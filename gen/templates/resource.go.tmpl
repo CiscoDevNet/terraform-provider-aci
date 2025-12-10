@@ -1503,7 +1503,7 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 				Computed: true,
 				DeprecationMessage: "{{getIgnoredExplanation .AttributeName}}",
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 			},
@@ -1515,7 +1515,7 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 				ElementType: types.StringType,
 				DeprecationMessage: "{{getIgnoredExplanation .AttributeName}}",
 				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseStateForUnknown(),
+					setplanmodifier.UseNonNullStateForUnknown(),
 				},
 			},
 						{{- end}}
@@ -1526,7 +1526,7 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 				ElementType: types.StringType,
 				DeprecationMessage: "{{getIgnoredExplanation .AttributeName}}",
 				PlanModifiers: []planmodifier.List{
-					listplanmodifier.UseStateForUnknown(),
+					listplanmodifier.UseNonNullStateForUnknown(),
 				},
 			},
 						{{- end}}
@@ -1538,7 +1538,7 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 				Computed:            true,
 				MarkdownDescription: "The distinguished name (DN) of the {{getResourceNameAsDescription .ResourceName $.Definitions}} object.",
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 				},
 			},
 			{{- if .HasParent}}
@@ -1556,7 +1556,7 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 				{{- end}}
 				MarkdownDescription: "The distinguished name (DN) of the parent object.",
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					stringplanmodifier.RequiresReplace(),
 				},
 				{{- if ne $LegacyAttributeName ""}}
@@ -1584,7 +1584,7 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 				{{- end}}
 				{{- if not .ReadOnly }}
 				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseStateForUnknown(),
+					setplanmodifier.UseNonNullStateForUnknown(),
 					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(nil),
 
 				},
@@ -1631,7 +1631,7 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 					{{- end}}
 				{{- if not .ReadOnly }}
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					{{- if or .IsNaming .CreateOnly}}
 					stringplanmodifier.RequiresReplace(),
@@ -2754,7 +2754,7 @@ func {{.ResourceClassName}}{{.ParentHierarchy}}SetToSetNullWhenStateIsNullPlanIs
     Computed:            true,
     {{- end }}
 	PlanModifiers: []planmodifier.Object{
-        objectplanmodifier.UseStateForUnknown(),
+        objectplanmodifier.UseNonNullStateForUnknown(),
     },
     {{- if and .RequiredPropertiesNames (not $RequiredAsChild)}}
     Validators: []validator.Object{
@@ -2776,7 +2776,7 @@ func {{.ResourceClassName}}{{.ParentHierarchy}}SetToSetNullWhenStateIsNullPlanIs
 			{{- end}}
 			{{- if not .ReadOnly }}
             PlanModifiers: []planmodifier.Set{
-                setplanmodifier.UseStateForUnknown(),
+                setplanmodifier.UseNonNullStateForUnknown(),
             },
 			{{- end}}
             {{- if .ValidValues}}
@@ -2803,7 +2803,7 @@ func {{.ResourceClassName}}{{.ParentHierarchy}}SetToSetNullWhenStateIsNullPlanIs
 			{{- end }}
 			{{- if not .ReadOnly }}
             PlanModifiers: []planmodifier.String{
-                stringplanmodifier.UseStateForUnknown(),
+                stringplanmodifier.UseNonNullStateForUnknown(),
             },
 			{{- end}}
             {{- if or .ValidValues }}
@@ -2827,7 +2827,7 @@ func {{.ResourceClassName}}{{.ParentHierarchy}}SetToSetNullWhenStateIsNullPlanIs
     Optional:            true,
     Computed:            true,
     PlanModifiers: []planmodifier.Set{
-        setplanmodifier.UseStateForUnknown(),
+        setplanmodifier.UseNonNullStateForUnknown(),
 		{{- if excludeForNullInSetCheck .ResourceClassName}}
 		SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate({{.ResourceClassName}}{{.ParentHierarchy}}SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate),
 		{{- end}}
@@ -2848,7 +2848,7 @@ func {{.ResourceClassName}}{{.ParentHierarchy}}SetToSetNullWhenStateIsNullPlanIs
                 {{- end}}
 				{{- if not .ReadOnly }}
                 PlanModifiers: []planmodifier.Set{
-                    setplanmodifier.UseStateForUnknown(),
+                    setplanmodifier.UseNonNullStateForUnknown(),
                 },
 				{{- end}}
                 {{- if .ValidValues}}
@@ -2878,7 +2878,7 @@ func {{.ResourceClassName}}{{.ParentHierarchy}}SetToSetNullWhenStateIsNullPlanIs
                 {{- end}}
 				{{- if not .ReadOnly }}
                 PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
                 },
 				{{- end}}
                 {{- if .HasCustomType}}

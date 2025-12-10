@@ -4290,7 +4290,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				ElementType:        types.StringType,
 				DeprecationMessage: "Attribute `relation_fv_rs_path_att` is deprecated. The configuration was not functioning as intended because the Managed Object (MO) created by the pre-migrated resource was either configured incorrectly or exposed without any implemented functionality on the APIC. The MO for this attribute is no longer created on the APIC, but the existing MO will remain present until the resource is destroyed. This attribute will be removed in the next major version of the provider.",
 				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseStateForUnknown(),
+					setplanmodifier.UseNonNullStateForUnknown(),
 				},
 			},
 			"relation_fv_rs_prov_def": schema.SetAttribute{
@@ -4299,7 +4299,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				ElementType:        types.StringType,
 				DeprecationMessage: "Attribute `relation_fv_rs_prov_def` is deprecated. The configuration was not functioning as intended because the Managed Object (MO) created by the pre-migrated resource was either configured incorrectly or exposed without any implemented functionality on the APIC. The MO for this attribute is no longer created on the APIC, but the existing MO will remain present until the resource is destroyed. This attribute will be removed in the next major version of the provider.",
 				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseStateForUnknown(),
+					setplanmodifier.UseNonNullStateForUnknown(),
 				},
 			},
 			"relation_fv_rs_bd": schema.StringAttribute{
@@ -4424,7 +4424,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Computed:            true,
 				MarkdownDescription: "The distinguished name (DN) of the Application EPG object.",
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 				},
 			},
 			"parent_dn": schema.StringAttribute{
@@ -4432,7 +4432,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Computed:            true,
 				MarkdownDescription: "The distinguished name (DN) of the parent object.",
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					stringplanmodifier.RequiresReplace(),
 				},
 				Validators: []validator.String{
@@ -4445,7 +4445,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
@@ -4455,7 +4455,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The description of the Application EPG object.`,
@@ -4464,7 +4464,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators:          []validator.String{},
@@ -4474,7 +4474,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.String{
@@ -4486,7 +4486,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.String{
@@ -4498,7 +4498,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.String{
@@ -4510,7 +4510,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.String{
@@ -4522,7 +4522,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.String{
@@ -4534,7 +4534,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
@@ -4547,7 +4547,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The name alias of the Application EPG object.`,
@@ -4556,7 +4556,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.String{
@@ -4572,7 +4572,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.String{
@@ -4585,7 +4585,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Optional:   true,
 				Computed:   true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.String{
@@ -4604,7 +4604,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.String{
@@ -4617,14 +4617,14 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Object{
-					objectplanmodifier.UseStateForUnknown(),
+					objectplanmodifier.UseNonNullStateForUnknown(),
 				},
 				Attributes: map[string]schema.Attribute{
 					"annotation": schema.StringAttribute{
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The annotation of the EPG uSeg Block Statement object.`,
 					},
@@ -4632,7 +4632,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The description of the EPG uSeg Block Statement object.`,
 					},
@@ -4640,7 +4640,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						Validators: []validator.String{
 							stringvalidator.OneOf("all", "any"),
@@ -4651,7 +4651,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The name of the EPG uSeg Block Statement object.`,
 					},
@@ -4659,7 +4659,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The name alias of the EPG uSeg Block Statement object.`,
 					},
@@ -4667,7 +4667,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The key for enabling clients to own their data for entity correlation.`,
 					},
@@ -4675,7 +4675,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
 					},
@@ -4683,7 +4683,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The precedence of the EPG uSeg Block Statement object.`,
 					},
@@ -4691,7 +4691,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						Validators: []validator.String{
 							stringvalidator.OneOf("scope-bd", "scope-vrf"),
@@ -4703,7 +4703,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 						Optional:            true,
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
-							setplanmodifier.UseStateForUnknown(),
+							setplanmodifier.UseNonNullStateForUnknown(),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
@@ -4711,7 +4711,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 									Optional: true,
 									Computed: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									Validators: []validator.String{
 										MakeStringRequired(),
@@ -4722,7 +4722,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 									Optional: true,
 									Computed: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									Validators: []validator.String{
 										MakeStringRequired(),
@@ -4737,7 +4737,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 						Optional:            true,
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
-							setplanmodifier.UseStateForUnknown(),
+							setplanmodifier.UseNonNullStateForUnknown(),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
@@ -4745,7 +4745,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 									Optional: true,
 									Computed: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									Validators: []validator.String{
 										MakeStringRequired(),
@@ -4756,7 +4756,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 									Optional: true,
 									Computed: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									Validators: []validator.String{
 										MakeStringRequired(),
@@ -4773,14 +4773,14 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Object{
-					objectplanmodifier.UseStateForUnknown(),
+					objectplanmodifier.UseNonNullStateForUnknown(),
 				},
 				Attributes: map[string]schema.Attribute{
 					"annotation": schema.StringAttribute{
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The annotation of the Relation From Application EPG To Monitoring Policy object.`,
 					},
@@ -4788,7 +4788,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The name of the monitoring policy.`,
 					},
@@ -4797,7 +4797,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 						Optional:            true,
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
-							setplanmodifier.UseStateForUnknown(),
+							setplanmodifier.UseNonNullStateForUnknown(),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
@@ -4805,7 +4805,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 									Optional: true,
 									Computed: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									Validators: []validator.String{
 										MakeStringRequired(),
@@ -4816,7 +4816,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 									Optional: true,
 									Computed: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									Validators: []validator.String{
 										MakeStringRequired(),
@@ -4831,7 +4831,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 						Optional:            true,
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
-							setplanmodifier.UseStateForUnknown(),
+							setplanmodifier.UseNonNullStateForUnknown(),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
@@ -4839,7 +4839,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 									Optional: true,
 									Computed: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									Validators: []validator.String{
 										MakeStringRequired(),
@@ -4850,7 +4850,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 									Optional: true,
 									Computed: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									Validators: []validator.String{
 										MakeStringRequired(),
@@ -4867,7 +4867,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseStateForUnknown(),
+					setplanmodifier.UseNonNullStateForUnknown(),
 					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(FvRsAepAttFvAEPgSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate),
 				},
 				NestedObject: schema.NestedAttributeObject{
@@ -4876,7 +4876,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators: []validator.String{
 								MakeStringRequired(),
@@ -4887,7 +4887,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators: []validator.String{
 								stringvalidator.OneOf("immediate", "lazy"),
@@ -4898,7 +4898,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators: []validator.String{
 								stringvalidator.OneOf("native", "regular", "untagged"),
@@ -4909,7 +4909,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators:          []validator.String{},
 							MarkdownDescription: `The primary encapsulation of the Relation From Application EPG To Attachable Access Entity Profile object.`,
@@ -4918,7 +4918,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators: []validator.String{
 								MakeStringRequired(),
@@ -4930,7 +4930,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional:            true,
 							Computed:            true,
 							PlanModifiers: []planmodifier.Set{
-								setplanmodifier.UseStateForUnknown(),
+								setplanmodifier.UseNonNullStateForUnknown(),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
@@ -4938,7 +4938,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 										Optional: true,
 										Computed: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										Validators: []validator.String{
 											MakeStringRequired(),
@@ -4949,7 +4949,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 										Optional: true,
 										Computed: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										Validators: []validator.String{
 											MakeStringRequired(),
@@ -4964,7 +4964,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional:            true,
 							Computed:            true,
 							PlanModifiers: []planmodifier.Set{
-								setplanmodifier.UseStateForUnknown(),
+								setplanmodifier.UseNonNullStateForUnknown(),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
@@ -4972,7 +4972,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 										Optional: true,
 										Computed: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										Validators: []validator.String{
 											MakeStringRequired(),
@@ -4983,7 +4983,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 										Optional: true,
 										Computed: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										Validators: []validator.String{
 											MakeStringRequired(),
@@ -5001,14 +5001,14 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Object{
-					objectplanmodifier.UseStateForUnknown(),
+					objectplanmodifier.UseNonNullStateForUnknown(),
 				},
 				Attributes: map[string]schema.Attribute{
 					"annotation": schema.StringAttribute{
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The annotation of the Relation To Bridge Domain object.`,
 					},
@@ -5016,7 +5016,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The name of the bridge domain associated with this EPG.`,
 					},
@@ -5025,7 +5025,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 						Optional:            true,
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
-							setplanmodifier.UseStateForUnknown(),
+							setplanmodifier.UseNonNullStateForUnknown(),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
@@ -5033,7 +5033,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 									Optional: true,
 									Computed: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									Validators: []validator.String{
 										MakeStringRequired(),
@@ -5044,7 +5044,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 									Optional: true,
 									Computed: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									Validators: []validator.String{
 										MakeStringRequired(),
@@ -5059,7 +5059,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 						Optional:            true,
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
-							setplanmodifier.UseStateForUnknown(),
+							setplanmodifier.UseNonNullStateForUnknown(),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
@@ -5067,7 +5067,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 									Optional: true,
 									Computed: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									Validators: []validator.String{
 										MakeStringRequired(),
@@ -5078,7 +5078,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 									Optional: true,
 									Computed: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									Validators: []validator.String{
 										MakeStringRequired(),
@@ -5095,7 +5095,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseStateForUnknown(),
+					setplanmodifier.UseNonNullStateForUnknown(),
 					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(FvRsConsFvAEPgSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate),
 				},
 				NestedObject: schema.NestedAttributeObject{
@@ -5104,7 +5104,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators:          []validator.String{},
 							MarkdownDescription: `The annotation of the Relation To Consumed Contract object.`,
@@ -5114,7 +5114,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional:   true,
 							Computed:   true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators: []validator.String{
 								stringvalidator.Any(
@@ -5128,7 +5128,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators: []validator.String{
 								MakeStringRequired(),
@@ -5140,7 +5140,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional:            true,
 							Computed:            true,
 							PlanModifiers: []planmodifier.Set{
-								setplanmodifier.UseStateForUnknown(),
+								setplanmodifier.UseNonNullStateForUnknown(),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
@@ -5148,7 +5148,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 										Optional: true,
 										Computed: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										Validators: []validator.String{
 											MakeStringRequired(),
@@ -5159,7 +5159,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 										Optional: true,
 										Computed: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										Validators: []validator.String{
 											MakeStringRequired(),
@@ -5174,7 +5174,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional:            true,
 							Computed:            true,
 							PlanModifiers: []planmodifier.Set{
-								setplanmodifier.UseStateForUnknown(),
+								setplanmodifier.UseNonNullStateForUnknown(),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
@@ -5182,7 +5182,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 										Optional: true,
 										Computed: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										Validators: []validator.String{
 											MakeStringRequired(),
@@ -5193,7 +5193,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 										Optional: true,
 										Computed: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										Validators: []validator.String{
 											MakeStringRequired(),
@@ -5211,7 +5211,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseStateForUnknown(),
+					setplanmodifier.UseNonNullStateForUnknown(),
 					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(FvRsConsIfFvAEPgSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate),
 				},
 				NestedObject: schema.NestedAttributeObject{
@@ -5220,7 +5220,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators:          []validator.String{},
 							MarkdownDescription: `The annotation of the Relation To Imported Contract object.`,
@@ -5230,7 +5230,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional:   true,
 							Computed:   true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators: []validator.String{
 								stringvalidator.Any(
@@ -5244,7 +5244,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators: []validator.String{
 								MakeStringRequired(),
@@ -5256,7 +5256,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional:            true,
 							Computed:            true,
 							PlanModifiers: []planmodifier.Set{
-								setplanmodifier.UseStateForUnknown(),
+								setplanmodifier.UseNonNullStateForUnknown(),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
@@ -5264,7 +5264,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 										Optional: true,
 										Computed: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										Validators: []validator.String{
 											MakeStringRequired(),
@@ -5275,7 +5275,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 										Optional: true,
 										Computed: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										Validators: []validator.String{
 											MakeStringRequired(),
@@ -5290,7 +5290,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional:            true,
 							Computed:            true,
 							PlanModifiers: []planmodifier.Set{
-								setplanmodifier.UseStateForUnknown(),
+								setplanmodifier.UseNonNullStateForUnknown(),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
@@ -5298,7 +5298,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 										Optional: true,
 										Computed: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										Validators: []validator.String{
 											MakeStringRequired(),
@@ -5309,7 +5309,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 										Optional: true,
 										Computed: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										Validators: []validator.String{
 											MakeStringRequired(),
@@ -5327,14 +5327,14 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Object{
-					objectplanmodifier.UseStateForUnknown(),
+					objectplanmodifier.UseNonNullStateForUnknown(),
 				},
 				Attributes: map[string]schema.Attribute{
 					"annotation": schema.StringAttribute{
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The annotation of the Relation To Custom QoS Policy object.`,
 					},
@@ -5342,7 +5342,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The Custom QoS traffic policy name.`,
 					},
@@ -5351,7 +5351,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 						Optional:            true,
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
-							setplanmodifier.UseStateForUnknown(),
+							setplanmodifier.UseNonNullStateForUnknown(),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
@@ -5359,7 +5359,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 									Optional: true,
 									Computed: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									Validators: []validator.String{
 										MakeStringRequired(),
@@ -5370,7 +5370,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 									Optional: true,
 									Computed: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									Validators: []validator.String{
 										MakeStringRequired(),
@@ -5385,7 +5385,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 						Optional:            true,
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
-							setplanmodifier.UseStateForUnknown(),
+							setplanmodifier.UseNonNullStateForUnknown(),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
@@ -5393,7 +5393,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 									Optional: true,
 									Computed: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									Validators: []validator.String{
 										MakeStringRequired(),
@@ -5404,7 +5404,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 									Optional: true,
 									Computed: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									Validators: []validator.String{
 										MakeStringRequired(),
@@ -5421,7 +5421,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseStateForUnknown(),
+					setplanmodifier.UseNonNullStateForUnknown(),
 					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(FvRsDomAttFvAEPgSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate),
 				},
 				NestedObject: schema.NestedAttributeObject{
@@ -5430,7 +5430,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators:          []validator.String{},
 							MarkdownDescription: `The annotation of the Relation To Domain object.`,
@@ -5439,7 +5439,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators: []validator.String{
 								stringvalidator.OneOf("dynamicBinding", "ephemeral", "none", "staticBinding"),
@@ -5450,7 +5450,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators: []validator.String{
 								stringvalidator.OneOf("encap", "useg"),
@@ -5461,7 +5461,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators:          []validator.String{},
 							MarkdownDescription: `The display name of the user configured port-group.`,
@@ -5470,7 +5470,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators:          []validator.String{},
 							MarkdownDescription: `The delimiter of the Relation To Domain object.`,
@@ -5479,7 +5479,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators:          []validator.String{},
 							MarkdownDescription: `The encapsulation of the Relation To Domain object. The encapsulation refers to the EPG VLAN when class preference is set to 'encap', or to the Secondary VLAN when class preference is set to 'useg'.`,
@@ -5488,7 +5488,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators: []validator.String{
 								stringvalidator.OneOf("auto", "vlan", "vxlan"),
@@ -5499,7 +5499,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators: []validator.String{
 								stringvalidator.OneOf("Cos0", "Cos1", "Cos2", "Cos3", "Cos4", "Cos5", "Cos6", "Cos7"),
@@ -5510,7 +5510,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators: []validator.String{
 								stringvalidator.OneOf("disabled", "enabled"),
@@ -5521,7 +5521,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators: []validator.String{
 								stringvalidator.OneOf("immediate", "lazy"),
@@ -5532,7 +5532,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators:          []validator.String{},
 							MarkdownDescription: `The IP address management (IPAM) DHCP override of the Relation To Domain object. Only applicable for Nutanix domains.`,
@@ -5541,7 +5541,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators: []validator.String{
 								stringvalidator.OneOf("no", "yes"),
@@ -5552,7 +5552,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators:          []validator.String{},
 							MarkdownDescription: `The IP address management (IPAM) gateway of the Relation To Domain object. Only applicable for Nutanix domains.`,
@@ -5561,7 +5561,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators:          []validator.String{},
 							MarkdownDescription: `The link aggregation group (LAG) policy name of the Relation To Domain object.`,
@@ -5570,7 +5570,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators: []validator.String{
 								stringvalidator.OneOf("both", "egress", "ingress"),
@@ -5581,7 +5581,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators: []validator.String{
 								stringvalidator.OneOf("disabled", "enabled"),
@@ -5592,7 +5592,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators:          []validator.String{},
 							MarkdownDescription: `The number of ports of the Relation To Domain object.`,
@@ -5601,7 +5601,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators: []validator.String{
 								stringvalidator.OneOf("elastic", "fixed", "none"),
@@ -5612,7 +5612,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators:          []validator.String{},
 							MarkdownDescription: `The primary encapsulation of the Relation To Domain object. This is used when the class preference is set to 'useg'.`,
@@ -5621,7 +5621,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators:          []validator.String{},
 							MarkdownDescription: `The primary inner encapsulation of the Relation To Domain object. This is used for the portgroup at the VMWare Distributed Virtual Switch (DVS). This VLAN is internal to the DVS and is used for communication between the other VMs and the AVE VM at a host. Traffic is not forwarded to the fabric over the VLAN. Only applicable for Cisco ACI Virtual Edge (AVE) domains.`,
@@ -5630,7 +5630,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators: []validator.String{
 								stringvalidator.OneOf("immediate", "lazy", "pre-provision"),
@@ -5641,7 +5641,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators:          []validator.String{},
 							MarkdownDescription: `The secondary inner encapsulation of the Relation To Domain object. This is used for the portgroup at the VMWare Distributed Virtual Switch (DVS). This VLAN is internal to the DVS and is used for communication between the other VMs and the AVE VM at a host. Traffic is not forwarded to the fabric over the VLAN. Only applicable for Cisco ACI Virtual Edge (AVE) domains.`,
@@ -5650,7 +5650,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators: []validator.String{
 								stringvalidator.OneOf("AVE", "native"),
@@ -5661,7 +5661,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators: []validator.String{
 								MakeStringRequired(),
@@ -5672,7 +5672,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators: []validator.String{
 								stringvalidator.OneOf("no", "yes"),
@@ -5684,14 +5684,14 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional:            true,
 							Computed:            true,
 							PlanModifiers: []planmodifier.Object{
-								objectplanmodifier.UseStateForUnknown(),
+								objectplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Attributes: map[string]schema.Attribute{
 								"active_uplinks": schema.StringAttribute{
 									Optional: true,
 									Computed: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									MarkdownDescription: `The active uplink IDs of the Uplink Order Container object. When defined the value cannot be set back to empty.`,
 								},
@@ -5699,7 +5699,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 									Optional: true,
 									Computed: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									MarkdownDescription: `The annotation of the Uplink Order Container object.`,
 								},
@@ -5707,7 +5707,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 									Optional: true,
 									Computed: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									MarkdownDescription: `The description of the Uplink Order Container object.`,
 								},
@@ -5715,7 +5715,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 									Optional: true,
 									Computed: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									MarkdownDescription: `The name of the Uplink Order Container object.`,
 								},
@@ -5723,7 +5723,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 									Optional: true,
 									Computed: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									MarkdownDescription: `The name alias of the Uplink Order Container object.`,
 								},
@@ -5731,7 +5731,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 									Optional: true,
 									Computed: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									MarkdownDescription: `The key for enabling clients to own their data for entity correlation.`,
 								},
@@ -5739,7 +5739,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 									Optional: true,
 									Computed: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
 								},
@@ -5747,7 +5747,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 									Optional: true,
 									Computed: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									MarkdownDescription: `The passive uplink IDs of the Uplink Order Container object.`,
 								},
@@ -5756,7 +5756,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 									Optional:            true,
 									Computed:            true,
 									PlanModifiers: []planmodifier.Set{
-										setplanmodifier.UseStateForUnknown(),
+										setplanmodifier.UseNonNullStateForUnknown(),
 									},
 									NestedObject: schema.NestedAttributeObject{
 										Attributes: map[string]schema.Attribute{
@@ -5764,7 +5764,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 												Optional: true,
 												Computed: true,
 												PlanModifiers: []planmodifier.String{
-													stringplanmodifier.UseStateForUnknown(),
+													stringplanmodifier.UseNonNullStateForUnknown(),
 												},
 												Validators: []validator.String{
 													MakeStringRequired(),
@@ -5775,7 +5775,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 												Optional: true,
 												Computed: true,
 												PlanModifiers: []planmodifier.String{
-													stringplanmodifier.UseStateForUnknown(),
+													stringplanmodifier.UseNonNullStateForUnknown(),
 												},
 												Validators: []validator.String{
 													MakeStringRequired(),
@@ -5790,7 +5790,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 									Optional:            true,
 									Computed:            true,
 									PlanModifiers: []planmodifier.Set{
-										setplanmodifier.UseStateForUnknown(),
+										setplanmodifier.UseNonNullStateForUnknown(),
 									},
 									NestedObject: schema.NestedAttributeObject{
 										Attributes: map[string]schema.Attribute{
@@ -5798,7 +5798,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 												Optional: true,
 												Computed: true,
 												PlanModifiers: []planmodifier.String{
-													stringplanmodifier.UseStateForUnknown(),
+													stringplanmodifier.UseNonNullStateForUnknown(),
 												},
 												Validators: []validator.String{
 													MakeStringRequired(),
@@ -5809,7 +5809,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 												Optional: true,
 												Computed: true,
 												PlanModifiers: []planmodifier.String{
-													stringplanmodifier.UseStateForUnknown(),
+													stringplanmodifier.UseNonNullStateForUnknown(),
 												},
 												Validators: []validator.String{
 													MakeStringRequired(),
@@ -5826,7 +5826,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional:            true,
 							Computed:            true,
 							PlanModifiers: []planmodifier.Set{
-								setplanmodifier.UseStateForUnknown(),
+								setplanmodifier.UseNonNullStateForUnknown(),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
@@ -5834,7 +5834,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 										Optional: true,
 										Computed: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										Validators: []validator.String{
 											MakeStringRequired(),
@@ -5845,7 +5845,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 										Optional: true,
 										Computed: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										Validators: []validator.String{
 											MakeStringRequired(),
@@ -5860,7 +5860,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional:            true,
 							Computed:            true,
 							PlanModifiers: []planmodifier.Set{
-								setplanmodifier.UseStateForUnknown(),
+								setplanmodifier.UseNonNullStateForUnknown(),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
@@ -5868,7 +5868,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 										Optional: true,
 										Computed: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										Validators: []validator.String{
 											MakeStringRequired(),
@@ -5879,7 +5879,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 										Optional: true,
 										Computed: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										Validators: []validator.String{
 											MakeStringRequired(),
@@ -5897,14 +5897,14 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Object{
-					objectplanmodifier.UseStateForUnknown(),
+					objectplanmodifier.UseNonNullStateForUnknown(),
 				},
 				Attributes: map[string]schema.Attribute{
 					"annotation": schema.StringAttribute{
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The annotation of the Relation To Data Plane Policing Policy object.`,
 					},
@@ -5912,7 +5912,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `Name.`,
 					},
@@ -5921,7 +5921,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 						Optional:            true,
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
-							setplanmodifier.UseStateForUnknown(),
+							setplanmodifier.UseNonNullStateForUnknown(),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
@@ -5929,7 +5929,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 									Optional: true,
 									Computed: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									Validators: []validator.String{
 										MakeStringRequired(),
@@ -5940,7 +5940,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 									Optional: true,
 									Computed: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									Validators: []validator.String{
 										MakeStringRequired(),
@@ -5955,7 +5955,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 						Optional:            true,
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
-							setplanmodifier.UseStateForUnknown(),
+							setplanmodifier.UseNonNullStateForUnknown(),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
@@ -5963,7 +5963,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 									Optional: true,
 									Computed: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									Validators: []validator.String{
 										MakeStringRequired(),
@@ -5974,7 +5974,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 									Optional: true,
 									Computed: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									Validators: []validator.String{
 										MakeStringRequired(),
@@ -5994,7 +5994,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseStateForUnknown(),
+					setplanmodifier.UseNonNullStateForUnknown(),
 					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(FvRsFcPathAttFvAEPgSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate),
 				},
 				NestedObject: schema.NestedAttributeObject{
@@ -6003,7 +6003,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators:          []validator.String{},
 							MarkdownDescription: `The annotation of the Relation To Fibre Channel Path object.`,
@@ -6012,7 +6012,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators:          []validator.String{},
 							MarkdownDescription: `The description of the Relation To Fibre Channel Path object.`,
@@ -6021,7 +6021,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators: []validator.String{
 								MakeStringRequired(),
@@ -6032,7 +6032,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators:          []validator.String{},
 							MarkdownDescription: `The virtual storage area network (VSAN) of the Relation To Fibre Channel Path object.`,
@@ -6041,7 +6041,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators: []validator.String{
 								stringvalidator.OneOf("native", "regular"),
@@ -6053,7 +6053,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional:            true,
 							Computed:            true,
 							PlanModifiers: []planmodifier.Set{
-								setplanmodifier.UseStateForUnknown(),
+								setplanmodifier.UseNonNullStateForUnknown(),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
@@ -6061,7 +6061,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 										Optional: true,
 										Computed: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										Validators: []validator.String{
 											MakeStringRequired(),
@@ -6072,7 +6072,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 										Optional: true,
 										Computed: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										Validators: []validator.String{
 											MakeStringRequired(),
@@ -6087,7 +6087,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional:            true,
 							Computed:            true,
 							PlanModifiers: []planmodifier.Set{
-								setplanmodifier.UseStateForUnknown(),
+								setplanmodifier.UseNonNullStateForUnknown(),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
@@ -6095,7 +6095,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 										Optional: true,
 										Computed: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										Validators: []validator.String{
 											MakeStringRequired(),
@@ -6106,7 +6106,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 										Optional: true,
 										Computed: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										Validators: []validator.String{
 											MakeStringRequired(),
@@ -6128,7 +6128,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseStateForUnknown(),
+					setplanmodifier.UseNonNullStateForUnknown(),
 					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(FvRsIntraEpgFvAEPgSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate),
 				},
 				NestedObject: schema.NestedAttributeObject{
@@ -6137,7 +6137,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators:          []validator.String{},
 							MarkdownDescription: `The annotation of the Relation To Intra EPG Contract object.`,
@@ -6146,7 +6146,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators: []validator.String{
 								MakeStringRequired(),
@@ -6158,7 +6158,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional:            true,
 							Computed:            true,
 							PlanModifiers: []planmodifier.Set{
-								setplanmodifier.UseStateForUnknown(),
+								setplanmodifier.UseNonNullStateForUnknown(),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
@@ -6166,7 +6166,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 										Optional: true,
 										Computed: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										Validators: []validator.String{
 											MakeStringRequired(),
@@ -6177,7 +6177,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 										Optional: true,
 										Computed: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										Validators: []validator.String{
 											MakeStringRequired(),
@@ -6192,7 +6192,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional:            true,
 							Computed:            true,
 							PlanModifiers: []planmodifier.Set{
-								setplanmodifier.UseStateForUnknown(),
+								setplanmodifier.UseNonNullStateForUnknown(),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
@@ -6200,7 +6200,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 										Optional: true,
 										Computed: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										Validators: []validator.String{
 											MakeStringRequired(),
@@ -6211,7 +6211,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 										Optional: true,
 										Computed: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										Validators: []validator.String{
 											MakeStringRequired(),
@@ -6229,7 +6229,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseStateForUnknown(),
+					setplanmodifier.UseNonNullStateForUnknown(),
 					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(FvRsNodeAttFvAEPgSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate),
 				},
 				NestedObject: schema.NestedAttributeObject{
@@ -6238,7 +6238,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators:          []validator.String{},
 							MarkdownDescription: `The annotation of the Relation To Static Leaf object.`,
@@ -6247,7 +6247,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators:          []validator.String{},
 							MarkdownDescription: `The description of the Relation To Static Leaf object.`,
@@ -6256,7 +6256,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators: []validator.String{
 								MakeStringRequired(),
@@ -6267,7 +6267,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators: []validator.String{
 								stringvalidator.OneOf("immediate", "lazy"),
@@ -6278,7 +6278,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators: []validator.String{
 								stringvalidator.OneOf("native", "regular", "untagged"),
@@ -6289,7 +6289,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators: []validator.String{
 								MakeStringRequired(),
@@ -6301,7 +6301,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional:            true,
 							Computed:            true,
 							PlanModifiers: []planmodifier.Set{
-								setplanmodifier.UseStateForUnknown(),
+								setplanmodifier.UseNonNullStateForUnknown(),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
@@ -6309,7 +6309,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 										Optional: true,
 										Computed: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										Validators: []validator.String{
 											MakeStringRequired(),
@@ -6320,7 +6320,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 										Optional: true,
 										Computed: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										Validators: []validator.String{
 											MakeStringRequired(),
@@ -6335,7 +6335,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional:            true,
 							Computed:            true,
 							PlanModifiers: []planmodifier.Set{
-								setplanmodifier.UseStateForUnknown(),
+								setplanmodifier.UseNonNullStateForUnknown(),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
@@ -6343,7 +6343,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 										Optional: true,
 										Computed: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										Validators: []validator.String{
 											MakeStringRequired(),
@@ -6354,7 +6354,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 										Optional: true,
 										Computed: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										Validators: []validator.String{
 											MakeStringRequired(),
@@ -6372,7 +6372,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseStateForUnknown(),
+					setplanmodifier.UseNonNullStateForUnknown(),
 					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(FvRsPathAttFvAEPgSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate),
 				},
 				NestedObject: schema.NestedAttributeObject{
@@ -6381,7 +6381,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators:          []validator.String{},
 							MarkdownDescription: `The annotation of the Relation To Static Path object.`,
@@ -6390,7 +6390,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators:          []validator.String{},
 							MarkdownDescription: `The description of the Relation To Static Path object.`,
@@ -6399,7 +6399,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators: []validator.String{
 								MakeStringRequired(),
@@ -6410,7 +6410,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators: []validator.String{
 								stringvalidator.OneOf("immediate", "lazy"),
@@ -6421,7 +6421,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators: []validator.String{
 								stringvalidator.OneOf("native", "regular", "untagged"),
@@ -6432,7 +6432,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators:          []validator.String{},
 							MarkdownDescription: `The primary VLAN encapsulation of the Relation To Static Path object.`,
@@ -6441,7 +6441,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators: []validator.String{
 								MakeStringRequired(),
@@ -6453,7 +6453,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional:            true,
 							Computed:            true,
 							PlanModifiers: []planmodifier.Set{
-								setplanmodifier.UseStateForUnknown(),
+								setplanmodifier.UseNonNullStateForUnknown(),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
@@ -6461,7 +6461,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 										Optional: true,
 										Computed: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										Validators: []validator.String{
 											MakeStringRequired(),
@@ -6472,7 +6472,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 										Optional: true,
 										Computed: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										Validators: []validator.String{
 											MakeStringRequired(),
@@ -6487,7 +6487,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional:            true,
 							Computed:            true,
 							PlanModifiers: []planmodifier.Set{
-								setplanmodifier.UseStateForUnknown(),
+								setplanmodifier.UseNonNullStateForUnknown(),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
@@ -6495,7 +6495,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 										Optional: true,
 										Computed: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										Validators: []validator.String{
 											MakeStringRequired(),
@@ -6506,7 +6506,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 										Optional: true,
 										Computed: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										Validators: []validator.String{
 											MakeStringRequired(),
@@ -6524,7 +6524,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseStateForUnknown(),
+					setplanmodifier.UseNonNullStateForUnknown(),
 					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(FvRsProtByFvAEPgSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate),
 				},
 				NestedObject: schema.NestedAttributeObject{
@@ -6533,7 +6533,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators:          []validator.String{},
 							MarkdownDescription: `The annotation of the Relation To Taboo Contract object.`,
@@ -6542,7 +6542,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators: []validator.String{
 								MakeStringRequired(),
@@ -6554,7 +6554,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional:            true,
 							Computed:            true,
 							PlanModifiers: []planmodifier.Set{
-								setplanmodifier.UseStateForUnknown(),
+								setplanmodifier.UseNonNullStateForUnknown(),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
@@ -6562,7 +6562,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 										Optional: true,
 										Computed: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										Validators: []validator.String{
 											MakeStringRequired(),
@@ -6573,7 +6573,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 										Optional: true,
 										Computed: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										Validators: []validator.String{
 											MakeStringRequired(),
@@ -6588,7 +6588,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional:            true,
 							Computed:            true,
 							PlanModifiers: []planmodifier.Set{
-								setplanmodifier.UseStateForUnknown(),
+								setplanmodifier.UseNonNullStateForUnknown(),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
@@ -6596,7 +6596,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 										Optional: true,
 										Computed: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										Validators: []validator.String{
 											MakeStringRequired(),
@@ -6607,7 +6607,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 										Optional: true,
 										Computed: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										Validators: []validator.String{
 											MakeStringRequired(),
@@ -6625,7 +6625,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseStateForUnknown(),
+					setplanmodifier.UseNonNullStateForUnknown(),
 					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(FvRsProvFvAEPgSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate),
 				},
 				NestedObject: schema.NestedAttributeObject{
@@ -6634,7 +6634,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators:          []validator.String{},
 							MarkdownDescription: `The annotation of the Relation To Provided Contract object.`,
@@ -6643,7 +6643,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators: []validator.String{
 								stringvalidator.OneOf("All", "AtleastOne", "AtmostOne", "None"),
@@ -6655,7 +6655,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional:   true,
 							Computed:   true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators: []validator.String{
 								stringvalidator.Any(
@@ -6669,7 +6669,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators: []validator.String{
 								MakeStringRequired(),
@@ -6681,7 +6681,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional:            true,
 							Computed:            true,
 							PlanModifiers: []planmodifier.Set{
-								setplanmodifier.UseStateForUnknown(),
+								setplanmodifier.UseNonNullStateForUnknown(),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
@@ -6689,7 +6689,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 										Optional: true,
 										Computed: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										Validators: []validator.String{
 											MakeStringRequired(),
@@ -6700,7 +6700,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 										Optional: true,
 										Computed: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										Validators: []validator.String{
 											MakeStringRequired(),
@@ -6715,7 +6715,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional:            true,
 							Computed:            true,
 							PlanModifiers: []planmodifier.Set{
-								setplanmodifier.UseStateForUnknown(),
+								setplanmodifier.UseNonNullStateForUnknown(),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
@@ -6723,7 +6723,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 										Optional: true,
 										Computed: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										Validators: []validator.String{
 											MakeStringRequired(),
@@ -6734,7 +6734,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 										Optional: true,
 										Computed: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										Validators: []validator.String{
 											MakeStringRequired(),
@@ -6752,7 +6752,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseStateForUnknown(),
+					setplanmodifier.UseNonNullStateForUnknown(),
 					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(FvRsSecInheritedFvAEPgSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate),
 				},
 				NestedObject: schema.NestedAttributeObject{
@@ -6761,7 +6761,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators:          []validator.String{},
 							MarkdownDescription: `The annotation of the Relation To Contract Master object.`,
@@ -6770,7 +6770,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators: []validator.String{
 								MakeStringRequired(),
@@ -6782,7 +6782,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional:            true,
 							Computed:            true,
 							PlanModifiers: []planmodifier.Set{
-								setplanmodifier.UseStateForUnknown(),
+								setplanmodifier.UseNonNullStateForUnknown(),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
@@ -6790,7 +6790,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 										Optional: true,
 										Computed: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										Validators: []validator.String{
 											MakeStringRequired(),
@@ -6801,7 +6801,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 										Optional: true,
 										Computed: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										Validators: []validator.String{
 											MakeStringRequired(),
@@ -6816,7 +6816,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional:            true,
 							Computed:            true,
 							PlanModifiers: []planmodifier.Set{
-								setplanmodifier.UseStateForUnknown(),
+								setplanmodifier.UseNonNullStateForUnknown(),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
@@ -6824,7 +6824,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 										Optional: true,
 										Computed: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										Validators: []validator.String{
 											MakeStringRequired(),
@@ -6835,7 +6835,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 										Optional: true,
 										Computed: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										Validators: []validator.String{
 											MakeStringRequired(),
@@ -6853,14 +6853,14 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Object{
-					objectplanmodifier.UseStateForUnknown(),
+					objectplanmodifier.UseNonNullStateForUnknown(),
 				},
 				Attributes: map[string]schema.Attribute{
 					"annotation": schema.StringAttribute{
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The annotation of the Relation To Trust Control Policy object.`,
 					},
@@ -6868,7 +6868,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `Name.`,
 					},
@@ -6877,7 +6877,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 						Optional:            true,
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
-							setplanmodifier.UseStateForUnknown(),
+							setplanmodifier.UseNonNullStateForUnknown(),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
@@ -6885,7 +6885,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 									Optional: true,
 									Computed: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									Validators: []validator.String{
 										MakeStringRequired(),
@@ -6896,7 +6896,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 									Optional: true,
 									Computed: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									Validators: []validator.String{
 										MakeStringRequired(),
@@ -6911,7 +6911,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 						Optional:            true,
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
-							setplanmodifier.UseStateForUnknown(),
+							setplanmodifier.UseNonNullStateForUnknown(),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
@@ -6919,7 +6919,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 									Optional: true,
 									Computed: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									Validators: []validator.String{
 										MakeStringRequired(),
@@ -6930,7 +6930,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 									Optional: true,
 									Computed: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									Validators: []validator.String{
 										MakeStringRequired(),
@@ -6947,7 +6947,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseStateForUnknown(),
+					setplanmodifier.UseNonNullStateForUnknown(),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
@@ -6955,7 +6955,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators: []validator.String{
 								MakeStringRequired(),
@@ -6966,7 +6966,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators: []validator.String{
 								MakeStringRequired(),
@@ -6981,7 +6981,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseStateForUnknown(),
+					setplanmodifier.UseNonNullStateForUnknown(),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
@@ -6989,7 +6989,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators: []validator.String{
 								MakeStringRequired(),
@@ -7000,7 +7000,7 @@ func (r *FvAEPgResource) Schema(ctx context.Context, req resource.SchemaRequest,
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators: []validator.String{
 								MakeStringRequired(),

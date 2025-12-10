@@ -1011,14 +1011,14 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 				Computed:            true,
 				MarkdownDescription: "The distinguished name (DN) of the Management Access Policy object.",
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 				},
 			},
 			"annotation": schema.StringAttribute{
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
@@ -1028,7 +1028,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The description of the Management Access Policy object.`,
@@ -1036,7 +1036,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 			"name": schema.StringAttribute{
 				Required: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
@@ -1046,7 +1046,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The name alias of the Management Access Policy object.`,
@@ -1055,7 +1055,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The key for enabling clients to own their data for entity correlation.`,
@@ -1064,7 +1064,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
@@ -1073,7 +1073,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.String{
@@ -1086,14 +1086,14 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Object{
-					objectplanmodifier.UseStateForUnknown(),
+					objectplanmodifier.UseNonNullStateForUnknown(),
 				},
 				Attributes: map[string]schema.Attribute{
 					"allow_credentials": schema.StringAttribute{
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						Validators: []validator.String{
 							stringvalidator.OneOf("disabled", "enabled"),
@@ -1104,7 +1104,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `Determines which origins can access the resource. For example, inputting http://127.0.0.1:8000 would allow access from a source device with that IP address and port.`,
 					},
@@ -1112,7 +1112,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						Validators: []validator.String{
 							stringvalidator.OneOf("disabled", "enabled"),
@@ -1123,7 +1123,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The annotation of the HTTP Service object.`,
 					},
@@ -1131,7 +1131,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						Validators: []validator.String{
 							stringvalidator.OneOf("disabled", "enabled"),
@@ -1142,7 +1142,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The description of the HTTP Service object.`,
 					},
@@ -1150,7 +1150,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The maximum amount of API calls allowed per unit time.`,
 					},
@@ -1158,7 +1158,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						Validators: []validator.String{
 							stringvalidator.OneOf("disabled", "enabled"),
@@ -1169,7 +1169,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The unit of measurement for rate limiting.`,
 					},
@@ -1177,7 +1177,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The maximum number of request status objects to keep.`,
 					},
@@ -1185,7 +1185,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The name of the HTTP Service object.`,
 					},
@@ -1193,7 +1193,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The name alias of the HTTP Service object.`,
 					},
@@ -1201,7 +1201,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						Validators: []validator.String{
 							stringvalidator.OneOf("disabled", "enabled"),
@@ -1212,7 +1212,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The port used by the HTTP communication service.`,
 					},
@@ -1220,7 +1220,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						Validators: []validator.String{
 							stringvalidator.OneOf("disabled", "enabled", "tested"),
@@ -1231,7 +1231,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						Validators: []validator.String{
 							stringvalidator.OneOf("disabled", "enabled"),
@@ -1242,7 +1242,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The maximum login/refresh allowed per second.`,
 					},
@@ -1250,7 +1250,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						Validators: []validator.String{
 							stringvalidator.OneOf("disabled", "enabled"),
@@ -1261,7 +1261,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						Validators: []validator.String{
 							stringvalidator.OneOf("disabled", "enabled"),
@@ -1273,21 +1273,21 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional:            true,
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
-							setplanmodifier.UseStateForUnknown(),
+							setplanmodifier.UseNonNullStateForUnknown(),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
 								"key": schema.StringAttribute{
 									Required: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 								},
 								"value": schema.StringAttribute{
 									Required: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									MarkdownDescription: `The value of the property.`,
 								},
@@ -1299,21 +1299,21 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional:            true,
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
-							setplanmodifier.UseStateForUnknown(),
+							setplanmodifier.UseNonNullStateForUnknown(),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
 								"key": schema.StringAttribute{
 									Required: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 								},
 								"value": schema.StringAttribute{
 									Required: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									MarkdownDescription: `The value of the property.`,
 								},
@@ -1327,14 +1327,14 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Object{
-					objectplanmodifier.UseStateForUnknown(),
+					objectplanmodifier.UseNonNullStateForUnknown(),
 				},
 				Attributes: map[string]schema.Attribute{
 					"allow_credentials": schema.StringAttribute{
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						Validators: []validator.String{
 							stringvalidator.OneOf("disabled", "enabled"),
@@ -1345,7 +1345,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `Determines which origins can access the resource. For example, inputting http://127.0.0.1:8000 would allow access from a source device with that IP address and port.`,
 					},
@@ -1353,7 +1353,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						Validators: []validator.String{
 							stringvalidator.OneOf("enabled"),
@@ -1364,7 +1364,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The annotation of the HTTPS Service object.`,
 					},
@@ -1372,7 +1372,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						Validators: []validator.String{
 							stringvalidator.OneOf("disabled", "enabled"),
@@ -1383,7 +1383,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						Validators: []validator.String{
 							stringvalidator.OneOf("disabled", "enabled"),
@@ -1394,7 +1394,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The description of the HTTPS Service object.`,
 					},
@@ -1402,7 +1402,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						Validators: []validator.String{
 							stringvalidator.OneOf("1024", "2048", "4096", "none"),
@@ -1413,7 +1413,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The maximum amount of API calls allowed per unit time.`,
 					},
@@ -1421,7 +1421,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						Validators: []validator.String{
 							stringvalidator.OneOf("disabled", "enabled"),
@@ -1432,7 +1432,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						Validators: []validator.String{
 							stringvalidator.OneOf("r/m", "r/s"),
@@ -1443,7 +1443,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The maximum number of request status objects to keep.`,
 					},
@@ -1451,7 +1451,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The name of the HTTPS Service object.`,
 					},
@@ -1459,7 +1459,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The name alias of the HTTPS Service object.`,
 					},
@@ -1467,7 +1467,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						Validators: []validator.String{
 							stringvalidator.OneOf("disabled", "enabled"),
@@ -1478,7 +1478,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The port used by the HTTPS communication service.`,
 					},
@@ -1486,7 +1486,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `Allowed HTTP referers.`,
 					},
@@ -1494,7 +1494,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						Validators: []validator.String{
 							stringvalidator.OneOf("disabled", "enabled"),
@@ -1506,7 +1506,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional:            true,
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
-							setplanmodifier.UseStateForUnknown(),
+							setplanmodifier.UseNonNullStateForUnknown(),
 						},
 						Validators: []validator.Set{
 							setvalidator.SizeAtMost(4),
@@ -1520,7 +1520,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The maximum login/refresh allowed per second.`,
 					},
@@ -1528,7 +1528,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						Validators: []validator.String{
 							stringvalidator.OneOf("disabled", "enabled"),
@@ -1539,7 +1539,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						Validators: []validator.String{
 							stringvalidator.OneOf("disabled", "enabled"),
@@ -1551,14 +1551,14 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional:            true,
 						Computed:            true,
 						PlanModifiers: []planmodifier.Object{
-							objectplanmodifier.UseStateForUnknown(),
+							objectplanmodifier.UseNonNullStateForUnknown(),
 						},
 						Attributes: map[string]schema.Attribute{
 							"annotation": schema.StringAttribute{
 								Optional: true,
 								Computed: true,
 								PlanModifiers: []planmodifier.String{
-									stringplanmodifier.UseStateForUnknown(),
+									stringplanmodifier.UseNonNullStateForUnknown(),
 								},
 								MarkdownDescription: `The annotation of the Certificate Authority object.`,
 							},
@@ -1566,7 +1566,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 								Optional: true,
 								Computed: true,
 								PlanModifiers: []planmodifier.String{
-									stringplanmodifier.UseStateForUnknown(),
+									stringplanmodifier.UseNonNullStateForUnknown(),
 								},
 								MarkdownDescription: `The distinguished name of the target.`,
 							},
@@ -1575,21 +1575,21 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 								Optional:            true,
 								Computed:            true,
 								PlanModifiers: []planmodifier.Set{
-									setplanmodifier.UseStateForUnknown(),
+									setplanmodifier.UseNonNullStateForUnknown(),
 								},
 								NestedObject: schema.NestedAttributeObject{
 									Attributes: map[string]schema.Attribute{
 										"key": schema.StringAttribute{
 											Required: true,
 											PlanModifiers: []planmodifier.String{
-												stringplanmodifier.UseStateForUnknown(),
+												stringplanmodifier.UseNonNullStateForUnknown(),
 											},
 											MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 										},
 										"value": schema.StringAttribute{
 											Required: true,
 											PlanModifiers: []planmodifier.String{
-												stringplanmodifier.UseStateForUnknown(),
+												stringplanmodifier.UseNonNullStateForUnknown(),
 											},
 											MarkdownDescription: `The value of the property.`,
 										},
@@ -1601,21 +1601,21 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 								Optional:            true,
 								Computed:            true,
 								PlanModifiers: []planmodifier.Set{
-									setplanmodifier.UseStateForUnknown(),
+									setplanmodifier.UseNonNullStateForUnknown(),
 								},
 								NestedObject: schema.NestedAttributeObject{
 									Attributes: map[string]schema.Attribute{
 										"key": schema.StringAttribute{
 											Required: true,
 											PlanModifiers: []planmodifier.String{
-												stringplanmodifier.UseStateForUnknown(),
+												stringplanmodifier.UseNonNullStateForUnknown(),
 											},
 											MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 										},
 										"value": schema.StringAttribute{
 											Required: true,
 											PlanModifiers: []planmodifier.String{
-												stringplanmodifier.UseStateForUnknown(),
+												stringplanmodifier.UseNonNullStateForUnknown(),
 											},
 											MarkdownDescription: `The value of the property.`,
 										},
@@ -1629,14 +1629,14 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional:            true,
 						Computed:            true,
 						PlanModifiers: []planmodifier.Object{
-							objectplanmodifier.UseStateForUnknown(),
+							objectplanmodifier.UseNonNullStateForUnknown(),
 						},
 						Attributes: map[string]schema.Attribute{
 							"annotation": schema.StringAttribute{
 								Optional: true,
 								Computed: true,
 								PlanModifiers: []planmodifier.String{
-									stringplanmodifier.UseStateForUnknown(),
+									stringplanmodifier.UseNonNullStateForUnknown(),
 								},
 								MarkdownDescription: `The annotation of the Key Ring object.`,
 							},
@@ -1644,7 +1644,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 								Optional: true,
 								Computed: true,
 								PlanModifiers: []planmodifier.String{
-									stringplanmodifier.UseStateForUnknown(),
+									stringplanmodifier.UseNonNullStateForUnknown(),
 								},
 								MarkdownDescription: `The HTTP connection key ring. Each PKI device holds a pair of asymmetric Rivest-Shamir-Adleman (RSA) or Elliptic Curve Cryptography (ECC) encryption keys, one kept private and one made public, stored in an internal key ring.`,
 							},
@@ -1653,21 +1653,21 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 								Optional:            true,
 								Computed:            true,
 								PlanModifiers: []planmodifier.Set{
-									setplanmodifier.UseStateForUnknown(),
+									setplanmodifier.UseNonNullStateForUnknown(),
 								},
 								NestedObject: schema.NestedAttributeObject{
 									Attributes: map[string]schema.Attribute{
 										"key": schema.StringAttribute{
 											Required: true,
 											PlanModifiers: []planmodifier.String{
-												stringplanmodifier.UseStateForUnknown(),
+												stringplanmodifier.UseNonNullStateForUnknown(),
 											},
 											MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 										},
 										"value": schema.StringAttribute{
 											Required: true,
 											PlanModifiers: []planmodifier.String{
-												stringplanmodifier.UseStateForUnknown(),
+												stringplanmodifier.UseNonNullStateForUnknown(),
 											},
 											MarkdownDescription: `The value of the property.`,
 										},
@@ -1679,21 +1679,21 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 								Optional:            true,
 								Computed:            true,
 								PlanModifiers: []planmodifier.Set{
-									setplanmodifier.UseStateForUnknown(),
+									setplanmodifier.UseNonNullStateForUnknown(),
 								},
 								NestedObject: schema.NestedAttributeObject{
 									Attributes: map[string]schema.Attribute{
 										"key": schema.StringAttribute{
 											Required: true,
 											PlanModifiers: []planmodifier.String{
-												stringplanmodifier.UseStateForUnknown(),
+												stringplanmodifier.UseNonNullStateForUnknown(),
 											},
 											MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 										},
 										"value": schema.StringAttribute{
 											Required: true,
 											PlanModifiers: []planmodifier.String{
-												stringplanmodifier.UseStateForUnknown(),
+												stringplanmodifier.UseNonNullStateForUnknown(),
 											},
 											MarkdownDescription: `The value of the property.`,
 										},
@@ -1707,21 +1707,21 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional:            true,
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
-							setplanmodifier.UseStateForUnknown(),
+							setplanmodifier.UseNonNullStateForUnknown(),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
 								"key": schema.StringAttribute{
 									Required: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 								},
 								"value": schema.StringAttribute{
 									Required: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									MarkdownDescription: `The value of the property.`,
 								},
@@ -1733,21 +1733,21 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional:            true,
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
-							setplanmodifier.UseStateForUnknown(),
+							setplanmodifier.UseNonNullStateForUnknown(),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
 								"key": schema.StringAttribute{
 									Required: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 								},
 								"value": schema.StringAttribute{
 									Required: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									MarkdownDescription: `The value of the property.`,
 								},
@@ -1761,14 +1761,14 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Object{
-					objectplanmodifier.UseStateForUnknown(),
+					objectplanmodifier.UseNonNullStateForUnknown(),
 				},
 				Attributes: map[string]schema.Attribute{
 					"admin_state": schema.StringAttribute{
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						Validators: []validator.String{
 							stringvalidator.OneOf("disabled", "enabled"),
@@ -1779,7 +1779,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The annotation of the SSH access via WEB object.`,
 					},
@@ -1787,7 +1787,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The description of the SSH access via WEB object.`,
 					},
@@ -1795,7 +1795,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The name of the SSH access via WEB object.`,
 					},
@@ -1803,7 +1803,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The name alias of the SSH access via WEB object.`,
 					},
@@ -1812,21 +1812,21 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional:            true,
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
-							setplanmodifier.UseStateForUnknown(),
+							setplanmodifier.UseNonNullStateForUnknown(),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
 								"key": schema.StringAttribute{
 									Required: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 								},
 								"value": schema.StringAttribute{
 									Required: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									MarkdownDescription: `The value of the property.`,
 								},
@@ -1838,21 +1838,21 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional:            true,
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
-							setplanmodifier.UseStateForUnknown(),
+							setplanmodifier.UseNonNullStateForUnknown(),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
 								"key": schema.StringAttribute{
 									Required: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 								},
 								"value": schema.StringAttribute{
 									Required: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									MarkdownDescription: `The value of the property.`,
 								},
@@ -1866,14 +1866,14 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Object{
-					objectplanmodifier.UseStateForUnknown(),
+					objectplanmodifier.UseNonNullStateForUnknown(),
 				},
 				Attributes: map[string]schema.Attribute{
 					"admin_state": schema.StringAttribute{
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						Validators: []validator.String{
 							stringvalidator.OneOf("disabled", "enabled"),
@@ -1884,7 +1884,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The annotation of the SSH Service object.`,
 					},
@@ -1892,7 +1892,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The description of the SSH Service object.`,
 					},
@@ -1901,7 +1901,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional:            true,
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
-							setplanmodifier.UseStateForUnknown(),
+							setplanmodifier.UseNonNullStateForUnknown(),
 						},
 						Validators: []validator.Set{
 							setvalidator.SizeAtMost(3),
@@ -1916,7 +1916,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional:            true,
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
-							setplanmodifier.UseStateForUnknown(),
+							setplanmodifier.UseNonNullStateForUnknown(),
 						},
 						Validators: []validator.Set{
 							setvalidator.SizeAtMost(9),
@@ -1930,7 +1930,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The name of the SSH Service object.`,
 					},
@@ -1938,7 +1938,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The name alias of the SSH Service object.`,
 					},
@@ -1946,7 +1946,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						Validators: []validator.String{
 							stringvalidator.OneOf("disabled", "enabled"),
@@ -1957,7 +1957,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The port used by the SSH service.`,
 					},
@@ -1966,7 +1966,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional:            true,
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
-							setplanmodifier.UseStateForUnknown(),
+							setplanmodifier.UseNonNullStateForUnknown(),
 						},
 						Validators: []validator.Set{
 							setvalidator.SizeAtMost(6),
@@ -1981,7 +1981,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional:            true,
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
-							setplanmodifier.UseStateForUnknown(),
+							setplanmodifier.UseNonNullStateForUnknown(),
 						},
 						Validators: []validator.Set{
 							setvalidator.SizeAtMost(5),
@@ -1996,21 +1996,21 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional:            true,
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
-							setplanmodifier.UseStateForUnknown(),
+							setplanmodifier.UseNonNullStateForUnknown(),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
 								"key": schema.StringAttribute{
 									Required: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 								},
 								"value": schema.StringAttribute{
 									Required: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									MarkdownDescription: `The value of the property.`,
 								},
@@ -2022,21 +2022,21 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional:            true,
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
-							setplanmodifier.UseStateForUnknown(),
+							setplanmodifier.UseNonNullStateForUnknown(),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
 								"key": schema.StringAttribute{
 									Required: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 								},
 								"value": schema.StringAttribute{
 									Required: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									MarkdownDescription: `The value of the property.`,
 								},
@@ -2050,14 +2050,14 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Object{
-					objectplanmodifier.UseStateForUnknown(),
+					objectplanmodifier.UseNonNullStateForUnknown(),
 				},
 				Attributes: map[string]schema.Attribute{
 					"admin_state": schema.StringAttribute{
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						Validators: []validator.String{
 							stringvalidator.OneOf("disabled", "enabled"),
@@ -2068,7 +2068,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The annotation of the Telnet Service object.`,
 					},
@@ -2076,7 +2076,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The description of the Telnet Service object.`,
 					},
@@ -2084,7 +2084,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The name of the Telnet Service object.`,
 					},
@@ -2092,7 +2092,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The name alias of the Telnet Service object.`,
 					},
@@ -2100,7 +2100,7 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The port used by the Telnet service.`,
 					},
@@ -2109,21 +2109,21 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional:            true,
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
-							setplanmodifier.UseStateForUnknown(),
+							setplanmodifier.UseNonNullStateForUnknown(),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
 								"key": schema.StringAttribute{
 									Required: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 								},
 								"value": schema.StringAttribute{
 									Required: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									MarkdownDescription: `The value of the property.`,
 								},
@@ -2135,21 +2135,21 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 						Optional:            true,
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
-							setplanmodifier.UseStateForUnknown(),
+							setplanmodifier.UseNonNullStateForUnknown(),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
 								"key": schema.StringAttribute{
 									Required: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 								},
 								"value": schema.StringAttribute{
 									Required: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									MarkdownDescription: `The value of the property.`,
 								},
@@ -2163,21 +2163,21 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseStateForUnknown(),
+					setplanmodifier.UseNonNullStateForUnknown(),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"key": schema.StringAttribute{
 							Required: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
 						"value": schema.StringAttribute{
 							Required: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},
@@ -2189,21 +2189,21 @@ func (r *CommPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseStateForUnknown(),
+					setplanmodifier.UseNonNullStateForUnknown(),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"key": schema.StringAttribute{
 							Required: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
 						"value": schema.StringAttribute{
 							Required: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},
