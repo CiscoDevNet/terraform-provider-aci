@@ -31,10 +31,15 @@ import (
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &QosDot1PClassResource{}
+var _ resource.ResourceWithIdentity = &QosDot1PClassResource{}
 var _ resource.ResourceWithImportState = &QosDot1PClassResource{}
 
 func NewQosDot1PClassResource() resource.Resource {
 	return &QosDot1PClassResource{}
+}
+
+func (r QosDot1PClassResource) IdentitySchema(_ context.Context, _ resource.IdentitySchemaRequest, resp *resource.IdentitySchemaResponse) {
+	resp.IdentitySchema = getIdentitySchema()
 }
 
 // QosDot1PClassResource defines the resource implementation.
@@ -435,6 +440,7 @@ func (r *QosDot1PClassResource) Create(ctx context.Context, req resource.CreateR
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_dot1p_classifier with id '%s'", data.Id.ValueString()))
 }
 
@@ -459,6 +465,7 @@ func (r *QosDot1PClassResource) Read(ctx context.Context, req resource.ReadReque
 		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
 	} else {
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+		resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_dot1p_classifier with id '%s'", data.Id.ValueString()))
@@ -501,6 +508,7 @@ func (r *QosDot1PClassResource) Update(ctx context.Context, req resource.UpdateR
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_dot1p_classifier with id '%s'", data.Id.ValueString()))
 }
 
@@ -529,10 +537,11 @@ func (r *QosDot1PClassResource) Delete(ctx context.Context, req resource.DeleteR
 
 func (r *QosDot1PClassResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_dot1p_classifier")
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	resource.ImportStatePassthroughWithIdentity(ctx, path.Root("id"), path.Root("id"), req, resp)
 
 	var stateData *QosDot1PClassResourceModel
 	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: stateData.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_dot1p_classifier with id '%s'", stateData.Id.ValueString()))
 
 	tflog.Debug(ctx, "End import of state resource: aci_dot1p_classifier")
@@ -541,11 +550,17 @@ func (r *QosDot1PClassResource) ImportState(ctx context.Context, req resource.Im
 func getAndSetQosDot1PClassAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *QosDot1PClassResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "qosDot1PClass,tagAnnotation,tagTag"), "GET", nil)
 
-	readData := getEmptyQosDot1PClassResourceModel()
-
 	if diags.HasError() {
 		return
 	}
+
+	setQosDot1PClassAttributes(ctx, diags, data, requestData)
+}
+
+func setQosDot1PClassAttributes(ctx context.Context, diags *diag.Diagnostics, data *QosDot1PClassResourceModel, requestData *container.Container) {
+
+	readData := getEmptyQosDot1PClassResourceModel()
+
 	if requestData.Search("imdata").Search("qosDot1PClass").Data() != nil {
 		classReadInfo := requestData.Search("imdata").Search("qosDot1PClass").Data().([]interface{})
 		if len(classReadInfo) == 1 {

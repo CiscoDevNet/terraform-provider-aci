@@ -32,10 +32,15 @@ import (
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &MgmtInstPResource{}
+var _ resource.ResourceWithIdentity = &MgmtInstPResource{}
 var _ resource.ResourceWithImportState = &MgmtInstPResource{}
 
 func NewMgmtInstPResource() resource.Resource {
 	return &MgmtInstPResource{}
+}
+
+func (r MgmtInstPResource) IdentitySchema(_ context.Context, _ resource.IdentitySchemaRequest, resp *resource.IdentitySchemaResponse) {
+	resp.IdentitySchema = getIdentitySchema()
 }
 
 // MgmtInstPResource defines the resource implementation.
@@ -573,6 +578,7 @@ func (r *MgmtInstPResource) Create(ctx context.Context, req resource.CreateReque
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_external_management_network_instance_profile with id '%s'", data.Id.ValueString()))
 }
 
@@ -597,6 +603,7 @@ func (r *MgmtInstPResource) Read(ctx context.Context, req resource.ReadRequest, 
 		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
 	} else {
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+		resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_external_management_network_instance_profile with id '%s'", data.Id.ValueString()))
@@ -642,6 +649,7 @@ func (r *MgmtInstPResource) Update(ctx context.Context, req resource.UpdateReque
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_external_management_network_instance_profile with id '%s'", data.Id.ValueString()))
 }
 
@@ -670,10 +678,11 @@ func (r *MgmtInstPResource) Delete(ctx context.Context, req resource.DeleteReque
 
 func (r *MgmtInstPResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_external_management_network_instance_profile")
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	resource.ImportStatePassthroughWithIdentity(ctx, path.Root("id"), path.Root("id"), req, resp)
 
 	var stateData *MgmtInstPResourceModel
 	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: stateData.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_external_management_network_instance_profile with id '%s'", stateData.Id.ValueString()))
 
 	tflog.Debug(ctx, "End import of state resource: aci_external_management_network_instance_profile")
@@ -682,11 +691,17 @@ func (r *MgmtInstPResource) ImportState(ctx context.Context, req resource.Import
 func getAndSetMgmtInstPAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *MgmtInstPResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "mgmtInstP,mgmtRsOoBCons,tagAnnotation,tagTag,tagAnnotation,tagTag"), "GET", nil)
 
-	readData := getEmptyMgmtInstPResourceModel()
-
 	if diags.HasError() {
 		return
 	}
+
+	setMgmtInstPAttributes(ctx, diags, data, requestData)
+}
+
+func setMgmtInstPAttributes(ctx context.Context, diags *diag.Diagnostics, data *MgmtInstPResourceModel, requestData *container.Container) {
+
+	readData := getEmptyMgmtInstPResourceModel()
+
 	if requestData.Search("imdata").Search("mgmtInstP").Data() != nil {
 		classReadInfo := requestData.Search("imdata").Search("mgmtInstP").Data().([]interface{})
 		if len(classReadInfo) == 1 {

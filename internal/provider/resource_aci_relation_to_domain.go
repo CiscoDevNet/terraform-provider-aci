@@ -30,10 +30,15 @@ import (
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &FvRsDomAttResource{}
+var _ resource.ResourceWithIdentity = &FvRsDomAttResource{}
 var _ resource.ResourceWithImportState = &FvRsDomAttResource{}
 
 func NewFvRsDomAttResource() resource.Resource {
 	return &FvRsDomAttResource{}
+}
+
+func (r FvRsDomAttResource) IdentitySchema(_ context.Context, _ resource.IdentitySchemaRequest, resp *resource.IdentitySchemaResponse) {
+	resp.IdentitySchema = getIdentitySchema()
 }
 
 // FvRsDomAttResource defines the resource implementation.
@@ -856,6 +861,7 @@ func (r *FvRsDomAttResource) Create(ctx context.Context, req resource.CreateRequ
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_relation_to_domain with id '%s'", data.Id.ValueString()))
 }
 
@@ -880,6 +886,7 @@ func (r *FvRsDomAttResource) Read(ctx context.Context, req resource.ReadRequest,
 		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
 	} else {
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+		resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_relation_to_domain with id '%s'", data.Id.ValueString()))
@@ -931,6 +938,7 @@ func (r *FvRsDomAttResource) Update(ctx context.Context, req resource.UpdateRequ
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_relation_to_domain with id '%s'", data.Id.ValueString()))
 }
 
@@ -959,10 +967,11 @@ func (r *FvRsDomAttResource) Delete(ctx context.Context, req resource.DeleteRequ
 
 func (r *FvRsDomAttResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_relation_to_domain")
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	resource.ImportStatePassthroughWithIdentity(ctx, path.Root("id"), path.Root("id"), req, resp)
 
 	var stateData *FvRsDomAttResourceModel
 	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: stateData.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_relation_to_domain with id '%s'", stateData.Id.ValueString()))
 
 	tflog.Debug(ctx, "End import of state resource: aci_relation_to_domain")
@@ -971,11 +980,17 @@ func (r *FvRsDomAttResource) ImportState(ctx context.Context, req resource.Impor
 func getAndSetFvRsDomAttAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FvRsDomAttResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "fvRsDomAtt,fvUplinkOrderCont,tagAnnotation,tagTag,tagAnnotation,tagTag"), "GET", nil)
 
-	readData := getEmptyFvRsDomAttResourceModel()
-
 	if diags.HasError() {
 		return
 	}
+
+	setFvRsDomAttAttributes(ctx, diags, data, requestData)
+}
+
+func setFvRsDomAttAttributes(ctx context.Context, diags *diag.Diagnostics, data *FvRsDomAttResourceModel, requestData *container.Container) {
+
+	readData := getEmptyFvRsDomAttResourceModel()
+
 	if requestData.Search("imdata").Search("fvRsDomAtt").Data() != nil {
 		classReadInfo := requestData.Search("imdata").Search("fvRsDomAtt").Data().([]interface{})
 		if len(classReadInfo) == 1 {
