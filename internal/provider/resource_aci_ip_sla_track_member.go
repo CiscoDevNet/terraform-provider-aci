@@ -257,14 +257,14 @@ func (r *FvTrackMemberResource) Schema(ctx context.Context, req resource.SchemaR
 				Computed:            true,
 				MarkdownDescription: "The distinguished name (DN) of the IP SLA Track Member object.",
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 				},
 			},
 			"parent_dn": schema.StringAttribute{
 				Required:            true,
 				MarkdownDescription: "The distinguished name (DN) of the parent object.",
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					stringplanmodifier.RequiresReplace(),
 				},
 			},
@@ -272,7 +272,7 @@ func (r *FvTrackMemberResource) Schema(ctx context.Context, req resource.SchemaR
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
@@ -282,7 +282,7 @@ func (r *FvTrackMemberResource) Schema(ctx context.Context, req resource.SchemaR
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The description of the IP SLA Track Member object.`,
@@ -290,7 +290,7 @@ func (r *FvTrackMemberResource) Schema(ctx context.Context, req resource.SchemaR
 			"destination_ip_address": schema.StringAttribute{
 				Required: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The destination IP address to be tracked.`,
@@ -298,7 +298,7 @@ func (r *FvTrackMemberResource) Schema(ctx context.Context, req resource.SchemaR
 			"name": schema.StringAttribute{
 				Required: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
@@ -308,7 +308,7 @@ func (r *FvTrackMemberResource) Schema(ctx context.Context, req resource.SchemaR
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The name alias of the IP SLA Track Member object.`,
@@ -317,7 +317,7 @@ func (r *FvTrackMemberResource) Schema(ctx context.Context, req resource.SchemaR
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The key for enabling clients to own their data for entity correlation.`,
@@ -326,7 +326,7 @@ func (r *FvTrackMemberResource) Schema(ctx context.Context, req resource.SchemaR
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
@@ -334,7 +334,7 @@ func (r *FvTrackMemberResource) Schema(ctx context.Context, req resource.SchemaR
 			"scope": schema.StringAttribute{
 				Required: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The distinguished name (DN) of the scope (Bridge Domain or L3Out) of the IP SLA Track Member. For a Bridge Domain this attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bridge_domain) with 'aci_bridge_domain.example.id' or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/bridge_domain) with 'data.aci_bridge_domain.example.id'. For a L3out this attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3_outside) with 'aci_l3_outside.example.id' or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/l3_outside) with 'data.aci_l3_outside.example.id'.`,
@@ -343,21 +343,21 @@ func (r *FvTrackMemberResource) Schema(ctx context.Context, req resource.SchemaR
 				MarkdownDescription: ``,
 				Required:            true,
 				PlanModifiers: []planmodifier.Object{
-					objectplanmodifier.UseStateForUnknown(),
+					objectplanmodifier.UseNonNullStateForUnknown(),
 				},
 				Attributes: map[string]schema.Attribute{
 					"annotation": schema.StringAttribute{
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The annotation of the Relation To IP SLA Monitoring Policy object.`,
 					},
 					"target_dn": schema.StringAttribute{
 						Required: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The distinguished name (DN) of the IP SLA Monitoring Policy.`,
 					},
@@ -366,21 +366,21 @@ func (r *FvTrackMemberResource) Schema(ctx context.Context, req resource.SchemaR
 						Optional:            true,
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
-							setplanmodifier.UseStateForUnknown(),
+							setplanmodifier.UseNonNullStateForUnknown(),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
 								"key": schema.StringAttribute{
 									Required: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 								},
 								"value": schema.StringAttribute{
 									Required: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									MarkdownDescription: `The value of the property.`,
 								},
@@ -392,21 +392,21 @@ func (r *FvTrackMemberResource) Schema(ctx context.Context, req resource.SchemaR
 						Optional:            true,
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
-							setplanmodifier.UseStateForUnknown(),
+							setplanmodifier.UseNonNullStateForUnknown(),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
 								"key": schema.StringAttribute{
 									Required: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 								},
 								"value": schema.StringAttribute{
 									Required: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									MarkdownDescription: `The value of the property.`,
 								},
@@ -420,21 +420,21 @@ func (r *FvTrackMemberResource) Schema(ctx context.Context, req resource.SchemaR
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseStateForUnknown(),
+					setplanmodifier.UseNonNullStateForUnknown(),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"key": schema.StringAttribute{
 							Required: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
 						"value": schema.StringAttribute{
 							Required: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},
@@ -446,21 +446,21 @@ func (r *FvTrackMemberResource) Schema(ctx context.Context, req resource.SchemaR
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseStateForUnknown(),
+					setplanmodifier.UseNonNullStateForUnknown(),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"key": schema.StringAttribute{
 							Required: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
 						"value": schema.StringAttribute{
 							Required: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},

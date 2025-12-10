@@ -162,21 +162,21 @@ func (r *FvRsAepAttResource) Schema(ctx context.Context, req resource.SchemaRequ
 				Computed:            true,
 				MarkdownDescription: "The distinguished name (DN) of the Relation From Application EPG To Attachable Access Entity Profile object.",
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 				},
 			},
 			"parent_dn": schema.StringAttribute{
 				Required:            true,
 				MarkdownDescription: "The distinguished name (DN) of the parent object.",
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					stringplanmodifier.RequiresReplace(),
 				},
 			},
 			"encapsulation": schema.StringAttribute{
 				Required: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The encapsulation of the Relation From Application EPG To Attachable Access Entity Profile object.`,
@@ -185,7 +185,7 @@ func (r *FvRsAepAttResource) Schema(ctx context.Context, req resource.SchemaRequ
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.String{
@@ -197,7 +197,7 @@ func (r *FvRsAepAttResource) Schema(ctx context.Context, req resource.SchemaRequ
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.String{
@@ -209,7 +209,7 @@ func (r *FvRsAepAttResource) Schema(ctx context.Context, req resource.SchemaRequ
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The primary encapsulation of the Relation From Application EPG To Attachable Access Entity Profile object.`,
@@ -217,7 +217,7 @@ func (r *FvRsAepAttResource) Schema(ctx context.Context, req resource.SchemaRequ
 			"attachable_access_entity_profile_name": schema.StringAttribute{
 				Required: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
@@ -228,21 +228,21 @@ func (r *FvRsAepAttResource) Schema(ctx context.Context, req resource.SchemaRequ
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseStateForUnknown(),
+					setplanmodifier.UseNonNullStateForUnknown(),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"key": schema.StringAttribute{
 							Required: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
 						"value": schema.StringAttribute{
 							Required: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},
@@ -254,21 +254,21 @@ func (r *FvRsAepAttResource) Schema(ctx context.Context, req resource.SchemaRequ
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseStateForUnknown(),
+					setplanmodifier.UseNonNullStateForUnknown(),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"key": schema.StringAttribute{
 							Required: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
 						"value": schema.StringAttribute{
 							Required: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},

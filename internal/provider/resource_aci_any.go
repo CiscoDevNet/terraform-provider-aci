@@ -1076,7 +1076,7 @@ func (r *VzAnyResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Computed:            true,
 				MarkdownDescription: "The distinguished name (DN) of the Any object.",
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 				},
 			},
 			"parent_dn": schema.StringAttribute{
@@ -1084,7 +1084,7 @@ func (r *VzAnyResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Computed:            true,
 				MarkdownDescription: "The distinguished name (DN) of the parent object.",
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					stringplanmodifier.RequiresReplace(),
 				},
 				Validators: []validator.String{
@@ -1097,7 +1097,7 @@ func (r *VzAnyResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
@@ -1107,7 +1107,7 @@ func (r *VzAnyResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The description of the Any object.`,
@@ -1116,7 +1116,7 @@ func (r *VzAnyResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.String{
@@ -1128,7 +1128,7 @@ func (r *VzAnyResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The name of the Any object.`,
@@ -1137,7 +1137,7 @@ func (r *VzAnyResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The name alias of the Any object.`,
@@ -1146,7 +1146,7 @@ func (r *VzAnyResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.String{
@@ -1159,21 +1159,21 @@ func (r *VzAnyResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseStateForUnknown(),
+					setplanmodifier.UseNonNullStateForUnknown(),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"key": schema.StringAttribute{
 							Required: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
 						"value": schema.StringAttribute{
 							Required: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},
@@ -1185,21 +1185,21 @@ func (r *VzAnyResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseStateForUnknown(),
+					setplanmodifier.UseNonNullStateForUnknown(),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"key": schema.StringAttribute{
 							Required: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
 						"value": schema.StringAttribute{
 							Required: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},
@@ -1211,7 +1211,7 @@ func (r *VzAnyResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseStateForUnknown(),
+					setplanmodifier.UseNonNullStateForUnknown(),
 					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(VzRsAnyToConsVzAnySetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate),
 				},
 				NestedObject: schema.NestedAttributeObject{
@@ -1220,7 +1220,7 @@ func (r *VzAnyResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							MarkdownDescription: `The annotation of the Relation From Any To Consumer Contract object.`,
 						},
@@ -1229,7 +1229,7 @@ func (r *VzAnyResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							Optional:   true,
 							Computed:   true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators: []validator.String{
 								stringvalidator.Any(
@@ -1242,7 +1242,7 @@ func (r *VzAnyResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 						"contract_name": schema.StringAttribute{
 							Required: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							MarkdownDescription: `The name of the Contract object.`,
 						},
@@ -1251,21 +1251,21 @@ func (r *VzAnyResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							Optional:            true,
 							Computed:            true,
 							PlanModifiers: []planmodifier.Set{
-								setplanmodifier.UseStateForUnknown(),
+								setplanmodifier.UseNonNullStateForUnknown(),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
 									"key": schema.StringAttribute{
 										Required: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 									},
 									"value": schema.StringAttribute{
 										Required: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										MarkdownDescription: `The value of the property.`,
 									},
@@ -1277,21 +1277,21 @@ func (r *VzAnyResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							Optional:            true,
 							Computed:            true,
 							PlanModifiers: []planmodifier.Set{
-								setplanmodifier.UseStateForUnknown(),
+								setplanmodifier.UseNonNullStateForUnknown(),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
 									"key": schema.StringAttribute{
 										Required: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 									},
 									"value": schema.StringAttribute{
 										Required: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										MarkdownDescription: `The value of the property.`,
 									},
@@ -1306,7 +1306,7 @@ func (r *VzAnyResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseStateForUnknown(),
+					setplanmodifier.UseNonNullStateForUnknown(),
 					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(VzRsAnyToConsIfVzAnySetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate),
 				},
 				NestedObject: schema.NestedAttributeObject{
@@ -1315,7 +1315,7 @@ func (r *VzAnyResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							MarkdownDescription: `The annotation of the Relation From Any To Contract Interface object.`,
 						},
@@ -1324,7 +1324,7 @@ func (r *VzAnyResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							Optional:   true,
 							Computed:   true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators: []validator.String{
 								stringvalidator.Any(
@@ -1337,7 +1337,7 @@ func (r *VzAnyResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 						"imported_contract_name": schema.StringAttribute{
 							Required: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							MarkdownDescription: `The name of the imported Contract object.`,
 						},
@@ -1346,21 +1346,21 @@ func (r *VzAnyResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							Optional:            true,
 							Computed:            true,
 							PlanModifiers: []planmodifier.Set{
-								setplanmodifier.UseStateForUnknown(),
+								setplanmodifier.UseNonNullStateForUnknown(),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
 									"key": schema.StringAttribute{
 										Required: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 									},
 									"value": schema.StringAttribute{
 										Required: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										MarkdownDescription: `The value of the property.`,
 									},
@@ -1372,21 +1372,21 @@ func (r *VzAnyResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							Optional:            true,
 							Computed:            true,
 							PlanModifiers: []planmodifier.Set{
-								setplanmodifier.UseStateForUnknown(),
+								setplanmodifier.UseNonNullStateForUnknown(),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
 									"key": schema.StringAttribute{
 										Required: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 									},
 									"value": schema.StringAttribute{
 										Required: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										MarkdownDescription: `The value of the property.`,
 									},
@@ -1401,7 +1401,7 @@ func (r *VzAnyResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseStateForUnknown(),
+					setplanmodifier.UseNonNullStateForUnknown(),
 					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(VzRsAnyToProvVzAnySetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate),
 				},
 				NestedObject: schema.NestedAttributeObject{
@@ -1410,7 +1410,7 @@ func (r *VzAnyResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							MarkdownDescription: `The annotation of the Relation From Any To Provider Contract object.`,
 						},
@@ -1418,7 +1418,7 @@ func (r *VzAnyResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators: []validator.String{
 								stringvalidator.OneOf("All", "AtleastOne", "AtmostOne", "None"),
@@ -1430,7 +1430,7 @@ func (r *VzAnyResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							Optional:   true,
 							Computed:   true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators: []validator.String{
 								stringvalidator.Any(
@@ -1443,7 +1443,7 @@ func (r *VzAnyResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 						"contract_name": schema.StringAttribute{
 							Required: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							MarkdownDescription: `The name of the Contract object.`,
 						},
@@ -1452,21 +1452,21 @@ func (r *VzAnyResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							Optional:            true,
 							Computed:            true,
 							PlanModifiers: []planmodifier.Set{
-								setplanmodifier.UseStateForUnknown(),
+								setplanmodifier.UseNonNullStateForUnknown(),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
 									"key": schema.StringAttribute{
 										Required: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 									},
 									"value": schema.StringAttribute{
 										Required: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										MarkdownDescription: `The value of the property.`,
 									},
@@ -1478,21 +1478,21 @@ func (r *VzAnyResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							Optional:            true,
 							Computed:            true,
 							PlanModifiers: []planmodifier.Set{
-								setplanmodifier.UseStateForUnknown(),
+								setplanmodifier.UseNonNullStateForUnknown(),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
 									"key": schema.StringAttribute{
 										Required: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 									},
 									"value": schema.StringAttribute{
 										Required: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										MarkdownDescription: `The value of the property.`,
 									},

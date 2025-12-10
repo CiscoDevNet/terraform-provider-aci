@@ -516,7 +516,7 @@ func (r *FvApResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 				Computed:            true,
 				MarkdownDescription: "The distinguished name (DN) of the Application Profile object.",
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 				},
 			},
 			"parent_dn": schema.StringAttribute{
@@ -524,7 +524,7 @@ func (r *FvApResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 				Computed:            true,
 				MarkdownDescription: "The distinguished name (DN) of the parent object.",
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					stringplanmodifier.RequiresReplace(),
 				},
 				Validators: []validator.String{
@@ -537,7 +537,7 @@ func (r *FvApResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
@@ -547,7 +547,7 @@ func (r *FvApResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The description of the Application Profile object.`,
@@ -555,7 +555,7 @@ func (r *FvApResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 			"name": schema.StringAttribute{
 				Required: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
@@ -565,7 +565,7 @@ func (r *FvApResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The name alias of the Application Profile object.`,
@@ -574,7 +574,7 @@ func (r *FvApResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The key for enabling clients to own their data for entity correlation.`,
@@ -583,7 +583,7 @@ func (r *FvApResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
@@ -593,7 +593,7 @@ func (r *FvApResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 				Optional:   true,
 				Computed:   true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.String{
@@ -609,14 +609,14 @@ func (r *FvApResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Object{
-					objectplanmodifier.UseStateForUnknown(),
+					objectplanmodifier.UseNonNullStateForUnknown(),
 				},
 				Attributes: map[string]schema.Attribute{
 					"annotation": schema.StringAttribute{
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The annotation of the Relation From Application Profile To Monitoring Policy object.`,
 					},
@@ -624,7 +624,7 @@ func (r *FvApResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The name of the monitoring policy.`,
 					},
@@ -633,21 +633,21 @@ func (r *FvApResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						Optional:            true,
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
-							setplanmodifier.UseStateForUnknown(),
+							setplanmodifier.UseNonNullStateForUnknown(),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
 								"key": schema.StringAttribute{
 									Required: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 								},
 								"value": schema.StringAttribute{
 									Required: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									MarkdownDescription: `The value of the property.`,
 								},
@@ -659,21 +659,21 @@ func (r *FvApResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 						Optional:            true,
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
-							setplanmodifier.UseStateForUnknown(),
+							setplanmodifier.UseNonNullStateForUnknown(),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
 								"key": schema.StringAttribute{
 									Required: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 								},
 								"value": schema.StringAttribute{
 									Required: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									MarkdownDescription: `The value of the property.`,
 								},
@@ -687,21 +687,21 @@ func (r *FvApResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseStateForUnknown(),
+					setplanmodifier.UseNonNullStateForUnknown(),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"key": schema.StringAttribute{
 							Required: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
 						"value": schema.StringAttribute{
 							Required: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},
@@ -713,21 +713,21 @@ func (r *FvApResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseStateForUnknown(),
+					setplanmodifier.UseNonNullStateForUnknown(),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"key": schema.StringAttribute{
 							Required: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
 						"value": schema.StringAttribute{
 							Required: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},

@@ -169,14 +169,14 @@ func (r *FvIpAttrResource) Schema(ctx context.Context, req resource.SchemaReques
 				Computed:            true,
 				MarkdownDescription: "The distinguished name (DN) of the EPG uSeg IP Attribute object.",
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 				},
 			},
 			"parent_dn": schema.StringAttribute{
 				Required:            true,
 				MarkdownDescription: "The distinguished name (DN) of the parent object.",
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					stringplanmodifier.RequiresReplace(),
 				},
 			},
@@ -184,7 +184,7 @@ func (r *FvIpAttrResource) Schema(ctx context.Context, req resource.SchemaReques
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
@@ -194,7 +194,7 @@ func (r *FvIpAttrResource) Schema(ctx context.Context, req resource.SchemaReques
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The description of the EPG uSeg IP Attribute object.`,
@@ -202,7 +202,7 @@ func (r *FvIpAttrResource) Schema(ctx context.Context, req resource.SchemaReques
 			"ip": schema.StringAttribute{
 				Required: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The device IP address of the EPG uSeg IP Attribute object.`,
@@ -210,7 +210,7 @@ func (r *FvIpAttrResource) Schema(ctx context.Context, req resource.SchemaReques
 			"name": schema.StringAttribute{
 				Required: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
@@ -220,7 +220,7 @@ func (r *FvIpAttrResource) Schema(ctx context.Context, req resource.SchemaReques
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The name alias of the EPG uSeg IP Attribute object.`,
@@ -229,7 +229,7 @@ func (r *FvIpAttrResource) Schema(ctx context.Context, req resource.SchemaReques
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The key for enabling clients to own their data for entity correlation.`,
@@ -238,7 +238,7 @@ func (r *FvIpAttrResource) Schema(ctx context.Context, req resource.SchemaReques
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
@@ -247,7 +247,7 @@ func (r *FvIpAttrResource) Schema(ctx context.Context, req resource.SchemaReques
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.String{
@@ -260,21 +260,21 @@ func (r *FvIpAttrResource) Schema(ctx context.Context, req resource.SchemaReques
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseStateForUnknown(),
+					setplanmodifier.UseNonNullStateForUnknown(),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"key": schema.StringAttribute{
 							Required: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
 						"value": schema.StringAttribute{
 							Required: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},
@@ -286,21 +286,21 @@ func (r *FvIpAttrResource) Schema(ctx context.Context, req resource.SchemaReques
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseStateForUnknown(),
+					setplanmodifier.UseNonNullStateForUnknown(),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"key": schema.StringAttribute{
 							Required: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
 						"value": schema.StringAttribute{
 							Required: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},

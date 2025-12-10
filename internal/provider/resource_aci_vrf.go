@@ -2145,7 +2145,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Computed:           true,
 				DeprecationMessage: "Attribute `knw_mcast_act` is deprecated. The configuration was not functioning as intended because the Managed Object (MO) created by the pre-migrated resource was either configured incorrectly or exposed without any implemented functionality on the APIC. The MO for this attribute is no longer created on the APIC, but the existing MO will remain present until the resource is destroyed. This attribute will be removed in the next major version of the provider.",
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 			},
@@ -2185,7 +2185,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				ElementType:        types.StringType,
 				DeprecationMessage: "Attribute `relation_fv_rs_ctx_mcast_to` is deprecated. The configuration was not functioning as intended because the Managed Object (MO) created by the pre-migrated resource was either configured incorrectly or exposed without any implemented functionality on the APIC. The MO for this attribute is no longer created on the APIC, but the existing MO will remain present until the resource is destroyed. This attribute will be removed in the next major version of the provider.",
 				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseStateForUnknown(),
+					setplanmodifier.UseNonNullStateForUnknown(),
 				},
 			},
 			"relation_fv_rs_vrf_validation_pol": schema.StringAttribute{
@@ -2193,7 +2193,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Computed:           true,
 				DeprecationMessage: "Attribute `relation_fv_rs_vrf_validation_pol` is deprecated. The configuration was not functioning as intended because the Managed Object (MO) created by the pre-migrated resource was either configured incorrectly or exposed without any implemented functionality on the APIC. The MO for this attribute is no longer created on the APIC, but the existing MO will remain present until the resource is destroyed. This attribute will be removed in the next major version of the provider.",
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 			},
@@ -2222,7 +2222,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Computed:            true,
 				MarkdownDescription: "The distinguished name (DN) of the VRF object.",
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 				},
 			},
 			"parent_dn": schema.StringAttribute{
@@ -2230,7 +2230,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Computed:            true,
 				MarkdownDescription: "The distinguished name (DN) of the parent object.",
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					stringplanmodifier.RequiresReplace(),
 				},
 				Validators: []validator.String{
@@ -2243,7 +2243,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
@@ -2253,7 +2253,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.String{
@@ -2265,7 +2265,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The description of the VRF object.`,
@@ -2274,7 +2274,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.String{
@@ -2286,7 +2286,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
@@ -2299,7 +2299,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The name alias of the VRF object.`,
@@ -2308,7 +2308,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The key for enabling clients to own their data for entity correlation.`,
@@ -2317,7 +2317,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
@@ -2326,7 +2326,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.String{
@@ -2338,7 +2338,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.String{
@@ -2359,14 +2359,14 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Object{
-					objectplanmodifier.UseStateForUnknown(),
+					objectplanmodifier.UseNonNullStateForUnknown(),
 				},
 				Attributes: map[string]schema.Attribute{
 					"annotation": schema.StringAttribute{
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The annotation of the Relation To BGP Timers object.`,
 					},
@@ -2374,7 +2374,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The name of the BGP timers policy associated with this context.`,
 					},
@@ -2383,7 +2383,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 						Optional:            true,
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
-							setplanmodifier.UseStateForUnknown(),
+							setplanmodifier.UseNonNullStateForUnknown(),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
@@ -2391,7 +2391,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 									Optional: true,
 									Computed: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									Validators: []validator.String{
 										MakeStringRequired(),
@@ -2402,7 +2402,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 									Optional: true,
 									Computed: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									Validators: []validator.String{
 										MakeStringRequired(),
@@ -2417,7 +2417,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 						Optional:            true,
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
-							setplanmodifier.UseStateForUnknown(),
+							setplanmodifier.UseNonNullStateForUnknown(),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
@@ -2425,7 +2425,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 									Optional: true,
 									Computed: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									Validators: []validator.String{
 										MakeStringRequired(),
@@ -2436,7 +2436,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 									Optional: true,
 									Computed: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									Validators: []validator.String{
 										MakeStringRequired(),
@@ -2453,14 +2453,14 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Object{
-					objectplanmodifier.UseStateForUnknown(),
+					objectplanmodifier.UseNonNullStateForUnknown(),
 				},
 				Attributes: map[string]schema.Attribute{
 					"annotation": schema.StringAttribute{
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The annotation of the Relation From VRF To Monitoring Policy object.`,
 					},
@@ -2468,7 +2468,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The name of the monitoring policy associated with this context.`,
 					},
@@ -2477,7 +2477,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 						Optional:            true,
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
-							setplanmodifier.UseStateForUnknown(),
+							setplanmodifier.UseNonNullStateForUnknown(),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
@@ -2485,7 +2485,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 									Optional: true,
 									Computed: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									Validators: []validator.String{
 										MakeStringRequired(),
@@ -2496,7 +2496,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 									Optional: true,
 									Computed: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									Validators: []validator.String{
 										MakeStringRequired(),
@@ -2511,7 +2511,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 						Optional:            true,
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
-							setplanmodifier.UseStateForUnknown(),
+							setplanmodifier.UseNonNullStateForUnknown(),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
@@ -2519,7 +2519,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 									Optional: true,
 									Computed: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									Validators: []validator.String{
 										MakeStringRequired(),
@@ -2530,7 +2530,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 									Optional: true,
 									Computed: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									Validators: []validator.String{
 										MakeStringRequired(),
@@ -2547,7 +2547,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseStateForUnknown(),
+					setplanmodifier.UseNonNullStateForUnknown(),
 					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(FvRsCtxToBgpCtxAfPolFvCtxSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate),
 				},
 				NestedObject: schema.NestedAttributeObject{
@@ -2556,7 +2556,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators: []validator.String{
 								stringvalidator.OneOf("ipv4-ucast", "ipv6-ucast"),
@@ -2568,7 +2568,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators:          []validator.String{},
 							MarkdownDescription: `The annotation of the Relation From VRF To BGP Address Family Context object.`,
@@ -2577,7 +2577,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators: []validator.String{
 								MakeStringRequired(),
@@ -2589,7 +2589,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							Optional:            true,
 							Computed:            true,
 							PlanModifiers: []planmodifier.Set{
-								setplanmodifier.UseStateForUnknown(),
+								setplanmodifier.UseNonNullStateForUnknown(),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
@@ -2597,7 +2597,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 										Optional: true,
 										Computed: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										Validators: []validator.String{
 											MakeStringRequired(),
@@ -2608,7 +2608,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 										Optional: true,
 										Computed: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										Validators: []validator.String{
 											MakeStringRequired(),
@@ -2623,7 +2623,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							Optional:            true,
 							Computed:            true,
 							PlanModifiers: []planmodifier.Set{
-								setplanmodifier.UseStateForUnknown(),
+								setplanmodifier.UseNonNullStateForUnknown(),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
@@ -2631,7 +2631,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 										Optional: true,
 										Computed: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										Validators: []validator.String{
 											MakeStringRequired(),
@@ -2642,7 +2642,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 										Optional: true,
 										Computed: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										Validators: []validator.String{
 											MakeStringRequired(),
@@ -2660,7 +2660,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseStateForUnknown(),
+					setplanmodifier.UseNonNullStateForUnknown(),
 					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(FvRsCtxToEigrpCtxAfPolFvCtxSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate),
 				},
 				NestedObject: schema.NestedAttributeObject{
@@ -2669,7 +2669,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators: []validator.String{
 								stringvalidator.OneOf("ipv4-ucast", "ipv6-ucast"),
@@ -2681,7 +2681,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators:          []validator.String{},
 							MarkdownDescription: `The annotation of the Relation From VRF To EIGRP Address Family Context object.`,
@@ -2690,7 +2690,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators: []validator.String{
 								MakeStringRequired(),
@@ -2702,7 +2702,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							Optional:            true,
 							Computed:            true,
 							PlanModifiers: []planmodifier.Set{
-								setplanmodifier.UseStateForUnknown(),
+								setplanmodifier.UseNonNullStateForUnknown(),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
@@ -2710,7 +2710,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 										Optional: true,
 										Computed: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										Validators: []validator.String{
 											MakeStringRequired(),
@@ -2721,7 +2721,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 										Optional: true,
 										Computed: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										Validators: []validator.String{
 											MakeStringRequired(),
@@ -2736,7 +2736,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							Optional:            true,
 							Computed:            true,
 							PlanModifiers: []planmodifier.Set{
-								setplanmodifier.UseStateForUnknown(),
+								setplanmodifier.UseNonNullStateForUnknown(),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
@@ -2744,7 +2744,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 										Optional: true,
 										Computed: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										Validators: []validator.String{
 											MakeStringRequired(),
@@ -2755,7 +2755,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 										Optional: true,
 										Computed: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										Validators: []validator.String{
 											MakeStringRequired(),
@@ -2773,14 +2773,14 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Object{
-					objectplanmodifier.UseStateForUnknown(),
+					objectplanmodifier.UseNonNullStateForUnknown(),
 				},
 				Attributes: map[string]schema.Attribute{
 					"annotation": schema.StringAttribute{
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The annotation of the Relation From VRF To End Point Retention Policy object.`,
 					},
@@ -2788,7 +2788,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The end point retention policy name.`,
 					},
@@ -2797,7 +2797,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 						Optional:            true,
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
-							setplanmodifier.UseStateForUnknown(),
+							setplanmodifier.UseNonNullStateForUnknown(),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
@@ -2805,7 +2805,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 									Optional: true,
 									Computed: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									Validators: []validator.String{
 										MakeStringRequired(),
@@ -2816,7 +2816,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 									Optional: true,
 									Computed: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									Validators: []validator.String{
 										MakeStringRequired(),
@@ -2831,7 +2831,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 						Optional:            true,
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
-							setplanmodifier.UseStateForUnknown(),
+							setplanmodifier.UseNonNullStateForUnknown(),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
@@ -2839,7 +2839,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 									Optional: true,
 									Computed: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									Validators: []validator.String{
 										MakeStringRequired(),
@@ -2850,7 +2850,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 									Optional: true,
 									Computed: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									Validators: []validator.String{
 										MakeStringRequired(),
@@ -2867,14 +2867,14 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Object{
-					objectplanmodifier.UseStateForUnknown(),
+					objectplanmodifier.UseNonNullStateForUnknown(),
 				},
 				Attributes: map[string]schema.Attribute{
 					"annotation": schema.StringAttribute{
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The annotation of the Relation From VRF To L3Out Route Tag Policy object.`,
 					},
@@ -2882,7 +2882,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The name of the External Route Tag policy associated with this context.`,
 					},
@@ -2891,7 +2891,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 						Optional:            true,
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
-							setplanmodifier.UseStateForUnknown(),
+							setplanmodifier.UseNonNullStateForUnknown(),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
@@ -2899,7 +2899,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 									Optional: true,
 									Computed: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									Validators: []validator.String{
 										MakeStringRequired(),
@@ -2910,7 +2910,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 									Optional: true,
 									Computed: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									Validators: []validator.String{
 										MakeStringRequired(),
@@ -2925,7 +2925,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 						Optional:            true,
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
-							setplanmodifier.UseStateForUnknown(),
+							setplanmodifier.UseNonNullStateForUnknown(),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
@@ -2933,7 +2933,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 									Optional: true,
 									Computed: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									Validators: []validator.String{
 										MakeStringRequired(),
@@ -2944,7 +2944,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 									Optional: true,
 									Computed: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									Validators: []validator.String{
 										MakeStringRequired(),
@@ -2961,7 +2961,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseStateForUnknown(),
+					setplanmodifier.UseNonNullStateForUnknown(),
 					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(FvRsCtxToOspfCtxPolFvCtxSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate),
 				},
 				NestedObject: schema.NestedAttributeObject{
@@ -2970,7 +2970,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators: []validator.String{
 								stringvalidator.OneOf("ipv4-ucast", "ipv6-ucast"),
@@ -2982,7 +2982,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators:          []validator.String{},
 							MarkdownDescription: `The annotation of the Relation From VRF To Address Family OSPF Timers object.`,
@@ -2991,7 +2991,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators: []validator.String{
 								MakeStringRequired(),
@@ -3003,7 +3003,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							Optional:            true,
 							Computed:            true,
 							PlanModifiers: []planmodifier.Set{
-								setplanmodifier.UseStateForUnknown(),
+								setplanmodifier.UseNonNullStateForUnknown(),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
@@ -3011,7 +3011,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 										Optional: true,
 										Computed: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										Validators: []validator.String{
 											MakeStringRequired(),
@@ -3022,7 +3022,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 										Optional: true,
 										Computed: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										Validators: []validator.String{
 											MakeStringRequired(),
@@ -3037,7 +3037,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							Optional:            true,
 							Computed:            true,
 							PlanModifiers: []planmodifier.Set{
-								setplanmodifier.UseStateForUnknown(),
+								setplanmodifier.UseNonNullStateForUnknown(),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
@@ -3045,7 +3045,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 										Optional: true,
 										Computed: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										Validators: []validator.String{
 											MakeStringRequired(),
@@ -3056,7 +3056,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 										Optional: true,
 										Computed: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										Validators: []validator.String{
 											MakeStringRequired(),
@@ -3074,14 +3074,14 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Object{
-					objectplanmodifier.UseStateForUnknown(),
+					objectplanmodifier.UseNonNullStateForUnknown(),
 				},
 				Attributes: map[string]schema.Attribute{
 					"annotation": schema.StringAttribute{
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The annotation of the Relation From VRF To WAN VPN object.`,
 					},
@@ -3089,7 +3089,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The distinguished name of the target.`,
 					},
@@ -3098,7 +3098,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 						Optional:            true,
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
-							setplanmodifier.UseStateForUnknown(),
+							setplanmodifier.UseNonNullStateForUnknown(),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
@@ -3106,7 +3106,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 									Optional: true,
 									Computed: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									Validators: []validator.String{
 										MakeStringRequired(),
@@ -3117,7 +3117,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 									Optional: true,
 									Computed: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									Validators: []validator.String{
 										MakeStringRequired(),
@@ -3132,7 +3132,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 						Optional:            true,
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
-							setplanmodifier.UseStateForUnknown(),
+							setplanmodifier.UseNonNullStateForUnknown(),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
@@ -3140,7 +3140,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 									Optional: true,
 									Computed: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									Validators: []validator.String{
 										MakeStringRequired(),
@@ -3151,7 +3151,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 									Optional: true,
 									Computed: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									Validators: []validator.String{
 										MakeStringRequired(),
@@ -3168,14 +3168,14 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Object{
-					objectplanmodifier.UseStateForUnknown(),
+					objectplanmodifier.UseNonNullStateForUnknown(),
 				},
 				Attributes: map[string]schema.Attribute{
 					"annotation": schema.StringAttribute{
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The annotation of the Relation To OSPF Timers object.`,
 					},
@@ -3183,7 +3183,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The name of the OSPF timers policy associated with this context.`,
 					},
@@ -3192,7 +3192,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 						Optional:            true,
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
-							setplanmodifier.UseStateForUnknown(),
+							setplanmodifier.UseNonNullStateForUnknown(),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
@@ -3200,7 +3200,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 									Optional: true,
 									Computed: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									Validators: []validator.String{
 										MakeStringRequired(),
@@ -3211,7 +3211,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 									Optional: true,
 									Computed: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									Validators: []validator.String{
 										MakeStringRequired(),
@@ -3226,7 +3226,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 						Optional:            true,
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
-							setplanmodifier.UseStateForUnknown(),
+							setplanmodifier.UseNonNullStateForUnknown(),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
@@ -3234,7 +3234,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 									Optional: true,
 									Computed: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									Validators: []validator.String{
 										MakeStringRequired(),
@@ -3245,7 +3245,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 									Optional: true,
 									Computed: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									Validators: []validator.String{
 										MakeStringRequired(),
@@ -3262,7 +3262,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseStateForUnknown(),
+					setplanmodifier.UseNonNullStateForUnknown(),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
@@ -3270,7 +3270,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators: []validator.String{
 								MakeStringRequired(),
@@ -3281,7 +3281,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators: []validator.String{
 								MakeStringRequired(),
@@ -3296,7 +3296,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseStateForUnknown(),
+					setplanmodifier.UseNonNullStateForUnknown(),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
@@ -3304,7 +3304,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators: []validator.String{
 								MakeStringRequired(),
@@ -3315,7 +3315,7 @@ func (r *FvCtxResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							Validators: []validator.String{
 								MakeStringRequired(),

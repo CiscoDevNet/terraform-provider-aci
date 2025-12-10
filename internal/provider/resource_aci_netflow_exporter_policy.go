@@ -357,7 +357,7 @@ func (r *NetflowExporterPolResource) Schema(ctx context.Context, req resource.Sc
 				Computed:            true,
 				MarkdownDescription: "The distinguished name (DN) of the NetFlow Exporter Policy object.",
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 				},
 			},
 			"parent_dn": schema.StringAttribute{
@@ -366,7 +366,7 @@ func (r *NetflowExporterPolResource) Schema(ctx context.Context, req resource.Sc
 				Default:             stringdefault.StaticString("uni/infra"),
 				MarkdownDescription: "The distinguished name (DN) of the parent object.",
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					stringplanmodifier.RequiresReplace(),
 				},
 			},
@@ -374,7 +374,7 @@ func (r *NetflowExporterPolResource) Schema(ctx context.Context, req resource.Sc
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
@@ -384,7 +384,7 @@ func (r *NetflowExporterPolResource) Schema(ctx context.Context, req resource.Sc
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The description of the NetFlow Exporter Policy object.`,
@@ -394,7 +394,7 @@ func (r *NetflowExporterPolResource) Schema(ctx context.Context, req resource.Sc
 				Optional:   true,
 				Computed:   true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.String{
@@ -408,7 +408,7 @@ func (r *NetflowExporterPolResource) Schema(ctx context.Context, req resource.Sc
 			"destination_ip_address": schema.StringAttribute{
 				Required: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The destination IP address of the remote node.`,
@@ -417,7 +417,7 @@ func (r *NetflowExporterPolResource) Schema(ctx context.Context, req resource.Sc
 				CustomType: customTypes.NetflowExporterPolDstPortStringType{},
 				Required:   true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.String{
@@ -431,7 +431,7 @@ func (r *NetflowExporterPolResource) Schema(ctx context.Context, req resource.Sc
 			"name": schema.StringAttribute{
 				Required: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
@@ -441,7 +441,7 @@ func (r *NetflowExporterPolResource) Schema(ctx context.Context, req resource.Sc
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The name alias of the NetFlow Exporter Policy object.`,
@@ -450,7 +450,7 @@ func (r *NetflowExporterPolResource) Schema(ctx context.Context, req resource.Sc
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The key for enabling clients to own their data for entity correlation.`,
@@ -459,7 +459,7 @@ func (r *NetflowExporterPolResource) Schema(ctx context.Context, req resource.Sc
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
@@ -468,7 +468,7 @@ func (r *NetflowExporterPolResource) Schema(ctx context.Context, req resource.Sc
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.String{
@@ -480,7 +480,7 @@ func (r *NetflowExporterPolResource) Schema(ctx context.Context, req resource.Sc
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The source IP address.`,
@@ -489,7 +489,7 @@ func (r *NetflowExporterPolResource) Schema(ctx context.Context, req resource.Sc
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.String{
@@ -502,14 +502,14 @@ func (r *NetflowExporterPolResource) Schema(ctx context.Context, req resource.Sc
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Object{
-					objectplanmodifier.UseStateForUnknown(),
+					objectplanmodifier.UseNonNullStateForUnknown(),
 				},
 				Attributes: map[string]schema.Attribute{
 					"annotation": schema.StringAttribute{
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The annotation of the Relation From NetFlow Exporter To VRF object.`,
 					},
@@ -517,7 +517,7 @@ func (r *NetflowExporterPolResource) Schema(ctx context.Context, req resource.Sc
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The distinguished name of the target.`,
 					},
@@ -526,21 +526,21 @@ func (r *NetflowExporterPolResource) Schema(ctx context.Context, req resource.Sc
 						Optional:            true,
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
-							setplanmodifier.UseStateForUnknown(),
+							setplanmodifier.UseNonNullStateForUnknown(),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
 								"key": schema.StringAttribute{
 									Required: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 								},
 								"value": schema.StringAttribute{
 									Required: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									MarkdownDescription: `The value of the property.`,
 								},
@@ -552,21 +552,21 @@ func (r *NetflowExporterPolResource) Schema(ctx context.Context, req resource.Sc
 						Optional:            true,
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
-							setplanmodifier.UseStateForUnknown(),
+							setplanmodifier.UseNonNullStateForUnknown(),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
 								"key": schema.StringAttribute{
 									Required: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 								},
 								"value": schema.StringAttribute{
 									Required: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									MarkdownDescription: `The value of the property.`,
 								},
@@ -580,14 +580,14 @@ func (r *NetflowExporterPolResource) Schema(ctx context.Context, req resource.Sc
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Object{
-					objectplanmodifier.UseStateForUnknown(),
+					objectplanmodifier.UseNonNullStateForUnknown(),
 				},
 				Attributes: map[string]schema.Attribute{
 					"annotation": schema.StringAttribute{
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The annotation of the Relation From NetFlow Exporter To EPG object.`,
 					},
@@ -595,7 +595,7 @@ func (r *NetflowExporterPolResource) Schema(ctx context.Context, req resource.Sc
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The distinguished name of the target.`,
 					},
@@ -604,21 +604,21 @@ func (r *NetflowExporterPolResource) Schema(ctx context.Context, req resource.Sc
 						Optional:            true,
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
-							setplanmodifier.UseStateForUnknown(),
+							setplanmodifier.UseNonNullStateForUnknown(),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
 								"key": schema.StringAttribute{
 									Required: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 								},
 								"value": schema.StringAttribute{
 									Required: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									MarkdownDescription: `The value of the property.`,
 								},
@@ -630,21 +630,21 @@ func (r *NetflowExporterPolResource) Schema(ctx context.Context, req resource.Sc
 						Optional:            true,
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
-							setplanmodifier.UseStateForUnknown(),
+							setplanmodifier.UseNonNullStateForUnknown(),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
 								"key": schema.StringAttribute{
 									Required: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 								},
 								"value": schema.StringAttribute{
 									Required: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									MarkdownDescription: `The value of the property.`,
 								},
@@ -658,21 +658,21 @@ func (r *NetflowExporterPolResource) Schema(ctx context.Context, req resource.Sc
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseStateForUnknown(),
+					setplanmodifier.UseNonNullStateForUnknown(),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"key": schema.StringAttribute{
 							Required: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
 						"value": schema.StringAttribute{
 							Required: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},
@@ -684,21 +684,21 @@ func (r *NetflowExporterPolResource) Schema(ctx context.Context, req resource.Sc
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseStateForUnknown(),
+					setplanmodifier.UseNonNullStateForUnknown(),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"key": schema.StringAttribute{
 							Required: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
 						"value": schema.StringAttribute{
 							Required: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},

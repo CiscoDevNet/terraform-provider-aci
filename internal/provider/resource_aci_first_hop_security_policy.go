@@ -305,14 +305,14 @@ func (r *FhsBDPolResource) Schema(ctx context.Context, req resource.SchemaReques
 				Computed:            true,
 				MarkdownDescription: "The distinguished name (DN) of the First Hop Security Policy object.",
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 				},
 			},
 			"parent_dn": schema.StringAttribute{
 				Required:            true,
 				MarkdownDescription: "The distinguished name (DN) of the parent object.",
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					stringplanmodifier.RequiresReplace(),
 				},
 			},
@@ -320,7 +320,7 @@ func (r *FhsBDPolResource) Schema(ctx context.Context, req resource.SchemaReques
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
@@ -330,7 +330,7 @@ func (r *FhsBDPolResource) Schema(ctx context.Context, req resource.SchemaReques
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The description of the First Hop Security Policy object.`,
@@ -339,7 +339,7 @@ func (r *FhsBDPolResource) Schema(ctx context.Context, req resource.SchemaReques
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.String{
@@ -350,7 +350,7 @@ func (r *FhsBDPolResource) Schema(ctx context.Context, req resource.SchemaReques
 			"name": schema.StringAttribute{
 				Required: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
@@ -360,7 +360,7 @@ func (r *FhsBDPolResource) Schema(ctx context.Context, req resource.SchemaReques
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The name alias of the First Hop Security Policy object.`,
@@ -369,7 +369,7 @@ func (r *FhsBDPolResource) Schema(ctx context.Context, req resource.SchemaReques
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The key for enabling clients to own their data for entity correlation.`,
@@ -378,7 +378,7 @@ func (r *FhsBDPolResource) Schema(ctx context.Context, req resource.SchemaReques
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
@@ -387,7 +387,7 @@ func (r *FhsBDPolResource) Schema(ctx context.Context, req resource.SchemaReques
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.String{
@@ -399,7 +399,7 @@ func (r *FhsBDPolResource) Schema(ctx context.Context, req resource.SchemaReques
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.String{
@@ -412,14 +412,14 @@ func (r *FhsBDPolResource) Schema(ctx context.Context, req resource.SchemaReques
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Object{
-					objectplanmodifier.UseStateForUnknown(),
+					objectplanmodifier.UseNonNullStateForUnknown(),
 				},
 				Attributes: map[string]schema.Attribute{
 					"annotation": schema.StringAttribute{
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The annotation of the Route Advertisement Guard Policy object.`,
 					},
@@ -427,7 +427,7 @@ func (r *FhsBDPolResource) Schema(ctx context.Context, req resource.SchemaReques
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The description of the Route Advertisement Guard Policy object.`,
 					},
@@ -435,7 +435,7 @@ func (r *FhsBDPolResource) Schema(ctx context.Context, req resource.SchemaReques
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						Validators: []validator.String{
 							stringvalidator.OneOf("no", "yes"),
@@ -446,7 +446,7 @@ func (r *FhsBDPolResource) Schema(ctx context.Context, req resource.SchemaReques
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						Validators: []validator.String{
 							stringvalidator.OneOf("no", "yes"),
@@ -457,7 +457,7 @@ func (r *FhsBDPolResource) Schema(ctx context.Context, req resource.SchemaReques
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The maximum hop limit for the Route Advertisement Guard Policy object.`,
 					},
@@ -465,7 +465,7 @@ func (r *FhsBDPolResource) Schema(ctx context.Context, req resource.SchemaReques
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						Validators: []validator.String{
 							stringvalidator.OneOf("disabled", "high", "low", "medium"),
@@ -476,7 +476,7 @@ func (r *FhsBDPolResource) Schema(ctx context.Context, req resource.SchemaReques
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The minimum hop limit for the Route Advertisement Guard Policy object.`,
 					},
@@ -484,7 +484,7 @@ func (r *FhsBDPolResource) Schema(ctx context.Context, req resource.SchemaReques
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The name of the Route Advertisement Guard Policy object.`,
 					},
@@ -492,7 +492,7 @@ func (r *FhsBDPolResource) Schema(ctx context.Context, req resource.SchemaReques
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The name alias of the Route Advertisement Guard Policy object.`,
 					},
@@ -500,7 +500,7 @@ func (r *FhsBDPolResource) Schema(ctx context.Context, req resource.SchemaReques
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						Validators: []validator.String{
 							stringvalidator.OneOf("no", "yes"),
@@ -511,7 +511,7 @@ func (r *FhsBDPolResource) Schema(ctx context.Context, req resource.SchemaReques
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						Validators: []validator.String{
 							stringvalidator.OneOf("no", "yes"),
@@ -522,7 +522,7 @@ func (r *FhsBDPolResource) Schema(ctx context.Context, req resource.SchemaReques
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `The key for enabling clients to own their data for entity correlation.`,
 					},
@@ -530,7 +530,7 @@ func (r *FhsBDPolResource) Schema(ctx context.Context, req resource.SchemaReques
 						Optional: true,
 						Computed: true,
 						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseStateForUnknown(),
+							stringplanmodifier.UseNonNullStateForUnknown(),
 						},
 						MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
 					},
@@ -539,21 +539,21 @@ func (r *FhsBDPolResource) Schema(ctx context.Context, req resource.SchemaReques
 						Optional:            true,
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
-							setplanmodifier.UseStateForUnknown(),
+							setplanmodifier.UseNonNullStateForUnknown(),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
 								"key": schema.StringAttribute{
 									Required: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 								},
 								"value": schema.StringAttribute{
 									Required: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									MarkdownDescription: `The value of the property.`,
 								},
@@ -565,21 +565,21 @@ func (r *FhsBDPolResource) Schema(ctx context.Context, req resource.SchemaReques
 						Optional:            true,
 						Computed:            true,
 						PlanModifiers: []planmodifier.Set{
-							setplanmodifier.UseStateForUnknown(),
+							setplanmodifier.UseNonNullStateForUnknown(),
 						},
 						NestedObject: schema.NestedAttributeObject{
 							Attributes: map[string]schema.Attribute{
 								"key": schema.StringAttribute{
 									Required: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 								},
 								"value": schema.StringAttribute{
 									Required: true,
 									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseStateForUnknown(),
+										stringplanmodifier.UseNonNullStateForUnknown(),
 									},
 									MarkdownDescription: `The value of the property.`,
 								},
@@ -593,21 +593,21 @@ func (r *FhsBDPolResource) Schema(ctx context.Context, req resource.SchemaReques
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseStateForUnknown(),
+					setplanmodifier.UseNonNullStateForUnknown(),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"key": schema.StringAttribute{
 							Required: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
 						"value": schema.StringAttribute{
 							Required: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},
@@ -619,21 +619,21 @@ func (r *FhsBDPolResource) Schema(ctx context.Context, req resource.SchemaReques
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseStateForUnknown(),
+					setplanmodifier.UseNonNullStateForUnknown(),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"key": schema.StringAttribute{
 							Required: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
 						"value": schema.StringAttribute{
 							Required: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},

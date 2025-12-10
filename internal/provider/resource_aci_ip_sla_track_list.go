@@ -297,14 +297,14 @@ func (r *FvTrackListResource) Schema(ctx context.Context, req resource.SchemaReq
 				Computed:            true,
 				MarkdownDescription: "The distinguished name (DN) of the IP SLA Track List object.",
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 				},
 			},
 			"parent_dn": schema.StringAttribute{
 				Required:            true,
 				MarkdownDescription: "The distinguished name (DN) of the parent object.",
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					stringplanmodifier.RequiresReplace(),
 				},
 			},
@@ -312,7 +312,7 @@ func (r *FvTrackListResource) Schema(ctx context.Context, req resource.SchemaReq
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Default:             stringdefault.StaticString(globalAnnotation),
@@ -322,7 +322,7 @@ func (r *FvTrackListResource) Schema(ctx context.Context, req resource.SchemaReq
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The description of the IP SLA Track List object.`,
@@ -330,7 +330,7 @@ func (r *FvTrackListResource) Schema(ctx context.Context, req resource.SchemaReq
 			"name": schema.StringAttribute{
 				Required: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
@@ -340,7 +340,7 @@ func (r *FvTrackListResource) Schema(ctx context.Context, req resource.SchemaReq
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The name alias of the IP SLA Track List object.`,
@@ -349,7 +349,7 @@ func (r *FvTrackListResource) Schema(ctx context.Context, req resource.SchemaReq
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The key for enabling clients to own their data for entity correlation.`,
@@ -358,7 +358,7 @@ func (r *FvTrackListResource) Schema(ctx context.Context, req resource.SchemaReq
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
@@ -367,7 +367,7 @@ func (r *FvTrackListResource) Schema(ctx context.Context, req resource.SchemaReq
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The down percentage assigned to the IP SLA Track List determines whether a route is considered available or unavailable. This attribute is applicable only when the track type is 'percentage'.`,
@@ -376,7 +376,7 @@ func (r *FvTrackListResource) Schema(ctx context.Context, req resource.SchemaReq
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The up percentage assigned to the IP SLA Track List determines whether a route is considered available or unavailable. The percentage up must be greater than the percentage down. This attribute is applicable only when the track type is 'percentage'.`,
@@ -385,7 +385,7 @@ func (r *FvTrackListResource) Schema(ctx context.Context, req resource.SchemaReq
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
@@ -398,7 +398,7 @@ func (r *FvTrackListResource) Schema(ctx context.Context, req resource.SchemaReq
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The down weight assigned to the IP SLA Track List determines whether a route is considered available or unavailable. This attribute is applicable only when the track type is 'weight'.`,
@@ -407,7 +407,7 @@ func (r *FvTrackListResource) Schema(ctx context.Context, req resource.SchemaReq
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
+					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				MarkdownDescription: `The up weight assigned to the IP SLA Track List determines whether a route is considered available or unavailable. The up weight must be greater than the down weight. This attribute is applicable only when the track type is 'weight'.`,
@@ -417,7 +417,7 @@ func (r *FvTrackListResource) Schema(ctx context.Context, req resource.SchemaReq
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseStateForUnknown(),
+					setplanmodifier.UseNonNullStateForUnknown(),
 					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(FvRsOtmListMemberFvTrackListSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate),
 				},
 				NestedObject: schema.NestedAttributeObject{
@@ -426,14 +426,14 @@ func (r *FvTrackListResource) Schema(ctx context.Context, req resource.SchemaReq
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							MarkdownDescription: `The annotation of the Relation To IP SLA Track Member object.`,
 						},
 						"target_dn": schema.StringAttribute{
 							Required: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							MarkdownDescription: `The distinguished name (DN) of the IP SLA Track Member.`,
 						},
@@ -441,7 +441,7 @@ func (r *FvTrackListResource) Schema(ctx context.Context, req resource.SchemaReq
 							Optional: true,
 							Computed: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							MarkdownDescription: `The weight associated with the IP SLA Track Member that contributes to the total weight that is used to determines whether a route is considered available or unavailable.`,
 						},
@@ -450,21 +450,21 @@ func (r *FvTrackListResource) Schema(ctx context.Context, req resource.SchemaReq
 							Optional:            true,
 							Computed:            true,
 							PlanModifiers: []planmodifier.Set{
-								setplanmodifier.UseStateForUnknown(),
+								setplanmodifier.UseNonNullStateForUnknown(),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
 									"key": schema.StringAttribute{
 										Required: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 									},
 									"value": schema.StringAttribute{
 										Required: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										MarkdownDescription: `The value of the property.`,
 									},
@@ -476,21 +476,21 @@ func (r *FvTrackListResource) Schema(ctx context.Context, req resource.SchemaReq
 							Optional:            true,
 							Computed:            true,
 							PlanModifiers: []planmodifier.Set{
-								setplanmodifier.UseStateForUnknown(),
+								setplanmodifier.UseNonNullStateForUnknown(),
 							},
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
 									"key": schema.StringAttribute{
 										Required: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 									},
 									"value": schema.StringAttribute{
 										Required: true,
 										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseStateForUnknown(),
+											stringplanmodifier.UseNonNullStateForUnknown(),
 										},
 										MarkdownDescription: `The value of the property.`,
 									},
@@ -505,21 +505,21 @@ func (r *FvTrackListResource) Schema(ctx context.Context, req resource.SchemaReq
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseStateForUnknown(),
+					setplanmodifier.UseNonNullStateForUnknown(),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"key": schema.StringAttribute{
 							Required: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
 						"value": schema.StringAttribute{
 							Required: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},
@@ -531,21 +531,21 @@ func (r *FvTrackListResource) Schema(ctx context.Context, req resource.SchemaReq
 				Optional:            true,
 				Computed:            true,
 				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseStateForUnknown(),
+					setplanmodifier.UseNonNullStateForUnknown(),
 				},
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"key": schema.StringAttribute{
 							Required: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
 						},
 						"value": schema.StringAttribute{
 							Required: true,
 							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseStateForUnknown(),
+								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
 							MarkdownDescription: `The value of the property.`,
 						},
