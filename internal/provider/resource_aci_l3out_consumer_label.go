@@ -29,10 +29,15 @@ import (
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &L3extConsLblResource{}
+var _ resource.ResourceWithIdentity = &L3extConsLblResource{}
 var _ resource.ResourceWithImportState = &L3extConsLblResource{}
 
 func NewL3extConsLblResource() resource.Resource {
 	return &L3extConsLblResource{}
+}
+
+func (r L3extConsLblResource) IdentitySchema(_ context.Context, _ resource.IdentitySchemaRequest, resp *resource.IdentitySchemaResponse) {
+	resp.IdentitySchema = getIdentitySchema()
 }
 
 // L3extConsLblResource defines the resource implementation.
@@ -805,6 +810,7 @@ func (r *L3extConsLblResource) Create(ctx context.Context, req resource.CreateRe
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_l3out_consumer_label with id '%s'", data.Id.ValueString()))
 }
 
@@ -829,6 +835,7 @@ func (r *L3extConsLblResource) Read(ctx context.Context, req resource.ReadReques
 		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
 	} else {
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+		resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_l3out_consumer_label with id '%s'", data.Id.ValueString()))
@@ -877,6 +884,7 @@ func (r *L3extConsLblResource) Update(ctx context.Context, req resource.UpdateRe
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_l3out_consumer_label with id '%s'", data.Id.ValueString()))
 }
 
@@ -905,10 +913,11 @@ func (r *L3extConsLblResource) Delete(ctx context.Context, req resource.DeleteRe
 
 func (r *L3extConsLblResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_l3out_consumer_label")
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	resource.ImportStatePassthroughWithIdentity(ctx, path.Root("id"), path.Root("id"), req, resp)
 
 	var stateData *L3extConsLblResourceModel
 	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: stateData.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_l3out_consumer_label with id '%s'", stateData.Id.ValueString()))
 
 	tflog.Debug(ctx, "End import of state resource: aci_l3out_consumer_label")
@@ -917,11 +926,17 @@ func (r *L3extConsLblResource) ImportState(ctx context.Context, req resource.Imp
 func getAndSetL3extConsLblAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *L3extConsLblResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "l3extConsLbl,l3extRsLblToInstP,l3extRsLblToProfile,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag"), "GET", nil)
 
-	readData := getEmptyL3extConsLblResourceModel()
-
 	if diags.HasError() {
 		return
 	}
+
+	setL3extConsLblAttributes(ctx, diags, data, requestData)
+}
+
+func setL3extConsLblAttributes(ctx context.Context, diags *diag.Diagnostics, data *L3extConsLblResourceModel, requestData *container.Container) {
+
+	readData := getEmptyL3extConsLblResourceModel()
+
 	if requestData.Search("imdata").Search("l3extConsLbl").Data() != nil {
 		classReadInfo := requestData.Search("imdata").Search("l3extConsLbl").Data().([]interface{})
 		if len(classReadInfo) == 1 {
