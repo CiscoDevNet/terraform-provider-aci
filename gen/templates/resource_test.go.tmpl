@@ -42,19 +42,19 @@ PreCheck: func() { testAccPreCheck(t, "{{.test_type}}", "{{$.class_version}}") }
 		{{- range $key, $value := $.default}}
 			{{- if eq $key "version_mismatch" }}
         		{{- range $version, $attributes := $value }}
-						composeAggregateTestCheckFuncWithVersion(t, "{{$version}}", "inside",{{- range $attributeName, $attributeValue := $attributes}}
-						{{- if not (definedInList $.exclude_attributes $attributeName) }}
-							{{- if (isInterfaceSlice $attributeValue)}}
-						resource.TestCheckResourceAttr("aci_{{$.resourceName}}.allow_test", "{{$attributeName}}.#", "{{len $attributeValue}}"),
-						resource.TestCheckResourceAttr("aci_{{$.resourceName}}.allow_test_2", "{{$attributeName}}.#", "{{len $attributeValue}}"),
-							{{- range $index, $subvalue := $attributeValue}}
-						resource.TestCheckResourceAttr("aci_{{$.resourceName}}.allow_test", "{{$attributeName}}.{{$index}}", "{{$subvalue}}"),
-						resource.TestCheckResourceAttr("aci_{{$.resourceName}}.allow_test_2", "{{$attributeName}}.{{$index}}", "{{$subvalue}}"),
-							{{- end}}
-						{{- else}}
-						resource.TestCheckResourceAttr("aci_{{$.resourceName}}.allow_test", "{{$attributeName}}", "{{$attributeValue}}"),
-						resource.TestCheckResourceAttr("aci_{{$.resourceName}}.allow_test_2", "{{$attributeName}}", "{{$attributeValue}}"),
+					composeAggregateTestCheckFuncWithVersion(t, "{{$version}}", "inside",{{- range $attributeName, $attributeValue := $attributes}}
+					{{- if not (definedInList $.exclude_attributes $attributeName) }}
+						{{- if (isInterfaceSlice $attributeValue)}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.allow_test", "{{$attributeName}}.#", "{{len $attributeValue}}"),
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.allow_test_2", "{{$attributeName}}.#", "{{len $attributeValue}}"),
+						{{- range $index, $subvalue := $attributeValue}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.allow_test", "{{$attributeName}}.{{$index}}", "{{$subvalue}}"),
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.allow_test_2", "{{$attributeName}}.{{$index}}", "{{$subvalue}}"),
 						{{- end}}
+					{{- else}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.allow_test", "{{$attributeName}}", "{{$attributeValue}}"),
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.allow_test_2", "{{$attributeName}}", "{{$attributeValue}}"),
+					{{- end}}
 				{{- end }}
 				{{- end }}),
 				{{- end }}
@@ -121,19 +121,19 @@ PreCheck: func() { testAccPreCheck(t, "{{.test_type}}", "{{$.class_version}}") }
 		{{- range $key, $value := $.default}}
 			{{- if eq $key "version_mismatch" }}
         		{{- range $version, $attributes := $value }}
-						composeAggregateTestCheckFuncWithVersion(t, "{{$version}}", "inside",{{- range $attributeName, $attributeValue := $attributes}}
-						{{- if not (definedInList $.exclude_attributes $attributeName) }}
-							{{- if (isInterfaceSlice $attributeValue)}}
-						resource.TestCheckResourceAttr("aci_{{$.resourceName}}.allow_test", "{{$attributeName}}.#", "{{len $attributeValue}}"),
-						resource.TestCheckResourceAttr("aci_{{$.resourceName}}.allow_test_2", "{{$attributeName}}.#", "{{len $attributeValue}}"),
-							{{- range $index, $subvalue := $attributeValue}}
-						resource.TestCheckResourceAttr("aci_{{$.resourceName}}.allow_test", "{{$attributeName}}.{{$index}}", "{{$subvalue}}"),
-						resource.TestCheckResourceAttr("aci_{{$.resourceName}}.allow_test_2", "{{$attributeName}}.{{$index}}", "{{$subvalue}}"),
-							{{- end}}
-						{{- else}}
-						resource.TestCheckResourceAttr("aci_{{$.resourceName}}.allow_test", "{{$attributeName}}", "{{$attributeValue}}"),
-						resource.TestCheckResourceAttr("aci_{{$.resourceName}}.allow_test_2", "{{$attributeName}}", "{{$attributeValue}}"),
+					composeAggregateTestCheckFuncWithVersion(t, "{{$version}}", "inside",{{- range $attributeName, $attributeValue := $attributes}}
+					{{- if not (definedInList $.exclude_attributes $attributeName) }}
+						{{- if (isInterfaceSlice $attributeValue)}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.allow_test", "{{$attributeName}}.#", "{{len $attributeValue}}"),
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.allow_test_2", "{{$attributeName}}.#", "{{len $attributeValue}}"),
+						{{- range $index, $subvalue := $attributeValue}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.allow_test", "{{$attributeName}}.{{$index}}", "{{$subvalue}}"),
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.allow_test_2", "{{$attributeName}}.{{$index}}", "{{$subvalue}}"),
 						{{- end}}
+					{{- else}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.allow_test", "{{$attributeName}}", "{{$attributeValue}}"),
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.allow_test_2", "{{$attributeName}}", "{{$attributeValue}}"),
+					{{- end}}
 				{{- end }}
 				{{- end }}),
 				{{- end }}
@@ -918,17 +918,26 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 			{{- end}}
 		{{- end}}
 		{{- range $key, $value := $.default}}
-					{{- if eq $key "version_mismatch" }}
-        				{{- range $version, $attributes := $value }}
+			{{- if eq $key "version_mismatch" }}
+				{{- range $version, $attributes := $value }}
 					composeAggregateTestCheckFuncWithVersion(t, "{{$version}}", "inside",{{- range $attributeName, $attributeValue := $attributes}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.allow_test", "{{$attributeName}}", "{{$attributeValue}}"),
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.allow_test_2", "{{$attributeName}}", "{{$attributeValue}}"),
-							{{- end}}),
-						{{- end}}
-					{{- else}}
+					{{- end}}),
+				{{- end}}
+			{{- else}}
+				{{- if (isInterfaceSlice $value)}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.allow_test", "{{$key}}.#", "{{len $value}}"),
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.allow_test_2", "{{$key}}.#", "{{len $value}}"),
+					{{- range $index, $subvalue := $value}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.allow_test", "{{$key}}.{{$index}}", "{{$subvalue}}"),
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.allow_test_2", "{{$key}}.{{$index}}", "{{$subvalue}}"),
+					{{- end}}
+				{{- else}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.allow_test", "{{$key}}", "{{$value}}"),
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.allow_test_2", "{{$key}}", "{{$value}}"),
-					{{- end}}
+				{{- end}}
+			{{- end}}
 		{{- end}}
 		{{- range $index, $key := $.read_only}}
 					resource.TestCheckResourceAttrSet("aci_{{$.resourceName}}.allow_test", "{{$key}}"),
@@ -972,17 +981,26 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 			{{- end}}
 		{{- end}}
 		{{- range $key, $value := $.default}}
-					{{- if eq $key "version_mismatch" }}
-        				{{- range $version, $attributes := $value }}
+			{{- if eq $key "version_mismatch" }}
+				{{- range $version, $attributes := $value }}
 					composeAggregateTestCheckFuncWithVersion(t, "{{$version}}", "inside",{{- range $attributeName, $attributeValue := $attributes}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.allow_test", "{{$attributeName}}", "{{$attributeValue}}"),
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.allow_test_2", "{{$attributeName}}", "{{$attributeValue}}"),
-							{{- end}}),
-						{{- end}}
-					{{- else}}
+					{{- end}}),
+				{{- end}}
+			{{- else}}
+				{{- if (isInterfaceSlice $value)}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.allow_test", "{{$key}}.#", "{{len $value}}"),
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.allow_test_2", "{{$key}}.#", "{{len $value}}"),
+					{{- range $index, $subvalue := $value}}
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.allow_test", "{{$key}}.{{$index}}", "{{$subvalue}}"),
+					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.allow_test_2", "{{$key}}.{{$index}}", "{{$subvalue}}"),
+					{{- end}}
+				{{- else}}
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.allow_test", "{{$key}}", "{{$value}}"),
 					resource.TestCheckResourceAttr("aci_{{$.resourceName}}.allow_test_2", "{{$key}}", "{{$value}}"),
-					{{- end}}
+				{{- end}}
+			{{- end}}
 		{{- end}}
 		{{- range $index, $key := $.read_only}}
 					resource.TestCheckResourceAttrSet("aci_{{$.resourceName}}.allow_test", "{{$key}}"),
