@@ -44,6 +44,6 @@ data "aci_relation_from_attachable_access_entity_profile_to_domain" "test" {
 const testConfigInfraRsDomPNotExistingInfraAttEntityP = testConfigInfraAttEntityPMin + `
 data "aci_relation_from_attachable_access_entity_profile_to_domain" "test_non_existing" {
   parent_dn = aci_attachable_access_entity_profile.test.id
-  target_dn = "uni/phys-physical_domain_3_not_existing"
+  target_dn = "uni/phys-physical_domain_0_not_existing"
 }
 `
