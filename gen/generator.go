@@ -70,6 +70,7 @@ const (
 	datasourcesExamplesPath = "./examples/data-sources"
 	docsPath                = "./docs"
 	resourcesDocsPath       = "./docs/resources"
+	listResourcesDocsPath   = "./docs/list-resources"
 	datasourcesDocsPath     = "./docs/data-sources"
 	providerPath            = "./internal/provider/"
 )
@@ -155,6 +156,8 @@ var templateFuncs = template.FuncMap{
 	"getCustomTestDependency":                  GetCustomTestDependency,
 	"getIgnoreInLegacy":                        GetIgnoreInLegacy,
 	"isSensitiveAttribute":                     IsSensitiveAttribute,
+	"getChildClassNames":                       GetChildClassNames,
+	"getRnForListTesting":                      GetRnForListTesting,
 }
 
 func IsSensitiveAttribute(attributeName string, properties map[string]Property) bool {
@@ -165,6 +168,25 @@ func IsSensitiveAttribute(attributeName string, properties map[string]Property) 
 		}
 	}
 	return false
+}
+
+func GetChildClassNames(model Model, childClassNames []string) []string {
+
+	if childClassNames == nil {
+		childClassNames = []string{}
+	}
+
+	for _, child := range model.Children {
+		if !slices.Contains(childClassNames, child.PkgName) {
+			childClassNames = append(childClassNames, child.PkgName)
+		}
+
+		if child.HasChild {
+			childClassNames = GetChildClassNames(child, childClassNames)
+		}
+
+	}
+	return childClassNames
 }
 
 func GetDeprecatedExplanation(attributeName, replacedByAttributeName string) string {
@@ -762,12 +784,14 @@ func LookupTestValue(classPkgName, originalPropertyName string, testVars map[str
 	// Referencing is done based on target_dn logic
 	// This lookup is created as a workaround to reference in an examples on non target_dn attributes
 	// Redesign of testing / example creation logic should be done to cover this reference use-case
-	if classDetails, ok := definitions.Properties[classPkgName]; ok {
-		for key, value := range classDetails.(map[interface{}]interface{}) {
-			if key.(string) == "example_value_overwrite" {
-				for k, v := range value.(map[interface{}]interface{}) {
-					if k.(string) == propertyName {
-						return v.(string)
+	if testVars["overwriteTestValue"].(bool) {
+		if classDetails, ok := definitions.Properties[classPkgName]; ok {
+			for key, value := range classDetails.(map[interface{}]interface{}) {
+				if key.(string) == "example_value_overwrite" {
+					for k, v := range value.(map[interface{}]interface{}) {
+						if k.(string) == propertyName {
+							return v.(string)
+						}
 					}
 				}
 			}
@@ -1040,7 +1064,48 @@ func getTestVars(model Model) (map[string]interface{}, error) {
 	// Adds the resource name and resource class name to the testVars map to be used in test template rendering
 	testVarsMap["resourceName"] = model.ResourceName
 	testVarsMap["resourceClassName"] = model.ResourceClassName
+	testVarsMap["pkgName"] = model.PkgName
+	// allow access to the model from testvars
+	testVarsMap["model"] = model
+	// bool to prevent/allow overwriting during value lookup for list resource testing
+	testVarsMap["overwriteTestValue"] = true
 	return testVarsMap, nil
+}
+
+func GetRnForListTesting(targetClasses interface{}, testVars map[string]interface{}) string {
+	model := testVars["model"].(Model)
+	rn := model.RnFormat
+	for _, property := range model.Properties {
+		if property.IsNaming {
+			var testValue string
+			if property.PropertyName == "tDn" {
+				testValue = GetTestTargetDn(testVars["targets"].([]interface{}), GetTargetResourceName(model.ResourceName), testValue, false, targetClasses, 0, false)
+			} else {
+				testVars["overwriteTestValue"] = false
+				testValue = LookupTestValue(model.PkgName, property.PropertyName, testVars, model.Definitions, model.Properties).(string)
+				if testValue == "test_value" {
+					testValue = LookupTestValue(model.PkgName, property.SnakeCaseName, testVars, model.Definitions, model.Properties).(string)
+				}
+				if testValue == "test_value" {
+					testValue = fmt.Sprintf("test_%s", property.SnakeCaseName)
+				}
+				testVars["overwriteTestValue"] = true
+			}
+			if len(testValue) > 0 && testValue[0] == '"' {
+				testValue = testValue[1 : len(testValue)-1]
+			}
+			rn = strings.ReplaceAll(rn, fmt.Sprintf("{%s}", property.PropertyName), testValue)
+		}
+	}
+
+	if len(model.ContainedBy) == 1 {
+		defaultParentValue := GetDefaultValues(model.PkgName, "parent_dn", model.Definitions)
+		if defaultParentValue != "" && strings.HasPrefix(defaultParentValue, "uni/") {
+			rn = fmt.Sprintf("%s/%s", defaultParentValue[4:], rn)
+		}
+	}
+
+	return rn
 }
 
 // Retrieves the property and classs overwrite definitions from the definitions YAML files
@@ -1143,9 +1208,10 @@ func migrateLegacyDocumentation() {
 
 // Container function to clean all directories properly
 func cleanDirectories() {
-	cleanDirectory(docsPath, []string{"resources", "data-sources", "guides"})
+	cleanDirectory(docsPath, []string{"list-resources", "resources", "data-sources", "guides"})
 	cleanDirectory(providerPath, []string{"provider_test.go", "utils.go", "test_constants.go", "resource_aci_rest_managed.go", "resource_aci_rest_managed_test.go", "data_source_aci_rest_managed.go", "data_source_aci_rest_managed_test.go", "annotation_unsupported.go", "data_source_aci_system.go", "data_source_aci_system_test.go", "function_compare_versions.go", "function_compare_versions_test.go"})
 	cleanDirectory(resourcesDocsPath, []string{})
+	cleanDirectory(listResourcesDocsPath, []string{})
 	cleanDirectory(datasourcesDocsPath, []string{"system.md"})
 	cleanDirectory(testVarsPath, []string{})
 	cleanDirectory("./internal/custom_types", []string{})
@@ -1330,6 +1396,7 @@ func main() {
 				}
 			}
 			renderTemplate("resource.go.tmpl", fmt.Sprintf("resource_%s_%s.go", providerName, model.ResourceName), providerPath, model)
+			renderTemplate("resource_list.go.tmpl", fmt.Sprintf("resource_%s_%s_list.go", providerName, model.ResourceName), providerPath, model)
 			renderTemplate("datasource.go.tmpl", fmt.Sprintf("data_source_%s_%s.go", providerName, model.ResourceName), providerPath, model)
 
 			os.Mkdir(fmt.Sprintf("%s/%s_%s", resourcesExamplesPath, providerName, model.ResourceName), 0755)
@@ -1342,6 +1409,7 @@ func main() {
 			// Leverage the hclwrite package to format the example code
 			model.ExampleResource = string(hclwrite.Format(getExampleCode(fmt.Sprintf("%s/%s_%s/resource.tf", resourcesExamplesPath, providerName, model.ResourceName))))
 			renderTemplate("resource.md.tmpl", fmt.Sprintf("%s.md", model.ResourceName), resourcesDocsPath, model)
+			renderTemplate("resource_list.md.tmpl", fmt.Sprintf("%s.md", model.ResourceName), listResourcesDocsPath, model)
 
 			os.Mkdir(fmt.Sprintf("%s/%s_%s", datasourcesExamplesPath, providerName, model.ResourceName), 0755)
 			renderTemplate("provider_example.tf.tmpl", fmt.Sprintf("%s_%s/provider.tf", providerName, model.ResourceName), datasourcesExamplesPath, model)
@@ -1351,6 +1419,7 @@ func main() {
 			renderTemplate("datasource.md.tmpl", fmt.Sprintf("%s.md", model.ResourceName), datasourcesDocsPath, model)
 			renderTemplate("resource_test.go.tmpl", fmt.Sprintf("resource_%s_%s_test.go", providerName, model.ResourceName), providerPath, model)
 			renderTemplate("datasource_test.go.tmpl", fmt.Sprintf("data_source_%s_%s_test.go", providerName, model.ResourceName), providerPath, model)
+			renderTemplate("resource_list_test.go.tmpl", fmt.Sprintf("resource_%s_%s_list_test.go", providerName, model.ResourceName), providerPath, model)
 		}
 	}
 }

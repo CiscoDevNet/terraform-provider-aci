@@ -17,6 +17,7 @@ import (
 	// "github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
+	"github.com/hashicorp/terraform-plugin-framework/list"
 	"github.com/hashicorp/terraform-plugin-framework/provider"
 	"github.com/hashicorp/terraform-plugin-framework/provider/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -35,6 +36,7 @@ var globalAllowExistingOnCreate bool
 // Ensure AciProvider satisfies various provider interfaces.
 var _ provider.Provider = &AciProvider{}
 var _ provider.ProviderWithFunctions = &AciProvider{}
+var _ provider.ProviderWithListResources = (*AciProvider)(nil)
 
 // Struct model for identity data handling
 type IdentityModel struct {
@@ -219,6 +221,110 @@ func (p *AciProvider) Configure(ctx context.Context, req provider.ConfigureReque
 
 	resp.DataSourceData = aciClient
 	resp.ResourceData = aciClient
+	resp.ListResourceData = aciClient
+}
+
+func (p *AciProvider) ListResources(ctx context.Context) []func() list.ListResource {
+	return []func() list.ListResource{
+		NewCommPolListResource,
+		NewDwdmIfPolListResource,
+		NewEigrpCtxAfPolListResource,
+		NewFhsBDPolListResource,
+		NewFhsTrustCtrlPolListResource,
+		NewFvAEPgListResource,
+		NewFvApListResource,
+		NewFvBDListResource,
+		NewFvCrtrnListResource,
+		NewFvCtxListResource,
+		NewFvDnsAttrListResource,
+		NewFvESgListResource,
+		NewFvEpIpTagListResource,
+		NewFvEpMacTagListResource,
+		NewFvFBRGroupListResource,
+		NewFvFBRMemberListResource,
+		NewFvFBRouteListResource,
+		NewFvFabricExtConnPListResource,
+		NewFvIdGroupAttrListResource,
+		NewFvIpAttrListResource,
+		NewFvMacAttrListResource,
+		NewFvRemoteIdListResource,
+		NewFvRogueExceptionMacListResource,
+		NewFvRsAepAttListResource,
+		NewFvRsBDToNetflowMonitorPolListResource,
+		NewFvRsBDToOutListResource,
+		NewFvRsConsListResource,
+		NewFvRsConsIfListResource,
+		NewFvRsCtxToBgpCtxAfPolListResource,
+		NewFvRsCtxToEigrpCtxAfPolListResource,
+		NewFvRsCtxToOspfCtxPolListResource,
+		NewFvRsDomAttListResource,
+		NewFvRsFcPathAttListResource,
+		NewFvRsIntraEpgListResource,
+		NewFvRsNodeAttListResource,
+		NewFvRsOtmListMemberListResource,
+		NewFvRsPathAttListResource,
+		NewFvRsProtByListResource,
+		NewFvRsProvListResource,
+		NewFvRsSecInheritedListResource,
+		NewFvSCrtrnListResource,
+		NewFvSiteAssociatedListResource,
+		NewFvTenantListResource,
+		NewFvTrackListListResource,
+		NewFvTrackMemberListResource,
+		NewFvVmAttrListResource,
+		NewIgmpSnoopPolListResource,
+		NewInfraAccPortPListResource,
+		NewInfraAttEntityPListResource,
+		NewInfraFexPListResource,
+		NewInfraHPathSListResource,
+		NewInfraHPortSListResource,
+		NewInfraPortBlkListResource,
+		NewInfraRsDomPListResource,
+		NewInfraSHPortSListResource,
+		NewInfraSpAccPortPListResource,
+		NewL3extConsLblListResource,
+		NewL3extInstPListResource,
+		NewL3extProvLblListResource,
+		NewL3extRsInstPToProfileListResource,
+		NewL3extRsLblToInstPListResource,
+		NewL3extRsLblToProfileListResource,
+		NewL3extRsOutToFBRGroupListResource,
+		NewL3extRsRedistributePolListResource,
+		NewLacpEnhancedLagPolListResource,
+		NewMgmtInstPListResource,
+		NewMgmtRsOoBConsListResource,
+		NewMgmtSubnetListResource,
+		NewMldSnoopPolListResource,
+		NewMplsNodeSidPListResource,
+		NewNdIfPolListResource,
+		NewNetflowExporterPolListResource,
+		NewNetflowMonitorPolListResource,
+		NewNetflowRecordPolListResource,
+		NewNetflowRsMonitorToExporterListResource,
+		NewPimRouteMapEntryListResource,
+		NewPimRouteMapPolListResource,
+		NewPkiKeyRingListResource,
+		NewPkiTPListResource,
+		NewQosCustomPolListResource,
+		NewQosDot1PClassListResource,
+		NewQosDppPolListResource,
+		NewQosDscpClassListResource,
+		NewRtctrlProfileListResource,
+		NewTagAnnotationListResource,
+		NewTagTagListResource,
+		NewVmmUplinkPListResource,
+		NewVmmUplinkPContListResource,
+		NewVmmUsrAccPListResource,
+		NewVnsLDevIfListResource,
+		NewVzAnyListResource,
+		NewVzOOBBrCPListResource,
+		NewVzRsAnyToConsListResource,
+		NewVzRsAnyToConsIfListResource,
+		NewVzRsAnyToProvListResource,
+		NewVzRsDenyRuleListResource,
+		NewVzTSubjListResource,
+		NewVzTabooListResource,
+	}
 }
 
 func (p *AciProvider) Resources(ctx context.Context) []func() resource.Resource {
