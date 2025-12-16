@@ -30,7 +30,7 @@ For more information about the usage see the official Hashicorp documentation fo
 
 ## Example Usage ##
 
-The configuration snippet below shows an example for Dot1p Classifier with only required attributes.
+The configuration snippet below shows an example for Dot1p Classifier with only required attributes. This snippet retrieves a list of all Dot1p Classifier objects.
 
 ```hcl
 list "aci_dot1p_classifier" "example" {

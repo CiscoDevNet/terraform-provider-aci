@@ -37,7 +37,7 @@ For more information about the usage see the official Hashicorp documentation fo
 
 ## Example Usage ##
 
-The configuration snippet below shows an example for Relation To Intra EPG Contract with only required attributes.
+The configuration snippet below shows an example for Relation To Intra EPG Contract with only required attributes. This snippet retrieves a list of all Relation To Intra EPG Contract objects.
 
 ```hcl
 list "aci_relation_to_intra_epg_contract" "example" {

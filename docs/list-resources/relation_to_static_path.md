@@ -30,7 +30,7 @@ For more information about the usage see the official Hashicorp documentation fo
 
 ## Example Usage ##
 
-The configuration snippet below shows an example for Relation To Static Path with only required attributes.
+The configuration snippet below shows an example for Relation To Static Path with only required attributes. This snippet retrieves a list of all Relation To Static Path objects.
 
 ```hcl
 list "aci_relation_to_static_path" "example" {

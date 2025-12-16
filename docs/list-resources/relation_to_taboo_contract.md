@@ -37,7 +37,7 @@ For more information about the usage see the official Hashicorp documentation fo
 
 ## Example Usage ##
 
-The configuration snippet below shows an example for Relation To Taboo Contract with only required attributes.
+The configuration snippet below shows an example for Relation To Taboo Contract with only required attributes. This snippet retrieves a list of all Relation To Taboo Contract objects.
 
 ```hcl
 list "aci_relation_to_taboo_contract" "example" {

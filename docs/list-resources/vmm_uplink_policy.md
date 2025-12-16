@@ -30,7 +30,7 @@ For more information about the usage see the official Hashicorp documentation fo
 
 ## Example Usage ##
 
-The configuration snippet below shows an example for VMM Uplink Policy with only required attributes.
+The configuration snippet below shows an example for VMM Uplink Policy with only required attributes. This snippet retrieves a list of all VMM Uplink Policy objects.
 
 ```hcl
 list "aci_vmm_uplink_policy" "example" {

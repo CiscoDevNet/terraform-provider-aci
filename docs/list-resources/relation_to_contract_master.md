@@ -39,7 +39,7 @@ For more information about the usage see the official Hashicorp documentation fo
 
 ## Example Usage ##
 
-The configuration snippet below shows an example for Relation To Contract Master with only required attributes.
+The configuration snippet below shows an example for Relation To Contract Master with only required attributes. This snippet retrieves a list of all Relation To Contract Master objects.
 
 ```hcl
 list "aci_relation_to_contract_master" "example" {

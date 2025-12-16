@@ -30,7 +30,7 @@ For more information about the usage see the official Hashicorp documentation fo
 
 ## Example Usage ##
 
-The configuration snippet below shows an example for Relation From Application EPG To Attachable Access Entity Profile with only required attributes.
+The configuration snippet below shows an example for Relation From Application EPG To Attachable Access Entity Profile with only required attributes. This snippet retrieves a list of all Relation From Application EPG To Attachable Access Entity Profile objects.
 
 ```hcl
 list "aci_relation_from_application_epg_to_attachable_access_entity_profile" "example" {

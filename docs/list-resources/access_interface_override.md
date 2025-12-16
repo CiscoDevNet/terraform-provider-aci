@@ -32,7 +32,7 @@ For more information about the usage see the official Hashicorp documentation fo
 
 ## Example Usage ##
 
-The configuration snippet below shows an example for Access Interface Override with only required attributes.
+The configuration snippet below shows an example for Access Interface Override with only required attributes. This snippet retrieves a list of all Access Interface Override objects.
 
 ```hcl
 list "aci_access_interface_override" "example" {

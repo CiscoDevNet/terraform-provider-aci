@@ -30,7 +30,7 @@ For more information about the usage see the official Hashicorp documentation fo
 
 ## Example Usage ##
 
-The configuration snippet below shows an example for Neighbor Discovery Interface Policy with only required attributes.
+The configuration snippet below shows an example for Neighbor Discovery Interface Policy with only required attributes. This snippet retrieves a list of all Neighbor Discovery Interface Policy objects.
 
 ```hcl
 list "aci_neighbor_discovery_interface_policy" "example" {

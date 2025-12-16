@@ -30,7 +30,7 @@ For more information about the usage see the official Hashicorp documentation fo
 
 ## Example Usage ##
 
-The configuration snippet below shows an example for Relation To IP SLA Track Member with only required attributes.
+The configuration snippet below shows an example for Relation To IP SLA Track Member with only required attributes. This snippet retrieves a list of all Relation To IP SLA Track Member objects.
 
 ```hcl
 list "aci_relation_to_ip_sla_track_member" "example" {

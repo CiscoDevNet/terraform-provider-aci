@@ -30,7 +30,7 @@ For more information about the usage see the official Hashicorp documentation fo
 
 ## Example Usage ##
 
-The configuration snippet below shows an example for Out Of Band Contract with only required attributes.
+The configuration snippet below shows an example for Out Of Band Contract with only required attributes. This snippet retrieves a list of all Out Of Band Contract objects.
 
 ```hcl
 list "aci_out_of_band_contract" "example" {

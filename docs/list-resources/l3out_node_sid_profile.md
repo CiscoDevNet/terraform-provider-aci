@@ -30,7 +30,7 @@ For more information about the usage see the official Hashicorp documentation fo
 
 ## Example Usage ##
 
-The configuration snippet below shows an example for L3Out Node SR-MPLS Segment ID Profile with only required attributes.
+The configuration snippet below shows an example for L3Out Node SR-MPLS Segment ID Profile with only required attributes. This snippet retrieves a list of all L3Out Node SR-MPLS Segment ID Profile objects.
 
 ```hcl
 list "aci_l3out_node_sid_profile" "example" {

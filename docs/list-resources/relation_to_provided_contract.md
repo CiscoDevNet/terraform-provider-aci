@@ -39,7 +39,7 @@ For more information about the usage see the official Hashicorp documentation fo
 
 ## Example Usage ##
 
-The configuration snippet below shows an example for Relation To Provided Contract with only required attributes.
+The configuration snippet below shows an example for Relation To Provided Contract with only required attributes. This snippet retrieves a list of all Relation To Provided Contract objects.
 
 ```hcl
 list "aci_relation_to_provided_contract" "example" {

@@ -33,7 +33,7 @@ For more information about the usage see the official Hashicorp documentation fo
 
 ## Example Usage ##
 
-The configuration snippet below shows an example for Access Port Block with only required attributes.
+The configuration snippet below shows an example for Access Port Block with only required attributes. This snippet retrieves a list of all Access Port Block objects.
 
 ```hcl
 list "aci_access_port_block" "example" {

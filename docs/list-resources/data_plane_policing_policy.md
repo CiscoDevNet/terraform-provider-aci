@@ -32,7 +32,7 @@ For more information about the usage see the official Hashicorp documentation fo
 
 ## Example Usage ##
 
-The configuration snippet below shows an example for Data Plane Policing Policy with only required attributes.
+The configuration snippet below shows an example for Data Plane Policing Policy with only required attributes. This snippet retrieves a list of all Data Plane Policing Policy objects.
 
 ```hcl
 list "aci_data_plane_policing_policy" "example" {

@@ -30,7 +30,7 @@ For more information about the usage see the official Hashicorp documentation fo
 
 ## Example Usage ##
 
-The configuration snippet below shows an example for Relation From Any To Provider Contract with only required attributes.
+The configuration snippet below shows an example for Relation From Any To Provider Contract with only required attributes. This snippet retrieves a list of all Relation From Any To Provider Contract objects.
 
 ```hcl
 list "aci_relation_from_any_to_provider_contract" "example" {

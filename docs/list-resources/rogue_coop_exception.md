@@ -30,7 +30,7 @@ For more information about the usage see the official Hashicorp documentation fo
 
 ## Example Usage ##
 
-The configuration snippet below shows an example for Rogue Coop Exception with only required attributes.
+The configuration snippet below shows an example for Rogue Coop Exception with only required attributes. This snippet retrieves a list of all Rogue Coop Exception objects.
 
 ```hcl
 list "aci_rogue_coop_exception" "example" {

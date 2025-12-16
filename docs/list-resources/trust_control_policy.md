@@ -30,7 +30,7 @@ For more information about the usage see the official Hashicorp documentation fo
 
 ## Example Usage ##
 
-The configuration snippet below shows an example for Trust Control Policy with only required attributes.
+The configuration snippet below shows an example for Trust Control Policy with only required attributes. This snippet retrieves a list of all Trust Control Policy objects.
 
 ```hcl
 list "aci_trust_control_policy" "example" {

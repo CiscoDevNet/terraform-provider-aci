@@ -30,7 +30,7 @@ For more information about the usage see the official Hashicorp documentation fo
 
 ## Example Usage ##
 
-The configuration snippet below shows an example for Relation From VRF To EIGRP Address Family Context with only required attributes.
+The configuration snippet below shows an example for Relation From VRF To EIGRP Address Family Context with only required attributes. This snippet retrieves a list of all Relation From VRF To EIGRP Address Family Context objects.
 
 ```hcl
 list "aci_relation_from_vrf_to_eigrp_address_family_context" "example" {

@@ -30,7 +30,7 @@ For more information about the usage see the official Hashicorp documentation fo
 
 ## Example Usage ##
 
-The configuration snippet below shows an example for EIGRP Address Family Context with only required attributes.
+The configuration snippet below shows an example for EIGRP Address Family Context with only required attributes. This snippet retrieves a list of all EIGRP Address Family Context objects.
 
 ```hcl
 list "aci_eigrp_address_family_context" "example" {

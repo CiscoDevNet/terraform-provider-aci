@@ -34,7 +34,7 @@ For more information about the usage see the official Hashicorp documentation fo
 
 ## Example Usage ##
 
-The configuration snippet below shows an example for Certificate Authority with only required attributes.
+The configuration snippet below shows an example for Certificate Authority with only required attributes. This snippet retrieves a list of all Certificate Authority objects.
 
 ```hcl
 list "aci_certificate_authority" "example" {

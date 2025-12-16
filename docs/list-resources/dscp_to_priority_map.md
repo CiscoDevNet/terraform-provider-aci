@@ -30,7 +30,7 @@ For more information about the usage see the official Hashicorp documentation fo
 
 ## Example Usage ##
 
-The configuration snippet below shows an example for DSCP to Priority Map with only required attributes.
+The configuration snippet below shows an example for DSCP to Priority Map with only required attributes. This snippet retrieves a list of all DSCP to Priority Map objects.
 
 ```hcl
 list "aci_dscp_to_priority_map" "example" {

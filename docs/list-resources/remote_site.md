@@ -35,7 +35,7 @@ For more information about the usage see the official Hashicorp documentation fo
 
 ## Example Usage ##
 
-The configuration snippet below shows an example for Remote Site with only required attributes.
+The configuration snippet below shows an example for Remote Site with only required attributes. This snippet retrieves a list of all Remote Site objects.
 
 ```hcl
 list "aci_remote_site" "example" {

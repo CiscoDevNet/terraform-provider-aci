@@ -33,7 +33,7 @@ For more information about the usage see the official Hashicorp documentation fo
 
 ## Example Usage ##
 
-The configuration snippet below shows an example for Relation From Bridge Domain To NetFlow Monitor Policy with only required attributes.
+The configuration snippet below shows an example for Relation From Bridge Domain To NetFlow Monitor Policy with only required attributes. This snippet retrieves a list of all Relation From Bridge Domain To NetFlow Monitor Policy objects.
 
 ```hcl
 list "aci_relation_from_bridge_domain_to_netflow_monitor_policy" "example" {

@@ -30,7 +30,7 @@ For more information about the usage see the official Hashicorp documentation fo
 
 ## Example Usage ##
 
-The configuration snippet below shows an example for First Hop Security Policy with only required attributes.
+The configuration snippet below shows an example for First Hop Security Policy with only required attributes. This snippet retrieves a list of all First Hop Security Policy objects.
 
 ```hcl
 list "aci_first_hop_security_policy" "example" {

@@ -30,7 +30,7 @@ For more information about the usage see the official Hashicorp documentation fo
 
 ## Example Usage ##
 
-The configuration snippet below shows an example for Relation From L3Out Consumer Label To Route Control Profile with only required attributes.
+The configuration snippet below shows an example for Relation From L3Out Consumer Label To Route Control Profile with only required attributes. This snippet retrieves a list of all Relation From L3Out Consumer Label To Route Control Profile objects.
 
 ```hcl
 list "aci_relation_from_l3out_consumer_label_to_route_control_profile" "example" {

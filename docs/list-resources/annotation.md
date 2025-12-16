@@ -36,7 +36,7 @@ For more information about the usage see the official Hashicorp documentation fo
 
 ## Example Usage ##
 
-The configuration snippet below shows an example for Annotation with only required attributes.
+The configuration snippet below shows an example for Annotation with only required attributes. This snippet retrieves a list of all Annotation objects.
 
 ```hcl
 list "aci_annotation" "example" {

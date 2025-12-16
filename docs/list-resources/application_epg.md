@@ -30,7 +30,7 @@ For more information about the usage see the official Hashicorp documentation fo
 
 ## Example Usage ##
 
-The configuration snippet below shows an example for Application EPG with only required attributes.
+The configuration snippet below shows an example for Application EPG with only required attributes. This snippet retrieves a list of all Application EPG objects.
 
 ```hcl
 list "aci_application_epg" "example" {

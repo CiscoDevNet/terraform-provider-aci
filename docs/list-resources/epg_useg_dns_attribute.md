@@ -30,7 +30,7 @@ For more information about the usage see the official Hashicorp documentation fo
 
 ## Example Usage ##
 
-The configuration snippet below shows an example for EPG uSeg DNS Attribute with only required attributes.
+The configuration snippet below shows an example for EPG uSeg DNS Attribute with only required attributes. This snippet retrieves a list of all EPG uSeg DNS Attribute objects.
 
 ```hcl
 list "aci_epg_useg_dns_attribute" "example" {
