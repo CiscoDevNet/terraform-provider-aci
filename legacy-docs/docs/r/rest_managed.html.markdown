@@ -191,7 +191,7 @@ Importing an object using its distinguished name (DN) with a JSON string:
 
 ```
 import {
-  id = `{ "parentDn": "uni/tn-{name}" }`
+  id = "{\"parentDn\": \"uni/tn-{name}\"}"
   to = aci_rest_managed.example_tenant
 }
 ```
@@ -200,7 +200,16 @@ Importing a parent object using its distinguished name (DN) and child objects us
 
 ```
 import {
-  id = `{ "parentDn": "uni/tn-{name}", "childRns": ["rsTenantMonPol", "annotationKey-[{key}]", "{child-n}"] }`
+  id = <<EOT
+    {
+      "parentDn": "uni/tn-{name}",
+      "childRns": [
+        "rsTenantMonPol",
+        "annotationKey-[{key}]",
+        "{child-n}"
+      ]
+    }
+  EOT
   to = aci_rest_managed.example_tenant
 }
 ```
