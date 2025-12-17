@@ -8,6 +8,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
@@ -422,7 +423,8 @@ func (r *FvRsIntraEpgResource) ImportState(ctx context.Context, req resource.Imp
 }
 
 func getAndSetFvRsIntraEpgAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FvRsIntraEpgResourceModel) {
-	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "fvRsIntraEpg,tagAnnotation,tagTag"), "GET", nil)
+	childClasses := getChildClassesForGetRequest([]string{"tagAnnotation", "tagTag"})
+	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), strings.Join(childClasses, ",")), "GET", nil)
 
 	readData := getEmptyFvRsIntraEpgResourceModel()
 

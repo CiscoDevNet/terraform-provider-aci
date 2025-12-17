@@ -37,22 +37,22 @@ children:
       target: "AF11"
       target_cos: "0"
       to: "0"
-      
+      child_versions: 1.0(1e)-
       children:
         annotations:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
         tags:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
     - annotation: "annotation_2"
       description: "description_2"
       from: "1"
@@ -62,22 +62,22 @@ children:
       target: "AF12"
       target_cos: "1"
       to: "1"
-      
+      child_versions: 1.0(1e)-
       children:
         annotations:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
         tags:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
   dscp_to_priority_maps:
     - annotation: "annotation_1"
       description: "description_1"
@@ -88,22 +88,22 @@ children:
       target: "AF11"
       target_cos: "0"
       to: "AF11"
-      
+      child_versions: 1.0(1e)-
       children:
         annotations:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
         tags:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
     - annotation: "annotation_2"
       description: "description_2"
       from: "AF12"
@@ -113,36 +113,36 @@ children:
       target: "AF12"
       target_cos: "1"
       to: "AF12"
-      
+      child_versions: 1.0(1e)-
       children:
         annotations:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
         tags:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
   annotations:
     - key: "key_0"
       value: "value_1"
-      
+      child_versions: 3.2(1l)-
     - key: "key_1"
       value: "test_value"
-      
+      child_versions: 3.2(1l)-
   tags:
     - key: "key_0"
       value: "value_1"
-      
+      child_versions: 3.2(1l)-
     - key: "key_1"
       value: "test_value"
-      
+      child_versions: 3.2(1l)-
 parents:
   - class_name: "fvTenant"
     parent_dependency: ""

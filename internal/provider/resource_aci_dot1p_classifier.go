@@ -8,6 +8,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/validators"
@@ -539,7 +540,8 @@ func (r *QosDot1PClassResource) ImportState(ctx context.Context, req resource.Im
 }
 
 func getAndSetQosDot1PClassAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *QosDot1PClassResourceModel) {
-	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "qosDot1PClass,tagAnnotation,tagTag"), "GET", nil)
+	childClasses := getChildClassesForGetRequest([]string{"tagAnnotation", "tagTag"})
+	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), strings.Join(childClasses, ",")), "GET", nil)
 
 	readData := getEmptyQosDot1PClassResourceModel()
 

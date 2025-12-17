@@ -19,7 +19,7 @@ func TestAccResourceFvRsFcPathAttWithFvAEPg(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigFvRsFcPathAttMinDependencyWithFvAEPgAllowExisting,
+				Config:             testConfigFvRsFcPathAttMinDependencyWithFvAEPgAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_fibre_channel_path.allow_test", "target_dn", "topology/pod-1/paths-101/pathep-[eth1/1]"),
@@ -44,7 +44,7 @@ func TestAccResourceFvRsFcPathAttWithFvAEPg(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:      testConfigFvRsFcPathAttMinDependencyWithFvAEPgAllowExisting,
+				Config:      testConfigFvRsFcPathAttMinDependencyWithFvAEPgAllowExisting + testConfigDataSourceSystem,
 				ExpectError: regexp.MustCompile("Object Already Exists"),
 			},
 		},
@@ -57,7 +57,7 @@ func TestAccResourceFvRsFcPathAttWithFvAEPg(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigFvRsFcPathAttMinDependencyWithFvAEPgAllowExisting,
+				Config:             testConfigFvRsFcPathAttMinDependencyWithFvAEPgAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_fibre_channel_path.allow_test", "target_dn", "topology/pod-1/paths-101/pathep-[eth1/1]"),
@@ -81,7 +81,7 @@ func TestAccResourceFvRsFcPathAttWithFvAEPg(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigFvRsFcPathAttMinDependencyWithFvAEPg,
+				Config:             testConfigFvRsFcPathAttMinDependencyWithFvAEPg + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_fibre_channel_path.test", "target_dn", "topology/pod-1/paths-101/pathep-[eth1/1]"),
@@ -93,7 +93,7 @@ func TestAccResourceFvRsFcPathAttWithFvAEPg(t *testing.T) {
 			},
 			// Update with all config and verify default APIC values
 			{
-				Config:             testConfigFvRsFcPathAttAllDependencyWithFvAEPg,
+				Config:             testConfigFvRsFcPathAttAllDependencyWithFvAEPg + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_fibre_channel_path.test", "target_dn", "topology/pod-1/paths-101/pathep-[eth1/1]"),
@@ -105,7 +105,7 @@ func TestAccResourceFvRsFcPathAttWithFvAEPg(t *testing.T) {
 			},
 			// Update with minimum config and verify config is unchanged
 			{
-				Config:             testConfigFvRsFcPathAttMinDependencyWithFvAEPg,
+				Config:             testConfigFvRsFcPathAttMinDependencyWithFvAEPg + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_fibre_channel_path.test", "target_dn", "topology/pod-1/paths-101/pathep-[eth1/1]"),
@@ -113,7 +113,7 @@ func TestAccResourceFvRsFcPathAttWithFvAEPg(t *testing.T) {
 			},
 			// Update with empty strings config or default value
 			{
-				Config:             testConfigFvRsFcPathAttResetDependencyWithFvAEPg,
+				Config:             testConfigFvRsFcPathAttResetDependencyWithFvAEPg + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_fibre_channel_path.test", "target_dn", "topology/pod-1/paths-101/pathep-[eth1/1]"),
@@ -131,7 +131,7 @@ func TestAccResourceFvRsFcPathAttWithFvAEPg(t *testing.T) {
 			},
 			// Update with children
 			{
-				Config:             testConfigFvRsFcPathAttChildrenDependencyWithFvAEPg,
+				Config:             testConfigFvRsFcPathAttChildrenDependencyWithFvAEPg + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_fibre_channel_path.test", "target_dn", "topology/pod-1/paths-101/pathep-[eth1/1]"),
@@ -139,14 +139,18 @@ func TestAccResourceFvRsFcPathAttWithFvAEPg(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_relation_to_fibre_channel_path.test", "description", ""),
 					resource.TestCheckResourceAttr("aci_relation_to_fibre_channel_path.test", "vsan", "unknown"),
 					resource.TestCheckResourceAttr("aci_relation_to_fibre_channel_path.test", "vsan_mode", "regular"),
-					resource.TestCheckResourceAttr("aci_relation_to_fibre_channel_path.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_to_fibre_channel_path.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_fibre_channel_path.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_fibre_channel_path.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_to_fibre_channel_path.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_to_fibre_channel_path.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_fibre_channel_path.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_fibre_channel_path.test", "tags.1.value", "test_value"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_to_fibre_channel_path.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_relation_to_fibre_channel_path.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_fibre_channel_path.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_fibre_channel_path.test", "annotations.1.value", "test_value"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_to_fibre_channel_path.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_relation_to_fibre_channel_path.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_fibre_channel_path.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_fibre_channel_path.test", "tags.1.value", "test_value"),
+					),
 				),
 			},
 			// Refresh State before import testing to ensure that the state is up to date
@@ -162,37 +166,45 @@ func TestAccResourceFvRsFcPathAttWithFvAEPg(t *testing.T) {
 			},
 			// Update with children removed from config
 			{
-				Config:             testConfigFvRsFcPathAttChildrenRemoveFromConfigDependencyWithFvAEPg,
+				Config:             testConfigFvRsFcPathAttChildrenRemoveFromConfigDependencyWithFvAEPg + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_to_fibre_channel_path.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_to_fibre_channel_path.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_fibre_channel_path.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_fibre_channel_path.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_to_fibre_channel_path.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_relation_to_fibre_channel_path.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_to_fibre_channel_path.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_fibre_channel_path.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_fibre_channel_path.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_to_fibre_channel_path.test", "tags.#", "2"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_to_fibre_channel_path.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_relation_to_fibre_channel_path.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_fibre_channel_path.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_fibre_channel_path.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_relation_to_fibre_channel_path.test", "annotations.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_to_fibre_channel_path.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_relation_to_fibre_channel_path.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_fibre_channel_path.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_fibre_channel_path.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_relation_to_fibre_channel_path.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children first child removed
 			{
-				Config:             testConfigFvRsFcPathAttChildrenRemoveOneDependencyWithFvAEPg,
+				Config:             testConfigFvRsFcPathAttChildrenRemoveOneDependencyWithFvAEPg + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_to_fibre_channel_path.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_fibre_channel_path.test", "annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_to_fibre_channel_path.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_relation_to_fibre_channel_path.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_fibre_channel_path.test", "tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_to_fibre_channel_path.test", "tags.#", "1"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_to_fibre_channel_path.test", "annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_fibre_channel_path.test", "annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_relation_to_fibre_channel_path.test", "annotations.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_to_fibre_channel_path.test", "tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_fibre_channel_path.test", "tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_relation_to_fibre_channel_path.test", "tags.#", "1"),
+					),
 				),
 			},
 			// Update with all children removed
 			{
-				Config:             testConfigFvRsFcPathAttChildrenRemoveAllDependencyWithFvAEPg,
+				Config:             testConfigFvRsFcPathAttChildrenRemoveAllDependencyWithFvAEPg + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_fibre_channel_path.test", "annotations.#", "0"),
@@ -251,7 +263,7 @@ const testConfigFvRsFcPathAttChildrenDependencyWithFvAEPg = testDependencyConfig
 resource "aci_relation_to_fibre_channel_path" "test" {
   parent_dn = aci_application_epg.test.id
   target_dn = "topology/pod-1/paths-101/pathep-[eth1/1]"
-  annotations = [
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -260,8 +272,8 @@ resource "aci_relation_to_fibre_channel_path" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
-  tags = [
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -270,7 +282,7 @@ resource "aci_relation_to_fibre_channel_path" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
+  ] : null
 }
 `
 
@@ -285,18 +297,18 @@ const testConfigFvRsFcPathAttChildrenRemoveOneDependencyWithFvAEPg = testDepende
 resource "aci_relation_to_fibre_channel_path" "test" {
   parent_dn = aci_application_epg.test.id
   target_dn = "topology/pod-1/paths-101/pathep-[eth1/1]"
-  annotations = [ 
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
-  tags = [ 
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
+  ] : null
 }
 `
 
@@ -304,7 +316,7 @@ const testConfigFvRsFcPathAttChildrenRemoveAllDependencyWithFvAEPg = testDepende
 resource "aci_relation_to_fibre_channel_path" "test" {
   parent_dn = aci_application_epg.test.id
   target_dn = "topology/pod-1/paths-101/pathep-[eth1/1]"
-  annotations = []
-  tags = []
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
 }
 `

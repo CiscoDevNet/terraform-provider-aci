@@ -22,7 +22,7 @@ func TestAccResourceInfraPortBlkWithInfraHPortS(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigInfraPortBlkMinDependencyWithInfraHPortSAllowExisting,
+				Config:             testConfigInfraPortBlkMinDependencyWithInfraHPortSAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_access_port_block.allow_test", "name", "test_name"),
@@ -53,7 +53,7 @@ func TestAccResourceInfraPortBlkWithInfraHPortS(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:      testConfigInfraPortBlkMinDependencyWithInfraHPortSAllowExisting,
+				Config:      testConfigInfraPortBlkMinDependencyWithInfraHPortSAllowExisting + testConfigDataSourceSystem,
 				ExpectError: regexp.MustCompile("Object Already Exists"),
 			},
 		},
@@ -66,7 +66,7 @@ func TestAccResourceInfraPortBlkWithInfraHPortS(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigInfraPortBlkMinDependencyWithInfraHPortSAllowExisting,
+				Config:             testConfigInfraPortBlkMinDependencyWithInfraHPortSAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_access_port_block.allow_test", "name", "test_name"),
@@ -96,7 +96,7 @@ func TestAccResourceInfraPortBlkWithInfraHPortS(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigInfraPortBlkMinDependencyWithInfraHPortS,
+				Config:             testConfigInfraPortBlkMinDependencyWithInfraHPortS + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_access_port_block.test", "name", "test_name"),
@@ -111,7 +111,7 @@ func TestAccResourceInfraPortBlkWithInfraHPortS(t *testing.T) {
 			},
 			// Update with all config and verify default APIC values
 			{
-				Config:             testConfigInfraPortBlkAllDependencyWithInfraHPortS,
+				Config:             testConfigInfraPortBlkAllDependencyWithInfraHPortS + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_access_port_block.test", "name", "test_name"),
@@ -126,7 +126,7 @@ func TestAccResourceInfraPortBlkWithInfraHPortS(t *testing.T) {
 			},
 			// Update with minimum config and verify config is unchanged
 			{
-				Config:             testConfigInfraPortBlkMinDependencyWithInfraHPortS,
+				Config:             testConfigInfraPortBlkMinDependencyWithInfraHPortS + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_access_port_block.test", "name", "test_name"),
@@ -134,7 +134,7 @@ func TestAccResourceInfraPortBlkWithInfraHPortS(t *testing.T) {
 			},
 			// Update with empty strings config or default value
 			{
-				Config:             testConfigInfraPortBlkResetDependencyWithInfraHPortS,
+				Config:             testConfigInfraPortBlkResetDependencyWithInfraHPortS + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_access_port_block.test", "name", "test_name"),
@@ -155,7 +155,7 @@ func TestAccResourceInfraPortBlkWithInfraHPortS(t *testing.T) {
 			},
 			// Update with children
 			{
-				Config:             testConfigInfraPortBlkChildrenDependencyWithInfraHPortS,
+				Config:             testConfigInfraPortBlkChildrenDependencyWithInfraHPortS + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_access_port_block.test", "name", "test_name"),
@@ -166,16 +166,22 @@ func TestAccResourceInfraPortBlkWithInfraHPortS(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_access_port_block.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_access_port_block.test", "to_card", "1"),
 					resource.TestCheckResourceAttr("aci_access_port_block.test", "to_port", "1"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "relation_to_pc_vpc_override_policy.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "relation_to_pc_vpc_override_policy.target_dn", ""),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "tags.1.value", "test_value"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "annotations.1.value", "test_value"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "relation_to_pc_vpc_override_policy.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "relation_to_pc_vpc_override_policy.target_dn", ""),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "tags.1.value", "test_value"),
+					),
 				),
 			},
 			// Refresh State before import testing to ensure that the state is up to date
@@ -191,44 +197,55 @@ func TestAccResourceInfraPortBlkWithInfraHPortS(t *testing.T) {
 			},
 			// Update with children removed from config
 			{
-				Config:             testConfigInfraPortBlkChildrenRemoveFromConfigDependencyWithInfraHPortS,
+				Config:             testConfigInfraPortBlkChildrenRemoveFromConfigDependencyWithInfraHPortS + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "relation_to_pc_vpc_override_policy.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "relation_to_pc_vpc_override_policy.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "relation_to_pc_vpc_override_policy.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "relation_to_pc_vpc_override_policy.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "relation_to_pc_vpc_override_policy.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "relation_to_pc_vpc_override_policy.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "relation_to_pc_vpc_override_policy.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "relation_to_pc_vpc_override_policy.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "relation_to_pc_vpc_override_policy.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "relation_to_pc_vpc_override_policy.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "relation_to_pc_vpc_override_policy.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "relation_to_pc_vpc_override_policy.target_dn", ""),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "tags.#", "2"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "annotations.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "relation_to_pc_vpc_override_policy.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "relation_to_pc_vpc_override_policy.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "relation_to_pc_vpc_override_policy.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "relation_to_pc_vpc_override_policy.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "relation_to_pc_vpc_override_policy.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "relation_to_pc_vpc_override_policy.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "relation_to_pc_vpc_override_policy.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "relation_to_pc_vpc_override_policy.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "relation_to_pc_vpc_override_policy.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "relation_to_pc_vpc_override_policy.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "relation_to_pc_vpc_override_policy.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "relation_to_pc_vpc_override_policy.target_dn", ""),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children first child removed
 			{
-				Config:             testConfigInfraPortBlkChildrenRemoveOneDependencyWithInfraHPortS,
+				Config:             testConfigInfraPortBlkChildrenRemoveOneDependencyWithInfraHPortS + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "tags.#", "1"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "annotations.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "tags.#", "1"),
+					),
 				),
 				ConfigStateChecks: []statecheck.StateCheck{
 					statecheck.ExpectKnownValue("aci_access_port_block.test",
@@ -246,7 +263,7 @@ func TestAccResourceInfraPortBlkWithInfraHPortS(t *testing.T) {
 			},
 			// Update with all children removed
 			{
-				Config:             testConfigInfraPortBlkChildrenRemoveAllDependencyWithInfraHPortS,
+				Config:             testConfigInfraPortBlkChildrenRemoveAllDependencyWithInfraHPortS + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_access_port_block.test", "annotations.#", "0"),
@@ -268,7 +285,7 @@ func TestAccResourceInfraPortBlkWithInfraHPortS(t *testing.T) {
 			},
 			// Update with legacy attribute config
 			{
-				Config:             testConfigInfraPortBlkLegacyAttributesWithInfraHPortS,
+				Config:             testConfigInfraPortBlkLegacyAttributesWithInfraHPortS + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 			},
 		},
@@ -280,7 +297,7 @@ func TestAccResourceInfraPortBlkWithInfraHPortS(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with legacy attribute config
 			{
-				Config:             testConfigInfraPortBlkLegacyAttributesWithInfraHPortS,
+				Config:             testConfigInfraPortBlkLegacyAttributesWithInfraHPortS + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 			},
 		},
@@ -295,7 +312,7 @@ func TestAccResourceInfraPortBlkWithInfraSHPortS(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigInfraPortBlkMinDependencyWithInfraSHPortSAllowExisting,
+				Config:             testConfigInfraPortBlkMinDependencyWithInfraSHPortSAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_access_port_block.allow_test", "name", "test_name"),
@@ -326,7 +343,7 @@ func TestAccResourceInfraPortBlkWithInfraSHPortS(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:      testConfigInfraPortBlkMinDependencyWithInfraSHPortSAllowExisting,
+				Config:      testConfigInfraPortBlkMinDependencyWithInfraSHPortSAllowExisting + testConfigDataSourceSystem,
 				ExpectError: regexp.MustCompile("Object Already Exists"),
 			},
 		},
@@ -339,7 +356,7 @@ func TestAccResourceInfraPortBlkWithInfraSHPortS(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigInfraPortBlkMinDependencyWithInfraSHPortSAllowExisting,
+				Config:             testConfigInfraPortBlkMinDependencyWithInfraSHPortSAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_access_port_block.allow_test", "name", "test_name"),
@@ -369,7 +386,7 @@ func TestAccResourceInfraPortBlkWithInfraSHPortS(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigInfraPortBlkMinDependencyWithInfraSHPortS,
+				Config:             testConfigInfraPortBlkMinDependencyWithInfraSHPortS + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_access_port_block.test", "name", "test_name"),
@@ -384,7 +401,7 @@ func TestAccResourceInfraPortBlkWithInfraSHPortS(t *testing.T) {
 			},
 			// Update with all config and verify default APIC values
 			{
-				Config:             testConfigInfraPortBlkAllDependencyWithInfraSHPortS,
+				Config:             testConfigInfraPortBlkAllDependencyWithInfraSHPortS + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_access_port_block.test", "name", "test_name"),
@@ -399,7 +416,7 @@ func TestAccResourceInfraPortBlkWithInfraSHPortS(t *testing.T) {
 			},
 			// Update with minimum config and verify config is unchanged
 			{
-				Config:             testConfigInfraPortBlkMinDependencyWithInfraSHPortS,
+				Config:             testConfigInfraPortBlkMinDependencyWithInfraSHPortS + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_access_port_block.test", "name", "test_name"),
@@ -407,7 +424,7 @@ func TestAccResourceInfraPortBlkWithInfraSHPortS(t *testing.T) {
 			},
 			// Update with empty strings config or default value
 			{
-				Config:             testConfigInfraPortBlkResetDependencyWithInfraSHPortS,
+				Config:             testConfigInfraPortBlkResetDependencyWithInfraSHPortS + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_access_port_block.test", "name", "test_name"),
@@ -428,7 +445,7 @@ func TestAccResourceInfraPortBlkWithInfraSHPortS(t *testing.T) {
 			},
 			// Update with children
 			{
-				Config:             testConfigInfraPortBlkChildrenDependencyWithInfraSHPortS,
+				Config:             testConfigInfraPortBlkChildrenDependencyWithInfraSHPortS + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_access_port_block.test", "name", "test_name"),
@@ -439,16 +456,22 @@ func TestAccResourceInfraPortBlkWithInfraSHPortS(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_access_port_block.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_access_port_block.test", "to_card", "1"),
 					resource.TestCheckResourceAttr("aci_access_port_block.test", "to_port", "1"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "relation_to_pc_vpc_override_policy.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "relation_to_pc_vpc_override_policy.target_dn", ""),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "tags.1.value", "test_value"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "annotations.1.value", "test_value"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "relation_to_pc_vpc_override_policy.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "relation_to_pc_vpc_override_policy.target_dn", ""),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "tags.1.value", "test_value"),
+					),
 				),
 			},
 			// Refresh State before import testing to ensure that the state is up to date
@@ -464,44 +487,55 @@ func TestAccResourceInfraPortBlkWithInfraSHPortS(t *testing.T) {
 			},
 			// Update with children removed from config
 			{
-				Config:             testConfigInfraPortBlkChildrenRemoveFromConfigDependencyWithInfraSHPortS,
+				Config:             testConfigInfraPortBlkChildrenRemoveFromConfigDependencyWithInfraSHPortS + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "relation_to_pc_vpc_override_policy.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "relation_to_pc_vpc_override_policy.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "relation_to_pc_vpc_override_policy.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "relation_to_pc_vpc_override_policy.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "relation_to_pc_vpc_override_policy.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "relation_to_pc_vpc_override_policy.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "relation_to_pc_vpc_override_policy.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "relation_to_pc_vpc_override_policy.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "relation_to_pc_vpc_override_policy.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "relation_to_pc_vpc_override_policy.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "relation_to_pc_vpc_override_policy.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "relation_to_pc_vpc_override_policy.target_dn", ""),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "tags.#", "2"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "annotations.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "relation_to_pc_vpc_override_policy.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "relation_to_pc_vpc_override_policy.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "relation_to_pc_vpc_override_policy.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "relation_to_pc_vpc_override_policy.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "relation_to_pc_vpc_override_policy.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "relation_to_pc_vpc_override_policy.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "relation_to_pc_vpc_override_policy.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "relation_to_pc_vpc_override_policy.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "relation_to_pc_vpc_override_policy.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "relation_to_pc_vpc_override_policy.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "relation_to_pc_vpc_override_policy.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "relation_to_pc_vpc_override_policy.target_dn", ""),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children first child removed
 			{
-				Config:             testConfigInfraPortBlkChildrenRemoveOneDependencyWithInfraSHPortS,
+				Config:             testConfigInfraPortBlkChildrenRemoveOneDependencyWithInfraSHPortS + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_access_port_block.test", "tags.#", "1"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "annotations.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_access_port_block.test", "tags.#", "1"),
+					),
 				),
 				ConfigStateChecks: []statecheck.StateCheck{
 					statecheck.ExpectKnownValue("aci_access_port_block.test",
@@ -519,7 +553,7 @@ func TestAccResourceInfraPortBlkWithInfraSHPortS(t *testing.T) {
 			},
 			// Update with all children removed
 			{
-				Config:             testConfigInfraPortBlkChildrenRemoveAllDependencyWithInfraSHPortS,
+				Config:             testConfigInfraPortBlkChildrenRemoveAllDependencyWithInfraSHPortS + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_access_port_block.test", "annotations.#", "0"),
@@ -541,7 +575,7 @@ func TestAccResourceInfraPortBlkWithInfraSHPortS(t *testing.T) {
 			},
 			// Update with legacy attribute config
 			{
-				Config:             testConfigInfraPortBlkLegacyAttributesWithInfraSHPortS,
+				Config:             testConfigInfraPortBlkLegacyAttributesWithInfraSHPortS + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 			},
 		},
@@ -553,7 +587,7 @@ func TestAccResourceInfraPortBlkWithInfraSHPortS(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with legacy attribute config
 			{
-				Config:             testConfigInfraPortBlkLegacyAttributesWithInfraSHPortS,
+				Config:             testConfigInfraPortBlkLegacyAttributesWithInfraSHPortS + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 			},
 		},
@@ -611,7 +645,7 @@ const testConfigInfraPortBlkChildrenDependencyWithInfraHPortS = testConfigInfraH
 resource "aci_access_port_block" "test" {
   parent_dn = aci_access_port_selector.test.id
   name = "test_name"
-  annotations = [
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -620,8 +654,8 @@ resource "aci_access_port_block" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
-  relation_to_pc_vpc_override_policy = {
+  ] : null
+  relation_to_pc_vpc_override_policy = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? {
     annotation = "annotation_1"
     annotations = [
 	  {
@@ -644,8 +678,8 @@ resource "aci_access_port_block" "test" {
 	  },
     ]
     target_dn = ""
-  }
-  tags = [
+  } : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -654,7 +688,7 @@ resource "aci_access_port_block" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
+  ] : null
 }
 `
 
@@ -669,19 +703,19 @@ const testConfigInfraPortBlkChildrenRemoveOneDependencyWithInfraHPortS = testCon
 resource "aci_access_port_block" "test" {
   parent_dn = aci_access_port_selector.test.id
   name = "test_name"
-  annotations = [ 
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
-  relation_to_pc_vpc_override_policy = {}
-  tags = [ 
+  ] : null
+  relation_to_pc_vpc_override_policy = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? {} : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
+  ] : null
 }
 `
 
@@ -689,9 +723,9 @@ const testConfigInfraPortBlkChildrenRemoveAllDependencyWithInfraHPortS = testCon
 resource "aci_access_port_block" "test" {
   parent_dn = aci_access_port_selector.test.id
   name = "test_name"
-  annotations = []
-  relation_to_pc_vpc_override_policy = {}
-  tags = []
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
+  relation_to_pc_vpc_override_policy = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? {} : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
 }
 `
 
@@ -699,7 +733,7 @@ const testConfigInfraPortBlkLegacyAttributesWithInfraHPortS = testConfigInfraHPo
 resource "aci_access_port_block" "test" {
   name = "test_name"
   access_port_selector_dn = aci_access_port_selector.test.id
-  relation_infra_rs_acc_bndl_subgrp = ""
+  relation_infra_rs_acc_bndl_subgrp = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? "" : null
 }
 `
 
@@ -753,7 +787,7 @@ const testConfigInfraPortBlkChildrenDependencyWithInfraSHPortS = testConfigInfra
 resource "aci_access_port_block" "test" {
   parent_dn = aci_spine_access_port_selector.test.id
   name = "test_name"
-  annotations = [
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -762,8 +796,8 @@ resource "aci_access_port_block" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
-  relation_to_pc_vpc_override_policy = {
+  ] : null
+  relation_to_pc_vpc_override_policy = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? {
     annotation = "annotation_1"
     annotations = [
 	  {
@@ -786,8 +820,8 @@ resource "aci_access_port_block" "test" {
 	  },
     ]
     target_dn = ""
-  }
-  tags = [
+  } : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -796,7 +830,7 @@ resource "aci_access_port_block" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
+  ] : null
 }
 `
 
@@ -811,19 +845,19 @@ const testConfigInfraPortBlkChildrenRemoveOneDependencyWithInfraSHPortS = testCo
 resource "aci_access_port_block" "test" {
   parent_dn = aci_spine_access_port_selector.test.id
   name = "test_name"
-  annotations = [ 
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
-  relation_to_pc_vpc_override_policy = {}
-  tags = [ 
+  ] : null
+  relation_to_pc_vpc_override_policy = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? {} : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
+  ] : null
 }
 `
 
@@ -831,9 +865,9 @@ const testConfigInfraPortBlkChildrenRemoveAllDependencyWithInfraSHPortS = testCo
 resource "aci_access_port_block" "test" {
   parent_dn = aci_spine_access_port_selector.test.id
   name = "test_name"
-  annotations = []
-  relation_to_pc_vpc_override_policy = {}
-  tags = []
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
+  relation_to_pc_vpc_override_policy = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? {} : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
 }
 `
 
@@ -841,6 +875,6 @@ const testConfigInfraPortBlkLegacyAttributesWithInfraSHPortS = testConfigInfraSH
 resource "aci_access_port_block" "test" {
   name = "test_name"
   access_port_selector_dn = aci_access_port_selector.test.id
-  relation_infra_rs_acc_bndl_subgrp = ""
+  relation_infra_rs_acc_bndl_subgrp = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? "" : null
 }
 `

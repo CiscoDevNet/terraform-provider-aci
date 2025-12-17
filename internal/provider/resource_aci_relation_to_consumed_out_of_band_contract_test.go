@@ -19,7 +19,7 @@ func TestAccResourceMgmtRsOoBConsWithMgmtInstP(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigMgmtRsOoBConsMinDependencyWithMgmtInstPAllowExisting,
+				Config:             testConfigMgmtRsOoBConsMinDependencyWithMgmtInstPAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.allow_test", "out_of_band_contract_name", "test_tn_vz_oob_br_cp_name"),
@@ -40,7 +40,7 @@ func TestAccResourceMgmtRsOoBConsWithMgmtInstP(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:      testConfigMgmtRsOoBConsMinDependencyWithMgmtInstPAllowExisting,
+				Config:      testConfigMgmtRsOoBConsMinDependencyWithMgmtInstPAllowExisting + testConfigDataSourceSystem,
 				ExpectError: regexp.MustCompile("Object Already Exists"),
 			},
 		},
@@ -53,7 +53,7 @@ func TestAccResourceMgmtRsOoBConsWithMgmtInstP(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigMgmtRsOoBConsMinDependencyWithMgmtInstPAllowExisting,
+				Config:             testConfigMgmtRsOoBConsMinDependencyWithMgmtInstPAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.allow_test", "out_of_band_contract_name", "test_tn_vz_oob_br_cp_name"),
@@ -73,7 +73,7 @@ func TestAccResourceMgmtRsOoBConsWithMgmtInstP(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigMgmtRsOoBConsMinDependencyWithMgmtInstP,
+				Config:             testConfigMgmtRsOoBConsMinDependencyWithMgmtInstP + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "out_of_band_contract_name", "test_tn_vz_oob_br_cp_name"),
@@ -83,7 +83,7 @@ func TestAccResourceMgmtRsOoBConsWithMgmtInstP(t *testing.T) {
 			},
 			// Update with all config and verify default APIC values
 			{
-				Config:             testConfigMgmtRsOoBConsAllDependencyWithMgmtInstP,
+				Config:             testConfigMgmtRsOoBConsAllDependencyWithMgmtInstP + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "out_of_band_contract_name", "test_tn_vz_oob_br_cp_name"),
@@ -93,7 +93,7 @@ func TestAccResourceMgmtRsOoBConsWithMgmtInstP(t *testing.T) {
 			},
 			// Update with minimum config and verify config is unchanged
 			{
-				Config:             testConfigMgmtRsOoBConsMinDependencyWithMgmtInstP,
+				Config:             testConfigMgmtRsOoBConsMinDependencyWithMgmtInstP + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "out_of_band_contract_name", "test_tn_vz_oob_br_cp_name"),
@@ -101,7 +101,7 @@ func TestAccResourceMgmtRsOoBConsWithMgmtInstP(t *testing.T) {
 			},
 			// Update with empty strings config or default value
 			{
-				Config:             testConfigMgmtRsOoBConsResetDependencyWithMgmtInstP,
+				Config:             testConfigMgmtRsOoBConsResetDependencyWithMgmtInstP + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "out_of_band_contract_name", "test_tn_vz_oob_br_cp_name"),
@@ -117,20 +117,24 @@ func TestAccResourceMgmtRsOoBConsWithMgmtInstP(t *testing.T) {
 			},
 			// Update with children
 			{
-				Config:             testConfigMgmtRsOoBConsChildrenDependencyWithMgmtInstP,
+				Config:             testConfigMgmtRsOoBConsChildrenDependencyWithMgmtInstP + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "out_of_band_contract_name", "test_tn_vz_oob_br_cp_name"),
 					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "priority", "unspecified"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "tags.1.value", "test_value"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "annotations.1.value", "test_value"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "tags.1.value", "test_value"),
+					),
 				),
 			},
 			// Refresh State before import testing to ensure that the state is up to date
@@ -146,37 +150,45 @@ func TestAccResourceMgmtRsOoBConsWithMgmtInstP(t *testing.T) {
 			},
 			// Update with children removed from config
 			{
-				Config:             testConfigMgmtRsOoBConsChildrenRemoveFromConfigDependencyWithMgmtInstP,
+				Config:             testConfigMgmtRsOoBConsChildrenRemoveFromConfigDependencyWithMgmtInstP + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "tags.#", "2"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "annotations.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children first child removed
 			{
-				Config:             testConfigMgmtRsOoBConsChildrenRemoveOneDependencyWithMgmtInstP,
+				Config:             testConfigMgmtRsOoBConsChildrenRemoveOneDependencyWithMgmtInstP + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "tags.#", "1"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "annotations.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "tags.#", "1"),
+					),
 				),
 			},
 			// Update with all children removed
 			{
-				Config:             testConfigMgmtRsOoBConsChildrenRemoveAllDependencyWithMgmtInstP,
+				Config:             testConfigMgmtRsOoBConsChildrenRemoveAllDependencyWithMgmtInstP + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "annotations.#", "0"),
@@ -185,7 +197,7 @@ func TestAccResourceMgmtRsOoBConsWithMgmtInstP(t *testing.T) {
 			},
 			// Update with minimum config and custom type semantic equivalent values
 			{
-				Config:             testConfigMgmtRsOoBConsCustomTypeDependencyWithMgmtInstP,
+				Config:             testConfigMgmtRsOoBConsCustomTypeDependencyWithMgmtInstP + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_consumed_out_of_band_contract.test", "out_of_band_contract_name", "test_tn_vz_oob_br_cp_name"),
@@ -237,7 +249,7 @@ const testConfigMgmtRsOoBConsChildrenDependencyWithMgmtInstP = testConfigMgmtIns
 resource "aci_relation_to_consumed_out_of_band_contract" "test" {
   parent_dn = aci_external_management_network_instance_profile.test.id
   out_of_band_contract_name = "test_tn_vz_oob_br_cp_name"
-  annotations = [
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -246,8 +258,8 @@ resource "aci_relation_to_consumed_out_of_band_contract" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
-  tags = [
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -256,7 +268,7 @@ resource "aci_relation_to_consumed_out_of_band_contract" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
+  ] : null
 }
 `
 
@@ -271,18 +283,18 @@ const testConfigMgmtRsOoBConsChildrenRemoveOneDependencyWithMgmtInstP = testConf
 resource "aci_relation_to_consumed_out_of_band_contract" "test" {
   parent_dn = aci_external_management_network_instance_profile.test.id
   out_of_band_contract_name = "test_tn_vz_oob_br_cp_name"
-  annotations = [ 
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
-  tags = [ 
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
+  ] : null
 }
 `
 
@@ -290,8 +302,8 @@ const testConfigMgmtRsOoBConsChildrenRemoveAllDependencyWithMgmtInstP = testConf
 resource "aci_relation_to_consumed_out_of_band_contract" "test" {
   parent_dn = aci_external_management_network_instance_profile.test.id
   out_of_band_contract_name = "test_tn_vz_oob_br_cp_name"
-  annotations = []
-  tags = []
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
 }
 `
 

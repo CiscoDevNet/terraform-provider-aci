@@ -8,6 +8,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/validators"
@@ -2441,7 +2442,8 @@ func (r *L3extInstPResource) ImportState(ctx context.Context, req resource.Impor
 }
 
 func getAndSetL3extInstPAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *L3extInstPResourceModel) {
-	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "l3extInstP,fvRsCons,fvRsConsIf,fvRsCustQosPol,fvRsIntraEpg,fvRsProtBy,fvRsProv,fvRsSecInherited,l3extRsInstPToProfile,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag"), "GET", nil)
+	childClasses := getChildClassesForGetRequest([]string{"fvRsCons", "fvRsConsIf", "fvRsCustQosPol", "fvRsIntraEpg", "fvRsProtBy", "fvRsProv", "fvRsSecInherited", "l3extRsInstPToProfile", "tagAnnotation", "tagTag"})
+	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), strings.Join(childClasses, ",")), "GET", nil)
 
 	readData := getEmptyL3extInstPResourceModel()
 

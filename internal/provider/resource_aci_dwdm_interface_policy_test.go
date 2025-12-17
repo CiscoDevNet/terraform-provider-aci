@@ -19,7 +19,7 @@ func TestAccResourceDwdmIfPol(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config: testConfigDwdmIfPolMinAllowExisting,
+				Config: testConfigDwdmIfPolMinAllowExisting + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_dwdm_interface_policy.allow_test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_dwdm_interface_policy.allow_test_2", "name", "test_name"),
@@ -60,7 +60,7 @@ func TestAccResourceDwdmIfPol(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config: testConfigDwdmIfPolMinAllowExisting,
+				Config: testConfigDwdmIfPolMinAllowExisting + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_dwdm_interface_policy.allow_test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_dwdm_interface_policy.allow_test_2", "name", "test_name"),
@@ -87,7 +87,7 @@ func TestAccResourceDwdmIfPol(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config: testConfigDwdmIfPolMin,
+				Config: testConfigDwdmIfPolMin + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "annotation", "orchestrator:terraform"),
@@ -100,7 +100,7 @@ func TestAccResourceDwdmIfPol(t *testing.T) {
 			},
 			// Update with all config and verify default APIC values
 			{
-				Config: testConfigDwdmIfPolAll,
+				Config: testConfigDwdmIfPolAll + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "annotation", "annotation"),
@@ -113,7 +113,7 @@ func TestAccResourceDwdmIfPol(t *testing.T) {
 			},
 			// Update with minimum config and verify config is unchanged
 			{
-				Config: testConfigDwdmIfPolMin,
+				Config: testConfigDwdmIfPolMin + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "annotation", "orchestrator:terraform"),
@@ -126,7 +126,7 @@ func TestAccResourceDwdmIfPol(t *testing.T) {
 			},
 			// Update with empty strings config or default value
 			{
-				Config: testConfigDwdmIfPolReset,
+				Config: testConfigDwdmIfPolReset + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "annotation", "orchestrator:terraform"),
@@ -145,7 +145,7 @@ func TestAccResourceDwdmIfPol(t *testing.T) {
 			},
 			// Update with children
 			{
-				Config: testConfigDwdmIfPolChildren,
+				Config: testConfigDwdmIfPolChildren + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "channel_nummber", "Channel32"),
@@ -153,21 +153,25 @@ func TestAccResourceDwdmIfPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "tags.#", "2"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "annotations.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children removed from config
 			{
-				Config: testConfigDwdmIfPolChildrenRemoveFromConfig,
+				Config: testConfigDwdmIfPolChildrenRemoveFromConfig + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "channel_nummber", "Channel32"),
@@ -175,21 +179,25 @@ func TestAccResourceDwdmIfPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "tags.#", "2"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "annotations.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children first child removed
 			{
-				Config: testConfigDwdmIfPolChildrenRemoveOne,
+				Config: testConfigDwdmIfPolChildrenRemoveOne + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "channel_nummber", "Channel32"),
@@ -197,17 +205,21 @@ func TestAccResourceDwdmIfPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "tags.#", "1"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "annotations.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "tags.#", "1"),
+					),
 				),
 			},
 			// Update with all children removed
 			{
-				Config: testConfigDwdmIfPolChildrenRemoveAll,
+				Config: testConfigDwdmIfPolChildrenRemoveAll + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_dwdm_interface_policy.test", "channel_nummber", "Channel32"),

@@ -8,6 +8,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/validators"
@@ -7388,7 +7389,8 @@ func (r *FvAEPgResource) ImportState(ctx context.Context, req resource.ImportSta
 }
 
 func getAndSetFvAEPgAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FvAEPgResourceModel) {
-	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "fvAEPg,fvCrtrn,fvRsAEPgMonPol,fvRsAepAtt,fvRsBd,fvRsCons,fvRsConsIf,fvRsCustQosPol,fvRsDomAtt,fvRsDppPol,fvRsFcPathAtt,fvRsIntraEpg,fvRsNodeAtt,fvRsPathAtt,fvRsProtBy,fvRsProv,fvRsSecInherited,fvRsTrustCtrl,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,fvUplinkOrderCont,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag"), "GET", nil)
+	childClasses := getChildClassesForGetRequest([]string{"fvCrtrn", "fvRsAEPgMonPol", "fvRsAepAtt", "fvRsBd", "fvRsCons", "fvRsConsIf", "fvRsCustQosPol", "fvRsDomAtt", "fvRsDppPol", "fvRsFcPathAtt", "fvRsIntraEpg", "fvRsNodeAtt", "fvRsPathAtt", "fvRsProtBy", "fvRsProv", "fvRsSecInherited", "fvRsTrustCtrl", "fvUplinkOrderCont", "tagAnnotation", "tagTag"})
+	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), strings.Join(childClasses, ",")), "GET", nil)
 
 	readData := getEmptyFvAEPgResourceModel()
 

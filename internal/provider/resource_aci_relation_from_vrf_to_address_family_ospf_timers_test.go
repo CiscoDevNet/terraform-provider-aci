@@ -19,7 +19,7 @@ func TestAccResourceFvRsCtxToOspfCtxPolWithFvCtx(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigFvRsCtxToOspfCtxPolMinDependencyWithFvCtxAllowExisting,
+				Config:             testConfigFvRsCtxToOspfCtxPolMinDependencyWithFvCtxAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_from_vrf_to_address_family_ospf_timers.allow_test", "ospf_timers_name", "test_tn_ospf_ctx_pol_name"),
@@ -40,7 +40,7 @@ func TestAccResourceFvRsCtxToOspfCtxPolWithFvCtx(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:      testConfigFvRsCtxToOspfCtxPolMinDependencyWithFvCtxAllowExisting,
+				Config:      testConfigFvRsCtxToOspfCtxPolMinDependencyWithFvCtxAllowExisting + testConfigDataSourceSystem,
 				ExpectError: regexp.MustCompile("Object Already Exists"),
 			},
 		},
@@ -53,7 +53,7 @@ func TestAccResourceFvRsCtxToOspfCtxPolWithFvCtx(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigFvRsCtxToOspfCtxPolMinDependencyWithFvCtxAllowExisting,
+				Config:             testConfigFvRsCtxToOspfCtxPolMinDependencyWithFvCtxAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_from_vrf_to_address_family_ospf_timers.allow_test", "ospf_timers_name", "test_tn_ospf_ctx_pol_name"),
@@ -73,7 +73,7 @@ func TestAccResourceFvRsCtxToOspfCtxPolWithFvCtx(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigFvRsCtxToOspfCtxPolMinDependencyWithFvCtx,
+				Config:             testConfigFvRsCtxToOspfCtxPolMinDependencyWithFvCtx + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_from_vrf_to_address_family_ospf_timers.test", "ospf_timers_name", "test_tn_ospf_ctx_pol_name"),
@@ -83,7 +83,7 @@ func TestAccResourceFvRsCtxToOspfCtxPolWithFvCtx(t *testing.T) {
 			},
 			// Update with all config and verify default APIC values
 			{
-				Config:             testConfigFvRsCtxToOspfCtxPolAllDependencyWithFvCtx,
+				Config:             testConfigFvRsCtxToOspfCtxPolAllDependencyWithFvCtx + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_from_vrf_to_address_family_ospf_timers.test", "ospf_timers_name", "test_tn_ospf_ctx_pol_name"),
@@ -93,7 +93,7 @@ func TestAccResourceFvRsCtxToOspfCtxPolWithFvCtx(t *testing.T) {
 			},
 			// Update with minimum config and verify config is unchanged
 			{
-				Config:             testConfigFvRsCtxToOspfCtxPolMinDependencyWithFvCtx,
+				Config:             testConfigFvRsCtxToOspfCtxPolMinDependencyWithFvCtx + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_from_vrf_to_address_family_ospf_timers.test", "address_family", "ipv4-ucast"),
@@ -102,7 +102,7 @@ func TestAccResourceFvRsCtxToOspfCtxPolWithFvCtx(t *testing.T) {
 			},
 			// Update with empty strings config or default value
 			{
-				Config:             testConfigFvRsCtxToOspfCtxPolResetDependencyWithFvCtx,
+				Config:             testConfigFvRsCtxToOspfCtxPolResetDependencyWithFvCtx + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_from_vrf_to_address_family_ospf_timers.test", "address_family", "ipv4-ucast"),
@@ -118,20 +118,24 @@ func TestAccResourceFvRsCtxToOspfCtxPolWithFvCtx(t *testing.T) {
 			},
 			// Update with children
 			{
-				Config:             testConfigFvRsCtxToOspfCtxPolChildrenDependencyWithFvCtx,
+				Config:             testConfigFvRsCtxToOspfCtxPolChildrenDependencyWithFvCtx + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_from_vrf_to_address_family_ospf_timers.test", "address_family", "ipv4-ucast"),
 					resource.TestCheckResourceAttr("aci_relation_from_vrf_to_address_family_ospf_timers.test", "ospf_timers_name", "test_tn_ospf_ctx_pol_name"),
 					resource.TestCheckResourceAttr("aci_relation_from_vrf_to_address_family_ospf_timers.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_relation_from_vrf_to_address_family_ospf_timers.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_from_vrf_to_address_family_ospf_timers.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_from_vrf_to_address_family_ospf_timers.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_from_vrf_to_address_family_ospf_timers.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_from_vrf_to_address_family_ospf_timers.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_from_vrf_to_address_family_ospf_timers.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_from_vrf_to_address_family_ospf_timers.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_from_vrf_to_address_family_ospf_timers.test", "tags.1.value", "test_value"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_from_vrf_to_address_family_ospf_timers.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_relation_from_vrf_to_address_family_ospf_timers.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_relation_from_vrf_to_address_family_ospf_timers.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_from_vrf_to_address_family_ospf_timers.test", "annotations.1.value", "test_value"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_from_vrf_to_address_family_ospf_timers.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_relation_from_vrf_to_address_family_ospf_timers.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_relation_from_vrf_to_address_family_ospf_timers.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_from_vrf_to_address_family_ospf_timers.test", "tags.1.value", "test_value"),
+					),
 				),
 			},
 			// Refresh State before import testing to ensure that the state is up to date
@@ -147,37 +151,45 @@ func TestAccResourceFvRsCtxToOspfCtxPolWithFvCtx(t *testing.T) {
 			},
 			// Update with children removed from config
 			{
-				Config:             testConfigFvRsCtxToOspfCtxPolChildrenRemoveFromConfigDependencyWithFvCtx,
+				Config:             testConfigFvRsCtxToOspfCtxPolChildrenRemoveFromConfigDependencyWithFvCtx + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_from_vrf_to_address_family_ospf_timers.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_from_vrf_to_address_family_ospf_timers.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_from_vrf_to_address_family_ospf_timers.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_from_vrf_to_address_family_ospf_timers.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_from_vrf_to_address_family_ospf_timers.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_relation_from_vrf_to_address_family_ospf_timers.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_from_vrf_to_address_family_ospf_timers.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_from_vrf_to_address_family_ospf_timers.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_from_vrf_to_address_family_ospf_timers.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_from_vrf_to_address_family_ospf_timers.test", "tags.#", "2"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_from_vrf_to_address_family_ospf_timers.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_relation_from_vrf_to_address_family_ospf_timers.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_relation_from_vrf_to_address_family_ospf_timers.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_from_vrf_to_address_family_ospf_timers.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_relation_from_vrf_to_address_family_ospf_timers.test", "annotations.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_from_vrf_to_address_family_ospf_timers.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_relation_from_vrf_to_address_family_ospf_timers.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_relation_from_vrf_to_address_family_ospf_timers.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_from_vrf_to_address_family_ospf_timers.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_relation_from_vrf_to_address_family_ospf_timers.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children first child removed
 			{
-				Config:             testConfigFvRsCtxToOspfCtxPolChildrenRemoveOneDependencyWithFvCtx,
+				Config:             testConfigFvRsCtxToOspfCtxPolChildrenRemoveOneDependencyWithFvCtx + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_from_vrf_to_address_family_ospf_timers.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_from_vrf_to_address_family_ospf_timers.test", "annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_from_vrf_to_address_family_ospf_timers.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_relation_from_vrf_to_address_family_ospf_timers.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_from_vrf_to_address_family_ospf_timers.test", "tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_from_vrf_to_address_family_ospf_timers.test", "tags.#", "1"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_from_vrf_to_address_family_ospf_timers.test", "annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_from_vrf_to_address_family_ospf_timers.test", "annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_relation_from_vrf_to_address_family_ospf_timers.test", "annotations.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_from_vrf_to_address_family_ospf_timers.test", "tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_from_vrf_to_address_family_ospf_timers.test", "tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_relation_from_vrf_to_address_family_ospf_timers.test", "tags.#", "1"),
+					),
 				),
 			},
 			// Update with all children removed
 			{
-				Config:             testConfigFvRsCtxToOspfCtxPolChildrenRemoveAllDependencyWithFvCtx,
+				Config:             testConfigFvRsCtxToOspfCtxPolChildrenRemoveAllDependencyWithFvCtx + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_from_vrf_to_address_family_ospf_timers.test", "annotations.#", "0"),
@@ -240,7 +252,7 @@ resource "aci_relation_from_vrf_to_address_family_ospf_timers" "test" {
   parent_dn = aci_vrf.test.id
   address_family = "ipv4-ucast"
   ospf_timers_name = "test_tn_ospf_ctx_pol_name"
-  annotations = [
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -249,8 +261,8 @@ resource "aci_relation_from_vrf_to_address_family_ospf_timers" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
-  tags = [
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -259,7 +271,7 @@ resource "aci_relation_from_vrf_to_address_family_ospf_timers" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
+  ] : null
 }
 `
 
@@ -276,18 +288,18 @@ resource "aci_relation_from_vrf_to_address_family_ospf_timers" "test" {
   parent_dn = aci_vrf.test.id
   address_family = "ipv4-ucast"
   ospf_timers_name = "test_tn_ospf_ctx_pol_name"
-  annotations = [ 
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
-  tags = [ 
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
+  ] : null
 }
 `
 
@@ -296,7 +308,7 @@ resource "aci_relation_from_vrf_to_address_family_ospf_timers" "test" {
   parent_dn = aci_vrf.test.id
   address_family = "ipv4-ucast"
   ospf_timers_name = "test_tn_ospf_ctx_pol_name"
-  annotations = []
-  tags = []
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
 }
 `

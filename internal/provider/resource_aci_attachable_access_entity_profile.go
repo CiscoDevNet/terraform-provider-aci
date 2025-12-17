@@ -881,7 +881,8 @@ func (r *InfraAttEntityPResource) ImportState(ctx context.Context, req resource.
 }
 
 func getAndSetInfraAttEntityPAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *InfraAttEntityPResourceModel) {
-	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "infraAttEntityP,infraRsDomP,tagAnnotation,tagTag,tagAnnotation,tagTag"), "GET", nil)
+	childClasses := getChildClassesForGetRequest([]string{"infraRsDomP", "tagAnnotation", "tagTag"})
+	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), strings.Join(childClasses, ",")), "GET", nil)
 
 	readData := getEmptyInfraAttEntityPResourceModel()
 

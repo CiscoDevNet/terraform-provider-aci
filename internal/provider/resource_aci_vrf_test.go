@@ -204,44 +204,66 @@ func TestAccResourceFvCtxWithFvTenant(t *testing.T) {
 						resource.TestCheckResourceAttr("aci_vrf.test", "ip_data_plane_learning", "enabled")),
 					resource.TestCheckResourceAttrSet("aci_vrf.test", "pc_tag"),
 					resource.TestCheckResourceAttrSet("aci_vrf.test", "scope"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.0.address_family", "ipv4-ucast"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.0.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.0.ospf_timers_name", "ospf_timers_name_0"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.1.address_family", "ipv6-ucast"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.1.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.1.ospf_timers_name", "ospf_timers_name_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.0.address_family", "ipv4-ucast"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.0.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.0.bgp_address_family_context_name", "bgp_address_family_context_name_0"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.1.address_family", "ipv6-ucast"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.1.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.1.bgp_address_family_context_name", "bgp_address_family_context_name_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_timers.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_timers.bgp_timers_name", "bgp_timers_name_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.0.address_family", "ipv4-ucast"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.0.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.0.eigrp_address_family_context_name", "eigrp_address_family_context_name_0"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.1.address_family", "ipv6-ucast"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.1.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.1.eigrp_address_family_context_name", "eigrp_address_family_context_name_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_end_point_retention_policy.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_end_point_retention_policy.end_point_retention_policy_name", "end_point_retention_policy_name_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_l3out_route_tag_policy.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_l3out_route_tag_policy.l3out_route_tag_policy_name", "l3out_route_tag_policy_name_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_monitoring_policy.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_monitoring_policy.monitoring_policy_name", "monitoring_policy_name_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_ospf_timers.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_ospf_timers.ospf_timers_name", "ospf_timers_name_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_wan_vpn.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_wan_vpn.target_dn", "uni/tn-test_tenant/sdwanvpncont/sdwanvpnentry-sdwanvpn_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "tags.1.value", "test_value"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_vrf.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "annotations.1.value", "test_value"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.0.address_family", "ipv4-ucast"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.0.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.0.ospf_timers_name", "ospf_timers_name_0"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.1.address_family", "ipv6-ucast"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.1.annotation", "annotation_2"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.1.ospf_timers_name", "ospf_timers_name_1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.0.address_family", "ipv4-ucast"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.0.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.0.bgp_address_family_context_name", "bgp_address_family_context_name_0"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.1.address_family", "ipv6-ucast"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.1.annotation", "annotation_2"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.1.bgp_address_family_context_name", "bgp_address_family_context_name_1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_timers.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_timers.bgp_timers_name", "bgp_timers_name_1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.0.address_family", "ipv4-ucast"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.0.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.0.eigrp_address_family_context_name", "eigrp_address_family_context_name_0"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.1.address_family", "ipv6-ucast"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.1.annotation", "annotation_2"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.1.eigrp_address_family_context_name", "eigrp_address_family_context_name_1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_end_point_retention_policy.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_end_point_retention_policy.end_point_retention_policy_name", "end_point_retention_policy_name_1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_l3out_route_tag_policy.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_l3out_route_tag_policy.l3out_route_tag_policy_name", "l3out_route_tag_policy_name_1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_monitoring_policy.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_monitoring_policy.monitoring_policy_name", "monitoring_policy_name_1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_ospf_timers.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_ospf_timers.ospf_timers_name", "ospf_timers_name_1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_wan_vpn.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_wan_vpn.target_dn", "uni/tn-test_tenant/sdwanvpncont/sdwanvpnentry-sdwanvpn_1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_vrf.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "tags.1.value", "test_value"),
+					),
 				),
 			},
 			// Refresh State before import testing to ensure that the state is up to date
@@ -262,169 +284,191 @@ func TestAccResourceFvCtxWithFvTenant(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttrSet("aci_vrf.test", "pc_tag"),
 					resource.TestCheckResourceAttrSet("aci_vrf.test", "scope"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.0.address_family", "ipv4-ucast"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.0.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.0.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.0.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.0.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.0.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.0.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.0.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.0.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.0.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.0.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.0.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.0.ospf_timers_name", "ospf_timers_name_0"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.1.address_family", "ipv6-ucast"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.1.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.1.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.1.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.1.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.1.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.1.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.1.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.1.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.1.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.1.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.1.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.1.ospf_timers_name", "ospf_timers_name_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.#", "2"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.0.address_family", "ipv4-ucast"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.0.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.0.bgp_address_family_context_name", "bgp_address_family_context_name_0"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.0.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.0.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.0.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.0.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.0.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.0.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.0.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.0.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.0.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.0.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.1.address_family", "ipv6-ucast"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.1.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.1.bgp_address_family_context_name", "bgp_address_family_context_name_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.1.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.1.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.1.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.1.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.1.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.1.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.1.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.1.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.1.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.1.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.#", "2"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_timers.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_timers.bgp_timers_name", "bgp_timers_name_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_timers.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_timers.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_timers.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_timers.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_timers.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_timers.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_timers.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_timers.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_timers.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_timers.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.0.address_family", "ipv4-ucast"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.0.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.0.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.0.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.0.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.0.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.0.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.0.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.0.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.0.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.0.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.0.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.0.eigrp_address_family_context_name", "eigrp_address_family_context_name_0"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.1.address_family", "ipv6-ucast"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.1.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.1.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.1.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.1.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.1.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.1.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.1.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.1.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.1.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.1.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.1.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.1.eigrp_address_family_context_name", "eigrp_address_family_context_name_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.#", "2"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_end_point_retention_policy.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_end_point_retention_policy.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_end_point_retention_policy.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_end_point_retention_policy.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_end_point_retention_policy.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_end_point_retention_policy.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_end_point_retention_policy.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_end_point_retention_policy.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_end_point_retention_policy.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_end_point_retention_policy.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_end_point_retention_policy.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_end_point_retention_policy.end_point_retention_policy_name", "end_point_retention_policy_name_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_l3out_route_tag_policy.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_l3out_route_tag_policy.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_l3out_route_tag_policy.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_l3out_route_tag_policy.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_l3out_route_tag_policy.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_l3out_route_tag_policy.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_l3out_route_tag_policy.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_l3out_route_tag_policy.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_l3out_route_tag_policy.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_l3out_route_tag_policy.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_l3out_route_tag_policy.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_l3out_route_tag_policy.l3out_route_tag_policy_name", "l3out_route_tag_policy_name_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_monitoring_policy.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_monitoring_policy.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_monitoring_policy.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_monitoring_policy.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_monitoring_policy.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_monitoring_policy.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_monitoring_policy.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_monitoring_policy.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_monitoring_policy.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_monitoring_policy.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_monitoring_policy.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_monitoring_policy.monitoring_policy_name", "monitoring_policy_name_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_ospf_timers.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_ospf_timers.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_ospf_timers.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_ospf_timers.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_ospf_timers.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_ospf_timers.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_ospf_timers.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_ospf_timers.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_ospf_timers.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_ospf_timers.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_ospf_timers.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_ospf_timers.ospf_timers_name", "ospf_timers_name_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_wan_vpn.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_wan_vpn.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_wan_vpn.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_wan_vpn.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_wan_vpn.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_wan_vpn.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_wan_vpn.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_wan_vpn.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_wan_vpn.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_wan_vpn.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_wan_vpn.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_wan_vpn.target_dn", "uni/tn-test_tenant/sdwanvpncont/sdwanvpnentry-sdwanvpn_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "tags.#", "2"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_vrf.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "annotations.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.0.address_family", "ipv4-ucast"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.0.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.0.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.0.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.0.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.0.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.0.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.0.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.0.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.0.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.0.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.0.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.0.ospf_timers_name", "ospf_timers_name_0"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.1.address_family", "ipv6-ucast"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.1.annotation", "annotation_2"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.1.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.1.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.1.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.1.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.1.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.1.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.1.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.1.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.1.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.1.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.1.ospf_timers_name", "ospf_timers_name_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.0.address_family", "ipv4-ucast"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.0.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.0.bgp_address_family_context_name", "bgp_address_family_context_name_0"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.0.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.0.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.0.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.0.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.0.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.0.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.0.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.0.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.0.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.0.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.1.address_family", "ipv6-ucast"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.1.annotation", "annotation_2"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.1.bgp_address_family_context_name", "bgp_address_family_context_name_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.1.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.1.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.1.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.1.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.1.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.1.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.1.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.1.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.1.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.1.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_timers.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_timers.bgp_timers_name", "bgp_timers_name_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_timers.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_timers.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_timers.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_timers.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_timers.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_timers.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_timers.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_timers.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_timers.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_timers.tags.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.0.address_family", "ipv4-ucast"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.0.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.0.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.0.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.0.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.0.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.0.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.0.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.0.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.0.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.0.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.0.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.0.eigrp_address_family_context_name", "eigrp_address_family_context_name_0"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.1.address_family", "ipv6-ucast"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.1.annotation", "annotation_2"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.1.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.1.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.1.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.1.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.1.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.1.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.1.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.1.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.1.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.1.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.1.eigrp_address_family_context_name", "eigrp_address_family_context_name_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_end_point_retention_policy.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_end_point_retention_policy.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_end_point_retention_policy.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_end_point_retention_policy.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_end_point_retention_policy.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_end_point_retention_policy.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_end_point_retention_policy.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_end_point_retention_policy.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_end_point_retention_policy.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_end_point_retention_policy.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_end_point_retention_policy.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_end_point_retention_policy.end_point_retention_policy_name", "end_point_retention_policy_name_1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_l3out_route_tag_policy.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_l3out_route_tag_policy.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_l3out_route_tag_policy.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_l3out_route_tag_policy.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_l3out_route_tag_policy.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_l3out_route_tag_policy.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_l3out_route_tag_policy.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_l3out_route_tag_policy.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_l3out_route_tag_policy.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_l3out_route_tag_policy.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_l3out_route_tag_policy.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_l3out_route_tag_policy.l3out_route_tag_policy_name", "l3out_route_tag_policy_name_1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_monitoring_policy.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_monitoring_policy.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_monitoring_policy.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_monitoring_policy.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_monitoring_policy.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_monitoring_policy.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_monitoring_policy.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_monitoring_policy.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_monitoring_policy.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_monitoring_policy.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_monitoring_policy.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_monitoring_policy.monitoring_policy_name", "monitoring_policy_name_1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_ospf_timers.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_ospf_timers.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_ospf_timers.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_ospf_timers.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_ospf_timers.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_ospf_timers.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_ospf_timers.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_ospf_timers.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_ospf_timers.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_ospf_timers.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_ospf_timers.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_ospf_timers.ospf_timers_name", "ospf_timers_name_1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_wan_vpn.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_wan_vpn.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_wan_vpn.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_wan_vpn.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_wan_vpn.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_wan_vpn.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_wan_vpn.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_wan_vpn.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_wan_vpn.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_wan_vpn.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_wan_vpn.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_wan_vpn.target_dn", "uni/tn-test_tenant/sdwanvpncont/sdwanvpnentry-sdwanvpn_1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_vrf.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children first child removed
@@ -434,74 +478,94 @@ func TestAccResourceFvCtxWithFvTenant(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttrSet("aci_vrf.test", "pc_tag"),
 					resource.TestCheckResourceAttrSet("aci_vrf.test", "scope"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.0.address_family", "ipv6-ucast"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.0.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.0.annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.0.annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.0.annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.0.tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.0.tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.0.tags.#", "1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.0.ospf_timers_name", "ospf_timers_name_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.#", "1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.0.address_family", "ipv6-ucast"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.0.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.0.bgp_address_family_context_name", "bgp_address_family_context_name_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.0.annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.0.annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.0.annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.0.tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.0.tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.0.tags.#", "1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.#", "1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_timers.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_timers.bgp_timers_name", "bgp_timers_name_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_timers.annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_timers.annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_timers.annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_timers.tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_timers.tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_timers.tags.#", "1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.0.address_family", "ipv6-ucast"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.0.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.0.annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.0.annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.0.annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.0.tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.0.tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.0.tags.#", "1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.0.eigrp_address_family_context_name", "eigrp_address_family_context_name_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.#", "1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_end_point_retention_policy.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_end_point_retention_policy.annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_end_point_retention_policy.annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_end_point_retention_policy.annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_end_point_retention_policy.tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_end_point_retention_policy.tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_end_point_retention_policy.tags.#", "1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_end_point_retention_policy.end_point_retention_policy_name", "end_point_retention_policy_name_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_l3out_route_tag_policy.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_l3out_route_tag_policy.annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_l3out_route_tag_policy.annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_l3out_route_tag_policy.annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_l3out_route_tag_policy.tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_l3out_route_tag_policy.tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_l3out_route_tag_policy.tags.#", "1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_l3out_route_tag_policy.l3out_route_tag_policy_name", "l3out_route_tag_policy_name_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_ospf_timers.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_ospf_timers.annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_ospf_timers.annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_ospf_timers.annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_ospf_timers.tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_ospf_timers.tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_ospf_timers.tags.#", "1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_ospf_timers.ospf_timers_name", "ospf_timers_name_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_vrf.test", "tags.#", "1"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_vrf.test", "annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "annotations.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.0.address_family", "ipv6-ucast"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.0.annotation", "annotation_2"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.0.annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.0.annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.0.annotations.#", "1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.0.tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.0.tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.0.tags.#", "1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.0.ospf_timers_name", "ospf_timers_name_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_address_family_ospf_timers.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.0.address_family", "ipv6-ucast"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.0.annotation", "annotation_2"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.0.bgp_address_family_context_name", "bgp_address_family_context_name_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.0.annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.0.annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.0.annotations.#", "1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.0.tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.0.tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.0.tags.#", "1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_address_family_contexts.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_timers.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_timers.bgp_timers_name", "bgp_timers_name_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_timers.annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_timers.annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_timers.annotations.#", "1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_timers.tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_timers.tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_bgp_timers.tags.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.0.address_family", "ipv6-ucast"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.0.annotation", "annotation_2"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.0.annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.0.annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.0.annotations.#", "1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.0.tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.0.tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.0.tags.#", "1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.0.eigrp_address_family_context_name", "eigrp_address_family_context_name_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_eigrp_address_family_contexts.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_end_point_retention_policy.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_end_point_retention_policy.annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_end_point_retention_policy.annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_end_point_retention_policy.annotations.#", "1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_end_point_retention_policy.tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_end_point_retention_policy.tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_end_point_retention_policy.tags.#", "1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_end_point_retention_policy.end_point_retention_policy_name", "end_point_retention_policy_name_1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_l3out_route_tag_policy.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_l3out_route_tag_policy.annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_l3out_route_tag_policy.annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_l3out_route_tag_policy.annotations.#", "1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_l3out_route_tag_policy.tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_l3out_route_tag_policy.tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_l3out_route_tag_policy.tags.#", "1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_l3out_route_tag_policy.l3out_route_tag_policy_name", "l3out_route_tag_policy_name_1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside"),
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_ospf_timers.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_ospf_timers.annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_ospf_timers.annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_ospf_timers.annotations.#", "1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_ospf_timers.tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_ospf_timers.tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_ospf_timers.tags.#", "1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "relation_to_ospf_timers.ospf_timers_name", "ospf_timers_name_1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_vrf.test", "tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_vrf.test", "tags.#", "1"),
+					),
 				),
 				ConfigStateChecks: []statecheck.StateCheck{
 					statecheck.ExpectKnownValue("aci_vrf.test",
@@ -689,7 +753,7 @@ const testConfigFvCtxChildrenDependencyWithFvTenant = testChildDependencyConfigF
 resource "aci_vrf" "test" {
   parent_dn = aci_tenant.test.id
   name = "test_name"
-  annotations = [
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -698,8 +762,8 @@ resource "aci_vrf" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
-  relation_to_address_family_ospf_timers = [
+  ] : null
+  relation_to_address_family_ospf_timers = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.1(1j)-") ? [
     {
       address_family = "ipv4-ucast"
       annotation = "annotation_1"
@@ -750,8 +814,8 @@ resource "aci_vrf" "test" {
       ]
       ospf_timers_name = aci_ospf_timers.test_ospf_timers_0.name
     },
-  ]
-  relation_to_bgp_address_family_contexts = [
+  ] : null
+  relation_to_bgp_address_family_contexts = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.1(1j)-") ? [
     {
       address_family = "ipv4-ucast"
       annotation = "annotation_1"
@@ -802,8 +866,8 @@ resource "aci_vrf" "test" {
 	    },
       ]
     },
-  ]
-  relation_to_bgp_timers = {
+  ] : null
+  relation_to_bgp_timers = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? {
     annotation = "annotation_1"
     bgp_timers_name = aci_bgp_timers.test_bgp_timers_0.name
     annotations = [
@@ -826,8 +890,8 @@ resource "aci_vrf" "test" {
         value = "test_value"
 	  },
     ]
-  }
-  relation_to_eigrp_address_family_contexts = [
+  } : null
+  relation_to_eigrp_address_family_contexts = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.1(1j)-") ? [
     {
       address_family = "ipv4-ucast"
       annotation = "annotation_1"
@@ -878,8 +942,8 @@ resource "aci_vrf" "test" {
       ]
       eigrp_address_family_context_name = aci_eigrp_address_family_context.test_eigrp_address_family_context_1.name
     },
-  ]
-  relation_to_end_point_retention_policy = {
+  ] : null
+  relation_to_end_point_retention_policy = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? {
     annotation = "annotation_1"
     annotations = [
 	  {
@@ -902,8 +966,8 @@ resource "aci_vrf" "test" {
 	  },
     ]
     end_point_retention_policy_name = aci_end_point_retention_policy.test_end_point_retention_policy_0.name
-  }
-  relation_to_l3out_route_tag_policy = {
+  } : null
+  relation_to_l3out_route_tag_policy = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.1(1j)-") ? {
     annotation = "annotation_1"
     annotations = [
 	  {
@@ -926,8 +990,8 @@ resource "aci_vrf" "test" {
 	  },
     ]
     l3out_route_tag_policy_name = aci_l3out_route_tag_policy.test_l3out_route_tag_policy_1.name
-  }
-  relation_to_monitoring_policy = {
+  } : null
+  relation_to_monitoring_policy = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? {
     annotation = "annotation_1"
     annotations = [
 	  {
@@ -950,8 +1014,8 @@ resource "aci_vrf" "test" {
 	  },
     ]
     monitoring_policy_name = aci_monitoring_policy.test_monitoring_policy_1.name
-  }
-  relation_to_ospf_timers = {
+  } : null
+  relation_to_ospf_timers = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? {
     annotation = "annotation_1"
     annotations = [
 	  {
@@ -974,8 +1038,8 @@ resource "aci_vrf" "test" {
 	  },
     ]
     ospf_timers_name = aci_ospf_timers.test_ospf_timers_0.name
-  }
-  relation_to_wan_vpn = {
+  } : null
+  relation_to_wan_vpn = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.2(1i)-") ? {
     annotation = "annotation_1"
     annotations = [
 	  {
@@ -998,8 +1062,8 @@ resource "aci_vrf" "test" {
 	  },
     ]
     target_dn = "uni/tn-test_tenant/sdwanvpncont/sdwanvpnentry-sdwanvpn_1"
-  }
-  tags = [
+  } : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -1008,7 +1072,7 @@ resource "aci_vrf" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
+  ] : null
 }
 `
 
@@ -1023,13 +1087,13 @@ const testConfigFvCtxChildrenRemoveOneDependencyWithFvTenant = testChildDependen
 resource "aci_vrf" "test" {
   parent_dn = aci_tenant.test.id
   name = "test_name"
-  annotations = [ 
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
-  relation_to_address_family_ospf_timers = [ 
+  ] : null
+  relation_to_address_family_ospf_timers = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.1(1j)-") ? [ 
 	{
 	  address_family = "ipv6-ucast"
 	  annotation = "annotation_2"
@@ -1047,8 +1111,8 @@ resource "aci_vrf" "test" {
       ]
 	  ospf_timers_name = aci_ospf_timers.test_ospf_timers_0.name
 	},
-  ]
-  relation_to_bgp_address_family_contexts = [ 
+  ] : null
+  relation_to_bgp_address_family_contexts = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.1(1j)-") ? [ 
 	{
 	  address_family = "ipv6-ucast"
 	  annotation = "annotation_2"
@@ -1066,8 +1130,8 @@ resource "aci_vrf" "test" {
 	    },
       ]
 	},
-  ]
-  relation_to_bgp_timers = {
+  ] : null
+  relation_to_bgp_timers = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? {
     annotation = "annotation_1"
     bgp_timers_name = aci_bgp_timers.test_bgp_timers_0.name
     annotations = [ 
@@ -1082,8 +1146,8 @@ resource "aci_vrf" "test" {
         value = "test_value"
 	  },
     ]
-  }
-  relation_to_eigrp_address_family_contexts = [ 
+  } : null
+  relation_to_eigrp_address_family_contexts = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.1(1j)-") ? [ 
 	{
 	  address_family = "ipv6-ucast"
 	  annotation = "annotation_2"
@@ -1101,8 +1165,8 @@ resource "aci_vrf" "test" {
       ]
 	  eigrp_address_family_context_name = aci_eigrp_address_family_context.test_eigrp_address_family_context_1.name
 	},
-  ]
-  relation_to_end_point_retention_policy = {
+  ] : null
+  relation_to_end_point_retention_policy = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? {
     annotation = "annotation_1"
     annotations = [ 
 	  {
@@ -1117,8 +1181,8 @@ resource "aci_vrf" "test" {
 	  },
     ]
     end_point_retention_policy_name = aci_end_point_retention_policy.test_end_point_retention_policy_0.name
-  }
-  relation_to_l3out_route_tag_policy = {
+  } : null
+  relation_to_l3out_route_tag_policy = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.1(1j)-") ? {
     annotation = "annotation_1"
     annotations = [ 
 	  {
@@ -1133,9 +1197,9 @@ resource "aci_vrf" "test" {
 	  },
     ]
     l3out_route_tag_policy_name = aci_l3out_route_tag_policy.test_l3out_route_tag_policy_1.name
-  }
-  relation_to_monitoring_policy = {}
-  relation_to_ospf_timers = {
+  } : null
+  relation_to_monitoring_policy = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? {} : null
+  relation_to_ospf_timers = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? {
     annotation = "annotation_1"
     annotations = [ 
 	  {
@@ -1150,14 +1214,14 @@ resource "aci_vrf" "test" {
 	  },
     ]
     ospf_timers_name = aci_ospf_timers.test_ospf_timers_0.name
-  }
-  relation_to_wan_vpn = {}
-  tags = [ 
+  } : null
+  relation_to_wan_vpn = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.2(1i)-") ? {} : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
+  ] : null
 }
 `
 
@@ -1165,51 +1229,51 @@ const testConfigFvCtxChildrenRemoveAllDependencyWithFvTenant = testChildDependen
 resource "aci_vrf" "test" {
   parent_dn = aci_tenant.test.id
   name = "test_name"
-  annotations = []
-  relation_to_address_family_ospf_timers = []
-  relation_to_bgp_address_family_contexts = []
-  relation_to_bgp_timers = {
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
+  relation_to_address_family_ospf_timers = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.1(1j)-") ? [] : null
+  relation_to_bgp_address_family_contexts = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.1(1j)-") ? [] : null
+  relation_to_bgp_timers = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? {
     annotation = "annotation_1"
     bgp_timers_name = aci_bgp_timers.test_bgp_timers_0.name
     annotations = []
     tags = []
-  }
-  relation_to_eigrp_address_family_contexts = []
-  relation_to_end_point_retention_policy = {
+  } : null
+  relation_to_eigrp_address_family_contexts = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.1(1j)-") ? [] : null
+  relation_to_end_point_retention_policy = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? {
     annotation = "annotation_1"
     annotations = []
     tags = []
     end_point_retention_policy_name = aci_end_point_retention_policy.test_end_point_retention_policy_0.name
-  }
-  relation_to_l3out_route_tag_policy = {
+  } : null
+  relation_to_l3out_route_tag_policy = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.1(1j)-") ? {
     annotation = "annotation_1"
     annotations = []
     tags = []
     l3out_route_tag_policy_name = aci_l3out_route_tag_policy.test_l3out_route_tag_policy_1.name
-  }
-  relation_to_monitoring_policy = {}
-  relation_to_ospf_timers = {
+  } : null
+  relation_to_monitoring_policy = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? {} : null
+  relation_to_ospf_timers = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? {
     annotation = "annotation_1"
     annotations = []
     tags = []
     ospf_timers_name = aci_ospf_timers.test_ospf_timers_0.name
-  }
-  relation_to_wan_vpn = {}
-  tags = []
+  } : null
+  relation_to_wan_vpn = provider::aci::compare_versions(data.aci_system.version.version,"inside","4.2(1i)-") ? {} : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
 }
 `
 
 const testConfigFvCtxLegacyAttributesWithFvTenant = testChildDependencyConfigFvCtx + testConfigFvTenantMin + `
 resource "aci_vrf" "test" {
   name = "test_name"
-  bd_enforced_enable = "no"
-  pc_enf_dir = "egress"
-  pc_enf_pref = "enforced"
-  relation_fv_rs_bgp_ctx_pol = aci_bgp_timers.test_bgp_timers_0.id
-  relation_fv_rs_ctx_mon_pol = aci_monitoring_policy.test_monitoring_policy_1.id
-  relation_fv_rs_ctx_to_ep_ret = aci_end_point_retention_policy.test_end_point_retention_policy_0.id
-  relation_fv_rs_ctx_to_ext_route_tag_pol = aci_l3out_route_tag_policy.test_l3out_route_tag_policy_1.id
-  relation_fv_rs_ospf_ctx_pol = aci_ospf_timers.test_ospf_timers_0.id
+  bd_enforced_enable = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.0(1k)-") ? "no" : null
+  pc_enf_dir = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.2(1i)-") ? "egress" : null
+  pc_enf_pref = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? "enforced" : null
+  relation_fv_rs_bgp_ctx_pol = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? aci_bgp_timers.test_bgp_timers_0.id : null
+  relation_fv_rs_ctx_mon_pol = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? aci_monitoring_policy.test_monitoring_policy_1.id : null
+  relation_fv_rs_ctx_to_ep_ret = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? aci_end_point_retention_policy.test_end_point_retention_policy_0.id : null
+  relation_fv_rs_ctx_to_ext_route_tag_pol = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.1(1j)-") ? aci_l3out_route_tag_policy.test_l3out_route_tag_policy_1.id : null
+  relation_fv_rs_ospf_ctx_pol = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? aci_ospf_timers.test_ospf_timers_0.id : null
   tenant_dn = aci_tenant.test.id
   relation_fv_rs_ctx_to_bgp_ctx_af_pol {
     af = "ipv4-ucast"

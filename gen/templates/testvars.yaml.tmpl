@@ -14,6 +14,13 @@ legacy_attributes:
 		{{- end}}
 	{{- end }}
 
+legacy_attribute_versions:
+  {{- range .LegacyAttributes}}
+    {{- if ne .ReplacedBy.AttributeName "" }}
+  {{.AttributeName}}: {{getLegacyAttributeVersion .Name $}}
+    {{- end}}
+  {{- end}}
+
 {{- $ignore := getIgnoreInLegacy .PkgName .Definitions}}
 {{- if gt (len $ignore) 0}}
 
@@ -411,7 +418,7 @@ version_mismatch: true
 {{- define "nestedChildren" -}}
 {{ $versionMismatch := .VersionMismatched}}
 {{- $indent := .TemplateProperties.Indent -}}
-{{$name := .ResourceName}}{{$child_deletable := .AllowDelete}}{{$child_required := .RequiredAsChild}}
+{{$name := .ResourceName}}{{$child_deletable := .AllowDelete}}{{$child_required := .RequiredAsChild}}{{$child_versions := .RawVersions}}
   {{ $indent }}{{overwriteProperty $.PkgName .ResourceName $.Definitions}}:
   {{- if or (not .IdentifiedBy) .MaxOneClassAllowed}}
   {{- $versionMismatchExists := false}}
@@ -428,6 +435,7 @@ version_mismatch: true
       {{- else -}}
     {{ $indent }}child_required: false
       {{- end}}
+      {{ $indent }}child_versions: {{$child_versions}}
     {{- if $versionMismatchExists}}
       {{- $properties := .Properties }}
       {{ $indent }}version_mismatch:
@@ -464,7 +472,7 @@ version_mismatch: true
   {{- $enteredPropertiesZone1 := false }}
    {{- $versionMismatchExists := false}}
     {{ $indent }}- {{ range .Properties}}{{- if $enteredPropertiesZone1 }}{{ $indent }}{{- else}}{{- $enteredPropertiesZone1 = true }}{{- end}}{{- if keyExists $versionMismatch .RawVersion}}{{$versionMismatchExists = true}}{{- end}}{{- if and (not (keyExists $versionMismatch .RawVersion)) (not .IgnoreInTest) (not .ReadOnly)}}{{$overwritePropertyName := overwriteProperty $.PkgName .SnakeCaseName $.Definitions}}{{$overwritePropertyName}}: {{$length := len .ValidValues}}{{- if eq .ValueType "bitmask"}}{{- if lt 0 (len (overwritePropertyValue $.PkgName $overwritePropertyName $overwritePropertyName "all" 0 $.Definitions))}}[{{range $index, $value := (overwritePropertyValue $.PkgName $overwritePropertyName $overwritePropertyName "all" 0 $.Definitions)}}"{{ $value}}"{{- if ne (add $index 1) (len (overwritePropertyValue $.PkgName $overwritePropertyName $overwritePropertyName "all" 0 $.Definitions))}},{{- end}}{{- end}}]{{- else}}[]{{- end}}{{else if ne $length 0}}"{{overwritePropertyValue $.PkgName $overwritePropertyName (index .ValidValues 0) "child_1" 0 $.Definitions }}"{{else if not .IsNaming}}"{{overwritePropertyValue $.PkgName $overwritePropertyName $overwritePropertyName "all" 0 $.Definitions }}"{{- else}}{{lookupChildTestValue $.PkgName $.ResourceName .SnakeCaseName $.TestVars 0 $.Definitions}}{{- end}}
-      {{ end}}{{ end}}
+      {{ end}}{{ end}}{{ $indent }}child_versions: {{$child_versions}}
       {{- if $versionMismatchExists}}
       {{- $properties := .Properties }}
       {{ $indent }}version_mismatch:
@@ -500,7 +508,7 @@ version_mismatch: true
   {{- $enteredPropertiesZone2 := false }}
   {{- $versionMismatchExists := false}}
     {{ $indent }}- {{ range .Properties}}{{- if $enteredPropertiesZone2 }}{{ $indent }}{{- else}}{{- $enteredPropertiesZone2 = true }}{{- end}}{{- if keyExists $versionMismatch .RawVersion}}{{$versionMismatchExists = true}}{{- end}}{{- if and (not (keyExists $versionMismatch .RawVersion)) (not .IgnoreInTest) (not .ReadOnly)}}{{$overwritePropertyName := overwriteProperty $.PkgName .SnakeCaseName $.Definitions}}{{$overwritePropertyName}}: {{$length := len .ValidValues}}{{- if eq .ValueType "bitmask"}}{{- if lt 0 (len (overwritePropertyValue $.PkgName $overwritePropertyName $overwritePropertyName "default" 0 $.Definitions))}}[{{range $index, $value := (overwritePropertyValue $.PkgName $overwritePropertyName $overwritePropertyName "default" 0 $.Definitions)}}"{{ $value}}"{{- if ne (add $index 1) (len (overwritePropertyValue $.PkgName $overwritePropertyName $overwritePropertyName "default" 0 $.Definitions))}},{{- end}}{{- end}}]{{- else}}[]{{- end}}{{else if ge $length 2}}"{{overwritePropertyValue $.PkgName $overwritePropertyName (index .ValidValues 1) "child_2" 0 $.Definitions }}"{{else if not .IsNaming}}"{{overwritePropertyValue $.PkgName $overwritePropertyName $overwritePropertyName "default" 0 $.Definitions }}"{{- else}}{{lookupChildTestValue $.PkgName $.ResourceName .SnakeCaseName $.TestVars 1 $.Definitions}}{{- end}}
-      {{ end}}{{- end}}
+      {{ end}}{{- end}}{{ $indent }}child_versions: {{$child_versions}}
     {{- if $versionMismatchExists}}
       {{- $properties := .Properties }}
       {{ $indent }}version_mismatch:

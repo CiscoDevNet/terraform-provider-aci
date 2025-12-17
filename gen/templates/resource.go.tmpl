@@ -2045,7 +2045,8 @@ func (r *{{.ResourceClassName}}Resource) ImportState(ctx context.Context, req re
 
 func getAndSet{{.ResourceClassName}}Attributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *{{.ResourceClassName}}ResourceModel) {
 	{{- if .HasChild}}
-	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "{{- .PkgName}},{{ template "rspSubtreeClassFilter" . }}"), "GET", nil)
+	childClasses := getChildClassesForGetRequest([]string{ {{ range (getChildClassNames . nil)}}"{{.}}",{{ end}} })
+	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), strings.Join(childClasses, ",")), "GET", nil)
 	{{- else}}
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "GET", nil)
 	{{- end}}

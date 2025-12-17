@@ -19,7 +19,7 @@ func TestAccResourceEigrpCtxAfPolWithFvTenant(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigEigrpCtxAfPolMinDependencyWithFvTenantAllowExisting,
+				Config:             testConfigEigrpCtxAfPolMinDependencyWithFvTenantAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_eigrp_address_family_context.allow_test", "name", "test_name"),
@@ -56,7 +56,7 @@ func TestAccResourceEigrpCtxAfPolWithFvTenant(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:      testConfigEigrpCtxAfPolMinDependencyWithFvTenantAllowExisting,
+				Config:      testConfigEigrpCtxAfPolMinDependencyWithFvTenantAllowExisting + testConfigDataSourceSystem,
 				ExpectError: regexp.MustCompile("Object Already Exists"),
 			},
 		},
@@ -69,7 +69,7 @@ func TestAccResourceEigrpCtxAfPolWithFvTenant(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigEigrpCtxAfPolMinDependencyWithFvTenantAllowExisting,
+				Config:             testConfigEigrpCtxAfPolMinDependencyWithFvTenantAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_eigrp_address_family_context.allow_test", "name", "test_name"),
@@ -105,7 +105,7 @@ func TestAccResourceEigrpCtxAfPolWithFvTenant(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigEigrpCtxAfPolMinDependencyWithFvTenant,
+				Config:             testConfigEigrpCtxAfPolMinDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_eigrp_address_family_context.test", "name", "test_name"),
@@ -123,7 +123,7 @@ func TestAccResourceEigrpCtxAfPolWithFvTenant(t *testing.T) {
 			},
 			// Update with all config and verify default APIC values
 			{
-				Config:             testConfigEigrpCtxAfPolAllDependencyWithFvTenant,
+				Config:             testConfigEigrpCtxAfPolAllDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_eigrp_address_family_context.test", "name", "test_name"),
@@ -141,7 +141,7 @@ func TestAccResourceEigrpCtxAfPolWithFvTenant(t *testing.T) {
 			},
 			// Update with minimum config and verify config is unchanged
 			{
-				Config:             testConfigEigrpCtxAfPolMinDependencyWithFvTenant,
+				Config:             testConfigEigrpCtxAfPolMinDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_eigrp_address_family_context.test", "name", "test_name"),
@@ -149,7 +149,7 @@ func TestAccResourceEigrpCtxAfPolWithFvTenant(t *testing.T) {
 			},
 			// Update with empty strings config or default value
 			{
-				Config:             testConfigEigrpCtxAfPolResetDependencyWithFvTenant,
+				Config:             testConfigEigrpCtxAfPolResetDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_eigrp_address_family_context.test", "name", "test_name"),
@@ -173,7 +173,7 @@ func TestAccResourceEigrpCtxAfPolWithFvTenant(t *testing.T) {
 			},
 			// Update with children
 			{
-				Config:             testConfigEigrpCtxAfPolChildrenDependencyWithFvTenant,
+				Config:             testConfigEigrpCtxAfPolChildrenDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_eigrp_address_family_context.test", "name", "test_name"),
@@ -187,14 +187,18 @@ func TestAccResourceEigrpCtxAfPolWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_eigrp_address_family_context.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_eigrp_address_family_context.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_eigrp_address_family_context.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_eigrp_address_family_context.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_eigrp_address_family_context.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_eigrp_address_family_context.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_eigrp_address_family_context.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_eigrp_address_family_context.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_eigrp_address_family_context.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_eigrp_address_family_context.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_eigrp_address_family_context.test", "tags.1.value", "test_value"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_eigrp_address_family_context.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_eigrp_address_family_context.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_eigrp_address_family_context.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_eigrp_address_family_context.test", "annotations.1.value", "test_value"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_eigrp_address_family_context.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_eigrp_address_family_context.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_eigrp_address_family_context.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_eigrp_address_family_context.test", "tags.1.value", "test_value"),
+					),
 				),
 			},
 			// Refresh State before import testing to ensure that the state is up to date
@@ -210,37 +214,45 @@ func TestAccResourceEigrpCtxAfPolWithFvTenant(t *testing.T) {
 			},
 			// Update with children removed from config
 			{
-				Config:             testConfigEigrpCtxAfPolChildrenRemoveFromConfigDependencyWithFvTenant,
+				Config:             testConfigEigrpCtxAfPolChildrenRemoveFromConfigDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_eigrp_address_family_context.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_eigrp_address_family_context.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_eigrp_address_family_context.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_eigrp_address_family_context.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_eigrp_address_family_context.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_eigrp_address_family_context.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_eigrp_address_family_context.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_eigrp_address_family_context.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_eigrp_address_family_context.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_eigrp_address_family_context.test", "tags.#", "2"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_eigrp_address_family_context.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_eigrp_address_family_context.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_eigrp_address_family_context.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_eigrp_address_family_context.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_eigrp_address_family_context.test", "annotations.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_eigrp_address_family_context.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_eigrp_address_family_context.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_eigrp_address_family_context.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_eigrp_address_family_context.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_eigrp_address_family_context.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children first child removed
 			{
-				Config:             testConfigEigrpCtxAfPolChildrenRemoveOneDependencyWithFvTenant,
+				Config:             testConfigEigrpCtxAfPolChildrenRemoveOneDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_eigrp_address_family_context.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_eigrp_address_family_context.test", "annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_eigrp_address_family_context.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_eigrp_address_family_context.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_eigrp_address_family_context.test", "tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_eigrp_address_family_context.test", "tags.#", "1"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_eigrp_address_family_context.test", "annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_eigrp_address_family_context.test", "annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_eigrp_address_family_context.test", "annotations.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_eigrp_address_family_context.test", "tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_eigrp_address_family_context.test", "tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_eigrp_address_family_context.test", "tags.#", "1"),
+					),
 				),
 			},
 			// Update with all children removed
 			{
-				Config:             testConfigEigrpCtxAfPolChildrenRemoveAllDependencyWithFvTenant,
+				Config:             testConfigEigrpCtxAfPolChildrenRemoveAllDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_eigrp_address_family_context.test", "annotations.#", "0"),
@@ -308,7 +320,7 @@ const testConfigEigrpCtxAfPolChildrenDependencyWithFvTenant = testConfigFvTenant
 resource "aci_eigrp_address_family_context" "test" {
   parent_dn = aci_tenant.test.id
   name = "test_name"
-  annotations = [
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -317,8 +329,8 @@ resource "aci_eigrp_address_family_context" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
-  tags = [
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -327,7 +339,7 @@ resource "aci_eigrp_address_family_context" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
+  ] : null
 }
 `
 
@@ -342,18 +354,18 @@ const testConfigEigrpCtxAfPolChildrenRemoveOneDependencyWithFvTenant = testConfi
 resource "aci_eigrp_address_family_context" "test" {
   parent_dn = aci_tenant.test.id
   name = "test_name"
-  annotations = [ 
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
-  tags = [ 
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
+  ] : null
 }
 `
 
@@ -361,7 +373,7 @@ const testConfigEigrpCtxAfPolChildrenRemoveAllDependencyWithFvTenant = testConfi
 resource "aci_eigrp_address_family_context" "test" {
   parent_dn = aci_tenant.test.id
   name = "test_name"
-  annotations = []
-  tags = []
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
 }
 `
