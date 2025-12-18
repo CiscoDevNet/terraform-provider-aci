@@ -58,7 +58,7 @@ func (d *MacsecKeyPolDataSource) Schema(ctx context.Context, req datasource.Sche
 			},
 			"end_time": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The end time of the MACsec Key object. The default value cannot be used directly, since APIC will calculate this value to the datetime representation which results in a applied state that does not match the planned state. Do not provide this attribute when APIC should calculate the current datetime ('now'). Furthermore, make sure that the time-zone part (in the full example this is '-08:00') matches the time-zone configured on APIC. Not doing so will result in unexpected behaviour.`,
+				MarkdownDescription: `The end time of the MACsec Key object. The default value cannot be used directly, since APIC will calculate this value to the datetime representation which results in a applied state that does not match the planned state. Do not provide this attribute when APIC should calculate the current datetime ('now'). Furthermore, make sure that the time-zone part (in the full example this is '-08:00') matches the time-zone configured on APIC. Providing a different time-zone will result in unexpected behaviour.`,
 			},
 			"key_name": schema.StringAttribute{
 				Required:            true,
@@ -86,7 +86,7 @@ func (d *MacsecKeyPolDataSource) Schema(ctx context.Context, req datasource.Sche
 			},
 			"start_time": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The start time of the MACsec Key object. Please make sure that the time-zone part (in the full example this is '-08:00') matches the time-zone configured on APIC. Not doing so will result in unexpected behaviour.`,
+				MarkdownDescription: `The start time of the MACsec Key object. Please make sure that the time-zone part (in the full example this is '-08:00') matches the time-zone configured on APIC. Providing a different time-zone will result in unexpected behaviour.`,
 			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,
