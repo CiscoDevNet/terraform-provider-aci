@@ -54,13 +54,13 @@ data "aci_macsec_key" "example_macsec_key_chain" {
 * `id` - (string) The distinguished name (DN) of the MACsec Key object.
 * `annotation` (annotation) - (string) The annotation of the MACsec Key object. This attribute is supported in ACI versions: 3.2(1l) and later.
 * `description` (descr) - (string) The description of the MACsec Key object.
-* `end_time` (endTime) - (string) The end time of the MACsec Key object. The default value cannot be used directly, since APIC will calculate this value to the datetime representation which results in a applied state that does not match the planned state. Do not provide this attribute when APIC should calculate the current datetime ('now'). Furthermore, make sure that the time-zone part (in the full example this is '-08:00') matches the time-zone configured on APIC. Not doing so will result in unexpected behaviour.
+* `end_time` (endTime) - (string) The end time of the MACsec Key object. The default value cannot be used directly, since APIC will calculate this value to the datetime representation which results in a applied state that does not match the planned state. Do not provide this attribute when APIC should calculate the current datetime ('now'). Furthermore, make sure that the time-zone part (in the full example this is '-08:00') matches the time-zone configured on APIC. Providing a different time-zone will result in unexpected behaviour.
 * `name` (name) - (string) The name of the MACsec Key object.
 * `name_alias` (nameAlias) - (string) The name alias of the MACsec Key object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 * `pre_shared_key` (preSharedKey) - (string) The  pre-shared key of the MACsec Key object.
-* `start_time` (startTime) - (string) The start time of the MACsec Key object. Please make sure that the time-zone part (in the full example this is '-08:00') matches the time-zone configured on APIC. Not doing so will result in unexpected behaviour.
+* `start_time` (startTime) - (string) The start time of the MACsec Key object. Please make sure that the time-zone part (in the full example this is '-08:00') matches the time-zone configured on APIC. Providing a different time-zone will result in unexpected behaviour.
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
