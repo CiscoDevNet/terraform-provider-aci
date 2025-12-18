@@ -1,0 +1,4 @@
+resource_name: relation_to_static_path
+sub_category: Application Management
+ui_locations:
+    - Tenants -> Application Profiles -> Application EPGs -> Static Ports

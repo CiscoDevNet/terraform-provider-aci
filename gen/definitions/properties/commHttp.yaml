@@ -1,0 +1,37 @@
+documentation:
+    accessControlAllowCredential: Determines if credentials are allowed in HTTP responses.
+    accessControlAllowOrigins: Determines which origins can access the resource. For example, inputting http://127.0.0.1:8000 would allow access from a source device with that IP address and port.
+    adminSt: The administrative state of the HTTP Service.
+    cliOnlyMode: Determines if CLI-only mode is enabled.
+    globalThrottleRate: The maximum amount of API calls allowed per unit time.
+    globalThrottleSt: The throttle state for all clients without specific identifier in their headers.
+    globalThrottleUnit: The unit of measurement for rate limiting.
+    nodeExporter: The node exporter service status.
+    port: The port used by the HTTP communication service.
+    redirectSt: The state of HTTP communication service.
+    serverHeader: Determines if the server header is included in responses.
+    throttleSt: The state of login and refresh throttling.
+    visoreAccess: Grants permissions for accessing the Visore tool, also known as Object Store Browser, in Cisco ACI.
+overwrites:
+    access_control_allow_credential: allow_credentials
+    access_control_allow_origins: allow_origins
+    admin_st: admin_state
+    global_throttle_st: global_throttle_state
+    redirect_st: redirect_state
+    throttle_rate: login_throttle_rate
+    throttle_st: login_throttle_state
+test_values:
+    all:
+        description: description_1
+        global_throttle_rate: "10000"
+        global_throttle_state: disabled
+        global_throttle_unit: r/s
+        login_throttle_rate: "2"
+        login_throttle_state: disabled
+        max_request_status_count: "0"
+        name: name_1
+        name_alias: name_alias_1
+        node_exporter: disabled
+        port: "80"
+        referer: referer_1
+        server_header: disabled

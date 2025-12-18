@@ -1,0 +1,36 @@
+default_values:
+    parent_dn: uni/infra
+documentation:
+    collect: Collect parameters of the %s object.
+    match: Match parameters of the %s object.
+overwrites:
+    collect: collect_parameters
+    match: match_parameters
+parents:
+    - class_name: infraInfra
+      parent_dependency: ""
+      parent_dn: uni/infra
+    - class_name: fvTenant
+      parent_dependency: ""
+      parent_dn: aci_tenant.test.id
+remove_valid_values:
+    match:
+        - unspecified
+test_values:
+    all:
+        collect_parameters:
+            - count-bytes
+            - src-intf
+        match_parameters:
+            - dst-ip
+            - src-ip
+    datasource_non_existing:
+        name: netfow_record_non_existing
+    datasource_required:
+        name: netfow_record
+    default:
+        collect_parameters:
+            - src-intf
+        match_parameters: []
+    resource_required:
+        name: netfow_record

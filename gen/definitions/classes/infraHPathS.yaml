@@ -1,0 +1,5 @@
+resource_name: access_interface_override
+sub_category: Access Policies
+ui_locations:
+    - Fabric -> Access Policies -> Interfaces -> Leaf Interfaces -> Overrides
+    - Fabric -> Access Policies -> Interfaces -> Spine Interfaces -> Overrides

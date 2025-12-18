@@ -1,0 +1,30 @@
+documentation:
+    uplinkId: The uplink identifier of the %s object.
+    uplinkName: The uplink name of the %s object.
+ignores:
+    - id
+    - name
+overwrites:
+    vmm_uplink_policys: uplink_policies
+parents:
+    - class_name: vmmUplinkPCont
+      parent_dependency: VmmDomP
+      parent_dn: aci_vmm_uplink_container.test.id
+resource_required:
+    - uplinkId
+    - uplinkName
+test_values:
+    all:
+        uplink_name: uplink_name_2
+    datasource_non_existing:
+        uplink_id: "2"
+    datasource_required:
+        uplink_id: "1"
+    default:
+        uplink_name: uplink_name_1
+    resource_required:
+        uplink_id: "1"
+        uplink_name: uplink_name_1
+    test_values_for_parent:
+        - uplink_id: "2"
+        - uplink_id: "1"

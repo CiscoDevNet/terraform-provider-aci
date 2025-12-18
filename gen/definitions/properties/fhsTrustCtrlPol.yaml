@@ -1,0 +1,17 @@
+default_values:
+    hasDhcpv4Server: "no"
+    hasDhcpv6Server: "no"
+    hasIpv6Router: "no"
+    trustArp: "no"
+    trustNd: "no"
+    trustRa: "no"
+documentation:
+    hasDhcpv4Server: The %s object contains DHCPv4 servers.
+    hasDhcpv6Server: The %s object contains DHCPv6 servers.
+    hasIpv6Router: The %s object contains IPv6 routers.
+    trustArp: The address resolution protocol (ARP) trust status of the %s object.
+    trustNd: The neighbor discovery (ND) trust status of the %s object.
+    trustRa: The router advertisement (RA) trust status of the %s object.
+parents:
+    - class_name: fvTenant
+      parent_dn: aci_tenant.test.id

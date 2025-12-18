@@ -1,0 +1,4 @@
+resource_name: eigrp_address_family_context
+sub_category: Tenant Policies
+ui_locations:
+    - Tenants -> Policies -> Protocol -> EIGRP -> EIGRP Address Family Context

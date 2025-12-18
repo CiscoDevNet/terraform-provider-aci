@@ -1,0 +1,8 @@
+contained_by:
+    - fvCrtrn
+dn_formats:
+    - uni/tn-{name}/ap-{name}/epg-{name}/crtrn/ipattr-{name}
+resource_name: epg_useg_ip_attribute
+sub_category: Application Management
+ui_locations:
+    - Tenants -> Application Profiles -> uSeg EPGs -> uSeg Attributes

@@ -1,0 +1,39 @@
+default_values:
+    siteId: "0"
+documentation:
+    remoteCtxPcTag: The policy class tag (pcTag) of the remote VRF. This attribute can only be present when the object for site association is a VRF.
+    remotePcTag: The policy class tag (pcTag) of the remote object.
+    siteId: The remote site identifier that is associated with the object of the primary/local site as an integer.
+overwrites:
+    remote_ctx_pc_tag: remote_vrf_pc_tag
+    siteId: site_id
+parents:
+    - class_name: fvSiteAssociated
+      parent_dependency: fvBD
+      parent_dn: aci_associated_site.test.id
+    - class_name: fvSiteAssociated
+      parent_dependency: fvAEPg
+      parent_dn: aci_associated_site.test.id
+remove_valid_values:
+    remoteCtxPcTag:
+        - any
+    remotePcTag:
+        - any
+test_values:
+    all:
+        remote_pc_tag: "16386"
+        remote_vrf_pc_tag: any
+        site_id: "1"
+    datasource_non_existing:
+        site_id: "2"
+    datasource_required:
+        site_id: "0"
+    default:
+        remote_pc_tag: "16387"
+        remote_vrf_pc_tag: any
+    resource_required:
+        remote_pc_tag: "16387"
+        site_id: "0"
+    test_values_for_parent:
+        - site_id: "0"
+        - site_id: "1"

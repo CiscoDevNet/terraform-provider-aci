@@ -1,0 +1,10 @@
+migration_blocks:
+    vmmUsrAccP:
+        pwd: password
+        usr: username
+        vmm_domain_dn: parent_dn
+migration_version: 1
+resource_name: vmm_credential
+sub_category: Virtual Networking
+ui_locations:
+    - Virtual Networking -> Provider -> Domain -> Credentials

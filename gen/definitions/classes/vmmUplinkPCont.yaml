@@ -1,0 +1,7 @@
+children:
+    - vmmUplinkP
+include: true
+resource_name: vmm_uplink_container
+sub_category: Virtual Networking
+ui_locations:
+    - Virtual Networking -> VMware -> Create Uplinks

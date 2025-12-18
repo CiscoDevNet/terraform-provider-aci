@@ -1,0 +1,27 @@
+default_values:
+    vsan: unknown
+documentation:
+    vsan: The virtual storage area network (VSAN) of the %s object.
+    vsanMode: The virtual storage area network (VSAN) mode of the %s object.
+parents:
+    - class_name: fvAEPg
+      parent_dependency: fvAp
+      parent_dn: aci_application_epg.test.id
+      target_classes:
+        - fabricPathEp
+targets:
+    - class_name: fabricPathEp
+      relation_resource_name: fibre_channel_path
+      static: true
+      target_dn: topology/pod-1/paths-101/pathep-[eth1/1]
+    - class_name: fabricPathEp
+      relation_resource_name: fibre_channel_path
+      static: true
+      target_dn: topology/pod-1/paths-101/pathep-[eth1/2]
+test_values:
+    all:
+        vsan: vsan-10
+    datasource_non_existing:
+        target_dn: topology/pod-2/paths-201/pathep-[eth1/1]
+    default:
+        vsan: unknown

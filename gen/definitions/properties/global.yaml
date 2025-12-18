@@ -1,0 +1,95 @@
+documentation:
+    adminSt: The administrative state of the %s object.
+    af: The type of address family for the %s.
+    annotation: The annotation of the %s object.
+    bdName: The bridge domain name of the %s object.
+    ctrl: The controls for the %s object.
+    ctxName: The VRF name of the %s object.
+    descr: The description of the %s object.
+    id: The identifier of the %s object.
+    instrImedcy: The deployment immediacy of the %s object. Specifies when the policy is pushed into the hardware policy content-addressable memory (CAM)
+    lastMbrIntvl: The last member interval (seconds) of the %s object. The group state is removed when no host responds before the timeout
+    mac: The MAC address of the %s object.
+    matchT: The provider label match criteria.
+    name: The name of the %s object.
+    nameAlias: The name alias of the %s object.
+    owner: The owner of the %s object.
+    pcTag: The classification tag used for policy enforcement and zoning.
+    prio: The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.
+    queryIntvl: The query interval (seconds) of the %s object.
+    resImedcy: The resolution immediacy of the %s object. Specifies if policies are resolved immmediately or when needed.
+    rspIntvl: The response interval (seconds) of the %s object.
+    seg: The segment ID (L2-VNI) of the %s object.
+    startQueryCnt: The start query count of the %s object.
+    startQueryIntvl: The query interval (seconds) of the %s object at start-up.
+    tnL3extOutName: The name of the L3 Outside object.
+    tnRtctrlProfileName: The name of the Route Control Profile object.
+    tnVzOOBBrCPName: The name of the Out Of Band Contract object.
+ignores:
+    - userdom
+overwrites:
+    af: address_family
+    class_pref: class_preference
+    count: apic_count
+    ctx_name: vrf_name
+    descr: description
+    encap: encapsulation
+    encap_mode: encapsulation_mode
+    id: id_attribute
+    instr_imedcy: deployment_immediacy
+    match_t: match_criteria
+    netflow_dir: netflow_direction
+    netflow_pref: enable_netflow
+    num_ports: number_of_ports
+    primary_encap: primary_encapsulation
+    primary_encap_inner: primary_encapsulation_inner
+    prio: priority
+    provider: prov
+    res_imedcy: resolution_immediacy
+    secondary_encap_inner: secondary_encapsulation_inner
+    seg: segment
+    t_dn: target_dn
+resource_name_doc_overwrite:
+    Ad: AD
+    Bd: BD
+    Bgp: BGP
+    Dhcp: DHCP
+    Dns: DNS
+    Dot1x: 802.1x
+    Dscp To: DSCP to
+    Dwdm: DWDM
+    Eigrp: EIGRP
+    Epg: EPG
+    Epgs: EPGs
+    Esg: ESG
+    Evpn: EVPN
+    External Network Instance Profile: External EPG
+    Fex: FEX
+    From Attachable Access Entity Profile To Domains: To Domains
+    Http Service: HTTP Service
+    Http Ssl Configuration: HTTPS Service
+    Igmp: IGMP
+    Ip: IP
+    L3out: L3Out
+    Lacp Enhanced Lag Policy: LACP Enhanced Lag Policy
+    Mac: MAC
+    Mld: MLD
+    Nd: Neighbor Discovery (ND)
+    Netflow: NetFlow
+    Ospf: OSPF
+    Pc Vpc Override Policy: PC VPC Override Policy
+    Pim: PIM
+    Poe: PoE
+    Policys: Policies
+    Qos: QoS
+    Shellinabox Service: SSH access via WEB
+    Sid: SR-MPLS Segment ID
+    Sla: SLA
+    Ssh Service: SSH Service
+    Tp: Certificate Authority
+    Useg: uSeg
+    Vm: VM
+    Vmm: VMM
+    Vpn: VPN
+    Vrf: VRF
+    Wan: WAN

@@ -1,0 +1,7 @@
+test_values:
+    datasource_non_existing:
+        ip: 2.2.2.0/24
+    datasource_required:
+        ip: 1.1.1.0/24
+    resource_required:
+        ip: 1.1.1.0/24

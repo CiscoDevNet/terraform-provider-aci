@@ -1,0 +1,4 @@
+resource_name: relation_from_external_epg_to_route_control_profile
+sub_category: L3Out
+ui_locations:
+    - Tenants -> Networking -> L3Outs -> External EPGs -> Route Control Profile

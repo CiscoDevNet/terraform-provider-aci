@@ -1,0 +1,6 @@
+default_values:
+    strictSecurityOnApicOOBSubnet: "no"
+documentation:
+    strictSecurityOnApicOOBSubnet: Removes implicit access permissions from any APIC out-of-band (OOB) subnet IP address.
+ignore_properties_in_test:
+    strictSecurityOnApicOOBSubnet: "no"

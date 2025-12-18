@@ -1,0 +1,18 @@
+parents:
+    - class_name: fvBD
+      parent_dependency: fvTenant
+      parent_dn: aci_bridge_domain.test.id
+test_values:
+    all:
+        mac: "00:00:00:00:00:01"
+    datasource_non_existing:
+        mac: "00:00:00:00:00:02"
+    datasource_required:
+        mac: "00:00:00:00:00:01"
+    default:
+        mac: "00:00:00:00:00:01"
+    resource_required:
+        mac: "00:00:00:00:00:01"
+    test_values_for_parent:
+        - mac: "00:00:00:00:00:03"
+        - mac: "00:00:00:00:00:01"

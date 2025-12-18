@@ -1,0 +1,27 @@
+documentation:
+    directives: The directives of the %s object. Use the 'no_stats' option for Policy Compression, which allows for the utilization of fewer TCAM resources. Use the 'log' option to log packets and provide information about traffic that is hitting the rule of interest. See the [contract configuration options](https://www.cisco.com/c/en/us/solutions/collateral/data-center-virtualization/application-centric-infrastructure/white-paper-c11-743951.html#Contractconfigurationoptions) in the Cisco ACI Contract Guide White Paper for more information.
+    tnVzFilterName: The name of the filter object.
+overwrites:
+    relation_from_taboo_contract_subject_to_filters: relation_to_filters
+parents:
+    - class_name: vzTSubj
+      parent_dependency: vzTaboo
+      parent_dn: aci_taboo_contract_subject.test.id
+remove_valid_values:
+    directives:
+        - none
+targets:
+    - class_name: vzFilter
+      overwrite_parent_dn_key: tenant_dn
+      parent_dependency: fvTenant
+      properties:
+        name: filter_name_1
+      relation_resource_name: filter
+      target_dn: uni/tn-test_name/flt-filter_name_1
+test_values:
+    all:
+        directives:
+            - log
+            - no_stats
+    default:
+        directives: []

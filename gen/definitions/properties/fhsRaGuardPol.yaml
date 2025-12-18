@@ -1,0 +1,21 @@
+default_values:
+    managedConfigCheck: "no"
+    managedConfigFlag: "no"
+    maxHopLimit: "0"
+    minHopLimit: "0"
+    otherConfigCheck: "no"
+    otherConfigFlag: "no"
+documentation:
+    managedConfigCheck: Perform a managed configuration check for the %s object.
+    managedConfigFlag: The managed configuration flag setting for the %s object.
+    maxHopLimit: The maximum hop limit for the %s object.
+    maxRouterPref: The allowed maximum router preference for the %s object.
+    minHopLimit: The minimum hop limit for the %s object.
+    otherConfigCheck: Perform other configuration checks for the %s object.
+    otherConfigFlag: The other configuration flag setting for the %s object.
+overwrites:
+    max_router_pref: max_router_preference
+test_values:
+    all:
+        max_hop_limit: "10"
+        min_hop_limit: "1"

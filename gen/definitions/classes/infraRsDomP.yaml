@@ -1,0 +1,10 @@
+multi_relationship_class: true
+relationship_classes:
+    - vmmDomP
+    - physDomP
+    - fcDomP
+    - l2extDomP
+resource_name: relation_from_attachable_access_entity_profile_to_domain
+sub_category: Access Policies
+ui_locations:
+    - Fabric -> Access Policies -> Policies -> Global -> Attachable Access Entity Profiles -> Domains

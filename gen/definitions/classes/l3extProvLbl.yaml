@@ -1,0 +1,4 @@
+resource_name: l3out_provider_label
+sub_category: L3Out
+ui_locations:
+    - Tenants (infra) -> Networking -> L3Outs -> Policy -> Main -> Provider Label

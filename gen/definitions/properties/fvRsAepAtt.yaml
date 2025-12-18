@@ -1,0 +1,20 @@
+documentation:
+    encap: The encapsulation of the %s object.
+    mode: The mode of the %s object.
+    primaryEncap: The primary encapsulation of the %s object.
+    tnInfraAttEntityPName: The name of the Attachable Access Entity Profile object
+ignores:
+    - annotation
+overwrites:
+    relation_from_application_epg_to_attachable_access_entity_profiles: relation_to_attachable_access_entity_profiles
+resource_required:
+    - encapsulation
+test_values:
+    all:
+        encapsulation: vlan-100
+        primary_encapsulation: vlan-200
+    default:
+        encapsulation: vlan-100
+        primary_encapsulation: unknown
+    resource_required:
+        encapsulation: vlan-100

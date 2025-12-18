@@ -1,0 +1,4 @@
+resource_name: dot1p_classifier
+sub_category: Tenant Policies
+ui_locations:
+    - Tenants -> Policies -> Protocol -> Custom QoS -> Dot1p Classifiers

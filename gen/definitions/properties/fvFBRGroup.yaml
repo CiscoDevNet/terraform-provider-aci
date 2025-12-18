@@ -1,0 +1,13 @@
+parents:
+    - class_name: fvCtx
+      parent_dependency: fvTenant
+      parent_dn: aci_vrf.test.id
+test_values:
+    datasource_non_existing:
+        name: fallback_route_group_non_existing
+    datasource_required:
+        name: fallback_route_group
+    default:
+        name: fallback_route_group
+    resource_required:
+        name: fallback_route_group

@@ -1,0 +1,4 @@
+resource_name: relation_from_vrf_to_bgp_address_family_context
+sub_category: Networking
+ui_locations:
+    - Tenants -> Networking -> VRFs -> Policy -> BGP Context Per Address Family

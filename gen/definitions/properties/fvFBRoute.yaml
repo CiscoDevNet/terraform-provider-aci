@@ -1,0 +1,19 @@
+documentation:
+    fbrPrefix: The prefix address of the %s object.
+overwrites:
+    fbr_prefix: prefix_address
+parents:
+    - class_name: fvFBRGroup
+      parent_dependency: fvCtx
+      parent_dn: aci_vrf_fallback_route_group.test.id
+test_values:
+    datasource_non_existing:
+        prefix_address: 2.2.2.4/24
+    datasource_required:
+        prefix_address: 2.2.2.3/24
+    default:
+        prefix_address: 2.2.2.2/24
+    resource_required:
+        prefix_address: 2.2.2.3/24
+    test_values_for_parent:
+        - prefix_address: 2.2.2.2/24

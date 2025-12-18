@@ -1,0 +1,9 @@
+documentation:
+    tnVzBrCPName: The contract name
+ignores:
+    - intent
+parents:
+    - class_name: fvESg
+      parent_dependency: fvAp
+    - class_name: fvAEPg
+      parent_dependency: fvAp

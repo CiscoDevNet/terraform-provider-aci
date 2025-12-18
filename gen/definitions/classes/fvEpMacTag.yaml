@@ -1,0 +1,7 @@
+contained_by:
+    - fvTenant
+resource_name: endpoint_tag_mac
+rn_prepend: eptags
+sub_category: Tenant Policies
+ui_locations:
+    - Tenants -> Policies -> Protocol -> Endpoint Tags -> Endpoint MAC

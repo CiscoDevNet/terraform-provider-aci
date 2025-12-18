@@ -1,0 +1,66 @@
+default_values:
+    ipamEnabled: "no"
+    untagged: "no"
+documentation:
+    bindingType: The binding type of the %s object.
+    classPref: The class preference of the %s object. Set 'useg' to allow microsegmentation.
+    customEpgName: The display name of the user configured port-group.
+    delimiter: The delimiter of the %s object.
+    encap: The encapsulation of the %s object. The encapsulation refers to the EPG VLAN when class preference is set to 'encap', or to the Secondary VLAN when class preference is set to 'useg'.
+    encapMode: The encapsulation mode of the %s object.
+    epgCos: The class of service (CoS) of the %s object.
+    epgCosPref: The class of service (CoS) preference of the %s object.
+    ipamDhcpOverride: The IP address management (IPAM) DHCP override of the %s object. Only applicable for Nutanix domains.
+    ipamEnabled: The IP address management (IPAM) enabled status of the %s object. Only applicable for Nutanix domains.
+    ipamGateway: The IP address management (IPAM) gateway of the %s object. Only applicable for Nutanix domains.
+    lagPolicyName: The link aggregation group (LAG) policy name of the %s object.
+    netflowDir: The NetFlow monitoring direction of the %s object.
+    netflowPref: The NetFlow enabled status for the %s object.
+    numPorts: The number of ports of the %s object.
+    primaryEncap: The primary encapsulation of the %s object. This is used when the class preference is set to 'useg'.
+    primaryEncapInner: The primary inner encapsulation of the %s object. This is used for the portgroup at the VMWare Distributed Virtual Switch (DVS). This VLAN is internal to the DVS and is used for communication between the other VMs and the AVE VM at a host. Traffic is not forwarded to the fabric over the VLAN. Only applicable for Cisco ACI Virtual Edge (AVE) domains.
+    secondaryEncapInner: The secondary inner encapsulation of the %s object. This is used for the portgroup at the VMWare Distributed Virtual Switch (DVS). This VLAN is internal to the DVS and is used for communication between the other VMs and the AVE VM at a host. Traffic is not forwarded to the fabric over the VLAN. Only applicable for Cisco ACI Virtual Edge (AVE) domains.
+    switchingMode: The switching mode of the %s object.
+    tDn: The distinguished name of the target Domain object.
+    untagged: The untagged status of the %s object.
+ignore_properties_in_test:
+    ipamDhcpOverride: 10.0.0.2
+    ipamEnabled: "yes"
+    ipamGateway: 10.0.0.1
+ignores:
+    - apiMode
+    - vnetOnly
+parents:
+    - class_name: fvAEPg
+      parent_dependency: fvAp
+      parent_dn: aci_application_epg.test.id
+      target_classes:
+        - vmmDomP
+targets:
+    - class_name: vmmDomP
+      relation_resource_name: domain
+      static: true
+      target_dn: uni/vmmp-VMware/dom-domain_1
+    - class_name: vmmDomP
+      relation_resource_name: domain
+      static: true
+      target_dn: uni/vmmp-VMware/dom-domain_2
+test_values:
+    all:
+        delimiter: '@'
+        encapsulation: vlan-100
+        number_of_ports: "1"
+        primary_encapsulation: vlan-200
+        primary_encapsulation_inner: vlan-300
+        secondary_encapsulation_inner: vlan-400
+    child_1:
+        switching_mode: native
+    child_2:
+        untagged: "no"
+    default:
+        delimiter: ""
+        encapsulation: unknown
+        number_of_ports: "0"
+        primary_encapsulation: unknown
+        primary_encapsulation_inner: unknown
+        secondary_encapsulation_inner: unknown

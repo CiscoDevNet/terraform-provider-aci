@@ -1,0 +1,9 @@
+contained_by:
+    - polUni
+dn_formats:
+    - uni/tn-mgmt/oobbrc-{name}
+resource_name: out_of_band_contract
+rn_prepend: tn-mgmt
+sub_category: Contract
+ui_locations:
+    - Tenants (mgmt) -> Contracts -> Out-Of-Band Contracts

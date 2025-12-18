@@ -1,0 +1,7 @@
+documentation:
+    key: The key used to uniquely identify this configuration object.
+resource_required:
+    - value
+test_values:
+    default:
+        value: test_value

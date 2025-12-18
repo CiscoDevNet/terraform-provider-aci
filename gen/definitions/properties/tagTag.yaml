@@ -1,0 +1,14 @@
+documentation:
+    key: The key used to uniquely identify this configuration object.
+parents:
+    - class_name: fvAEPg
+      parent_dependency: ""
+      parent_dn: aci_application_epg.test.id
+    - class_name: fvTenant
+      parent_dependency: ""
+      parent_dn: aci_tenant.test.id
+resource_required:
+    - value
+test_values:
+    default:
+        value: test_value

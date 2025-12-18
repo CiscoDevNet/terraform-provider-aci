@@ -1,0 +1,6 @@
+resource_name: epg_useg_sub_block_statement
+resource_notes:
+    - The `aci_epg_useg_sub_block_statement` is used to create nested sub-block statements by referencing itself.
+sub_category: Application Management
+ui_locations:
+    - Tenants -> Application Profiles -> uSeg EPGs -> uSeg Attributes

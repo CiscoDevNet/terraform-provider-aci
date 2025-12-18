@@ -1,0 +1,8 @@
+contained_by:
+    - polUni
+migration_version: 1
+resource_name: fex_profile
+rn_prepend: infra
+sub_category: Access Policies
+ui_locations:
+    - Fabric -> Access Policies -> Interfaces -> Leaf Interfaces -> Profiles -> Fex Interfaces

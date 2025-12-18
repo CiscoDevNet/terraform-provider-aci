@@ -1,0 +1,5 @@
+overwrites:
+    admin_st: admin_state
+test_values:
+    all:
+        key_ring_name: default

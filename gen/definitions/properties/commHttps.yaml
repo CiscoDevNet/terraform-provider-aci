@@ -1,0 +1,58 @@
+add_valid_values:
+    globalThrottleUnit:
+        - r/s
+        - r/m
+documentation:
+    accessControlAllowCredential: Determines if credentials are allowed in HTTPS responses.
+    accessControlAllowOrigins: Determines which origins can access the resource. For example, inputting http://127.0.0.1:8000 would allow access from a source device with that IP address and port.
+    adminSt: The administrative state of the HTTPS Service.
+    cliOnlyMode: Determines if CLI-only mode is enabled.
+    clientCertAuthState: The authentication state of the client certificate.
+    dhParam: Determines the settings for Diffie-Hellman (DH) parameters.
+    globalThrottleRate: The maximum amount of API calls allowed per unit time.
+    globalThrottleSt: The throttle state for all clients without specific identifier in their headers.
+    globalThrottleUnit: The unit of measurement for rate limiting specified with the 'global_throttle_rate' attribute.
+    nodeExporter: The node exporter service status.
+    port: The port used by the HTTPS communication service.
+    referer: Allowed HTTP referers.
+    serverHeader: Determines if the server header is included in responses.
+    sslProtocols: The SSL protocols allowed by HTTPS communication service.
+    throttleSt: The state of login and refresh throttling.
+    visoreAccess: Grants permissions for accessing the Visore tool, also known as Object Store Browser, in Cisco ACI.
+overwrites:
+    access_control_allow_credential: allow_credentials
+    access_control_allow_origins: allow_origins
+    admin_st: admin_state
+    client_cert_auth_state: client_certificate_authentication_state
+    dh_param: dh_parameter
+    global_throttle_st: global_throttle_state
+    throttle_rate: login_throttle_rate
+    throttle_st: login_throttle_state
+remove_valid_values:
+    adminSt:
+        - disabled
+targets:
+    - class_name: pkiTP
+      properties:
+        certificate_chain: '-----BEGIN CERTIFICATE-----\\nMIICODCCAaGgAwIBAgIJAIt8XMntue0VMA0GCSqGSIb3DQEBCwUAMDQxDjAMBgNV\\nBAMMBUFkbWluMRUwEwYDVQQKDAxZb3VyIENvbXBhbnkxCzAJBgNVBAYTAlVTMCAX\\nDTE4MDEwOTAwNTk0NFoYDzIxMTcxMjE2MDA1OTQ0WjA0MQ4wDAYDVQQDDAVBZG1p\\nbjEVMBMGA1UECgwMWW91ciBDb21wYW55MQswCQYDVQQGEwJVUzCBnzANBgkqhkiG\\n9w0BAQEFAAOBjQAwgYkCgYEAohG/7axtt7CbSaMP7r+2mhTKbNgh0Ww36C7Ta14i\\nv+VmLyKkQHnXinKGhp6uy3Nug+15a+eIu7CrgpBVMQeCiWfsnwRocKcQJWIYDrWl\\nXHxGQn31yYKR6mylE7Dcj3rMFybnyhezr5D8GcP85YRPmwG9H2hO/0Y1FUnWu9Iw\\nAQkCAwEAAaNQME4wHQYDVR0OBBYEFD0jLXfpkrU/ChzRvfruRs/fy1VXMB8GA1Ud\\nIwQYMBaAFD0jLXfpkrU/ChzRvfruRs/fy1VXMAwGA1UdEwQFMAMBAf8wDQYJKoZI\\nhvcNAQELBQADgYEAOmvre+5tgZ0+F3DgsfxNQqLTrGiBgGCIymPkP/cBXXkNuJyl\\n3ac7tArHQc7WEA4U2R2rZbEq8FC3UJJm4nUVtCPvEh3G9OhN2xwYev79yt6pIn/l\\nKU0Td2OpVyo0eLqjoX5u2G90IBWzhyjFbo+CcKMrSVKj1YOdG0E3OuiJf00=\\n-----END CERTIFICATE-----'
+        name: test_name
+test_values:
+    all:
+        cli_only_mode: disabled
+        client_cert_auth_state: disabled
+        description: description_1
+        global_throttle_rate: "10000"
+        global_throttle_state: disabled
+        global_throttle_unit: r/s
+        login_throttle_rate: "2"
+        login_throttle_state: disabled
+        max_request_status_count: "0"
+        name: name_1
+        name_alias: name_alias_1
+        node_exporter: disabled
+        port: "443"
+        referer: referer_1
+        server_header: disabled
+        ssl_protocols:
+            - TLSv1
+        visore_access: disabled

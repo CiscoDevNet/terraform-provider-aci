@@ -1,0 +1,4 @@
+resource_name: ip_sla_track_list
+sub_category: Tenant Policies
+ui_locations:
+    - Tenants -> Policies -> Protocol -> IP SLA -> Track Lists

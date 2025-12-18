@@ -1,0 +1,9 @@
+resource_name: netflow_monitor_policy
+sub_category: Tenant Policies
+type_changes:
+    - attribute: netflowRsMonitorToRecord
+      old_type: SetNestedAttribute
+      version: 0
+ui_locations:
+    - Tenants -> Policies -> NetFlow -> NetFlow Monitors
+    - Fabric -> Access Policies -> Policies -> Interface -> NetFlow -> NetFlow Monitors

@@ -1,0 +1,4 @@
+parents:
+    - class_name: vzTaboo
+      parent_dependency: fvTenant
+      parent_dn: aci_taboo_contract.test.id

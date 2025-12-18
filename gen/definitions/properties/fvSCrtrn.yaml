@@ -1,0 +1,20 @@
+documentation:
+    match: The Matching Rule Type of the %s object.
+parents:
+    - class_name: fvCrtrn
+      parent_dependency: fvAEPg
+      parent_dn: epg_useg_block_statement.test.id
+    - class_name: fvSCrtrn
+      parent_dependency: fvCrtrn
+      parent_dn: epg_useg_sub_block_statement.test.id
+test_values:
+    all:
+        match: all
+    datasource_non_existing:
+        name: sub_criterion_non_existing
+    datasource_required:
+        name: sub_criterion
+    default:
+        match: any
+    resource_required:
+        name: sub_criterion

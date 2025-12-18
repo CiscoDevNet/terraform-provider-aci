@@ -1,0 +1,14 @@
+ignores:
+    - ctxName
+test_values:
+    all:
+        id_attribute: "1"
+    datasource_non_existing:
+        mac: "00:00:00:00:00:01"
+    datasource_required:
+        mac: "00:00:00:00:00:01"
+    default:
+        id_attribute: "0"
+        mac: "00:00:00:00:00:00"
+    resource_required:
+        mac: "00:00:00:00:00:01"

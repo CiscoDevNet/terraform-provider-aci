@@ -1,0 +1,4 @@
+documentation:
+    fcotChannelNumber: The channel number of the %s object.
+overwrites:
+    fcot_channel_number: channel_nummber

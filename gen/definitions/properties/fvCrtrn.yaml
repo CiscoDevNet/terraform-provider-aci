@@ -1,0 +1,22 @@
+documentation:
+    match: The Matching Rule Type of the %s object.
+    prec: The precedence of the %s object.
+    scope: The scope of the %s object.
+overwrites:
+    prec: precedence
+parents:
+    - class_name: fvAEPg
+      parent_dn: aci_application_epg.test.id
+test_values:
+    all:
+        match: all
+        name: criterion
+        precedence: "1"
+    datasource_non_existing:
+        name: criterion_non_existing
+    datasource_required:
+        name: criterion
+    default:
+        match: any
+        precedence: "0"
+        scope: scope-bd

@@ -1,0 +1,16 @@
+default_values:
+    flushAdminSt: disabled
+documentation:
+    congClearAction: The congestion clear action of the %s object.
+    congDetectMult: The congestion detect multiplier of the %s object. The value must be in the range 1 - 10000.
+    flushAdminSt: The flush administrative state of the %s object.
+    flushIntvl: The flush timeout (milliseconds) of the %s object. The value must be in the range 100 - 1000.
+overwrites:
+    cong_clear_action: congestion_clear_action
+    cong_detect_mult: congestion_detect_multiplier
+    flush_admin_st: flush_admin_state
+    flush_intvl: flush_timeout
+test_values:
+    all:
+        congestion_detect_multiplier: "15"
+        flush_timeout: "300"

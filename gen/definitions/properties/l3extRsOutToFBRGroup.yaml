@@ -1,0 +1,15 @@
+documentation:
+    tDn: The distinguished name of the VRF Fallback Route Group object.
+parents:
+    - class_name: l3extOut
+      parent_dependency: fvTenant
+      parent_dn: aci_l3_outside.test.id
+      target_classes:
+        - fvFBRGroup
+targets:
+    - class_name: fvFBRGroup
+      parent_dependency: fvCtx
+      properties:
+        name: vrf_fallback_route_group_0
+      relation_resource_name: vrf_fallback_route_group
+      target_dn: uni/tn-test_name/ctx-test_vrf/fbrg-vrf_fallback_route_group_0

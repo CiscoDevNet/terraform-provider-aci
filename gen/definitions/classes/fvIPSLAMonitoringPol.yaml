@@ -1,0 +1,4 @@
+resource_name: ip_sla_monitoring_policy
+sub_category: Tenant Policies
+ui_locations:
+    - Tenants -> Policies -> Protocol -> IP SLA -> IP SLA Monitoring Policies

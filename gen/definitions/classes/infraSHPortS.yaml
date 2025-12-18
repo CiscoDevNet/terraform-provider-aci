@@ -1,0 +1,11 @@
+migration_blocks:
+    infraRsSpAccGrp:
+        relation_infra_rs_sp_acc_grp: relation_to_spine_port_policy_group.target_dn
+    infraSHPortS:
+        spine_access_port_selector_type: port_selector_type
+        spine_interface_profile_dn: parent_dn
+migration_version: 1
+resource_name: spine_access_port_selector
+sub_category: Access Policies
+ui_locations:
+    - Fabric -> Access Policies -> Interfaces -> Spine Interfaces -> Profiles -> Interface Selectors

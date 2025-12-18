@@ -1,0 +1,12 @@
+overwrites:
+    relation_from_netflow_exporter_to_epg: relation_to_epg
+parents:
+    - class_name: netflowExporterPol
+      target_classes:
+        - fvEPg
+targets:
+    - class_name: fvAEPg
+      relation_resource_name: application_epg
+      static: true
+      target_dn: uni/tn-test_name/ap-test_name/epg-test_epg
+      target_dn_overwrite_docs: aci_application_epg.example.id

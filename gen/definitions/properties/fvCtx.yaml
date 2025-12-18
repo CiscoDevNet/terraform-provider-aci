@@ -1,0 +1,26 @@
+default_values:
+    bdEnforcedEnable: "no"
+documentation:
+    bdEnforcedEnable: The Bridge Domain (BD) enforcement status of the %s. BD enforcement will restrict a host from sending ping requests to subnets outside the Bridge Domain (BD). The feature blocks ICMP, TCP and UDP traffic between BDs.
+    ipDataPlaneLearning: The IP data plane status of the %s object. The process known as IP data plane learning involves acquiring the endpoint's IPv4 or IPv6 address through data plane routing of traffic from the endpoint.
+    pcEnfDir: The policy control enforcement direction of the %s object. VRF ingress policy enforcement involves ACL filtering on the leaf switch where the endpoint is located, reducing the policy CAM usage on the border leaf switch by confining the filtering to 'compute' leaf switches. VRF egress policy enforcement extends ACL filtering to the border leaf switch, increasing its policy CAM usage. The border leaf switch handles filtering for traffic from L3Out to EPG after the endpoint is learned, unless the endpoint-to-destination class mapping is unknown, in which case the compute leaf switch handles the filtering.
+    pcEnfPref: The policy control enforcement mode of the %s object. VRFs in unenforced mode do not restrict traffic between EPGs that are member of the VRF. VRFs in enforced mode restrict traffic not allowed by contracts between EPGs that are member of the VRF. The policy control enforcement direction is used to determine the preferred enforcement method.
+    scope: The scope ID (L3-VNI) of the %s object.
+ignores:
+    - knwMcastAct
+    - vrfIndex
+overwrites:
+    bd_enforced_enable: bd_enforcement
+    pc_enf_dir: policy_control_enforcement_direction
+    pc_enf_pref: policy_control_enforcement_mode
+read_only_properties:
+    - pcTag
+    - scope
+remove_valid_values:
+    pcEnfDir:
+        - mixed
+    pcTag:
+        - any
+test_values:
+    default:
+        bd_enforcement: "no"

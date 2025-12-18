@@ -1,0 +1,25 @@
+documentation:
+    loopbackAddr: The loopback address of the %s object.
+    sidoffset: The segment ID of the %s object.
+overwrites:
+    loopback_addr: loopback_address
+    sidoffset: segment_id
+parents:
+    - class_name: l3extLoopBackIfP
+      parent_dependency: l3extRsNodeL3OutAtt
+      parent_dn: aci_logical_node_to_fabric_node.test.id
+test_values:
+    all:
+        loopback_address: 1.1.1.1
+        name: node_sid_profile
+        segment_id: "1"
+    datasource_non_existing:
+        segment_id: "2"
+    datasource_required:
+        segment_id: "1"
+    default:
+        loopback_address: 0.0.0.0
+        name: ""
+        segment_id: "1"
+    resource_required:
+        segment_id: "1"

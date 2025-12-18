@@ -1,0 +1,27 @@
+documentation:
+    tnBgpCtxAfPolName: The name of the BGP Address Family Context.
+overwrites:
+    relation_from_vrf_to_bgp_address_family_contexts: relation_to_bgp_address_family_contexts
+parents:
+    - class_name: fvCtx
+      parent_dependency: fvTenant
+      parent_dn: aci_vrf.test.id
+targets:
+    - class_name: bgpCtxAfPol
+      overwrite_parent_dn_key: tenant_dn
+      parent_dependency: fvTenant
+      properties:
+        name: bgp_address_family_context_name_1
+      relation_resource_name: bgp_address_family_context
+      target_dn: uni/tn-test_name/bgpCtxAfP-bgp_address_family_context_name_1
+test_values:
+    all:
+        address_family: ipv4-ucast
+    datasource_non_existing:
+        address_family: ipv6-ucast
+    datasource_required:
+        address_family: ipv4-ucast
+    default:
+        address_family: ipv4-ucast
+    resource_required:
+        address_family: ipv4-ucast

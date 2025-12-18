@@ -1,0 +1,43 @@
+default_values:
+    hasMcastSource: "no"
+    isAttrBasedEPg: "no"
+    shutdown: "no"
+documentation:
+    exceptionTag: The contract exception tag of the %s object.
+    floodOnEncap: Flood L2 Multicast/Broadcast and Link Local Layer based on encapsulation.
+    fwdCtrl: The forwarding control of the %s object.
+    hasMcastSource: The %s object has a multicast source.
+    isAttrBasedEPg: The %s object is microsegmented (uSeg).
+    pcEnfPref: Parameter used to determine whether communication between endpoints within the EPG is blocked.
+    prefGrMemb: Parameter used to determine whether the EPG is part of the preferred group. Members of this group are allowed to communicate without contracts.
+    scope: The scope ID (L3-VNI) of the %s object.
+exclude_targets:
+    - fvESg
+    - l3extInstP
+ignore_custom_type_docs:
+    - Prio
+overwrites:
+    exception_tag: contract_exception_tag
+    flood_on_encap: flood_in_encapsulation
+    fwd_ctrl: forwarding_control
+    has_mcast_source: has_multicast_source
+    is_attr_based_e_pg: useg_epg
+    pc_enf_pref: intra_epg_isolation
+    pref_gr_memb: preferred_group_member
+    shutdown: admin_state
+parents:
+    - class_name: fvAp
+      parent_dependency: fvTenant
+read_only_properties:
+    - pcTag
+    - scope
+remove_valid_values:
+    pcTag:
+        - any
+test_values:
+    all:
+        forwarding_control: proxy-arp
+    default:
+        forwarding_control: none
+type_overwrites:
+    fwdCtrl: string

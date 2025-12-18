@@ -1,0 +1,12 @@
+documentation:
+    tnMonEPGPolName: The name of the monitoring policy.
+overwrites:
+    relation_from_application_epg_to_monitoring_policy: relation_to_monitoring_policy
+targets:
+    - class_name: monEPGPol
+      overwrite_parent_dn_key: tenant_dn
+      parent_dependency: fvTenant
+      properties:
+        name: monitoring_policy_name_1
+      relation_resource_name: monitoring_policy
+      target_dn: uni/tn-test_name/monepg-monitoring_policy_name_1

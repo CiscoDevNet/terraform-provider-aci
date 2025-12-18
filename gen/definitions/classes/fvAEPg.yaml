@@ -1,0 +1,51 @@
+exclude_children:
+    - fvSiteAssociated
+migration_blocks:
+    fvAEPg:
+        application_profile_dn: parent_dn
+        exception_tag: contract_exception_tag
+        flood_on_encap: flood_in_encapsulation
+        fwd_ctrl: forwarding_control
+        has_mcast_source: has_multicast_source
+        is_attr_based_epg: useg_epg
+        match_t: match_criteria
+        pc_enf_pref: intra_epg_isolation
+        pref_gr_memb: preferred_group_member
+        prio: priority
+        shutdown: admin_state
+    fvRsAEPgMonPol:
+        relation_fv_rs_aepg_mon_pol: relation_from_application_epg_to_monitoring_policy.monitoring_policy_name
+    fvRsBd:
+        relation_fv_rs_bd: relation_to_bridge_domain.bridge_domain_name
+    fvRsCons:
+        relation_fv_rs_cons: relation_to_consumed_contracts.contract_name
+    fvRsConsIf:
+        relation_fv_rs_cons_if: relation_to_imported_contracts.imported_contract_name
+    fvRsCustQosPol:
+        relation_fv_rs_cust_qos_pol: relation_to_custom_qos_policy.custom_qos_policy_name
+    fvRsDppPol:
+        relation_fv_rs_dpp_pol: relation_to_data_plane_policing_policy.data_plane_policing_policy_name
+    fvRsFcPathAtt:
+        relation_fv_rs_fc_path_att: relation_to_fibre_channel_paths.fibre_channel_path_name
+    fvRsIntraEpg:
+        relation_fv_rs_intra_epg: relation_to_intra_epg_contracts.contract_name
+    fvRsNodeAtt:
+        deployment_immediacy: relation_to_static_leafs.deployment_immediacy
+        description: relation_to_static_leafs.description
+        encap: relation_to_static_leafs.encapsulation
+        mode: relation_to_static_leafs.mode
+        node_dn: relation_to_static_leafs.target_dn
+        relation_fv_rs_node_att: relation_to_static_leafs
+    fvRsProtBy:
+        relation_fv_rs_prot_by: relation_to_taboo_contracts.taboo_contract_name
+    fvRsProv:
+        relation_fv_rs_prov: relation_to_provided_contracts.contract_name
+    fvRsSecInherited:
+        relation_fv_rs_sec_inherited: relation_to_contract_masters.target_dn
+    fvRsTrustCtrl:
+        relation_fv_rs_trust_ctrl: relation_to_trust_control_policy.trust_control_policy_name
+migration_version: 1
+resource_name: application_epg
+sub_category: Application Management
+ui_locations:
+    - Tenants -> Application Profiles -> Application EPGs

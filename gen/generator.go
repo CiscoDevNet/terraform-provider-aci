@@ -537,7 +537,7 @@ func IsResourceClass(className string) bool {
 
 func GetResourceNameAsDescription(s string, definitions Definitions) string {
 	resourceName := cases.Title(language.English).String(strings.ReplaceAll(s, "_", " "))
-	for k, v := range definitions.Properties["global"].(map[interface{}]interface{})["resource_name_doc_overwrite"].(map[interface{}]interface{}) {
+	for k, v := range definitions.Properties["global"].(map[string]interface{})["resource_name_doc_overwrite"].(map[interface{}]interface{}) {
 		matchList := strings.Split(resourceName, " ")
 		// Always replace when the key is containing of multiple words
 		// Replace only individual word on exact match of key, in order to prevent partial word replacement
@@ -643,8 +643,8 @@ func isMultiLine(propertyName, classPkgName string, definitions Definitions, mod
 	precedenceList := []string{classPkgName, "global"}
 	for _, precedence := range precedenceList {
 		if classDetails, ok := definitions.Properties[precedence]; ok {
-			for key, value := range classDetails.(map[interface{}]interface{}) {
-				if key.(string) == "multi_line" {
+			for key, value := range classDetails.(map[string]interface{}) {
+				if key == "multi_line" {
 					for _, v := range value.([]interface{}) {
 						if v.(string) == propertyName {
 							return true
@@ -763,8 +763,8 @@ func LookupTestValue(classPkgName, originalPropertyName string, testVars map[str
 	// This lookup is created as a workaround to reference in an examples on non target_dn attributes
 	// Redesign of testing / example creation logic should be done to cover this reference use-case
 	if classDetails, ok := definitions.Properties[classPkgName]; ok {
-		for key, value := range classDetails.(map[interface{}]interface{}) {
-			if key.(string) == "example_value_overwrite" {
+		for key, value := range classDetails.(map[string]interface{}) {
+			if key == "example_value_overwrite" {
 				for k, v := range value.(map[interface{}]interface{}) {
 					if k.(string) == propertyName {
 						return v.(string)
@@ -779,8 +779,8 @@ func LookupTestValue(classPkgName, originalPropertyName string, testVars map[str
 
 func GetTestValueOverwrite(classPkgName, propertyName, propertyValue string, definitions Definitions) string {
 	if classDetails, ok := definitions.Properties[classPkgName]; ok {
-		for key, value := range classDetails.(map[interface{}]interface{}) {
-			if key.(string) == "example_value_overwrite" {
+		for key, value := range classDetails.(map[string]interface{}) {
+			if key == "example_value_overwrite" {
 				for k, v := range value.(map[interface{}]interface{}) {
 					if k.(string) == propertyName {
 						return v.(string)
@@ -1051,22 +1051,7 @@ func getDefinitions() Definitions {
 		panic(err)
 	}
 	for _, file := range files {
-		if path.Ext(file.Name()) == ".yaml" {
-			definitionMap := make(map[string]interface{})
-			definition, err := os.ReadFile(fmt.Sprintf("%s/%s", definitionsPath, file.Name()))
-			if err != nil {
-				panic(err)
-			}
-			err = yaml.Unmarshal([]byte(definition), &definitionMap)
-			if err != nil {
-				panic(err)
-			}
-			if file.Name() == "classes.yaml" {
-				definitions.Classes = definitionMap
-			} else if file.Name() == "properties.yaml" {
-				definitions.Properties = definitionMap
-			}
-		} else if path.Ext(file.Name()) == ".json" && strings.Contains(file.Name(), "schema-git-commit-") {
+		if path.Ext(file.Name()) == ".json" && strings.Contains(file.Name(), "schema-git-commit-") {
 			definitionMap := make(map[string]interface{})
 			definition, err := os.ReadFile(fmt.Sprintf("%s/%s", definitionsPath, file.Name()))
 			if err != nil {
@@ -1077,9 +1062,40 @@ func getDefinitions() Definitions {
 				panic(err)
 			}
 			definitions.Migration = definitionMap
+			break
 		}
 	}
+
+	definitions.Classes = getDefinitionDetails("classes")
+	definitions.Properties = getDefinitionDetails("properties")
+
 	return definitions
+}
+
+func getDefinitionDetails(definitionType string) map[string]interface{} {
+	definitionMap := make(map[string]interface{})
+	dirPath := filepath.Join(definitionsPath, definitionType)
+	files, err := os.ReadDir(dirPath)
+	if err != nil {
+		panic(fmt.Sprintf("Failed to read directory %s: %v", dirPath, err))
+	}
+	for _, file := range files {
+		if file.IsDir() || filepath.Ext(file.Name()) != ".yaml" {
+			continue
+		}
+		filePath := filepath.Join(dirPath, file.Name())
+		data, err := os.ReadFile(filePath)
+		if err != nil {
+			panic(fmt.Sprintf("Failed to read file %s: %v", filePath, err))
+		}
+		var definition map[string]interface{}
+		if err := yaml.Unmarshal(data, &definition); err != nil {
+			panic(fmt.Sprintf("Failed to unmarshal YAML file %s: %v", filePath, err))
+		}
+		key := strings.TrimSuffix(file.Name(), filepath.Ext(file.Name()))
+		definitionMap[key] = definition
+	}
+	return definitionMap
 }
 
 // Remove all files in a directory except when the files that do not match the ignore list
@@ -1651,8 +1667,8 @@ func (m *Model) setClassModel(metaPath string, isChildIteration bool, definition
 
 func (m *Model) SetStateUpgradeTypeChanges(definitions Definitions) {
 	if v, ok := definitions.Classes[m.PkgName]; ok {
-		for key, value := range v.(map[interface{}]interface{}) {
-			if key.(string) == "type_changes" {
+		for key, value := range v.(map[string]interface{}) {
+			if key == "type_changes" {
 				m.TypeChanges = make(map[int][]TypeChange)
 				for _, value := range value.([]interface{}) {
 					var version int
@@ -1760,8 +1776,8 @@ func (m *Model) SetClassRnFormat(classDetails interface{}) {
 func (m *Model) SetRelationshipClasses(definitions Definitions) {
 	overwriteExampleClasses := []interface{}{}
 	if v, ok := definitions.Classes[m.PkgName]; ok {
-		for key, value := range v.(map[interface{}]interface{}) {
-			if key.(string) == "relationship_classes" {
+		for key, value := range v.(map[string]interface{}) {
+			if key == "relationship_classes" {
 				overwriteExampleClasses = value.([]interface{})
 			}
 			if key == "multi_relationship_class" {
@@ -1794,8 +1810,8 @@ func (m *Model) SetClassIdentifiers(classDetails interface{}) {
 
 func (m *Model) setMax1Entry() {
 	if v, ok := m.Definitions.Classes[m.PkgName]; ok {
-		for key, value := range v.(map[interface{}]interface{}) {
-			if key.(string) == "max_one_class_allowed" {
+		for key, value := range v.(map[string]interface{}) {
+			if key == "max_one_class_allowed" {
 				m.MaxOneClassAllowed = value.(bool)
 			}
 		}
@@ -1806,8 +1822,8 @@ func (m *Model) SetClassChildren(classDetails interface{}, pkgNames, mainParentC
 	childClasses := []string{}
 	excludeChildClasses := []string{}
 	if classDetails, ok := m.Definitions.Classes[m.PkgName]; ok {
-		for key, value := range classDetails.(map[interface{}]interface{}) {
-			if key.(string) == "exclude_children" {
+		for key, value := range classDetails.(map[string]interface{}) {
+			if key == "exclude_children" {
 				for _, child := range value.([]interface{}) {
 					if !slices.Contains(childClasses, child.(string)) {
 						excludeChildClasses = append(excludeChildClasses, child.(string))
@@ -1828,8 +1844,8 @@ func (m *Model) SetClassChildren(classDetails interface{}, pkgNames, mainParentC
 		}
 	}
 	if classDetails, ok := m.Definitions.Classes[m.PkgName]; ok {
-		for key, value := range classDetails.(map[interface{}]interface{}) {
-			if key.(string) == "children" {
+		for key, value := range classDetails.(map[string]interface{}) {
+			if key == "children" {
 				for _, child := range value.([]interface{}) {
 					if !slices.Contains(childClasses, child.(string)) {
 						childClasses = append(childClasses, child.(string))
@@ -1869,8 +1885,8 @@ func SetChildClassNames(definitions Definitions, model *Model, children map[stri
 
 func (m *Model) SetClassInclude() {
 	if classDetails, ok := m.Definitions.Classes[m.PkgName]; ok {
-		for key, value := range classDetails.(map[interface{}]interface{}) {
-			if key.(string) == "include" {
+		for key, value := range classDetails.(map[string]interface{}) {
+			if key == "include" {
 				m.Include = value.(bool)
 			}
 		}
@@ -1879,8 +1895,8 @@ func (m *Model) SetClassInclude() {
 
 func (m *Model) SetClassExclude() {
 	if classDetails, ok := m.Definitions.Classes[m.PkgName]; ok {
-		for key, value := range classDetails.(map[interface{}]interface{}) {
-			if key.(string) == "exclude" {
+		for key, value := range classDetails.(map[string]interface{}) {
+			if key == "exclude" {
 				m.Exclude = value.(bool)
 			} else {
 				m.Exclude = false
@@ -1917,23 +1933,23 @@ func reverseList(items []string) []string {
 // Flag created to ensure classes that only classes allowed to be deleted are deleted
 func (m *Model) SetResourceNotesAndWarnigns(classPkgName string, definitions Definitions) {
 	if classDetails, ok := definitions.Classes[classPkgName]; ok {
-		for key, value := range classDetails.(map[interface{}]interface{}) {
-			if key.(string) == "resource_notes" {
+		for key, value := range classDetails.(map[string]interface{}) {
+			if key == "resource_notes" {
 				for _, note := range value.([]interface{}) {
 					m.ResourceNotes = append(m.ResourceNotes, note.(string))
 				}
 			}
-			if key.(string) == "resource_warnings" {
+			if key == "resource_warnings" {
 				for _, note := range value.([]interface{}) {
 					m.ResourceWarnings = append(m.ResourceWarnings, note.(string))
 				}
 			}
-			if key.(string) == "datasource_notes" {
+			if key == "datasource_notes" {
 				for _, note := range value.([]interface{}) {
 					m.DatasourceNotes = append(m.DatasourceNotes, note.(string))
 				}
 			}
-			if key.(string) == "datasource_warnings" {
+			if key == "datasource_warnings" {
 				for _, note := range value.([]interface{}) {
 					m.DatasourceWarnings = append(m.DatasourceWarnings, note.(string))
 				}
@@ -1975,8 +1991,8 @@ func (m *Model) SetTestType(classDetails interface{}, definitions Definitions) {
 // Flag created to ensure classes that only classes allowed to be deleted are deleted
 func AllowClassDelete(classPkgName string, definitions Definitions) bool {
 	if classDetails, ok := definitions.Classes[classPkgName]; ok {
-		for key, value := range classDetails.(map[interface{}]interface{}) {
-			if key.(string) == "allow_delete" {
+		for key, value := range classDetails.(map[string]interface{}) {
+			if key == "allow_delete" {
 				return value.(bool)
 			}
 		}
@@ -2048,8 +2064,8 @@ func (m *Model) SetTestApplicableFromVersion(classDetails interface{}) {
 
 func (m *Model) SetRequiredAsChild(classPkgName string, definitions Definitions) {
 	if classDetails, ok := definitions.Classes[classPkgName]; ok {
-		for key, value := range classDetails.(map[interface{}]interface{}) {
-			if key.(string) == "required_as_child" {
+		for key, value := range classDetails.(map[string]interface{}) {
+			if key == "required_as_child" {
 				m.RequiredAsChild = value.(bool)
 				m.AllowDelete = false
 			}
@@ -2266,8 +2282,8 @@ func ignoreTestProperty(propertyName, classPkgName string, definitions Definitio
 	precedenceList := []string{classPkgName, "global"}
 	for _, precedence := range precedenceList {
 		if classDetails, ok := definitions.Properties[precedence]; ok {
-			for key, value := range classDetails.(map[interface{}]interface{}) {
-				if key.(string) == "ignore_properties_in_test" {
+			for key, value := range classDetails.(map[string]interface{}) {
+				if key == "ignore_properties_in_test" {
 					for k, v := range value.(map[interface{}]interface{}) {
 						if k.(string) == propertyName {
 							switch val := v.(type) {
@@ -2372,8 +2388,8 @@ func (m *Model) SetLegacyChildren(definitions Definitions) {
 
 	legacyChildren := []string{}
 	if v, ok := definitions.Classes[m.PkgName]; ok {
-		for key, value := range v.(map[interface{}]interface{}) {
-			if key.(string) == "migration_blocks" {
+		for key, value := range v.(map[string]interface{}) {
+			if key == "migration_blocks" {
 				for className := range value.(map[interface{}]interface{}) {
 					if className.(string) != m.PkgName {
 						legacyChildren = append(legacyChildren, className.(string))
@@ -2388,8 +2404,8 @@ func (m *Model) SetLegacyChildren(definitions Definitions) {
 func (m *Model) SetMigrationVersion(definitions Definitions) {
 	m.LegacySchemaVersion = 1
 	if v, ok := definitions.Classes[m.PkgName]; ok {
-		for key, value := range v.(map[interface{}]interface{}) {
-			if key.(string) == "migration_version" {
+		for key, value := range v.(map[string]interface{}) {
+			if key == "migration_version" {
 				m.LegacySchemaVersion = value.(int)
 			}
 		}
@@ -2466,8 +2482,8 @@ func (m *Model) SetLegacyAttributes(definitions Definitions) {
 
 func (m *Model) SetDataSourceHasNoNameIdentifier() {
 	if classDetails, ok := m.Definitions.Classes[m.PkgName]; ok {
-		for key, value := range classDetails.(map[interface{}]interface{}) {
-			if key.(string) == "data_source_has_no_name_identifier" {
+		for key, value := range classDetails.(map[string]interface{}) {
+			if key == "data_source_has_no_name_identifier" {
 				m.DataSourceHasNoNameIdentifier = value.(bool)
 			}
 		}
@@ -2557,8 +2573,8 @@ func getOverwritePropertyComment(propertyName, classPkgName string, definitions 
 	precedenceList := []string{classPkgName, "global"}
 	for _, precedence := range precedenceList {
 		if classDetails, ok := definitions.Properties[precedence]; ok {
-			for key, value := range classDetails.(map[interface{}]interface{}) {
-				if key.(string) == "documentation" {
+			for key, value := range classDetails.(map[string]interface{}) {
+				if key == "documentation" {
 					for k, v := range value.(map[interface{}]interface{}) {
 						if k.(string) == propertyName {
 							if strings.Contains(v.(string), "%s") {
@@ -2578,8 +2594,8 @@ func getOverwritePropertyType(propertyName, classPkgName, uiType string, definit
 	precedenceList := []string{classPkgName, "global"}
 	for _, precedence := range precedenceList {
 		if classDetails, ok := definitions.Properties[precedence]; ok {
-			for key, value := range classDetails.(map[interface{}]interface{}) {
-				if key.(string) == "type_overwrites" {
+			for key, value := range classDetails.(map[string]interface{}) {
+				if key == "type_overwrites" {
 					for k, v := range value.(map[interface{}]interface{}) {
 						if k.(string) == propertyName {
 							return v.(string)
@@ -2603,8 +2619,8 @@ func ignoreProperty(propertyName, classPkgName string, definitions Definitions) 
 	precedenceList := []string{classPkgName, "global"}
 	for _, precedence := range precedenceList {
 		if classDetails, ok := definitions.Properties[precedence]; ok {
-			for key, value := range classDetails.(map[interface{}]interface{}) {
-				if key.(string) == "ignores" {
+			for key, value := range classDetails.(map[string]interface{}) {
+				if key == "ignores" {
 					for _, v := range value.([]interface{}) {
 						if v.(string) == propertyName {
 							return true
@@ -2620,8 +2636,8 @@ func ignoreProperty(propertyName, classPkgName string, definitions Definitions) 
 func readOnlyProperties(classPkgName string, definitions Definitions) []string {
 	readOnlyProperties := []string{}
 	if classDetails, ok := definitions.Properties[classPkgName]; ok {
-		for key, value := range classDetails.(map[interface{}]interface{}) {
-			if key.(string) == "read_only_properties" {
+		for key, value := range classDetails.(map[string]interface{}) {
+			if key == "read_only_properties" {
 				for _, v := range value.([]interface{}) {
 					readOnlyProperties = append(readOnlyProperties, v.(string))
 				}
@@ -2641,8 +2657,8 @@ func requiredProperty(propertyName, classPkgName string, definitions Definitions
 	precedenceList := []string{classPkgName, "global"}
 	for _, precedence := range precedenceList {
 		if classDetails, ok := definitions.Properties[precedence]; ok {
-			for key, value := range classDetails.(map[interface{}]interface{}) {
-				if key.(string) == "resource_required" {
+			for key, value := range classDetails.(map[string]interface{}) {
+				if key == "resource_required" {
 					for _, v := range value.([]interface{}) {
 						if v.(string) == propertyName {
 							return true
@@ -2676,8 +2692,8 @@ func GetOverwriteAttributeName(classPkgName, propertyName string, definitions De
 
 	for _, precedence := range precedenceList {
 		if classDetails, ok := definitions.Properties[precedence]; ok {
-			for key, value := range classDetails.(map[interface{}]interface{}) {
-				if key.(string) == "overwrites" {
+			for key, value := range classDetails.(map[string]interface{}) {
+				if key == "overwrites" {
 					for k, v := range value.(map[interface{}]interface{}) {
 						if k.(string) == propertyName {
 							return v.(string)
@@ -2698,8 +2714,8 @@ Precendence order is:
 func GetOverwriteAttributeValue(classPkgName, propertyName, propertyValue, testType string, valueIndex int, definitions Definitions) interface{} {
 
 	if classDetails, ok := definitions.Properties[classPkgName]; ok {
-		for key, value := range classDetails.(map[interface{}]interface{}) {
-			if key.(string) == "test_values" {
+		for key, value := range classDetails.(map[string]interface{}) {
+			if key == "test_values" {
 				for test_type, test_type_values := range value.(map[interface{}]interface{}) {
 					test_type_value := make(map[interface{}]interface{})
 					if test_type.(string) == "test_values_for_parent" && testType == "test_values_for_parent" {
@@ -2737,8 +2753,8 @@ func GetOverwriteAttributeValue(classPkgName, propertyName, propertyValue, testT
 func GetIgnoreInLegacy(classPkgName string, definitions Definitions) []string {
 	result := []string{}
 	if classDetails, ok := definitions.Properties[classPkgName]; ok {
-		for key, value := range classDetails.(map[interface{}]interface{}) {
-			if key.(string) == "test_values" {
+		for key, value := range classDetails.(map[string]interface{}) {
+			if key == "test_values" {
 				for test_type, test_type_values := range value.(map[interface{}]interface{}) {
 					if test_type.(string) == "ignore_in_legacy" {
 						for _, test_type_value := range test_type_values.([]interface{}) {
@@ -2756,8 +2772,8 @@ func GetIgnoreInLegacy(classPkgName string, definitions Definitions) []string {
 func GetOverwriteContainedBy(classDetails interface{}, classPkgName string, definitions Definitions) map[string]interface{} {
 	containedBy := make(map[string]interface{})
 	if v, ok := definitions.Classes[classPkgName]; ok {
-		for key, value := range v.(map[interface{}]interface{}) {
-			if key.(string) == "contained_by" {
+		for key, value := range v.(map[string]interface{}) {
+			if key == "contained_by" {
 				for _, containedByValue := range value.([]interface{}) {
 					containedBy[containedByValue.(string)] = ""
 				}
@@ -2775,8 +2791,8 @@ func GetOverwriteContainedBy(classDetails interface{}, classPkgName string, defi
 func (m *Model) GetOverwriteRnFormat(rnFormat string) {
 	m.RnFormat = rnFormat
 	if v, ok := m.Definitions.Classes[m.PkgName]; ok {
-		for key, value := range v.(map[interface{}]interface{}) {
-			if key.(string) == "rn_prepend" {
+		for key, value := range v.(map[string]interface{}) {
+			if key == "rn_prepend" {
 				m.RnFormat = fmt.Sprintf("%s/%s", value.(string), rnFormat)
 				m.RnPrepend = value.(string)
 			}
@@ -2786,8 +2802,8 @@ func (m *Model) GetOverwriteRnFormat(rnFormat string) {
 
 func GetOverwriteTestType(classPkgName string, definitions Definitions) string {
 	if v, ok := definitions.Classes[classPkgName]; ok {
-		for key, value := range v.(map[interface{}]interface{}) {
-			if key.(string) == "test_type" {
+		for key, value := range v.(map[string]interface{}) {
+			if key == "test_type" {
 				return value.(string)
 			}
 		}
@@ -2797,8 +2813,8 @@ func GetOverwriteTestType(classPkgName string, definitions Definitions) string {
 
 func GetOverwriteClassVersion(classPkgName string, definitions Definitions) string {
 	if v, ok := definitions.Classes[classPkgName]; ok {
-		for key, value := range v.(map[interface{}]interface{}) {
-			if key.(string) == "class_version" {
+		for key, value := range v.(map[string]interface{}) {
+			if key == "class_version" {
 				return value.(string)
 			}
 		}
@@ -2817,7 +2833,7 @@ type MultiParentFormat struct {
 func GetMultiParentFormats(classPkgName string, definitions Definitions) map[string]MultiParentFormat {
 	multiParentFormats := make(map[string]MultiParentFormat)
 	if v, ok := definitions.Classes[classPkgName]; ok {
-		classMap, ok := v.(map[interface{}]interface{})
+		classMap, ok := v.(map[string]interface{})
 		if !ok {
 			return multiParentFormats
 		}
@@ -2890,8 +2906,8 @@ func GetMultiParentFormats(classPkgName string, definitions Definitions) map[str
 
 func GetOverwriteResourceIdentifier(classPkgName string, definitions Definitions) string {
 	if v, ok := definitions.Classes[classPkgName]; ok {
-		for key, value := range v.(map[interface{}]interface{}) {
-			if key.(string) == "resource_identifier" {
+		for key, value := range v.(map[string]interface{}) {
+			if key == "resource_identifier" {
 				return value.(string)
 			}
 		}
@@ -2912,8 +2928,8 @@ func (m *Model) SetClassRnFormatList(classDetails interface{}) {
 // Determine if possible dn formats in terraform documentation should be overwritten by dn formats from the classes.yaml file
 func GetOverwriteDnFormats(dnFormats []interface{}, classPkgName string, definitions Definitions) []interface{} {
 	if v, ok := definitions.Classes[classPkgName]; ok {
-		for key, value := range v.(map[interface{}]interface{}) {
-			if key.(string) == "dn_formats" {
+		for key, value := range v.(map[string]interface{}) {
+			if key == "dn_formats" {
 				dnFormats = value.([]interface{})
 			}
 		}
@@ -2933,8 +2949,8 @@ func GetTestConfigVariableName(className string, midString string, parentClassNa
 func GetOverwriteExampleClasses(classPkgName string, definitions Definitions) []interface{} {
 	overwriteExampleClasses := []interface{}{}
 	if v, ok := definitions.Classes[classPkgName]; ok {
-		for key, value := range v.(map[interface{}]interface{}) {
-			if key.(string) == "example_classes" {
+		for key, value := range v.(map[string]interface{}) {
+			if key == "example_classes" {
 				overwriteExampleClasses = value.([]interface{})
 			}
 		}
@@ -2949,8 +2965,8 @@ func GetParentTestDependencies(classPkgName string, index int, definitions Defin
 	targetClasses := []string{}
 
 	if classDetails, ok := definitions.Properties[classPkgName]; ok {
-		for key, value := range classDetails.(map[interface{}]interface{}) {
-			if key.(string) == "parents" {
+		for key, value := range classDetails.(map[string]interface{}) {
+			if key == "parents" {
 				if len(value.([]interface{})) > index {
 					parentMap := value.([]interface{})[index].(map[interface{}]interface{})
 					if pd, ok := parentMap["parent_dependency"]; ok {
@@ -2981,8 +2997,8 @@ func (m *Model) SetModelTestDependencies(classModels map[string]Model, definitio
 
 	testDependencies := []TestDependency{}
 	if classDetails, ok := definitions.Properties[m.PkgName]; ok {
-		for key, value := range classDetails.(map[interface{}]interface{}) {
-			if key.(string) == "targets" {
+		for key, value := range classDetails.(map[string]interface{}) {
+			if key == "targets" {
 				for index, v := range value.([]interface{}) {
 					targetMap := v.(map[interface{}]interface{})
 					if className, ok := targetMap["class_name"]; ok && !slices.Contains(m.getExcludeTargets(), className.(string)) {
@@ -2996,8 +3012,8 @@ func (m *Model) SetModelTestDependencies(classModels map[string]Model, definitio
 	childTestDependencies := []TestDependency{}
 	for _, child := range m.ChildClasses {
 		if classDetails, ok := definitions.Properties[child]; ok {
-			for key, value := range classDetails.(map[interface{}]interface{}) {
-				if key.(string) == "targets" {
+			for key, value := range classDetails.(map[string]interface{}) {
+				if key == "targets" {
 					for index, v := range value.([]interface{}) {
 						targetMap := v.(map[interface{}]interface{})
 						if className, ok := targetMap["class_name"]; ok && !slices.Contains(m.getExcludeTargets(), className.(string)) {
@@ -3017,8 +3033,8 @@ func (m *Model) SetModelTestDependencies(classModels map[string]Model, definitio
 func (m *Model) getExcludeTargets() []string {
 	excludeTargets := []string{}
 	if v, ok := m.Definitions.Properties[m.PkgName]; ok {
-		for key, value := range v.(map[interface{}]interface{}) {
-			if key.(string) == "exclude_targets" {
+		for key, value := range v.(map[string]interface{}) {
+			if key == "exclude_targets" {
 				for _, v := range value.([]interface{}) {
 					excludeTargets = append(excludeTargets, v.(string))
 				}
@@ -3083,7 +3099,7 @@ func getTestDependency(sourceClassName, className string, targetMap map[interfac
 }
 
 func GetTargetResourceName(resourceName string) string {
-	definitions := getDefinitions().Properties["resource_name_overwrite"].(map[interface{}]interface{})
+	definitions := getDefinitions().Properties["resource_name_overwrite"].(map[string]interface{})
 	if definitions[resourceName] != nil {
 		return definitions[resourceName].(string)
 	} else if definitions[resourceName] == nil {
@@ -3163,8 +3179,8 @@ func GetTestTargetDn(targets []interface{}, resourceName, targetDnValue string, 
 
 func (m *Model) GetClassForBlockName(definitions Definitions, blockName string) string {
 	if v, ok := definitions.Classes[m.PkgName]; ok {
-		for key, value := range v.(map[interface{}]interface{}) {
-			if key.(string) == "migration_blocks" {
+		for key, value := range v.(map[string]interface{}) {
+			if key == "migration_blocks" {
 				for className, classValues := range value.(map[interface{}]interface{}) {
 					for migrationKey := range classValues.(map[interface{}]interface{}) {
 						if migrationKey.(string) == blockName {
@@ -3180,8 +3196,8 @@ func (m *Model) GetClassForBlockName(definitions Definitions, blockName string) 
 
 func (m *Model) GetClassFromMigrationClassMapping(definitions Definitions, attributeName string, set bool) string {
 	if v, ok := definitions.Classes[m.PkgName]; ok {
-		for key, value := range v.(map[interface{}]interface{}) {
-			if key.(string) == "migration_blocks" {
+		for key, value := range v.(map[string]interface{}) {
+			if key == "migration_blocks" {
 				for className, attributes := range value.(map[interface{}]interface{}) {
 					if set {
 						if className.(string) != m.PkgName && len(attributes.(map[interface{}]interface{})) == 1 {
@@ -3207,8 +3223,8 @@ func (m *Model) GetClassFromMigrationClassMapping(definitions Definitions, attri
 
 func (m *Model) GetOverwriteAttributeMigration(definitions Definitions, attributeName, className string) interface{} {
 	if v, ok := definitions.Classes[m.PkgName]; ok {
-		for key, value := range v.(map[interface{}]interface{}) {
-			if key.(string) == "migration_blocks" {
+		for key, value := range v.(map[string]interface{}) {
+			if key == "migration_blocks" {
 				for classNameDefinition, classValues := range value.(map[interface{}]interface{}) {
 					if classNameDefinition.(string) == className {
 						for migrationKey, migrationValue := range classValues.(map[interface{}]interface{}) {
@@ -3228,10 +3244,10 @@ func isMigrationResource(classPkgName string, definitions Definitions) (bool, bo
 	version := false
 	changes := false
 	if v, ok := definitions.Classes[classPkgName]; ok {
-		for key := range v.(map[interface{}]interface{}) {
-			if key.(string) == "migration_blocks" {
+		for key := range v.(map[string]interface{}) {
+			if key == "migration_blocks" {
 				changes = true
-			} else if key.(string) == "migration_version" {
+			} else if key == "migration_version" {
 				version = true
 			}
 		}
@@ -3244,12 +3260,12 @@ func setDocumentationData(m *Model, definitions Definitions) {
 	UiLocations := []string{}
 	SubCategory := "Generic"
 	if v, ok := definitions.Classes[m.PkgName]; ok {
-		for key, value := range v.(map[interface{}]interface{}) {
-			if key.(string) == "ui_locations" {
+		for key, value := range v.(map[string]interface{}) {
+			if key == "ui_locations" {
 				for _, UiLocation := range value.([]interface{}) {
 					UiLocations = append(UiLocations, UiLocation.(string))
 				}
-			} else if key.(string) == "sub_category" {
+			} else if key == "sub_category" {
 				SubCategory = value.(string)
 			}
 		}
@@ -3351,8 +3367,8 @@ func setDocumentationData(m *Model, definitions Definitions) {
 // TODO determine way to handle the creation of resource name
 func GetResourceName(classPkgName string, definitions Definitions) string {
 	if v, ok := definitions.Classes[classPkgName]; ok {
-		for key, value := range v.(map[interface{}]interface{}) {
-			if key.(string) == "resource_name" {
+		for key, value := range v.(map[string]interface{}) {
+			if key == "resource_name" {
 				return value.(string)
 			}
 		}
@@ -3365,16 +3381,16 @@ func GetClassConfiguration(classPkgName string, definitions Definitions) map[str
 	reversePrecedenceList := []string{"global", classPkgName}
 	for _, precedence := range reversePrecedenceList {
 		if classDetails, ok := definitions.Classes[precedence]; ok {
-			for key, value := range classDetails.(map[interface{}]interface{}) {
-				if key.(string) == "contained_by_excludes" {
+			for key, value := range classDetails.(map[string]interface{}) {
+				if key == "contained_by_excludes" {
 					containedByExcludes := []string{}
 					for _, containedByExcludeValue := range value.(interface{}).([]interface{}) {
 						containedByExcludes = append(containedByExcludes, containedByExcludeValue.(string))
 					}
 					classConfiguration["contained_by_excludes"] = containedByExcludes
-				} else if key.(string) == "docs_examples_amount" {
+				} else if key == "docs_examples_amount" {
 					classConfiguration["docs_examples_amount"] = value.(int)
-				} else if key.(string) == "docs_parent_dn_amount" {
+				} else if key == "docs_parent_dn_amount" {
 					classConfiguration["docs_parent_dn_amount"] = value.(int)
 				}
 			}
@@ -3395,8 +3411,8 @@ func GetDefaultValues(classPkgName, propertyName string, definitions Definitions
 	precedenceList := []string{classPkgName, "global"}
 	for _, precedence := range precedenceList {
 		if classDetails, ok := definitions.Properties[precedence]; ok {
-			for key, value := range classDetails.(map[interface{}]interface{}) {
-				if key.(string) == "default_values" {
+			for key, value := range classDetails.(map[string]interface{}) {
+				if key == "default_values" {
 					for k, v := range value.(map[interface{}]interface{}) {
 						if k.(string) == propertyName {
 							switch v := v.(type) {
@@ -3436,8 +3452,8 @@ func GetValidValuesToRemove(classPkgName, propertyName string, definitions Defin
 	removedValidValuesSlice := make([]interface{}, 0)
 	for _, precedence := range precedenceList {
 		if classDetails, ok := definitions.Properties[precedence]; ok {
-			for key, value := range classDetails.(map[interface{}]interface{}) {
-				if key.(string) == "remove_valid_values" {
+			for key, value := range classDetails.(map[string]interface{}) {
+				if key == "remove_valid_values" {
 					for k, v := range value.(map[interface{}]interface{}) {
 						if k.(string) == propertyName {
 							removedValidValuesSlice = append(removedValidValuesSlice, v.([]interface{})...)
@@ -3455,8 +3471,8 @@ func GetValidValuesToAdd(classPkgName, propertyName string, definitions Definiti
 	addValidValuesSlice := make([]interface{}, 0)
 	for _, precedence := range precedenceList {
 		if classDetails, ok := definitions.Properties[precedence]; ok {
-			for key, value := range classDetails.(map[interface{}]interface{}) {
-				if key.(string) == "add_valid_values" {
+			for key, value := range classDetails.(map[string]interface{}) {
+				if key == "add_valid_values" {
 					for k, v := range value.(map[interface{}]interface{}) {
 						if k.(string) == propertyName {
 							addValidValuesSlice = append(addValidValuesSlice, v.([]interface{})...)
@@ -3471,8 +3487,8 @@ func GetValidValuesToAdd(classPkgName, propertyName string, definitions Definiti
 
 func IsRequiredInTestValue(classPkgName, propertyName string, definitions Definitions, testType string) bool {
 	if classDetails, ok := definitions.Properties[classPkgName]; ok {
-		for key, value := range classDetails.(map[interface{}]interface{}) {
-			if key.(string) == "test_values" {
+		for key, value := range classDetails.(map[string]interface{}) {
+			if key == "test_values" {
 				for test_type, test_type_values := range value.(map[interface{}]interface{}) {
 					if test_type.(string) == testType {
 						for k := range test_type_values.(map[interface{}]interface{}) {
@@ -3491,8 +3507,8 @@ func IsRequiredInTestValue(classPkgName, propertyName string, definitions Defini
 
 func HasCustomTypeDocs(classPkgName, propertyName string, definitions Definitions) bool {
 	if classDetails, ok := definitions.Properties[classPkgName]; ok {
-		for key, value := range classDetails.(map[interface{}]interface{}) {
-			if key.(string) == "ignore_custom_type_docs" {
+		for key, value := range classDetails.(map[string]interface{}) {
+			if key == "ignore_custom_type_docs" {
 				for _, property := range value.([]interface{}) {
 					if property.(string) == propertyName {
 						return false
@@ -3507,8 +3523,8 @@ func HasCustomTypeDocs(classPkgName, propertyName string, definitions Definition
 
 func GetCustomTestDependency(classPkgName string, definitions Definitions) string {
 	if classDetails, ok := definitions.Properties[classPkgName]; ok {
-		for key, value := range classDetails.(map[interface{}]interface{}) {
-			if key.(string) == "custom_test_dependency_name" {
+		for key, value := range classDetails.(map[string]interface{}) {
+			if key == "custom_test_dependency_name" {
 				return value.(string)
 			}
 		}

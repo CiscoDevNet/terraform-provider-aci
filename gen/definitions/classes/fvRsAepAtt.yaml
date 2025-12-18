@@ -1,0 +1,4 @@
+resource_name: relation_from_application_epg_to_attachable_access_entity_profile
+sub_category: Application Management
+ui_locations:
+    - Tenants -> Application Profiles -> Application EPGs

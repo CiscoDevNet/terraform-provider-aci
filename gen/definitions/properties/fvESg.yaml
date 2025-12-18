@@ -1,0 +1,26 @@
+default_values:
+    shutdown: "no"
+documentation:
+    pcEnfPref: Parameter used to determine whether communication between endpoints within the ESG is blocked.
+    prefGrMemb: Parameter used to determine whether the ESG is part of the preferred group. Members of this group are allowed to communicate without contracts.
+    scope: The scope ID (L3-VNI) of the %s object.
+    shutdown: Withdraw the ESG configuration from all nodes in the fabric.
+exclude_targets:
+    - fvAEPg
+    - l3extInstP
+ignores:
+    - floodOnEncap
+    - prio
+overwrites:
+    pc_enf_pref: intra_esg_isolation
+    pref_gr_memb: preferred_group_member
+    shutdown: admin_state
+parents:
+    - class_name: fvAp
+      parent_dependency: fvTenant
+read_only_properties:
+    - pcTag
+    - scope
+remove_valid_values:
+    pcTag:
+        - any

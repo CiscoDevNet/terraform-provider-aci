@@ -1,0 +1,18 @@
+documentation:
+    tDn: The distinguished name (DN) of the IP SLA Monitoring Policy.
+overwrites:
+    relation_to_ip_sla_monitoring_policy: relation_to_monitoring_policy
+resource_required:
+    - tDn
+targets:
+    - class_name: fvIPSLAMonitoringPol
+      parent_dependency: fvTenant
+      properties:
+        name: monitoring_policy_name_1
+      relation_resource_name: monitoring_policy
+      static: true
+      target_dn: uni/tn-test_tenant/ipslaMonitoringPol-monitoring_policy_name_1
+      target_dn_overwrite_docs: aci_ip_sla_monitoring_policy.example.id
+test_values:
+    test_values_for_parent:
+        - target_dn: uni/tn-test_tenant/ipslaMonitoringPol-monitoring_policy_name_1

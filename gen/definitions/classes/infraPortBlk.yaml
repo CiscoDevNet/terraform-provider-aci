@@ -1,0 +1,11 @@
+migration_blocks:
+    infraPortBlk:
+        access_port_selector_dn: parent_dn
+    infraRsAccBndlSubgrp:
+        relation_infra_rs_acc_bndl_subgrp: relation_to_pc_vpc_override_policy.target_dn
+migration_version: 1
+resource_notes:
+    - Port Blocks are only applied and visible in UI when the `port_selector_type` attribute on it's parent is set to `range`.
+sub_category: Access Policies
+ui_locations:
+    - Fabric -> Access Policies -> Interfaces -> Leaf/Spine Interfaces -> Profiles -> Interface Selectors -> Port Blocks

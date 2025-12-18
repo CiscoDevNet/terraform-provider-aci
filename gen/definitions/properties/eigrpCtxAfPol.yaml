@@ -1,0 +1,8 @@
+documentation:
+    maxPaths: The maximum number of different equal cost paths to install in the routing table.
+    metricStyle: The metric style used for metric calculations.
+overwrites:
+    act_intvl: active_interval
+    ext_dist: external_distance
+    int_dist: internal_distance
+    max_paths: maximum_path_limit

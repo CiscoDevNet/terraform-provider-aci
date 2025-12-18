@@ -1,0 +1,4 @@
+resource_name: lacp_enhanced_lag_policy
+sub_category: Virtual Networking
+ui_locations:
+    - Virtual Networking -> VMware -> Domains -> VSwitch Policy -> Enhanced Lag Policy

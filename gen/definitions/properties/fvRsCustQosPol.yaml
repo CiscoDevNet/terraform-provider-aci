@@ -1,0 +1,7 @@
+targets:
+    - class_name: qosCustomPol
+      parent_dependency: fvTenant
+      properties:
+        name: custom_qos_policy_name_1
+      relation_resource_name: custom_qos_policy
+      target_dn: uni/tn-test_name/qoscustom-custom_qos_policy_name_1

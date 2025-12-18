@@ -1,0 +1,33 @@
+overwrites:
+    relation_from_bridge_domain_to_route_control_profile: relation_to_route_control_profile
+targets:
+    - class_name: fvCtx
+      overwrite_parent_dn_key: tenant_dn
+      parent_dependency: fvTenant
+      properties:
+        name: vrf_name_1
+      relation_resource_name: vrf
+      target_dn: uni/tn-test_name/ctx-vrf_name_1
+    - class_name: l3extOut
+      overwrite_parent_dn_key: tenant_dn
+      parent_dependency: fvTenant
+      properties:
+        name: l3_outside_name_1
+        relation_l3ext_rs_ectx: aci_vrf.test_vrf_0.id
+      relation_resource_name: l3_outside
+      target_dn: uni/tn-test_name/out-abr_l3_outside_name_1
+    - class_name: l3extOut
+      overwrite_parent_dn_key: tenant_dn
+      parent_dependency: fvTenant
+      properties:
+        name: l3_outside_name_0
+        relation_l3ext_rs_ectx: aci_vrf.test_vrf_0.id
+      relation_resource_name: l3_outside
+      target_dn: uni/tn-test_name/out-abr_l3_outside_name_0
+    - class_name: rtctrlProfile
+      parent_dependency: l3extOut
+      parent_dependency_dn_ref: aci_l3_outside.test_l3_outside_0.id
+      properties:
+        name: route_control_profile_name_1
+      relation_resource_name: route_control_profile
+      target_dn: uni/tn-test_name/out-abr_l3_outside_name_0/prof-route_control_profile_name_1

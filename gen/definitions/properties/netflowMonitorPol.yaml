@@ -1,0 +1,18 @@
+default_values:
+    parent_dn: uni/infra
+parents:
+    - class_name: infraInfra
+      parent_dependency: ""
+      parent_dn: uni/infra
+    - class_name: fvTenant
+      parent_dependency: ""
+      parent_dn: aci_tenant.test.id
+test_values:
+    datasource_non_existing:
+        name: netfow_monitor_non_existing
+    datasource_required:
+        name: netfow_monitor
+    default:
+        name: netfow_monitor_default
+    resource_required:
+        name: netfow_monitor

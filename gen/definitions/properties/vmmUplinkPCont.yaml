@@ -1,0 +1,16 @@
+documentation:
+    numOfUplinks: The number of uplinks in the %s object.
+ignores:
+    - id
+    - name
+overwrites:
+    num_of_uplinks: number_of_uplinks
+resource_required:
+    - numOfUplinks
+test_values:
+    all:
+        number_of_uplinks: "1"
+    default:
+        number_of_uplinks: "2"
+    resource_required:
+        number_of_uplinks: "2"

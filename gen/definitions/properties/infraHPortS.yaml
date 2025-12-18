@@ -1,0 +1,15 @@
+documentation:
+    type: The port selector type of the %s object.
+overwrites:
+    type: port_selector_type
+test_values:
+    datasource_non_existing:
+        port_selector_type: range
+    datasource_required:
+        port_selector_type: range
+    ignore_in_legacy:
+        - port_selector_type
+    legacy:
+        port_selector_type: range
+    resource_required:
+        port_selector_type: range

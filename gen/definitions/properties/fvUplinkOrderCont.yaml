@@ -1,0 +1,10 @@
+documentation:
+    active: The active uplink IDs of the %s object. When defined the value cannot be set back to empty.
+    standby: The passive uplink IDs of the %s object.
+overwrites:
+    active: active_uplinks
+    standby: standby_uplinks
+test_values:
+    all:
+        active_uplinks: 1,2
+        standby_uplinks: 3,4

@@ -1,0 +1,4 @@
+resource_name: relation_from_bridge_domain_to_netflow_monitor_policy
+sub_category: Networking
+ui_locations:
+    - Tenants -> Networking -> Bridge Domains -> Policy -> Advanced/Troubleshooting -> NetFlow Monitor Policies

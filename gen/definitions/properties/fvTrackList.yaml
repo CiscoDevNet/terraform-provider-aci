@@ -1,0 +1,19 @@
+documentation:
+    percentageDown: The down percentage assigned to the %s determines whether a route is considered available or unavailable. This attribute is applicable only when the track type is 'percentage'.
+    percentageUp: The up percentage assigned to the %s determines whether a route is considered available or unavailable. The percentage up must be greater than the percentage down. This attribute is applicable only when the track type is 'percentage'.
+    type: The type of the %s. Choose 'percentage' if you want the route availability to be based on the percentage of track members that are up or down. Choose 'weight' if the route availability is based on a weight value that is assigned to each track member.
+    weightDown: The down weight assigned to the %s determines whether a route is considered available or unavailable. This attribute is applicable only when the track type is 'weight'.
+    weightUp: The up weight assigned to the %s determines whether a route is considered available or unavailable. The up weight must be greater than the down weight. This attribute is applicable only when the track type is 'weight'.
+test_values:
+    all:
+        percentage_down: "30"
+        percentage_up: "40"
+        type: weight
+        weight_down: "10"
+        weight_up: "20"
+    default:
+        percentage_down: "0"
+        percentage_up: "1"
+        type: percentage
+        weight_down: "0"
+        weight_up: "1"

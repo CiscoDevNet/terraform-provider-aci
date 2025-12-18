@@ -1,0 +1,3 @@
+documentation:
+    intent: The Install Rules or Estimate Number of Rules
+    targetDscp: The target DSCP value of the %s object.

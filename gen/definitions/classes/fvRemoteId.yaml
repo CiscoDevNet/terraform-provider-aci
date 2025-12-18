@@ -1,0 +1,12 @@
+dn_formats:
+    - uni/tn-{name}/ap-{name}/epg-{name}/stAsc/site-{siteId}
+    - uni/tn-{name}/ctx-{name}/stAsc/site-{siteId}
+    - uni/tn-{name}/BD-{name}/stAsc/site-{siteId}
+    - uni/tn-{name}/out-{name}/instP-{name}/stAsc/site-{siteId}
+    - uni/tn-{name}/mscGraphXlateCont/epgDefXlate-[{epgDefDn}]/stAsc/site-{siteId}
+resource_name: remote_site
+resource_notes:
+    - This resource should only be used to accomplish multi-site orchestration.
+sub_category: Multi-Site
+ui_locations:
+    - Not shown in UI

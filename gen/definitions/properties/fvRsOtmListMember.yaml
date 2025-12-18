@@ -1,0 +1,24 @@
+documentation:
+    tDn: The distinguished name (DN) of the IP SLA Track Member.
+    weight: The weight associated with the IP SLA Track Member that contributes to the total weight that is used to determines whether a route is considered available or unavailable.
+parents:
+    - class_name: fvTrackList
+      parent_dependency: fvTenant
+      parent_dn: aci_ip_sla_track_list.test.id
+targets:
+    - class_name: fvTrackMember
+      parent_dependency: fvTenant
+      properties:
+        name: track_member_name_1
+      relation_resource_name: ip_sla_track_member
+      static: true
+      target_dn: uni/tn-test_tenant/trackmember-track_member_name_1
+      target_dn_overwrite_docs: aci_ip_sla_track_member.example.id
+test_values:
+    all:
+        weight: "20"
+    default:
+        weight: "10"
+    test_values_for_parent:
+        - target_dn: uni/tn-test_tenant/trackmember-track_member_name_1
+        - target_dn: uni/tn-test_tenant/trackmember-track_member_name_2

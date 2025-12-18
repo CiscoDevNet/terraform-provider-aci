@@ -1,0 +1,6 @@
+exclude_children:
+    - fvSiteAssociated
+resource_name: external_epg
+sub_category: L3Out
+ui_locations:
+    - Tenants -> Networking -> L3Outs -> External EPGs

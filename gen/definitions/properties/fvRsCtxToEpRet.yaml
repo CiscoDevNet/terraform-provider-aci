@@ -1,0 +1,10 @@
+overwrites:
+    relation_from_vrf_to_end_point_retention_policy: relation_to_end_point_retention_policy
+targets:
+    - class_name: fvEpRetPol
+      overwrite_parent_dn_key: tenant_dn
+      parent_dependency: fvTenant
+      properties:
+        name: end_point_retention_policy_name_1
+      relation_resource_name: end_point_retention_policy
+      target_dn: uni/tn-test_name/epRPol-end_point_retention_policy_name_1

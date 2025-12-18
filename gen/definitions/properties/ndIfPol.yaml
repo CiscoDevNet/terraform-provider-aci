@@ -1,0 +1,48 @@
+default_values:
+    hopLimit: "64"
+    mtu: "9000"
+    nsIntvl: "1000"
+    nsRetries: "3"
+    nudRetryBase: "1"
+    nudRetryInterval: "1000"
+    nudRetryMaxAttempts: "3"
+    raIntvl: "600"
+    raLifetime: "1800"
+    reachableTime: "0"
+    retransTimer: "0"
+documentation:
+    hopLimit: The hop limit of the %s object.
+    mtu: The maximum transmission unit (MTU) of the %s object.
+    nsIntvl: The interval (milliseconds) for sending neighbor solicitation (NS) messages.
+    nsRetries: The retransmission count for sending neighbor solicitation (NS) messages.
+    nudRetryBase: The retransmission base value for neighbor unreachability detection (NUD).
+    nudRetryInterval: The retransmission interval (milliseconds) for neighbor unreachability detection (NUD).
+    nudRetryMaxAttempts: The maximum number of retransmission attempts for neighbor unreachability detection (NUD).
+    raIntvl: The interval (seconds) for sending route advertisement messages.
+    raLifetime: The default router lifetime (seconds).
+    reachableTime: The time (milliseconds) for which a neighbor is considered reachable after receiving reachability confirmation.
+    retransTimer: The retransmission time (milliseconds) for sending neighbor solicitation messages.
+overwrites:
+    ctrl: controller_state
+    ns_intvl: neighbor_solicitation_interval
+    ns_retries: neighbor_solicitation_retries
+    ra_intvl: router_advertisement_interval
+    ra_lifetime: router_advertisement_lifetime
+    retrans_timer: retransmit_timer
+test_values:
+    all:
+        controller_state:
+            - managed-cfg
+        hop_limit: "40"
+        mtu: "8700"
+        neighbor_solicitation_interval: "1500"
+        neighbor_solicitation_retries: "6"
+        nud_retry_base: "2"
+        nud_retry_interval: "1300"
+        nud_retry_max_attempts: "5"
+        reachable_time: "2"
+        retransmit_timer: "2"
+        router_advertisement_interval: "500"
+        router_advertisement_lifetime: "1500"
+    default:
+        controller_state: []

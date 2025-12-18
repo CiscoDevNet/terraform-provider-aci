@@ -1,0 +1,9 @@
+documentation:
+    tnMldSnoopPolName: The name of the MLD Snooping Policy object.
+targets:
+    - class_name: mldSnoopPol
+      parent_dependency: fvTenant
+      properties:
+        name: mld_snooping_policy_name_1
+      relation_resource_name: mld_snooping_policy
+      target_dn: uni/tn-test_name/mldsnoopPol-mld_snooping_policy_name_1

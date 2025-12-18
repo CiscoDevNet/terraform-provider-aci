@@ -1,0 +1,8 @@
+class_version: 6.0(2h)-6.0(8g),6.1(3f)-
+contained_by:
+    - polUni
+resource_name: management_access_policy
+rn_prepend: fabric
+sub_category: Fabric Policies
+ui_locations:
+    - Fabric -> Fabric Policies -> Policies -> Pod -> Management Access

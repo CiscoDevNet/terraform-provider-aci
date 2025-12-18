@@ -1,0 +1,26 @@
+documentation:
+    tnEigrpCtxAfPolName: The name of the EIGRP Address Family Context.
+overwrites:
+    relation_from_vrf_to_eigrp_address_family_contexts: relation_to_eigrp_address_family_contexts
+parents:
+    - class_name: fvCtx
+      parent_dependency: fvTenant
+      parent_dn: aci_vrf.test.id
+targets:
+    - class_name: eigrpCtxAfPol
+      parent_dependency: fvTenant
+      properties:
+        name: eigrp_address_family_context_name_1
+      relation_resource_name: eigrp_address_family_context
+      target_dn: uni/tn-test_name/eigrpCtxAfP-eigrp_address_family_context_name_1
+test_values:
+    all:
+        address_family: ipv4-ucast
+    datasource_non_existing:
+        address_family: ipv6-ucast
+    datasource_required:
+        address_family: ipv4-ucast
+    default:
+        address_family: ipv4-ucast
+    resource_required:
+        address_family: ipv4-ucast

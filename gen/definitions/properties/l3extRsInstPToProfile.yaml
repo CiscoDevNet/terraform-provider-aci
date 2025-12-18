@@ -1,0 +1,13 @@
+documentation:
+    direction: The direction on which to apply the Route Map associated with the Route Control Profile.
+overwrites:
+    relation_from_external_epg_to_route_control_profiles: relation_to_route_control_profiles
+parents:
+    - parent_dependency: l3extOut
+test_values:
+    datasource_non_existing:
+        direction: import
+    datasource_required:
+        direction: import
+    resource_required:
+        direction: import
