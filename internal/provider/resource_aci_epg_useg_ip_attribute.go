@@ -29,10 +29,15 @@ import (
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &FvIpAttrResource{}
+var _ resource.ResourceWithIdentity = &FvIpAttrResource{}
 var _ resource.ResourceWithImportState = &FvIpAttrResource{}
 
 func NewFvIpAttrResource() resource.Resource {
 	return &FvIpAttrResource{}
+}
+
+func (r FvIpAttrResource) IdentitySchema(_ context.Context, _ resource.IdentitySchemaRequest, resp *resource.IdentitySchemaResponse) {
+	resp.IdentitySchema = getIdentitySchema()
 }
 
 // FvIpAttrResource defines the resource implementation.
@@ -388,6 +393,7 @@ func (r *FvIpAttrResource) Create(ctx context.Context, req resource.CreateReques
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_epg_useg_ip_attribute with id '%s'", data.Id.ValueString()))
 }
 
@@ -412,6 +418,7 @@ func (r *FvIpAttrResource) Read(ctx context.Context, req resource.ReadRequest, r
 		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
 	} else {
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+		resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_epg_useg_ip_attribute with id '%s'", data.Id.ValueString()))
@@ -454,6 +461,7 @@ func (r *FvIpAttrResource) Update(ctx context.Context, req resource.UpdateReques
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_epg_useg_ip_attribute with id '%s'", data.Id.ValueString()))
 }
 
@@ -482,10 +490,11 @@ func (r *FvIpAttrResource) Delete(ctx context.Context, req resource.DeleteReques
 
 func (r *FvIpAttrResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_epg_useg_ip_attribute")
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	resource.ImportStatePassthroughWithIdentity(ctx, path.Root("id"), path.Root("id"), req, resp)
 
 	var stateData *FvIpAttrResourceModel
 	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: stateData.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_epg_useg_ip_attribute with id '%s'", stateData.Id.ValueString()))
 
 	tflog.Debug(ctx, "End import of state resource: aci_epg_useg_ip_attribute")
@@ -494,11 +503,17 @@ func (r *FvIpAttrResource) ImportState(ctx context.Context, req resource.ImportS
 func getAndSetFvIpAttrAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FvIpAttrResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "fvIpAttr,tagAnnotation,tagTag"), "GET", nil)
 
-	readData := getEmptyFvIpAttrResourceModel()
-
 	if diags.HasError() {
 		return
 	}
+
+	setFvIpAttrAttributes(ctx, diags, data, requestData)
+}
+
+func setFvIpAttrAttributes(ctx context.Context, diags *diag.Diagnostics, data *FvIpAttrResourceModel, requestData *container.Container) {
+
+	readData := getEmptyFvIpAttrResourceModel()
+
 	if requestData.Search("imdata").Search("fvIpAttr").Data() != nil {
 		classReadInfo := requestData.Search("imdata").Search("fvIpAttr").Data().([]interface{})
 		if len(classReadInfo) == 1 {

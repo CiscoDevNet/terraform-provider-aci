@@ -28,10 +28,15 @@ import (
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &FvEpIpTagResource{}
+var _ resource.ResourceWithIdentity = &FvEpIpTagResource{}
 var _ resource.ResourceWithImportState = &FvEpIpTagResource{}
 
 func NewFvEpIpTagResource() resource.Resource {
 	return &FvEpIpTagResource{}
+}
+
+func (r FvEpIpTagResource) IdentitySchema(_ context.Context, _ resource.IdentitySchemaRequest, resp *resource.IdentitySchemaResponse) {
+	resp.IdentitySchema = getIdentitySchema()
 }
 
 // FvEpIpTagResource defines the resource implementation.
@@ -364,6 +369,7 @@ func (r *FvEpIpTagResource) Create(ctx context.Context, req resource.CreateReque
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_endpoint_tag_ip with id '%s'", data.Id.ValueString()))
 }
 
@@ -388,6 +394,7 @@ func (r *FvEpIpTagResource) Read(ctx context.Context, req resource.ReadRequest, 
 		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
 	} else {
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+		resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_endpoint_tag_ip with id '%s'", data.Id.ValueString()))
@@ -430,6 +437,7 @@ func (r *FvEpIpTagResource) Update(ctx context.Context, req resource.UpdateReque
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_endpoint_tag_ip with id '%s'", data.Id.ValueString()))
 }
 
@@ -458,10 +466,11 @@ func (r *FvEpIpTagResource) Delete(ctx context.Context, req resource.DeleteReque
 
 func (r *FvEpIpTagResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_endpoint_tag_ip")
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	resource.ImportStatePassthroughWithIdentity(ctx, path.Root("id"), path.Root("id"), req, resp)
 
 	var stateData *FvEpIpTagResourceModel
 	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: stateData.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_endpoint_tag_ip with id '%s'", stateData.Id.ValueString()))
 
 	tflog.Debug(ctx, "End import of state resource: aci_endpoint_tag_ip")
@@ -470,11 +479,17 @@ func (r *FvEpIpTagResource) ImportState(ctx context.Context, req resource.Import
 func getAndSetFvEpIpTagAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FvEpIpTagResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "fvEpIpTag,tagAnnotation,tagTag"), "GET", nil)
 
-	readData := getEmptyFvEpIpTagResourceModel()
-
 	if diags.HasError() {
 		return
 	}
+
+	setFvEpIpTagAttributes(ctx, diags, data, requestData)
+}
+
+func setFvEpIpTagAttributes(ctx context.Context, diags *diag.Diagnostics, data *FvEpIpTagResourceModel, requestData *container.Container) {
+
+	readData := getEmptyFvEpIpTagResourceModel()
+
 	if requestData.Search("imdata").Search("fvEpIpTag").Data() != nil {
 		classReadInfo := requestData.Search("imdata").Search("fvEpIpTag").Data().([]interface{})
 		if len(classReadInfo) == 1 {

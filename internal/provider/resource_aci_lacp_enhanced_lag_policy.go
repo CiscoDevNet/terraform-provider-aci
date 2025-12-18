@@ -29,10 +29,15 @@ import (
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &LacpEnhancedLagPolResource{}
+var _ resource.ResourceWithIdentity = &LacpEnhancedLagPolResource{}
 var _ resource.ResourceWithImportState = &LacpEnhancedLagPolResource{}
 
 func NewLacpEnhancedLagPolResource() resource.Resource {
 	return &LacpEnhancedLagPolResource{}
+}
+
+func (r LacpEnhancedLagPolResource) IdentitySchema(_ context.Context, _ resource.IdentitySchemaRequest, resp *resource.IdentitySchemaResponse) {
+	resp.IdentitySchema = getIdentitySchema()
 }
 
 // LacpEnhancedLagPolResource defines the resource implementation.
@@ -370,6 +375,7 @@ func (r *LacpEnhancedLagPolResource) Create(ctx context.Context, req resource.Cr
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_lacp_enhanced_lag_policy with id '%s'", data.Id.ValueString()))
 }
 
@@ -394,6 +400,7 @@ func (r *LacpEnhancedLagPolResource) Read(ctx context.Context, req resource.Read
 		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
 	} else {
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+		resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_lacp_enhanced_lag_policy with id '%s'", data.Id.ValueString()))
@@ -436,6 +443,7 @@ func (r *LacpEnhancedLagPolResource) Update(ctx context.Context, req resource.Up
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_lacp_enhanced_lag_policy with id '%s'", data.Id.ValueString()))
 }
 
@@ -464,10 +472,11 @@ func (r *LacpEnhancedLagPolResource) Delete(ctx context.Context, req resource.De
 
 func (r *LacpEnhancedLagPolResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_lacp_enhanced_lag_policy")
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	resource.ImportStatePassthroughWithIdentity(ctx, path.Root("id"), path.Root("id"), req, resp)
 
 	var stateData *LacpEnhancedLagPolResourceModel
 	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: stateData.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_lacp_enhanced_lag_policy with id '%s'", stateData.Id.ValueString()))
 
 	tflog.Debug(ctx, "End import of state resource: aci_lacp_enhanced_lag_policy")
@@ -476,11 +485,17 @@ func (r *LacpEnhancedLagPolResource) ImportState(ctx context.Context, req resour
 func getAndSetLacpEnhancedLagPolAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *LacpEnhancedLagPolResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "lacpEnhancedLagPol,tagAnnotation,tagTag"), "GET", nil)
 
-	readData := getEmptyLacpEnhancedLagPolResourceModel()
-
 	if diags.HasError() {
 		return
 	}
+
+	setLacpEnhancedLagPolAttributes(ctx, diags, data, requestData)
+}
+
+func setLacpEnhancedLagPolAttributes(ctx context.Context, diags *diag.Diagnostics, data *LacpEnhancedLagPolResourceModel, requestData *container.Container) {
+
+	readData := getEmptyLacpEnhancedLagPolResourceModel()
+
 	if requestData.Search("imdata").Search("lacpEnhancedLagPol").Data() != nil {
 		classReadInfo := requestData.Search("imdata").Search("lacpEnhancedLagPol").Data().([]interface{})
 		if len(classReadInfo) == 1 {

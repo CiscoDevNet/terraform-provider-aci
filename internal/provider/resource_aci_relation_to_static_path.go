@@ -29,10 +29,15 @@ import (
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &FvRsPathAttResource{}
+var _ resource.ResourceWithIdentity = &FvRsPathAttResource{}
 var _ resource.ResourceWithImportState = &FvRsPathAttResource{}
 
 func NewFvRsPathAttResource() resource.Resource {
 	return &FvRsPathAttResource{}
+}
+
+func (r FvRsPathAttResource) IdentitySchema(_ context.Context, _ resource.IdentitySchemaRequest, resp *resource.IdentitySchemaResponse) {
+	resp.IdentitySchema = getIdentitySchema()
 }
 
 // FvRsPathAttResource defines the resource implementation.
@@ -380,6 +385,7 @@ func (r *FvRsPathAttResource) Create(ctx context.Context, req resource.CreateReq
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_relation_to_static_path with id '%s'", data.Id.ValueString()))
 }
 
@@ -404,6 +410,7 @@ func (r *FvRsPathAttResource) Read(ctx context.Context, req resource.ReadRequest
 		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
 	} else {
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+		resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_relation_to_static_path with id '%s'", data.Id.ValueString()))
@@ -446,6 +453,7 @@ func (r *FvRsPathAttResource) Update(ctx context.Context, req resource.UpdateReq
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_relation_to_static_path with id '%s'", data.Id.ValueString()))
 }
 
@@ -474,10 +482,11 @@ func (r *FvRsPathAttResource) Delete(ctx context.Context, req resource.DeleteReq
 
 func (r *FvRsPathAttResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_relation_to_static_path")
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	resource.ImportStatePassthroughWithIdentity(ctx, path.Root("id"), path.Root("id"), req, resp)
 
 	var stateData *FvRsPathAttResourceModel
 	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: stateData.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_relation_to_static_path with id '%s'", stateData.Id.ValueString()))
 
 	tflog.Debug(ctx, "End import of state resource: aci_relation_to_static_path")
@@ -486,11 +495,17 @@ func (r *FvRsPathAttResource) ImportState(ctx context.Context, req resource.Impo
 func getAndSetFvRsPathAttAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FvRsPathAttResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "fvRsPathAtt,tagAnnotation,tagTag"), "GET", nil)
 
-	readData := getEmptyFvRsPathAttResourceModel()
-
 	if diags.HasError() {
 		return
 	}
+
+	setFvRsPathAttAttributes(ctx, diags, data, requestData)
+}
+
+func setFvRsPathAttAttributes(ctx context.Context, diags *diag.Diagnostics, data *FvRsPathAttResourceModel, requestData *container.Container) {
+
+	readData := getEmptyFvRsPathAttResourceModel()
+
 	if requestData.Search("imdata").Search("fvRsPathAtt").Data() != nil {
 		classReadInfo := requestData.Search("imdata").Search("fvRsPathAtt").Data().([]interface{})
 		if len(classReadInfo) == 1 {

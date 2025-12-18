@@ -27,10 +27,15 @@ import (
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &MgmtSubnetResource{}
+var _ resource.ResourceWithIdentity = &MgmtSubnetResource{}
 var _ resource.ResourceWithImportState = &MgmtSubnetResource{}
 
 func NewMgmtSubnetResource() resource.Resource {
 	return &MgmtSubnetResource{}
+}
+
+func (r MgmtSubnetResource) IdentitySchema(_ context.Context, _ resource.IdentitySchemaRequest, resp *resource.IdentitySchemaResponse) {
+	resp.IdentitySchema = getIdentitySchema()
 }
 
 // MgmtSubnetResource defines the resource implementation.
@@ -351,6 +356,7 @@ func (r *MgmtSubnetResource) Create(ctx context.Context, req resource.CreateRequ
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_external_management_network_subnet with id '%s'", data.Id.ValueString()))
 }
 
@@ -375,6 +381,7 @@ func (r *MgmtSubnetResource) Read(ctx context.Context, req resource.ReadRequest,
 		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
 	} else {
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+		resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_external_management_network_subnet with id '%s'", data.Id.ValueString()))
@@ -417,6 +424,7 @@ func (r *MgmtSubnetResource) Update(ctx context.Context, req resource.UpdateRequ
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_external_management_network_subnet with id '%s'", data.Id.ValueString()))
 }
 
@@ -445,10 +453,11 @@ func (r *MgmtSubnetResource) Delete(ctx context.Context, req resource.DeleteRequ
 
 func (r *MgmtSubnetResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_external_management_network_subnet")
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	resource.ImportStatePassthroughWithIdentity(ctx, path.Root("id"), path.Root("id"), req, resp)
 
 	var stateData *MgmtSubnetResourceModel
 	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: stateData.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_external_management_network_subnet with id '%s'", stateData.Id.ValueString()))
 
 	tflog.Debug(ctx, "End import of state resource: aci_external_management_network_subnet")
@@ -457,11 +466,17 @@ func (r *MgmtSubnetResource) ImportState(ctx context.Context, req resource.Impor
 func getAndSetMgmtSubnetAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *MgmtSubnetResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "mgmtSubnet,tagAnnotation,tagTag"), "GET", nil)
 
-	readData := getEmptyMgmtSubnetResourceModel()
-
 	if diags.HasError() {
 		return
 	}
+
+	setMgmtSubnetAttributes(ctx, diags, data, requestData)
+}
+
+func setMgmtSubnetAttributes(ctx context.Context, diags *diag.Diagnostics, data *MgmtSubnetResourceModel, requestData *container.Container) {
+
+	readData := getEmptyMgmtSubnetResourceModel()
+
 	if requestData.Search("imdata").Search("mgmtSubnet").Data() != nil {
 		classReadInfo := requestData.Search("imdata").Search("mgmtSubnet").Data().([]interface{})
 		if len(classReadInfo) == 1 {

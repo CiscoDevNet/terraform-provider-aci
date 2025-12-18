@@ -1,5 +1,10 @@
 package provider
 
+import (
+	"fmt"
+	"slices"
+)
+
 const testConstantsConfigFvTenantMin = `
 resource "aci_tenant" "test" {
   name = "test_name"
@@ -22,12 +27,12 @@ resource "aci_l3_outside" "test" {
 const testConfigFvAEPgMin = testConstantsConfigFvTenantMin + `
 resource "aci_application_profile" "test" {
   tenant_dn = aci_tenant.test.id
-  name      = "test_ap"
+  name      = "test_name"
 }
 
 resource "aci_application_epg" "test" {
   application_profile_dn = aci_application_profile.test.id
-  name                   = "test_epg"
+  name                   = "test_name"
 }
 `
 
@@ -169,3 +174,59 @@ resource "aci_l4_l7_device" "test_imported_device" {
   relation_vns_rs_al_dev_to_phys_dom_p = "uni/phys-test"
 }
 `
+
+func GetParentDnForTesting(parentClassName, className string) string {
+	parentClassDnMap := map[string]string{
+		"fvTenant":             "uni/tn-test_name",
+		"fvAp":                 "uni/tn-test_name/ap-test_name",
+		"fvESg":                "uni/tn-test_name/ap-test_name/esg-test_name",
+		"fvAEPg":               "uni/tn-test_name/ap-test_name/epg-test_name",
+		"fvCrtrn":              "uni/tn-test_name/ap-test_name/epg-test_name/crtrn",
+		"fvSCrtrn":             "uni/tn-test_name/ap-test_name/epg-test_name/crtrn/crtrn-sub_criterion",
+		"fvCtx":                "uni/tn-test_name/ctx-test_name",
+		"fvFBRGroup":           "uni/tn-test_name/ctx-test_name/fbrg-fallback_route_group",
+		"fvBD":                 "uni/tn-test_name/BD-test_name",
+		"fvSiteAssociated":     "uni/tn-test_name/BD-test_name/stAsc",
+		"vzTaboo":              "uni/tn-test_name/taboo-test_name",
+		"vzTSubj":              "uni/tn-test_name/taboo-test_name/tsubj-test_name",
+		"fvTrackList":          "uni/tn-test_name/tracklist-test_name",
+		"netflowMonitorPol":    "uni/tn-test_name/monitorpol-netfow_monitor",
+		"qosCustomPol":         "uni/tn-test_name/qoscustom-test_name",
+		"pimRouteMapPol":       "uni/tn-test_name/rtmap-test_name",
+		"infraAccPortP":        "uni/infra/accportprof-test_name",
+		"infraSpAccPortP":      "uni/infra/spaccportprof-test_name",
+		"infraFexP":            "uni/infra/fexprof-test_name",
+		"infraHPortS":          "uni/infra/accportprof-test_name/hports-test_name-typ-range",
+		"infraSHPortS":         "uni/infra/spaccportprof-test_name/shports-test_name-typ-ALL",
+		"infraAttEntityP":      "uni/infra/attentp-test_name",
+		"l3extOut":             "uni/tn-test_name/out-test_l3_outside",
+		"l3extLoopBackIfP":     "uni/tn-test_name/out-test_l3_outside/lnodep-logical_node_profile/rsnodeL3OutAtt-[topology/pod-2/node-2011]/lbp-[1.2.3.5]",
+		"l3extInstP":           "uni/tn-test_name/out-test_l3_outside/instP-test_name",
+		"l3extConsLbl":         "uni/tn-test_name/out-test_l3_outside/conslbl-test_name",
+		"mgmtInstP":            "uni/tn-mgmt/extmgmt-default/instp-test_name",
+		"vmmDomP":              "uni/vmmp-VMware/dom-test_vmm_domain",
+		"vmmVSwitchPolicyCont": "uni/vmmp-VMware/dom-test_vmm_domain/vswitchpolcont",
+		"vmmUplinkPCont":       "uni/vmmp-VMware/dom-test_vmm_domain/uplinkpcont",
+		"vzAny":                "uni/tn-test_name/ctx-test_name/any",
+	}
+
+	classDnMap := map[string]string{
+		"pkiTP":        "uni/userext/pkiext",
+		"pkiKeyRing":   "uni/userext/pkiext",
+		"l3extProvLbl": "uni/tn-infra/out-test_l3_outside",
+	}
+
+	// ignore l3extProvLbl because the l3extOut parent in tree requires to point the infra tenant
+	ignoreClassName := []string{"l3extProvLbl"}
+	if !slices.Contains(ignoreClassName, className) {
+		if value, ok := parentClassDnMap[parentClassName]; ok {
+			return fmt.Sprintf("%s/", value)
+		}
+	}
+
+	if value, ok := classDnMap[className]; ok {
+		return fmt.Sprintf("%s/", value)
+	}
+
+	return ""
+}

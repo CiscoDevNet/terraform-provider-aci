@@ -31,10 +31,15 @@ import (
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &PkiTPResource{}
+var _ resource.ResourceWithIdentity = &PkiTPResource{}
 var _ resource.ResourceWithImportState = &PkiTPResource{}
 
 func NewPkiTPResource() resource.Resource {
 	return &PkiTPResource{}
+}
+
+func (r PkiTPResource) IdentitySchema(_ context.Context, _ resource.IdentitySchemaRequest, resp *resource.IdentitySchemaResponse) {
+	resp.IdentitySchema = getIdentitySchema()
 }
 
 // PkiTPResource defines the resource implementation.
@@ -405,6 +410,7 @@ func (r *PkiTPResource) Create(ctx context.Context, req resource.CreateRequest, 
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_certificate_authority with id '%s'", data.Id.ValueString()))
 }
 
@@ -429,6 +435,7 @@ func (r *PkiTPResource) Read(ctx context.Context, req resource.ReadRequest, resp
 		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
 	} else {
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+		resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_certificate_authority with id '%s'", data.Id.ValueString()))
@@ -483,6 +490,7 @@ func (r *PkiTPResource) Update(ctx context.Context, req resource.UpdateRequest, 
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_certificate_authority with id '%s'", data.Id.ValueString()))
 }
 
@@ -511,10 +519,11 @@ func (r *PkiTPResource) Delete(ctx context.Context, req resource.DeleteRequest, 
 
 func (r *PkiTPResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_certificate_authority")
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	resource.ImportStatePassthroughWithIdentity(ctx, path.Root("id"), path.Root("id"), req, resp)
 
 	var stateData *PkiTPResourceModel
 	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: stateData.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_certificate_authority with id '%s'", stateData.Id.ValueString()))
 
 	tflog.Debug(ctx, "End import of state resource: aci_certificate_authority")
@@ -523,11 +532,17 @@ func (r *PkiTPResource) ImportState(ctx context.Context, req resource.ImportStat
 func getAndSetPkiTPAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *PkiTPResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "pkiTP,tagAnnotation,tagTag"), "GET", nil)
 
-	readData := getEmptyPkiTPResourceModel()
-
 	if diags.HasError() {
 		return
 	}
+
+	setPkiTPAttributes(ctx, diags, data, requestData)
+}
+
+func setPkiTPAttributes(ctx context.Context, diags *diag.Diagnostics, data *PkiTPResourceModel, requestData *container.Container) {
+
+	readData := getEmptyPkiTPResourceModel()
+
 	if requestData.Search("imdata").Search("pkiTP").Data() != nil {
 		classReadInfo := requestData.Search("imdata").Search("pkiTP").Data().([]interface{})
 		if len(classReadInfo) == 1 {

@@ -27,10 +27,15 @@ import (
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &FvDnsAttrResource{}
+var _ resource.ResourceWithIdentity = &FvDnsAttrResource{}
 var _ resource.ResourceWithImportState = &FvDnsAttrResource{}
 
 func NewFvDnsAttrResource() resource.Resource {
 	return &FvDnsAttrResource{}
+}
+
+func (r FvDnsAttrResource) IdentitySchema(_ context.Context, _ resource.IdentitySchemaRequest, resp *resource.IdentitySchemaResponse) {
+	resp.IdentitySchema = getIdentitySchema()
 }
 
 // FvDnsAttrResource defines the resource implementation.
@@ -373,6 +378,7 @@ func (r *FvDnsAttrResource) Create(ctx context.Context, req resource.CreateReque
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_epg_useg_dns_attribute with id '%s'", data.Id.ValueString()))
 }
 
@@ -397,6 +403,7 @@ func (r *FvDnsAttrResource) Read(ctx context.Context, req resource.ReadRequest, 
 		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
 	} else {
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+		resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_epg_useg_dns_attribute with id '%s'", data.Id.ValueString()))
@@ -439,6 +446,7 @@ func (r *FvDnsAttrResource) Update(ctx context.Context, req resource.UpdateReque
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_epg_useg_dns_attribute with id '%s'", data.Id.ValueString()))
 }
 
@@ -467,10 +475,11 @@ func (r *FvDnsAttrResource) Delete(ctx context.Context, req resource.DeleteReque
 
 func (r *FvDnsAttrResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_epg_useg_dns_attribute")
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	resource.ImportStatePassthroughWithIdentity(ctx, path.Root("id"), path.Root("id"), req, resp)
 
 	var stateData *FvDnsAttrResourceModel
 	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: stateData.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_epg_useg_dns_attribute with id '%s'", stateData.Id.ValueString()))
 
 	tflog.Debug(ctx, "End import of state resource: aci_epg_useg_dns_attribute")
@@ -479,11 +488,17 @@ func (r *FvDnsAttrResource) ImportState(ctx context.Context, req resource.Import
 func getAndSetFvDnsAttrAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FvDnsAttrResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "fvDnsAttr,tagAnnotation,tagTag"), "GET", nil)
 
-	readData := getEmptyFvDnsAttrResourceModel()
-
 	if diags.HasError() {
 		return
 	}
+
+	setFvDnsAttrAttributes(ctx, diags, data, requestData)
+}
+
+func setFvDnsAttrAttributes(ctx context.Context, diags *diag.Diagnostics, data *FvDnsAttrResourceModel, requestData *container.Container) {
+
+	readData := getEmptyFvDnsAttrResourceModel()
+
 	if requestData.Search("imdata").Search("fvDnsAttr").Data() != nil {
 		classReadInfo := requestData.Search("imdata").Search("fvDnsAttr").Data().([]interface{})
 		if len(classReadInfo) == 1 {

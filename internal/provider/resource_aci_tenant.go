@@ -31,10 +31,15 @@ import (
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &FvTenantResource{}
+var _ resource.ResourceWithIdentity = &FvTenantResource{}
 var _ resource.ResourceWithImportState = &FvTenantResource{}
 
 func NewFvTenantResource() resource.Resource {
 	return &FvTenantResource{}
+}
+
+func (r FvTenantResource) IdentitySchema(_ context.Context, _ resource.IdentitySchemaRequest, resp *resource.IdentitySchemaResponse) {
+	resp.IdentitySchema = getIdentitySchema()
 }
 
 // FvTenantResource defines the resource implementation.
@@ -742,6 +747,7 @@ func (r *FvTenantResource) Create(ctx context.Context, req resource.CreateReques
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_tenant with id '%s'", data.Id.ValueString()))
 }
 
@@ -766,6 +772,7 @@ func (r *FvTenantResource) Read(ctx context.Context, req resource.ReadRequest, r
 		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
 	} else {
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+		resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_tenant with id '%s'", data.Id.ValueString()))
@@ -817,6 +824,7 @@ func (r *FvTenantResource) Update(ctx context.Context, req resource.UpdateReques
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_tenant with id '%s'", data.Id.ValueString()))
 }
 
@@ -845,10 +853,11 @@ func (r *FvTenantResource) Delete(ctx context.Context, req resource.DeleteReques
 
 func (r *FvTenantResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_tenant")
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	resource.ImportStatePassthroughWithIdentity(ctx, path.Root("id"), path.Root("id"), req, resp)
 
 	var stateData *FvTenantResourceModel
 	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: stateData.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_tenant with id '%s'", stateData.Id.ValueString()))
 
 	tflog.Debug(ctx, "End import of state resource: aci_tenant")
@@ -857,11 +866,17 @@ func (r *FvTenantResource) ImportState(ctx context.Context, req resource.ImportS
 func getAndSetFvTenantAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FvTenantResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "fvTenant,fvRsTenantMonPol,tagAnnotation,tagTag,tagAnnotation,tagTag"), "GET", nil)
 
-	readData := getEmptyFvTenantResourceModel()
-
 	if diags.HasError() {
 		return
 	}
+
+	setFvTenantAttributes(ctx, diags, data, requestData)
+}
+
+func setFvTenantAttributes(ctx context.Context, diags *diag.Diagnostics, data *FvTenantResourceModel, requestData *container.Container) {
+
+	readData := getEmptyFvTenantResourceModel()
+
 	if requestData.Search("imdata").Search("fvTenant").Data() != nil {
 		classReadInfo := requestData.Search("imdata").Search("fvTenant").Data().([]interface{})
 		if len(classReadInfo) == 1 {

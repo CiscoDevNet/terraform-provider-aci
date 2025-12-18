@@ -31,10 +31,15 @@ import (
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &NdIfPolResource{}
+var _ resource.ResourceWithIdentity = &NdIfPolResource{}
 var _ resource.ResourceWithImportState = &NdIfPolResource{}
 
 func NewNdIfPolResource() resource.Resource {
 	return &NdIfPolResource{}
+}
+
+func (r NdIfPolResource) IdentitySchema(_ context.Context, _ resource.IdentitySchemaRequest, resp *resource.IdentitySchemaResponse) {
+	resp.IdentitySchema = getIdentitySchema()
 }
 
 // NdIfPolResource defines the resource implementation.
@@ -505,6 +510,7 @@ func (r *NdIfPolResource) Create(ctx context.Context, req resource.CreateRequest
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_neighbor_discovery_interface_policy with id '%s'", data.Id.ValueString()))
 }
 
@@ -529,6 +535,7 @@ func (r *NdIfPolResource) Read(ctx context.Context, req resource.ReadRequest, re
 		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
 	} else {
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+		resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_neighbor_discovery_interface_policy with id '%s'", data.Id.ValueString()))
@@ -571,6 +578,7 @@ func (r *NdIfPolResource) Update(ctx context.Context, req resource.UpdateRequest
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_neighbor_discovery_interface_policy with id '%s'", data.Id.ValueString()))
 }
 
@@ -599,10 +607,11 @@ func (r *NdIfPolResource) Delete(ctx context.Context, req resource.DeleteRequest
 
 func (r *NdIfPolResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_neighbor_discovery_interface_policy")
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	resource.ImportStatePassthroughWithIdentity(ctx, path.Root("id"), path.Root("id"), req, resp)
 
 	var stateData *NdIfPolResourceModel
 	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: stateData.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_neighbor_discovery_interface_policy with id '%s'", stateData.Id.ValueString()))
 
 	tflog.Debug(ctx, "End import of state resource: aci_neighbor_discovery_interface_policy")
@@ -611,11 +620,17 @@ func (r *NdIfPolResource) ImportState(ctx context.Context, req resource.ImportSt
 func getAndSetNdIfPolAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *NdIfPolResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "ndIfPol,tagAnnotation,tagTag"), "GET", nil)
 
-	readData := getEmptyNdIfPolResourceModel()
-
 	if diags.HasError() {
 		return
 	}
+
+	setNdIfPolAttributes(ctx, diags, data, requestData)
+}
+
+func setNdIfPolAttributes(ctx context.Context, diags *diag.Diagnostics, data *NdIfPolResourceModel, requestData *container.Container) {
+
+	readData := getEmptyNdIfPolResourceModel()
+
 	if requestData.Search("imdata").Search("ndIfPol").Data() != nil {
 		classReadInfo := requestData.Search("imdata").Search("ndIfPol").Data().([]interface{})
 		if len(classReadInfo) == 1 {

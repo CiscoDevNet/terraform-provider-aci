@@ -17,9 +17,11 @@ import (
 	// "github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
+	"github.com/hashicorp/terraform-plugin-framework/list"
 	"github.com/hashicorp/terraform-plugin-framework/provider"
 	"github.com/hashicorp/terraform-plugin-framework/provider/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
+	"github.com/hashicorp/terraform-plugin-framework/resource/identityschema"
 	// temporary unused until muxing is removed
 	// "github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -33,6 +35,23 @@ var globalAllowExistingOnCreate bool
 // Ensure AciProvider satisfies various provider interfaces.
 var _ provider.Provider = &AciProvider{}
 var _ provider.ProviderWithFunctions = &AciProvider{}
+var _ provider.ProviderWithListResources = (*AciProvider)(nil)
+
+// Struct model for identity data handling
+type IdentityModel struct {
+	Id   types.String `tfsdk:"id"`
+}
+
+// Generic identity schema for each resource
+func getIdentitySchema() identityschema.Schema {
+	return identityschema.Schema{
+		Attributes: map[string]identityschema.Attribute{
+			"id": identityschema.StringAttribute{
+				RequiredForImport: true,
+			},
+		},
+	}
+}
 
 // AciProvider defines the provider implementation.
 type AciProvider struct {
@@ -201,6 +220,17 @@ func (p *AciProvider) Configure(ctx context.Context, req provider.ConfigureReque
 
 	resp.DataSourceData = aciClient
 	resp.ResourceData = aciClient
+	resp.ListResourceData = aciClient
+}
+
+func (p *AciProvider) ListResources(ctx context.Context) []func() list.ListResource {
+	return []func() list.ListResource{
+		{{- range . }}
+			{{- if or (and .IdentifiedBy (not (and .MaxOneClassAllowed (hasPrefix .RnFormat  "rs")))) .Include}}
+		New{{.ResourceClassName}}ListResource,
+			{{- end }}
+		{{- end }}
+	}
 }
 
 func (p *AciProvider) Resources(ctx context.Context) []func() resource.Resource {
