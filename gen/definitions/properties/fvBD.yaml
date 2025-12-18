@@ -1,0 +1,85 @@
+add_valid_values:
+    epMoveDetectMode:
+        - ""
+default_values:
+    enableRogueExceptMac: "no"
+    epMoveDetectMode: '@aci_gen_default_value_overwrite_to_empty_string!'
+    hostBasedRouting: "no"
+    intersiteBumTrafficAllow: "no"
+    ipLearning: "yes"
+    ipv6McastAllow: "no"
+    limitIpLearnToSubnets: "yes"
+    mac: 00:22:BD:F8:19:FF
+    mcastARPDrop: "yes"
+    mcastAllow: "no"
+documentation:
+    OptimizeWanBandwidth: Optimize WAN Bandwidth for the %s object.
+    arpFlood: Enable ARP flooding for the %s object. If flooding is disabled, ARP requests for unknown endpoints will be forwarded by the leaf switch to the spine proxy for resolution and might trigger an ARP glean if the endpoint is not present in the COOP database.
+    enableRogueExceptMac: Enable rogue exception based on MAC wildcard for the %s object.
+    epClear: Clear all endpoints in leaf switches for the %s object.
+    hostBasedRouting: Advertise host routes (/32 prefixes) out of the L3Out(s) associated to the %s object.
+    intersiteBumTrafficAllow: Enable intersite Broadcast, Unknown-Unicast and Multicast (BUM) traffic between sites for the %s object.
+    intersiteL2Stretch: Enable L2 stretch between sites for the %s object.
+    ipLearning: The IP learning setting of the %s object.
+    ipv6McastAllow: Enable IPv6 Protocol Independent Multicast (PIM) traffic for the %s object.
+    limitIpLearnToSubnets: Limit IP address learning to subnets for the %s object. Every Bridge Domain object can have multiple subnets associated with it
+    mcastARPDrop: Drop rogue multicast ARP packets for the %s object.
+    mcastAllow: Enable IPv4 Protocol Independent Multicast (PIM) traffic for the %s object.
+    scope: The scope ID (L3-VNI) of the %s object.
+    type: The domain type of the %s object.
+    unicastRoute: Enables L3 routing and endpoint IP learning for the %s object.
+    unkMcastAct: The forwarding method for unknown layer 3 multicast destinations.
+    v6unkMcastAct: The forwarding method for unknown IPv6 multicast destinations.
+    vmac: The virtual MAC address of the %s object. This is used when the the BD/SVI is extended to multiple sites using a L2 Outside.
+ignore_properties_in_test:
+    enableRogueExceptMac: "no"
+overwrites:
+    arp_flood: arp_flooding
+    enable_rogue_except_mac: enable_rogue_exception_mac
+    ep_clear: clear_remote_mac_entries
+    ep_move_detect_mode: endpoint_move_detection_mode
+    host_based_routing: advertise_host_routes
+    intersite_bum_traffic_allow: enable_intersite_bum_traffic
+    ipv6_mcast_allow: pim_ipv6
+    ll_addr: link_local_ipv6_address
+    mac: custom_mac_address
+    mcast_allow: pim
+    mcast_arp_drop: drop_arp_with_multicast_smac
+    multi_dst_pkt_act: multi_destination_flooding
+    type: bridge_domain_type
+    unicast_route: unicast_routing
+    unk_mac_ucast_act: l2_unknown_unicast_flooding
+    unk_mcast_act: l3_unknown_multicast_flooding
+    v6unk_mcast_act: ipv6_l3_unknown_multicast_flooding
+    vmac: virtual_mac_address
+parents:
+    - class_name: fvTenant
+      parent_dependency: ""
+      parent_dn: aci_tenant.test.id
+read_only_properties:
+    - pcTag
+    - seg
+    - scope
+remove_valid_values:
+    pcTag:
+        - any
+    vmac:
+        - not-applicable
+test_values:
+    all:
+        custom_mac_address: 00:22:BD:F8:19:FE
+        endpoint_move_detection_mode: garp
+        l2_unknown_unicast_flooding: proxy
+        limit_ip_learn_to_subnets: "yes"
+        link_local_ipv6_address: fe80::1
+        virtual_mac_address: 00:22:BD:F8:19:FB
+    default:
+        endpoint_move_detection_mode: ""
+        link_local_ipv6_address: '::'
+    legacy:
+        custom_mac_address: 00:22:BD:F8:19:FE
+        link_local_ipv6_address: fe80::1
+        unicast_routing: "yes"
+        virtual_mac_address: 00:22:BD:F8:19:FB
+type_overwrites:
+    epMoveDetectMode: string

@@ -1,0 +1,4 @@
+resource_name: fabric_external_connection_policy
+sub_category: Tenant Infra Policies
+ui_locations:
+    - Tenant (infra) -> Policies -> Protocol -> Fabric Ext Connection Policy

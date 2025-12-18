@@ -1,0 +1,13 @@
+dn_formats:
+    - uni/tn-{name}/ap-{name}/epg-{name}/rsprotBy-{tnVzTabooName}
+    - uni/tn-{name}/out-{name}/instP-{name}/rsprotBy-{tnVzBrCPName}
+    - uni/tn-{name}/l2out-{name}/instP-{name}/rsprotBy-{tnVzBrCPName}
+    - Too many DN formats to display, see model documentation for all possible parents of [fvRsProtBy](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsProtBy/overview).
+example_classes:
+    - fvAEPg
+resource_name: relation_to_taboo_contract
+sub_category: Application Management
+ui_locations:
+    - Tenants -> Application Profiles -> Application EPGs -> Contracts
+    - Tenants -> Networking -> L3Outs -> External EPGs -> Contracts
+    - Tenants -> Networking -> L2Outs -> External EPGs -> Contracts

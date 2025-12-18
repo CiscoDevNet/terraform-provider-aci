@@ -1,0 +1,7 @@
+documentation:
+    port: The port used by the Telnet service.
+overwrites:
+    admin_st: admin_state
+test_values:
+    all:
+        port: "23"

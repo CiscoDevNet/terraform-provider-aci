@@ -1,0 +1,8 @@
+dn_formats:
+    - uni/tn-{name}/out-{name}/conslbl-{name}/rslblToInstP-[{tDn}]
+resource_name: relation_from_l3out_consumer_label_to_external_epg
+resource_notes:
+    - This resource should not be used in combination with the `l3out_consumer_label` nested attributes of other resources for the same object. Doing so will result in unexpected behaviour.
+sub_category: L3Out
+ui_locations:
+    - Tenants -> Networking -> L3Outs -> Policy -> Main -> Consumer Label

@@ -1,0 +1,22 @@
+documentation:
+    tDn: The distinguished name (DN) of the EPG object.
+targets:
+    - class_name: fvTenant
+      properties:
+        name: test_name
+      relation_resource_name: tenant
+      target_dn: uni/tn-tenant_0
+    - class_name: fvAp
+      parent_dependency: fvTenant
+      parent_dependency_dn_ref: aci_tenant.test_tenant_0.id
+      properties:
+        name: test_name
+      relation_resource_name: application_profile
+      target_dn: uni/tn-test_name/ap-ap_1
+    - class_name: fvAEPg
+      parent_dependency: fvAp
+      parent_dependency_dn_ref: aci_application_profile.test_application_profile_1.id
+      properties:
+        name: epg_0
+      relation_resource_name: application_epg
+      target_dn: uni/tn-test_name/ap-test_name/epg-epg_0

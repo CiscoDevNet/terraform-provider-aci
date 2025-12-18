@@ -1,0 +1,35 @@
+documentation:
+    category: The category of the %s object.
+    labelName: The label name of the %s object.
+    operator: The operator of the %s object.
+    type: The type of the %s object.
+    value: The value of the %s object.
+overwrites:
+    labelName: label_name
+parents:
+    - class_name: fvCrtrn
+      parent_dependency: fvAEPg
+      parent_dn: epg_useg_block_statement.test.id
+    - class_name: fvSCrtrn
+      parent_dependency: fvCrtrn
+      parent_dn: epg_useg_sub_block_statement.test.id
+resource_required:
+    - value
+test_values:
+    all:
+        category: all_category
+        label_name: label_name
+        operator: contains
+        type: domain
+        value: all_value
+    datasource_non_existing:
+        name: vm_attribute_non_existing
+    datasource_required:
+        name: vm_attribute
+    default:
+        operator: equals
+        type: vm-name
+        value: default_value
+    resource_required:
+        name: vm_attribute
+        value: default_value

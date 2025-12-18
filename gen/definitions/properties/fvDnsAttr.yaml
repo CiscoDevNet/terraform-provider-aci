@@ -1,0 +1,13 @@
+documentation:
+    filter: The domain name filter of the %s object.
+parents:
+    - class_name: fvCrtrn
+      parent_dependency: fvAEPg
+      parent_dn: epg_useg_block_statement.test.id
+test_values:
+    datasource_non_existing:
+        name: dns_attribute_non_existing
+    datasource_required:
+        name: dns_attribute
+    resource_required:
+        name: dns_attribute

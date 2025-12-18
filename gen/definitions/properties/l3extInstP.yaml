@@ -1,0 +1,19 @@
+documentation:
+    exceptionTag: The contract exception tag of the %s object.
+    floodOnEncap: Flood L2 Multicast/Broadcast and Link Local Layer based on encapsulation.
+    pcEnfPref: Parameter used to determine whether communication between endpoints within the EPG is blocked.
+    prefGrMemb: Parameter used to determine whether the EPG is part of the preferred group. Members of this group are allowed to communicate without contracts.
+    scope: The scope ID (L3-VNI) of the %s object.
+    targetDscp: The target DSCP value of the %s object.
+exclude_targets:
+    - fvAEPg
+    - fvESg
+overwrites:
+    exception_tag: contract_exception_tag
+    flood_on_encap: flood_in_encapsulation
+    pc_enf_pref: intra_epg_isolation
+    pref_gr_memb: preferred_group_member
+    shutdown: admin_state
+read_only_properties:
+    - pcTag
+    - scope

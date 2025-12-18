@@ -1,0 +1,56 @@
+exclude_targets:
+    - l3extInstP
+parents:
+    - class_name: fvAEPg
+      parent_dependency: fvAp
+      target_classes:
+        - fvAEPg
+    - class_name: fvESg
+      parent_dependency: fvAp
+      target_classes:
+        - fvESg
+    - class_name: l3extInstP
+      parent_dependency: l3extOut
+      target_classes:
+        - l3extInstP
+targets:
+    - class_name: fvESg
+      overwrite_parent_dn_key: application_profile_dn
+      parent_dependency: fvAp
+      properties:
+        name: esg_0
+      relation_resource_name: contract_master
+      target_dn: uni/tn-test_name/ap-test_name/esg-esg_0
+    - class_name: fvESg
+      overwrite_parent_dn_key: application_profile_dn
+      parent_dependency: fvAp
+      properties:
+        name: esg_1
+      relation_resource_name: contract_master
+      target_dn: uni/tn-test_name/ap-test_name/esg-esg_1
+    - class_name: fvAEPg
+      overwrite_parent_dn_key: application_profile_dn
+      parent_dependency: fvAp
+      properties:
+        name: epg_0
+      relation_resource_name: contract_master
+      target_dn: uni/tn-test_name/ap-test_name/epg-epg_0
+    - class_name: fvAEPg
+      overwrite_parent_dn_key: application_profile_dn
+      parent_dependency: fvAp
+      properties:
+        name: epg_1
+      relation_resource_name: contract_master
+      target_dn: uni/tn-test_name/ap-test_name/epg-epg_1
+    - class_name: l3extInstP
+      parent_dependency: l3extOut
+      properties:
+        name: ext_epg_0
+      relation_resource_name: contract_master
+      target_dn: uni/tn-test_name/out-test_l3_outside/instP-ext_epg_1
+    - class_name: l3extInstP
+      parent_dependency: l3extOut
+      properties:
+        name: ext_epg_1
+      relation_resource_name: contract_master
+      target_dn: uni/tn-test_name/out-test_l3_outside/instP-ext_epg_0

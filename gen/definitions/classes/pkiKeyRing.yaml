@@ -1,0 +1,10 @@
+multi_parents:
+    - contained_by: fvTenant
+      rn_prepend: certstore
+      test_type: cloud
+      wrapper_class: cloudCertStore
+resource_name: key_ring
+sub_category: AAA
+ui_locations:
+    - Admin -> AAA -> Security -> Key Rings
+    - Cloud Network Controller -> Administrative -> Security -> Key Rings

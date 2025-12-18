@@ -1,0 +1,25 @@
+overwrites:
+    relation_from_vrf_to_address_family_ospf_timers: relation_to_address_family_ospf_timers
+parents:
+    - class_name: fvCtx
+      parent_dependency: fvTenant
+      parent_dn: aci_vrf.test.id
+targets:
+    - class_name: ospfCtxPol
+      overwrite_parent_dn_key: tenant_dn
+      parent_dependency: fvTenant
+      properties:
+        name: ospf_timers_name_1
+      relation_resource_name: ospf_timers
+      target_dn: uni/tn-test_name/ospfCtxP-ospf_timers_name_1
+test_values:
+    all:
+        address_family: ipv4-ucast
+    datasource_non_existing:
+        address_family: ipv6-ucast
+    datasource_required:
+        address_family: ipv4-ucast
+    default:
+        address_family: ipv4-ucast
+    resource_required:
+        address_family: ipv4-ucast

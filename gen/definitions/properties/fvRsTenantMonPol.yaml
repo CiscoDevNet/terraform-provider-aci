@@ -1,0 +1,9 @@
+documentation:
+    tnMonEPGPolName: The name of the monitoring policy.
+overwrites:
+    relation_from_tenant_to_monitoring_policy: relation_to_monitoring_policy
+test_values:
+    all:
+        monitoring_policy_name: default
+    default:
+        monitoring_policy_name: uni/tn-common/monepg-default

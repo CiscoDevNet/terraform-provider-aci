@@ -1,0 +1,4 @@
+parents:
+    - class_name: netflowMonitorPol
+      parent_dependency: fvTenant
+      parent_dn: aci_netlfow_monitor_policy.test.id

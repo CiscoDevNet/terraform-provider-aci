@@ -1,0 +1,46 @@
+default_values:
+    parent_dn: uni/infra
+documentation:
+    dscp: The DSCP value of the %s object.
+    dstAddr: The destination IP address of the remote node.
+    dstPort: The destination port of the remote node.
+    sourceIpType: The type of the source IP address for the %s object.
+    srcAddr: The source IP address.
+    ver: The NetFlow Exporter Version of the %s object.
+overwrites:
+    dscp: qos_dscp_value
+    dst_addr: destination_ip_address
+    dst_port: destination_port
+    src_addr: source_ip_address
+    ver: version
+parents:
+    - class_name: infraInfra
+      parent_dependency: ""
+      parent_dn: uni/infra
+    - class_name: fvTenant
+      parent_dependency: ""
+      parent_dn: aci_tenant.test.id
+resource_required:
+    - dstAddr
+    - dstPort
+test_values:
+    all:
+        destination_ip_address: 12.12.12.1
+        destination_port: ssh
+        name: netfow_exporter
+        source_ip_address: 11.11.11.1/11
+        version: v9
+    datasource_non_existing:
+        name: netfow_exporter_non_existing
+    datasource_required:
+        name: netfow_exporter
+    default:
+        destination_ip_address: 2.2.2.1
+        destination_port: https
+        name: netfow_exporter_default
+        source_ip_address: 1.1.1.1/10
+    resource_required:
+        destination_ip_address: 2.2.2.1
+        destination_port: https
+        name: netfow_exporter
+        source_ip_address: 1.1.1.1/10

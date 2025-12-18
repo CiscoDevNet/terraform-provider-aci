@@ -1,0 +1,8 @@
+documentation:
+    ipInspectAdminSt: The Inspection Status for IPv4 and IPv6 traffic of the %s object.
+    raGuardAdminSt: Enable Router Advertisement Guard for the %s object.
+    srcGuardAdminSt: The Source Guard Status for IPv4 and IPv6 traffic of the %s object.
+overwrites:
+    ip_inspect_admin_st: ip_inspection
+    ra_guard_admin_st: router_advertisement
+    src_guard_admin_st: source_guard

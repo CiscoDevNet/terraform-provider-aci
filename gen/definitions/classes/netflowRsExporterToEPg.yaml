@@ -1,0 +1,10 @@
+multi_relationship_class: true
+relationship_classes:
+    - fvAEPg
+    - l3extInstP
+    - l2extInstP
+resource_name: relation_from_netflow_exporter_to_epg
+sub_category: Tenant Policies
+ui_locations:
+    - Tenants -> Policies -> NetFlow -> NetFlow Exporters
+    - Fabric -> Access Policies -> Policies -> Interface -> NetFlow -> NetFlow Exporters

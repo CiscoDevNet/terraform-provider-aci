@@ -1,0 +1,20 @@
+documentation:
+    tnVzBrCPName: The name of the Contract object.
+ignores:
+    - intent
+overwrites:
+    relation_from_any_to_provider_contracts: relation_to_provider_contracts
+parents:
+    - class_name: vzAny
+      parent_dependency: fvCtx
+      parent_dn: aci_any.test.id
+targets:
+    - class_name: vzBrCP
+      overwrite_parent_dn_key: tenant_dn
+      parent_dependency: fvTenant
+      properties:
+        name: contract_name_1
+      relation_resource_name: contract
+      shared_classes:
+        - vzRsAnyToCons
+      target_dn: uni/tn-test_name/brc-contract_name_1

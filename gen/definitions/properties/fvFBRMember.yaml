@@ -1,0 +1,20 @@
+documentation:
+    rnhAddr: The address of the %s object.
+overwrites:
+    rnh_addr: fallback_member
+parents:
+    - class_name: fvFBRGroup
+      parent_dependency: fvCtx
+      parent_dn: aci_vrf_fallback_route_group.test.id
+test_values:
+    datasource_non_existing:
+        fallback_member: 2.2.2.4
+    datasource_required:
+        fallback_member: 2.2.2.3
+    default:
+        fallback_member: 2.2.2.2
+    resource_required:
+        fallback_member: 2.2.2.3
+    test_values_for_parent:
+        - fallback_member: 2.2.2.2
+        - fallback_member: 2.2.2.3

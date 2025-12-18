@@ -1,0 +1,7 @@
+children:
+    - qosDscpClass
+    - qosDot1PClass
+resource_name: custom_qos_policy
+sub_category: Tenant Policies
+ui_locations:
+    - Tenants -> Policies -> Protocol -> Custom QoS

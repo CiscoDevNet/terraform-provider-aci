@@ -1,0 +1,26 @@
+documentation:
+    action: The route action of the %s object.
+    grp: The group ip of the %s object.
+    rp: The rendezvous point ip of the %s object.
+    src: The source ip of the %s object.
+overwrites:
+    grp: group_ip
+    rp: rendezvous_point_ip
+    src: source_ip
+parents:
+    - parent_dependency: fvTenant
+test_values:
+    all:
+        group_ip: 0.0.0.0
+        rendezvous_point_ip: 0.0.0.0
+        source_ip: 1.1.1.1/30
+    datasource_non_existing:
+        order: "2"
+    datasource_required:
+        order: "1"
+    default:
+        group_ip: 0.0.0.0
+        rendezvous_point_ip: 0.0.0.0
+        source_ip: 0.0.0.0
+    resource_required:
+        order: "1"

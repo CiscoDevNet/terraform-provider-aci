@@ -1,0 +1,18 @@
+documentation:
+    src: The source of the %s object.
+overwrites:
+    src: source
+parents:
+    - class_in_parent: true
+      parent_dependency: fvTenant
+test_values:
+    all:
+        source: direct
+    datasource_non_existing:
+        source: static
+    datasource_required:
+        source: direct
+    default:
+        source: direct
+    resource_required:
+        source: direct

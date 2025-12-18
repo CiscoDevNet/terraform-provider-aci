@@ -1,0 +1,28 @@
+documentation:
+    fltType: The filter type of the NetFlow Monitor Policy object.
+    tnNetflowMonitorPolName: The name of the NetFlow Monitor Policy object.
+overwrites:
+    flt_type: filter_type
+    relation_from_bridge_domain_to_netflow_monitor_policys: relation_to_netflow_monitor_policies
+parents:
+    - class_name: fvBD
+      parent_dependency: fvTenant
+      parent_dn: aci_bridge_domain.test.id
+targets:
+    - class_name: netflowMonitorPol
+      parent_dependency: fvTenant
+      properties:
+        name: netflow_monitor_policy_name_1
+      relation_resource_name: netflow_monitor_policy_name
+      target_dn: uni/tn-test_name/monitorpol-netflow_monitor_policy_name_1
+test_values:
+    all:
+        filter_type: ce
+    datasource_non_existing:
+        filter_type: ipv6
+    datasource_required:
+        filter_type: ipv4
+    default:
+        filter_type: ipv4
+    resource_required:
+        filter_type: ipv4

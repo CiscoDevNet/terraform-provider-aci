@@ -1,0 +1,11 @@
+documentation:
+    tDn: The distinguished name of the target.
+targets:
+    - class_name: infraAccPortGrp
+      properties:
+        name: leaf_access_port_policy_group_1
+      relation_resource_name: leaf_access_port_policy_group
+      target_dn: uni/infra/funcprof/accportgrp-leaf_access_port_policy_group_1
+test_values:
+    all:
+        fex_id: "102"

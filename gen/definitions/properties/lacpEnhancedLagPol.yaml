@@ -1,0 +1,13 @@
+documentation:
+    lbmode: The load balancing mode of the %s object.
+    mode: The LACP mode of the %s object.
+    numLinks: The number of links of the %s object.
+ignores:
+    - id
+overwrites:
+    lbmode: load_balancing_mode
+    num_links: number_of_links
+parents:
+    - class_name: vmmVSwitchPolicyCont
+      parent_dependency: vmmDomP
+      parent_dn: aci_vswitch_policy.test.id

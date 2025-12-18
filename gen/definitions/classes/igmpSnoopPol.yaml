@@ -1,0 +1,4 @@
+resource_name: igmp_snooping_policy
+sub_category: Tenant Policies
+ui_locations:
+    - Tenants -> Policies -> Protocol -> IGMP Snoop

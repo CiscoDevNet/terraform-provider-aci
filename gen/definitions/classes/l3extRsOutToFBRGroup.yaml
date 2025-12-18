@@ -1,0 +1,4 @@
+resource_name: relation_to_vrf_fallback_route_group
+sub_category: L3Out
+ui_locations:
+    - Tenants -> Networking -> L3Outs -> Policy -> Main -> Fallback Route Group

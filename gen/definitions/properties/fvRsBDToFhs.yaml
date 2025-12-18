@@ -1,0 +1,11 @@
+documentation:
+    tnFhsBDPolName: The name of the First Hop Security Policy object.
+overwrites:
+    relation_from_bridge_domain_to_first_hop_security_policy: relation_to_first_hop_security_policy
+targets:
+    - class_name: fhsBDPol
+      parent_dependency: fvTenant
+      properties:
+        name: first_hop_security_policy_name_1
+      relation_resource_name: first_hop_security_policy
+      target_dn: uni/tn-test_name/bdpol-first_hop_security_policy_name_1

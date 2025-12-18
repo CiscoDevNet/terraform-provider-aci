@@ -1,0 +1,11 @@
+exclude_children:
+    - cloudCertStore
+migration_blocks:
+    fvRsTenantMonPol:
+        relation_fv_rs_tenant_mon_pol: relation_from_tenant_to_monitoring_policy.monitoring_policy_name
+migration_version: 1
+resource_identifier: tn
+resource_name: tenant
+sub_category: Application Management
+ui_locations:
+    - Tenants

@@ -1,0 +1,12 @@
+documentation:
+    tnDhcpRelayPName: The name of the DHCP Relay Policy object.
+overwrites:
+    relation_from_bridge_domain_to_dhcp_relay_policy: relation_to_dhcp_relay_policy
+targets:
+    - class_name: dhcpRelayP
+      overwrite_parent_dn_key: tenant_dn
+      parent_dependency: fvTenant
+      properties:
+        name: dhcp_relay_policy_name_1
+      relation_resource_name: dhcp_relay_policy
+      target_dn: uni/tn-test_name/relayp-dhcp_relay_policy_name_1

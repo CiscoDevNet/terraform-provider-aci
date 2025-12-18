@@ -1,0 +1,4 @@
+resource_name: relation_from_vrf_to_wan_vpn
+sub_category: Networking
+ui_locations:
+    - Tenants -> Networking -> VRFs -> Policy

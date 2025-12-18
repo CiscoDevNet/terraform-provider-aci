@@ -1,0 +1,5 @@
+documentation:
+    password: The password used for establishing automatic BGP peering sessions.
+    type: The type of BGP EVPN Peering Profile object.
+overwrites:
+    bgp_evpn_peering_profile: peering_profile

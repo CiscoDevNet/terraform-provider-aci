@@ -1,0 +1,23 @@
+documentation:
+    tDn: The distinguished name (DN) of the External EPG object.
+overwrites:
+    relation_from_l3out_consumer_label_to_external_epgs: relation_to_external_epgs
+parents:
+    - class_name: l3extConsLbl
+      parent_dependency: l3extOut
+      parent_dn: aci_l3out_consumer_label.test.id
+      target_classes:
+        - l3extInstP
+targets:
+    - class_name: l3extInstP
+      parent_dependency: l3extOut
+      properties:
+        name: inst_profile_1
+      relation_resource_name: external_network_instance_profile
+      static: true
+      target_dn: uni/tn-test_name/out-test_l3_outside/instP-inst_profile_1
+      target_dn_overwrite_docs: aci_external_network_instance_profile.example.id
+test_values:
+    test_values_for_parent:
+        - target_dn: uni/tn-test_name/out-test_l3_outside/instP-inst_profile_1
+        - target_dn: uni/tn-test_name/out-test_l3_outside/instP-inst_profile_2

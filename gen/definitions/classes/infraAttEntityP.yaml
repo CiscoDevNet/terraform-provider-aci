@@ -1,0 +1,10 @@
+contained_by:
+    - polUni
+migration_blocks:
+    infraRsDomP:
+        relation_infra_rs_dom_p: relation_to_domains.target_dn
+migration_version: 1
+rn_prepend: infra
+sub_category: Access Policies
+ui_locations:
+    - Fabric -> Access Policies -> Policies -> Global -> Attachable Access Entity Profiles

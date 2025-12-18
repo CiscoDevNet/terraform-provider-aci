@@ -1,0 +1,22 @@
+ignore_custom_type_docs:
+    - Prio
+parents:
+    - class_name: fvESg
+      parent_dependency: fvAp
+    - class_name: fvAEPg
+      parent_dependency: fvAp
+targets:
+    - class_name: vzCPIf
+      overwrite_parent_dn_key: tenant_dn
+      parent_dependency: fvTenant
+      properties:
+        name: imported_contract_name_0
+      relation_resource_name: imported_contract
+      target_dn: uni/tn-test_name/cif-imported_contract_name_0
+    - class_name: vzCPIf
+      overwrite_parent_dn_key: tenant_dn
+      parent_dependency: fvTenant
+      properties:
+        name: imported_contract_name_1
+      relation_resource_name: imported_contract
+      target_dn: uni/tn-test_name/cif-imported_contract_name_1

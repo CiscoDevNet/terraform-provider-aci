@@ -1,0 +1,6 @@
+overwrites:
+    admin_st: admin_state
+    tp: certificate_authority
+test_values:
+    all:
+        target_dn: uni/userext/pkiext/tp-test_name

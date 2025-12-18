@@ -1,0 +1,33 @@
+default_values:
+    poeVoiceVlan: unknown
+    prioHigh: "no"
+documentation:
+    max: The maximum power in milliwatts that is allowed for the %s object. The value must be in the range 4000 - 60000.
+    mode: The host mode of the %s object.
+    poeVoiceVlan: The PoE VLAN of the %s object.
+    policeAct: The policing action of the %s object.
+    prioHigh: Enable high port priority for the %s object.
+ignores:
+    - consumption
+overwrites:
+    admin_st: admin_state
+    max: maximum_power
+    mode: host_mode
+    poe_voice_vlan: poe_vlan
+    police_act: policing_action
+    prio_high: port_priority_high
+remove_valid_values:
+    max:
+        - "15400"
+        - "30000"
+        - "4000"
+        - "45000"
+        - "60000"
+        - "7000"
+test_values:
+    all:
+        host_mode: never
+        maximum_power: "15400"
+        poe_vlan: vlan-200
+        policing_action: log
+        port_priority_high: "yes"

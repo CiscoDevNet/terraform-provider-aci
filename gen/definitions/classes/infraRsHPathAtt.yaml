@@ -1,0 +1,6 @@
+max_one_class_allowed: true
+resource_name: relation_to_host_path
+sub_category: Access Policies
+ui_locations:
+    - Fabric -> Access Policies -> Interfaces -> Leaf Interfaces -> Overrides
+    - Fabric -> Access Policies -> Interfaces -> Spine Interfaces -> Overrides

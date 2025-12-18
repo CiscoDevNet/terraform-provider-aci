@@ -1,0 +1,3 @@
+dn_formats:
+    - topology/pod-{id}/node-{id}/sys
+sub_category: Fabric Inventory

@@ -1,0 +1,7 @@
+targets:
+    - class_name: fvBD
+      parent_dependency: fvTenant
+      properties:
+        name: bridge_domain_name_1
+      relation_resource_name: bridge_domain_name
+      target_dn: uni/tn-test_name/BD-bridge_domain_name_1

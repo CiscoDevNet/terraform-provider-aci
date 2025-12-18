@@ -1,0 +1,28 @@
+default_values:
+    usefvSubnet: "no"
+documentation:
+    ip: The device IP address of the %s object.
+    usefvSubnet: Parameter used to determine whether a previously configured subnet address should be used as the IP filter.
+overwrites:
+    usefv_subnet: use_epg_subnet
+parents:
+    - class_name: fvCrtrn
+      parent_dependency: fvAEPg
+      parent_dn: epg_useg_block_statement.test.id
+resource_required:
+    - ip
+test_values:
+    all:
+        ip: 0.0.0.0
+        use_epg_subnet: "yes"
+    datasource_non_existing:
+        name: 131_non_existing
+    datasource_required:
+        name: "131"
+    default:
+        ip: 131.107.1.200
+        name: "131"
+        use_epg_subnet: "no"
+    resource_required:
+        ip: 131.107.1.200
+        name: "131"

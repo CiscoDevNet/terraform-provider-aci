@@ -1,0 +1,50 @@
+children:
+    - fvRogueExceptionMac
+    - fvAccP
+exclude_children:
+    - fvSiteAssociated
+migration_blocks:
+    fvBD:
+        arp_flood: arp_flooding
+        ep_clear: clear_remote_mac_entries
+        ep_move_detect_mode: endpoint_move_detection_mode
+        host_based_routing: advertise_host_routes
+        intersite_bum_traffic_allow: enable_intersite_bum_traffic
+        ipv6_mcast_allow: pim_ipv6
+        ll_addr: link_local_ipv6_address
+        mac: custom_mac_address
+        mcast_allow: pim
+        multi_dst_pkt_act: multi_destination_flooding
+        tenant_dn: parent_dn
+        unicast_route: unicast_routing
+        unk_mac_ucast_act: l2_unknown_unicast_flooding
+        unk_mcast_act: l3_unknown_multicast_flooding
+        v6unk_mcast_act: ipv6_l3_unknown_multicast_flooding
+        vmac: virtual_mac_address
+    fvRsABDPolMonPol:
+        relation_fv_rs_abd_pol_mon_pol: relation_from_bridge_domain_to_monitoring_policy.monitoring_policy_name
+    fvRsBDToFhs:
+        relation_fv_rs_bd_to_fhs: relation_from_bridge_domain_to_first_hop_security_policy.first_hop_security_policy_name
+    fvRsBDToNdP:
+        relation_fv_rs_bd_to_nd_p: relation_from_bridge_domain_to_neighbor_discovery_interface_policy.neighbor_discovery_interface_policy_name
+    fvRsBDToNetflowMonitorPol:
+        flt_type: relation_to_netflow_monitor_policies.filter_type
+        relation_fv_rs_bd_to_netflow_monitor_pol: relation_from_bridge_domain_to_netflow_monitor_policy
+        tn_netflow_monitor_pol_name: relation_to_netflow_monitor_policies.netflow_monitor_policy_name
+    fvRsBDToOut:
+        relation_fv_rs_bd_to_out: relation_from_bridge_domain_to_l3_outsides.l3_outside_name
+    fvRsBDToRelayP:
+        relation_fv_rs_bd_to_relay_p: relation_from_bridge_domain_to_dhcp_relay_policy.dhcp_relay_policy_name
+    fvRsBdToEpRet:
+        relation_fv_rs_bd_to_ep_ret: relation_from_bridge_domain_to_end_point_retention_policy.end_point_retention_policy_name
+    fvRsCtx:
+        relation_fv_rs_ctx: relation_to_vrf.vrf_name
+    fvRsIgmpsn:
+        relation_fv_rs_igmpsn: relation_to_igmp_snooping_policy.igmp_snooping_policy_name
+    fvRsMldsn:
+        relation_fv_rs_mldsn: relation_to_mld_snooping_policy.mld_snooping_policy_name
+migration_version: 1
+resource_name: bridge_domain
+sub_category: Networking
+ui_locations:
+    - Tenants -> Networking -> Bridge Domains

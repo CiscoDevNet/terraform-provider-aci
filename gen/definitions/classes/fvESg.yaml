@@ -1,0 +1,32 @@
+exclude_children:
+    - fvRsProtBy
+    - fvRsCustQosPol
+migration_blocks:
+    fvESg:
+        application_profile_dn: parent_dn
+        match_t: match_criteria
+        pc_enf_pref: intra_esg_isolation
+        pref_gr_memb: preferred_group_member
+    fvRsCons:
+        prio: relation_to_consumed_contracts.priority
+        relation_fv_rs_cons: relation_to_consumed_contracts
+        target_dn: relation_to_consumed_contracts.contract_name
+    fvRsConsIf:
+        prio: relation_to_imported_contracts.priority
+        relation_fv_rs_cons_if: relation_to_imported_contracts
+        target_dn: relation_to_imported_contracts.imported_contract_name
+    fvRsIntraEpg:
+        relation_fv_rs_intra_epg: relation_to_intra_epg_contracts.contract_name
+    fvRsProv:
+        match_t: relation_to_provided_contracts.match_criteria
+        prio: relation_to_provided_contracts.priority
+        relation_fv_rs_prov: relation_to_provided_contracts
+        target_dn: relation_to_provided_contracts.contract_name
+    fvRsScope:
+        relation_fv_rs_scope: relation_to_vrf.vrf_name
+    fvRsSecInherited:
+        relation_fv_rs_sec_inherited: relation_to_contract_masters.target_dn
+migration_version: 1
+sub_category: Application Management
+ui_locations:
+    - Tenants -> Application Profiles -> Endpoint Security Groups

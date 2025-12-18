@@ -1,0 +1,4 @@
+resource_name: relation_from_taboo_contract_subject_to_filter
+sub_category: Contract
+ui_locations:
+    - Tenants -> Contracts -> Taboos -> Subjects -> Filters

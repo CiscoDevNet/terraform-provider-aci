@@ -1,0 +1,8 @@
+documentation:
+    prefGrMemb: Parameter used to determine whether the EPG is part of the preferred group. Members of this group are allowed to communicate without contracts.
+overwrites:
+    pref_gr_memb: preferred_group_member
+parents:
+    - class_name: fvCtx
+      parent_dependency: fvTenant
+      parent_dn: aci_vrf.test.id

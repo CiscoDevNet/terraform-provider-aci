@@ -1,0 +1,12 @@
+documentation:
+    tnL3extRouteTagPolName: The name of the External Route Tag policy associated with this context.
+overwrites:
+    relation_from_vrf_to_l3out_route_tag_policy: relation_to_l3out_route_tag_policy
+targets:
+    - class_name: l3extRouteTagPol
+      overwrite_parent_dn_key: tenant_dn
+      parent_dependency: fvTenant
+      properties:
+        name: l3out_route_tag_policy_name_1
+      relation_resource_name: l3out_route_tag_policy
+      target_dn: uni/tn-test_name/rttag-l3out_route_tag_policy_name_1

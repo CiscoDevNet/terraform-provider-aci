@@ -1,0 +1,34 @@
+default_values:
+    parent_dn: uni/infra
+    pir: "0"
+    rate: "0"
+documentation:
+    adminSt: The administrative state of the %s object.
+    be: The excessive burst size of the %s object. Only applicable for 2R3C policer.
+    beUnit: The excessive burst size unit of the %s object. Only applicable for 2R3C policer.
+    burst: The burst size of the %s object.
+    burstUnit: The burst size unit of the %s object.
+    conformAction: The conform action of the %s object.
+    conformMarkCos: The conform mark class of service (CoS) of the %s object.
+    conformMarkDscp: The conform mark differentiated services code point (DSCP) of the %s object.
+    exceedAction: The exceed action of the %s object.
+    exceedMarkCos: The exceed mark class of service (CoS) of the %s object.
+    exceedMarkDscp: The exceed mark differentiated services code point (DSCP) of the %s object.
+    pir: The peak information rate (PIR) of the %s object. Only applicable for 2R3C policer.
+    pirUnit: The peak information rate (PIR) unit of the %s object. Only applicable for 2R3C policer.
+    rate: The rate of the %s object.
+    rateUnit: The rate unit of the %s object.
+    sharingMode: The sharing mode of the %s object.
+    type: The type of the %s object.
+    violateAction: The violate action of the %s object.
+    violateMarkCos: The violate mark class of service (CoS) of the %s object.
+    violateMarkDscp: The violate mark differentiated services code point (DSCP) of the %s object.
+overwrites:
+    admin_st: admin_state
+    be: excessive_burst
+    be_unit: excessive_burst_unit
+    pir: peak_rate
+    pir_unit: peak_rate_unit
+parents:
+    - class_name: fvTenant
+      parent_dn: aci_tenant.test.id

@@ -1,0 +1,7 @@
+documentation:
+    tDn: The distinguished name (DN) of the target PC VPC Override Policy.
+example_value_overwrite:
+    target_dn: aci_leaf_access_bundle_policy_sub_group.example.id
+test_values:
+    all:
+        target_dn: ""

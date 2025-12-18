@@ -1,0 +1,9 @@
+parents:
+    - class_name: infraHPathS
+      target_classes:
+        - infraAccPortGrp
+targets:
+    - class_name: infraAccPortGrp
+      relation_resource_name: access_interface_policy_group
+      static: true
+      target_dn: uni/infra/funcprof/accportgrp-access_interface_policy_group

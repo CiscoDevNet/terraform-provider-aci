@@ -1,0 +1,4 @@
+resource_name: first_hop_security_policy
+sub_category: Tenant Policies
+ui_locations:
+    - Tenants -> Policies -> Protocol -> First Hop Security -> Feature Policies

@@ -1,0 +1,29 @@
+default_values:
+    lastMbrIntvl: "1"
+    queryIntvl: "125"
+    rspIntvl: "10"
+    startQueryCnt: "2"
+    startQueryIntvl: "31"
+documentation:
+    ver: The MLD version.
+overwrites:
+    admin_st: admin_state
+    ctrl: control
+    last_mbr_intvl: last_member_interval
+    query_intvl: query_interval
+    rsp_intvl: response_interval
+    start_query_cnt: start_query_count
+    start_query_intvl: start_query_interval
+    ver: version
+test_values:
+    all:
+        control:
+            - fast-leave
+            - querier
+        last_member_interval: "3"
+        query_interval: "140"
+        response_interval: "11"
+        start_query_count: "9"
+        start_query_interval: "2"
+    default:
+        control: []

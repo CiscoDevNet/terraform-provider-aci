@@ -1,0 +1,8 @@
+contained_by:
+    - l3extLoopBackIfP
+dn_formats:
+    - uni/tn-{name}/out-{name}/lnodep-{name}/rsnodeL3OutAtt-[{tDn}]/lbp-[{addr}]/nodesidp-{sidoffset}
+resource_name: l3out_node_sid_profile
+sub_category: L3Out
+ui_locations:
+    - Tenants -> Networking -> L3Outs -> Logical Node Profiles -> Policy -> Nodes -> Policy -> Loopback Addresses

@@ -1,0 +1,9 @@
+documentation:
+    tnIgmpSnoopPolName: The name of the IGMP Snooping Policy object.
+targets:
+    - class_name: igmpSnoopPol
+      parent_dependency: fvTenant
+      properties:
+        name: igmp_snooping_policy_name_1
+      relation_resource_name: igmp_snooping_policy
+      target_dn: uni/tn-test_name/snPol-igmp_snooping_policy_name_1

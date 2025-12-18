@@ -1,0 +1,4 @@
+resource_name: relation_to_consumed_out_of_band_contract
+sub_category: Node Management
+ui_locations:
+    - Tenants (mgmt) -> External Management Network Instance Profiles -> Contracts

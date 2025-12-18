@@ -1,0 +1,26 @@
+ignore_custom_type_docs:
+    - Prio
+ignores:
+    - intent
+parents:
+    - class_name: fvESg
+      parent_dependency: fvAp
+    - class_name: fvAEPg
+      parent_dependency: fvAp
+targets:
+    - class_name: vzBrCP
+      overwrite_parent_dn_key: tenant_dn
+      parent_dependency: fvTenant
+      properties:
+        name: contract_name_0
+      relation_resource_name: contract
+      shared_classes:
+        - fvRsProv
+      target_dn: uni/tn-test_name/brc-contract_name_0
+    - class_name: vzBrCP
+      overwrite_parent_dn_key: tenant_dn
+      parent_dependency: fvTenant
+      properties:
+        name: contract_name_1
+      relation_resource_name: contract
+      target_dn: uni/tn-test_name/brc-contract_name_1

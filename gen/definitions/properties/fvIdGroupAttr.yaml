@@ -1,0 +1,13 @@
+documentation:
+    selector: The selector of the %s object. Represents the DN or expression to select an identity group.
+parents:
+    - class_name: fvCrtrn
+      parent_dependency: fvAEPg
+      parent_dn: epg_useg_block_statement.test.id
+test_values:
+    datasource_non_existing:
+        selector: adepg/authsvr-common-sg1-ISE_1/grpcont/dom-cisco.com/grp-Eng_non_existing
+    datasource_required:
+        selector: adepg/authsvr-common-sg1-ISE_1/grpcont/dom-cisco.com/grp-Eng
+    resource_required:
+        selector: adepg/authsvr-common-sg1-ISE_1/grpcont/dom-cisco.com/grp-Eng

@@ -1,0 +1,4 @@
+resource_name: imported_logical_device
+sub_category: L4-L7
+ui_locations:
+    - Tenants -> Services -> L4-L7 -> Imported Devices

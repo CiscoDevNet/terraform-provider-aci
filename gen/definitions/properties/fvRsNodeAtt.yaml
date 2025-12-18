@@ -1,0 +1,29 @@
+documentation:
+    encap: The VLAN encapsulation of the %s object.
+    mode: The static association mode with the path of the %s object.
+parents:
+    - class_name: fvAEPg
+      parent_dependency: fvAp
+      parent_dn: aci_application_epg.test.id
+      target_classes:
+        - fabricNode
+resource_required:
+    - encapsulation
+targets:
+    - class_name: fabricNode
+      relation_resource_name: static_leaf
+      static: true
+      target_dn: topology/pod-1/node-101
+    - class_name: fabricNode
+      relation_resource_name: static_leaf
+      static: true
+      target_dn: topology/pod-1/node-102
+test_values:
+    all:
+        encapsulation: vlan-100
+    datasource_non_existing:
+        target_dn: topology/pod-2/paths-201/pathep-[eth1/1]
+    default:
+        encapsulation: vlan-101
+    resource_required:
+        encapsulation: vlan-101

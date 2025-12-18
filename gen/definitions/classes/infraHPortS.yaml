@@ -1,0 +1,11 @@
+migration_blocks:
+    infraHPortS:
+        access_port_selector_type: port_selector_type
+        leaf_interface_profile_dn: parent_dn
+    infraRsAccBaseGrp:
+        relation_infra_rs_acc_base_grp: relation_to_leaf_access_port_policy_group.target_dn
+migration_version: 1
+resource_name: access_port_selector
+sub_category: Access Policies
+ui_locations:
+    - Fabric -> Access Policies -> Interfaces -> Leaf Interfaces -> Profiles -> Interface Selectors

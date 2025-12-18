@@ -1,0 +1,5 @@
+include: true
+resource_name: epg_useg_block_statement
+sub_category: Application Management
+ui_locations:
+    - Tenants -> Application Profiles -> uSeg EPGs -> uSeg Attributes

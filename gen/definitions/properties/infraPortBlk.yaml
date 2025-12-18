@@ -1,0 +1,23 @@
+documentation:
+    fromCard: The start of the line card range for the %s object.
+    fromPort: The start of the port range for the %s object.
+    toCard: ' The end of the line card range for the %s object.'
+    toPort: The end of the port range for the %s object.
+parents:
+    - class_name: infraHPortS
+      parent_dependency: infraAccPortP
+      parent_dn: aci_access_port_selector.test.id
+    - class_name: infraZHPortS
+      parent_dependency: infraSpAccPortP
+      parent_dn: aci_spine_access_port_selector.test.id
+test_values:
+    all:
+        from_card: "2"
+        from_port: "3"
+        to_card: "4"
+        to_port: "5"
+    default:
+        from_card: "1"
+        from_port: "1"
+        to_card: "1"
+        to_port: "1"

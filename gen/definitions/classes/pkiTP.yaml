@@ -1,0 +1,9 @@
+multi_parents:
+    - contained_by: fvTenant
+      rn_prepend: certstore
+      test_type: cloud
+      wrapper_class: cloudCertStore
+sub_category: AAA
+ui_locations:
+    - Admin -> AAA -> Security -> Certificate Authorities
+    - Cloud Network Controller -> Administrative -> Security -> Certificate Authorities

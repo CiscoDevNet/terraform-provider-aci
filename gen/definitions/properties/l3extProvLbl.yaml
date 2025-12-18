@@ -1,0 +1,18 @@
+parents:
+    - class_name: l3extOut
+      parent_dependency: fvTenant
+      parent_dependency_name: infra
+      parent_dn: aci_l3_outside.test.id
+test_values:
+    all:
+        name: prov_label
+        tag: alice-blue
+    datasource_non_existing:
+        name: prov_label_non_existing
+    datasource_required:
+        name: prov_label
+    default:
+        name: default_prov_label
+        tag: yellow-green
+    resource_required:
+        name: prov_label

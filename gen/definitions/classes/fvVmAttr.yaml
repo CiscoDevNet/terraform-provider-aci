@@ -1,0 +1,4 @@
+resource_name: epg_useg_vm_attribute
+sub_category: Application Management
+ui_locations:
+    - Tenants -> Application Profiles -> uSeg EPGs -> uSeg Attributes

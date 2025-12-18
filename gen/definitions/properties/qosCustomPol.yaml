@@ -1,0 +1,3 @@
+parents:
+    - class_name: fvTenant
+      parent_dn: aci_tenant.test.id

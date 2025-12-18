@@ -1,0 +1,4 @@
+resource_name: rogue_coop_exception
+sub_category: Networking
+ui_locations:
+    - Tenants -> Networking -> Bridge Domains -> Policy -> Advanced/Troubleshooting -> Rogue/Coop Exception List

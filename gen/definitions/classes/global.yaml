@@ -1,0 +1,5 @@
+contained_by_excludes:
+    - polUni
+    - fabricInst
+docs_examples_amount: 2
+docs_parent_dn_amount: 20

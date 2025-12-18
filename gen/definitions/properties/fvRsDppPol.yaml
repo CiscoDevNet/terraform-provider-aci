@@ -1,0 +1,7 @@
+targets:
+    - class_name: qosDppPol
+      parent_dependency: fvTenant
+      properties:
+        name: data_plane_policing_policy_name_1
+      relation_resource_name: data_plane_policing_policy
+      target_dn: uni/tn-test_name/qosdpppol-data_plane_policing_policy_name_1

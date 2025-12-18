@@ -1,0 +1,7 @@
+targets:
+    - class_name: fhsTrustCtrlPol
+      parent_dependency: fvTenant
+      properties:
+        name: trust_control_policy_name_1
+      relation_resource_name: trust_control_policy
+      target_dn: uni/tn-test_name/trustctrlpol-trust_control_policy_name_1

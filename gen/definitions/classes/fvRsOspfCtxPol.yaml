@@ -1,0 +1,4 @@
+resource_name: relation_to_ospf_timers
+sub_category: Networking
+ui_locations:
+    - Tenants -> Networking -> VRFs -> Policy

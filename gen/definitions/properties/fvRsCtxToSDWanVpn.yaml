@@ -1,0 +1,7 @@
+overwrites:
+    relation_from_vrf_to_wan_vpn: relation_to_wan_vpn
+targets:
+    - class_name: extdevSDWanVpnEntry
+      relation_resource_name: wan_vpn
+      static: true
+      target_dn: uni/tn-test_tenant/sdwanvpncont/sdwanvpnentry-sdwanvpn_1

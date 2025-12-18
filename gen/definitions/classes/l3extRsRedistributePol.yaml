@@ -1,0 +1,4 @@
+resource_name: l3out_redistribute_policy
+sub_category: L3Out
+ui_locations:
+    - Tenants -> Networking -> L3Outs -> Policy -> Main -> Route Profile for Redistribution

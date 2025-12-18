@@ -1,0 +1,11 @@
+migration_blocks:
+    fvAp:
+        prio: priority
+        tenant_dn: parent_dn
+    fvRsApMonPol:
+        relation_fv_rs_ap_mon_pol: relation_from_application_profile_to_monitoring_policy.monitoring_policy_name
+migration_version: 1
+resource_name: application_profile
+sub_category: Application Management
+ui_locations:
+    - Tenants -> Application Profiles

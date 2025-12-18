@@ -1,0 +1,11 @@
+documentation:
+    encap: The VLAN or VXLAN encapsulation of the %s object.
+resource_required:
+    - encapsulation
+test_values:
+    all:
+        encapsulation: vlan-100
+    default:
+        encapsulation: vlan-101
+    resource_required:
+        encapsulation: vlan-101

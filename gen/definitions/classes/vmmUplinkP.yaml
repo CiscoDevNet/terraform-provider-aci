@@ -1,0 +1,4 @@
+resource_name: vmm_uplink_policy
+sub_category: Virtual Networking
+ui_locations:
+    - Virtual Networking -> VMware -> Name of Uplinks

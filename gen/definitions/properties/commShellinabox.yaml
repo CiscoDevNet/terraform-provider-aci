@@ -1,0 +1,3 @@
+overwrites:
+    admin_st: admin_state
+    shellinabox_service: ssh_access_via_web

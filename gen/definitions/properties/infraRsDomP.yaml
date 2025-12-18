@@ -1,0 +1,19 @@
+documentation:
+    tDn: The distinguished name of the target Domain object.
+overwrites:
+    relation_from_attachable_access_entity_profile_to_domains: relation_to_domains
+targets:
+    - class_name: physDomP
+      properties:
+        name: physical_domain_0
+      relation_resource_name: domain
+      target_dn: uni/phys-physical_domain_0
+      target_dn_overwrite_docs: aci_physical_domain.example.id
+    - class_name: physDomP
+      properties:
+        name: physical_domain_1
+      relation_resource_name: domain
+      target_dn: uni/phys-physical_domain_1
+test_values:
+    datasource_non_existing:
+        target_dn: uni/phys-physical_domain_3

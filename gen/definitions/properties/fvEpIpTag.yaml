@@ -1,0 +1,15 @@
+documentation:
+    ip: The IP address of the %s object.
+test_values:
+    all:
+        id_attribute: "1"
+        ip: 10.0.0.2
+    datasource_non_existing:
+        ip: 10.0.1.2
+    datasource_required:
+        ip: 10.0.0.2
+    default:
+        id_attribute: "0"
+        ip: 10.0.0.1
+    resource_required:
+        ip: 10.0.0.2

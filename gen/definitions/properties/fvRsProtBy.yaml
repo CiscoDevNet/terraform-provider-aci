@@ -1,0 +1,20 @@
+parents:
+    - class_name: fvESg
+      parent_dependency: fvAp
+    - class_name: fvAEPg
+      parent_dependency: fvAp
+targets:
+    - class_name: vzTaboo
+      overwrite_parent_dn_key: tenant_dn
+      parent_dependency: fvTenant
+      properties:
+        name: taboo_contract_name_0
+      relation_resource_name: taboo_contract
+      target_dn: uni/tn-test_name/taboo-taboo_contract_name_0
+    - class_name: vzTaboo
+      overwrite_parent_dn_key: tenant_dn
+      parent_dependency: fvTenant
+      properties:
+        name: taboo_contract_name_1
+      relation_resource_name: taboo_contract
+      target_dn: uni/tn-test_name/taboo-taboo_contract_name_1

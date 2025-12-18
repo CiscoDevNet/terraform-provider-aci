@@ -1,0 +1,11 @@
+documentation:
+    tnNdIfPolName: The name of the Neighbor Discovery Interface Policy object.
+overwrites:
+    relation_from_bridge_domain_to_neighbor_discovery_interface_policy: relation_to_neighbor_discovery_interface_policy
+targets:
+    - class_name: ndIfPol
+      parent_dependency: fvTenant
+      properties:
+        name: neighbor_discovery_interface_policy_name_1
+      relation_resource_name: neighbor_discovery_interface_policy
+      target_dn: uni/tn-test_name/ndifpol-neighbor_discovery_interface_policy_name_1

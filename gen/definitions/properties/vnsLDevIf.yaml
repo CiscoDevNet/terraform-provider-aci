@@ -1,0 +1,19 @@
+custom_test_dependency_name: ImportedVnsLDevVipWithFvTenant
+documentation:
+    description: The description of the Imported Logical Device object.
+    ldev: The distinguished name (DN) of the Logical Device to import (ACI object [vnsLDevVip](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vnsLDevVip/overview). The Logical Device can be configured using [aci_l4_l7_device](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l4_l7_devices) resource)
+example_value_overwrite:
+    logical_device: aci_l4_l7_device.example_in_another_tenant.id
+overwrites:
+    ldev: logical_device
+test_values:
+    all:
+        logical_device: uni/tn-test_tenant_imported_device/lDevVip-test_imported_device
+    datasource_non_existing:
+        logical_device: uni/tn-test_tenant_imported_device/lDevVip-test_imported_device
+    datasource_required:
+        logical_device: uni/tn-test_tenant_imported_device/lDevVip-test_imported_device
+    default:
+        logical_device: uni/tn-test_tenant_imported_device/lDevVip-test_imported_device
+    resource_required:
+        logical_device: uni/tn-test_tenant_imported_device/lDevVip-test_imported_device

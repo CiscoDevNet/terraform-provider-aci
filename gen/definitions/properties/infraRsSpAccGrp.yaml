@@ -1,0 +1,9 @@
+targets:
+    - class_name: infraSpAccPortGrp
+      properties:
+        name: spine_port_policy_group_1
+      relation_resource_name: spine_port_policy_group
+      target_dn: uni/infra/funcprof/spaccportgrp-spine_port_policy_group_1
+test_values:
+    all:
+        target_dn: uni/infra/funcprof/spaccportgrp-spine_port_policy_group_1

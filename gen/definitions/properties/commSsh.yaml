@@ -1,0 +1,24 @@
+documentation:
+    hostkeyAlgos: The supported algorithms for the host key.
+    kexAlgos: The supported algorithms for key exchange.
+    passwordAuth: Determines the state of password-based authentication to control administrator access to the management interfaces of the ACI fabric.
+    port: The port used by the SSH service.
+    sshCiphers: The ciphers supported by the SSH service.
+    sshMacs: The message authentication codes (MACs) supported by the SSH service.
+ignore_properties_in_test:
+    hostkeyAlgos:
+        - rsa-sha2-256
+overwrites:
+    admin_st: admin_state
+    hostkey_algos: host_key_algorithms
+    kex_algos: kex_algorithms
+    password_auth: password_authentication_state
+test_values:
+    all:
+        kex_algorithms:
+            - curve25519-sha256
+        port: "22"
+        ssh_ciphers:
+            - aes192-ctr
+        ssh_macs:
+            - hmac-sha1

@@ -1,0 +1,6 @@
+overwrites:
+    relation_from_bridge_domain_to_l3_outsides: relation_to_l3_outsides
+parents:
+    - class_name: fvBD
+      parent_dependency: fvTenant
+      parent_dn: aci_bridge_domain.test.id

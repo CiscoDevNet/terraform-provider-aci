@@ -1,0 +1,9 @@
+ignore_custom_type_docs:
+    - Prio
+ignores:
+    - intent
+parents:
+    - class_name: fvESg
+      parent_dependency: fvAp
+    - class_name: fvAEPg
+      parent_dependency: fvAp

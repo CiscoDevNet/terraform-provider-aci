@@ -1,0 +1,23 @@
+documentation:
+    target: The target of the %s object. This Fabric only supports DSCP mutation, Dot1P mutation is not supported.
+    targetCos: The target Class of Service (CoS) to be driven based on the range of DSCP input values coming into the fabric.
+parents:
+    - class_name: qosCustomPol
+      parent_dependency: fvTenant
+      parent_dn: aci_custom_qos_policy.test.id
+test_values:
+    all:
+        from: "4"
+        to: "5"
+    datasource_non_existing:
+        from: "6"
+        to: "7"
+    datasource_required:
+        from: "1"
+        to: "2"
+    default:
+        from: "1"
+        to: "2"
+    resource_required:
+        from: "1"
+        to: "2"

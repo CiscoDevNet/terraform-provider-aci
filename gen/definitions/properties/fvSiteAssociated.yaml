@@ -1,0 +1,18 @@
+default_values:
+    siteId: "0"
+documentation:
+    siteId: The primary/local site identifier associated with the object as an integer.
+ignores:
+    - siteStretched
+overwrites:
+    siteId: site_id
+parents:
+    - class_name: fvAEPg
+      parent_dependency: fvAp
+      parent_dn: aci_application_epg.test.id
+    - class_name: fvBD
+      parent_dependency: fvTenant
+      parent_dn: aci_bridge_domain.test.id
+test_values:
+    all:
+        site_id: "0"

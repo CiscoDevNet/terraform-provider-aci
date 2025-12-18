@@ -1,0 +1,9 @@
+children:
+    - fvFBRMember
+    - fvFBRoute
+contained_by:
+    - fvCtx
+resource_name: vrf_fallback_route_group
+sub_category: Networking
+ui_locations:
+    - Tenants -> Networking -> VRFs -> Policy -> Fallback Route Group

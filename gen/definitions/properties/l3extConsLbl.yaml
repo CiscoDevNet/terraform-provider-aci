@@ -1,0 +1,5 @@
+test_values:
+    all:
+        tag: lemon-chiffon
+    default:
+        tag: yellow-green

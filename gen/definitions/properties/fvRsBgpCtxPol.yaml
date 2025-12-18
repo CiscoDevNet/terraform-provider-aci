@@ -1,0 +1,10 @@
+documentation:
+    tnBgpCtxPolName: The name of the BGP timers policy associated with this context.
+targets:
+    - class_name: bgpCtxPol
+      overwrite_parent_dn_key: tenant_dn
+      parent_dependency: fvTenant
+      properties:
+        name: bgp_timers_name_1
+      relation_resource_name: bgp_timers
+      target_dn: uni/tn-test_name/bgpCtxP-bgp_timers_name_1

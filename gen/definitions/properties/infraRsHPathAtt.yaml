@@ -1,0 +1,9 @@
+parents:
+    - class_name: infraHPathS
+      target_classes:
+        - fabricPathEp
+targets:
+    - class_name: fabricPathEp
+      relation_resource_name: host_path
+      static: true
+      target_dn: topology/pod-1/paths-101/pathep-[eth1/1]

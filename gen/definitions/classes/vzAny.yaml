@@ -1,0 +1,18 @@
+data_source_has_no_name_identifier: true
+include: true
+migration_blocks:
+    vzAny:
+        match_t: match_criteria
+        pref_gr_memb: preferred_group_member
+        vrf_dn: parent_dn
+    vzRsAnyToCons:
+        relation_vz_rs_any_to_cons: relation_from_any_to_consumer_contracts.contract_name
+    vzRsAnyToConsIf:
+        relation_vz_rs_any_to_cons_if: relation_from_any_to_contract_interfaces.imported_contract_name
+    vzRsAnyToProv:
+        relation_vz_rs_any_to_prov: relation_from_any_to_provider_contracts.contract_name
+migration_version: 1
+resource_name: any
+sub_category: Networking
+ui_locations:
+    - Tenants -> Networking -> VRFs -> EPG|ESG Collection for VRF

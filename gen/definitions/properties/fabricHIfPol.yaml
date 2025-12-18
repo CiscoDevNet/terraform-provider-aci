@@ -1,0 +1,21 @@
+documentation:
+    autoNeg: The auto-negotiation mode of the %s object. Auto-negotiation is an optional function of the IEEE 802.3u Fast Ethernet standard that enables devices to automatically exchange information over a link about speed and duplex abilities.
+    dfeDelayMs: The port delay (milliseconds) applied when the interface is coming up for the the %s object. The value must be in the range 0 - 10000.
+    emiRetrain: The Electromagnetic Interference (EMI) retrain state the %s object.
+    fecMode: The Forwarding Error Correction (FEC) mode of the %s object.
+    linkDebounce: The link debounce interval (milliseconds) of the %s object. Setting a value greater than 0 enables the debounce timer on physical interface ports. A value of 0 disables the debounce timer. The value must be in the range 0 - 5000.
+    portPhyMediaType: The physical media type of the %s object.
+    speed: The speed of the %s object. The data transfer rate for the port should match the destination to which the port is linked.
+overwrites:
+    auto_neg: auto_negotiation
+    dfe_delay_ms: port_delay
+    port_phy_media_type: physical_media_type
+remove_valid_values:
+    speed:
+        - unknown
+test_values:
+    all:
+        emi_retrain: enable
+        link_debounce: "2001"
+        physical_media_type: sfp-10g-tx
+        port_delay: "50"

@@ -1,0 +1,4 @@
+resource_name: relation_from_bridge_domain_to_l3_outside
+sub_category: Networking
+ui_locations:
+    - Tenants -> Networking -> Bridge Domains -> Policy -> L3 Configurations -> Associated L3 Outs

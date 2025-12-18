@@ -1,0 +1,10 @@
+multi_relationship_class: true
+relationship_classes:
+    - vmmDomP
+    - physDomP
+    - fcDomP
+    - l2extDomP
+resource_name: relation_to_domain
+sub_category: Application Management
+ui_locations:
+    - Tenants -> Application Profiles -> Application EPGs -> Domains (VMs and Bare-Metals)

@@ -1,0 +1,34 @@
+documentation:
+    direction: The direction on which to apply the Route Map associated with the Route Control Profile.
+    tDn: The distinguished name (DN) of the Route Control Profile object.
+overwrites:
+    relation_from_l3out_consumer_label_to_route_control_profiles: relation_to_route_control_profiles
+parents:
+    - class_name: l3extConsLbl
+      parent_dependency: l3extOut
+      parent_dn: aci_l3out_consumer_label.test.id
+      target_classes:
+        - rtctrlProfile
+targets:
+    - class_name: rtctrlProfile
+      parent_dependency: fvTenant
+      properties:
+        name: rt_ctrl_profile_1
+      relation_resource_name: route_control_profile
+      static: true
+      target_dn: uni/tn-test_name/prof-rt_ctrl_profile_1
+      target_dn_overwrite_docs: aci_route_control_profile.example.id
+test_values:
+    all:
+        direction: export
+    datasource_non_existing:
+        direction: import
+    datasource_required:
+        direction: import
+    default:
+        direction: import
+    resource_required:
+        direction: import
+    test_values_for_parent:
+        - target_dn: uni/tn-test_name/prof-rt_ctrl_profile_1
+        - target_dn: uni/tn-test_name/prof-rt_ctrl_profile_2

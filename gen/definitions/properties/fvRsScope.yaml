@@ -1,0 +1,20 @@
+documentation:
+    tnFvCtxName: The name of the VRF object.
+parents:
+    - class_name: fvESg
+      parent_dependency: fvAp
+targets:
+    - class_name: fvCtx
+      overwrite_parent_dn_key: tenant_dn
+      parent_dependency: fvTenant
+      properties:
+        name: vrf_name_1
+      relation_resource_name: vrf
+      target_dn: uni/tn-test_name/ctx-vrf_name_1
+    - class_name: fvCtx
+      overwrite_parent_dn_key: tenant_dn
+      parent_dependency: fvTenant
+      properties:
+        name: vrf_name_0
+      relation_resource_name: vrf
+      target_dn: uni/tn-test_name/ctx-vrf_name_0

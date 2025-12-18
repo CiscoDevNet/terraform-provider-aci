@@ -1,0 +1,4 @@
+resource_name: relation_from_any_to_provider_contract
+sub_category: Networking
+ui_locations:
+    - Tenants -> Networking -> VRFs -> EPG|ESG Collection for VRF -> Provided Contracts

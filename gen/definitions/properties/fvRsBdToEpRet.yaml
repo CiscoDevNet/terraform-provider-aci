@@ -1,0 +1,14 @@
+documentation:
+    resolveAct: The action to take for resolving the Endpoint Retention Policy object.
+    tnFvEpRetPolName: The name of the Endpoint Retention Policy object.
+overwrites:
+    relation_from_bridge_domain_to_end_point_retention_policy: relation_to_end_point_retention_policy
+    resolve_act: resolve_action
+targets:
+    - class_name: fvEpRetPol
+      overwrite_parent_dn_key: tenant_dn
+      parent_dependency: fvTenant
+      properties:
+        name: end_point_retention_policy_name_1
+      relation_resource_name: end_point_retention_policy
+      target_dn: uni/tn-test_name/epRPol-end_point_retention_policy_name_1
