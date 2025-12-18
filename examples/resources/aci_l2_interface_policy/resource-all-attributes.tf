@@ -1,0 +1,24 @@
+
+resource "aci_l2_interface_policy" "full_example" {
+  annotation       = "annotation"
+  description      = "description_1"
+  name             = "test_name"
+  name_alias       = "name_alias_1"
+  owner_key        = "owner_key_1"
+  owner_tag        = "owner_tag_1"
+  qinq             = "corePort"
+  reflective_relay = "enabled"
+  vlan_scope       = "portlocal"
+  annotations = [
+    {
+      key   = "key_0"
+      value = "value_1"
+    }
+  ]
+  tags = [
+    {
+      key   = "key_0"
+      value = "value_1"
+    }
+  ]
+}

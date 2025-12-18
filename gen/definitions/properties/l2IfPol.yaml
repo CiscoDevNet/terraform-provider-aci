@@ -1,0 +1,10 @@
+documentation:
+    qinq: The QinQ port type of the %s object.
+    vepa: The reflective relay (802.1Qbg) state of the %s object.
+    vlanScope: The vlan scope of the %s object.
+overwrites:
+    vepa: reflective_relay
+test_values:
+    all:
+        reflective_relay: enabled
+        vlan_scope: portlocal
