@@ -1,0 +1,4 @@
+documentation:
+    hostMode: The host mode of the %s object.
+overwrites:
+    admin_st: admin_state
