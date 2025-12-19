@@ -14,6 +14,8 @@ import (
 
 func resourceAciMiscablingProtocolInterfacePolicy() *schema.Resource {
 	return &schema.Resource{
+		DeprecationMessage: "The resource 'aci_miscabling_protocol_interface_policy' is deprecated, please refer to 'aci_mcp_interface_policy' instead. The resource will be removed in the next major version of the provider.",
+
 		CreateContext: resourceAciMiscablingProtocolInterfacePolicyCreate,
 		UpdateContext: resourceAciMiscablingProtocolInterfacePolicyUpdate,
 		ReadContext:   resourceAciMiscablingProtocolInterfacePolicyRead,
