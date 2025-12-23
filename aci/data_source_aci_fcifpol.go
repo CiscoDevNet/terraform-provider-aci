@@ -11,6 +11,7 @@ import (
 
 func dataSourceAciInterfaceFCPolicy() *schema.Resource {
 	return &schema.Resource{
+		DeprecationMessage: "The datasource 'aci_interface_fc_policy' is deprecated, please refer to 'aci_fibre_channel_interface_policy' instead. The datasource will be removed in the next major version of the provider.",
 
 		ReadContext: dataSourceAciInterfaceFCPolicyRead,
 

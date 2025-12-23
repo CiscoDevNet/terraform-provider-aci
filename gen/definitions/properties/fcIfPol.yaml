@@ -1,0 +1,18 @@
+documentation:
+    automaxspeed: The maximum speed for the %s object when set to auto negotiation.
+    fillPattern: The fill pattern for the %s object. This attribute is only applicable for native fibre channel ports.
+    portMode: The port mode for the %s object.
+    rxBBCredit: The receive buffer credit amount for the %s object. This attribute is only applicable for native fibre channel ports. The value must be in the range 16 - 64.
+    speed: The speed for the %s object. This attribute is only applicable for native fibre channel ports.
+    trunkMode: The trunk mode for the %s object. This attribute is only applicable for native fibre channel ports.
+overwrites:
+    automaxspeed: auto_max_speed
+    rx_bb_credit: receive_buffer_credit
+remove_valid_values:
+    speed:
+        - unknown
+    trunkMode:
+        - un-init
+test_values:
+    all:
+        receive_buffer_credit: "16"
