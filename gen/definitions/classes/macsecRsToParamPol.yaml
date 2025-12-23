@@ -1,0 +1,3 @@
+relationship_classes:
+    - macsecParamPol
+resource_name: relation_to_macsec_parameters
