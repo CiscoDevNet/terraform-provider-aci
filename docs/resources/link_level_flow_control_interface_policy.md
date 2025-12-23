@@ -46,14 +46,14 @@ The configuration snippet below shows all possible attributes of the Link Level 
 ```hcl
 
 resource "aci_link_level_flow_control_interface_policy" "full_example" {
-  annotation   = "annotation"
-  description  = "description_1"
-  receive_mode = "on"
-  send_mode    = "on"
-  name         = "test_name"
-  name_alias   = "name_alias_1"
-  owner_key    = "owner_key_1"
-  owner_tag    = "owner_tag_1"
+  annotation    = "annotation"
+  description   = "description_1"
+  receive_state = "on"
+  send_state    = "on"
+  name          = "test_name"
+  name_alias    = "name_alias_1"
+  owner_key     = "owner_key_1"
+  owner_tag     = "owner_tag_1"
   annotations = [
     {
       key   = "key_0"
@@ -87,10 +87,10 @@ All examples for the Link Level Flow Control Interface Policy resource can be fo
 * `annotation` (annotation) - (string) The annotation of the Link Level Flow Control Interface Policy object.
   - Default: `"orchestrator:terraform"`
 * `description` (descr) - (string) The description of the Link Level Flow Control Interface Policy object.
-* `receive_mode` (llfcRcvAdminSt) - (string) The receive mode of the Link Level Flow Control Interface Policy object.
+* `receive_state` (llfcRcvAdminSt) - (string) The receive state of the Link Level Flow Control Interface Policy object.
   - Default: `"off"`
   - Valid Values: `"off"`, `"on"`.
-* `send_mode` (llfcSendAdminSt) - (string) The send mode of the Link Level Flow Control Interface Policy object.
+* `send_state` (llfcSendAdminSt) - (string) The send state of the Link Level Flow Control Interface Policy object.
   - Default: `"off"`
   - Valid Values: `"off"`, `"on"`.
 * `name_alias` (nameAlias) - (string) The name alias of the Link Level Flow Control Interface Policy object.

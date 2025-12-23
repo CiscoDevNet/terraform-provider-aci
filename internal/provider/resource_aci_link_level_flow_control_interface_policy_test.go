@@ -33,10 +33,10 @@ func TestAccResourceQosLlfcIfPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.allow_test_2", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.allow_test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.allow_test_2", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.allow_test", "receive_mode", "off"),
-					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.allow_test_2", "receive_mode", "off"),
-					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.allow_test", "send_mode", "off"),
-					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.allow_test_2", "send_mode", "off"),
+					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.allow_test", "receive_state", "off"),
+					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.allow_test_2", "receive_state", "off"),
+					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.allow_test", "send_state", "off"),
+					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.allow_test_2", "send_state", "off"),
 				),
 			},
 		},
@@ -76,10 +76,10 @@ func TestAccResourceQosLlfcIfPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.allow_test_2", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.allow_test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.allow_test_2", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.allow_test", "receive_mode", "off"),
-					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.allow_test_2", "receive_mode", "off"),
-					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.allow_test", "send_mode", "off"),
-					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.allow_test_2", "send_mode", "off"),
+					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.allow_test", "receive_state", "off"),
+					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.allow_test_2", "receive_state", "off"),
+					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.allow_test", "send_state", "off"),
+					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.allow_test_2", "send_state", "off"),
 				),
 			},
 		},
@@ -99,8 +99,8 @@ func TestAccResourceQosLlfcIfPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "receive_mode", "off"),
-					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "send_mode", "off"),
+					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "receive_state", "off"),
+					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "send_state", "off"),
 				),
 			},
 			// Update with all config and verify default APIC values
@@ -113,8 +113,8 @@ func TestAccResourceQosLlfcIfPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "name_alias", "name_alias_1"),
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "owner_key", "owner_key_1"),
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "owner_tag", "owner_tag_1"),
-					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "receive_mode", "on"),
-					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "send_mode", "on"),
+					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "receive_state", "on"),
+					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "send_state", "on"),
 				),
 			},
 			// Update with minimum config and verify config is unchanged
@@ -127,8 +127,8 @@ func TestAccResourceQosLlfcIfPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "name_alias", "name_alias_1"),
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "owner_key", "owner_key_1"),
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "owner_tag", "owner_tag_1"),
-					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "receive_mode", "on"),
-					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "send_mode", "on"),
+					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "receive_state", "on"),
+					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "send_state", "on"),
 				),
 			},
 			// Update with empty strings config or default value
@@ -141,8 +141,8 @@ func TestAccResourceQosLlfcIfPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "receive_mode", "off"),
-					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "send_mode", "off"),
+					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "receive_state", "off"),
+					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "send_state", "off"),
 				),
 			},
 			// Import testing
@@ -160,8 +160,8 @@ func TestAccResourceQosLlfcIfPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "receive_mode", "off"),
-					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "send_mode", "off"),
+					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "receive_state", "off"),
+					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "send_state", "off"),
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "annotations.1.key", "key_1"),
@@ -183,8 +183,8 @@ func TestAccResourceQosLlfcIfPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "receive_mode", "off"),
-					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "send_mode", "off"),
+					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "receive_state", "off"),
+					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "send_state", "off"),
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "annotations.0.key", "key_0"),
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "annotations.0.value", "value_1"),
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "annotations.1.key", "key_1"),
@@ -206,8 +206,8 @@ func TestAccResourceQosLlfcIfPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "receive_mode", "off"),
-					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "send_mode", "off"),
+					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "receive_state", "off"),
+					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "send_state", "off"),
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "annotations.0.key", "key_1"),
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "annotations.0.value", "test_value"),
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "annotations.#", "1"),
@@ -225,8 +225,8 @@ func TestAccResourceQosLlfcIfPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "receive_mode", "off"),
-					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "send_mode", "off"),
+					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "receive_state", "off"),
+					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "send_state", "off"),
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "annotations.#", "0"),
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "tags.#", "0"),
 				),
@@ -260,8 +260,8 @@ resource "aci_link_level_flow_control_interface_policy" "test" {
   name_alias = "name_alias_1"
   owner_key = "owner_key_1"
   owner_tag = "owner_tag_1"
-  receive_mode = "on"
-  send_mode = "on"
+  receive_state = "on"
+  send_state = "on"
 }
 `
 
@@ -273,8 +273,8 @@ resource "aci_link_level_flow_control_interface_policy" "test" {
   name_alias = ""
   owner_key = ""
   owner_tag = ""
-  receive_mode = "off"
-  send_mode = "off"
+  receive_state = "off"
+  send_state = "off"
 }
 `
 const testConfigQosLlfcIfPolChildren = `

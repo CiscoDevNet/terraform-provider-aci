@@ -46,8 +46,8 @@ type QosLlfcIfPolResourceModel struct {
 	Id              types.String `tfsdk:"id"`
 	Annotation      types.String `tfsdk:"annotation"`
 	Descr           types.String `tfsdk:"description"`
-	LlfcRcvAdminSt  types.String `tfsdk:"receive_mode"`
-	LlfcSendAdminSt types.String `tfsdk:"send_mode"`
+	LlfcRcvAdminSt  types.String `tfsdk:"receive_state"`
+	LlfcSendAdminSt types.String `tfsdk:"send_state"`
 	Name            types.String `tfsdk:"name"`
 	NameAlias       types.String `tfsdk:"name_alias"`
 	OwnerKey        types.String `tfsdk:"owner_key"`
@@ -190,7 +190,7 @@ func (r *QosLlfcIfPolResource) Schema(ctx context.Context, req resource.SchemaRe
 				},
 				MarkdownDescription: `The description of the Link Level Flow Control Interface Policy object.`,
 			},
-			"receive_mode": schema.StringAttribute{
+			"receive_state": schema.StringAttribute{
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
@@ -200,9 +200,9 @@ func (r *QosLlfcIfPolResource) Schema(ctx context.Context, req resource.SchemaRe
 				Validators: []validator.String{
 					stringvalidator.OneOf("off", "on"),
 				},
-				MarkdownDescription: `The receive mode of the Link Level Flow Control Interface Policy object.`,
+				MarkdownDescription: `The receive state of the Link Level Flow Control Interface Policy object.`,
 			},
-			"send_mode": schema.StringAttribute{
+			"send_state": schema.StringAttribute{
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
@@ -212,7 +212,7 @@ func (r *QosLlfcIfPolResource) Schema(ctx context.Context, req resource.SchemaRe
 				Validators: []validator.String{
 					stringvalidator.OneOf("off", "on"),
 				},
-				MarkdownDescription: `The send mode of the Link Level Flow Control Interface Policy object.`,
+				MarkdownDescription: `The send state of the Link Level Flow Control Interface Policy object.`,
 			},
 			"name": schema.StringAttribute{
 				Required: true,

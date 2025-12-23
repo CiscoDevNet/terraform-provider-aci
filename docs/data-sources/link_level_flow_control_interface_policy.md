@@ -47,8 +47,8 @@ data "aci_link_level_flow_control_interface_policy" "example" {
 * `id` - (string) The distinguished name (DN) of the Link Level Flow Control Interface Policy object.
 * `annotation` (annotation) - (string) The annotation of the Link Level Flow Control Interface Policy object.
 * `description` (descr) - (string) The description of the Link Level Flow Control Interface Policy object.
-* `receive_mode` (llfcRcvAdminSt) - (string) The receive mode of the Link Level Flow Control Interface Policy object.
-* `send_mode` (llfcSendAdminSt) - (string) The send mode of the Link Level Flow Control Interface Policy object.
+* `receive_state` (llfcRcvAdminSt) - (string) The receive state of the Link Level Flow Control Interface Policy object.
+* `send_state` (llfcSendAdminSt) - (string) The send state of the Link Level Flow Control Interface Policy object.
 * `name_alias` (nameAlias) - (string) The name alias of the Link Level Flow Control Interface Policy object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.

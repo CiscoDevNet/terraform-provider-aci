@@ -25,8 +25,8 @@ func TestAccDataSourceQosLlfcIfPol(t *testing.T) {
 					resource.TestCheckResourceAttr("data.aci_link_level_flow_control_interface_policy.test", "name_alias", "name_alias_1"),
 					resource.TestCheckResourceAttr("data.aci_link_level_flow_control_interface_policy.test", "owner_key", "owner_key_1"),
 					resource.TestCheckResourceAttr("data.aci_link_level_flow_control_interface_policy.test", "owner_tag", "owner_tag_1"),
-					resource.TestCheckResourceAttr("data.aci_link_level_flow_control_interface_policy.test", "receive_mode", "on"),
-					resource.TestCheckResourceAttr("data.aci_link_level_flow_control_interface_policy.test", "send_mode", "on"),
+					resource.TestCheckResourceAttr("data.aci_link_level_flow_control_interface_policy.test", "receive_state", "on"),
+					resource.TestCheckResourceAttr("data.aci_link_level_flow_control_interface_policy.test", "send_state", "on"),
 				),
 			},
 			{

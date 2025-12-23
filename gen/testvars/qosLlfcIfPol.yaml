@@ -6,8 +6,8 @@
 default:
   annotation: "orchestrator:terraform"
   description: ""
-  receive_mode: "off"
-  send_mode: "off"
+  receive_state: "off"
+  send_state: "off"
   name_alias: ""
   owner_key: ""
   owner_tag: ""
@@ -24,8 +24,8 @@ resource_required:
 all:
   annotation: "annotation"
   description: "description_1"
-  receive_mode: "on"
-  send_mode: "on"
+  receive_state: "on"
+  send_state: "on"
   name_alias: "name_alias_1"
   owner_key: "owner_key_1"
   owner_tag: "owner_tag_1"
