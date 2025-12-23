@@ -1,0 +1,4 @@
+documentation:
+    dscpMatchAdminSt: The administrative state of the %s object.
+overwrites:
+    dscp_match_admin_st: admin_state

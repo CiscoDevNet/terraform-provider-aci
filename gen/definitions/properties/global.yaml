@@ -76,6 +76,7 @@ resource_name_doc_overwrite:
     Mld: MLD
     Nd: Neighbor Discovery (ND)
     Netflow: NetFlow
+    No Drop Dscp: No-Drop-DSCP
     Ospf: OSPF
     Pc Vpc Override Policy: PC VPC Override Policy
     Pim: PIM
