@@ -52,13 +52,13 @@ func (d *QosLlfcIfPolDataSource) Schema(ctx context.Context, req datasource.Sche
 				Computed:            true,
 				MarkdownDescription: `The description of the Link Level Flow Control Interface Policy object.`,
 			},
-			"receive_mode": schema.StringAttribute{
+			"receive_state": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The receive mode of the Link Level Flow Control Interface Policy object.`,
+				MarkdownDescription: `The receive state of the Link Level Flow Control Interface Policy object.`,
 			},
-			"send_mode": schema.StringAttribute{
+			"send_state": schema.StringAttribute{
 				Computed:            true,
-				MarkdownDescription: `The send mode of the Link Level Flow Control Interface Policy object.`,
+				MarkdownDescription: `The send state of the Link Level Flow Control Interface Policy object.`,
 			},
 			"name": schema.StringAttribute{
 				Required:            true,
