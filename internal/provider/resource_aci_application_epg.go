@@ -33,10 +33,15 @@ import (
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &FvAEPgResource{}
+var _ resource.ResourceWithIdentity = &FvAEPgResource{}
 var _ resource.ResourceWithImportState = &FvAEPgResource{}
 
 func NewFvAEPgResource() resource.Resource {
 	return &FvAEPgResource{}
+}
+
+func (r FvAEPgResource) IdentitySchema(_ context.Context, _ resource.IdentitySchemaRequest, resp *resource.IdentitySchemaResponse) {
+	resp.IdentitySchema = getIdentitySchema()
 }
 
 // FvAEPgResource defines the resource implementation.
@@ -7202,6 +7207,7 @@ func (r *FvAEPgResource) Create(ctx context.Context, req resource.CreateRequest,
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_application_epg with id '%s'", data.Id.ValueString()))
 }
 
@@ -7226,6 +7232,7 @@ func (r *FvAEPgResource) Read(ctx context.Context, req resource.ReadRequest, res
 		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
 	} else {
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+		resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_application_epg with id '%s'", data.Id.ValueString()))
@@ -7350,6 +7357,7 @@ func (r *FvAEPgResource) Update(ctx context.Context, req resource.UpdateRequest,
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_application_epg with id '%s'", data.Id.ValueString()))
 }
 
@@ -7378,10 +7386,11 @@ func (r *FvAEPgResource) Delete(ctx context.Context, req resource.DeleteRequest,
 
 func (r *FvAEPgResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_application_epg")
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	resource.ImportStatePassthroughWithIdentity(ctx, path.Root("id"), path.Root("id"), req, resp)
 
 	var stateData *FvAEPgResourceModel
 	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: stateData.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_application_epg with id '%s'", stateData.Id.ValueString()))
 
 	tflog.Debug(ctx, "End import of state resource: aci_application_epg")
@@ -7390,11 +7399,17 @@ func (r *FvAEPgResource) ImportState(ctx context.Context, req resource.ImportSta
 func getAndSetFvAEPgAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FvAEPgResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "fvAEPg,fvCrtrn,fvRsAEPgMonPol,fvRsAepAtt,fvRsBd,fvRsCons,fvRsConsIf,fvRsCustQosPol,fvRsDomAtt,fvRsDppPol,fvRsFcPathAtt,fvRsIntraEpg,fvRsNodeAtt,fvRsPathAtt,fvRsProtBy,fvRsProv,fvRsSecInherited,fvRsTrustCtrl,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,fvUplinkOrderCont,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag"), "GET", nil)
 
-	readData := getEmptyFvAEPgResourceModel()
-
 	if diags.HasError() {
 		return
 	}
+
+	setFvAEPgAttributes(ctx, diags, data, requestData)
+}
+
+func setFvAEPgAttributes(ctx context.Context, diags *diag.Diagnostics, data *FvAEPgResourceModel, requestData *container.Container) {
+
+	readData := getEmptyFvAEPgResourceModel()
+
 	if requestData.Search("imdata").Search("fvAEPg").Data() != nil {
 		classReadInfo := requestData.Search("imdata").Search("fvAEPg").Data().([]interface{})
 		if len(classReadInfo) == 1 {

@@ -31,10 +31,15 @@ import (
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &VzTSubjResource{}
+var _ resource.ResourceWithIdentity = &VzTSubjResource{}
 var _ resource.ResourceWithImportState = &VzTSubjResource{}
 
 func NewVzTSubjResource() resource.Resource {
 	return &VzTSubjResource{}
+}
+
+func (r VzTSubjResource) IdentitySchema(_ context.Context, _ resource.IdentitySchemaRequest, resp *resource.IdentitySchemaResponse) {
+	resp.IdentitySchema = getIdentitySchema()
 }
 
 // VzTSubjResource defines the resource implementation.
@@ -564,6 +569,7 @@ func (r *VzTSubjResource) Create(ctx context.Context, req resource.CreateRequest
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_taboo_contract_subject with id '%s'", data.Id.ValueString()))
 }
 
@@ -588,6 +594,7 @@ func (r *VzTSubjResource) Read(ctx context.Context, req resource.ReadRequest, re
 		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
 	} else {
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+		resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_taboo_contract_subject with id '%s'", data.Id.ValueString()))
@@ -633,6 +640,7 @@ func (r *VzTSubjResource) Update(ctx context.Context, req resource.UpdateRequest
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_taboo_contract_subject with id '%s'", data.Id.ValueString()))
 }
 
@@ -661,10 +669,11 @@ func (r *VzTSubjResource) Delete(ctx context.Context, req resource.DeleteRequest
 
 func (r *VzTSubjResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_taboo_contract_subject")
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	resource.ImportStatePassthroughWithIdentity(ctx, path.Root("id"), path.Root("id"), req, resp)
 
 	var stateData *VzTSubjResourceModel
 	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: stateData.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_taboo_contract_subject with id '%s'", stateData.Id.ValueString()))
 
 	tflog.Debug(ctx, "End import of state resource: aci_taboo_contract_subject")
@@ -673,11 +682,17 @@ func (r *VzTSubjResource) ImportState(ctx context.Context, req resource.ImportSt
 func getAndSetVzTSubjAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *VzTSubjResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "vzTSubj,tagAnnotation,tagTag,vzRsDenyRule,tagAnnotation,tagTag"), "GET", nil)
 
-	readData := getEmptyVzTSubjResourceModel()
-
 	if diags.HasError() {
 		return
 	}
+
+	setVzTSubjAttributes(ctx, diags, data, requestData)
+}
+
+func setVzTSubjAttributes(ctx context.Context, diags *diag.Diagnostics, data *VzTSubjResourceModel, requestData *container.Container) {
+
+	readData := getEmptyVzTSubjResourceModel()
+
 	if requestData.Search("imdata").Search("vzTSubj").Data() != nil {
 		classReadInfo := requestData.Search("imdata").Search("vzTSubj").Data().([]interface{})
 		if len(classReadInfo) == 1 {

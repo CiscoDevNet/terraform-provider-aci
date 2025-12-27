@@ -27,10 +27,15 @@ import (
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &FvRsOtmListMemberResource{}
+var _ resource.ResourceWithIdentity = &FvRsOtmListMemberResource{}
 var _ resource.ResourceWithImportState = &FvRsOtmListMemberResource{}
 
 func NewFvRsOtmListMemberResource() resource.Resource {
 	return &FvRsOtmListMemberResource{}
+}
+
+func (r FvRsOtmListMemberResource) IdentitySchema(_ context.Context, _ resource.IdentitySchemaRequest, resp *resource.IdentitySchemaResponse) {
+	resp.IdentitySchema = getIdentitySchema()
 }
 
 // FvRsOtmListMemberResource defines the resource implementation.
@@ -329,6 +334,7 @@ func (r *FvRsOtmListMemberResource) Create(ctx context.Context, req resource.Cre
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_relation_to_ip_sla_track_member with id '%s'", data.Id.ValueString()))
 }
 
@@ -353,6 +359,7 @@ func (r *FvRsOtmListMemberResource) Read(ctx context.Context, req resource.ReadR
 		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
 	} else {
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+		resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_relation_to_ip_sla_track_member with id '%s'", data.Id.ValueString()))
@@ -395,6 +402,7 @@ func (r *FvRsOtmListMemberResource) Update(ctx context.Context, req resource.Upd
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_relation_to_ip_sla_track_member with id '%s'", data.Id.ValueString()))
 }
 
@@ -423,10 +431,11 @@ func (r *FvRsOtmListMemberResource) Delete(ctx context.Context, req resource.Del
 
 func (r *FvRsOtmListMemberResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_relation_to_ip_sla_track_member")
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	resource.ImportStatePassthroughWithIdentity(ctx, path.Root("id"), path.Root("id"), req, resp)
 
 	var stateData *FvRsOtmListMemberResourceModel
 	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: stateData.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_relation_to_ip_sla_track_member with id '%s'", stateData.Id.ValueString()))
 
 	tflog.Debug(ctx, "End import of state resource: aci_relation_to_ip_sla_track_member")
@@ -435,11 +444,17 @@ func (r *FvRsOtmListMemberResource) ImportState(ctx context.Context, req resourc
 func getAndSetFvRsOtmListMemberAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FvRsOtmListMemberResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "fvRsOtmListMember,tagAnnotation,tagTag"), "GET", nil)
 
-	readData := getEmptyFvRsOtmListMemberResourceModel()
-
 	if diags.HasError() {
 		return
 	}
+
+	setFvRsOtmListMemberAttributes(ctx, diags, data, requestData)
+}
+
+func setFvRsOtmListMemberAttributes(ctx context.Context, diags *diag.Diagnostics, data *FvRsOtmListMemberResourceModel, requestData *container.Container) {
+
+	readData := getEmptyFvRsOtmListMemberResourceModel()
+
 	if requestData.Search("imdata").Search("fvRsOtmListMember").Data() != nil {
 		classReadInfo := requestData.Search("imdata").Search("fvRsOtmListMember").Data().([]interface{})
 		if len(classReadInfo) == 1 {

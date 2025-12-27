@@ -20,6 +20,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/provider"
 	"github.com/hashicorp/terraform-plugin-framework/provider/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
+	"github.com/hashicorp/terraform-plugin-framework/resource/identityschema"
 
 	// temporary unused until muxing is removed
 	// "github.com/hashicorp/terraform-plugin-framework/schema/validator"
@@ -34,6 +35,22 @@ var globalAllowExistingOnCreate bool
 // Ensure AciProvider satisfies various provider interfaces.
 var _ provider.Provider = &AciProvider{}
 var _ provider.ProviderWithFunctions = &AciProvider{}
+
+// Struct model for identity data handling
+type IdentityModel struct {
+	Id types.String `tfsdk:"id"`
+}
+
+// Generic identity schema for each resource
+func getIdentitySchema() identityschema.Schema {
+	return identityschema.Schema{
+		Attributes: map[string]identityschema.Attribute{
+			"id": identityschema.StringAttribute{
+				RequiredForImport: true,
+			},
+		},
+	}
+}
 
 // AciProvider defines the provider implementation.
 type AciProvider struct {

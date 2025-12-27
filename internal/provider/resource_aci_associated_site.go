@@ -27,10 +27,15 @@ import (
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &FvSiteAssociatedResource{}
+var _ resource.ResourceWithIdentity = &FvSiteAssociatedResource{}
 var _ resource.ResourceWithImportState = &FvSiteAssociatedResource{}
 
 func NewFvSiteAssociatedResource() resource.Resource {
 	return &FvSiteAssociatedResource{}
+}
+
+func (r FvSiteAssociatedResource) IdentitySchema(_ context.Context, _ resource.IdentitySchemaRequest, resp *resource.IdentitySchemaResponse) {
+	resp.IdentitySchema = getIdentitySchema()
 }
 
 // FvSiteAssociatedResource defines the resource implementation.
@@ -678,6 +683,7 @@ func (r *FvSiteAssociatedResource) Create(ctx context.Context, req resource.Crea
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_associated_site with id '%s'", data.Id.ValueString()))
 }
 
@@ -702,6 +708,7 @@ func (r *FvSiteAssociatedResource) Read(ctx context.Context, req resource.ReadRe
 		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
 	} else {
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+		resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_associated_site with id '%s'", data.Id.ValueString()))
@@ -747,6 +754,7 @@ func (r *FvSiteAssociatedResource) Update(ctx context.Context, req resource.Upda
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_associated_site with id '%s'", data.Id.ValueString()))
 }
 
@@ -775,10 +783,11 @@ func (r *FvSiteAssociatedResource) Delete(ctx context.Context, req resource.Dele
 
 func (r *FvSiteAssociatedResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_associated_site")
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	resource.ImportStatePassthroughWithIdentity(ctx, path.Root("id"), path.Root("id"), req, resp)
 
 	var stateData *FvSiteAssociatedResourceModel
 	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: stateData.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_associated_site with id '%s'", stateData.Id.ValueString()))
 
 	tflog.Debug(ctx, "End import of state resource: aci_associated_site")
@@ -787,11 +796,17 @@ func (r *FvSiteAssociatedResource) ImportState(ctx context.Context, req resource
 func getAndSetFvSiteAssociatedAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FvSiteAssociatedResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "fvSiteAssociated,fvRemoteId,tagAnnotation,tagTag,tagAnnotation,tagTag"), "GET", nil)
 
-	readData := getEmptyFvSiteAssociatedResourceModel()
-
 	if diags.HasError() {
 		return
 	}
+
+	setFvSiteAssociatedAttributes(ctx, diags, data, requestData)
+}
+
+func setFvSiteAssociatedAttributes(ctx context.Context, diags *diag.Diagnostics, data *FvSiteAssociatedResourceModel, requestData *container.Container) {
+
+	readData := getEmptyFvSiteAssociatedResourceModel()
+
 	if requestData.Search("imdata").Search("fvSiteAssociated").Data() != nil {
 		classReadInfo := requestData.Search("imdata").Search("fvSiteAssociated").Data().([]interface{})
 		if len(classReadInfo) == 1 {

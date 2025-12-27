@@ -27,10 +27,15 @@ import (
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &FvRsBDToOutResource{}
+var _ resource.ResourceWithIdentity = &FvRsBDToOutResource{}
 var _ resource.ResourceWithImportState = &FvRsBDToOutResource{}
 
 func NewFvRsBDToOutResource() resource.Resource {
 	return &FvRsBDToOutResource{}
+}
+
+func (r FvRsBDToOutResource) IdentitySchema(_ context.Context, _ resource.IdentitySchemaRequest, resp *resource.IdentitySchemaResponse) {
+	resp.IdentitySchema = getIdentitySchema()
 }
 
 // FvRsBDToOutResource defines the resource implementation.
@@ -318,6 +323,7 @@ func (r *FvRsBDToOutResource) Create(ctx context.Context, req resource.CreateReq
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_relation_from_bridge_domain_to_l3_outside with id '%s'", data.Id.ValueString()))
 }
 
@@ -342,6 +348,7 @@ func (r *FvRsBDToOutResource) Read(ctx context.Context, req resource.ReadRequest
 		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
 	} else {
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+		resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_relation_from_bridge_domain_to_l3_outside with id '%s'", data.Id.ValueString()))
@@ -384,6 +391,7 @@ func (r *FvRsBDToOutResource) Update(ctx context.Context, req resource.UpdateReq
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_relation_from_bridge_domain_to_l3_outside with id '%s'", data.Id.ValueString()))
 }
 
@@ -412,10 +420,11 @@ func (r *FvRsBDToOutResource) Delete(ctx context.Context, req resource.DeleteReq
 
 func (r *FvRsBDToOutResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_relation_from_bridge_domain_to_l3_outside")
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	resource.ImportStatePassthroughWithIdentity(ctx, path.Root("id"), path.Root("id"), req, resp)
 
 	var stateData *FvRsBDToOutResourceModel
 	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: stateData.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_relation_from_bridge_domain_to_l3_outside with id '%s'", stateData.Id.ValueString()))
 
 	tflog.Debug(ctx, "End import of state resource: aci_relation_from_bridge_domain_to_l3_outside")
@@ -424,11 +433,17 @@ func (r *FvRsBDToOutResource) ImportState(ctx context.Context, req resource.Impo
 func getAndSetFvRsBDToOutAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FvRsBDToOutResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "fvRsBDToOut,tagAnnotation,tagTag"), "GET", nil)
 
-	readData := getEmptyFvRsBDToOutResourceModel()
-
 	if diags.HasError() {
 		return
 	}
+
+	setFvRsBDToOutAttributes(ctx, diags, data, requestData)
+}
+
+func setFvRsBDToOutAttributes(ctx context.Context, diags *diag.Diagnostics, data *FvRsBDToOutResourceModel, requestData *container.Container) {
+
+	readData := getEmptyFvRsBDToOutResourceModel()
+
 	if requestData.Search("imdata").Search("fvRsBDToOut").Data() != nil {
 		classReadInfo := requestData.Search("imdata").Search("fvRsBDToOut").Data().([]interface{})
 		if len(classReadInfo) == 1 {
