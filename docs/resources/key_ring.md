@@ -258,7 +258,7 @@ All examples for the Key Ring resource can be found in the [examples](https://gi
 * `key` (key) - (string) The private key of the certificate. This sensitive value is excluded from the resource's lifecycle configuration and is not tracked by Terraform.
 * `key_type` (keyType) - (string) The type used by the provided key. This attribute is supported in ACI versions: 6.0(2h) and later.
   - Default: `"RSA"`
-  - Valid Values: `"ECC"`, `"RSA"`, `"indeterminate"`.
+  - Valid Values: `"ECC"`, `"RSA"`.
 * `modulus` (modulus) - (string) The length of the encryption keys. A longer key length increases the difficulty of breaking the key.
   - Default: `"mod2048"`
   - Valid Values: `"mod1024"`, `"mod1536"`, `"mod2048"`, `"mod3072"`, `"mod4096"`, `"mod512"`, `"none"`.
