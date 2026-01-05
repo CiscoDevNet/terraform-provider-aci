@@ -1,69 +1,91 @@
 package data
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils/test"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
-var relationInfoFvRsCons = map[string]interface{}{
-	"label": "contract",
-	"relationInfo": map[string]interface{}{
-		"type":   "named",
-		"fromMo": "fv:EPg",
-		"toMo":   "vz:BrCP",
-	},
-}
-
-var relationInfoNetflowRsExporterToCtx = map[string]interface{}{
-	"label": "netflow exporter",
-	"relationInfo": map[string]interface{}{
-		"type":   "explicit",
-		"fromMo": "netflow:AExporterPol",
-		"toMo":   "fv:Ctx",
-	},
-	"isCreatableDeletable": "always",
-}
-
-func TestSplitClassNameToPackageNameAndShortNameSingle(t *testing.T) {
+func TestSplitClassNameToPackageNameAndShortName(t *testing.T) {
+	t.Parallel()
 	test.InitializeTest(t)
-	packageName, shortName, err := splitClassNameToPackageNameAndShortName("fvTenant")
-	assert.Equal(t, packageName, "fv", fmt.Sprintf("Expected package name to be 'fv', but got '%s'", packageName))
-	assert.Equal(t, shortName, "Tenant", fmt.Sprintf("Expected short name to be 'Tenant', but got '%s'", shortName))
-	assert.NoError(t, err, fmt.Sprintf("Expected no error, but got '%s'", err))
-}
 
-func TestSplitClassNameToPackageNameAndShortNameMultiple(t *testing.T) {
-	test.InitializeTest(t)
-	packageName, shortName, err := splitClassNameToPackageNameAndShortName("fvRsIpslaMonPol")
-	assert.Equal(t, packageName, "fv", fmt.Sprintf("Expected package name to be 'fv', but got '%s'", packageName))
-	assert.Equal(t, shortName, "RsIpslaMonPol", fmt.Sprintf("Expected short name to be 'RsIpslaMonPol', but got '%s'", shortName))
-	assert.NoError(t, err, fmt.Sprintf("Expected no error, but got '%s'", err))
-}
+	tests := []struct {
+		name                string
+		className           string
+		expectedPackageName string
+		expectedShortName   string
+		expectError         bool
+		expectedErrorMsg    string
+	}{
+		{
+			name:                "single_word",
+			className:           "fvTenant",
+			expectedPackageName: "fv",
+			expectedShortName:   "Tenant",
+			expectError:         false,
+		},
+		{
+			name:                "multiple_words",
+			className:           "fvRsIpslaMonPol",
+			expectedPackageName: "fv",
+			expectedShortName:   "RsIpslaMonPol",
+			expectError:         false,
+		},
+		{
+			name:                "error_no_uppercase",
+			className:           "error",
+			expectedPackageName: "",
+			expectedShortName:   "",
+			expectError:         true,
+			expectedErrorMsg:    "failed to split class name",
+		},
+		{
+			name:                "empty_string",
+			className:           "",
+			expectedPackageName: "",
+			expectedShortName:   "",
+			expectError:         true,
+			expectedErrorMsg:    "failed to split class name",
+		},
+	}
 
-func TestSplitClassNameToPackageNameAndShortNameError(t *testing.T) {
-	test.InitializeTest(t)
-	packageName, shortName, err := splitClassNameToPackageNameAndShortName("error")
-	assert.Equal(t, packageName, "", fmt.Sprintf("Expected package name to be '', but got '%s'", packageName))
-	assert.Equal(t, shortName, "", fmt.Sprintf("Expected short name to be '', but got '%s'", shortName))
-	assert.Error(t, err, fmt.Sprintf("Expected error, but got '%s'", err))
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			packageName, shortName, err := splitClassNameToPackageNameAndShortName(tc.className)
+
+			if tc.expectError {
+				require.Error(t, err)
+				assert.ErrorContains(t, err, tc.expectedErrorMsg)
+			} else {
+				require.NoError(t, err)
+			}
+			assert.Equal(t, tc.expectedPackageName, packageName)
+			assert.Equal(t, tc.expectedShortName, shortName)
+		})
+	}
 }
 
 func TestSetResourceNameFromLabelNoRelationWithIdentifier(t *testing.T) {
+	t.Parallel()
 	ds := initializeDataStoreTest(t)
 	class := Class{ClassName: "tagAnnotation", IdentifiedBy: []string{"key"}}
 	class.MetaFileContent = map[string]interface{}{
 		"label": "annotation",
 	}
+
 	err := class.setResourceName(ds)
-	assert.NoError(t, err, fmt.Sprintf("Expected no error, but got '%s'", err))
-	assert.Equal(t, class.ResourceName, "annotation", fmt.Sprintf("Expected resource name to be 'annotation', but got '%s'", class.ResourceName))
-	assert.Equal(t, class.ResourceNameNested, "annotations", fmt.Sprintf("Expected nested resource name to be 'annotations', but got '%s'", class.ResourceNameNested))
+
+	require.NoError(t, err)
+	assert.Equal(t, "annotation", class.ResourceName)
+	assert.Equal(t, "annotations", class.ResourceNameNested)
 }
 
 func TestSetResourceNameFromLabelNoRelationWithoutIdentifier(t *testing.T) {
+	t.Parallel()
 	ds := initializeDataStoreTest(t)
 	ds.GlobalMetaDefinition = GlobalMetaDefinition{
 		NoMetaFile: map[string]string{
@@ -79,156 +101,211 @@ func TestSetResourceNameFromLabelNoRelationWithoutIdentifier(t *testing.T) {
 			"toMo":   "fv:Ctx",
 		},
 	}
+
 	err := class.setRelation()
-	assert.NoError(t, err, fmt.Sprintf("Expected no error, but got '%s'", err))
+	require.NoError(t, err)
+
 	err = class.setResourceName(ds)
-	assert.NoError(t, err, fmt.Sprintf("Expected no error, but got '%s'", err))
-	assert.Equal(t, class.ResourceName, "relation_to_vrf", fmt.Sprintf("Expected resource name to be 'relation_to_vrf', but got '%s'", class.ResourceName))
-	assert.Equal(t, class.ResourceNameNested, "relation_to_vrf", fmt.Sprintf("Expected nested resource name to be 'relation_to_vrf', but got '%s'", class.ResourceNameNested))
+	require.NoError(t, err)
+	assert.Equal(t, "relation_to_vrf", class.ResourceName)
+	assert.Equal(t, "relation_to_vrf", class.ResourceNameNested)
 }
 
 func TestSetResourceNameToRelation(t *testing.T) {
+	t.Parallel()
 	ds := initializeDataStoreTest(t)
 	ds.GlobalMetaDefinition = GlobalMetaDefinition{
-		NoMetaFile: map[string]string{
-			"vzBrCP": "contract",
-		},
+		NoMetaFile: test.GlobalMetaDefinitionContract(),
 	}
 	class := Class{ClassName: "fvRsCons", IdentifiedBy: []string{"tnVzBrCPName"}}
-	class.MetaFileContent = relationInfoFvRsCons
+	class.MetaFileContent = test.RelationInfoFvRsCons
+
 	err := class.setRelation()
-	assert.NoError(t, err, fmt.Sprintf("Expected no error, but got '%s'", err))
+	require.NoError(t, err)
+
 	err = class.setResourceName(ds)
-	assert.NoError(t, err, fmt.Sprintf("Expected no error, but got '%s'", err))
-	assert.Equal(t, class.ResourceName, "relation_to_contract", fmt.Sprintf("Expected resource name to be 'relation_to_contract', but got '%s'", class.ResourceName))
-	assert.Equal(t, class.ResourceNameNested, "relation_to_contracts", fmt.Sprintf("Expected nested resource name to be 'relation_to_contracts', but got '%s'", class.ResourceName))
+	require.NoError(t, err)
+	assert.Equal(t, "relation_to_contract", class.ResourceName)
+	assert.Equal(t, "relation_to_contracts", class.ResourceNameNested)
 }
 
 func TestSetResourceNameFromToRelation(t *testing.T) {
+	t.Parallel()
 	ds := initializeDataStoreTest(t)
 	ds.GlobalMetaDefinition = GlobalMetaDefinition{
-		NoMetaFile: map[string]string{
-			"fvCtx":               "vrf",
-			"netflowAExporterPol": "netflow_exporter_policy",
-		},
+		NoMetaFile: test.GlobalMetaDefinitionNetflow(),
 	}
 	class := Class{ClassName: "netflowRsExporterToCtx"}
-	class.MetaFileContent = relationInfoNetflowRsExporterToCtx
+	class.MetaFileContent = test.RelationInfoNetflowRsExporterToCtx
+
 	err := class.setRelation()
-	assert.NoError(t, err, fmt.Sprintf("Expected no error, but got '%s'", err))
+	require.NoError(t, err)
+
 	err = class.setResourceName(ds)
-	assert.NoError(t, err, fmt.Sprintf("Expected no error, but got '%s'", err))
-	assert.Equal(t, class.ResourceName, "relation_from_netflow_exporter_policy_to_vrf", fmt.Sprintf("Expected resource name to be 'relation_from_netflow_exporter_policy_to_vrf', but got '%s'", class.ResourceName))
-	assert.Equal(t, class.ResourceNameNested, "relation_to_vrf", fmt.Sprintf("Expected nested resource name to be 'relation_to_vrf', but got '%s'", class.ResourceNameNested))
+	require.NoError(t, err)
+	assert.Equal(t, "relation_from_netflow_exporter_policy_to_vrf", class.ResourceName)
+	assert.Equal(t, "relation_to_vrf", class.ResourceNameNested)
 }
 
 func TestSetResourceNameFromEmptyLabelError(t *testing.T) {
+	t.Parallel()
 	ds := initializeDataStoreTest(t)
 	class := Class{}
 	class.MetaFileContent = map[string]interface{}{"label": ""}
+
 	err := class.setResourceName(ds)
-	assert.Error(t, err, fmt.Sprintf("Expected error, but got '%s'", err))
+
+	assert.Error(t, err)
 }
 
 func TestSetResourceNameFromNoLabelError(t *testing.T) {
+	t.Parallel()
 	ds := initializeDataStoreTest(t)
 	class := Class{}
 	class.MetaFileContent = map[string]interface{}{"no_label": ""}
+
 	err := class.setResourceName(ds)
-	assert.Error(t, err, fmt.Sprintf("Expected error, but got '%s'", err))
+
+	assert.Error(t, err)
 }
 
-func TestSetRelationNoRelation(t *testing.T) {
+func TestSetRelation(t *testing.T) {
+	t.Parallel()
 	test.InitializeTest(t)
-	class := Class{ClassName: "fvTenant"}
-	err := class.setRelation()
-	assert.NoError(t, err, fmt.Sprintf("Expected no error, but got '%s'", err))
-	assert.Equal(t, class.Relation.FromClass, "", fmt.Sprintf("Expected FromClass to be 'fvEPg', but got '%s'", class.Relation.FromClass))
-	assert.Equal(t, class.Relation.ToClass, "", fmt.Sprintf("Expected ToClass to be 'vzBrCP', but got '%s'", class.Relation.ToClass))
-	assert.Equal(t, class.Relation.Type, RelationshipTypeEnum(0), fmt.Sprintf("Expected Type to be 'Undefined', but got '%v'", class.Relation.Type))
-	assert.Equal(t, class.Relation.IncludeFrom, false, fmt.Sprintf("Expected IncludeFrom to be 'false', but got '%v'", class.Relation.IncludeFrom))
-	assert.Equal(t, class.Relation.RelationalClass, false, fmt.Sprintf("Expected RelationalClass to be 'false', but got '%v'", class.Relation.RelationalClass))
-}
 
-func TestSetRelationIncludeFromFalseAndTypeNamed(t *testing.T) {
-	test.InitializeTest(t)
-	class := Class{ClassName: "fvRsCons"}
-	class.MetaFileContent = relationInfoFvRsCons
-	err := class.setRelation()
-	assert.NoError(t, err, fmt.Sprintf("Expected no error, but got '%s'", err))
-	assert.Equal(t, class.Relation.FromClass, "fvEPg", fmt.Sprintf("Expected FromClass to be 'fvEPg', but got '%s'", class.Relation.FromClass))
-	assert.Equal(t, class.Relation.ToClass, "vzBrCP", fmt.Sprintf("Expected ToClass to be 'vzBrCP', but got '%s'", class.Relation.ToClass))
-	assert.Equal(t, class.Relation.Type, Named, fmt.Sprintf("Expected Type to be 'Named', but got '%v'", class.Relation.Type))
-	assert.Equal(t, class.Relation.IncludeFrom, false, fmt.Sprintf("Expected IncludeFrom to be 'false', but got '%v'", class.Relation.IncludeFrom))
-	assert.Equal(t, class.Relation.RelationalClass, true, fmt.Sprintf("Expected RelationalClass to be 'true', but got '%v'", class.Relation.RelationalClass))
-}
-
-func TestSetRelationIncludeFromTrueAndTypeExplicit(t *testing.T) {
-	test.InitializeTest(t)
-	class := Class{ClassName: "netflowRsExporterToCtx"}
-	class.MetaFileContent = relationInfoNetflowRsExporterToCtx
-	err := class.setRelation()
-	class.setAllowDelete()
-	assert.NoError(t, err, fmt.Sprintf("Expected no error, but got '%s'", err))
-	assert.Equal(t, class.Relation.FromClass, "netflowAExporterPol", fmt.Sprintf("Expected FromClass to be 'netflowAExporterPol', but got '%s'", class.Relation.FromClass))
-	assert.Equal(t, class.Relation.ToClass, "fvCtx", fmt.Sprintf("Expected ToClass to be 'fvCtx', but got '%s'", class.Relation.ToClass))
-	assert.Equal(t, class.Relation.Type, Explicit, fmt.Sprintf("Expected Type to be 'Explicit', but got '%v'", class.Relation.Type))
-	assert.Equal(t, class.Relation.IncludeFrom, true, fmt.Sprintf("Expected IncludeFrom to be 'false', but got '%v'", class.Relation.IncludeFrom))
-	assert.Equal(t, class.Relation.RelationalClass, true, fmt.Sprintf("Expected RelationalClass to be 'true', but got '%v'", class.Relation.RelationalClass))
-}
-
-func TestSetRelationUndefinedType(t *testing.T) {
-	test.InitializeTest(t)
-	class := Class{ClassName: "netflowRsExporterToCtx"}
-	class.MetaFileContent = map[string]interface{}{
-		"relationInfo": map[string]interface{}{
-			"type":   "undefinedType",
-			"fromMo": "netflow:AExporterPol",
-			"toMo":   "fv:Ctx",
+	tests := []struct {
+		name                    string
+		className               string
+		metaFileContent         map[string]interface{}
+		expectedFromClass       string
+		expectedToClass         string
+		expectedType            RelationshipTypeEnum
+		expectedIncludeFrom     bool
+		expectedRelationalClass bool
+		expectError             bool
+		expectedErrorMsg        string
+	}{
+		{
+			name:                    "no_relation",
+			className:               "fvTenant",
+			metaFileContent:         nil,
+			expectedFromClass:       "",
+			expectedToClass:         "",
+			expectedType:            RelationshipTypeEnum(0),
+			expectedIncludeFrom:     false,
+			expectedRelationalClass: false,
+			expectError:             false,
+		},
+		{
+			name:                    "include_from_false_type_named",
+			className:               "fvRsCons",
+			metaFileContent:         test.RelationInfoFvRsCons,
+			expectedFromClass:       "fvEPg",
+			expectedToClass:         "vzBrCP",
+			expectedType:            Named,
+			expectedIncludeFrom:     false,
+			expectedRelationalClass: true,
+			expectError:             false,
+		},
+		{
+			name:                    "include_from_true_type_explicit",
+			className:               "netflowRsExporterToCtx",
+			metaFileContent:         test.RelationInfoNetflowRsExporterToCtx,
+			expectedFromClass:       "netflowAExporterPol",
+			expectedToClass:         "fvCtx",
+			expectedType:            Explicit,
+			expectedIncludeFrom:     true,
+			expectedRelationalClass: true,
+			expectError:             false,
+		},
+		{
+			name:      "undefined_type_error",
+			className: "netflowRsExporterToCtx",
+			metaFileContent: map[string]interface{}{
+				"relationInfo": map[string]interface{}{
+					"type":   "undefinedType",
+					"fromMo": "netflow:AExporterPol",
+					"toMo":   "fv:Ctx",
+				},
+			},
+			expectError:      true,
+			expectedErrorMsg: "undefined relationship type",
 		},
 	}
-	err := class.setRelation()
-	assert.Error(t, err, fmt.Sprintf("Expected error, but got '%s'", err))
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			class := Class{ClassName: tc.className}
+			class.MetaFileContent = tc.metaFileContent
+
+			err := class.setRelation()
+
+			if tc.expectError {
+				require.Error(t, err)
+				if tc.expectedErrorMsg != "" {
+					assert.ErrorContains(t, err, tc.expectedErrorMsg)
+				}
+				return
+			}
+
+			require.NoError(t, err)
+			assert.Equal(t, tc.expectedFromClass, class.Relation.FromClass)
+			assert.Equal(t, tc.expectedToClass, class.Relation.ToClass)
+			assert.Equal(t, tc.expectedType, class.Relation.Type)
+			assert.Equal(t, tc.expectedIncludeFrom, class.Relation.IncludeFrom)
+			assert.Equal(t, tc.expectedRelationalClass, class.Relation.RelationalClass)
+		})
+	}
 }
 
 func TestSetAllowDelete(t *testing.T) {
+	t.Parallel()
 	test.InitializeTest(t)
-	class := Class{ClassName: "fvPeeringP"}
 
-	tests := []map[string]interface{}{
+	tests := []struct {
+		name            string
+		metaFileContent map[string]interface{}
+		classDefinition ClassDefinition
+		expected        bool
+	}{
 		{
-			"name":                   "definitions.allow_delete is an empty string, isCreatableDeletable is 'never'",
-			"metaFileContent":        map[string]interface{}{"isCreatableDeletable": "never"},
-			"classDefinitionContent": ClassDefinition{},
-			"expected":               false,
+			name:            "isCreatableDeletable_never",
+			metaFileContent: map[string]interface{}{"isCreatableDeletable": "never"},
+			classDefinition: ClassDefinition{},
+			expected:        false,
 		},
 		{
-			"name":                   "definitions.allow_delete is an empty string, isCreatableDeletable is not 'never'",
-			"metaFileContent":        map[string]interface{}{"isCreatableDeletable": "always"},
-			"classDefinitionContent": ClassDefinition{},
-			"expected":               true,
+			name:            "isCreatableDeletable_always",
+			metaFileContent: map[string]interface{}{"isCreatableDeletable": "always"},
+			classDefinition: ClassDefinition{},
+			expected:        true,
 		},
 		{
-			"name":                   "definitions.allow_delete is 'never'",
-			"metaFileContent":        map[string]interface{}{},
-			"classDefinitionContent": ClassDefinition{AllowDelete: "never"},
-			"expected":               false,
+			name:            "definition_allow_delete_never",
+			metaFileContent: map[string]interface{}{},
+			classDefinition: ClassDefinition{AllowDelete: "never"},
+			expected:        false,
 		},
 		{
-			"name":                   "definitions.allow_delete is not 'never'",
-			"metaFileContent":        map[string]interface{}{},
-			"classDefinitionContent": ClassDefinition{AllowDelete: "always"},
-			"expected":               true,
+			name:            "definition_allow_delete_always",
+			metaFileContent: map[string]interface{}{},
+			classDefinition: ClassDefinition{AllowDelete: "always"},
+			expected:        true,
 		},
 	}
 
-	for _, test := range tests {
-		genLogger.Info(fmt.Sprintf("Executing: %s with scenario '%s'", t.Name(), test["name"]))
-		class.MetaFileContent = test["metaFileContent"].(map[string]interface{})
-		class.ClassDefinition = test["classDefinitionContent"].(ClassDefinition)
-		class.AllowDelete = false
-		class.setAllowDelete()
-		assert.Equal(t, test["expected"].(bool), class.AllowDelete,
-			fmt.Sprintf("Expected '%v', but got '%v' for case '%s'", test["expected"], class.AllowDelete, test["name"]))
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			class := Class{ClassName: "fvPeeringP"}
+			class.MetaFileContent = tc.metaFileContent
+			class.ClassDefinition = tc.classDefinition
+			class.AllowDelete = false
+
+			class.setAllowDelete()
+
+			assert.Equal(t, tc.expected, class.AllowDelete)
+		})
 	}
 }
