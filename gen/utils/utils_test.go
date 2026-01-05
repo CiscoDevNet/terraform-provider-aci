@@ -1,11 +1,11 @@
 package utils
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils/test"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 const (
@@ -19,66 +19,124 @@ const (
 )
 
 func TestGetFileNamesFromDirectoryWithExtension(t *testing.T) {
+	t.Parallel()
 	test.InitializeTest(t)
+
 	filenames := GetFileNamesFromDirectory(constTestDirectoryForGetFileNamesFromDirectory, false)
-	assert.NotEmpty(t, filenames, "Expected to get file names from directory, but got empty list")
-	assert.Equal(t, len(filenames), 3, fmt.Sprintf("Expected to get 2 file names from directory, but got %d", len(filenames)))
-	assert.Contains(t, filenames, constTestFile1WithExtension, fmt.Sprintf("Expected to find file name '%s' in the list, but it was not found", constTestFile1WithExtension))
-	assert.Contains(t, filenames, constTestFile2WithExtension, fmt.Sprintf("Expected to find file name '%s' in the list, but it was not found", constTestFile2WithExtension))
-	assert.Contains(t, filenames, constTestFile3, fmt.Sprintf("Expected to find file name '%s' in the list, but it was not found", constTestFile3))
-	assert.NotContains(t, filenames, constTestDir1, fmt.Sprintf("Expected to not find directory name '%s' in the list, but it was found", constTestDir1))
+
+	require.NotEmpty(t, filenames, "file names should not be empty")
+	assert.Len(t, filenames, 3)
+	assert.Contains(t, filenames, constTestFile1WithExtension)
+	assert.Contains(t, filenames, constTestFile2WithExtension)
+	assert.Contains(t, filenames, constTestFile3)
+	assert.NotContains(t, filenames, constTestDir1)
 }
 
 func TestGetFileNamesFromDirectoryWithoutExtension(t *testing.T) {
+	t.Parallel()
 	test.InitializeTest(t)
+
 	filenames := GetFileNamesFromDirectory(constTestDirectoryForGetFileNamesFromDirectory, true)
-	assert.NotEmpty(t, filenames, "Expected to get file names from directory, but got empty list")
-	assert.Equal(t, len(filenames), 3, fmt.Sprintf("Expected to get 2 file names from directory, but got %d", len(filenames)))
-	assert.Contains(t, filenames, constTestFile1WithoutExtension, fmt.Sprintf("Expected to find file name '%s' in the list, but it was not found", constTestFile1WithoutExtension))
-	assert.Contains(t, filenames, constTestFile2WithoutExtension, fmt.Sprintf("Expected to find file name '%s' in the list, but it was not found", constTestFile2WithoutExtension))
-	assert.Contains(t, filenames, constTestFile3, fmt.Sprintf("Expected to find file name '%s' in the list, but it was not found", constTestFile3))
-	assert.NotContains(t, filenames, constTestDir1, fmt.Sprintf("Expected to not find directory name '%s' in the list, but it was found", constTestDir1))
+
+	require.NotEmpty(t, filenames, "file names should not be empty")
+	assert.Len(t, filenames, 3)
+	assert.Contains(t, filenames, constTestFile1WithoutExtension)
+	assert.Contains(t, filenames, constTestFile2WithoutExtension)
+	assert.Contains(t, filenames, constTestFile3)
+	assert.NotContains(t, filenames, constTestDir1)
 }
 
 func TestUnderscore(t *testing.T) {
+	t.Parallel()
 	test.InitializeTest(t)
 
-	tests := []map[string]string{
-		{"input": "tenant", "expected": "tenant"},
-		{"input": "Tenant", "expected": "tenant"},
-		{"input": "Tenant1", "expected": "tenant1"},
-		{"input": "ApplicationEndpointGroup", "expected": "application_endpoint_group"},
-		{"input": "Application Endpoint Group", "expected": "application_endpoint_group"},
-		{"input": "Application-Endpoint-Group", "expected": "application_endpoint_group"},
-		{"input": "Application Endpoint-Group", "expected": "application_endpoint_group"},
+	tests := []struct {
+		name     string
+		input    string
+		expected string
+	}{
+		{name: "lowercase", input: "tenant", expected: "tenant"},
+		{name: "capitalized", input: "Tenant", expected: "tenant"},
+		{name: "with_number", input: "Tenant1", expected: "tenant1"},
+		{name: "camel_case", input: "ApplicationEndpointGroup", expected: "application_endpoint_group"},
+		{name: "space_separated", input: "Application Endpoint Group", expected: "application_endpoint_group"},
+		{name: "hyphen_separated", input: "Application-Endpoint-Group", expected: "application_endpoint_group"},
+		{name: "mixed_separators", input: "Application Endpoint-Group", expected: "application_endpoint_group"},
 	}
 
-	for _, test := range tests {
-		genLogger.Info(fmt.Sprintf("Executing: %s' with input '%s' and expected output '%s'", t.Name(), test["input"], test["expected"]))
-		result := Underscore(test["input"])
-		assert.Equal(t, test["expected"], result, fmt.Sprintf("Expected '%s', but got '%s'", test["expected"], result))
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			result := Underscore(tc.input)
+			assert.Equal(t, tc.expected, result)
+		})
 	}
-
 }
 
 func TestPlural(t *testing.T) {
+	t.Parallel()
 	test.InitializeTest(t)
 
-	tests := []map[string]string{
-		{"input": "monitor_policy", "expected": "monitor_policies"},
-		{"input": "annotation", "expected": "annotations"},
+	tests := []struct {
+		name     string
+		input    string
+		expected string
+	}{
+		{name: "policy_to_policies", input: "monitor_policy", expected: "monitor_policies"},
+		{name: "add_s", input: "annotation", expected: "annotations"},
 	}
 
-	for _, test := range tests {
-		genLogger.Info(fmt.Sprintf("Executing: %s' with input '%s' and expected output '%s'", t.Name(), test["input"], test["expected"]))
-		result, err := Plural(test["input"])
-		assert.NoError(t, err, fmt.Sprintf("Expected no error, but got '%s'", err))
-		assert.Equal(t, test["expected"], result, fmt.Sprintf("Expected '%s', but got '%s'", test["expected"], result))
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			result, err := Plural(tc.input)
+			require.NoError(t, err)
+			assert.Equal(t, tc.expected, result)
+		})
 	}
 }
 
 func TestPluralError(t *testing.T) {
+	t.Parallel()
 	test.InitializeTest(t)
+
 	_, err := Plural("contracts")
-	assert.Error(t, err, fmt.Sprintf("Expected error, but got '%s'", err))
+	require.Error(t, err)
+	assert.ErrorContains(t, err, "no plural rule defined")
+}
+
+func TestUnderscoreEdgeCases(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	tests := []struct {
+		name     string
+		input    string
+		expected string
+	}{
+		{name: "empty_string", input: "", expected: ""},
+		{name: "single_lowercase", input: "a", expected: "a"},
+		{name: "single_uppercase", input: "A", expected: "a"},
+		{name: "numbers_only", input: "123", expected: "123"},
+		{name: "leading_number", input: "1Tenant", expected: "1_tenant"},
+		{name: "underscore_input", input: "already_snake", expected: "already_snake"},
+		{name: "multiple_underscores", input: "a__b", expected: "a__b"},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			result := Underscore(tc.input)
+			assert.Equal(t, tc.expected, result)
+		})
+	}
+}
+
+func TestGetFileNamesFromDirectoryNonExistent(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	filenames := GetFileNamesFromDirectory("./non_existent_directory", false)
+
+	assert.Empty(t, filenames)
 }
