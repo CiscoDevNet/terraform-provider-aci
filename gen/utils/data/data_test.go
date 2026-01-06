@@ -15,7 +15,6 @@ const (
 )
 
 func initializeDataStoreTest(t *testing.T) *DataStore {
-	t.Helper()
 	test.InitializeTest(t)
 	return &DataStore{}
 }
@@ -26,7 +25,7 @@ func TestSetHostDefault(t *testing.T) {
 
 	ds.setMetaHost()
 
-	assert.Equal(t, constPubhubDevnetHost, ds.metaHost)
+	assert.Equal(t, constPubhubDevnetHost, ds.metaHost, test.MessageEqual(constPubhubDevnetHost, ds.metaHost, t.Name()))
 }
 
 func TestSetHostFromEnvironmentVariable(t *testing.T) {
@@ -35,44 +34,45 @@ func TestSetHostFromEnvironmentVariable(t *testing.T) {
 
 	ds.setMetaHost()
 
-	assert.Equal(t, metaHost, ds.metaHost)
+	assert.Equal(t, metaHost, ds.metaHost, test.MessageEqual(metaHost, ds.metaHost, t.Name()))
+}
+
+type loadClassExpected struct {
+	Error bool
 }
 
 func TestLoadClass(t *testing.T) {
 	t.Parallel()
 
-	tests := []struct {
-		name        string
-		className   string
-		expectError bool
-	}{
+	testCases := []test.TestCase{
 		{
-			name:        "invalid_class_name_no_uppercase",
-			className:   "invalidclass",
-			expectError: true,
+			Name:     "test_invalid_class_name_no_uppercase",
+			Input:    "invalidclass",
+			Expected: loadClassExpected{Error: true},
 		},
 		{
-			name:        "empty_class_name",
-			className:   "",
-			expectError: true,
+			Name:     "test_empty_class_name",
+			Input:    "",
+			Expected: loadClassExpected{Error: true},
 		},
 	}
 
-	for _, tc := range tests {
-		t.Run(tc.name, func(t *testing.T) {
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
 			t.Parallel()
+			expected := testCase.Expected.(loadClassExpected)
 			ds := &DataStore{
 				Classes:              make(map[string]Class),
 				GlobalMetaDefinition: GlobalMetaDefinition{},
 			}
 
-			err := ds.loadClass(tc.className)
+			err := ds.loadClass(testCase.Input.(string))
 
-			if tc.expectError {
+			if expected.Error {
 				assert.Error(t, err)
 			} else {
-				require.NoError(t, err)
-				assert.Contains(t, ds.Classes, tc.className)
+				require.NoError(t, err, test.MessageUnexpectedError(err))
+				assert.Contains(t, ds.Classes, testCase.Input.(string), test.MessageContains(ds.Classes, testCase.Input.(string), testCase.Name))
 			}
 		})
 	}
@@ -91,63 +91,77 @@ func TestLoadClassAlreadyLoaded(t *testing.T) {
 	// Loading the same class should not error and should skip
 	err := ds.loadClass("fvTenant")
 
-	require.NoError(t, err)
+	require.NoError(t, err, test.MessageUnexpectedError(err))
 	assert.Len(t, ds.Classes, 1)
 }
 
+type retrieveEnvMetaClassesInput struct {
+	EnvValue       string
+	ServerResponse string
+	ServerStatus   int
+}
+
+type retrieveEnvMetaClassesExpected struct {
+	Error bool
+}
+
 func TestRetrieveEnvMetaClassesFromRemote(t *testing.T) {
-	tests := []struct {
-		name           string
-		envValue       string
-		serverResponse string
-		serverStatus   int
-		expectError    bool
-	}{
+	testCases := []test.TestCase{
 		{
-			name:           "empty_env_variable",
-			envValue:       "",
-			serverResponse: "",
-			serverStatus:   http.StatusOK,
-			expectError:    false,
+			Name: "test_empty_env_variable",
+			Input: retrieveEnvMetaClassesInput{
+				EnvValue:       "",
+				ServerResponse: "",
+				ServerStatus:   http.StatusOK,
+			},
+			Expected: retrieveEnvMetaClassesExpected{Error: false},
 		},
 		{
-			name:           "single_valid_class",
-			envValue:       "fvTenant",
-			serverResponse: `{"label": "tenant"}`,
-			serverStatus:   http.StatusOK,
-			expectError:    false,
+			Name: "test_single_valid_class",
+			Input: retrieveEnvMetaClassesInput{
+				EnvValue:       "fvTenant",
+				ServerResponse: `{"label": "tenant"}`,
+				ServerStatus:   http.StatusOK,
+			},
+			Expected: retrieveEnvMetaClassesExpected{Error: false},
 		},
 		{
-			name:           "multiple_valid_classes",
-			envValue:       "fvTenant,fvAp",
-			serverResponse: `{"label": "test"}`,
-			serverStatus:   http.StatusOK,
-			expectError:    false,
+			Name: "test_multiple_valid_classes",
+			Input: retrieveEnvMetaClassesInput{
+				EnvValue:       "fvTenant,fvAp",
+				ServerResponse: `{"label": "test"}`,
+				ServerStatus:   http.StatusOK,
+			},
+			Expected: retrieveEnvMetaClassesExpected{Error: false},
 		},
 		{
-			name:           "invalid_class_name_no_uppercase",
-			envValue:       "invalidclass",
-			serverResponse: "",
-			serverStatus:   http.StatusOK,
-			expectError:    true,
+			Name: "test_invalid_class_name_no_uppercase",
+			Input: retrieveEnvMetaClassesInput{
+				EnvValue:       "invalidclass",
+				ServerResponse: "",
+				ServerStatus:   http.StatusOK,
+			},
+			Expected: retrieveEnvMetaClassesExpected{Error: true},
 		},
 	}
 
-	for _, tc := range tests {
-		t.Run(tc.name, func(t *testing.T) {
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			input := testCase.Input.(retrieveEnvMetaClassesInput)
+			expected := testCase.Expected.(retrieveEnvMetaClassesExpected)
 			// Create temp directory for meta files
 			tempDir := t.TempDir()
 
 			// Create a test server
 			server := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.WriteHeader(tc.serverStatus)
-				w.Write([]byte(tc.serverResponse))
+				w.WriteHeader(input.ServerStatus)
+				w.Write([]byte(input.ServerResponse))
 			}))
 			defer server.Close()
 
 			// Set environment variable
-			if tc.envValue != "" {
-				t.Setenv(constEnvMetaClasses, tc.envValue)
+			if input.EnvValue != "" {
+				t.Setenv(constEnvMetaClasses, input.EnvValue)
 			}
 
 			ds := &DataStore{
@@ -161,11 +175,11 @@ func TestRetrieveEnvMetaClassesFromRemote(t *testing.T) {
 			// Since we can't easily do that, we'll just test the error cases
 			err := ds.retrieveEnvMetaClassesFromRemote()
 
-			if tc.expectError {
+			if expected.Error {
 				assert.Error(t, err)
-			} else if tc.envValue == "" {
+			} else if input.EnvValue == "" {
 				// Empty env should not error
-				require.NoError(t, err)
+				require.NoError(t, err, test.MessageUnexpectedError(err))
 			}
 
 			_ = tempDir // Used for cleanup
@@ -184,41 +198,42 @@ func TestRetrieveEnvMetaClassesFromRemoteEmptyEnv(t *testing.T) {
 
 	err := ds.retrieveEnvMetaClassesFromRemote()
 
-	require.NoError(t, err)
+	require.NoError(t, err, test.MessageUnexpectedError(err))
+}
+
+type refreshMetaFilesExpected struct {
+	Error bool
 }
 
 func TestRefreshMetaFiles(t *testing.T) {
-	tests := []struct {
-		name        string
-		envValue    string
-		expectError bool
-	}{
+	testCases := []test.TestCase{
 		{
-			name:        "env_not_set",
-			envValue:    "",
-			expectError: false,
+			Name:     "test_env_not_set",
+			Input:    "",
+			Expected: refreshMetaFilesExpected{Error: false},
 		},
 		{
-			name:        "env_set_to_false",
-			envValue:    "false",
-			expectError: false,
+			Name:     "test_env_set_to_false",
+			Input:    "false",
+			Expected: refreshMetaFilesExpected{Error: false},
 		},
 		{
-			name:        "env_set_to_0",
-			envValue:    "0",
-			expectError: false,
+			Name:     "test_env_set_to_0",
+			Input:    "0",
+			Expected: refreshMetaFilesExpected{Error: false},
 		},
 		{
-			name:        "env_set_to_invalid_value",
-			envValue:    "invalid",
-			expectError: false, // Logs warning but doesn't error
+			Name:     "test_env_set_to_invalid_value",
+			Input:    "invalid",
+			Expected: refreshMetaFilesExpected{Error: false}, // Logs warning but doesn't error
 		},
 	}
 
-	for _, tc := range tests {
-		t.Run(tc.name, func(t *testing.T) {
-			if tc.envValue != "" {
-				t.Setenv(constEnvMetaRefresh, tc.envValue)
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			expected := testCase.Expected.(refreshMetaFilesExpected)
+			if testCase.Input.(string) != "" {
+				t.Setenv(constEnvMetaRefresh, testCase.Input.(string))
 			}
 
 			ds := &DataStore{
@@ -229,48 +244,58 @@ func TestRefreshMetaFiles(t *testing.T) {
 
 			err := ds.refreshMetaFiles()
 
-			if tc.expectError {
+			if expected.Error {
 				assert.Error(t, err)
 			} else {
-				require.NoError(t, err)
+				require.NoError(t, err, test.MessageUnexpectedError(err))
 			}
 		})
 	}
 }
 
+type retrieveMetaFileInput struct {
+	ClassName      string
+	ServerResponse string
+	ServerStatus   int
+}
+
+type retrieveMetaFileExpected struct {
+	Error bool
+}
+
 func TestRetrieveMetaFileFromRemote(t *testing.T) {
 	t.Parallel()
 
-	tests := []struct {
-		name           string
-		className      string
-		serverResponse string
-		serverStatus   int
-		expectError    bool
-	}{
+	testCases := []test.TestCase{
 		{
-			name:           "invalid_class_name",
-			className:      "invalidclass",
-			serverResponse: "",
-			serverStatus:   http.StatusOK,
-			expectError:    true,
+			Name: "test_invalid_class_name",
+			Input: retrieveMetaFileInput{
+				ClassName:      "invalidclass",
+				ServerResponse: "",
+				ServerStatus:   http.StatusOK,
+			},
+			Expected: retrieveMetaFileExpected{Error: true},
 		},
 		{
-			name:           "empty_class_name",
-			className:      "",
-			serverResponse: "",
-			serverStatus:   http.StatusOK,
-			expectError:    true,
+			Name: "test_empty_class_name",
+			Input: retrieveMetaFileInput{
+				ClassName:      "",
+				ServerResponse: "",
+				ServerStatus:   http.StatusOK,
+			},
+			Expected: retrieveMetaFileExpected{Error: true},
 		},
 	}
 
-	for _, tc := range tests {
-		t.Run(tc.name, func(t *testing.T) {
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
 			t.Parallel()
+			input := testCase.Input.(retrieveMetaFileInput)
+			expected := testCase.Expected.(retrieveMetaFileExpected)
 
 			server := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.WriteHeader(tc.serverStatus)
-				w.Write([]byte(tc.serverResponse))
+				w.WriteHeader(input.ServerStatus)
+				w.Write([]byte(input.ServerResponse))
 			}))
 			defer server.Close()
 
@@ -281,12 +306,12 @@ func TestRetrieveMetaFileFromRemote(t *testing.T) {
 				retrievedClasses: []string{},
 			}
 
-			err := ds.retrieveMetaFileFromRemote(tc.className)
+			err := ds.retrieveMetaFileFromRemote(input.ClassName)
 
-			if tc.expectError {
+			if expected.Error {
 				assert.Error(t, err)
 			} else {
-				require.NoError(t, err)
+				require.NoError(t, err, test.MessageUnexpectedError(err))
 			}
 		})
 	}
@@ -303,5 +328,5 @@ func TestRetrieveMetaFileFromRemoteAlreadyRetrieved(t *testing.T) {
 	// Should skip retrieval and not error
 	err := ds.retrieveMetaFileFromRemote("fvTenant")
 
-	require.NoError(t, err)
+	require.NoError(t, err, test.MessageUnexpectedError(err))
 }
