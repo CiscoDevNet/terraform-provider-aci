@@ -24,12 +24,12 @@ func TestGetFileNamesFromDirectoryWithExtension(t *testing.T) {
 
 	filenames := GetFileNamesFromDirectory(constTestDirectoryForGetFileNamesFromDirectory, false)
 
-	require.NotEmpty(t, filenames, "file names should not be empty")
+	require.NotEmpty(t, filenames, test.MessageNotEmpty(filenames, t.Name()))
 	assert.Len(t, filenames, 3)
-	assert.Contains(t, filenames, constTestFile1WithExtension)
-	assert.Contains(t, filenames, constTestFile2WithExtension)
-	assert.Contains(t, filenames, constTestFile3)
-	assert.NotContains(t, filenames, constTestDir1)
+	assert.Contains(t, filenames, constTestFile1WithExtension, test.MessageContains(filenames, constTestFile1WithExtension, t.Name()))
+	assert.Contains(t, filenames, constTestFile2WithExtension, test.MessageContains(filenames, constTestFile2WithExtension, t.Name()))
+	assert.Contains(t, filenames, constTestFile3, test.MessageContains(filenames, constTestFile3, t.Name()))
+	assert.NotContains(t, filenames, constTestDir1, test.MessageNotContains(filenames, constTestDir1, t.Name()))
 }
 
 func TestGetFileNamesFromDirectoryWithoutExtension(t *testing.T) {
@@ -38,37 +38,33 @@ func TestGetFileNamesFromDirectoryWithoutExtension(t *testing.T) {
 
 	filenames := GetFileNamesFromDirectory(constTestDirectoryForGetFileNamesFromDirectory, true)
 
-	require.NotEmpty(t, filenames, "file names should not be empty")
+	require.NotEmpty(t, filenames, test.MessageNotEmpty(filenames, t.Name()))
 	assert.Len(t, filenames, 3)
-	assert.Contains(t, filenames, constTestFile1WithoutExtension)
-	assert.Contains(t, filenames, constTestFile2WithoutExtension)
-	assert.Contains(t, filenames, constTestFile3)
-	assert.NotContains(t, filenames, constTestDir1)
+	assert.Contains(t, filenames, constTestFile1WithoutExtension, test.MessageContains(filenames, constTestFile1WithoutExtension, t.Name()))
+	assert.Contains(t, filenames, constTestFile2WithoutExtension, test.MessageContains(filenames, constTestFile2WithoutExtension, t.Name()))
+	assert.Contains(t, filenames, constTestFile3, test.MessageContains(filenames, constTestFile3, t.Name()))
+	assert.NotContains(t, filenames, constTestDir1, test.MessageNotContains(filenames, constTestDir1, t.Name()))
 }
 
 func TestUnderscore(t *testing.T) {
 	t.Parallel()
 	test.InitializeTest(t)
 
-	tests := []struct {
-		name     string
-		input    string
-		expected string
-	}{
-		{name: "lowercase", input: "tenant", expected: "tenant"},
-		{name: "capitalized", input: "Tenant", expected: "tenant"},
-		{name: "with_number", input: "Tenant1", expected: "tenant1"},
-		{name: "camel_case", input: "ApplicationEndpointGroup", expected: "application_endpoint_group"},
-		{name: "space_separated", input: "Application Endpoint Group", expected: "application_endpoint_group"},
-		{name: "hyphen_separated", input: "Application-Endpoint-Group", expected: "application_endpoint_group"},
-		{name: "mixed_separators", input: "Application Endpoint-Group", expected: "application_endpoint_group"},
+	testCases := []test.TestCase{
+		{Name: "test_lowercase", Input: "tenant", Expected: "tenant"},
+		{Name: "test_capitalized", Input: "Tenant", Expected: "tenant"},
+		{Name: "test_with_number", Input: "Tenant1", Expected: "tenant1"},
+		{Name: "test_camel_case", Input: "ApplicationEndpointGroup", Expected: "application_endpoint_group"},
+		{Name: "test_space_separated", Input: "Application Endpoint Group", Expected: "application_endpoint_group"},
+		{Name: "test_hyphen_separated", Input: "Application-Endpoint-Group", Expected: "application_endpoint_group"},
+		{Name: "test_mixed_separators", Input: "Application Endpoint-Group", Expected: "application_endpoint_group"},
 	}
 
-	for _, tc := range tests {
-		t.Run(tc.name, func(t *testing.T) {
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
 			t.Parallel()
-			result := Underscore(tc.input)
-			assert.Equal(t, tc.expected, result)
+			result := Underscore(testCase.Input.(string))
+			assert.Equal(t, testCase.Expected, result, test.MessageEqual(testCase.Expected, result, testCase.Name))
 		})
 	}
 }
@@ -77,21 +73,17 @@ func TestPlural(t *testing.T) {
 	t.Parallel()
 	test.InitializeTest(t)
 
-	tests := []struct {
-		name     string
-		input    string
-		expected string
-	}{
-		{name: "policy_to_policies", input: "monitor_policy", expected: "monitor_policies"},
-		{name: "add_s", input: "annotation", expected: "annotations"},
+	testCases := []test.TestCase{
+		{Name: "test_policy_to_policies", Input: "monitor_policy", Expected: "monitor_policies"},
+		{Name: "test_add_s", Input: "annotation", Expected: "annotations"},
 	}
 
-	for _, tc := range tests {
-		t.Run(tc.name, func(t *testing.T) {
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
 			t.Parallel()
-			result, err := Plural(tc.input)
-			require.NoError(t, err)
-			assert.Equal(t, tc.expected, result)
+			result, err := Plural(testCase.Input.(string))
+			require.NoError(t, err, test.MessageUnexpectedError(err))
+			assert.Equal(t, testCase.Expected, result, test.MessageEqual(testCase.Expected, result, testCase.Name))
 		})
 	}
 }
@@ -109,25 +101,21 @@ func TestUnderscoreEdgeCases(t *testing.T) {
 	t.Parallel()
 	test.InitializeTest(t)
 
-	tests := []struct {
-		name     string
-		input    string
-		expected string
-	}{
-		{name: "empty_string", input: "", expected: ""},
-		{name: "single_lowercase", input: "a", expected: "a"},
-		{name: "single_uppercase", input: "A", expected: "a"},
-		{name: "numbers_only", input: "123", expected: "123"},
-		{name: "leading_number", input: "1Tenant", expected: "1_tenant"},
-		{name: "underscore_input", input: "already_snake", expected: "already_snake"},
-		{name: "multiple_underscores", input: "a__b", expected: "a__b"},
+	testCases := []test.TestCase{
+		{Name: "test_empty_string", Input: "", Expected: ""},
+		{Name: "test_single_lowercase", Input: "a", Expected: "a"},
+		{Name: "test_single_uppercase", Input: "A", Expected: "a"},
+		{Name: "test_numbers_only", Input: "123", Expected: "123"},
+		{Name: "test_leading_number", Input: "1Tenant", Expected: "1_tenant"},
+		{Name: "test_underscore_input", Input: "already_snake", Expected: "already_snake"},
+		{Name: "test_multiple_underscores", Input: "a__b", Expected: "a__b"},
 	}
 
-	for _, tc := range tests {
-		t.Run(tc.name, func(t *testing.T) {
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
 			t.Parallel()
-			result := Underscore(tc.input)
-			assert.Equal(t, tc.expected, result)
+			result := Underscore(testCase.Input.(string))
+			assert.Equal(t, testCase.Expected, result, test.MessageEqual(testCase.Expected, result, testCase.Name))
 		})
 	}
 }
@@ -138,5 +126,5 @@ func TestGetFileNamesFromDirectoryNonExistent(t *testing.T) {
 
 	filenames := GetFileNamesFromDirectory("./non_existent_directory", false)
 
-	assert.Empty(t, filenames)
+	assert.Empty(t, filenames, test.MessageEmpty(filenames, t.Name()))
 }

@@ -15,7 +15,6 @@ const (
 )
 
 func initializeLogTest(t *testing.T) *Logger {
-	t.Helper()
 	test.InitializeTest(t)
 	genLogger := InitializeLogger()
 	require.NotNil(t, genLogger, "logger must be initialized")
@@ -39,7 +38,7 @@ func TestLogFile(t *testing.T) {
 	genLogger := initializeLogTest(t)
 
 	require.NotNil(t, genLogger.logFile)
-	assert.Equal(t, logFilePath, genLogger.logFile.Name())
+	assert.Equal(t, logFilePath, genLogger.logFile.Name(), test.MessageEqual(logFilePath, genLogger.logFile.Name(), t.Name()))
 }
 
 func TestSetLogLevel(t *testing.T) {
@@ -57,24 +56,21 @@ func TestSetLogLevel(t *testing.T) {
 
 	// Define ordered log levels to ensure deterministic execution
 	// Using a slice instead of ranging over map to ensure consistent order
-	orderedLogLevels := []struct {
-		name  string
-		level int
-	}{
-		{"TRACE", logLevels["TRACE"]},
-		{"DEBUG", logLevels["DEBUG"]},
-		{"INFO", logLevels["INFO"]},
-		{"WARN", logLevels["WARN"]},
-		{"ERROR", logLevels["ERROR"]},
+	testCases := []test.TestCase{
+		{Name: "test_TRACE", Input: "TRACE", Expected: logLevels["TRACE"]},
+		{Name: "test_DEBUG", Input: "DEBUG", Expected: logLevels["DEBUG"]},
+		{Name: "test_INFO", Input: "INFO", Expected: logLevels["INFO"]},
+		{Name: "test_WARN", Input: "WARN", Expected: logLevels["WARN"]},
+		{Name: "test_ERROR", Input: "ERROR", Expected: logLevels["ERROR"]},
 	}
 
 	// Sequential execution - subtests share genLogger state so cannot be parallel
-	for _, ll := range orderedLogLevels {
-		genLogger.SetLogLevel(ll.name)
-		assert.Equal(t, ll.level, genLogger.logLevel, "log level mismatch for %s", ll.name)
+	for _, testCase := range testCases {
+		genLogger.SetLogLevel(testCase.Input.(string))
+		assert.Equal(t, testCase.Expected.(int), genLogger.logLevel, test.MessageEqual(testCase.Expected.(int), genLogger.logLevel, testCase.Name))
 
-		logMessage := fmt.Sprintf("%v message", ll.level)
-		switch ll.name {
+		logMessage := fmt.Sprintf("%v message", testCase.Expected.(int))
+		switch testCase.Input.(string) {
 		case "TRACE":
 			genLogger.Trace(logMessage)
 		case "DEBUG":
@@ -89,14 +85,14 @@ func TestSetLogLevel(t *testing.T) {
 	}
 
 	bytes, err := os.ReadFile(logFilePath)
-	require.NoError(t, err, "failed to read log file")
+	require.NoError(t, err, test.MessageUnexpectedError(err))
 
 	logFileContent := string(bytes)
-	for _, ll := range orderedLogLevels {
-		logEntry := fmt.Sprintf("%s: %v message", ll.name, ll.level)
-		assert.Contains(t, logFileContent, logEntry)
+	for _, testCase := range testCases {
+		logEntry := fmt.Sprintf("%s: %v message", testCase.Input.(string), testCase.Expected.(int))
+		assert.Contains(t, logFileContent, logEntry, test.MessageContains(logFileContent, logEntry, testCase.Name))
 	}
-	assert.NotContains(t, logFileContent, "FATAL message")
+	assert.NotContains(t, logFileContent, "FATAL message", test.MessageNotContains(logFileContent, "FATAL message", t.Name()))
 
 	genLogger.SetLogLevel("INFO")
 }
