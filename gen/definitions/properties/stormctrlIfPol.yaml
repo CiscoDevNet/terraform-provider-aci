@@ -1,0 +1,81 @@
+default_values:
+    bcBurstRate: "100.000000"
+    bcRate: "100.000000"
+    burstRate: "100.000000"
+    mcBurstRate: "100.000000"
+    mcRate: "100.000000"
+    rate: "100.000000"
+    uucBurstRate: "100.000000"
+    uucRate: "100.000000"
+documentation:
+    bcBurstPps: The broadcast burst interval rate in packets per second for the %s object.
+    bcBurstRate: The broadcast burst rate in percentage for the %s object.
+    bcRate: The broadcast rate in percentage for the %s object.
+    bcRatePps: The broadcast rate in packets per second for the %s object.
+    burstPps: The burst interval rate in packets per second for the %s object.
+    burstRate: The burst rate in percentage for the %s object.
+    isUcMcBcStormPktCfgValid: Configure the %s object for unicast, multicast, and broadcast. Use 'Valid' when enabling the object for unicast, multicast, and broadcast.
+    mcBurstPps: The multicast burst interval rate in packets per second for the %s object.
+    mcBurstRate: The multicast burst rate in percentage for the %s object.
+    mcRate: The multicast rate in percentage for the %s object.
+    mcRatePps: The multicast rate in packets per second for the %s object.
+    rate: The rate in percentage for the %s object.
+    ratePps: The rate in packets per second for the %s object.
+    stormCtrlAction: The action of the %s object.
+    stormCtrlSoakInstCount: The soak count for the %s object. The value must be in the range 3 - 10.
+    uucBurstPps: The unicast burst interval rate in packets per second for the %s object.
+    uucBurstRate: The unicast burst rate in percentage for the %s object.
+    uucRate: The unicast rate in percentage for the %s object.
+    uucRatePps: The unicast rate in packets per second for the %s object.
+ignores:
+    - type
+overwrites:
+    bc_burst_pps: broadcast_burst_rate_packets_per_second
+    bc_burst_rate: broadcast_burst_rate_percentage
+    bc_rate: broadcast_rate_percentage
+    bc_rate_pps: broadcast_rate_packets_per_second
+    burst_pps: burst_rate_packets_per_second
+    burst_rate: burst_rate_percentage
+    is_uc_mc_bc_storm_pkt_cfg_valid: unicast_multicast_broadcast
+    mc_burst_pps: multicast_burst_rate_packets_per_second
+    mc_burst_rate: multicast_burst_rate_percentage
+    mc_rate: multicast_rate_percentage
+    mc_rate_pps: multicast_rate_packets_per_second
+    rate: rate_percentage
+    rate_pps: rate_packets_per_second
+    storm_ctrl_action: action
+    storm_ctrl_soak_inst_count: soak_count
+    uuc_burst_pps: unicast_burst_rate_packets_per_second
+    uuc_burst_rate: unicast_burst_rate_percentage
+    uuc_rate: unicast_rate_percentage
+    uuc_rate_pps: unicast_rate_packets_per_second
+required_by_custom_type_in_test:
+    - isUcMcBcStormPktCfgValid
+static_custom_type:
+    bcBurstRate: rounded_percentage
+    bcRate: rounded_percentage
+    burstRate: rounded_percentage
+    mcBurstRate: rounded_percentage
+    mcRate: rounded_percentage
+    rate: rounded_percentage
+    uucBurstRate: rounded_percentage
+    uucRate: rounded_percentage
+test_values:
+    all:
+        broadcast_burst_rate_packets_per_second: "11"
+        broadcast_rate_packets_per_second: "10"
+        multicast_burst_rate_packets_per_second: "13"
+        multicast_rate_packets_per_second: "12"
+        unicast_burst_rate_packets_per_second: "15"
+        unicast_multicast_broadcast: Valid
+        unicast_rate_packets_per_second: "14"
+    custom_type:
+        broadcast_burst_rate_percentage: "100.000000"
+        broadcast_rate_percentage: "90"
+        burst_rate_percentage: "100.000000"
+        multicast_burst_rate_percentage: "95.4556"
+        multicast_rate_percentage: "80.1"
+        rate_percentage: "100.000000"
+        unicast_burst_rate_percentage: "64.736"
+        unicast_multicast_broadcast: Valid
+        unicast_rate_percentage: "50.56"
