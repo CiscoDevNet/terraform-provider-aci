@@ -77,6 +77,10 @@ const (
 const providerName = "aci"
 const pubhupDevnetBaseUrl = "https://pubhub.devnetcloud.com/media/model-doc-latest/docs"
 
+var staticCustomTypeMap = map[string]string{
+	"rounded_percentage": "RoundedPercentage",
+}
+
 // Function map used during template rendering in order to call functions from the template
 // The map contains a key which is the name of the function used in the template and a value which is the function itself
 // The functions itself are defined in the current file
@@ -1164,7 +1168,7 @@ func cleanDirectories() {
 	cleanDirectory(resourcesDocsPath, []string{})
 	cleanDirectory(datasourcesDocsPath, []string{"system.md"})
 	cleanDirectory(testVarsPath, []string{})
-	cleanDirectory("./internal/custom_types", []string{})
+	cleanDirectory("./internal/custom_types", []string{"roundedPercentage.go"})
 
 	// The *ExamplesPath directories are removed and recreated to ensure all previously rendered files are removed
 	// The provider example file is not removed because it contains static provider configuration
@@ -1341,7 +1345,7 @@ func main() {
 			}
 			model.TestVars = testVarsMap
 			for propertyName, property := range model.Properties {
-				if property.HasCustomType {
+				if property.HasCustomType && property.StaticCustomType == "" {
 					renderTemplate("custom_type.go.tmpl", fmt.Sprintf("%s_%s.go", model.PkgName, propertyName), "./internal/custom_types", property)
 				}
 			}
@@ -1547,12 +1551,14 @@ type Property struct {
 	Validators               []interface{}
 	IdentifyProperties       []Property
 	// Below booleans are used during template rendering to determine correct rendering the go code
-	IsNaming      bool
-	CreateOnly    bool
-	IsRequired    bool
-	IgnoreInTest  bool
-	ReadOnly      bool
-	HasCustomType bool
+	IsNaming                bool
+	CreateOnly              bool
+	IsRequired              bool
+	IgnoreInTest            bool
+	ReadOnly                bool
+	HasCustomType           bool
+	IncludeInCustomTypeTest bool
+	StaticCustomType        string
 }
 
 // A Definitions represents the ACI class and property definitions as defined in the definitions YAML files
@@ -2205,6 +2211,14 @@ func (m *Model) SetClassProperties(classDetails interface{}) {
 					m.HasCustomTypeProperties = true
 				}
 			}
+
+			staticCustomType := GetStaticCustomType(m.PkgName, propertyName, m.Definitions)
+			if staticCustomType != "" {
+				property.StaticCustomType = staticCustomTypeMap[staticCustomType]
+				property.HasCustomType = true
+				m.HasCustomTypeProperties = true
+			}
+			property.IncludeInCustomTypeTest = IncludeInCustomTypeTest(m.PkgName, propertyName, m.Definitions)
 
 			defaultValueOverwrite := GetDefaultValues(m.PkgName, propertyName, m.Definitions)
 			if defaultValueOverwrite != "" {
@@ -3440,6 +3454,36 @@ func GetDefaultValues(classPkgName, propertyName string, definitions Definitions
 		}
 	}
 	return ""
+}
+
+func GetStaticCustomType(classPkgName, propertyName string, definitions Definitions) string {
+	if classDetails, ok := definitions.Properties[classPkgName]; ok {
+		for key, value := range classDetails.(map[string]interface{}) {
+			if key == "static_custom_type" {
+				for k, v := range value.(map[interface{}]interface{}) {
+					if k.(string) == propertyName {
+						return v.(string)
+					}
+				}
+			}
+		}
+	}
+	return ""
+}
+
+func IncludeInCustomTypeTest(classPkgName, propertyName string, definitions Definitions) bool {
+	if classDetails, ok := definitions.Properties[classPkgName]; ok {
+		for key, value := range classDetails.(map[string]interface{}) {
+			if key == "required_by_custom_type_in_test" {
+				for _, v := range value.([]interface{}) {
+					if v.(string) == propertyName {
+						return true
+					}
+				}
+			}
+		}
+	}
+	return false
 }
 
 func IsInterfaceSlice(input interface{}) bool {
