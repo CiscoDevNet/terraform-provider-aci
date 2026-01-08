@@ -21,3 +21,7 @@ no_meta_file:
   vzBrCP: contract
   vzCPIf: imported_contract
   vzFilter: filter
+
+always_include_as_child:
+  - tagAnnotation
+  - tagTag
