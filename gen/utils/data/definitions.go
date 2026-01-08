@@ -8,6 +8,8 @@ import (
 )
 
 type GlobalMetaDefinition struct {
+	// A list of class names that should always be included as children regardless of standard inclusion logic.
+	AlwaysIncludeAsChild []string `yaml:"always_include_as_child"`
 	// A map containing class names as keys and their corresponding resource names as values.
 	// This is used to search for the resource name of a class when it is not defined in meta directory.
 	NoMetaFile map[string]string `yaml:"no_meta_file"`
@@ -29,7 +31,13 @@ func loadGlobalMetaDefinition() GlobalMetaDefinition {
 }
 
 type ClassDefinition struct {
+	// Overrides the default deletion behavior from meta file. Set to "never" to prevent deletion of the class.
+	// The value "never" is used to keep the input consistent with the meta data file.
 	AllowDelete string `yaml:"allow_delete"`
+	// A list of child class names to exclude from the Children list.
+	ExcludeChildren []string `yaml:"exclude_children"`
+	// A list of child class names to include in the Children list outside of the standard inclusion logic.
+	IncludeChildren []string `yaml:"include_children"`
 }
 
 func loadClassDefinition(className string) ClassDefinition {

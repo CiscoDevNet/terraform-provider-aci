@@ -216,11 +216,9 @@ func (c *Class) setClassData(ds *DataStore) error {
 
 	var err error
 
-	// TODO: add function to set AllowDelete
 	c.setAllowDelete()
 
-	// TODO: add function to set Children
-	c.setChildren()
+	c.setChildren(ds)
 
 	// TODO: add function to set ContainedBy
 	c.setContainedBy()
@@ -286,10 +284,32 @@ func (c *Class) setAllowDelete() {
 	genLogger.Debug(fmt.Sprintf("The AllowDelete property was successfully set to '%t' for the class '%s'.", c.AllowDelete, c.ClassName))
 }
 
-func (c *Class) setChildren() {
+func (c *Class) setChildren(ds *DataStore) {
 	// Determine the child classes for the class.
 	genLogger.Debug(fmt.Sprintf("Setting Children for class '%s'.", c.ClassName))
-	genLogger.Debug(fmt.Sprintf("Successfully set Children for class '%s'.", c.ClassName))
+
+	// Initialize with children from ClassDefinition.IncludeChildren.
+	childClasses := c.ClassDefinition.IncludeChildren
+
+	// Retrieve the rnMap from MetaFileContent which holds the rnFormat as key and class name as value.
+	// The class name is in the format "{ClassNamePackage}:{ClassName}".
+	if rnMap, ok := c.MetaFileContent["rnMap"].(map[string]interface{}); ok {
+		for rn, classNameInterface := range rnMap {
+			className := classNameInterface.(string)
+			// Remove the colon separator from the class name (e.g., "fv:Tenant" -> "fvTenant").
+			className = strings.Replace(className, ":", "", -1)
+
+			if shouldIncludeChild(rn, className, c.ClassDefinition.ExcludeChildren, ds.GlobalMetaDefinition.AlwaysIncludeAsChild) {
+				childClasses = append(childClasses, className)
+			}
+		}
+	}
+
+	// Sort the children for consistent ordering and remove duplicates.
+	slices.Sort(childClasses)
+	c.Children = slices.Compact(childClasses)
+
+	genLogger.Debug(fmt.Sprintf("Successfully set Children for class '%s'. Found %d children.", c.ClassName, len(c.Children)))
 }
 
 func (c *Class) setContainedBy() {
@@ -486,4 +506,38 @@ func getRelationshipResourceName(ds *DataStore, toClass string) string {
 	}
 	// If the class is found, return the resource name of the class.
 	return ds.Classes[toClass].ResourceName
+}
+
+// shouldIncludeChild determines if a child class should be included based on:
+// - excludeChildren: exclude if className is in the list
+// - alwaysIncludeAsChild: include if className is in the list
+// - RN format: include if it starts with "rs" (relation source)
+// - RN format: exclude if it ends with "-" (typically named classes with a specific identifier)
+func shouldIncludeChild(rn, className string, excludeChildren, alwaysIncludeAsChild []string) bool {
+	// Check if the class is explicitly excluded.
+	if slices.Contains(excludeChildren, className) {
+		genLogger.Trace(fmt.Sprintf("Child class '%s' excluded via excludeChildren.", className))
+		return false
+	}
+
+	// Check if the class is in the always include list.
+	if slices.Contains(alwaysIncludeAsChild, className) {
+		genLogger.Trace(fmt.Sprintf("Child class '%s' included via alwaysIncludeAsChild.", className))
+		return true
+	}
+
+	// Include classes where the RN starts with "rs" (relation source).
+	if strings.HasPrefix(rn, "rs") {
+		genLogger.Trace(fmt.Sprintf("Child class '%s' included because RN starts with 'rs'.", className))
+		return true
+	}
+
+	// Exclude classes where the RN ends with "-" (typically named classes with a specific identifier).
+	if strings.HasSuffix(rn, "-") {
+		genLogger.Trace(fmt.Sprintf("Child class '%s' excluded because RN '%s' ends with '-'.", className, rn))
+		return false
+	}
+
+	genLogger.Trace(fmt.Sprintf("Child class '%s' included by default.", className))
+	return true
 }
