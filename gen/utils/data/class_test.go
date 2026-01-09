@@ -1,6 +1,8 @@
 package data
 
 import (
+	"bytes"
+	"os"
 	"testing"
 
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils/test"
@@ -377,10 +379,10 @@ func TestSetAllowDelete(t *testing.T) {
 }
 
 type shouldIncludeChildInput struct {
-	RN                   string
-	ClassName            string
-	ExcludeChildren      []string
-	AlwaysIncludeAsChild []string
+	RN                          string
+	ClassName                   string
+	ExcludeChildrenFromClassDef []string
+	AlwaysIncludeFromGlobalDef  []string
 }
 
 func TestShouldIncludeChild(t *testing.T) {
@@ -389,92 +391,92 @@ func TestShouldIncludeChild(t *testing.T) {
 
 	testCases := []test.TestCase{
 		{
-			Name: "test_exclude_when_in_excludeChildren",
+			Name: "test_exclude_when_in_excludeChildrenFromClassDef",
 			Input: shouldIncludeChildInput{
-				RN:                   "ctx-",
-				ClassName:            "fvCtx",
-				ExcludeChildren:      []string{"fvCtx"},
-				AlwaysIncludeAsChild: []string{},
+				RN:                          "ctx-",
+				ClassName:                   "fvCtx",
+				ExcludeChildrenFromClassDef: []string{"fvCtx"},
+				AlwaysIncludeFromGlobalDef:  []string{},
 			},
 			Expected: false,
 		},
 		{
-			Name: "test_excludeChildren_takes_precedence_over_alwaysIncludeAsChild",
+			Name: "test_excludeChildrenFromClassDef_takes_precedence_over_alwaysIncludeFromGlobalDef",
 			Input: shouldIncludeChildInput{
-				RN:                   "ctx-",
-				ClassName:            "fvCtx",
-				ExcludeChildren:      []string{"fvCtx"},
-				AlwaysIncludeAsChild: []string{"fvCtx"},
+				RN:                          "ctx-",
+				ClassName:                   "fvCtx",
+				ExcludeChildrenFromClassDef: []string{"fvCtx"},
+				AlwaysIncludeFromGlobalDef:  []string{"fvCtx"},
 			},
 			Expected: false,
 		},
 		{
-			Name: "test_include_when_in_alwaysIncludeAsChild",
+			Name: "test_include_when_in_alwaysIncludeFromGlobalDef",
 			Input: shouldIncludeChildInput{
-				RN:                   "annotationKey-",
-				ClassName:            "tagAnnotation",
-				ExcludeChildren:      []string{},
-				AlwaysIncludeAsChild: []string{"tagAnnotation", "tagTag"},
+				RN:                          "annotationKey-",
+				ClassName:                   "tagAnnotation",
+				ExcludeChildrenFromClassDef: []string{},
+				AlwaysIncludeFromGlobalDef:  []string{"tagAnnotation", "tagTag"},
 			},
 			Expected: true,
 		},
 		{
-			Name: "test_alwaysIncludeAsChild_overrides_default_exclude",
+			Name: "test_alwaysIncludeFromGlobalDef_overrides_default_exclude",
 			Input: shouldIncludeChildInput{
-				RN:                   "tagKey-",
-				ClassName:            "tagTag",
-				ExcludeChildren:      []string{},
-				AlwaysIncludeAsChild: []string{"tagAnnotation", "tagTag"},
+				RN:                          "tagKey-",
+				ClassName:                   "tagTag",
+				ExcludeChildrenFromClassDef: []string{},
+				AlwaysIncludeFromGlobalDef:  []string{"tagAnnotation", "tagTag"},
 			},
 			Expected: true,
 		},
 		{
 			Name: "test_include_when_rn_starts_with_rs",
 			Input: shouldIncludeChildInput{
-				RN:                   "rsBDToOut",
-				ClassName:            "fvRsBDToOut",
-				ExcludeChildren:      []string{},
-				AlwaysIncludeAsChild: []string{},
+				RN:                          "rsBDToOut",
+				ClassName:                   "fvRsBDToOut",
+				ExcludeChildrenFromClassDef: []string{},
+				AlwaysIncludeFromGlobalDef:  []string{},
 			},
 			Expected: true,
 		},
 		{
 			Name: "test_include_when_rn_starts_with_rs_even_if_ends_with_dash",
 			Input: shouldIncludeChildInput{
-				RN:                   "rsCtx-",
-				ClassName:            "fvRsCtx",
-				ExcludeChildren:      []string{},
-				AlwaysIncludeAsChild: []string{},
+				RN:                          "rsCtx-",
+				ClassName:                   "fvRsCtx",
+				ExcludeChildrenFromClassDef: []string{},
+				AlwaysIncludeFromGlobalDef:  []string{},
 			},
 			Expected: true,
 		},
 		{
 			Name: "test_exclude_when_rn_ends_with_dash",
 			Input: shouldIncludeChildInput{
-				RN:                   "ctx-",
-				ClassName:            "fvCtx",
-				ExcludeChildren:      []string{},
-				AlwaysIncludeAsChild: []string{},
+				RN:                          "ctx-",
+				ClassName:                   "fvCtx",
+				ExcludeChildrenFromClassDef: []string{},
+				AlwaysIncludeFromGlobalDef:  []string{},
 			},
 			Expected: false,
 		},
 		{
-			Name: "test_include_by_default_when_no_rules_match",
+			Name: "test_include_when_rn_does_not_end_with_dash",
 			Input: shouldIncludeChildInput{
-				RN:                   "subnet",
-				ClassName:            "fvSubnet",
-				ExcludeChildren:      []string{},
-				AlwaysIncludeAsChild: []string{},
+				RN:                          "subnet",
+				ClassName:                   "fvSubnet",
+				ExcludeChildrenFromClassDef: []string{},
+				AlwaysIncludeFromGlobalDef:  []string{},
 			},
 			Expected: true,
 		},
 		{
-			Name: "test_include_by_default_with_nil_lists",
+			Name: "test_include_when_rn_does_not_end_with_dash_and_nil_lists",
 			Input: shouldIncludeChildInput{
-				RN:                   "ap",
-				ClassName:            "fvAp",
-				ExcludeChildren:      nil,
-				AlwaysIncludeAsChild: nil,
+				RN:                          "ap",
+				ClassName:                   "fvAp",
+				ExcludeChildrenFromClassDef: nil,
+				AlwaysIncludeFromGlobalDef:  nil,
 			},
 			Expected: true,
 		},
@@ -485,7 +487,7 @@ func TestShouldIncludeChild(t *testing.T) {
 			t.Parallel()
 			input := testCase.Input.(shouldIncludeChildInput)
 
-			result := shouldIncludeChild(input.RN, input.ClassName, input.ExcludeChildren, input.AlwaysIncludeAsChild)
+			result := shouldIncludeChild(input.RN, input.ClassName, input.ExcludeChildrenFromClassDef, input.AlwaysIncludeFromGlobalDef)
 
 			assert.Equal(t, testCase.Expected, result, test.MessageEqual(testCase.Expected, result, testCase.Name))
 		})
@@ -621,6 +623,16 @@ func TestSetChildren(t *testing.T) {
 			},
 			Expected: []string{},
 		},
+		{
+			Name: "test_includeChildren_takes_precedence_over_excludeChildren",
+			Input: setChildrenInput{
+				IncludeChildren:      []string{"fvSubnet"},
+				ExcludeChildren:      []string{"fvSubnet"},
+				AlwaysIncludeAsChild: []string{},
+				RnMap:                map[string]interface{}{},
+			},
+			Expected: []string{"fvSubnet"},
+		},
 	}
 
 	for _, testCase := range testCases {
@@ -655,4 +667,42 @@ func TestSetChildren(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestSetChildrenWarnsWhenClassInBothIncludeAndExclude(t *testing.T) {
+	test.InitializeTest(t)
+
+	// Capture log output using a buffer.
+	var logBuffer bytes.Buffer
+	genLogger.SetOutputForTesting(&logBuffer)
+	genLogger.SetLogLevel("WARN")
+
+	// Restore original log output after test.
+	defer func() {
+		genLogger.SetOutputForTesting(os.Stdout)
+	}()
+
+	class := &Class{
+		ClassName: "testClass",
+		ClassDefinition: ClassDefinition{
+			IncludeChildren: []string{"fvSubnet"},
+			ExcludeChildren: []string{"fvSubnet"},
+		},
+		MetaFileContent: map[string]interface{}{
+			"rnMap": map[string]interface{}{},
+		},
+	}
+
+	ds := &DataStore{
+		GlobalMetaDefinition: GlobalMetaDefinition{
+			AlwaysIncludeAsChild: []string{},
+		},
+	}
+
+	class.setChildren(ds)
+
+	// Verify the warning was logged.
+	logOutput := logBuffer.String()
+	expectedWarning := "WARN: Child class 'fvSubnet' is defined in both IncludeChildren and ExcludeChildren for class 'testClass'. IncludeChildren takes precedence."
+	assert.Contains(t, logOutput, expectedWarning, test.MessageEqual(expectedWarning, logOutput, "warning log message"))
 }
