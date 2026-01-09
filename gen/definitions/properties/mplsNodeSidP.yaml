@@ -23,3 +23,7 @@ test_values:
         segment_id: "1"
     resource_required:
         segment_id: "1"
+    custom_type:
+        loopback_address: fe80::0002
+static_custom_type:
+    loopbackAddr: ipv6_address

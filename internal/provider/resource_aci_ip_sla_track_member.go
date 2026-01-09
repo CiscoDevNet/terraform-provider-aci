@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"strings"
 
+	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
@@ -42,19 +43,19 @@ type FvTrackMemberResource struct {
 
 // FvTrackMemberResourceModel describes the resource data model.
 type FvTrackMemberResourceModel struct {
-	Id              types.String `tfsdk:"id"`
-	ParentDn        types.String `tfsdk:"parent_dn"`
-	Annotation      types.String `tfsdk:"annotation"`
-	Descr           types.String `tfsdk:"description"`
-	DstIpAddr       types.String `tfsdk:"destination_ip_address"`
-	Name            types.String `tfsdk:"name"`
-	NameAlias       types.String `tfsdk:"name_alias"`
-	OwnerKey        types.String `tfsdk:"owner_key"`
-	OwnerTag        types.String `tfsdk:"owner_tag"`
-	ScopeDn         types.String `tfsdk:"scope"`
-	FvRsIpslaMonPol types.Object `tfsdk:"relation_to_monitoring_policy"`
-	TagAnnotation   types.Set    `tfsdk:"annotations"`
-	TagTag          types.Set    `tfsdk:"tags"`
+	Id              types.String                       `tfsdk:"id"`
+	ParentDn        types.String                       `tfsdk:"parent_dn"`
+	Annotation      types.String                       `tfsdk:"annotation"`
+	Descr           types.String                       `tfsdk:"description"`
+	DstIpAddr       customTypes.IPv6AddressStringValue `tfsdk:"destination_ip_address"`
+	Name            types.String                       `tfsdk:"name"`
+	NameAlias       types.String                       `tfsdk:"name_alias"`
+	OwnerKey        types.String                       `tfsdk:"owner_key"`
+	OwnerTag        types.String                       `tfsdk:"owner_tag"`
+	ScopeDn         types.String                       `tfsdk:"scope"`
+	FvRsIpslaMonPol types.Object                       `tfsdk:"relation_to_monitoring_policy"`
+	TagAnnotation   types.Set                          `tfsdk:"annotations"`
+	TagTag          types.Set                          `tfsdk:"tags"`
 }
 
 func getEmptyFvTrackMemberResourceModel() *FvTrackMemberResourceModel {
@@ -63,7 +64,7 @@ func getEmptyFvTrackMemberResourceModel() *FvTrackMemberResourceModel {
 		ParentDn:   basetypes.NewStringNull(),
 		Annotation: basetypes.NewStringNull(),
 		Descr:      basetypes.NewStringNull(),
-		DstIpAddr:  basetypes.NewStringNull(),
+		DstIpAddr:  customTypes.NewIPv6AddressStringNull(),
 		Name:       basetypes.NewStringNull(),
 		NameAlias:  basetypes.NewStringNull(),
 		OwnerKey:   basetypes.NewStringNull(),
@@ -289,7 +290,8 @@ func (r *FvTrackMemberResource) Schema(ctx context.Context, req resource.SchemaR
 				MarkdownDescription: `The description of the IP SLA Track Member object.`,
 			},
 			"destination_ip_address": schema.StringAttribute{
-				Required: true,
+				CustomType: customTypes.IPv6AddressStringType{},
+				Required:   true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
@@ -689,7 +691,7 @@ func getAndSetFvTrackMemberAttributes(ctx context.Context, diags *diag.Diagnosti
 					readData.Descr = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "dstIpAddr" {
-					readData.DstIpAddr = basetypes.NewStringValue(attributeValue.(string))
+					readData.DstIpAddr = customTypes.NewIPv6AddressStringValue(attributeValue.(string))
 				}
 				if attributeName == "name" {
 					readData.Name = basetypes.NewStringValue(attributeValue.(string))

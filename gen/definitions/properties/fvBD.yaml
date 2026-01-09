@@ -81,5 +81,9 @@ test_values:
         link_local_ipv6_address: fe80::1
         unicast_routing: "yes"
         virtual_mac_address: 00:22:BD:F8:19:FB
+    custom_type:
+        link_local_ipv6_address: fe80::0002
 type_overwrites:
     epMoveDetectMode: string
+static_custom_type:
+    llAddr: ipv6_address
