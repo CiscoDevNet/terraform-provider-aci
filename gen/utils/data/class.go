@@ -516,16 +516,12 @@ func getRelationshipResourceName(ds *DataStore, toClass string) string {
 }
 
 // shouldIncludeChild determines if a child class should be included.
-// The default behavior is to NOT include a child class.
+// The default behavior is to exclude a child class.
 // A child class is included if any of the following conditions are met (in order of precedence):
 //  1. The className is NOT in the excludeChildrenFromClassDef list (if it is, the child is excluded regardless of other rules)
 //  2. The className is in the alwaysIncludeFromGlobalDef list
 //  3. The RN format starts with "rs" (relation source classes)
 //  4. The RN format does NOT end with "-" (non-named classes without a specific identifier)
-//
-// A child class is excluded if:
-//   - The className is in the excludeChildrenFromClassDef list (takes highest precedence)
-//   - The RN format ends with "-" (typically named classes with a specific identifier)
 func shouldIncludeChild(rn, className string, excludeChildrenFromClassDef, alwaysIncludeFromGlobalDef []string) bool {
 	// Exclude if the class is explicitly excluded via ClassDefinition.ExcludeChildren.
 	if slices.Contains(excludeChildrenFromClassDef, className) {
@@ -551,7 +547,6 @@ func shouldIncludeChild(rn, className string, excludeChildrenFromClassDef, alway
 		return true
 	}
 
-	// Default: do not include the child class.
 	genLogger.Trace(fmt.Sprintf("Child class '%s' excluded by default (RN ends with '-').", className))
 	return false
 }
