@@ -55,6 +55,9 @@ func (d *{{.ResourceClassName}}DataSource) Schema(ctx context.Context, req datas
 					{{- if ne .ReplacedBy.AttributeName "" }}{{$ReplacedAttribute := overwriteProperty .ReplacedBy.ClassName (getConflictingAttributeName .ReplacedBy.AttributeName) $.Definitions}}
 						{{- if eq (getMigrationType .ValueType) "String"}}
 			"{{.AttributeName}}": schema.StringAttribute{
+					{{- if ne .StaticCustomType "" }}
+				CustomType: customTypes.{{- if .StaticCustomType}}{{.StaticCustomType}}{{else}}{{.ResourceClassName}}{{.Name}}{{- end}}StringType{},
+					{{- end}}
 				Computed: true,
 				DeprecationMessage: "Attribute '{{.AttributeName}}' is deprecated, please refer to '{{$ReplacedAttribute}}' instead. The attribute will be removed in the next major version of the provider.",
 			},

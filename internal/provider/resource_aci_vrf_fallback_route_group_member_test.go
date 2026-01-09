@@ -211,6 +211,14 @@ func TestAccResourceFvFBRMemberWithFvFBRGroup(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "tags.#", "0"),
 				),
 			},
+			// Update with minimum config and custom type semantic equivalent values
+			{
+				Config:             testConfigFvFBRMemberCustomTypeDependencyWithFvFBRGroup,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "fallback_member", "fe80::0001"),
+				),
+			},
 		},
 		CheckDestroy: testCheckResourceDestroy,
 	})
@@ -315,5 +323,12 @@ resource "aci_vrf_fallback_route_group_member" "test" {
   fallback_member = "2.2.2.3"
   annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
   tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
+}
+`
+
+const testConfigFvFBRMemberCustomTypeDependencyWithFvFBRGroup = testConfigFvFBRGroupMinDependencyWithFvCtx + `
+resource "aci_vrf_fallback_route_group_member" "test" {
+  parent_dn = aci_vrf_fallback_route_group.test.id
+  fallback_member = "fe80::0001"
 }
 `
