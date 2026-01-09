@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 
+	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
@@ -61,6 +62,7 @@ func (d *FvEpIpTagDataSource) Schema(ctx context.Context, req datasource.SchemaR
 				MarkdownDescription: `The identifier of the Endpoint Tag IP object.`,
 			},
 			"ip": schema.StringAttribute{
+				CustomType:          customTypes.IPv6AddressStringType{},
 				Required:            true,
 				MarkdownDescription: `The IP address of the Endpoint Tag IP object.`,
 			},

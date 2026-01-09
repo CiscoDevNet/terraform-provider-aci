@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 
+	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
@@ -42,19 +43,19 @@ type PimRouteMapEntryResource struct {
 
 // PimRouteMapEntryResourceModel describes the resource data model.
 type PimRouteMapEntryResourceModel struct {
-	Id            types.String `tfsdk:"id"`
-	ParentDn      types.String `tfsdk:"parent_dn"`
-	Action        types.String `tfsdk:"action"`
-	Annotation    types.String `tfsdk:"annotation"`
-	Descr         types.String `tfsdk:"description"`
-	Grp           types.String `tfsdk:"group_ip"`
-	Name          types.String `tfsdk:"name"`
-	NameAlias     types.String `tfsdk:"name_alias"`
-	Order         types.String `tfsdk:"order"`
-	Rp            types.String `tfsdk:"rendezvous_point_ip"`
-	Src           types.String `tfsdk:"source_ip"`
-	TagAnnotation types.Set    `tfsdk:"annotations"`
-	TagTag        types.Set    `tfsdk:"tags"`
+	Id            types.String                       `tfsdk:"id"`
+	ParentDn      types.String                       `tfsdk:"parent_dn"`
+	Action        types.String                       `tfsdk:"action"`
+	Annotation    types.String                       `tfsdk:"annotation"`
+	Descr         types.String                       `tfsdk:"description"`
+	Grp           customTypes.IPv6AddressStringValue `tfsdk:"group_ip"`
+	Name          types.String                       `tfsdk:"name"`
+	NameAlias     types.String                       `tfsdk:"name_alias"`
+	Order         types.String                       `tfsdk:"order"`
+	Rp            customTypes.IPv6AddressStringValue `tfsdk:"rendezvous_point_ip"`
+	Src           customTypes.IPv6AddressStringValue `tfsdk:"source_ip"`
+	TagAnnotation types.Set                          `tfsdk:"annotations"`
+	TagTag        types.Set                          `tfsdk:"tags"`
 }
 
 func getEmptyPimRouteMapEntryResourceModel() *PimRouteMapEntryResourceModel {
@@ -64,12 +65,12 @@ func getEmptyPimRouteMapEntryResourceModel() *PimRouteMapEntryResourceModel {
 		Action:     basetypes.NewStringNull(),
 		Annotation: basetypes.NewStringNull(),
 		Descr:      basetypes.NewStringNull(),
-		Grp:        basetypes.NewStringNull(),
+		Grp:        customTypes.NewIPv6AddressStringNull(),
 		Name:       basetypes.NewStringNull(),
 		NameAlias:  basetypes.NewStringNull(),
 		Order:      basetypes.NewStringNull(),
-		Rp:         basetypes.NewStringNull(),
-		Src:        basetypes.NewStringNull(),
+		Rp:         customTypes.NewIPv6AddressStringNull(),
+		Src:        customTypes.NewIPv6AddressStringNull(),
 		TagAnnotation: types.SetNull(types.ObjectType{
 			AttrTypes: map[string]attr.Type{
 				"key":   types.StringType,
@@ -214,8 +215,9 @@ func (r *PimRouteMapEntryResource) Schema(ctx context.Context, req resource.Sche
 				MarkdownDescription: `The description of the PIM Route Map Entry object.`,
 			},
 			"group_ip": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
+				CustomType: customTypes.IPv6AddressStringType{},
+				Optional:   true,
+				Computed:   true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
@@ -250,8 +252,9 @@ func (r *PimRouteMapEntryResource) Schema(ctx context.Context, req resource.Sche
 				MarkdownDescription: `PIM route map entry order.`,
 			},
 			"rendezvous_point_ip": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
+				CustomType: customTypes.IPv6AddressStringType{},
+				Optional:   true,
+				Computed:   true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
@@ -259,8 +262,9 @@ func (r *PimRouteMapEntryResource) Schema(ctx context.Context, req resource.Sche
 				MarkdownDescription: `The rendezvous point ip of the PIM Route Map Entry object.`,
 			},
 			"source_ip": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
+				CustomType: customTypes.IPv6AddressStringType{},
+				Optional:   true,
+				Computed:   true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
@@ -530,7 +534,7 @@ func getAndSetPimRouteMapEntryAttributes(ctx context.Context, diags *diag.Diagno
 					readData.Descr = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "grp" {
-					readData.Grp = basetypes.NewStringValue(attributeValue.(string))
+					readData.Grp = customTypes.NewIPv6AddressStringValue(attributeValue.(string))
 				}
 				if attributeName == "name" {
 					readData.Name = basetypes.NewStringValue(attributeValue.(string))
@@ -542,10 +546,10 @@ func getAndSetPimRouteMapEntryAttributes(ctx context.Context, diags *diag.Diagno
 					readData.Order = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "rp" {
-					readData.Rp = basetypes.NewStringValue(attributeValue.(string))
+					readData.Rp = customTypes.NewIPv6AddressStringValue(attributeValue.(string))
 				}
 				if attributeName == "src" {
-					readData.Src = basetypes.NewStringValue(attributeValue.(string))
+					readData.Src = customTypes.NewIPv6AddressStringValue(attributeValue.(string))
 				}
 			}
 			TagAnnotationPimRouteMapEntryList := make([]TagAnnotationPimRouteMapEntryResourceModel, 0)

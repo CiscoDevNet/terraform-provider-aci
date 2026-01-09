@@ -928,6 +928,15 @@ func TestAccResourceFvBDWithFvTenant(t *testing.T) {
 					),
 				},
 			},
+			// Update with minimum config and custom type semantic equivalent values
+			{
+				Config:             testConfigFvBDCustomTypeDependencyWithFvTenant + testConfigDataSourceSystem,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_bridge_domain.test", "link_local_ipv6_address", "fe80::0002"),
+					resource.TestCheckResourceAttr("aci_bridge_domain.test", "name", "test_name"),
+				),
+			},
 			// Update with legacy attribute config
 			{
 				Config:             testConfigFvBDLegacyAttributesWithFvTenant + testConfigDataSourceSystem,
@@ -1739,6 +1748,13 @@ resource "aci_bridge_domain" "test" {
 }
 `
 
+const testConfigFvBDCustomTypeDependencyWithFvTenant = testChildDependencyConfigFvBD + testConfigFvTenantMin + `
+resource "aci_bridge_domain" "test" {
+  parent_dn = aci_tenant.test.id
+  link_local_ipv6_address = "fe80::0002"
+  name = "test_name"
+}
+`
 const testConfigFvBDLegacyAttributesWithFvTenant = testChildDependencyConfigFvBD + testConfigFvTenantMin + `
 resource "aci_bridge_domain" "test" {
   name = "test_name"

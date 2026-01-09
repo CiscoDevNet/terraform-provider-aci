@@ -21,6 +21,10 @@ resource_required:
   vrf_name: "test_ctx_name"
   ip: "10.0.0.2"
 
+custom_type:
+  vrf_name: "test_ctx_name"
+  ip: "fe80::0001"
+
 all:
   annotation: "annotation"
   id_attribute: "1"

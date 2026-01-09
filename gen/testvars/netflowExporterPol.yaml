@@ -30,10 +30,10 @@ resource_required:
 
 custom_type:
   qos_dscp_value: "0"
-  destination_ip_address: "2.2.2.1"
+  destination_ip_address: "2001:db8::2"
   destination_port: "110"
   name: "netfow_exporter"
-  source_ip_address: "1.1.1.1/10"
+  source_ip_address: "2001:db8::1/116"
 
 all:
   annotation: "annotation"

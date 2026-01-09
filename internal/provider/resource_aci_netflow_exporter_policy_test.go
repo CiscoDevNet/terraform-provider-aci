@@ -342,11 +342,11 @@ func TestAccResourceNetflowExporterPolWithFvTenant(t *testing.T) {
 				Config:             testConfigNetflowExporterPolCustomTypeDependencyWithFvTenant,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "destination_ip_address", "2.2.2.1"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "destination_ip_address", "2001:db8::2"),
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "destination_port", "110"),
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "name", "netfow_exporter"),
 					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "qos_dscp_value", "0"),
-					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "source_ip_address", "1.1.1.1/10"),
+					resource.TestCheckResourceAttr("aci_netflow_exporter_policy.test", "source_ip_address", "2001:db8::1/116"),
 				),
 			},
 		},
@@ -549,10 +549,10 @@ resource "aci_netflow_exporter_policy" "test" {
 const testConfigNetflowExporterPolCustomTypeDependencyWithFvTenant = testChildDependencyConfigNetflowExporterPol + testConfigFvTenantMin + `
 resource "aci_netflow_exporter_policy" "test" {
   parent_dn = aci_tenant.test.id
-  destination_ip_address = "2.2.2.1"
+  destination_ip_address = "2001:db8::2"
   destination_port = "110"
   name = "netfow_exporter"
   qos_dscp_value = "0"
-  source_ip_address = "1.1.1.1/10"
+  source_ip_address = "2001:db8::1/116"
 }
 `
