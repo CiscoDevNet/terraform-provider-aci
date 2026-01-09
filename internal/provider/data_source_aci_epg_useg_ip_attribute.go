@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 
+	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
@@ -57,6 +58,7 @@ func (d *FvIpAttrDataSource) Schema(ctx context.Context, req datasource.SchemaRe
 				MarkdownDescription: `The description of the EPG uSeg IP Attribute object.`,
 			},
 			"ip": schema.StringAttribute{
+				CustomType:          customTypes.IPv6AddressStringType{},
 				Computed:            true,
 				MarkdownDescription: `The device IP address of the EPG uSeg IP Attribute object.`,
 			},

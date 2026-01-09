@@ -26,3 +26,7 @@ test_values:
     resource_required:
         ip: 131.107.1.200
         name: "131"
+    custom_type:
+      ip: fe80::0002
+static_custom_type:
+    ip: ipv6_address

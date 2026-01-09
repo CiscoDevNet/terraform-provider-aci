@@ -1641,7 +1641,7 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 					{{- if eq .Name "Annotation"}}
 				Default: stringdefault.StaticString(globalAnnotation),
 					{{- end}}
-					{{- if .HasCustomType}}
+					{{- if and .HasCustomType (not .ValidateAsIPv4OrIPv6) }}
 				Validators: []validator.String{
 					stringvalidator.Any(
 						{{- if .ValidValues}}

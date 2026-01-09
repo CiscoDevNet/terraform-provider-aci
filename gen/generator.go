@@ -79,6 +79,7 @@ const pubhupDevnetBaseUrl = "https://pubhub.devnetcloud.com/media/model-doc-late
 
 var staticCustomTypeMap = map[string]string{
 	"rounded_percentage": "RoundedPercentage",
+	"ipv6_address":       "IPv6Address",
 }
 
 // Function map used during template rendering in order to call functions from the template
@@ -1168,7 +1169,7 @@ func cleanDirectories() {
 	cleanDirectory(resourcesDocsPath, []string{})
 	cleanDirectory(datasourcesDocsPath, []string{"system.md"})
 	cleanDirectory(testVarsPath, []string{})
-	cleanDirectory("./internal/custom_types", []string{"roundedPercentage.go"})
+	cleanDirectory("./internal/custom_types", []string{"roundedPercentage.go", "ipv6Address.go"})
 
 	// The *ExamplesPath directories are removed and recreated to ensure all previously rendered files are removed
 	// The provider example file is not removed because it contains static provider configuration
@@ -1559,6 +1560,7 @@ type Property struct {
 	HasCustomType           bool
 	IncludeInCustomTypeTest bool
 	StaticCustomType        string
+	ValidateAsIPv4OrIPv6    bool
 }
 
 // A Definitions represents the ACI class and property definitions as defined in the definitions YAML files
@@ -2136,6 +2138,10 @@ func (m *Model) SetClassProperties(classDetails interface{}) {
 				IgnoreInTestExampleValue: ignoreInTestExampleValue,
 				ReadOnly:                 slices.Contains(readOnlyProperties, propertyName),
 				HasCustomType:            false,
+			}
+
+			if propertyValue.(map[string]interface{})["validateAsIPv4OrIPv6"] != nil {
+				property.ValidateAsIPv4OrIPv6 = propertyValue.(map[string]interface{})["validateAsIPv4OrIPv6"].(bool)
 			}
 
 			if requiredProperty(GetOverwriteAttributeName(m.PkgName, propertyName, m.Definitions), m.PkgName, m.Definitions) || property.IsNaming {

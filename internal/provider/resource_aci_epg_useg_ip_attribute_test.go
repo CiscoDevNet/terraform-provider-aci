@@ -224,6 +224,15 @@ func TestAccResourceFvIpAttrWithFvCrtrn(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "tags.#", "0"),
 				),
 			},
+			// Update with minimum config and custom type semantic equivalent values
+			{
+				Config:             testConfigFvIpAttrCustomTypeDependencyWithFvCrtrn,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "ip", "fe80::0002"),
+					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "name", "131"),
+				),
+			},
 		},
 		CheckDestroy: testCheckResourceDestroy,
 	})
@@ -341,5 +350,13 @@ resource "aci_epg_useg_ip_attribute" "test" {
   name = "131"
   annotations = []
   tags = []
+}
+`
+
+const testConfigFvIpAttrCustomTypeDependencyWithFvCrtrn = testConfigFvCrtrnMinDependencyWithFvAEPg + `
+resource "aci_epg_useg_ip_attribute" "test" {
+  parent_dn = aci_epg_useg_block_statement.test.id
+  ip = "fe80::0002"
+  name = "131"
 }
 `
