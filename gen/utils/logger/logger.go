@@ -2,6 +2,7 @@ package logger
 
 import (
 	"fmt"
+	"io"
 	"log"
 	"os"
 )
@@ -95,6 +96,12 @@ func (l *Logger) CloseLogFile() {
 		l.log.SetOutput(os.Stdout)
 		l.Trace("Log file closed, logging to stdout")
 	}
+}
+
+// SetOutputForTesting sets the output writer for the logger.
+// This is intended for use in tests to capture and validate log output.
+func (l *Logger) SetOutputForTesting(w io.Writer) {
+	l.log.SetOutput(w)
 }
 
 // Sets the log level for the logger.
