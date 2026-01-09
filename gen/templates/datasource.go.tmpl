@@ -116,7 +116,7 @@ func (d *{{.ResourceClassName}}DataSource) Schema(ctx context.Context, req datas
 				{{- if .IsNaming}}
 			"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": schema.StringAttribute{
 					{{- if .HasCustomType}}
-				CustomType: customTypes.{{.ResourceClassName}}{{.Name}}StringType{},
+				CustomType: customTypes.{{- if .StaticCustomType}}{{.StaticCustomType}}{{else}}{{.ResourceClassName}}{{.Name}}{{- end}}StringType{},
 					{{- end}}
 				Required:            true,
 					{{- if .ValidValues}}
@@ -133,7 +133,7 @@ func (d *{{.ResourceClassName}}DataSource) Schema(ctx context.Context, req datas
 			},{{else}}
 			"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": schema.StringAttribute{
 					{{- if .HasCustomType}}
-				CustomType: customTypes.{{.ResourceClassName}}{{.Name}}StringType{},
+				CustomType: customTypes.{{- if .StaticCustomType}}{{.StaticCustomType}}{{else}}{{.ResourceClassName}}{{.Name}}{{- end}}StringType{},
 					{{- end}}
 				Computed:            true,
 				MarkdownDescription: `{{.Comment}}`,
@@ -279,7 +279,7 @@ func (d *{{.ResourceClassName}}DataSource) Read(ctx context.Context, req datasou
 						},{{else}}
 						"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": schema.StringAttribute{
 								{{- if .HasCustomType}}
-							CustomType: customTypes.{{.ResourceClassName}}{{.Name}}StringType{},
+							CustomType: customTypes.{{- if .StaticCustomType}}{{.StaticCustomType}}{{else}}{{.ResourceClassName}}{{.Name}}{{- end}}StringType{},
 								{{- end}}
 							Computed:            true,
 							MarkdownDescription: `{{.Comment}}`,
