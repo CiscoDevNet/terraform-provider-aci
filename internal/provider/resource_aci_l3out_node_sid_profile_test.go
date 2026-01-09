@@ -207,6 +207,15 @@ func TestAccResourceMplsNodeSidPWithL3extLoopBackIfP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "tags.#", "0"),
 				),
 			},
+			// Update with minimum config and custom type semantic equivalent values
+			{
+				Config:             testConfigMplsNodeSidPCustomTypeDependencyWithL3extLoopBackIfP,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "loopback_address", "fe80::0002"),
+					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "segment_id", "1"),
+				),
+			},
 		},
 		CheckDestroy: testCheckResourceDestroy,
 	})
@@ -313,5 +322,13 @@ resource "aci_l3out_node_sid_profile" "test" {
   segment_id = "1"
   annotations = []
   tags = []
+}
+`
+
+const testConfigMplsNodeSidPCustomTypeDependencyWithL3extLoopBackIfP = testConfigL3extLoopBackIfPMinDependencyWithL3extRsNodeL3OutAtt + `
+resource "aci_l3out_node_sid_profile" "test" {
+  parent_dn = aci_l3out_loopback_interface_profile.test.id
+  loopback_address = "fe80::0002"
+  segment_id = "1"
 }
 `

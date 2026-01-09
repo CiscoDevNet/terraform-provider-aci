@@ -2328,6 +2328,41 @@ resource "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClas
   {{$key}} = "{{$value}}"
   				{{- end }}
   			{{- end}}
+  		{{- range $key, $value := $.children}}{{$index := 0}}
+			{{- if eq (len $value) 1}}
+				{{- $child := index $value 0}}
+				{{- if and $child.deletable_child $child.child_required}}
+  {{$key}} = {}
+				{{- else if $child.child_required }}
+  {{$key}} = {
+				{{- range $child_key, $child_value := $child}}
+					{{- if eq $child_key "children"}}
+						{{- $newCtx := addToChild $child_value "Indent" "  " -}}
+  						{{- template "nestedChildrenRemoveAll" $newCtx }}
+					{{- else if eq $child_key "version_mismatch" }}
+        					{{- range $version, $attributes := $child_value }}
+								{{- range $attributeName, $attributeValue := $attributes}}
+  	{{$attributeName}} = provider::aci::compare_versions(data.aci_system.version.version,"inside","{{ $version }}") ? "{{$attributeValue}}" : null
+        						{{- end }}
+							{{- end }}
+					{{- else }}
+					{{- if eq $child_key "target_dn"}}{{$attributeValue := getTestTargetDn $.child_targets $key $child_value true nil $index false}}
+    {{$child_key}} = {{if isReference $attributeValue}}{{$attributeValue}}{{- else if isInterfaceSlice $attributeValue}}{{- if lt 0 (len $attributeValue)}}[{{fromInterfacesToString $attributeValue}}]{{else}}[]{{end}}{{else}}"{{$attributeValue}}"{{end}}	
+					{{- else if (isInterfaceSlice $child_value)}}
+							{{- if lt 0 (len $child_value)}}
+    {{$child_key}} = [{{range $index, $subvalue := $child_value}}{{if lt $index (subtract (len $child_value) 1)}}"{{$subvalue}}", {{else}}"{{$subvalue}}"{{end}}{{end}}]
+				{{- else}}
+    {{$child_key}} = []
+				{{- end}}		
+					{{- else if and (ne $child_key "deletable_child") (ne $child_key "child_required")}}{{$attributeValue := getTestTargetValue $.child_targets $child_key $child_value}}
+    {{$child_key}} = {{if isReference $attributeValue}}{{$attributeValue}}{{- else if isInterfaceSlice $attributeValue}}{{- if lt 0 (len $attributeValue)}}[{{fromInterfacesToString $attributeValue}}]{{else}}[]{{end}}{{else}}"{{$attributeValue}}"{{end}}
+	  				{{- end}}
+				{{- end}}
+				{{- end}}{{ $index = add $index 1 }}
+  }
+				{{- end}}
+			{{- end }}
+		{{- end}}
 }
 `
 		{{- end}}

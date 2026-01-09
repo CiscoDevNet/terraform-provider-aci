@@ -1350,6 +1350,7 @@ func main() {
 					renderTemplate("custom_type.go.tmpl", fmt.Sprintf("%s_%s.go", model.PkgName, propertyName), "./internal/custom_types", property)
 				}
 			}
+
 			renderTemplate("resource.go.tmpl", fmt.Sprintf("resource_%s_%s.go", providerName, model.ResourceName), providerPath, model)
 			renderTemplate("datasource.go.tmpl", fmt.Sprintf("data_source_%s_%s.go", providerName, model.ResourceName), providerPath, model)
 
@@ -1514,14 +1515,16 @@ type LegacyBlock struct {
 }
 
 type LegacyAttribute struct {
-	Name            string
-	AttributeName   string
-	ValueType       []string
-	ReplacedBy      ReplacementAttribute
-	Optional        bool
-	Computed        bool
-	Required        bool
-	NeedsCustomType bool
+	Name                 string
+	AttributeName        string
+	ValueType            []string
+	ReplacedBy           ReplacementAttribute
+	Optional             bool
+	Computed             bool
+	Required             bool
+	NeedsCustomType      bool
+	StaticCustomType     string
+	ValidateAsIPv4OrIPv6 bool
 }
 
 type ReplacementAttribute struct {
@@ -2452,7 +2455,6 @@ func (m *Model) SetLegacyAttributes(definitions Definitions) {
 	legacyResource := definitions.Migration["provider_schemas"].(map[string]interface{})["registry.terraform.io/ciscodevnet/aci"].(map[string]interface{})["resource_schemas"].(map[string]interface{})[resourceName]
 
 	if legacyResource != nil {
-
 		attributeNames := []string{}
 		for _, property := range m.Properties {
 			attributeNames = append(attributeNames, property.SnakeCaseName)
@@ -2569,23 +2571,32 @@ func (m *Model) GetLegacyAttribute(attributeName, className string, attributeVal
 		}
 	}
 
-	needsCustomType := false
+	// needsCustomType := false
+	var validateAsIPv4OrIPv6, needsCustomType bool
+	var staticCustomType string
 	for _, property := range m.Properties {
-		if propertyName == property.Name && len(property.ValidValuesMap) > 0 && len(property.Validators) > 0 {
-			needsCustomType = true
-			break
+		if propertyName == property.Name {
+			if property.StaticCustomType != "" {
+				staticCustomType = property.StaticCustomType
+				validateAsIPv4OrIPv6 = property.ValidateAsIPv4OrIPv6
+			}
+			if len(property.ValidValuesMap) > 0 && len(property.Validators) > 0 {
+				needsCustomType = true
+				break
+			}
 		}
-
 	}
 
 	legacyAttribute := LegacyAttribute{
-		Name:            propertyName,
-		AttributeName:   attributeName,
-		ValueType:       valueType,
-		Optional:        optional,
-		Computed:        computed,
-		Required:        required,
-		NeedsCustomType: needsCustomType,
+		Name:                 propertyName,
+		AttributeName:        attributeName,
+		ValueType:            valueType,
+		Optional:             optional,
+		Computed:             computed,
+		Required:             required,
+		NeedsCustomType:      needsCustomType,
+		StaticCustomType:     staticCustomType,
+		ValidateAsIPv4OrIPv6: validateAsIPv4OrIPv6,
 	}
 
 	if replacedBy != nil {

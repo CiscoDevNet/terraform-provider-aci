@@ -19,3 +19,8 @@ test_values:
     resource_required:
         destination_ip_address: 1.1.1.1
         scope: uni/tn-test_tenant/BD-test_bd
+    custom_type:
+        destination_ip_address: 2001:0db8::01
+        scope: uni/tn-test_tenant/BD-test_bd
+static_custom_type:
+    dstIpAddr: ipv6_address

@@ -13,3 +13,7 @@ test_values:
         ip: 10.0.0.1
     resource_required:
         ip: 10.0.0.2
+    custom_type:
+        ip: fe80::0001
+static_custom_type:
+    ip: ipv6_address

@@ -208,6 +208,15 @@ func TestAccResourceFvEpIpTagWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "tags.#", "0"),
 				),
 			},
+			// Update with minimum config and custom type semantic equivalent values
+			{
+				Config:             testConfigFvEpIpTagCustomTypeDependencyWithFvTenant,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "ip", "fe80::0001"),
+					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "vrf_name", "test_ctx_name"),
+				),
+			},
 		},
 		CheckDestroy: testCheckResourceDestroy,
 	})
@@ -321,5 +330,13 @@ resource "aci_endpoint_tag_ip" "test" {
   vrf_name = "test_ctx_name"
   annotations = []
   tags = []
+}
+`
+
+const testConfigFvEpIpTagCustomTypeDependencyWithFvTenant = testConfigFvTenantMin + `
+resource "aci_endpoint_tag_ip" "test" {
+  parent_dn = aci_tenant.test.id
+  ip = "fe80::0001"
+  vrf_name = "test_ctx_name"
 }
 `

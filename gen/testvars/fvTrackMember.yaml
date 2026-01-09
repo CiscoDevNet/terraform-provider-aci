@@ -23,6 +23,11 @@ resource_required:
   name: "test_name"
   scope: "uni/tn-test_tenant/BD-test_bd"
 
+custom_type:
+  destination_ip_address: "2001:0db8::01"
+  name: "test_name"
+  scope: "uni/tn-test_tenant/BD-test_bd"
+
 all:
   annotation: "annotation"
   description: "description_1"
