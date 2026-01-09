@@ -288,6 +288,13 @@ func (c *Class) setChildren(ds *DataStore) {
 	// Determine the child classes for the class.
 	genLogger.Debug(fmt.Sprintf("Setting Children for class '%s'.", c.ClassName))
 
+	// Warn if a class is defined in both IncludeChildren and ExcludeChildren.
+	for _, includedChild := range c.ClassDefinition.IncludeChildren {
+		if slices.Contains(c.ClassDefinition.ExcludeChildren, includedChild) {
+			genLogger.Warn(fmt.Sprintf("Child class '%s' is defined in both IncludeChildren and ExcludeChildren for class '%s'. IncludeChildren takes precedence.", includedChild, c.ClassName))
+		}
+	}
+
 	// Initialize with children from ClassDefinition.IncludeChildren.
 	childClasses := c.ClassDefinition.IncludeChildren
 
@@ -508,21 +515,27 @@ func getRelationshipResourceName(ds *DataStore, toClass string) string {
 	return ds.Classes[toClass].ResourceName
 }
 
-// shouldIncludeChild determines if a child class should be included based on:
-// - excludeChildren: exclude if className is in the list
-// - alwaysIncludeAsChild: include if className is in the list
-// - RN format: include if it starts with "rs" (relation source)
-// - RN format: exclude if it ends with "-" (typically named classes with a specific identifier)
-func shouldIncludeChild(rn, className string, excludeChildren, alwaysIncludeAsChild []string) bool {
-	// Check if the class is explicitly excluded.
-	if slices.Contains(excludeChildren, className) {
-		genLogger.Trace(fmt.Sprintf("Child class '%s' excluded via excludeChildren.", className))
+// shouldIncludeChild determines if a child class should be included.
+// The default behavior is to NOT include a child class.
+// A child class is included if any of the following conditions are met (in order of precedence):
+//  1. The className is NOT in the excludeChildrenFromClassDef list (if it is, the child is excluded regardless of other rules)
+//  2. The className is in the alwaysIncludeFromGlobalDef list
+//  3. The RN format starts with "rs" (relation source classes)
+//  4. The RN format does NOT end with "-" (non-named classes without a specific identifier)
+//
+// A child class is excluded if:
+//   - The className is in the excludeChildrenFromClassDef list (takes highest precedence)
+//   - The RN format ends with "-" (typically named classes with a specific identifier)
+func shouldIncludeChild(rn, className string, excludeChildrenFromClassDef, alwaysIncludeFromGlobalDef []string) bool {
+	// Exclude if the class is explicitly excluded via ClassDefinition.ExcludeChildren.
+	if slices.Contains(excludeChildrenFromClassDef, className) {
+		genLogger.Trace(fmt.Sprintf("Child class '%s' excluded via excludeChildrenFromClassDef.", className))
 		return false
 	}
 
-	// Check if the class is in the always include list.
-	if slices.Contains(alwaysIncludeAsChild, className) {
-		genLogger.Trace(fmt.Sprintf("Child class '%s' included via alwaysIncludeAsChild.", className))
+	// Include if the class is in GlobalMetaDefinition.AlwaysIncludeAsChild.
+	if slices.Contains(alwaysIncludeFromGlobalDef, className) {
+		genLogger.Trace(fmt.Sprintf("Child class '%s' included via alwaysIncludeFromGlobalDef.", className))
 		return true
 	}
 
@@ -532,12 +545,13 @@ func shouldIncludeChild(rn, className string, excludeChildren, alwaysIncludeAsCh
 		return true
 	}
 
-	// Exclude classes where the RN ends with "-" (typically named classes with a specific identifier).
-	if strings.HasSuffix(rn, "-") {
-		genLogger.Trace(fmt.Sprintf("Child class '%s' excluded because RN '%s' ends with '-'.", className, rn))
-		return false
+	// Include classes where the RN does NOT end with "-" (non-named classes without a specific identifier).
+	if !strings.HasSuffix(rn, "-") {
+		genLogger.Trace(fmt.Sprintf("Child class '%s' included because RN '%s' does not end with '-'.", className, rn))
+		return true
 	}
 
-	genLogger.Trace(fmt.Sprintf("Child class '%s' included by default.", className))
-	return true
+	// Default: do not include the child class.
+	genLogger.Trace(fmt.Sprintf("Child class '%s' excluded by default (RN ends with '-').", className))
+	return false
 }
