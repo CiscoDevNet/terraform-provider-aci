@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"testing"
@@ -95,4 +96,27 @@ func TestSetLogLevel(t *testing.T) {
 	assert.NotContains(t, logFileContent, "FATAL message", test.MessageNotContains(logFileContent, "FATAL message", t.Name()))
 
 	genLogger.SetLogLevel("INFO")
+}
+
+func TestSetOutputForTesting(t *testing.T) {
+	genLogger := initializeLogTest(t)
+	genLogger.SetLogLevel("WARN")
+
+	// Capture log output using a buffer.
+	var logBuffer bytes.Buffer
+	genLogger.SetOutputForTesting(&logBuffer)
+
+	// Restore original log output after test.
+	defer func() {
+		genLogger.SetOutputForTesting(os.Stdout)
+	}()
+
+	// Log a warning message.
+	expectedMessage := "Test warning message for SetOutputForTesting"
+	genLogger.Warn(expectedMessage)
+
+	// Verify the warning was captured in the buffer.
+	logOutput := logBuffer.String()
+	expectedLogEntry := fmt.Sprintf("WARN: %s", expectedMessage)
+	assert.Contains(t, logOutput, expectedLogEntry, test.MessageContains(logOutput, expectedLogEntry, t.Name()))
 }
