@@ -22,6 +22,10 @@ resource_required:
   ip: "131.107.1.200"
   name: "131"
 
+custom_type:
+  ip: "fe80::0002"
+  name: "131"
+
 all:
   annotation: "annotation"
   description: "description_1"
