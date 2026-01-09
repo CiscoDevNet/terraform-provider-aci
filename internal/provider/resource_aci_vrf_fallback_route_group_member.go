@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"strings"
 
+	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
@@ -41,15 +42,15 @@ type FvFBRMemberResource struct {
 
 // FvFBRMemberResourceModel describes the resource data model.
 type FvFBRMemberResourceModel struct {
-	Id            types.String `tfsdk:"id"`
-	ParentDn      types.String `tfsdk:"parent_dn"`
-	Annotation    types.String `tfsdk:"annotation"`
-	Descr         types.String `tfsdk:"description"`
-	Name          types.String `tfsdk:"name"`
-	NameAlias     types.String `tfsdk:"name_alias"`
-	RnhAddr       types.String `tfsdk:"fallback_member"`
-	TagAnnotation types.Set    `tfsdk:"annotations"`
-	TagTag        types.Set    `tfsdk:"tags"`
+	Id            types.String                       `tfsdk:"id"`
+	ParentDn      types.String                       `tfsdk:"parent_dn"`
+	Annotation    types.String                       `tfsdk:"annotation"`
+	Descr         types.String                       `tfsdk:"description"`
+	Name          types.String                       `tfsdk:"name"`
+	NameAlias     types.String                       `tfsdk:"name_alias"`
+	RnhAddr       customTypes.IPv6AddressStringValue `tfsdk:"fallback_member"`
+	TagAnnotation types.Set                          `tfsdk:"annotations"`
+	TagTag        types.Set                          `tfsdk:"tags"`
 }
 
 func getEmptyFvFBRMemberResourceModel() *FvFBRMemberResourceModel {
@@ -60,7 +61,7 @@ func getEmptyFvFBRMemberResourceModel() *FvFBRMemberResourceModel {
 		Descr:      basetypes.NewStringNull(),
 		Name:       basetypes.NewStringNull(),
 		NameAlias:  basetypes.NewStringNull(),
-		RnhAddr:    basetypes.NewStringNull(),
+		RnhAddr:    customTypes.NewIPv6AddressStringNull(),
 		TagAnnotation: types.SetNull(types.ObjectType{
 			AttrTypes: map[string]attr.Type{
 				"key":   types.StringType,
@@ -211,7 +212,8 @@ func (r *FvFBRMemberResource) Schema(ctx context.Context, req resource.SchemaReq
 				MarkdownDescription: `The name alias of the VRF Fallback Route Group Member object.`,
 			},
 			"fallback_member": schema.StringAttribute{
-				Required: true,
+				CustomType: customTypes.IPv6AddressStringType{},
+				Required:   true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
@@ -486,7 +488,7 @@ func getAndSetFvFBRMemberAttributes(ctx context.Context, diags *diag.Diagnostics
 					readData.NameAlias = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "rnhAddr" {
-					readData.RnhAddr = basetypes.NewStringValue(attributeValue.(string))
+					readData.RnhAddr = customTypes.NewIPv6AddressStringValue(attributeValue.(string))
 				}
 			}
 			TagAnnotationFvFBRMemberList := make([]TagAnnotationFvFBRMemberResourceModel, 0)
@@ -543,7 +545,7 @@ func getAndSetFvFBRMemberAttributes(ctx context.Context, diags *diag.Diagnostics
 }
 
 func getFvFBRMemberRn(ctx context.Context, data *FvFBRMemberResourceModel) string {
-	return fmt.Sprintf("nexthop-[%s]", data.RnhAddr.ValueString())
+	return fmt.Sprintf("nexthop-[%s]", data.RnhAddr.NamedValueString())
 }
 
 func setFvFBRMemberParentDn(ctx context.Context, dn string, data *FvFBRMemberResourceModel) {

@@ -18,3 +18,7 @@ test_values:
     test_values_for_parent:
         - fallback_member: 2.2.2.2
         - fallback_member: 2.2.2.3
+    custom_type:
+        fallback_member: fe80::0001
+static_custom_type:
+    rnhAddr: ipv6_address

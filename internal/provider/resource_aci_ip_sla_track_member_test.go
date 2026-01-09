@@ -265,6 +265,16 @@ func TestAccResourceFvTrackMemberWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_ip_sla_track_member.test", "tags.#", "0"),
 				),
 			},
+			// Update with minimum config and custom type semantic equivalent values
+			{
+				Config:             testConfigFvTrackMemberCustomTypeDependencyWithFvTenant,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_ip_sla_track_member.test", "destination_ip_address", "2001:0db8::01"),
+					resource.TestCheckResourceAttr("aci_ip_sla_track_member.test", "name", "test_name"),
+					resource.TestCheckResourceAttr("aci_ip_sla_track_member.test", "scope", "uni/tn-test_tenant/BD-test_bd"),
+				),
+			},
 		},
 		CheckDestroy: testCheckResourceDestroy,
 	})
@@ -462,5 +472,20 @@ resource "aci_ip_sla_track_member" "test" {
     target_dn = "uni/tn-test_tenant/ipslaMonitoringPol-monitoring_policy_name_1"
   } : null
   tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
+}
+`
+
+const testConfigFvTrackMemberCustomTypeDependencyWithFvTenant = testChildDependencyConfigFvTrackMember + testConfigFvTenantMin + `
+resource "aci_ip_sla_track_member" "test" {
+  parent_dn = aci_tenant.test.id
+  destination_ip_address = "2001:0db8::01"
+  name = "test_name"
+  scope = "uni/tn-test_tenant/BD-test_bd"
+  relation_to_monitoring_policy = {
+    annotation = "annotation_1"
+    annotations = []
+    tags = []
+    target_dn = "uni/tn-test_tenant/ipslaMonitoringPol-monitoring_policy_name_1"
+  }
 }
 `

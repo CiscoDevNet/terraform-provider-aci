@@ -24,3 +24,11 @@ test_values:
         source_ip: 0.0.0.0
     resource_required:
         order: "1"
+    custom_type:
+        group_ip: ff0e::0101/128
+        rendezvous_point_ip: 2001:0db8:ffff::1/128
+        source_ip: 2001:0db8:100::10/128
+static_custom_type:
+    grp: ipv6_address
+    rp: ipv6_address
+    src: ipv6_address

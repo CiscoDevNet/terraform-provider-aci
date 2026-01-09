@@ -108,7 +108,13 @@ func (v IPv6AddressStringValue) NamedValueString() string {
 func ParseIPv6AddressValue(value basetypes.StringValue) basetypes.StringValue {
 	ipv6Address := net.ParseIP(strings.TrimSpace(value.ValueString()))
 	if ipv6Address == nil {
-		return basetypes.NewStringNull()
+		ip, ipnet, err := net.ParseCIDR(strings.TrimSpace(value.ValueString()))
+		address := ip.String()
+		ones, _ := ipnet.Mask.Size()
+		if err != nil {
+			return basetypes.NewStringNull()
+		}
+		return basetypes.NewStringValue(fmt.Sprintf("%s/%d", address, ones))
 	}
 	return basetypes.NewStringValue(ipv6Address.String())
 }
