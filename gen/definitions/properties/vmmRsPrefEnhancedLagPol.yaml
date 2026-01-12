@@ -1,0 +1,12 @@
+# TODO: Include this target for vmmDomP when working on vswitch policy migration
+# Excluded from tests because current testing capabilities are not allowing to configure in single apply
+# The relationship needs to point to an object that is configured as a child of vswitch policy, which is a child of vmmDomP
+# Current resources have the limitation that the vmm_domain needs to be created, then the vswitch_policy and then the relationship can be applied from within the vmm_domain.
+# vmmRsPrefEnhancedLagPol:
+#   targets:
+#     - class_name: "lacpEnhancedLagPol"
+#       target_dn: "uni/vmmp-VMware/dom-test_name/vswitchpolcont/enlacplagp-lacp_enhanced_lag_policy_name_1"
+#       relation_resource_name: "lacp_enhanced_lag_policy"
+#       properties:
+#         name: "lacp_enhanced_lag_policy_name_1"
+#         parent_dn: "uni/vmmp-VMware/dom-test_name/vswitchpolcont"
