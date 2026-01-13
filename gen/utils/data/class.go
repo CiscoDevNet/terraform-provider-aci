@@ -6,7 +6,6 @@ import (
 	"os"
 	"slices"
 	"strings"
-	"unicode"
 
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils"
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider"
@@ -158,9 +157,6 @@ func NewClass(className string, ds *DataStore) (*Class, error) {
 	genLogger.Trace(fmt.Sprintf("Creating new class struct with class name: %s.", className))
 	// Splitting the class name into the package and short name.
 	packageName, shortName, err := splitClassNameToPackageNameAndShortName(className)
-	if err != nil {
-		return nil, err
-	}
 
 	class := Class{
 		ClassDefinition:       loadClassDefinition(className),
@@ -218,9 +214,15 @@ func (c *Class) setClassData(ds *DataStore) error {
 
 	c.setAllowDelete()
 
-	c.setChildren(ds)
+	err = c.setChildren(ds)
+	if err != nil {
+		return err
+	}
 
-	c.setParents()
+	err = c.setParents()
+	if err != nil {
+		return err
+	}
 
 	// TODO: add placeholder function for Deprecated
 	c.setDeprecated()
@@ -283,7 +285,7 @@ func (c *Class) setAllowDelete() {
 	genLogger.Debug(fmt.Sprintf("The AllowDelete property was successfully set to '%t' for the class '%s'.", c.AllowDelete, c.ClassName))
 }
 
-func (c *Class) setChildren(ds *DataStore) {
+func (c *Class) setChildren(ds *DataStore) error {
 	// Determine the child classes for the class.
 	genLogger.Debug(fmt.Sprintf("Setting Children for class '%s'.", c.ClassName))
 
@@ -303,7 +305,10 @@ func (c *Class) setChildren(ds *DataStore) {
 		for rn, classNameInterface := range rnMap {
 			className := classNameInterface.(string)
 			// Remove the colon separator from the class name (e.g., "fv:Tenant" -> "fvTenant").
-			className = sanitizeClassName(className)
+			className, err := sanitizeClassName(className)
+			if err != nil {
+				return err
+			}
 
 			if shouldIncludeChild(rn, className, c.ClassDefinition.ExcludeChildren, ds.GlobalMetaDefinition.AlwaysIncludeAsChild) {
 				childClasses = append(childClasses, className)
@@ -316,9 +321,10 @@ func (c *Class) setChildren(ds *DataStore) {
 	c.Children = slices.Compact(childClasses)
 
 	genLogger.Debug(fmt.Sprintf("Successfully set Children for class '%s'. Found %d children.", c.ClassName, len(c.Children)))
+	return nil
 }
 
-func (c *Class) setParents() {
+func (c *Class) setParents() error {
 	// Determine the parent classes for the class.
 	genLogger.Debug(fmt.Sprintf("Setting Parents for class '%s'.", c.ClassName))
 
@@ -336,7 +342,10 @@ func (c *Class) setParents() {
 	if containedBy, ok := c.MetaFileContent["containedBy"].(map[string]interface{}); ok {
 		for classNameWithColon := range containedBy {
 			// Remove the colon separator from the class name (e.g., "fv:AEPg" -> "fvAEPg").
-			className := sanitizeClassName(classNameWithColon)
+			className, err := sanitizeClassName(classNameWithColon)
+			if err != nil {
+				return err
+			}
 
 			// Exclude if the class is explicitly excluded via ClassDefinition.ExcludeParents.
 			if !slices.Contains(c.ClassDefinition.ExcludeParents, className) {
@@ -350,6 +359,7 @@ func (c *Class) setParents() {
 	c.Parents = slices.Compact(parentClasses)
 
 	genLogger.Debug(fmt.Sprintf("Successfully set Parents for class '%s'. Found %d parents.", c.ClassName, len(c.Parents)))
+	return nil
 }
 
 func (c *Class) setDeprecated() {
@@ -424,12 +434,22 @@ func (c *Class) setRelation() error {
 			return err
 		}
 
-		c.Relation.FromClass = sanitizeClassName(relationInfo.(map[string]interface{})["fromMo"].(string))
+		fromClass, err := sanitizeClassName(relationInfo.(map[string]interface{})["fromMo"].(string))
+		if err != nil {
+			return err
+		}
+		c.Relation.FromClass = fromClass
+
 		if strings.Contains(c.ClassName, "To") {
 			c.Relation.IncludeFrom = true
 		}
 		c.Relation.RelationalClass = true
-		c.Relation.ToClass = sanitizeClassName(relationInfo.(map[string]interface{})["toMo"].(string))
+
+		toClass, err := sanitizeClassName(relationInfo.(map[string]interface{})["toMo"].(string))
+		if err != nil {
+			return err
+		}
+		c.Relation.ToClass = toClass
 		c.Relation.Type = RelationshipTypeEnum(relationType)
 
 	}
@@ -498,40 +518,6 @@ func (c *Class) setVersions() {
 	// Determine the supported APIC versions for the class.
 	genLogger.Debug(fmt.Sprintf("Setting Versions for class '%s'.", c.ClassName))
 	genLogger.Debug(fmt.Sprintf("Successfully set Versions for class '%s'.", c.ClassName))
-}
-
-func sanitizeClassName(classNameWithColon string) string {
-	// Currently only removes the ':' separator from class names retrieved from meta, but can be enhanced in the future.
-	// Example: "fv:Tenant" -> "fvTenant"
-	// Logs a fatal error if multiple colons are detected.
-	if strings.Count(classNameWithColon, ":") > 1 {
-		genLogger.Fatal(fmt.Sprintf("Invalid class name '%s': multiple colons detected.", classNameWithColon))
-	}
-	return strings.Replace(classNameWithColon, ":", "", 1)
-}
-
-func splitClassNameToPackageNameAndShortName(className string) (string, string, error) {
-	// Splitting the class name into the package and short name.
-	// The package and short names are used for the meta file download, documentation links and lookup in the raw data.
-	var shortName, packageName string
-	genLogger.Trace(fmt.Sprintf("Splitting class name '%s' for name space separation.", className))
-	for index, character := range className {
-		if unicode.IsUpper(character) {
-			shortName = className[index:]
-			packageName = className[:index]
-			break
-		}
-	}
-
-	genLogger.Debug(fmt.Sprintf("Class name '%s' got split into package name '%s' and short name '%s'.", className, packageName, shortName))
-
-	if packageName == "" || shortName == "" {
-		genLogger.Error(fmt.Sprintf("Failed to split class name '%s' for name space separation.", className))
-		return "", "", fmt.Errorf("failed to split class name '%s' for name space separation", className)
-	}
-
-	return packageName, shortName, nil
-
 }
 
 func getRelationshipResourceName(ds *DataStore, toClass string) string {
