@@ -3,6 +3,7 @@ package data
 import (
 	"bytes"
 	"os"
+	"os/exec"
 	"testing"
 
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils/test"
@@ -71,6 +72,64 @@ func TestSplitClassNameToPackageNameAndShortName(t *testing.T) {
 			assert.Equal(t, expected.PackageName, packageName, test.MessageEqual(expected.PackageName, packageName, testCase.Name))
 			assert.Equal(t, expected.ShortName, shortName, test.MessageEqual(expected.ShortName, shortName, testCase.Name))
 		})
+	}
+}
+
+func TestSanitizeClassName(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	testCases := []test.TestCase{
+		{
+			Name:     "test_standard_class_name",
+			Input:    "fv:Tenant",
+			Expected: "fvTenant",
+		},
+		{
+			Name:     "test_relation_class_name",
+			Input:    "fv:RsBdToOut",
+			Expected: "fvRsBdToOut",
+		},
+		{
+			Name:     "test_longer_package_name",
+			Input:    "netflow:AExporterPol",
+			Expected: "netflowAExporterPol",
+		},
+		{
+			Name:     "test_already_sanitized",
+			Input:    "fvTenant",
+			Expected: "fvTenant",
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			result := sanitizeClassName(testCase.Input.(string))
+			expected := testCase.Expected.(string)
+			assert.Equal(t, expected, result, test.MessageEqual(expected, result, testCase.Name))
+		})
+	}
+}
+
+func TestSanitizeClassNameFatalOnMultipleColons(t *testing.T) {
+	if os.Getenv("TEST_SANITIZE_FATAL") == "1" {
+		// This runs in the subprocess id terminating the test process and should trigger the fatal error.
+		test.InitializeTest(t)
+		sanitizeClassName("fv:Rs:Bd")
+		return
+	}
+
+	// Run this test in a subprocess.
+	cmd := exec.Command(os.Args[0], "-test.run=TestSanitizeClassNameFatalOnMultipleColons")
+	cmd.Env = append(os.Environ(), "TEST_SANITIZE_FATAL=1")
+	err := cmd.Run()
+
+	// Verify the subprocess exited with a non-zero exit code.
+	if exitErr, ok := err.(*exec.ExitError); ok {
+		assert.False(t, exitErr.Success(), "expected non-zero exit code for fatal error")
+	} else {
+		t.Fatalf("expected exit error, got: %v", err)
 	}
 }
 

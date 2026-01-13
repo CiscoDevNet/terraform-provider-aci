@@ -503,7 +503,11 @@ func (c *Class) setVersions() {
 func sanitizeClassName(classNameWithColon string) string {
 	// Currently only removes the ':' separator from class names retrieved from meta, but can be enhanced in the future.
 	// Example: "fv:Tenant" -> "fvTenant"
-	return strings.Replace(classNameWithColon, ":", "", -1)
+	// Logs a fatal error if multiple colons are detected.
+	if strings.Count(classNameWithColon, ":") > 1 {
+		genLogger.Fatal(fmt.Sprintf("Invalid class name '%s': multiple colons detected.", classNameWithColon))
+	}
+	return strings.Replace(classNameWithColon, ":", "", 1)
 }
 
 func splitClassNameToPackageNameAndShortName(className string) (string, string, error) {
