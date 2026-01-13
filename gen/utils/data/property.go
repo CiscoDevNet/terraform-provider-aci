@@ -49,67 +49,17 @@ type Property struct {
 	Versions []VersionRange
 }
 
-type ValueTypeEnum int
-
-// The enumeration options of the ValueType.
-const (
-	// String indicates that the property is a string value.
-	String ValueTypeEnum = iota + 1
-	// Set indicates that the property is a set value.
-	Set
-	// List indicates that the property is a list value.
-	List
-)
-
 type MigrationValue struct {
-	// Indicates if a property is computed in the legacy resource schema.
-	Computed bool
 	// The name of the property in the legacy resource schema.
 	AttributeName string
+	// Indicates if a property is computed in the legacy resource schema.
+	Computed bool
 	// Indicates if a property is optional in the legacy resource schema.
 	Optional bool
 	// Indicates if a property is required in the legacy resource schema.
 	Required bool
 	// The type of the legacy attribute.
 	Type ValueTypeEnum
-}
-
-type TestValue struct {
-	// The changed value of the property to be used in the test when a property is allowed to be changed without destruction of the resource.
-	Changed []string
-	// The initial value of the property to be used in the test.
-	// This is set to the default value of the property in APIC when it is not a required value.
-	Initial []string
-}
-
-type ValidValue struct {
-	// The valid value of the property.
-	Value    string
-	Versions []VersionRange
-}
-
-type Validator struct {
-	// If the property has a range of values, these are the minimum and maximum values of the range.
-	Max float64
-	Min float64
-	// If the property has one or more regex statements it requires to match.
-	RegexList []RegexStatement
-}
-
-type RegexStatementTypeEnum int
-
-// The enumeration options of the RegexStatement Type.
-const (
-	// Include indicates that the value must match the regex statement.
-	Include RegexStatementTypeEnum = iota + 1
-	// TODO: re-evaluate the possible regex statements type options.
-)
-
-type RegexStatement struct {
-	// The regex string.
-	Regex string
-	// The type of the regex statement.
-	Type RegexStatementTypeEnum
 }
 
 type PropertyDocumentation struct {
@@ -122,41 +72,214 @@ type PropertyDocumentation struct {
 	Description string
 }
 
+type RegexStatement struct {
+	// The regex string.
+	Regex string
+	// The type of the regex statement.
+	Type RegexStatementTypeEnum
+}
+
+type RegexStatementTypeEnum int
+
+// The enumeration options of the RegexStatement Type.
+const (
+	// Include indicates that the value must match the regex statement.
+	Include RegexStatementTypeEnum = iota + 1
+	// TODO: re-evaluate the possible regex statements type options.
+)
+
+type TestValue struct {
+	// The changed value of the property to be used in the test when a property is allowed to be changed without destruction of the resource.
+	Changed []string
+	// The initial value of the property to be used in the test.
+	// This is set to the default value of the property in APIC when it is not a required value.
+	Initial []string
+}
+
+type Validator struct {
+	// If the property has a range of values, these are the minimum and maximum values of the range.
+	Max float64
+	Min float64
+	// If the property has one or more regex statements it requires to match.
+	RegexList []RegexStatement
+}
+
+type ValidValue struct {
+	// The valid value of the property.
+	Value    string
+	Versions []VersionRange
+}
+
+type ValueTypeEnum int
+
+// The enumeration options of the ValueType.
+const (
+	// String indicates that the property is a string value.
+	String ValueTypeEnum = iota + 1
+	// Set indicates that the property is a set value.
+	Set
+	// List indicates that the property is a list value.
+	List
+)
+
 func NewProperty(name string, details map[string]interface{}) *Property {
 	genLogger.Trace(fmt.Sprintf("Creating new property struct for property: %s.", name))
+
 	property := &Property{PropertyName: name}
 
-	// TODO: add function to set AttributeName
+	property.setPropertyData(details)
 
-	// TODO: add function to set Computed
-
-	// TODO: add function to set CustomType
-
-	// TODO: add placeholder function for Deprecated
-
-	// TODO: add placeholder function for DeprecatedVersions
-
-	// TODO: add function to set Documentation
-
-	// TODO: add function to set MigrationValues
-
-	// TODO: add function to set Optional
-
-	// TODO: add function to set PointsToClass
-
-	// TODO: add function to set ReadOnly
-
-	// TODO: add function to set Required
-
-	// TODO: add function to set TestValues
-
-	// TODO: add function to set Validators
-
-	// TODO: add function to set ValidValues
-
-	// TODO: add function to set ValueType
-
-	// TODO: add function to set Versions
+	genLogger.Trace(fmt.Sprintf("Successfully created new property struct for property: %s.", name))
 
 	return property
+}
+
+func (p *Property) setPropertyData(details map[string]interface{}) {
+	genLogger.Debug(fmt.Sprintf("Setting property data for property '%s'.", p.PropertyName))
+
+	// TODO: add function to set AttributeName
+	p.setAttributeName()
+
+	// TODO: add function to set Computed
+	p.setComputed()
+
+	// TODO: add function to set CustomType
+	p.setCustomType()
+
+	// TODO: add placeholder function for Deprecated
+	p.setDeprecated()
+
+	// TODO: add placeholder function for DeprecatedVersions
+	p.setDeprecatedVersions()
+
+	// TODO: add function to set Documentation
+	p.setDocumentation()
+
+	// TODO: add function to set MigrationValues
+	p.setMigrationValues()
+
+	// TODO: add function to set Optional
+	p.setOptional()
+
+	// TODO: add function to set PointsToClass
+	p.setPointsToClass()
+
+	// TODO: add function to set ReadOnly
+	p.setReadOnly()
+
+	// TODO: add function to set Required
+	p.setRequired()
+
+	// TODO: add function to set TestValues
+	p.setTestValues()
+
+	// TODO: add function to set Validators
+	p.setValidators()
+
+	// TODO: add function to set ValidValues
+	p.setValidValues()
+
+	// TODO: add function to set ValueType
+	p.setValueType()
+
+	// TODO: add function to set Versions
+	p.setVersions()
+
+	genLogger.Debug(fmt.Sprintf("Successfully set property data for property '%s'.", p.PropertyName))
+}
+
+func (p *Property) setAttributeName() {
+	// Determine the attribute name of the property.
+	genLogger.Debug(fmt.Sprintf("Setting AttributeName for property '%s'.", p.PropertyName))
+	genLogger.Debug(fmt.Sprintf("Successfully set AttributeName for property '%s'.", p.PropertyName))
+}
+
+func (p *Property) setComputed() {
+	// Determine if the property is computed.
+	genLogger.Debug(fmt.Sprintf("Setting Computed for property '%s'.", p.PropertyName))
+	genLogger.Debug(fmt.Sprintf("Successfully set Computed for property '%s'.", p.PropertyName))
+}
+
+func (p *Property) setCustomType() {
+	// Determine if the property has a custom type.
+	genLogger.Debug(fmt.Sprintf("Setting CustomType for property '%s'.", p.PropertyName))
+	genLogger.Debug(fmt.Sprintf("Successfully set CustomType for property '%s'.", p.PropertyName))
+}
+
+func (p *Property) setDeprecated() {
+	// Determine if the property is deprecated.
+	genLogger.Debug(fmt.Sprintf("Setting Deprecated for property '%s'.", p.PropertyName))
+	genLogger.Debug(fmt.Sprintf("Successfully set Deprecated for property '%s'.", p.PropertyName))
+}
+
+func (p *Property) setDeprecatedVersions() {
+	// Determine the APIC versions in which the property is deprecated.
+	genLogger.Debug(fmt.Sprintf("Setting DeprecatedVersions for property '%s'.", p.PropertyName))
+	genLogger.Debug(fmt.Sprintf("Successfully set DeprecatedVersions for property '%s'.", p.PropertyName))
+}
+
+func (p *Property) setDocumentation() {
+	// Determine the documentation specific information for the property.
+	genLogger.Debug(fmt.Sprintf("Setting Documentation for property '%s'.", p.PropertyName))
+	genLogger.Debug(fmt.Sprintf("Successfully set Documentation for property '%s'.", p.PropertyName))
+}
+
+func (p *Property) setMigrationValues() {
+	// Determine the migration values for the property.
+	genLogger.Debug(fmt.Sprintf("Setting MigrationValues for property '%s'.", p.PropertyName))
+	genLogger.Debug(fmt.Sprintf("Successfully set MigrationValues for property '%s'.", p.PropertyName))
+}
+
+func (p *Property) setOptional() {
+	// Determine if the property is optional.
+	genLogger.Debug(fmt.Sprintf("Setting Optional for property '%s'.", p.PropertyName))
+	genLogger.Debug(fmt.Sprintf("Successfully set Optional for property '%s'.", p.PropertyName))
+}
+
+func (p *Property) setPointsToClass() {
+	// Determine the class to which the property points.
+	genLogger.Debug(fmt.Sprintf("Setting PointsToClass for property '%s'.", p.PropertyName))
+	genLogger.Debug(fmt.Sprintf("Successfully set PointsToClass for property '%s'.", p.PropertyName))
+}
+
+func (p *Property) setReadOnly() {
+	// Determine if the property is read-only.
+	genLogger.Debug(fmt.Sprintf("Setting ReadOnly for property '%s'.", p.PropertyName))
+	genLogger.Debug(fmt.Sprintf("Successfully set ReadOnly for property '%s'.", p.PropertyName))
+}
+
+func (p *Property) setRequired() {
+	// Determine if the property is required.
+	genLogger.Debug(fmt.Sprintf("Setting Required for property '%s'.", p.PropertyName))
+	genLogger.Debug(fmt.Sprintf("Successfully set Required for property '%s'.", p.PropertyName))
+}
+
+func (p *Property) setTestValues() {
+	// Determine the test values for the property.
+	genLogger.Debug(fmt.Sprintf("Setting TestValues for property '%s'.", p.PropertyName))
+	genLogger.Debug(fmt.Sprintf("Successfully set TestValues for property '%s'.", p.PropertyName))
+}
+
+func (p *Property) setValidators() {
+	// Determine the validators for the property.
+	genLogger.Debug(fmt.Sprintf("Setting Validators for property '%s'.", p.PropertyName))
+	genLogger.Debug(fmt.Sprintf("Successfully set Validators for property '%s'.", p.PropertyName))
+}
+
+func (p *Property) setValidValues() {
+	// Determine the valid values for the property.
+	genLogger.Debug(fmt.Sprintf("Setting ValidValues for property '%s'.", p.PropertyName))
+	genLogger.Debug(fmt.Sprintf("Successfully set ValidValues for property '%s'.", p.PropertyName))
+}
+
+func (p *Property) setValueType() {
+	// Determine the value type of the property.
+	genLogger.Debug(fmt.Sprintf("Setting ValueType for property '%s'.", p.PropertyName))
+	genLogger.Debug(fmt.Sprintf("Successfully set ValueType for property '%s'.", p.PropertyName))
+}
+
+func (p *Property) setVersions() {
+	// Determine the supported APIC versions for the property.
+	genLogger.Debug(fmt.Sprintf("Setting Versions for property '%s'.", p.PropertyName))
+	genLogger.Debug(fmt.Sprintf("Successfully set Versions for property '%s'.", p.PropertyName))
 }
