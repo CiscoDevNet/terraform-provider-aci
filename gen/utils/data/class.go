@@ -303,7 +303,7 @@ func (c *Class) setChildren(ds *DataStore) {
 		for rn, classNameInterface := range rnMap {
 			className := classNameInterface.(string)
 			// Remove the colon separator from the class name (e.g., "fv:Tenant" -> "fvTenant").
-			className = strings.Replace(className, ":", "", -1)
+			className = sanitizeClassName(className)
 
 			if shouldIncludeChild(rn, className, c.ClassDefinition.ExcludeChildren, ds.GlobalMetaDefinition.AlwaysIncludeAsChild) {
 				childClasses = append(childClasses, className)
@@ -336,7 +336,7 @@ func (c *Class) setParents() {
 	if containedBy, ok := c.MetaFileContent["containedBy"].(map[string]interface{}); ok {
 		for classNameWithColon := range containedBy {
 			// Remove the colon separator from the class name (e.g., "fv:AEPg" -> "fvAEPg").
-			className := strings.Replace(classNameWithColon, ":", "", -1)
+			className := sanitizeClassName(classNameWithColon)
 
 			// Exclude if the class is explicitly excluded via ClassDefinition.ExcludeParents.
 			if !slices.Contains(c.ClassDefinition.ExcludeParents, className) {
@@ -424,12 +424,12 @@ func (c *Class) setRelation() error {
 			return err
 		}
 
-		c.Relation.FromClass = strings.Replace(relationInfo.(map[string]interface{})["fromMo"].(string), ":", "", -1)
+		c.Relation.FromClass = sanitizeClassName(relationInfo.(map[string]interface{})["fromMo"].(string))
 		if strings.Contains(c.ClassName, "To") {
 			c.Relation.IncludeFrom = true
 		}
 		c.Relation.RelationalClass = true
-		c.Relation.ToClass = strings.Replace(relationInfo.(map[string]interface{})["toMo"].(string), ":", "", -1)
+		c.Relation.ToClass = sanitizeClassName(relationInfo.(map[string]interface{})["toMo"].(string))
 		c.Relation.Type = RelationshipTypeEnum(relationType)
 
 	}
@@ -500,6 +500,12 @@ func (c *Class) setVersions() {
 	genLogger.Debug(fmt.Sprintf("Successfully set Versions for class '%s'.", c.ClassName))
 }
 
+func sanitizeClassName(classNameWithColon string) string {
+	// Currently only removes the ':' separator from class names retrieved from meta, but can be enhanced in the future.
+	// Example: "fv:Tenant" -> "fvTenant"
+	return strings.Replace(classNameWithColon, ":", "", -1)
+}
+
 func splitClassNameToPackageNameAndShortName(className string) (string, string, error) {
 	// Splitting the class name into the package and short name.
 	// The package and short names are used for the meta file download, documentation links and lookup in the raw data.
@@ -543,13 +549,14 @@ func getRelationshipResourceName(ds *DataStore, toClass string) string {
 }
 
 // shouldIncludeChild determines if a child class should be included.
-// The default behavior is to exclude a child class.
-// A child class is included if any of the following conditions are met (in order of precedence):
-//  1. The className is NOT in the excludeChildrenFromClassDef list (if it is, the child is excluded regardless of other rules)
-//  2. The className is in the alwaysIncludeFromGlobalDef list
-//  3. The RN format starts with "rs" (relation source classes)
-//  4. The RN format does NOT end with "-" (non-named classes without a specific identifier)
+
 func shouldIncludeChild(rn, className string, excludeChildrenFromClassDef, alwaysIncludeFromGlobalDef []string) bool {
+	// Determines if a child class should be included, with a default behavior of excluding a child class.
+	// A child class is included if any of the following conditions are met (in order of precedence):
+	//  1. The className is NOT in the excludeChildrenFromClassDef list (if it is, the child is excluded regardless of other rules)
+	//  2. The className is in the alwaysIncludeFromGlobalDef list
+	//  3. The RN format starts with "rs" (relation source classes)
+	//  4. The RN format does NOT end with "-" (non-named classes without a specific identifier)
 	// Exclude if the class is explicitly excluded via ClassDefinition.ExcludeChildren.
 	if slices.Contains(excludeChildrenFromClassDef, className) {
 		genLogger.Trace(fmt.Sprintf("Child class '%s' excluded via excludeChildrenFromClassDef.", className))
