@@ -664,6 +664,84 @@ func TestSetChildrenWarnsWhenClassInBothIncludeAndExclude(t *testing.T) {
 	assert.Contains(t, logOutput, expectedWarning, test.MessageEqual(expectedWarning, logOutput, "warning log message"))
 }
 
+type setChildrenErrorExpected struct {
+	ErrorMsg string
+}
+
+func TestSetChildrenErrors(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	testCases := []test.TestCase{
+		{
+			Name: "test_error_multiple_colons_in_rnMap",
+			Input: setChildrenInput{
+				IncludeChildren:      []string{},
+				ExcludeChildren:      []string{},
+				AlwaysIncludeAsChild: []string{},
+				RnMap: map[string]interface{}{
+					"rsBDToOut": "fv:Rs:BDToOut",
+				},
+			},
+			Expected: setChildrenErrorExpected{
+				ErrorMsg: "invalid class name 'fv:Rs:BDToOut': multiple colons detected",
+			},
+		},
+		{
+			Name: "test_error_invalid_class_name_in_includeChildren",
+			Input: setChildrenInput{
+				IncludeChildren:      []string{"invalidclass"},
+				ExcludeChildren:      []string{},
+				AlwaysIncludeAsChild: []string{},
+				RnMap:                map[string]interface{}{},
+			},
+			Expected: setChildrenErrorExpected{
+				ErrorMsg: "failed to split class name 'invalidclass' for name space separation",
+			},
+		},
+		{
+			Name: "test_error_empty_class_name_in_includeChildren",
+			Input: setChildrenInput{
+				IncludeChildren:      []string{""},
+				ExcludeChildren:      []string{},
+				AlwaysIncludeAsChild: []string{},
+				RnMap:                map[string]interface{}{},
+			},
+			Expected: setChildrenErrorExpected{
+				ErrorMsg: "failed to split class name '' for name space separation",
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.(setChildrenInput)
+			expected := testCase.Expected.(setChildrenErrorExpected)
+
+			class := &Class{
+				Name: testClassName("testClass"),
+				ClassDefinition: ClassDefinition{
+					IncludeChildren: input.IncludeChildren,
+					ExcludeChildren: input.ExcludeChildren,
+				},
+				MetaFileContent: map[string]interface{}{
+					"rnMap": input.RnMap,
+				},
+			}
+
+			ds := &DataStore{
+				GlobalMetaDefinition: GlobalMetaDefinition{
+					AlwaysIncludeAsChild: input.AlwaysIncludeAsChild,
+				},
+			}
+
+			err := class.setChildren(ds)
+			assert.EqualError(t, err, expected.ErrorMsg)
+		})
+	}
+}
+
 type setParentsInput struct {
 	IncludeParents []string
 	ExcludeParents []string
@@ -841,4 +919,155 @@ func TestSetParentsWarnsWhenClassInBothIncludeAndExclude(t *testing.T) {
 	logOutput := logBuffer.String()
 	expectedWarning := "WARN: Parent class 'fvTenant' is defined in both IncludeParents and ExcludeParents for class 'testClass'. IncludeParents takes precedence."
 	assert.Contains(t, logOutput, expectedWarning, test.MessageEqual(expectedWarning, logOutput, "warning log message"))
+}
+
+type setParentsErrorExpected struct {
+	ErrorMsg string
+}
+
+func TestSetParentsErrors(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	testCases := []test.TestCase{
+		{
+			Name: "test_error_multiple_colons_in_containedBy",
+			Input: setParentsInput{
+				IncludeParents: []string{},
+				ExcludeParents: []string{},
+				ContainedBy: map[string]interface{}{
+					"fv:AE:Pg": "",
+				},
+			},
+			Expected: setParentsErrorExpected{
+				ErrorMsg: "invalid class name 'fv:AE:Pg': multiple colons detected",
+			},
+		},
+		{
+			Name: "test_error_invalid_class_name_in_includeParents",
+			Input: setParentsInput{
+				IncludeParents: []string{"invalidparent"},
+				ExcludeParents: []string{},
+				ContainedBy:    map[string]interface{}{},
+			},
+			Expected: setParentsErrorExpected{
+				ErrorMsg: "failed to split class name 'invalidparent' for name space separation",
+			},
+		},
+		{
+			Name: "test_error_empty_class_name_in_includeParents",
+			Input: setParentsInput{
+				IncludeParents: []string{""},
+				ExcludeParents: []string{},
+				ContainedBy:    map[string]interface{}{},
+			},
+			Expected: setParentsErrorExpected{
+				ErrorMsg: "failed to split class name '' for name space separation",
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.(setParentsInput)
+			expected := testCase.Expected.(setParentsErrorExpected)
+
+			class := &Class{
+				Name: testClassName("testClass"),
+				ClassDefinition: ClassDefinition{
+					IncludeParents: input.IncludeParents,
+					ExcludeParents: input.ExcludeParents,
+				},
+				MetaFileContent: map[string]interface{}{
+					"containedBy": input.ContainedBy,
+				},
+			}
+
+			err := class.setParents()
+			assert.EqualError(t, err, expected.ErrorMsg)
+		})
+	}
+}
+
+type sortAndConvertToClassNamesExpected struct {
+	ClassNames []string
+	Error      bool
+	ErrorMsg   string
+}
+
+func TestSortAndConvertToClassNames(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	testCases := []test.TestCase{
+		{
+			Name:     "test_empty_slice_returns_empty_result",
+			Input:    []string{},
+			Expected: sortAndConvertToClassNamesExpected{ClassNames: []string{}},
+		},
+		{
+			Name:     "test_single_valid_class_name",
+			Input:    []string{"fvTenant"},
+			Expected: sortAndConvertToClassNamesExpected{ClassNames: []string{"fvTenant"}},
+		},
+		{
+			Name:     "test_multiple_class_names_sorted",
+			Input:    []string{"fvCtx", "fvAp", "fvBD"},
+			Expected: sortAndConvertToClassNamesExpected{ClassNames: []string{"fvAp", "fvBD", "fvCtx"}},
+		},
+		{
+			Name:     "test_duplicates_removed",
+			Input:    []string{"fvTenant", "fvBD", "fvTenant"},
+			Expected: sortAndConvertToClassNamesExpected{ClassNames: []string{"fvBD", "fvTenant"}},
+		},
+		{
+			Name:  "test_error_empty_string",
+			Input: []string{""},
+			Expected: sortAndConvertToClassNamesExpected{
+				Error:    true,
+				ErrorMsg: "failed to split class name '' for name space separation",
+			},
+		},
+		{
+			Name:  "test_error_invalid_class_name_no_uppercase",
+			Input: []string{"invalidclass"},
+			Expected: sortAndConvertToClassNamesExpected{
+				Error:    true,
+				ErrorMsg: "failed to split class name 'invalidclass' for name space separation",
+			},
+		},
+		{
+			Name:  "test_error_invalid_class_name_no_package",
+			Input: []string{"Tenant"},
+			Expected: sortAndConvertToClassNamesExpected{
+				Error:    true,
+				ErrorMsg: "failed to split class name 'Tenant' for name space separation",
+			},
+		},
+		{
+			Name:  "test_error_mixed_valid_and_invalid",
+			Input: []string{"fvTenant", "invalidclass"},
+			Expected: sortAndConvertToClassNamesExpected{
+				Error:    true,
+				ErrorMsg: "failed to split class name 'invalidclass' for name space separation",
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.([]string)
+			expected := testCase.Expected.(sortAndConvertToClassNamesExpected)
+
+			result, err := sortAndConvertToClassNames(input)
+
+			if expected.Error {
+				assert.EqualError(t, err, expected.ErrorMsg)
+			} else {
+				assert.Equal(t, expected.ClassNames, classNamesToStrings(result), test.MessageEqual(expected.ClassNames, result, testCase.Name))
+			}
+		})
+	}
 }
