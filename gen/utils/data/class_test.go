@@ -20,6 +20,15 @@ func testClassName(name string) *ClassName {
 	return cn
 }
 
+// classNamesToStrings converts a slice of ClassName pointers to a slice of strings for test assertions.
+func classNamesToStrings(names []*ClassName) []string {
+	result := make([]string, len(names))
+	for i, n := range names {
+		result[i] = n.String()
+	}
+	return result
+}
+
 func TestSetResourceNameFromLabelNoRelationWithIdentifier(t *testing.T) {
 	t.Parallel()
 	ds := initializeDataStoreTest(t)
@@ -610,7 +619,7 @@ func TestSetChildren(t *testing.T) {
 			if len(expected) == 0 {
 				assert.Empty(t, class.Children, test.MessageEqual(expected, class.Children, testCase.Name))
 			} else {
-				assert.Equal(t, expected, class.Children, test.MessageEqual(expected, class.Children, testCase.Name))
+				assert.Equal(t, expected, classNamesToStrings(class.Children), test.MessageEqual(expected, class.Children, testCase.Name))
 			}
 		})
 	}
@@ -795,7 +804,7 @@ func TestSetParents(t *testing.T) {
 			if len(expected) == 0 {
 				assert.Empty(t, class.Parents, test.MessageEqual(expected, class.Parents, testCase.Name))
 			} else {
-				assert.Equal(t, expected, class.Parents, test.MessageEqual(expected, class.Parents, testCase.Name))
+				assert.Equal(t, expected, classNamesToStrings(class.Parents), test.MessageEqual(expected, class.Parents, testCase.Name))
 			}
 		})
 	}
