@@ -29,11 +29,43 @@ func TestSplitClassNameToPackageNameAndShortName(t *testing.T) {
 			},
 		},
 		{
+			Name:  "test_single_word_meta_style_class_name",
+			Input: "fv:Tenant",
+			Expected: splitClassNameExpected{
+				PackageName: "fv",
+				ShortName:   "Tenant",
+			},
+		},
+		{
 			Name:  "test_multiple_words",
 			Input: "fvRsIpslaMonPol",
 			Expected: splitClassNameExpected{
 				PackageName: "fv",
 				ShortName:   "RsIpslaMonPol",
+			},
+		},
+		{
+			Name:  "test_multiple_words_meta_style_class_name",
+			Input: "fv:RsIpslaMonPol",
+			Expected: splitClassNameExpected{
+				PackageName: "fv",
+				ShortName:   "RsIpslaMonPol",
+			},
+		},
+		{
+			Name:  "test_longer_package_name",
+			Input: "netflowAExporterPol",
+			Expected: splitClassNameExpected{
+				PackageName: "netflow",
+				ShortName:   "AExporterPol",
+			},
+		},
+		{
+			Name:  "test_longer_package_meta_style_class_name",
+			Input: "netflow:AExporterPol",
+			Expected: splitClassNameExpected{
+				PackageName: "netflow",
+				ShortName:   "AExporterPol",
 			},
 		},
 		{
@@ -50,6 +82,14 @@ func TestSplitClassNameToPackageNameAndShortName(t *testing.T) {
 			Expected: splitClassNameExpected{
 				Error:    true,
 				ErrorMsg: "failed to split class name '' for name space separation",
+			},
+		},
+		{
+			Name:  "test_error_multiple_colons",
+			Input: "fv:Rs:Bd",
+			Expected: splitClassNameExpected{
+				Error:    true,
+				ErrorMsg: "invalid class name 'fv:Rs:Bd': multiple colons detected",
 			},
 		},
 	}
