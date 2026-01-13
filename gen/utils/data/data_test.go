@@ -169,7 +169,7 @@ func TestRetrieveEnvMetaClassesFromRemote(t *testing.T) {
 				Classes:          make(map[string]Class),
 				client:           server.Client(),
 				metaHost:         server.URL[8:], // Remove "https://"
-				retrievedClasses: []string{},
+				retrievedClasses: make(map[string]bool),
 			}
 
 			// We need to override constMetaPath for this test
@@ -194,7 +194,7 @@ func TestRetrieveEnvMetaClassesFromRemoteEmptyEnv(t *testing.T) {
 
 	ds := &DataStore{
 		Classes:          make(map[string]Class),
-		retrievedClasses: []string{},
+		retrievedClasses: make(map[string]bool),
 	}
 
 	err := ds.retrieveEnvMetaClassesFromRemote()
@@ -240,7 +240,7 @@ func TestRefreshMetaFiles(t *testing.T) {
 			ds := &DataStore{
 				Classes:          make(map[string]Class),
 				metaHost:         "test.example.com",
-				retrievedClasses: []string{},
+				retrievedClasses: make(map[string]bool),
 			}
 
 			err := ds.refreshMetaFiles()
@@ -304,7 +304,7 @@ func TestRetrieveMetaFileFromRemote(t *testing.T) {
 				Classes:          make(map[string]Class),
 				client:           server.Client(),
 				metaHost:         server.URL[8:],
-				retrievedClasses: []string{},
+				retrievedClasses: make(map[string]bool),
 			}
 
 			err := ds.retrieveMetaFileFromRemote(input.ClassName)
@@ -323,7 +323,7 @@ func TestRetrieveMetaFileFromRemoteAlreadyRetrieved(t *testing.T) {
 
 	ds := &DataStore{
 		Classes:          make(map[string]Class),
-		retrievedClasses: []string{"fvTenant"},
+		retrievedClasses: map[string]bool{"fvTenant": true},
 	}
 
 	// Should skip retrieval and not error
