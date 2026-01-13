@@ -21,6 +21,9 @@ no_meta_file:
   vzBrCP: contract
   vzCPIf: imported_contract
   vzFilter: filter
+  infraADomP: abstract_domain
+  infraAccBndlSubgrp: aci_leaf_access_bundle_policy_sub_group
+  infraSpAccGrp: spine_port_policy_group
 
 always_include_as_child:
   - tagAnnotation
