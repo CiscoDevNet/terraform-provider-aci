@@ -20,9 +20,9 @@ type Class struct {
 	Name *ClassName
 	// List of all child classes which are included inside the resource.
 	// When looping over maps in golang the order of the returned elements is random, thus list is used for order consistency.
-	Children []string
+	Children []*ClassName
 	// List of all possible parent classes.
-	Parents []string
+	Parents []*ClassName
 	// Deprecated resources include a warning the resource and datasource schemas.
 	Deprecated bool
 	// The APIC versions in which the class is deprecated.
@@ -288,29 +288,31 @@ func (c *Class) setChildren(ds *DataStore) error {
 		}
 	}
 
-	// Initialize with children from ClassDefinition.IncludeChildren.
-	childClasses := c.ClassDefinition.IncludeChildren
+	// Initialize with children from ClassDefinition.IncludeChildren (as strings first).
+	childClassNames := c.ClassDefinition.IncludeChildren
 
 	// Retrieve the rnMap from MetaFileContent which holds the rnFormat as key and class name as value.
 	// The class name is in the format "{ClassNamePackage}:{ClassName}".
 	if rnMap, ok := c.MetaFileContent["rnMap"].(map[string]interface{}); ok {
 		for rn, classNameInterface := range rnMap {
-			className := classNameInterface.(string)
 			// Remove the colon separator from the class name (e.g., "fv:Tenant" -> "fvTenant").
-			className, err := sanitizeClassName(className)
+			classNameStr, err := sanitizeClassName(classNameInterface.(string))
 			if err != nil {
 				return err
 			}
 
-			if shouldIncludeChild(rn, className, c.ClassDefinition.ExcludeChildren, ds.GlobalMetaDefinition.AlwaysIncludeAsChild) {
-				childClasses = append(childClasses, className)
+			if shouldIncludeChild(rn, classNameStr, c.ClassDefinition.ExcludeChildren, ds.GlobalMetaDefinition.AlwaysIncludeAsChild) {
+				childClassNames = append(childClassNames, classNameStr)
 			}
 		}
 	}
 
-	// Sort the children for consistent ordering and remove duplicates.
-	slices.Sort(childClasses)
-	c.Children = slices.Compact(childClasses)
+	// Sort, deduplicate, and convert to ClassName pointers.
+	children, err := sortAndConvertToClassNames(childClassNames)
+	if err != nil {
+		return err
+	}
+	c.Children = children
 
 	genLogger.Debug(fmt.Sprintf("Successfully set Children for class '%s'. Found %d children.", c.Name, len(c.Children)))
 	return nil
@@ -327,28 +329,31 @@ func (c *Class) setParents() error {
 		}
 	}
 
-	// Initialize with parents from ClassDefinition.IncludeParents.
-	parentClasses := c.ClassDefinition.IncludeParents
+	// Initialize with parents from ClassDefinition.IncludeParents (as strings first).
+	parentClassNames := c.ClassDefinition.IncludeParents
 
 	// Retrieve the containedBy from MetaFileContent which holds the parent class names as keys.
 	if containedBy, ok := c.MetaFileContent["containedBy"].(map[string]interface{}); ok {
 		for classNameWithColon := range containedBy {
 			// Remove the colon separator from the class name (e.g., "fv:AEPg" -> "fvAEPg").
-			className, err := sanitizeClassName(classNameWithColon)
+			classNameStr, err := sanitizeClassName(classNameWithColon)
 			if err != nil {
 				return err
 			}
 
 			// Exclude if the class is explicitly excluded via ClassDefinition.ExcludeParents.
-			if !slices.Contains(c.ClassDefinition.ExcludeParents, className) {
-				parentClasses = append(parentClasses, className)
+			if !slices.Contains(c.ClassDefinition.ExcludeParents, classNameStr) {
+				parentClassNames = append(parentClassNames, classNameStr)
 			}
 		}
 	}
 
-	// Sort the parents for consistent ordering and remove duplicates.
-	slices.Sort(parentClasses)
-	c.Parents = slices.Compact(parentClasses)
+	// Sort, deduplicate, and convert to ClassName pointers.
+	parents, err := sortAndConvertToClassNames(parentClassNames)
+	if err != nil {
+		return err
+	}
+	c.Parents = parents
 
 	genLogger.Debug(fmt.Sprintf("Successfully set Parents for class '%s'. Found %d parents.", c.Name, len(c.Parents)))
 	return nil
@@ -565,4 +570,20 @@ func shouldIncludeChild(rn, className string, excludeChildrenFromClassDef, alway
 
 	genLogger.Trace(fmt.Sprintf("Child class '%s' excluded by default (RN ends with '-').", className))
 	return false
+}
+
+// sortAndConvertToClassNames sorts, deduplicates, and converts a slice of class name strings to ClassName pointers.
+func sortAndConvertToClassNames(classNameStrings []string) ([]*ClassName, error) {
+	slices.Sort(classNameStrings)
+	classNameStrings = slices.Compact(classNameStrings)
+
+	classNames := make([]*ClassName, 0, len(classNameStrings))
+	for _, classNameStr := range classNameStrings {
+		name, err := NewClassName(classNameStr)
+		if err != nil {
+			return nil, err
+		}
+		classNames = append(classNames, name)
+	}
+	return classNames, nil
 }
