@@ -10,10 +10,20 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+// testClassName creates a ClassName for testing purposes.
+// Panics if the class name is invalid, which is acceptable in tests.
+func testClassName(name string) *ClassName {
+	cn, err := NewClassName(name)
+	if err != nil {
+		panic(err)
+	}
+	return cn
+}
+
 func TestSetResourceNameFromLabelNoRelationWithIdentifier(t *testing.T) {
 	t.Parallel()
 	ds := initializeDataStoreTest(t)
-	class := Class{ClassName: "tagAnnotation", IdentifiedBy: []string{"key"}}
+	class := Class{Name: testClassName("tagAnnotation"), IdentifiedBy: []string{"key"}}
 	class.MetaFileContent = map[string]interface{}{
 		"label": "annotation",
 	}
@@ -33,7 +43,7 @@ func TestSetResourceNameFromLabelNoRelationWithoutIdentifier(t *testing.T) {
 			"fvCtx": "vrf",
 		},
 	}
-	class := Class{ClassName: "fvRsScope"}
+	class := Class{Name: testClassName("fvRsScope")}
 	class.MetaFileContent = map[string]interface{}{
 		"label": "Private Network",
 		"relationInfo": map[string]interface{}{
@@ -60,7 +70,7 @@ func TestSetResourceNameToRelation(t *testing.T) {
 			"vzBrCP": "contract",
 		},
 	}
-	class := Class{ClassName: "fvRsCons", IdentifiedBy: []string{"tnVzBrCPName"}}
+	class := Class{Name: testClassName("fvRsCons"), IdentifiedBy: []string{"tnVzBrCPName"}}
 	class.MetaFileContent = map[string]interface{}{
 		"label": "contract",
 		"relationInfo": map[string]interface{}{
@@ -88,7 +98,7 @@ func TestSetResourceNameFromToRelation(t *testing.T) {
 			"netflowAExporterPol": "netflow_exporter_policy",
 		},
 	}
-	class := Class{ClassName: "netflowRsExporterToCtx"}
+	class := Class{Name: testClassName("netflowRsExporterToCtx")}
 	class.MetaFileContent = map[string]interface{}{
 		"label": "netflow exporter",
 		"relationInfo": map[string]interface{}{
@@ -231,7 +241,7 @@ func TestSetRelation(t *testing.T) {
 			t.Parallel()
 			input := testCase.Input.(setRelationInput)
 			expected := testCase.Expected.(setRelationExpected)
-			class := Class{ClassName: input.ClassName}
+			class := Class{Name: testClassName(input.ClassName)}
 			class.MetaFileContent = input.MetaFileContent
 
 			err := class.setRelation()
@@ -302,7 +312,7 @@ func TestSetAllowDelete(t *testing.T) {
 		t.Run(testCase.Name, func(t *testing.T) {
 			t.Parallel()
 			input := testCase.Input.(setAllowDeleteInput)
-			class := Class{ClassName: "fvPeeringP"}
+			class := Class{Name: testClassName("fvPeeringP")}
 			class.MetaFileContent = input.MetaFileContent
 			class.ClassDefinition = input.ClassDefinition
 			class.AllowDelete = false
@@ -578,7 +588,7 @@ func TestSetChildren(t *testing.T) {
 			expected := testCase.Expected.([]string)
 
 			class := &Class{
-				ClassName: "testClass",
+				Name: testClassName("testClass"),
 				ClassDefinition: ClassDefinition{
 					IncludeChildren: input.IncludeChildren,
 					ExcludeChildren: input.ExcludeChildren,
@@ -620,7 +630,7 @@ func TestSetChildrenWarnsWhenClassInBothIncludeAndExclude(t *testing.T) {
 	}()
 
 	class := &Class{
-		ClassName: "testClass",
+		Name: testClassName("testClass"),
 		ClassDefinition: ClassDefinition{
 			IncludeChildren: []string{"fvSubnet"},
 			ExcludeChildren: []string{"fvSubnet"},
@@ -769,7 +779,7 @@ func TestSetParents(t *testing.T) {
 			expected := testCase.Expected.([]string)
 
 			class := &Class{
-				ClassName: "testClass",
+				Name: testClassName("testClass"),
 				ClassDefinition: ClassDefinition{
 					IncludeParents: input.IncludeParents,
 					ExcludeParents: input.ExcludeParents,
@@ -805,7 +815,7 @@ func TestSetParentsWarnsWhenClassInBothIncludeAndExclude(t *testing.T) {
 	}()
 
 	class := &Class{
-		ClassName: "testClass",
+		Name: testClassName("testClass"),
 		ClassDefinition: ClassDefinition{
 			IncludeParents: []string{"fvTenant"},
 			ExcludeParents: []string{"fvTenant"},
