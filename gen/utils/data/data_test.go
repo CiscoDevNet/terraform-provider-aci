@@ -86,7 +86,8 @@ func TestLoadClassAlreadyLoaded(t *testing.T) {
 	}
 
 	// Pre-populate with a class
-	ds.Classes["fvTenant"] = Class{ClassName: "fvTenant"}
+	name, _ := NewClassName("fvTenant")
+	ds.Classes["fvTenant"] = Class{Name: name}
 
 	// Loading the same class should not error and should skip
 	err := ds.loadClass("fvTenant")
