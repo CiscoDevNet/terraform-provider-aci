@@ -87,22 +87,18 @@ func sanitizeClassName(classNameWithColon string) (string, error) {
 func splitClassNameToPackageNameAndShortName(className string) (string, string, error) {
 	// Splits the class name into the package and short name.
 	// The package and short names are used for the meta file download, documentation links and lookup in the raw data.
-	var shortName, packageName string
 	genLogger.Trace(fmt.Sprintf("Splitting class name '%s' for name space separation.", className))
-	for index, character := range className {
-		if unicode.IsUpper(character) {
-			shortName = className[index:]
-			packageName = className[:index]
-			break
-		}
-	}
 
-	genLogger.Debug(fmt.Sprintf("Class name '%s' got split into package name '%s' and short name '%s'.", className, packageName, shortName))
-
-	if packageName == "" || shortName == "" {
+	index := strings.IndexFunc(className, unicode.IsUpper)
+	if index <= 0 {
 		genLogger.Error(fmt.Sprintf("Failed to split class name '%s' for name space separation.", className))
 		return "", "", fmt.Errorf("failed to split class name '%s' for name space separation", className)
 	}
+
+	packageName := className[:index]
+	shortName := className[index:]
+
+	genLogger.Debug(fmt.Sprintf("Class name '%s' got split into package name '%s' and short name '%s'.", className, packageName, shortName))
 
 	return packageName, shortName, nil
 }
