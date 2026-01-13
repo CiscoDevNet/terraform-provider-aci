@@ -36,8 +36,12 @@ type ClassDefinition struct {
 	AllowDelete string `yaml:"allow_delete"`
 	// A list of child class names to exclude from the Children list.
 	ExcludeChildren []string `yaml:"exclude_children"`
+	// A list of parent class names to exclude from the Parents list.
+	ExcludeParents []string `yaml:"exclude_parents"`
 	// A list of child class names to include in the Children list outside of the standard inclusion logic.
 	IncludeChildren []string `yaml:"include_children"`
+	// A list of parent class names to include in the Parents list outside of the standard inclusion logic.
+	IncludeParents []string `yaml:"include_parents"`
 }
 
 func loadClassDefinition(className string) ClassDefinition {
