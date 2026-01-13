@@ -14,15 +14,11 @@ import (
 type Class struct {
 	// This is used to prevent the deletion of the class if it is not allowed on APIC.
 	AllowDelete bool
-	// Custom class definition to override class meta properties
-	ClassDefinition ClassDefinition
-	// The class name with all its representations.
-	Name *ClassName
 	// List of all child classes which are included inside the resource.
 	// When looping over maps in golang the order of the returned elements is random, thus list is used for order consistency.
 	Children []*ClassName
-	// List of all possible parent classes.
-	Parents []*ClassName
+	// Custom class definition to override class meta properties
+	ClassDefinition ClassDefinition
 	// Deprecated resources include a warning the resource and datasource schemas.
 	Deprecated bool
 	// The APIC versions in which the class is deprecated.
@@ -38,6 +34,13 @@ type Class struct {
 	// Indicates that when the class is included in a resource as a child it can only be configured once.
 	// This is used to determine the type of the nested attribute to be a map or list.
 	IsSingleNested bool
+	// The full content from the meta file.
+	// Storing the content proactively in case we need to access the data at a later stage.
+	MetaFileContent map[string]interface{}
+	// The class name with all its representations.
+	Name *ClassName
+	// List of all possible parent classes.
+	Parents []*ClassName
 	// The platform type is used to indicate on which APIC platform the class is available.
 	PlatformType PlatformTypeEnum
 	// A map containing all the properties of the class.
@@ -45,12 +48,9 @@ type Class struct {
 	// Each property is categorised in all, required, optional, or read-only.
 	// When looping over maps in golang the order of the returned elements is random, thus lists are used for order consistency.
 	PropertiesAll      []string
-	PropertiesRequired []string
 	PropertiesOptional []string
 	PropertiesReadOnly []string
-	// The full content from the meta file.
-	// Storing the content proactively in case we need to access the data at a later stage.
-	MetaFileContent map[string]interface{}
+	PropertiesRequired []string
 	// The relationship information of the class.
 	// If the class is a relationship class, it will contain the information about the relationship.
 	Relation Relation
@@ -211,11 +211,6 @@ func (c *Class) setClassData(ds *DataStore) error {
 		return err
 	}
 
-	err = c.setParents()
-	if err != nil {
-		return err
-	}
-
 	// TODO: add placeholder function for Deprecated
 	c.setDeprecated()
 
@@ -231,19 +226,24 @@ func (c *Class) setClassData(ds *DataStore) error {
 	// TODO: add function to set IsMigration
 	c.setIsMigration()
 
-	err = c.setRelation()
+	// TODO: add function to set IsSingleNested
+	c.setIsSingleNested()
+
+	err = c.setParents()
 	if err != nil {
 		return err
 	}
-
-	// TODO: add function to set IsSingleNested
-	c.setIsSingleNested()
 
 	// TODO: add function to set PlatformType
 	c.setPlatformType()
 
 	// TODO: add function to set Properties
 	c.setProperties()
+
+	err = c.setRelation()
+	if err != nil {
+		return err
+	}
 
 	// TODO: add function to set RequiredAsChild
 	c.setRequiredAsChild()
@@ -318,6 +318,42 @@ func (c *Class) setChildren(ds *DataStore) error {
 	return nil
 }
 
+func (c *Class) setDeprecated() {
+	// Determine if the class is deprecated.
+	genLogger.Debug(fmt.Sprintf("Setting Deprecated for class '%s'.", c.Name))
+	genLogger.Debug(fmt.Sprintf("Successfully set Deprecated for class '%s'.", c.Name))
+}
+
+func (c *Class) setDeprecatedVersions() {
+	// Determine the APIC versions in which the class is deprecated.
+	genLogger.Debug(fmt.Sprintf("Setting DeprecatedVersions for class '%s'.", c.Name))
+	genLogger.Debug(fmt.Sprintf("Successfully set DeprecatedVersions for class '%s'.", c.Name))
+}
+
+func (c *Class) setDocumentation() {
+	// Determine the documentation specific information for the class.
+	genLogger.Debug(fmt.Sprintf("Setting Documentation for class '%s'.", c.Name))
+	genLogger.Debug(fmt.Sprintf("Successfully set Documentation for class '%s'.", c.Name))
+}
+
+func (c *Class) setIdentifiedBy() {
+	// Determine the identifying properties of the class.
+	genLogger.Debug(fmt.Sprintf("Setting IdentifiedBy for class '%s'.", c.Name))
+	genLogger.Debug(fmt.Sprintf("Successfully set IdentifiedBy for class '%s'.", c.Name))
+}
+
+func (c *Class) setIsMigration() {
+	// Determine if the class is migrated from previous version of the provider.
+	genLogger.Debug(fmt.Sprintf("Setting IsMigration for class '%s'.", c.Name))
+	genLogger.Debug(fmt.Sprintf("Successfully set IsMigration for class '%s'.", c.Name))
+}
+
+func (c *Class) setIsSingleNested() {
+	// Determine if the class can only be configured once when used as a nested attribute in a parent resource.
+	genLogger.Debug(fmt.Sprintf("Setting IsSingleNested for class '%s'.", c.Name))
+	genLogger.Debug(fmt.Sprintf("Successfully set IsSingleNested for class '%s'.", c.Name))
+}
+
 func (c *Class) setParents() error {
 	// Determine the parent classes for the class.
 	genLogger.Debug(fmt.Sprintf("Setting Parents for class '%s'.", c.Name))
@@ -357,42 +393,6 @@ func (c *Class) setParents() error {
 
 	genLogger.Debug(fmt.Sprintf("Successfully set Parents for class '%s'. Found %d parents.", c.Name, len(c.Parents)))
 	return nil
-}
-
-func (c *Class) setDeprecated() {
-	// Determine if the class is deprecated.
-	genLogger.Debug(fmt.Sprintf("Setting Deprecated for class '%s'.", c.Name))
-	genLogger.Debug(fmt.Sprintf("Successfully set Deprecated for class '%s'.", c.Name))
-}
-
-func (c *Class) setDeprecatedVersions() {
-	// Determine the APIC versions in which the class is deprecated.
-	genLogger.Debug(fmt.Sprintf("Setting DeprecatedVersions for class '%s'.", c.Name))
-	genLogger.Debug(fmt.Sprintf("Successfully set DeprecatedVersions for class '%s'.", c.Name))
-}
-
-func (c *Class) setDocumentation() {
-	// Determine the documentation specific information for the class.
-	genLogger.Debug(fmt.Sprintf("Setting Documentation for class '%s'.", c.Name))
-	genLogger.Debug(fmt.Sprintf("Successfully set Documentation for class '%s'.", c.Name))
-}
-
-func (c *Class) setIdentifiedBy() {
-	// Determine the identifying properties of the class.
-	genLogger.Debug(fmt.Sprintf("Setting IdentifiedBy for class '%s'.", c.Name))
-	genLogger.Debug(fmt.Sprintf("Successfully set IdentifiedBy for class '%s'.", c.Name))
-}
-
-func (c *Class) setIsMigration() {
-	// Determine if the class is migrated from previous version of the provider.
-	genLogger.Debug(fmt.Sprintf("Setting IsMigration for class '%s'.", c.Name))
-	genLogger.Debug(fmt.Sprintf("Successfully set IsMigration for class '%s'.", c.Name))
-}
-
-func (c *Class) setIsSingleNested() {
-	// Determine if the class can only be configured once when used as a nested attribute in a parent resource.
-	genLogger.Debug(fmt.Sprintf("Setting IsSingleNested for class '%s'.", c.Name))
-	genLogger.Debug(fmt.Sprintf("Successfully set IsSingleNested for class '%s'.", c.Name))
 }
 
 func (c *Class) setPlatformType() {
@@ -534,8 +534,6 @@ func getRelationshipResourceName(ds *DataStore, toClass string) string {
 	// If the class is found, return the resource name of the class.
 	return ds.Classes[toClass].ResourceName
 }
-
-// shouldIncludeChild determines if a child class should be included.
 
 func shouldIncludeChild(rn, className string, excludeChildrenFromClassDef, alwaysIncludeFromGlobalDef []string) bool {
 	// Determines if a child class should be included, with a default behavior of excluding a child class.
