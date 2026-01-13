@@ -31,7 +31,7 @@ type Class struct {
 	// When looping over maps in golang the order of the returned elements is random, thus list is used for order consistency.
 	Children []string
 	// List of all possible parent classes.
-	ContainedBy []string
+	Parents []string
 	// Deprecated resources include a warning the resource and datasource schemas.
 	Deprecated bool
 	// The APIC versions in which the class is deprecated.
@@ -220,8 +220,7 @@ func (c *Class) setClassData(ds *DataStore) error {
 
 	c.setChildren(ds)
 
-	// TODO: add function to set ContainedBy
-	c.setContainedBy()
+	c.setParents()
 
 	// TODO: add placeholder function for Deprecated
 	c.setDeprecated()
@@ -319,10 +318,38 @@ func (c *Class) setChildren(ds *DataStore) {
 	genLogger.Debug(fmt.Sprintf("Successfully set Children for class '%s'. Found %d children.", c.ClassName, len(c.Children)))
 }
 
-func (c *Class) setContainedBy() {
+func (c *Class) setParents() {
 	// Determine the parent classes for the class.
-	genLogger.Debug(fmt.Sprintf("Setting ContainedBy for class '%s'.", c.ClassName))
-	genLogger.Debug(fmt.Sprintf("Successfully set ContainedBy for class '%s'.", c.ClassName))
+	genLogger.Debug(fmt.Sprintf("Setting Parents for class '%s'.", c.ClassName))
+
+	// Warn if a class is defined in both IncludeParents and ExcludeParents.
+	for _, included := range c.ClassDefinition.IncludeParents {
+		if slices.Contains(c.ClassDefinition.ExcludeParents, included) {
+			genLogger.Warn(fmt.Sprintf("Parent class '%s' is defined in both IncludeParents and ExcludeParents for class '%s'. IncludeParents takes precedence.", included, c.ClassName))
+		}
+	}
+
+	// Initialize with parents from ClassDefinition.IncludeParents.
+	parentClasses := c.ClassDefinition.IncludeParents
+
+	// Retrieve the containedBy from MetaFileContent which holds the parent class names as keys.
+	if containedBy, ok := c.MetaFileContent["containedBy"].(map[string]interface{}); ok {
+		for classNameWithColon := range containedBy {
+			// Remove the colon separator from the class name (e.g., "fv:AEPg" -> "fvAEPg").
+			className := strings.Replace(classNameWithColon, ":", "", -1)
+
+			// Exclude if the class is explicitly excluded via ClassDefinition.ExcludeParents.
+			if !slices.Contains(c.ClassDefinition.ExcludeParents, className) {
+				parentClasses = append(parentClasses, className)
+			}
+		}
+	}
+
+	// Sort the parents for consistent ordering and remove duplicates.
+	slices.Sort(parentClasses)
+	c.Parents = slices.Compact(parentClasses)
+
+	genLogger.Debug(fmt.Sprintf("Successfully set Parents for class '%s'. Found %d parents.", c.ClassName, len(c.Parents)))
 }
 
 func (c *Class) setDeprecated() {
