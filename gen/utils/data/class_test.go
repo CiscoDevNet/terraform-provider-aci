@@ -706,3 +706,180 @@ func TestSetChildrenWarnsWhenClassInBothIncludeAndExclude(t *testing.T) {
 	expectedWarning := "WARN: Child class 'fvSubnet' is defined in both IncludeChildren and ExcludeChildren for class 'testClass'. IncludeChildren takes precedence."
 	assert.Contains(t, logOutput, expectedWarning, test.MessageEqual(expectedWarning, logOutput, "warning log message"))
 }
+
+type setParentsInput struct {
+	IncludeParents []string
+	ExcludeParents []string
+	ContainedBy    map[string]interface{}
+}
+
+func TestSetParents(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	testCases := []test.TestCase{
+		{
+			Name: "test_empty_containedBy_returns_only_includeParents",
+			Input: setParentsInput{
+				IncludeParents: []string{"fvTenant"},
+				ExcludeParents: []string{},
+				ContainedBy:    map[string]interface{}{},
+			},
+			Expected: []string{"fvTenant"},
+		},
+		{
+			Name: "test_includes_all_classes_from_containedBy",
+			Input: setParentsInput{
+				IncludeParents: []string{},
+				ExcludeParents: []string{},
+				ContainedBy: map[string]interface{}{
+					"fv:AEPg": "",
+					"fv:BD":   "",
+				},
+			},
+			Expected: []string{"fvAEPg", "fvBD"},
+		},
+		{
+			Name: "test_removes_colon_from_class_names",
+			Input: setParentsInput{
+				IncludeParents: []string{},
+				ExcludeParents: []string{},
+				ContainedBy: map[string]interface{}{
+					"fv:Tenant": "",
+				},
+			},
+			Expected: []string{"fvTenant"},
+		},
+		{
+			Name: "test_respects_excludeParents",
+			Input: setParentsInput{
+				IncludeParents: []string{},
+				ExcludeParents: []string{"fvAEPg"},
+				ContainedBy: map[string]interface{}{
+					"fv:AEPg": "",
+					"fv:BD":   "",
+				},
+			},
+			Expected: []string{"fvBD"},
+		},
+		{
+			Name: "test_combines_includeParents_with_containedBy_results",
+			Input: setParentsInput{
+				IncludeParents: []string{"fvTenant"},
+				ExcludeParents: []string{},
+				ContainedBy: map[string]interface{}{
+					"fv:AEPg": "",
+				},
+			},
+			Expected: []string{"fvAEPg", "fvTenant"},
+		},
+		{
+			Name: "test_removes_duplicates",
+			Input: setParentsInput{
+				IncludeParents: []string{"fvAEPg"},
+				ExcludeParents: []string{},
+				ContainedBy: map[string]interface{}{
+					"fv:AEPg": "",
+				},
+			},
+			Expected: []string{"fvAEPg"},
+		},
+		{
+			Name: "test_sorts_parents_alphabetically",
+			Input: setParentsInput{
+				IncludeParents: []string{"fvCtx", "fvAp"},
+				ExcludeParents: []string{},
+				ContainedBy: map[string]interface{}{
+					"fv:BD": "",
+				},
+			},
+			Expected: []string{"fvAp", "fvBD", "fvCtx"},
+		},
+		{
+			Name: "test_nil_containedBy_returns_only_includeParents",
+			Input: setParentsInput{
+				IncludeParents: []string{"fvTenant"},
+				ExcludeParents: []string{},
+				ContainedBy:    nil,
+			},
+			Expected: []string{"fvTenant"},
+		},
+		{
+			Name: "test_empty_inputs_returns_empty_parents",
+			Input: setParentsInput{
+				IncludeParents: []string{},
+				ExcludeParents: []string{},
+				ContainedBy:    map[string]interface{}{},
+			},
+			Expected: []string{},
+		},
+		{
+			Name: "test_includeParents_takes_precedence_over_excludeParents",
+			Input: setParentsInput{
+				IncludeParents: []string{"fvTenant"},
+				ExcludeParents: []string{"fvTenant"},
+				ContainedBy:    map[string]interface{}{},
+			},
+			Expected: []string{"fvTenant"},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.(setParentsInput)
+			expected := testCase.Expected.([]string)
+
+			class := &Class{
+				ClassName: "testClass",
+				ClassDefinition: ClassDefinition{
+					IncludeParents: input.IncludeParents,
+					ExcludeParents: input.ExcludeParents,
+				},
+				MetaFileContent: map[string]interface{}{
+					"containedBy": input.ContainedBy,
+				},
+			}
+
+			class.setParents()
+
+			if len(expected) == 0 {
+				assert.Empty(t, class.Parents, test.MessageEqual(expected, class.Parents, testCase.Name))
+			} else {
+				assert.Equal(t, expected, class.Parents, test.MessageEqual(expected, class.Parents, testCase.Name))
+			}
+		})
+	}
+}
+
+func TestSetParentsWarnsWhenClassInBothIncludeAndExclude(t *testing.T) {
+	test.InitializeTest(t)
+
+	// Capture log output using a buffer.
+	var logBuffer bytes.Buffer
+	genLogger.SetOutputForTesting(&logBuffer)
+	genLogger.SetLogLevel("WARN")
+
+	// Restore original log output after test.
+	defer func() {
+		genLogger.SetOutputForTesting(os.Stdout)
+	}()
+
+	class := &Class{
+		ClassName: "testClass",
+		ClassDefinition: ClassDefinition{
+			IncludeParents: []string{"fvTenant"},
+			ExcludeParents: []string{"fvTenant"},
+		},
+		MetaFileContent: map[string]interface{}{
+			"containedBy": map[string]interface{}{},
+		},
+	}
+
+	class.setParents()
+
+	// Verify the warning was logged.
+	logOutput := logBuffer.String()
+	expectedWarning := "WARN: Parent class 'fvTenant' is defined in both IncludeParents and ExcludeParents for class 'testClass'. IncludeParents takes precedence."
+	assert.Contains(t, logOutput, expectedWarning, test.MessageEqual(expectedWarning, logOutput, "warning log message"))
+}
