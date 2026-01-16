@@ -28,6 +28,9 @@ data "aci_{{$.ResourceName}}" "example_{{getResourceName $key $.Definitions}}" {
 // This example is only applicable to Cisco Cloud Network Controller
 {{- end}}
 data "aci_{{$.ResourceName}}" "example" {
+  {{- if and $.HasParent (ne $.ParentExampleDn "")}}
+  parent_dn = "{{ $.ParentExampleDn }}"
+  {{- end}}
   {{- range $.Properties}}{{- if .IsNaming}}{{- if ne .NamedPropertyClass ""}}
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}} = aci_{{getResourceName .NamedPropertyClass $.Definitions}}.example.name
     {{- else}}

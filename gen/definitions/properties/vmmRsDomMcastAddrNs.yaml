@@ -1,0 +1,10 @@
+documentation:
+    tDn: The distinguished name of the target.
+# TODO: Include this target for vmmDomP when working having a way to influence depending attributes re quired for a specific child
+# Excluded from tests because current testing capabilities are not allowing to configure this without enable_ave_mode = yes
+#   targets:
+#     - class_name: "fvnsMcastAddrInstP"
+#       target_dn: "uni/infra/maddrns-multicast_pool_name_1"
+#       relation_resource_name: "multicast_pool"
+#       properties:
+#         name: "multicast_pool_name_1"

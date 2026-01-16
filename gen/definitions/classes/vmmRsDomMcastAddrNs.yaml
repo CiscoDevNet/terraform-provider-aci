@@ -1,0 +1,4 @@
+exclude_from_testing: true
+resource_name: relation_to_multicast_pool
+ui_locations:
+    - Virtual Networking -> Provider -> Domain -> Pool of Multicast Addresses

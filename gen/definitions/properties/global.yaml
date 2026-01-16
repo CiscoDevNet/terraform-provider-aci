@@ -53,6 +53,7 @@ resource_name_doc_overwrite:
     Ad: AD
     Bd: BD
     Bgp: BGP
+    Cdp: CDP
     Dhcp: DHCP
     Dns: DNS
     Dot1x: 802.1x
@@ -71,9 +72,12 @@ resource_name_doc_overwrite:
     Igmp: IGMP
     Ip: IP
     L3out: L3Out
+    Lacp: LACP
     Lacp Enhanced Lag Policy: LACP Enhanced Lag Policy
+    Lldp: LLDP
     Mac: MAC
     Mld: MLD
+    Mtu: MTU
     Nd: Neighbor Discovery (ND)
     Netflow: NetFlow
     Ospf: OSPF

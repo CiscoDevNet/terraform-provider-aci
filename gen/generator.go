@@ -155,12 +155,22 @@ var templateFuncs = template.FuncMap{
 	"getCustomTestDependency":                  GetCustomTestDependency,
 	"getIgnoreInLegacy":                        GetIgnoreInLegacy,
 	"isSensitiveAttribute":                     IsSensitiveAttribute,
+	"excludeClassFromTesting":                  ExcludeClassFromTesting,
 }
 
 func IsSensitiveAttribute(attributeName string, properties map[string]Property) bool {
 
 	if attributeValue, ok := properties[attributeName]; ok {
 		if attributeValue.ValueType == "password" {
+			return true
+		}
+	}
+	return false
+}
+
+func ExcludeClassFromTesting(className string, model Model) bool {
+	for _, child := range model.Children {
+		if child.PkgName == className && child.ExcludeFromTesting {
 			return true
 		}
 	}
@@ -260,6 +270,10 @@ func GetTestValue(name string, model Model) string {
 		}
 	}
 	if name == "ParentDn" {
+		parantDnValue := GetOverwriteAttributeValue(model.PkgName, "parent_dn", "parent_dn_not_found", "legacy", 0, model.Definitions)
+		if parantDnValue != "parent_dn_not_found" {
+			return parantDnValue.(string)
+		}
 		if len(model.ContainedBy) > 0 {
 			parentResource := GetResourceName(model.ContainedBy[0], model.Definitions)
 			return fmt.Sprintf(`aci_%s.test.id`, parentResource)
@@ -1418,6 +1432,7 @@ type Model struct {
 	DocumentationExamples       []string
 	TestDependencies            []TestDependency
 	ChildTestDependencies       []TestDependency
+	ExcludeFromTesting          bool
 	DocumentationChildren       []string
 	ResourceNotes               []string
 	ResourceWarnings            []string
@@ -1447,6 +1462,7 @@ type Model struct {
 	MultiParentFormats          map[string]MultiParentFormat
 	MultiParentFormatsTestTypes map[string]string
 	ClassVersion                string
+	ParentExampleDn             string
 	ParentName                  string
 	ParentHierarchy             string
 	TargetResourceClassName     string
@@ -1461,6 +1477,9 @@ type Model struct {
 	HasBitmask                    bool
 	HasChild                      bool
 	HasParent                     bool
+	HasStaticParent               bool
+	HasParentValidValues          bool
+	ParentDnValidValues           []string
 	HasAnnotation                 bool
 	HasValidValues                bool
 	HasChildWithoutIdentifier     bool
@@ -1830,6 +1849,9 @@ func (m *Model) SetClassChildren(classDetails interface{}, pkgNames, mainParentC
 					}
 				}
 			}
+			if key == "exclude_from_testing" {
+				m.ExcludeFromTesting = value.(bool)
+			}
 		}
 	}
 
@@ -2019,6 +2041,15 @@ func (m *Model) SetClassContainedByAndParent(classDetails interface{}, parents [
 		m.HasParent = false
 	} else {
 		m.HasParent = true
+		m.GetOverwriteStaticParent()
+		m.ParentExampleDn = GetParentExampleDn(classDetails, m.PkgName, m.Definitions)
+		addValidValuesList := GetValidValuesToAdd(m.PkgName, "parentDn", m.Definitions)
+		for _, validValueName := range addValidValuesList {
+			m.ParentDnValidValues = append(m.ParentDnValidValues, validValueName.(string))
+		}
+		if len(m.ParentDnValidValues) > 0 {
+			m.HasParentValidValues = true
+		}
 	}
 }
 
@@ -2780,6 +2811,17 @@ func GetIgnoreInLegacy(classPkgName string, definitions Definitions) []string {
 	return result
 }
 
+func GetParentExampleDn(classDetails interface{}, classPkgName string, definitions Definitions) string {
+	if v, ok := definitions.Classes[classPkgName]; ok {
+		for key, value := range v.(map[string]interface{}) {
+			if key == "parent_example_dn" {
+				return value.(string)
+			}
+		}
+	}
+	return ""
+}
+
 // Determine if possible parent classes in terraform configuration should be overwritten by contained_by from the classes.yaml file
 func GetOverwriteContainedBy(classDetails interface{}, classPkgName string, definitions Definitions) map[string]interface{} {
 	containedBy := make(map[string]interface{})
@@ -2796,6 +2838,17 @@ func GetOverwriteContainedBy(classDetails interface{}, classPkgName string, defi
 		return classDetails.(map[string]interface{})["containedBy"].(map[string]interface{})
 	} else {
 		return containedBy
+	}
+}
+
+// Determine if a reformat in terraform configuration should be prepended with a rn from the classes.yaml file
+func (m *Model) GetOverwriteStaticParent() {
+	if v, ok := m.Definitions.Classes[m.PkgName]; ok {
+		for key, value := range v.(map[string]interface{}) {
+			if key == "static_parent" {
+				m.HasStaticParent = value.(bool)
+			}
+		}
 	}
 }
 
@@ -3084,7 +3137,11 @@ func getTestDependency(sourceClassName, className string, targetMap map[interfac
 
 	if targetDn, ok := targetMap["target_dn"]; ok {
 		testDependency.TargetDn = targetDn.(string)
-		testDependency.TargetDnRef = fmt.Sprintf("%s_%s.test_%s_%d.id", providerName, GetResourceName(className, definitions), GetResourceName(className, definitions), index%2)
+		if targetDnRef, ok := targetMap["target_dn_ref"]; ok {
+			testDependency.TargetDnRef = targetDnRef.(string)
+		} else {
+			testDependency.TargetDnRef = fmt.Sprintf("%s_%s.test_%s_%d.id", providerName, GetResourceName(className, definitions), GetResourceName(className, definitions), index%2)
+		}
 	}
 
 	if properties, ok := targetMap["properties"]; ok {

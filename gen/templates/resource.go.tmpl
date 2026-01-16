@@ -706,7 +706,7 @@ func set{{ .ResourceClassName }}LegacyAttributes(ctx context.Context, diags *dia
 							{{- range .Properties}}
 							{{- $Overwrite := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
 							{{- $AttributeName := getLegacyChildAttribute .PkgName $Overwrite . $.LegacyAttributes $.LegacyBlocks}}
-								{{- if and (eq $AttributeName (capitalize .PkgName)) (isNewNamedClassAttributeMatch $Overwrite $ResourceName)}}
+								{{- if or (eq .PropertyName "tDn") (and (eq $AttributeName (capitalize .PkgName)) (isNewNamedClassAttributeMatch $Overwrite $ResourceName))}}
 						if childAttributeName == "tDn" {
 							data.Deprecated{{.ResourceClassName}} = basetypes.NewStringValue(childAttributeValue.(string))
 						}
@@ -1564,6 +1564,9 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 					stringvalidator.AtLeastOneOf(path.Expressions{
 						path.MatchRoot("{{$LegacyAttributeName}}"),
 					}...),
+					{{- if .HasParentValidValues}}
+					stringvalidator.OneOf({{- validatorString .ParentDnValidValues}}),
+					{{- end}}
 				},
 				{{- end}}
 			},
@@ -3004,6 +3007,9 @@ if !{{ .ParentHierarchy | decapitalize}}Plan.{{.ResourceClassName}}.IsNull() && 
 	{{ .ParentHierarchy }}Children = append({{ .ParentHierarchy }}Children, map[string]interface{}{"{{.PkgName}}": {{.PkgName}}{{$.ParentHierarchy}}ChildMap})
 		{{- else}}
 for _, {{ .PkgName }}{{.ParentHierarchy}} := range {{.PkgName}}{{.ParentHierarchy}}Plan {
+	{{- if .Children}}
+	{{capitalize .PkgName}}{{.ParentHierarchy}}Children = make([]map[string]interface{}, 0)
+	{{- end}}
 	{{.PkgName}}{{.ParentHierarchy}}ChildMap := NewAciObject()
 	{{- range .Properties}}
 	if !{{ .PkgName }}{{$.ParentHierarchy}}.{{- if eq .Name "Id"}}{{.ResourceClassName}}{{ .Name }}{{- else}}{{.Name}}{{- end}}.IsNull() && !{{ .PkgName }}{{$.ParentHierarchy}}.{{- if eq .Name "Id"}}{{.ResourceClassName}}{{ .Name }}{{- else}}{{.Name}}{{- end}}.IsUnknown(){

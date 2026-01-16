@@ -5,7 +5,7 @@
 {{- if .LegacyAttributes}}
 legacy_attributes:
   {{- range .LegacyAttributes}}
-		{{- if ne .ReplacedBy.AttributeName "" }}
+		{{- if and (ne .ReplacedBy.AttributeName "") (not (excludeClassFromTesting .ReplacedBy.ClassName $)) }}
 			{{- if eq (getMigrationType .ValueType) "String"}}
   {{.AttributeName}}: "{{getLegacyPropertyTestValue .Name $}}"
 			{{- else if eq (getMigrationType .ValueType) "Set"}}
@@ -116,6 +116,9 @@ default:
 {{- end}}
 {{ if .HasNaming }}
 datasource_non_existing:
+  {{- if .HasStaticParent}}
+  parent_dn: "{{overwritePropertyValue .PkgName "parent_dn" "parent_dn" "datasource_non_existing" 0 $.Definitions}}"
+  {{- end}}
   {{- range .Properties}}
     {{- if and (not (keyExists $versionMismatch .RawVersion)) (not .IgnoreInTest) (not .ReadOnly)}}{{$testValue := createNonExistingValue .SnakeCaseName}}{{$overwritePropertyName := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
       {{- if .IsNaming }}
@@ -125,6 +128,9 @@ datasource_non_existing:
   {{- end}}
 
 datasource_required:
+  {{- if .HasStaticParent}}
+  parent_dn: "{{overwritePropertyValue .PkgName "parent_dn" "parent_dn" "datasource_non_existing" 0 $.Definitions}}"
+  {{- end}}
   {{- range .Properties}}{{$testValue := createTestValue .SnakeCaseName}}{{$overwritePropertyName := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
     {{- if or .IsNaming (isRequiredInTestValue .PkgName $overwritePropertyName $.Definitions "datasource_required") }}
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "{{overwritePropertyValue .PkgName $overwritePropertyName $testValue "datasource_required" 0 $.Definitions}}"
@@ -132,6 +138,9 @@ datasource_required:
   {{- end}}
 
 resource_required:
+  {{- if .HasStaticParent}}
+  parent_dn: "{{overwritePropertyValue .PkgName "parent_dn" "parent_dn" "datasource_non_existing" 0 $.Definitions}}"
+  {{- end}}
   {{- range .Properties}}{{$testValue := createTestValue .SnakeCaseName}}{{$overwritePropertyName := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
     {{- if or .IsNaming (or .IsRequired (isRequiredInTestValue .PkgName $overwritePropertyName $.Definitions "resource_required"))}}
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "{{overwritePropertyValue .PkgName $overwritePropertyName $testValue "resource_required" 0 $.Definitions}}"
@@ -249,12 +258,12 @@ all:
 {{- end}}
 {{ if .Children}}
 children:
-  {{- range $key, $value := .Children}}
+  {{- range $key, $value := .Children}}{{if not .ExcludeFromTesting}}
     {{- $newCtx := addToTemplateProperties . "Indent" "" -}}
     {{- template "nestedChildren" $newCtx }}
-  {{- end}}
+  {{- end}}{{- end}}
 {{- end}}
-{{- if and .ContainedBy (not .MultiParentFormats) (not .ContainsDefaultParentDn)}}
+{{- if and .ContainedBy (not .MultiParentFormats) (not .ContainsDefaultParentDn) (not .HasStaticParent)}}
 parents:
     {{- $index := 0}}
     {{- range $key := .DocumentationExamples}}{{$parentDependency := getParentTestDependencies $.PkgName $index $.Definitions}}{{$index = add $index 1}}

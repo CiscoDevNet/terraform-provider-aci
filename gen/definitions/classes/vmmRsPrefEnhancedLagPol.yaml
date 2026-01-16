@@ -1,0 +1,4 @@
+exclude_from_testing: true
+resource_name: relation_to_lacp_enhanced_lag_policy
+ui_locations:
+    - Virtual Networking -> Provider -> Domain -> Enhanced Lag Policy

@@ -1766,7 +1766,7 @@ resource "aci_{{$target.target_resource_name}}" "test_{{$target.target_resource_
   {{$target.parent_dn_key}} = {{$target.parent_dependency_dn_ref}}
   {{- end}}
   			{{- range $key, $value := $target.properties}}
-				{{- if contains $value "."}}
+				{{- if isReference $value }}
   {{$key}} = {{$value}}
 				{{- else}}
   {{$key}} = "{{$value}}"
@@ -2732,7 +2732,7 @@ resource "aci_{{$.resourceName}}" "test" {
 			{{- range $key, $value := $.legacy_attributes}}
 				{{- if isInterfaceSlice $value}}{{$list_value := index $value 0}}
   {{$key}} = {{if isReference $list_value}}{{$value}}{{else}}["{{$list_value}}"]{{end}}
-				{{- else}}
+				{{- else if ne $value "target_dn_0"}}
   {{$key}} = {{if isReference $value}}{{$value}}{{else}}"{{$value}}"{{end}}
 				{{- end}}
 			{{- end}}

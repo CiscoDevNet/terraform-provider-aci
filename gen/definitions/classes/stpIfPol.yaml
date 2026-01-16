@@ -1,0 +1,3 @@
+resource_name: spanning_tree_interface_policy
+ui_locations:
+    - Access Policies -> Policies -> Interface -> Spanning Tree
