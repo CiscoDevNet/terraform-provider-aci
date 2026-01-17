@@ -2,6 +2,39 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.19.0 (January 17, 2026)
+
+DEPRECATIONS:
+- Deprecate aci_fabric_if_pol, which will be removed in the next major version of the provider.
+- Deprecate aci_port_security_policy, which will be removed in the next major version of the provider.
+- Deprecate aci_miscabling_protocol_interface_policy, which will be removed in the next major version of the provider.
+- Deprecate aci_interface_fc_policy, which will be removed in the next major version of the provider.
+
+IMPROVEMENTS:
+- Add support for uplink_order_container (fvuplinkordercont) in relation_to_domains attribute of aci_application_epg and aci_relation_to_domain resource and datasource
+- Add resource and data source to import l4-l7 logical devices from one tenant to another.
+- Addition of new attributes to resource_aci_rest_managed to modify an object during destroy instead of deleting it
+- Migrate resources and datasource aci_access_port_block, aci_access_port_selector, aci_fex_profile. aci_leaf_interface_profile, aci_spine_interface_profile and aci_spine_access_port_selector to terraform plugin framework
+- Migrate resource and datasource aci_vmm_credential to terraform plugin framework
+- Add resource and datasource aci_relation_from_application_epg_to_attachable_access_entity_profile for fvrsaepatt class support
+- Migrate resource and datasource aci_attachable_access_entity_profile to terraform plugin framework and add resource and datasource for aci_relation_from_attachable_access_entity_profile_to_domain
+- Add support for dwdm interface access policy with resources aci_dwdm_interface_policy
+- Add support for poe interface access policy with resource aci_poe_interface_policy
+- Add support for link level interface access policy with resource aci_link_level_interface_policy
+- Add support for slow drain interface access policy with resource aci_slow_drain_interface_policy
+- Add support for synchronous ethernet interface access policy with resource aci_synce_interface_policy
+- Add support for port security interface access policy with resource aci_port_security_interface_policy
+- Add support for monitoring access policy with resources aci_access_monitoring_policy
+- Add support for link level control flow interface access policy with resource aci_link_level_control_flow_interface_policy
+- Add support for mcp interface access policy with resource aci_mcp_interface_policy
+- Add support for fibre channel interface access policy with resource aci_fibre_channel_interface_policy
+- Add support for priority flow control interface access policy with resource aci_priority_flow_control_interface_policy
+- Add support for 802.1x port authentication interface access policy with resource aci_dot1x_port_authentication_interface_policy
+
+BUG FIXES:
+- Bug fix for update of single nested children
+- Fix documentation examples for importing with a json string in aci_rest_managed
+
 ## 2.18.0 (November 7, 2025)
 
 IMPROVEMENTS:
