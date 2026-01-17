@@ -19,7 +19,7 @@ func TestAccResourceTagTagWithFvTenant(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigTagTagMinDependencyWithFvTenantAllowExisting,
+				Config:             testConfigTagTagMinDependencyWithFvTenantAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_tag.allow_test", "key", "test_key"),
@@ -38,7 +38,7 @@ func TestAccResourceTagTagWithFvTenant(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:      testConfigTagTagMinDependencyWithFvTenantAllowExisting,
+				Config:      testConfigTagTagMinDependencyWithFvTenantAllowExisting + testConfigDataSourceSystem,
 				ExpectError: regexp.MustCompile("Object Already Exists"),
 			},
 		},
@@ -51,7 +51,7 @@ func TestAccResourceTagTagWithFvTenant(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigTagTagMinDependencyWithFvTenantAllowExisting,
+				Config:             testConfigTagTagMinDependencyWithFvTenantAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_tag.allow_test", "key", "test_key"),
@@ -69,7 +69,7 @@ func TestAccResourceTagTagWithFvTenant(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigTagTagMinDependencyWithFvTenant,
+				Config:             testConfigTagTagMinDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_tag.test", "key", "test_key"),
@@ -78,7 +78,7 @@ func TestAccResourceTagTagWithFvTenant(t *testing.T) {
 			},
 			// Update with all config and verify default APIC values
 			{
-				Config:             testConfigTagTagAllDependencyWithFvTenant,
+				Config:             testConfigTagTagAllDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_tag.test", "key", "test_key"),
@@ -87,7 +87,7 @@ func TestAccResourceTagTagWithFvTenant(t *testing.T) {
 			},
 			// Update with minimum config and verify config is unchanged
 			{
-				Config:             testConfigTagTagMinDependencyWithFvTenant,
+				Config:             testConfigTagTagMinDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_tag.test", "key", "test_key"),
@@ -96,7 +96,7 @@ func TestAccResourceTagTagWithFvTenant(t *testing.T) {
 			},
 			// Update with empty strings config or default value
 			{
-				Config:             testConfigTagTagResetDependencyWithFvTenant,
+				Config:             testConfigTagTagResetDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_tag.test", "key", "test_key"),
@@ -121,7 +121,7 @@ func TestAccResourceTagTagWithFvAEPg(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigTagTagMinDependencyWithFvAEPgAllowExisting,
+				Config:             testConfigTagTagMinDependencyWithFvAEPgAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_tag.allow_test", "key", "test_key"),
@@ -140,7 +140,7 @@ func TestAccResourceTagTagWithFvAEPg(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:      testConfigTagTagMinDependencyWithFvAEPgAllowExisting,
+				Config:      testConfigTagTagMinDependencyWithFvAEPgAllowExisting + testConfigDataSourceSystem,
 				ExpectError: regexp.MustCompile("Object Already Exists"),
 			},
 		},
@@ -153,7 +153,7 @@ func TestAccResourceTagTagWithFvAEPg(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigTagTagMinDependencyWithFvAEPgAllowExisting,
+				Config:             testConfigTagTagMinDependencyWithFvAEPgAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_tag.allow_test", "key", "test_key"),
@@ -171,7 +171,7 @@ func TestAccResourceTagTagWithFvAEPg(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigTagTagMinDependencyWithFvAEPg,
+				Config:             testConfigTagTagMinDependencyWithFvAEPg + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_tag.test", "key", "test_key"),
@@ -180,7 +180,7 @@ func TestAccResourceTagTagWithFvAEPg(t *testing.T) {
 			},
 			// Update with all config and verify default APIC values
 			{
-				Config:             testConfigTagTagAllDependencyWithFvAEPg,
+				Config:             testConfigTagTagAllDependencyWithFvAEPg + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_tag.test", "key", "test_key"),
@@ -189,7 +189,7 @@ func TestAccResourceTagTagWithFvAEPg(t *testing.T) {
 			},
 			// Update with minimum config and verify config is unchanged
 			{
-				Config:             testConfigTagTagMinDependencyWithFvAEPg,
+				Config:             testConfigTagTagMinDependencyWithFvAEPg + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_tag.test", "key", "test_key"),
@@ -198,7 +198,7 @@ func TestAccResourceTagTagWithFvAEPg(t *testing.T) {
 			},
 			// Update with empty strings config or default value
 			{
-				Config:             testConfigTagTagResetDependencyWithFvAEPg,
+				Config:             testConfigTagTagResetDependencyWithFvAEPg + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_tag.test", "key", "test_key"),

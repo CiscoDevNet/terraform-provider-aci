@@ -8,6 +8,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
@@ -969,7 +970,8 @@ func (r *FvRsDomAttResource) ImportState(ctx context.Context, req resource.Impor
 }
 
 func getAndSetFvRsDomAttAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FvRsDomAttResourceModel) {
-	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "fvRsDomAtt,fvUplinkOrderCont,tagAnnotation,tagTag,tagAnnotation,tagTag"), "GET", nil)
+	childClasses := getChildClassesForGetRequest([]string{"fvUplinkOrderCont", "tagAnnotation", "tagTag"})
+	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), strings.Join(childClasses, ",")), "GET", nil)
 
 	readData := getEmptyFvRsDomAttResourceModel()
 

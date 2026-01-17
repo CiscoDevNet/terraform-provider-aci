@@ -19,7 +19,7 @@ func TestAccResourcePkiTP(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigPkiTPMinAllowExisting,
+				Config:             testConfigPkiTPMinAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_certificate_authority.allow_test", "name", "test_name"),
@@ -48,7 +48,7 @@ func TestAccResourcePkiTP(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:      testConfigPkiTPMinAllowExisting,
+				Config:      testConfigPkiTPMinAllowExisting + testConfigDataSourceSystem,
 				ExpectError: regexp.MustCompile("Object Already Exists"),
 			},
 		},
@@ -61,7 +61,7 @@ func TestAccResourcePkiTP(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigPkiTPMinAllowExisting,
+				Config:             testConfigPkiTPMinAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_certificate_authority.allow_test", "name", "test_name"),
@@ -89,7 +89,7 @@ func TestAccResourcePkiTP(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigPkiTPMin,
+				Config:             testConfigPkiTPMin + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "name", "test_name"),
@@ -103,7 +103,7 @@ func TestAccResourcePkiTP(t *testing.T) {
 			},
 			// Update with all config and verify default APIC values
 			{
-				Config:             testConfigPkiTPAll,
+				Config:             testConfigPkiTPAll + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "name", "test_name"),
@@ -117,7 +117,7 @@ func TestAccResourcePkiTP(t *testing.T) {
 			},
 			// Update with minimum config and verify config is unchanged
 			{
-				Config:             testConfigPkiTPMin,
+				Config:             testConfigPkiTPMin + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "certificate_chain", "-----BEGIN CERTIFICATE-----\nMIICODCCAaGgAwIBAgIJAIt8XMntue0VMA0GCSqGSIb3DQEBCwUAMDQxDjAMBgNV\nBAMMBUFkbWluMRUwEwYDVQQKDAxZb3VyIENvbXBhbnkxCzAJBgNVBAYTAlVTMCAX\nDTE4MDEwOTAwNTk0NFoYDzIxMTcxMjE2MDA1OTQ0WjA0MQ4wDAYDVQQDDAVBZG1p\nbjEVMBMGA1UECgwMWW91ciBDb21wYW55MQswCQYDVQQGEwJVUzCBnzANBgkqhkiG\n9w0BAQEFAAOBjQAwgYkCgYEAohG/7axtt7CbSaMP7r+2mhTKbNgh0Ww36C7Ta14i\nv+VmLyKkQHnXinKGhp6uy3Nug+15a+eIu7CrgpBVMQeCiWfsnwRocKcQJWIYDrWl\nXHxGQn31yYKR6mylE7Dcj3rMFybnyhezr5D8GcP85YRPmwG9H2hO/0Y1FUnWu9Iw\nAQkCAwEAAaNQME4wHQYDVR0OBBYEFD0jLXfpkrU/ChzRvfruRs/fy1VXMB8GA1Ud\nIwQYMBaAFD0jLXfpkrU/ChzRvfruRs/fy1VXMAwGA1UdEwQFMAMBAf8wDQYJKoZI\nhvcNAQELBQADgYEAOmvre+5tgZ0+F3DgsfxNQqLTrGiBgGCIymPkP/cBXXkNuJyl\n3ac7tArHQc7WEA4U2R2rZbEq8FC3UJJm4nUVtCPvEh3G9OhN2xwYev79yt6pIn/l\nKU0Td2OpVyo0eLqjoX5u2G90IBWzhyjFbo+CcKMrSVKj1YOdG0E3OuiJf00=\n-----END CERTIFICATE-----"),
@@ -126,7 +126,7 @@ func TestAccResourcePkiTP(t *testing.T) {
 			},
 			// Update with empty strings config or default value
 			{
-				Config:             testConfigPkiTPReset,
+				Config:             testConfigPkiTPReset + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "certificate_chain", "-----BEGIN CERTIFICATE-----\nMIICODCCAaGgAwIBAgIJAIt8XMntue0VMA0GCSqGSIb3DQEBCwUAMDQxDjAMBgNV\nBAMMBUFkbWluMRUwEwYDVQQKDAxZb3VyIENvbXBhbnkxCzAJBgNVBAYTAlVTMCAX\nDTE4MDEwOTAwNTk0NFoYDzIxMTcxMjE2MDA1OTQ0WjA0MQ4wDAYDVQQDDAVBZG1p\nbjEVMBMGA1UECgwMWW91ciBDb21wYW55MQswCQYDVQQGEwJVUzCBnzANBgkqhkiG\n9w0BAQEFAAOBjQAwgYkCgYEAohG/7axtt7CbSaMP7r+2mhTKbNgh0Ww36C7Ta14i\nv+VmLyKkQHnXinKGhp6uy3Nug+15a+eIu7CrgpBVMQeCiWfsnwRocKcQJWIYDrWl\nXHxGQn31yYKR6mylE7Dcj3rMFybnyhezr5D8GcP85YRPmwG9H2hO/0Y1FUnWu9Iw\nAQkCAwEAAaNQME4wHQYDVR0OBBYEFD0jLXfpkrU/ChzRvfruRs/fy1VXMB8GA1Ud\nIwQYMBaAFD0jLXfpkrU/ChzRvfruRs/fy1VXMAwGA1UdEwQFMAMBAf8wDQYJKoZI\nhvcNAQELBQADgYEAOmvre+5tgZ0+F3DgsfxNQqLTrGiBgGCIymPkP/cBXXkNuJyl\n3ac7tArHQc7WEA4U2R2rZbEq8FC3UJJm4nUVtCPvEh3G9OhN2xwYev79yt6pIn/l\nKU0Td2OpVyo0eLqjoX5u2G90IBWzhyjFbo+CcKMrSVKj1YOdG0E3OuiJf00=\n-----END CERTIFICATE-----"),
@@ -146,7 +146,7 @@ func TestAccResourcePkiTP(t *testing.T) {
 			},
 			// Update with children
 			{
-				Config:             testConfigPkiTPChildren,
+				Config:             testConfigPkiTPChildren + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "certificate_chain", "-----BEGIN CERTIFICATE-----\nMIICODCCAaGgAwIBAgIJAIt8XMntue0VMA0GCSqGSIb3DQEBCwUAMDQxDjAMBgNV\nBAMMBUFkbWluMRUwEwYDVQQKDAxZb3VyIENvbXBhbnkxCzAJBgNVBAYTAlVTMCAX\nDTE4MDEwOTAwNTk0NFoYDzIxMTcxMjE2MDA1OTQ0WjA0MQ4wDAYDVQQDDAVBZG1p\nbjEVMBMGA1UECgwMWW91ciBDb21wYW55MQswCQYDVQQGEwJVUzCBnzANBgkqhkiG\n9w0BAQEFAAOBjQAwgYkCgYEAohG/7axtt7CbSaMP7r+2mhTKbNgh0Ww36C7Ta14i\nv+VmLyKkQHnXinKGhp6uy3Nug+15a+eIu7CrgpBVMQeCiWfsnwRocKcQJWIYDrWl\nXHxGQn31yYKR6mylE7Dcj3rMFybnyhezr5D8GcP85YRPmwG9H2hO/0Y1FUnWu9Iw\nAQkCAwEAAaNQME4wHQYDVR0OBBYEFD0jLXfpkrU/ChzRvfruRs/fy1VXMB8GA1Ud\nIwQYMBaAFD0jLXfpkrU/ChzRvfruRs/fy1VXMAwGA1UdEwQFMAMBAf8wDQYJKoZI\nhvcNAQELBQADgYEAOmvre+5tgZ0+F3DgsfxNQqLTrGiBgGCIymPkP/cBXXkNuJyl\n3ac7tArHQc7WEA4U2R2rZbEq8FC3UJJm4nUVtCPvEh3G9OhN2xwYev79yt6pIn/l\nKU0Td2OpVyo0eLqjoX5u2G90IBWzhyjFbo+CcKMrSVKj1YOdG0E3OuiJf00=\n-----END CERTIFICATE-----"),
@@ -156,14 +156,18 @@ func TestAccResourcePkiTP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.1.value", "test_value"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.1.value", "test_value"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.1.value", "test_value"),
+					),
 				),
 			},
 			// Refresh State before import testing to ensure that the state is up to date
@@ -179,37 +183,45 @@ func TestAccResourcePkiTP(t *testing.T) {
 			},
 			// Update with children removed from config
 			{
-				Config:             testConfigPkiTPChildrenRemoveFromConfig,
+				Config:             testConfigPkiTPChildrenRemoveFromConfig + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.#", "2"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children first child removed
 			{
-				Config:             testConfigPkiTPChildrenRemoveOne,
+				Config:             testConfigPkiTPChildrenRemoveOne + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.#", "1"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.#", "1"),
+					),
 				),
 			},
 			// Update with all children removed
 			{
-				Config:             testConfigPkiTPChildrenRemoveAll,
+				Config:             testConfigPkiTPChildrenRemoveAll + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.#", "0"),
@@ -228,7 +240,7 @@ func TestAccResourcePkiTPWithFvTenant(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigPkiTPMinDependencyWithFvTenantAllowExisting,
+				Config:             testConfigPkiTPMinDependencyWithFvTenantAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_certificate_authority.allow_test", "name", "test_name"),
@@ -257,7 +269,7 @@ func TestAccResourcePkiTPWithFvTenant(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:      testConfigPkiTPMinDependencyWithFvTenantAllowExisting,
+				Config:      testConfigPkiTPMinDependencyWithFvTenantAllowExisting + testConfigDataSourceSystem,
 				ExpectError: regexp.MustCompile("Object Already Exists"),
 			},
 		},
@@ -270,7 +282,7 @@ func TestAccResourcePkiTPWithFvTenant(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigPkiTPMinDependencyWithFvTenantAllowExisting,
+				Config:             testConfigPkiTPMinDependencyWithFvTenantAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_certificate_authority.allow_test", "name", "test_name"),
@@ -298,7 +310,7 @@ func TestAccResourcePkiTPWithFvTenant(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigPkiTPMinDependencyWithFvTenant,
+				Config:             testConfigPkiTPMinDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "name", "test_name"),
@@ -312,7 +324,7 @@ func TestAccResourcePkiTPWithFvTenant(t *testing.T) {
 			},
 			// Update with all config and verify default APIC values
 			{
-				Config:             testConfigPkiTPAllDependencyWithFvTenant,
+				Config:             testConfigPkiTPAllDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "name", "test_name"),
@@ -326,7 +338,7 @@ func TestAccResourcePkiTPWithFvTenant(t *testing.T) {
 			},
 			// Update with minimum config and verify config is unchanged
 			{
-				Config:             testConfigPkiTPMinDependencyWithFvTenant,
+				Config:             testConfigPkiTPMinDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "certificate_chain", "-----BEGIN CERTIFICATE-----\nMIICODCCAaGgAwIBAgIJAIt8XMntue0VMA0GCSqGSIb3DQEBCwUAMDQxDjAMBgNV\nBAMMBUFkbWluMRUwEwYDVQQKDAxZb3VyIENvbXBhbnkxCzAJBgNVBAYTAlVTMCAX\nDTE4MDEwOTAwNTk0NFoYDzIxMTcxMjE2MDA1OTQ0WjA0MQ4wDAYDVQQDDAVBZG1p\nbjEVMBMGA1UECgwMWW91ciBDb21wYW55MQswCQYDVQQGEwJVUzCBnzANBgkqhkiG\n9w0BAQEFAAOBjQAwgYkCgYEAohG/7axtt7CbSaMP7r+2mhTKbNgh0Ww36C7Ta14i\nv+VmLyKkQHnXinKGhp6uy3Nug+15a+eIu7CrgpBVMQeCiWfsnwRocKcQJWIYDrWl\nXHxGQn31yYKR6mylE7Dcj3rMFybnyhezr5D8GcP85YRPmwG9H2hO/0Y1FUnWu9Iw\nAQkCAwEAAaNQME4wHQYDVR0OBBYEFD0jLXfpkrU/ChzRvfruRs/fy1VXMB8GA1Ud\nIwQYMBaAFD0jLXfpkrU/ChzRvfruRs/fy1VXMAwGA1UdEwQFMAMBAf8wDQYJKoZI\nhvcNAQELBQADgYEAOmvre+5tgZ0+F3DgsfxNQqLTrGiBgGCIymPkP/cBXXkNuJyl\n3ac7tArHQc7WEA4U2R2rZbEq8FC3UJJm4nUVtCPvEh3G9OhN2xwYev79yt6pIn/l\nKU0Td2OpVyo0eLqjoX5u2G90IBWzhyjFbo+CcKMrSVKj1YOdG0E3OuiJf00=\n-----END CERTIFICATE-----"),
@@ -335,7 +347,7 @@ func TestAccResourcePkiTPWithFvTenant(t *testing.T) {
 			},
 			// Update with empty strings config or default value
 			{
-				Config:             testConfigPkiTPResetDependencyWithFvTenant,
+				Config:             testConfigPkiTPResetDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "certificate_chain", "-----BEGIN CERTIFICATE-----\nMIICODCCAaGgAwIBAgIJAIt8XMntue0VMA0GCSqGSIb3DQEBCwUAMDQxDjAMBgNV\nBAMMBUFkbWluMRUwEwYDVQQKDAxZb3VyIENvbXBhbnkxCzAJBgNVBAYTAlVTMCAX\nDTE4MDEwOTAwNTk0NFoYDzIxMTcxMjE2MDA1OTQ0WjA0MQ4wDAYDVQQDDAVBZG1p\nbjEVMBMGA1UECgwMWW91ciBDb21wYW55MQswCQYDVQQGEwJVUzCBnzANBgkqhkiG\n9w0BAQEFAAOBjQAwgYkCgYEAohG/7axtt7CbSaMP7r+2mhTKbNgh0Ww36C7Ta14i\nv+VmLyKkQHnXinKGhp6uy3Nug+15a+eIu7CrgpBVMQeCiWfsnwRocKcQJWIYDrWl\nXHxGQn31yYKR6mylE7Dcj3rMFybnyhezr5D8GcP85YRPmwG9H2hO/0Y1FUnWu9Iw\nAQkCAwEAAaNQME4wHQYDVR0OBBYEFD0jLXfpkrU/ChzRvfruRs/fy1VXMB8GA1Ud\nIwQYMBaAFD0jLXfpkrU/ChzRvfruRs/fy1VXMAwGA1UdEwQFMAMBAf8wDQYJKoZI\nhvcNAQELBQADgYEAOmvre+5tgZ0+F3DgsfxNQqLTrGiBgGCIymPkP/cBXXkNuJyl\n3ac7tArHQc7WEA4U2R2rZbEq8FC3UJJm4nUVtCPvEh3G9OhN2xwYev79yt6pIn/l\nKU0Td2OpVyo0eLqjoX5u2G90IBWzhyjFbo+CcKMrSVKj1YOdG0E3OuiJf00=\n-----END CERTIFICATE-----"),
@@ -355,7 +367,7 @@ func TestAccResourcePkiTPWithFvTenant(t *testing.T) {
 			},
 			// Update with children
 			{
-				Config:             testConfigPkiTPChildrenDependencyWithFvTenant,
+				Config:             testConfigPkiTPChildrenDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "certificate_chain", "-----BEGIN CERTIFICATE-----\nMIICODCCAaGgAwIBAgIJAIt8XMntue0VMA0GCSqGSIb3DQEBCwUAMDQxDjAMBgNV\nBAMMBUFkbWluMRUwEwYDVQQKDAxZb3VyIENvbXBhbnkxCzAJBgNVBAYTAlVTMCAX\nDTE4MDEwOTAwNTk0NFoYDzIxMTcxMjE2MDA1OTQ0WjA0MQ4wDAYDVQQDDAVBZG1p\nbjEVMBMGA1UECgwMWW91ciBDb21wYW55MQswCQYDVQQGEwJVUzCBnzANBgkqhkiG\n9w0BAQEFAAOBjQAwgYkCgYEAohG/7axtt7CbSaMP7r+2mhTKbNgh0Ww36C7Ta14i\nv+VmLyKkQHnXinKGhp6uy3Nug+15a+eIu7CrgpBVMQeCiWfsnwRocKcQJWIYDrWl\nXHxGQn31yYKR6mylE7Dcj3rMFybnyhezr5D8GcP85YRPmwG9H2hO/0Y1FUnWu9Iw\nAQkCAwEAAaNQME4wHQYDVR0OBBYEFD0jLXfpkrU/ChzRvfruRs/fy1VXMB8GA1Ud\nIwQYMBaAFD0jLXfpkrU/ChzRvfruRs/fy1VXMAwGA1UdEwQFMAMBAf8wDQYJKoZI\nhvcNAQELBQADgYEAOmvre+5tgZ0+F3DgsfxNQqLTrGiBgGCIymPkP/cBXXkNuJyl\n3ac7tArHQc7WEA4U2R2rZbEq8FC3UJJm4nUVtCPvEh3G9OhN2xwYev79yt6pIn/l\nKU0Td2OpVyo0eLqjoX5u2G90IBWzhyjFbo+CcKMrSVKj1YOdG0E3OuiJf00=\n-----END CERTIFICATE-----"),
@@ -365,14 +377,18 @@ func TestAccResourcePkiTPWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.1.value", "test_value"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.1.value", "test_value"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.1.value", "test_value"),
+					),
 				),
 			},
 			// Refresh State before import testing to ensure that the state is up to date
@@ -388,37 +404,45 @@ func TestAccResourcePkiTPWithFvTenant(t *testing.T) {
 			},
 			// Update with children removed from config
 			{
-				Config:             testConfigPkiTPChildrenRemoveFromConfigDependencyWithFvTenant,
+				Config:             testConfigPkiTPChildrenRemoveFromConfigDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.#", "2"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children first child removed
 			{
-				Config:             testConfigPkiTPChildrenRemoveOneDependencyWithFvTenant,
+				Config:             testConfigPkiTPChildrenRemoveOneDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.#", "1"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_certificate_authority.test", "tags.#", "1"),
+					),
 				),
 			},
 			// Update with all children removed
 			{
-				Config:             testConfigPkiTPChildrenRemoveAllDependencyWithFvTenant,
+				Config:             testConfigPkiTPChildrenRemoveAllDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_certificate_authority.test", "annotations.#", "0"),
@@ -476,7 +500,7 @@ const testConfigPkiTPChildren = `
 resource "aci_certificate_authority" "test" {
   certificate_chain = "-----BEGIN CERTIFICATE-----\nMIICODCCAaGgAwIBAgIJAIt8XMntue0VMA0GCSqGSIb3DQEBCwUAMDQxDjAMBgNV\nBAMMBUFkbWluMRUwEwYDVQQKDAxZb3VyIENvbXBhbnkxCzAJBgNVBAYTAlVTMCAX\nDTE4MDEwOTAwNTk0NFoYDzIxMTcxMjE2MDA1OTQ0WjA0MQ4wDAYDVQQDDAVBZG1p\nbjEVMBMGA1UECgwMWW91ciBDb21wYW55MQswCQYDVQQGEwJVUzCBnzANBgkqhkiG\n9w0BAQEFAAOBjQAwgYkCgYEAohG/7axtt7CbSaMP7r+2mhTKbNgh0Ww36C7Ta14i\nv+VmLyKkQHnXinKGhp6uy3Nug+15a+eIu7CrgpBVMQeCiWfsnwRocKcQJWIYDrWl\nXHxGQn31yYKR6mylE7Dcj3rMFybnyhezr5D8GcP85YRPmwG9H2hO/0Y1FUnWu9Iw\nAQkCAwEAAaNQME4wHQYDVR0OBBYEFD0jLXfpkrU/ChzRvfruRs/fy1VXMB8GA1Ud\nIwQYMBaAFD0jLXfpkrU/ChzRvfruRs/fy1VXMAwGA1UdEwQFMAMBAf8wDQYJKoZI\nhvcNAQELBQADgYEAOmvre+5tgZ0+F3DgsfxNQqLTrGiBgGCIymPkP/cBXXkNuJyl\n3ac7tArHQc7WEA4U2R2rZbEq8FC3UJJm4nUVtCPvEh3G9OhN2xwYev79yt6pIn/l\nKU0Td2OpVyo0eLqjoX5u2G90IBWzhyjFbo+CcKMrSVKj1YOdG0E3OuiJf00=\n-----END CERTIFICATE-----"
   name = "test_name"
-  annotations = [
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -485,8 +509,8 @@ resource "aci_certificate_authority" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
-  tags = [
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -495,7 +519,7 @@ resource "aci_certificate_authority" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
+  ] : null
 }
 `
 
@@ -510,18 +534,18 @@ const testConfigPkiTPChildrenRemoveOne = `
 resource "aci_certificate_authority" "test" {
   certificate_chain = "-----BEGIN CERTIFICATE-----\nMIICODCCAaGgAwIBAgIJAIt8XMntue0VMA0GCSqGSIb3DQEBCwUAMDQxDjAMBgNV\nBAMMBUFkbWluMRUwEwYDVQQKDAxZb3VyIENvbXBhbnkxCzAJBgNVBAYTAlVTMCAX\nDTE4MDEwOTAwNTk0NFoYDzIxMTcxMjE2MDA1OTQ0WjA0MQ4wDAYDVQQDDAVBZG1p\nbjEVMBMGA1UECgwMWW91ciBDb21wYW55MQswCQYDVQQGEwJVUzCBnzANBgkqhkiG\n9w0BAQEFAAOBjQAwgYkCgYEAohG/7axtt7CbSaMP7r+2mhTKbNgh0Ww36C7Ta14i\nv+VmLyKkQHnXinKGhp6uy3Nug+15a+eIu7CrgpBVMQeCiWfsnwRocKcQJWIYDrWl\nXHxGQn31yYKR6mylE7Dcj3rMFybnyhezr5D8GcP85YRPmwG9H2hO/0Y1FUnWu9Iw\nAQkCAwEAAaNQME4wHQYDVR0OBBYEFD0jLXfpkrU/ChzRvfruRs/fy1VXMB8GA1Ud\nIwQYMBaAFD0jLXfpkrU/ChzRvfruRs/fy1VXMAwGA1UdEwQFMAMBAf8wDQYJKoZI\nhvcNAQELBQADgYEAOmvre+5tgZ0+F3DgsfxNQqLTrGiBgGCIymPkP/cBXXkNuJyl\n3ac7tArHQc7WEA4U2R2rZbEq8FC3UJJm4nUVtCPvEh3G9OhN2xwYev79yt6pIn/l\nKU0Td2OpVyo0eLqjoX5u2G90IBWzhyjFbo+CcKMrSVKj1YOdG0E3OuiJf00=\n-----END CERTIFICATE-----"
   name = "test_name"
-  annotations = [ 
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
-  tags = [ 
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
+  ] : null
 }
 `
 
@@ -529,8 +553,8 @@ const testConfigPkiTPChildrenRemoveAll = `
 resource "aci_certificate_authority" "test" {
   certificate_chain = "-----BEGIN CERTIFICATE-----\nMIICODCCAaGgAwIBAgIJAIt8XMntue0VMA0GCSqGSIb3DQEBCwUAMDQxDjAMBgNV\nBAMMBUFkbWluMRUwEwYDVQQKDAxZb3VyIENvbXBhbnkxCzAJBgNVBAYTAlVTMCAX\nDTE4MDEwOTAwNTk0NFoYDzIxMTcxMjE2MDA1OTQ0WjA0MQ4wDAYDVQQDDAVBZG1p\nbjEVMBMGA1UECgwMWW91ciBDb21wYW55MQswCQYDVQQGEwJVUzCBnzANBgkqhkiG\n9w0BAQEFAAOBjQAwgYkCgYEAohG/7axtt7CbSaMP7r+2mhTKbNgh0Ww36C7Ta14i\nv+VmLyKkQHnXinKGhp6uy3Nug+15a+eIu7CrgpBVMQeCiWfsnwRocKcQJWIYDrWl\nXHxGQn31yYKR6mylE7Dcj3rMFybnyhezr5D8GcP85YRPmwG9H2hO/0Y1FUnWu9Iw\nAQkCAwEAAaNQME4wHQYDVR0OBBYEFD0jLXfpkrU/ChzRvfruRs/fy1VXMB8GA1Ud\nIwQYMBaAFD0jLXfpkrU/ChzRvfruRs/fy1VXMAwGA1UdEwQFMAMBAf8wDQYJKoZI\nhvcNAQELBQADgYEAOmvre+5tgZ0+F3DgsfxNQqLTrGiBgGCIymPkP/cBXXkNuJyl\n3ac7tArHQc7WEA4U2R2rZbEq8FC3UJJm4nUVtCPvEh3G9OhN2xwYev79yt6pIn/l\nKU0Td2OpVyo0eLqjoX5u2G90IBWzhyjFbo+CcKMrSVKj1YOdG0E3OuiJf00=\n-----END CERTIFICATE-----"
   name = "test_name"
-  annotations = []
-  tags = []
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
 }
 `
 
@@ -586,7 +610,7 @@ resource "aci_certificate_authority" "test" {
   parent_dn = aci_tenant.test.id
   certificate_chain = "-----BEGIN CERTIFICATE-----\nMIICODCCAaGgAwIBAgIJAIt8XMntue0VMA0GCSqGSIb3DQEBCwUAMDQxDjAMBgNV\nBAMMBUFkbWluMRUwEwYDVQQKDAxZb3VyIENvbXBhbnkxCzAJBgNVBAYTAlVTMCAX\nDTE4MDEwOTAwNTk0NFoYDzIxMTcxMjE2MDA1OTQ0WjA0MQ4wDAYDVQQDDAVBZG1p\nbjEVMBMGA1UECgwMWW91ciBDb21wYW55MQswCQYDVQQGEwJVUzCBnzANBgkqhkiG\n9w0BAQEFAAOBjQAwgYkCgYEAohG/7axtt7CbSaMP7r+2mhTKbNgh0Ww36C7Ta14i\nv+VmLyKkQHnXinKGhp6uy3Nug+15a+eIu7CrgpBVMQeCiWfsnwRocKcQJWIYDrWl\nXHxGQn31yYKR6mylE7Dcj3rMFybnyhezr5D8GcP85YRPmwG9H2hO/0Y1FUnWu9Iw\nAQkCAwEAAaNQME4wHQYDVR0OBBYEFD0jLXfpkrU/ChzRvfruRs/fy1VXMB8GA1Ud\nIwQYMBaAFD0jLXfpkrU/ChzRvfruRs/fy1VXMAwGA1UdEwQFMAMBAf8wDQYJKoZI\nhvcNAQELBQADgYEAOmvre+5tgZ0+F3DgsfxNQqLTrGiBgGCIymPkP/cBXXkNuJyl\n3ac7tArHQc7WEA4U2R2rZbEq8FC3UJJm4nUVtCPvEh3G9OhN2xwYev79yt6pIn/l\nKU0Td2OpVyo0eLqjoX5u2G90IBWzhyjFbo+CcKMrSVKj1YOdG0E3OuiJf00=\n-----END CERTIFICATE-----"
   name = "test_name"
-  annotations = [
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -595,8 +619,8 @@ resource "aci_certificate_authority" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
-  tags = [
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -605,7 +629,7 @@ resource "aci_certificate_authority" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
+  ] : null
 }
 `
 
@@ -622,18 +646,18 @@ resource "aci_certificate_authority" "test" {
   parent_dn = aci_tenant.test.id
   certificate_chain = "-----BEGIN CERTIFICATE-----\nMIICODCCAaGgAwIBAgIJAIt8XMntue0VMA0GCSqGSIb3DQEBCwUAMDQxDjAMBgNV\nBAMMBUFkbWluMRUwEwYDVQQKDAxZb3VyIENvbXBhbnkxCzAJBgNVBAYTAlVTMCAX\nDTE4MDEwOTAwNTk0NFoYDzIxMTcxMjE2MDA1OTQ0WjA0MQ4wDAYDVQQDDAVBZG1p\nbjEVMBMGA1UECgwMWW91ciBDb21wYW55MQswCQYDVQQGEwJVUzCBnzANBgkqhkiG\n9w0BAQEFAAOBjQAwgYkCgYEAohG/7axtt7CbSaMP7r+2mhTKbNgh0Ww36C7Ta14i\nv+VmLyKkQHnXinKGhp6uy3Nug+15a+eIu7CrgpBVMQeCiWfsnwRocKcQJWIYDrWl\nXHxGQn31yYKR6mylE7Dcj3rMFybnyhezr5D8GcP85YRPmwG9H2hO/0Y1FUnWu9Iw\nAQkCAwEAAaNQME4wHQYDVR0OBBYEFD0jLXfpkrU/ChzRvfruRs/fy1VXMB8GA1Ud\nIwQYMBaAFD0jLXfpkrU/ChzRvfruRs/fy1VXMAwGA1UdEwQFMAMBAf8wDQYJKoZI\nhvcNAQELBQADgYEAOmvre+5tgZ0+F3DgsfxNQqLTrGiBgGCIymPkP/cBXXkNuJyl\n3ac7tArHQc7WEA4U2R2rZbEq8FC3UJJm4nUVtCPvEh3G9OhN2xwYev79yt6pIn/l\nKU0Td2OpVyo0eLqjoX5u2G90IBWzhyjFbo+CcKMrSVKj1YOdG0E3OuiJf00=\n-----END CERTIFICATE-----"
   name = "test_name"
-  annotations = [ 
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
-  tags = [ 
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
+  ] : null
 }
 `
 
@@ -642,7 +666,7 @@ resource "aci_certificate_authority" "test" {
   parent_dn = aci_tenant.test.id
   certificate_chain = "-----BEGIN CERTIFICATE-----\nMIICODCCAaGgAwIBAgIJAIt8XMntue0VMA0GCSqGSIb3DQEBCwUAMDQxDjAMBgNV\nBAMMBUFkbWluMRUwEwYDVQQKDAxZb3VyIENvbXBhbnkxCzAJBgNVBAYTAlVTMCAX\nDTE4MDEwOTAwNTk0NFoYDzIxMTcxMjE2MDA1OTQ0WjA0MQ4wDAYDVQQDDAVBZG1p\nbjEVMBMGA1UECgwMWW91ciBDb21wYW55MQswCQYDVQQGEwJVUzCBnzANBgkqhkiG\n9w0BAQEFAAOBjQAwgYkCgYEAohG/7axtt7CbSaMP7r+2mhTKbNgh0Ww36C7Ta14i\nv+VmLyKkQHnXinKGhp6uy3Nug+15a+eIu7CrgpBVMQeCiWfsnwRocKcQJWIYDrWl\nXHxGQn31yYKR6mylE7Dcj3rMFybnyhezr5D8GcP85YRPmwG9H2hO/0Y1FUnWu9Iw\nAQkCAwEAAaNQME4wHQYDVR0OBBYEFD0jLXfpkrU/ChzRvfruRs/fy1VXMB8GA1Ud\nIwQYMBaAFD0jLXfpkrU/ChzRvfruRs/fy1VXMAwGA1UdEwQFMAMBAf8wDQYJKoZI\nhvcNAQELBQADgYEAOmvre+5tgZ0+F3DgsfxNQqLTrGiBgGCIymPkP/cBXXkNuJyl\n3ac7tArHQc7WEA4U2R2rZbEq8FC3UJJm4nUVtCPvEh3G9OhN2xwYev79yt6pIn/l\nKU0Td2OpVyo0eLqjoX5u2G90IBWzhyjFbo+CcKMrSVKj1YOdG0E3OuiJf00=\n-----END CERTIFICATE-----"
   name = "test_name"
-  annotations = []
-  tags = []
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
 }
 `

@@ -468,7 +468,8 @@ func (r *FvEpIpTagResource) ImportState(ctx context.Context, req resource.Import
 }
 
 func getAndSetFvEpIpTagAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FvEpIpTagResourceModel) {
-	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "fvEpIpTag,tagAnnotation,tagTag"), "GET", nil)
+	childClasses := getChildClassesForGetRequest([]string{"tagAnnotation", "tagTag"})
+	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), strings.Join(childClasses, ",")), "GET", nil)
 
 	readData := getEmptyFvEpIpTagResourceModel()
 

@@ -19,7 +19,7 @@ func TestAccResourceFvDnsAttrWithFvCrtrn(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigFvDnsAttrMinDependencyWithFvCrtrnAllowExisting,
+				Config:             testConfigFvDnsAttrMinDependencyWithFvCrtrnAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.allow_test", "name", "dns_attribute"),
@@ -48,7 +48,7 @@ func TestAccResourceFvDnsAttrWithFvCrtrn(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:      testConfigFvDnsAttrMinDependencyWithFvCrtrnAllowExisting,
+				Config:      testConfigFvDnsAttrMinDependencyWithFvCrtrnAllowExisting + testConfigDataSourceSystem,
 				ExpectError: regexp.MustCompile("Object Already Exists"),
 			},
 		},
@@ -61,7 +61,7 @@ func TestAccResourceFvDnsAttrWithFvCrtrn(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigFvDnsAttrMinDependencyWithFvCrtrnAllowExisting,
+				Config:             testConfigFvDnsAttrMinDependencyWithFvCrtrnAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.allow_test", "name", "dns_attribute"),
@@ -89,7 +89,7 @@ func TestAccResourceFvDnsAttrWithFvCrtrn(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigFvDnsAttrMinDependencyWithFvCrtrn,
+				Config:             testConfigFvDnsAttrMinDependencyWithFvCrtrn + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "name", "dns_attribute"),
@@ -103,7 +103,7 @@ func TestAccResourceFvDnsAttrWithFvCrtrn(t *testing.T) {
 			},
 			// Update with all config and verify default APIC values
 			{
-				Config:             testConfigFvDnsAttrAllDependencyWithFvCrtrn,
+				Config:             testConfigFvDnsAttrAllDependencyWithFvCrtrn + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "name", "dns_attribute"),
@@ -117,7 +117,7 @@ func TestAccResourceFvDnsAttrWithFvCrtrn(t *testing.T) {
 			},
 			// Update with minimum config and verify config is unchanged
 			{
-				Config:             testConfigFvDnsAttrMinDependencyWithFvCrtrn,
+				Config:             testConfigFvDnsAttrMinDependencyWithFvCrtrn + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "name", "dns_attribute"),
@@ -125,7 +125,7 @@ func TestAccResourceFvDnsAttrWithFvCrtrn(t *testing.T) {
 			},
 			// Update with empty strings config or default value
 			{
-				Config:             testConfigFvDnsAttrResetDependencyWithFvCrtrn,
+				Config:             testConfigFvDnsAttrResetDependencyWithFvCrtrn + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "name", "dns_attribute"),
@@ -145,7 +145,7 @@ func TestAccResourceFvDnsAttrWithFvCrtrn(t *testing.T) {
 			},
 			// Update with children
 			{
-				Config:             testConfigFvDnsAttrChildrenDependencyWithFvCrtrn,
+				Config:             testConfigFvDnsAttrChildrenDependencyWithFvCrtrn + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "name", "dns_attribute"),
@@ -155,14 +155,18 @@ func TestAccResourceFvDnsAttrWithFvCrtrn(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "tags.1.value", "test_value"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "annotations.1.value", "test_value"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "tags.1.value", "test_value"),
+					),
 				),
 			},
 			// Refresh State before import testing to ensure that the state is up to date
@@ -178,37 +182,45 @@ func TestAccResourceFvDnsAttrWithFvCrtrn(t *testing.T) {
 			},
 			// Update with children removed from config
 			{
-				Config:             testConfigFvDnsAttrChildrenRemoveFromConfigDependencyWithFvCrtrn,
+				Config:             testConfigFvDnsAttrChildrenRemoveFromConfigDependencyWithFvCrtrn + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "tags.#", "2"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "annotations.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children first child removed
 			{
-				Config:             testConfigFvDnsAttrChildrenRemoveOneDependencyWithFvCrtrn,
+				Config:             testConfigFvDnsAttrChildrenRemoveOneDependencyWithFvCrtrn + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "tags.#", "1"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "annotations.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "tags.#", "1"),
+					),
 				),
 			},
 			// Update with all children removed
 			{
-				Config:             testConfigFvDnsAttrChildrenRemoveAllDependencyWithFvCrtrn,
+				Config:             testConfigFvDnsAttrChildrenRemoveAllDependencyWithFvCrtrn + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_epg_useg_dns_attribute.test", "annotations.#", "0"),
@@ -268,7 +280,7 @@ const testConfigFvDnsAttrChildrenDependencyWithFvCrtrn = testConfigFvCrtrnMinDep
 resource "aci_epg_useg_dns_attribute" "test" {
   parent_dn = aci_epg_useg_block_statement.test.id
   name = "dns_attribute"
-  annotations = [
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -277,8 +289,8 @@ resource "aci_epg_useg_dns_attribute" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
-  tags = [
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -287,7 +299,7 @@ resource "aci_epg_useg_dns_attribute" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
+  ] : null
 }
 `
 
@@ -302,18 +314,18 @@ const testConfigFvDnsAttrChildrenRemoveOneDependencyWithFvCrtrn = testConfigFvCr
 resource "aci_epg_useg_dns_attribute" "test" {
   parent_dn = aci_epg_useg_block_statement.test.id
   name = "dns_attribute"
-  annotations = [ 
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
-  tags = [ 
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
+  ] : null
 }
 `
 
@@ -321,7 +333,7 @@ const testConfigFvDnsAttrChildrenRemoveAllDependencyWithFvCrtrn = testConfigFvCr
 resource "aci_epg_useg_dns_attribute" "test" {
   parent_dn = aci_epg_useg_block_statement.test.id
   name = "dns_attribute"
-  annotations = []
-  tags = []
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
 }
 `

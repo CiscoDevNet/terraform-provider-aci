@@ -19,7 +19,7 @@ func TestAccResourceL3extRsInstPToProfileWithL3extInstP(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigL3extRsInstPToProfileMinDependencyWithL3extInstPAllowExisting,
+				Config:             testConfigL3extRsInstPToProfileMinDependencyWithL3extInstPAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_from_external_epg_to_route_control_profile.allow_test", "route_control_profile_name", "test_tn_rtctrl_profile_name"),
@@ -40,7 +40,7 @@ func TestAccResourceL3extRsInstPToProfileWithL3extInstP(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:      testConfigL3extRsInstPToProfileMinDependencyWithL3extInstPAllowExisting,
+				Config:      testConfigL3extRsInstPToProfileMinDependencyWithL3extInstPAllowExisting + testConfigDataSourceSystem,
 				ExpectError: regexp.MustCompile("Object Already Exists"),
 			},
 		},
@@ -53,7 +53,7 @@ func TestAccResourceL3extRsInstPToProfileWithL3extInstP(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigL3extRsInstPToProfileMinDependencyWithL3extInstPAllowExisting,
+				Config:             testConfigL3extRsInstPToProfileMinDependencyWithL3extInstPAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_from_external_epg_to_route_control_profile.allow_test", "route_control_profile_name", "test_tn_rtctrl_profile_name"),
@@ -73,7 +73,7 @@ func TestAccResourceL3extRsInstPToProfileWithL3extInstP(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigL3extRsInstPToProfileMinDependencyWithL3extInstP,
+				Config:             testConfigL3extRsInstPToProfileMinDependencyWithL3extInstP + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_from_external_epg_to_route_control_profile.test", "route_control_profile_name", "test_tn_rtctrl_profile_name"),
@@ -83,7 +83,7 @@ func TestAccResourceL3extRsInstPToProfileWithL3extInstP(t *testing.T) {
 			},
 			// Update with all config and verify default APIC values
 			{
-				Config:             testConfigL3extRsInstPToProfileAllDependencyWithL3extInstP,
+				Config:             testConfigL3extRsInstPToProfileAllDependencyWithL3extInstP + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_from_external_epg_to_route_control_profile.test", "route_control_profile_name", "test_tn_rtctrl_profile_name"),
@@ -93,7 +93,7 @@ func TestAccResourceL3extRsInstPToProfileWithL3extInstP(t *testing.T) {
 			},
 			// Update with minimum config and verify config is unchanged
 			{
-				Config:             testConfigL3extRsInstPToProfileMinDependencyWithL3extInstP,
+				Config:             testConfigL3extRsInstPToProfileMinDependencyWithL3extInstP + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_from_external_epg_to_route_control_profile.test", "direction", "import"),
@@ -102,7 +102,7 @@ func TestAccResourceL3extRsInstPToProfileWithL3extInstP(t *testing.T) {
 			},
 			// Update with empty strings config or default value
 			{
-				Config:             testConfigL3extRsInstPToProfileResetDependencyWithL3extInstP,
+				Config:             testConfigL3extRsInstPToProfileResetDependencyWithL3extInstP + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_from_external_epg_to_route_control_profile.test", "direction", "import"),
@@ -118,20 +118,24 @@ func TestAccResourceL3extRsInstPToProfileWithL3extInstP(t *testing.T) {
 			},
 			// Update with children
 			{
-				Config:             testConfigL3extRsInstPToProfileChildrenDependencyWithL3extInstP,
+				Config:             testConfigL3extRsInstPToProfileChildrenDependencyWithL3extInstP + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_from_external_epg_to_route_control_profile.test", "direction", "import"),
 					resource.TestCheckResourceAttr("aci_relation_from_external_epg_to_route_control_profile.test", "route_control_profile_name", "test_tn_rtctrl_profile_name"),
 					resource.TestCheckResourceAttr("aci_relation_from_external_epg_to_route_control_profile.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_relation_from_external_epg_to_route_control_profile.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_from_external_epg_to_route_control_profile.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_from_external_epg_to_route_control_profile.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_from_external_epg_to_route_control_profile.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_from_external_epg_to_route_control_profile.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_from_external_epg_to_route_control_profile.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_from_external_epg_to_route_control_profile.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_from_external_epg_to_route_control_profile.test", "tags.1.value", "test_value"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_from_external_epg_to_route_control_profile.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_relation_from_external_epg_to_route_control_profile.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_relation_from_external_epg_to_route_control_profile.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_from_external_epg_to_route_control_profile.test", "annotations.1.value", "test_value"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_from_external_epg_to_route_control_profile.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_relation_from_external_epg_to_route_control_profile.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_relation_from_external_epg_to_route_control_profile.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_from_external_epg_to_route_control_profile.test", "tags.1.value", "test_value"),
+					),
 				),
 			},
 			// Refresh State before import testing to ensure that the state is up to date
@@ -147,37 +151,45 @@ func TestAccResourceL3extRsInstPToProfileWithL3extInstP(t *testing.T) {
 			},
 			// Update with children removed from config
 			{
-				Config:             testConfigL3extRsInstPToProfileChildrenRemoveFromConfigDependencyWithL3extInstP,
+				Config:             testConfigL3extRsInstPToProfileChildrenRemoveFromConfigDependencyWithL3extInstP + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_from_external_epg_to_route_control_profile.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_from_external_epg_to_route_control_profile.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_from_external_epg_to_route_control_profile.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_from_external_epg_to_route_control_profile.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_from_external_epg_to_route_control_profile.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_relation_from_external_epg_to_route_control_profile.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_from_external_epg_to_route_control_profile.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_from_external_epg_to_route_control_profile.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_from_external_epg_to_route_control_profile.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_from_external_epg_to_route_control_profile.test", "tags.#", "2"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_from_external_epg_to_route_control_profile.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_relation_from_external_epg_to_route_control_profile.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_relation_from_external_epg_to_route_control_profile.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_from_external_epg_to_route_control_profile.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_relation_from_external_epg_to_route_control_profile.test", "annotations.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_from_external_epg_to_route_control_profile.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_relation_from_external_epg_to_route_control_profile.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_relation_from_external_epg_to_route_control_profile.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_from_external_epg_to_route_control_profile.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_relation_from_external_epg_to_route_control_profile.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children first child removed
 			{
-				Config:             testConfigL3extRsInstPToProfileChildrenRemoveOneDependencyWithL3extInstP,
+				Config:             testConfigL3extRsInstPToProfileChildrenRemoveOneDependencyWithL3extInstP + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_from_external_epg_to_route_control_profile.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_from_external_epg_to_route_control_profile.test", "annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_from_external_epg_to_route_control_profile.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_relation_from_external_epg_to_route_control_profile.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_from_external_epg_to_route_control_profile.test", "tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_from_external_epg_to_route_control_profile.test", "tags.#", "1"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_from_external_epg_to_route_control_profile.test", "annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_from_external_epg_to_route_control_profile.test", "annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_relation_from_external_epg_to_route_control_profile.test", "annotations.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_from_external_epg_to_route_control_profile.test", "tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_from_external_epg_to_route_control_profile.test", "tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_relation_from_external_epg_to_route_control_profile.test", "tags.#", "1"),
+					),
 				),
 			},
 			// Update with all children removed
 			{
-				Config:             testConfigL3extRsInstPToProfileChildrenRemoveAllDependencyWithL3extInstP,
+				Config:             testConfigL3extRsInstPToProfileChildrenRemoveAllDependencyWithL3extInstP + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_from_external_epg_to_route_control_profile.test", "annotations.#", "0"),
@@ -233,7 +245,7 @@ resource "aci_relation_from_external_epg_to_route_control_profile" "test" {
   parent_dn = aci_external_epg.test.id
   direction = "import"
   route_control_profile_name = "test_tn_rtctrl_profile_name"
-  annotations = [
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -242,8 +254,8 @@ resource "aci_relation_from_external_epg_to_route_control_profile" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
-  tags = [
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -252,7 +264,7 @@ resource "aci_relation_from_external_epg_to_route_control_profile" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
+  ] : null
 }
 `
 
@@ -269,18 +281,18 @@ resource "aci_relation_from_external_epg_to_route_control_profile" "test" {
   parent_dn = aci_external_epg.test.id
   direction = "import"
   route_control_profile_name = "test_tn_rtctrl_profile_name"
-  annotations = [ 
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
-  tags = [ 
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
+  ] : null
 }
 `
 
@@ -289,7 +301,7 @@ resource "aci_relation_from_external_epg_to_route_control_profile" "test" {
   parent_dn = aci_external_epg.test.id
   direction = "import"
   route_control_profile_name = "test_tn_rtctrl_profile_name"
-  annotations = []
-  tags = []
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
 }
 `

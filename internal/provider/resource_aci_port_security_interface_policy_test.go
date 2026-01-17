@@ -19,7 +19,7 @@ func TestAccResourceL2PortSecurityPol(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config: testConfigL2PortSecurityPolMinAllowExisting,
+				Config: testConfigL2PortSecurityPolMinAllowExisting + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_port_security_interface_policy.allow_test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_port_security_interface_policy.allow_test_2", "name", "test_name"),
@@ -64,7 +64,7 @@ func TestAccResourceL2PortSecurityPol(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config: testConfigL2PortSecurityPolMinAllowExisting,
+				Config: testConfigL2PortSecurityPolMinAllowExisting + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_port_security_interface_policy.allow_test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_port_security_interface_policy.allow_test_2", "name", "test_name"),
@@ -95,7 +95,7 @@ func TestAccResourceL2PortSecurityPol(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config: testConfigL2PortSecurityPolMin,
+				Config: testConfigL2PortSecurityPolMin + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "annotation", "orchestrator:terraform"),
@@ -110,7 +110,7 @@ func TestAccResourceL2PortSecurityPol(t *testing.T) {
 			},
 			// Update with all config and verify default APIC values
 			{
-				Config: testConfigL2PortSecurityPolAll,
+				Config: testConfigL2PortSecurityPolAll + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "annotation", "annotation"),
@@ -125,7 +125,7 @@ func TestAccResourceL2PortSecurityPol(t *testing.T) {
 			},
 			// Update with minimum config and verify config is unchanged
 			{
-				Config: testConfigL2PortSecurityPolMin,
+				Config: testConfigL2PortSecurityPolMin + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "annotation", "orchestrator:terraform"),
@@ -140,7 +140,7 @@ func TestAccResourceL2PortSecurityPol(t *testing.T) {
 			},
 			// Update with empty strings config or default value
 			{
-				Config: testConfigL2PortSecurityPolReset,
+				Config: testConfigL2PortSecurityPolReset + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "annotation", "orchestrator:terraform"),
@@ -161,7 +161,7 @@ func TestAccResourceL2PortSecurityPol(t *testing.T) {
 			},
 			// Update with children
 			{
-				Config: testConfigL2PortSecurityPolChildren,
+				Config: testConfigL2PortSecurityPolChildren + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "description", ""),
@@ -171,21 +171,25 @@ func TestAccResourceL2PortSecurityPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "timeout", "60"),
 					resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "violation_action", "protect"),
-					resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "tags.#", "2"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "annotations.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children removed from config
 			{
-				Config: testConfigL2PortSecurityPolChildrenRemoveFromConfig,
+				Config: testConfigL2PortSecurityPolChildrenRemoveFromConfig + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "description", ""),
@@ -195,21 +199,25 @@ func TestAccResourceL2PortSecurityPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "timeout", "60"),
 					resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "violation_action", "protect"),
-					resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "tags.#", "2"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "annotations.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children first child removed
 			{
-				Config: testConfigL2PortSecurityPolChildrenRemoveOne,
+				Config: testConfigL2PortSecurityPolChildrenRemoveOne + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "description", ""),
@@ -219,17 +227,21 @@ func TestAccResourceL2PortSecurityPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "timeout", "60"),
 					resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "violation_action", "protect"),
-					resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "tags.#", "1"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "annotations.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "tags.#", "1"),
+					),
 				),
 			},
 			// Update with all children removed
 			{
-				Config: testConfigL2PortSecurityPolChildrenRemoveAll,
+				Config: testConfigL2PortSecurityPolChildrenRemoveAll + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_port_security_interface_policy.test", "description", ""),

@@ -209,54 +209,74 @@ func TestAccResourceL3extInstPWithL3extOut(t *testing.T) {
 						resource.TestCheckResourceAttr("aci_external_epg.test", "intra_epg_isolation", "unenforced")),
 					resource.TestCheckResourceAttrSet("aci_external_epg.test", "pc_tag"),
 					resource.TestCheckResourceAttrSet("aci_external_epg.test", "scope"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.0.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.0.contract_name", "contract_name_0"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.0.priority", "level1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.1.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.1.contract_name", "contract_name_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.1.priority", "level2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.0.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.0.target_dn", "uni/tn-test_name/out-test_l3_outside/instP-ext_epg_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.1.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.1.target_dn", "uni/tn-test_name/out-test_l3_outside/instP-ext_epg_0"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_custom_qos_policy.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_custom_qos_policy.custom_qos_policy_name", "custom_qos_policy_name_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.0.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.0.imported_contract_name", "imported_contract_name_0"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.0.priority", "level1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.1.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.1.imported_contract_name", "imported_contract_name_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.1.priority", "level2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.0.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.0.contract_name", "contract_name_0"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.1.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.1.contract_name", "contract_name_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.0.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.0.contract_name", "contract_name_0"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.0.match_criteria", "All"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.0.priority", "level1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.1.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.1.contract_name", "contract_name_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.1.match_criteria", "AtleastOne"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.1.priority", "level2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.0.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.0.direction", "export"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.0.route_control_profile_name", "route_control_profile_name_0"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.1.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.1.direction", "import"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.1.route_control_profile_name", "route_control_profile_name_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.0.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.0.taboo_contract_name", "taboo_contract_name_0"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.1.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.1.taboo_contract_name", "taboo_contract_name_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "tags.1.value", "test_value"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_external_epg.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "annotations.1.value", "test_value"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.0.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.0.contract_name", "contract_name_0"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.0.priority", "level1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.1.annotation", "annotation_2"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.1.contract_name", "contract_name_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.1.priority", "level2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "2.3(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.0.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.0.target_dn", "uni/tn-test_name/out-test_l3_outside/instP-ext_epg_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.1.annotation", "annotation_2"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.1.target_dn", "uni/tn-test_name/out-test_l3_outside/instP-ext_epg_0"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_custom_qos_policy.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_custom_qos_policy.custom_qos_policy_name", "custom_qos_policy_name_1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.0.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.0.imported_contract_name", "imported_contract_name_0"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.0.priority", "level1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.1.annotation", "annotation_2"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.1.imported_contract_name", "imported_contract_name_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.1.priority", "level2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.0(1k)-", "inside",
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.0.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.0.contract_name", "contract_name_0"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.1.annotation", "annotation_2"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.1.contract_name", "contract_name_1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.0.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.0.contract_name", "contract_name_0"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.0.match_criteria", "All"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.0.priority", "level1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.1.annotation", "annotation_2"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.1.contract_name", "contract_name_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.1.match_criteria", "AtleastOne"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.1.priority", "level2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.0.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.0.direction", "export"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.0.route_control_profile_name", "route_control_profile_name_0"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.1.annotation", "annotation_2"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.1.direction", "import"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.1.route_control_profile_name", "route_control_profile_name_1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.0.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.0.taboo_contract_name", "taboo_contract_name_0"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.1.annotation", "annotation_2"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.1.taboo_contract_name", "taboo_contract_name_1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_external_epg.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "tags.1.value", "test_value"),
+					),
 				),
 			},
 			// Refresh State before import testing to ensure that the state is up to date
@@ -277,213 +297,233 @@ func TestAccResourceL3extInstPWithL3extOut(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttrSet("aci_external_epg.test", "pc_tag"),
 					resource.TestCheckResourceAttrSet("aci_external_epg.test", "scope"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.0.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.0.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.0.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.0.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.0.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.0.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.0.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.0.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.0.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.0.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.0.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.0.contract_name", "contract_name_0"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.0.priority", "level1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.1.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.1.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.1.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.1.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.1.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.1.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.1.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.1.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.1.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.1.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.1.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.1.contract_name", "contract_name_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.1.priority", "level2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.#", "2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.0.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.0.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.0.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.0.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.0.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.0.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.0.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.0.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.0.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.0.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.0.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.0.target_dn", "uni/tn-test_name/out-test_l3_outside/instP-ext_epg_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.1.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.1.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.1.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.1.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.1.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.1.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.1.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.1.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.1.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.1.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.1.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.1.target_dn", "uni/tn-test_name/out-test_l3_outside/instP-ext_epg_0"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.#", "2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_custom_qos_policy.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_custom_qos_policy.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_custom_qos_policy.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_custom_qos_policy.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_custom_qos_policy.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_custom_qos_policy.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_custom_qos_policy.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_custom_qos_policy.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_custom_qos_policy.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_custom_qos_policy.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_custom_qos_policy.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_custom_qos_policy.custom_qos_policy_name", "custom_qos_policy_name_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.0.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.0.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.0.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.0.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.0.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.0.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.0.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.0.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.0.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.0.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.0.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.0.imported_contract_name", "imported_contract_name_0"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.0.priority", "level1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.1.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.1.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.1.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.1.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.1.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.1.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.1.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.1.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.1.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.1.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.1.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.1.imported_contract_name", "imported_contract_name_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.1.priority", "level2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.#", "2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.0.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.0.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.0.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.0.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.0.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.0.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.0.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.0.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.0.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.0.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.0.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.0.contract_name", "contract_name_0"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.1.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.1.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.1.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.1.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.1.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.1.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.1.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.1.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.1.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.1.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.1.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.1.contract_name", "contract_name_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.#", "2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.0.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.0.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.0.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.0.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.0.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.0.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.0.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.0.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.0.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.0.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.0.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.0.contract_name", "contract_name_0"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.0.match_criteria", "All"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.0.priority", "level1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.1.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.1.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.1.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.1.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.1.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.1.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.1.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.1.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.1.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.1.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.1.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.1.contract_name", "contract_name_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.1.match_criteria", "AtleastOne"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.1.priority", "level2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.#", "2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.0.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.0.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.0.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.0.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.0.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.0.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.0.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.0.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.0.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.0.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.0.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.0.direction", "export"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.0.route_control_profile_name", "route_control_profile_name_0"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.1.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.1.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.1.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.1.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.1.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.1.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.1.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.1.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.1.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.1.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.1.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.1.direction", "import"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.1.route_control_profile_name", "route_control_profile_name_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.#", "2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.0.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.0.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.0.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.0.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.0.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.0.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.0.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.0.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.0.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.0.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.0.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.0.taboo_contract_name", "taboo_contract_name_0"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.1.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.1.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.1.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.1.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.1.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.1.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.1.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.1.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.1.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.1.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.1.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.1.taboo_contract_name", "taboo_contract_name_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.#", "2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "tags.#", "2"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_external_epg.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "annotations.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.0.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.0.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.0.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.0.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.0.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.0.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.0.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.0.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.0.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.0.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.0.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.0.contract_name", "contract_name_0"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.0.priority", "level1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.1.annotation", "annotation_2"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.1.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.1.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.1.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.1.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.1.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.1.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.1.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.1.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.1.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.1.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.1.contract_name", "contract_name_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.1.priority", "level2"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "2.3(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.0.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.0.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.0.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.0.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.0.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.0.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.0.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.0.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.0.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.0.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.0.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.0.target_dn", "uni/tn-test_name/out-test_l3_outside/instP-ext_epg_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.1.annotation", "annotation_2"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.1.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.1.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.1.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.1.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.1.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.1.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.1.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.1.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.1.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.1.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.1.target_dn", "uni/tn-test_name/out-test_l3_outside/instP-ext_epg_0"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_custom_qos_policy.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_custom_qos_policy.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_custom_qos_policy.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_custom_qos_policy.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_custom_qos_policy.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_custom_qos_policy.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_custom_qos_policy.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_custom_qos_policy.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_custom_qos_policy.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_custom_qos_policy.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_custom_qos_policy.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_custom_qos_policy.custom_qos_policy_name", "custom_qos_policy_name_1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.0.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.0.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.0.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.0.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.0.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.0.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.0.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.0.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.0.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.0.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.0.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.0.imported_contract_name", "imported_contract_name_0"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.0.priority", "level1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.1.annotation", "annotation_2"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.1.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.1.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.1.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.1.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.1.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.1.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.1.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.1.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.1.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.1.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.1.imported_contract_name", "imported_contract_name_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.1.priority", "level2"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.0(1k)-", "inside",
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.0.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.0.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.0.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.0.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.0.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.0.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.0.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.0.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.0.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.0.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.0.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.0.contract_name", "contract_name_0"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.1.annotation", "annotation_2"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.1.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.1.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.1.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.1.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.1.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.1.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.1.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.1.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.1.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.1.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.1.contract_name", "contract_name_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.0.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.0.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.0.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.0.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.0.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.0.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.0.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.0.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.0.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.0.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.0.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.0.contract_name", "contract_name_0"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.0.match_criteria", "All"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.0.priority", "level1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.1.annotation", "annotation_2"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.1.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.1.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.1.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.1.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.1.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.1.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.1.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.1.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.1.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.1.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.1.contract_name", "contract_name_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.1.match_criteria", "AtleastOne"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.1.priority", "level2"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.0.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.0.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.0.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.0.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.0.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.0.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.0.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.0.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.0.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.0.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.0.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.0.direction", "export"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.0.route_control_profile_name", "route_control_profile_name_0"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.1.annotation", "annotation_2"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.1.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.1.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.1.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.1.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.1.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.1.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.1.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.1.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.1.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.1.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.1.direction", "import"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.1.route_control_profile_name", "route_control_profile_name_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.0.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.0.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.0.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.0.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.0.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.0.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.0.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.0.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.0.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.0.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.0.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.0.taboo_contract_name", "taboo_contract_name_0"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.1.annotation", "annotation_2"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.1.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.1.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.1.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.1.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.1.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.1.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.1.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.1.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.1.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.1.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.1.taboo_contract_name", "taboo_contract_name_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_external_epg.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children first child removed
@@ -493,88 +533,108 @@ func TestAccResourceL3extInstPWithL3extOut(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttrSet("aci_external_epg.test", "pc_tag"),
 					resource.TestCheckResourceAttrSet("aci_external_epg.test", "scope"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.0.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.0.annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.0.annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.0.annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.0.tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.0.tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.0.tags.#", "1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.0.contract_name", "contract_name_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.0.priority", "level2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.#", "1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.0.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.0.annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.0.annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.0.annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.0.tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.0.tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.0.tags.#", "1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.0.target_dn", "uni/tn-test_name/out-test_l3_outside/instP-ext_epg_0"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.#", "1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_custom_qos_policy.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_custom_qos_policy.annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_custom_qos_policy.annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_custom_qos_policy.annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_custom_qos_policy.tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_custom_qos_policy.tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_custom_qos_policy.tags.#", "1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_custom_qos_policy.custom_qos_policy_name", "custom_qos_policy_name_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.0.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.0.annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.0.annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.0.annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.0.tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.0.tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.0.tags.#", "1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.0.imported_contract_name", "imported_contract_name_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.0.priority", "level2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.#", "1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.0.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.0.annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.0.annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.0.annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.0.tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.0.tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.0.tags.#", "1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.0.contract_name", "contract_name_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.#", "1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.0.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.0.annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.0.annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.0.annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.0.tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.0.tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.0.tags.#", "1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.0.contract_name", "contract_name_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.0.match_criteria", "AtleastOne"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.0.priority", "level2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.#", "1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.0.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.0.annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.0.annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.0.annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.0.tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.0.tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.0.tags.#", "1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.0.direction", "import"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.0.route_control_profile_name", "route_control_profile_name_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.#", "1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.0.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.0.annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.0.annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.0.annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.0.tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.0.tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.0.tags.#", "1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.0.taboo_contract_name", "taboo_contract_name_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.#", "1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_external_epg.test", "tags.#", "1"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_external_epg.test", "annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "annotations.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.0.annotation", "annotation_2"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.0.annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.0.annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.0.annotations.#", "1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.0.tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.0.tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.0.tags.#", "1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.0.contract_name", "contract_name_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.0.priority", "level2"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_consumed_contracts.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "2.3(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.0.annotation", "annotation_2"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.0.annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.0.annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.0.annotations.#", "1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.0.tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.0.tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.0.tags.#", "1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.0.target_dn", "uni/tn-test_name/out-test_l3_outside/instP-ext_epg_0"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_contract_masters.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_custom_qos_policy.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_custom_qos_policy.annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_custom_qos_policy.annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_custom_qos_policy.annotations.#", "1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_custom_qos_policy.tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_custom_qos_policy.tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_custom_qos_policy.tags.#", "1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_custom_qos_policy.custom_qos_policy_name", "custom_qos_policy_name_1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.0.annotation", "annotation_2"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.0.annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.0.annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.0.annotations.#", "1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.0.tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.0.tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.0.tags.#", "1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.0.imported_contract_name", "imported_contract_name_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.0.priority", "level2"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_imported_contracts.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.0(1k)-", "inside",
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.0.annotation", "annotation_2"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.0.annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.0.annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.0.annotations.#", "1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.0.tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.0.tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.0.tags.#", "1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.0.contract_name", "contract_name_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_intra_epg_contracts.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.0.annotation", "annotation_2"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.0.annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.0.annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.0.annotations.#", "1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.0.tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.0.tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.0.tags.#", "1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.0.contract_name", "contract_name_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.0.match_criteria", "AtleastOne"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.0.priority", "level2"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_provided_contracts.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.0.annotation", "annotation_2"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.0.annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.0.annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.0.annotations.#", "1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.0.tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.0.tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.0.tags.#", "1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.0.direction", "import"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.0.route_control_profile_name", "route_control_profile_name_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_route_control_profiles.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-", "inside",
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.0.annotation", "annotation_2"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.0.annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.0.annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.0.annotations.#", "1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.0.tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.0.tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.0.tags.#", "1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.0.taboo_contract_name", "taboo_contract_name_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "relation_to_taboo_contracts.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_external_epg.test", "tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_external_epg.test", "tags.#", "1"),
+					),
 				),
 			},
 			// Update with all children removed
@@ -709,7 +769,7 @@ const testConfigL3extInstPChildrenDependencyWithL3extOut = testChildDependencyCo
 resource "aci_external_epg" "test" {
   parent_dn = aci_l3_outside.test.id
   name = "test_name"
-  annotations = [
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -718,8 +778,8 @@ resource "aci_external_epg" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
-  relation_to_consumed_contracts = [
+  ] : null
+  relation_to_consumed_contracts = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? [
     {
       annotation = "annotation_1"
       annotations = [
@@ -770,8 +830,8 @@ resource "aci_external_epg" "test" {
       contract_name = aci_contract.test_contract_1.name
       priority = "level2"
     },
-  ]
-  relation_to_contract_masters = [
+  ] : null
+  relation_to_contract_masters = provider::aci::compare_versions(data.aci_system.version.version,"inside","2.3(1e)-") ? [
     {
       annotation = "annotation_1"
       annotations = [
@@ -820,8 +880,8 @@ resource "aci_external_epg" "test" {
       ]
       target_dn = aci_external_epg.test_external_epg_1.id
     },
-  ]
-  relation_to_custom_qos_policy = {
+  ] : null
+  relation_to_custom_qos_policy = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? {
     annotation = "annotation_1"
     annotations = [
 	  {
@@ -844,8 +904,8 @@ resource "aci_external_epg" "test" {
 	  },
     ]
     custom_qos_policy_name = aci_custom_qos_policy.test_custom_qos_policy_0.name
-  }
-  relation_to_imported_contracts = [
+  } : null
+  relation_to_imported_contracts = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? [
     {
       annotation = "annotation_1"
       annotations = [
@@ -896,8 +956,8 @@ resource "aci_external_epg" "test" {
       imported_contract_name = aci_imported_contract.test_imported_contract_1.name
       priority = "level2"
     },
-  ]
-  relation_to_intra_epg_contracts = [
+  ] : null
+  relation_to_intra_epg_contracts = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.0(1k)-") ? [
     {
       annotation = "annotation_1"
       annotations = [
@@ -946,8 +1006,8 @@ resource "aci_external_epg" "test" {
       ]
       contract_name = aci_contract.test_contract_1.name
     },
-  ]
-  relation_to_provided_contracts = [
+  ] : null
+  relation_to_provided_contracts = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? [
     {
       annotation = "annotation_1"
       annotations = [
@@ -1000,8 +1060,8 @@ resource "aci_external_epg" "test" {
       match_criteria = "AtleastOne"
       priority = "level2"
     },
-  ]
-  relation_to_route_control_profiles = [
+  ] : null
+  relation_to_route_control_profiles = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.1(1j)-") ? [
     {
       annotation = "annotation_1"
       annotations = [
@@ -1052,8 +1112,8 @@ resource "aci_external_epg" "test" {
       direction = "import"
       route_control_profile_name = "route_control_profile_name_1"
     },
-  ]
-  relation_to_taboo_contracts = [
+  ] : null
+  relation_to_taboo_contracts = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? [
     {
       annotation = "annotation_1"
       annotations = [
@@ -1102,8 +1162,8 @@ resource "aci_external_epg" "test" {
       ]
       taboo_contract_name = aci_taboo_contract.test_taboo_contract_0.name
     },
-  ]
-  tags = [
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -1112,7 +1172,7 @@ resource "aci_external_epg" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
+  ] : null
 }
 `
 
@@ -1127,13 +1187,13 @@ const testConfigL3extInstPChildrenRemoveOneDependencyWithL3extOut = testChildDep
 resource "aci_external_epg" "test" {
   parent_dn = aci_l3_outside.test.id
   name = "test_name"
-  annotations = [ 
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
-  relation_to_consumed_contracts = [ 
+  ] : null
+  relation_to_consumed_contracts = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? [ 
 	{
 	  annotation = "annotation_2"
       annotations = [ 
@@ -1151,8 +1211,8 @@ resource "aci_external_epg" "test" {
 	  contract_name = aci_contract.test_contract_1.name
 	  priority = "level2"
 	},
-  ]
-  relation_to_contract_masters = [ 
+  ] : null
+  relation_to_contract_masters = provider::aci::compare_versions(data.aci_system.version.version,"inside","2.3(1e)-") ? [ 
 	{
 	  annotation = "annotation_2"
       annotations = [ 
@@ -1169,8 +1229,8 @@ resource "aci_external_epg" "test" {
       ]
 	  target_dn = aci_external_epg.test_external_epg_1.id
 	},
-  ]
-  relation_to_custom_qos_policy = {
+  ] : null
+  relation_to_custom_qos_policy = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? {
     annotation = "annotation_1"
     annotations = [ 
 	  {
@@ -1185,8 +1245,8 @@ resource "aci_external_epg" "test" {
 	  },
     ]
     custom_qos_policy_name = aci_custom_qos_policy.test_custom_qos_policy_0.name
-  }
-  relation_to_imported_contracts = [ 
+  } : null
+  relation_to_imported_contracts = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? [ 
 	{
 	  annotation = "annotation_2"
       annotations = [ 
@@ -1204,8 +1264,8 @@ resource "aci_external_epg" "test" {
 	  imported_contract_name = aci_imported_contract.test_imported_contract_1.name
 	  priority = "level2"
 	},
-  ]
-  relation_to_intra_epg_contracts = [ 
+  ] : null
+  relation_to_intra_epg_contracts = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.0(1k)-") ? [ 
 	{
 	  annotation = "annotation_2"
       annotations = [ 
@@ -1222,8 +1282,8 @@ resource "aci_external_epg" "test" {
       ]
 	  contract_name = aci_contract.test_contract_1.name
 	},
-  ]
-  relation_to_provided_contracts = [ 
+  ] : null
+  relation_to_provided_contracts = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? [ 
 	{
 	  annotation = "annotation_2"
       annotations = [ 
@@ -1242,8 +1302,8 @@ resource "aci_external_epg" "test" {
 	  match_criteria = "AtleastOne"
 	  priority = "level2"
 	},
-  ]
-  relation_to_route_control_profiles = [ 
+  ] : null
+  relation_to_route_control_profiles = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.1(1j)-") ? [ 
 	{
 	  annotation = "annotation_2"
       annotations = [ 
@@ -1261,8 +1321,8 @@ resource "aci_external_epg" "test" {
 	  direction = "import"
 	  route_control_profile_name = "route_control_profile_name_1"
 	},
-  ]
-  relation_to_taboo_contracts = [ 
+  ] : null
+  relation_to_taboo_contracts = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? [ 
 	{
 	  annotation = "annotation_2"
       annotations = [ 
@@ -1279,13 +1339,13 @@ resource "aci_external_epg" "test" {
       ]
 	  taboo_contract_name = aci_taboo_contract.test_taboo_contract_0.name
 	},
-  ]
-  tags = [ 
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
+  ] : null
 }
 `
 
@@ -1293,21 +1353,21 @@ const testConfigL3extInstPChildrenRemoveAllDependencyWithL3extOut = testChildDep
 resource "aci_external_epg" "test" {
   parent_dn = aci_l3_outside.test.id
   name = "test_name"
-  annotations = []
-  relation_to_consumed_contracts = []
-  relation_to_contract_masters = []
-  relation_to_custom_qos_policy = {
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
+  relation_to_consumed_contracts = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? [] : null
+  relation_to_contract_masters = provider::aci::compare_versions(data.aci_system.version.version,"inside","2.3(1e)-") ? [] : null
+  relation_to_custom_qos_policy = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? {
     annotation = "annotation_1"
     annotations = []
     tags = []
     custom_qos_policy_name = aci_custom_qos_policy.test_custom_qos_policy_0.name
-  }
-  relation_to_imported_contracts = []
-  relation_to_intra_epg_contracts = []
-  relation_to_provided_contracts = []
-  relation_to_route_control_profiles = []
-  relation_to_taboo_contracts = []
-  tags = []
+  } : null
+  relation_to_imported_contracts = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? [] : null
+  relation_to_intra_epg_contracts = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.0(1k)-") ? [] : null
+  relation_to_provided_contracts = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? [] : null
+  relation_to_route_control_profiles = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.1(1j)-") ? [] : null
+  relation_to_taboo_contracts = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? [] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
 }
 `
 

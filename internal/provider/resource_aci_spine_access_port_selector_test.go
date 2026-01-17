@@ -22,7 +22,7 @@ func TestAccResourceInfraSHPortSWithInfraSpAccPortP(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigInfraSHPortSMinDependencyWithInfraSpAccPortPAllowExisting,
+				Config:             testConfigInfraSHPortSMinDependencyWithInfraSpAccPortPAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_spine_access_port_selector.allow_test", "name", "test_name"),
@@ -51,7 +51,7 @@ func TestAccResourceInfraSHPortSWithInfraSpAccPortP(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:      testConfigInfraSHPortSMinDependencyWithInfraSpAccPortPAllowExisting,
+				Config:      testConfigInfraSHPortSMinDependencyWithInfraSpAccPortPAllowExisting + testConfigDataSourceSystem,
 				ExpectError: regexp.MustCompile("Object Already Exists"),
 			},
 		},
@@ -64,7 +64,7 @@ func TestAccResourceInfraSHPortSWithInfraSpAccPortP(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigInfraSHPortSMinDependencyWithInfraSpAccPortPAllowExisting,
+				Config:             testConfigInfraSHPortSMinDependencyWithInfraSpAccPortPAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_spine_access_port_selector.allow_test", "name", "test_name"),
@@ -92,7 +92,7 @@ func TestAccResourceInfraSHPortSWithInfraSpAccPortP(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigInfraSHPortSMinDependencyWithInfraSpAccPortP,
+				Config:             testConfigInfraSHPortSMinDependencyWithInfraSpAccPortP + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "name", "test_name"),
@@ -106,7 +106,7 @@ func TestAccResourceInfraSHPortSWithInfraSpAccPortP(t *testing.T) {
 			},
 			// Update with all config and verify default APIC values
 			{
-				Config:             testConfigInfraSHPortSAllDependencyWithInfraSpAccPortP,
+				Config:             testConfigInfraSHPortSAllDependencyWithInfraSpAccPortP + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "name", "test_name"),
@@ -120,7 +120,7 @@ func TestAccResourceInfraSHPortSWithInfraSpAccPortP(t *testing.T) {
 			},
 			// Update with minimum config and verify config is unchanged
 			{
-				Config:             testConfigInfraSHPortSMinDependencyWithInfraSpAccPortP,
+				Config:             testConfigInfraSHPortSMinDependencyWithInfraSpAccPortP + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "name", "test_name"),
@@ -129,7 +129,7 @@ func TestAccResourceInfraSHPortSWithInfraSpAccPortP(t *testing.T) {
 			},
 			// Update with empty strings config or default value
 			{
-				Config:             testConfigInfraSHPortSResetDependencyWithInfraSpAccPortP,
+				Config:             testConfigInfraSHPortSResetDependencyWithInfraSpAccPortP + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "name", "test_name"),
@@ -149,7 +149,7 @@ func TestAccResourceInfraSHPortSWithInfraSpAccPortP(t *testing.T) {
 			},
 			// Update with children
 			{
-				Config:             testConfigInfraSHPortSChildrenDependencyWithInfraSpAccPortP,
+				Config:             testConfigInfraSHPortSChildrenDependencyWithInfraSpAccPortP + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "name", "test_name"),
@@ -159,16 +159,22 @@ func TestAccResourceInfraSHPortSWithInfraSpAccPortP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "relation_to_spine_port_policy_group.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "relation_to_spine_port_policy_group.target_dn", "uni/infra/funcprof/spaccportgrp-spine_port_policy_group_1"),
-					resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "tags.1.value", "test_value"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "annotations.1.value", "test_value"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "2.0(1m)-", "inside",
+						resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "relation_to_spine_port_policy_group.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "relation_to_spine_port_policy_group.target_dn", "uni/infra/funcprof/spaccportgrp-spine_port_policy_group_1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "tags.1.value", "test_value"),
+					),
 				),
 			},
 			// Refresh State before import testing to ensure that the state is up to date
@@ -184,44 +190,55 @@ func TestAccResourceInfraSHPortSWithInfraSpAccPortP(t *testing.T) {
 			},
 			// Update with children removed from config
 			{
-				Config:             testConfigInfraSHPortSChildrenRemoveFromConfigDependencyWithInfraSpAccPortP,
+				Config:             testConfigInfraSHPortSChildrenRemoveFromConfigDependencyWithInfraSpAccPortP + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "relation_to_spine_port_policy_group.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "relation_to_spine_port_policy_group.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "relation_to_spine_port_policy_group.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "relation_to_spine_port_policy_group.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "relation_to_spine_port_policy_group.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "relation_to_spine_port_policy_group.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "relation_to_spine_port_policy_group.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "relation_to_spine_port_policy_group.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "relation_to_spine_port_policy_group.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "relation_to_spine_port_policy_group.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "relation_to_spine_port_policy_group.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "relation_to_spine_port_policy_group.target_dn", "uni/infra/funcprof/spaccportgrp-spine_port_policy_group_1"),
-					resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "tags.#", "2"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "annotations.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "2.0(1m)-", "inside",
+						resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "relation_to_spine_port_policy_group.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "relation_to_spine_port_policy_group.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "relation_to_spine_port_policy_group.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "relation_to_spine_port_policy_group.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "relation_to_spine_port_policy_group.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "relation_to_spine_port_policy_group.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "relation_to_spine_port_policy_group.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "relation_to_spine_port_policy_group.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "relation_to_spine_port_policy_group.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "relation_to_spine_port_policy_group.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "relation_to_spine_port_policy_group.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "relation_to_spine_port_policy_group.target_dn", "uni/infra/funcprof/spaccportgrp-spine_port_policy_group_1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children first child removed
 			{
-				Config:             testConfigInfraSHPortSChildrenRemoveOneDependencyWithInfraSpAccPortP,
+				Config:             testConfigInfraSHPortSChildrenRemoveOneDependencyWithInfraSpAccPortP + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "tags.#", "1"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "annotations.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "2.0(1m)-", "inside"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "tags.#", "1"),
+					),
 				),
 				ConfigStateChecks: []statecheck.StateCheck{
 					statecheck.ExpectKnownValue("aci_spine_access_port_selector.test",
@@ -239,7 +256,7 @@ func TestAccResourceInfraSHPortSWithInfraSpAccPortP(t *testing.T) {
 			},
 			// Update with all children removed
 			{
-				Config:             testConfigInfraSHPortSChildrenRemoveAllDependencyWithInfraSpAccPortP,
+				Config:             testConfigInfraSHPortSChildrenRemoveAllDependencyWithInfraSpAccPortP + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_spine_access_port_selector.test", "annotations.#", "0"),
@@ -261,7 +278,7 @@ func TestAccResourceInfraSHPortSWithInfraSpAccPortP(t *testing.T) {
 			},
 			// Update with legacy attribute config
 			{
-				Config:             testConfigInfraSHPortSLegacyAttributesWithInfraSpAccPortP,
+				Config:             testConfigInfraSHPortSLegacyAttributesWithInfraSpAccPortP + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 			},
 		},
@@ -273,7 +290,7 @@ func TestAccResourceInfraSHPortSWithInfraSpAccPortP(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with legacy attribute config
 			{
-				Config:             testConfigInfraSHPortSLegacyAttributesWithInfraSpAccPortP,
+				Config:             testConfigInfraSHPortSLegacyAttributesWithInfraSpAccPortP + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 			},
 		},
@@ -339,7 +356,7 @@ resource "aci_spine_access_port_selector" "test" {
   parent_dn = aci_spine_interface_profile.test.id
   name = "test_name"
   port_selector_type = "ALL"
-  annotations = [
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -348,8 +365,8 @@ resource "aci_spine_access_port_selector" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
-  relation_to_spine_port_policy_group = {
+  ] : null
+  relation_to_spine_port_policy_group = provider::aci::compare_versions(data.aci_system.version.version,"inside","2.0(1m)-") ? {
     annotation = "annotation_1"
     annotations = [
 	  {
@@ -372,8 +389,8 @@ resource "aci_spine_access_port_selector" "test" {
 	  },
     ]
     target_dn = aci_spine_port_policy_group.test_spine_port_policy_group_0.id
-  }
-  tags = [
+  } : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -382,7 +399,7 @@ resource "aci_spine_access_port_selector" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
+  ] : null
 }
 `
 
@@ -399,19 +416,19 @@ resource "aci_spine_access_port_selector" "test" {
   parent_dn = aci_spine_interface_profile.test.id
   name = "test_name"
   port_selector_type = "ALL"
-  annotations = [ 
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
-  relation_to_spine_port_policy_group = {}
-  tags = [ 
+  ] : null
+  relation_to_spine_port_policy_group = provider::aci::compare_versions(data.aci_system.version.version,"inside","2.0(1m)-") ? {} : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
+  ] : null
 }
 `
 
@@ -420,17 +437,17 @@ resource "aci_spine_access_port_selector" "test" {
   parent_dn = aci_spine_interface_profile.test.id
   name = "test_name"
   port_selector_type = "ALL"
-  annotations = []
-  relation_to_spine_port_policy_group = {}
-  tags = []
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
+  relation_to_spine_port_policy_group = provider::aci::compare_versions(data.aci_system.version.version,"inside","2.0(1m)-") ? {} : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
 }
 `
 
 const testConfigInfraSHPortSLegacyAttributesWithInfraSpAccPortP = testChildDependencyConfigInfraSHPortS + testConfigInfraSpAccPortPMin + `
 resource "aci_spine_access_port_selector" "test" {
   name = "test_name"
-  relation_infra_rs_sp_acc_grp = aci_spine_port_policy_group.test_spine_port_policy_group_0.id
-  spine_access_port_selector_type = "ALL"
+  relation_infra_rs_sp_acc_grp = provider::aci::compare_versions(data.aci_system.version.version,"inside","2.0(1m)-") ? aci_spine_port_policy_group.test_spine_port_policy_group_0.id : null
+  spine_access_port_selector_type = provider::aci::compare_versions(data.aci_system.version.version,"inside","2.0(1m)-") ? "ALL" : null
   spine_interface_profile_dn = aci_spine_interface_profile.test.id
 }
 `

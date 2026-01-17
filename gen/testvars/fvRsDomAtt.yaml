@@ -76,35 +76,36 @@ children:
       standby_uplinks: "3,4"
       deletable_child: false
       child_required: false
+      child_versions: 4.2(1i)-
       children:
         annotations:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
         tags:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
   annotations:
     - key: "key_0"
       value: "value_1"
-      
+      child_versions: 3.2(1l)-
     - key: "key_1"
       value: "test_value"
-      
+      child_versions: 3.2(1l)-
   tags:
     - key: "key_0"
       value: "value_1"
-      
+      child_versions: 3.2(1l)-
     - key: "key_1"
       value: "test_value"
-      
+      child_versions: 3.2(1l)-
 parents:
   - class_name: "fvAEPg"
     parent_dependency: "fvAp"

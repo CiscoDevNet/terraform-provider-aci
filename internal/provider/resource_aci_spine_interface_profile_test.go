@@ -19,7 +19,7 @@ func TestAccResourceInfraSpAccPortP(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config: testConfigInfraSpAccPortPMinAllowExisting,
+				Config: testConfigInfraSpAccPortPMinAllowExisting + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_spine_interface_profile.allow_test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_spine_interface_profile.allow_test_2", "name", "test_name"),
@@ -58,7 +58,7 @@ func TestAccResourceInfraSpAccPortP(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config: testConfigInfraSpAccPortPMinAllowExisting,
+				Config: testConfigInfraSpAccPortPMinAllowExisting + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_spine_interface_profile.allow_test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_spine_interface_profile.allow_test_2", "name", "test_name"),
@@ -83,7 +83,7 @@ func TestAccResourceInfraSpAccPortP(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config: testConfigInfraSpAccPortPMin,
+				Config: testConfigInfraSpAccPortPMin + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "annotation", "orchestrator:terraform"),
@@ -95,7 +95,7 @@ func TestAccResourceInfraSpAccPortP(t *testing.T) {
 			},
 			// Update with all config and verify default APIC values
 			{
-				Config: testConfigInfraSpAccPortPAll,
+				Config: testConfigInfraSpAccPortPAll + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "annotation", "annotation"),
@@ -107,7 +107,7 @@ func TestAccResourceInfraSpAccPortP(t *testing.T) {
 			},
 			// Update with minimum config and verify config is unchanged
 			{
-				Config: testConfigInfraSpAccPortPMin,
+				Config: testConfigInfraSpAccPortPMin + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "annotation", "orchestrator:terraform"),
@@ -119,7 +119,7 @@ func TestAccResourceInfraSpAccPortP(t *testing.T) {
 			},
 			// Update with empty strings config or default value
 			{
-				Config: testConfigInfraSpAccPortPReset,
+				Config: testConfigInfraSpAccPortPReset + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "annotation", "orchestrator:terraform"),
@@ -137,66 +137,78 @@ func TestAccResourceInfraSpAccPortP(t *testing.T) {
 			},
 			// Update with children
 			{
-				Config: testConfigInfraSpAccPortPChildren,
+				Config: testConfigInfraSpAccPortPChildren + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "description", ""),
 					resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "tags.#", "2"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "annotations.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children removed from config
 			{
-				Config: testConfigInfraSpAccPortPChildrenRemoveFromConfig,
+				Config: testConfigInfraSpAccPortPChildrenRemoveFromConfig + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "description", ""),
 					resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "tags.#", "2"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "annotations.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children first child removed
 			{
-				Config: testConfigInfraSpAccPortPChildrenRemoveOne,
+				Config: testConfigInfraSpAccPortPChildrenRemoveOne + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "description", ""),
 					resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "tags.#", "1"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "annotations.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "tags.#", "1"),
+					),
 				),
 			},
 			// Update with all children removed
 			{
-				Config: testConfigInfraSpAccPortPChildrenRemoveAll,
+				Config: testConfigInfraSpAccPortPChildrenRemoveAll + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_spine_interface_profile.test", "description", ""),

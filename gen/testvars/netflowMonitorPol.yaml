@@ -30,74 +30,75 @@ children:
   relation_to_netflow_exporters:
     - annotation: "annotation_1"
       netflow_exporter_policy_name: "netflow_exporter_policy_name_0"
-      
+      child_versions: 2.2(1k)-
       children:
         annotations:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
         tags:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
     - annotation: "annotation_2"
       netflow_exporter_policy_name: "netflow_exporter_policy_name_1"
-      
+      child_versions: 2.2(1k)-
       children:
         annotations:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
         tags:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
   relation_to_netflow_record:
     - annotation: "annotation_1"
       netflow_record_policy_name: "netflow_record_policy_name_1"
       deletable_child: false
       child_required: false
+      child_versions: 2.2(1k)-
       children:
         annotations:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
         tags:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
   annotations:
     - key: "key_0"
       value: "value_1"
-      
+      child_versions: 3.2(1l)-
     - key: "key_1"
       value: "test_value"
-      
+      child_versions: 3.2(1l)-
   tags:
     - key: "key_0"
       value: "value_1"
-      
+      child_versions: 3.2(1l)-
     - key: "key_1"
       value: "test_value"
-      
+      child_versions: 3.2(1l)-
 parents:
   - class_name: "fvTenant"
     parent_dependency: ""

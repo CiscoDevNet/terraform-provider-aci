@@ -17,6 +17,7 @@ import (
 	// "github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/provider"
 	"github.com/hashicorp/terraform-plugin-framework/provider/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -29,6 +30,7 @@ import (
 )
 
 var globalAnnotation string
+var apicVersion string
 var globalAllowExistingOnCreate bool
 
 // Ensure AciProvider satisfies various provider interfaces.
@@ -199,6 +201,8 @@ func (p *AciProvider) Configure(ctx context.Context, req provider.ConfigureReque
 	} else {
 		aciClient = client.GetClient(url, username, client.PrivateKey(privateKey), client.AdminCert(certName), client.Insecure(isInsecure), client.ProxyUrl(proxyUrl), client.ProxyCreds(proxyCreds), client.ValidateRelationDn(validateRelationDn), client.MaxRetries(maxRetries))
 	}
+
+	apicVersion = getVersionAPIC(ctx, &resp.Diagnostics, aciClient)
 
 	resp.DataSourceData = aciClient
 	resp.ResourceData = aciClient
@@ -562,4 +566,38 @@ func (p *AciProvider) Functions(ctx context.Context) []func() function.Function 
 	return []func() function.Function{
 		NewCompareVersionsFunction,
 	}
+}
+
+func getVersionAPIC(ctx context.Context, diags *diag.Diagnostics, client *client.Client) string {
+	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("/api/node/class/topSystem.json"), "GET", nil)
+	if diags.HasError() {
+		return ""
+	}
+
+	if requestData.Search("imdata").Search("topSystem").Data() != nil {
+		attributes := requestData.Search("imdata").Search("topSystem").Search("attributes").Data().([]interface{})
+		var versions []string
+		for _, attributeMap := range attributes {
+			if role, ok := attributeMap.(map[string]interface{})["role"]; ok && role == "controller" {
+				if v, ok := attributeMap.(map[string]interface{})["version"]; ok {
+					versions = append(versions, v.(string))
+
+				}
+			}
+		}
+		if len(versions) == 1 {
+			return versions[0]
+		}
+		diags.AddError(
+			"Controller version mismatch detected",
+			fmt.Sprintf("The versions of the APIC controllers must all match. Versions found: %s", versions),
+		)
+	} else {
+		diags.AddError(
+			"Data for topSysytem class could not be retrieved",
+			fmt.Sprintf("The versions of the APIC controllers could not be determined"),
+		)
+	}
+
+	return ""
 }

@@ -9,6 +9,15 @@ legacy_attributes:
   relation_fv_rs_sec_inherited: ["aci_endpoint_security_group.test_endpoint_security_group_0.id"]
   relation_fv_rs_intra_epg: ["aci_contract.test_contract_1.id"]
   relation_fv_rs_scope: "aci_vrf.test_vrf_0.id"
+
+legacy_attribute_versions:
+  match_t: 1.0(1e)-
+  application_profile_dn: no_version_found
+  pc_enf_pref: 5.0(1k)-
+  pref_gr_memb: 2.1(1h)-
+  relation_fv_rs_sec_inherited: 2.3(1e)-
+  relation_fv_rs_intra_epg: 3.0(1k)-
+  relation_fv_rs_scope: 5.0(1k)-
 legacy_blocks:
   relation_fv_rs_cons:
     target_dn: "aci_contract.test_contract_0.id"
@@ -65,229 +74,230 @@ children:
     - annotation: "annotation_1"
       priority: "level1"
       contract_name: "contract_name_0"
-      
+      child_versions: 1.0(1e)-
       children:
         annotations:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
         tags:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
     - annotation: "annotation_2"
       priority: "level2"
       contract_name: "contract_name_1"
-      
+      child_versions: 1.0(1e)-
       children:
         annotations:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
         tags:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
   relation_to_imported_contracts:
     - annotation: "annotation_1"
       priority: "level1"
       imported_contract_name: "imported_contract_name_0"
-      
+      child_versions: 1.0(1e)-
       children:
         annotations:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
         tags:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
     - annotation: "annotation_2"
       priority: "level2"
       imported_contract_name: "imported_contract_name_1"
-      
+      child_versions: 1.0(1e)-
       children:
         annotations:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
         tags:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
   relation_to_intra_epg_contracts:
     - annotation: "annotation_1"
       contract_name: "contract_name_0"
-      
+      child_versions: 3.0(1k)-
       children:
         annotations:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
         tags:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
     - annotation: "annotation_2"
       contract_name: "contract_name_1"
-      
+      child_versions: 3.0(1k)-
       children:
         annotations:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
         tags:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
   relation_to_provided_contracts:
     - annotation: "annotation_1"
       match_criteria: "All"
       priority: "level1"
       contract_name: "contract_name_0"
-      
+      child_versions: 1.0(1e)-
       children:
         annotations:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
         tags:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
     - annotation: "annotation_2"
       match_criteria: "AtleastOne"
       priority: "level2"
       contract_name: "contract_name_1"
-      
+      child_versions: 1.0(1e)-
       children:
         annotations:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
         tags:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
   relation_to_vrf:
     - annotation: "annotation_1"
       vrf_name: "vrf_name_1"
       deletable_child: false
       child_required: false
+      child_versions: 5.0(1k)-
       children:
         annotations:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
         tags:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
   relation_to_contract_masters:
     - annotation: "annotation_1"
       target_dn: "target_dn_0"
-      
+      child_versions: 2.3(1e)-
       children:
         annotations:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
         tags:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
     - annotation: "annotation_2"
       target_dn: "target_dn_1"
-      
+      child_versions: 2.3(1e)-
       children:
         annotations:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
         tags:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
   annotations:
     - key: "key_0"
       value: "value_1"
-      
+      child_versions: 3.2(1l)-
     - key: "key_1"
       value: "test_value"
-      
+      child_versions: 3.2(1l)-
   tags:
     - key: "key_0"
       value: "value_1"
-      
+      child_versions: 3.2(1l)-
     - key: "key_1"
       value: "test_value"
-      
+      child_versions: 3.2(1l)-
 parents:
   - class_name: "fvAp"
     parent_dependency: "fvTenant"

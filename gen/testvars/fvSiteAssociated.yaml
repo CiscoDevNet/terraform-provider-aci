@@ -33,22 +33,22 @@ children:
       remote_vrf_pc_tag: "any"
       remote_pc_tag: "16386"
       site_id: "0"
-      
+      child_versions: 3.0(1k)-
       children:
         annotations:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
         tags:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
     - annotation: "annotation_2"
       description: "description_2"
       name: "name_2"
@@ -58,36 +58,36 @@ children:
       remote_vrf_pc_tag: "any"
       remote_pc_tag: "16387"
       site_id: "1"
-      
+      child_versions: 3.0(1k)-
       children:
         annotations:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
         tags:
           - key: "key_0"
             value: "value_1"
-      
+            child_versions: 3.2(1l)-
           - key: "key_1"
             value: "test_value"
-      
+            child_versions: 3.2(1l)-
   annotations:
     - key: "key_0"
       value: "value_1"
-      
+      child_versions: 3.2(1l)-
     - key: "key_1"
       value: "test_value"
-      
+      child_versions: 3.2(1l)-
   tags:
     - key: "key_0"
       value: "value_1"
-      
+      child_versions: 3.2(1l)-
     - key: "key_1"
       value: "test_value"
-      
+      child_versions: 3.2(1l)-
 parents:
   - class_name: "fvAEPg"
     parent_dependency: "fvAp"

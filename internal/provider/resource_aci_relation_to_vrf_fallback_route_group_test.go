@@ -19,7 +19,7 @@ func TestAccResourceL3extRsOutToFBRGroupWithL3extOut(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigL3extRsOutToFBRGroupMinDependencyWithL3extOutAllowExisting,
+				Config:             testConfigL3extRsOutToFBRGroupMinDependencyWithL3extOutAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.allow_test", "target_dn", "uni/tn-test_name/ctx-test_vrf/fbrg-vrf_fallback_route_group_0"),
@@ -38,7 +38,7 @@ func TestAccResourceL3extRsOutToFBRGroupWithL3extOut(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:      testConfigL3extRsOutToFBRGroupMinDependencyWithL3extOutAllowExisting,
+				Config:      testConfigL3extRsOutToFBRGroupMinDependencyWithL3extOutAllowExisting + testConfigDataSourceSystem,
 				ExpectError: regexp.MustCompile("Object Already Exists"),
 			},
 		},
@@ -51,7 +51,7 @@ func TestAccResourceL3extRsOutToFBRGroupWithL3extOut(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigL3extRsOutToFBRGroupMinDependencyWithL3extOutAllowExisting,
+				Config:             testConfigL3extRsOutToFBRGroupMinDependencyWithL3extOutAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.allow_test", "target_dn", "uni/tn-test_name/ctx-test_vrf/fbrg-vrf_fallback_route_group_0"),
@@ -69,7 +69,7 @@ func TestAccResourceL3extRsOutToFBRGroupWithL3extOut(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigL3extRsOutToFBRGroupMinDependencyWithL3extOut,
+				Config:             testConfigL3extRsOutToFBRGroupMinDependencyWithL3extOut + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "target_dn", "uni/tn-test_name/ctx-test_vrf/fbrg-vrf_fallback_route_group_0"),
@@ -78,7 +78,7 @@ func TestAccResourceL3extRsOutToFBRGroupWithL3extOut(t *testing.T) {
 			},
 			// Update with all config and verify default APIC values
 			{
-				Config:             testConfigL3extRsOutToFBRGroupAllDependencyWithL3extOut,
+				Config:             testConfigL3extRsOutToFBRGroupAllDependencyWithL3extOut + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "target_dn", "uni/tn-test_name/ctx-test_vrf/fbrg-vrf_fallback_route_group_0"),
@@ -87,7 +87,7 @@ func TestAccResourceL3extRsOutToFBRGroupWithL3extOut(t *testing.T) {
 			},
 			// Update with minimum config and verify config is unchanged
 			{
-				Config:             testConfigL3extRsOutToFBRGroupMinDependencyWithL3extOut,
+				Config:             testConfigL3extRsOutToFBRGroupMinDependencyWithL3extOut + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "target_dn", "uni/tn-test_name/ctx-test_vrf/fbrg-vrf_fallback_route_group_0"),
@@ -95,7 +95,7 @@ func TestAccResourceL3extRsOutToFBRGroupWithL3extOut(t *testing.T) {
 			},
 			// Update with empty strings config or default value
 			{
-				Config:             testConfigL3extRsOutToFBRGroupResetDependencyWithL3extOut,
+				Config:             testConfigL3extRsOutToFBRGroupResetDependencyWithL3extOut + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "target_dn", "uni/tn-test_name/ctx-test_vrf/fbrg-vrf_fallback_route_group_0"),
@@ -110,19 +110,23 @@ func TestAccResourceL3extRsOutToFBRGroupWithL3extOut(t *testing.T) {
 			},
 			// Update with children
 			{
-				Config:             testConfigL3extRsOutToFBRGroupChildrenDependencyWithL3extOut,
+				Config:             testConfigL3extRsOutToFBRGroupChildrenDependencyWithL3extOut + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "target_dn", "uni/tn-test_name/ctx-test_vrf/fbrg-vrf_fallback_route_group_0"),
 					resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "tags.1.value", "test_value"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "annotations.1.value", "test_value"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "tags.1.value", "test_value"),
+					),
 				),
 			},
 			// Refresh State before import testing to ensure that the state is up to date
@@ -138,37 +142,45 @@ func TestAccResourceL3extRsOutToFBRGroupWithL3extOut(t *testing.T) {
 			},
 			// Update with children removed from config
 			{
-				Config:             testConfigL3extRsOutToFBRGroupChildrenRemoveFromConfigDependencyWithL3extOut,
+				Config:             testConfigL3extRsOutToFBRGroupChildrenRemoveFromConfigDependencyWithL3extOut + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "tags.#", "2"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "annotations.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children first child removed
 			{
-				Config:             testConfigL3extRsOutToFBRGroupChildrenRemoveOneDependencyWithL3extOut,
+				Config:             testConfigL3extRsOutToFBRGroupChildrenRemoveOneDependencyWithL3extOut + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "tags.#", "1"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "annotations.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "tags.#", "1"),
+					),
 				),
 			},
 			// Update with all children removed
 			{
-				Config:             testConfigL3extRsOutToFBRGroupChildrenRemoveAllDependencyWithL3extOut,
+				Config:             testConfigL3extRsOutToFBRGroupChildrenRemoveAllDependencyWithL3extOut + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_relation_to_vrf_fallback_route_group.test", "annotations.#", "0"),
@@ -225,7 +237,7 @@ const testConfigL3extRsOutToFBRGroupChildrenDependencyWithL3extOut = testDepende
 resource "aci_relation_to_vrf_fallback_route_group" "test" {
   parent_dn = aci_l3_outside.test.id
   target_dn = aci_vrf_fallback_route_group.test_vrf_fallback_route_group_0.id
-  annotations = [
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -234,8 +246,8 @@ resource "aci_relation_to_vrf_fallback_route_group" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
-  tags = [
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -244,7 +256,7 @@ resource "aci_relation_to_vrf_fallback_route_group" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
+  ] : null
 }
 `
 
@@ -259,18 +271,18 @@ const testConfigL3extRsOutToFBRGroupChildrenRemoveOneDependencyWithL3extOut = te
 resource "aci_relation_to_vrf_fallback_route_group" "test" {
   parent_dn = aci_l3_outside.test.id
   target_dn = aci_vrf_fallback_route_group.test_vrf_fallback_route_group_0.id
-  annotations = [ 
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
-  tags = [ 
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
+  ] : null
 }
 `
 
@@ -278,7 +290,7 @@ const testConfigL3extRsOutToFBRGroupChildrenRemoveAllDependencyWithL3extOut = te
 resource "aci_relation_to_vrf_fallback_route_group" "test" {
   parent_dn = aci_l3_outside.test.id
   target_dn = aci_vrf_fallback_route_group.test_vrf_fallback_route_group_0.id
-  annotations = []
-  tags = []
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
 }
 `

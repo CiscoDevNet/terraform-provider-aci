@@ -210,14 +210,18 @@ func TestAccResourcePkiKeyRing(t *testing.T) {
 					composeAggregateTestCheckFuncWithVersion(t, "6.0(2h)-", "inside",
 						resource.TestCheckResourceAttr("aci_key_ring.test", "elliptic_curve", "none"),
 						resource.TestCheckResourceAttr("aci_key_ring.test", "key_type", "RSA")),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.1.value", "test_value"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.1.value", "test_value"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_key_ring.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_key_ring.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_key_ring.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_key_ring.test", "tags.1.value", "test_value"),
+					),
 				),
 			},
 			// Refresh State before import testing to ensure that the state is up to date
@@ -237,16 +241,20 @@ func TestAccResourcePkiKeyRing(t *testing.T) {
 				Config:             testConfigPkiKeyRingChildrenRemoveFromConfig + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.#", "2"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_key_ring.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_key_ring.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_key_ring.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_key_ring.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_key_ring.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children first child removed
@@ -254,12 +262,16 @@ func TestAccResourcePkiKeyRing(t *testing.T) {
 				Config:             testConfigPkiKeyRingChildrenRemoveOne + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.#", "1"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_key_ring.test", "tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_key_ring.test", "tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_key_ring.test", "tags.#", "1"),
+					),
 				),
 			},
 			// Update with all children removed
@@ -474,14 +486,18 @@ func TestAccResourcePkiKeyRingWithFvTenant(t *testing.T) {
 					composeAggregateTestCheckFuncWithVersion(t, "6.0(2h)-", "inside",
 						resource.TestCheckResourceAttr("aci_key_ring.test", "elliptic_curve", "none"),
 						resource.TestCheckResourceAttr("aci_key_ring.test", "key_type", "RSA")),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.1.value", "test_value"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.1.value", "test_value"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_key_ring.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_key_ring.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_key_ring.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_key_ring.test", "tags.1.value", "test_value"),
+					),
 				),
 			},
 			// Refresh State before import testing to ensure that the state is up to date
@@ -501,16 +517,20 @@ func TestAccResourcePkiKeyRingWithFvTenant(t *testing.T) {
 				Config:             testConfigPkiKeyRingChildrenRemoveFromConfigDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.#", "2"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_key_ring.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_key_ring.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_key_ring.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_key_ring.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_key_ring.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children first child removed
@@ -518,12 +538,16 @@ func TestAccResourcePkiKeyRingWithFvTenant(t *testing.T) {
 				Config:             testConfigPkiKeyRingChildrenRemoveOneDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_key_ring.test", "tags.#", "1"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_key_ring.test", "annotations.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_key_ring.test", "tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_key_ring.test", "tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_key_ring.test", "tags.#", "1"),
+					),
 				),
 			},
 			// Update with all children removed
@@ -603,7 +627,7 @@ resource "aci_key_ring" "test" {
 const testConfigPkiKeyRingChildren = testDependencyConfigPkiKeyRing + `
 resource "aci_key_ring" "test" {
   name = "test_name"
-  annotations = [
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -612,8 +636,8 @@ resource "aci_key_ring" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
-  tags = [
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -622,7 +646,7 @@ resource "aci_key_ring" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
+  ] : null
 }
 `
 
@@ -635,26 +659,26 @@ resource "aci_key_ring" "test" {
 const testConfigPkiKeyRingChildrenRemoveOne = testDependencyConfigPkiKeyRing + `
 resource "aci_key_ring" "test" {
   name = "test_name"
-  annotations = [ 
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
-  tags = [ 
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
+  ] : null
 }
 `
 
 const testConfigPkiKeyRingChildrenRemoveAll = testDependencyConfigPkiKeyRing + `
 resource "aci_key_ring" "test" {
   name = "test_name"
-  annotations = []
-  tags = []
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
 }
 `
 
@@ -720,7 +744,7 @@ const testConfigPkiKeyRingChildrenDependencyWithFvTenant = testDependencyConfigP
 resource "aci_key_ring" "test" {
   parent_dn = aci_tenant.test.id
   name = "test_name"
-  annotations = [
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -729,8 +753,8 @@ resource "aci_key_ring" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
-  tags = [
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -739,7 +763,7 @@ resource "aci_key_ring" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
+  ] : null
 }
 `
 
@@ -754,18 +778,18 @@ const testConfigPkiKeyRingChildrenRemoveOneDependencyWithFvTenant = testDependen
 resource "aci_key_ring" "test" {
   parent_dn = aci_tenant.test.id
   name = "test_name"
-  annotations = [ 
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
-  tags = [ 
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
+  ] : null
 }
 `
 
@@ -773,7 +797,7 @@ const testConfigPkiKeyRingChildrenRemoveAllDependencyWithFvTenant = testDependen
 resource "aci_key_ring" "test" {
   parent_dn = aci_tenant.test.id
   name = "test_name"
-  annotations = []
-  tags = []
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
 }
 `

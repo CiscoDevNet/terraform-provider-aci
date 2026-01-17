@@ -2465,7 +2465,8 @@ func (r *CommPolResource) ImportState(ctx context.Context, req resource.ImportSt
 }
 
 func getAndSetCommPolAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *CommPolResourceModel) {
-	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "commPol,commHttp,commHttps,commShellinabox,commSsh,commTelnet,tagAnnotation,tagTag,tagAnnotation,tagTag,commRsClientCertCA,commRsKeyRing,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag"), "GET", nil)
+	childClasses := getChildClassesForGetRequest([]string{"commHttp", "commHttps", "commRsClientCertCA", "commRsKeyRing", "commShellinabox", "commSsh", "commTelnet", "tagAnnotation", "tagTag"})
+	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), strings.Join(childClasses, ",")), "GET", nil)
 
 	readData := getEmptyCommPolResourceModel()
 

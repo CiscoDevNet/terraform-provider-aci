@@ -19,7 +19,7 @@ func TestAccResourceFvEpIpTagWithFvTenant(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigFvEpIpTagMinDependencyWithFvTenantAllowExisting,
+				Config:             testConfigFvEpIpTagMinDependencyWithFvTenantAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.allow_test", "ip", "10.0.0.2"),
@@ -46,7 +46,7 @@ func TestAccResourceFvEpIpTagWithFvTenant(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:      testConfigFvEpIpTagMinDependencyWithFvTenantAllowExisting,
+				Config:      testConfigFvEpIpTagMinDependencyWithFvTenantAllowExisting + testConfigDataSourceSystem,
 				ExpectError: regexp.MustCompile("Object Already Exists"),
 			},
 		},
@@ -59,7 +59,7 @@ func TestAccResourceFvEpIpTagWithFvTenant(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigFvEpIpTagMinDependencyWithFvTenantAllowExisting,
+				Config:             testConfigFvEpIpTagMinDependencyWithFvTenantAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.allow_test", "ip", "10.0.0.2"),
@@ -85,7 +85,7 @@ func TestAccResourceFvEpIpTagWithFvTenant(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigFvEpIpTagMinDependencyWithFvTenant,
+				Config:             testConfigFvEpIpTagMinDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "ip", "10.0.0.2"),
@@ -98,7 +98,7 @@ func TestAccResourceFvEpIpTagWithFvTenant(t *testing.T) {
 			},
 			// Update with all config and verify default APIC values
 			{
-				Config:             testConfigFvEpIpTagAllDependencyWithFvTenant,
+				Config:             testConfigFvEpIpTagAllDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "ip", "10.0.0.2"),
@@ -111,7 +111,7 @@ func TestAccResourceFvEpIpTagWithFvTenant(t *testing.T) {
 			},
 			// Update with minimum config and verify config is unchanged
 			{
-				Config:             testConfigFvEpIpTagMinDependencyWithFvTenant,
+				Config:             testConfigFvEpIpTagMinDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "ip", "10.0.0.2"),
@@ -120,7 +120,7 @@ func TestAccResourceFvEpIpTagWithFvTenant(t *testing.T) {
 			},
 			// Update with empty strings config or default value
 			{
-				Config:             testConfigFvEpIpTagResetDependencyWithFvTenant,
+				Config:             testConfigFvEpIpTagResetDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "ip", "10.0.0.2"),
@@ -139,7 +139,7 @@ func TestAccResourceFvEpIpTagWithFvTenant(t *testing.T) {
 			},
 			// Update with children
 			{
-				Config:             testConfigFvEpIpTagChildrenDependencyWithFvTenant,
+				Config:             testConfigFvEpIpTagChildrenDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "ip", "10.0.0.2"),
@@ -148,14 +148,18 @@ func TestAccResourceFvEpIpTagWithFvTenant(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "id_attribute", "0"),
 					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "name", ""),
 					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "name_alias", ""),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "tags.1.value", "test_value"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.1.value", "test_value"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "tags.1.value", "test_value"),
+					),
 				),
 			},
 			// Refresh State before import testing to ensure that the state is up to date
@@ -171,37 +175,45 @@ func TestAccResourceFvEpIpTagWithFvTenant(t *testing.T) {
 			},
 			// Update with children removed from config
 			{
-				Config:             testConfigFvEpIpTagChildrenRemoveFromConfigDependencyWithFvTenant,
+				Config:             testConfigFvEpIpTagChildrenRemoveFromConfigDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "tags.#", "2"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children first child removed
 			{
-				Config:             testConfigFvEpIpTagChildrenRemoveOneDependencyWithFvTenant,
+				Config:             testConfigFvEpIpTagChildrenRemoveOneDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "tags.#", "1"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "tags.#", "1"),
+					),
 				),
 			},
 			// Update with all children removed
 			{
-				Config:             testConfigFvEpIpTagChildrenRemoveAllDependencyWithFvTenant,
+				Config:             testConfigFvEpIpTagChildrenRemoveAllDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "annotations.#", "0"),
@@ -263,7 +275,7 @@ resource "aci_endpoint_tag_ip" "test" {
   parent_dn = aci_tenant.test.id
   ip = "10.0.0.2"
   vrf_name = "test_ctx_name"
-  annotations = [
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -272,8 +284,8 @@ resource "aci_endpoint_tag_ip" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
-  tags = [
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -282,7 +294,7 @@ resource "aci_endpoint_tag_ip" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
+  ] : null
 }
 `
 
@@ -299,18 +311,18 @@ resource "aci_endpoint_tag_ip" "test" {
   parent_dn = aci_tenant.test.id
   ip = "10.0.0.2"
   vrf_name = "test_ctx_name"
-  annotations = [ 
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
-  tags = [ 
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
+  ] : null
 }
 `
 
@@ -319,7 +331,7 @@ resource "aci_endpoint_tag_ip" "test" {
   parent_dn = aci_tenant.test.id
   ip = "10.0.0.2"
   vrf_name = "test_ctx_name"
-  annotations = []
-  tags = []
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
 }
 `

@@ -19,7 +19,7 @@ func TestAccResourceFvSiteAssociatedWithFvAEPg(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigFvSiteAssociatedMinDependencyWithFvAEPgAllowExisting,
+				Config:             testConfigFvSiteAssociatedMinDependencyWithFvAEPgAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_associated_site.allow_test", "annotation", "orchestrator:terraform"),
@@ -48,7 +48,7 @@ func TestAccResourceFvSiteAssociatedWithFvAEPg(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:      testConfigFvSiteAssociatedMinDependencyWithFvAEPgAllowExisting,
+				Config:      testConfigFvSiteAssociatedMinDependencyWithFvAEPgAllowExisting + testConfigDataSourceSystem,
 				ExpectError: regexp.MustCompile("Object Already Exists"),
 			},
 		},
@@ -61,7 +61,7 @@ func TestAccResourceFvSiteAssociatedWithFvAEPg(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigFvSiteAssociatedMinDependencyWithFvAEPgAllowExisting,
+				Config:             testConfigFvSiteAssociatedMinDependencyWithFvAEPgAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_associated_site.allow_test", "annotation", "orchestrator:terraform"),
@@ -89,7 +89,7 @@ func TestAccResourceFvSiteAssociatedWithFvAEPg(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigFvSiteAssociatedMinDependencyWithFvAEPg,
+				Config:             testConfigFvSiteAssociatedMinDependencyWithFvAEPg + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_associated_site.test", "annotation", "orchestrator:terraform"),
@@ -103,7 +103,7 @@ func TestAccResourceFvSiteAssociatedWithFvAEPg(t *testing.T) {
 			},
 			// Update with all config and verify default APIC values
 			{
-				Config:             testConfigFvSiteAssociatedAllDependencyWithFvAEPg,
+				Config:             testConfigFvSiteAssociatedAllDependencyWithFvAEPg + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_associated_site.test", "annotation", "annotation"),
@@ -117,13 +117,13 @@ func TestAccResourceFvSiteAssociatedWithFvAEPg(t *testing.T) {
 			},
 			// Update with minimum config and verify config is unchanged
 			{
-				Config:             testConfigFvSiteAssociatedMinDependencyWithFvAEPg,
+				Config:             testConfigFvSiteAssociatedMinDependencyWithFvAEPg + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check:              resource.ComposeAggregateTestCheckFunc(),
 			},
 			// Update with empty strings config or default value
 			{
-				Config:             testConfigFvSiteAssociatedResetDependencyWithFvAEPg,
+				Config:             testConfigFvSiteAssociatedResetDependencyWithFvAEPg + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check:              resource.ComposeAggregateTestCheckFunc(),
 			},
@@ -135,7 +135,7 @@ func TestAccResourceFvSiteAssociatedWithFvAEPg(t *testing.T) {
 			},
 			// Update with children
 			{
-				Config:             testConfigFvSiteAssociatedChildrenDependencyWithFvAEPg,
+				Config:             testConfigFvSiteAssociatedChildrenDependencyWithFvAEPg + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_associated_site.test", "annotation", "orchestrator:terraform"),
@@ -145,32 +145,38 @@ func TestAccResourceFvSiteAssociatedWithFvAEPg(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_associated_site.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_associated_site.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_associated_site.test", "site_id", "0"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.description", "description_1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.name", "name_1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.name_alias", "name_alias_1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.owner_key", "owner_key_1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.owner_tag", "owner_tag_1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.remote_pc_tag", "16386"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.remote_vrf_pc_tag", "any"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.site_id", "0"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.description", "description_2"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.name", "name_2"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.name_alias", "name_alias_2"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.owner_key", "owner_key_2"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.owner_tag", "owner_tag_2"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.remote_pc_tag", "16387"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.remote_vrf_pc_tag", "any"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.site_id", "1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "tags.1.value", "test_value"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.1.value", "test_value"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.0(1k)-", "inside",
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.description", "description_1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.name", "name_1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.name_alias", "name_alias_1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.owner_key", "owner_key_1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.owner_tag", "owner_tag_1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.remote_pc_tag", "16386"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.remote_vrf_pc_tag", "any"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.site_id", "0"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.annotation", "annotation_2"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.description", "description_2"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.name", "name_2"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.name_alias", "name_alias_2"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.owner_key", "owner_key_2"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.owner_tag", "owner_tag_2"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.remote_pc_tag", "16387"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.remote_vrf_pc_tag", "any"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.site_id", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_associated_site.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "tags.1.value", "test_value"),
+					),
 				),
 			},
 			// Refresh State before import testing to ensure that the state is up to date
@@ -186,92 +192,104 @@ func TestAccResourceFvSiteAssociatedWithFvAEPg(t *testing.T) {
 			},
 			// Update with children removed from config
 			{
-				Config:             testConfigFvSiteAssociatedChildrenRemoveFromConfigDependencyWithFvAEPg,
+				Config:             testConfigFvSiteAssociatedChildrenRemoveFromConfigDependencyWithFvAEPg + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.description", "description_1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.name", "name_1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.name_alias", "name_alias_1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.owner_key", "owner_key_1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.owner_tag", "owner_tag_1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.remote_pc_tag", "16386"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.remote_vrf_pc_tag", "any"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.site_id", "0"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.description", "description_2"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.name", "name_2"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.name_alias", "name_alias_2"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.owner_key", "owner_key_2"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.owner_tag", "owner_tag_2"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.remote_pc_tag", "16387"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.remote_vrf_pc_tag", "any"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.site_id", "1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.#", "2"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "tags.#", "2"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.0(1k)-", "inside",
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.description", "description_1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.name", "name_1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.name_alias", "name_alias_1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.owner_key", "owner_key_1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.owner_tag", "owner_tag_1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.remote_pc_tag", "16386"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.remote_vrf_pc_tag", "any"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.site_id", "0"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.annotation", "annotation_2"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.description", "description_2"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.name", "name_2"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.name_alias", "name_alias_2"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.owner_key", "owner_key_2"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.owner_tag", "owner_tag_2"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.remote_pc_tag", "16387"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.remote_vrf_pc_tag", "any"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.site_id", "1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_associated_site.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children first child removed
 			{
-				Config:             testConfigFvSiteAssociatedChildrenRemoveOneDependencyWithFvAEPg,
+				Config:             testConfigFvSiteAssociatedChildrenRemoveOneDependencyWithFvAEPg + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.tags.#", "1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.description", "description_2"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.name", "name_2"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.name_alias", "name_alias_2"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.owner_key", "owner_key_2"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.owner_tag", "owner_tag_2"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.remote_pc_tag", "16387"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.remote_vrf_pc_tag", "any"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.site_id", "1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.#", "1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "tags.#", "1"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.0(1k)-", "inside",
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.annotation", "annotation_2"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.annotations.#", "1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.tags.#", "1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.description", "description_2"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.name", "name_2"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.name_alias", "name_alias_2"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.owner_key", "owner_key_2"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.owner_tag", "owner_tag_2"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.remote_pc_tag", "16387"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.remote_vrf_pc_tag", "any"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.site_id", "1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_associated_site.test", "tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "tags.#", "1"),
+					),
 				),
 			},
 			// Update with all children removed
 			{
-				Config:             testConfigFvSiteAssociatedChildrenRemoveAllDependencyWithFvAEPg,
+				Config:             testConfigFvSiteAssociatedChildrenRemoveAllDependencyWithFvAEPg + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.#", "0"),
@@ -291,7 +309,7 @@ func TestAccResourceFvSiteAssociatedWithFvBD(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigFvSiteAssociatedMinDependencyWithFvBDAllowExisting,
+				Config:             testConfigFvSiteAssociatedMinDependencyWithFvBDAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_associated_site.allow_test", "annotation", "orchestrator:terraform"),
@@ -320,7 +338,7 @@ func TestAccResourceFvSiteAssociatedWithFvBD(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:      testConfigFvSiteAssociatedMinDependencyWithFvBDAllowExisting,
+				Config:      testConfigFvSiteAssociatedMinDependencyWithFvBDAllowExisting + testConfigDataSourceSystem,
 				ExpectError: regexp.MustCompile("Object Already Exists"),
 			},
 		},
@@ -333,7 +351,7 @@ func TestAccResourceFvSiteAssociatedWithFvBD(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigFvSiteAssociatedMinDependencyWithFvBDAllowExisting,
+				Config:             testConfigFvSiteAssociatedMinDependencyWithFvBDAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_associated_site.allow_test", "annotation", "orchestrator:terraform"),
@@ -361,7 +379,7 @@ func TestAccResourceFvSiteAssociatedWithFvBD(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigFvSiteAssociatedMinDependencyWithFvBD,
+				Config:             testConfigFvSiteAssociatedMinDependencyWithFvBD + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_associated_site.test", "annotation", "orchestrator:terraform"),
@@ -375,7 +393,7 @@ func TestAccResourceFvSiteAssociatedWithFvBD(t *testing.T) {
 			},
 			// Update with all config and verify default APIC values
 			{
-				Config:             testConfigFvSiteAssociatedAllDependencyWithFvBD,
+				Config:             testConfigFvSiteAssociatedAllDependencyWithFvBD + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_associated_site.test", "annotation", "annotation"),
@@ -389,13 +407,13 @@ func TestAccResourceFvSiteAssociatedWithFvBD(t *testing.T) {
 			},
 			// Update with minimum config and verify config is unchanged
 			{
-				Config:             testConfigFvSiteAssociatedMinDependencyWithFvBD,
+				Config:             testConfigFvSiteAssociatedMinDependencyWithFvBD + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check:              resource.ComposeAggregateTestCheckFunc(),
 			},
 			// Update with empty strings config or default value
 			{
-				Config:             testConfigFvSiteAssociatedResetDependencyWithFvBD,
+				Config:             testConfigFvSiteAssociatedResetDependencyWithFvBD + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check:              resource.ComposeAggregateTestCheckFunc(),
 			},
@@ -407,7 +425,7 @@ func TestAccResourceFvSiteAssociatedWithFvBD(t *testing.T) {
 			},
 			// Update with children
 			{
-				Config:             testConfigFvSiteAssociatedChildrenDependencyWithFvBD,
+				Config:             testConfigFvSiteAssociatedChildrenDependencyWithFvBD + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_associated_site.test", "annotation", "orchestrator:terraform"),
@@ -417,32 +435,38 @@ func TestAccResourceFvSiteAssociatedWithFvBD(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_associated_site.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_associated_site.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_associated_site.test", "site_id", "0"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.description", "description_1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.name", "name_1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.name_alias", "name_alias_1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.owner_key", "owner_key_1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.owner_tag", "owner_tag_1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.remote_pc_tag", "16386"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.remote_vrf_pc_tag", "any"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.site_id", "0"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.description", "description_2"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.name", "name_2"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.name_alias", "name_alias_2"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.owner_key", "owner_key_2"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.owner_tag", "owner_tag_2"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.remote_pc_tag", "16387"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.remote_vrf_pc_tag", "any"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.site_id", "1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "tags.1.value", "test_value"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.1.value", "test_value"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.0(1k)-", "inside",
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.description", "description_1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.name", "name_1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.name_alias", "name_alias_1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.owner_key", "owner_key_1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.owner_tag", "owner_tag_1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.remote_pc_tag", "16386"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.remote_vrf_pc_tag", "any"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.site_id", "0"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.annotation", "annotation_2"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.description", "description_2"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.name", "name_2"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.name_alias", "name_alias_2"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.owner_key", "owner_key_2"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.owner_tag", "owner_tag_2"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.remote_pc_tag", "16387"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.remote_vrf_pc_tag", "any"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.site_id", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_associated_site.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "tags.1.value", "test_value"),
+					),
 				),
 			},
 			// Refresh State before import testing to ensure that the state is up to date
@@ -458,92 +482,104 @@ func TestAccResourceFvSiteAssociatedWithFvBD(t *testing.T) {
 			},
 			// Update with children removed from config
 			{
-				Config:             testConfigFvSiteAssociatedChildrenRemoveFromConfigDependencyWithFvBD,
+				Config:             testConfigFvSiteAssociatedChildrenRemoveFromConfigDependencyWithFvBD + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.annotation", "annotation_1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.description", "description_1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.name", "name_1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.name_alias", "name_alias_1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.owner_key", "owner_key_1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.owner_tag", "owner_tag_1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.remote_pc_tag", "16386"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.remote_vrf_pc_tag", "any"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.site_id", "0"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.tags.#", "2"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.description", "description_2"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.name", "name_2"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.name_alias", "name_alias_2"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.owner_key", "owner_key_2"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.owner_tag", "owner_tag_2"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.remote_pc_tag", "16387"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.remote_vrf_pc_tag", "any"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.site_id", "1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.#", "2"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "tags.#", "2"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.0(1k)-", "inside",
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.annotation", "annotation_1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.description", "description_1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.name", "name_1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.name_alias", "name_alias_1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.owner_key", "owner_key_1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.owner_tag", "owner_tag_1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.remote_pc_tag", "16386"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.remote_vrf_pc_tag", "any"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.site_id", "0"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.annotation", "annotation_2"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.annotations.#", "2"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.tags.#", "2"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.description", "description_2"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.name", "name_2"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.name_alias", "name_alias_2"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.owner_key", "owner_key_2"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.owner_tag", "owner_tag_2"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.remote_pc_tag", "16387"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.remote_vrf_pc_tag", "any"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.1.site_id", "1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_associated_site.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children first child removed
 			{
-				Config:             testConfigFvSiteAssociatedChildrenRemoveOneDependencyWithFvBD,
+				Config:             testConfigFvSiteAssociatedChildrenRemoveOneDependencyWithFvBD + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.annotation", "annotation_2"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.tags.#", "1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.description", "description_2"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.name", "name_2"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.name_alias", "name_alias_2"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.owner_key", "owner_key_2"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.owner_tag", "owner_tag_2"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.remote_pc_tag", "16387"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.remote_vrf_pc_tag", "any"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.site_id", "1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.#", "1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_associated_site.test", "tags.#", "1"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.0(1k)-", "inside",
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.annotation", "annotation_2"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.annotations.#", "1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.tags.#", "1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.description", "description_2"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.name", "name_2"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.name_alias", "name_alias_2"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.owner_key", "owner_key_2"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.owner_tag", "owner_tag_2"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.remote_pc_tag", "16387"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.remote_vrf_pc_tag", "any"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.0.site_id", "1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "remote_sites.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_associated_site.test", "tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_associated_site.test", "tags.#", "1"),
+					),
 				),
 			},
 			// Update with all children removed
 			{
-				Config:             testConfigFvSiteAssociatedChildrenRemoveAllDependencyWithFvBD,
+				Config:             testConfigFvSiteAssociatedChildrenRemoveAllDependencyWithFvBD + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_associated_site.test", "annotations.#", "0"),
@@ -600,7 +636,7 @@ resource "aci_associated_site" "test" {
 const testConfigFvSiteAssociatedChildrenDependencyWithFvAEPg = testConfigFvAEPgMinDependencyWithFvAp + `
 resource "aci_associated_site" "test" {
   parent_dn = aci_application_epg.test.id
-  annotations = [
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -609,8 +645,8 @@ resource "aci_associated_site" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
-  remote_sites = [
+  ] : null
+  remote_sites = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.0(1k)-") ? [
     {
       annotation = "annotation_1"
       annotations = [
@@ -673,8 +709,8 @@ resource "aci_associated_site" "test" {
       remote_vrf_pc_tag = "any"
       site_id = "1"
     },
-  ]
-  tags = [
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -683,7 +719,7 @@ resource "aci_associated_site" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
+  ] : null
 }
 `
 
@@ -696,13 +732,13 @@ resource "aci_associated_site" "test" {
 const testConfigFvSiteAssociatedChildrenRemoveOneDependencyWithFvAEPg = testConfigFvAEPgMinDependencyWithFvAp + `
 resource "aci_associated_site" "test" {
   parent_dn = aci_application_epg.test.id
-  annotations = [ 
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
-  remote_sites = [ 
+  ] : null
+  remote_sites = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.0(1k)-") ? [ 
 	{
 	  annotation = "annotation_2"
       annotations = [ 
@@ -726,22 +762,22 @@ resource "aci_associated_site" "test" {
 	  remote_vrf_pc_tag = "any"
 	  site_id = "1"
 	},
-  ]
-  tags = [ 
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
+  ] : null
 }
 `
 
 const testConfigFvSiteAssociatedChildrenRemoveAllDependencyWithFvAEPg = testConfigFvAEPgMinDependencyWithFvAp + `
 resource "aci_associated_site" "test" {
   parent_dn = aci_application_epg.test.id
-  annotations = []
-  remote_sites = []
-  tags = []
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
+  remote_sites = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.0(1k)-") ? [] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
 }
 `
 
@@ -789,7 +825,7 @@ resource "aci_associated_site" "test" {
 const testConfigFvSiteAssociatedChildrenDependencyWithFvBD = testConfigFvBDMinDependencyWithFvTenant + `
 resource "aci_associated_site" "test" {
   parent_dn = aci_bridge_domain.test.id
-  annotations = [
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -798,8 +834,8 @@ resource "aci_associated_site" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
-  remote_sites = [
+  ] : null
+  remote_sites = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.0(1k)-") ? [
     {
       annotation = "annotation_1"
       annotations = [
@@ -862,8 +898,8 @@ resource "aci_associated_site" "test" {
       remote_vrf_pc_tag = "any"
       site_id = "1"
     },
-  ]
-  tags = [
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -872,7 +908,7 @@ resource "aci_associated_site" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
+  ] : null
 }
 `
 
@@ -885,13 +921,13 @@ resource "aci_associated_site" "test" {
 const testConfigFvSiteAssociatedChildrenRemoveOneDependencyWithFvBD = testConfigFvBDMinDependencyWithFvTenant + `
 resource "aci_associated_site" "test" {
   parent_dn = aci_bridge_domain.test.id
-  annotations = [ 
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
-  remote_sites = [ 
+  ] : null
+  remote_sites = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.0(1k)-") ? [ 
 	{
 	  annotation = "annotation_2"
       annotations = [ 
@@ -915,21 +951,21 @@ resource "aci_associated_site" "test" {
 	  remote_vrf_pc_tag = "any"
 	  site_id = "1"
 	},
-  ]
-  tags = [ 
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
+  ] : null
 }
 `
 
 const testConfigFvSiteAssociatedChildrenRemoveAllDependencyWithFvBD = testConfigFvBDMinDependencyWithFvTenant + `
 resource "aci_associated_site" "test" {
   parent_dn = aci_bridge_domain.test.id
-  annotations = []
-  remote_sites = []
-  tags = []
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
+  remote_sites = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.0(1k)-") ? [] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
 }
 `
