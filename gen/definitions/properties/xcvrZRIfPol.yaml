@@ -1,0 +1,37 @@
+default_values:
+    frequency100MHz: "1931000"
+    wavelength50GHz: "1552524"
+documentation:
+    cdMax: The maximum chromatic dispersion of the %s object. The difference with 'minimum_chromatic_dispersion' must be greater than 1000, and the value must be in the range -1399 - 2400.
+    cdMin: The minimum chromatic dispersion of the %s object. The difference with 'maximum_chromatic_dispersion' must be greater than 1000, and the value must be in the range -2400 - 1399.
+    dacRate: The Digital-to-Analog Converter (DAC) rate of the %s object.
+    dwdmCarrier: The Dense Wavelength Division Multiplexing (DWDM) carrier grid selector of the %s object.
+    fecMode: The Forward Error Correction (FEC) mode of the %s object.
+    frequency50GHz: The 50 Gigahertz (GHz) frequency of the %s object. The value must be in the range 19115 - 19610.
+    frequency100MHz: The 100 Megahertz (MHz) frequency of the %s object. The value must be in the range 1911500 - 1961000.
+    ituChannel50GHz: The 50 Gigahertz (GHz) International Telecommunication Union (ITU) channel of the %s object. The value must be in the range 1 - 100.
+    modulation: The modulation of the %s object.
+    muxponder: The muxponder mode of the %s object.
+    transmitPower: The transmit power of the %s object. The value must be in the range -190 - 50.
+    wavelength50GHz: The 50 Gigahertz (GHz) wavelength of the %s object. The value must be in the range 1528773 - 1568362.
+overwrites:
+    admin_st: admin_state
+    cd_max: maximum_chromatic_dispersion
+    cd_min: minimum_chromatic_dispersion
+    dwdm_carrier: dwdm_carrier_grid
+    frequency50_g_hz: frequency_50_ghz
+    frequency100_m_hz: frequency_100_mhz
+    itu_channel50_g_hz: itu_channel_50_ghz
+    muxponder: muxponder_mode
+    wavelength50_g_hz: wavelength_50_ghz
+test_values:
+    all:
+        admin_state: enabled
+        dwdm_carrier_grid: 50GHzFrequency
+        frequency_50_ghz: "19415"
+        frequency_100_mhz: "1912504"
+        itu_channel_50_ghz: "23"
+        maximum_chromatic_dispersion: "-1390"
+        minimum_chromatic_dispersion: "-2391"
+        transmit_power: "20"
+        wavelength_50_ghz: "1563742"

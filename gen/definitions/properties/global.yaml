@@ -95,3 +95,5 @@ resource_name_doc_overwrite:
     Vpn: VPN
     Vrf: VRF
     Wan: WAN
+    Zr: ZR
+    Zrp: ZRP (ZR+)
