@@ -3,14 +3,14 @@
     "dataLicense": "CC0-1.0",
     "SPDXID": "SPDXRef-DOCUMENT",
     "name": "./",
-    "documentNamespace": "https://anchore.com/syft/dir/6ee3a976-e641-48ae-8286-5f7f3256e96b",
+    "documentNamespace": "https://anchore.com/syft/dir/a2503dba-77b0-412a-ad68-20aef812ba39",
     "creationInfo": {
         "licenseListVersion": "3.27",
         "creators": [
             "Organization: Anchore, Inc",
-            "Tool: syft-1.36.0"
+            "Tool: syft-1.40.0"
         ],
-        "created": "2025-11-07T03:44:03Z"
+        "created": "2026-01-17T01:38:12Z"
     },
     "packages": [
         {
@@ -38,14 +38,14 @@
                 {
                     "referenceCategory": "PACKAGE-MANAGER",
                     "referenceType": "purl",
-                    "referenceLocator": "pkg:golang/github.com/CiscoDevNet/terraform-provider-aci#v2"
+                    "referenceLocator": "pkg:golang/github.com/CiscoDevNet/terraform-provider-aci/v2"
                 }
             ]
         },
         {
             "name": "github.com/ProtonMail/go-crypto",
-            "SPDXID": "SPDXRef-Package-go-module-github.com-ProtonMail-go-crypto-c42204908bdec65f",
-            "versionInfo": "v1.1.3",
+            "SPDXID": "SPDXRef-Package-go-module-github.com-ProtonMail-go-crypto-7628f5f6e70b2c37",
+            "versionInfo": "v1.1.6",
             "supplier": "NOASSERTION",
             "downloadLocation": "NOASSERTION",
             "filesAnalyzed": false,
@@ -57,17 +57,17 @@
                 {
                     "referenceCategory": "SECURITY",
                     "referenceType": "cpe23Type",
-                    "referenceLocator": "cpe:2.3:a:ProtonMail:go-crypto:v1.1.3:*:*:*:*:*:*:*"
+                    "referenceLocator": "cpe:2.3:a:ProtonMail:go-crypto:v1.1.6:*:*:*:*:*:*:*"
                 },
                 {
                     "referenceCategory": "SECURITY",
                     "referenceType": "cpe23Type",
-                    "referenceLocator": "cpe:2.3:a:ProtonMail:go_crypto:v1.1.3:*:*:*:*:*:*:*"
+                    "referenceLocator": "cpe:2.3:a:ProtonMail:go_crypto:v1.1.6:*:*:*:*:*:*:*"
                 },
                 {
                     "referenceCategory": "PACKAGE-MANAGER",
                     "referenceType": "purl",
-                    "referenceLocator": "pkg:golang/github.com/ProtonMail/go-crypto@v1.1.3"
+                    "referenceLocator": "pkg:golang/github.com/ProtonMail/go-crypto@v1.1.6"
                 }
             ]
         },
@@ -120,7 +120,7 @@
                 {
                     "referenceCategory": "PACKAGE-MANAGER",
                     "referenceType": "purl",
-                    "referenceLocator": "pkg:golang/github.com/apparentlymart/go-textseg@v15.0.0#v15"
+                    "referenceLocator": "pkg:golang/github.com/apparentlymart/go-textseg/v15@v15.0.0"
                 }
             ]
         },
@@ -149,14 +149,14 @@
                 {
                     "referenceCategory": "PACKAGE-MANAGER",
                     "referenceType": "purl",
-                    "referenceLocator": "pkg:golang/github.com/ciscoecosystem/aci-go-client@v2.32.0#v2"
+                    "referenceLocator": "pkg:golang/github.com/ciscoecosystem/aci-go-client/v2@v2.32.0"
                 }
             ]
         },
         {
             "name": "github.com/cloudflare/circl",
-            "SPDXID": "SPDXRef-Package-go-module-github.com-cloudflare-circl-52e9c78911853809",
-            "versionInfo": "v1.3.7",
+            "SPDXID": "SPDXRef-Package-go-module-github.com-cloudflare-circl-943198f096ab83bc",
+            "versionInfo": "v1.6.1",
             "supplier": "NOASSERTION",
             "downloadLocation": "NOASSERTION",
             "filesAnalyzed": false,
@@ -168,12 +168,12 @@
                 {
                     "referenceCategory": "SECURITY",
                     "referenceType": "cpe23Type",
-                    "referenceLocator": "cpe:2.3:a:cloudflare:circl:v1.3.7:*:*:*:*:*:*:*"
+                    "referenceLocator": "cpe:2.3:a:cloudflare:circl:v1.6.1:*:*:*:*:*:*:*"
                 },
                 {
                     "referenceCategory": "PACKAGE-MANAGER",
                     "referenceType": "purl",
-                    "referenceLocator": "pkg:golang/github.com/cloudflare/circl@v1.3.7"
+                    "referenceLocator": "pkg:golang/github.com/cloudflare/circl@v1.6.1"
                 }
             ]
         },
@@ -449,8 +449,8 @@
         },
         {
             "name": "github.com/hashicorp/go-plugin",
-            "SPDXID": "SPDXRef-Package-go-module-github.com-hashicorp-go-plugin-f2aa120b6c645c90",
-            "versionInfo": "v1.6.2",
+            "SPDXID": "SPDXRef-Package-go-module-github.com-hashicorp-go-plugin-e9462916f79df5a1",
+            "versionInfo": "v1.7.0",
             "supplier": "NOASSERTION",
             "downloadLocation": "NOASSERTION",
             "filesAnalyzed": false,
@@ -462,17 +462,17 @@
                 {
                     "referenceCategory": "SECURITY",
                     "referenceType": "cpe23Type",
-                    "referenceLocator": "cpe:2.3:a:hashicorp:go-plugin:v1.6.2:*:*:*:*:*:*:*"
+                    "referenceLocator": "cpe:2.3:a:hashicorp:go-plugin:v1.7.0:*:*:*:*:*:*:*"
                 },
                 {
                     "referenceCategory": "SECURITY",
                     "referenceType": "cpe23Type",
-                    "referenceLocator": "cpe:2.3:a:hashicorp:go_plugin:v1.6.2:*:*:*:*:*:*:*"
+                    "referenceLocator": "cpe:2.3:a:hashicorp:go_plugin:v1.7.0:*:*:*:*:*:*:*"
                 },
                 {
                     "referenceCategory": "PACKAGE-MANAGER",
                     "referenceType": "purl",
-                    "referenceLocator": "pkg:golang/github.com/hashicorp/go-plugin@v1.6.2"
+                    "referenceLocator": "pkg:golang/github.com/hashicorp/go-plugin@v1.7.0"
                 }
             ]
         },
@@ -560,8 +560,8 @@
         },
         {
             "name": "github.com/hashicorp/hc-install",
-            "SPDXID": "SPDXRef-Package-go-module-github.com-hashicorp-hc-install-285bf1b85d8c4e00",
-            "versionInfo": "v0.9.1",
+            "SPDXID": "SPDXRef-Package-go-module-github.com-hashicorp-hc-install-6034eede35f94cc8",
+            "versionInfo": "v0.9.2",
             "supplier": "NOASSERTION",
             "downloadLocation": "NOASSERTION",
             "filesAnalyzed": false,
@@ -573,24 +573,24 @@
                 {
                     "referenceCategory": "SECURITY",
                     "referenceType": "cpe23Type",
-                    "referenceLocator": "cpe:2.3:a:hashicorp:hc-install:v0.9.1:*:*:*:*:*:*:*"
+                    "referenceLocator": "cpe:2.3:a:hashicorp:hc-install:v0.9.2:*:*:*:*:*:*:*"
                 },
                 {
                     "referenceCategory": "SECURITY",
                     "referenceType": "cpe23Type",
-                    "referenceLocator": "cpe:2.3:a:hashicorp:hc_install:v0.9.1:*:*:*:*:*:*:*"
+                    "referenceLocator": "cpe:2.3:a:hashicorp:hc_install:v0.9.2:*:*:*:*:*:*:*"
                 },
                 {
                     "referenceCategory": "PACKAGE-MANAGER",
                     "referenceType": "purl",
-                    "referenceLocator": "pkg:golang/github.com/hashicorp/hc-install@v0.9.1"
+                    "referenceLocator": "pkg:golang/github.com/hashicorp/hc-install@v0.9.2"
                 }
             ]
         },
         {
             "name": "github.com/hashicorp/hcl/v2",
-            "SPDXID": "SPDXRef-Package-go-module-github.com-hashicorp-hcl-v2-c81bb8490eb2e47e",
-            "versionInfo": "v2.23.0",
+            "SPDXID": "SPDXRef-Package-go-module-github.com-hashicorp-hcl-v2-03f986fa582b9bde",
+            "versionInfo": "v2.24.0",
             "supplier": "NOASSERTION",
             "downloadLocation": "NOASSERTION",
             "filesAnalyzed": false,
@@ -602,12 +602,12 @@
                 {
                     "referenceCategory": "SECURITY",
                     "referenceType": "cpe23Type",
-                    "referenceLocator": "cpe:2.3:a:hashicorp:hcl\\/v2:v2.23.0:*:*:*:*:*:*:*"
+                    "referenceLocator": "cpe:2.3:a:hashicorp:hcl\\/v2:v2.24.0:*:*:*:*:*:*:*"
                 },
                 {
                     "referenceCategory": "PACKAGE-MANAGER",
                     "referenceType": "purl",
-                    "referenceLocator": "pkg:golang/github.com/hashicorp/hcl@v2.23.0#v2"
+                    "referenceLocator": "pkg:golang/github.com/hashicorp/hcl/v2@v2.24.0"
                 }
             ]
         },
@@ -637,36 +637,7 @@
         },
         {
             "name": "github.com/hashicorp/terraform-exec",
-            "SPDXID": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-exec-f7b208d50ac094cd",
-            "versionInfo": "v0.22.0",
-            "supplier": "NOASSERTION",
-            "downloadLocation": "NOASSERTION",
-            "filesAnalyzed": false,
-            "sourceInfo": "acquired package info from go module information: /go.mod",
-            "licenseConcluded": "MPL-2.0",
-            "licenseDeclared": "NOASSERTION",
-            "copyrightText": "NOASSERTION",
-            "externalRefs": [
-                {
-                    "referenceCategory": "SECURITY",
-                    "referenceType": "cpe23Type",
-                    "referenceLocator": "cpe:2.3:a:hashicorp:terraform-exec:v0.22.0:*:*:*:*:*:*:*"
-                },
-                {
-                    "referenceCategory": "SECURITY",
-                    "referenceType": "cpe23Type",
-                    "referenceLocator": "cpe:2.3:a:hashicorp:terraform_exec:v0.22.0:*:*:*:*:*:*:*"
-                },
-                {
-                    "referenceCategory": "PACKAGE-MANAGER",
-                    "referenceType": "purl",
-                    "referenceLocator": "pkg:golang/github.com/hashicorp/terraform-exec@v0.22.0"
-                }
-            ]
-        },
-        {
-            "name": "github.com/hashicorp/terraform-json",
-            "SPDXID": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-json-fc8725e3f92cff27",
+            "SPDXID": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-exec-a2bbffd91dff3d2c",
             "versionInfo": "v0.24.0",
             "supplier": "NOASSERTION",
             "downloadLocation": "NOASSERTION",
@@ -679,24 +650,24 @@
                 {
                     "referenceCategory": "SECURITY",
                     "referenceType": "cpe23Type",
-                    "referenceLocator": "cpe:2.3:a:hashicorp:terraform-json:v0.24.0:*:*:*:*:*:*:*"
+                    "referenceLocator": "cpe:2.3:a:hashicorp:terraform-exec:v0.24.0:*:*:*:*:*:*:*"
                 },
                 {
                     "referenceCategory": "SECURITY",
                     "referenceType": "cpe23Type",
-                    "referenceLocator": "cpe:2.3:a:hashicorp:terraform_json:v0.24.0:*:*:*:*:*:*:*"
+                    "referenceLocator": "cpe:2.3:a:hashicorp:terraform_exec:v0.24.0:*:*:*:*:*:*:*"
                 },
                 {
                     "referenceCategory": "PACKAGE-MANAGER",
                     "referenceType": "purl",
-                    "referenceLocator": "pkg:golang/github.com/hashicorp/terraform-json@v0.24.0"
+                    "referenceLocator": "pkg:golang/github.com/hashicorp/terraform-exec@v0.24.0"
                 }
             ]
         },
         {
-            "name": "github.com/hashicorp/terraform-plugin-framework",
-            "SPDXID": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-framework-49dccaedc5c1e73d",
-            "versionInfo": "v1.14.1",
+            "name": "github.com/hashicorp/terraform-json",
+            "SPDXID": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-json-d3d4934d11dbd340",
+            "versionInfo": "v0.27.2",
             "supplier": "NOASSERTION",
             "downloadLocation": "NOASSERTION",
             "filesAnalyzed": false,
@@ -708,17 +679,46 @@
                 {
                     "referenceCategory": "SECURITY",
                     "referenceType": "cpe23Type",
-                    "referenceLocator": "cpe:2.3:a:hashicorp:terraform-plugin-framework:v1.14.1:*:*:*:*:*:*:*"
+                    "referenceLocator": "cpe:2.3:a:hashicorp:terraform-json:v0.27.2:*:*:*:*:*:*:*"
                 },
                 {
                     "referenceCategory": "SECURITY",
                     "referenceType": "cpe23Type",
-                    "referenceLocator": "cpe:2.3:a:hashicorp:terraform_plugin_framework:v1.14.1:*:*:*:*:*:*:*"
+                    "referenceLocator": "cpe:2.3:a:hashicorp:terraform_json:v0.27.2:*:*:*:*:*:*:*"
                 },
                 {
                     "referenceCategory": "PACKAGE-MANAGER",
                     "referenceType": "purl",
-                    "referenceLocator": "pkg:golang/github.com/hashicorp/terraform-plugin-framework@v1.14.1"
+                    "referenceLocator": "pkg:golang/github.com/hashicorp/terraform-json@v0.27.2"
+                }
+            ]
+        },
+        {
+            "name": "github.com/hashicorp/terraform-plugin-framework",
+            "SPDXID": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-framework-420e4ba8e86caf1a",
+            "versionInfo": "v1.17.0",
+            "supplier": "NOASSERTION",
+            "downloadLocation": "NOASSERTION",
+            "filesAnalyzed": false,
+            "sourceInfo": "acquired package info from go module information: /go.mod",
+            "licenseConcluded": "MPL-2.0",
+            "licenseDeclared": "NOASSERTION",
+            "copyrightText": "NOASSERTION",
+            "externalRefs": [
+                {
+                    "referenceCategory": "SECURITY",
+                    "referenceType": "cpe23Type",
+                    "referenceLocator": "cpe:2.3:a:hashicorp:terraform-plugin-framework:v1.17.0:*:*:*:*:*:*:*"
+                },
+                {
+                    "referenceCategory": "SECURITY",
+                    "referenceType": "cpe23Type",
+                    "referenceLocator": "cpe:2.3:a:hashicorp:terraform_plugin_framework:v1.17.0:*:*:*:*:*:*:*"
+                },
+                {
+                    "referenceCategory": "PACKAGE-MANAGER",
+                    "referenceType": "purl",
+                    "referenceLocator": "pkg:golang/github.com/hashicorp/terraform-plugin-framework@v1.17.0"
                 }
             ]
         },
@@ -753,8 +753,8 @@
         },
         {
             "name": "github.com/hashicorp/terraform-plugin-go",
-            "SPDXID": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-go-3908f2fa74acba1d",
-            "versionInfo": "v0.26.0",
+            "SPDXID": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-go-2425854b24ca4afd",
+            "versionInfo": "v0.29.0",
             "supplier": "NOASSERTION",
             "downloadLocation": "NOASSERTION",
             "filesAnalyzed": false,
@@ -766,24 +766,24 @@
                 {
                     "referenceCategory": "SECURITY",
                     "referenceType": "cpe23Type",
-                    "referenceLocator": "cpe:2.3:a:hashicorp:terraform-plugin-go:v0.26.0:*:*:*:*:*:*:*"
+                    "referenceLocator": "cpe:2.3:a:hashicorp:terraform-plugin-go:v0.29.0:*:*:*:*:*:*:*"
                 },
                 {
                     "referenceCategory": "SECURITY",
                     "referenceType": "cpe23Type",
-                    "referenceLocator": "cpe:2.3:a:hashicorp:terraform_plugin_go:v0.26.0:*:*:*:*:*:*:*"
+                    "referenceLocator": "cpe:2.3:a:hashicorp:terraform_plugin_go:v0.29.0:*:*:*:*:*:*:*"
                 },
                 {
                     "referenceCategory": "PACKAGE-MANAGER",
                     "referenceType": "purl",
-                    "referenceLocator": "pkg:golang/github.com/hashicorp/terraform-plugin-go@v0.26.0"
+                    "referenceLocator": "pkg:golang/github.com/hashicorp/terraform-plugin-go@v0.29.0"
                 }
             ]
         },
         {
             "name": "github.com/hashicorp/terraform-plugin-log",
-            "SPDXID": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-log-b1aa9434d4f946ab",
-            "versionInfo": "v0.9.0",
+            "SPDXID": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-log-942abaf223664249",
+            "versionInfo": "v0.10.0",
             "supplier": "NOASSERTION",
             "downloadLocation": "NOASSERTION",
             "filesAnalyzed": false,
@@ -795,24 +795,24 @@
                 {
                     "referenceCategory": "SECURITY",
                     "referenceType": "cpe23Type",
-                    "referenceLocator": "cpe:2.3:a:hashicorp:terraform-plugin-log:v0.9.0:*:*:*:*:*:*:*"
+                    "referenceLocator": "cpe:2.3:a:hashicorp:terraform-plugin-log:v0.10.0:*:*:*:*:*:*:*"
                 },
                 {
                     "referenceCategory": "SECURITY",
                     "referenceType": "cpe23Type",
-                    "referenceLocator": "cpe:2.3:a:hashicorp:terraform_plugin_log:v0.9.0:*:*:*:*:*:*:*"
+                    "referenceLocator": "cpe:2.3:a:hashicorp:terraform_plugin_log:v0.10.0:*:*:*:*:*:*:*"
                 },
                 {
                     "referenceCategory": "PACKAGE-MANAGER",
                     "referenceType": "purl",
-                    "referenceLocator": "pkg:golang/github.com/hashicorp/terraform-plugin-log@v0.9.0"
+                    "referenceLocator": "pkg:golang/github.com/hashicorp/terraform-plugin-log@v0.10.0"
                 }
             ]
         },
         {
             "name": "github.com/hashicorp/terraform-plugin-mux",
-            "SPDXID": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-mux-eff8b750760b05d9",
-            "versionInfo": "v0.18.0",
+            "SPDXID": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-mux-2c8bad1e3429e803",
+            "versionInfo": "v0.21.0",
             "supplier": "NOASSERTION",
             "downloadLocation": "NOASSERTION",
             "filesAnalyzed": false,
@@ -824,24 +824,24 @@
                 {
                     "referenceCategory": "SECURITY",
                     "referenceType": "cpe23Type",
-                    "referenceLocator": "cpe:2.3:a:hashicorp:terraform-plugin-mux:v0.18.0:*:*:*:*:*:*:*"
+                    "referenceLocator": "cpe:2.3:a:hashicorp:terraform-plugin-mux:v0.21.0:*:*:*:*:*:*:*"
                 },
                 {
                     "referenceCategory": "SECURITY",
                     "referenceType": "cpe23Type",
-                    "referenceLocator": "cpe:2.3:a:hashicorp:terraform_plugin_mux:v0.18.0:*:*:*:*:*:*:*"
+                    "referenceLocator": "cpe:2.3:a:hashicorp:terraform_plugin_mux:v0.21.0:*:*:*:*:*:*:*"
                 },
                 {
                     "referenceCategory": "PACKAGE-MANAGER",
                     "referenceType": "purl",
-                    "referenceLocator": "pkg:golang/github.com/hashicorp/terraform-plugin-mux@v0.18.0"
+                    "referenceLocator": "pkg:golang/github.com/hashicorp/terraform-plugin-mux@v0.21.0"
                 }
             ]
         },
         {
             "name": "github.com/hashicorp/terraform-plugin-sdk/v2",
-            "SPDXID": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-sdk-v2-45a756df0f8c7d38",
-            "versionInfo": "v2.36.1",
+            "SPDXID": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-sdk-v2-fc02aa6725beb436",
+            "versionInfo": "v2.38.1",
             "supplier": "NOASSERTION",
             "downloadLocation": "NOASSERTION",
             "filesAnalyzed": false,
@@ -853,24 +853,24 @@
                 {
                     "referenceCategory": "SECURITY",
                     "referenceType": "cpe23Type",
-                    "referenceLocator": "cpe:2.3:a:hashicorp:terraform-plugin-sdk\\/v2:v2.36.1:*:*:*:*:*:*:*"
+                    "referenceLocator": "cpe:2.3:a:hashicorp:terraform-plugin-sdk\\/v2:v2.38.1:*:*:*:*:*:*:*"
                 },
                 {
                     "referenceCategory": "SECURITY",
                     "referenceType": "cpe23Type",
-                    "referenceLocator": "cpe:2.3:a:hashicorp:terraform_plugin_sdk\\/v2:v2.36.1:*:*:*:*:*:*:*"
+                    "referenceLocator": "cpe:2.3:a:hashicorp:terraform_plugin_sdk\\/v2:v2.38.1:*:*:*:*:*:*:*"
                 },
                 {
                     "referenceCategory": "PACKAGE-MANAGER",
                     "referenceType": "purl",
-                    "referenceLocator": "pkg:golang/github.com/hashicorp/terraform-plugin-sdk@v2.36.1#v2"
+                    "referenceLocator": "pkg:golang/github.com/hashicorp/terraform-plugin-sdk/v2@v2.38.1"
                 }
             ]
         },
         {
             "name": "github.com/hashicorp/terraform-plugin-testing",
-            "SPDXID": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-testing-f369ab014a3ffa87",
-            "versionInfo": "v1.12.0",
+            "SPDXID": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-testing-63a943d89bbfd80f",
+            "versionInfo": "v1.14.0",
             "supplier": "NOASSERTION",
             "downloadLocation": "NOASSERTION",
             "filesAnalyzed": false,
@@ -882,24 +882,24 @@
                 {
                     "referenceCategory": "SECURITY",
                     "referenceType": "cpe23Type",
-                    "referenceLocator": "cpe:2.3:a:hashicorp:terraform-plugin-testing:v1.12.0:*:*:*:*:*:*:*"
+                    "referenceLocator": "cpe:2.3:a:hashicorp:terraform-plugin-testing:v1.14.0:*:*:*:*:*:*:*"
                 },
                 {
                     "referenceCategory": "SECURITY",
                     "referenceType": "cpe23Type",
-                    "referenceLocator": "cpe:2.3:a:hashicorp:terraform_plugin_testing:v1.12.0:*:*:*:*:*:*:*"
+                    "referenceLocator": "cpe:2.3:a:hashicorp:terraform_plugin_testing:v1.14.0:*:*:*:*:*:*:*"
                 },
                 {
                     "referenceCategory": "PACKAGE-MANAGER",
                     "referenceType": "purl",
-                    "referenceLocator": "pkg:golang/github.com/hashicorp/terraform-plugin-testing@v1.12.0"
+                    "referenceLocator": "pkg:golang/github.com/hashicorp/terraform-plugin-testing@v1.14.0"
                 }
             ]
         },
         {
             "name": "github.com/hashicorp/terraform-registry-address",
-            "SPDXID": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-registry-address-b312e85e36784aba",
-            "versionInfo": "v0.2.4",
+            "SPDXID": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-registry-address-94c2688a1d3c97ed",
+            "versionInfo": "v0.4.0",
             "supplier": "NOASSERTION",
             "downloadLocation": "NOASSERTION",
             "filesAnalyzed": false,
@@ -911,17 +911,17 @@
                 {
                     "referenceCategory": "SECURITY",
                     "referenceType": "cpe23Type",
-                    "referenceLocator": "cpe:2.3:a:hashicorp:terraform-registry-address:v0.2.4:*:*:*:*:*:*:*"
+                    "referenceLocator": "cpe:2.3:a:hashicorp:terraform-registry-address:v0.4.0:*:*:*:*:*:*:*"
                 },
                 {
                     "referenceCategory": "SECURITY",
                     "referenceType": "cpe23Type",
-                    "referenceLocator": "cpe:2.3:a:hashicorp:terraform_registry_address:v0.2.4:*:*:*:*:*:*:*"
+                    "referenceLocator": "cpe:2.3:a:hashicorp:terraform_registry_address:v0.4.0:*:*:*:*:*:*:*"
                 },
                 {
                     "referenceCategory": "PACKAGE-MANAGER",
                     "referenceType": "purl",
-                    "referenceLocator": "pkg:golang/github.com/hashicorp/terraform-registry-address@v0.2.4"
+                    "referenceLocator": "pkg:golang/github.com/hashicorp/terraform-registry-address@v0.4.0"
                 }
             ]
         },
@@ -956,8 +956,8 @@
         },
         {
             "name": "github.com/hashicorp/yamux",
-            "SPDXID": "SPDXRef-Package-go-module-github.com-hashicorp-yamux-ebb5b802307864d0",
-            "versionInfo": "v0.1.1",
+            "SPDXID": "SPDXRef-Package-go-module-github.com-hashicorp-yamux-739767d99098c61f",
+            "versionInfo": "v0.1.2",
             "supplier": "NOASSERTION",
             "downloadLocation": "NOASSERTION",
             "filesAnalyzed": false,
@@ -969,12 +969,12 @@
                 {
                     "referenceCategory": "SECURITY",
                     "referenceType": "cpe23Type",
-                    "referenceLocator": "cpe:2.3:a:hashicorp:yamux:v0.1.1:*:*:*:*:*:*:*"
+                    "referenceLocator": "cpe:2.3:a:hashicorp:yamux:v0.1.2:*:*:*:*:*:*:*"
                 },
                 {
                     "referenceCategory": "PACKAGE-MANAGER",
                     "referenceType": "purl",
-                    "referenceLocator": "pkg:golang/github.com/hashicorp/yamux@v0.1.1"
+                    "referenceLocator": "pkg:golang/github.com/hashicorp/yamux@v0.1.2"
                 }
             ]
         },
@@ -1258,7 +1258,7 @@
                 {
                     "referenceCategory": "PACKAGE-MANAGER",
                     "referenceType": "purl",
-                    "referenceLocator": "pkg:golang/github.com/vmihailenco/msgpack@v5.4.1#v5"
+                    "referenceLocator": "pkg:golang/github.com/vmihailenco/msgpack/v5@v5.4.1"
                 }
             ]
         },
@@ -1282,14 +1282,14 @@
                 {
                     "referenceCategory": "PACKAGE-MANAGER",
                     "referenceType": "purl",
-                    "referenceLocator": "pkg:golang/github.com/vmihailenco/tagparser@v2.0.0#v2"
+                    "referenceLocator": "pkg:golang/github.com/vmihailenco/tagparser/v2@v2.0.0"
                 }
             ]
         },
         {
             "name": "github.com/zclconf/go-cty",
-            "SPDXID": "SPDXRef-Package-go-module-github.com-zclconf-go-cty-11c5ec6f884d273f",
-            "versionInfo": "v1.16.2",
+            "SPDXID": "SPDXRef-Package-go-module-github.com-zclconf-go-cty-ae06dc46feadc1f8",
+            "versionInfo": "v1.17.0",
             "supplier": "NOASSERTION",
             "downloadLocation": "NOASSERTION",
             "filesAnalyzed": false,
@@ -1301,24 +1301,24 @@
                 {
                     "referenceCategory": "SECURITY",
                     "referenceType": "cpe23Type",
-                    "referenceLocator": "cpe:2.3:a:zclconf:go-cty:v1.16.2:*:*:*:*:*:*:*"
+                    "referenceLocator": "cpe:2.3:a:zclconf:go-cty:v1.17.0:*:*:*:*:*:*:*"
                 },
                 {
                     "referenceCategory": "SECURITY",
                     "referenceType": "cpe23Type",
-                    "referenceLocator": "cpe:2.3:a:zclconf:go_cty:v1.16.2:*:*:*:*:*:*:*"
+                    "referenceLocator": "cpe:2.3:a:zclconf:go_cty:v1.17.0:*:*:*:*:*:*:*"
                 },
                 {
                     "referenceCategory": "PACKAGE-MANAGER",
                     "referenceType": "purl",
-                    "referenceLocator": "pkg:golang/github.com/zclconf/go-cty@v1.16.2"
+                    "referenceLocator": "pkg:golang/github.com/zclconf/go-cty@v1.17.0"
                 }
             ]
         },
         {
             "name": "golang.org/x/crypto",
-            "SPDXID": "SPDXRef-Package-go-module-golang.org-x-crypto-476520a554184f22",
-            "versionInfo": "v0.37.0",
+            "SPDXID": "SPDXRef-Package-go-module-golang.org-x-crypto-e64c47a3f95da081",
+            "versionInfo": "v0.45.0",
             "supplier": "NOASSERTION",
             "downloadLocation": "NOASSERTION",
             "filesAnalyzed": false,
@@ -1330,12 +1330,12 @@
                 {
                     "referenceCategory": "SECURITY",
                     "referenceType": "cpe23Type",
-                    "referenceLocator": "cpe:2.3:a:go:ssh:v0.37.0:*:*:*:*:go:*:*"
+                    "referenceLocator": "cpe:2.3:a:go:ssh:v0.45.0:*:*:*:*:go:*:*"
                 },
                 {
                     "referenceCategory": "PACKAGE-MANAGER",
                     "referenceType": "purl",
-                    "referenceLocator": "pkg:golang/golang.org/x/crypto@v0.37.0"
+                    "referenceLocator": "pkg:golang/golang.org/x/crypto@v0.45.0"
                 }
             ]
         },
@@ -1365,8 +1365,8 @@
         },
         {
             "name": "golang.org/x/mod",
-            "SPDXID": "SPDXRef-Package-go-module-golang.org-x-mod-0642896bc6324ca7",
-            "versionInfo": "v0.24.0",
+            "SPDXID": "SPDXRef-Package-go-module-golang.org-x-mod-03b00f730f547d57",
+            "versionInfo": "v0.29.0",
             "supplier": "NOASSERTION",
             "downloadLocation": "NOASSERTION",
             "filesAnalyzed": false,
@@ -1378,19 +1378,19 @@
                 {
                     "referenceCategory": "SECURITY",
                     "referenceType": "cpe23Type",
-                    "referenceLocator": "cpe:2.3:a:golang:x\\/mod:v0.24.0:*:*:*:*:*:*:*"
+                    "referenceLocator": "cpe:2.3:a:golang:x\\/mod:v0.29.0:*:*:*:*:*:*:*"
                 },
                 {
                     "referenceCategory": "PACKAGE-MANAGER",
                     "referenceType": "purl",
-                    "referenceLocator": "pkg:golang/golang.org/x/mod@v0.24.0"
+                    "referenceLocator": "pkg:golang/golang.org/x/mod@v0.29.0"
                 }
             ]
         },
         {
             "name": "golang.org/x/net",
-            "SPDXID": "SPDXRef-Package-go-module-golang.org-x-net-73d822a5165a7580",
-            "versionInfo": "v0.39.0",
+            "SPDXID": "SPDXRef-Package-go-module-golang.org-x-net-2e7c70551b559888",
+            "versionInfo": "v0.47.0",
             "supplier": "NOASSERTION",
             "downloadLocation": "NOASSERTION",
             "filesAnalyzed": false,
@@ -1402,19 +1402,19 @@
                 {
                     "referenceCategory": "SECURITY",
                     "referenceType": "cpe23Type",
-                    "referenceLocator": "cpe:2.3:a:golang:networking:v0.39.0:*:*:*:*:go:*:*"
+                    "referenceLocator": "cpe:2.3:a:golang:networking:v0.47.0:*:*:*:*:go:*:*"
                 },
                 {
                     "referenceCategory": "PACKAGE-MANAGER",
                     "referenceType": "purl",
-                    "referenceLocator": "pkg:golang/golang.org/x/net@v0.39.0"
+                    "referenceLocator": "pkg:golang/golang.org/x/net@v0.47.0"
                 }
             ]
         },
         {
             "name": "golang.org/x/sync",
-            "SPDXID": "SPDXRef-Package-go-module-golang.org-x-sync-5cfca8293e82e6ff",
-            "versionInfo": "v0.13.0",
+            "SPDXID": "SPDXRef-Package-go-module-golang.org-x-sync-a1443618ae5abe05",
+            "versionInfo": "v0.18.0",
             "supplier": "NOASSERTION",
             "downloadLocation": "NOASSERTION",
             "filesAnalyzed": false,
@@ -1426,19 +1426,19 @@
                 {
                     "referenceCategory": "SECURITY",
                     "referenceType": "cpe23Type",
-                    "referenceLocator": "cpe:2.3:a:golang:x\\/sync:v0.13.0:*:*:*:*:*:*:*"
+                    "referenceLocator": "cpe:2.3:a:golang:x\\/sync:v0.18.0:*:*:*:*:*:*:*"
                 },
                 {
                     "referenceCategory": "PACKAGE-MANAGER",
                     "referenceType": "purl",
-                    "referenceLocator": "pkg:golang/golang.org/x/sync@v0.13.0"
+                    "referenceLocator": "pkg:golang/golang.org/x/sync@v0.18.0"
                 }
             ]
         },
         {
             "name": "golang.org/x/sys",
-            "SPDXID": "SPDXRef-Package-go-module-golang.org-x-sys-e0491576717f6095",
-            "versionInfo": "v0.32.0",
+            "SPDXID": "SPDXRef-Package-go-module-golang.org-x-sys-def82f102b3aa03e",
+            "versionInfo": "v0.38.0",
             "supplier": "NOASSERTION",
             "downloadLocation": "NOASSERTION",
             "filesAnalyzed": false,
@@ -1450,43 +1450,19 @@
                 {
                     "referenceCategory": "SECURITY",
                     "referenceType": "cpe23Type",
-                    "referenceLocator": "cpe:2.3:a:golang:x\\/sys:v0.32.0:*:*:*:*:*:*:*"
+                    "referenceLocator": "cpe:2.3:a:golang:x\\/sys:v0.38.0:*:*:*:*:*:*:*"
                 },
                 {
                     "referenceCategory": "PACKAGE-MANAGER",
                     "referenceType": "purl",
-                    "referenceLocator": "pkg:golang/golang.org/x/sys@v0.32.0"
+                    "referenceLocator": "pkg:golang/golang.org/x/sys@v0.38.0"
                 }
             ]
         },
         {
-            "name": "golang.org/x/text",
-            "SPDXID": "SPDXRef-Package-go-module-golang.org-x-text-785645606172e054",
-            "versionInfo": "v0.24.0",
-            "supplier": "NOASSERTION",
-            "downloadLocation": "NOASSERTION",
-            "filesAnalyzed": false,
-            "sourceInfo": "acquired package info from go module information: /go.mod",
-            "licenseConcluded": "BSD-3-Clause AND MPL-2.0",
-            "licenseDeclared": "NOASSERTION",
-            "copyrightText": "NOASSERTION",
-            "externalRefs": [
-                {
-                    "referenceCategory": "SECURITY",
-                    "referenceType": "cpe23Type",
-                    "referenceLocator": "cpe:2.3:a:golang:text:v0.24.0:*:*:*:*:*:*:*"
-                },
-                {
-                    "referenceCategory": "PACKAGE-MANAGER",
-                    "referenceType": "purl",
-                    "referenceLocator": "pkg:golang/golang.org/x/text@v0.24.0"
-                }
-            ]
-        },
-        {
-            "name": "golang.org/x/tools",
-            "SPDXID": "SPDXRef-Package-go-module-golang.org-x-tools-dee3f66338a96a88",
-            "versionInfo": "v0.32.0",
+            "name": "golang.org/x/telemetry",
+            "SPDXID": "SPDXRef-Package-go-module-golang.org-x-telemetry-39c27f8695d13b78",
+            "versionInfo": "v0.0.0-20251008203120-078029d740a8",
             "supplier": "NOASSERTION",
             "downloadLocation": "NOASSERTION",
             "filesAnalyzed": false,
@@ -1498,12 +1474,60 @@
                 {
                     "referenceCategory": "SECURITY",
                     "referenceType": "cpe23Type",
-                    "referenceLocator": "cpe:2.3:a:golang:x\\/tools:v0.32.0:*:*:*:*:*:*:*"
+                    "referenceLocator": "cpe:2.3:a:golang:x\\/telemetry:v0.0.0-20251008203120-078029d740a8:*:*:*:*:*:*:*"
                 },
                 {
                     "referenceCategory": "PACKAGE-MANAGER",
                     "referenceType": "purl",
-                    "referenceLocator": "pkg:golang/golang.org/x/tools@v0.32.0"
+                    "referenceLocator": "pkg:golang/golang.org/x/telemetry@v0.0.0-20251008203120-078029d740a8"
+                }
+            ]
+        },
+        {
+            "name": "golang.org/x/text",
+            "SPDXID": "SPDXRef-Package-go-module-golang.org-x-text-639498e93dc2e58f",
+            "versionInfo": "v0.31.0",
+            "supplier": "NOASSERTION",
+            "downloadLocation": "NOASSERTION",
+            "filesAnalyzed": false,
+            "sourceInfo": "acquired package info from go module information: /go.mod",
+            "licenseConcluded": "BSD-3-Clause AND MPL-2.0",
+            "licenseDeclared": "NOASSERTION",
+            "copyrightText": "NOASSERTION",
+            "externalRefs": [
+                {
+                    "referenceCategory": "SECURITY",
+                    "referenceType": "cpe23Type",
+                    "referenceLocator": "cpe:2.3:a:golang:text:v0.31.0:*:*:*:*:*:*:*"
+                },
+                {
+                    "referenceCategory": "PACKAGE-MANAGER",
+                    "referenceType": "purl",
+                    "referenceLocator": "pkg:golang/golang.org/x/text@v0.31.0"
+                }
+            ]
+        },
+        {
+            "name": "golang.org/x/tools",
+            "SPDXID": "SPDXRef-Package-go-module-golang.org-x-tools-2275854a36871cda",
+            "versionInfo": "v0.38.0",
+            "supplier": "NOASSERTION",
+            "downloadLocation": "NOASSERTION",
+            "filesAnalyzed": false,
+            "sourceInfo": "acquired package info from go module information: /go.mod",
+            "licenseConcluded": "NOASSERTION",
+            "licenseDeclared": "NOASSERTION",
+            "copyrightText": "NOASSERTION",
+            "externalRefs": [
+                {
+                    "referenceCategory": "SECURITY",
+                    "referenceType": "cpe23Type",
+                    "referenceLocator": "cpe:2.3:a:golang:x\\/tools:v0.38.0:*:*:*:*:*:*:*"
+                },
+                {
+                    "referenceCategory": "PACKAGE-MANAGER",
+                    "referenceType": "purl",
+                    "referenceLocator": "pkg:golang/golang.org/x/tools@v0.38.0"
                 }
             ]
         },
@@ -1533,8 +1557,8 @@
         },
         {
             "name": "google.golang.org/genproto/googleapis/rpc",
-            "SPDXID": "SPDXRef-Package-go-module-google.golang.org-genproto-googleapis-rpc-e24d4ef595fbcda1",
-            "versionInfo": "v0.0.0-20241015192408-796eee8c2d53",
+            "SPDXID": "SPDXRef-Package-go-module-google.golang.org-genproto-googleapis-rpc-2f782d4fbe6d23a8",
+            "versionInfo": "v0.0.0-20250707201910-8d1bb00bc6a7",
             "supplier": "NOASSERTION",
             "downloadLocation": "NOASSERTION",
             "filesAnalyzed": false,
@@ -1546,19 +1570,19 @@
                 {
                     "referenceCategory": "SECURITY",
                     "referenceType": "cpe23Type",
-                    "referenceLocator": "cpe:2.3:a:google:genproto:v0.0.0-20241015192408-796eee8c2d53:*:*:*:*:*:*:*"
+                    "referenceLocator": "cpe:2.3:a:google:genproto:v0.0.0-20250707201910-8d1bb00bc6a7:*:*:*:*:*:*:*"
                 },
                 {
                     "referenceCategory": "PACKAGE-MANAGER",
                     "referenceType": "purl",
-                    "referenceLocator": "pkg:golang/google.golang.org/genproto/googleapis@v0.0.0-20241015192408-796eee8c2d53#rpc"
+                    "referenceLocator": "pkg:golang/google.golang.org/genproto/googleapis/rpc@v0.0.0-20250707201910-8d1bb00bc6a7"
                 }
             ]
         },
         {
             "name": "google.golang.org/grpc",
-            "SPDXID": "SPDXRef-Package-go-module-google.golang.org-grpc-2c990bd6621f19cd",
-            "versionInfo": "v1.69.4",
+            "SPDXID": "SPDXRef-Package-go-module-google.golang.org-grpc-a6c37394a2ec3379",
+            "versionInfo": "v1.75.1",
             "supplier": "NOASSERTION",
             "downloadLocation": "NOASSERTION",
             "filesAnalyzed": false,
@@ -1570,19 +1594,19 @@
                 {
                     "referenceCategory": "SECURITY",
                     "referenceType": "cpe23Type",
-                    "referenceLocator": "cpe:2.3:a:google:grpc:v1.69.4:*:*:*:*:*:*:*"
+                    "referenceLocator": "cpe:2.3:a:google:grpc:v1.75.1:*:*:*:*:*:*:*"
                 },
                 {
                     "referenceCategory": "PACKAGE-MANAGER",
                     "referenceType": "purl",
-                    "referenceLocator": "pkg:golang/google.golang.org/grpc@v1.69.4"
+                    "referenceLocator": "pkg:golang/google.golang.org/grpc@v1.75.1"
                 }
             ]
         },
         {
             "name": "google.golang.org/protobuf",
-            "SPDXID": "SPDXRef-Package-go-module-google.golang.org-protobuf-306b1685b24a4100",
-            "versionInfo": "v1.36.3",
+            "SPDXID": "SPDXRef-Package-go-module-google.golang.org-protobuf-8f27758e91d55941",
+            "versionInfo": "v1.36.9",
             "supplier": "NOASSERTION",
             "downloadLocation": "NOASSERTION",
             "filesAnalyzed": false,
@@ -1594,12 +1618,12 @@
                 {
                     "referenceCategory": "SECURITY",
                     "referenceType": "cpe23Type",
-                    "referenceLocator": "cpe:2.3:a:google:protobuf:v1.36.3:*:*:*:*:*:*:*"
+                    "referenceLocator": "cpe:2.3:a:google:protobuf:v1.36.9:*:*:*:*:*:*:*"
                 },
                 {
                     "referenceCategory": "PACKAGE-MANAGER",
                     "referenceType": "purl",
-                    "referenceLocator": "pkg:golang/google.golang.org/protobuf@v1.36.3"
+                    "referenceLocator": "pkg:golang/google.golang.org/protobuf@v1.36.9"
                 }
             ]
         },
@@ -1644,11 +1668,11 @@
             "checksums": [
                 {
                     "algorithm": "SHA1",
-                    "checksumValue": "c1aaeb60b1cc79b8732263c1ac0903342f244a36"
+                    "checksumValue": "b0a786ff94817b2941bbfd27dbbfe6602c20ad2b"
                 },
                 {
                     "algorithm": "SHA256",
-                    "checksumValue": "d4cd946d07c8327ac7c69621216f117b9e458463ab13c8a911d8cfb68484693f"
+                    "checksumValue": "5958203db10b9ef02fdb59dfe34505d14c0e138a51e98aa191b0cdd34f595d60"
                 }
             ],
             "licenseConcluded": "NOASSERTION",
@@ -1668,62 +1692,42 @@
     "relationships": [
         {
             "spdxElementId": "SPDXRef-Package-go-module-github.com-google-go-cmp-01747b553eb46769",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-sdk-v2-45a756df0f8c7d38",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-hcl-v2-03f986fa582b9bde",
             "relationshipType": "DEPENDENCY_OF"
         },
         {
             "spdxElementId": "SPDXRef-Package-go-module-github.com-google-go-cmp-01747b553eb46769",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-hcl-v2-c81bb8490eb2e47e",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-mux-2c8bad1e3429e803",
             "relationshipType": "DEPENDENCY_OF"
         },
         {
             "spdxElementId": "SPDXRef-Package-go-module-github.com-google-go-cmp-01747b553eb46769",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-mux-eff8b750760b05d9",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-testing-63a943d89bbfd80f",
             "relationshipType": "DEPENDENCY_OF"
         },
         {
             "spdxElementId": "SPDXRef-Package-go-module-github.com-google-go-cmp-01747b553eb46769",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-testing-f369ab014a3ffa87",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-sdk-v2-fc02aa6725beb436",
             "relationshipType": "DEPENDENCY_OF"
         },
         {
-            "spdxElementId": "SPDXRef-Package-go-module-golang.org-x-mod-0642896bc6324ca7",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-hc-install-285bf1b85d8c4e00",
+            "spdxElementId": "SPDXRef-Package-go-module-golang.org-x-mod-03b00f730f547d57",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-hc-install-6034eede35f94cc8",
             "relationshipType": "DEPENDENCY_OF"
         },
         {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-framework-validators-091a96644fd3fb44",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-CiscoDevNet-terraform-provider-aci-v2-855108d07aa8f962",
+            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-hcl-v2-03f986fa582b9bde",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-testing-63a943d89bbfd80f",
             "relationshipType": "DEPENDENCY_OF"
         },
         {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-zclconf-go-cty-11c5ec6f884d273f",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-sdk-v2-45a756df0f8c7d38",
-            "relationshipType": "DEPENDENCY_OF"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-zclconf-go-cty-11c5ec6f884d273f",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-hcl-v2-c81bb8490eb2e47e",
-            "relationshipType": "DEPENDENCY_OF"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-zclconf-go-cty-11c5ec6f884d273f",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-testing-f369ab014a3ffa87",
-            "relationshipType": "DEPENDENCY_OF"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-zclconf-go-cty-11c5ec6f884d273f",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-json-fc8725e3f92cff27",
+            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-hcl-v2-03f986fa582b9bde",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-sdk-v2-fc02aa6725beb436",
             "relationshipType": "DEPENDENCY_OF"
         },
         {
             "spdxElementId": "SPDXRef-Package-go-module-github.com-agext-levenshtein-12773f5396caf27c",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-hcl-v2-c81bb8490eb2e47e",
-            "relationshipType": "DEPENDENCY_OF"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-ciscoecosystem-aci-go-client-v2-15c347f44082eb2d",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-CiscoDevNet-terraform-provider-aci-v2-855108d07aa8f962",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-hcl-v2-03f986fa582b9bde",
             "relationshipType": "DEPENDENCY_OF"
         },
         {
@@ -1732,28 +1736,33 @@
             "relationshipType": "DEPENDENCY_OF"
         },
         {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-go-cty-254aa380ce9051bc",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-sdk-v2-45a756df0f8c7d38",
+            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-go-2425854b24ca4afd",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-mux-2c8bad1e3429e803",
+            "relationshipType": "DEPENDENCY_OF"
+        },
+        {
+            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-go-2425854b24ca4afd",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-framework-420e4ba8e86caf1a",
+            "relationshipType": "DEPENDENCY_OF"
+        },
+        {
+            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-go-2425854b24ca4afd",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-testing-63a943d89bbfd80f",
+            "relationshipType": "DEPENDENCY_OF"
+        },
+        {
+            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-go-2425854b24ca4afd",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-sdk-v2-fc02aa6725beb436",
             "relationshipType": "DEPENDENCY_OF"
         },
         {
             "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-go-cty-254aa380ce9051bc",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-CiscoDevNet-terraform-provider-aci-v2-855108d07aa8f962",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-testing-63a943d89bbfd80f",
             "relationshipType": "DEPENDENCY_OF"
         },
         {
             "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-go-cty-254aa380ce9051bc",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-testing-f369ab014a3ffa87",
-            "relationshipType": "DEPENDENCY_OF"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-hc-install-285bf1b85d8c4e00",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-sdk-v2-45a756df0f8c7d38",
-            "relationshipType": "DEPENDENCY_OF"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-hc-install-285bf1b85d8c4e00",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-testing-f369ab014a3ffa87",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-sdk-v2-fc02aa6725beb436",
             "relationshipType": "DEPENDENCY_OF"
         },
         {
@@ -1763,97 +1772,42 @@
         },
         {
             "spdxElementId": "SPDXRef-Package-go-module-github.com-mitchellh-mapstructure-2b4837d78a4731ff",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-sdk-v2-45a756df0f8c7d38",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-sdk-v2-fc02aa6725beb436",
             "relationshipType": "DEPENDENCY_OF"
         },
         {
-            "spdxElementId": "SPDXRef-Package-go-module-google.golang.org-grpc-2c990bd6621f19cd",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-go-3908f2fa74acba1d",
-            "relationshipType": "DEPENDENCY_OF"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-google.golang.org-grpc-2c990bd6621f19cd",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-mux-eff8b750760b05d9",
-            "relationshipType": "DEPENDENCY_OF"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-google.golang.org-grpc-2c990bd6621f19cd",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-go-plugin-f2aa120b6c645c90",
-            "relationshipType": "DEPENDENCY_OF"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-google.golang.org-protobuf-306b1685b24a4100",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-google.golang.org-grpc-2c990bd6621f19cd",
-            "relationshipType": "DEPENDENCY_OF"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-google.golang.org-protobuf-306b1685b24a4100",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-go-3908f2fa74acba1d",
-            "relationshipType": "DEPENDENCY_OF"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-google.golang.org-protobuf-306b1685b24a4100",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-golang-protobuf-5704bd371ec8d4a4",
-            "relationshipType": "DEPENDENCY_OF"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-google.golang.org-protobuf-306b1685b24a4100",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-google.golang.org-genproto-googleapis-rpc-e24d4ef595fbcda1",
-            "relationshipType": "DEPENDENCY_OF"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-google.golang.org-protobuf-306b1685b24a4100",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-go-plugin-f2aa120b6c645c90",
-            "relationshipType": "DEPENDENCY_OF"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-go-multierror-355069946dcf1dcf",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-hc-install-285bf1b85d8c4e00",
-            "relationshipType": "DEPENDENCY_OF"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-go-3908f2fa74acba1d",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-sdk-v2-45a756df0f8c7d38",
-            "relationshipType": "DEPENDENCY_OF"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-go-3908f2fa74acba1d",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-framework-49dccaedc5c1e73d",
-            "relationshipType": "DEPENDENCY_OF"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-go-3908f2fa74acba1d",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-CiscoDevNet-terraform-provider-aci-v2-855108d07aa8f962",
-            "relationshipType": "DEPENDENCY_OF"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-go-3908f2fa74acba1d",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-mux-eff8b750760b05d9",
-            "relationshipType": "DEPENDENCY_OF"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-go-3908f2fa74acba1d",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-testing-f369ab014a3ffa87",
-            "relationshipType": "DEPENDENCY_OF"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-sdk-v2-45a756df0f8c7d38",
+            "spdxElementId": "SPDXRef-Package-go-module-golang.org-x-net-2e7c70551b559888",
             "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-ciscoecosystem-aci-go-client-v2-15c347f44082eb2d",
             "relationshipType": "DEPENDENCY_OF"
         },
         {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-sdk-v2-45a756df0f8c7d38",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-CiscoDevNet-terraform-provider-aci-v2-855108d07aa8f962",
+            "spdxElementId": "SPDXRef-Package-go-module-golang.org-x-net-2e7c70551b559888",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-svchost-9247c86190d39d8f",
             "relationshipType": "DEPENDENCY_OF"
         },
         {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-sdk-v2-45a756df0f8c7d38",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-testing-f369ab014a3ffa87",
+            "spdxElementId": "SPDXRef-Package-go-module-golang.org-x-net-2e7c70551b559888",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-registry-address-94c2688a1d3c97ed",
             "relationshipType": "DEPENDENCY_OF"
         },
         {
-            "spdxElementId": "SPDXRef-Package-go-module-gopkg.in-yaml.v2-46da1f3e418c8b85",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-CiscoDevNet-terraform-provider-aci-v2-855108d07aa8f962",
+            "spdxElementId": "SPDXRef-Package-go-module-golang.org-x-net-2e7c70551b559888",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-google.golang.org-grpc-a6c37394a2ec3379",
+            "relationshipType": "DEPENDENCY_OF"
+        },
+        {
+            "spdxElementId": "SPDXRef-Package-go-module-google.golang.org-genproto-googleapis-rpc-2f782d4fbe6d23a8",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-google.golang.org-grpc-a6c37394a2ec3379",
+            "relationshipType": "DEPENDENCY_OF"
+        },
+        {
+            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-go-multierror-355069946dcf1dcf",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-hc-install-6034eede35f94cc8",
+            "relationshipType": "DEPENDENCY_OF"
+        },
+        {
+            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-framework-420e4ba8e86caf1a",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-framework-validators-091a96644fd3fb44",
             "relationshipType": "DEPENDENCY_OF"
         },
         {
@@ -1862,43 +1816,43 @@
             "relationshipType": "DEPENDENCY_OF"
         },
         {
-            "spdxElementId": "SPDXRef-Package-go-module-golang.org-x-crypto-476520a554184f22",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-sdk-v2-45a756df0f8c7d38",
-            "relationshipType": "DEPENDENCY_OF"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-golang.org-x-crypto-476520a554184f22",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-ProtonMail-go-crypto-c42204908bdec65f",
-            "relationshipType": "DEPENDENCY_OF"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-framework-49dccaedc5c1e73d",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-framework-validators-091a96644fd3fb44",
-            "relationshipType": "DEPENDENCY_OF"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-framework-49dccaedc5c1e73d",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-CiscoDevNet-terraform-provider-aci-v2-855108d07aa8f962",
-            "relationshipType": "DEPENDENCY_OF"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-cloudflare-circl-52e9c78911853809",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-ProtonMail-go-crypto-c42204908bdec65f",
-            "relationshipType": "DEPENDENCY_OF"
-        },
-        {
             "spdxElementId": "SPDXRef-Package-go-module-github.com-golang-protobuf-5704bd371ec8d4a4",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-go-plugin-f2aa120b6c645c90",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-go-plugin-e9462916f79df5a1",
             "relationshipType": "DEPENDENCY_OF"
         },
         {
             "spdxElementId": "SPDXRef-Package-go-module-github.com-mitchellh-go-wordwrap-5de4b306400781f9",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-hcl-v2-c81bb8490eb2e47e",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-hcl-v2-03f986fa582b9bde",
+            "relationshipType": "DEPENDENCY_OF"
+        },
+        {
+            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-hc-install-6034eede35f94cc8",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-testing-63a943d89bbfd80f",
+            "relationshipType": "DEPENDENCY_OF"
+        },
+        {
+            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-hc-install-6034eede35f94cc8",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-sdk-v2-fc02aa6725beb436",
             "relationshipType": "DEPENDENCY_OF"
         },
         {
             "spdxElementId": "SPDXRef-Package-go-module-github.com-oklog-run-606ee9f34d24dbba",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-go-plugin-f2aa120b6c645c90",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-go-plugin-e9462916f79df5a1",
+            "relationshipType": "DEPENDENCY_OF"
+        },
+        {
+            "spdxElementId": "SPDXRef-Package-go-module-golang.org-x-text-639498e93dc2e58f",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-go-cty-254aa380ce9051bc",
+            "relationshipType": "DEPENDENCY_OF"
+        },
+        {
+            "spdxElementId": "SPDXRef-Package-go-module-golang.org-x-text-639498e93dc2e58f",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-golang.org-x-net-2e7c70551b559888",
+            "relationshipType": "DEPENDENCY_OF"
+        },
+        {
+            "spdxElementId": "SPDXRef-Package-go-module-golang.org-x-text-639498e93dc2e58f",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-zclconf-go-cty-ae06dc46feadc1f8",
             "relationshipType": "DEPENDENCY_OF"
         },
         {
@@ -1907,53 +1861,18 @@
             "relationshipType": "DEPENDENCY_OF"
         },
         {
+            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-yamux-739767d99098c61f",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-go-plugin-e9462916f79df5a1",
+            "relationshipType": "DEPENDENCY_OF"
+        },
+        {
             "spdxElementId": "SPDXRef-Package-go-module-github.com-mitchellh-copystructure-73a6c985c9f2f5c5",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-sdk-v2-45a756df0f8c7d38",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-sdk-v2-fc02aa6725beb436",
             "relationshipType": "DEPENDENCY_OF"
         },
         {
-            "spdxElementId": "SPDXRef-Package-go-module-golang.org-x-net-73d822a5165a7580",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-ciscoecosystem-aci-go-client-v2-15c347f44082eb2d",
-            "relationshipType": "DEPENDENCY_OF"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-golang.org-x-net-73d822a5165a7580",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-google.golang.org-grpc-2c990bd6621f19cd",
-            "relationshipType": "DEPENDENCY_OF"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-golang.org-x-net-73d822a5165a7580",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-svchost-9247c86190d39d8f",
-            "relationshipType": "DEPENDENCY_OF"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-golang.org-x-net-73d822a5165a7580",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-registry-address-b312e85e36784aba",
-            "relationshipType": "DEPENDENCY_OF"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-golang.org-x-text-785645606172e054",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-zclconf-go-cty-11c5ec6f884d273f",
-            "relationshipType": "DEPENDENCY_OF"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-golang.org-x-text-785645606172e054",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-go-cty-254aa380ce9051bc",
-            "relationshipType": "DEPENDENCY_OF"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-golang.org-x-text-785645606172e054",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-golang.org-x-net-73d822a5165a7580",
-            "relationshipType": "DEPENDENCY_OF"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-golang.org-x-text-785645606172e054",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-CiscoDevNet-terraform-provider-aci-v2-855108d07aa8f962",
-            "relationshipType": "DEPENDENCY_OF"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-golang.org-x-exp-80cefc46600d8644",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-CiscoDevNet-terraform-provider-aci-v2-855108d07aa8f962",
+            "spdxElementId": "SPDXRef-Package-go-module-github.com-ProtonMail-go-crypto-7628f5f6e70b2c37",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-hc-install-6034eede35f94cc8",
             "relationshipType": "DEPENDENCY_OF"
         },
         {
@@ -1977,93 +1896,158 @@
             "relationshipType": "DEPENDENCY_OF"
         },
         {
+            "spdxElementId": "SPDXRef-Package-go-module-google.golang.org-protobuf-8f27758e91d55941",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-go-2425854b24ca4afd",
+            "relationshipType": "DEPENDENCY_OF"
+        },
+        {
+            "spdxElementId": "SPDXRef-Package-go-module-google.golang.org-protobuf-8f27758e91d55941",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-google.golang.org-genproto-googleapis-rpc-2f782d4fbe6d23a8",
+            "relationshipType": "DEPENDENCY_OF"
+        },
+        {
+            "spdxElementId": "SPDXRef-Package-go-module-google.golang.org-protobuf-8f27758e91d55941",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-golang-protobuf-5704bd371ec8d4a4",
+            "relationshipType": "DEPENDENCY_OF"
+        },
+        {
+            "spdxElementId": "SPDXRef-Package-go-module-google.golang.org-protobuf-8f27758e91d55941",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-google.golang.org-grpc-a6c37394a2ec3379",
+            "relationshipType": "DEPENDENCY_OF"
+        },
+        {
+            "spdxElementId": "SPDXRef-Package-go-module-google.golang.org-protobuf-8f27758e91d55941",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-go-plugin-e9462916f79df5a1",
+            "relationshipType": "DEPENDENCY_OF"
+        },
+        {
             "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-svchost-9247c86190d39d8f",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-registry-address-b312e85e36784aba",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-registry-address-94c2688a1d3c97ed",
+            "relationshipType": "DEPENDENCY_OF"
+        },
+        {
+            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-log-942abaf223664249",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-go-2425854b24ca4afd",
+            "relationshipType": "DEPENDENCY_OF"
+        },
+        {
+            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-log-942abaf223664249",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-mux-2c8bad1e3429e803",
+            "relationshipType": "DEPENDENCY_OF"
+        },
+        {
+            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-log-942abaf223664249",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-framework-420e4ba8e86caf1a",
+            "relationshipType": "DEPENDENCY_OF"
+        },
+        {
+            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-log-942abaf223664249",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-testing-63a943d89bbfd80f",
+            "relationshipType": "DEPENDENCY_OF"
+        },
+        {
+            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-log-942abaf223664249",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-sdk-v2-fc02aa6725beb436",
+            "relationshipType": "DEPENDENCY_OF"
+        },
+        {
+            "spdxElementId": "SPDXRef-Package-go-module-github.com-cloudflare-circl-943198f096ab83bc",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-ProtonMail-go-crypto-7628f5f6e70b2c37",
+            "relationshipType": "DEPENDENCY_OF"
+        },
+        {
+            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-registry-address-94c2688a1d3c97ed",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-go-2425854b24ca4afd",
             "relationshipType": "DEPENDENCY_OF"
         },
         {
             "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-go-retryablehttp-9b37994e6f45ad19",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-hc-install-285bf1b85d8c4e00",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-hc-install-6034eede35f94cc8",
+            "relationshipType": "DEPENDENCY_OF"
+        },
+        {
+            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-exec-a2bbffd91dff3d2c",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-testing-63a943d89bbfd80f",
+            "relationshipType": "DEPENDENCY_OF"
+        },
+        {
+            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-exec-a2bbffd91dff3d2c",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-sdk-v2-fc02aa6725beb436",
             "relationshipType": "DEPENDENCY_OF"
         },
         {
             "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-go-checkpoint-a4374eeccd159cf0",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-hc-install-285bf1b85d8c4e00",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-hc-install-6034eede35f94cc8",
+            "relationshipType": "DEPENDENCY_OF"
+        },
+        {
+            "spdxElementId": "SPDXRef-Package-go-module-google.golang.org-grpc-a6c37394a2ec3379",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-go-2425854b24ca4afd",
+            "relationshipType": "DEPENDENCY_OF"
+        },
+        {
+            "spdxElementId": "SPDXRef-Package-go-module-google.golang.org-grpc-a6c37394a2ec3379",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-mux-2c8bad1e3429e803",
+            "relationshipType": "DEPENDENCY_OF"
+        },
+        {
+            "spdxElementId": "SPDXRef-Package-go-module-google.golang.org-grpc-a6c37394a2ec3379",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-go-plugin-e9462916f79df5a1",
+            "relationshipType": "DEPENDENCY_OF"
+        },
+        {
+            "spdxElementId": "SPDXRef-Package-go-module-github.com-zclconf-go-cty-ae06dc46feadc1f8",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-hcl-v2-03f986fa582b9bde",
+            "relationshipType": "DEPENDENCY_OF"
+        },
+        {
+            "spdxElementId": "SPDXRef-Package-go-module-github.com-zclconf-go-cty-ae06dc46feadc1f8",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-testing-63a943d89bbfd80f",
+            "relationshipType": "DEPENDENCY_OF"
+        },
+        {
+            "spdxElementId": "SPDXRef-Package-go-module-github.com-zclconf-go-cty-ae06dc46feadc1f8",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-json-d3d4934d11dbd340",
+            "relationshipType": "DEPENDENCY_OF"
+        },
+        {
+            "spdxElementId": "SPDXRef-Package-go-module-github.com-zclconf-go-cty-ae06dc46feadc1f8",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-sdk-v2-fc02aa6725beb436",
             "relationshipType": "DEPENDENCY_OF"
         },
         {
             "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-go-version-aee38407bb701d82",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-hc-install-285bf1b85d8c4e00",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-hc-install-6034eede35f94cc8",
             "relationshipType": "DEPENDENCY_OF"
         },
         {
             "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-go-version-aee38407bb701d82",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-sdk-v2-45a756df0f8c7d38",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-testing-63a943d89bbfd80f",
             "relationshipType": "DEPENDENCY_OF"
         },
         {
             "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-go-version-aee38407bb701d82",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-CiscoDevNet-terraform-provider-aci-v2-855108d07aa8f962",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-exec-a2bbffd91dff3d2c",
             "relationshipType": "DEPENDENCY_OF"
         },
         {
             "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-go-version-aee38407bb701d82",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-testing-f369ab014a3ffa87",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-json-d3d4934d11dbd340",
             "relationshipType": "DEPENDENCY_OF"
         },
         {
             "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-go-version-aee38407bb701d82",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-exec-f7b208d50ac094cd",
-            "relationshipType": "DEPENDENCY_OF"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-go-version-aee38407bb701d82",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-json-fc8725e3f92cff27",
-            "relationshipType": "DEPENDENCY_OF"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-log-b1aa9434d4f946ab",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-go-3908f2fa74acba1d",
-            "relationshipType": "DEPENDENCY_OF"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-log-b1aa9434d4f946ab",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-sdk-v2-45a756df0f8c7d38",
-            "relationshipType": "DEPENDENCY_OF"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-log-b1aa9434d4f946ab",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-framework-49dccaedc5c1e73d",
-            "relationshipType": "DEPENDENCY_OF"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-log-b1aa9434d4f946ab",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-CiscoDevNet-terraform-provider-aci-v2-855108d07aa8f962",
-            "relationshipType": "DEPENDENCY_OF"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-log-b1aa9434d4f946ab",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-mux-eff8b750760b05d9",
-            "relationshipType": "DEPENDENCY_OF"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-log-b1aa9434d4f946ab",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-testing-f369ab014a3ffa87",
-            "relationshipType": "DEPENDENCY_OF"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-registry-address-b312e85e36784aba",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-go-3908f2fa74acba1d",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-sdk-v2-fc02aa6725beb436",
             "relationshipType": "DEPENDENCY_OF"
         },
         {
             "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-go-uuid-b938d99ed3513c10",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-go-3908f2fa74acba1d",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-go-2425854b24ca4afd",
             "relationshipType": "DEPENDENCY_OF"
         },
         {
             "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-go-uuid-b938d99ed3513c10",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-sdk-v2-45a756df0f8c7d38",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-testing-63a943d89bbfd80f",
             "relationshipType": "DEPENDENCY_OF"
         },
         {
@@ -2073,72 +2057,62 @@
         },
         {
             "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-go-uuid-b938d99ed3513c10",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-testing-f369ab014a3ffa87",
-            "relationshipType": "DEPENDENCY_OF"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-ProtonMail-go-crypto-c42204908bdec65f",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-hc-install-285bf1b85d8c4e00",
-            "relationshipType": "DEPENDENCY_OF"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-hcl-v2-c81bb8490eb2e47e",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-sdk-v2-45a756df0f8c7d38",
-            "relationshipType": "DEPENDENCY_OF"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-hcl-v2-c81bb8490eb2e47e",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-CiscoDevNet-terraform-provider-aci-v2-855108d07aa8f962",
-            "relationshipType": "DEPENDENCY_OF"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-hcl-v2-c81bb8490eb2e47e",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-testing-f369ab014a3ffa87",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-sdk-v2-fc02aa6725beb436",
             "relationshipType": "DEPENDENCY_OF"
         },
         {
             "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-logutils-d3320a3e78bdec53",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-sdk-v2-45a756df0f8c7d38",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-sdk-v2-fc02aa6725beb436",
+            "relationshipType": "DEPENDENCY_OF"
+        },
+        {
+            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-json-d3d4934d11dbd340",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-testing-63a943d89bbfd80f",
+            "relationshipType": "DEPENDENCY_OF"
+        },
+        {
+            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-json-d3d4934d11dbd340",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-exec-a2bbffd91dff3d2c",
+            "relationshipType": "DEPENDENCY_OF"
+        },
+        {
+            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-json-d3d4934d11dbd340",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-sdk-v2-fc02aa6725beb436",
             "relationshipType": "DEPENDENCY_OF"
         },
         {
             "spdxElementId": "SPDXRef-Package-go-module-github.com-vmihailenco-msgpack-v5-d9c790382eabd9f8",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-go-3908f2fa74acba1d",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-go-2425854b24ca4afd",
             "relationshipType": "DEPENDENCY_OF"
         },
         {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-apparentlymart-go-textseg-v15-df6f6165f7b77f40",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-zclconf-go-cty-11c5ec6f884d273f",
-            "relationshipType": "DEPENDENCY_OF"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-apparentlymart-go-textseg-v15-df6f6165f7b77f40",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-hcl-v2-c81bb8490eb2e47e",
-            "relationshipType": "DEPENDENCY_OF"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-golang.org-x-sys-e0491576717f6095",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-google.golang.org-grpc-2c990bd6621f19cd",
-            "relationshipType": "DEPENDENCY_OF"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-golang.org-x-sys-e0491576717f6095",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-golang.org-x-crypto-476520a554184f22",
-            "relationshipType": "DEPENDENCY_OF"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-golang.org-x-sys-e0491576717f6095",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-cloudflare-circl-52e9c78911853809",
-            "relationshipType": "DEPENDENCY_OF"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-golang.org-x-sys-e0491576717f6095",
+            "spdxElementId": "SPDXRef-Package-go-module-golang.org-x-sys-def82f102b3aa03e",
             "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-mattn-go-isatty-897f68cb3ad57054",
             "relationshipType": "DEPENDENCY_OF"
         },
         {
-            "spdxElementId": "SPDXRef-Package-go-module-google.golang.org-genproto-googleapis-rpc-e24d4ef595fbcda1",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-google.golang.org-grpc-2c990bd6621f19cd",
+            "spdxElementId": "SPDXRef-Package-go-module-golang.org-x-sys-def82f102b3aa03e",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-cloudflare-circl-943198f096ab83bc",
+            "relationshipType": "DEPENDENCY_OF"
+        },
+        {
+            "spdxElementId": "SPDXRef-Package-go-module-golang.org-x-sys-def82f102b3aa03e",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-google.golang.org-grpc-a6c37394a2ec3379",
+            "relationshipType": "DEPENDENCY_OF"
+        },
+        {
+            "spdxElementId": "SPDXRef-Package-go-module-golang.org-x-sys-def82f102b3aa03e",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-golang.org-x-crypto-e64c47a3f95da081",
+            "relationshipType": "DEPENDENCY_OF"
+        },
+        {
+            "spdxElementId": "SPDXRef-Package-go-module-github.com-apparentlymart-go-textseg-v15-df6f6165f7b77f40",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-hcl-v2-03f986fa582b9bde",
+            "relationshipType": "DEPENDENCY_OF"
+        },
+        {
+            "spdxElementId": "SPDXRef-Package-go-module-github.com-apparentlymart-go-textseg-v15-df6f6165f7b77f40",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-zclconf-go-cty-ae06dc46feadc1f8",
             "relationshipType": "DEPENDENCY_OF"
         },
         {
@@ -2153,37 +2127,62 @@
         },
         {
             "spdxElementId": "SPDXRef-Package-go-module-github.com-mitchellh-reflectwalk-e2a566d0531a4c65",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-sdk-v2-45a756df0f8c7d38",
-            "relationshipType": "DEPENDENCY_OF"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-mitchellh-reflectwalk-e2a566d0531a4c65",
             "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-mitchellh-copystructure-73a6c985c9f2f5c5",
             "relationshipType": "DEPENDENCY_OF"
         },
         {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-go-hclog-e9c857e82aaed68c",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-go-3908f2fa74acba1d",
+            "spdxElementId": "SPDXRef-Package-go-module-github.com-mitchellh-reflectwalk-e2a566d0531a4c65",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-sdk-v2-fc02aa6725beb436",
+            "relationshipType": "DEPENDENCY_OF"
+        },
+        {
+            "spdxElementId": "SPDXRef-Package-go-module-golang.org-x-crypto-e64c47a3f95da081",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-ProtonMail-go-crypto-7628f5f6e70b2c37",
+            "relationshipType": "DEPENDENCY_OF"
+        },
+        {
+            "spdxElementId": "SPDXRef-Package-go-module-golang.org-x-crypto-e64c47a3f95da081",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-cloudflare-circl-943198f096ab83bc",
+            "relationshipType": "DEPENDENCY_OF"
+        },
+        {
+            "spdxElementId": "SPDXRef-Package-go-module-golang.org-x-crypto-e64c47a3f95da081",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-sdk-v2-fc02aa6725beb436",
+            "relationshipType": "DEPENDENCY_OF"
+        },
+        {
+            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-go-plugin-e9462916f79df5a1",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-go-2425854b24ca4afd",
+            "relationshipType": "DEPENDENCY_OF"
+        },
+        {
+            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-go-plugin-e9462916f79df5a1",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-sdk-v2-fc02aa6725beb436",
             "relationshipType": "DEPENDENCY_OF"
         },
         {
             "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-go-hclog-e9c857e82aaed68c",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-sdk-v2-45a756df0f8c7d38",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-go-2425854b24ca4afd",
             "relationshipType": "DEPENDENCY_OF"
         },
         {
             "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-go-hclog-e9c857e82aaed68c",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-log-b1aa9434d4f946ab",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-testing-63a943d89bbfd80f",
             "relationshipType": "DEPENDENCY_OF"
         },
         {
             "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-go-hclog-e9c857e82aaed68c",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-go-plugin-f2aa120b6c645c90",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-log-942abaf223664249",
             "relationshipType": "DEPENDENCY_OF"
         },
         {
             "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-go-hclog-e9c857e82aaed68c",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-testing-f369ab014a3ffa87",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-go-plugin-e9462916f79df5a1",
+            "relationshipType": "DEPENDENCY_OF"
+        },
+        {
+            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-go-hclog-e9c857e82aaed68c",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-sdk-v2-fc02aa6725beb436",
             "relationshipType": "DEPENDENCY_OF"
         },
         {
@@ -2193,77 +2192,32 @@
         },
         {
             "spdxElementId": "SPDXRef-Package-go-module-github.com-mitchellh-go-testing-interface-eaf60480d7b31060",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-go-3908f2fa74acba1d",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-go-2425854b24ca4afd",
             "relationshipType": "DEPENDENCY_OF"
         },
         {
             "spdxElementId": "SPDXRef-Package-go-module-github.com-mitchellh-go-testing-interface-eaf60480d7b31060",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-sdk-v2-45a756df0f8c7d38",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-testing-63a943d89bbfd80f",
             "relationshipType": "DEPENDENCY_OF"
         },
         {
             "spdxElementId": "SPDXRef-Package-go-module-github.com-mitchellh-go-testing-interface-eaf60480d7b31060",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-log-b1aa9434d4f946ab",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-log-942abaf223664249",
             "relationshipType": "DEPENDENCY_OF"
         },
         {
             "spdxElementId": "SPDXRef-Package-go-module-github.com-mitchellh-go-testing-interface-eaf60480d7b31060",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-testing-f369ab014a3ffa87",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-sdk-v2-fc02aa6725beb436",
             "relationshipType": "DEPENDENCY_OF"
         },
         {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-yamux-ebb5b802307864d0",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-go-plugin-f2aa120b6c645c90",
+            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-sdk-v2-fc02aa6725beb436",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-ciscoecosystem-aci-go-client-v2-15c347f44082eb2d",
             "relationshipType": "DEPENDENCY_OF"
         },
         {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-mux-eff8b750760b05d9",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-CiscoDevNet-terraform-provider-aci-v2-855108d07aa8f962",
-            "relationshipType": "DEPENDENCY_OF"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-go-plugin-f2aa120b6c645c90",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-go-3908f2fa74acba1d",
-            "relationshipType": "DEPENDENCY_OF"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-go-plugin-f2aa120b6c645c90",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-sdk-v2-45a756df0f8c7d38",
-            "relationshipType": "DEPENDENCY_OF"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-testing-f369ab014a3ffa87",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-CiscoDevNet-terraform-provider-aci-v2-855108d07aa8f962",
-            "relationshipType": "DEPENDENCY_OF"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-exec-f7b208d50ac094cd",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-sdk-v2-45a756df0f8c7d38",
-            "relationshipType": "DEPENDENCY_OF"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-exec-f7b208d50ac094cd",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-testing-f369ab014a3ffa87",
-            "relationshipType": "DEPENDENCY_OF"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-json-fc8725e3f92cff27",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-sdk-v2-45a756df0f8c7d38",
-            "relationshipType": "DEPENDENCY_OF"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-json-fc8725e3f92cff27",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-testing-f369ab014a3ffa87",
-            "relationshipType": "DEPENDENCY_OF"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-json-fc8725e3f92cff27",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-exec-f7b208d50ac094cd",
-            "relationshipType": "DEPENDENCY_OF"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-ghodss-yaml-fec7cebd7cf8610e",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-CiscoDevNet-terraform-provider-aci-v2-855108d07aa8f962",
+            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-sdk-v2-fc02aa6725beb436",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-testing-63a943d89bbfd80f",
             "relationshipType": "DEPENDENCY_OF"
         },
         {
@@ -2273,19 +2227,19 @@
             "comment": "evident-by: indicates the package's existence is evident by the given file"
         },
         {
-            "spdxElementId": "SPDXRef-Package-go-module-golang.org-x-mod-0642896bc6324ca7",
+            "spdxElementId": "SPDXRef-Package-go-module-golang.org-x-mod-03b00f730f547d57",
+            "relatedSpdxElement": "SPDXRef-File-go.mod-3fc5a8d3d86e9790",
+            "relationshipType": "OTHER",
+            "comment": "evident-by: indicates the package's existence is evident by the given file"
+        },
+        {
+            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-hcl-v2-03f986fa582b9bde",
             "relatedSpdxElement": "SPDXRef-File-go.mod-3fc5a8d3d86e9790",
             "relationshipType": "OTHER",
             "comment": "evident-by: indicates the package's existence is evident by the given file"
         },
         {
             "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-framework-validators-091a96644fd3fb44",
-            "relatedSpdxElement": "SPDXRef-File-go.mod-3fc5a8d3d86e9790",
-            "relationshipType": "OTHER",
-            "comment": "evident-by: indicates the package's existence is evident by the given file"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-zclconf-go-cty-11c5ec6f884d273f",
             "relatedSpdxElement": "SPDXRef-File-go.mod-3fc5a8d3d86e9790",
             "relationshipType": "OTHER",
             "comment": "evident-by: indicates the package's existence is evident by the given file"
@@ -2315,13 +2269,19 @@
             "comment": "evident-by: indicates the package's existence is evident by the given file"
         },
         {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-go-cty-254aa380ce9051bc",
+            "spdxElementId": "SPDXRef-Package-go-module-golang.org-x-tools-2275854a36871cda",
             "relatedSpdxElement": "SPDXRef-File-go.mod-3fc5a8d3d86e9790",
             "relationshipType": "OTHER",
             "comment": "evident-by: indicates the package's existence is evident by the given file"
         },
         {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-hc-install-285bf1b85d8c4e00",
+            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-go-2425854b24ca4afd",
+            "relatedSpdxElement": "SPDXRef-File-go.mod-3fc5a8d3d86e9790",
+            "relationshipType": "OTHER",
+            "comment": "evident-by: indicates the package's existence is evident by the given file"
+        },
+        {
+            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-go-cty-254aa380ce9051bc",
             "relatedSpdxElement": "SPDXRef-File-go.mod-3fc5a8d3d86e9790",
             "relationshipType": "OTHER",
             "comment": "evident-by: indicates the package's existence is evident by the given file"
@@ -2339,13 +2299,19 @@
             "comment": "evident-by: indicates the package's existence is evident by the given file"
         },
         {
-            "spdxElementId": "SPDXRef-Package-go-module-google.golang.org-grpc-2c990bd6621f19cd",
+            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-mux-2c8bad1e3429e803",
             "relatedSpdxElement": "SPDXRef-File-go.mod-3fc5a8d3d86e9790",
             "relationshipType": "OTHER",
             "comment": "evident-by: indicates the package's existence is evident by the given file"
         },
         {
-            "spdxElementId": "SPDXRef-Package-go-module-google.golang.org-protobuf-306b1685b24a4100",
+            "spdxElementId": "SPDXRef-Package-go-module-golang.org-x-net-2e7c70551b559888",
+            "relatedSpdxElement": "SPDXRef-File-go.mod-3fc5a8d3d86e9790",
+            "relationshipType": "OTHER",
+            "comment": "evident-by: indicates the package's existence is evident by the given file"
+        },
+        {
+            "spdxElementId": "SPDXRef-Package-go-module-google.golang.org-genproto-googleapis-rpc-2f782d4fbe6d23a8",
             "relatedSpdxElement": "SPDXRef-File-go.mod-3fc5a8d3d86e9790",
             "relationshipType": "OTHER",
             "comment": "evident-by: indicates the package's existence is evident by the given file"
@@ -2357,13 +2323,13 @@
             "comment": "evident-by: indicates the package's existence is evident by the given file"
         },
         {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-go-3908f2fa74acba1d",
+            "spdxElementId": "SPDXRef-Package-go-module-golang.org-x-telemetry-39c27f8695d13b78",
             "relatedSpdxElement": "SPDXRef-File-go.mod-3fc5a8d3d86e9790",
             "relationshipType": "OTHER",
             "comment": "evident-by: indicates the package's existence is evident by the given file"
         },
         {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-sdk-v2-45a756df0f8c7d38",
+            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-framework-420e4ba8e86caf1a",
             "relatedSpdxElement": "SPDXRef-File-go.mod-3fc5a8d3d86e9790",
             "relationshipType": "OTHER",
             "comment": "evident-by: indicates the package's existence is evident by the given file"
@@ -2375,31 +2341,7 @@
             "comment": "evident-by: indicates the package's existence is evident by the given file"
         },
         {
-            "spdxElementId": "SPDXRef-Package-go-module-golang.org-x-crypto-476520a554184f22",
-            "relatedSpdxElement": "SPDXRef-File-go.mod-3fc5a8d3d86e9790",
-            "relationshipType": "OTHER",
-            "comment": "evident-by: indicates the package's existence is evident by the given file"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-framework-49dccaedc5c1e73d",
-            "relatedSpdxElement": "SPDXRef-File-go.mod-3fc5a8d3d86e9790",
-            "relationshipType": "OTHER",
-            "comment": "evident-by: indicates the package's existence is evident by the given file"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-cloudflare-circl-52e9c78911853809",
-            "relatedSpdxElement": "SPDXRef-File-go.mod-3fc5a8d3d86e9790",
-            "relationshipType": "OTHER",
-            "comment": "evident-by: indicates the package's existence is evident by the given file"
-        },
-        {
             "spdxElementId": "SPDXRef-Package-go-module-github.com-golang-protobuf-5704bd371ec8d4a4",
-            "relatedSpdxElement": "SPDXRef-File-go.mod-3fc5a8d3d86e9790",
-            "relationshipType": "OTHER",
-            "comment": "evident-by: indicates the package's existence is evident by the given file"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-golang.org-x-sync-5cfca8293e82e6ff",
             "relatedSpdxElement": "SPDXRef-File-go.mod-3fc5a8d3d86e9790",
             "relationshipType": "OTHER",
             "comment": "evident-by: indicates the package's existence is evident by the given file"
@@ -2411,7 +2353,25 @@
             "comment": "evident-by: indicates the package's existence is evident by the given file"
         },
         {
+            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-hc-install-6034eede35f94cc8",
+            "relatedSpdxElement": "SPDXRef-File-go.mod-3fc5a8d3d86e9790",
+            "relationshipType": "OTHER",
+            "comment": "evident-by: indicates the package's existence is evident by the given file"
+        },
+        {
             "spdxElementId": "SPDXRef-Package-go-module-github.com-oklog-run-606ee9f34d24dbba",
+            "relatedSpdxElement": "SPDXRef-File-go.mod-3fc5a8d3d86e9790",
+            "relationshipType": "OTHER",
+            "comment": "evident-by: indicates the package's existence is evident by the given file"
+        },
+        {
+            "spdxElementId": "SPDXRef-Package-go-module-golang.org-x-text-639498e93dc2e58f",
+            "relatedSpdxElement": "SPDXRef-File-go.mod-3fc5a8d3d86e9790",
+            "relationshipType": "OTHER",
+            "comment": "evident-by: indicates the package's existence is evident by the given file"
+        },
+        {
+            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-testing-63a943d89bbfd80f",
             "relatedSpdxElement": "SPDXRef-File-go.mod-3fc5a8d3d86e9790",
             "relationshipType": "OTHER",
             "comment": "evident-by: indicates the package's existence is evident by the given file"
@@ -2423,19 +2383,19 @@
             "comment": "evident-by: indicates the package's existence is evident by the given file"
         },
         {
+            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-yamux-739767d99098c61f",
+            "relatedSpdxElement": "SPDXRef-File-go.mod-3fc5a8d3d86e9790",
+            "relationshipType": "OTHER",
+            "comment": "evident-by: indicates the package's existence is evident by the given file"
+        },
+        {
             "spdxElementId": "SPDXRef-Package-go-module-github.com-mitchellh-copystructure-73a6c985c9f2f5c5",
             "relatedSpdxElement": "SPDXRef-File-go.mod-3fc5a8d3d86e9790",
             "relationshipType": "OTHER",
             "comment": "evident-by: indicates the package's existence is evident by the given file"
         },
         {
-            "spdxElementId": "SPDXRef-Package-go-module-golang.org-x-net-73d822a5165a7580",
-            "relatedSpdxElement": "SPDXRef-File-go.mod-3fc5a8d3d86e9790",
-            "relationshipType": "OTHER",
-            "comment": "evident-by: indicates the package's existence is evident by the given file"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-golang.org-x-text-785645606172e054",
+            "spdxElementId": "SPDXRef-Package-go-module-github.com-ProtonMail-go-crypto-7628f5f6e70b2c37",
             "relatedSpdxElement": "SPDXRef-File-go.mod-3fc5a8d3d86e9790",
             "relationshipType": "OTHER",
             "comment": "evident-by: indicates the package's existence is evident by the given file"
@@ -2465,7 +2425,31 @@
             "comment": "evident-by: indicates the package's existence is evident by the given file"
         },
         {
+            "spdxElementId": "SPDXRef-Package-go-module-google.golang.org-protobuf-8f27758e91d55941",
+            "relatedSpdxElement": "SPDXRef-File-go.mod-3fc5a8d3d86e9790",
+            "relationshipType": "OTHER",
+            "comment": "evident-by: indicates the package's existence is evident by the given file"
+        },
+        {
             "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-svchost-9247c86190d39d8f",
+            "relatedSpdxElement": "SPDXRef-File-go.mod-3fc5a8d3d86e9790",
+            "relationshipType": "OTHER",
+            "comment": "evident-by: indicates the package's existence is evident by the given file"
+        },
+        {
+            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-log-942abaf223664249",
+            "relatedSpdxElement": "SPDXRef-File-go.mod-3fc5a8d3d86e9790",
+            "relationshipType": "OTHER",
+            "comment": "evident-by: indicates the package's existence is evident by the given file"
+        },
+        {
+            "spdxElementId": "SPDXRef-Package-go-module-github.com-cloudflare-circl-943198f096ab83bc",
+            "relatedSpdxElement": "SPDXRef-File-go.mod-3fc5a8d3d86e9790",
+            "relationshipType": "OTHER",
+            "comment": "evident-by: indicates the package's existence is evident by the given file"
+        },
+        {
+            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-registry-address-94c2688a1d3c97ed",
             "relatedSpdxElement": "SPDXRef-File-go.mod-3fc5a8d3d86e9790",
             "relationshipType": "OTHER",
             "comment": "evident-by: indicates the package's existence is evident by the given file"
@@ -2477,7 +2461,31 @@
             "comment": "evident-by: indicates the package's existence is evident by the given file"
         },
         {
+            "spdxElementId": "SPDXRef-Package-go-module-golang.org-x-sync-a1443618ae5abe05",
+            "relatedSpdxElement": "SPDXRef-File-go.mod-3fc5a8d3d86e9790",
+            "relationshipType": "OTHER",
+            "comment": "evident-by: indicates the package's existence is evident by the given file"
+        },
+        {
+            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-exec-a2bbffd91dff3d2c",
+            "relatedSpdxElement": "SPDXRef-File-go.mod-3fc5a8d3d86e9790",
+            "relationshipType": "OTHER",
+            "comment": "evident-by: indicates the package's existence is evident by the given file"
+        },
+        {
             "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-go-checkpoint-a4374eeccd159cf0",
+            "relatedSpdxElement": "SPDXRef-File-go.mod-3fc5a8d3d86e9790",
+            "relationshipType": "OTHER",
+            "comment": "evident-by: indicates the package's existence is evident by the given file"
+        },
+        {
+            "spdxElementId": "SPDXRef-Package-go-module-google.golang.org-grpc-a6c37394a2ec3379",
+            "relatedSpdxElement": "SPDXRef-File-go.mod-3fc5a8d3d86e9790",
+            "relationshipType": "OTHER",
+            "comment": "evident-by: indicates the package's existence is evident by the given file"
+        },
+        {
+            "spdxElementId": "SPDXRef-Package-go-module-github.com-zclconf-go-cty-ae06dc46feadc1f8",
             "relatedSpdxElement": "SPDXRef-File-go.mod-3fc5a8d3d86e9790",
             "relationshipType": "OTHER",
             "comment": "evident-by: indicates the package's existence is evident by the given file"
@@ -2489,31 +2497,7 @@
             "comment": "evident-by: indicates the package's existence is evident by the given file"
         },
         {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-log-b1aa9434d4f946ab",
-            "relatedSpdxElement": "SPDXRef-File-go.mod-3fc5a8d3d86e9790",
-            "relationshipType": "OTHER",
-            "comment": "evident-by: indicates the package's existence is evident by the given file"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-registry-address-b312e85e36784aba",
-            "relatedSpdxElement": "SPDXRef-File-go.mod-3fc5a8d3d86e9790",
-            "relationshipType": "OTHER",
-            "comment": "evident-by: indicates the package's existence is evident by the given file"
-        },
-        {
             "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-go-uuid-b938d99ed3513c10",
-            "relatedSpdxElement": "SPDXRef-File-go.mod-3fc5a8d3d86e9790",
-            "relationshipType": "OTHER",
-            "comment": "evident-by: indicates the package's existence is evident by the given file"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-ProtonMail-go-crypto-c42204908bdec65f",
-            "relatedSpdxElement": "SPDXRef-File-go.mod-3fc5a8d3d86e9790",
-            "relationshipType": "OTHER",
-            "comment": "evident-by: indicates the package's existence is evident by the given file"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-hcl-v2-c81bb8490eb2e47e",
             "relatedSpdxElement": "SPDXRef-File-go.mod-3fc5a8d3d86e9790",
             "relationshipType": "OTHER",
             "comment": "evident-by: indicates the package's existence is evident by the given file"
@@ -2525,31 +2509,25 @@
             "comment": "evident-by: indicates the package's existence is evident by the given file"
         },
         {
+            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-json-d3d4934d11dbd340",
+            "relatedSpdxElement": "SPDXRef-File-go.mod-3fc5a8d3d86e9790",
+            "relationshipType": "OTHER",
+            "comment": "evident-by: indicates the package's existence is evident by the given file"
+        },
+        {
             "spdxElementId": "SPDXRef-Package-go-module-github.com-vmihailenco-msgpack-v5-d9c790382eabd9f8",
             "relatedSpdxElement": "SPDXRef-File-go.mod-3fc5a8d3d86e9790",
             "relationshipType": "OTHER",
             "comment": "evident-by: indicates the package's existence is evident by the given file"
         },
         {
-            "spdxElementId": "SPDXRef-Package-go-module-golang.org-x-tools-dee3f66338a96a88",
+            "spdxElementId": "SPDXRef-Package-go-module-golang.org-x-sys-def82f102b3aa03e",
             "relatedSpdxElement": "SPDXRef-File-go.mod-3fc5a8d3d86e9790",
             "relationshipType": "OTHER",
             "comment": "evident-by: indicates the package's existence is evident by the given file"
         },
         {
             "spdxElementId": "SPDXRef-Package-go-module-github.com-apparentlymart-go-textseg-v15-df6f6165f7b77f40",
-            "relatedSpdxElement": "SPDXRef-File-go.mod-3fc5a8d3d86e9790",
-            "relationshipType": "OTHER",
-            "comment": "evident-by: indicates the package's existence is evident by the given file"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-golang.org-x-sys-e0491576717f6095",
-            "relatedSpdxElement": "SPDXRef-File-go.mod-3fc5a8d3d86e9790",
-            "relationshipType": "OTHER",
-            "comment": "evident-by: indicates the package's existence is evident by the given file"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-google.golang.org-genproto-googleapis-rpc-e24d4ef595fbcda1",
             "relatedSpdxElement": "SPDXRef-File-go.mod-3fc5a8d3d86e9790",
             "relationshipType": "OTHER",
             "comment": "evident-by: indicates the package's existence is evident by the given file"
@@ -2573,6 +2551,18 @@
             "comment": "evident-by: indicates the package's existence is evident by the given file"
         },
         {
+            "spdxElementId": "SPDXRef-Package-go-module-golang.org-x-crypto-e64c47a3f95da081",
+            "relatedSpdxElement": "SPDXRef-File-go.mod-3fc5a8d3d86e9790",
+            "relationshipType": "OTHER",
+            "comment": "evident-by: indicates the package's existence is evident by the given file"
+        },
+        {
+            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-go-plugin-e9462916f79df5a1",
+            "relatedSpdxElement": "SPDXRef-File-go.mod-3fc5a8d3d86e9790",
+            "relationshipType": "OTHER",
+            "comment": "evident-by: indicates the package's existence is evident by the given file"
+        },
+        {
             "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-go-hclog-e9c857e82aaed68c",
             "relatedSpdxElement": "SPDXRef-File-go.mod-3fc5a8d3d86e9790",
             "relationshipType": "OTHER",
@@ -2591,37 +2581,7 @@
             "comment": "evident-by: indicates the package's existence is evident by the given file"
         },
         {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-yamux-ebb5b802307864d0",
-            "relatedSpdxElement": "SPDXRef-File-go.mod-3fc5a8d3d86e9790",
-            "relationshipType": "OTHER",
-            "comment": "evident-by: indicates the package's existence is evident by the given file"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-mux-eff8b750760b05d9",
-            "relatedSpdxElement": "SPDXRef-File-go.mod-3fc5a8d3d86e9790",
-            "relationshipType": "OTHER",
-            "comment": "evident-by: indicates the package's existence is evident by the given file"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-go-plugin-f2aa120b6c645c90",
-            "relatedSpdxElement": "SPDXRef-File-go.mod-3fc5a8d3d86e9790",
-            "relationshipType": "OTHER",
-            "comment": "evident-by: indicates the package's existence is evident by the given file"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-testing-f369ab014a3ffa87",
-            "relatedSpdxElement": "SPDXRef-File-go.mod-3fc5a8d3d86e9790",
-            "relationshipType": "OTHER",
-            "comment": "evident-by: indicates the package's existence is evident by the given file"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-exec-f7b208d50ac094cd",
-            "relatedSpdxElement": "SPDXRef-File-go.mod-3fc5a8d3d86e9790",
-            "relationshipType": "OTHER",
-            "comment": "evident-by: indicates the package's existence is evident by the given file"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-json-fc8725e3f92cff27",
+            "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-sdk-v2-fc02aa6725beb436",
             "relatedSpdxElement": "SPDXRef-File-go.mod-3fc5a8d3d86e9790",
             "relationshipType": "OTHER",
             "comment": "evident-by: indicates the package's existence is evident by the given file"
@@ -2639,7 +2599,7 @@
         },
         {
             "spdxElementId": "SPDXRef-DocumentRoot-Directory-.-",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-ProtonMail-go-crypto-c42204908bdec65f",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-ProtonMail-go-crypto-7628f5f6e70b2c37",
             "relationshipType": "CONTAINS"
         },
         {
@@ -2659,7 +2619,7 @@
         },
         {
             "spdxElementId": "SPDXRef-DocumentRoot-Directory-.-",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-cloudflare-circl-52e9c78911853809",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-cloudflare-circl-943198f096ab83bc",
             "relationshipType": "CONTAINS"
         },
         {
@@ -2714,7 +2674,7 @@
         },
         {
             "spdxElementId": "SPDXRef-DocumentRoot-Directory-.-",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-go-plugin-f2aa120b6c645c90",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-go-plugin-e9462916f79df5a1",
             "relationshipType": "CONTAINS"
         },
         {
@@ -2734,12 +2694,12 @@
         },
         {
             "spdxElementId": "SPDXRef-DocumentRoot-Directory-.-",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-hc-install-285bf1b85d8c4e00",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-hc-install-6034eede35f94cc8",
             "relationshipType": "CONTAINS"
         },
         {
             "spdxElementId": "SPDXRef-DocumentRoot-Directory-.-",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-hcl-v2-c81bb8490eb2e47e",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-hcl-v2-03f986fa582b9bde",
             "relationshipType": "CONTAINS"
         },
         {
@@ -2749,17 +2709,17 @@
         },
         {
             "spdxElementId": "SPDXRef-DocumentRoot-Directory-.-",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-exec-f7b208d50ac094cd",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-exec-a2bbffd91dff3d2c",
             "relationshipType": "CONTAINS"
         },
         {
             "spdxElementId": "SPDXRef-DocumentRoot-Directory-.-",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-json-fc8725e3f92cff27",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-json-d3d4934d11dbd340",
             "relationshipType": "CONTAINS"
         },
         {
             "spdxElementId": "SPDXRef-DocumentRoot-Directory-.-",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-framework-49dccaedc5c1e73d",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-framework-420e4ba8e86caf1a",
             "relationshipType": "CONTAINS"
         },
         {
@@ -2769,32 +2729,32 @@
         },
         {
             "spdxElementId": "SPDXRef-DocumentRoot-Directory-.-",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-go-3908f2fa74acba1d",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-go-2425854b24ca4afd",
             "relationshipType": "CONTAINS"
         },
         {
             "spdxElementId": "SPDXRef-DocumentRoot-Directory-.-",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-log-b1aa9434d4f946ab",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-log-942abaf223664249",
             "relationshipType": "CONTAINS"
         },
         {
             "spdxElementId": "SPDXRef-DocumentRoot-Directory-.-",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-mux-eff8b750760b05d9",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-mux-2c8bad1e3429e803",
             "relationshipType": "CONTAINS"
         },
         {
             "spdxElementId": "SPDXRef-DocumentRoot-Directory-.-",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-sdk-v2-45a756df0f8c7d38",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-sdk-v2-fc02aa6725beb436",
             "relationshipType": "CONTAINS"
         },
         {
             "spdxElementId": "SPDXRef-DocumentRoot-Directory-.-",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-testing-f369ab014a3ffa87",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-testing-63a943d89bbfd80f",
             "relationshipType": "CONTAINS"
         },
         {
             "spdxElementId": "SPDXRef-DocumentRoot-Directory-.-",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-registry-address-b312e85e36784aba",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-registry-address-94c2688a1d3c97ed",
             "relationshipType": "CONTAINS"
         },
         {
@@ -2804,7 +2764,7 @@
         },
         {
             "spdxElementId": "SPDXRef-DocumentRoot-Directory-.-",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-yamux-ebb5b802307864d0",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-yamux-739767d99098c61f",
             "relationshipType": "CONTAINS"
         },
         {
@@ -2869,12 +2829,12 @@
         },
         {
             "spdxElementId": "SPDXRef-DocumentRoot-Directory-.-",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-zclconf-go-cty-11c5ec6f884d273f",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-zclconf-go-cty-ae06dc46feadc1f8",
             "relationshipType": "CONTAINS"
         },
         {
             "spdxElementId": "SPDXRef-DocumentRoot-Directory-.-",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-golang.org-x-crypto-476520a554184f22",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-golang.org-x-crypto-e64c47a3f95da081",
             "relationshipType": "CONTAINS"
         },
         {
@@ -2884,32 +2844,37 @@
         },
         {
             "spdxElementId": "SPDXRef-DocumentRoot-Directory-.-",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-golang.org-x-mod-0642896bc6324ca7",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-golang.org-x-mod-03b00f730f547d57",
             "relationshipType": "CONTAINS"
         },
         {
             "spdxElementId": "SPDXRef-DocumentRoot-Directory-.-",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-golang.org-x-net-73d822a5165a7580",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-golang.org-x-net-2e7c70551b559888",
             "relationshipType": "CONTAINS"
         },
         {
             "spdxElementId": "SPDXRef-DocumentRoot-Directory-.-",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-golang.org-x-sync-5cfca8293e82e6ff",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-golang.org-x-sync-a1443618ae5abe05",
             "relationshipType": "CONTAINS"
         },
         {
             "spdxElementId": "SPDXRef-DocumentRoot-Directory-.-",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-golang.org-x-sys-e0491576717f6095",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-golang.org-x-sys-def82f102b3aa03e",
             "relationshipType": "CONTAINS"
         },
         {
             "spdxElementId": "SPDXRef-DocumentRoot-Directory-.-",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-golang.org-x-text-785645606172e054",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-golang.org-x-telemetry-39c27f8695d13b78",
             "relationshipType": "CONTAINS"
         },
         {
             "spdxElementId": "SPDXRef-DocumentRoot-Directory-.-",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-golang.org-x-tools-dee3f66338a96a88",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-golang.org-x-text-639498e93dc2e58f",
+            "relationshipType": "CONTAINS"
+        },
+        {
+            "spdxElementId": "SPDXRef-DocumentRoot-Directory-.-",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-golang.org-x-tools-2275854a36871cda",
             "relationshipType": "CONTAINS"
         },
         {
@@ -2919,17 +2884,17 @@
         },
         {
             "spdxElementId": "SPDXRef-DocumentRoot-Directory-.-",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-google.golang.org-genproto-googleapis-rpc-e24d4ef595fbcda1",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-google.golang.org-genproto-googleapis-rpc-2f782d4fbe6d23a8",
             "relationshipType": "CONTAINS"
         },
         {
             "spdxElementId": "SPDXRef-DocumentRoot-Directory-.-",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-google.golang.org-grpc-2c990bd6621f19cd",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-google.golang.org-grpc-a6c37394a2ec3379",
             "relationshipType": "CONTAINS"
         },
         {
             "spdxElementId": "SPDXRef-DocumentRoot-Directory-.-",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-google.golang.org-protobuf-306b1685b24a4100",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-google.golang.org-protobuf-8f27758e91d55941",
             "relationshipType": "CONTAINS"
         },
         {
