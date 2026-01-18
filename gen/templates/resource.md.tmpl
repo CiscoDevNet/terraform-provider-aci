@@ -77,10 +77,12 @@ All examples for the {{.ResourceNameAsDescription}} resource can be found in the
 {{- range .Properties}}
     {{- if or .IsNaming .IsRequired}}
 * `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (string) {{.Comment}}{{if ne .NamedPropertyClass ""}}{{$RName := getResourceName .NamedPropertyClass $.Definitions}} This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/{{$RName}}) with `aci_{{$RName}}.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/{{$RName}}) with `data.aci_{{$RName}}.example.name`.{{end}}{{if and (ne $.Versions .Versions) (ne .Versions "")}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
-      {{- if and .HasCustomType (hasCustomTypeDocs .PkgName .Name $.Definitions)}}{{$i := 1}}{{$length := len .ValidValues}}
+      {{- if and .HasCustomType (hasCustomTypeDocs .PkgName .Name $.Definitions) (not .ValidateAsIPv4OrIPv6) }}{{$i := 1}}{{$length := len .ValidValues}}
   - Valid Values:
+        {{- if .ValidValues}}
     *{{ range .ValidValues}} `"{{ . }}"`{{ if ne $length $i}}{{$i = add $i 1}}, {{- else}}.{{- end}}{{- end}}
-    * Or a value in the range of `{{ printf "%.0f" (index .Validators 0 "min") }}` to `{{ printf "%.0f" (index .Validators 0 "max") }}`.
+        {{- end}}
+    * {{if .ValidValues}}Or a{{else}}A{{end}} value in the range of `{{ printf "%.0f" (index .Validators 0 "min") }}` to `{{ printf "%.0f" (index .Validators 0 "max") }}`.
       {{- else if .ValidValues }}{{$i := 1}}{{$length := len .ValidValues}}
   - Valid Values:{{ range .ValidValues}} `"{{ . }}"`{{ if ne $length $i}}{{$i = add $i 1}}, {{- else}}.{{- end}}{{- end}}
       {{- end}}
@@ -141,10 +143,12 @@ All examples for the {{.ResourceNameAsDescription}} resource can be found in the
   - Default: `"{{ .DefaultValue }}"`
           {{- end}}
         {{- end}}
-        {{- if and .HasCustomType (hasCustomTypeDocs .PkgName .Name $.Definitions)}}{{$i := 1}}{{$length := len .ValidValues}}
+        {{- if and .HasCustomType (hasCustomTypeDocs .PkgName .Name $.Definitions) (not .ValidateAsIPv4OrIPv6) }}{{$i := 1}}{{$length := len .ValidValues}}
   - Valid Values:
+          {{- if .ValidValues}}
     *{{ range .ValidValues}} `"{{ . }}"`{{ if ne $length $i}}{{$i = add $i 1}}, {{- else}}.{{- end}}{{- end}}
-    * Or a value in the range of `{{ printf "%.0f" (index .Validators 0 "min") }}` to `{{ printf "%.0f" (index .Validators 0 "max") }}`.
+          {{- end}}
+    * {{if .ValidValues}}Or a{{else}}A{{end}} value in the range of `{{ printf "%.0f" (index .Validators 0 "min") }}` to `{{ printf "%.0f" (index .Validators 0 "max") }}`.
         {{- else if .ValidValues }}{{$i := 1}}{{$length := len .ValidValues}}
   - Valid Values:{{ range .ValidValues}} `"{{ . }}"`{{ if ne $length $i}}{{$i = add $i 1}}, {{- else}}.{{- end}}{{- end}}
         {{- end}}
@@ -219,10 +223,12 @@ import {
     {{ $indent }}* `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (list) {{.Comment}}{{if ne $childVersion .Versions}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
           {{- else}}
     {{ $indent }}* `{{- overwriteProperty .PkgName .SnakeCaseName $.Definitions}}` ({{- .PropertyName}}) - (string) {{.Comment}}{{if ne .NamedPropertyClass ""}}{{$RName := getResourceName .NamedPropertyClass $.Definitions}} This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/{{$RName}}) with `aci_{{$RName}}.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/{{$RName}}) with `data.aci_{{$RName}}.example.name`.{{end}}{{if ne $childVersion .Versions}} This attribute is supported in ACI versions: {{ .Versions}}{{- end}}
-              {{- if and .HasCustomType (hasCustomTypeDocs .PkgName .Name $.Definitions)}}{{$i := 1}}{{$length := len .ValidValues}}
+              {{- if and .HasCustomType (hasCustomTypeDocs .PkgName .Name $.Definitions) (not .ValidateAsIPv4OrIPv6) }}{{$i := 1}}{{$length := len .ValidValues}}
     {{ $indent }} - Valid Values:
+                {{- if .ValidValues}}
     {{ $indent }}   *{{ range .ValidValues}} `"{{ . }}"`{{ if ne $length $i}}{{$i = add $i 1}}, {{- else}}.{{- end}}{{- end}}
-    {{ $indent }}   * Or a value in the range of `{{ printf "%.0f" (index .Validators 0 "min") }}` to `{{ printf "%.0f" (index .Validators 0 "max") }}`.
+                {{- end}}
+    {{ $indent }}   * {{if .ValidValues}}Or a{{else}}A{{end}} value in the range of `{{ printf "%.0f" (index .Validators 0 "min") }}` to `{{ printf "%.0f" (index .Validators 0 "max") }}`.
               {{- else if .ValidValues }}{{$i := 1}}{{$length := len .ValidValues}}
     {{ $indent }} - Valid Values:{{ range .ValidValues}} `"{{ . }}"`{{ if ne $length $i}}{{$i = add $i 1}}, {{- else}}.{{- end}}{{- end}}
               {{- end}}

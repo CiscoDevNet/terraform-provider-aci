@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"strings"
 
+	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
@@ -41,16 +42,16 @@ type FvEpIpTagResource struct {
 
 // FvEpIpTagResourceModel describes the resource data model.
 type FvEpIpTagResourceModel struct {
-	Id            types.String `tfsdk:"id"`
-	ParentDn      types.String `tfsdk:"parent_dn"`
-	Annotation    types.String `tfsdk:"annotation"`
-	CtxName       types.String `tfsdk:"vrf_name"`
-	FvEpIpTagId   types.String `tfsdk:"id_attribute"`
-	Ip            types.String `tfsdk:"ip"`
-	Name          types.String `tfsdk:"name"`
-	NameAlias     types.String `tfsdk:"name_alias"`
-	TagAnnotation types.Set    `tfsdk:"annotations"`
-	TagTag        types.Set    `tfsdk:"tags"`
+	Id            types.String                       `tfsdk:"id"`
+	ParentDn      types.String                       `tfsdk:"parent_dn"`
+	Annotation    types.String                       `tfsdk:"annotation"`
+	CtxName       types.String                       `tfsdk:"vrf_name"`
+	FvEpIpTagId   types.String                       `tfsdk:"id_attribute"`
+	Ip            customTypes.IPv6AddressStringValue `tfsdk:"ip"`
+	Name          types.String                       `tfsdk:"name"`
+	NameAlias     types.String                       `tfsdk:"name_alias"`
+	TagAnnotation types.Set                          `tfsdk:"annotations"`
+	TagTag        types.Set                          `tfsdk:"tags"`
 }
 
 func getEmptyFvEpIpTagResourceModel() *FvEpIpTagResourceModel {
@@ -60,7 +61,7 @@ func getEmptyFvEpIpTagResourceModel() *FvEpIpTagResourceModel {
 		Annotation:  basetypes.NewStringNull(),
 		CtxName:     basetypes.NewStringNull(),
 		FvEpIpTagId: basetypes.NewStringNull(),
-		Ip:          basetypes.NewStringNull(),
+		Ip:          customTypes.NewIPv6AddressStringNull(),
 		Name:        basetypes.NewStringNull(),
 		NameAlias:   basetypes.NewStringNull(),
 		TagAnnotation: types.SetNull(types.ObjectType{
@@ -205,7 +206,8 @@ func (r *FvEpIpTagResource) Schema(ctx context.Context, req resource.SchemaReque
 				MarkdownDescription: `The identifier of the Endpoint Tag IP object.`,
 			},
 			"ip": schema.StringAttribute{
-				Required: true,
+				CustomType: customTypes.IPv6AddressStringType{},
+				Required:   true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
@@ -494,7 +496,7 @@ func getAndSetFvEpIpTagAttributes(ctx context.Context, diags *diag.Diagnostics, 
 					readData.FvEpIpTagId = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "ip" {
-					readData.Ip = basetypes.NewStringValue(attributeValue.(string))
+					readData.Ip = customTypes.NewIPv6AddressStringValue(attributeValue.(string))
 				}
 				if attributeName == "name" {
 					readData.Name = basetypes.NewStringValue(attributeValue.(string))
@@ -557,7 +559,7 @@ func getAndSetFvEpIpTagAttributes(ctx context.Context, diags *diag.Diagnostics, 
 }
 
 func getFvEpIpTagRn(ctx context.Context, data *FvEpIpTagResourceModel) string {
-	return fmt.Sprintf("eptags/epiptag-[%s]-%s", data.Ip.ValueString(), data.CtxName.ValueString())
+	return fmt.Sprintf("eptags/epiptag-[%s]-%s", data.Ip.NamedValueString(), data.CtxName.ValueString())
 }
 
 func setFvEpIpTagParentDn(ctx context.Context, dn string, data *FvEpIpTagResourceModel) {

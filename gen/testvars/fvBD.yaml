@@ -78,6 +78,10 @@ datasource_required:
 resource_required:
   name: "test_name"
 
+custom_type:
+  link_local_ipv6_address: "fe80::0002"
+  name: "test_name"
+
 read_only:
   - "pc_tag"
   - "scope"

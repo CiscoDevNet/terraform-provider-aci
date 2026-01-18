@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 
+	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
@@ -99,13 +100,13 @@ func getEmptyFvFBRGroupResourceModel() *FvFBRGroupResourceModel {
 
 // FvFBRMemberFvFBRGroupResourceModel describes the resource data model for the children without relation ships.
 type FvFBRMemberFvFBRGroupResourceModel struct {
-	Annotation    types.String `tfsdk:"annotation"`
-	Descr         types.String `tfsdk:"description"`
-	Name          types.String `tfsdk:"name"`
-	NameAlias     types.String `tfsdk:"name_alias"`
-	RnhAddr       types.String `tfsdk:"fallback_member"`
-	TagAnnotation types.Set    `tfsdk:"annotations"`
-	TagTag        types.Set    `tfsdk:"tags"`
+	Annotation    types.String                       `tfsdk:"annotation"`
+	Descr         types.String                       `tfsdk:"description"`
+	Name          types.String                       `tfsdk:"name"`
+	NameAlias     types.String                       `tfsdk:"name_alias"`
+	RnhAddr       customTypes.IPv6AddressStringValue `tfsdk:"fallback_member"`
+	TagAnnotation types.Set                          `tfsdk:"annotations"`
+	TagTag        types.Set                          `tfsdk:"tags"`
 }
 
 func getEmptyFvFBRMemberFvFBRGroupResourceModel() FvFBRMemberFvFBRGroupResourceModel {
@@ -114,7 +115,7 @@ func getEmptyFvFBRMemberFvFBRGroupResourceModel() FvFBRMemberFvFBRGroupResourceM
 		Descr:      basetypes.NewStringNull(),
 		Name:       basetypes.NewStringNull(),
 		NameAlias:  basetypes.NewStringNull(),
-		RnhAddr:    basetypes.NewStringNull(),
+		RnhAddr:    customTypes.NewIPv6AddressStringNull(),
 		TagAnnotation: types.SetNull(types.ObjectType{
 			AttrTypes: map[string]attr.Type{
 				"key":   types.StringType,
@@ -170,7 +171,7 @@ func FvFBRMemberFvFBRGroupSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(c
 			}
 			if stateValue.RnhAddr.IsNull() {
 				nullInStateFound = true
-				planSetValues[index].RnhAddr = basetypes.NewStringNull()
+				planSetValues[index].RnhAddr = customTypes.NewIPv6AddressStringNull()
 			}
 			if !nullInStateFound {
 				// when there are no null fields we can conclude the version supports all attributes in set
@@ -491,7 +492,8 @@ func (r *FvFBRGroupResource) Schema(ctx context.Context, req resource.SchemaRequ
 							MarkdownDescription: `The name alias of the VRF Fallback Route Group Member object.`,
 						},
 						"fallback_member": schema.StringAttribute{
-							Required: true,
+							CustomType: customTypes.IPv6AddressStringType{},
+							Required:   true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseNonNullStateForUnknown(),
 							},
@@ -961,7 +963,7 @@ func getAndSetFvFBRGroupAttributes(ctx context.Context, diags *diag.Diagnostics,
 									FvFBRMemberFvFBRGroup.NameAlias = basetypes.NewStringValue(childAttributeValue.(string))
 								}
 								if childAttributeName == "rnhAddr" {
-									FvFBRMemberFvFBRGroup.RnhAddr = basetypes.NewStringValue(childAttributeValue.(string))
+									FvFBRMemberFvFBRGroup.RnhAddr = customTypes.NewIPv6AddressStringValue(childAttributeValue.(string))
 								}
 
 							}
@@ -1247,13 +1249,13 @@ func getFvFBRGroupFvFBRMemberChildPayloads(ctx context.Context, diags *diag.Diag
 			childMap.Children = FvFBRMemberFvFBRGroupChildren
 			childPayloads = append(childPayloads, map[string]interface{}{"fvFBRMember": childMap})
 			fvFBRMemberIdentifier := FvFBRMemberIdentifier{}
-			fvFBRMemberIdentifier.RnhAddr = fvFBRMemberFvFBRGroup.RnhAddr
+			fvFBRMemberIdentifier.RnhAddr = basetypes.NewStringValue(fvFBRMemberFvFBRGroup.RnhAddr.ValueString())
 			fvFBRMemberIdentifiers = append(fvFBRMemberIdentifiers, fvFBRMemberIdentifier)
 		}
 		for _, fvFBRMember := range fvFBRMemberFvFBRGroupState {
 			delete := true
 			for _, fvFBRMemberIdentifier := range fvFBRMemberIdentifiers {
-				if fvFBRMemberIdentifier.RnhAddr == fvFBRMember.RnhAddr {
+				if fvFBRMemberIdentifier.RnhAddr == basetypes.NewStringValue(fvFBRMember.RnhAddr.ValueString()) {
 					delete = false
 					break
 				}

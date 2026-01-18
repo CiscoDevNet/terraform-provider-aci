@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 
+	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework-validators/setvalidator"
@@ -44,83 +45,83 @@ type FvBDResource struct {
 
 // FvBDResourceModel describes the resource data model.
 type FvBDResourceModel struct {
-	Id                                   types.String `tfsdk:"id"`
-	ParentDn                             types.String `tfsdk:"parent_dn"`
-	OptimizeWanBandwidth                 types.String `tfsdk:"optimize_wan_bandwidth"`
-	Annotation                           types.String `tfsdk:"annotation"`
-	ArpFlood                             types.String `tfsdk:"arp_flooding"`
-	Descr                                types.String `tfsdk:"description"`
-	EnableRogueExceptMac                 types.String `tfsdk:"enable_rogue_exception_mac"`
-	EpClear                              types.String `tfsdk:"clear_remote_mac_entries"`
-	EpMoveDetectMode                     types.String `tfsdk:"endpoint_move_detection_mode"`
-	HostBasedRouting                     types.String `tfsdk:"advertise_host_routes"`
-	IntersiteBumTrafficAllow             types.String `tfsdk:"enable_intersite_bum_traffic"`
-	IntersiteL2Stretch                   types.String `tfsdk:"intersite_l2_stretch"`
-	IpLearning                           types.String `tfsdk:"ip_learning"`
-	Ipv6McastAllow                       types.String `tfsdk:"pim_ipv6"`
-	LimitIpLearnToSubnets                types.String `tfsdk:"limit_ip_learn_to_subnets"`
-	LlAddr                               types.String `tfsdk:"link_local_ipv6_address"`
-	Mac                                  types.String `tfsdk:"custom_mac_address"`
-	McastARPDrop                         types.String `tfsdk:"drop_arp_with_multicast_smac"`
-	McastAllow                           types.String `tfsdk:"pim"`
-	MultiDstPktAct                       types.String `tfsdk:"multi_destination_flooding"`
-	Name                                 types.String `tfsdk:"name"`
-	NameAlias                            types.String `tfsdk:"name_alias"`
-	OwnerKey                             types.String `tfsdk:"owner_key"`
-	OwnerTag                             types.String `tfsdk:"owner_tag"`
-	PcTag                                types.String `tfsdk:"pc_tag"`
-	Scope                                types.String `tfsdk:"scope"`
-	Seg                                  types.String `tfsdk:"segment"`
-	ServiceBdRoutingDisable              types.String `tfsdk:"service_bd_routing_disable"`
-	Type                                 types.String `tfsdk:"bridge_domain_type"`
-	UnicastRoute                         types.String `tfsdk:"unicast_routing"`
-	UnkMacUcastAct                       types.String `tfsdk:"l2_unknown_unicast_flooding"`
-	UnkMcastAct                          types.String `tfsdk:"l3_unknown_multicast_flooding"`
-	V6unkMcastAct                        types.String `tfsdk:"ipv6_l3_unknown_multicast_flooding"`
-	Vmac                                 types.String `tfsdk:"virtual_mac_address"`
-	FvAccP                               types.Object `tfsdk:"legacy_mode"`
-	FvRogueExceptionMac                  types.Set    `tfsdk:"rogue_coop_exceptions"`
-	FvRsABDPolMonPol                     types.Object `tfsdk:"relation_to_monitoring_policy"`
-	FvRsBDToFhs                          types.Object `tfsdk:"relation_to_first_hop_security_policy"`
-	FvRsBDToNdP                          types.Object `tfsdk:"relation_to_neighbor_discovery_interface_policy"`
-	FvRsBDToNetflowMonitorPol            types.Set    `tfsdk:"relation_to_netflow_monitor_policies"`
-	FvRsBDToOut                          types.Set    `tfsdk:"relation_to_l3_outsides"`
-	FvRsBDToProfile                      types.Object `tfsdk:"relation_to_route_control_profile"`
-	FvRsBDToRelayP                       types.Object `tfsdk:"relation_to_dhcp_relay_policy"`
-	FvRsBdToEpRet                        types.Object `tfsdk:"relation_to_end_point_retention_policy"`
-	FvRsCtx                              types.Object `tfsdk:"relation_to_vrf"`
-	FvRsIgmpsn                           types.Object `tfsdk:"relation_to_igmp_snooping_policy"`
-	FvRsMldsn                            types.Object `tfsdk:"relation_to_mld_snooping_policy"`
-	TagAnnotation                        types.Set    `tfsdk:"annotations"`
-	TagTag                               types.Set    `tfsdk:"tags"`
-	DeprecatedArpFlood                   types.String `tfsdk:"arp_flood"`
-	DeprecatedEpClear                    types.String `tfsdk:"ep_clear"`
-	DeprecatedEpMoveDetectMode           types.String `tfsdk:"ep_move_detect_mode"`
-	DeprecatedHostBasedRouting           types.String `tfsdk:"host_based_routing"`
-	DeprecatedIntersiteBumTrafficAllow   types.String `tfsdk:"intersite_bum_traffic_allow"`
-	DeprecatedIpv6McastAllow             types.String `tfsdk:"ipv6_mcast_allow"`
-	DeprecatedLlAddr                     types.String `tfsdk:"ll_addr"`
-	DeprecatedMac                        types.String `tfsdk:"mac"`
-	DeprecatedMcastAllow                 types.String `tfsdk:"mcast_allow"`
-	DeprecatedMultiDstPktAct             types.String `tfsdk:"multi_dst_pkt_act"`
-	DeprecatedParentDn                   types.String `tfsdk:"tenant_dn"`
-	DeprecatedUnicastRoute               types.String `tfsdk:"unicast_route"`
-	DeprecatedUnkMacUcastAct             types.String `tfsdk:"unk_mac_ucast_act"`
-	DeprecatedUnkMcastAct                types.String `tfsdk:"unk_mcast_act"`
-	DeprecatedV6unkMcastAct              types.String `tfsdk:"v6unk_mcast_act"`
-	DeprecatedVmac                       types.String `tfsdk:"vmac"`
-	DeprecatedFvRsBDToRelayP             types.String `tfsdk:"relation_fv_rs_bd_to_relay_p"`
-	DeprecatedFvRsBdToEpRet              types.String `tfsdk:"relation_fv_rs_bd_to_ep_ret"`
-	DeprecatedFvRsBDToFhs                types.String `tfsdk:"relation_fv_rs_bd_to_fhs"`
-	DeprecatedFvRsBDToOut                types.Set    `tfsdk:"relation_fv_rs_bd_to_out"`
-	DeprecatedFvRsABDPolMonPol           types.String `tfsdk:"relation_fv_rs_abd_pol_mon_pol"`
-	DeprecatedFvRsBDToNdP                types.String `tfsdk:"relation_fv_rs_bd_to_nd_p"`
-	Ignored_relation_fv_rs_bd_flood_to   types.Set    `tfsdk:"relation_fv_rs_bd_flood_to"`
-	Ignored_relation_fv_rs_bd_to_profile types.String `tfsdk:"relation_fv_rs_bd_to_profile"`
-	DeprecatedFvRsIgmpsn                 types.String `tfsdk:"relation_fv_rs_igmpsn"`
-	DeprecatedFvRsMldsn                  types.String `tfsdk:"relation_fv_rs_mldsn"`
-	DeprecatedFvRsCtx                    types.String `tfsdk:"relation_fv_rs_ctx"`
-	DeprecatedFvRsBDToNetflowMonitorPol  types.Set    `tfsdk:"relation_fv_rs_bd_to_netflow_monitor_pol"`
+	Id                                   types.String                       `tfsdk:"id"`
+	ParentDn                             types.String                       `tfsdk:"parent_dn"`
+	OptimizeWanBandwidth                 types.String                       `tfsdk:"optimize_wan_bandwidth"`
+	Annotation                           types.String                       `tfsdk:"annotation"`
+	ArpFlood                             types.String                       `tfsdk:"arp_flooding"`
+	Descr                                types.String                       `tfsdk:"description"`
+	EnableRogueExceptMac                 types.String                       `tfsdk:"enable_rogue_exception_mac"`
+	EpClear                              types.String                       `tfsdk:"clear_remote_mac_entries"`
+	EpMoveDetectMode                     types.String                       `tfsdk:"endpoint_move_detection_mode"`
+	HostBasedRouting                     types.String                       `tfsdk:"advertise_host_routes"`
+	IntersiteBumTrafficAllow             types.String                       `tfsdk:"enable_intersite_bum_traffic"`
+	IntersiteL2Stretch                   types.String                       `tfsdk:"intersite_l2_stretch"`
+	IpLearning                           types.String                       `tfsdk:"ip_learning"`
+	Ipv6McastAllow                       types.String                       `tfsdk:"pim_ipv6"`
+	LimitIpLearnToSubnets                types.String                       `tfsdk:"limit_ip_learn_to_subnets"`
+	LlAddr                               customTypes.IPv6AddressStringValue `tfsdk:"link_local_ipv6_address"`
+	Mac                                  types.String                       `tfsdk:"custom_mac_address"`
+	McastARPDrop                         types.String                       `tfsdk:"drop_arp_with_multicast_smac"`
+	McastAllow                           types.String                       `tfsdk:"pim"`
+	MultiDstPktAct                       types.String                       `tfsdk:"multi_destination_flooding"`
+	Name                                 types.String                       `tfsdk:"name"`
+	NameAlias                            types.String                       `tfsdk:"name_alias"`
+	OwnerKey                             types.String                       `tfsdk:"owner_key"`
+	OwnerTag                             types.String                       `tfsdk:"owner_tag"`
+	PcTag                                types.String                       `tfsdk:"pc_tag"`
+	Scope                                types.String                       `tfsdk:"scope"`
+	Seg                                  types.String                       `tfsdk:"segment"`
+	ServiceBdRoutingDisable              types.String                       `tfsdk:"service_bd_routing_disable"`
+	Type                                 types.String                       `tfsdk:"bridge_domain_type"`
+	UnicastRoute                         types.String                       `tfsdk:"unicast_routing"`
+	UnkMacUcastAct                       types.String                       `tfsdk:"l2_unknown_unicast_flooding"`
+	UnkMcastAct                          types.String                       `tfsdk:"l3_unknown_multicast_flooding"`
+	V6unkMcastAct                        types.String                       `tfsdk:"ipv6_l3_unknown_multicast_flooding"`
+	Vmac                                 types.String                       `tfsdk:"virtual_mac_address"`
+	FvAccP                               types.Object                       `tfsdk:"legacy_mode"`
+	FvRogueExceptionMac                  types.Set                          `tfsdk:"rogue_coop_exceptions"`
+	FvRsABDPolMonPol                     types.Object                       `tfsdk:"relation_to_monitoring_policy"`
+	FvRsBDToFhs                          types.Object                       `tfsdk:"relation_to_first_hop_security_policy"`
+	FvRsBDToNdP                          types.Object                       `tfsdk:"relation_to_neighbor_discovery_interface_policy"`
+	FvRsBDToNetflowMonitorPol            types.Set                          `tfsdk:"relation_to_netflow_monitor_policies"`
+	FvRsBDToOut                          types.Set                          `tfsdk:"relation_to_l3_outsides"`
+	FvRsBDToProfile                      types.Object                       `tfsdk:"relation_to_route_control_profile"`
+	FvRsBDToRelayP                       types.Object                       `tfsdk:"relation_to_dhcp_relay_policy"`
+	FvRsBdToEpRet                        types.Object                       `tfsdk:"relation_to_end_point_retention_policy"`
+	FvRsCtx                              types.Object                       `tfsdk:"relation_to_vrf"`
+	FvRsIgmpsn                           types.Object                       `tfsdk:"relation_to_igmp_snooping_policy"`
+	FvRsMldsn                            types.Object                       `tfsdk:"relation_to_mld_snooping_policy"`
+	TagAnnotation                        types.Set                          `tfsdk:"annotations"`
+	TagTag                               types.Set                          `tfsdk:"tags"`
+	DeprecatedArpFlood                   types.String                       `tfsdk:"arp_flood"`
+	DeprecatedEpClear                    types.String                       `tfsdk:"ep_clear"`
+	DeprecatedEpMoveDetectMode           types.String                       `tfsdk:"ep_move_detect_mode"`
+	DeprecatedHostBasedRouting           types.String                       `tfsdk:"host_based_routing"`
+	DeprecatedIntersiteBumTrafficAllow   types.String                       `tfsdk:"intersite_bum_traffic_allow"`
+	DeprecatedIpv6McastAllow             types.String                       `tfsdk:"ipv6_mcast_allow"`
+	DeprecatedLlAddr                     customTypes.IPv6AddressStringValue `tfsdk:"ll_addr"`
+	DeprecatedMac                        types.String                       `tfsdk:"mac"`
+	DeprecatedMcastAllow                 types.String                       `tfsdk:"mcast_allow"`
+	DeprecatedMultiDstPktAct             types.String                       `tfsdk:"multi_dst_pkt_act"`
+	DeprecatedParentDn                   types.String                       `tfsdk:"tenant_dn"`
+	DeprecatedUnicastRoute               types.String                       `tfsdk:"unicast_route"`
+	DeprecatedUnkMacUcastAct             types.String                       `tfsdk:"unk_mac_ucast_act"`
+	DeprecatedUnkMcastAct                types.String                       `tfsdk:"unk_mcast_act"`
+	DeprecatedV6unkMcastAct              types.String                       `tfsdk:"v6unk_mcast_act"`
+	DeprecatedVmac                       types.String                       `tfsdk:"vmac"`
+	DeprecatedFvRsBDToRelayP             types.String                       `tfsdk:"relation_fv_rs_bd_to_relay_p"`
+	DeprecatedFvRsBdToEpRet              types.String                       `tfsdk:"relation_fv_rs_bd_to_ep_ret"`
+	DeprecatedFvRsBDToFhs                types.String                       `tfsdk:"relation_fv_rs_bd_to_fhs"`
+	DeprecatedFvRsBDToOut                types.Set                          `tfsdk:"relation_fv_rs_bd_to_out"`
+	DeprecatedFvRsABDPolMonPol           types.String                       `tfsdk:"relation_fv_rs_abd_pol_mon_pol"`
+	DeprecatedFvRsBDToNdP                types.String                       `tfsdk:"relation_fv_rs_bd_to_nd_p"`
+	Ignored_relation_fv_rs_bd_flood_to   types.Set                          `tfsdk:"relation_fv_rs_bd_flood_to"`
+	Ignored_relation_fv_rs_bd_to_profile types.String                       `tfsdk:"relation_fv_rs_bd_to_profile"`
+	DeprecatedFvRsIgmpsn                 types.String                       `tfsdk:"relation_fv_rs_igmpsn"`
+	DeprecatedFvRsMldsn                  types.String                       `tfsdk:"relation_fv_rs_mldsn"`
+	DeprecatedFvRsCtx                    types.String                       `tfsdk:"relation_fv_rs_ctx"`
+	DeprecatedFvRsBDToNetflowMonitorPol  types.Set                          `tfsdk:"relation_fv_rs_bd_to_netflow_monitor_pol"`
 }
 
 func getEmptyFvBDResourceModel() *FvBDResourceModel {
@@ -140,7 +141,7 @@ func getEmptyFvBDResourceModel() *FvBDResourceModel {
 		IpLearning:               basetypes.NewStringNull(),
 		Ipv6McastAllow:           basetypes.NewStringNull(),
 		LimitIpLearnToSubnets:    basetypes.NewStringNull(),
-		LlAddr:                   basetypes.NewStringNull(),
+		LlAddr:                   customTypes.NewIPv6AddressStringNull(),
 		Mac:                      basetypes.NewStringNull(),
 		McastARPDrop:             basetypes.NewStringNull(),
 		McastAllow:               basetypes.NewStringNull(),
@@ -272,7 +273,7 @@ func getEmptyFvBDResourceModel() *FvBDResourceModel {
 		DeprecatedHostBasedRouting:           types.String{},
 		DeprecatedIntersiteBumTrafficAllow:   types.String{},
 		DeprecatedIpv6McastAllow:             types.String{},
-		DeprecatedLlAddr:                     types.String{},
+		DeprecatedLlAddr:                     customTypes.IPv6AddressStringValue{},
 		DeprecatedMac:                        types.String{},
 		DeprecatedMcastAllow:                 types.String{},
 		DeprecatedMultiDstPktAct:             types.String{},
@@ -1453,44 +1454,44 @@ var deprecatedFvRsBDToNetflowMonitorPolType = types.ObjectType{
 }
 
 type FvBDResourceModelV1 struct {
-	Annotation                           types.String `tfsdk:"annotation"`
-	ArpFlood                             types.String `tfsdk:"arp_flood"`
-	Descr                                types.String `tfsdk:"description"`
-	EpClear                              types.String `tfsdk:"ep_clear"`
-	EpMoveDetectMode                     types.String `tfsdk:"ep_move_detect_mode"`
-	HostBasedRouting                     types.String `tfsdk:"host_based_routing"`
-	Id                                   types.String `tfsdk:"id"`
-	IntersiteBumTrafficAllow             types.String `tfsdk:"intersite_bum_traffic_allow"`
-	IntersiteL2Stretch                   types.String `tfsdk:"intersite_l2_stretch"`
-	IpLearning                           types.String `tfsdk:"ip_learning"`
-	Ipv6McastAllow                       types.String `tfsdk:"ipv6_mcast_allow"`
-	LimitIpLearnToSubnets                types.String `tfsdk:"limit_ip_learn_to_subnets"`
-	LlAddr                               types.String `tfsdk:"ll_addr"`
-	Mac                                  types.String `tfsdk:"mac"`
-	McastAllow                           types.String `tfsdk:"mcast_allow"`
-	MultiDstPktAct                       types.String `tfsdk:"multi_dst_pkt_act"`
-	Name                                 types.String `tfsdk:"name"`
-	NameAlias                            types.String `tfsdk:"name_alias"`
-	OptimizeWanBandwidth                 types.String `tfsdk:"optimize_wan_bandwidth"`
-	ParentDn                             types.String `tfsdk:"tenant_dn"`
-	Type                                 types.String `tfsdk:"bridge_domain_type"`
-	UnicastRoute                         types.String `tfsdk:"unicast_route"`
-	UnkMacUcastAct                       types.String `tfsdk:"unk_mac_ucast_act"`
-	UnkMcastAct                          types.String `tfsdk:"unk_mcast_act"`
-	V6unkMcastAct                        types.String `tfsdk:"v6unk_mcast_act"`
-	Vmac                                 types.String `tfsdk:"vmac"`
-	FvRsBDToRelayP                       types.String `tfsdk:"relation_fv_rs_bd_to_relay_p"`
-	FvRsBdToEpRet                        types.String `tfsdk:"relation_fv_rs_bd_to_ep_ret"`
-	FvRsBDToFhs                          types.String `tfsdk:"relation_fv_rs_bd_to_fhs"`
-	FvRsBDToOut                          types.Set    `tfsdk:"relation_fv_rs_bd_to_out"`
-	FvRsABDPolMonPol                     types.String `tfsdk:"relation_fv_rs_abd_pol_mon_pol"`
-	FvRsBDToNdP                          types.String `tfsdk:"relation_fv_rs_bd_to_nd_p"`
-	Ignored_relation_fv_rs_bd_flood_to   types.Set    `tfsdk:"relation_fv_rs_bd_flood_to"`
-	Ignored_relation_fv_rs_bd_to_profile types.String `tfsdk:"relation_fv_rs_bd_to_profile"`
-	FvRsIgmpsn                           types.String `tfsdk:"relation_fv_rs_igmpsn"`
-	FvRsMldsn                            types.String `tfsdk:"relation_fv_rs_mldsn"`
-	FvRsCtx                              types.String `tfsdk:"relation_fv_rs_ctx"`
-	FvRsBDToNetflowMonitorPol            types.Set    `tfsdk:"relation_fv_rs_bd_to_netflow_monitor_pol"`
+	Annotation                           types.String                       `tfsdk:"annotation"`
+	ArpFlood                             types.String                       `tfsdk:"arp_flood"`
+	Descr                                types.String                       `tfsdk:"description"`
+	EpClear                              types.String                       `tfsdk:"ep_clear"`
+	EpMoveDetectMode                     types.String                       `tfsdk:"ep_move_detect_mode"`
+	HostBasedRouting                     types.String                       `tfsdk:"host_based_routing"`
+	Id                                   types.String                       `tfsdk:"id"`
+	IntersiteBumTrafficAllow             types.String                       `tfsdk:"intersite_bum_traffic_allow"`
+	IntersiteL2Stretch                   types.String                       `tfsdk:"intersite_l2_stretch"`
+	IpLearning                           types.String                       `tfsdk:"ip_learning"`
+	Ipv6McastAllow                       types.String                       `tfsdk:"ipv6_mcast_allow"`
+	LimitIpLearnToSubnets                types.String                       `tfsdk:"limit_ip_learn_to_subnets"`
+	LlAddr                               customTypes.IPv6AddressStringValue `tfsdk:"ll_addr"`
+	Mac                                  types.String                       `tfsdk:"mac"`
+	McastAllow                           types.String                       `tfsdk:"mcast_allow"`
+	MultiDstPktAct                       types.String                       `tfsdk:"multi_dst_pkt_act"`
+	Name                                 types.String                       `tfsdk:"name"`
+	NameAlias                            types.String                       `tfsdk:"name_alias"`
+	OptimizeWanBandwidth                 types.String                       `tfsdk:"optimize_wan_bandwidth"`
+	ParentDn                             types.String                       `tfsdk:"tenant_dn"`
+	Type                                 types.String                       `tfsdk:"bridge_domain_type"`
+	UnicastRoute                         types.String                       `tfsdk:"unicast_route"`
+	UnkMacUcastAct                       types.String                       `tfsdk:"unk_mac_ucast_act"`
+	UnkMcastAct                          types.String                       `tfsdk:"unk_mcast_act"`
+	V6unkMcastAct                        types.String                       `tfsdk:"v6unk_mcast_act"`
+	Vmac                                 types.String                       `tfsdk:"vmac"`
+	FvRsBDToRelayP                       types.String                       `tfsdk:"relation_fv_rs_bd_to_relay_p"`
+	FvRsBdToEpRet                        types.String                       `tfsdk:"relation_fv_rs_bd_to_ep_ret"`
+	FvRsBDToFhs                          types.String                       `tfsdk:"relation_fv_rs_bd_to_fhs"`
+	FvRsBDToOut                          types.Set                          `tfsdk:"relation_fv_rs_bd_to_out"`
+	FvRsABDPolMonPol                     types.String                       `tfsdk:"relation_fv_rs_abd_pol_mon_pol"`
+	FvRsBDToNdP                          types.String                       `tfsdk:"relation_fv_rs_bd_to_nd_p"`
+	Ignored_relation_fv_rs_bd_flood_to   types.Set                          `tfsdk:"relation_fv_rs_bd_flood_to"`
+	Ignored_relation_fv_rs_bd_to_profile types.String                       `tfsdk:"relation_fv_rs_bd_to_profile"`
+	FvRsIgmpsn                           types.String                       `tfsdk:"relation_fv_rs_igmpsn"`
+	FvRsMldsn                            types.String                       `tfsdk:"relation_fv_rs_mldsn"`
+	FvRsCtx                              types.String                       `tfsdk:"relation_fv_rs_ctx"`
+	FvRsBDToNetflowMonitorPol            types.Set                          `tfsdk:"relation_fv_rs_bd_to_netflow_monitor_pol"`
 }
 
 type FvRsBDToNetflowMonitorPolFvBDResourceModelV1 struct {
@@ -1742,7 +1743,7 @@ func (r *FvBDResource) UpgradeState(ctx context.Context) map[int64]resource.Stat
 					IpLearning:                           priorStateData.IpLearning,
 					Ipv6McastAllow:                       priorStateData.Ipv6McastAllow,
 					LimitIpLearnToSubnets:                priorStateData.LimitIpLearnToSubnets,
-					LlAddr:                               priorStateData.LlAddr,
+					LlAddr:                               customTypes.IPv6AddressStringValue{StringValue: basetypes.NewStringValue(priorStateData.LlAddr.NamedValueString())},
 					Mac:                                  priorStateData.Mac,
 					McastARPDrop:                         basetypes.NewStringNull(),
 					McastAllow:                           priorStateData.McastAllow,
@@ -2077,7 +2078,7 @@ func setFvBDLegacyAttributes(ctx context.Context, diags *diag.Diagnostics, data,
 			data.DeprecatedIpv6McastAllow = basetypes.NewStringValue(attributeValue.(string))
 		}
 		if attributeName == "llAddr" {
-			data.DeprecatedLlAddr = basetypes.NewStringValue(attributeValue.(string))
+			data.DeprecatedLlAddr = customTypes.NewIPv6AddressStringValue(attributeValue.(string))
 		}
 		if attributeName == "mac" {
 			data.DeprecatedMac = basetypes.NewStringValue(attributeValue.(string))
@@ -2777,7 +2778,7 @@ func avoidFvBDPlanChangeForKnownAfterApplyOnly(ctx context.Context, planData, st
 			planData.DeprecatedIpv6McastAllow = basetypes.NewStringUnknown()
 		}
 		if configData.DeprecatedLlAddr.IsNull() {
-			planData.DeprecatedLlAddr = basetypes.NewStringUnknown()
+			planData.DeprecatedLlAddr = customTypes.NewIPv6AddressStringUnknown()
 		}
 		if configData.DeprecatedMac.IsNull() {
 			planData.DeprecatedMac = basetypes.NewStringUnknown()
@@ -2915,6 +2916,7 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 				},
 			},
 			"ll_addr": schema.StringAttribute{
+				CustomType:         customTypes.IPv6AddressStringType{},
 				Optional:           true,
 				Computed:           true,
 				DeprecationMessage: "Attribute 'll_addr' is deprecated, please refer to 'link_local_ipv6_address' instead. The attribute will be removed in the next major version of the provider.",
@@ -3297,8 +3299,9 @@ func (r *FvBDResource) Schema(ctx context.Context, req resource.SchemaRequest, r
 				MarkdownDescription: `Limit IP address learning to subnets for the Bridge Domain object. Every Bridge Domain object can have multiple subnets associated with it.`,
 			},
 			"link_local_ipv6_address": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
+				CustomType: customTypes.IPv6AddressStringType{},
+				Optional:   true,
+				Computed:   true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
@@ -5277,7 +5280,7 @@ func getAndSetFvBDAttributes(ctx context.Context, diags *diag.Diagnostics, clien
 					readData.LimitIpLearnToSubnets = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "llAddr" {
-					readData.LlAddr = basetypes.NewStringValue(attributeValue.(string))
+					readData.LlAddr = customTypes.NewIPv6AddressStringValue(attributeValue.(string))
 				}
 				if attributeName == "mac" {
 					readData.Mac = basetypes.NewStringValue(attributeValue.(string))

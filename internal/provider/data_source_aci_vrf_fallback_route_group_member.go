@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 
+	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
@@ -65,6 +66,7 @@ func (d *FvFBRMemberDataSource) Schema(ctx context.Context, req datasource.Schem
 				MarkdownDescription: `The name alias of the VRF Fallback Route Group Member object.`,
 			},
 			"fallback_member": schema.StringAttribute{
+				CustomType:          customTypes.IPv6AddressStringType{},
 				Required:            true,
 				MarkdownDescription: `The address of the VRF Fallback Route Group Member object.`,
 			},

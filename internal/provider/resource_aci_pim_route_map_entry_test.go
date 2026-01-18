@@ -231,6 +231,17 @@ func TestAccResourcePimRouteMapEntryWithPimRouteMapPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "tags.#", "0"),
 				),
 			},
+			// Update with minimum config and custom type semantic equivalent values
+			{
+				Config:             testConfigPimRouteMapEntryCustomTypeDependencyWithPimRouteMapPol,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "group_ip", "ff0e::0101/128"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "order", "1"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "rendezvous_point_ip", "2001:0db8:ffff::1/128"),
+					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "source_ip", "2001:0db8:100::10/128"),
+				),
+			},
 		},
 		CheckDestroy: testCheckResourceDestroy,
 	})
@@ -343,5 +354,15 @@ resource "aci_pim_route_map_entry" "test" {
   order = "1"
   annotations = []
   tags = []
+}
+`
+
+const testConfigPimRouteMapEntryCustomTypeDependencyWithPimRouteMapPol = testConfigPimRouteMapPolMinDependencyWithFvTenant + `
+resource "aci_pim_route_map_entry" "test" {
+  parent_dn = aci_pim_route_map_policy.test.id
+  group_ip = "ff0e::0101/128"
+  order = "1"
+  rendezvous_point_ip = "2001:0db8:ffff::1/128"
+  source_ip = "2001:0db8:100::10/128"
 }
 `

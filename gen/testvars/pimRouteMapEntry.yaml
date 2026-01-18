@@ -22,6 +22,12 @@ datasource_required:
 resource_required:
   order: "1"
 
+custom_type:
+  group_ip: "ff0e::0101/128"
+  order: "1"
+  rendezvous_point_ip: "2001:0db8:ffff::1/128"
+  source_ip: "2001:0db8:100::10/128"
+
 all:
   action: "deny"
   annotation: "annotation"
