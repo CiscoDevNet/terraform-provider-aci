@@ -50,11 +50,12 @@ type L2IfPolResourceModel struct {
 	NameAlias      types.String `tfsdk:"name_alias"`
 	OwnerKey       types.String `tfsdk:"owner_key"`
 	OwnerTag       types.String `tfsdk:"owner_tag"`
-	Qinq           types.String `tfsdk:"qinq"`
+	Qinq           types.String `tfsdk:"q_in_q"`
 	Vepa           types.String `tfsdk:"reflective_relay"`
 	VlanScope      types.String `tfsdk:"vlan_scope"`
 	TagAnnotation  types.Set    `tfsdk:"annotations"`
 	TagTag         types.Set    `tfsdk:"tags"`
+	DeprecatedQinq types.String `tfsdk:"qinq"`
 	DeprecatedVepa types.String `tfsdk:"vepa"`
 }
 
@@ -82,6 +83,7 @@ func getEmptyL2IfPolResourceModel() *L2IfPolResourceModel {
 				"value": types.StringType,
 			},
 		}),
+		DeprecatedQinq: types.String{},
 		DeprecatedVepa: types.String{},
 	}
 }
@@ -209,6 +211,7 @@ func (r *L2IfPolResource) UpgradeState(ctx context.Context) map[int64]resource.S
 					Qinq:           priorStateData.Qinq,
 					Vepa:           priorStateData.Vepa,
 					VlanScope:      priorStateData.VlanScope,
+					DeprecatedQinq: priorStateData.Qinq,
 					DeprecatedVepa: priorStateData.Vepa,
 				}
 
@@ -239,6 +242,9 @@ func (r *L2IfPolResource) UpgradeState(ctx context.Context) map[int64]resource.S
 func setL2IfPolLegacyAttributes(ctx context.Context, diags *diag.Diagnostics, data, staticData *L2IfPolResourceModel, classReadInfo []interface{}) {
 	attributes := classReadInfo[0].(map[string]interface{})["attributes"].(map[string]interface{})
 	for attributeName, attributeValue := range attributes {
+		if attributeName == "qinq" {
+			data.DeprecatedQinq = basetypes.NewStringValue(attributeValue.(string))
+		}
 		if attributeName == "vepa" {
 			data.DeprecatedVepa = basetypes.NewStringValue(attributeValue.(string))
 		}
@@ -267,6 +273,10 @@ func (r *L2IfPolResource) ModifyPlan(ctx context.Context, req resource.ModifyPla
 			}
 		}
 
+		if !configData.DeprecatedQinq.IsNull() {
+			planData.Qinq = configData.DeprecatedQinq
+		}
+
 		if !configData.DeprecatedVepa.IsNull() {
 			planData.Vepa = configData.DeprecatedVepa
 		}
@@ -282,12 +292,18 @@ func (r *L2IfPolResource) ModifyPlan(ctx context.Context, req resource.ModifyPla
 
 func avoidL2IfPolPlanChangeForKnownAfterApplyOnly(ctx context.Context, planData, stateData, configData *L2IfPolResourceModel) {
 	// Set read-only and deprecated attributes in planData from stateData
+	if configData.DeprecatedQinq.IsNull() {
+		planData.DeprecatedQinq = stateData.DeprecatedQinq
+	}
 	if configData.DeprecatedVepa.IsNull() {
 		planData.DeprecatedVepa = stateData.DeprecatedVepa
 	}
 
 	// Compare the string representation of the planData and stateData because structs cannot be compared directly
 	if fmt.Sprintf("%s", planData) != fmt.Sprintf("%s", stateData) {
+		if configData.DeprecatedQinq.IsNull() {
+			planData.DeprecatedQinq = basetypes.NewStringUnknown()
+		}
 		if configData.DeprecatedVepa.IsNull() {
 			planData.DeprecatedVepa = basetypes.NewStringUnknown()
 		}
@@ -309,6 +325,16 @@ func (r *L2IfPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 
 		Attributes: map[string]schema.Attribute{
 			// Deprecated attributes
+			"qinq": schema.StringAttribute{
+				Optional:           true,
+				Computed:           true,
+				DeprecationMessage: "Attribute 'qinq' is deprecated, please refer to 'q_in_q' instead. The attribute will be removed in the next major version of the provider.",
+				Validators: []validator.String{
+					stringvalidator.ConflictsWith(path.Expressions{
+						path.MatchRoot("q_in_q"),
+					}...),
+				},
+			},
 			"vepa": schema.StringAttribute{
 				Optional:           true,
 				Computed:           true,
@@ -382,7 +408,7 @@ func (r *L2IfPolResource) Schema(ctx context.Context, req resource.SchemaRequest
 				},
 				MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
 			},
-			"qinq": schema.StringAttribute{
+			"q_in_q": schema.StringAttribute{
 				Optional: true,
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
