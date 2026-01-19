@@ -285,7 +285,7 @@ func (r *XcvrZRIfPolResource) Schema(ctx context.Context, req resource.SchemaReq
 					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
-				MarkdownDescription: `The 100 Megahertz (MHz) frequency of the ZR Transceiver Interface Policy object. The value must be in the range 1911500 - 1961000.`,
+				MarkdownDescription: `The 100 megahertz (MHz) frequency of the ZR Transceiver Interface Policy object. The value must be in the range 1911500 - 1961000.`,
 			},
 			"frequency_50_ghz": schema.StringAttribute{
 				Optional: true,
@@ -294,7 +294,7 @@ func (r *XcvrZRIfPolResource) Schema(ctx context.Context, req resource.SchemaReq
 					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
-				MarkdownDescription: `The 50 Gigahertz (GHz) frequency of the ZR Transceiver Interface Policy object. The value must be in the range 19115 - 19610.`,
+				MarkdownDescription: `The 50 gigahertz (GHz) frequency of the ZR Transceiver Interface Policy object. The value must be in the range 19115 - 19610.`,
 			},
 			"itu_channel_50_ghz": schema.StringAttribute{
 				Optional: true,
@@ -303,7 +303,7 @@ func (r *XcvrZRIfPolResource) Schema(ctx context.Context, req resource.SchemaReq
 					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
-				MarkdownDescription: `The 50 Gigahertz (GHz) International Telecommunication Union (ITU) channel of the ZR Transceiver Interface Policy object. The value must be in the range 1 - 100.`,
+				MarkdownDescription: `The 50 gigahertz (GHz) International Telecommunication Union (ITU) channel of the ZR Transceiver Interface Policy object. The value must be in the range 1 - 100.`,
 			},
 			"modulation": schema.StringAttribute{
 				Optional: true,
@@ -381,7 +381,7 @@ func (r *XcvrZRIfPolResource) Schema(ctx context.Context, req resource.SchemaReq
 					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
-				MarkdownDescription: `The 50 Gigahertz (GHz) wavelength of the ZR Transceiver Interface Policy object. The value must be in the range 1528773 - 1568362.`,
+				MarkdownDescription: `The 50 gigahertz (GHz) wavelength of the ZR Transceiver Interface Policy object. The value must be in the range 1528773 - 1568362.`,
 			},
 			"annotations": schema.SetNestedAttribute{
 				MarkdownDescription: ``,
