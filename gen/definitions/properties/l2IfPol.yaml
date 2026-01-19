@@ -4,6 +4,7 @@ documentation:
     vlanScope: The vlan scope of the %s object.
 overwrites:
     vepa: reflective_relay
+    qinq: q_in_q
 test_values:
     all:
         reflective_relay: enabled

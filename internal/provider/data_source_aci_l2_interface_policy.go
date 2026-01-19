@@ -41,6 +41,10 @@ func (d *L2IfPolDataSource) Schema(ctx context.Context, req datasource.SchemaReq
 
 		Attributes: map[string]schema.Attribute{
 			// Deprecated attributes
+			"qinq": schema.StringAttribute{
+				Computed:           true,
+				DeprecationMessage: "Attribute 'qinq' is deprecated, please refer to 'q_in_q' instead. The attribute will be removed in the next major version of the provider.",
+			},
 			"vepa": schema.StringAttribute{
 				Computed:           true,
 				DeprecationMessage: "Attribute 'vepa' is deprecated, please refer to 'reflective_relay' instead. The attribute will be removed in the next major version of the provider.",
@@ -74,7 +78,7 @@ func (d *L2IfPolDataSource) Schema(ctx context.Context, req datasource.SchemaReq
 				Computed:            true,
 				MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
 			},
-			"qinq": schema.StringAttribute{
+			"q_in_q": schema.StringAttribute{
 				Computed:            true,
 				MarkdownDescription: `The QinQ port type of the L2 Interface Policy object.`,
 			},

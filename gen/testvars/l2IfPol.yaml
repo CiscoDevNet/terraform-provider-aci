@@ -2,6 +2,7 @@
 # In order to regenerate this file execute `go generate` from the repository root.
 # More details can be found in the [README](https://github.com/CiscoDevNet/terraform-provider-aci/blob/master/README.md).
 legacy_attributes:
+  qinq: "corePort"
   vepa: "disabled"
 
 
@@ -11,7 +12,7 @@ default:
   name_alias: ""
   owner_key: ""
   owner_tag: ""
-  qinq: "disabled"
+  q_in_q: "disabled"
   reflective_relay: "disabled"
   vlan_scope: "global"
 
@@ -30,7 +31,7 @@ all:
   name_alias: "name_alias_1"
   owner_key: "owner_key_1"
   owner_tag: "owner_tag_1"
-  qinq: "corePort"
+  q_in_q: "corePort"
   reflective_relay: "enabled"
   vlan_scope: "portlocal"
 

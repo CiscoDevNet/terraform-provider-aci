@@ -25,7 +25,7 @@ func TestAccDataSourceL2IfPol(t *testing.T) {
 					resource.TestCheckResourceAttr("data.aci_l2_interface_policy.test", "name_alias", "name_alias_1"),
 					resource.TestCheckResourceAttr("data.aci_l2_interface_policy.test", "owner_key", "owner_key_1"),
 					resource.TestCheckResourceAttr("data.aci_l2_interface_policy.test", "owner_tag", "owner_tag_1"),
-					resource.TestCheckResourceAttr("data.aci_l2_interface_policy.test", "qinq", "corePort"),
+					resource.TestCheckResourceAttr("data.aci_l2_interface_policy.test", "q_in_q", "corePort"),
 					resource.TestCheckResourceAttr("data.aci_l2_interface_policy.test", "reflective_relay", "enabled"),
 					resource.TestCheckResourceAttr("data.aci_l2_interface_policy.test", "vlan_scope", "portlocal"),
 				),

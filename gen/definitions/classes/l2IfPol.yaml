@@ -3,6 +3,7 @@ contained_by:
 migration_blocks:
     l2IfPol:
         vepa: reflective_relay
+        qinq: q_in_q
 migration_version: 1
 resource_name: l2_interface_policy
 rn_prepend: infra

@@ -50,7 +50,7 @@ data "aci_l2_interface_policy" "example" {
 * `name_alias` (nameAlias) - (string) The name alias of the L2 Interface Policy object. This attribute is supported in ACI versions: 2.2(1k) and later.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
-* `qinq` (qinq) - (string) The QinQ port type of the L2 Interface Policy object. This attribute is supported in ACI versions: 2.2(1k) and later.
+* `q_in_q` (qinq) - (string) The QinQ port type of the L2 Interface Policy object. This attribute is supported in ACI versions: 2.2(1k) and later.
 * `reflective_relay` (vepa) - (string) The reflective relay (802.1Qbg) state of the L2 Interface Policy object. This attribute is supported in ACI versions: 2.3(1e) and later.
 * `vlan_scope` (vlanScope) - (string) The vlan scope of the L2 Interface Policy object.
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.

@@ -33,8 +33,8 @@ func TestAccResourceL2IfPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.allow_test_2", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.allow_test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.allow_test_2", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_l2_interface_policy.allow_test", "qinq", "disabled"),
-					resource.TestCheckResourceAttr("aci_l2_interface_policy.allow_test_2", "qinq", "disabled"),
+					resource.TestCheckResourceAttr("aci_l2_interface_policy.allow_test", "q_in_q", "disabled"),
+					resource.TestCheckResourceAttr("aci_l2_interface_policy.allow_test_2", "q_in_q", "disabled"),
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.allow_test", "reflective_relay", "disabled"),
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.allow_test_2", "reflective_relay", "disabled"),
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.allow_test", "vlan_scope", "global"),
@@ -78,8 +78,8 @@ func TestAccResourceL2IfPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.allow_test_2", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.allow_test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.allow_test_2", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_l2_interface_policy.allow_test", "qinq", "disabled"),
-					resource.TestCheckResourceAttr("aci_l2_interface_policy.allow_test_2", "qinq", "disabled"),
+					resource.TestCheckResourceAttr("aci_l2_interface_policy.allow_test", "q_in_q", "disabled"),
+					resource.TestCheckResourceAttr("aci_l2_interface_policy.allow_test_2", "q_in_q", "disabled"),
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.allow_test", "reflective_relay", "disabled"),
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.allow_test_2", "reflective_relay", "disabled"),
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.allow_test", "vlan_scope", "global"),
@@ -103,7 +103,7 @@ func TestAccResourceL2IfPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "qinq", "disabled"),
+					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "q_in_q", "disabled"),
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "reflective_relay", "disabled"),
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "vlan_scope", "global"),
 				),
@@ -118,7 +118,7 @@ func TestAccResourceL2IfPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "name_alias", "name_alias_1"),
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "owner_key", "owner_key_1"),
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "owner_tag", "owner_tag_1"),
-					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "qinq", "corePort"),
+					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "q_in_q", "corePort"),
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "reflective_relay", "enabled"),
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "vlan_scope", "portlocal"),
 				),
@@ -133,7 +133,7 @@ func TestAccResourceL2IfPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "name_alias", "name_alias_1"),
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "owner_key", "owner_key_1"),
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "owner_tag", "owner_tag_1"),
-					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "qinq", "corePort"),
+					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "q_in_q", "corePort"),
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "reflective_relay", "enabled"),
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "vlan_scope", "portlocal"),
 				),
@@ -148,7 +148,7 @@ func TestAccResourceL2IfPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "qinq", "disabled"),
+					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "q_in_q", "disabled"),
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "reflective_relay", "disabled"),
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "vlan_scope", "global"),
 				),
@@ -168,7 +168,7 @@ func TestAccResourceL2IfPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "qinq", "disabled"),
+					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "q_in_q", "disabled"),
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "reflective_relay", "disabled"),
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "vlan_scope", "global"),
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "annotations.0.key", "key_0"),
@@ -192,7 +192,7 @@ func TestAccResourceL2IfPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "qinq", "disabled"),
+					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "q_in_q", "disabled"),
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "reflective_relay", "disabled"),
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "vlan_scope", "global"),
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "annotations.0.key", "key_0"),
@@ -216,7 +216,7 @@ func TestAccResourceL2IfPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "qinq", "disabled"),
+					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "q_in_q", "disabled"),
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "reflective_relay", "disabled"),
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "vlan_scope", "global"),
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "annotations.0.key", "key_1"),
@@ -236,7 +236,7 @@ func TestAccResourceL2IfPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "qinq", "disabled"),
+					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "q_in_q", "disabled"),
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "reflective_relay", "disabled"),
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "vlan_scope", "global"),
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "annotations.#", "0"),
@@ -287,7 +287,7 @@ resource "aci_l2_interface_policy" "test" {
   name_alias = "name_alias_1"
   owner_key = "owner_key_1"
   owner_tag = "owner_tag_1"
-  qinq = "corePort"
+  q_in_q = "corePort"
   reflective_relay = "enabled"
   vlan_scope = "portlocal"
 }
@@ -301,7 +301,7 @@ resource "aci_l2_interface_policy" "test" {
   name_alias = ""
   owner_key = ""
   owner_tag = ""
-  qinq = "disabled"
+  q_in_q = "disabled"
   reflective_relay = "disabled"
   vlan_scope = "global"
 }
@@ -367,6 +367,7 @@ resource "aci_l2_interface_policy" "test" {
 const testConfigL2IfPolLegacyAttributes = `
 resource "aci_l2_interface_policy" "test" {
   name = "test_name"
+  qinq = "corePort"
   vepa = "disabled"
 }
 `
