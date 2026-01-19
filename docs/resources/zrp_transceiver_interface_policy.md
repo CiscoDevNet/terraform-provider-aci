@@ -114,11 +114,11 @@ All examples for the ZRP (ZR+) Transceiver Interface Policy resource can be foun
 * `fec_mode` (fecMode) - (string) The Forward Error Correction (FEC) mode of the ZRP (ZR+) Transceiver Interface Policy object. The value 'cFEC' must have a DAC rate of '1x1', and the value 'oFEC' must have a DAC rate of '1x1.25'.
   - Default: `"oFEC"`
   - Valid Values: `"cFEC"`, `"oFEC"`.
-* `frequency_100_mhz` (frequency100MHz) - (string) The 100 Megahertz (MHz) frequency of the ZRP (ZR+) Transceiver Interface Policy object. The value must be in the range 1911500 - 1961375.
+* `frequency_100_mhz` (frequency100MHz) - (string) The 100 megahertz (MHz) frequency of the ZRP (ZR+) Transceiver Interface Policy object. The value must be in the range 1911500 - 1961375.
   - Default: `"1911500"`
-* `frequency_50_ghz` (frequency50GHz) - (string) The 50 Gigahertz (GHz) frequency of the ZRP (ZR+) Transceiver Interface Policy object. The value must be in the range 19115 - 19610.
+* `frequency_50_ghz` (frequency50GHz) - (string) The 50 gigahertz (GHz) frequency of the ZRP (ZR+) Transceiver Interface Policy object. The value must be in the range 19115 - 19610.
   - Default: `"19115"`
-* `itu_channel_50_ghz` (ituChannel50GHz) - (string) The 50 Gigahertz (GHz) International Telecommunication Union (ITU) channel of the ZRP (ZR+) Transceiver Interface Policy object. The value must be in the range 1 - 100.
+* `itu_channel_50_ghz` (ituChannel50GHz) - (string) The 50 gigahertz (GHz) International Telecommunication Union (ITU) channel of the ZRP (ZR+) Transceiver Interface Policy object. The value must be in the range 1 - 100.
   - Default: `"1"`
 * `modulation` (modulation) - (string) The modulation of the ZRP (ZR+) Transceiver Interface Policy object.
   - Default: `"16QAM"`
@@ -131,7 +131,7 @@ All examples for the ZRP (ZR+) Transceiver Interface Policy resource can be foun
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 * `transmit_power` (transmitPower) - (string) The transmit power of the ZRP (ZR+) Transceiver Interface Policy object. The value must be in the range -190 - 50.
   - Default: `"-190"`
-* `wavelength_50_ghz` (wavelength50GHz) - (string) The 50 Gigahertz (GHz) wavelength of the ZRP (ZR+) Transceiver Interface Policy object. The value must be in the range 1528773 - 1568362.
+* `wavelength_50_ghz` (wavelength50GHz) - (string) The 50 gigahertz (GHz) wavelength of the ZRP (ZR+) Transceiver Interface Policy object. The value must be in the range 1528773 - 1568362.
   - Default: `"1528773"`
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####

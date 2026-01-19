@@ -53,16 +53,16 @@ data "aci_zrp_transceiver_interface_policy" "example" {
 * `description` (descr) - (string) The description of the ZRP (ZR+) Transceiver Interface Policy object.
 * `dwdm_carrier_grid` (dwdmCarrier) - (string) The Dense Wavelength Division Multiplexing (DWDM) carrier grid selector of the ZRP (ZR+) Transceiver Interface Policy object.
 * `fec_mode` (fecMode) - (string) The Forward Error Correction (FEC) mode of the ZRP (ZR+) Transceiver Interface Policy object. The value 'cFEC' must have a DAC rate of '1x1', and the value 'oFEC' must have a DAC rate of '1x1.25'.
-* `frequency_100_mhz` (frequency100MHz) - (string) The 100 Megahertz (MHz) frequency of the ZRP (ZR+) Transceiver Interface Policy object. The value must be in the range 1911500 - 1961375.
-* `frequency_50_ghz` (frequency50GHz) - (string) The 50 Gigahertz (GHz) frequency of the ZRP (ZR+) Transceiver Interface Policy object. The value must be in the range 19115 - 19610.
-* `itu_channel_50_ghz` (ituChannel50GHz) - (string) The 50 Gigahertz (GHz) International Telecommunication Union (ITU) channel of the ZRP (ZR+) Transceiver Interface Policy object. The value must be in the range 1 - 100.
+* `frequency_100_mhz` (frequency100MHz) - (string) The 100 megahertz (MHz) frequency of the ZRP (ZR+) Transceiver Interface Policy object. The value must be in the range 1911500 - 1961375.
+* `frequency_50_ghz` (frequency50GHz) - (string) The 50 gigahertz (GHz) frequency of the ZRP (ZR+) Transceiver Interface Policy object. The value must be in the range 19115 - 19610.
+* `itu_channel_50_ghz` (ituChannel50GHz) - (string) The 50 gigahertz (GHz) International Telecommunication Union (ITU) channel of the ZRP (ZR+) Transceiver Interface Policy object. The value must be in the range 1 - 100.
 * `modulation` (modulation) - (string) The modulation of the ZRP (ZR+) Transceiver Interface Policy object.
 * `muxponder_mode` (muxponder) - (string) The muxponder mode of the ZRP (ZR+) Transceiver Interface Policy object.
 * `name_alias` (nameAlias) - (string) The name alias of the ZRP (ZR+) Transceiver Interface Policy object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 * `transmit_power` (transmitPower) - (string) The transmit power of the ZRP (ZR+) Transceiver Interface Policy object. The value must be in the range -190 - 50.
-* `wavelength_50_ghz` (wavelength50GHz) - (string) The 50 Gigahertz (GHz) wavelength of the ZRP (ZR+) Transceiver Interface Policy object. The value must be in the range 1528773 - 1568362.
+* `wavelength_50_ghz` (wavelength50GHz) - (string) The 50 gigahertz (GHz) wavelength of the ZRP (ZR+) Transceiver Interface Policy object. The value must be in the range 1528773 - 1568362.
 * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
