@@ -5,10 +5,8 @@
 package provider
 
 
-func classVersions() map[string]string {
-    return map[string]string{
-    {{- range $key, $value := . }}
-        "{{$key}}": "{{$value}}",
-    {{- end}}
-    }
+var classVersions = map[string]string{
+{{- range $key, $value := . }}
+    "{{$key}}": "{{$value}}",
+{{- end}}
 }

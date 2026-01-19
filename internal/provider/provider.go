@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -557,7 +558,7 @@ func (p *AciProvider) Functions(ctx context.Context) []func() function.Function 
 }
 
 func getVersionAPIC(ctx context.Context, diags *diag.Diagnostics, client *client.Client) string {
-	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("/api/node/class/topSystem.json"), "GET", nil)
+	requestData := DoRestRequest(ctx, diags, client, "/api/node/class/topSystem.json?query-target-filter=eq(topSystem.role,\"controller\")", "GET", nil)
 	if diags.HasError() {
 		return ""
 	}
@@ -566,14 +567,11 @@ func getVersionAPIC(ctx context.Context, diags *diag.Diagnostics, client *client
 		attributes := requestData.Search("imdata").Search("topSystem").Search("attributes").Data().([]interface{})
 		var versions []string
 		for _, attributeMap := range attributes {
-			if role, ok := attributeMap.(map[string]interface{})["role"]; ok && role == "controller" {
-				if v, ok := attributeMap.(map[string]interface{})["version"]; ok {
-					versions = append(versions, v.(string))
-
-				}
+			if version, ok := attributeMap.(map[string]interface{})["version"].(string); ok {
+				versions = append(versions, version)
 			}
 		}
-		if len(versions) == 1 {
+		if len(slices.Compact(versions)) == 1 {
 			return versions[0]
 		}
 		diags.AddError(
@@ -582,7 +580,7 @@ func getVersionAPIC(ctx context.Context, diags *diag.Diagnostics, client *client
 		)
 	} else {
 		diags.AddError(
-			"Data for topSysytem class could not be retrieved",
+			"Data for topSystem class could not be retrieved",
 			fmt.Sprintf("The versions of the APIC controllers could not be determined"),
 		)
 	}

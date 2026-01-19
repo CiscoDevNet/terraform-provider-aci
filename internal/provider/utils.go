@@ -19,11 +19,9 @@ import (
 )
 
 func getChildClassesForGetRequest(childClasses []string) []string {
-	classVersions := classVersions()
 	subtreeClasses := []string{}
 	for _, childClass := range childClasses {
-		childVersion := classVersions[childClass]
-		inside, err := CompareVersionsRange(apicVersion, childVersion, "inside")
+		inside, err := CompareVersionsRange(apicVersion, classVersions[childClass], "inside")
 		if err == nil && inside && !slices.Contains(subtreeClasses, childClass) {
 			subtreeClasses = append(subtreeClasses, childClass)
 		}
