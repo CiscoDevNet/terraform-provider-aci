@@ -5,7 +5,6 @@ import (
 
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils/test"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 const (
@@ -24,7 +23,7 @@ func TestGetFileNamesFromDirectoryWithExtension(t *testing.T) {
 
 	filenames := GetFileNamesFromDirectory(constTestDirectoryForGetFileNamesFromDirectory, false)
 
-	require.NotEmpty(t, filenames, test.MessageNotEmpty(filenames, t.Name()))
+	assert.NotEmpty(t, filenames, test.MessageNotEmpty(filenames, t.Name()))
 	assert.Len(t, filenames, 3)
 	assert.Contains(t, filenames, constTestFile1WithExtension, test.MessageContains(filenames, constTestFile1WithExtension, t.Name()))
 	assert.Contains(t, filenames, constTestFile2WithExtension, test.MessageContains(filenames, constTestFile2WithExtension, t.Name()))
@@ -38,7 +37,7 @@ func TestGetFileNamesFromDirectoryWithoutExtension(t *testing.T) {
 
 	filenames := GetFileNamesFromDirectory(constTestDirectoryForGetFileNamesFromDirectory, true)
 
-	require.NotEmpty(t, filenames, test.MessageNotEmpty(filenames, t.Name()))
+	assert.NotEmpty(t, filenames, test.MessageNotEmpty(filenames, t.Name()))
 	assert.Len(t, filenames, 3)
 	assert.Contains(t, filenames, constTestFile1WithoutExtension, test.MessageContains(filenames, constTestFile1WithoutExtension, t.Name()))
 	assert.Contains(t, filenames, constTestFile2WithoutExtension, test.MessageContains(filenames, constTestFile2WithoutExtension, t.Name()))
@@ -82,7 +81,7 @@ func TestPlural(t *testing.T) {
 		t.Run(testCase.Name, func(t *testing.T) {
 			t.Parallel()
 			result, err := Plural(testCase.Input.(string))
-			require.NoError(t, err, test.MessageUnexpectedError(err))
+			assert.NoError(t, err, test.MessageUnexpectedError(err))
 			assert.Equal(t, testCase.Expected, result, test.MessageEqual(testCase.Expected, result, testCase.Name))
 		})
 	}
@@ -93,7 +92,7 @@ func TestPluralError(t *testing.T) {
 	test.InitializeTest(t)
 
 	_, err := Plural("contracts")
-	require.Error(t, err)
+	assert.Error(t, err)
 	assert.ErrorContains(t, err, "no plural rule defined")
 }
 
