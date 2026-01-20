@@ -172,6 +172,13 @@ type Version struct {
 	Tag   int
 }
 
+func (v Version) String() string {
+	if v.Tag != 0 {
+		return fmt.Sprintf("%d.%d(%d%c)", v.Major, v.Minor, v.Patch, v.Tag)
+	}
+	return fmt.Sprintf("%d.%d(%d)", v.Major, v.Minor, v.Patch)
+}
+
 type VersionResult struct {
 	Version *Version
 	Error   string

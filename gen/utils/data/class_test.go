@@ -1071,3 +1071,162 @@ func TestSortAndConvertToClassNames(t *testing.T) {
 		})
 	}
 }
+
+type setVersionsInput struct {
+	ClassDefinitionVersions string
+	MetaVersions            interface{}
+}
+
+type setVersionsExpected struct {
+	Raw      string
+	String   string
+	Error    bool
+	ErrorMsg string
+}
+
+func TestSetVersions(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	testCases := []test.TestCase{
+		{
+			Name: "test_versions_from_meta_file",
+			Input: setVersionsInput{
+				ClassDefinitionVersions: "",
+				MetaVersions:            "4.2(7f)-",
+			},
+			Expected: setVersionsExpected{
+				Raw:    "4.2(7f)-",
+				String: "4.2(7f) and later",
+			},
+		},
+		{
+			Name: "test_versions_from_class_definition_override",
+			Input: setVersionsInput{
+				ClassDefinitionVersions: "5.0(1a)-",
+				MetaVersions:            "4.2(7f)-",
+			},
+			Expected: setVersionsExpected{
+				Raw:    "5.0(1a)-",
+				String: "5.0(1a) and later",
+			},
+		},
+		{
+			Name: "test_versions_from_class_definition_when_meta_empty",
+			Input: setVersionsInput{
+				ClassDefinitionVersions: "5.0(1a)-",
+				MetaVersions:            "",
+			},
+			Expected: setVersionsExpected{
+				Raw:    "5.0(1a)-",
+				String: "5.0(1a) and later",
+			},
+		},
+		{
+			Name: "test_versions_from_class_definition_when_meta_nil",
+			Input: setVersionsInput{
+				ClassDefinitionVersions: "5.0(1a)-",
+				MetaVersions:            nil,
+			},
+			Expected: setVersionsExpected{
+				Raw:    "5.0(1a)-",
+				String: "5.0(1a) and later",
+			},
+		},
+		{
+			Name: "test_multiple_ranges",
+			Input: setVersionsInput{
+				ClassDefinitionVersions: "",
+				MetaVersions:            "3.2(10e)-3.2(10g),4.2(7f)-",
+			},
+			Expected: setVersionsExpected{
+				Raw:    "3.2(10e)-3.2(10g),4.2(7f)-",
+				String: "3.2(10e) to 3.2(10g), 4.2(7f) and later",
+			},
+		},
+		{
+			Name: "test_multiple_ranges_sorted",
+			Input: setVersionsInput{
+				ClassDefinitionVersions: "",
+				MetaVersions:            "5.2(1g)-,3.2(10e)-3.2(10g)",
+			},
+			Expected: setVersionsExpected{
+				Raw:    "5.2(1g)-,3.2(10e)-3.2(10g)",
+				String: "3.2(10e) to 3.2(10g), 5.2(1g) and later",
+			},
+		},
+		{
+			Name: "test_error_empty_versions",
+			Input: setVersionsInput{
+				ClassDefinitionVersions: "",
+				MetaVersions:            "",
+			},
+			Expected: setVersionsExpected{
+				Error:    true,
+				ErrorMsg: "versions not specified for class 'fvTenant': add versions to the class definition file",
+			},
+		},
+		{
+			Name: "test_error_nil_versions",
+			Input: setVersionsInput{
+				ClassDefinitionVersions: "",
+				MetaVersions:            nil,
+			},
+			Expected: setVersionsExpected{
+				Error:    true,
+				ErrorMsg: "versions not specified for class 'fvTenant': add versions to the class definition file",
+			},
+		},
+		{
+			Name: "test_error_invalid_version",
+			Input: setVersionsInput{
+				ClassDefinitionVersions: "",
+				MetaVersions:            "invalid",
+			},
+			Expected: setVersionsExpected{
+				Error:    true,
+				ErrorMsg: "failed to parse versions for class 'fvTenant': invalid version 'invalid': unknown",
+			},
+		},
+		{
+			Name: "test_error_invalid_version_in_range",
+			Input: setVersionsInput{
+				ClassDefinitionVersions: "",
+				MetaVersions:            "4.2(7f)-,invalid",
+			},
+			Expected: setVersionsExpected{
+				Error:    true,
+				ErrorMsg: "failed to parse versions for class 'fvTenant': invalid version 'invalid': unknown",
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.(setVersionsInput)
+			expected := testCase.Expected.(setVersionsExpected)
+
+			class := Class{
+				Name: testClassName("fvTenant"),
+				ClassDefinition: ClassDefinition{
+					SupportedVersions: input.ClassDefinitionVersions,
+				},
+				MetaFileContent: map[string]interface{}{},
+			}
+			if input.MetaVersions != nil {
+				class.MetaFileContent["versions"] = input.MetaVersions
+			}
+
+			err := class.setVersions()
+
+			if expected.Error {
+				assert.EqualError(t, err, expected.ErrorMsg)
+			} else {
+				require.NoError(t, err, test.MessageUnexpectedError(err))
+				assert.Equal(t, expected.Raw, class.SupportedVersions.Raw(), test.MessageEqual(expected.Raw, class.SupportedVersions.Raw(), testCase.Name))
+				assert.Equal(t, expected.String, class.SupportedVersions.String(), test.MessageEqual(expected.String, class.SupportedVersions.String(), testCase.Name))
+			}
+		})
+	}
+}
