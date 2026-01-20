@@ -7,7 +7,6 @@ import (
 
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils/test"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 // testClassName creates a ClassName for testing purposes.
@@ -39,7 +38,7 @@ func TestSetResourceNameFromLabelNoRelationWithIdentifier(t *testing.T) {
 
 	err := class.setResourceName(ds)
 
-	require.NoError(t, err, test.MessageUnexpectedError(err))
+	assert.NoError(t, err, test.MessageUnexpectedError(err))
 	assert.Equal(t, "annotation", class.ResourceName, test.MessageEqual("annotation", class.ResourceName, t.Name()))
 	assert.Equal(t, "annotations", class.ResourceNameNested, test.MessageEqual("annotations", class.ResourceNameNested, t.Name()))
 }
@@ -63,10 +62,10 @@ func TestSetResourceNameFromLabelNoRelationWithoutIdentifier(t *testing.T) {
 	}
 
 	err := class.setRelation()
-	require.NoError(t, err, test.MessageUnexpectedError(err))
+	assert.NoError(t, err, test.MessageUnexpectedError(err))
 
 	err = class.setResourceName(ds)
-	require.NoError(t, err, test.MessageUnexpectedError(err))
+	assert.NoError(t, err, test.MessageUnexpectedError(err))
 	assert.Equal(t, "relation_to_vrf", class.ResourceName, test.MessageEqual("relation_to_vrf", class.ResourceName, t.Name()))
 	assert.Equal(t, "relation_to_vrf", class.ResourceNameNested, test.MessageEqual("relation_to_vrf", class.ResourceNameNested, t.Name()))
 }
@@ -90,10 +89,10 @@ func TestSetResourceNameToRelation(t *testing.T) {
 	}
 
 	err := class.setRelation()
-	require.NoError(t, err, test.MessageUnexpectedError(err))
+	assert.NoError(t, err, test.MessageUnexpectedError(err))
 
 	err = class.setResourceName(ds)
-	require.NoError(t, err, test.MessageUnexpectedError(err))
+	assert.NoError(t, err, test.MessageUnexpectedError(err))
 	assert.Equal(t, "relation_to_contract", class.ResourceName, test.MessageEqual("relation_to_contract", class.ResourceName, t.Name()))
 	assert.Equal(t, "relation_to_contracts", class.ResourceNameNested, test.MessageEqual("relation_to_contracts", class.ResourceNameNested, t.Name()))
 }
@@ -119,10 +118,10 @@ func TestSetResourceNameFromToRelation(t *testing.T) {
 	}
 
 	err := class.setRelation()
-	require.NoError(t, err, test.MessageUnexpectedError(err))
+	assert.NoError(t, err, test.MessageUnexpectedError(err))
 
 	err = class.setResourceName(ds)
-	require.NoError(t, err, test.MessageUnexpectedError(err))
+	assert.NoError(t, err, test.MessageUnexpectedError(err))
 	assert.Equal(t, "relation_from_netflow_exporter_policy_to_vrf", class.ResourceName, test.MessageEqual("relation_from_netflow_exporter_policy_to_vrf", class.ResourceName, t.Name()))
 	assert.Equal(t, "relation_to_vrf", class.ResourceNameNested, test.MessageEqual("relation_to_vrf", class.ResourceNameNested, t.Name()))
 }
@@ -256,14 +255,14 @@ func TestSetRelation(t *testing.T) {
 			err := class.setRelation()
 
 			if expected.Error {
-				require.Error(t, err)
+				assert.Error(t, err)
 				if expected.ErrorMsg != "" {
 					assert.ErrorContains(t, err, expected.ErrorMsg)
 				}
 				return
 			}
 
-			require.NoError(t, err, test.MessageUnexpectedError(err))
+			assert.NoError(t, err, test.MessageUnexpectedError(err))
 			assert.Equal(t, expected.FromClass, class.Relation.FromClass, test.MessageEqual(expected.FromClass, class.Relation.FromClass, testCase.Name))
 			assert.Equal(t, expected.ToClass, class.Relation.ToClass, test.MessageEqual(expected.ToClass, class.Relation.ToClass, testCase.Name))
 			assert.Equal(t, expected.Type, class.Relation.Type, test.MessageEqual(expected.Type, class.Relation.Type, testCase.Name))
@@ -614,7 +613,7 @@ func TestSetChildren(t *testing.T) {
 			}
 
 			err := class.setChildren(ds)
-			require.NoError(t, err, test.MessageUnexpectedError(err))
+			assert.NoError(t, err, test.MessageUnexpectedError(err))
 
 			if len(expected) == 0 {
 				assert.Empty(t, class.Children, test.MessageEqual(expected, class.Children, testCase.Name))
@@ -656,7 +655,7 @@ func TestSetChildrenWarnsWhenClassInBothIncludeAndExclude(t *testing.T) {
 	}
 
 	err := class.setChildren(ds)
-	require.NoError(t, err, test.MessageUnexpectedError(err))
+	assert.NoError(t, err, test.MessageUnexpectedError(err))
 
 	// Verify the warning was logged.
 	logOutput := logBuffer.String()
@@ -877,7 +876,7 @@ func TestSetParents(t *testing.T) {
 			}
 
 			err := class.setParents()
-			require.NoError(t, err, test.MessageUnexpectedError(err))
+			assert.NoError(t, err, test.MessageUnexpectedError(err))
 
 			if len(expected) == 0 {
 				assert.Empty(t, class.Parents, test.MessageEqual(expected, class.Parents, testCase.Name))
@@ -913,7 +912,7 @@ func TestSetParentsWarnsWhenClassInBothIncludeAndExclude(t *testing.T) {
 	}
 
 	err := class.setParents()
-	require.NoError(t, err, test.MessageUnexpectedError(err))
+	assert.NoError(t, err, test.MessageUnexpectedError(err))
 
 	// Verify the warning was logged.
 	logOutput := logBuffer.String()
@@ -1223,7 +1222,7 @@ func TestSetVersions(t *testing.T) {
 			if expected.Error {
 				assert.EqualError(t, err, expected.ErrorMsg)
 			} else {
-				require.NoError(t, err, test.MessageUnexpectedError(err))
+				assert.NoError(t, err, test.MessageUnexpectedError(err))
 				assert.Equal(t, expected.Raw, class.SupportedVersions.Raw(), test.MessageEqual(expected.Raw, class.SupportedVersions.Raw(), testCase.Name))
 				assert.Equal(t, expected.String, class.SupportedVersions.String(), test.MessageEqual(expected.String, class.SupportedVersions.String(), testCase.Name))
 			}

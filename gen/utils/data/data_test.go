@@ -7,7 +7,6 @@ import (
 
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils/test"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 const (
@@ -71,7 +70,7 @@ func TestLoadClass(t *testing.T) {
 			if expected.Error {
 				assert.Error(t, err)
 			} else {
-				require.NoError(t, err, test.MessageUnexpectedError(err))
+				assert.NoError(t, err, test.MessageUnexpectedError(err))
 				assert.Contains(t, ds.Classes, testCase.Input.(string), test.MessageContains(ds.Classes, testCase.Input.(string), testCase.Name))
 			}
 		})
@@ -92,7 +91,7 @@ func TestLoadClassAlreadyLoaded(t *testing.T) {
 	// Loading the same class should not error and should skip
 	err := ds.loadClass("fvTenant")
 
-	require.NoError(t, err, test.MessageUnexpectedError(err))
+	assert.NoError(t, err, test.MessageUnexpectedError(err))
 	assert.Len(t, ds.Classes, 1)
 }
 
@@ -180,7 +179,7 @@ func TestRetrieveEnvMetaClassesFromRemote(t *testing.T) {
 				assert.Error(t, err)
 			} else if input.EnvValue == "" {
 				// Empty env should not error
-				require.NoError(t, err, test.MessageUnexpectedError(err))
+				assert.NoError(t, err, test.MessageUnexpectedError(err))
 			}
 
 			_ = tempDir // Used for cleanup
@@ -199,7 +198,7 @@ func TestRetrieveEnvMetaClassesFromRemoteEmptyEnv(t *testing.T) {
 
 	err := ds.retrieveEnvMetaClassesFromRemote()
 
-	require.NoError(t, err, test.MessageUnexpectedError(err))
+	assert.NoError(t, err, test.MessageUnexpectedError(err))
 }
 
 type refreshMetaFilesExpected struct {
@@ -248,7 +247,7 @@ func TestRefreshMetaFiles(t *testing.T) {
 			if expected.Error {
 				assert.Error(t, err)
 			} else {
-				require.NoError(t, err, test.MessageUnexpectedError(err))
+				assert.NoError(t, err, test.MessageUnexpectedError(err))
 			}
 		})
 	}
@@ -312,7 +311,7 @@ func TestRetrieveMetaFileFromRemote(t *testing.T) {
 			if expected.Error {
 				assert.Error(t, err)
 			} else {
-				require.NoError(t, err, test.MessageUnexpectedError(err))
+				assert.NoError(t, err, test.MessageUnexpectedError(err))
 			}
 		})
 	}
@@ -329,5 +328,5 @@ func TestRetrieveMetaFileFromRemoteAlreadyRetrieved(t *testing.T) {
 	// Should skip retrieval and not error
 	err := ds.retrieveMetaFileFromRemote("fvTenant")
 
-	require.NoError(t, err, test.MessageUnexpectedError(err))
+	assert.NoError(t, err, test.MessageUnexpectedError(err))
 }
