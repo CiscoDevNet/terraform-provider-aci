@@ -8,7 +8,6 @@ import (
 
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils/test"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 const (
@@ -18,7 +17,7 @@ const (
 func initializeLogTest(t *testing.T) *Logger {
 	test.InitializeTest(t)
 	genLogger := InitializeLogger()
-	require.NotNil(t, genLogger, "logger must be initialized")
+	assert.NotNil(t, genLogger, "logger must be initialized")
 	return genLogger
 }
 
@@ -38,7 +37,7 @@ func TestLogFile(t *testing.T) {
 
 	genLogger := initializeLogTest(t)
 
-	require.NotNil(t, genLogger.logFile)
+	assert.NotNil(t, genLogger.logFile)
 	assert.Equal(t, logFilePath, genLogger.logFile.Name(), test.MessageEqual(logFilePath, genLogger.logFile.Name(), t.Name()))
 }
 
@@ -86,7 +85,7 @@ func TestSetLogLevel(t *testing.T) {
 	}
 
 	bytes, err := os.ReadFile(logFilePath)
-	require.NoError(t, err, test.MessageUnexpectedError(err))
+	assert.NoError(t, err, test.MessageUnexpectedError(err))
 
 	logFileContent := string(bytes)
 	for _, testCase := range testCases {

@@ -32,7 +32,7 @@ func MessageNotContains(collection, element any, caseName string) string {
 	return fmt.Sprintf("Expected '%v' to not contain '%v' for case '%s'", collection, element, caseName)
 }
 
-// MessageNotEmpty returns a formatted message for require.NotEmpty comparisons.
+// MessageNotEmpty returns a formatted message for assert.NotEmpty comparisons.
 func MessageNotEmpty(object any, caseName string) string {
 	return fmt.Sprintf("Expected '%v' to not be empty for case '%s'", object, caseName)
 }
