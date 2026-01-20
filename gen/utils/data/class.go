@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils"
-	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider"
 )
 
 type Class struct {
@@ -21,8 +20,6 @@ type Class struct {
 	ClassDefinition ClassDefinition
 	// Deprecated resources include a warning the resource and datasource schemas.
 	Deprecated bool
-	// The APIC versions in which the class is deprecated.
-	DeprecatedVersions []VersionRange
 	// Documentation specific information for the class.
 	Documentation ClassDocumentation
 	// List of all identifying properties of the class.
@@ -64,10 +61,10 @@ type Class struct {
 	// The relative name (RN) format of the class, ex "tn-{name}".
 	RnFormat string
 	// The supported APIC versions for the class.
-	// Each version range is separated by a comma, ex "4.2(7f)-4.2(7w),5.2(1g)-".
-	// The first version is the minimum version and the second version is the maximum version.
-	// A dash at the end of a range (ex. 4.2(7f)-) indicates that the class is supported from the first version to the latest version.
-	Versions []VersionRange
+	// Parsed from the "versions" field in the meta file (e.g., "1.0(1e)-", "4.2(7f)-4.2(7w),5.2(1g)-").
+	// TODO: Add DeprecatedVersions field when meta file exposes deprecation information.
+	// TODO: Add TestVersions field for bypassing tests for versions which are supposed to be supported.
+	SupportedVersions *Versions
 }
 
 type PlatformTypeEnum int
@@ -131,18 +128,6 @@ type ClassDocumentation struct {
 	Notes []string
 	// List of warnings to be added to the top of the documentation
 	Warnings []string
-}
-
-type VersionRange struct {
-	// The maximum version of the range.
-	// This is the second version of the range.
-	// The version is in the format "4.2(7w)".
-	// A dash at the end of a range (ex. 4.2(7f)-) indicates that the class is supported from the first version to the latest version.
-	Max provider.Version
-	// The minimum version of the range.
-	// This is the first version of the range.
-	// The version is in the format "4.2(7f)".
-	Min provider.Version
 }
 
 func NewClass(className string, ds *DataStore) (*Class, error) {
@@ -214,9 +199,6 @@ func (c *Class) setClassData(ds *DataStore) error {
 	// TODO: add placeholder function for Deprecated
 	c.setDeprecated()
 
-	// TODO: add placeholder function for DeprecatedVersions
-	c.setDeprecatedVersions()
-
 	// TODO: add function to set Documentation
 	c.setDocumentation()
 
@@ -256,8 +238,10 @@ func (c *Class) setClassData(ds *DataStore) error {
 	// TODO: add function to set RnFormat
 	c.setRnFormat()
 
-	// TODO: add function to set Versions
-	c.setVersions()
+	err = c.setVersions()
+	if err != nil {
+		return err
+	}
 
 	genLogger.Debug(fmt.Sprintf("Successfully set class data for class '%s'.", c.Name))
 	return nil
@@ -322,12 +306,6 @@ func (c *Class) setDeprecated() {
 	// Determine if the class is deprecated.
 	genLogger.Debug(fmt.Sprintf("Setting Deprecated for class '%s'.", c.Name))
 	genLogger.Debug(fmt.Sprintf("Successfully set Deprecated for class '%s'.", c.Name))
-}
-
-func (c *Class) setDeprecatedVersions() {
-	// Determine the APIC versions in which the class is deprecated.
-	genLogger.Debug(fmt.Sprintf("Setting DeprecatedVersions for class '%s'.", c.Name))
-	genLogger.Debug(fmt.Sprintf("Successfully set DeprecatedVersions for class '%s'.", c.Name))
 }
 
 func (c *Class) setDocumentation() {
@@ -511,10 +489,29 @@ func (c *Class) setRnFormat() {
 	genLogger.Debug(fmt.Sprintf("Successfully set RnFormat for class '%s'.", c.Name))
 }
 
-func (c *Class) setVersions() {
+func (c *Class) setVersions() error {
 	// Determine the supported APIC versions for the class.
 	genLogger.Debug(fmt.Sprintf("Setting Versions for class '%s'.", c.Name))
-	genLogger.Debug(fmt.Sprintf("Successfully set Versions for class '%s'.", c.Name))
+
+	// Initialize with versions from ClassDefinition, if not defined set the versions from meta file.
+	metaVersions := c.ClassDefinition.SupportedVersions
+	if metaVersions == "" {
+		metaVersions, _ = c.MetaFileContent["versions"].(string)
+	}
+
+	// When versions are not specified error to force users to add versions.
+	if metaVersions == "" {
+		return fmt.Errorf("versions not specified for class '%s': add versions to the class definition file", c.Name)
+	}
+
+	versions, err := NewVersions(metaVersions)
+	if err != nil {
+		return fmt.Errorf("failed to parse versions for class '%s': %w", c.Name, err)
+	}
+	c.SupportedVersions = versions
+
+	genLogger.Debug(fmt.Sprintf("Successfully set Versions for class '%s'. Versions: '%s'", c.Name, c.SupportedVersions))
+	return nil
 }
 
 func getRelationshipResourceName(ds *DataStore, toClass string) string {

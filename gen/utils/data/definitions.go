@@ -42,6 +42,8 @@ type ClassDefinition struct {
 	IncludeChildren []string `yaml:"include_children"`
 	// A list of parent class names to include in the Parents list outside of the standard inclusion logic.
 	IncludeParents []string `yaml:"include_parents"`
+	// Overrides the versions from the meta file. Format: "1.0(1e)-" or "4.2(7f)-4.2(7w),5.2(1g)-".
+	SupportedVersions string `yaml:"supported_versions"`
 }
 
 func loadClassDefinition(className string) ClassDefinition {

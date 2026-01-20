@@ -13,8 +13,6 @@ type Property struct {
 	// Indicates if the property is deprecated in the resource and datasource schemas.
 	// Deprecated properties include a warning the resource and datasource schemas.
 	Deprecated bool
-	// The APIC versions in which the property is deprecated.
-	DeprecatedVersions []VersionRange
 	// Documentation specific information for the property.
 	Documentation PropertyDocumentation
 	// Migration specific information for the property.
@@ -30,6 +28,12 @@ type Property struct {
 	ReadOnly bool
 	// Indicates if the property is required in the resource and datasource schemas.
 	Required bool
+	// The supported APIC versions for the property.
+	// Each version range is separated by a comma, ex "4.2(7f)-4.2(7w),5.2(1g)-".
+	// The first version is the minimum version and the second version is the maximum version.
+	// A dash at the end of a range (ex. 4.2(7f)-) indicates that the class is supported from the first version to the latest version.
+	// TODO: Add DeprecatedVersions field when meta file exposes deprecation information.
+	SupportedVersions *Versions
 	// Test specific information for the property.
 	// This is used to generate the test cases and examples for the property.
 	// TODO: re-evaluate the structure when creating example and test templates.
@@ -42,11 +46,6 @@ type Property struct {
 	ValidValues []ValidValue
 	// The ValueTypeEnum type is used to indicate the type of the property in the resource and datasource schemas.
 	ValueType ValueTypeEnum
-	// The supported APIC versions for the property.
-	// Each version range is separated by a comma, ex "4.2(7f)-4.2(7w),5.2(1g)-".
-	// The first version is the minimum version and the second version is the maximum version.
-	// A dash at the end of a range (ex. 4.2(7f)-) indicates that the class is supported from the first version to the latest version.
-	Versions []VersionRange
 }
 
 type MigrationValue struct {
