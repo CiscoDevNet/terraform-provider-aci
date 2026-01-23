@@ -20,6 +20,9 @@ type Class struct {
 	ClassDefinition ClassDefinition
 	// Deprecated resources include a warning the resource and datasource schemas.
 	Deprecated bool
+	// The deprecated APIC versions for the class.
+	// Used to indicate versions where the class is deprecated but still functional.
+	DeprecatedVersions *Versions
 	// Documentation specific information for the class.
 	Documentation ClassDocumentation
 	// List of all identifying properties of the class.
@@ -62,8 +65,6 @@ type Class struct {
 	RnFormat string
 	// The supported APIC versions for the class.
 	// Parsed from the "versions" field in the meta file (e.g., "1.0(1e)-", "4.2(7f)-4.2(7w),5.2(1g)-").
-	// TODO: Add DeprecatedVersions field when meta file exposes deprecation information.
-	// TODO: Add TestVersions field for bypassing tests for versions which are supposed to be supported.
 	SupportedVersions *Versions
 }
 
@@ -199,6 +200,11 @@ func (c *Class) setClassData(ds *DataStore) error {
 	// TODO: add placeholder function for Deprecated
 	c.setDeprecated()
 
+	err = c.setDeprecatedVersions()
+	if err != nil {
+		return err
+	}
+
 	// TODO: add function to set Documentation
 	c.setDocumentation()
 
@@ -238,7 +244,7 @@ func (c *Class) setClassData(ds *DataStore) error {
 	// TODO: add function to set RnFormat
 	c.setRnFormat()
 
-	err = c.setVersions()
+	err = c.setSupportedVersions()
 	if err != nil {
 		return err
 	}
@@ -306,6 +312,27 @@ func (c *Class) setDeprecated() {
 	// Determine if the class is deprecated.
 	genLogger.Debug(fmt.Sprintf("Setting Deprecated for class '%s'.", c.Name))
 	genLogger.Debug(fmt.Sprintf("Successfully set Deprecated for class '%s'.", c.Name))
+}
+
+func (c *Class) setDeprecatedVersions() error {
+	// Determine the deprecated APIC versions for the class from the definition file.
+	genLogger.Debug(fmt.Sprintf("Setting DeprecatedVersions for class '%s'.", c.Name))
+
+	// DeprecatedVersions is only set from the definition file (meta file doesn't support this yet).
+	metaVersions := c.ClassDefinition.DeprecatedVersions
+	if metaVersions == "" {
+		genLogger.Debug(fmt.Sprintf("No DeprecatedVersions specified for class '%s'.", c.Name))
+		return nil
+	}
+
+	versions, err := NewVersions(metaVersions)
+	if err != nil {
+		return fmt.Errorf("failed to parse deprecated versions for class '%s': %w", c.Name, err)
+	}
+	c.DeprecatedVersions = versions
+
+	genLogger.Debug(fmt.Sprintf("Successfully set DeprecatedVersions for class '%s'. Versions: '%s'", c.Name, c.DeprecatedVersions))
+	return nil
 }
 
 func (c *Class) setDocumentation() {
@@ -489,9 +516,9 @@ func (c *Class) setRnFormat() {
 	genLogger.Debug(fmt.Sprintf("Successfully set RnFormat for class '%s'.", c.Name))
 }
 
-func (c *Class) setVersions() error {
+func (c *Class) setSupportedVersions() error {
 	// Determine the supported APIC versions for the class.
-	genLogger.Debug(fmt.Sprintf("Setting Versions for class '%s'.", c.Name))
+	genLogger.Debug(fmt.Sprintf("Setting SupportedVersions for class '%s'.", c.Name))
 
 	// Initialize with versions from ClassDefinition, if not defined set the versions from meta file.
 	metaVersions := c.ClassDefinition.SupportedVersions
@@ -510,7 +537,7 @@ func (c *Class) setVersions() error {
 	}
 	c.SupportedVersions = versions
 
-	genLogger.Debug(fmt.Sprintf("Successfully set Versions for class '%s'. Versions: '%s'", c.Name, c.SupportedVersions))
+	genLogger.Debug(fmt.Sprintf("Successfully set SupportedVersions for class '%s'. Versions: '%s'", c.Name, c.SupportedVersions))
 	return nil
 }
 
