@@ -60,6 +60,67 @@ func (vr *VersionRange) String() string {
 	}
 }
 
+func NewVersionRange(metaVersionRange string) (*VersionRange, error) {
+	// NewVersionRange parses a single version range string and returns a VersionRange struct.
+	// Examples:
+	//   - "1.0(1e)" -> single version (min == max)
+	//   - "4.2(7f)-4.2(7w)" -> bounded range
+	//   - "4.2(7f)-" -> unbounded range (max is nil)
+	//   - "-4.2(7w)" -> unbounded range (min is nil)
+	genLogger.Trace(fmt.Sprintf("Parsing version range: %s", metaVersionRange))
+
+	minVersion, maxVersion, err := parseVersionBounds(metaVersionRange)
+	if err != nil {
+		return nil, err
+	}
+
+	versionRange := &VersionRange{raw: metaVersionRange, min: minVersion, max: maxVersion}
+
+	genLogger.Trace(fmt.Sprintf("Successfully parsed version range '%s': %s", metaVersionRange, versionRange))
+	return versionRange, nil
+}
+
+func parseVersionBounds(metaVersionRange string) (*provider.Version, *provider.Version, error) {
+	// parseVersionBounds extracts min and max versions from a version range string.
+	// Returns (minVersion, maxVersion, error).
+	var minVersion, maxVersion *provider.Version
+
+	if strings.Contains(metaVersionRange, "-") {
+		// SplitN with n=2 ensures we only split on the first dash.
+		// Extra dashes remain in the second part and will fail ParseVersion validation.
+		metaVersionParts := strings.SplitN(metaVersionRange, "-", 2)
+		minMetaVersion := metaVersionParts[0]
+		maxMetaVersion := metaVersionParts[1]
+
+		// Parse minimum version if present
+		if minMetaVersion != "" {
+			minVersionResult := provider.ParseVersion(minMetaVersion)
+			if minVersionResult.Error != "" {
+				return nil, nil, fmt.Errorf("invalid minimum version '%s': %s", minMetaVersion, minVersionResult.Error)
+			}
+			minVersion = minVersionResult.Version
+		}
+
+		// Parse maximum version if present
+		if maxMetaVersion != "" {
+			maxVersionResult := provider.ParseVersion(maxMetaVersion)
+			if maxVersionResult.Error != "" {
+				return nil, nil, fmt.Errorf("invalid maximum version '%s': %s", maxMetaVersion, maxVersionResult.Error)
+			}
+			maxVersion = maxVersionResult.Version
+		}
+	} else {
+		versionResult := provider.ParseVersion(metaVersionRange)
+		if versionResult.Error != "" {
+			return nil, nil, fmt.Errorf("invalid version '%s': %s", metaVersionRange, versionResult.Error)
+		}
+		minVersion = versionResult.Version
+		maxVersion = versionResult.Version
+	}
+
+	return minVersion, maxVersion, nil
+}
+
 type Versions struct {
 	// raw contains the original version string from the meta file.
 	raw string
@@ -166,7 +227,7 @@ func parseVersionRanges(metaVersions string) ([]VersionRange, error) {
 	var versionRanges []VersionRange
 
 	for metaVersionRange := range strings.SplitSeq(metaVersions, ",") {
-		versionRange, err := parseVersionRange(metaVersionRange)
+		versionRange, err := NewVersionRange(metaVersionRange)
 		if err != nil {
 			return nil, err
 		}
@@ -174,50 +235,4 @@ func parseVersionRanges(metaVersions string) ([]VersionRange, error) {
 	}
 
 	return versionRanges, nil
-}
-
-func parseVersionRange(metaVersionRange string) (*VersionRange, error) {
-	// parseVersionRange parses a single version range string.
-	// Examples:
-	//   - "1.0(1e)" -> single version (min == max)
-	//   - "4.2(7f)-4.2(7w)" -> bounded range
-	//   - "4.2(7f)-" -> unbounded range (max is nil)
-	//   - "-4.2(7w)" -> unbounded range (min is nil)
-	var minVersion, maxVersion *provider.Version
-
-	// Check if it's a range
-	if strings.Contains(metaVersionRange, "-") {
-		// SplitN with n=2 ensures we only split on the first dash.
-		// Extra dashes remain in the second part and will fail ParseVersion validation.
-		metaVersionParts := strings.SplitN(metaVersionRange, "-", 2)
-		minMetaVersion := metaVersionParts[0]
-		maxMetaVersion := metaVersionParts[1]
-
-		// Parse minimum version if present
-		if minMetaVersion != "" {
-			minVersionResult := provider.ParseVersion(minMetaVersion)
-			if minVersionResult.Error != "" {
-				return nil, fmt.Errorf("invalid minimum version '%s': %s", minMetaVersion, minVersionResult.Error)
-			}
-			minVersion = minVersionResult.Version
-		}
-
-		// Parse maximum version if present
-		if maxMetaVersion != "" {
-			maxVersionResult := provider.ParseVersion(maxMetaVersion)
-			if maxVersionResult.Error != "" {
-				return nil, fmt.Errorf("invalid maximum version '%s': %s", maxMetaVersion, maxVersionResult.Error)
-			}
-			maxVersion = maxVersionResult.Version
-		}
-	} else {
-		versionResult := provider.ParseVersion(metaVersionRange)
-		if versionResult.Error != "" {
-			return nil, fmt.Errorf("invalid version '%s': %s", metaVersionRange, versionResult.Error)
-		}
-		minVersion = versionResult.Version
-		maxVersion = versionResult.Version
-	}
-
-	return &VersionRange{raw: metaVersionRange, min: minVersion, max: maxVersion}, nil
 }
