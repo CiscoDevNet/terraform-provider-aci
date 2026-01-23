@@ -34,6 +34,9 @@ type ClassDefinition struct {
 	// Overrides the default deletion behavior from meta file. Set to "never" to prevent deletion of the class.
 	// The value "never" is used to keep the input consistent with the meta data file.
 	AllowDelete string `yaml:"allow_delete"`
+	// The deprecated APIC versions for the class. Format: "1.0(1e)-" or "4.2(7f)-4.2(7w),5.2(1g)-".
+	// Used to indicate versions where the class is deprecated but still functional.
+	DeprecatedVersions string `yaml:"deprecated_versions"`
 	// A list of child class names to exclude from the Children list.
 	ExcludeChildren []string `yaml:"exclude_children"`
 	// A list of parent class names to exclude from the Parents list.
