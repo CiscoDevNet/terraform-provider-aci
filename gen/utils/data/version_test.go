@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-type parseVersionRangeExpected struct {
+type newVersionRangeExpected struct {
 	Raw             string
 	Min             *provider.Version
 	Max             *provider.Version
@@ -18,7 +18,7 @@ type parseVersionRangeExpected struct {
 	ErrorMsg        string
 }
 
-func TestParseVersionRange(t *testing.T) {
+func TestNewVersionRange(t *testing.T) {
 	t.Parallel()
 	test.InitializeTest(t)
 
@@ -26,7 +26,7 @@ func TestParseVersionRange(t *testing.T) {
 		{
 			Name:  "test_single_version_with_tag",
 			Input: "4.2(7f)",
-			Expected: parseVersionRangeExpected{
+			Expected: newVersionRangeExpected{
 				Raw:             "4.2(7f)",
 				Min:             &provider.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
 				Max:             &provider.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
@@ -37,7 +37,7 @@ func TestParseVersionRange(t *testing.T) {
 		{
 			Name:  "test_single_version_without_tag",
 			Input: "4.2(7)",
-			Expected: parseVersionRangeExpected{
+			Expected: newVersionRangeExpected{
 				Raw:             "4.2(7)",
 				Min:             &provider.Version{Major: 4, Minor: 2, Patch: 7, Tag: 0},
 				Max:             &provider.Version{Major: 4, Minor: 2, Patch: 7, Tag: 0},
@@ -48,7 +48,7 @@ func TestParseVersionRange(t *testing.T) {
 		{
 			Name:  "test_bounded_range",
 			Input: "4.2(7f)-4.2(7w)",
-			Expected: parseVersionRangeExpected{
+			Expected: newVersionRangeExpected{
 				Raw:             "4.2(7f)-4.2(7w)",
 				Min:             &provider.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
 				Max:             &provider.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('w')},
@@ -59,7 +59,7 @@ func TestParseVersionRange(t *testing.T) {
 		{
 			Name:  "test_unbounded_upper",
 			Input: "4.2(7f)-",
-			Expected: parseVersionRangeExpected{
+			Expected: newVersionRangeExpected{
 				Raw:             "4.2(7f)-",
 				Min:             &provider.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
 				Max:             nil,
@@ -70,7 +70,7 @@ func TestParseVersionRange(t *testing.T) {
 		{
 			Name:  "test_unbounded_lower",
 			Input: "-4.2(7w)",
-			Expected: parseVersionRangeExpected{
+			Expected: newVersionRangeExpected{
 				Raw:             "-4.2(7w)",
 				Min:             nil,
 				Max:             &provider.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('w')},
@@ -81,7 +81,7 @@ func TestParseVersionRange(t *testing.T) {
 		{
 			Name:  "test_error_invalid_version",
 			Input: "invalid",
-			Expected: parseVersionRangeExpected{
+			Expected: newVersionRangeExpected{
 				Error:    true,
 				ErrorMsg: "invalid version 'invalid': unknown",
 			},
@@ -89,7 +89,7 @@ func TestParseVersionRange(t *testing.T) {
 		{
 			Name:  "test_error_invalid_min_version",
 			Input: "invalid-4.2(7w)",
-			Expected: parseVersionRangeExpected{
+			Expected: newVersionRangeExpected{
 				Error:    true,
 				ErrorMsg: "invalid minimum version 'invalid': unknown",
 			},
@@ -97,7 +97,7 @@ func TestParseVersionRange(t *testing.T) {
 		{
 			Name:  "test_error_invalid_max_version",
 			Input: "4.2(7f)-invalid",
-			Expected: parseVersionRangeExpected{
+			Expected: newVersionRangeExpected{
 				Error:    true,
 				ErrorMsg: "invalid maximum version 'invalid': unknown",
 			},
@@ -107,8 +107,8 @@ func TestParseVersionRange(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run(testCase.Name, func(t *testing.T) {
 			t.Parallel()
-			expected := testCase.Expected.(parseVersionRangeExpected)
-			versionRange, err := parseVersionRange(testCase.Input.(string))
+			expected := testCase.Expected.(newVersionRangeExpected)
+			versionRange, err := NewVersionRange(testCase.Input.(string))
 
 			if expected.Error {
 				assert.EqualError(t, err, expected.ErrorMsg)
@@ -128,7 +128,7 @@ type newVersionsExpected struct {
 	Raw         string
 	RangeCount  int
 	String      string
-	RangeValues []parseVersionRangeExpected
+	RangeValues []newVersionRangeExpected
 	Error       bool
 	ErrorMsg    string
 }
@@ -145,7 +145,7 @@ func TestNewVersions(t *testing.T) {
 				Raw:        "4.2(7f)",
 				RangeCount: 1,
 				String:     "4.2(7f)",
-				RangeValues: []parseVersionRangeExpected{
+				RangeValues: []newVersionRangeExpected{
 					{
 						Raw:             "4.2(7f)",
 						Min:             &provider.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
@@ -163,7 +163,7 @@ func TestNewVersions(t *testing.T) {
 				Raw:        "4.2(7f)-",
 				RangeCount: 1,
 				String:     "4.2(7f) and later",
-				RangeValues: []parseVersionRangeExpected{
+				RangeValues: []newVersionRangeExpected{
 					{
 						Raw:             "4.2(7f)-",
 						Min:             &provider.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
@@ -181,7 +181,7 @@ func TestNewVersions(t *testing.T) {
 				Raw:        "3.2(10e)-3.2(10g),4.2(7f)-",
 				RangeCount: 2,
 				String:     "3.2(10e) to 3.2(10g), 4.2(7f) and later",
-				RangeValues: []parseVersionRangeExpected{
+				RangeValues: []newVersionRangeExpected{
 					{
 						Raw:             "3.2(10e)-3.2(10g)",
 						Min:             &provider.Version{Major: 3, Minor: 2, Patch: 10, Tag: int('e')},
@@ -206,7 +206,7 @@ func TestNewVersions(t *testing.T) {
 				Raw:        "5.2(1g)-,3.2(10e)-3.2(10g)",
 				RangeCount: 2,
 				String:     "3.2(10e) to 3.2(10g), 5.2(1g) and later",
-				RangeValues: []parseVersionRangeExpected{
+				RangeValues: []newVersionRangeExpected{
 					{
 						Raw:             "3.2(10e)-3.2(10g)",
 						Min:             &provider.Version{Major: 3, Minor: 2, Patch: 10, Tag: int('e')},
@@ -231,7 +231,7 @@ func TestNewVersions(t *testing.T) {
 				Raw:        "5.0(1a)-,3.0(1a)-3.0(1z),4.0(1a)-4.0(1z)",
 				RangeCount: 3,
 				String:     "3.0(1a) to 3.0(1z), 4.0(1a) to 4.0(1z), 5.0(1a) and later",
-				RangeValues: []parseVersionRangeExpected{
+				RangeValues: []newVersionRangeExpected{
 					{
 						Raw:             "3.0(1a)-3.0(1z)",
 						Min:             &provider.Version{Major: 3, Minor: 0, Patch: 1, Tag: int('a')},
