@@ -1071,129 +1071,129 @@ func TestSortAndConvertToClassNames(t *testing.T) {
 	}
 }
 
-type setVersionsInput struct {
+type setSupportedVersionsInput struct {
 	ClassDefinitionVersions string
 	MetaVersions            interface{}
 }
 
-type setVersionsExpected struct {
+type setSupportedVersionsExpected struct {
 	Raw      string
 	String   string
 	Error    bool
 	ErrorMsg string
 }
 
-func TestSetVersions(t *testing.T) {
+func TestSetSupportedVersions(t *testing.T) {
 	t.Parallel()
 	test.InitializeTest(t)
 
 	testCases := []test.TestCase{
 		{
 			Name: "test_versions_from_meta_file",
-			Input: setVersionsInput{
+			Input: setSupportedVersionsInput{
 				ClassDefinitionVersions: "",
 				MetaVersions:            "4.2(7f)-",
 			},
-			Expected: setVersionsExpected{
+			Expected: setSupportedVersionsExpected{
 				Raw:    "4.2(7f)-",
 				String: "4.2(7f) and later",
 			},
 		},
 		{
 			Name: "test_versions_from_class_definition_override",
-			Input: setVersionsInput{
+			Input: setSupportedVersionsInput{
 				ClassDefinitionVersions: "5.0(1a)-",
 				MetaVersions:            "4.2(7f)-",
 			},
-			Expected: setVersionsExpected{
+			Expected: setSupportedVersionsExpected{
 				Raw:    "5.0(1a)-",
 				String: "5.0(1a) and later",
 			},
 		},
 		{
 			Name: "test_versions_from_class_definition_when_meta_empty",
-			Input: setVersionsInput{
+			Input: setSupportedVersionsInput{
 				ClassDefinitionVersions: "5.0(1a)-",
 				MetaVersions:            "",
 			},
-			Expected: setVersionsExpected{
+			Expected: setSupportedVersionsExpected{
 				Raw:    "5.0(1a)-",
 				String: "5.0(1a) and later",
 			},
 		},
 		{
 			Name: "test_versions_from_class_definition_when_meta_nil",
-			Input: setVersionsInput{
+			Input: setSupportedVersionsInput{
 				ClassDefinitionVersions: "5.0(1a)-",
 				MetaVersions:            nil,
 			},
-			Expected: setVersionsExpected{
+			Expected: setSupportedVersionsExpected{
 				Raw:    "5.0(1a)-",
 				String: "5.0(1a) and later",
 			},
 		},
 		{
 			Name: "test_multiple_ranges",
-			Input: setVersionsInput{
+			Input: setSupportedVersionsInput{
 				ClassDefinitionVersions: "",
 				MetaVersions:            "3.2(10e)-3.2(10g),4.2(7f)-",
 			},
-			Expected: setVersionsExpected{
+			Expected: setSupportedVersionsExpected{
 				Raw:    "3.2(10e)-3.2(10g),4.2(7f)-",
 				String: "3.2(10e) to 3.2(10g), 4.2(7f) and later",
 			},
 		},
 		{
 			Name: "test_multiple_ranges_sorted",
-			Input: setVersionsInput{
+			Input: setSupportedVersionsInput{
 				ClassDefinitionVersions: "",
 				MetaVersions:            "5.2(1g)-,3.2(10e)-3.2(10g)",
 			},
-			Expected: setVersionsExpected{
+			Expected: setSupportedVersionsExpected{
 				Raw:    "5.2(1g)-,3.2(10e)-3.2(10g)",
 				String: "3.2(10e) to 3.2(10g), 5.2(1g) and later",
 			},
 		},
 		{
 			Name: "test_error_empty_versions",
-			Input: setVersionsInput{
+			Input: setSupportedVersionsInput{
 				ClassDefinitionVersions: "",
 				MetaVersions:            "",
 			},
-			Expected: setVersionsExpected{
+			Expected: setSupportedVersionsExpected{
 				Error:    true,
 				ErrorMsg: "versions not specified for class 'fvTenant': add versions to the class definition file",
 			},
 		},
 		{
 			Name: "test_error_nil_versions",
-			Input: setVersionsInput{
+			Input: setSupportedVersionsInput{
 				ClassDefinitionVersions: "",
 				MetaVersions:            nil,
 			},
-			Expected: setVersionsExpected{
+			Expected: setSupportedVersionsExpected{
 				Error:    true,
 				ErrorMsg: "versions not specified for class 'fvTenant': add versions to the class definition file",
 			},
 		},
 		{
 			Name: "test_error_invalid_version",
-			Input: setVersionsInput{
+			Input: setSupportedVersionsInput{
 				ClassDefinitionVersions: "",
 				MetaVersions:            "invalid",
 			},
-			Expected: setVersionsExpected{
+			Expected: setSupportedVersionsExpected{
 				Error:    true,
 				ErrorMsg: "failed to parse versions for class 'fvTenant': invalid version 'invalid': unknown",
 			},
 		},
 		{
 			Name: "test_error_invalid_version_in_range",
-			Input: setVersionsInput{
+			Input: setSupportedVersionsInput{
 				ClassDefinitionVersions: "",
 				MetaVersions:            "4.2(7f)-,invalid",
 			},
-			Expected: setVersionsExpected{
+			Expected: setSupportedVersionsExpected{
 				Error:    true,
 				ErrorMsg: "failed to parse versions for class 'fvTenant': invalid version 'invalid': unknown",
 			},
@@ -1203,8 +1203,8 @@ func TestSetVersions(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run(testCase.Name, func(t *testing.T) {
 			t.Parallel()
-			input := testCase.Input.(setVersionsInput)
-			expected := testCase.Expected.(setVersionsExpected)
+			input := testCase.Input.(setSupportedVersionsInput)
+			expected := testCase.Expected.(setSupportedVersionsExpected)
 
 			class := Class{
 				Name: testClassName("fvTenant"),
@@ -1217,7 +1217,7 @@ func TestSetVersions(t *testing.T) {
 				class.MetaFileContent["versions"] = input.MetaVersions
 			}
 
-			err := class.setVersions()
+			err := class.setSupportedVersions()
 
 			if expected.Error {
 				assert.EqualError(t, err, expected.ErrorMsg)
@@ -1225,6 +1225,113 @@ func TestSetVersions(t *testing.T) {
 				assert.NoError(t, err, test.MessageUnexpectedError(err))
 				assert.Equal(t, expected.Raw, class.SupportedVersions.Raw(), test.MessageEqual(expected.Raw, class.SupportedVersions.Raw(), testCase.Name))
 				assert.Equal(t, expected.String, class.SupportedVersions.String(), test.MessageEqual(expected.String, class.SupportedVersions.String(), testCase.Name))
+			}
+		})
+	}
+}
+
+type setDeprecatedVersionsInput struct {
+	ClassDefinitionVersions string
+}
+
+type setDeprecatedVersionsExpected struct {
+	Raw      string
+	String   string
+	Nil      bool
+	Error    bool
+	ErrorMsg string
+}
+
+func TestSetDeprecatedVersions(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	testCases := []test.TestCase{
+		{
+			Name: "test_deprecated_versions_not_set",
+			Input: setDeprecatedVersionsInput{
+				ClassDefinitionVersions: "",
+			},
+			Expected: setDeprecatedVersionsExpected{
+				Nil: true,
+			},
+		},
+		{
+			Name: "test_deprecated_versions_single_range",
+			Input: setDeprecatedVersionsInput{
+				ClassDefinitionVersions: "4.2(7f)-",
+			},
+			Expected: setDeprecatedVersionsExpected{
+				Raw:    "4.2(7f)-",
+				String: "4.2(7f) and later",
+			},
+		},
+		{
+			Name: "test_deprecated_versions_bounded_range",
+			Input: setDeprecatedVersionsInput{
+				ClassDefinitionVersions: "3.2(10e)-4.2(7f)",
+			},
+			Expected: setDeprecatedVersionsExpected{
+				Raw:    "3.2(10e)-4.2(7f)",
+				String: "3.2(10e) to 4.2(7f)",
+			},
+		},
+		{
+			Name: "test_deprecated_versions_multiple_ranges",
+			Input: setDeprecatedVersionsInput{
+				ClassDefinitionVersions: "3.2(10e)-3.2(10g),4.2(7f)-",
+			},
+			Expected: setDeprecatedVersionsExpected{
+				Raw:    "3.2(10e)-3.2(10g),4.2(7f)-",
+				String: "3.2(10e) to 3.2(10g), 4.2(7f) and later",
+			},
+		},
+		{
+			Name: "test_error_invalid_deprecated_version",
+			Input: setDeprecatedVersionsInput{
+				ClassDefinitionVersions: "invalid",
+			},
+			Expected: setDeprecatedVersionsExpected{
+				Error:    true,
+				ErrorMsg: "failed to parse deprecated versions for class 'fvTenant': invalid version 'invalid': unknown",
+			},
+		},
+		{
+			Name: "test_error_invalid_deprecated_version_in_range",
+			Input: setDeprecatedVersionsInput{
+				ClassDefinitionVersions: "4.2(7f)-,invalid",
+			},
+			Expected: setDeprecatedVersionsExpected{
+				Error:    true,
+				ErrorMsg: "failed to parse deprecated versions for class 'fvTenant': invalid version 'invalid': unknown",
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.(setDeprecatedVersionsInput)
+			expected := testCase.Expected.(setDeprecatedVersionsExpected)
+
+			class := Class{
+				Name: testClassName("fvTenant"),
+				ClassDefinition: ClassDefinition{
+					DeprecatedVersions: input.ClassDefinitionVersions,
+				},
+			}
+
+			err := class.setDeprecatedVersions()
+
+			if expected.Error {
+				assert.EqualError(t, err, expected.ErrorMsg)
+			} else if expected.Nil {
+				assert.NoError(t, err, test.MessageUnexpectedError(err))
+				assert.Nil(t, class.DeprecatedVersions, "expected DeprecatedVersions to be nil")
+			} else {
+				assert.NoError(t, err, test.MessageUnexpectedError(err))
+				assert.Equal(t, expected.Raw, class.DeprecatedVersions.Raw(), test.MessageEqual(expected.Raw, class.DeprecatedVersions.Raw(), testCase.Name))
+				assert.Equal(t, expected.String, class.DeprecatedVersions.String(), test.MessageEqual(expected.String, class.DeprecatedVersions.String(), testCase.Name))
 			}
 		})
 	}
