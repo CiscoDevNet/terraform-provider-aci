@@ -52,7 +52,7 @@ func (d *FvVipDataSource) Schema(ctx context.Context, req datasource.SchemaReque
 			"ip": schema.StringAttribute{
 				CustomType:          customTypes.IPv6AddressStringType{},
 				Required:            true,
-				MarkdownDescription: `The L4-L7 Virtual IP Address of the Virtual IP Address object.`,
+				MarkdownDescription: `The L4-L7 Virtual IP Address for this object.`,
 			},
 			"annotation": schema.StringAttribute{
 				Computed:            true,

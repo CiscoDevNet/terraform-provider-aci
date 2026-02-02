@@ -43,7 +43,7 @@ data "aci_virtual_ip_address" "example_application_epg" {
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_application_epg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/application_epg) ([fvAEPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvAEPg/overview))
-* `ip` (addr) - (string) The L4-L7 Virtual IP Address of the Virtual IP Address object.
+* `ip` (addr) - (string) The L4-L7 Virtual IP Address for this object.
 
 ### Read-Only ###
 

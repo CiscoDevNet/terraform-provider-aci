@@ -1,5 +1,5 @@
 documentation:
-    addr: The L4-L7 Virtual IP Address of the %s object.
+    addr: The L4-L7 Virtual IP Address for this object.
 overwrites:
     addr: ip
 test_values:

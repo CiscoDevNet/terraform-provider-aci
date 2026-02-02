@@ -185,7 +185,7 @@ func (r *FvVipResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 					stringplanmodifier.RequiresReplace(),
 				},
-				MarkdownDescription: `The L4-L7 Virtual IP Address of the Virtual IP Address object.`,
+				MarkdownDescription: `The L4-L7 Virtual IP Address for this object.`,
 			},
 			"annotation": schema.StringAttribute{
 				Optional: true,
