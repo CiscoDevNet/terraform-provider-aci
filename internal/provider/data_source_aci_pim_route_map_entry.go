@@ -62,7 +62,7 @@ func (d *PimRouteMapEntryDataSource) Schema(ctx context.Context, req datasource.
 				MarkdownDescription: `The description of the PIM Route Map Entry object.`,
 			},
 			"group_ip": schema.StringAttribute{
-				CustomType:          customTypes.IPv6AddressStringType{},
+				CustomType:          customTypes.IPAddressStringType{},
 				Computed:            true,
 				MarkdownDescription: `The group ip of the PIM Route Map Entry object.`,
 			},
@@ -79,12 +79,12 @@ func (d *PimRouteMapEntryDataSource) Schema(ctx context.Context, req datasource.
 				MarkdownDescription: `PIM route map entry order.`,
 			},
 			"rendezvous_point_ip": schema.StringAttribute{
-				CustomType:          customTypes.IPv6AddressStringType{},
+				CustomType:          customTypes.IPAddressStringType{},
 				Computed:            true,
 				MarkdownDescription: `The rendezvous point ip of the PIM Route Map Entry object.`,
 			},
 			"source_ip": schema.StringAttribute{
-				CustomType:          customTypes.IPv6AddressStringType{},
+				CustomType:          customTypes.IPAddressStringType{},
 				Computed:            true,
 				MarkdownDescription: `The source ip of the PIM Route Map Entry object.`,
 			},

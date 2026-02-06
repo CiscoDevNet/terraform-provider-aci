@@ -16,4 +16,4 @@ test_values:
     custom_type:
         ip: fe80::0001
 static_custom_type:
-    ip: ipv6_address
+    ip: ip_address

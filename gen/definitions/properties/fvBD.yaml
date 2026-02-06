@@ -86,4 +86,4 @@ test_values:
 type_overwrites:
     epMoveDetectMode: string
 static_custom_type:
-    llAddr: ipv6_address
+    llAddr: ip_address

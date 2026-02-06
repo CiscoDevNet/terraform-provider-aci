@@ -79,7 +79,7 @@ const pubhupDevnetBaseUrl = "https://pubhub.devnetcloud.com/media/model-doc-late
 
 var staticCustomTypeMap = map[string]string{
 	"rounded_percentage": "RoundedPercentage",
-	"ipv6_address":       "IPv6Address",
+	"ip_address":         "IPAddress",
 }
 
 // Function map used during template rendering in order to call functions from the template
@@ -1237,7 +1237,7 @@ func cleanDirectories() {
 	cleanDirectory(resourcesDocsPath, []string{})
 	cleanDirectory(datasourcesDocsPath, []string{"system.md"})
 	cleanDirectory(testVarsPath, []string{})
-	cleanDirectory("./internal/custom_types", []string{"roundedPercentage.go", "ipv6Address.go"})
+	cleanDirectory("./internal/custom_types", []string{"roundedPercentage.go", "ipAddress.go"})
 
 	// The *ExamplesPath directories are removed and recreated to ensure all previously rendered files are removed
 	// The provider example file is not removed because it contains static provider configuration

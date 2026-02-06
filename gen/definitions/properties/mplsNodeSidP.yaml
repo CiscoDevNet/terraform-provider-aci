@@ -26,4 +26,4 @@ test_values:
     custom_type:
         loopback_address: fe80::0002
 static_custom_type:
-    loopbackAddr: ipv6_address
+    loopbackAddr: ip_address

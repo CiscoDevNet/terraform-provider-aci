@@ -58,7 +58,7 @@ func (d *FvTrackMemberDataSource) Schema(ctx context.Context, req datasource.Sch
 				MarkdownDescription: `The description of the IP SLA Track Member object.`,
 			},
 			"destination_ip_address": schema.StringAttribute{
-				CustomType:          customTypes.IPv6AddressStringType{},
+				CustomType:          customTypes.IPAddressStringType{},
 				Computed:            true,
 				MarkdownDescription: `The destination IP address to be tracked.`,
 			},
