@@ -58,7 +58,7 @@ func (d *MgmtSubnetDataSource) Schema(ctx context.Context, req datasource.Schema
 				MarkdownDescription: `The description of the External Management Network Subnet object.`,
 			},
 			"ip": schema.StringAttribute{
-				CustomType:          customTypes.IPv6AddressStringType{},
+				CustomType:          customTypes.IPAddressStringType{},
 				Required:            true,
 				MarkdownDescription: `The external subnet IP address and subnet mask. This IP address is used for creating an external management entity. The subnet mask for the IP address to be imported from the outside into the fabric. The contracts associated with its parent instance profile (l3ext:InstP) are applied to the subnet.`,
 			},

@@ -20,4 +20,4 @@ test_values:
     custom_type:
         prefix_address: 2001:0db8::01/64
 static_custom_type:
-    fbrPrefix: ipv6_address
+    fbrPrefix: ip_address

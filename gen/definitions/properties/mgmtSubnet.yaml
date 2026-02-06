@@ -8,4 +8,4 @@ test_values:
     custom_type:
         ip: 2001:0db8::/32
 static_custom_type:
-    ip: ipv6_address
+    ip: ip_address

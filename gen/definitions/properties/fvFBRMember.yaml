@@ -21,4 +21,4 @@ test_values:
     custom_type:
         fallback_member: fe80::0001
 static_custom_type:
-    rnhAddr: ipv6_address
+    rnhAddr: ip_address

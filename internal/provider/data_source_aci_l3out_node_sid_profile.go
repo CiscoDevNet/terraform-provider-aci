@@ -58,7 +58,7 @@ func (d *MplsNodeSidPDataSource) Schema(ctx context.Context, req datasource.Sche
 				MarkdownDescription: `The description of the L3Out Node SR-MPLS Segment ID Profile object.`,
 			},
 			"loopback_address": schema.StringAttribute{
-				CustomType:          customTypes.IPv6AddressStringType{},
+				CustomType:          customTypes.IPAddressStringType{},
 				Computed:            true,
 				MarkdownDescription: `The loopback address of the L3Out Node SR-MPLS Segment ID Profile object.`,
 			},

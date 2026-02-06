@@ -101,13 +101,13 @@ func getEmptyFvFBRGroupResourceModel() *FvFBRGroupResourceModel {
 
 // FvFBRMemberFvFBRGroupResourceModel describes the resource data model for the children without relation ships.
 type FvFBRMemberFvFBRGroupResourceModel struct {
-	Annotation    types.String                       `tfsdk:"annotation"`
-	Descr         types.String                       `tfsdk:"description"`
-	Name          types.String                       `tfsdk:"name"`
-	NameAlias     types.String                       `tfsdk:"name_alias"`
-	RnhAddr       customTypes.IPv6AddressStringValue `tfsdk:"fallback_member"`
-	TagAnnotation types.Set                          `tfsdk:"annotations"`
-	TagTag        types.Set                          `tfsdk:"tags"`
+	Annotation    types.String                     `tfsdk:"annotation"`
+	Descr         types.String                     `tfsdk:"description"`
+	Name          types.String                     `tfsdk:"name"`
+	NameAlias     types.String                     `tfsdk:"name_alias"`
+	RnhAddr       customTypes.IPAddressStringValue `tfsdk:"fallback_member"`
+	TagAnnotation types.Set                        `tfsdk:"annotations"`
+	TagTag        types.Set                        `tfsdk:"tags"`
 }
 
 func getEmptyFvFBRMemberFvFBRGroupResourceModel() FvFBRMemberFvFBRGroupResourceModel {
@@ -116,7 +116,7 @@ func getEmptyFvFBRMemberFvFBRGroupResourceModel() FvFBRMemberFvFBRGroupResourceM
 		Descr:      basetypes.NewStringNull(),
 		Name:       basetypes.NewStringNull(),
 		NameAlias:  basetypes.NewStringNull(),
-		RnhAddr:    customTypes.NewIPv6AddressStringNull(),
+		RnhAddr:    customTypes.NewIPAddressStringNull(),
 		TagAnnotation: types.SetNull(types.ObjectType{
 			AttrTypes: map[string]attr.Type{
 				"key":   types.StringType,
@@ -172,7 +172,7 @@ func FvFBRMemberFvFBRGroupSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(c
 			}
 			if stateValue.RnhAddr.IsNull() {
 				nullInStateFound = true
-				planSetValues[index].RnhAddr = customTypes.NewIPv6AddressStringNull()
+				planSetValues[index].RnhAddr = customTypes.NewIPAddressStringNull()
 			}
 			if !nullInStateFound {
 				// when there are no null fields we can conclude the version supports all attributes in set
@@ -227,20 +227,20 @@ var TagTagFvFBRMemberFvFBRGroupType = types.ObjectType{
 
 // FvFBRouteFvFBRGroupResourceModel describes the resource data model for the children without relation ships.
 type FvFBRouteFvFBRGroupResourceModel struct {
-	Annotation    types.String                       `tfsdk:"annotation"`
-	Descr         types.String                       `tfsdk:"description"`
-	FbrPrefix     customTypes.IPv6AddressStringValue `tfsdk:"prefix_address"`
-	Name          types.String                       `tfsdk:"name"`
-	NameAlias     types.String                       `tfsdk:"name_alias"`
-	TagAnnotation types.Set                          `tfsdk:"annotations"`
-	TagTag        types.Set                          `tfsdk:"tags"`
+	Annotation    types.String                     `tfsdk:"annotation"`
+	Descr         types.String                     `tfsdk:"description"`
+	FbrPrefix     customTypes.IPAddressStringValue `tfsdk:"prefix_address"`
+	Name          types.String                     `tfsdk:"name"`
+	NameAlias     types.String                     `tfsdk:"name_alias"`
+	TagAnnotation types.Set                        `tfsdk:"annotations"`
+	TagTag        types.Set                        `tfsdk:"tags"`
 }
 
 func getEmptyFvFBRouteFvFBRGroupResourceModel() FvFBRouteFvFBRGroupResourceModel {
 	return FvFBRouteFvFBRGroupResourceModel{
 		Annotation: basetypes.NewStringNull(),
 		Descr:      basetypes.NewStringNull(),
-		FbrPrefix:  customTypes.NewIPv6AddressStringNull(),
+		FbrPrefix:  customTypes.NewIPAddressStringNull(),
 		Name:       basetypes.NewStringNull(),
 		NameAlias:  basetypes.NewStringNull(),
 		TagAnnotation: types.SetNull(types.ObjectType{
@@ -493,7 +493,7 @@ func (r *FvFBRGroupResource) Schema(ctx context.Context, req resource.SchemaRequ
 							MarkdownDescription: `The name alias of the VRF Fallback Route Group Member object.`,
 						},
 						"fallback_member": schema.StringAttribute{
-							CustomType: customTypes.IPv6AddressStringType{},
+							CustomType: customTypes.IPAddressStringType{},
 							Required:   true,
 							PlanModifiers: []planmodifier.String{
 								stringplanmodifier.UseNonNullStateForUnknown(),
@@ -583,7 +583,7 @@ func (r *FvFBRGroupResource) Schema(ctx context.Context, req resource.SchemaRequ
 						MarkdownDescription: `The description of the VRF Fallback Route object.`,
 					},
 					"prefix_address": schema.StringAttribute{
-						CustomType: customTypes.IPv6AddressStringType{},
+						CustomType: customTypes.IPAddressStringType{},
 						Optional:   true,
 						Computed:   true,
 						PlanModifiers: []planmodifier.String{
@@ -966,7 +966,7 @@ func getAndSetFvFBRGroupAttributes(ctx context.Context, diags *diag.Diagnostics,
 									FvFBRMemberFvFBRGroup.NameAlias = basetypes.NewStringValue(childAttributeValue.(string))
 								}
 								if childAttributeName == "rnhAddr" {
-									FvFBRMemberFvFBRGroup.RnhAddr = customTypes.NewIPv6AddressStringValue(childAttributeValue.(string))
+									FvFBRMemberFvFBRGroup.RnhAddr = customTypes.NewIPAddressStringValue(childAttributeValue.(string))
 								}
 
 							}
@@ -1021,7 +1021,7 @@ func getAndSetFvFBRGroupAttributes(ctx context.Context, diags *diag.Diagnostics,
 									FvFBRouteFvFBRGroup.Descr = basetypes.NewStringValue(childAttributeValue.(string))
 								}
 								if childAttributeName == "fbrPrefix" {
-									FvFBRouteFvFBRGroup.FbrPrefix = customTypes.NewIPv6AddressStringValue(childAttributeValue.(string))
+									FvFBRouteFvFBRGroup.FbrPrefix = customTypes.NewIPAddressStringValue(childAttributeValue.(string))
 								}
 								if childAttributeName == "name" {
 									FvFBRouteFvFBRGroup.Name = basetypes.NewStringValue(childAttributeValue.(string))

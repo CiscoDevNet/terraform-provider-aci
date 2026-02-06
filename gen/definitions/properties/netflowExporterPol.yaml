@@ -48,5 +48,5 @@ test_values:
         source_ip_address: 2001:db8::1/116
         destination_ip_address: 2001:db8::2
 static_custom_type:
-    srcAddr: ipv6_address
-    dstAddr: ipv6_address
+    srcAddr: ip_address
+    dstAddr: ip_address

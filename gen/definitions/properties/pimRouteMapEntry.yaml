@@ -29,6 +29,6 @@ test_values:
         rendezvous_point_ip: 2001:0db8:ffff::1/128
         source_ip: 2001:0db8:100::10/128
 static_custom_type:
-    grp: ipv6_address
-    rp: ipv6_address
-    src: ipv6_address
+    grp: ip_address
+    rp: ip_address
+    src: ip_address

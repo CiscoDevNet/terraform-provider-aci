@@ -58,7 +58,7 @@ func (d *FvIpAttrDataSource) Schema(ctx context.Context, req datasource.SchemaRe
 				MarkdownDescription: `The description of the EPG uSeg IP Attribute object.`,
 			},
 			"ip": schema.StringAttribute{
-				CustomType:          customTypes.IPv6AddressStringType{},
+				CustomType:          customTypes.IPAddressStringType{},
 				Computed:            true,
 				MarkdownDescription: `The device IP address of the EPG uSeg IP Attribute object.`,
 			},
