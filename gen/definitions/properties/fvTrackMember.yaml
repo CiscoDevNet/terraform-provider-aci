@@ -23,4 +23,4 @@ test_values:
         destination_ip_address: 2001:0db8::01
         scope: uni/tn-test_tenant/BD-test_bd
 static_custom_type:
-    dstIpAddr: ipv6_address
+    dstIpAddr: ip_address

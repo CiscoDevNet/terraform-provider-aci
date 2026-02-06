@@ -62,7 +62,7 @@ func (d *FvEpIpTagDataSource) Schema(ctx context.Context, req datasource.SchemaR
 				MarkdownDescription: `The identifier of the Endpoint Tag IP object.`,
 			},
 			"ip": schema.StringAttribute{
-				CustomType:          customTypes.IPv6AddressStringType{},
+				CustomType:          customTypes.IPAddressStringType{},
 				Required:            true,
 				MarkdownDescription: `The IP address of the Endpoint Tag IP object.`,
 			},

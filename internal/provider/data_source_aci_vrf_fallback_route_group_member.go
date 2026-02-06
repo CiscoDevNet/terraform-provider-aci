@@ -66,7 +66,7 @@ func (d *FvFBRMemberDataSource) Schema(ctx context.Context, req datasource.Schem
 				MarkdownDescription: `The name alias of the VRF Fallback Route Group Member object.`,
 			},
 			"fallback_member": schema.StringAttribute{
-				CustomType:          customTypes.IPv6AddressStringType{},
+				CustomType:          customTypes.IPAddressStringType{},
 				Required:            true,
 				MarkdownDescription: `The address of the VRF Fallback Route Group Member object.`,
 			},

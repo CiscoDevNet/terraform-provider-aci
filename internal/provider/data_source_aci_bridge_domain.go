@@ -68,7 +68,7 @@ func (d *FvBDDataSource) Schema(ctx context.Context, req datasource.SchemaReques
 				DeprecationMessage: "Attribute 'ipv6_mcast_allow' is deprecated, please refer to 'pim_ipv6' instead. The attribute will be removed in the next major version of the provider.",
 			},
 			"ll_addr": schema.StringAttribute{
-				CustomType:         customTypes.IPv6AddressStringType{},
+				CustomType:         customTypes.IPAddressStringType{},
 				Computed:           true,
 				DeprecationMessage: "Attribute 'll_addr' is deprecated, please refer to 'link_local_ipv6_address' instead. The attribute will be removed in the next major version of the provider.",
 			},
@@ -216,7 +216,7 @@ func (d *FvBDDataSource) Schema(ctx context.Context, req datasource.SchemaReques
 				MarkdownDescription: `Limit IP address learning to subnets for the Bridge Domain object. Every Bridge Domain object can have multiple subnets associated with it.`,
 			},
 			"link_local_ipv6_address": schema.StringAttribute{
-				CustomType:          customTypes.IPv6AddressStringType{},
+				CustomType:          customTypes.IPAddressStringType{},
 				Computed:            true,
 				MarkdownDescription: `The override of the system generated IPv6 link-local address.`,
 			},

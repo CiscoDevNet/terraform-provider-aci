@@ -51,14 +51,14 @@ type NetflowExporterPolResourceModel struct {
 	Annotation             types.String                                     `tfsdk:"annotation"`
 	Descr                  types.String                                     `tfsdk:"description"`
 	Dscp                   customTypes.NetflowExporterPolDscpStringValue    `tfsdk:"qos_dscp_value"`
-	DstAddr                customTypes.IPv6AddressStringValue               `tfsdk:"destination_ip_address"`
+	DstAddr                customTypes.IPAddressStringValue                 `tfsdk:"destination_ip_address"`
 	DstPort                customTypes.NetflowExporterPolDstPortStringValue `tfsdk:"destination_port"`
 	Name                   types.String                                     `tfsdk:"name"`
 	NameAlias              types.String                                     `tfsdk:"name_alias"`
 	OwnerKey               types.String                                     `tfsdk:"owner_key"`
 	OwnerTag               types.String                                     `tfsdk:"owner_tag"`
 	SourceIpType           types.String                                     `tfsdk:"source_ip_type"`
-	SrcAddr                customTypes.IPv6AddressStringValue               `tfsdk:"source_ip_address"`
+	SrcAddr                customTypes.IPAddressStringValue                 `tfsdk:"source_ip_address"`
 	Ver                    types.String                                     `tfsdk:"version"`
 	NetflowRsExporterToCtx types.Object                                     `tfsdk:"relation_to_vrf"`
 	NetflowRsExporterToEPg types.Object                                     `tfsdk:"relation_to_epg"`
@@ -73,14 +73,14 @@ func getEmptyNetflowExporterPolResourceModel() *NetflowExporterPolResourceModel 
 		Annotation:   basetypes.NewStringNull(),
 		Descr:        basetypes.NewStringNull(),
 		Dscp:         customTypes.NewNetflowExporterPolDscpStringNull(),
-		DstAddr:      customTypes.NewIPv6AddressStringNull(),
+		DstAddr:      customTypes.NewIPAddressStringNull(),
 		DstPort:      customTypes.NewNetflowExporterPolDstPortStringNull(),
 		Name:         basetypes.NewStringNull(),
 		NameAlias:    basetypes.NewStringNull(),
 		OwnerKey:     basetypes.NewStringNull(),
 		OwnerTag:     basetypes.NewStringNull(),
 		SourceIpType: basetypes.NewStringNull(),
-		SrcAddr:      customTypes.NewIPv6AddressStringNull(),
+		SrcAddr:      customTypes.NewIPAddressStringNull(),
 		Ver:          basetypes.NewStringNull(),
 		NetflowRsExporterToCtx: types.ObjectNull(map[string]attr.Type{
 			"annotation":  types.StringType,
@@ -407,7 +407,7 @@ func (r *NetflowExporterPolResource) Schema(ctx context.Context, req resource.Sc
 				MarkdownDescription: `The DSCP value of the NetFlow Exporter Policy object.`,
 			},
 			"destination_ip_address": schema.StringAttribute{
-				CustomType: customTypes.IPv6AddressStringType{},
+				CustomType: customTypes.IPAddressStringType{},
 				Required:   true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseNonNullStateForUnknown(),
@@ -479,7 +479,7 @@ func (r *NetflowExporterPolResource) Schema(ctx context.Context, req resource.Sc
 				MarkdownDescription: `The type of the source IP address for the NetFlow Exporter Policy object.`,
 			},
 			"source_ip_address": schema.StringAttribute{
-				CustomType: customTypes.IPv6AddressStringType{},
+				CustomType: customTypes.IPAddressStringType{},
 				Optional:   true,
 				Computed:   true,
 				PlanModifiers: []planmodifier.String{
@@ -932,7 +932,7 @@ func getAndSetNetflowExporterPolAttributes(ctx context.Context, diags *diag.Diag
 					readData.Dscp = customTypes.NewNetflowExporterPolDscpStringValue(attributeValue.(string))
 				}
 				if attributeName == "dstAddr" {
-					readData.DstAddr = customTypes.NewIPv6AddressStringValue(attributeValue.(string))
+					readData.DstAddr = customTypes.NewIPAddressStringValue(attributeValue.(string))
 				}
 				if attributeName == "dstPort" {
 					readData.DstPort = customTypes.NewNetflowExporterPolDstPortStringValue(attributeValue.(string))
@@ -953,7 +953,7 @@ func getAndSetNetflowExporterPolAttributes(ctx context.Context, diags *diag.Diag
 					readData.SourceIpType = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "srcAddr" {
-					readData.SrcAddr = customTypes.NewIPv6AddressStringValue(attributeValue.(string))
+					readData.SrcAddr = customTypes.NewIPAddressStringValue(attributeValue.(string))
 				}
 				if attributeName == "ver" {
 					readData.Ver = basetypes.NewStringValue(attributeValue.(string))

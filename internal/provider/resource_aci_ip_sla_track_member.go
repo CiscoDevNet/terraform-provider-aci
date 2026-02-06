@@ -43,19 +43,19 @@ type FvTrackMemberResource struct {
 
 // FvTrackMemberResourceModel describes the resource data model.
 type FvTrackMemberResourceModel struct {
-	Id              types.String                       `tfsdk:"id"`
-	ParentDn        types.String                       `tfsdk:"parent_dn"`
-	Annotation      types.String                       `tfsdk:"annotation"`
-	Descr           types.String                       `tfsdk:"description"`
-	DstIpAddr       customTypes.IPv6AddressStringValue `tfsdk:"destination_ip_address"`
-	Name            types.String                       `tfsdk:"name"`
-	NameAlias       types.String                       `tfsdk:"name_alias"`
-	OwnerKey        types.String                       `tfsdk:"owner_key"`
-	OwnerTag        types.String                       `tfsdk:"owner_tag"`
-	ScopeDn         types.String                       `tfsdk:"scope"`
-	FvRsIpslaMonPol types.Object                       `tfsdk:"relation_to_monitoring_policy"`
-	TagAnnotation   types.Set                          `tfsdk:"annotations"`
-	TagTag          types.Set                          `tfsdk:"tags"`
+	Id              types.String                     `tfsdk:"id"`
+	ParentDn        types.String                     `tfsdk:"parent_dn"`
+	Annotation      types.String                     `tfsdk:"annotation"`
+	Descr           types.String                     `tfsdk:"description"`
+	DstIpAddr       customTypes.IPAddressStringValue `tfsdk:"destination_ip_address"`
+	Name            types.String                     `tfsdk:"name"`
+	NameAlias       types.String                     `tfsdk:"name_alias"`
+	OwnerKey        types.String                     `tfsdk:"owner_key"`
+	OwnerTag        types.String                     `tfsdk:"owner_tag"`
+	ScopeDn         types.String                     `tfsdk:"scope"`
+	FvRsIpslaMonPol types.Object                     `tfsdk:"relation_to_monitoring_policy"`
+	TagAnnotation   types.Set                        `tfsdk:"annotations"`
+	TagTag          types.Set                        `tfsdk:"tags"`
 }
 
 func getEmptyFvTrackMemberResourceModel() *FvTrackMemberResourceModel {
@@ -64,7 +64,7 @@ func getEmptyFvTrackMemberResourceModel() *FvTrackMemberResourceModel {
 		ParentDn:   basetypes.NewStringNull(),
 		Annotation: basetypes.NewStringNull(),
 		Descr:      basetypes.NewStringNull(),
-		DstIpAddr:  customTypes.NewIPv6AddressStringNull(),
+		DstIpAddr:  customTypes.NewIPAddressStringNull(),
 		Name:       basetypes.NewStringNull(),
 		NameAlias:  basetypes.NewStringNull(),
 		OwnerKey:   basetypes.NewStringNull(),
@@ -290,7 +290,7 @@ func (r *FvTrackMemberResource) Schema(ctx context.Context, req resource.SchemaR
 				MarkdownDescription: `The description of the IP SLA Track Member object.`,
 			},
 			"destination_ip_address": schema.StringAttribute{
-				CustomType: customTypes.IPv6AddressStringType{},
+				CustomType: customTypes.IPAddressStringType{},
 				Required:   true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseNonNullStateForUnknown(),
@@ -691,7 +691,7 @@ func getAndSetFvTrackMemberAttributes(ctx context.Context, diags *diag.Diagnosti
 					readData.Descr = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "dstIpAddr" {
-					readData.DstIpAddr = customTypes.NewIPv6AddressStringValue(attributeValue.(string))
+					readData.DstIpAddr = customTypes.NewIPAddressStringValue(attributeValue.(string))
 				}
 				if attributeName == "name" {
 					readData.Name = basetypes.NewStringValue(attributeValue.(string))

@@ -44,18 +44,18 @@ type FvIpAttrResource struct {
 
 // FvIpAttrResourceModel describes the resource data model.
 type FvIpAttrResourceModel struct {
-	Id            types.String                       `tfsdk:"id"`
-	ParentDn      types.String                       `tfsdk:"parent_dn"`
-	Annotation    types.String                       `tfsdk:"annotation"`
-	Descr         types.String                       `tfsdk:"description"`
-	Ip            customTypes.IPv6AddressStringValue `tfsdk:"ip"`
-	Name          types.String                       `tfsdk:"name"`
-	NameAlias     types.String                       `tfsdk:"name_alias"`
-	OwnerKey      types.String                       `tfsdk:"owner_key"`
-	OwnerTag      types.String                       `tfsdk:"owner_tag"`
-	UsefvSubnet   types.String                       `tfsdk:"use_epg_subnet"`
-	TagAnnotation types.Set                          `tfsdk:"annotations"`
-	TagTag        types.Set                          `tfsdk:"tags"`
+	Id            types.String                     `tfsdk:"id"`
+	ParentDn      types.String                     `tfsdk:"parent_dn"`
+	Annotation    types.String                     `tfsdk:"annotation"`
+	Descr         types.String                     `tfsdk:"description"`
+	Ip            customTypes.IPAddressStringValue `tfsdk:"ip"`
+	Name          types.String                     `tfsdk:"name"`
+	NameAlias     types.String                     `tfsdk:"name_alias"`
+	OwnerKey      types.String                     `tfsdk:"owner_key"`
+	OwnerTag      types.String                     `tfsdk:"owner_tag"`
+	UsefvSubnet   types.String                     `tfsdk:"use_epg_subnet"`
+	TagAnnotation types.Set                        `tfsdk:"annotations"`
+	TagTag        types.Set                        `tfsdk:"tags"`
 }
 
 func getEmptyFvIpAttrResourceModel() *FvIpAttrResourceModel {
@@ -64,7 +64,7 @@ func getEmptyFvIpAttrResourceModel() *FvIpAttrResourceModel {
 		ParentDn:    basetypes.NewStringNull(),
 		Annotation:  basetypes.NewStringNull(),
 		Descr:       basetypes.NewStringNull(),
-		Ip:          customTypes.NewIPv6AddressStringNull(),
+		Ip:          customTypes.NewIPAddressStringNull(),
 		Name:        basetypes.NewStringNull(),
 		NameAlias:   basetypes.NewStringNull(),
 		OwnerKey:    basetypes.NewStringNull(),
@@ -202,7 +202,7 @@ func (r *FvIpAttrResource) Schema(ctx context.Context, req resource.SchemaReques
 				MarkdownDescription: `The description of the EPG uSeg IP Attribute object.`,
 			},
 			"ip": schema.StringAttribute{
-				CustomType: customTypes.IPv6AddressStringType{},
+				CustomType: customTypes.IPAddressStringType{},
 				Required:   true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseNonNullStateForUnknown(),
@@ -519,7 +519,7 @@ func getAndSetFvIpAttrAttributes(ctx context.Context, diags *diag.Diagnostics, c
 					readData.Descr = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "ip" {
-					readData.Ip = customTypes.NewIPv6AddressStringValue(attributeValue.(string))
+					readData.Ip = customTypes.NewIPAddressStringValue(attributeValue.(string))
 				}
 				if attributeName == "name" {
 					readData.Name = basetypes.NewStringValue(attributeValue.(string))
