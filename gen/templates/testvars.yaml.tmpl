@@ -141,8 +141,10 @@ resource_required:
 
 custom_type:
     {{- range .Properties}}{{$testValue := createTestValue .SnakeCaseName}}{{$overwritePropertyName := overwriteProperty .PkgName .SnakeCaseName $.Definitions}}
-      {{- if .HasCustomType}}
+      {{- if and .HasCustomType (not .StaticCustomType)}}
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: {{$validValuesMap := .ValidValuesMap}}{{range $key, $value := $validValuesMap}}{{- if or (ne $value "unspecified") (eq (len $validValuesMap) 1)}}"{{$key}}"{{break}}{{end}}{{end}}
+      {{- else if or (and .HasCustomType .StaticCustomType) .IncludeInCustomTypeTest }}
+  {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "{{overwritePropertyValue .PkgName $overwritePropertyName $testValue "custom_type" 0 $.Definitions}}"
       {{- else if or .IsNaming (or .IsRequired (isRequiredInTestValue .PkgName $overwritePropertyName $.Definitions "resource_required"))}}
   {{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}: "{{overwritePropertyValue .PkgName $overwritePropertyName $testValue "resource_required" 0 $.Definitions}}"
       {{- end}}
