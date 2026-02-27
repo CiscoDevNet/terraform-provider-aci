@@ -55,6 +55,9 @@ func (d *{{.ResourceClassName}}DataSource) Schema(ctx context.Context, req datas
 					{{- if ne .ReplacedBy.AttributeName "" }}{{$ReplacedAttribute := overwriteProperty .ReplacedBy.ClassName (getConflictingAttributeName .ReplacedBy.AttributeName) $.Definitions}}
 						{{- if eq (getMigrationType .ValueType) "String"}}
 			"{{.AttributeName}}": schema.StringAttribute{
+					{{- if ne .StaticCustomType "" }}
+				CustomType: customTypes.{{- if .StaticCustomType}}{{.StaticCustomType}}{{else}}{{.ResourceClassName}}{{.Name}}{{- end}}StringType{},
+					{{- end}}
 				Computed: true,
 				DeprecationMessage: "Attribute '{{.AttributeName}}' is deprecated, please refer to '{{$ReplacedAttribute}}' instead. The attribute will be removed in the next major version of the provider.",
 			},
@@ -116,7 +119,7 @@ func (d *{{.ResourceClassName}}DataSource) Schema(ctx context.Context, req datas
 				{{- if .IsNaming}}
 			"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": schema.StringAttribute{
 					{{- if .HasCustomType}}
-				CustomType: customTypes.{{.ResourceClassName}}{{.Name}}StringType{},
+				CustomType: customTypes.{{- if .StaticCustomType}}{{.StaticCustomType}}{{else}}{{.ResourceClassName}}{{.Name}}{{- end}}StringType{},
 					{{- end}}
 				Required:            true,
 					{{- if .ValidValues}}
@@ -133,7 +136,7 @@ func (d *{{.ResourceClassName}}DataSource) Schema(ctx context.Context, req datas
 			},{{else}}
 			"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": schema.StringAttribute{
 					{{- if .HasCustomType}}
-				CustomType: customTypes.{{.ResourceClassName}}{{.Name}}StringType{},
+				CustomType: customTypes.{{- if .StaticCustomType}}{{.StaticCustomType}}{{else}}{{.ResourceClassName}}{{.Name}}{{- end}}StringType{},
 					{{- end}}
 				Computed:            true,
 				MarkdownDescription: `{{.Comment}}`,
@@ -279,7 +282,7 @@ func (d *{{.ResourceClassName}}DataSource) Read(ctx context.Context, req datasou
 						},{{else}}
 						"{{overwriteProperty .PkgName .SnakeCaseName $.Definitions}}": schema.StringAttribute{
 								{{- if .HasCustomType}}
-							CustomType: customTypes.{{.ResourceClassName}}{{.Name}}StringType{},
+							CustomType: customTypes.{{- if .StaticCustomType}}{{.StaticCustomType}}{{else}}{{.ResourceClassName}}{{.Name}}{{- end}}StringType{},
 								{{- end}}
 							Computed:            true,
 							MarkdownDescription: `{{.Comment}}`,

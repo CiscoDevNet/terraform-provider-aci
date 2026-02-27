@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 
+	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
@@ -40,15 +41,15 @@ type FvFBRouteResource struct {
 
 // FvFBRouteResourceModel describes the resource data model.
 type FvFBRouteResourceModel struct {
-	Id            types.String `tfsdk:"id"`
-	ParentDn      types.String `tfsdk:"parent_dn"`
-	Annotation    types.String `tfsdk:"annotation"`
-	Descr         types.String `tfsdk:"description"`
-	FbrPrefix     types.String `tfsdk:"prefix_address"`
-	Name          types.String `tfsdk:"name"`
-	NameAlias     types.String `tfsdk:"name_alias"`
-	TagAnnotation types.Set    `tfsdk:"annotations"`
-	TagTag        types.Set    `tfsdk:"tags"`
+	Id            types.String                       `tfsdk:"id"`
+	ParentDn      types.String                       `tfsdk:"parent_dn"`
+	Annotation    types.String                       `tfsdk:"annotation"`
+	Descr         types.String                       `tfsdk:"description"`
+	FbrPrefix     customTypes.IPv6AddressStringValue `tfsdk:"prefix_address"`
+	Name          types.String                       `tfsdk:"name"`
+	NameAlias     types.String                       `tfsdk:"name_alias"`
+	TagAnnotation types.Set                          `tfsdk:"annotations"`
+	TagTag        types.Set                          `tfsdk:"tags"`
 }
 
 func getEmptyFvFBRouteResourceModel() *FvFBRouteResourceModel {
@@ -57,7 +58,7 @@ func getEmptyFvFBRouteResourceModel() *FvFBRouteResourceModel {
 		ParentDn:   basetypes.NewStringNull(),
 		Annotation: basetypes.NewStringNull(),
 		Descr:      basetypes.NewStringNull(),
-		FbrPrefix:  basetypes.NewStringNull(),
+		FbrPrefix:  customTypes.NewIPv6AddressStringNull(),
 		Name:       basetypes.NewStringNull(),
 		NameAlias:  basetypes.NewStringNull(),
 		TagAnnotation: types.SetNull(types.ObjectType{
@@ -192,7 +193,8 @@ func (r *FvFBRouteResource) Schema(ctx context.Context, req resource.SchemaReque
 				MarkdownDescription: `The description of the VRF Fallback Route object.`,
 			},
 			"prefix_address": schema.StringAttribute{
-				Required: true,
+				CustomType: customTypes.IPv6AddressStringType{},
+				Required:   true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
@@ -478,7 +480,7 @@ func getAndSetFvFBRouteAttributes(ctx context.Context, diags *diag.Diagnostics, 
 					readData.Descr = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "fbrPrefix" {
-					readData.FbrPrefix = basetypes.NewStringValue(attributeValue.(string))
+					readData.FbrPrefix = customTypes.NewIPv6AddressStringValue(attributeValue.(string))
 				}
 				if attributeName == "name" {
 					readData.Name = basetypes.NewStringValue(attributeValue.(string))
@@ -541,7 +543,7 @@ func getAndSetFvFBRouteAttributes(ctx context.Context, diags *diag.Diagnostics, 
 }
 
 func getFvFBRouteRn(ctx context.Context, data *FvFBRouteResourceModel) string {
-	return fmt.Sprintf("pfx-[%s]", data.FbrPrefix.ValueString())
+	return fmt.Sprintf("pfx-[%s]", data.FbrPrefix.NamedValueString())
 }
 
 func setFvFBRouteParentDn(ctx context.Context, dn string, data *FvFBRouteResourceModel) {

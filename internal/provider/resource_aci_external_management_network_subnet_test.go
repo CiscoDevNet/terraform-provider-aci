@@ -199,6 +199,14 @@ func TestAccResourceMgmtSubnetWithMgmtInstP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "tags.#", "0"),
 				),
 			},
+			// Update with minimum config and custom type semantic equivalent values
+			{
+				Config:             testConfigMgmtSubnetCustomTypeDependencyWithMgmtInstP,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "ip", "2001:0db8::/32"),
+				),
+			},
 		},
 		CheckDestroy: testCheckResourceDestroy,
 	})
@@ -303,5 +311,12 @@ resource "aci_external_management_network_subnet" "test" {
   ip = "1.1.1.0/24"
   annotations = []
   tags = []
+}
+`
+
+const testConfigMgmtSubnetCustomTypeDependencyWithMgmtInstP = testConfigMgmtInstPMin + `
+resource "aci_external_management_network_subnet" "test" {
+  parent_dn = aci_external_management_network_instance_profile.test.id
+  ip = "2001:0db8::/32"
 }
 `

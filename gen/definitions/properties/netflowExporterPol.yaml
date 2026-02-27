@@ -44,3 +44,9 @@ test_values:
         destination_port: https
         name: netfow_exporter
         source_ip_address: 1.1.1.1/10
+    custom_type:
+        source_ip_address: 2001:db8::1/116
+        destination_ip_address: 2001:db8::2
+static_custom_type:
+    srcAddr: ipv6_address
+    dstAddr: ipv6_address
