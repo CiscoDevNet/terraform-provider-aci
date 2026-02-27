@@ -31,10 +31,15 @@ import (
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &VzRsAnyToProvResource{}
+var _ resource.ResourceWithIdentity = &VzRsAnyToProvResource{}
 var _ resource.ResourceWithImportState = &VzRsAnyToProvResource{}
 
 func NewVzRsAnyToProvResource() resource.Resource {
 	return &VzRsAnyToProvResource{}
+}
+
+func (r VzRsAnyToProvResource) IdentitySchema(_ context.Context, _ resource.IdentitySchemaRequest, resp *resource.IdentitySchemaResponse) {
+	resp.IdentitySchema = getIdentitySchema()
 }
 
 // VzRsAnyToProvResource defines the resource implementation.
@@ -354,6 +359,7 @@ func (r *VzRsAnyToProvResource) Create(ctx context.Context, req resource.CreateR
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_relation_from_any_to_provider_contract with id '%s'", data.Id.ValueString()))
 }
 
@@ -378,6 +384,7 @@ func (r *VzRsAnyToProvResource) Read(ctx context.Context, req resource.ReadReque
 		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
 	} else {
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+		resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_relation_from_any_to_provider_contract with id '%s'", data.Id.ValueString()))
@@ -420,6 +427,7 @@ func (r *VzRsAnyToProvResource) Update(ctx context.Context, req resource.UpdateR
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_relation_from_any_to_provider_contract with id '%s'", data.Id.ValueString()))
 }
 
@@ -448,10 +456,11 @@ func (r *VzRsAnyToProvResource) Delete(ctx context.Context, req resource.DeleteR
 
 func (r *VzRsAnyToProvResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_relation_from_any_to_provider_contract")
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	resource.ImportStatePassthroughWithIdentity(ctx, path.Root("id"), path.Root("id"), req, resp)
 
 	var stateData *VzRsAnyToProvResourceModel
 	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: stateData.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_relation_from_any_to_provider_contract with id '%s'", stateData.Id.ValueString()))
 
 	tflog.Debug(ctx, "End import of state resource: aci_relation_from_any_to_provider_contract")
@@ -460,11 +469,17 @@ func (r *VzRsAnyToProvResource) ImportState(ctx context.Context, req resource.Im
 func getAndSetVzRsAnyToProvAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *VzRsAnyToProvResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "vzRsAnyToProv,tagAnnotation,tagTag"), "GET", nil)
 
-	readData := getEmptyVzRsAnyToProvResourceModel()
-
 	if diags.HasError() {
 		return
 	}
+
+	setVzRsAnyToProvAttributes(ctx, diags, data, requestData)
+}
+
+func setVzRsAnyToProvAttributes(ctx context.Context, diags *diag.Diagnostics, data *VzRsAnyToProvResourceModel, requestData *container.Container) {
+
+	readData := getEmptyVzRsAnyToProvResourceModel()
+
 	if requestData.Search("imdata").Search("vzRsAnyToProv").Data() != nil {
 		classReadInfo := requestData.Search("imdata").Search("vzRsAnyToProv").Data().([]interface{})
 		if len(classReadInfo) == 1 {

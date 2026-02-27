@@ -27,10 +27,15 @@ import (
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &VmmUplinkPContResource{}
+var _ resource.ResourceWithIdentity = &VmmUplinkPContResource{}
 var _ resource.ResourceWithImportState = &VmmUplinkPContResource{}
 
 func NewVmmUplinkPContResource() resource.Resource {
 	return &VmmUplinkPContResource{}
+}
+
+func (r VmmUplinkPContResource) IdentitySchema(_ context.Context, _ resource.IdentitySchemaRequest, resp *resource.IdentitySchemaResponse) {
+	resp.IdentitySchema = getIdentitySchema()
 }
 
 // VmmUplinkPContResource defines the resource implementation.
@@ -552,6 +557,7 @@ func (r *VmmUplinkPContResource) Create(ctx context.Context, req resource.Create
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_vmm_uplink_container with id '%s'", data.Id.ValueString()))
 }
 
@@ -576,6 +582,7 @@ func (r *VmmUplinkPContResource) Read(ctx context.Context, req resource.ReadRequ
 		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
 	} else {
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+		resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_vmm_uplink_container with id '%s'", data.Id.ValueString()))
@@ -621,6 +628,7 @@ func (r *VmmUplinkPContResource) Update(ctx context.Context, req resource.Update
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_vmm_uplink_container with id '%s'", data.Id.ValueString()))
 }
 
@@ -649,10 +657,11 @@ func (r *VmmUplinkPContResource) Delete(ctx context.Context, req resource.Delete
 
 func (r *VmmUplinkPContResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_vmm_uplink_container")
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	resource.ImportStatePassthroughWithIdentity(ctx, path.Root("id"), path.Root("id"), req, resp)
 
 	var stateData *VmmUplinkPContResourceModel
 	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: stateData.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_vmm_uplink_container with id '%s'", stateData.Id.ValueString()))
 
 	tflog.Debug(ctx, "End import of state resource: aci_vmm_uplink_container")
@@ -661,11 +670,17 @@ func (r *VmmUplinkPContResource) ImportState(ctx context.Context, req resource.I
 func getAndSetVmmUplinkPContAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *VmmUplinkPContResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "vmmUplinkPCont,tagAnnotation,tagTag,vmmUplinkP,tagAnnotation,tagTag"), "GET", nil)
 
-	readData := getEmptyVmmUplinkPContResourceModel()
-
 	if diags.HasError() {
 		return
 	}
+
+	setVmmUplinkPContAttributes(ctx, diags, data, requestData)
+}
+
+func setVmmUplinkPContAttributes(ctx context.Context, diags *diag.Diagnostics, data *VmmUplinkPContResourceModel, requestData *container.Container) {
+
+	readData := getEmptyVmmUplinkPContResourceModel()
+
 	if requestData.Search("imdata").Search("vmmUplinkPCont").Data() != nil {
 		classReadInfo := requestData.Search("imdata").Search("vmmUplinkPCont").Data().([]interface{})
 		if len(classReadInfo) == 1 {

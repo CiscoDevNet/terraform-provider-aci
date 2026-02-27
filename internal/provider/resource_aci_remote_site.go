@@ -27,10 +27,15 @@ import (
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &FvRemoteIdResource{}
+var _ resource.ResourceWithIdentity = &FvRemoteIdResource{}
 var _ resource.ResourceWithImportState = &FvRemoteIdResource{}
 
 func NewFvRemoteIdResource() resource.Resource {
 	return &FvRemoteIdResource{}
+}
+
+func (r FvRemoteIdResource) IdentitySchema(_ context.Context, _ resource.IdentitySchemaRequest, resp *resource.IdentitySchemaResponse) {
+	resp.IdentitySchema = getIdentitySchema()
 }
 
 // FvRemoteIdResource defines the resource implementation.
@@ -395,6 +400,7 @@ func (r *FvRemoteIdResource) Create(ctx context.Context, req resource.CreateRequ
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_remote_site with id '%s'", data.Id.ValueString()))
 }
 
@@ -419,6 +425,7 @@ func (r *FvRemoteIdResource) Read(ctx context.Context, req resource.ReadRequest,
 		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
 	} else {
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+		resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_remote_site with id '%s'", data.Id.ValueString()))
@@ -461,6 +468,7 @@ func (r *FvRemoteIdResource) Update(ctx context.Context, req resource.UpdateRequ
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_remote_site with id '%s'", data.Id.ValueString()))
 }
 
@@ -489,10 +497,11 @@ func (r *FvRemoteIdResource) Delete(ctx context.Context, req resource.DeleteRequ
 
 func (r *FvRemoteIdResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_remote_site")
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	resource.ImportStatePassthroughWithIdentity(ctx, path.Root("id"), path.Root("id"), req, resp)
 
 	var stateData *FvRemoteIdResourceModel
 	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: stateData.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_remote_site with id '%s'", stateData.Id.ValueString()))
 
 	tflog.Debug(ctx, "End import of state resource: aci_remote_site")
@@ -501,11 +510,17 @@ func (r *FvRemoteIdResource) ImportState(ctx context.Context, req resource.Impor
 func getAndSetFvRemoteIdAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FvRemoteIdResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "fvRemoteId,tagAnnotation,tagTag"), "GET", nil)
 
-	readData := getEmptyFvRemoteIdResourceModel()
-
 	if diags.HasError() {
 		return
 	}
+
+	setFvRemoteIdAttributes(ctx, diags, data, requestData)
+}
+
+func setFvRemoteIdAttributes(ctx context.Context, diags *diag.Diagnostics, data *FvRemoteIdResourceModel, requestData *container.Container) {
+
+	readData := getEmptyFvRemoteIdResourceModel()
+
 	if requestData.Search("imdata").Search("fvRemoteId").Data() != nil {
 		classReadInfo := requestData.Search("imdata").Search("fvRemoteId").Data().([]interface{})
 		if len(classReadInfo) == 1 {

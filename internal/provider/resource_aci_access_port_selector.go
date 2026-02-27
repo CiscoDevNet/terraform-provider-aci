@@ -30,10 +30,15 @@ import (
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &InfraHPortSResource{}
+var _ resource.ResourceWithIdentity = &InfraHPortSResource{}
 var _ resource.ResourceWithImportState = &InfraHPortSResource{}
 
 func NewInfraHPortSResource() resource.Resource {
 	return &InfraHPortSResource{}
+}
+
+func (r InfraHPortSResource) IdentitySchema(_ context.Context, _ resource.IdentitySchemaRequest, resp *resource.IdentitySchemaResponse) {
+	resp.IdentitySchema = getIdentitySchema()
 }
 
 // InfraHPortSResource defines the resource implementation.
@@ -831,6 +836,7 @@ func (r *InfraHPortSResource) Create(ctx context.Context, req resource.CreateReq
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_access_port_selector with id '%s'", data.Id.ValueString()))
 }
 
@@ -855,6 +861,7 @@ func (r *InfraHPortSResource) Read(ctx context.Context, req resource.ReadRequest
 		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
 	} else {
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+		resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_access_port_selector with id '%s'", data.Id.ValueString()))
@@ -900,6 +907,7 @@ func (r *InfraHPortSResource) Update(ctx context.Context, req resource.UpdateReq
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_access_port_selector with id '%s'", data.Id.ValueString()))
 }
 
@@ -928,10 +936,11 @@ func (r *InfraHPortSResource) Delete(ctx context.Context, req resource.DeleteReq
 
 func (r *InfraHPortSResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_access_port_selector")
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	resource.ImportStatePassthroughWithIdentity(ctx, path.Root("id"), path.Root("id"), req, resp)
 
 	var stateData *InfraHPortSResourceModel
 	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: stateData.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_access_port_selector with id '%s'", stateData.Id.ValueString()))
 
 	tflog.Debug(ctx, "End import of state resource: aci_access_port_selector")
@@ -940,11 +949,17 @@ func (r *InfraHPortSResource) ImportState(ctx context.Context, req resource.Impo
 func getAndSetInfraHPortSAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *InfraHPortSResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "infraHPortS,infraRsAccBaseGrp,tagAnnotation,tagTag,tagAnnotation,tagTag"), "GET", nil)
 
-	readData := getEmptyInfraHPortSResourceModel()
-
 	if diags.HasError() {
 		return
 	}
+
+	setInfraHPortSAttributes(ctx, diags, data, requestData)
+}
+
+func setInfraHPortSAttributes(ctx context.Context, diags *diag.Diagnostics, data *InfraHPortSResourceModel, requestData *container.Container) {
+
+	readData := getEmptyInfraHPortSResourceModel()
+
 	if requestData.Search("imdata").Search("infraHPortS").Data() != nil {
 		classReadInfo := requestData.Search("imdata").Search("infraHPortS").Data().([]interface{})
 		if len(classReadInfo) == 1 {

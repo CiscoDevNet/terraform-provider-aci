@@ -31,10 +31,15 @@ import (
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &FvBDResource{}
+var _ resource.ResourceWithIdentity = &FvBDResource{}
 var _ resource.ResourceWithImportState = &FvBDResource{}
 
 func NewFvBDResource() resource.Resource {
 	return &FvBDResource{}
+}
+
+func (r FvBDResource) IdentitySchema(_ context.Context, _ resource.IdentitySchemaRequest, resp *resource.IdentitySchemaResponse) {
+	resp.IdentitySchema = getIdentitySchema()
 }
 
 // FvBDResource defines the resource implementation.
@@ -5048,6 +5053,7 @@ func (r *FvBDResource) Create(ctx context.Context, req resource.CreateRequest, r
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_bridge_domain with id '%s'", data.Id.ValueString()))
 }
 
@@ -5072,6 +5078,7 @@ func (r *FvBDResource) Read(ctx context.Context, req resource.ReadRequest, resp 
 		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
 	} else {
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+		resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_bridge_domain with id '%s'", data.Id.ValueString()))
@@ -5183,6 +5190,7 @@ func (r *FvBDResource) Update(ctx context.Context, req resource.UpdateRequest, r
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_bridge_domain with id '%s'", data.Id.ValueString()))
 }
 
@@ -5211,10 +5219,11 @@ func (r *FvBDResource) Delete(ctx context.Context, req resource.DeleteRequest, r
 
 func (r *FvBDResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_bridge_domain")
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	resource.ImportStatePassthroughWithIdentity(ctx, path.Root("id"), path.Root("id"), req, resp)
 
 	var stateData *FvBDResourceModel
 	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: stateData.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_bridge_domain with id '%s'", stateData.Id.ValueString()))
 
 	tflog.Debug(ctx, "End import of state resource: aci_bridge_domain")
@@ -5223,11 +5232,17 @@ func (r *FvBDResource) ImportState(ctx context.Context, req resource.ImportState
 func getAndSetFvBDAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FvBDResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "fvBD,fvAccP,fvRogueExceptionMac,fvRsABDPolMonPol,fvRsBDToFhs,fvRsBDToNdP,fvRsBDToNetflowMonitorPol,fvRsBDToOut,fvRsBDToProfile,fvRsBDToRelayP,fvRsBdToEpRet,fvRsCtx,fvRsIgmpsn,fvRsMldsn,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag"), "GET", nil)
 
-	readData := getEmptyFvBDResourceModel()
-
 	if diags.HasError() {
 		return
 	}
+
+	setFvBDAttributes(ctx, diags, data, requestData)
+}
+
+func setFvBDAttributes(ctx context.Context, diags *diag.Diagnostics, data *FvBDResourceModel, requestData *container.Container) {
+
+	readData := getEmptyFvBDResourceModel()
+
 	if requestData.Search("imdata").Search("fvBD").Data() != nil {
 		classReadInfo := requestData.Search("imdata").Search("fvBD").Data().([]interface{})
 		if len(classReadInfo) == 1 {

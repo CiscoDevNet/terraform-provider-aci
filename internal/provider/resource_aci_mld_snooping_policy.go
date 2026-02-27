@@ -31,10 +31,15 @@ import (
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &MldSnoopPolResource{}
+var _ resource.ResourceWithIdentity = &MldSnoopPolResource{}
 var _ resource.ResourceWithImportState = &MldSnoopPolResource{}
 
 func NewMldSnoopPolResource() resource.Resource {
 	return &MldSnoopPolResource{}
+}
+
+func (r MldSnoopPolResource) IdentitySchema(_ context.Context, _ resource.IdentitySchemaRequest, resp *resource.IdentitySchemaResponse) {
+	resp.IdentitySchema = getIdentitySchema()
 }
 
 // MldSnoopPolResource defines the resource implementation.
@@ -467,6 +472,7 @@ func (r *MldSnoopPolResource) Create(ctx context.Context, req resource.CreateReq
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_mld_snooping_policy with id '%s'", data.Id.ValueString()))
 }
 
@@ -491,6 +497,7 @@ func (r *MldSnoopPolResource) Read(ctx context.Context, req resource.ReadRequest
 		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
 	} else {
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+		resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_mld_snooping_policy with id '%s'", data.Id.ValueString()))
@@ -533,6 +540,7 @@ func (r *MldSnoopPolResource) Update(ctx context.Context, req resource.UpdateReq
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_mld_snooping_policy with id '%s'", data.Id.ValueString()))
 }
 
@@ -561,10 +569,11 @@ func (r *MldSnoopPolResource) Delete(ctx context.Context, req resource.DeleteReq
 
 func (r *MldSnoopPolResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_mld_snooping_policy")
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	resource.ImportStatePassthroughWithIdentity(ctx, path.Root("id"), path.Root("id"), req, resp)
 
 	var stateData *MldSnoopPolResourceModel
 	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: stateData.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_mld_snooping_policy with id '%s'", stateData.Id.ValueString()))
 
 	tflog.Debug(ctx, "End import of state resource: aci_mld_snooping_policy")
@@ -573,11 +582,17 @@ func (r *MldSnoopPolResource) ImportState(ctx context.Context, req resource.Impo
 func getAndSetMldSnoopPolAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *MldSnoopPolResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "mldSnoopPol,tagAnnotation,tagTag"), "GET", nil)
 
-	readData := getEmptyMldSnoopPolResourceModel()
-
 	if diags.HasError() {
 		return
 	}
+
+	setMldSnoopPolAttributes(ctx, diags, data, requestData)
+}
+
+func setMldSnoopPolAttributes(ctx context.Context, diags *diag.Diagnostics, data *MldSnoopPolResourceModel, requestData *container.Container) {
+
+	readData := getEmptyMldSnoopPolResourceModel()
+
 	if requestData.Search("imdata").Search("mldSnoopPol").Data() != nil {
 		classReadInfo := requestData.Search("imdata").Search("mldSnoopPol").Data().([]interface{})
 		if len(classReadInfo) == 1 {

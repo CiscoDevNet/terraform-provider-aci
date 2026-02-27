@@ -27,10 +27,15 @@ import (
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &FvRogueExceptionMacResource{}
+var _ resource.ResourceWithIdentity = &FvRogueExceptionMacResource{}
 var _ resource.ResourceWithImportState = &FvRogueExceptionMacResource{}
 
 func NewFvRogueExceptionMacResource() resource.Resource {
 	return &FvRogueExceptionMacResource{}
+}
+
+func (r FvRogueExceptionMacResource) IdentitySchema(_ context.Context, _ resource.IdentitySchemaRequest, resp *resource.IdentitySchemaResponse) {
+	resp.IdentitySchema = getIdentitySchema()
 }
 
 // FvRogueExceptionMacResource defines the resource implementation.
@@ -351,6 +356,7 @@ func (r *FvRogueExceptionMacResource) Create(ctx context.Context, req resource.C
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_rogue_coop_exception with id '%s'", data.Id.ValueString()))
 }
 
@@ -375,6 +381,7 @@ func (r *FvRogueExceptionMacResource) Read(ctx context.Context, req resource.Rea
 		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
 	} else {
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+		resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_rogue_coop_exception with id '%s'", data.Id.ValueString()))
@@ -417,6 +424,7 @@ func (r *FvRogueExceptionMacResource) Update(ctx context.Context, req resource.U
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_rogue_coop_exception with id '%s'", data.Id.ValueString()))
 }
 
@@ -445,10 +453,11 @@ func (r *FvRogueExceptionMacResource) Delete(ctx context.Context, req resource.D
 
 func (r *FvRogueExceptionMacResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_rogue_coop_exception")
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	resource.ImportStatePassthroughWithIdentity(ctx, path.Root("id"), path.Root("id"), req, resp)
 
 	var stateData *FvRogueExceptionMacResourceModel
 	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: stateData.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_rogue_coop_exception with id '%s'", stateData.Id.ValueString()))
 
 	tflog.Debug(ctx, "End import of state resource: aci_rogue_coop_exception")
@@ -457,11 +466,17 @@ func (r *FvRogueExceptionMacResource) ImportState(ctx context.Context, req resou
 func getAndSetFvRogueExceptionMacAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FvRogueExceptionMacResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "fvRogueExceptionMac,tagAnnotation,tagTag"), "GET", nil)
 
-	readData := getEmptyFvRogueExceptionMacResourceModel()
-
 	if diags.HasError() {
 		return
 	}
+
+	setFvRogueExceptionMacAttributes(ctx, diags, data, requestData)
+}
+
+func setFvRogueExceptionMacAttributes(ctx context.Context, diags *diag.Diagnostics, data *FvRogueExceptionMacResourceModel, requestData *container.Container) {
+
+	readData := getEmptyFvRogueExceptionMacResourceModel()
+
 	if requestData.Search("imdata").Search("fvRogueExceptionMac").Data() != nil {
 		classReadInfo := requestData.Search("imdata").Search("fvRogueExceptionMac").Data().([]interface{})
 		if len(classReadInfo) == 1 {

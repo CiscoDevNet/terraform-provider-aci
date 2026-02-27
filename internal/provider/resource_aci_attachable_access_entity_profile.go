@@ -30,10 +30,15 @@ import (
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &InfraAttEntityPResource{}
+var _ resource.ResourceWithIdentity = &InfraAttEntityPResource{}
 var _ resource.ResourceWithImportState = &InfraAttEntityPResource{}
 
 func NewInfraAttEntityPResource() resource.Resource {
 	return &InfraAttEntityPResource{}
+}
+
+func (r InfraAttEntityPResource) IdentitySchema(_ context.Context, _ resource.IdentitySchemaRequest, resp *resource.IdentitySchemaResponse) {
+	resp.IdentitySchema = getIdentitySchema()
 }
 
 // InfraAttEntityPResource defines the resource implementation.
@@ -774,6 +779,7 @@ func (r *InfraAttEntityPResource) Create(ctx context.Context, req resource.Creat
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_attachable_access_entity_profile with id '%s'", data.Id.ValueString()))
 }
 
@@ -798,6 +804,7 @@ func (r *InfraAttEntityPResource) Read(ctx context.Context, req resource.ReadReq
 		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
 	} else {
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+		resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_attachable_access_entity_profile with id '%s'", data.Id.ValueString()))
@@ -843,6 +850,7 @@ func (r *InfraAttEntityPResource) Update(ctx context.Context, req resource.Updat
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_attachable_access_entity_profile with id '%s'", data.Id.ValueString()))
 }
 
@@ -871,10 +879,11 @@ func (r *InfraAttEntityPResource) Delete(ctx context.Context, req resource.Delet
 
 func (r *InfraAttEntityPResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_attachable_access_entity_profile")
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	resource.ImportStatePassthroughWithIdentity(ctx, path.Root("id"), path.Root("id"), req, resp)
 
 	var stateData *InfraAttEntityPResourceModel
 	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: stateData.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_attachable_access_entity_profile with id '%s'", stateData.Id.ValueString()))
 
 	tflog.Debug(ctx, "End import of state resource: aci_attachable_access_entity_profile")
@@ -883,11 +892,17 @@ func (r *InfraAttEntityPResource) ImportState(ctx context.Context, req resource.
 func getAndSetInfraAttEntityPAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *InfraAttEntityPResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "infraAttEntityP,infraRsDomP,tagAnnotation,tagTag,tagAnnotation,tagTag"), "GET", nil)
 
-	readData := getEmptyInfraAttEntityPResourceModel()
-
 	if diags.HasError() {
 		return
 	}
+
+	setInfraAttEntityPAttributes(ctx, diags, data, requestData)
+}
+
+func setInfraAttEntityPAttributes(ctx context.Context, diags *diag.Diagnostics, data *InfraAttEntityPResourceModel, requestData *container.Container) {
+
+	readData := getEmptyInfraAttEntityPResourceModel()
+
 	if requestData.Search("imdata").Search("infraAttEntityP").Data() != nil {
 		classReadInfo := requestData.Search("imdata").Search("infraAttEntityP").Data().([]interface{})
 		if len(classReadInfo) == 1 {

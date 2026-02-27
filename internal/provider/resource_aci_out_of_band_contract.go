@@ -32,10 +32,15 @@ import (
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &VzOOBBrCPResource{}
+var _ resource.ResourceWithIdentity = &VzOOBBrCPResource{}
 var _ resource.ResourceWithImportState = &VzOOBBrCPResource{}
 
 func NewVzOOBBrCPResource() resource.Resource {
 	return &VzOOBBrCPResource{}
+}
+
+func (r VzOOBBrCPResource) IdentitySchema(_ context.Context, _ resource.IdentitySchemaRequest, resp *resource.IdentitySchemaResponse) {
+	resp.IdentitySchema = getIdentitySchema()
 }
 
 // VzOOBBrCPResource defines the resource implementation.
@@ -421,6 +426,7 @@ func (r *VzOOBBrCPResource) Create(ctx context.Context, req resource.CreateReque
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_out_of_band_contract with id '%s'", data.Id.ValueString()))
 }
 
@@ -445,6 +451,7 @@ func (r *VzOOBBrCPResource) Read(ctx context.Context, req resource.ReadRequest, 
 		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
 	} else {
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+		resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_out_of_band_contract with id '%s'", data.Id.ValueString()))
@@ -487,6 +494,7 @@ func (r *VzOOBBrCPResource) Update(ctx context.Context, req resource.UpdateReque
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_out_of_band_contract with id '%s'", data.Id.ValueString()))
 }
 
@@ -515,10 +523,11 @@ func (r *VzOOBBrCPResource) Delete(ctx context.Context, req resource.DeleteReque
 
 func (r *VzOOBBrCPResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_out_of_band_contract")
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	resource.ImportStatePassthroughWithIdentity(ctx, path.Root("id"), path.Root("id"), req, resp)
 
 	var stateData *VzOOBBrCPResourceModel
 	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: stateData.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_out_of_band_contract with id '%s'", stateData.Id.ValueString()))
 
 	tflog.Debug(ctx, "End import of state resource: aci_out_of_band_contract")
@@ -527,11 +536,17 @@ func (r *VzOOBBrCPResource) ImportState(ctx context.Context, req resource.Import
 func getAndSetVzOOBBrCPAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *VzOOBBrCPResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "vzOOBBrCP,tagAnnotation,tagTag"), "GET", nil)
 
-	readData := getEmptyVzOOBBrCPResourceModel()
-
 	if diags.HasError() {
 		return
 	}
+
+	setVzOOBBrCPAttributes(ctx, diags, data, requestData)
+}
+
+func setVzOOBBrCPAttributes(ctx context.Context, diags *diag.Diagnostics, data *VzOOBBrCPResourceModel, requestData *container.Container) {
+
+	readData := getEmptyVzOOBBrCPResourceModel()
+
 	if requestData.Search("imdata").Search("vzOOBBrCP").Data() != nil {
 		classReadInfo := requestData.Search("imdata").Search("vzOOBBrCP").Data().([]interface{})
 		if len(classReadInfo) == 1 {

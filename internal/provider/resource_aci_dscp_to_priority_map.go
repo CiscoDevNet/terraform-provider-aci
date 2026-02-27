@@ -31,10 +31,15 @@ import (
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &QosDscpClassResource{}
+var _ resource.ResourceWithIdentity = &QosDscpClassResource{}
 var _ resource.ResourceWithImportState = &QosDscpClassResource{}
 
 func NewQosDscpClassResource() resource.Resource {
 	return &QosDscpClassResource{}
+}
+
+func (r QosDscpClassResource) IdentitySchema(_ context.Context, _ resource.IdentitySchemaRequest, resp *resource.IdentitySchemaResponse) {
+	resp.IdentitySchema = getIdentitySchema()
 }
 
 // QosDscpClassResource defines the resource implementation.
@@ -435,6 +440,7 @@ func (r *QosDscpClassResource) Create(ctx context.Context, req resource.CreateRe
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_dscp_to_priority_map with id '%s'", data.Id.ValueString()))
 }
 
@@ -459,6 +465,7 @@ func (r *QosDscpClassResource) Read(ctx context.Context, req resource.ReadReques
 		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
 	} else {
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+		resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_dscp_to_priority_map with id '%s'", data.Id.ValueString()))
@@ -501,6 +508,7 @@ func (r *QosDscpClassResource) Update(ctx context.Context, req resource.UpdateRe
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_dscp_to_priority_map with id '%s'", data.Id.ValueString()))
 }
 
@@ -529,10 +537,11 @@ func (r *QosDscpClassResource) Delete(ctx context.Context, req resource.DeleteRe
 
 func (r *QosDscpClassResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_dscp_to_priority_map")
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	resource.ImportStatePassthroughWithIdentity(ctx, path.Root("id"), path.Root("id"), req, resp)
 
 	var stateData *QosDscpClassResourceModel
 	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: stateData.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_dscp_to_priority_map with id '%s'", stateData.Id.ValueString()))
 
 	tflog.Debug(ctx, "End import of state resource: aci_dscp_to_priority_map")
@@ -541,11 +550,17 @@ func (r *QosDscpClassResource) ImportState(ctx context.Context, req resource.Imp
 func getAndSetQosDscpClassAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *QosDscpClassResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "qosDscpClass,tagAnnotation,tagTag"), "GET", nil)
 
-	readData := getEmptyQosDscpClassResourceModel()
-
 	if diags.HasError() {
 		return
 	}
+
+	setQosDscpClassAttributes(ctx, diags, data, requestData)
+}
+
+func setQosDscpClassAttributes(ctx context.Context, diags *diag.Diagnostics, data *QosDscpClassResourceModel, requestData *container.Container) {
+
+	readData := getEmptyQosDscpClassResourceModel()
+
 	if requestData.Search("imdata").Search("qosDscpClass").Data() != nil {
 		classReadInfo := requestData.Search("imdata").Search("qosDscpClass").Data().([]interface{})
 		if len(classReadInfo) == 1 {

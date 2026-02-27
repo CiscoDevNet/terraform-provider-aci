@@ -28,10 +28,15 @@ import (
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &FvEpMacTagResource{}
+var _ resource.ResourceWithIdentity = &FvEpMacTagResource{}
 var _ resource.ResourceWithImportState = &FvEpMacTagResource{}
 
 func NewFvEpMacTagResource() resource.Resource {
 	return &FvEpMacTagResource{}
+}
+
+func (r FvEpMacTagResource) IdentitySchema(_ context.Context, _ resource.IdentitySchemaRequest, resp *resource.IdentitySchemaResponse) {
+	resp.IdentitySchema = getIdentitySchema()
 }
 
 // FvEpMacTagResource defines the resource implementation.
@@ -364,6 +369,7 @@ func (r *FvEpMacTagResource) Create(ctx context.Context, req resource.CreateRequ
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_endpoint_tag_mac with id '%s'", data.Id.ValueString()))
 }
 
@@ -388,6 +394,7 @@ func (r *FvEpMacTagResource) Read(ctx context.Context, req resource.ReadRequest,
 		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
 	} else {
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+		resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_endpoint_tag_mac with id '%s'", data.Id.ValueString()))
@@ -430,6 +437,7 @@ func (r *FvEpMacTagResource) Update(ctx context.Context, req resource.UpdateRequ
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_endpoint_tag_mac with id '%s'", data.Id.ValueString()))
 }
 
@@ -458,10 +466,11 @@ func (r *FvEpMacTagResource) Delete(ctx context.Context, req resource.DeleteRequ
 
 func (r *FvEpMacTagResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_endpoint_tag_mac")
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	resource.ImportStatePassthroughWithIdentity(ctx, path.Root("id"), path.Root("id"), req, resp)
 
 	var stateData *FvEpMacTagResourceModel
 	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: stateData.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_endpoint_tag_mac with id '%s'", stateData.Id.ValueString()))
 
 	tflog.Debug(ctx, "End import of state resource: aci_endpoint_tag_mac")
@@ -470,11 +479,17 @@ func (r *FvEpMacTagResource) ImportState(ctx context.Context, req resource.Impor
 func getAndSetFvEpMacTagAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FvEpMacTagResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "fvEpMacTag,tagAnnotation,tagTag"), "GET", nil)
 
-	readData := getEmptyFvEpMacTagResourceModel()
-
 	if diags.HasError() {
 		return
 	}
+
+	setFvEpMacTagAttributes(ctx, diags, data, requestData)
+}
+
+func setFvEpMacTagAttributes(ctx context.Context, diags *diag.Diagnostics, data *FvEpMacTagResourceModel, requestData *container.Container) {
+
+	readData := getEmptyFvEpMacTagResourceModel()
+
 	if requestData.Search("imdata").Search("fvEpMacTag").Data() != nil {
 		classReadInfo := requestData.Search("imdata").Search("fvEpMacTag").Data().([]interface{})
 		if len(classReadInfo) == 1 {

@@ -31,10 +31,15 @@ import (
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &QosDppPolResource{}
+var _ resource.ResourceWithIdentity = &QosDppPolResource{}
 var _ resource.ResourceWithImportState = &QosDppPolResource{}
 
 func NewQosDppPolResource() resource.Resource {
 	return &QosDppPolResource{}
+}
+
+func (r QosDppPolResource) IdentitySchema(_ context.Context, _ resource.IdentitySchemaRequest, resp *resource.IdentitySchemaResponse) {
+	resp.IdentitySchema = getIdentitySchema()
 }
 
 // QosDppPolResource defines the resource implementation.
@@ -688,6 +693,7 @@ func (r *QosDppPolResource) Create(ctx context.Context, req resource.CreateReque
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_data_plane_policing_policy with id '%s'", data.Id.ValueString()))
 }
 
@@ -712,6 +718,7 @@ func (r *QosDppPolResource) Read(ctx context.Context, req resource.ReadRequest, 
 		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
 	} else {
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+		resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_data_plane_policing_policy with id '%s'", data.Id.ValueString()))
@@ -754,6 +761,7 @@ func (r *QosDppPolResource) Update(ctx context.Context, req resource.UpdateReque
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_data_plane_policing_policy with id '%s'", data.Id.ValueString()))
 }
 
@@ -782,10 +790,11 @@ func (r *QosDppPolResource) Delete(ctx context.Context, req resource.DeleteReque
 
 func (r *QosDppPolResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_data_plane_policing_policy")
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	resource.ImportStatePassthroughWithIdentity(ctx, path.Root("id"), path.Root("id"), req, resp)
 
 	var stateData *QosDppPolResourceModel
 	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: stateData.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_data_plane_policing_policy with id '%s'", stateData.Id.ValueString()))
 
 	tflog.Debug(ctx, "End import of state resource: aci_data_plane_policing_policy")
@@ -794,11 +803,17 @@ func (r *QosDppPolResource) ImportState(ctx context.Context, req resource.Import
 func getAndSetQosDppPolAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *QosDppPolResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "qosDppPol,tagAnnotation,tagTag"), "GET", nil)
 
-	readData := getEmptyQosDppPolResourceModel()
-
 	if diags.HasError() {
 		return
 	}
+
+	setQosDppPolAttributes(ctx, diags, data, requestData)
+}
+
+func setQosDppPolAttributes(ctx context.Context, diags *diag.Diagnostics, data *QosDppPolResourceModel, requestData *container.Container) {
+
+	readData := getEmptyQosDppPolResourceModel()
+
 	if requestData.Search("imdata").Search("qosDppPol").Data() != nil {
 		classReadInfo := requestData.Search("imdata").Search("qosDppPol").Data().([]interface{})
 		if len(classReadInfo) == 1 {

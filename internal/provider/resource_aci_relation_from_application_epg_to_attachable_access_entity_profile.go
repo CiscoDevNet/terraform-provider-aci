@@ -28,10 +28,15 @@ import (
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &FvRsAepAttResource{}
+var _ resource.ResourceWithIdentity = &FvRsAepAttResource{}
 var _ resource.ResourceWithImportState = &FvRsAepAttResource{}
 
 func NewFvRsAepAttResource() resource.Resource {
 	return &FvRsAepAttResource{}
+}
+
+func (r FvRsAepAttResource) IdentitySchema(_ context.Context, _ resource.IdentitySchemaRequest, resp *resource.IdentitySchemaResponse) {
+	resp.IdentitySchema = getIdentitySchema()
 }
 
 // FvRsAepAttResource defines the resource implementation.
@@ -356,6 +361,7 @@ func (r *FvRsAepAttResource) Create(ctx context.Context, req resource.CreateRequ
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_relation_from_application_epg_to_attachable_access_entity_profile with id '%s'", data.Id.ValueString()))
 }
 
@@ -380,6 +386,7 @@ func (r *FvRsAepAttResource) Read(ctx context.Context, req resource.ReadRequest,
 		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
 	} else {
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+		resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_relation_from_application_epg_to_attachable_access_entity_profile with id '%s'", data.Id.ValueString()))
@@ -422,6 +429,7 @@ func (r *FvRsAepAttResource) Update(ctx context.Context, req resource.UpdateRequ
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_relation_from_application_epg_to_attachable_access_entity_profile with id '%s'", data.Id.ValueString()))
 }
 
@@ -450,10 +458,11 @@ func (r *FvRsAepAttResource) Delete(ctx context.Context, req resource.DeleteRequ
 
 func (r *FvRsAepAttResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_relation_from_application_epg_to_attachable_access_entity_profile")
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	resource.ImportStatePassthroughWithIdentity(ctx, path.Root("id"), path.Root("id"), req, resp)
 
 	var stateData *FvRsAepAttResourceModel
 	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: stateData.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_relation_from_application_epg_to_attachable_access_entity_profile with id '%s'", stateData.Id.ValueString()))
 
 	tflog.Debug(ctx, "End import of state resource: aci_relation_from_application_epg_to_attachable_access_entity_profile")
@@ -462,11 +471,17 @@ func (r *FvRsAepAttResource) ImportState(ctx context.Context, req resource.Impor
 func getAndSetFvRsAepAttAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FvRsAepAttResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "fvRsAepAtt,tagAnnotation,tagTag"), "GET", nil)
 
-	readData := getEmptyFvRsAepAttResourceModel()
-
 	if diags.HasError() {
 		return
 	}
+
+	setFvRsAepAttAttributes(ctx, diags, data, requestData)
+}
+
+func setFvRsAepAttAttributes(ctx context.Context, diags *diag.Diagnostics, data *FvRsAepAttResourceModel, requestData *container.Container) {
+
+	readData := getEmptyFvRsAepAttResourceModel()
+
 	if requestData.Search("imdata").Search("fvRsAepAtt").Data() != nil {
 		classReadInfo := requestData.Search("imdata").Search("fvRsAepAtt").Data().([]interface{})
 		if len(classReadInfo) == 1 {

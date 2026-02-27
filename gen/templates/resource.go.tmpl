@@ -34,10 +34,15 @@ import (
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &{{.ResourceClassName}}Resource{}
+var _ resource.ResourceWithIdentity = &{{.ResourceClassName}}Resource{}
 var _ resource.ResourceWithImportState = &{{.ResourceClassName}}Resource{}
 
 func New{{.ResourceClassName}}Resource() resource.Resource {
 	return &{{.ResourceClassName}}Resource{}
+}
+
+func (r {{.ResourceClassName}}Resource) IdentitySchema(_ context.Context, _ resource.IdentitySchemaRequest, resp *resource.IdentitySchemaResponse) {
+	resp.IdentitySchema = getIdentitySchema()
 }
 
 // {{.ResourceClassName}}Resource defines the resource implementation.
@@ -1846,6 +1851,7 @@ func (r *{{.ResourceClassName}}Resource) Create(ctx context.Context, req resourc
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_{{.ResourceName}} with id '%s'", data.Id.ValueString()))
 }
 
@@ -1870,6 +1876,7 @@ func (r *{{.ResourceClassName}}Resource) Read(ctx context.Context, req resource.
 		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
 	} else {
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+		resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_{{.ResourceName}} with id '%s'", data.Id.ValueString()))
@@ -1992,6 +1999,7 @@ tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_{{ .ResourceName }} with id
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_{{.ResourceName}} with id '%s'", data.Id.ValueString()))
 }
 
@@ -2034,10 +2042,11 @@ func (r *{{.ResourceClassName}}Resource) Delete(ctx context.Context, req resourc
 
 func (r *{{.ResourceClassName}}Resource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_{{.ResourceName}}")
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	resource.ImportStatePassthroughWithIdentity(ctx, path.Root("id"), path.Root("id"), req, resp)
 	
 	var stateData *{{.ResourceClassName}}ResourceModel
 	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: stateData.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_{{.ResourceName}} with id '%s'", stateData.Id.ValueString()))
 
 	tflog.Debug(ctx, "End import of state resource: aci_{{.ResourceName}}")
@@ -2050,11 +2059,17 @@ func getAndSet{{.ResourceClassName}}Attributes(ctx context.Context, diags *diag.
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "GET", nil)
 	{{- end}}
 
-	readData := getEmpty{{.ResourceClassName}}ResourceModel()
-
 	if diags.HasError() {
 		return
 	}
+
+	set{{.ResourceClassName}}Attributes(ctx, diags, data, requestData)
+}
+
+func set{{.ResourceClassName}}Attributes(ctx context.Context, diags *diag.Diagnostics, data *{{.ResourceClassName}}ResourceModel, requestData *container.Container) {
+
+	readData := getEmpty{{.ResourceClassName}}ResourceModel()
+
 	if requestData.Search("imdata").Search("{{.PkgName}}").Data() != nil {
 		classReadInfo := requestData.Search("imdata").Search("{{.PkgName}}").Data().([]interface{})
 		if len(classReadInfo) == 1 {

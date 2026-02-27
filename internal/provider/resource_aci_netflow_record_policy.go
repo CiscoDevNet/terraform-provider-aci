@@ -31,10 +31,15 @@ import (
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &NetflowRecordPolResource{}
+var _ resource.ResourceWithIdentity = &NetflowRecordPolResource{}
 var _ resource.ResourceWithImportState = &NetflowRecordPolResource{}
 
 func NewNetflowRecordPolResource() resource.Resource {
 	return &NetflowRecordPolResource{}
+}
+
+func (r NetflowRecordPolResource) IdentitySchema(_ context.Context, _ resource.IdentitySchemaRequest, resp *resource.IdentitySchemaResponse) {
+	resp.IdentitySchema = getIdentitySchema()
 }
 
 // NetflowRecordPolResource defines the resource implementation.
@@ -404,6 +409,7 @@ func (r *NetflowRecordPolResource) Create(ctx context.Context, req resource.Crea
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_netflow_record_policy with id '%s'", data.Id.ValueString()))
 }
 
@@ -428,6 +434,7 @@ func (r *NetflowRecordPolResource) Read(ctx context.Context, req resource.ReadRe
 		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
 	} else {
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+		resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_netflow_record_policy with id '%s'", data.Id.ValueString()))
@@ -470,6 +477,7 @@ func (r *NetflowRecordPolResource) Update(ctx context.Context, req resource.Upda
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_netflow_record_policy with id '%s'", data.Id.ValueString()))
 }
 
@@ -498,10 +506,11 @@ func (r *NetflowRecordPolResource) Delete(ctx context.Context, req resource.Dele
 
 func (r *NetflowRecordPolResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_netflow_record_policy")
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	resource.ImportStatePassthroughWithIdentity(ctx, path.Root("id"), path.Root("id"), req, resp)
 
 	var stateData *NetflowRecordPolResourceModel
 	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: stateData.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_netflow_record_policy with id '%s'", stateData.Id.ValueString()))
 
 	tflog.Debug(ctx, "End import of state resource: aci_netflow_record_policy")
@@ -510,11 +519,17 @@ func (r *NetflowRecordPolResource) ImportState(ctx context.Context, req resource
 func getAndSetNetflowRecordPolAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *NetflowRecordPolResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "netflowRecordPol,tagAnnotation,tagTag"), "GET", nil)
 
-	readData := getEmptyNetflowRecordPolResourceModel()
-
 	if diags.HasError() {
 		return
 	}
+
+	setNetflowRecordPolAttributes(ctx, diags, data, requestData)
+}
+
+func setNetflowRecordPolAttributes(ctx context.Context, diags *diag.Diagnostics, data *NetflowRecordPolResourceModel, requestData *container.Container) {
+
+	readData := getEmptyNetflowRecordPolResourceModel()
+
 	if requestData.Search("imdata").Search("netflowRecordPol").Data() != nil {
 		classReadInfo := requestData.Search("imdata").Search("netflowRecordPol").Data().([]interface{})
 		if len(classReadInfo) == 1 {

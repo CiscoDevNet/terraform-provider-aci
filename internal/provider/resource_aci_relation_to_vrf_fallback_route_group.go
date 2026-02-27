@@ -27,10 +27,15 @@ import (
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &L3extRsOutToFBRGroupResource{}
+var _ resource.ResourceWithIdentity = &L3extRsOutToFBRGroupResource{}
 var _ resource.ResourceWithImportState = &L3extRsOutToFBRGroupResource{}
 
 func NewL3extRsOutToFBRGroupResource() resource.Resource {
 	return &L3extRsOutToFBRGroupResource{}
+}
+
+func (r L3extRsOutToFBRGroupResource) IdentitySchema(_ context.Context, _ resource.IdentitySchemaRequest, resp *resource.IdentitySchemaResponse) {
+	resp.IdentitySchema = getIdentitySchema()
 }
 
 // L3extRsOutToFBRGroupResource defines the resource implementation.
@@ -318,6 +323,7 @@ func (r *L3extRsOutToFBRGroupResource) Create(ctx context.Context, req resource.
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_relation_to_vrf_fallback_route_group with id '%s'", data.Id.ValueString()))
 }
 
@@ -342,6 +348,7 @@ func (r *L3extRsOutToFBRGroupResource) Read(ctx context.Context, req resource.Re
 		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
 	} else {
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+		resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_relation_to_vrf_fallback_route_group with id '%s'", data.Id.ValueString()))
@@ -384,6 +391,7 @@ func (r *L3extRsOutToFBRGroupResource) Update(ctx context.Context, req resource.
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_relation_to_vrf_fallback_route_group with id '%s'", data.Id.ValueString()))
 }
 
@@ -412,10 +420,11 @@ func (r *L3extRsOutToFBRGroupResource) Delete(ctx context.Context, req resource.
 
 func (r *L3extRsOutToFBRGroupResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_relation_to_vrf_fallback_route_group")
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	resource.ImportStatePassthroughWithIdentity(ctx, path.Root("id"), path.Root("id"), req, resp)
 
 	var stateData *L3extRsOutToFBRGroupResourceModel
 	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: stateData.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_relation_to_vrf_fallback_route_group with id '%s'", stateData.Id.ValueString()))
 
 	tflog.Debug(ctx, "End import of state resource: aci_relation_to_vrf_fallback_route_group")
@@ -424,11 +433,17 @@ func (r *L3extRsOutToFBRGroupResource) ImportState(ctx context.Context, req reso
 func getAndSetL3extRsOutToFBRGroupAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *L3extRsOutToFBRGroupResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "l3extRsOutToFBRGroup,tagAnnotation,tagTag"), "GET", nil)
 
-	readData := getEmptyL3extRsOutToFBRGroupResourceModel()
-
 	if diags.HasError() {
 		return
 	}
+
+	setL3extRsOutToFBRGroupAttributes(ctx, diags, data, requestData)
+}
+
+func setL3extRsOutToFBRGroupAttributes(ctx context.Context, diags *diag.Diagnostics, data *L3extRsOutToFBRGroupResourceModel, requestData *container.Container) {
+
+	readData := getEmptyL3extRsOutToFBRGroupResourceModel()
+
 	if requestData.Search("imdata").Search("l3extRsOutToFBRGroup").Data() != nil {
 		classReadInfo := requestData.Search("imdata").Search("l3extRsOutToFBRGroup").Data().([]interface{})
 		if len(classReadInfo) == 1 {

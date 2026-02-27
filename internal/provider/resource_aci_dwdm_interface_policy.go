@@ -32,10 +32,15 @@ import (
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &DwdmIfPolResource{}
+var _ resource.ResourceWithIdentity = &DwdmIfPolResource{}
 var _ resource.ResourceWithImportState = &DwdmIfPolResource{}
 
 func NewDwdmIfPolResource() resource.Resource {
 	return &DwdmIfPolResource{}
+}
+
+func (r DwdmIfPolResource) IdentitySchema(_ context.Context, _ resource.IdentitySchemaRequest, resp *resource.IdentitySchemaResponse) {
+	resp.IdentitySchema = getIdentitySchema()
 }
 
 // DwdmIfPolResource defines the resource implementation.
@@ -375,6 +380,7 @@ func (r *DwdmIfPolResource) Create(ctx context.Context, req resource.CreateReque
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_dwdm_interface_policy with id '%s'", data.Id.ValueString()))
 }
 
@@ -399,6 +405,7 @@ func (r *DwdmIfPolResource) Read(ctx context.Context, req resource.ReadRequest, 
 		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
 	} else {
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+		resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_dwdm_interface_policy with id '%s'", data.Id.ValueString()))
@@ -441,6 +448,7 @@ func (r *DwdmIfPolResource) Update(ctx context.Context, req resource.UpdateReque
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_dwdm_interface_policy with id '%s'", data.Id.ValueString()))
 }
 
@@ -469,10 +477,11 @@ func (r *DwdmIfPolResource) Delete(ctx context.Context, req resource.DeleteReque
 
 func (r *DwdmIfPolResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_dwdm_interface_policy")
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	resource.ImportStatePassthroughWithIdentity(ctx, path.Root("id"), path.Root("id"), req, resp)
 
 	var stateData *DwdmIfPolResourceModel
 	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: stateData.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_dwdm_interface_policy with id '%s'", stateData.Id.ValueString()))
 
 	tflog.Debug(ctx, "End import of state resource: aci_dwdm_interface_policy")
@@ -481,11 +490,17 @@ func (r *DwdmIfPolResource) ImportState(ctx context.Context, req resource.Import
 func getAndSetDwdmIfPolAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *DwdmIfPolResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "dwdmIfPol,tagAnnotation,tagTag"), "GET", nil)
 
-	readData := getEmptyDwdmIfPolResourceModel()
-
 	if diags.HasError() {
 		return
 	}
+
+	setDwdmIfPolAttributes(ctx, diags, data, requestData)
+}
+
+func setDwdmIfPolAttributes(ctx context.Context, diags *diag.Diagnostics, data *DwdmIfPolResourceModel, requestData *container.Container) {
+
+	readData := getEmptyDwdmIfPolResourceModel()
+
 	if requestData.Search("imdata").Search("dwdmIfPol").Data() != nil {
 		classReadInfo := requestData.Search("imdata").Search("dwdmIfPol").Data().([]interface{})
 		if len(classReadInfo) == 1 {

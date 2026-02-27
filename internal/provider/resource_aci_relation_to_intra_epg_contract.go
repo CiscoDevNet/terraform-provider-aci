@@ -27,10 +27,15 @@ import (
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &FvRsIntraEpgResource{}
+var _ resource.ResourceWithIdentity = &FvRsIntraEpgResource{}
 var _ resource.ResourceWithImportState = &FvRsIntraEpgResource{}
 
 func NewFvRsIntraEpgResource() resource.Resource {
 	return &FvRsIntraEpgResource{}
+}
+
+func (r FvRsIntraEpgResource) IdentitySchema(_ context.Context, _ resource.IdentitySchemaRequest, resp *resource.IdentitySchemaResponse) {
+	resp.IdentitySchema = getIdentitySchema()
 }
 
 // FvRsIntraEpgResource defines the resource implementation.
@@ -318,6 +323,7 @@ func (r *FvRsIntraEpgResource) Create(ctx context.Context, req resource.CreateRe
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_relation_to_intra_epg_contract with id '%s'", data.Id.ValueString()))
 }
 
@@ -342,6 +348,7 @@ func (r *FvRsIntraEpgResource) Read(ctx context.Context, req resource.ReadReques
 		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
 	} else {
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+		resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_relation_to_intra_epg_contract with id '%s'", data.Id.ValueString()))
@@ -384,6 +391,7 @@ func (r *FvRsIntraEpgResource) Update(ctx context.Context, req resource.UpdateRe
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_relation_to_intra_epg_contract with id '%s'", data.Id.ValueString()))
 }
 
@@ -412,10 +420,11 @@ func (r *FvRsIntraEpgResource) Delete(ctx context.Context, req resource.DeleteRe
 
 func (r *FvRsIntraEpgResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_relation_to_intra_epg_contract")
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	resource.ImportStatePassthroughWithIdentity(ctx, path.Root("id"), path.Root("id"), req, resp)
 
 	var stateData *FvRsIntraEpgResourceModel
 	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: stateData.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_relation_to_intra_epg_contract with id '%s'", stateData.Id.ValueString()))
 
 	tflog.Debug(ctx, "End import of state resource: aci_relation_to_intra_epg_contract")
@@ -424,11 +433,17 @@ func (r *FvRsIntraEpgResource) ImportState(ctx context.Context, req resource.Imp
 func getAndSetFvRsIntraEpgAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FvRsIntraEpgResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "fvRsIntraEpg,tagAnnotation,tagTag"), "GET", nil)
 
-	readData := getEmptyFvRsIntraEpgResourceModel()
-
 	if diags.HasError() {
 		return
 	}
+
+	setFvRsIntraEpgAttributes(ctx, diags, data, requestData)
+}
+
+func setFvRsIntraEpgAttributes(ctx context.Context, diags *diag.Diagnostics, data *FvRsIntraEpgResourceModel, requestData *container.Container) {
+
+	readData := getEmptyFvRsIntraEpgResourceModel()
+
 	if requestData.Search("imdata").Search("fvRsIntraEpg").Data() != nil {
 		classReadInfo := requestData.Search("imdata").Search("fvRsIntraEpg").Data().([]interface{})
 		if len(classReadInfo) == 1 {

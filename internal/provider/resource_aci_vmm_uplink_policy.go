@@ -27,10 +27,15 @@ import (
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &VmmUplinkPResource{}
+var _ resource.ResourceWithIdentity = &VmmUplinkPResource{}
 var _ resource.ResourceWithImportState = &VmmUplinkPResource{}
 
 func NewVmmUplinkPResource() resource.Resource {
 	return &VmmUplinkPResource{}
+}
+
+func (r VmmUplinkPResource) IdentitySchema(_ context.Context, _ resource.IdentitySchemaRequest, resp *resource.IdentitySchemaResponse) {
+	resp.IdentitySchema = getIdentitySchema()
 }
 
 // VmmUplinkPResource defines the resource implementation.
@@ -339,6 +344,7 @@ func (r *VmmUplinkPResource) Create(ctx context.Context, req resource.CreateRequ
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_vmm_uplink_policy with id '%s'", data.Id.ValueString()))
 }
 
@@ -363,6 +369,7 @@ func (r *VmmUplinkPResource) Read(ctx context.Context, req resource.ReadRequest,
 		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
 	} else {
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+		resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_vmm_uplink_policy with id '%s'", data.Id.ValueString()))
@@ -405,6 +412,7 @@ func (r *VmmUplinkPResource) Update(ctx context.Context, req resource.UpdateRequ
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_vmm_uplink_policy with id '%s'", data.Id.ValueString()))
 }
 
@@ -433,10 +441,11 @@ func (r *VmmUplinkPResource) Delete(ctx context.Context, req resource.DeleteRequ
 
 func (r *VmmUplinkPResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_vmm_uplink_policy")
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	resource.ImportStatePassthroughWithIdentity(ctx, path.Root("id"), path.Root("id"), req, resp)
 
 	var stateData *VmmUplinkPResourceModel
 	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: stateData.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_vmm_uplink_policy with id '%s'", stateData.Id.ValueString()))
 
 	tflog.Debug(ctx, "End import of state resource: aci_vmm_uplink_policy")
@@ -445,11 +454,17 @@ func (r *VmmUplinkPResource) ImportState(ctx context.Context, req resource.Impor
 func getAndSetVmmUplinkPAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *VmmUplinkPResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "vmmUplinkP,tagAnnotation,tagTag"), "GET", nil)
 
-	readData := getEmptyVmmUplinkPResourceModel()
-
 	if diags.HasError() {
 		return
 	}
+
+	setVmmUplinkPAttributes(ctx, diags, data, requestData)
+}
+
+func setVmmUplinkPAttributes(ctx context.Context, diags *diag.Diagnostics, data *VmmUplinkPResourceModel, requestData *container.Container) {
+
+	readData := getEmptyVmmUplinkPResourceModel()
+
 	if requestData.Search("imdata").Search("vmmUplinkP").Data() != nil {
 		classReadInfo := requestData.Search("imdata").Search("vmmUplinkP").Data().([]interface{})
 		if len(classReadInfo) == 1 {

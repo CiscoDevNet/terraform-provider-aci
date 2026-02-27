@@ -30,10 +30,15 @@ import (
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &FvFabricExtConnPResource{}
+var _ resource.ResourceWithIdentity = &FvFabricExtConnPResource{}
 var _ resource.ResourceWithImportState = &FvFabricExtConnPResource{}
 
 func NewFvFabricExtConnPResource() resource.Resource {
 	return &FvFabricExtConnPResource{}
+}
+
+func (r FvFabricExtConnPResource) IdentitySchema(_ context.Context, _ resource.IdentitySchemaRequest, resp *resource.IdentitySchemaResponse) {
+	resp.IdentitySchema = getIdentitySchema()
 }
 
 // FvFabricExtConnPResource defines the resource implementation.
@@ -645,6 +650,7 @@ func (r *FvFabricExtConnPResource) Create(ctx context.Context, req resource.Crea
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_fabric_external_connection_policy with id '%s'", data.Id.ValueString()))
 }
 
@@ -669,6 +675,7 @@ func (r *FvFabricExtConnPResource) Read(ctx context.Context, req resource.ReadRe
 		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
 	} else {
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+		resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_fabric_external_connection_policy with id '%s'", data.Id.ValueString()))
@@ -720,6 +727,7 @@ func (r *FvFabricExtConnPResource) Update(ctx context.Context, req resource.Upda
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_fabric_external_connection_policy with id '%s'", data.Id.ValueString()))
 }
 
@@ -748,10 +756,11 @@ func (r *FvFabricExtConnPResource) Delete(ctx context.Context, req resource.Dele
 
 func (r *FvFabricExtConnPResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_fabric_external_connection_policy")
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	resource.ImportStatePassthroughWithIdentity(ctx, path.Root("id"), path.Root("id"), req, resp)
 
 	var stateData *FvFabricExtConnPResourceModel
 	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: stateData.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_fabric_external_connection_policy with id '%s'", stateData.Id.ValueString()))
 
 	tflog.Debug(ctx, "End import of state resource: aci_fabric_external_connection_policy")
@@ -760,11 +769,17 @@ func (r *FvFabricExtConnPResource) ImportState(ctx context.Context, req resource
 func getAndSetFvFabricExtConnPAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FvFabricExtConnPResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "fvFabricExtConnP,fvPeeringP,tagAnnotation,tagTag,tagAnnotation,tagTag"), "GET", nil)
 
-	readData := getEmptyFvFabricExtConnPResourceModel()
-
 	if diags.HasError() {
 		return
 	}
+
+	setFvFabricExtConnPAttributes(ctx, diags, data, requestData)
+}
+
+func setFvFabricExtConnPAttributes(ctx context.Context, diags *diag.Diagnostics, data *FvFabricExtConnPResourceModel, requestData *container.Container) {
+
+	readData := getEmptyFvFabricExtConnPResourceModel()
+
 	if requestData.Search("imdata").Search("fvFabricExtConnP").Data() != nil {
 		classReadInfo := requestData.Search("imdata").Search("fvFabricExtConnP").Data().([]interface{})
 		if len(classReadInfo) == 1 {

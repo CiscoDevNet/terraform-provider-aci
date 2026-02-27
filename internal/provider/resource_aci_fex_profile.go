@@ -28,10 +28,15 @@ import (
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &InfraFexPResource{}
+var _ resource.ResourceWithIdentity = &InfraFexPResource{}
 var _ resource.ResourceWithImportState = &InfraFexPResource{}
 
 func NewInfraFexPResource() resource.Resource {
 	return &InfraFexPResource{}
+}
+
+func (r InfraFexPResource) IdentitySchema(_ context.Context, _ resource.IdentitySchemaRequest, resp *resource.IdentitySchemaResponse) {
+	resp.IdentitySchema = getIdentitySchema()
 }
 
 // InfraFexPResource defines the resource implementation.
@@ -354,6 +359,7 @@ func (r *InfraFexPResource) Create(ctx context.Context, req resource.CreateReque
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_fex_profile with id '%s'", data.Id.ValueString()))
 }
 
@@ -378,6 +384,7 @@ func (r *InfraFexPResource) Read(ctx context.Context, req resource.ReadRequest, 
 		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
 	} else {
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+		resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_fex_profile with id '%s'", data.Id.ValueString()))
@@ -420,6 +427,7 @@ func (r *InfraFexPResource) Update(ctx context.Context, req resource.UpdateReque
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_fex_profile with id '%s'", data.Id.ValueString()))
 }
 
@@ -448,10 +456,11 @@ func (r *InfraFexPResource) Delete(ctx context.Context, req resource.DeleteReque
 
 func (r *InfraFexPResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_fex_profile")
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	resource.ImportStatePassthroughWithIdentity(ctx, path.Root("id"), path.Root("id"), req, resp)
 
 	var stateData *InfraFexPResourceModel
 	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: stateData.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_fex_profile with id '%s'", stateData.Id.ValueString()))
 
 	tflog.Debug(ctx, "End import of state resource: aci_fex_profile")
@@ -460,11 +469,17 @@ func (r *InfraFexPResource) ImportState(ctx context.Context, req resource.Import
 func getAndSetInfraFexPAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *InfraFexPResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "infraFexP,tagAnnotation,tagTag"), "GET", nil)
 
-	readData := getEmptyInfraFexPResourceModel()
-
 	if diags.HasError() {
 		return
 	}
+
+	setInfraFexPAttributes(ctx, diags, data, requestData)
+}
+
+func setInfraFexPAttributes(ctx context.Context, diags *diag.Diagnostics, data *InfraFexPResourceModel, requestData *container.Container) {
+
+	readData := getEmptyInfraFexPResourceModel()
+
 	if requestData.Search("imdata").Search("infraFexP").Data() != nil {
 		classReadInfo := requestData.Search("imdata").Search("infraFexP").Data().([]interface{})
 		if len(classReadInfo) == 1 {
