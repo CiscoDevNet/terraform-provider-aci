@@ -19,7 +19,7 @@ func TestAccResourceXcvrZRPIfPol(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config: testConfigXcvrZRPIfPolMinAllowExisting,
+				Config: testConfigXcvrZRPIfPolMinAllowExisting + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.allow_test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.allow_test_2", "name", "test_name"),
@@ -84,7 +84,7 @@ func TestAccResourceXcvrZRPIfPol(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config: testConfigXcvrZRPIfPolMinAllowExisting,
+				Config: testConfigXcvrZRPIfPolMinAllowExisting + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.allow_test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.allow_test_2", "name", "test_name"),
@@ -135,7 +135,7 @@ func TestAccResourceXcvrZRPIfPol(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config: testConfigXcvrZRPIfPolMin,
+				Config: testConfigXcvrZRPIfPolMin + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "admin_state", "disabled"),
@@ -160,7 +160,7 @@ func TestAccResourceXcvrZRPIfPol(t *testing.T) {
 			},
 			// Update with all config and verify default APIC values
 			{
-				Config: testConfigXcvrZRPIfPolAll,
+				Config: testConfigXcvrZRPIfPolAll + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "admin_state", "enabled"),
@@ -185,7 +185,7 @@ func TestAccResourceXcvrZRPIfPol(t *testing.T) {
 			},
 			// Update with minimum config and verify config is unchanged
 			{
-				Config: testConfigXcvrZRPIfPolMin,
+				Config: testConfigXcvrZRPIfPolMin + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "admin_state", "enabled"),
@@ -210,7 +210,7 @@ func TestAccResourceXcvrZRPIfPol(t *testing.T) {
 			},
 			// Update with empty strings config or default value
 			{
-				Config: testConfigXcvrZRPIfPolReset,
+				Config: testConfigXcvrZRPIfPolReset + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "admin_state", "disabled"),
@@ -241,7 +241,7 @@ func TestAccResourceXcvrZRPIfPol(t *testing.T) {
 			},
 			// Update with children
 			{
-				Config: testConfigXcvrZRPIfPolChildren,
+				Config: testConfigXcvrZRPIfPolChildren + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "admin_state", "disabled"),
 					resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "annotation", "orchestrator:terraform"),
@@ -261,21 +261,25 @@ func TestAccResourceXcvrZRPIfPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "transmit_power", "-190"),
 					resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "wavelength_50_ghz", "1528773"),
-					resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "tags.#", "2"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "annotations.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children removed from config
 			{
-				Config: testConfigXcvrZRPIfPolChildrenRemoveFromConfig,
+				Config: testConfigXcvrZRPIfPolChildrenRemoveFromConfig + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "admin_state", "disabled"),
 					resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "annotation", "orchestrator:terraform"),
@@ -295,21 +299,25 @@ func TestAccResourceXcvrZRPIfPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "transmit_power", "-190"),
 					resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "wavelength_50_ghz", "1528773"),
-					resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "tags.#", "2"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "annotations.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children first child removed
 			{
-				Config: testConfigXcvrZRPIfPolChildrenRemoveOne,
+				Config: testConfigXcvrZRPIfPolChildrenRemoveOne + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "admin_state", "disabled"),
 					resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "annotation", "orchestrator:terraform"),
@@ -329,17 +337,21 @@ func TestAccResourceXcvrZRPIfPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "transmit_power", "-190"),
 					resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "wavelength_50_ghz", "1528773"),
-					resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "tags.#", "1"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "annotations.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "tags.#", "1"),
+					),
 				),
 			},
 			// Update with all children removed
 			{
-				Config: testConfigXcvrZRPIfPolChildrenRemoveAll,
+				Config: testConfigXcvrZRPIfPolChildrenRemoveAll + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "admin_state", "disabled"),
 					resource.TestCheckResourceAttr("aci_zrp_transceiver_interface_policy.test", "annotation", "orchestrator:terraform"),

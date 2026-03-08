@@ -19,7 +19,7 @@ func TestAccResourceQosPfcIfPol(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config: testConfigQosPfcIfPolMinAllowExisting,
+				Config: testConfigQosPfcIfPolMinAllowExisting + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.allow_test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.allow_test_2", "name", "test_name"),
@@ -60,7 +60,7 @@ func TestAccResourceQosPfcIfPol(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config: testConfigQosPfcIfPolMinAllowExisting,
+				Config: testConfigQosPfcIfPolMinAllowExisting + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.allow_test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.allow_test_2", "name", "test_name"),
@@ -87,7 +87,7 @@ func TestAccResourceQosPfcIfPol(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config: testConfigQosPfcIfPolMin,
+				Config: testConfigQosPfcIfPolMin + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "annotation", "orchestrator:terraform"),
@@ -100,7 +100,7 @@ func TestAccResourceQosPfcIfPol(t *testing.T) {
 			},
 			// Update with all config and verify default APIC values
 			{
-				Config: testConfigQosPfcIfPolAll,
+				Config: testConfigQosPfcIfPolAll + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "annotation", "annotation"),
@@ -113,7 +113,7 @@ func TestAccResourceQosPfcIfPol(t *testing.T) {
 			},
 			// Update with minimum config and verify config is unchanged
 			{
-				Config: testConfigQosPfcIfPolMin,
+				Config: testConfigQosPfcIfPolMin + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "annotation", "orchestrator:terraform"),
@@ -126,7 +126,7 @@ func TestAccResourceQosPfcIfPol(t *testing.T) {
 			},
 			// Update with empty strings config or default value
 			{
-				Config: testConfigQosPfcIfPolReset,
+				Config: testConfigQosPfcIfPolReset + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "annotation", "orchestrator:terraform"),
@@ -145,7 +145,7 @@ func TestAccResourceQosPfcIfPol(t *testing.T) {
 			},
 			// Update with children
 			{
-				Config: testConfigQosPfcIfPolChildren,
+				Config: testConfigQosPfcIfPolChildren + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "description", ""),
@@ -153,21 +153,25 @@ func TestAccResourceQosPfcIfPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "state", "auto"),
-					resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "tags.#", "2"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "annotations.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children removed from config
 			{
-				Config: testConfigQosPfcIfPolChildrenRemoveFromConfig,
+				Config: testConfigQosPfcIfPolChildrenRemoveFromConfig + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "description", ""),
@@ -175,21 +179,25 @@ func TestAccResourceQosPfcIfPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "state", "auto"),
-					resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "tags.#", "2"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "annotations.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children first child removed
 			{
-				Config: testConfigQosPfcIfPolChildrenRemoveOne,
+				Config: testConfigQosPfcIfPolChildrenRemoveOne + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "description", ""),
@@ -197,17 +205,21 @@ func TestAccResourceQosPfcIfPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "state", "auto"),
-					resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "tags.#", "1"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "annotations.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "tags.#", "1"),
+					),
 				),
 			},
 			// Update with all children removed
 			{
-				Config: testConfigQosPfcIfPolChildrenRemoveAll,
+				Config: testConfigQosPfcIfPolChildrenRemoveAll + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_priority_flow_control_interface_policy.test", "description", ""),

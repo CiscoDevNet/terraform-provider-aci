@@ -510,7 +510,8 @@ func (r *CoppProtoClassPResource) ImportState(ctx context.Context, req resource.
 }
 
 func getAndSetCoppProtoClassPAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *CoppProtoClassPResourceModel) {
-	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "coppProtoClassP,tagAnnotation,tagTag"), "GET", nil)
+	childClasses := getChildClassesForGetRequest([]string{"tagAnnotation", "tagTag"})
+	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), strings.Join(childClasses, ",")), "GET", nil)
 
 	readData := getEmptyCoppProtoClassPResourceModel()
 

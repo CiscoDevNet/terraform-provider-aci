@@ -19,7 +19,7 @@ func TestAccResourceMonInfraPol(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config: testConfigMonInfraPolMinAllowExisting,
+				Config: testConfigMonInfraPolMinAllowExisting + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_access_monitoring_policy.allow_test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_access_monitoring_policy.allow_test_2", "name", "test_name"),
@@ -58,7 +58,7 @@ func TestAccResourceMonInfraPol(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config: testConfigMonInfraPolMinAllowExisting,
+				Config: testConfigMonInfraPolMinAllowExisting + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_access_monitoring_policy.allow_test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_access_monitoring_policy.allow_test_2", "name", "test_name"),
@@ -83,7 +83,7 @@ func TestAccResourceMonInfraPol(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config: testConfigMonInfraPolMin,
+				Config: testConfigMonInfraPolMin + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "annotation", "orchestrator:terraform"),
@@ -95,7 +95,7 @@ func TestAccResourceMonInfraPol(t *testing.T) {
 			},
 			// Update with all config and verify default APIC values
 			{
-				Config: testConfigMonInfraPolAll,
+				Config: testConfigMonInfraPolAll + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "annotation", "annotation"),
@@ -107,7 +107,7 @@ func TestAccResourceMonInfraPol(t *testing.T) {
 			},
 			// Update with minimum config and verify config is unchanged
 			{
-				Config: testConfigMonInfraPolMin,
+				Config: testConfigMonInfraPolMin + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "annotation", "orchestrator:terraform"),
@@ -119,7 +119,7 @@ func TestAccResourceMonInfraPol(t *testing.T) {
 			},
 			// Update with empty strings config or default value
 			{
-				Config: testConfigMonInfraPolReset,
+				Config: testConfigMonInfraPolReset + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "annotation", "orchestrator:terraform"),
@@ -137,66 +137,78 @@ func TestAccResourceMonInfraPol(t *testing.T) {
 			},
 			// Update with children
 			{
-				Config: testConfigMonInfraPolChildren,
+				Config: testConfigMonInfraPolChildren + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "description", ""),
 					resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "tags.#", "2"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "annotations.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children removed from config
 			{
-				Config: testConfigMonInfraPolChildrenRemoveFromConfig,
+				Config: testConfigMonInfraPolChildrenRemoveFromConfig + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "description", ""),
 					resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "tags.#", "2"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "annotations.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children first child removed
 			{
-				Config: testConfigMonInfraPolChildrenRemoveOne,
+				Config: testConfigMonInfraPolChildrenRemoveOne + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "description", ""),
 					resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "tags.#", "1"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "annotations.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "tags.#", "1"),
+					),
 				),
 			},
 			// Update with all children removed
 			{
-				Config: testConfigMonInfraPolChildrenRemoveAll,
+				Config: testConfigMonInfraPolChildrenRemoveAll + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_access_monitoring_policy.test", "description", ""),

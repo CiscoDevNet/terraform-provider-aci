@@ -19,7 +19,7 @@ func TestAccResourceQosNodropDscpMatchIfPol(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config: testConfigQosNodropDscpMatchIfPolMinAllowExisting,
+				Config: testConfigQosNodropDscpMatchIfPolMinAllowExisting + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.allow_test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.allow_test_2", "name", "test_name"),
@@ -60,7 +60,7 @@ func TestAccResourceQosNodropDscpMatchIfPol(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config: testConfigQosNodropDscpMatchIfPolMinAllowExisting,
+				Config: testConfigQosNodropDscpMatchIfPolMinAllowExisting + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.allow_test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.allow_test_2", "name", "test_name"),
@@ -87,7 +87,7 @@ func TestAccResourceQosNodropDscpMatchIfPol(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config: testConfigQosNodropDscpMatchIfPolMin,
+				Config: testConfigQosNodropDscpMatchIfPolMin + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "admin_state", "off"),
@@ -100,7 +100,7 @@ func TestAccResourceQosNodropDscpMatchIfPol(t *testing.T) {
 			},
 			// Update with all config and verify default APIC values
 			{
-				Config: testConfigQosNodropDscpMatchIfPolAll,
+				Config: testConfigQosNodropDscpMatchIfPolAll + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "admin_state", "off"),
@@ -113,7 +113,7 @@ func TestAccResourceQosNodropDscpMatchIfPol(t *testing.T) {
 			},
 			// Update with minimum config and verify config is unchanged
 			{
-				Config: testConfigQosNodropDscpMatchIfPolMin,
+				Config: testConfigQosNodropDscpMatchIfPolMin + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "admin_state", "off"),
@@ -126,7 +126,7 @@ func TestAccResourceQosNodropDscpMatchIfPol(t *testing.T) {
 			},
 			// Update with empty strings config or default value
 			{
-				Config: testConfigQosNodropDscpMatchIfPolReset,
+				Config: testConfigQosNodropDscpMatchIfPolReset + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "admin_state", "off"),
@@ -145,7 +145,7 @@ func TestAccResourceQosNodropDscpMatchIfPol(t *testing.T) {
 			},
 			// Update with children
 			{
-				Config: testConfigQosNodropDscpMatchIfPolChildren,
+				Config: testConfigQosNodropDscpMatchIfPolChildren + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "admin_state", "off"),
 					resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "annotation", "orchestrator:terraform"),
@@ -153,21 +153,25 @@ func TestAccResourceQosNodropDscpMatchIfPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "tags.#", "2"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "annotations.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children removed from config
 			{
-				Config: testConfigQosNodropDscpMatchIfPolChildrenRemoveFromConfig,
+				Config: testConfigQosNodropDscpMatchIfPolChildrenRemoveFromConfig + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "admin_state", "off"),
 					resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "annotation", "orchestrator:terraform"),
@@ -175,21 +179,25 @@ func TestAccResourceQosNodropDscpMatchIfPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "tags.#", "2"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "annotations.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children first child removed
 			{
-				Config: testConfigQosNodropDscpMatchIfPolChildrenRemoveOne,
+				Config: testConfigQosNodropDscpMatchIfPolChildrenRemoveOne + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "admin_state", "off"),
 					resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "annotation", "orchestrator:terraform"),
@@ -197,17 +205,21 @@ func TestAccResourceQosNodropDscpMatchIfPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "tags.#", "1"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "annotations.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "tags.#", "1"),
+					),
 				),
 			},
 			// Update with all children removed
 			{
-				Config: testConfigQosNodropDscpMatchIfPolChildrenRemoveAll,
+				Config: testConfigQosNodropDscpMatchIfPolChildrenRemoveAll + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "admin_state", "off"),
 					resource.TestCheckResourceAttr("aci_no_drop_dscp_match_interface_policy.test", "annotation", "orchestrator:terraform"),
