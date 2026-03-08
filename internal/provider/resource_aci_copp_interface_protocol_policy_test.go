@@ -19,7 +19,7 @@ func TestAccResourceCoppProtoClassPWithCoppIfPol(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigCoppProtoClassPMinDependencyWithCoppIfPolAllowExisting,
+				Config:             testConfigCoppProtoClassPMinDependencyWithCoppIfPolAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_copp_interface_protocol_policy.allow_test", "name", "test_name"),
@@ -52,7 +52,7 @@ func TestAccResourceCoppProtoClassPWithCoppIfPol(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:      testConfigCoppProtoClassPMinDependencyWithCoppIfPolAllowExisting,
+				Config:      testConfigCoppProtoClassPMinDependencyWithCoppIfPolAllowExisting + testConfigDataSourceSystem,
 				ExpectError: regexp.MustCompile("Object Already Exists"),
 			},
 		},
@@ -65,7 +65,7 @@ func TestAccResourceCoppProtoClassPWithCoppIfPol(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigCoppProtoClassPMinDependencyWithCoppIfPolAllowExisting,
+				Config:             testConfigCoppProtoClassPMinDependencyWithCoppIfPolAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_copp_interface_protocol_policy.allow_test", "name", "test_name"),
@@ -97,7 +97,7 @@ func TestAccResourceCoppProtoClassPWithCoppIfPol(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigCoppProtoClassPMinDependencyWithCoppIfPol,
+				Config:             testConfigCoppProtoClassPMinDependencyWithCoppIfPol + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_copp_interface_protocol_policy.test", "name", "test_name"),
@@ -113,7 +113,7 @@ func TestAccResourceCoppProtoClassPWithCoppIfPol(t *testing.T) {
 			},
 			// Update with all config and verify default APIC values
 			{
-				Config:             testConfigCoppProtoClassPAllDependencyWithCoppIfPol,
+				Config:             testConfigCoppProtoClassPAllDependencyWithCoppIfPol + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_copp_interface_protocol_policy.test", "name", "test_name"),
@@ -131,7 +131,7 @@ func TestAccResourceCoppProtoClassPWithCoppIfPol(t *testing.T) {
 			},
 			// Update with minimum config and verify config is unchanged
 			{
-				Config:             testConfigCoppProtoClassPMinDependencyWithCoppIfPol,
+				Config:             testConfigCoppProtoClassPMinDependencyWithCoppIfPol + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_copp_interface_protocol_policy.test", "name", "test_name"),
@@ -139,7 +139,7 @@ func TestAccResourceCoppProtoClassPWithCoppIfPol(t *testing.T) {
 			},
 			// Update with empty strings config or default value
 			{
-				Config:             testConfigCoppProtoClassPResetDependencyWithCoppIfPol,
+				Config:             testConfigCoppProtoClassPResetDependencyWithCoppIfPol + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_copp_interface_protocol_policy.test", "name", "test_name"),
@@ -161,7 +161,7 @@ func TestAccResourceCoppProtoClassPWithCoppIfPol(t *testing.T) {
 			},
 			// Update with children
 			{
-				Config:             testConfigCoppProtoClassPChildrenDependencyWithCoppIfPol,
+				Config:             testConfigCoppProtoClassPChildrenDependencyWithCoppIfPol + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_copp_interface_protocol_policy.test", "name", "test_name"),
@@ -173,14 +173,18 @@ func TestAccResourceCoppProtoClassPWithCoppIfPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_copp_interface_protocol_policy.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_copp_interface_protocol_policy.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_copp_interface_protocol_policy.test", "rate", "10"),
-					resource.TestCheckResourceAttr("aci_copp_interface_protocol_policy.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_copp_interface_protocol_policy.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_copp_interface_protocol_policy.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_copp_interface_protocol_policy.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_copp_interface_protocol_policy.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_copp_interface_protocol_policy.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_copp_interface_protocol_policy.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_copp_interface_protocol_policy.test", "tags.1.value", "test_value"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_copp_interface_protocol_policy.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_copp_interface_protocol_policy.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_copp_interface_protocol_policy.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_copp_interface_protocol_policy.test", "annotations.1.value", "test_value"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_copp_interface_protocol_policy.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_copp_interface_protocol_policy.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_copp_interface_protocol_policy.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_copp_interface_protocol_policy.test", "tags.1.value", "test_value"),
+					),
 				),
 			},
 			// Refresh State before import testing to ensure that the state is up to date
@@ -196,37 +200,45 @@ func TestAccResourceCoppProtoClassPWithCoppIfPol(t *testing.T) {
 			},
 			// Update with children removed from config
 			{
-				Config:             testConfigCoppProtoClassPChildrenRemoveFromConfigDependencyWithCoppIfPol,
+				Config:             testConfigCoppProtoClassPChildrenRemoveFromConfigDependencyWithCoppIfPol + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_copp_interface_protocol_policy.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_copp_interface_protocol_policy.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_copp_interface_protocol_policy.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_copp_interface_protocol_policy.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_copp_interface_protocol_policy.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_copp_interface_protocol_policy.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_copp_interface_protocol_policy.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_copp_interface_protocol_policy.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_copp_interface_protocol_policy.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_copp_interface_protocol_policy.test", "tags.#", "2"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_copp_interface_protocol_policy.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_copp_interface_protocol_policy.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_copp_interface_protocol_policy.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_copp_interface_protocol_policy.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_copp_interface_protocol_policy.test", "annotations.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_copp_interface_protocol_policy.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_copp_interface_protocol_policy.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_copp_interface_protocol_policy.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_copp_interface_protocol_policy.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_copp_interface_protocol_policy.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children first child removed
 			{
-				Config:             testConfigCoppProtoClassPChildrenRemoveOneDependencyWithCoppIfPol,
+				Config:             testConfigCoppProtoClassPChildrenRemoveOneDependencyWithCoppIfPol + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_copp_interface_protocol_policy.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_copp_interface_protocol_policy.test", "annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_copp_interface_protocol_policy.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_copp_interface_protocol_policy.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_copp_interface_protocol_policy.test", "tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_copp_interface_protocol_policy.test", "tags.#", "1"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_copp_interface_protocol_policy.test", "annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_copp_interface_protocol_policy.test", "annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_copp_interface_protocol_policy.test", "annotations.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_copp_interface_protocol_policy.test", "tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_copp_interface_protocol_policy.test", "tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_copp_interface_protocol_policy.test", "tags.#", "1"),
+					),
 				),
 			},
 			// Update with all children removed
 			{
-				Config:             testConfigCoppProtoClassPChildrenRemoveAllDependencyWithCoppIfPol,
+				Config:             testConfigCoppProtoClassPChildrenRemoveAllDependencyWithCoppIfPol + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_copp_interface_protocol_policy.test", "annotations.#", "0"),
@@ -290,7 +302,7 @@ const testConfigCoppProtoClassPChildrenDependencyWithCoppIfPol = testConfigCoppI
 resource "aci_copp_interface_protocol_policy" "test" {
   parent_dn = aci_copp_interface_policy.test.id
   name = "test_name"
-  annotations = [
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -299,8 +311,8 @@ resource "aci_copp_interface_protocol_policy" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
-  tags = [
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -309,7 +321,7 @@ resource "aci_copp_interface_protocol_policy" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
+  ] : null
 }
 `
 
@@ -324,18 +336,18 @@ const testConfigCoppProtoClassPChildrenRemoveOneDependencyWithCoppIfPol = testCo
 resource "aci_copp_interface_protocol_policy" "test" {
   parent_dn = aci_copp_interface_policy.test.id
   name = "test_name"
-  annotations = [ 
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
-  tags = [ 
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
+  ] : null
 }
 `
 
@@ -343,7 +355,7 @@ const testConfigCoppProtoClassPChildrenRemoveAllDependencyWithCoppIfPol = testCo
 resource "aci_copp_interface_protocol_policy" "test" {
   parent_dn = aci_copp_interface_policy.test.id
   name = "test_name"
-  annotations = []
-  tags = []
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
 }
 `

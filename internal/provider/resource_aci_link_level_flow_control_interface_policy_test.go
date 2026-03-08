@@ -19,7 +19,7 @@ func TestAccResourceQosLlfcIfPol(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config: testConfigQosLlfcIfPolMinAllowExisting,
+				Config: testConfigQosLlfcIfPolMinAllowExisting + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.allow_test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.allow_test_2", "name", "test_name"),
@@ -62,7 +62,7 @@ func TestAccResourceQosLlfcIfPol(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config: testConfigQosLlfcIfPolMinAllowExisting,
+				Config: testConfigQosLlfcIfPolMinAllowExisting + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.allow_test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.allow_test_2", "name", "test_name"),
@@ -91,7 +91,7 @@ func TestAccResourceQosLlfcIfPol(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config: testConfigQosLlfcIfPolMin,
+				Config: testConfigQosLlfcIfPolMin + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "annotation", "orchestrator:terraform"),
@@ -105,7 +105,7 @@ func TestAccResourceQosLlfcIfPol(t *testing.T) {
 			},
 			// Update with all config and verify default APIC values
 			{
-				Config: testConfigQosLlfcIfPolAll,
+				Config: testConfigQosLlfcIfPolAll + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "annotation", "annotation"),
@@ -119,7 +119,7 @@ func TestAccResourceQosLlfcIfPol(t *testing.T) {
 			},
 			// Update with minimum config and verify config is unchanged
 			{
-				Config: testConfigQosLlfcIfPolMin,
+				Config: testConfigQosLlfcIfPolMin + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "annotation", "orchestrator:terraform"),
@@ -133,7 +133,7 @@ func TestAccResourceQosLlfcIfPol(t *testing.T) {
 			},
 			// Update with empty strings config or default value
 			{
-				Config: testConfigQosLlfcIfPolReset,
+				Config: testConfigQosLlfcIfPolReset + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "annotation", "orchestrator:terraform"),
@@ -153,7 +153,7 @@ func TestAccResourceQosLlfcIfPol(t *testing.T) {
 			},
 			// Update with children
 			{
-				Config: testConfigQosLlfcIfPolChildren,
+				Config: testConfigQosLlfcIfPolChildren + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "description", ""),
@@ -162,21 +162,25 @@ func TestAccResourceQosLlfcIfPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "receive_state", "off"),
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "send_state", "off"),
-					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "tags.#", "2"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "annotations.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children removed from config
 			{
-				Config: testConfigQosLlfcIfPolChildrenRemoveFromConfig,
+				Config: testConfigQosLlfcIfPolChildrenRemoveFromConfig + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "description", ""),
@@ -185,21 +189,25 @@ func TestAccResourceQosLlfcIfPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "receive_state", "off"),
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "send_state", "off"),
-					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "tags.#", "2"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "annotations.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children first child removed
 			{
-				Config: testConfigQosLlfcIfPolChildrenRemoveOne,
+				Config: testConfigQosLlfcIfPolChildrenRemoveOne + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "description", ""),
@@ -208,17 +216,21 @@ func TestAccResourceQosLlfcIfPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "receive_state", "off"),
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "send_state", "off"),
-					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "tags.#", "1"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "annotations.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "tags.#", "1"),
+					),
 				),
 			},
 			// Update with all children removed
 			{
-				Config: testConfigQosLlfcIfPolChildrenRemoveAll,
+				Config: testConfigQosLlfcIfPolChildrenRemoveAll + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_link_level_flow_control_interface_policy.test", "description", ""),

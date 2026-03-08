@@ -19,7 +19,7 @@ func TestAccResourceL2IfPol(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config: testConfigL2IfPolMinAllowExisting,
+				Config: testConfigL2IfPolMinAllowExisting + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.allow_test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.allow_test_2", "name", "test_name"),
@@ -64,7 +64,7 @@ func TestAccResourceL2IfPol(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config: testConfigL2IfPolMinAllowExisting,
+				Config: testConfigL2IfPolMinAllowExisting + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.allow_test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.allow_test_2", "name", "test_name"),
@@ -95,7 +95,7 @@ func TestAccResourceL2IfPol(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config: testConfigL2IfPolMin,
+				Config: testConfigL2IfPolMin + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "annotation", "orchestrator:terraform"),
@@ -110,7 +110,7 @@ func TestAccResourceL2IfPol(t *testing.T) {
 			},
 			// Update with all config and verify default APIC values
 			{
-				Config: testConfigL2IfPolAll,
+				Config: testConfigL2IfPolAll + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "annotation", "annotation"),
@@ -125,7 +125,7 @@ func TestAccResourceL2IfPol(t *testing.T) {
 			},
 			// Update with minimum config and verify config is unchanged
 			{
-				Config: testConfigL2IfPolMin,
+				Config: testConfigL2IfPolMin + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "annotation", "orchestrator:terraform"),
@@ -140,7 +140,7 @@ func TestAccResourceL2IfPol(t *testing.T) {
 			},
 			// Update with empty strings config or default value
 			{
-				Config: testConfigL2IfPolReset,
+				Config: testConfigL2IfPolReset + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "annotation", "orchestrator:terraform"),
@@ -161,7 +161,7 @@ func TestAccResourceL2IfPol(t *testing.T) {
 			},
 			// Update with children
 			{
-				Config: testConfigL2IfPolChildren,
+				Config: testConfigL2IfPolChildren + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "description", ""),
@@ -171,21 +171,25 @@ func TestAccResourceL2IfPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "q_in_q", "disabled"),
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "reflective_relay", "disabled"),
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "vlan_scope", "global"),
-					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "tags.#", "2"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "annotations.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children removed from config
 			{
-				Config: testConfigL2IfPolChildrenRemoveFromConfig,
+				Config: testConfigL2IfPolChildrenRemoveFromConfig + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "description", ""),
@@ -195,21 +199,25 @@ func TestAccResourceL2IfPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "q_in_q", "disabled"),
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "reflective_relay", "disabled"),
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "vlan_scope", "global"),
-					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "tags.#", "2"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "annotations.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children first child removed
 			{
-				Config: testConfigL2IfPolChildrenRemoveOne,
+				Config: testConfigL2IfPolChildrenRemoveOne + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "description", ""),
@@ -219,17 +227,21 @@ func TestAccResourceL2IfPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "q_in_q", "disabled"),
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "reflective_relay", "disabled"),
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "vlan_scope", "global"),
-					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "tags.#", "1"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "annotations.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "tags.#", "1"),
+					),
 				),
 			},
 			// Update with all children removed
 			{
-				Config: testConfigL2IfPolChildrenRemoveAll,
+				Config: testConfigL2IfPolChildrenRemoveAll + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_l2_interface_policy.test", "description", ""),
@@ -245,7 +257,7 @@ func TestAccResourceL2IfPol(t *testing.T) {
 			},
 			// Update with legacy attribute config
 			{
-				Config: testConfigL2IfPolLegacyAttributes,
+				Config: testConfigL2IfPolLegacyAttributes + testConfigDataSourceSystem,
 			},
 		},
 		CheckDestroy: testCheckResourceDestroy,
@@ -256,7 +268,7 @@ func TestAccResourceL2IfPol(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with legacy attribute config
 			{
-				Config: testConfigL2IfPolLegacyAttributes,
+				Config: testConfigL2IfPolLegacyAttributes + testConfigDataSourceSystem,
 			},
 		},
 		CheckDestroy: testCheckResourceDestroy,
