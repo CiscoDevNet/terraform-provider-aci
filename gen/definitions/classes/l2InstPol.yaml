@@ -2,6 +2,6 @@ contained_by:
     - polUni
 resource_name: l2_mtu_policy
 rn_prepend: fabric
-sub_category: Farbic Policies
+sub_category: Fabric Policie
 ui_locations:
-    - Fabirc Policies -> Policies -> Global -> Fabric L2 MTU
+    - Fabric Policies -> Policies -> Global -> Fabric L2 MTU
