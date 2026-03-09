@@ -1,5 +1,7 @@
 documentation:
     tDn: The distinguished name of the target.
+example_value_overwrite:
+    target_dn: aci_multicast_pool.example.id
 # TODO: Include this target for vmmDomP when working having a way to influence depending attributes re quired for a specific child
 # Excluded from tests because current testing capabilities are not allowing to configure this without enable_ave_mode = yes
 #   targets:

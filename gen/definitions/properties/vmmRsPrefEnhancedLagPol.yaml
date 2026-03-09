@@ -1,3 +1,6 @@
+example_value_overwrite:
+    target_dn: aci_lacp_enhanced_lag_policy.example.id
+  
 # TODO: Include this target for vmmDomP when working on vswitch policy migration
 # Excluded from tests because current testing capabilities are not allowing to configure in single apply
 # The relationship needs to point to an object that is configured as a child of vswitch policy, which is a child of vmmDomP
