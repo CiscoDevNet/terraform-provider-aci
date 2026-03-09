@@ -213,7 +213,7 @@ func TestAccResourceFvFBRouteWithFvFBRGroup(t *testing.T) {
 			},
 			// Update with minimum config and custom type semantic equivalent values
 			{
-				Config:             testConfigFvFBRouteCustomTypeDependencyWithFvFBRGroup,
+				Config:             testConfigFvFBRouteCustomTypeDependencyWithFvFBRGroup + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route.test", "prefix_address", "2001:0db8::01/64"),

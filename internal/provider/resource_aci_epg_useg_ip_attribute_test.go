@@ -238,7 +238,7 @@ func TestAccResourceFvIpAttrWithFvCrtrn(t *testing.T) {
 			},
 			// Update with minimum config and custom type semantic equivalent values
 			{
-				Config:             testConfigFvIpAttrCustomTypeDependencyWithFvCrtrn,
+				Config:             testConfigFvIpAttrCustomTypeDependencyWithFvCrtrn + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_epg_useg_ip_attribute.test", "ip", "fe80::0002"),
