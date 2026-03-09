@@ -221,7 +221,7 @@ func TestAccResourceMplsNodeSidPWithL3extLoopBackIfP(t *testing.T) {
 			},
 			// Update with minimum config and custom type semantic equivalent values
 			{
-				Config:             testConfigMplsNodeSidPCustomTypeDependencyWithL3extLoopBackIfP,
+				Config:             testConfigMplsNodeSidPCustomTypeDependencyWithL3extLoopBackIfP + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_l3out_node_sid_profile.test", "loopback_address", "fe80::0002"),

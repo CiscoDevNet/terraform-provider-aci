@@ -213,7 +213,7 @@ func TestAccResourceFvFBRMemberWithFvFBRGroup(t *testing.T) {
 			},
 			// Update with minimum config and custom type semantic equivalent values
 			{
-				Config:             testConfigFvFBRMemberCustomTypeDependencyWithFvFBRGroup,
+				Config:             testConfigFvFBRMemberCustomTypeDependencyWithFvFBRGroup + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route_group_member.test", "fallback_member", "fe80::0001"),
