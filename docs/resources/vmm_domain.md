@@ -74,7 +74,7 @@ resource "aci_vmm_domain" "full_example" {
   default_encapsulation_mode       = "unspecified"
   relation_to_ip_address_pool = {
     annotation = "annotation_1"
-    target_dn  = aci_ip_address_pool.test_ip_address_pool_0.id
+    target_dn  = aci_ip_address_pool.example.id
     annotations = [
       {
         key   = "key_0"
@@ -90,7 +90,7 @@ resource "aci_vmm_domain" "full_example" {
   }
   relation_to_vlan_pool = {
     annotation = "annotation_1"
-    target_dn  = aci_vlan_pool.test_vlan_pool_1.id
+    target_dn  = aci_vlan_pool.example.id
     annotations = [
       {
         key   = "key_0"
@@ -118,7 +118,7 @@ resource "aci_vmm_domain" "full_example" {
   ]
   relation_to_multicast_pool = {
     annotation = "test_value_for_child"
-    target_dn  = "target_dn_0"
+    target_dn  = aci_multicast_pool.example.id
     annotations = [
       {
         key   = "key_0"
@@ -134,7 +134,7 @@ resource "aci_vmm_domain" "full_example" {
   }
   relation_to_lacp_enhanced_lag_policy = {
     annotation = "test_value_for_child"
-    target_dn  = "target_dn_0"
+    target_dn  = aci_lacp_enhanced_lag_policy.example.id
     annotations = [
       {
         key   = "key_0"

@@ -5,3 +5,6 @@ targets:
         name: ip_address_pool_name_1
       relation_resource_name: ip_address_pool
       target_dn: uni/tn-mgmt/addrinst-ip_address_pool_name_1
+
+example_value_overwrite:
+    target_dn: aci_ip_address_pool.example.id

@@ -8,3 +8,6 @@ targets:
       relation_resource_name: vlan_pool
       target_dn: uni/infra/vlanns-[vlan_pool_name_1]-static
       target_dn_ref: aci_vlan_pool.test_vlan_pool_1.id
+
+example_value_overwrite:
+    target_dn: aci_vlan_pool.example.id
