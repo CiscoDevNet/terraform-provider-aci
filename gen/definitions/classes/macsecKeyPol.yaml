@@ -1,0 +1,6 @@
+class_version: 6.0(2h)-
+resource_name: macsec_key
+sub_category: Access Policies
+ui_locations:
+    - Fabric -> Access Policies -> Policies -> Interface -> MACSec -> MACSec KeyChain Policies -> MACSec Key Policy
+    - Fabric -> Fabric Policies -> Policies -> MACSec -> MACSec KeyChain Policies -> MACSec Key Policy
