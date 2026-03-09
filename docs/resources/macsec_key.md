@@ -20,7 +20,7 @@ Manages ACI MACsec Key
 
 * Class: [macsecKeyPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/macsecKeyPol/overview)
 
-* Supported in ACI versions: 3.1(1i) and later.
+* Supported in ACI versions: 6.0(2h) and later.
 
 * Distinguished Name Formats:
   - `uni/fabric/macsecpcontfab/keychainp-{name}/keyp-{keyName}`
@@ -94,7 +94,7 @@ All examples for the MACsec Key resource can be found in the [examples](https://
 
 ### Optional ###
 
-* `annotation` (annotation) - (string) The annotation of the MACsec Key object. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotation` (annotation) - (string) The annotation of the MACsec Key object.
   - Default: `"orchestrator:terraform"`
 * `description` (descr) - (string) The description of the MACsec Key object.
 * `end_time` (endTime) - (string) The end time of the MACsec Key object. The default value cannot be used directly, since APIC will calculate this value to the datetime representation which results in a applied state that does not match the planned state. Do not provide this attribute when APIC should calculate the current datetime ('now'). Furthermore, make sure that the time-zone part (in the full example this is '-08:00') matches the time-zone configured on APIC. Providing a different time-zone will result in unexpected behaviour.
