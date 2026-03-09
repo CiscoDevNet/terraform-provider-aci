@@ -819,7 +819,8 @@ func (r *MacsecIfPolResource) ImportState(ctx context.Context, req resource.Impo
 }
 
 func getAndSetMacsecIfPolAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *MacsecIfPolResourceModel) {
-	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), "macsecIfPol,macsecRsToKeyChainPol,macsecRsToParamPol,tagAnnotation,tagTag,tagAnnotation,tagTag,tagAnnotation,tagTag"), "GET", nil)
+	childClasses := getChildClassesForGetRequest([]string{"macsecRsToKeyChainPol", "macsecRsToParamPol", "tagAnnotation", "tagTag"})
+	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), strings.Join(childClasses, ",")), "GET", nil)
 
 	readData := getEmptyMacsecIfPolResourceModel()
 

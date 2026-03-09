@@ -14,7 +14,7 @@ import (
 func TestAccDataSourceMacsecKeyPolWithMacsecKeyChainPol(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t, "both", "6.0(2h)-") },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "3.1(1i)-") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{

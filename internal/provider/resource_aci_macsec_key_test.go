@@ -14,12 +14,12 @@ import (
 func TestAccResourceMacsecKeyPolWithMacsecKeyChainPol(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t, "both", "6.0(2h)-") },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "3.1(1i)-") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigMacsecKeyPolMinDependencyWithMacsecKeyChainPolAllowExisting,
+				Config:             testConfigMacsecKeyPolMinDependencyWithMacsecKeyChainPolAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_macsec_key.allow_test", "key_name", "aa"),
@@ -47,12 +47,12 @@ func TestAccResourceMacsecKeyPolWithMacsecKeyChainPol(t *testing.T) {
 
 	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "false")
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t, "both", "6.0(2h)-") },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "3.1(1i)-") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:      testConfigMacsecKeyPolMinDependencyWithMacsecKeyChainPolAllowExisting,
+				Config:      testConfigMacsecKeyPolMinDependencyWithMacsecKeyChainPolAllowExisting + testConfigDataSourceSystem,
 				ExpectError: regexp.MustCompile("Object Already Exists"),
 			},
 		},
@@ -60,12 +60,12 @@ func TestAccResourceMacsecKeyPolWithMacsecKeyChainPol(t *testing.T) {
 
 	setEnvVariable(t, "ACI_ALLOW_EXISTING_ON_CREATE", "true")
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t, "both", "6.0(2h)-") },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "3.1(1i)-") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigMacsecKeyPolMinDependencyWithMacsecKeyChainPolAllowExisting,
+				Config:             testConfigMacsecKeyPolMinDependencyWithMacsecKeyChainPolAllowExisting + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_macsec_key.allow_test", "key_name", "aa"),
@@ -92,12 +92,12 @@ func TestAccResourceMacsecKeyPolWithMacsecKeyChainPol(t *testing.T) {
 	})
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t, "both", "6.0(2h)-") },
+		PreCheck:                 func() { testAccPreCheck(t, "both", "3.1(1i)-") },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config:             testConfigMacsecKeyPolMinDependencyWithMacsecKeyChainPol,
+				Config:             testConfigMacsecKeyPolMinDependencyWithMacsecKeyChainPol + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_macsec_key.test", "key_name", "aa"),
@@ -113,7 +113,7 @@ func TestAccResourceMacsecKeyPolWithMacsecKeyChainPol(t *testing.T) {
 			},
 			// Update with all config and verify default APIC values
 			{
-				Config:             testConfigMacsecKeyPolAllDependencyWithMacsecKeyChainPol,
+				Config:             testConfigMacsecKeyPolAllDependencyWithMacsecKeyChainPol + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_macsec_key.test", "key_name", "aa"),
@@ -129,7 +129,7 @@ func TestAccResourceMacsecKeyPolWithMacsecKeyChainPol(t *testing.T) {
 			},
 			// Update with minimum config and verify config is unchanged
 			{
-				Config:             testConfigMacsecKeyPolMinDependencyWithMacsecKeyChainPol,
+				Config:             testConfigMacsecKeyPolMinDependencyWithMacsecKeyChainPol + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_macsec_key.test", "key_name", "aa"),
@@ -138,7 +138,7 @@ func TestAccResourceMacsecKeyPolWithMacsecKeyChainPol(t *testing.T) {
 			},
 			// Update with empty strings config or default value
 			{
-				Config:             testConfigMacsecKeyPolResetDependencyWithMacsecKeyChainPol,
+				Config:             testConfigMacsecKeyPolResetDependencyWithMacsecKeyChainPol + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_macsec_key.test", "key_name", "aa"),
@@ -161,7 +161,7 @@ func TestAccResourceMacsecKeyPolWithMacsecKeyChainPol(t *testing.T) {
 			},
 			// Update with children
 			{
-				Config:             testConfigMacsecKeyPolChildrenDependencyWithMacsecKeyChainPol,
+				Config:             testConfigMacsecKeyPolChildrenDependencyWithMacsecKeyChainPol + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_macsec_key.test", "key_name", "aa"),
@@ -173,14 +173,18 @@ func TestAccResourceMacsecKeyPolWithMacsecKeyChainPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_macsec_key.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_macsec_key.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_macsec_key.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_macsec_key.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_macsec_key.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_macsec_key.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_macsec_key.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_macsec_key.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_macsec_key.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_macsec_key.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_macsec_key.test", "tags.1.value", "test_value"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_macsec_key.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_macsec_key.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_macsec_key.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_macsec_key.test", "annotations.1.value", "test_value"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_macsec_key.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_macsec_key.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_macsec_key.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_macsec_key.test", "tags.1.value", "test_value"),
+					),
 				),
 			},
 			// Refresh State before import testing to ensure that the state is up to date
@@ -197,37 +201,45 @@ func TestAccResourceMacsecKeyPolWithMacsecKeyChainPol(t *testing.T) {
 			},
 			// Update with children removed from config
 			{
-				Config:             testConfigMacsecKeyPolChildrenRemoveFromConfigDependencyWithMacsecKeyChainPol,
+				Config:             testConfigMacsecKeyPolChildrenRemoveFromConfigDependencyWithMacsecKeyChainPol + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_macsec_key.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_macsec_key.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_macsec_key.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_macsec_key.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_macsec_key.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_macsec_key.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_macsec_key.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_macsec_key.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_macsec_key.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_macsec_key.test", "tags.#", "2"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_macsec_key.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_macsec_key.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_macsec_key.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_macsec_key.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_macsec_key.test", "annotations.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_macsec_key.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_macsec_key.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_macsec_key.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_macsec_key.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_macsec_key.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children first child removed
 			{
-				Config:             testConfigMacsecKeyPolChildrenRemoveOneDependencyWithMacsecKeyChainPol,
+				Config:             testConfigMacsecKeyPolChildrenRemoveOneDependencyWithMacsecKeyChainPol + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("aci_macsec_key.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_macsec_key.test", "annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_macsec_key.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_macsec_key.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_macsec_key.test", "tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_macsec_key.test", "tags.#", "1"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_macsec_key.test", "annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_macsec_key.test", "annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_macsec_key.test", "annotations.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_macsec_key.test", "tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_macsec_key.test", "tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_macsec_key.test", "tags.#", "1"),
+					),
 				),
 			},
 			// Update with all children removed
 			{
-				Config:             testConfigMacsecKeyPolChildrenRemoveAllDependencyWithMacsecKeyChainPol,
+				Config:             testConfigMacsecKeyPolChildrenRemoveAllDependencyWithMacsecKeyChainPol + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_macsec_key.test", "annotations.#", "0"),
@@ -297,7 +309,7 @@ resource "aci_macsec_key" "test" {
   parent_dn = aci_macsec_key_chain.test.id
   key_name = "aa"
   start_time = "2025-11-28T03:12:09.452-08:00"
-  annotations = [
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -306,8 +318,8 @@ resource "aci_macsec_key" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
-  tags = [
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [
     {
       key = "key_0"
       value = "value_1"
@@ -316,7 +328,7 @@ resource "aci_macsec_key" "test" {
       key = "key_1"
       value = "test_value"
     },
-  ]
+  ] : null
 }
 `
 
@@ -333,18 +345,18 @@ resource "aci_macsec_key" "test" {
   parent_dn = aci_macsec_key_chain.test.id
   key_name = "aa"
   start_time = "2025-11-28T03:12:09.452-08:00"
-  annotations = [ 
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
-  tags = [ 
+  ] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [ 
 	{
 	  key = "key_1"
 	  value = "test_value"
 	},
-  ]
+  ] : null
 }
 `
 
@@ -353,7 +365,7 @@ resource "aci_macsec_key" "test" {
   parent_dn = aci_macsec_key_chain.test.id
   key_name = "aa"
   start_time = "2025-11-28T03:12:09.452-08:00"
-  annotations = []
-  tags = []
+  annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
+  tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
 }
 `

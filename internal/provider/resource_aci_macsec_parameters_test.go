@@ -19,7 +19,7 @@ func TestAccResourceMacsecParamPol(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config: testConfigMacsecParamPolMinAllowExisting,
+				Config: testConfigMacsecParamPolMinAllowExisting + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_macsec_parameters.allow_test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_macsec_parameters.allow_test_2", "name", "test_name"),
@@ -68,7 +68,7 @@ func TestAccResourceMacsecParamPol(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config: testConfigMacsecParamPolMinAllowExisting,
+				Config: testConfigMacsecParamPolMinAllowExisting + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_macsec_parameters.allow_test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_macsec_parameters.allow_test_2", "name", "test_name"),
@@ -103,7 +103,7 @@ func TestAccResourceMacsecParamPol(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config: testConfigMacsecParamPolMin,
+				Config: testConfigMacsecParamPolMin + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_macsec_parameters.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_macsec_parameters.test", "annotation", "orchestrator:terraform"),
@@ -120,7 +120,7 @@ func TestAccResourceMacsecParamPol(t *testing.T) {
 			},
 			// Update with all config and verify default APIC values
 			{
-				Config: testConfigMacsecParamPolAll,
+				Config: testConfigMacsecParamPolAll + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_macsec_parameters.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_macsec_parameters.test", "annotation", "annotation"),
@@ -137,7 +137,7 @@ func TestAccResourceMacsecParamPol(t *testing.T) {
 			},
 			// Update with minimum config and verify config is unchanged
 			{
-				Config: testConfigMacsecParamPolMin,
+				Config: testConfigMacsecParamPolMin + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_macsec_parameters.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_macsec_parameters.test", "annotation", "orchestrator:terraform"),
@@ -154,7 +154,7 @@ func TestAccResourceMacsecParamPol(t *testing.T) {
 			},
 			// Update with empty strings config or default value
 			{
-				Config: testConfigMacsecParamPolReset,
+				Config: testConfigMacsecParamPolReset + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_macsec_parameters.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_macsec_parameters.test", "annotation", "orchestrator:terraform"),
@@ -177,7 +177,7 @@ func TestAccResourceMacsecParamPol(t *testing.T) {
 			},
 			// Update with children
 			{
-				Config: testConfigMacsecParamPolChildren,
+				Config: testConfigMacsecParamPolChildren + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_macsec_parameters.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_macsec_parameters.test", "cipher_suite", "gcm-aes-xpn-256"),
@@ -189,21 +189,25 @@ func TestAccResourceMacsecParamPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_macsec_parameters.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_macsec_parameters.test", "security_policy", "should-secure"),
 					resource.TestCheckResourceAttr("aci_macsec_parameters.test", "window_size", "64"),
-					resource.TestCheckResourceAttr("aci_macsec_parameters.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_macsec_parameters.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_macsec_parameters.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_macsec_parameters.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_macsec_parameters.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_macsec_parameters.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_macsec_parameters.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_macsec_parameters.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_macsec_parameters.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_macsec_parameters.test", "tags.#", "2"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_macsec_parameters.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_macsec_parameters.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_macsec_parameters.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_macsec_parameters.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_macsec_parameters.test", "annotations.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_macsec_parameters.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_macsec_parameters.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_macsec_parameters.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_macsec_parameters.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_macsec_parameters.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children removed from config
 			{
-				Config: testConfigMacsecParamPolChildrenRemoveFromConfig,
+				Config: testConfigMacsecParamPolChildrenRemoveFromConfig + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_macsec_parameters.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_macsec_parameters.test", "cipher_suite", "gcm-aes-xpn-256"),
@@ -215,21 +219,25 @@ func TestAccResourceMacsecParamPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_macsec_parameters.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_macsec_parameters.test", "security_policy", "should-secure"),
 					resource.TestCheckResourceAttr("aci_macsec_parameters.test", "window_size", "64"),
-					resource.TestCheckResourceAttr("aci_macsec_parameters.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_macsec_parameters.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_macsec_parameters.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_macsec_parameters.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_macsec_parameters.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_macsec_parameters.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_macsec_parameters.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_macsec_parameters.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_macsec_parameters.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_macsec_parameters.test", "tags.#", "2"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_macsec_parameters.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_macsec_parameters.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_macsec_parameters.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_macsec_parameters.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_macsec_parameters.test", "annotations.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_macsec_parameters.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_macsec_parameters.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_macsec_parameters.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_macsec_parameters.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_macsec_parameters.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children first child removed
 			{
-				Config: testConfigMacsecParamPolChildrenRemoveOne,
+				Config: testConfigMacsecParamPolChildrenRemoveOne + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_macsec_parameters.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_macsec_parameters.test", "cipher_suite", "gcm-aes-xpn-256"),
@@ -241,17 +249,21 @@ func TestAccResourceMacsecParamPol(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_macsec_parameters.test", "owner_tag", ""),
 					resource.TestCheckResourceAttr("aci_macsec_parameters.test", "security_policy", "should-secure"),
 					resource.TestCheckResourceAttr("aci_macsec_parameters.test", "window_size", "64"),
-					resource.TestCheckResourceAttr("aci_macsec_parameters.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_macsec_parameters.test", "annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_macsec_parameters.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_macsec_parameters.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_macsec_parameters.test", "tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_macsec_parameters.test", "tags.#", "1"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_macsec_parameters.test", "annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_macsec_parameters.test", "annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_macsec_parameters.test", "annotations.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_macsec_parameters.test", "tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_macsec_parameters.test", "tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_macsec_parameters.test", "tags.#", "1"),
+					),
 				),
 			},
 			// Update with all children removed
 			{
-				Config: testConfigMacsecParamPolChildrenRemoveAll,
+				Config: testConfigMacsecParamPolChildrenRemoveAll + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_macsec_parameters.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_macsec_parameters.test", "cipher_suite", "gcm-aes-xpn-256"),

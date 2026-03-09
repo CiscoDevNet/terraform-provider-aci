@@ -19,7 +19,7 @@ func TestAccResourceMacsecKeyChainPol(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config: testConfigMacsecKeyChainPolMinAllowExisting,
+				Config: testConfigMacsecKeyChainPolMinAllowExisting + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_macsec_key_chain.allow_test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_macsec_key_chain.allow_test_2", "name", "test_name"),
@@ -58,7 +58,7 @@ func TestAccResourceMacsecKeyChainPol(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config: testConfigMacsecKeyChainPolMinAllowExisting,
+				Config: testConfigMacsecKeyChainPolMinAllowExisting + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_macsec_key_chain.allow_test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_macsec_key_chain.allow_test_2", "name", "test_name"),
@@ -83,7 +83,7 @@ func TestAccResourceMacsecKeyChainPol(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create with minimum config and verify default APIC values
 			{
-				Config: testConfigMacsecKeyChainPolMin,
+				Config: testConfigMacsecKeyChainPolMin + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "annotation", "orchestrator:terraform"),
@@ -95,7 +95,7 @@ func TestAccResourceMacsecKeyChainPol(t *testing.T) {
 			},
 			// Update with all config and verify default APIC values
 			{
-				Config: testConfigMacsecKeyChainPolAll,
+				Config: testConfigMacsecKeyChainPolAll + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "annotation", "annotation"),
@@ -107,7 +107,7 @@ func TestAccResourceMacsecKeyChainPol(t *testing.T) {
 			},
 			// Update with minimum config and verify config is unchanged
 			{
-				Config: testConfigMacsecKeyChainPolMin,
+				Config: testConfigMacsecKeyChainPolMin + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "annotation", "orchestrator:terraform"),
@@ -119,7 +119,7 @@ func TestAccResourceMacsecKeyChainPol(t *testing.T) {
 			},
 			// Update with empty strings config or default value
 			{
-				Config: testConfigMacsecKeyChainPolReset,
+				Config: testConfigMacsecKeyChainPolReset + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "annotation", "orchestrator:terraform"),
@@ -137,66 +137,78 @@ func TestAccResourceMacsecKeyChainPol(t *testing.T) {
 			},
 			// Update with children
 			{
-				Config: testConfigMacsecKeyChainPolChildren,
+				Config: testConfigMacsecKeyChainPolChildren + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "description", ""),
 					resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "tags.#", "2"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "annotations.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children removed from config
 			{
-				Config: testConfigMacsecKeyChainPolChildrenRemoveFromConfig,
+				Config: testConfigMacsecKeyChainPolChildrenRemoveFromConfig + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "description", ""),
 					resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "annotations.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "annotations.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "annotations.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "annotations.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "annotations.#", "2"),
-					resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "tags.0.key", "key_0"),
-					resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "tags.0.value", "value_1"),
-					resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "tags.1.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "tags.1.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "tags.#", "2"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "annotations.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "annotations.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "annotations.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "annotations.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "annotations.#", "2"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "tags.0.key", "key_0"),
+						resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "tags.0.value", "value_1"),
+						resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "tags.1.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "tags.1.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "tags.#", "2"),
+					),
 				),
 			},
 			// Update with children first child removed
 			{
-				Config: testConfigMacsecKeyChainPolChildrenRemoveOne,
+				Config: testConfigMacsecKeyChainPolChildrenRemoveOne + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "description", ""),
 					resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "name_alias", ""),
 					resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "owner_key", ""),
 					resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "owner_tag", ""),
-					resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "annotations.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "annotations.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "annotations.#", "1"),
-					resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "tags.0.key", "key_1"),
-					resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "tags.0.value", "test_value"),
-					resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "tags.#", "1"),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "annotations.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "annotations.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "annotations.#", "1"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+						resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "tags.0.key", "key_1"),
+						resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "tags.0.value", "test_value"),
+						resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "tags.#", "1"),
+					),
 				),
 			},
 			// Update with all children removed
 			{
-				Config: testConfigMacsecKeyChainPolChildrenRemoveAll,
+				Config: testConfigMacsecKeyChainPolChildrenRemoveAll + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_macsec_key_chain.test", "description", ""),
