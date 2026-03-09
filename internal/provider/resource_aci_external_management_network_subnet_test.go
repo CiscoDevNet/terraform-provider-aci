@@ -213,7 +213,7 @@ func TestAccResourceMgmtSubnetWithMgmtInstP(t *testing.T) {
 			},
 			// Update with minimum config and custom type semantic equivalent values
 			{
-				Config:             testConfigMgmtSubnetCustomTypeDependencyWithMgmtInstP,
+				Config:             testConfigMgmtSubnetCustomTypeDependencyWithMgmtInstP + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_external_management_network_subnet.test", "ip", "2001:0db8::/32"),

@@ -267,7 +267,7 @@ func TestAccResourceFvTrackMemberWithFvTenant(t *testing.T) {
 			},
 			// Update with minimum config and custom type semantic equivalent values
 			{
-				Config:             testConfigFvTrackMemberCustomTypeDependencyWithFvTenant,
+				Config:             testConfigFvTrackMemberCustomTypeDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_ip_sla_track_member.test", "destination_ip_address", "2001:0db8::01"),
@@ -483,6 +483,7 @@ resource "aci_ip_sla_track_member" "test" {
   scope = "uni/tn-test_tenant/BD-test_bd"
   relation_to_monitoring_policy = {
     annotation = "annotation_1"
+    child_versions = "4.1(1i)-"
     annotations = []
     tags = []
     target_dn = "uni/tn-test_tenant/ipslaMonitoringPol-monitoring_policy_name_1"

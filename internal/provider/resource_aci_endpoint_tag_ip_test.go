@@ -222,7 +222,7 @@ func TestAccResourceFvEpIpTagWithFvTenant(t *testing.T) {
 			},
 			// Update with minimum config and custom type semantic equivalent values
 			{
-				Config:             testConfigFvEpIpTagCustomTypeDependencyWithFvTenant,
+				Config:             testConfigFvEpIpTagCustomTypeDependencyWithFvTenant + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_endpoint_tag_ip.test", "ip", "fe80::0001"),

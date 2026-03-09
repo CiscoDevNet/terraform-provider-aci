@@ -245,7 +245,7 @@ func TestAccResourcePimRouteMapEntryWithPimRouteMapPol(t *testing.T) {
 			},
 			// Update with minimum config and custom type semantic equivalent values
 			{
-				Config:             testConfigPimRouteMapEntryCustomTypeDependencyWithPimRouteMapPol,
+				Config:             testConfigPimRouteMapEntryCustomTypeDependencyWithPimRouteMapPol + testConfigDataSourceSystem,
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_pim_route_map_entry.test", "group_ip", "ff0e::0101/128"),
