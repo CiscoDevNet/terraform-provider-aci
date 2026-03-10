@@ -5,3 +5,4 @@ resource_name: ip_address_block
 sub_category: Tenant Policies
 ui_locations:
     - Tenants (mgmt) -> IP Address Pools -> Address Blocks
+    - Tenants -> Application Profiles -> Application EPGs -> L4-L7 IP Address Pools -> Address Blocks
