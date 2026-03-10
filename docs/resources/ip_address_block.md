@@ -28,7 +28,9 @@ Manages ACI IP Address Block
 
 ## GUI Information ##
 
-* Location: `Tenants (mgmt) -> IP Address Pools -> Address Blocks`
+* Locations:
+  - `Tenants (mgmt) -> IP Address Pools -> Address Blocks`
+  - `Tenants -> Application Profiles -> Application EPGs -> L4-L7 IP Address Pools -> Address Blocks`
 
 ## Example Usage ##
 
