@@ -41,6 +41,8 @@ type ClassDefinition struct {
 	ExcludeChildren []string `yaml:"exclude_children"`
 	// A list of parent class names to exclude from the Parents list.
 	ExcludeParents []string `yaml:"exclude_parents"`
+	// A list of identifier attributes for the class.
+	IdentifiedBy []string `yaml:"identified_by"`
 	// A list of child class names to include in the Children list outside of the standard inclusion logic.
 	IncludeChildren []string `yaml:"include_children"`
 	// A list of parent class names to include in the Parents list outside of the standard inclusion logic.
