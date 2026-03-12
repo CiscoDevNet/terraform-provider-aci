@@ -197,7 +197,6 @@ func (c *Class) setClassData(ds *DataStore) error {
 		return err
 	}
 
-	// TODO: add placeholder function for Deprecated
 	c.setDeprecated()
 
 	err = c.setDeprecatedVersions()
