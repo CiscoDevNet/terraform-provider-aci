@@ -344,7 +344,21 @@ func (c *Class) setDocumentation() {
 func (c *Class) setIdentifiedBy() {
 	// Determine the identifying properties of the class.
 	genLogger.Debug(fmt.Sprintf("Setting IdentifiedBy for class '%s'.", c.Name))
-	genLogger.Debug(fmt.Sprintf("Successfully set IdentifiedBy for class '%s'.", c.Name))
+
+	// Use ClassDefinition override if specified, otherwise read from meta file.
+	if len(c.ClassDefinition.IdentifiedBy) > 0 {
+		c.IdentifiedBy = c.ClassDefinition.IdentifiedBy
+	} else if identifiedBy, ok := c.MetaFileContent["identifiedBy"].([]interface{}); ok {
+		for _, identifier := range identifiedBy {
+			if identifierString, ok := identifier.(string); ok && !slices.Contains(c.IdentifiedBy, identifierString) {
+				c.IdentifiedBy = append(c.IdentifiedBy, identifierString)
+			}
+		}
+	}
+
+	slices.Sort(c.IdentifiedBy)
+
+	genLogger.Debug(fmt.Sprintf("Successfully set IdentifiedBy for class '%s'. IdentifiedBy: %v", c.Name, c.IdentifiedBy))
 }
 
 func (c *Class) setIsMigration() {

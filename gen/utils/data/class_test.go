@@ -1336,3 +1336,131 @@ func TestSetDeprecatedVersions(t *testing.T) {
 		})
 	}
 }
+
+type setIdentifiedByInput struct {
+	ClassDefinitionIdentifiedBy []string
+	MetaIdentifiedBy            interface{}
+}
+
+func TestSetIdentifiedBy(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	testCases := []test.TestCase{
+		{
+			Name: "test_identified_by_from_meta_file",
+			Input: setIdentifiedByInput{
+				ClassDefinitionIdentifiedBy: nil,
+				MetaIdentifiedBy:            []interface{}{"name"},
+			},
+			Expected: []string{"name"},
+		},
+		{
+			Name: "test_identified_by_from_meta_file_multiple",
+			Input: setIdentifiedByInput{
+				ClassDefinitionIdentifiedBy: nil,
+				MetaIdentifiedBy:            []interface{}{"key", "value"},
+			},
+			Expected: []string{"key", "value"},
+		},
+		{
+			Name: "test_identified_by_from_meta_file_sorted",
+			Input: setIdentifiedByInput{
+				ClassDefinitionIdentifiedBy: nil,
+				MetaIdentifiedBy:            []interface{}{"value", "key"},
+			},
+			Expected: []string{"key", "value"},
+		},
+		{
+			Name: "test_identified_by_from_meta_file_deduplicated",
+			Input: setIdentifiedByInput{
+				ClassDefinitionIdentifiedBy: nil,
+				MetaIdentifiedBy:            []interface{}{"name", "name"},
+			},
+			Expected: []string{"name"},
+		},
+		{
+			Name: "test_class_definition_overrides_meta_file",
+			Input: setIdentifiedByInput{
+				ClassDefinitionIdentifiedBy: []string{"overrideKey"},
+				MetaIdentifiedBy:            []interface{}{"metaKey"},
+			},
+			Expected: []string{"overrideKey"},
+		},
+		{
+			Name: "test_class_definition_overrides_when_meta_nil",
+			Input: setIdentifiedByInput{
+				ClassDefinitionIdentifiedBy: []string{"overrideKey"},
+				MetaIdentifiedBy:            nil,
+			},
+			Expected: []string{"overrideKey"},
+		},
+		{
+			Name: "test_class_definition_multiple_sorted",
+			Input: setIdentifiedByInput{
+				ClassDefinitionIdentifiedBy: []string{"zAttr", "aAttr"},
+				MetaIdentifiedBy:            nil,
+			},
+			Expected: []string{"aAttr", "zAttr"},
+		},
+		{
+			Name: "test_empty_class_definition_falls_back_to_meta",
+			Input: setIdentifiedByInput{
+				ClassDefinitionIdentifiedBy: []string{},
+				MetaIdentifiedBy:            []interface{}{"metaKey"},
+			},
+			Expected: []string{"metaKey"},
+		},
+		{
+			Name: "test_nil_class_definition_and_nil_meta_returns_empty",
+			Input: setIdentifiedByInput{
+				ClassDefinitionIdentifiedBy: nil,
+				MetaIdentifiedBy:            nil,
+			},
+			Expected: []string{},
+		},
+		{
+			Name: "test_empty_class_definition_and_empty_meta_returns_empty",
+			Input: setIdentifiedByInput{
+				ClassDefinitionIdentifiedBy: []string{},
+				MetaIdentifiedBy:            []interface{}{},
+			},
+			Expected: []string{},
+		},
+		{
+			Name: "test_nil_class_definition_and_missing_meta_key_returns_empty",
+			Input: setIdentifiedByInput{
+				ClassDefinitionIdentifiedBy: nil,
+				MetaIdentifiedBy:            "not_a_slice",
+			},
+			Expected: []string{},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.(setIdentifiedByInput)
+			expected := testCase.Expected.([]string)
+
+			class := Class{
+				Name: testClassName("fvTenant"),
+				ClassDefinition: ClassDefinition{
+					IdentifiedBy: input.ClassDefinitionIdentifiedBy,
+				},
+				MetaFileContent: map[string]interface{}{},
+			}
+			if input.MetaIdentifiedBy != nil {
+				class.MetaFileContent["identifiedBy"] = input.MetaIdentifiedBy
+			}
+
+			class.setIdentifiedBy()
+
+			if len(expected) == 0 {
+				assert.Empty(t, class.IdentifiedBy, test.MessageEqual(expected, class.IdentifiedBy, testCase.Name))
+			} else {
+				assert.Equal(t, expected, class.IdentifiedBy, test.MessageEqual(expected, class.IdentifiedBy, testCase.Name))
+			}
+		})
+	}
+}
