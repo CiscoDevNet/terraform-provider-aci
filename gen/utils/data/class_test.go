@@ -1464,3 +1464,83 @@ func TestSetIdentifiedBy(t *testing.T) {
 		})
 	}
 }
+
+type setIsSingleNestedInput struct {
+	ClassDefinitionIsSingleNested bool
+	IdentifiedBy                  []string
+}
+
+func TestSetIsSingleNested(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	testCases := []test.TestCase{
+		{
+			Name: "test_no_identifiers_returns_true",
+			Input: setIsSingleNestedInput{
+				ClassDefinitionIsSingleNested: false,
+				IdentifiedBy:                  []string{},
+			},
+			Expected: true,
+		},
+		{
+			Name: "test_nil_identifiers_returns_true",
+			Input: setIsSingleNestedInput{
+				ClassDefinitionIsSingleNested: false,
+				IdentifiedBy:                  nil,
+			},
+			Expected: true,
+		},
+		{
+			Name: "test_with_identifiers_returns_false",
+			Input: setIsSingleNestedInput{
+				ClassDefinitionIsSingleNested: false,
+				IdentifiedBy:                  []string{"name"},
+			},
+			Expected: false,
+		},
+		{
+			Name: "test_class_definition_override_true",
+			Input: setIsSingleNestedInput{
+				ClassDefinitionIsSingleNested: true,
+				IdentifiedBy:                  []string{"name"},
+			},
+			Expected: true,
+		},
+		{
+			Name: "test_class_definition_override_true_no_identifiers",
+			Input: setIsSingleNestedInput{
+				ClassDefinitionIsSingleNested: true,
+				IdentifiedBy:                  []string{},
+			},
+			Expected: true,
+		},
+		{
+			Name: "test_multiple_identifiers_returns_false",
+			Input: setIsSingleNestedInput{
+				ClassDefinitionIsSingleNested: false,
+				IdentifiedBy:                  []string{"key", "value"},
+			},
+			Expected: false,
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.(setIsSingleNestedInput)
+
+			class := Class{
+				Name: testClassName("fvTenant"),
+				ClassDefinition: ClassDefinition{
+					IsSingleNested: input.ClassDefinitionIsSingleNested,
+				},
+				IdentifiedBy: input.IdentifiedBy,
+			}
+
+			class.setIsSingleNested()
+
+			assert.Equal(t, testCase.Expected, class.IsSingleNested, test.MessageEqual(testCase.Expected, class.IsSingleNested, testCase.Name))
+		})
+	}
+}
