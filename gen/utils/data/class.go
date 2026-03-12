@@ -496,11 +496,7 @@ func (c *Class) setResourceName(ds *DataStore) error {
 
 		// If the class is a relational class and the relation has identifiers, the plural form of the resource name will be set.
 		if len(c.IdentifiedBy) != 0 {
-			pluralForm, err := utils.Plural(c.ResourceName)
-			if err != nil {
-				return err
-			}
-			c.ResourceNameNested = pluralForm
+			c.ResourceNameNested = utils.Plural(c.ResourceName)
 		}
 	} else {
 		return fmt.Errorf("failed to set resource name for class '%s': label not found", c.Name)
