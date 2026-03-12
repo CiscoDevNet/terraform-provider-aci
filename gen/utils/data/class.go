@@ -307,9 +307,11 @@ func (c *Class) setChildren(ds *DataStore) error {
 }
 
 func (c *Class) setDeprecated() {
-	// Determine if the class is deprecated.
 	genLogger.Debug(fmt.Sprintf("Setting Deprecated for class '%s'.", c.Name))
-	genLogger.Debug(fmt.Sprintf("Successfully set Deprecated for class '%s'.", c.Name))
+
+	c.Deprecated = c.ClassDefinition.Deprecated
+
+	genLogger.Debug(fmt.Sprintf("Successfully set Deprecated for class '%s'. Deprecated: %t", c.Name, c.Deprecated))
 }
 
 func (c *Class) setDeprecatedVersions() error {

@@ -34,6 +34,8 @@ type ClassDefinition struct {
 	// Overrides the default deletion behavior from meta file. Set to "never" to prevent deletion of the class.
 	// The value "never" is used to keep the input consistent with the meta data file.
 	AllowDelete string `yaml:"allow_delete"`
+	// Indicates that the resource and datasource are deprecated. A deprecation warning will be included in the schemas.
+	Deprecated bool `yaml:"deprecated"`
 	// The deprecated APIC versions for the class. Format: "1.0(1e)-" or "4.2(7f)-4.2(7w),5.2(1g)-".
 	// Used to indicate versions where the class is deprecated but still functional.
 	DeprecatedVersions string `yaml:"deprecated_versions"`
