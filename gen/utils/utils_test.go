@@ -75,25 +75,18 @@ func TestPlural(t *testing.T) {
 	testCases := []test.TestCase{
 		{Name: "test_policy_to_policies", Input: "monitor_policy", Expected: "monitor_policies"},
 		{Name: "test_add_s", Input: "annotation", Expected: "annotations"},
+		{Name: "test_already_plural_s", Input: "contracts", Expected: "contracts"},
+		{Name: "test_already_plural_mappings", Input: "remote_site_id_mappings", Expected: "remote_site_id_mappings"},
+		{Name: "test_already_plural_ies", Input: "monitor_policies", Expected: "monitor_policies"},
 	}
 
 	for _, testCase := range testCases {
 		t.Run(testCase.Name, func(t *testing.T) {
 			t.Parallel()
-			result, err := Plural(testCase.Input.(string))
-			assert.NoError(t, err, test.MessageUnexpectedError(err))
+			result := Plural(testCase.Input.(string))
 			assert.Equal(t, testCase.Expected, result, test.MessageEqual(testCase.Expected, result, testCase.Name))
 		})
 	}
-}
-
-func TestPluralError(t *testing.T) {
-	t.Parallel()
-	test.InitializeTest(t)
-
-	_, err := Plural("contracts")
-	assert.Error(t, err)
-	assert.ErrorContains(t, err, "no plural rule defined")
 }
 
 func TestUnderscoreEdgeCases(t *testing.T) {
