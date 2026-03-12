@@ -208,13 +208,11 @@ func (c *Class) setClassData(ds *DataStore) error {
 	// TODO: add function to set Documentation
 	c.setDocumentation()
 
-	// TODO: add function to set IdentifiedBy
 	c.setIdentifiedBy()
 
 	// TODO: add function to set IsMigration
 	c.setIsMigration()
 
-	// TODO: add function to set IsSingleNested
 	c.setIsSingleNested()
 
 	err = c.setParents()
@@ -370,7 +368,10 @@ func (c *Class) setIsMigration() {
 func (c *Class) setIsSingleNested() {
 	// Determine if the class can only be configured once when used as a nested attribute in a parent resource.
 	genLogger.Debug(fmt.Sprintf("Setting IsSingleNested for class '%s'.", c.Name))
-	genLogger.Debug(fmt.Sprintf("Successfully set IsSingleNested for class '%s'.", c.Name))
+
+	c.IsSingleNested = c.ClassDefinition.IsSingleNested || len(c.IdentifiedBy) == 0
+
+	genLogger.Debug(fmt.Sprintf("Successfully set IsSingleNested for class '%s'. IsSingleNested: %t", c.Name, c.IsSingleNested))
 }
 
 func (c *Class) setParents() error {
