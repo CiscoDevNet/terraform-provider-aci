@@ -1544,3 +1544,38 @@ func TestSetIsSingleNested(t *testing.T) {
 		})
 	}
 }
+
+func TestSetDeprecated(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	testCases := []test.TestCase{
+		{
+			Name:     "test_deprecated_false",
+			Input:    false,
+			Expected: false,
+		},
+		{
+			Name:     "test_deprecated_true",
+			Input:    true,
+			Expected: true,
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+
+			class := Class{
+				Name: testClassName("fvTenant"),
+				ClassDefinition: ClassDefinition{
+					Deprecated: testCase.Input.(bool),
+				},
+			}
+
+			class.setDeprecated()
+
+			assert.Equal(t, testCase.Expected, class.Deprecated, test.MessageEqual(testCase.Expected, class.Deprecated, testCase.Name))
+		})
+	}
+}
