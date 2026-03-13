@@ -107,7 +107,10 @@ func (c *Class) setDocumentation() error {
 		return err
 	}
 
-	c.Documentation.setUiLocations(c)
+	err = c.Documentation.setUiLocations(c)
+	if err != nil {
+		return err
+	}
 
 	c.Documentation.setWarnings(c)
 
@@ -160,9 +163,20 @@ func (d *ClassDocumentation) setNotes(class *Class) {
 	genLogger.Debug(fmt.Sprintf("Successfully set Documentation Notes for class '%s'.", class.Name.full))
 }
 
-func (d *ClassDocumentation) setUiLocations(class *Class) {
+func (d *ClassDocumentation) setUiLocations(class *Class) error {
 	genLogger.Debug(fmt.Sprintf("Setting Documentation UiLocations for class '%s'.", class.Name.full))
-	genLogger.Debug(fmt.Sprintf("Successfully set Documentation UiLocations for class '%s'.", class.Name.full))
+
+	if len(class.ClassDefinition.Documentation.UiLocations) == 0 {
+		if class.IsSingleNestedWhenDefinedAsChild {
+			return nil
+		}
+		return fmt.Errorf("class '%s': ui_locations not specified: add documentation.ui_locations to the class definition file", class.Name.full)
+	}
+
+	d.UiLocations = class.ClassDefinition.Documentation.UiLocations
+
+	genLogger.Debug(fmt.Sprintf("Successfully set Documentation UiLocations for class '%s'. UiLocations: %v", class.Name.full, d.UiLocations))
+	return nil
 }
 
 func (d *ClassDocumentation) setWarnings(class *Class) {
