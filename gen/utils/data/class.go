@@ -33,7 +33,7 @@ type Class struct {
 	IsMigration bool
 	// Indicates that when the class is included in a resource as a child it can only be configured once.
 	// This is used to determine the type of the nested attribute to be a map or list.
-	IsSingleNested bool
+	IsSingleNestedWhenDefinedAsChild bool
 	// The full content from the meta file.
 	// Storing the content proactively in case we need to access the data at a later stage.
 	MetaFileContent map[string]interface{}
@@ -212,7 +212,7 @@ func (c *Class) setClassData(ds *DataStore) error {
 	// TODO: add function to set IsMigration
 	c.setIsMigration()
 
-	c.setIsSingleNested()
+	c.setIsSingleNestedWhenDefinedAsChild()
 
 	err = c.setParents()
 	if err != nil {
@@ -366,13 +366,13 @@ func (c *Class) setIsMigration() {
 	genLogger.Debug(fmt.Sprintf("Successfully set IsMigration for class '%s'.", c.Name))
 }
 
-func (c *Class) setIsSingleNested() {
+func (c *Class) setIsSingleNestedWhenDefinedAsChild() {
 	// Determine if the class can only be configured once when used as a nested attribute in a parent resource.
-	genLogger.Debug(fmt.Sprintf("Setting IsSingleNested for class '%s'.", c.Name))
+	genLogger.Debug(fmt.Sprintf("Setting IsSingleNestedWhenDefinedAsChild for class '%s'.", c.Name))
 
-	c.IsSingleNested = c.ClassDefinition.IsSingleNested || len(c.IdentifiedBy) == 0
+	c.IsSingleNestedWhenDefinedAsChild = c.ClassDefinition.IsSingleNestedWhenDefinedAsChild || len(c.IdentifiedBy) == 0
 
-	genLogger.Debug(fmt.Sprintf("Successfully set IsSingleNested for class '%s'. IsSingleNested: %t", c.Name, c.IsSingleNested))
+	genLogger.Debug(fmt.Sprintf("Successfully set IsSingleNestedWhenDefinedAsChild for class '%s'. IsSingleNestedWhenDefinedAsChild: %t", c.Name, c.IsSingleNestedWhenDefinedAsChild))
 }
 
 func (c *Class) setParents() error {
