@@ -30,6 +30,23 @@ func loadGlobalMetaDefinition() GlobalMetaDefinition {
 	return definitionGlobalMetaData
 }
 
+type ClassDocumentationDefinition struct {
+	// Overrides the description from meta file comment[] array.
+	Description string `yaml:"description"`
+	// A list of child class names to exclude from the documentation children list.
+	ExcludeChildren []string `yaml:"exclude_children"`
+	// A list of child class names to force-include in the documentation children list.
+	IncludeChildren []string `yaml:"include_children"`
+	// Notes rendered with -> prefix in the documentation.
+	Notes []string `yaml:"notes"`
+	// Sub-category for Terraform Registry sidebar grouping.
+	SubCategory SubCategoryEnum `yaml:"sub_category"`
+	// GUI locations in APIC (e.g., "Tenants -> Networking -> VRFs").
+	UiLocations []string `yaml:"ui_locations"`
+	// Warnings rendered with !> prefix in the documentation.
+	Warnings []string `yaml:"warnings"`
+}
+
 type ClassDefinition struct {
 	// Overrides the default deletion behavior from meta file. Set to "never" to prevent deletion of the class.
 	// The value "never" is used to keep the input consistent with the meta data file.
@@ -39,6 +56,8 @@ type ClassDefinition struct {
 	// The deprecated APIC versions for the class. Format: "1.0(1e)-" or "4.2(7f)-4.2(7w),5.2(1g)-".
 	// Used to indicate versions where the class is deprecated but still functional.
 	DeprecatedVersions string `yaml:"deprecated_versions"`
+	// Documentation specific overrides for the class.
+	Documentation ClassDocumentationDefinition `yaml:"documentation"`
 	// A list of child class names to exclude from the Children list.
 	ExcludeChildren []string `yaml:"exclude_children"`
 	// A list of parent class names to exclude from the Parents list.

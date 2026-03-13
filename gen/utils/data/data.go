@@ -176,6 +176,16 @@ func (ds *DataStore) loadClasses() error {
 		return fmt.Errorf("failed to load classes: %s", failedToLoadClasses)
 	}
 
+	// Set documentation for classes after all class data is loaded.
+	// This ensures that all child class information from the DataStore is available.
+	for classNameStr, class := range ds.Classes {
+		err := class.setDocumentation()
+		if err != nil {
+			return err
+		}
+		ds.Classes[classNameStr] = class
+	}
+
 	genLogger.Debug(fmt.Sprintf("Successfully loaded classes from: %s.", constMetaPath))
 	return nil
 }
