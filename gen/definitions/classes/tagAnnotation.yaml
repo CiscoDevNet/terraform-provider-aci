@@ -12,3 +12,4 @@ resource_notes:
     - This resource should not be used in combination with the `annotations` nested attributes of other resources for the same object. Doing so will result in unexpected behaviour.
 ui_locations:
     - Under every object as Annotations in the Policy tab in recent APIC versions.
+sub_category: Generic
