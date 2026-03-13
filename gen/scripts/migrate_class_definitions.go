@@ -19,15 +19,19 @@ import (
 
 // Input struct matching the current top-level YAML keys in classes/ files.
 type OldClassDefinition struct {
-	AllowDelete string   `yaml:"allow_delete"`
-	SubCategory string   `yaml:"sub_category"`
-	UiLocations []string `yaml:"ui_locations"`
+	AllowDelete     string   `yaml:"allow_delete"`
+	ExcludeChildren []string `yaml:"exclude_children"`
+	IncludeChildren []string `yaml:"include_children"`
+	SubCategory     string   `yaml:"sub_category"`
+	UiLocations     []string `yaml:"ui_locations"`
 }
 
-// Output struct matching the new nested documentation format.
+// Output struct matching the new ClassDefinition format.
 type NewClassDefinition struct {
-	AllowDelete   string             `yaml:"allow_delete,omitempty"`
-	Documentation DocumentationBlock `yaml:"documentation"`
+	AllowDelete     string             `yaml:"allow_delete,omitempty"`
+	Documentation   DocumentationBlock `yaml:"documentation,omitempty"`
+	ExcludeChildren []string           `yaml:"exclude_children,omitempty"`
+	IncludeChildren []string           `yaml:"include_children,omitempty"`
 }
 
 type DocumentationBlock struct {
@@ -85,7 +89,7 @@ func main() {
 		}
 
 		// Skip files that have no fields to migrate.
-		if old.AllowDelete == "" && old.SubCategory == "" && len(old.UiLocations) == 0 {
+		if old.AllowDelete == "" && old.SubCategory == "" && len(old.UiLocations) == 0 && len(old.ExcludeChildren) == 0 && len(old.IncludeChildren) == 0 {
 			skipped++
 			continue
 		}
@@ -97,7 +101,9 @@ func main() {
 		}
 
 		newDef := NewClassDefinition{
-			AllowDelete: allowDelete,
+			AllowDelete:     allowDelete,
+			ExcludeChildren: old.ExcludeChildren,
+			IncludeChildren: old.IncludeChildren,
 			Documentation: DocumentationBlock{
 				SubCategory: old.SubCategory,
 				UiLocations: old.UiLocations,

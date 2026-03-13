@@ -129,3 +129,103 @@ func TestSetSubCategory(t *testing.T) {
 		})
 	}
 }
+
+type setUiLocationsInput struct {
+	UiLocations                      []string
+	IsSingleNestedWhenDefinedAsChild bool
+}
+
+type setUiLocationsExpected struct {
+	UiLocations []string
+	Error       bool
+	ErrorMsg    string
+}
+
+func TestSetUiLocations(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	testCases := []test.TestCase{
+		{
+			Name: "test_valid_single_ui_location",
+			Input: setUiLocationsInput{
+				UiLocations: []string{"Tenants -> Networking -> VRFs"},
+			},
+			Expected: setUiLocationsExpected{
+				UiLocations: []string{"Tenants -> Networking -> VRFs"},
+			},
+		},
+		{
+			Name: "test_valid_multiple_ui_locations",
+			Input: setUiLocationsInput{
+				UiLocations: []string{
+					"Tenants -> Application Profiles -> Application EPGs -> Contracts",
+					"Tenants -> Networking -> L3Outs -> External EPGs -> Contracts",
+				},
+			},
+			Expected: setUiLocationsExpected{
+				UiLocations: []string{
+					"Tenants -> Application Profiles -> Application EPGs -> Contracts",
+					"Tenants -> Networking -> L3Outs -> External EPGs -> Contracts",
+				},
+			},
+		},
+		{
+			Name: "test_not_shown_in_ui",
+			Input: setUiLocationsInput{
+				UiLocations: []string{"Not shown in UI"},
+			},
+			Expected: setUiLocationsExpected{
+				UiLocations: []string{"Not shown in UI"},
+			},
+		},
+		{
+			Name: "test_empty_ui_locations_single_nested",
+			Input: setUiLocationsInput{
+				UiLocations:                      nil,
+				IsSingleNestedWhenDefinedAsChild: true,
+			},
+			Expected: setUiLocationsExpected{
+				UiLocations: nil,
+			},
+		},
+		{
+			Name: "test_empty_ui_locations_not_single_nested",
+			Input: setUiLocationsInput{
+				UiLocations:                      nil,
+				IsSingleNestedWhenDefinedAsChild: false,
+			},
+			Expected: setUiLocationsExpected{
+				Error:    true,
+				ErrorMsg: "class 'fvTenant': ui_locations not specified: add documentation.ui_locations to the class definition file",
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.(setUiLocationsInput)
+			expected := testCase.Expected.(setUiLocationsExpected)
+
+			class := Class{
+				Name:                             testClassName("fvTenant"),
+				IsSingleNestedWhenDefinedAsChild: input.IsSingleNestedWhenDefinedAsChild,
+				ClassDefinition: ClassDefinition{
+					Documentation: ClassDocumentationDefinition{
+						UiLocations: input.UiLocations,
+					},
+				},
+			}
+
+			err := class.Documentation.setUiLocations(&class)
+
+			if expected.Error {
+				assert.EqualError(t, err, expected.ErrorMsg)
+			} else {
+				assert.NoError(t, err, test.MessageUnexpectedError(err))
+				assert.Equal(t, expected.UiLocations, class.Documentation.UiLocations, test.MessageEqual(expected.UiLocations, class.Documentation.UiLocations, testCase.Name))
+			}
+		})
+	}
+}
