@@ -1465,61 +1465,61 @@ func TestSetIdentifiedBy(t *testing.T) {
 	}
 }
 
-type setIsSingleNestedInput struct {
-	ClassDefinitionIsSingleNested bool
-	IdentifiedBy                  []string
+type setIsSingleNestedWhenDefinedAsChildInput struct {
+	ClassDefinitionIsSingleNestedWhenDefinedAsChild bool
+	IdentifiedBy                                    []string
 }
 
-func TestSetIsSingleNested(t *testing.T) {
+func TestSetIsSingleNestedWhenDefinedAsChild(t *testing.T) {
 	t.Parallel()
 	test.InitializeTest(t)
 
 	testCases := []test.TestCase{
 		{
 			Name: "test_no_identifiers_returns_true",
-			Input: setIsSingleNestedInput{
-				ClassDefinitionIsSingleNested: false,
-				IdentifiedBy:                  []string{},
+			Input: setIsSingleNestedWhenDefinedAsChildInput{
+				ClassDefinitionIsSingleNestedWhenDefinedAsChild: false,
+				IdentifiedBy: []string{},
 			},
 			Expected: true,
 		},
 		{
 			Name: "test_nil_identifiers_returns_true",
-			Input: setIsSingleNestedInput{
-				ClassDefinitionIsSingleNested: false,
-				IdentifiedBy:                  nil,
+			Input: setIsSingleNestedWhenDefinedAsChildInput{
+				ClassDefinitionIsSingleNestedWhenDefinedAsChild: false,
+				IdentifiedBy: nil,
 			},
 			Expected: true,
 		},
 		{
 			Name: "test_with_identifiers_returns_false",
-			Input: setIsSingleNestedInput{
-				ClassDefinitionIsSingleNested: false,
-				IdentifiedBy:                  []string{"name"},
+			Input: setIsSingleNestedWhenDefinedAsChildInput{
+				ClassDefinitionIsSingleNestedWhenDefinedAsChild: false,
+				IdentifiedBy: []string{"name"},
 			},
 			Expected: false,
 		},
 		{
 			Name: "test_class_definition_override_true",
-			Input: setIsSingleNestedInput{
-				ClassDefinitionIsSingleNested: true,
-				IdentifiedBy:                  []string{"name"},
+			Input: setIsSingleNestedWhenDefinedAsChildInput{
+				ClassDefinitionIsSingleNestedWhenDefinedAsChild: true,
+				IdentifiedBy: []string{"name"},
 			},
 			Expected: true,
 		},
 		{
 			Name: "test_class_definition_override_true_no_identifiers",
-			Input: setIsSingleNestedInput{
-				ClassDefinitionIsSingleNested: true,
-				IdentifiedBy:                  []string{},
+			Input: setIsSingleNestedWhenDefinedAsChildInput{
+				ClassDefinitionIsSingleNestedWhenDefinedAsChild: true,
+				IdentifiedBy: []string{},
 			},
 			Expected: true,
 		},
 		{
 			Name: "test_multiple_identifiers_returns_false",
-			Input: setIsSingleNestedInput{
-				ClassDefinitionIsSingleNested: false,
-				IdentifiedBy:                  []string{"key", "value"},
+			Input: setIsSingleNestedWhenDefinedAsChildInput{
+				ClassDefinitionIsSingleNestedWhenDefinedAsChild: false,
+				IdentifiedBy: []string{"key", "value"},
 			},
 			Expected: false,
 		},
@@ -1528,19 +1528,19 @@ func TestSetIsSingleNested(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run(testCase.Name, func(t *testing.T) {
 			t.Parallel()
-			input := testCase.Input.(setIsSingleNestedInput)
+			input := testCase.Input.(setIsSingleNestedWhenDefinedAsChildInput)
 
 			class := Class{
 				Name: testClassName("fvTenant"),
 				ClassDefinition: ClassDefinition{
-					IsSingleNested: input.ClassDefinitionIsSingleNested,
+					IsSingleNestedWhenDefinedAsChild: input.ClassDefinitionIsSingleNestedWhenDefinedAsChild,
 				},
 				IdentifiedBy: input.IdentifiedBy,
 			}
 
-			class.setIsSingleNested()
+			class.setIsSingleNestedWhenDefinedAsChild()
 
-			assert.Equal(t, testCase.Expected, class.IsSingleNested, test.MessageEqual(testCase.Expected, class.IsSingleNested, testCase.Name))
+			assert.Equal(t, testCase.Expected, class.IsSingleNestedWhenDefinedAsChild, test.MessageEqual(testCase.Expected, class.IsSingleNestedWhenDefinedAsChild, testCase.Name))
 		})
 	}
 }
