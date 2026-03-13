@@ -117,20 +117,6 @@ func setRelationshipTypeEnum(relationType string) (RelationshipTypeEnum, error) 
 	}
 }
 
-type ClassDocumentation struct {
-	// List of all child classes which are not included inside the resource but have a separate resource
-	// Used to reference child resource in documentation
-	Children []string
-	// The description of the class, which is used at the top of the documentation.
-	Description string
-	// List of DN formats
-	DnFormats []string
-	// List of notes to be added to the top of the documentation
-	Notes []string
-	// List of warnings to be added to the top of the documentation
-	Warnings []string
-}
-
 func NewClass(className string, ds *DataStore) (*Class, error) {
 	genLogger.Trace(fmt.Sprintf("Creating new class struct with class name: %s.", className))
 
@@ -203,9 +189,6 @@ func (c *Class) setClassData(ds *DataStore) error {
 	if err != nil {
 		return err
 	}
-
-	// TODO: add function to set Documentation
-	c.setDocumentation()
 
 	c.setIdentifiedBy()
 
@@ -332,12 +315,6 @@ func (c *Class) setDeprecatedVersions() error {
 
 	genLogger.Debug(fmt.Sprintf("Successfully set DeprecatedVersions for class '%s'. Versions: '%s'", c.Name, c.DeprecatedVersions))
 	return nil
-}
-
-func (c *Class) setDocumentation() {
-	// Determine the documentation specific information for the class.
-	genLogger.Debug(fmt.Sprintf("Setting Documentation for class '%s'.", c.Name))
-	genLogger.Debug(fmt.Sprintf("Successfully set Documentation for class '%s'.", c.Name))
 }
 
 func (c *Class) setIdentifiedBy() {
