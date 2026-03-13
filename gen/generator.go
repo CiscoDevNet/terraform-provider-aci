@@ -77,6 +77,10 @@ const (
 const providerName = "aci"
 const pubhupDevnetBaseUrl = "https://pubhub.devnetcloud.com/media/model-doc-latest/docs"
 
+var staticCustomTypeMap = map[string]string{
+	"ip_address": "IPAddress",
+}
+
 // Function map used during template rendering in order to call functions from the template
 // The map contains a key which is the name of the function used in the template and a value which is the function itself
 // The functions itself are defined in the current file
@@ -1246,7 +1250,7 @@ func cleanDirectories() {
 	cleanDirectory(resourcesDocsPath, []string{})
 	cleanDirectory(datasourcesDocsPath, []string{"system.md"})
 	cleanDirectory(testVarsPath, []string{})
-	cleanDirectory("./internal/custom_types", []string{})
+	cleanDirectory("./internal/custom_types", []string{"ipAddress.go"})
 
 	// The *ExamplesPath directories are removed and recreated to ensure all previously rendered files are removed
 	// The provider example file is not removed because it contains static provider configuration
@@ -1424,10 +1428,11 @@ func main() {
 			}
 			model.TestVars = testVarsMap
 			for propertyName, property := range model.Properties {
-				if property.HasCustomType {
+				if property.HasCustomType && property.StaticCustomType == "" {
 					renderTemplate("custom_type.go.tmpl", fmt.Sprintf("%s_%s.go", model.PkgName, propertyName), "./internal/custom_types", property)
 				}
 			}
+
 			renderTemplate("resource.go.tmpl", fmt.Sprintf("resource_%s_%s.go", providerName, model.ResourceName), providerPath, model)
 			renderTemplate("datasource.go.tmpl", fmt.Sprintf("data_source_%s_%s.go", providerName, model.ResourceName), providerPath, model)
 
@@ -1597,14 +1602,16 @@ type LegacyBlock struct {
 }
 
 type LegacyAttribute struct {
-	Name            string
-	AttributeName   string
-	ValueType       []string
-	ReplacedBy      ReplacementAttribute
-	Optional        bool
-	Computed        bool
-	Required        bool
-	NeedsCustomType bool
+	Name                 string
+	AttributeName        string
+	ValueType            []string
+	ReplacedBy           ReplacementAttribute
+	Optional             bool
+	Computed             bool
+	Required             bool
+	NeedsCustomType      bool
+	StaticCustomType     string
+	ValidateAsIPv4OrIPv6 bool
 }
 
 type ReplacementAttribute struct {
@@ -1635,12 +1642,15 @@ type Property struct {
 	Validators               []interface{}
 	IdentifyProperties       []Property
 	// Below booleans are used during template rendering to determine correct rendering the go code
-	IsNaming      bool
-	CreateOnly    bool
-	IsRequired    bool
-	IgnoreInTest  bool
-	ReadOnly      bool
-	HasCustomType bool
+	IsNaming                bool
+	CreateOnly              bool
+	IsRequired              bool
+	IgnoreInTest            bool
+	ReadOnly                bool
+	HasCustomType           bool
+	IncludeInCustomTypeTest bool
+	StaticCustomType        string
+	ValidateAsIPv4OrIPv6    bool
 }
 
 // A Definitions represents the ACI class and property definitions as defined in the definitions YAML files
@@ -2237,6 +2247,10 @@ func (m *Model) SetClassProperties(classDetails interface{}) {
 				HasCustomType:            false,
 			}
 
+			if propertyValue.(map[string]interface{})["validateAsIPv4OrIPv6"] != nil {
+				property.ValidateAsIPv4OrIPv6 = propertyValue.(map[string]interface{})["validateAsIPv4OrIPv6"].(bool)
+			}
+
 			if requiredProperty(GetOverwriteAttributeName(m.PkgName, propertyName, m.Definitions), m.PkgName, m.Definitions) || property.IsNaming {
 				property.IsRequired = true
 				requiredCount += 1
@@ -2310,6 +2324,14 @@ func (m *Model) SetClassProperties(classDetails interface{}) {
 					m.HasCustomTypeProperties = true
 				}
 			}
+
+			staticCustomType := GetStaticCustomType(m.PkgName, propertyName, m.Definitions)
+			if staticCustomType != "" {
+				property.StaticCustomType = staticCustomTypeMap[staticCustomType]
+				property.HasCustomType = true
+				m.HasCustomTypeProperties = true
+			}
+			property.IncludeInCustomTypeTest = IncludeInCustomTypeTest(m.PkgName, propertyName, m.Definitions)
 
 			defaultValueOverwrite := GetDefaultValues(m.PkgName, propertyName, m.Definitions)
 			if defaultValueOverwrite != "" {
@@ -2537,7 +2559,6 @@ func (m *Model) SetLegacyAttributes(definitions Definitions) {
 	legacyResource := definitions.Migration["provider_schemas"].(map[string]interface{})["registry.terraform.io/ciscodevnet/aci"].(map[string]interface{})["resource_schemas"].(map[string]interface{})[resourceName]
 
 	if legacyResource != nil {
-
 		attributeNames := []string{}
 		for _, property := range m.Properties {
 			attributeNames = append(attributeNames, property.SnakeCaseName)
@@ -2654,23 +2675,32 @@ func (m *Model) GetLegacyAttribute(attributeName, className string, attributeVal
 		}
 	}
 
-	needsCustomType := false
+	// needsCustomType := false
+	var validateAsIPv4OrIPv6, needsCustomType bool
+	var staticCustomType string
 	for _, property := range m.Properties {
-		if propertyName == property.Name && len(property.ValidValuesMap) > 0 && len(property.Validators) > 0 {
-			needsCustomType = true
-			break
+		if propertyName == property.Name {
+			if property.StaticCustomType != "" {
+				staticCustomType = property.StaticCustomType
+				validateAsIPv4OrIPv6 = property.ValidateAsIPv4OrIPv6
+			}
+			if len(property.ValidValuesMap) > 0 && len(property.Validators) > 0 {
+				needsCustomType = true
+				break
+			}
 		}
-
 	}
 
 	legacyAttribute := LegacyAttribute{
-		Name:            propertyName,
-		AttributeName:   attributeName,
-		ValueType:       valueType,
-		Optional:        optional,
-		Computed:        computed,
-		Required:        required,
-		NeedsCustomType: needsCustomType,
+		Name:                 propertyName,
+		AttributeName:        attributeName,
+		ValueType:            valueType,
+		Optional:             optional,
+		Computed:             computed,
+		Required:             required,
+		NeedsCustomType:      needsCustomType,
+		StaticCustomType:     staticCustomType,
+		ValidateAsIPv4OrIPv6: validateAsIPv4OrIPv6,
 	}
 
 	if replacedBy != nil {
@@ -3577,6 +3607,36 @@ func GetDefaultValues(classPkgName, propertyName string, definitions Definitions
 		}
 	}
 	return ""
+}
+
+func GetStaticCustomType(classPkgName, propertyName string, definitions Definitions) string {
+	if classDetails, ok := definitions.Properties[classPkgName]; ok {
+		for key, value := range classDetails.(map[string]interface{}) {
+			if key == "static_custom_type" {
+				for k, v := range value.(map[interface{}]interface{}) {
+					if k.(string) == propertyName {
+						return v.(string)
+					}
+				}
+			}
+		}
+	}
+	return ""
+}
+
+func IncludeInCustomTypeTest(classPkgName, propertyName string, definitions Definitions) bool {
+	if classDetails, ok := definitions.Properties[classPkgName]; ok {
+		for key, value := range classDetails.(map[string]interface{}) {
+			if key == "required_by_custom_type_in_test" {
+				for _, v := range value.([]interface{}) {
+					if v.(string) == propertyName {
+						return true
+					}
+				}
+			}
+		}
+	}
+	return false
 }
 
 func IsInterfaceSlice(input interface{}) bool {

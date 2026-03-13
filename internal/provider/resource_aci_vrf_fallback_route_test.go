@@ -211,6 +211,14 @@ func TestAccResourceFvFBRouteWithFvFBRGroup(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_vrf_fallback_route.test", "tags.#", "0"),
 				),
 			},
+			// Update with minimum config and custom type semantic equivalent values
+			{
+				Config:             testConfigFvFBRouteCustomTypeDependencyWithFvFBRGroup + testConfigDataSourceSystem,
+				ExpectNonEmptyPlan: false,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_vrf_fallback_route.test", "prefix_address", "2001:0db8::01/64"),
+				),
+			},
 		},
 		CheckDestroy: testCheckResourceDestroy,
 	})
@@ -315,5 +323,12 @@ resource "aci_vrf_fallback_route" "test" {
   prefix_address = "2.2.2.3/24"
   annotations = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
   tags = provider::aci::compare_versions(data.aci_system.version.version,"inside","3.2(1l)-") ? [] : null
+}
+`
+
+const testConfigFvFBRouteCustomTypeDependencyWithFvFBRGroup = testConfigFvFBRGroupMinDependencyWithFvCtx + `
+resource "aci_vrf_fallback_route" "test" {
+  parent_dn = aci_vrf_fallback_route_group.test.id
+  prefix_address = "2001:0db8::01/64"
 }
 `

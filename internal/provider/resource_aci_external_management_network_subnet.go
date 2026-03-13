@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"strings"
 
+	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
@@ -41,15 +42,15 @@ type MgmtSubnetResource struct {
 
 // MgmtSubnetResourceModel describes the resource data model.
 type MgmtSubnetResourceModel struct {
-	Id            types.String `tfsdk:"id"`
-	ParentDn      types.String `tfsdk:"parent_dn"`
-	Annotation    types.String `tfsdk:"annotation"`
-	Descr         types.String `tfsdk:"description"`
-	Ip            types.String `tfsdk:"ip"`
-	Name          types.String `tfsdk:"name"`
-	NameAlias     types.String `tfsdk:"name_alias"`
-	TagAnnotation types.Set    `tfsdk:"annotations"`
-	TagTag        types.Set    `tfsdk:"tags"`
+	Id            types.String                     `tfsdk:"id"`
+	ParentDn      types.String                     `tfsdk:"parent_dn"`
+	Annotation    types.String                     `tfsdk:"annotation"`
+	Descr         types.String                     `tfsdk:"description"`
+	Ip            customTypes.IPAddressStringValue `tfsdk:"ip"`
+	Name          types.String                     `tfsdk:"name"`
+	NameAlias     types.String                     `tfsdk:"name_alias"`
+	TagAnnotation types.Set                        `tfsdk:"annotations"`
+	TagTag        types.Set                        `tfsdk:"tags"`
 }
 
 func getEmptyMgmtSubnetResourceModel() *MgmtSubnetResourceModel {
@@ -58,7 +59,7 @@ func getEmptyMgmtSubnetResourceModel() *MgmtSubnetResourceModel {
 		ParentDn:   basetypes.NewStringNull(),
 		Annotation: basetypes.NewStringNull(),
 		Descr:      basetypes.NewStringNull(),
-		Ip:         basetypes.NewStringNull(),
+		Ip:         customTypes.NewIPAddressStringNull(),
 		Name:       basetypes.NewStringNull(),
 		NameAlias:  basetypes.NewStringNull(),
 		TagAnnotation: types.SetNull(types.ObjectType{
@@ -193,7 +194,8 @@ func (r *MgmtSubnetResource) Schema(ctx context.Context, req resource.SchemaRequ
 				MarkdownDescription: `The description of the External Management Network Subnet object.`,
 			},
 			"ip": schema.StringAttribute{
-				Required: true,
+				CustomType: customTypes.IPAddressStringType{},
+				Required:   true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
@@ -480,7 +482,7 @@ func getAndSetMgmtSubnetAttributes(ctx context.Context, diags *diag.Diagnostics,
 					readData.Descr = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "ip" {
-					readData.Ip = basetypes.NewStringValue(attributeValue.(string))
+					readData.Ip = customTypes.NewIPAddressStringValue(attributeValue.(string))
 				}
 				if attributeName == "name" {
 					readData.Name = basetypes.NewStringValue(attributeValue.(string))
@@ -543,7 +545,7 @@ func getAndSetMgmtSubnetAttributes(ctx context.Context, diags *diag.Diagnostics,
 }
 
 func getMgmtSubnetRn(ctx context.Context, data *MgmtSubnetResourceModel) string {
-	return fmt.Sprintf("subnet-[%s]", data.Ip.ValueString())
+	return fmt.Sprintf("subnet-[%s]", data.Ip.NamedValueString())
 }
 
 func setMgmtSubnetParentDn(ctx context.Context, dn string, data *MgmtSubnetResourceModel) {

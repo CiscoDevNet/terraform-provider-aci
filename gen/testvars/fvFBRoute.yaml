@@ -18,6 +18,9 @@ datasource_required:
 resource_required:
   prefix_address: "2.2.2.3/24"
 
+custom_type:
+  prefix_address: "2001:0db8::01/64"
+
 all:
   annotation: "annotation"
   description: "description_1"

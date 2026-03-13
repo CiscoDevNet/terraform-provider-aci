@@ -17,3 +17,7 @@ test_values:
         prefix_address: 2.2.2.3/24
     test_values_for_parent:
         - prefix_address: 2.2.2.2/24
+    custom_type:
+        prefix_address: 2001:0db8::01/64
+static_custom_type:
+    fbrPrefix: ip_address

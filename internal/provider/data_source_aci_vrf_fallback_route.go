@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 
+	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
@@ -57,6 +58,7 @@ func (d *FvFBRouteDataSource) Schema(ctx context.Context, req datasource.SchemaR
 				MarkdownDescription: `The description of the VRF Fallback Route object.`,
 			},
 			"prefix_address": schema.StringAttribute{
+				CustomType:          customTypes.IPAddressStringType{},
 				Required:            true,
 				MarkdownDescription: `The prefix address of the VRF Fallback Route object.`,
 			},
