@@ -59,7 +59,7 @@ func main() {
 				fmt.Fprintf(os.Stderr, "Error removing %s: %v\n", f, err)
 				continue
 			}
-			fmt.Printf("Removed %s\n", f)
+			fmt.Printf("Removed: %s\n", f)
 			removed++
 		}
 		fmt.Printf("\nDone: %d files removed\n", removed)
@@ -124,7 +124,7 @@ func main() {
 			continue
 		}
 
-		fmt.Printf("Migrated %s -> %s\n", file, outputPath)
+		fmt.Printf("Migrated: %s -> %s\n", file, outputPath)
 		migrated++
 	}
 
