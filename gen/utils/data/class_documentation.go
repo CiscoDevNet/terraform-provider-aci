@@ -1,56 +1,49 @@
 package data
 
-import "fmt"
-
-// SubCategoryEnum represents the sub-category for Terraform Registry sidebar grouping.
-type SubCategoryEnum string
-
-const (
-	SubCategoryAAA                 SubCategoryEnum = "AAA"
-	SubCategoryAccessPolicies      SubCategoryEnum = "Access Policies"
-	SubCategoryApplicationMgmt     SubCategoryEnum = "Application Management"
-	SubCategoryCloud               SubCategoryEnum = "Cloud"
-	SubCategoryContract            SubCategoryEnum = "Contract"
-	SubCategoryFabricAccessPol     SubCategoryEnum = "Fabric Access Policies"
-	SubCategoryFabricInventory     SubCategoryEnum = "Fabric Inventory"
-	SubCategoryFabricPolicies      SubCategoryEnum = "Fabric Policies"
-	SubCategoryFirmware            SubCategoryEnum = "Firmware"
-	SubCategoryGeneric             SubCategoryEnum = "Generic"
-	SubCategoryImportExport        SubCategoryEnum = "Import/Export"
-	SubCategoryL2Out               SubCategoryEnum = "L2Out"
-	SubCategoryL3Out               SubCategoryEnum = "L3Out"
-	SubCategoryL4L7Services        SubCategoryEnum = "L4-L7"
-	SubCategoryMonitoring          SubCategoryEnum = "Monitoring"
-	SubCategoryMultiSite           SubCategoryEnum = "Multi-Site"
-	SubCategoryNetworking          SubCategoryEnum = "Networking"
-	SubCategoryNodeMgmt            SubCategoryEnum = "Node Management"
-	SubCategoryScheduler           SubCategoryEnum = "Scheduler"
-	SubCategorySystemSettings      SubCategoryEnum = "System Settings"
-	SubCategoryTenantInfraPolicies SubCategoryEnum = "Tenant Infra Policies"
-	SubCategoryTenantPolicies      SubCategoryEnum = "Tenant Policies"
-	SubCategoryVirtualNetworking   SubCategoryEnum = "Virtual Networking"
+import (
+	"fmt"
+	"slices"
 )
 
-// validateSubCategory validates that the given SubCategoryEnum value is one of the allowed sub-categories.
+// validSubCategories contains the allowed sub-category values for Terraform Registry sidebar grouping.
+var validSubCategories = []string{
+	"AAA",
+	"Access Policies",
+	"Application Management",
+	"Cloud",
+	"Contract",
+	"Fabric Access Policies",
+	"Fabric Inventory",
+	"Fabric Policies",
+	"Firmware",
+	"Generic",
+	"Import/Export",
+	"L2Out",
+	"L3Out",
+	"L4-L7",
+	"Monitoring",
+	"Multi-Site",
+	"Networking",
+	"Node Management",
+	"Scheduler",
+	"System Settings",
+	"Tenant Infra Policies",
+	"Tenant Policies",
+	"Virtual Networking",
+}
+
+// validateSubCategory validates that the given sub-category value is one of the allowed sub-categories.
 func validateSubCategory(class *Class) error {
-	switch class.ClassDefinition.Documentation.SubCategory {
-	case "":
+	if class.ClassDefinition.Documentation.SubCategory == "" {
 		if class.IsSingleNestedWhenDefinedAsChild {
 			return nil
 		}
 		return fmt.Errorf("sub_category not specified for class '%s': add documentation.sub_category to the class definition file", class.Name.full)
-	case SubCategoryAAA, SubCategoryAccessPolicies, SubCategoryApplicationMgmt,
-		SubCategoryCloud, SubCategoryContract, SubCategoryFabricAccessPol,
-		SubCategoryFabricInventory, SubCategoryFabricPolicies, SubCategoryFirmware,
-		SubCategoryGeneric, SubCategoryImportExport, SubCategoryL2Out,
-		SubCategoryL3Out, SubCategoryL4L7Services, SubCategoryMonitoring,
-		SubCategoryMultiSite, SubCategoryNetworking, SubCategoryNodeMgmt,
-		SubCategoryScheduler, SubCategorySystemSettings, SubCategoryTenantInfraPolicies,
-		SubCategoryTenantPolicies, SubCategoryVirtualNetworking:
-		return nil
-	default:
+	}
+	if !slices.Contains(validSubCategories, class.ClassDefinition.Documentation.SubCategory) {
 		return fmt.Errorf("invalid sub_category '%s'", class.ClassDefinition.Documentation.SubCategory)
 	}
+	return nil
 }
 
 type ClassDocumentation struct {
@@ -74,7 +67,7 @@ type ClassDocumentation struct {
 	// Notes rendered with -> prefix in docs.
 	Notes []string
 	// Sub-category for Terraform Registry sidebar grouping.
-	SubCategory SubCategoryEnum
+	SubCategory string
 	// GUI locations in APIC (e.g., "Tenants -> Networking -> VRFs").
 	UiLocations []string
 	// Warnings rendered with !> prefix in docs.

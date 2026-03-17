@@ -8,12 +8,12 @@ import (
 )
 
 type setSubCategoryInput struct {
-	SubCategory                      SubCategoryEnum
+	SubCategory                      string
 	IsSingleNestedWhenDefinedAsChild bool
 }
 
 type setSubCategoryExpected struct {
-	SubCategory SubCategoryEnum
+	SubCategory string
 	Error       bool
 	ErrorMsg    string
 }
@@ -26,37 +26,37 @@ func TestSetSubCategory(t *testing.T) {
 		{
 			Name: "test_valid_sub_category_networking",
 			Input: setSubCategoryInput{
-				SubCategory: SubCategoryNetworking,
+				SubCategory: "Networking",
 			},
 			Expected: setSubCategoryExpected{
-				SubCategory: SubCategoryNetworking,
+				SubCategory: "Networking",
 			},
 		},
 		{
 			Name: "test_valid_sub_category_aaa",
 			Input: setSubCategoryInput{
-				SubCategory: SubCategoryAAA,
+				SubCategory: "AAA",
 			},
 			Expected: setSubCategoryExpected{
-				SubCategory: SubCategoryAAA,
+				SubCategory: "AAA",
 			},
 		},
 		{
 			Name: "test_valid_sub_category_application_mgmt",
 			Input: setSubCategoryInput{
-				SubCategory: SubCategoryApplicationMgmt,
+				SubCategory: "Application Management",
 			},
 			Expected: setSubCategoryExpected{
-				SubCategory: SubCategoryApplicationMgmt,
+				SubCategory: "Application Management",
 			},
 		},
 		{
 			Name: "test_valid_sub_category_l4l7_services",
 			Input: setSubCategoryInput{
-				SubCategory: SubCategoryL4L7Services,
+				SubCategory: "L4-L7",
 			},
 			Expected: setSubCategoryExpected{
-				SubCategory: SubCategoryL4L7Services,
+				SubCategory: "L4-L7",
 			},
 		},
 		{
