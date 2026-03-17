@@ -888,7 +888,7 @@ const testConfigInfraHPortSLegacyAttributesWithInfraFexP = testChildDependencyCo
 resource "aci_access_port_selector" "test" {
   name = "test_name"
   access_port_selector_type = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? "range" : null
-  leaf_interface_profile_dn = aci_leaf_interface_profile.test.id
+  leaf_interface_profile_dn = aci_fex_profile.test.id
   relation_infra_rs_acc_base_grp = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? aci_leaf_access_port_policy_group.test_leaf_access_port_policy_group_0.id : null
 }
 `

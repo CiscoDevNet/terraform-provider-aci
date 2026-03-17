@@ -161,6 +161,19 @@ var templateFuncs = template.FuncMap{
 	"getLegacyAttributeVersion":                GetLegacyAttributeVersion,
 	"getLegacyAttributeVersionInTest":          GetLegacyAttributeVersionInTest,
 	"excludeClassFromTesting":                  ExcludeClassFromTesting,
+	"getLegacyParentDn":                        GetLegacyParentDn,
+}
+
+func GetLegacyParentDn(parentClassName string, testVars []interface{}) string {
+	parentClassName = Decapitalize(parentClassName)
+	for _, parent := range testVars {
+		if className, ok := parent.(map[interface{}]interface{})["class_name"]; ok && className.(string) == parentClassName {
+			if parentDn, ok := parent.(map[interface{}]interface{})["parent_dn"]; ok {
+				return parentDn.(string)
+			}
+		}
+	}
+	return "Not Found"
 }
 
 func GetChildClassNames(model Model, childClassNames []string) []string {
