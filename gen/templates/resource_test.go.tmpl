@@ -2378,7 +2378,7 @@ resource "aci_{{$.resourceName}}" "test{{- if eq $.resourceClassName $parentClas
 					{{- if isInterfaceSlice $value}}{{$list_value := index $value 0}}
   {{$key}} = {{if isReference $list_value}}{{$value}}{{else}}["{{$list_value}}"]{{end}}
 					{{- else}}
-  {{$key}} = {{if isReference $value}}{{$value}}{{else}}"{{$value}}"{{end}}
+  {{$key}} = {{getLegacyParentDn $parentClassName $.parents}}
 					{{- end}}
 				{{- else}}
 					{{- if isInterfaceSlice $value}}{{$list_value := index $value 0}}

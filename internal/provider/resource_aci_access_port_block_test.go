@@ -874,7 +874,7 @@ resource "aci_access_port_block" "test" {
 const testConfigInfraPortBlkLegacyAttributesWithInfraSHPortS = testConfigInfraSHPortSMinDependencyWithInfraSpAccPortP + `
 resource "aci_access_port_block" "test" {
   name = "test_name"
-  access_port_selector_dn = aci_access_port_selector.test.id
+  access_port_selector_dn = aci_spine_access_port_selector.test.id
   relation_infra_rs_acc_bndl_subgrp = provider::aci::compare_versions(data.aci_system.version.version,"inside","1.0(1e)-") ? "" : null
 }
 `
