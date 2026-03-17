@@ -40,7 +40,7 @@ type ClassDocumentationDefinition struct {
 	// Notes rendered with -> prefix in the documentation.
 	Notes []string `yaml:"notes"`
 	// Sub-category for Terraform Registry sidebar grouping.
-	SubCategory SubCategoryEnum `yaml:"sub_category"`
+	SubCategory string `yaml:"sub_category"`
 	// GUI locations in APIC (e.g., "Tenants -> Networking -> VRFs").
 	UiLocations []string `yaml:"ui_locations"`
 	// Warnings rendered with !> prefix in the documentation.
