@@ -1,10 +1,41 @@
 //go:build ignore
 // +build ignore
 
-// quick AI generated script for testing with migrated files
-// GENERATE NEW FORMAT DEFINTIONS: go run gen/scripts/migrate_class_definitions.go
-// REMOVE NEW FORMAT DEFINTIONS:go run gen/scripts/migrate_class_definitions.go clean
-// Alternatively leverage git for removal
+/*
+This script migrates class definition YAML files from the old per-class format (gen/definitions/classes/)
+to the new combined format (gen/definitions/). It will be extended over time as more fields are added
+and may become its own issue when the full migration is required. For now, it is used for testing
+during development only and is not intended as a final migration script.
+
+## Usage
+
+GENERATE NEW FORMAT DEFINTIONS: go run gen/scripts/migrate_class_definitions.go
+REMOVE NEW FORMAT DEFINTIONS:   go run gen/scripts/migrate_class_definitions.go clean
+
+### Old (gen/definitions/classes/fvTenant.yaml):
+
+```
+allow_delete: false
+exclude_children:
+  - cloudCertStore
+sub_category: Application Management
+ui_locations:
+  - Tenants
+```
+
+### New (gen/definitions/fvTenant.yaml):
+
+```
+allow_delete: never
+documentation:
+  sub_category: Application Management
+  ui_locations:
+	- Tenants
+
+exclude_children:
+  - cloudCertStore
+```
+*/
 
 package main
 
