@@ -3,10 +3,10 @@ documentation:
 targets:
     - class_name: fvnsVlanInstP
       properties:
-        alloc_mode: static
+        alloc_mode: dynamic
         name: vlan_pool_name_1
       relation_resource_name: vlan_pool
-      target_dn: uni/infra/vlanns-[vlan_pool_name_1]-static
+      target_dn: uni/infra/vlanns-[vlan_pool_name_1]-dynamic
       target_dn_ref: aci_vlan_pool.test_vlan_pool_1.id
 
 example_value_overwrite:
