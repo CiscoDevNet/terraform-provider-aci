@@ -243,7 +243,7 @@ child_targets:
         gateway_address: "10.0.0.1/24"
         name: "ip_address_pool_name_1"
   - class_name: "fvnsVlanInstP"
-    target_dn: "uni/infra/vlanns-[vlan_pool_name_1]-static"
+    target_dn: "uni/infra/vlanns-[vlan_pool_name_1]-dynamic"
     relation_resource_name: "vlan_pool"
     static: false
     target_dn_ref: "aci_vlan_pool.test_vlan_pool_1.id"
@@ -252,7 +252,7 @@ child_targets:
     target_resource_name: "vlan_pool"
     parent_dn_key: "parent_dn"
     properties:
-        alloc_mode: "static"
+        alloc_mode: "dynamic"
         name: "vlan_pool_name_1"
 
 test_type: both

@@ -355,7 +355,7 @@ func TestAccResourceVmmDomP(t *testing.T) {
 						resource.TestCheckResourceAttr("aci_vmm_domain.test", "relation_to_vlan_pool.tags.1.key", "key_1"),
 						resource.TestCheckResourceAttr("aci_vmm_domain.test", "relation_to_vlan_pool.tags.1.value", "test_value"),
 						resource.TestCheckResourceAttr("aci_vmm_domain.test", "relation_to_vlan_pool.tags.#", "2"),
-						resource.TestCheckResourceAttr("aci_vmm_domain.test", "relation_to_vlan_pool.target_dn", "uni/infra/vlanns-[vlan_pool_name_1]-static"),
+						resource.TestCheckResourceAttr("aci_vmm_domain.test", "relation_to_vlan_pool.target_dn", "uni/infra/vlanns-[vlan_pool_name_1]-dynamic"),
 					),
 					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
 						resource.TestCheckResourceAttr("aci_vmm_domain.test", "tags.0.key", "key_0"),
@@ -471,7 +471,7 @@ func TestAccResourceVmmDomP(t *testing.T) {
 						resource.TestCheckResourceAttr("aci_vmm_domain.test", "relation_to_vlan_pool.tags.1.key", "key_1"),
 						resource.TestCheckResourceAttr("aci_vmm_domain.test", "relation_to_vlan_pool.tags.1.value", "test_value"),
 						resource.TestCheckResourceAttr("aci_vmm_domain.test", "relation_to_vlan_pool.tags.#", "2"),
-						resource.TestCheckResourceAttr("aci_vmm_domain.test", "relation_to_vlan_pool.target_dn", "uni/infra/vlanns-[vlan_pool_name_1]-static"),
+						resource.TestCheckResourceAttr("aci_vmm_domain.test", "relation_to_vlan_pool.target_dn", "uni/infra/vlanns-[vlan_pool_name_1]-dynamic"),
 					),
 					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
 						resource.TestCheckResourceAttr("aci_vmm_domain.test", "tags.0.key", "key_0"),
@@ -701,7 +701,7 @@ resource "aci_ip_address_pool" "test_ip_address_pool_0"{
   name = "ip_address_pool_name_1"
 }
 resource "aci_vlan_pool" "test_vlan_pool_1"{
-  alloc_mode = "static"
+  alloc_mode = "dynamic"
   name = "vlan_pool_name_1"
 }
 `
