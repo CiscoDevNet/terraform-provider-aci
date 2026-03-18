@@ -92,6 +92,7 @@ var classVersions = map[string]string{
 	"fvTrackList":                "4.1(1i)-",
 	"fvTrackMember":              "4.1(1i)-",
 	"fvUplinkOrderCont":          "4.2(1i)-",
+	"fvVip":                      "1.2(1i)-",
 	"fvVmAttr":                   "1.1(1j)-",
 	"fvnsAddrInst":               "1.0(1e)-",
 	"fvnsUcastAddrBlk":           "1.0(1e)-",

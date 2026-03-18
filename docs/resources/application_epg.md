@@ -949,3 +949,4 @@ import {
 ## Child Resources
   
   - [aci_associated_site](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/associated_site)
+  - [aci_virtual_ip_address](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/virtual_ip_address)

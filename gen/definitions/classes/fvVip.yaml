@@ -1,0 +1,3 @@
+sub_category: Application Management
+ui_locations:
+    - Tenants -> Application Profiles -> Application EPGs -> L4-L7 Virtual IPs
