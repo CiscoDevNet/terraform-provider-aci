@@ -11,8 +11,8 @@ github.com/apparentlymart/go-textseg/v15 v15.0.0 h1:uYvfpb3DyLSCGWnctWKGj857c6ew
 github.com/apparentlymart/go-textseg/v15 v15.0.0/go.mod h1:K8XmNZdhEBkdlyDdvbmmsvpAG721bKi0joRfFdHIWJ4=
 github.com/bufbuild/protocompile v0.14.1 h1:iA73zAf/fyljNjQKwYzUHD6AD4R8KMasmwa/FBatYVw=
 github.com/bufbuild/protocompile v0.14.1/go.mod h1:ppVdAIhbr2H8asPk6k4pY7t9zB1OU5DoEw9xY/FUi1c=
-github.com/ciscoecosystem/aci-go-client/v2 v2.32.0 h1:io2CIG8QDWqu5bhNoKIKYMNf4myCaNjZezY47gTVepo=
-github.com/ciscoecosystem/aci-go-client/v2 v2.32.0/go.mod h1:j6/l+P1/hqfkzZxKQTel82xLsLYEgbgSyZNxLglgukk=
+github.com/ciscoecosystem/aci-go-client/v2 v2.32.2 h1:GKRzlFCZZkAh8bs+chZrjyumIsK5WOMU500guUkA0tc=
+github.com/ciscoecosystem/aci-go-client/v2 v2.32.2/go.mod h1:mA9dOsvdNQ1az0cpbsLda6w+gdCfab8eOQ7Ao1UDN28=
 github.com/cloudflare/circl v1.6.1 h1:zqIqSPIndyBh1bjLVVDHMPpVKqp8Su/V+6MeDzzQBQ0=
 github.com/cloudflare/circl v1.6.1/go.mod h1:uddAzsPgqdMAYatqJ0lsjX1oECcQLIlRpzZh3pJrofs=
 github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ33E=

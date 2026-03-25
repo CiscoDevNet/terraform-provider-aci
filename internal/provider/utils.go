@@ -117,11 +117,18 @@ func DoRestRequestEscapeHtml(ctx context.Context, diags *diag.Diagnostics, aciCl
 		return nil
 	}
 
-	if restResponse != nil && cont.Data() != nil && restResponse.StatusCode != 200 {
+	if restResponse != nil && cont.Data() != nil && restResponse.StatusCode >= 400 {
 		errCode := models.StripQuotes(models.StripSquareBrackets(cont.Search("imdata", "error", "attributes", "code").String()))
 		errText := models.StripQuotes(models.StripSquareBrackets(cont.Search("imdata", "error", "attributes", "text").String()))
-		// Ignore errors of type "Cannot create object", "Cannot delete object", "Request in progress", error text containing "can not be deleted." when the error code is 120 and error text containing "cannot be deleted." when the error code is 1
-		if errCode == "103" || errCode == "107" || errCode == "202" || (errCode == "120" && strings.HasSuffix(errText, "can not be deleted.")) || (errCode == "1" && strings.HasSuffix(errText, "cannot be deleted.")) {
+
+		if errCode == "107" && strings.HasSuffix(errText, "make sure it's not used before deleting it") {
+			diags.AddError(
+				fmt.Sprintf("The %s rest request failed", strings.ToLower(method)),
+				fmt.Sprintf("HTTP Request failed: StatusCode %v, Method: %s, URL: %s, Error Code: %s, Error Message: %s", restResponse.StatusCode, restRequest.Method, restRequest.URL.String(), errCode, errText),
+			)
+			return nil
+		} else if errCode == "103" || errCode == "107" || errCode == "202" || (errCode == "120" && strings.HasSuffix(errText, "can not be deleted.")) || (errCode == "1" && strings.HasSuffix(errText, "cannot be deleted.")) {
+			// Ignore errors of type "Cannot create object", "Cannot delete object", "Request in progress", error text containing "can not be deleted." when the error code is 120 and error text containing "cannot be deleted." when the error code is 1
 			tflog.Debug(ctx, fmt.Sprintf("Exiting from error: Code: %s, Message: %s", errCode, errText))
 			return nil
 		} else if (errText == "" && errCode == "403") || errCode == "401" {
