@@ -117,7 +117,7 @@ func DoRestRequestEscapeHtml(ctx context.Context, diags *diag.Diagnostics, aciCl
 		return nil
 	}
 
-	if restResponse != nil && cont.Data() != nil && restResponse.StatusCode >= 400 {
+	if restResponse != nil && cont.Data() != nil && restResponse.StatusCode != 200 {
 		errCode := models.StripQuotes(models.StripSquareBrackets(cont.Search("imdata", "error", "attributes", "code").String()))
 		errText := models.StripQuotes(models.StripSquareBrackets(cont.Search("imdata", "error", "attributes", "text").String()))
 
