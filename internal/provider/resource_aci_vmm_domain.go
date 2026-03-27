@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"strings"
 
+	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
@@ -44,64 +45,64 @@ type VmmDomPResource struct {
 
 // VmmDomPResourceModel describes the resource data model.
 type VmmDomPResourceModel struct {
-	Id                                           types.String `tfsdk:"id"`
-	ParentDn                                     types.String `tfsdk:"parent_dn"`
-	AccessMode                                   types.String `tfsdk:"access_mode"`
-	Annotation                                   types.String `tfsdk:"annotation"`
-	ArpLearning                                  types.String `tfsdk:"arp_learning"`
-	AveTimeOut                                   types.String `tfsdk:"ave_time_out"`
-	ConfigInfraPg                                types.String `tfsdk:"configure_infra_port_groups"`
-	CtrlKnob                                     types.String `tfsdk:"endpoint_data_path_verification"`
-	CustomSwitchName                             types.String `tfsdk:"custom_switch_name"`
-	Delimiter                                    types.String `tfsdk:"delimiter"`
-	EnableAVE                                    types.String `tfsdk:"enable_ave_mode"`
-	EnableTag                                    types.String `tfsdk:"enable_tag_collection"`
-	EnableVmFolder                               types.String `tfsdk:"enable_vm_folder_data_retrieval"`
-	EncapMode                                    types.String `tfsdk:"encapsulation_mode"`
-	EnfPref                                      types.String `tfsdk:"switching_enforcement_preference"`
-	EpInventoryType                              types.String `tfsdk:"endpoint_inventory_type"`
-	EpRetTime                                    types.String `tfsdk:"endpoint_retention_time"`
-	HvAvailMonitor                               types.String `tfsdk:"host_availability_assurance"`
-	McastAddr                                    types.String `tfsdk:"multicast_address"`
-	Mode                                         types.String `tfsdk:"switch_type"`
-	Name                                         types.String `tfsdk:"name"`
-	NameAlias                                    types.String `tfsdk:"name_alias"`
-	OwnerKey                                     types.String `tfsdk:"owner_key"`
-	OwnerTag                                     types.String `tfsdk:"owner_tag"`
-	PrefEncapMode                                types.String `tfsdk:"default_encapsulation_mode"`
-	InfraRsVipAddrNs                             types.Object `tfsdk:"relation_to_ip_address_pool"`
-	InfraRsVlanNs                                types.Object `tfsdk:"relation_to_vlan_pool"`
-	TagAnnotation                                types.Set    `tfsdk:"annotations"`
-	TagTag                                       types.Set    `tfsdk:"tags"`
-	VmmRsDomMcastAddrNs                          types.Object `tfsdk:"relation_to_multicast_pool"`
-	VmmRsPrefEnhancedLagPol                      types.Object `tfsdk:"relation_to_lacp_enhanced_lag_policy"`
-	VmmUplinkPCont                               types.Object `tfsdk:"vmm_uplink_container"`
-	DeprecatedConfigInfraPg                      types.String `tfsdk:"config_infra_pg"`
-	DeprecatedCtrlKnob                           types.String `tfsdk:"ctrl_knob"`
-	DeprecatedEnableAVE                          types.String `tfsdk:"enable_ave"`
-	DeprecatedEnableTag                          types.String `tfsdk:"enable_tag"`
-	DeprecatedEnableVmFolder                     types.String `tfsdk:"enable_vm_folder"`
-	DeprecatedEncapMode                          types.String `tfsdk:"encap_mode"`
-	DeprecatedEnfPref                            types.String `tfsdk:"enf_pref"`
-	DeprecatedEpInventoryType                    types.String `tfsdk:"ep_inventory_type"`
-	DeprecatedEpRetTime                          types.String `tfsdk:"ep_ret_time"`
-	DeprecatedHvAvailMonitor                     types.String `tfsdk:"hv_avail_monitor"`
-	DeprecatedMcastAddr                          types.String `tfsdk:"mcast_addr"`
-	DeprecatedMode                               types.String `tfsdk:"mode"`
-	DeprecatedParentDn                           types.String `tfsdk:"provider_profile_dn"`
-	DeprecatedPrefEncapMode                      types.String `tfsdk:"pref_encap_mode"`
-	Ignored_relation_infra_rs_dom_vxlan_ns_def   types.String `tfsdk:"relation_infra_rs_dom_vxlan_ns_def"`
-	Ignored_relation_infra_rs_vlan_ns_def        types.String `tfsdk:"relation_infra_rs_vlan_ns_def"`
-	DeprecatedInfraRsVipAddrNs                   types.String `tfsdk:"relation_infra_rs_vip_addr_ns"`
-	DeprecatedVmmRsPrefEnhancedLagPol            types.String `tfsdk:"relation_vmm_rs_pref_enhanced_lag_pol"`
-	DeprecatedVmmRsDomMcastAddrNs                types.String `tfsdk:"relation_vmm_rs_dom_mcast_addr_ns"`
-	DeprecatedInfraRsVlanNs                      types.String `tfsdk:"relation_infra_rs_vlan_ns"`
-	Ignored_relation_vmm_rs_default_cdp_if_pol   types.String `tfsdk:"relation_vmm_rs_default_cdp_if_pol"`
-	Ignored_relation_vmm_rs_default_fw_pol       types.String `tfsdk:"relation_vmm_rs_default_fw_pol"`
-	Ignored_relation_vmm_rs_default_l2_inst_pol  types.String `tfsdk:"relation_vmm_rs_default_l2_inst_pol"`
-	Ignored_relation_vmm_rs_default_lacp_lag_pol types.String `tfsdk:"relation_vmm_rs_default_lacp_lag_pol"`
-	Ignored_relation_vmm_rs_default_lldp_if_pol  types.String `tfsdk:"relation_vmm_rs_default_lldp_if_pol"`
-	Ignored_relation_vmm_rs_default_stp_if_pol   types.String `tfsdk:"relation_vmm_rs_default_stp_if_pol"`
+	Id                                           types.String                          `tfsdk:"id"`
+	ParentDn                                     types.String                          `tfsdk:"parent_dn"`
+	AccessMode                                   types.String                          `tfsdk:"access_mode"`
+	Annotation                                   types.String                          `tfsdk:"annotation"`
+	ArpLearning                                  customTypes.VMMArpLearningStringValue `tfsdk:"arp_learning"`
+	AveTimeOut                                   types.String                          `tfsdk:"ave_time_out"`
+	ConfigInfraPg                                types.String                          `tfsdk:"configure_infra_port_groups"`
+	CtrlKnob                                     types.String                          `tfsdk:"endpoint_data_path_verification"`
+	CustomSwitchName                             types.String                          `tfsdk:"custom_switch_name"`
+	Delimiter                                    types.String                          `tfsdk:"delimiter"`
+	EnableAVE                                    types.String                          `tfsdk:"enable_ave_mode"`
+	EnableTag                                    types.String                          `tfsdk:"enable_tag_collection"`
+	EnableVmFolder                               types.String                          `tfsdk:"enable_vm_folder_data_retrieval"`
+	EncapMode                                    types.String                          `tfsdk:"encapsulation_mode"`
+	EnfPref                                      types.String                          `tfsdk:"switching_enforcement_preference"`
+	EpInventoryType                              types.String                          `tfsdk:"endpoint_inventory_type"`
+	EpRetTime                                    types.String                          `tfsdk:"endpoint_retention_time"`
+	HvAvailMonitor                               types.String                          `tfsdk:"host_availability_assurance"`
+	McastAddr                                    types.String                          `tfsdk:"multicast_address"`
+	Mode                                         types.String                          `tfsdk:"switch_type"`
+	Name                                         types.String                          `tfsdk:"name"`
+	NameAlias                                    types.String                          `tfsdk:"name_alias"`
+	OwnerKey                                     types.String                          `tfsdk:"owner_key"`
+	OwnerTag                                     types.String                          `tfsdk:"owner_tag"`
+	PrefEncapMode                                types.String                          `tfsdk:"default_encapsulation_mode"`
+	InfraRsVipAddrNs                             types.Object                          `tfsdk:"relation_to_ip_address_pool"`
+	InfraRsVlanNs                                types.Object                          `tfsdk:"relation_to_vlan_pool"`
+	TagAnnotation                                types.Set                             `tfsdk:"annotations"`
+	TagTag                                       types.Set                             `tfsdk:"tags"`
+	VmmRsDomMcastAddrNs                          types.Object                          `tfsdk:"relation_to_multicast_pool"`
+	VmmRsPrefEnhancedLagPol                      types.Object                          `tfsdk:"relation_to_lacp_enhanced_lag_policy"`
+	VmmUplinkPCont                               types.Object                          `tfsdk:"vmm_uplink_container"`
+	DeprecatedConfigInfraPg                      types.String                          `tfsdk:"config_infra_pg"`
+	DeprecatedCtrlKnob                           types.String                          `tfsdk:"ctrl_knob"`
+	DeprecatedEnableAVE                          types.String                          `tfsdk:"enable_ave"`
+	DeprecatedEnableTag                          types.String                          `tfsdk:"enable_tag"`
+	DeprecatedEnableVmFolder                     types.String                          `tfsdk:"enable_vm_folder"`
+	DeprecatedEncapMode                          types.String                          `tfsdk:"encap_mode"`
+	DeprecatedEnfPref                            types.String                          `tfsdk:"enf_pref"`
+	DeprecatedEpInventoryType                    types.String                          `tfsdk:"ep_inventory_type"`
+	DeprecatedEpRetTime                          types.String                          `tfsdk:"ep_ret_time"`
+	DeprecatedHvAvailMonitor                     types.String                          `tfsdk:"hv_avail_monitor"`
+	DeprecatedMcastAddr                          types.String                          `tfsdk:"mcast_addr"`
+	DeprecatedMode                               types.String                          `tfsdk:"mode"`
+	DeprecatedParentDn                           types.String                          `tfsdk:"provider_profile_dn"`
+	DeprecatedPrefEncapMode                      types.String                          `tfsdk:"pref_encap_mode"`
+	Ignored_relation_infra_rs_dom_vxlan_ns_def   types.String                          `tfsdk:"relation_infra_rs_dom_vxlan_ns_def"`
+	Ignored_relation_infra_rs_vlan_ns_def        types.String                          `tfsdk:"relation_infra_rs_vlan_ns_def"`
+	DeprecatedInfraRsVipAddrNs                   types.String                          `tfsdk:"relation_infra_rs_vip_addr_ns"`
+	DeprecatedVmmRsPrefEnhancedLagPol            types.String                          `tfsdk:"relation_vmm_rs_pref_enhanced_lag_pol"`
+	DeprecatedVmmRsDomMcastAddrNs                types.String                          `tfsdk:"relation_vmm_rs_dom_mcast_addr_ns"`
+	DeprecatedInfraRsVlanNs                      types.String                          `tfsdk:"relation_infra_rs_vlan_ns"`
+	Ignored_relation_vmm_rs_default_cdp_if_pol   types.String                          `tfsdk:"relation_vmm_rs_default_cdp_if_pol"`
+	Ignored_relation_vmm_rs_default_fw_pol       types.String                          `tfsdk:"relation_vmm_rs_default_fw_pol"`
+	Ignored_relation_vmm_rs_default_l2_inst_pol  types.String                          `tfsdk:"relation_vmm_rs_default_l2_inst_pol"`
+	Ignored_relation_vmm_rs_default_lacp_lag_pol types.String                          `tfsdk:"relation_vmm_rs_default_lacp_lag_pol"`
+	Ignored_relation_vmm_rs_default_lldp_if_pol  types.String                          `tfsdk:"relation_vmm_rs_default_lldp_if_pol"`
+	Ignored_relation_vmm_rs_default_stp_if_pol   types.String                          `tfsdk:"relation_vmm_rs_default_stp_if_pol"`
 }
 
 func getEmptyVmmDomPResourceModel() *VmmDomPResourceModel {
@@ -110,7 +111,7 @@ func getEmptyVmmDomPResourceModel() *VmmDomPResourceModel {
 		ParentDn:         basetypes.NewStringNull(),
 		AccessMode:       basetypes.NewStringNull(),
 		Annotation:       basetypes.NewStringNull(),
-		ArpLearning:      basetypes.NewStringNull(),
+		ArpLearning:      customTypes.NewVMMArpLearningStringNull(),
 		AveTimeOut:       basetypes.NewStringNull(),
 		ConfigInfraPg:    basetypes.NewStringNull(),
 		CtrlKnob:         basetypes.NewStringNull(),
@@ -753,40 +754,40 @@ type VmmDomPIdentifier struct {
 }
 
 type VmmDomPResourceModelV1 struct {
-	AccessMode                                   types.String `tfsdk:"access_mode"`
-	Annotation                                   types.String `tfsdk:"annotation"`
-	ArpLearning                                  types.String `tfsdk:"arp_learning"`
-	AveTimeOut                                   types.String `tfsdk:"ave_time_out"`
-	ConfigInfraPg                                types.String `tfsdk:"config_infra_pg"`
-	CtrlKnob                                     types.String `tfsdk:"ctrl_knob"`
-	Delimiter                                    types.String `tfsdk:"delimiter"`
-	EnableAVE                                    types.String `tfsdk:"enable_ave"`
-	EnableTag                                    types.String `tfsdk:"enable_tag"`
-	EnableVmFolder                               types.String `tfsdk:"enable_vm_folder"`
-	EncapMode                                    types.String `tfsdk:"encap_mode"`
-	EnfPref                                      types.String `tfsdk:"enf_pref"`
-	EpInventoryType                              types.String `tfsdk:"ep_inventory_type"`
-	EpRetTime                                    types.String `tfsdk:"ep_ret_time"`
-	HvAvailMonitor                               types.String `tfsdk:"hv_avail_monitor"`
-	Id                                           types.String `tfsdk:"id"`
-	McastAddr                                    types.String `tfsdk:"mcast_addr"`
-	Mode                                         types.String `tfsdk:"mode"`
-	Name                                         types.String `tfsdk:"name"`
-	NameAlias                                    types.String `tfsdk:"name_alias"`
-	ParentDn                                     types.String `tfsdk:"provider_profile_dn"`
-	PrefEncapMode                                types.String `tfsdk:"pref_encap_mode"`
-	Ignored_relation_infra_rs_dom_vxlan_ns_def   types.String `tfsdk:"relation_infra_rs_dom_vxlan_ns_def"`
-	Ignored_relation_infra_rs_vlan_ns_def        types.String `tfsdk:"relation_infra_rs_vlan_ns_def"`
-	InfraRsVipAddrNs                             types.String `tfsdk:"relation_infra_rs_vip_addr_ns"`
-	VmmRsPrefEnhancedLagPol                      types.String `tfsdk:"relation_vmm_rs_pref_enhanced_lag_pol"`
-	VmmRsDomMcastAddrNs                          types.String `tfsdk:"relation_vmm_rs_dom_mcast_addr_ns"`
-	InfraRsVlanNs                                types.String `tfsdk:"relation_infra_rs_vlan_ns"`
-	Ignored_relation_vmm_rs_default_cdp_if_pol   types.String `tfsdk:"relation_vmm_rs_default_cdp_if_pol"`
-	Ignored_relation_vmm_rs_default_fw_pol       types.String `tfsdk:"relation_vmm_rs_default_fw_pol"`
-	Ignored_relation_vmm_rs_default_l2_inst_pol  types.String `tfsdk:"relation_vmm_rs_default_l2_inst_pol"`
-	Ignored_relation_vmm_rs_default_lacp_lag_pol types.String `tfsdk:"relation_vmm_rs_default_lacp_lag_pol"`
-	Ignored_relation_vmm_rs_default_lldp_if_pol  types.String `tfsdk:"relation_vmm_rs_default_lldp_if_pol"`
-	Ignored_relation_vmm_rs_default_stp_if_pol   types.String `tfsdk:"relation_vmm_rs_default_stp_if_pol"`
+	AccessMode                                   types.String                          `tfsdk:"access_mode"`
+	Annotation                                   types.String                          `tfsdk:"annotation"`
+	ArpLearning                                  customTypes.VMMArpLearningStringValue `tfsdk:"arp_learning"`
+	AveTimeOut                                   types.String                          `tfsdk:"ave_time_out"`
+	ConfigInfraPg                                types.String                          `tfsdk:"config_infra_pg"`
+	CtrlKnob                                     types.String                          `tfsdk:"ctrl_knob"`
+	Delimiter                                    types.String                          `tfsdk:"delimiter"`
+	EnableAVE                                    types.String                          `tfsdk:"enable_ave"`
+	EnableTag                                    types.String                          `tfsdk:"enable_tag"`
+	EnableVmFolder                               types.String                          `tfsdk:"enable_vm_folder"`
+	EncapMode                                    types.String                          `tfsdk:"encap_mode"`
+	EnfPref                                      types.String                          `tfsdk:"enf_pref"`
+	EpInventoryType                              types.String                          `tfsdk:"ep_inventory_type"`
+	EpRetTime                                    types.String                          `tfsdk:"ep_ret_time"`
+	HvAvailMonitor                               types.String                          `tfsdk:"hv_avail_monitor"`
+	Id                                           types.String                          `tfsdk:"id"`
+	McastAddr                                    types.String                          `tfsdk:"mcast_addr"`
+	Mode                                         types.String                          `tfsdk:"mode"`
+	Name                                         types.String                          `tfsdk:"name"`
+	NameAlias                                    types.String                          `tfsdk:"name_alias"`
+	ParentDn                                     types.String                          `tfsdk:"provider_profile_dn"`
+	PrefEncapMode                                types.String                          `tfsdk:"pref_encap_mode"`
+	Ignored_relation_infra_rs_dom_vxlan_ns_def   types.String                          `tfsdk:"relation_infra_rs_dom_vxlan_ns_def"`
+	Ignored_relation_infra_rs_vlan_ns_def        types.String                          `tfsdk:"relation_infra_rs_vlan_ns_def"`
+	InfraRsVipAddrNs                             types.String                          `tfsdk:"relation_infra_rs_vip_addr_ns"`
+	VmmRsPrefEnhancedLagPol                      types.String                          `tfsdk:"relation_vmm_rs_pref_enhanced_lag_pol"`
+	VmmRsDomMcastAddrNs                          types.String                          `tfsdk:"relation_vmm_rs_dom_mcast_addr_ns"`
+	InfraRsVlanNs                                types.String                          `tfsdk:"relation_infra_rs_vlan_ns"`
+	Ignored_relation_vmm_rs_default_cdp_if_pol   types.String                          `tfsdk:"relation_vmm_rs_default_cdp_if_pol"`
+	Ignored_relation_vmm_rs_default_fw_pol       types.String                          `tfsdk:"relation_vmm_rs_default_fw_pol"`
+	Ignored_relation_vmm_rs_default_l2_inst_pol  types.String                          `tfsdk:"relation_vmm_rs_default_l2_inst_pol"`
+	Ignored_relation_vmm_rs_default_lacp_lag_pol types.String                          `tfsdk:"relation_vmm_rs_default_lacp_lag_pol"`
+	Ignored_relation_vmm_rs_default_lldp_if_pol  types.String                          `tfsdk:"relation_vmm_rs_default_lldp_if_pol"`
+	Ignored_relation_vmm_rs_default_stp_if_pol   types.String                          `tfsdk:"relation_vmm_rs_default_stp_if_pol"`
 }
 
 func (r *VmmDomPResource) UpgradeState(ctx context.Context) map[int64]resource.StateUpgrader {
@@ -981,7 +982,7 @@ func (r *VmmDomPResource) UpgradeState(ctx context.Context) map[int64]resource.S
 					ParentDn:                  priorStateData.ParentDn,
 					AccessMode:                priorStateData.AccessMode,
 					Annotation:                priorStateData.Annotation,
-					ArpLearning:               priorStateData.ArpLearning,
+					ArpLearning:               customTypes.VMMArpLearningStringValue{StringValue: basetypes.NewStringValue(priorStateData.ArpLearning.NamedValueString())},
 					AveTimeOut:                priorStateData.AveTimeOut,
 					ConfigInfraPg:             priorStateData.ConfigInfraPg,
 					CtrlKnob:                  priorStateData.CtrlKnob,
@@ -1883,14 +1884,17 @@ func (r *VmmDomPResource) Schema(ctx context.Context, req resource.SchemaRequest
 				MarkdownDescription: `The annotation of the VMM Domain object.`,
 			},
 			"arp_learning": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
+				CustomType: customTypes.VMMArpLearningStringType{},
+				Optional:   true,
+				Computed:   true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseNonNullStateForUnknown(),
 					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
 				},
 				Validators: []validator.String{
-					stringvalidator.OneOf("", "disabled", "enabled"),
+					stringvalidator.Any(
+						stringvalidator.OneOf("0x0", "0x1", "disabled", "enabled"),
+					),
 				},
 				MarkdownDescription: `Enable ARP learning for the the VMM Domain object, this attribute is only applicable for Application Virtual Switch (AVS).`,
 			},
@@ -2898,7 +2902,7 @@ func getAndSetVmmDomPAttributes(ctx context.Context, diags *diag.Diagnostics, cl
 					readData.Annotation = basetypes.NewStringValue(attributeValue.(string))
 				}
 				if attributeName == "arpLearning" {
-					readData.ArpLearning = basetypes.NewStringValue(attributeValue.(string))
+					readData.ArpLearning = customTypes.NewVMMArpLearningStringValue(attributeValue.(string))
 				}
 				if attributeName == "aveTimeOut" {
 					readData.AveTimeOut = basetypes.NewStringValue(attributeValue.(string))

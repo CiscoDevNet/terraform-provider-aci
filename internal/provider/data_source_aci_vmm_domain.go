@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 
+	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
@@ -168,6 +169,7 @@ func (d *VmmDomPDataSource) Schema(ctx context.Context, req datasource.SchemaReq
 				MarkdownDescription: `The annotation of the VMM Domain object.`,
 			},
 			"arp_learning": schema.StringAttribute{
+				CustomType:          customTypes.VMMArpLearningStringType{},
 				Computed:            true,
 				MarkdownDescription: `Enable ARP learning for the the VMM Domain object, this attribute is only applicable for Application Virtual Switch (AVS).`,
 			},

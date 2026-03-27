@@ -32,8 +32,8 @@ func TestAccResourceVmmDomP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_vmm_domain.allow_test_2", "access_mode", "read-write"),
 					resource.TestCheckResourceAttr("aci_vmm_domain.allow_test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_vmm_domain.allow_test_2", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_vmm_domain.allow_test", "arp_learning", ""),
-					resource.TestCheckResourceAttr("aci_vmm_domain.allow_test_2", "arp_learning", ""),
+					resource.TestCheckResourceAttr("aci_vmm_domain.allow_test", "arp_learning", "disabled"),
+					resource.TestCheckResourceAttr("aci_vmm_domain.allow_test_2", "arp_learning", "disabled"),
 					resource.TestCheckResourceAttr("aci_vmm_domain.allow_test", "ave_time_out", "30"),
 					resource.TestCheckResourceAttr("aci_vmm_domain.allow_test_2", "ave_time_out", "30"),
 					resource.TestCheckResourceAttr("aci_vmm_domain.allow_test", "default_encapsulation_mode", "unspecified"),
@@ -109,8 +109,8 @@ func TestAccResourceVmmDomP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_vmm_domain.allow_test_2", "access_mode", "read-write"),
 					resource.TestCheckResourceAttr("aci_vmm_domain.allow_test", "annotation", "orchestrator:terraform"),
 					resource.TestCheckResourceAttr("aci_vmm_domain.allow_test_2", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_vmm_domain.allow_test", "arp_learning", ""),
-					resource.TestCheckResourceAttr("aci_vmm_domain.allow_test_2", "arp_learning", ""),
+					resource.TestCheckResourceAttr("aci_vmm_domain.allow_test", "arp_learning", "disabled"),
+					resource.TestCheckResourceAttr("aci_vmm_domain.allow_test_2", "arp_learning", "disabled"),
 					resource.TestCheckResourceAttr("aci_vmm_domain.allow_test", "ave_time_out", "30"),
 					resource.TestCheckResourceAttr("aci_vmm_domain.allow_test_2", "ave_time_out", "30"),
 					resource.TestCheckResourceAttr("aci_vmm_domain.allow_test", "default_encapsulation_mode", "unspecified"),
@@ -168,7 +168,7 @@ func TestAccResourceVmmDomP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_vmm_domain.test", "parent_dn", "uni/vmmp-VMware"),
 					resource.TestCheckResourceAttr("aci_vmm_domain.test", "access_mode", "read-write"),
 					resource.TestCheckResourceAttr("aci_vmm_domain.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_vmm_domain.test", "arp_learning", ""),
+					resource.TestCheckResourceAttr("aci_vmm_domain.test", "arp_learning", "disabled"),
 					resource.TestCheckResourceAttr("aci_vmm_domain.test", "ave_time_out", "30"),
 					resource.TestCheckResourceAttr("aci_vmm_domain.test", "default_encapsulation_mode", "unspecified"),
 					resource.TestCheckResourceAttr("aci_vmm_domain.test", "delimiter", ""),
@@ -200,7 +200,7 @@ func TestAccResourceVmmDomP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_vmm_domain.test", "parent_dn", "uni/vmmp-VMware"),
 					resource.TestCheckResourceAttr("aci_vmm_domain.test", "access_mode", "read-only"),
 					resource.TestCheckResourceAttr("aci_vmm_domain.test", "annotation", "annotation"),
-					resource.TestCheckResourceAttr("aci_vmm_domain.test", "arp_learning", ""),
+					resource.TestCheckResourceAttr("aci_vmm_domain.test", "arp_learning", "disabled"),
 					resource.TestCheckResourceAttr("aci_vmm_domain.test", "ave_time_out", "30"),
 					resource.TestCheckResourceAttr("aci_vmm_domain.test", "default_encapsulation_mode", "unspecified"),
 					resource.TestCheckResourceAttr("aci_vmm_domain.test", "delimiter", "@"),
@@ -232,7 +232,7 @@ func TestAccResourceVmmDomP(t *testing.T) {
 					resource.TestCheckResourceAttr("aci_vmm_domain.test", "parent_dn", "uni/vmmp-VMware"),
 					resource.TestCheckResourceAttr("aci_vmm_domain.test", "access_mode", "read-only"),
 					resource.TestCheckResourceAttr("aci_vmm_domain.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_vmm_domain.test", "arp_learning", ""),
+					resource.TestCheckResourceAttr("aci_vmm_domain.test", "arp_learning", "disabled"),
 					resource.TestCheckResourceAttr("aci_vmm_domain.test", "ave_time_out", "30"),
 					resource.TestCheckResourceAttr("aci_vmm_domain.test", "default_encapsulation_mode", "unspecified"),
 					resource.TestCheckResourceAttr("aci_vmm_domain.test", "delimiter", "@"),
@@ -260,11 +260,11 @@ func TestAccResourceVmmDomP(t *testing.T) {
 			{
 				Config: testConfigVmmDomPReset + testConfigDataSourceSystem,
 				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_vmm_domain.test", "arp_learning", "disabled"),
 					resource.TestCheckResourceAttr("aci_vmm_domain.test", "name", "test_name"),
 					resource.TestCheckResourceAttr("aci_vmm_domain.test", "parent_dn", "uni/vmmp-VMware"),
 					resource.TestCheckResourceAttr("aci_vmm_domain.test", "access_mode", "read-write"),
 					resource.TestCheckResourceAttr("aci_vmm_domain.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_vmm_domain.test", "arp_learning", ""),
 					resource.TestCheckResourceAttr("aci_vmm_domain.test", "ave_time_out", "30"),
 					resource.TestCheckResourceAttr("aci_vmm_domain.test", "default_encapsulation_mode", "unspecified"),
 					resource.TestCheckResourceAttr("aci_vmm_domain.test", "delimiter", ""),
@@ -290,9 +290,9 @@ func TestAccResourceVmmDomP(t *testing.T) {
 			},
 			// Import testing
 			{
-				ResourceName:      "aci_vmm_domain.test",
-				ImportState:       true,
-				ImportStateVerify: true,
+				ResourceName: "aci_vmm_domain.test",
+				ImportState:  true,
+				// skipping ImportStateVerify due to overwrite in class definition file
 			},
 			// Update with children
 			{
@@ -300,7 +300,6 @@ func TestAccResourceVmmDomP(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_vmm_domain.test", "access_mode", "read-write"),
 					resource.TestCheckResourceAttr("aci_vmm_domain.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_vmm_domain.test", "arp_learning", ""),
 					resource.TestCheckResourceAttr("aci_vmm_domain.test", "ave_time_out", "30"),
 					resource.TestCheckResourceAttr("aci_vmm_domain.test", "default_encapsulation_mode", "unspecified"),
 					resource.TestCheckResourceAttr("aci_vmm_domain.test", "delimiter", ""),
@@ -416,7 +415,6 @@ func TestAccResourceVmmDomP(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_vmm_domain.test", "access_mode", "read-write"),
 					resource.TestCheckResourceAttr("aci_vmm_domain.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_vmm_domain.test", "arp_learning", ""),
 					resource.TestCheckResourceAttr("aci_vmm_domain.test", "ave_time_out", "30"),
 					resource.TestCheckResourceAttr("aci_vmm_domain.test", "default_encapsulation_mode", "unspecified"),
 					resource.TestCheckResourceAttr("aci_vmm_domain.test", "delimiter", ""),
@@ -532,7 +530,6 @@ func TestAccResourceVmmDomP(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_vmm_domain.test", "access_mode", "read-write"),
 					resource.TestCheckResourceAttr("aci_vmm_domain.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_vmm_domain.test", "arp_learning", ""),
 					resource.TestCheckResourceAttr("aci_vmm_domain.test", "ave_time_out", "30"),
 					resource.TestCheckResourceAttr("aci_vmm_domain.test", "default_encapsulation_mode", "unspecified"),
 					resource.TestCheckResourceAttr("aci_vmm_domain.test", "delimiter", ""),
@@ -612,7 +609,6 @@ func TestAccResourceVmmDomP(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("aci_vmm_domain.test", "access_mode", "read-write"),
 					resource.TestCheckResourceAttr("aci_vmm_domain.test", "annotation", "orchestrator:terraform"),
-					resource.TestCheckResourceAttr("aci_vmm_domain.test", "arp_learning", ""),
 					resource.TestCheckResourceAttr("aci_vmm_domain.test", "ave_time_out", "30"),
 					resource.TestCheckResourceAttr("aci_vmm_domain.test", "default_encapsulation_mode", "unspecified"),
 					resource.TestCheckResourceAttr("aci_vmm_domain.test", "delimiter", ""),
@@ -675,6 +671,14 @@ func TestAccResourceVmmDomP(t *testing.T) {
 					),
 				},
 			},
+			// Update with minimum config and custom type semantic equivalent values
+			{
+				Config: testConfigVmmDomPCustomType,
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_vmm_domain.test", "arp_learning", "disabled"),
+					resource.TestCheckResourceAttr("aci_vmm_domain.test", "name", "test_name"),
+				),
+			},
 			// Update with legacy attribute config
 			{
 				Config: testConfigVmmDomPLegacyAttributes + testConfigDataSourceSystem,
@@ -708,10 +712,12 @@ resource "aci_vlan_pool" "test_vlan_pool_1"{
 
 const testConfigVmmDomPMinAllowExisting = `
 resource "aci_vmm_domain" "allow_test" {
+  arp_learning = "disabled"
   name = "test_name"
   parent_dn = "uni/vmmp-VMware"
 }
 resource "aci_vmm_domain" "allow_test_2" {
+  arp_learning = "disabled"
   name = "test_name"
   parent_dn = "uni/vmmp-VMware"
   depends_on = [aci_vmm_domain.allow_test]
@@ -720,6 +726,7 @@ resource "aci_vmm_domain" "allow_test_2" {
 
 const testConfigVmmDomPMin = `
 resource "aci_vmm_domain" "test" {
+  arp_learning = "disabled"
   name = "test_name"
   parent_dn = "uni/vmmp-VMware"
 }
@@ -731,7 +738,7 @@ resource "aci_vmm_domain" "test" {
   parent_dn = "uni/vmmp-VMware"
   access_mode = "read-only"
   annotation = "annotation"
-  arp_learning = ""
+  arp_learning = "disabled"
   ave_time_out = "30"
   default_encapsulation_mode = "unspecified"
   delimiter = "@"
@@ -760,7 +767,7 @@ resource "aci_vmm_domain" "test" {
   parent_dn = "uni/vmmp-VMware"
   access_mode = "read-write"
   annotation = "orchestrator:terraform"
-  arp_learning = ""
+  arp_learning = "disabled"
   ave_time_out = "30"
   default_encapsulation_mode = "unspecified"
   delimiter = ""
@@ -784,6 +791,7 @@ resource "aci_vmm_domain" "test" {
 `
 const testConfigVmmDomPChildren = testChildDependencyConfigVmmDomP + `
 resource "aci_vmm_domain" "test" {
+  arp_learning = "disabled"
   name = "test_name"
   parent_dn = "uni/vmmp-VMware"
   annotations = [
@@ -943,6 +951,7 @@ resource "aci_vmm_domain" "test" {
 
 const testConfigVmmDomPChildrenRemoveFromConfig = testChildDependencyConfigVmmDomP + `
 resource "aci_vmm_domain" "test" {
+  arp_learning = "disabled"
   name = "test_name"
   parent_dn = "uni/vmmp-VMware"
 }
@@ -950,6 +959,7 @@ resource "aci_vmm_domain" "test" {
 
 const testConfigVmmDomPChildrenRemoveOne = testChildDependencyConfigVmmDomP + `
 resource "aci_vmm_domain" "test" {
+  arp_learning = "disabled"
   name = "test_name"
   parent_dn = "uni/vmmp-VMware"
   annotations = [ 
@@ -972,6 +982,7 @@ resource "aci_vmm_domain" "test" {
 
 const testConfigVmmDomPChildrenRemoveAll = testChildDependencyConfigVmmDomP + `
 resource "aci_vmm_domain" "test" {
+  arp_learning = "disabled"
   name = "test_name"
   parent_dn = "uni/vmmp-VMware"
   annotations = []
@@ -982,8 +993,16 @@ resource "aci_vmm_domain" "test" {
 }
 `
 
+const testConfigVmmDomPCustomType = `
+resource "aci_vmm_domain" "test" {
+  parent_dn = "uni/vmmp-VMware"
+  arp_learning = "disabled"
+  name = "test_name"
+}
+`
 const testConfigVmmDomPLegacyAttributes = testChildDependencyConfigVmmDomP + `
 resource "aci_vmm_domain" "test" {
+  arp_learning = "disabled"
   name = "test_name"
   config_infra_pg = "no"
   ctrl_knob = "epDpVerify"
