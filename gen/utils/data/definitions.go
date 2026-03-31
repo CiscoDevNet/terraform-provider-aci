@@ -73,6 +73,8 @@ type ClassDefinition struct {
 	IsSingleNestedWhenDefinedAsChild bool `yaml:"is_single_nested_when_defined_as_child"`
 	// Overrides the platform type from the meta file. Valid values: "apic", "cloud", "both".
 	PlatformType string `yaml:"platform_type"`
+	// Indicates that the class is required when defined as a child in a parent resource.
+	RequiredAsChild bool `yaml:"required_as_child"`
 	// Overrides the versions from the meta file. Format: "1.0(1e)-" or "4.2(7f)-4.2(7w),5.2(1g)-".
 	SupportedVersions string `yaml:"supported_versions"`
 }
