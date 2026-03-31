@@ -1770,3 +1770,117 @@ func TestSetRequiredAsChild(t *testing.T) {
 		})
 	}
 }
+
+type setRnFormatInput struct {
+	MetaFileContent map[string]interface{}
+	ClassDefinition ClassDefinition
+}
+
+func TestSetRnFormat(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	testCases := []test.TestCase{
+		{
+			Name: "test_rn_format_from_meta_file",
+			Input: setRnFormatInput{
+				MetaFileContent: map[string]interface{}{"rnFormat": "tn-{name}"},
+				ClassDefinition: ClassDefinition{},
+			},
+			Expected: "tn-{name}",
+		},
+		{
+			Name: "test_rn_format_definition_override",
+			Input: setRnFormatInput{
+				MetaFileContent: map[string]interface{}{"rnFormat": "tn-{name}"},
+				ClassDefinition: ClassDefinition{RnFormat: "custom-{name}"},
+			},
+			Expected: "custom-{name}",
+		},
+		{
+			Name: "test_rn_format_definition_override_without_meta",
+			Input: setRnFormatInput{
+				MetaFileContent: map[string]interface{}{},
+				ClassDefinition: ClassDefinition{RnFormat: "custom-{name}"},
+			},
+			Expected: "custom-{name}",
+		},
+		{
+			Name: "test_rn_prepend_with_meta_format",
+			Input: setRnFormatInput{
+				MetaFileContent: map[string]interface{}{"rnFormat": "sdifpol-{name}"},
+				ClassDefinition: ClassDefinition{RnPrepend: "infra"},
+			},
+			Expected: "infra/sdifpol-{name}",
+		},
+		{
+			Name: "test_rn_prepend_with_definition_override",
+			Input: setRnFormatInput{
+				MetaFileContent: map[string]interface{}{"rnFormat": "tn-{name}"},
+				ClassDefinition: ClassDefinition{RnFormat: "custom-{name}", RnPrepend: "bar"},
+			},
+			Expected: "bar/custom-{name}",
+		},
+		{
+			Name: "test_rn_prepend_multi_segment",
+			Input: setRnFormatInput{
+				MetaFileContent: map[string]interface{}{"rnFormat": "instP-{name}"},
+				ClassDefinition: ClassDefinition{RnPrepend: "tn-mgmt/extmgmt-default"},
+			},
+			Expected: "tn-mgmt/extmgmt-default/instP-{name}",
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.(setRnFormatInput)
+			class := Class{Name: testClassName("fvTenant")}
+			class.MetaFileContent = input.MetaFileContent
+			class.ClassDefinition = input.ClassDefinition
+
+			err := class.setRnFormat()
+
+			assert.NoError(t, err, test.MessageUnexpectedError(err))
+			assert.Equal(t, testCase.Expected, class.RnFormat, test.MessageEqual(testCase.Expected, class.RnFormat, testCase.Name))
+		})
+	}
+}
+
+func TestSetRnFormatErrors(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	testCases := []test.TestCase{
+		{
+			Name: "test_error_no_rn_format_from_any_source",
+			Input: setRnFormatInput{
+				MetaFileContent: map[string]interface{}{},
+				ClassDefinition: ClassDefinition{},
+			},
+			Expected: "rnFormat not specified for class 'fvTenant': add rn_format to the class definition file",
+		},
+		{
+			Name: "test_error_rn_prepend_only_without_rn_format",
+			Input: setRnFormatInput{
+				MetaFileContent: map[string]interface{}{},
+				ClassDefinition: ClassDefinition{RnPrepend: "infra"},
+			},
+			Expected: "rnFormat not specified for class 'fvTenant': add rn_format to the class definition file",
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.(setRnFormatInput)
+			class := Class{Name: testClassName("fvTenant")}
+			class.MetaFileContent = input.MetaFileContent
+			class.ClassDefinition = input.ClassDefinition
+
+			err := class.setRnFormat()
+
+			assert.EqualError(t, err, testCase.Expected.(string))
+		})
+	}
+}

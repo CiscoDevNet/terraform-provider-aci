@@ -231,8 +231,10 @@ func (c *Class) setClassData(ds *DataStore) error {
 		return err
 	}
 
-	// TODO: add function to set RnFormat
-	c.setRnFormat()
+	err = c.setRnFormat()
+	if err != nil {
+		return err
+	}
 
 	err = c.setSupportedVersions()
 	if err != nil {
@@ -552,10 +554,29 @@ func (c *Class) setResourceName(ds *DataStore) error {
 	return nil
 }
 
-func (c *Class) setRnFormat() {
+func (c *Class) setRnFormat() error {
 	// Determine the relative name (RN) format of the class.
 	genLogger.Debug(fmt.Sprintf("Setting RnFormat for class '%s'.", c.Name))
-	genLogger.Debug(fmt.Sprintf("Successfully set RnFormat for class '%s'.", c.Name))
+
+	// Use ClassDefinition override if specified, otherwise read from meta file.
+	if c.ClassDefinition.RnFormat != "" {
+		c.RnFormat = c.ClassDefinition.RnFormat
+	} else if rnFormat, ok := c.MetaFileContent["rnFormat"].(string); ok {
+		c.RnFormat = rnFormat
+	}
+
+	// When rnFormat is not specified error to force users to add rnFormat.
+	if c.RnFormat == "" {
+		return fmt.Errorf("rnFormat not specified for class '%s': add rn_format to the class definition file", c.Name)
+	}
+
+	// Prepend the RN path prefix if specified in the definition.
+	if c.ClassDefinition.RnPrepend != "" {
+		c.RnFormat = fmt.Sprintf("%s/%s", c.ClassDefinition.RnPrepend, c.RnFormat)
+	}
+
+	genLogger.Debug(fmt.Sprintf("Successfully set RnFormat '%s' for class '%s'.", c.RnFormat, c.Name))
+	return nil
 }
 
 func (c *Class) setSupportedVersions() error {

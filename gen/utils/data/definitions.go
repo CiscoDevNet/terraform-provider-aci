@@ -75,6 +75,10 @@ type ClassDefinition struct {
 	PlatformType string `yaml:"platform_type"`
 	// Indicates that the class is required when defined as a child in a parent resource.
 	RequiredAsChild bool `yaml:"required_as_child"`
+	// Overrides the rnFormat from the meta file. The full RN format string (e.g., "custom-{name}").
+	RnFormat string `yaml:"rn_format"`
+	// Prepends a path prefix to the resolved RN format (e.g., "infra" results in "infra/{rnFormat}").
+	RnPrepend string `yaml:"rn_prepend"`
 	// Overrides the versions from the meta file. Format: "1.0(1e)-" or "4.2(7f)-4.2(7w),5.2(1g)-".
 	SupportedVersions string `yaml:"supported_versions"`
 }
