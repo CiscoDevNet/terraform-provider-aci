@@ -2,49 +2,68 @@
 
 All notable changes to this project will be documented in this file.
 
-## 2.19.0 (March 27, 2026)
+## 2.19.0 (April 17, 2026)
+
+This release includes resources and data sources that have been migrated from SDKv2 to the Terraform Provider Framework. Those resources and data sources will continue to accept legacy attributes but deprecation warnings will be displayed. See the [migration guide](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/guides/migration) for more details on the migration and how to upgrade the provider to this release and any subsequent v2.x release that will include migrated resources and data sources.
+
+MIGRATED TO FRAMEWORK:
+
+- aci_access_port_block
+- aci_access_port_selector
+- aci_fex_profile
+- aci_leaf_interface_profile
+- aci_spine_interface_profile
+- aci_spine_access_port_selector
+- aci_vmm_credential
+- aci_attachable_access_entity_profile
+- aci_spanning_tree_interface_policy
+- aci_l2_interface_policy
+- aci_vmm_domain
+- aci_cdp_interface_policy
+- aci_lldp_interface_policy
 
 DEPRECATIONS:
-- Deprecate aci_fabric_if_pol, which will be removed in the next major version of the provider.
-- Deprecate aci_port_security_policy, which will be removed in the next major version of the provider.
-- Deprecate aci_miscabling_protocol_interface_policy, which will be removed in the next major version of the provider.
-- Deprecate aci_interface_fc_policy, which will be removed in the next major version of the provider.
+
+- Deprecate aci_fabric_if_pol, which will be removed in the next major version of the provider. Use aci_link_level_interface_policy instead.
+- Deprecate aci_port_security_policy, which will be removed in the next major version of the provider. Use aci_port_security_interface_policy instead.
+- Deprecate aci_miscabling_protocol_interface_policy, which will be removed in the next major version of the provider. Use aci_mcp_interface_policy instead.
+- Deprecate aci_interface_fc_policy, which will be removed in the next major version of the provider. Use aci_fibre_channel_interface_policy instead.
 
 IMPROVEMENTS:
-- Add support for uplink_order_container (fvuplinkordercont) in relation_to_domains attribute of aci_application_epg and aci_relation_to_domain resource and datasource
-- Add resource and data source to import l4-l7 logical devices from one tenant to another.
-- Addition of new attributes to resource_aci_rest_managed to modify an object during destroy instead of deleting it
-- Migrate resources and datasource aci_access_port_block, aci_access_port_selector, aci_fex_profile. aci_leaf_interface_profile, aci_spine_interface_profile and aci_spine_access_port_selector to terraform plugin framework
-- Migrate resource and datasource aci_vmm_credential to terraform plugin framework
-- Add resource and datasource aci_relation_from_application_epg_to_attachable_access_entity_profile for fvrsaepatt class support
-- Migrate resource and datasource aci_attachable_access_entity_profile to terraform plugin framework and add resource and datasource for aci_relation_from_attachable_access_entity_profile_to_domain
-- Add support for dwdm interface access policy with resources aci_dwdm_interface_policy
-- Add support for poe interface access policy with resource aci_poe_interface_policy
-- Add support for link level interface access policy with resource aci_link_level_interface_policy
-- Add support for slow drain interface access policy with resource aci_slow_drain_interface_policy
-- Add support for synchronous ethernet interface access policy with resource aci_synce_interface_policy
-- Add support for port security interface access policy with resource aci_port_security_interface_policy
-- Add support for monitoring access policy with resources aci_access_monitoring_policy
-- Add support for link level control flow interface access policy with resource aci_link_level_control_flow_interface_policy
-- Add support for mcp interface access policy with resource aci_mcp_interface_policy
-- Add support for fibre channel interface access policy with resource aci_fibre_channel_interface_policy
-- Add support for priority flow control interface access policy with resource aci_priority_flow_control_interface_policy
-- Add support for 802.1x port authentication interface access policy with resource aci_dot1x_port_authentication_interface_policy
-- Added 'do not edit' note to the custom_type.go.tmpl file
-- Add support for copp interface access policy with resources aci_copp_interface_policy and aci_copp_interface_protocol_policy
-- Migrate resource and datasource aci_spanning_tree_interface_policy to terraform plugin framework
-- Add support for no drop dscp match interface access policy with resource aci_no_drop_dscp_match_interface_policy
-- Add support for transceiver interface access policies with resourcea aci_zr_transceiver_interface_policy and aci_zrp_transceiver_interface_policy
-- Migrate resource and datasource aci_l2_interface_policy to terraform plugin framework
-- Migrate resources and data-sources aci_vmm_domain, aci_cdp_interface_policy, and aci_lldp_interface_policy to terraform plugin framework and create resources and data-sources for aci_firewall_policy, aci_ip_address_block, aci_ip_address_pool, and aci_l2_mtu_policy
-- Add support for link flap interface access policy with resource aci_link_flap_interface_policy
-- Add logic for static custom type
-- Upgrade go version to 1.25
+
+- Upgrade Go version to 1.25.
+- Add content_on_destroy and child_on_destroy attributes to aci_rest_managed resource to modify an object during destroy instead of deleting it.
+- Add uplink_order_container attribute in relation_to_domains attribute to aci_application_epg and aci_relation_to_domain resource and datasource.
+- Add aci_imported_logical_device resource and datasource.
+- Add aci_relation_from_application_epg_to_attachable_access_entity_profile resource and datasource.
+- Add aci_relation_from_attachable_access_entity_profile_to_domain resource and datasource.
+- Add aci_dwdm_interface_policy resource and datasource.
+- Add aci_poe_interface_policy resource and datasource.
+- Add aci_link_level_interface_policy resource and datasource.
+- Add aci_slow_drain_interface_policy resource and datasource.
+- Add aci_synce_interface_policy resource and datasource.
+- Add aci_port_security_interface_policy resource and datasource.
+- Add aci_access_monitoring_policy resource and datasource.
+- Add aci_link_level_control_flow_interface_policy resource and datasource.
+- Add aci_mcp_interface_policy resource and datasource.
+- Add aci_fibre_channel_interface_policy resource and datasource.
+- Add aci_priority_flow_control_interface_policy resource and datasource.
+- Add aci_dot1x_port_authentication_interface_policy resource and datasource.
+- Add aci_copp_interface_policy resource and datasource.
+- Add aci_copp_interface_protocol_policy resource and datasource.
+- Add aci_no_drop_dscp_match_interface_policy resource and datasource.
+- Add aci_zr_transceiver_interface_policy resource and datasource.
+- Add aci_zrp_transceiver_interface_policy resource and datasource.
+- Add aci_link_flap_interface_policy resource and datasource.
+- Add aci_firewall_policy resource and datasource.
+- Add aci_ip_address_block resource and datasource.
+- Add aci_ip_address_pool resource and datasource.
+- Add aci_l2_mtu_policy resource and datasource.
+- Add aci-go-client improvement to increase connection pool size and enable TLS session ticket caching.
 
 BUG FIXES:
-- Bug fix for update of single nested children
-- Fix documentation examples for importing with a json string in aci_rest_managed
-- Fix child classes to be queried only when apic versions allows
+
+- Fix error code 107 with message "make sure it's not used before deleting it" being silently ignored, error is now surfaced to the user.
 
 ## 2.18.0 (November 7, 2025)
 
