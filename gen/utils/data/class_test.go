@@ -129,23 +129,69 @@ func TestSetResourceNameFromToRelation(t *testing.T) {
 func TestSetResourceNameFromEmptyLabelError(t *testing.T) {
 	t.Parallel()
 	ds := initializeDataStoreTest(t)
-	class := Class{}
+	class := Class{Name: testClassName("fvTenant")}
 	class.MetaFileContent = map[string]interface{}{"label": ""}
 
 	err := class.setResourceName(ds)
 
-	assert.Error(t, err)
+	assert.EqualError(t, err, "failed to set resource name for class 'fvTenant': resource_name not defined and label not found")
 }
 
 func TestSetResourceNameFromNoLabelError(t *testing.T) {
 	t.Parallel()
 	ds := initializeDataStoreTest(t)
-	class := Class{}
+	class := Class{Name: testClassName("fvTenant")}
 	class.MetaFileContent = map[string]interface{}{"no_label": ""}
 
 	err := class.setResourceName(ds)
 
-	assert.Error(t, err)
+	assert.EqualError(t, err, "failed to set resource name for class 'fvTenant': resource_name not defined and label not found")
+}
+
+func TestSetResourceNameFromDefinitionOverride(t *testing.T) {
+	t.Parallel()
+	ds := initializeDataStoreTest(t)
+	class := Class{Name: testClassName("fvCtx"), IdentifiedBy: []string{"name"}}
+	class.MetaFileContent = map[string]interface{}{
+		"label": "context",
+	}
+	class.ClassDefinition = ClassDefinition{ResourceName: "vrf"}
+
+	err := class.setResourceName(ds)
+
+	assert.NoError(t, err, test.MessageUnexpectedError(err))
+	assert.Equal(t, "vrf", class.ResourceName, test.MessageEqual("vrf", class.ResourceName, t.Name()))
+	assert.Equal(t, "vrfs", class.ResourceNameNested, test.MessageEqual("vrfs", class.ResourceNameNested, t.Name()))
+}
+
+func TestSetResourceNameFromDefinitionOverrideWithoutIdentifier(t *testing.T) {
+	t.Parallel()
+	ds := initializeDataStoreTest(t)
+	class := Class{Name: testClassName("fvRsCtx")}
+	class.MetaFileContent = map[string]interface{}{
+		"label": "context",
+	}
+	class.ClassDefinition = ClassDefinition{ResourceName: "vrf"}
+
+	err := class.setResourceName(ds)
+
+	assert.NoError(t, err, test.MessageUnexpectedError(err))
+	assert.Equal(t, "vrf", class.ResourceName, test.MessageEqual("vrf", class.ResourceName, t.Name()))
+	assert.Equal(t, "vrf", class.ResourceNameNested, test.MessageEqual("vrf", class.ResourceNameNested, t.Name()))
+}
+
+func TestSetResourceNameFromDefinitionOverrideWithoutLabel(t *testing.T) {
+	t.Parallel()
+	ds := initializeDataStoreTest(t)
+	class := Class{Name: testClassName("fvRsCtx")}
+	class.MetaFileContent = map[string]interface{}{}
+	class.ClassDefinition = ClassDefinition{ResourceName: "vrf"}
+
+	err := class.setResourceName(ds)
+
+	assert.NoError(t, err, test.MessageUnexpectedError(err))
+	assert.Equal(t, "vrf", class.ResourceName, test.MessageEqual("vrf", class.ResourceName, t.Name()))
+	assert.Equal(t, "vrf", class.ResourceNameNested, test.MessageEqual("vrf", class.ResourceNameNested, t.Name()))
 }
 
 type setRelationInput struct {
