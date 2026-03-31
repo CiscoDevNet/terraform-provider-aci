@@ -68,17 +68,29 @@ type Class struct {
 	SupportedVersions *Versions
 }
 
+// PlatformTypeEnum represents the APIC platform type. The default value is Apic.
 type PlatformTypeEnum int
 
 // The enumeration options of the Platform type.
 const (
-	// Apic indicates that the class is available on the on-premises version of APIC.
-	Apic PlatformTypeEnum = iota + 1
+	// Apic indicates that the class is available on the on-premises version of APIC. This is the default value.
+	Apic PlatformTypeEnum = iota
 	// Both indicates that the class is available on both the on-premises and cloud versions of APIC.
 	Both
 	// Cloud indicates that the class is available on the cloud version of APIC.
 	Cloud
 )
+
+func (p PlatformTypeEnum) String() string {
+	switch p {
+	case Both:
+		return "both"
+	case Cloud:
+		return "cloud"
+	default:
+		return "apic"
+	}
+}
 
 type Relation struct {
 	// The class from which the relationship is defined.
@@ -202,7 +214,6 @@ func (c *Class) setClassData(ds *DataStore) error {
 		return err
 	}
 
-	// TODO: add function to set PlatformType
 	c.setPlatformType()
 
 	// TODO: add function to set Properties
@@ -396,7 +407,47 @@ func (c *Class) setParents() error {
 func (c *Class) setPlatformType() {
 	// Determine the platform type of the class.
 	genLogger.Debug(fmt.Sprintf("Setting PlatformType for class '%s'.", c.Name))
-	genLogger.Debug(fmt.Sprintf("Successfully set PlatformType for class '%s'.", c.Name))
+
+	// Use ClassDefinition override if specified.
+	if c.ClassDefinition.PlatformType != "" {
+		switch c.ClassDefinition.PlatformType {
+		case "apic":
+			c.PlatformType = Apic
+		case "cloud":
+			c.PlatformType = Cloud
+		case "both":
+			c.PlatformType = Both
+		}
+		genLogger.Debug(fmt.Sprintf("Successfully set PlatformType for class '%s' from definition: %s.", c.Name, c.PlatformType))
+		return
+	}
+
+	// Fall back to meta file platformFlavors.
+	if platformFlavors, ok := c.MetaFileContent["platformFlavors"].([]interface{}); ok {
+		hasApic := false
+		hasCloud := false
+		for _, flavor := range platformFlavors {
+			if flavorStr, ok := flavor.(string); ok {
+				switch flavorStr {
+				case "apic":
+					hasApic = true
+				case "capic":
+					hasCloud = true
+				default:
+					genLogger.Warn(fmt.Sprintf("Unknown platform flavor '%s' found for class '%s'.", flavorStr, c.Name))
+				}
+			}
+		}
+		if hasApic && hasCloud {
+			c.PlatformType = Both
+		} else if hasCloud {
+			c.PlatformType = Cloud
+		} else if hasApic {
+			c.PlatformType = Apic
+		}
+	}
+
+	genLogger.Debug(fmt.Sprintf("Successfully set PlatformType for class '%s': %s.", c.Name, c.PlatformType))
 }
 
 func (c *Class) setProperties() {
