@@ -1579,3 +1579,159 @@ func TestSetDeprecated(t *testing.T) {
 		})
 	}
 }
+
+type setPlatformTypeInput struct {
+	ClassDefinitionPlatformType string
+	PlatformFlavors             interface{}
+}
+
+func TestSetPlatformType(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	testCases := []test.TestCase{
+		{
+			Name: "test_apic_only_from_meta",
+			Input: setPlatformTypeInput{
+				ClassDefinitionPlatformType: "",
+				PlatformFlavors:             []interface{}{"apic"},
+			},
+			Expected: Apic,
+		},
+		{
+			Name: "test_cloud_only_from_meta",
+			Input: setPlatformTypeInput{
+				ClassDefinitionPlatformType: "",
+				PlatformFlavors:             []interface{}{"capic"},
+			},
+			Expected: Cloud,
+		},
+		{
+			Name: "test_both_from_meta",
+			Input: setPlatformTypeInput{
+				ClassDefinitionPlatformType: "",
+				PlatformFlavors:             []interface{}{"apic", "capic"},
+			},
+			Expected: Both,
+		},
+		{
+			Name: "test_both_from_meta_reverse_order",
+			Input: setPlatformTypeInput{
+				ClassDefinitionPlatformType: "",
+				PlatformFlavors:             []interface{}{"capic", "apic"},
+			},
+			Expected: Both,
+		},
+		{
+			Name: "test_definition_overrides_meta_apic",
+			Input: setPlatformTypeInput{
+				ClassDefinitionPlatformType: "apic",
+				PlatformFlavors:             []interface{}{"capic"},
+			},
+			Expected: Apic,
+		},
+		{
+			Name: "test_definition_overrides_meta_cloud",
+			Input: setPlatformTypeInput{
+				ClassDefinitionPlatformType: "cloud",
+				PlatformFlavors:             []interface{}{"apic"},
+			},
+			Expected: Cloud,
+		},
+		{
+			Name: "test_definition_overrides_meta_both",
+			Input: setPlatformTypeInput{
+				ClassDefinitionPlatformType: "both",
+				PlatformFlavors:             nil,
+			},
+			Expected: Both,
+		},
+		{
+			Name:     "test_default_zero_value_is_apic",
+			Input:    setPlatformTypeInput{},
+			Expected: Apic,
+		},
+		{
+			Name: "test_nil_platform_flavors_no_definition_defaults_to_apic",
+			Input: setPlatformTypeInput{
+				ClassDefinitionPlatformType: "",
+				PlatformFlavors:             nil,
+			},
+			Expected: Apic,
+		},
+		{
+			Name: "test_empty_platform_flavors_defaults_to_apic",
+			Input: setPlatformTypeInput{
+				ClassDefinitionPlatformType: "",
+				PlatformFlavors:             []interface{}{},
+			},
+			Expected: Apic,
+		},
+		{
+			Name: "test_unknown_flavor_defaults_to_apic",
+			Input: setPlatformTypeInput{
+				ClassDefinitionPlatformType: "",
+				PlatformFlavors:             []interface{}{"unknown"},
+			},
+			Expected: Apic,
+		},
+		{
+			Name: "test_unknown_flavor_with_apic",
+			Input: setPlatformTypeInput{
+				ClassDefinitionPlatformType: "",
+				PlatformFlavors:             []interface{}{"apic", "unknown"},
+			},
+			Expected: Apic,
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.(setPlatformTypeInput)
+
+			class := Class{
+				Name: testClassName("fvTenant"),
+				ClassDefinition: ClassDefinition{
+					PlatformType: input.ClassDefinitionPlatformType,
+				},
+				MetaFileContent: map[string]interface{}{},
+			}
+			if input.PlatformFlavors != nil {
+				class.MetaFileContent["platformFlavors"] = input.PlatformFlavors
+			}
+
+			class.setPlatformType()
+
+			assert.Equal(t, testCase.Expected, class.PlatformType, test.MessageEqual(testCase.Expected, class.PlatformType, testCase.Name))
+		})
+	}
+}
+
+func TestSetPlatformTypeWarnsOnUnknownFlavor(t *testing.T) {
+	test.InitializeTest(t)
+
+	// Capture log output using a buffer.
+	var logBuffer bytes.Buffer
+	genLogger.SetOutputForTesting(&logBuffer)
+	genLogger.SetLogLevel("WARN")
+
+	// Restore original log output after test.
+	defer func() {
+		genLogger.SetOutputForTesting(os.Stdout)
+	}()
+
+	class := Class{
+		Name: testClassName("fvTenant"),
+		MetaFileContent: map[string]interface{}{
+			"platformFlavors": []interface{}{"unknownFlavor"},
+		},
+	}
+
+	class.setPlatformType()
+
+	// Verify the warning was logged.
+	logOutput := logBuffer.String()
+	expectedWarning := "WARN: Unknown platform flavor 'unknownFlavor' found for class 'fvTenant'."
+	assert.Contains(t, logOutput, expectedWarning, test.MessageEqual(expectedWarning, logOutput, "warning log message"))
+}
