@@ -1735,3 +1735,38 @@ func TestSetPlatformTypeWarnsOnUnknownFlavor(t *testing.T) {
 	expectedWarning := "WARN: Unknown platform flavor 'unknownFlavor' found for class 'fvTenant'."
 	assert.Contains(t, logOutput, expectedWarning, test.MessageEqual(expectedWarning, logOutput, "warning log message"))
 }
+
+func TestSetRequiredAsChild(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	testCases := []test.TestCase{
+		{
+			Name:     "test_required_as_child_false",
+			Input:    false,
+			Expected: false,
+		},
+		{
+			Name:     "test_required_as_child_true",
+			Input:    true,
+			Expected: true,
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+
+			class := Class{
+				Name: testClassName("fvTenant"),
+				ClassDefinition: ClassDefinition{
+					RequiredAsChild: testCase.Input.(bool),
+				},
+			}
+
+			class.setRequiredAsChild()
+
+			assert.Equal(t, testCase.Expected, class.RequiredAsChild, test.MessageEqual(testCase.Expected, class.RequiredAsChild, testCase.Name))
+		})
+	}
+}
