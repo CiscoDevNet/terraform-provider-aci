@@ -224,7 +224,6 @@ func (c *Class) setClassData(ds *DataStore) error {
 		return err
 	}
 
-	// TODO: add function to set RequiredAsChild
 	c.setRequiredAsChild()
 
 	err = c.setResourceName(ds)
@@ -507,7 +506,10 @@ func (c *Class) setRelation() error {
 func (c *Class) setRequiredAsChild() {
 	// Determine if the class is required when defined as a child in a parent resource.
 	genLogger.Debug(fmt.Sprintf("Setting RequiredAsChild for class '%s'.", c.Name))
-	genLogger.Debug(fmt.Sprintf("Successfully set RequiredAsChild for class '%s'.", c.Name))
+
+	c.RequiredAsChild = c.ClassDefinition.RequiredAsChild
+
+	genLogger.Debug(fmt.Sprintf("Successfully set RequiredAsChild for class '%s'. RequiredAsChild: %t", c.Name, c.RequiredAsChild))
 }
 
 func (c *Class) setResourceName(ds *DataStore) error {
