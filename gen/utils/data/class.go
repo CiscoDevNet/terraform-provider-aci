@@ -517,37 +517,32 @@ func (c *Class) setRequiredAsChild() {
 func (c *Class) setResourceName(ds *DataStore) error {
 	genLogger.Debug(fmt.Sprintf("Setting resource name for class '%s'.", c.Name))
 
-	// TODO: add logic to override the resource name from a definition file.
-	// TODO: add logic to override the label from a definition file.
-	// TODO: add logic to override the class the nested resource name from the parent
-	// 	ex. is fvRsSecInherited with fvESg and fvAEPg.
-	// 		fvESg: relation_to_end_point_security_groups
-	// 		fvAEPg: relation_to_application_epgs
-	if label, ok := c.MetaFileContent["label"]; ok && label != "" {
-		if c.Relation.RelationalClass {
-			// If the relation includes 'To' in the classname, the resource name will be in the format 'relation_from_{from_class}_to_{to_class}'.
-			// If the relation does not include 'To' in the classname, the resource name will be in the format 'relation_to_{to_class}'.
-			toClass := getRelationshipResourceName(ds, c.Relation.ToClass)
-			if c.Relation.IncludeFrom {
-				// If the class is a relational class and the relation includes 'from', the resource name will be in the format 'relation_from_{from_class}_to_{to_class}'.
-				c.ResourceName = fmt.Sprintf("relation_from_%s_to_%s", getRelationshipResourceName(ds, c.Relation.FromClass), toClass)
-				c.ResourceNameNested = fmt.Sprintf("relation_to_%s", toClass)
-			} else {
-				// If the class is a relational class and the relation does not include 'from', the resource name will be in the format 'relation_to_{to_class}'.
-				c.ResourceName = fmt.Sprintf("relation_to_%s", toClass)
-				c.ResourceNameNested = fmt.Sprintf("relation_to_%s", toClass)
-			}
-		} else {
-			c.ResourceName = utils.Underscore(label.(string))
-			c.ResourceNameNested = c.ResourceName
-		}
-
-		// If the class is a relational class and the relation has identifiers, the plural form of the resource name will be set.
-		if len(c.IdentifiedBy) != 0 {
-			c.ResourceNameNested = utils.Plural(c.ResourceName)
-		}
+	// Get the resource name from definition, else construct the resource name from label, error when both not found.
+	if c.ClassDefinition.ResourceName != "" {
+		c.ResourceName = c.ClassDefinition.ResourceName
+	} else if label, ok := c.MetaFileContent["label"]; ok && label != "" {
+		c.ResourceName = utils.Underscore(label.(string))
 	} else {
-		return fmt.Errorf("failed to set resource name for class '%s': label not found", c.Name)
+		return fmt.Errorf("failed to set resource name for class '%s': resource_name not defined and label not found", c.Name)
+	}
+	c.ResourceNameNested = c.ResourceName
+
+	// Determine if the class is relational and set the ResourceName and ResourceNameNested based on the relation.
+	if c.Relation.RelationalClass {
+		// If the relation includes 'To' in the classname, the resource name will be in the format 'relation_from_{from_class}_to_{to_class}'.
+		// If the relation does not include 'To' in the classname, the resource name will be in the format 'relation_to_{to_class}'.
+		toClass := getRelationshipResourceName(ds, c.Relation.ToClass)
+		if c.Relation.IncludeFrom {
+			c.ResourceName = fmt.Sprintf("relation_from_%s_to_%s", getRelationshipResourceName(ds, c.Relation.FromClass), toClass)
+		} else {
+			c.ResourceName = fmt.Sprintf("relation_to_%s", toClass)
+		}
+		c.ResourceNameNested = fmt.Sprintf("relation_to_%s", toClass)
+	}
+
+	// Set the plural form for the nested resource name when the class has identifiers.
+	if len(c.IdentifiedBy) != 0 {
+		c.ResourceNameNested = utils.Plural(c.ResourceNameNested)
 	}
 
 	genLogger.Debug(fmt.Sprintf("Successfully set resource name '%s' for class '%s'.", c.ResourceName, c.Name))
