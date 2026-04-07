@@ -51,7 +51,7 @@ resource "aci_vmm_domain" "full_example" {
   parent_dn                        = "uni/vmmp-VMware"
   access_mode                      = "read-only"
   annotation                       = "annotation"
-  arp_learning                     = ""
+  arp_learning                     = "disabled"
   ave_time_out                     = "30"
   configure_infra_port_groups      = "no"
   endpoint_data_path_verification  = "epDpVerify"
@@ -222,7 +222,8 @@ All examples for the VMM Domain resource can be found in the [examples](https://
   - Default: `"orchestrator:terraform"`
 * `arp_learning` (arpLearning) - (string) Enable ARP learning for the the VMM Domain object, this attribute is only applicable for Application Virtual Switch (AVS). This attribute is supported in ACI versions: 3.1(1i) and later.
   - Default: `"disabled"`
-  - Valid Values: `""`, `"disabled"`, `"enabled"`.
+  - Valid Values:
+    * `"disabled"`, `"enabled"`.
 * `ave_time_out` (aveTimeOut) - (string) The timeout in seconds that the Cisco ACI Virtual Edge (AVE), the virtual switch for ACI, can remain in a non-working state before vCenter takes action. This attribute is supported in ACI versions: 3.2(10e) to 3.2(10g), 3.2(3n) and later.
   - Default: `"30"`
 * `configure_infra_port_groups` (configInfraPg) - (string) Configure port groups for the virtual APIC. This attribute is supported in ACI versions: 4.0(1h) and later.

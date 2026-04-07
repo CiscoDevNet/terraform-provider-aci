@@ -78,7 +78,8 @@ const providerName = "aci"
 const pubhupDevnetBaseUrl = "https://pubhub.devnetcloud.com/media/model-doc-latest/docs"
 
 var staticCustomTypeMap = map[string]string{
-	"ip_address": "IPAddress",
+	"ip_address":       "IPAddress",
+	"vmm_arp_learning": "VMMArpLearning",
 }
 
 // Function map used during template rendering in order to call functions from the template
@@ -1139,6 +1140,9 @@ func getTestVars(model Model) (map[string]interface{}, error) {
 	// Adds the resource name and resource class name to the testVars map to be used in test template rendering
 	testVarsMap["resourceName"] = model.ResourceName
 	testVarsMap["resourceClassName"] = model.ResourceClassName
+	testVarsMap["importStateVerify"] = model.IgnoreStateVerify
+	testVarsMap["ignoreDataSourceAttributes"] = model.IgnoreDataSourceAttributes
+	testVarsMap["ignoreResourceAttributes"] = model.IgnoreResourceAttributes
 	return testVarsMap, nil
 }
 
@@ -1263,7 +1267,7 @@ func cleanDirectories() {
 	cleanDirectory(resourcesDocsPath, []string{})
 	cleanDirectory(datasourcesDocsPath, []string{"system.md"})
 	cleanDirectory(testVarsPath, []string{})
-	cleanDirectory("./internal/custom_types", []string{"ipAddress.go"})
+	cleanDirectory("./internal/custom_types", []string{"ipAddress.go", "arpLearning.go"})
 
 	// The *ExamplesPath directories are removed and recreated to ensure all previously rendered files are removed
 	// The provider example file is not removed because it contains static provider configuration
@@ -1584,6 +1588,9 @@ type Model struct {
 	RequiredAsChild               bool
 	ContainsDefaultParentDn       bool
 	DataSourceHasNoNameIdentifier bool
+	IgnoreStateVerify             bool
+	IgnoreDataSourceAttributes    []interface{}
+	IgnoreResourceAttributes      []interface{}
 }
 
 type TypeChange struct {
@@ -1715,6 +1722,8 @@ func (m *Model) setClassModel(metaPath string, isChildIteration bool, definition
 		m.SetTestApplicableFromVersion(classDetails)
 		m.SetRequiredAsChild(m.PkgName, definitions)
 		m.SetDataSourceHasNoNameIdentifier()
+		m.SetIgnoreStateVerification()
+		m.SetIgnoreTestAttributes()
 	}
 
 	/*
@@ -2636,6 +2645,35 @@ func (m *Model) SetDataSourceHasNoNameIdentifier() {
 		for key, value := range classDetails.(map[string]interface{}) {
 			if key == "data_source_has_no_name_identifier" {
 				m.DataSourceHasNoNameIdentifier = value.(bool)
+			}
+		}
+	}
+}
+
+func (m *Model) SetIgnoreStateVerification() {
+	// This function is an exception override function when custom types are required to handle state deviation
+	// This was introduced to mitigate CSCws11715 where the default value of disabled is transformed into an empty string
+	if classDetails, ok := m.Definitions.Classes[m.PkgName]; ok {
+		for key, value := range classDetails.(map[string]interface{}) {
+			if key == "ignore_import_state_verify_in_test" {
+				m.IgnoreStateVerify = value.(bool)
+			}
+		}
+	}
+}
+
+func (m *Model) SetIgnoreTestAttributes() {
+	if classDetails, ok := m.Definitions.Properties[m.PkgName]; ok {
+		for key, value := range classDetails.(map[string]interface{}) {
+			if key == "test_values" {
+				for test_type, test_type_values := range value.(map[interface{}]interface{}) {
+					if test_type.(string) == "ignore_in_datasource" {
+						m.IgnoreDataSourceAttributes = test_type_values.([]interface{})
+					}
+					if test_type.(string) == "ignore_in_resource" {
+						m.IgnoreResourceAttributes = test_type_values.([]interface{})
+					}
+				}
 			}
 		}
 	}

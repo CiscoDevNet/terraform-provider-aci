@@ -90,9 +90,7 @@ func TestAccDataSource{{.resourceClassName}}(t *testing.T) {
 				Config: testConfig{{.resourceClassName}}DataSource{{if $.version_mismatch}} + testConfigDataSourceSystem{{end}},
 				Check: resource.ComposeAggregateTestCheckFunc(
 					{{- range $key, $value := .min}}
-					{{- if not (definedInList $.exclude_attributes $key) }}
 					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
-					{{- end}}
 					{{- end}}
 					{{- range $key, $value := .all}}
 						{{- if eq $key "version_mismatch" }}
@@ -118,7 +116,9 @@ func TestAccDataSource{{.resourceClassName}}(t *testing.T) {
 					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test", "{{$key}}.{{$index}}", "{{$subvalue}}"),
 							{{- end}}
 						{{- else}}
+							{{- if not (definedInList $.ignoreDataSourceAttributes $key) }}
 					resource.TestCheckResourceAttr("data.aci_{{$.resourceName}}.test", "{{$key}}", "{{$value}}"),
+							{{- end}}
 						{{- end}}
 					{{- end}}
 					{{- end}}

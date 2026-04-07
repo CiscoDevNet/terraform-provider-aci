@@ -3,7 +3,7 @@ resource "aci_vmm_domain" "full_example" {
   parent_dn                        = "uni/vmmp-VMware"
   access_mode                      = "read-only"
   annotation                       = "annotation"
-  arp_learning                     = ""
+  arp_learning                     = "disabled"
   ave_time_out                     = "30"
   configure_infra_port_groups      = "no"
   endpoint_data_path_verification  = "epDpVerify"

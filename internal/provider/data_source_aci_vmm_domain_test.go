@@ -22,7 +22,6 @@ func TestAccDataSourceVmmDomP(t *testing.T) {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("data.aci_vmm_domain.test", "access_mode", "read-only"),
 					resource.TestCheckResourceAttr("data.aci_vmm_domain.test", "annotation", "annotation"),
-					resource.TestCheckResourceAttr("data.aci_vmm_domain.test", "arp_learning", ""),
 					resource.TestCheckResourceAttr("data.aci_vmm_domain.test", "ave_time_out", "30"),
 					resource.TestCheckResourceAttr("data.aci_vmm_domain.test", "default_encapsulation_mode", "unspecified"),
 					resource.TestCheckResourceAttr("data.aci_vmm_domain.test", "delimiter", "@"),

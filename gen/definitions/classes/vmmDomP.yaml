@@ -29,3 +29,7 @@ static_parent: true
 sub_category: Virtual Networking
 ui_locations:
     - Virtual Networking -> Provider -> Domain
+# ignoring due to bug in ACI where the imported value does not match state
+# there is custom type logic in place to handle this aci exception
+# the bug (CSCws11715) raised will not be fixed because it could break other functionality
+ignore_import_state_verify_in_test: true

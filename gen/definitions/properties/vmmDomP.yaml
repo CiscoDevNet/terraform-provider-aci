@@ -1,6 +1,4 @@
 add_valid_values:
-    arpLearning:
-        - ""
     parentDn:
         - uni/vmmp-VMware
         - uni/vmmp-Microsoft
@@ -11,7 +9,7 @@ add_valid_values:
         - uni/vmmp-Redhat
         - uni/vmmp-Nutanix
 default_values:
-    arpLearning: ""
+    arpLearning: "disabled"
     configInfraPg: "no"
     enableAVE: "no"
     enableTag: "no"
@@ -52,7 +50,7 @@ overwrites:
     pref_encap_mode: default_encapsulation_mode
 test_values:
     all:
-        arp_learning: ""
+        arp_learning: "disabled"
         custom_switch_name: ""
         delimiter: '@'
         multicast_address: 224.0.1.0
@@ -61,8 +59,10 @@ test_values:
         parent_dn: uni/vmmp-VMware
     datasource_required:
         parent_dn: uni/vmmp-VMware
+    ignore_in_datasource:
+        - arp_learning
     default:
-        arp_learning: ""
+        arp_learning: "disabled"
         custom_switch_name: ""
         delimiter: ""
         multicast_address: 0.0.0.0
@@ -74,8 +74,14 @@ test_values:
         multicast_address: 0.0.0.0
         parent_dn: uni/vmmp-VMware
         switch_type: default
+        arp_learning: "disabled"
+    custom_type:
+        arp_learning: "disabled"
     resource_required:
         parent_dn: uni/vmmp-VMware
+        arp_learning: "disabled"
 type_overwrites:
     arpLearning: string
     ctrlKnob: string
+static_custom_type:
+    arpLearning: vmm_arp_learning

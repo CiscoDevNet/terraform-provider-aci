@@ -1687,7 +1687,9 @@ func (r *{{.ResourceClassName}}Resource) Schema(ctx context.Context, req resourc
 						{{- if .ValidValues}}
 						stringvalidator.OneOf({{- validatorStringCustomType .ValidValues .ValidValuesMap}}),
 						{{- end}}
-						validators.InBetweenFromString({{- index .Validators 0 "min"}}, {{- index .Validators 0 "max"}}),
+						{{- if ne 0 (len .Validators)}}
+                        validators.InBetweenFromString({{- index .Validators 0 "min"}}, {{- index .Validators 0 "max"}}),
+						{{- end}}
 					),
 				},
 					{{- else if or .ValidValues (ne $LegacyAttributeName "")}}
@@ -2933,7 +2935,9 @@ func {{.ResourceClassName}}{{.ParentHierarchy}}SetToSetNullWhenStateIsNullPlanIs
 						{{- if .ValidValues}}
 						stringvalidator.OneOf({{- validatorStringCustomType .ValidValues .ValidValuesMap}}),
 						{{- end}}
+						{{- if ne 0 (len .Validators)}}
                         validators.InBetweenFromString({{- index .Validators 0 "min"}}, {{- index .Validators 0 "max"}}),
+						{{- end}}
                     ),
                 },
                 {{- else if or .ValidValues $.TemplateProperties.HasReadOnlyProperties}}

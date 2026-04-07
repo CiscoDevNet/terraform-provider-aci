@@ -358,7 +358,11 @@ PreCheck: func() { testAccPreCheck(t, "{{.test_type}}", "{{$.class_version}}") }
 			{
 				ResourceName:      "aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}_1{{- end }}",
 				ImportState:       true,
-        		ImportStateVerify: true,
+				{{- if $.importStateVerify }}
+				// skipping ImportStateVerify due to overwrite in class definition file
+				{{- else}}
+				ImportStateVerify: true,
+				{{- end}}
 				{{- if $.exclude_attributes }}
 				ImportStateVerifyIgnore: []string{
                 {{- range $.exclude_attributes }}"{{.}}",{{- end}}
@@ -494,7 +498,11 @@ PreCheck: func() { testAccPreCheck(t, "{{.test_type}}", "{{$.class_version}}") }
 			{	
 				ResourceName:      "aci_{{$.resourceName}}.test{{- if eq $.resourceClassName $parentClassName }}_1{{- end }}",
 				ImportState:       true,
+				{{- if $.importStateVerify }}
+				// skipping ImportStateVerify due to overwrite in class definition file
+				{{- else}}
 				ImportStateVerify: true,
+				{{- end}}
 				{{- if $.exclude_attributes }}
 				ImportStateVerifyIgnore: []string{
                 {{- range $.exclude_attributes }}"{{.}}",{{- end}}
@@ -1212,7 +1220,11 @@ func TestAccResource{{.resourceClassName}}(t *testing.T) {
 			{
 				ResourceName:      "aci_{{$.resourceName}}.test",
 				ImportState:       true,
-        		ImportStateVerify: true,
+				{{- if $.importStateVerify }}
+				// skipping ImportStateVerify due to overwrite in class definition file
+				{{- else}}
+				ImportStateVerify: true,
+				{{- end}}
 			},
 	{{- if $.children}}
 			// Update with children
@@ -2783,6 +2795,11 @@ resource "aci_{{$.resourceName}}" "test" {
 	{{if $.custom_type}}
 const testConfig{{.resourceClassName}}CustomType = `
 resource "aci_{{$.resourceName}}" "test" {
+		{{- range $key, $value := $.resource_required}}
+			{{- if eq $key "parent_dn"}}
+  {{$key}} = "{{$value}}"
+			{{- end}}
+		{{- end}}
 		{{- range $key, $value := $.custom_type}}
   {{$key}} = "{{$value}}"
 		{{- end}}

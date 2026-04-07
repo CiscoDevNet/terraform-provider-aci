@@ -46,7 +46,7 @@ ignore_in_legacy:
 default:
   access_mode: "read-write"
   annotation: "orchestrator:terraform"
-  arp_learning: ""
+  arp_learning: "disabled"
   ave_time_out: "30"
   endpoint_data_path_verification: "epDpVerify"
   delimiter: ""
@@ -80,12 +80,17 @@ datasource_required:
 
 resource_required:
   parent_dn: "uni/vmmp-VMware"
+  arp_learning: "disabled"
+  name: "test_name"
+
+custom_type:
+  arp_learning: "disabled"
   name: "test_name"
 
 all:
   access_mode: "read-only"
   annotation: "annotation"
-  arp_learning: ""
+  arp_learning: "disabled"
   ave_time_out: "30"
   endpoint_data_path_verification: "epDpVerify"
   delimiter: "@"
