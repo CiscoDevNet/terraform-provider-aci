@@ -19,6 +19,7 @@ import (
 	"time"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
+	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"golang.org/x/net/html"
 )
 
@@ -196,9 +197,9 @@ func initClient(clientUrl, username string, options ...Option) *Client {
 		log.Fatal(err)
 	}
 	client := &Client{
-		BaseURL:  bUrl,
-		username: username,
-		MOURL:    DefaultMOURL,
+		BaseURL:          bUrl,
+		username:         username,
+		MOURL:            DefaultMOURL,
 		maxReAuthRetries: 3,
 	}
 
@@ -282,7 +283,9 @@ func (c *Client) configProxy(transport *http.Transport) *http.Transport {
 func (c *Client) useInsecureHTTPClient(insecure bool) *http.Transport {
 	// proxyUrl, _ := url.Parse("http://10.0.1.167:3128")
 
-	transport := http.DefaultTransport.(*http.Transport)
+	// Clone http.DefaultTransport instead of mutating the global default,
+	// preventing side effects on other HTTP clients in the same process
+	transport := http.DefaultTransport.(*http.Transport).Clone()
 
 	// transport := &http.Transport{
 	// 	TLSClientConfig: &tls.Config{
@@ -300,6 +303,10 @@ func (c *Client) useInsecureHTTPClient(insecure bool) *http.Transport {
 	// 	},
 	// }
 
+	// Increase from the default (2) to 32, ensuring Terraform's default
+	// parallelism of 10 concurrent operations can reuse idle
+	// connections instead of repeatedly opening new ones
+	transport.MaxIdleConnsPerHost = 32
 	transport.TLSClientConfig = &tls.Config{
 		CipherSuites: []uint16{
 			tls.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,
@@ -310,8 +317,12 @@ func (c *Client) useInsecureHTTPClient(insecure bool) *http.Transport {
 		},
 		PreferServerCipherSuites: true,
 		InsecureSkipVerify:       insecure,
-		MinVersion:               tls.VersionTLS11,
-		MaxVersion:               tls.VersionTLS13,
+		// Enable TLS client session caching to allow TLS session ticket resumption,
+		// avoiding the overhead of TLS handshake for subsequent requests to the
+		// same server.
+		ClientSessionCache: tls.NewLRUClientSessionCache(0),
+		MinVersion:         tls.VersionTLS11,
+		MaxVersion:         tls.VersionTLS13,
 	}
 
 	return transport
@@ -547,7 +558,7 @@ func (c *Client) do(req *http.Request, skipLoggingPayload bool) (*container.Cont
 
 		// Handle session timeout for login based requests
 		reAuthError := false
-		if (resp.StatusCode == 403) {
+		if resp.StatusCode == 403 {
 			obj, err := container.ParseJSON(bodyBytes)
 			if err != nil {
 				log.Printf("[DEBUG] Authorization error with status code 403")
@@ -575,7 +586,7 @@ func (c *Client) do(req *http.Request, skipLoggingPayload bool) (*container.Cont
 			}
 		}
 
-		if (resp.StatusCode < 500 || resp.StatusCode > 504) && resp.StatusCode != 405 && !isApicNotFound(resp.StatusCode, bodyStr, resp.Header) && !reAuthError{
+		if (resp.StatusCode < 500 || resp.StatusCode > 504) && resp.StatusCode != 405 && !isApicNotFound(resp.StatusCode, bodyStr, resp.Header) && !reAuthError {
 			obj, err := container.ParseJSON(bodyBytes)
 			if err != nil {
 				log.Printf("[ERROR] Error occured while json parsing: %+v", err)
@@ -586,6 +597,25 @@ func (c *Client) do(req *http.Request, skipLoggingPayload bool) (*container.Cont
 				log.Printf("[ERROR] Error occured while json parsing: %s", htmlErr.Error())
 				log.Printf("[DEBUG] Exit from Do method")
 				return nil, resp, errors.New(fmt.Sprintf("Failed to parse JSON response from: %s. Verify that you are connecting to an APIC.\nHTTP response status: %s\nMessage: %s", req.URL.String(), resp.Status, htmlErr))
+			} else if resp != nil && obj.Data() != nil && resp.StatusCode >= 400 {
+				errCode := models.StripQuotes(models.StripSquareBrackets(obj.Search("imdata", "error", "attributes", "code").String()))
+				errText := models.StripQuotes(models.StripSquareBrackets(obj.Search("imdata", "error", "attributes", "text").String()))
+
+				if errCode == "107" && strings.HasSuffix(errText, "make sure it's not used before deleting it") {
+					return nil, resp, fmt.Errorf("HTTP Request failed: StatusCode %v, Method: %s, URL: %s, Error Code: %s, Error Message: %s", resp.StatusCode, req.Method, req.URL.String(), errCode, errText)
+				} else if errCode == "103" || errCode == "107" || errCode == "202" || (errCode == "120" && strings.HasSuffix(errText, "can not be deleted.")) || (errCode == "1" && strings.HasSuffix(errText, "cannot be deleted.")) {
+					// Ignore errors of type "Cannot create object", "Cannot delete object", "Request in progress", error text containing "can not be deleted." when the error code is 120 and error text containing "cannot be deleted." when the error code is 1
+					log.Printf("[ERROR] Exiting from error: Code: %s, Message: %s", errCode, errText)
+					return obj, resp, nil
+				} else if errCode == "401" {
+					log.Printf("[ERROR] Unable to authenticate. Please check your credentials")
+					log.Printf("[ERROR] Response Status Code: %d, Error Code: %s, Error Message: %s.", resp.StatusCode, errCode, errText)
+					return obj, resp, nil
+				} else {
+					log.Printf("[ERROR] The %s rest request failed", strings.ToLower(req.Method))
+					log.Printf("[ERROR] Response Status Code: %d, Error Code: %s, Error Message: %s.", resp.StatusCode, errCode, errText)
+					return obj, resp, nil
+				}
 			}
 
 			log.Printf("[DEBUG] Exit from Do method")
@@ -658,7 +688,7 @@ func (c *Client) doRaw(req *http.Request, skipLoggingPayload bool) (*http.Respon
 
 		// Handle session timeout for login based requests
 		reAuthError := false
-		if (resp.StatusCode == 403) {
+		if resp.StatusCode == 403 {
 			log.Printf("[DEBUG] Authorization error with status code 403")
 			log.Printf("[DEBUG] Checking max re-authentication retries: %v on %v", reAuthCounter, c.maxReAuthRetries)
 			if reAuthCounter < c.maxReAuthRetries {
