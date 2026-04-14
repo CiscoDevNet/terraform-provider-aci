@@ -28,3 +28,29 @@ no_meta_file:
 always_include_as_child:
   - tagAnnotation
   - tagTag
+
+attribute_name_overrides:
+    af: address_family
+    classPref: class_preference
+    count: apic_count
+    ctxName: vrf_name
+    descr: description
+    encap: encapsulation
+    encapMode: encapsulation_mode
+    id: id_attribute
+    instrImedcy: deployment_immediacy
+    matchT: match_criteria
+    netflowDir: netflow_direction
+    netflowPref: enable_netflow
+    numPorts: number_of_ports
+    primaryEncap: primary_encapsulation
+    primaryEncapInner: primary_encapsulation_inner
+    prio: priority
+    provider: prov
+    resImedcy: resolution_immediacy
+    secondaryEncapInner: secondary_encapsulation_inner
+    seg: segment
+    tDn: target_dn
+
+exclude_properties:
+  - userdom
