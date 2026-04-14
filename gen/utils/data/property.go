@@ -1,6 +1,10 @@
 package data
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils"
+)
 
 type Property struct {
 	// The name of the property in the resource and datasource schemas.
@@ -19,15 +23,21 @@ type Property struct {
 	// This is a map that contains the migration value details of the attribute for a specific schema version.
 	MigrationValues map[int]MigrationValue
 	// Indicates if a property is optional in the resource and datasource schemas.
+	// Exposed as a separate bool because it directly maps to a Terraform schema construct, which makes templating easier.
 	Optional bool
 	// When a property that points to another class, this is the class to which the property points to.
 	PointsToClass string
 	// The name of the property in the APIC class.
 	PropertyName string
 	// Indicates if the property is read-only in the resource schemas.
+	// Exposed as a separate bool because it directly maps to a Terraform schema construct, which makes templating easier.
 	ReadOnly bool
 	// Indicates if the property is required in the resource and datasource schemas.
+	// Exposed as a separate bool because it directly maps to a Terraform schema construct, which makes templating easier.
 	Required bool
+	// Indicates if the property is sensitive in the resource and datasource schemas.
+	// Exposed as a separate bool because it directly maps to a Terraform schema construct, which makes templating easier.
+	Sensitive bool
 	// The supported APIC versions for the property.
 	// Each version range is separated by a comma, ex "4.2(7f)-4.2(7w),5.2(1g)-".
 	// The first version is the minimum version and the second version is the maximum version.
@@ -46,6 +56,12 @@ type Property struct {
 	ValidValues []ValidValue
 	// The ValueTypeEnum type is used to indicate the type of the property in the resource and datasource schemas.
 	ValueType ValueTypeEnum
+	// The global meta definition containing global overrides. Unexported because it is only used internally by setter methods.
+	globalDefinition GlobalMetaDefinition
+	// The meta file details for the property. Unexported because it is only used internally by setter methods.
+	metaDetails map[string]interface{}
+	// The property definition overrides from the class definition file. Unexported because it is only used internally by setter methods.
+	propertyDefinition PropertyDefinition
 }
 
 type MigrationValue struct {
@@ -121,26 +137,28 @@ const (
 	List
 )
 
-func NewProperty(name string, details map[string]interface{}) *Property {
+func NewProperty(name string, details map[string]interface{}, definition PropertyDefinition, globalDefinition GlobalMetaDefinition) *Property {
 	genLogger.Trace(fmt.Sprintf("Creating new property struct for property: %s.", name))
 
-	property := &Property{PropertyName: name}
+	property := &Property{
+		PropertyName:       name,
+		globalDefinition:   globalDefinition,
+		metaDetails:        details,
+		propertyDefinition: definition,
+	}
 
-	property.setPropertyData(details)
+	property.setPropertyData()
 
 	genLogger.Trace(fmt.Sprintf("Successfully created new property struct for property: %s.", name))
 
 	return property
 }
 
-func (p *Property) setPropertyData(details map[string]interface{}) {
+func (p *Property) setPropertyData() {
 	genLogger.Debug(fmt.Sprintf("Setting property data for property '%s'.", p.PropertyName))
 
 	// TODO: add function to set AttributeName
 	p.setAttributeName()
-
-	// TODO: add function to set Computed
-	p.setComputed()
 
 	// TODO: add function to set CustomType
 	p.setCustomType()
@@ -157,17 +175,20 @@ func (p *Property) setPropertyData(details map[string]interface{}) {
 	// TODO: add function to set MigrationValues
 	p.setMigrationValues()
 
-	// TODO: add function to set Optional
-	p.setOptional()
-
 	// TODO: add function to set PointsToClass
 	p.setPointsToClass()
 
-	// TODO: add function to set ReadOnly
+	p.setRequired()
+
+	// setOptional is called after setRequired because it depends on p.Required.
+	p.setOptional()
+
 	p.setReadOnly()
 
-	// TODO: add function to set Required
-	p.setRequired()
+	// setComputed is called after setRequired because it depends on p.Required.
+	p.setComputed()
+
+	p.setSensitive()
 
 	// TODO: add function to set TestValues
 	p.setTestValues()
@@ -189,14 +210,29 @@ func (p *Property) setPropertyData(details map[string]interface{}) {
 
 func (p *Property) setAttributeName() {
 	// Determine the attribute name of the property.
+	// Priority: per-class definition override > global attribute name override > default snake_case derivation.
 	genLogger.Debug(fmt.Sprintf("Setting AttributeName for property '%s'.", p.PropertyName))
-	genLogger.Debug(fmt.Sprintf("Successfully set AttributeName for property '%s'.", p.PropertyName))
+
+	if p.propertyDefinition.AttributeName != "" {
+		p.AttributeName = p.propertyDefinition.AttributeName
+	} else if override, ok := p.globalDefinition.AttributeNameOverrides[p.PropertyName]; ok {
+		p.AttributeName = override
+	} else {
+		p.AttributeName = utils.Underscore(p.PropertyName)
+	}
+
+	genLogger.Debug(fmt.Sprintf("Successfully set AttributeName '%s' for property '%s'.", p.AttributeName, p.PropertyName))
 }
 
 func (p *Property) setComputed() {
 	// Determine if the property is computed.
+	// By default all properties are computed except required properties,
+	// because optional properties can have server-side defaults and read-only properties are always computed.
 	genLogger.Debug(fmt.Sprintf("Setting Computed for property '%s'.", p.PropertyName))
-	genLogger.Debug(fmt.Sprintf("Successfully set Computed for property '%s'.", p.PropertyName))
+
+	p.Computed = !p.Required
+
+	genLogger.Debug(fmt.Sprintf("Successfully set Computed '%t' for property '%s'.", p.Computed, p.PropertyName))
 }
 
 func (p *Property) setCustomType() {
@@ -231,8 +267,17 @@ func (p *Property) setMigrationValues() {
 
 func (p *Property) setOptional() {
 	// Determine if the property is optional.
+	// A property is optional when the definition restriction is "optional",
+	// or when the meta file indicates isConfigurable is true and the property is not required.
 	genLogger.Debug(fmt.Sprintf("Setting Optional for property '%s'.", p.PropertyName))
-	genLogger.Debug(fmt.Sprintf("Successfully set Optional for property '%s'.", p.PropertyName))
+
+	if p.propertyDefinition.Restriction == "optional" {
+		p.Optional = true
+	} else if p.metaDetails["isConfigurable"] == true && !p.Required {
+		p.Optional = true
+	}
+
+	genLogger.Debug(fmt.Sprintf("Successfully set Optional '%t' for property '%s'.", p.Optional, p.PropertyName))
 }
 
 func (p *Property) setPointsToClass() {
@@ -243,14 +288,45 @@ func (p *Property) setPointsToClass() {
 
 func (p *Property) setReadOnly() {
 	// Determine if the property is read-only.
+	// A property is read-only only when the definition restriction is "read_only".
+	// This is used to include isConfigurable=false properties as read-only attributes in the schema.
 	genLogger.Debug(fmt.Sprintf("Setting ReadOnly for property '%s'.", p.PropertyName))
-	genLogger.Debug(fmt.Sprintf("Successfully set ReadOnly for property '%s'.", p.PropertyName))
+
+	if p.propertyDefinition.Restriction == "read_only" {
+		p.ReadOnly = true
+	}
+
+	genLogger.Debug(fmt.Sprintf("Successfully set ReadOnly '%t' for property '%s'.", p.ReadOnly, p.PropertyName))
 }
 
 func (p *Property) setRequired() {
 	// Determine if the property is required.
+	// A property is required when the definition restriction is "required",
+	// or when the meta file indicates isConfigurable and isNaming are both true.
 	genLogger.Debug(fmt.Sprintf("Setting Required for property '%s'.", p.PropertyName))
-	genLogger.Debug(fmt.Sprintf("Successfully set Required for property '%s'.", p.PropertyName))
+
+	if p.propertyDefinition.Restriction == "required" {
+		p.Required = true
+	} else if p.metaDetails["isConfigurable"] == true && p.metaDetails["isNaming"] == true {
+		p.Required = true
+	}
+
+	genLogger.Debug(fmt.Sprintf("Successfully set Required '%t' for property '%s'.", p.Required, p.PropertyName))
+}
+
+func (p *Property) setSensitive() {
+	// Determine if the property is sensitive.
+	// A property is sensitive when the definition override is true,
+	// or when the meta file indicates secure is true.
+	genLogger.Debug(fmt.Sprintf("Setting Sensitive for property '%s'.", p.PropertyName))
+
+	if p.propertyDefinition.Sensitive {
+		p.Sensitive = true
+	} else if p.metaDetails["secure"] == true {
+		p.Sensitive = true
+	}
+
+	genLogger.Debug(fmt.Sprintf("Successfully set Sensitive '%t' for property '%s'.", p.Sensitive, p.PropertyName))
 }
 
 func (p *Property) setTestValues() {

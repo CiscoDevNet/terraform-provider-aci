@@ -217,7 +217,7 @@ func (c *Class) setClassData(ds *DataStore) error {
 	c.setPlatformType()
 
 	// TODO: add function to set Properties
-	c.setProperties()
+	c.setProperties(ds)
 
 	err = c.setRelation()
 	if err != nil {
@@ -451,23 +451,53 @@ func (c *Class) setPlatformType() {
 	genLogger.Debug(fmt.Sprintf("Successfully set PlatformType for class '%s': %s.", c.Name, c.PlatformType))
 }
 
-func (c *Class) setProperties() {
+func (c *Class) setProperties(ds *DataStore) {
 	genLogger.Debug(fmt.Sprintf("Setting properties for class '%s'.", c.Name))
 
 	if properties, ok := c.MetaFileContent["properties"]; ok {
 		for name, propertyDetails := range properties.(map[string]interface{}) {
 			details := propertyDetails.(map[string]interface{})
-			// TODO: add logic to set the property data based on ignore/include/exclude overwrites (read-only) from definition files.
-			if details["isConfigurable"] == true {
-				c.Properties[name] = NewProperty(name, details)
+
+			// Look up the property definition override from the class definition file.
+			propertyDefinition, hasClassDefinition := c.ClassDefinition.Properties[name]
+
+			// Skip the property entirely when the restriction is "exclude".
+			if propertyDefinition.Restriction == "exclude" {
+				genLogger.Debug(fmt.Sprintf("Property '%s' excluded via definition restriction for class '%s'.", name, c.Name))
+				continue
+			}
+
+			// Skip globally excluded properties unless the class definition explicitly defines the property.
+			if !hasClassDefinition && slices.Contains(ds.GlobalMetaDefinition.ExcludeProperties, name) {
+				genLogger.Debug(fmt.Sprintf("Property '%s' excluded via global exclude for class '%s'.", name, c.Name))
+				continue
+			}
+
+			// Include configurable properties (default behavior from meta file).
+			// Include non-configurable properties only when the restriction is "read_only".
+			if details["isConfigurable"] == true || propertyDefinition.Restriction == "read_only" {
+				property := NewProperty(name, details, propertyDefinition, ds.GlobalMetaDefinition)
+				c.Properties[name] = property
 				c.PropertiesAll = append(c.PropertiesAll, name)
-				// TODO: add logic to set the required/optional/read-only list logic
+
+				if property.Required {
+					c.PropertiesRequired = append(c.PropertiesRequired, name)
+				} else if property.ReadOnly {
+					c.PropertiesReadOnly = append(c.PropertiesReadOnly, name)
+				} else if property.Optional {
+					c.PropertiesOptional = append(c.PropertiesOptional, name)
+				}
 			}
 		}
 	}
 
+	// Sort all property lists alphabetically to ensure deterministic output when iterating over properties in templates.
+	slices.Sort(c.PropertiesAll)
+	slices.Sort(c.PropertiesOptional)
+	slices.Sort(c.PropertiesReadOnly)
+	slices.Sort(c.PropertiesRequired)
+
 	genLogger.Debug(fmt.Sprintf("Successfully set properties for class '%s'.", c.Name))
-	// TODO: add sorting logic for the properties
 }
 
 func (c *Class) setRelation() error {

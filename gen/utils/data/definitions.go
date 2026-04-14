@@ -10,6 +10,13 @@ import (
 type GlobalMetaDefinition struct {
 	// A list of class names that should always be included as children regardless of standard inclusion logic.
 	AlwaysIncludeAsChild []string `yaml:"always_include_as_child"`
+	// A map of meta property names to their desired attribute names.
+	// Used to globally override the default snake_case derivation for specific properties (e.g., "descr" → "description").
+	// Per-class PropertyDefinition.AttributeName takes precedence over this.
+	AttributeNameOverrides map[string]string `yaml:"attribute_name_overrides"`
+	// A list of property names to exclude from all classes.
+	// A class-level PropertyDefinition entry for the same property takes precedence over this global exclude.
+	ExcludeProperties []string `yaml:"exclude_properties"`
 	// A map containing class names as keys and their corresponding resource names as values.
 	// This is used to search for the resource name of a class when it is not defined in meta directory.
 	NoMetaFile map[string]string `yaml:"no_meta_file"`
@@ -47,6 +54,18 @@ type ClassDocumentationDefinition struct {
 	Warnings []string `yaml:"warnings"`
 }
 
+type PropertyDefinition struct {
+	// Overrides the default attribute name derived from the meta property name in snake_case notation.
+	AttributeName string `yaml:"attribute_name"`
+	// Controls the schema behavior of the property.
+	// Valid values: "required", "optional", "read_only", "exclude".
+	// When empty, the default behavior is derived from the meta file (isConfigurable+isNaming → required, isConfigurable → optional).
+	Restriction string `yaml:"restriction"`
+	// Overrides the sensitive flag for the property.
+	// When true, the property is marked as sensitive in the Terraform schema regardless of the meta file.
+	Sensitive bool `yaml:"sensitive"`
+}
+
 type ClassDefinition struct {
 	// Overrides the default deletion behavior from meta file. Set to "never" to prevent deletion of the class.
 	// The value "never" is used to keep the input consistent with the meta data file.
@@ -73,6 +92,9 @@ type ClassDefinition struct {
 	IsSingleNestedWhenDefinedAsChild bool `yaml:"is_single_nested_when_defined_as_child"`
 	// Overrides the platform type from the meta file. Valid values: "apic", "cloud", "both".
 	PlatformType string `yaml:"platform_type"`
+	// Property-level overrides keyed by the meta property name (e.g., "pcTag", "name").
+	// Used to override the attribute name, or control the schema restriction (required, optional, read_only, exclude).
+	Properties map[string]PropertyDefinition `yaml:"properties"`
 	// Indicates that the class is required when defined as a child in a parent resource.
 	RequiredAsChild bool `yaml:"required_as_child"`
 	// Overrides the resource name derived from the meta file label (e.g., "vrf" instead of "context").
