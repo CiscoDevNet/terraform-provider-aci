@@ -1930,3 +1930,446 @@ func TestSetRnFormatErrors(t *testing.T) {
 		})
 	}
 }
+
+type setPropertiesInput struct {
+	MetaFileContent      map[string]interface{}
+	ClassDefinition      ClassDefinition
+	GlobalMetaDefinition GlobalMetaDefinition
+}
+
+type setPropertiesExpected struct {
+	PropertiesAll      []string
+	PropertiesRequired []string
+	PropertiesOptional []string
+	PropertiesReadOnly []string
+	PropertyDetails    map[string]struct {
+		AttributeName string
+		Required      bool
+		Optional      bool
+		ReadOnly      bool
+	}
+}
+
+func TestSetProperties(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	testCases := []test.TestCase{
+		{
+			Name: "test_configurable_naming_property_is_required",
+			Input: setPropertiesInput{
+				MetaFileContent: map[string]interface{}{
+					"properties": map[string]interface{}{
+						"name": map[string]interface{}{
+							"isConfigurable": true,
+							"isNaming":       true,
+						},
+					},
+				},
+				ClassDefinition: ClassDefinition{},
+			},
+			Expected: setPropertiesExpected{
+				PropertiesAll:      []string{"name"},
+				PropertiesRequired: []string{"name"},
+				PropertiesOptional: []string{},
+				PropertiesReadOnly: []string{},
+				PropertyDetails: map[string]struct {
+					AttributeName string
+					Required      bool
+					Optional      bool
+					ReadOnly      bool
+				}{
+					"name": {AttributeName: "name", Required: true},
+				},
+			},
+		},
+		{
+			Name: "test_configurable_non_naming_property_is_optional",
+			Input: setPropertiesInput{
+				MetaFileContent: map[string]interface{}{
+					"properties": map[string]interface{}{
+						"nameAlias": map[string]interface{}{
+							"isConfigurable": true,
+							"isNaming":       false,
+						},
+					},
+				},
+				ClassDefinition: ClassDefinition{},
+			},
+			Expected: setPropertiesExpected{
+				PropertiesAll:      []string{"nameAlias"},
+				PropertiesRequired: []string{},
+				PropertiesOptional: []string{"nameAlias"},
+				PropertiesReadOnly: []string{},
+				PropertyDetails: map[string]struct {
+					AttributeName string
+					Required      bool
+					Optional      bool
+					ReadOnly      bool
+				}{
+					"nameAlias": {AttributeName: "name_alias", Optional: true},
+				},
+			},
+		},
+		{
+			Name: "test_non_configurable_excluded_by_default",
+			Input: setPropertiesInput{
+				MetaFileContent: map[string]interface{}{
+					"properties": map[string]interface{}{
+						"pcTag": map[string]interface{}{
+							"isConfigurable": false,
+							"isNaming":       false,
+						},
+					},
+				},
+				ClassDefinition: ClassDefinition{},
+			},
+			Expected: setPropertiesExpected{
+				PropertiesAll:      []string{},
+				PropertiesRequired: []string{},
+				PropertiesOptional: []string{},
+				PropertiesReadOnly: []string{},
+			},
+		},
+		{
+			Name: "test_non_configurable_with_read_only_restriction",
+			Input: setPropertiesInput{
+				MetaFileContent: map[string]interface{}{
+					"properties": map[string]interface{}{
+						"pcTag": map[string]interface{}{
+							"isConfigurable": false,
+							"isNaming":       false,
+						},
+					},
+				},
+				ClassDefinition: ClassDefinition{
+					Properties: map[string]PropertyDefinition{
+						"pcTag": {Restriction: "read_only"},
+					},
+				},
+			},
+			Expected: setPropertiesExpected{
+				PropertiesAll:      []string{"pcTag"},
+				PropertiesRequired: []string{},
+				PropertiesOptional: []string{},
+				PropertiesReadOnly: []string{"pcTag"},
+				PropertyDetails: map[string]struct {
+					AttributeName string
+					Required      bool
+					Optional      bool
+					ReadOnly      bool
+				}{
+					"pcTag": {AttributeName: "pc_tag", ReadOnly: true},
+				},
+			},
+		},
+		{
+			Name: "test_configurable_with_exclude_restriction",
+			Input: setPropertiesInput{
+				MetaFileContent: map[string]interface{}{
+					"properties": map[string]interface{}{
+						"annotation": map[string]interface{}{
+							"isConfigurable": true,
+							"isNaming":       false,
+						},
+					},
+				},
+				ClassDefinition: ClassDefinition{
+					Properties: map[string]PropertyDefinition{
+						"annotation": {Restriction: "exclude"},
+					},
+				},
+			},
+			Expected: setPropertiesExpected{
+				PropertiesAll:      []string{},
+				PropertiesRequired: []string{},
+				PropertiesOptional: []string{},
+				PropertiesReadOnly: []string{},
+			},
+		},
+		{
+			Name: "test_configurable_with_required_restriction_override",
+			Input: setPropertiesInput{
+				MetaFileContent: map[string]interface{}{
+					"properties": map[string]interface{}{
+						"value": map[string]interface{}{
+							"isConfigurable": true,
+							"isNaming":       false,
+						},
+					},
+				},
+				ClassDefinition: ClassDefinition{
+					Properties: map[string]PropertyDefinition{
+						"value": {Restriction: "required"},
+					},
+				},
+			},
+			Expected: setPropertiesExpected{
+				PropertiesAll:      []string{"value"},
+				PropertiesRequired: []string{"value"},
+				PropertiesOptional: []string{},
+				PropertiesReadOnly: []string{},
+				PropertyDetails: map[string]struct {
+					AttributeName string
+					Required      bool
+					Optional      bool
+					ReadOnly      bool
+				}{
+					"value": {AttributeName: "value", Required: true},
+				},
+			},
+		},
+		{
+			Name: "test_attribute_name_override",
+			Input: setPropertiesInput{
+				MetaFileContent: map[string]interface{}{
+					"properties": map[string]interface{}{
+						"pcEnfPref": map[string]interface{}{
+							"isConfigurable": true,
+							"isNaming":       false,
+						},
+					},
+				},
+				ClassDefinition: ClassDefinition{
+					Properties: map[string]PropertyDefinition{
+						"pcEnfPref": {AttributeName: "policy_control_enforcement"},
+					},
+				},
+			},
+			Expected: setPropertiesExpected{
+				PropertiesAll:      []string{"pcEnfPref"},
+				PropertiesRequired: []string{},
+				PropertiesOptional: []string{"pcEnfPref"},
+				PropertiesReadOnly: []string{},
+				PropertyDetails: map[string]struct {
+					AttributeName string
+					Required      bool
+					Optional      bool
+					ReadOnly      bool
+				}{
+					"pcEnfPref": {AttributeName: "policy_control_enforcement", Optional: true},
+				},
+			},
+		},
+		{
+			Name: "test_global_attribute_name_override",
+			Input: setPropertiesInput{
+				MetaFileContent: map[string]interface{}{
+					"properties": map[string]interface{}{
+						"descr": map[string]interface{}{
+							"isConfigurable": true,
+							"isNaming":       false,
+						},
+					},
+				},
+				ClassDefinition: ClassDefinition{},
+				GlobalMetaDefinition: GlobalMetaDefinition{
+					AttributeNameOverrides: map[string]string{
+						"descr": "description",
+					},
+				},
+			},
+			Expected: setPropertiesExpected{
+				PropertiesAll:      []string{"descr"},
+				PropertiesRequired: []string{},
+				PropertiesOptional: []string{"descr"},
+				PropertiesReadOnly: []string{},
+				PropertyDetails: map[string]struct {
+					AttributeName string
+					Required      bool
+					Optional      bool
+					ReadOnly      bool
+				}{
+					"descr": {AttributeName: "description", Optional: true},
+				},
+			},
+		},
+		{
+			Name: "test_multiple_properties_sorted_alphabetically",
+			Input: setPropertiesInput{
+				MetaFileContent: map[string]interface{}{
+					"properties": map[string]interface{}{
+						"nameAlias": map[string]interface{}{
+							"isConfigurable": true,
+							"isNaming":       false,
+						},
+						"annotation": map[string]interface{}{
+							"isConfigurable": true,
+							"isNaming":       false,
+						},
+						"name": map[string]interface{}{
+							"isConfigurable": true,
+							"isNaming":       true,
+						},
+						"pcTag": map[string]interface{}{
+							"isConfigurable": false,
+							"isNaming":       false,
+						},
+						"scope": map[string]interface{}{
+							"isConfigurable": false,
+							"isNaming":       false,
+						},
+					},
+				},
+				ClassDefinition: ClassDefinition{
+					Properties: map[string]PropertyDefinition{
+						"scope": {Restriction: "read_only"},
+					},
+				},
+			},
+			Expected: setPropertiesExpected{
+				PropertiesAll:      []string{"annotation", "name", "nameAlias", "scope"},
+				PropertiesRequired: []string{"name"},
+				PropertiesOptional: []string{"annotation", "nameAlias"},
+				PropertiesReadOnly: []string{"scope"},
+				PropertyDetails: map[string]struct {
+					AttributeName string
+					Required      bool
+					Optional      bool
+					ReadOnly      bool
+				}{
+					"annotation": {AttributeName: "annotation", Optional: true},
+					"nameAlias":  {AttributeName: "name_alias", Optional: true},
+					"name":       {AttributeName: "name", Required: true},
+					"scope":      {AttributeName: "scope", ReadOnly: true},
+				},
+			},
+		},
+		{
+			Name: "test_empty_properties",
+			Input: setPropertiesInput{
+				MetaFileContent: map[string]interface{}{},
+				ClassDefinition: ClassDefinition{},
+			},
+			Expected: setPropertiesExpected{
+				PropertiesAll:      []string{},
+				PropertiesRequired: []string{},
+				PropertiesOptional: []string{},
+				PropertiesReadOnly: []string{},
+			},
+		},
+		{
+			Name: "test_no_properties_key_in_meta",
+			Input: setPropertiesInput{
+				MetaFileContent: map[string]interface{}{"label": "test"},
+				ClassDefinition: ClassDefinition{},
+			},
+			Expected: setPropertiesExpected{
+				PropertiesAll:      []string{},
+				PropertiesRequired: []string{},
+				PropertiesOptional: []string{},
+				PropertiesReadOnly: []string{},
+			},
+		},
+		{
+			Name: "test_global_exclude_property",
+			Input: setPropertiesInput{
+				MetaFileContent: map[string]interface{}{
+					"properties": map[string]interface{}{
+						"userdom": map[string]interface{}{
+							"isConfigurable": true,
+							"isNaming":       false,
+						},
+						"name": map[string]interface{}{
+							"isConfigurable": true,
+							"isNaming":       true,
+						},
+					},
+				},
+				ClassDefinition: ClassDefinition{},
+				GlobalMetaDefinition: GlobalMetaDefinition{
+					ExcludeProperties: []string{"userdom"},
+				},
+			},
+			Expected: setPropertiesExpected{
+				PropertiesAll:      []string{"name"},
+				PropertiesRequired: []string{"name"},
+				PropertiesOptional: []string{},
+				PropertiesReadOnly: []string{},
+				PropertyDetails: map[string]struct {
+					AttributeName string
+					Required      bool
+					Optional      bool
+					ReadOnly      bool
+				}{
+					"name": {AttributeName: "name", Required: true},
+				},
+			},
+		},
+		{
+			Name: "test_global_exclude_overridden_by_class_definition",
+			Input: setPropertiesInput{
+				MetaFileContent: map[string]interface{}{
+					"properties": map[string]interface{}{
+						"userdom": map[string]interface{}{
+							"isConfigurable": true,
+							"isNaming":       false,
+						},
+					},
+				},
+				ClassDefinition: ClassDefinition{
+					Properties: map[string]PropertyDefinition{
+						"userdom": {Restriction: "optional"},
+					},
+				},
+				GlobalMetaDefinition: GlobalMetaDefinition{
+					ExcludeProperties: []string{"userdom"},
+				},
+			},
+			Expected: setPropertiesExpected{
+				PropertiesAll:      []string{"userdom"},
+				PropertiesRequired: []string{},
+				PropertiesOptional: []string{"userdom"},
+				PropertiesReadOnly: []string{},
+				PropertyDetails: map[string]struct {
+					AttributeName string
+					Required      bool
+					Optional      bool
+					ReadOnly      bool
+				}{
+					"userdom": {AttributeName: "userdom", Optional: true},
+				},
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.(setPropertiesInput)
+			expected := testCase.Expected.(setPropertiesExpected)
+
+			class := &Class{
+				Name:            testClassName("testClass"),
+				ClassDefinition: input.ClassDefinition,
+				MetaFileContent: input.MetaFileContent,
+				Properties:      make(map[string]*Property),
+			}
+
+			ds := &DataStore{
+				GlobalMetaDefinition: input.GlobalMetaDefinition,
+			}
+
+			class.setProperties(ds)
+
+			test.AssertStringSlice(t, expected.PropertiesAll, class.PropertiesAll, testCase.Name)
+			test.AssertStringSlice(t, expected.PropertiesRequired, class.PropertiesRequired, testCase.Name)
+			test.AssertStringSlice(t, expected.PropertiesOptional, class.PropertiesOptional, testCase.Name)
+			test.AssertStringSlice(t, expected.PropertiesReadOnly, class.PropertiesReadOnly, testCase.Name)
+
+			// Check individual property details when specified.
+			if expected.PropertyDetails != nil {
+				for propName, details := range expected.PropertyDetails {
+					prop, ok := class.Properties[propName]
+					assert.True(t, ok, test.MessageContains(class.Properties, propName, testCase.Name))
+					if ok {
+						assert.Equal(t, details.AttributeName, prop.AttributeName, test.MessageEqual(details.AttributeName, prop.AttributeName, testCase.Name))
+						assert.Equal(t, details.Required, prop.Required, test.MessageEqual(details.Required, prop.Required, testCase.Name))
+						assert.Equal(t, details.Optional, prop.Optional, test.MessageEqual(details.Optional, prop.Optional, testCase.Name))
+						assert.Equal(t, details.ReadOnly, prop.ReadOnly, test.MessageEqual(details.ReadOnly, prop.ReadOnly, testCase.Name))
+					}
+				}
+			}
+		})
+	}
+}
