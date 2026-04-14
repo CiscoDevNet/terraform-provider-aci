@@ -3,6 +3,8 @@ package test
 import (
 	"fmt"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 // InitializeTest is a helper function that logs the test name.
@@ -40,6 +42,16 @@ func MessageNotEmpty(object any, caseName string) string {
 // MessageEmpty returns a formatted message for assert.Empty comparisons.
 func MessageEmpty(object any, caseName string) string {
 	return fmt.Sprintf("Expected '%v' to be empty for case '%s'", object, caseName)
+}
+
+// AssertStringSlice asserts that a string slice is empty or equal to the expected value.
+func AssertStringSlice(t *testing.T, expected, actual []string, caseName string) {
+	t.Helper()
+	if len(expected) == 0 {
+		assert.Empty(t, actual, MessageEmpty(actual, caseName))
+	} else {
+		assert.Equal(t, expected, actual, MessageEqual(expected, actual, caseName))
+	}
 }
 
 // TestCase is a generic struct for table-driven tests.
