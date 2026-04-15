@@ -253,6 +253,15 @@ func TestSetOptional(t *testing.T) {
 			Expected: true,
 		},
 		{
+			Name: "test_definition_restriction_read_only_isConfigurable_true",
+			Input: setOptionalInput{
+				MetaDetails:        map[string]interface{}{"isConfigurable": true},
+				PropertyDefinition: PropertyDefinition{Restriction: "read_only"},
+				Required:           false,
+			},
+			Expected: false,
+		},
+		{
 			Name: "test_empty_meta_details",
 			Input: setOptionalInput{
 				MetaDetails:        map[string]interface{}{},

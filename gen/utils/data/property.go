@@ -268,12 +268,12 @@ func (p *Property) setMigrationValues() {
 func (p *Property) setOptional() {
 	// Determine if the property is optional.
 	// A property is optional when the definition restriction is "optional",
-	// or when the meta file indicates isConfigurable is true and the property is not required.
+	// or when the meta file indicates isConfigurable is true and the property is not required and the restriction is not "read_only".
 	genLogger.Debug(fmt.Sprintf("Setting Optional for property '%s'.", p.PropertyName))
 
 	if p.propertyDefinition.Restriction == "optional" {
 		p.Optional = true
-	} else if p.metaDetails["isConfigurable"] == true && !p.Required {
+	} else if p.propertyDefinition.Restriction != "read_only" && p.metaDetails["isConfigurable"] == true && !p.Required {
 		p.Optional = true
 	}
 
