@@ -3,14 +3,14 @@
     "dataLicense": "CC0-1.0",
     "SPDXID": "SPDXRef-DOCUMENT",
     "name": "./",
-    "documentNamespace": "https://anchore.com/syft/dir/354f8969-caff-449f-88cc-88786f3832b3",
+    "documentNamespace": "https://anchore.com/syft/dir/4e98021f-fe6a-4789-84a1-80ac34444d1b",
     "creationInfo": {
         "licenseListVersion": "3.28",
         "creators": [
             "Organization: Anchore, Inc",
             "Tool: syft-1.42.3"
         ],
-        "created": "2026-03-27T07:42:30Z"
+        "created": "2026-04-17T11:42:15Z"
     },
     "packages": [
         {
@@ -126,8 +126,8 @@
         },
         {
             "name": "github.com/ciscoecosystem/aci-go-client/v2",
-            "SPDXID": "SPDXRef-Package-go-module-github.com-ciscoecosystem-aci-go-client-v2-15c347f44082eb2d",
-            "versionInfo": "v2.32.0",
+            "SPDXID": "SPDXRef-Package-go-module-github.com-ciscoecosystem-aci-go-client-v2-bd52274c33ad5d06",
+            "versionInfo": "v2.32.2",
             "supplier": "NOASSERTION",
             "downloadLocation": "NOASSERTION",
             "filesAnalyzed": false,
@@ -139,17 +139,17 @@
                 {
                     "referenceCategory": "SECURITY",
                     "referenceType": "cpe23Type",
-                    "referenceLocator": "cpe:2.3:a:ciscoecosystem:aci-go-client\\/v2:v2.32.0:*:*:*:*:*:*:*"
+                    "referenceLocator": "cpe:2.3:a:ciscoecosystem:aci-go-client\\/v2:v2.32.2:*:*:*:*:*:*:*"
                 },
                 {
                     "referenceCategory": "SECURITY",
                     "referenceType": "cpe23Type",
-                    "referenceLocator": "cpe:2.3:a:ciscoecosystem:aci_go_client\\/v2:v2.32.0:*:*:*:*:*:*:*"
+                    "referenceLocator": "cpe:2.3:a:ciscoecosystem:aci_go_client\\/v2:v2.32.2:*:*:*:*:*:*:*"
                 },
                 {
                     "referenceCategory": "PACKAGE-MANAGER",
                     "referenceType": "purl",
-                    "referenceLocator": "pkg:golang/github.com/ciscoecosystem/aci-go-client/v2@v2.32.0"
+                    "referenceLocator": "pkg:golang/github.com/ciscoecosystem/aci-go-client/v2@v2.32.2"
                 }
             ]
         },
@@ -1668,11 +1668,11 @@
             "checksums": [
                 {
                     "algorithm": "SHA1",
-                    "checksumValue": "2c2ea69ffaa3f8feb34f6b8816c56f07c60c8974"
+                    "checksumValue": "dc57aeec0c3a52199323a90bcd61997786856b69"
                 },
                 {
                     "algorithm": "SHA256",
-                    "checksumValue": "2d39311834999bd0ae5d5e4add24c9699ba397c8bc438ad8dfe9d192d912a541"
+                    "checksumValue": "8e86480f47d828d0715bd49d227d545ed8b851c82c8432c40d30074b17131de9"
                 }
             ],
             "licenseConcluded": "NOASSERTION",
@@ -1777,11 +1777,6 @@
         },
         {
             "spdxElementId": "SPDXRef-Package-go-module-golang.org-x-net-2e7c70551b559888",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-ciscoecosystem-aci-go-client-v2-15c347f44082eb2d",
-            "relationshipType": "DEPENDENCY_OF"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-golang.org-x-net-2e7c70551b559888",
             "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-svchost-9247c86190d39d8f",
             "relationshipType": "DEPENDENCY_OF"
         },
@@ -1793,6 +1788,11 @@
         {
             "spdxElementId": "SPDXRef-Package-go-module-golang.org-x-net-2e7c70551b559888",
             "relatedSpdxElement": "SPDXRef-Package-go-module-google.golang.org-grpc-a6c37394a2ec3379",
+            "relationshipType": "DEPENDENCY_OF"
+        },
+        {
+            "spdxElementId": "SPDXRef-Package-go-module-golang.org-x-net-2e7c70551b559888",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-ciscoecosystem-aci-go-client-v2-bd52274c33ad5d06",
             "relationshipType": "DEPENDENCY_OF"
         },
         {
@@ -2212,12 +2212,12 @@
         },
         {
             "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-sdk-v2-fc02aa6725beb436",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-ciscoecosystem-aci-go-client-v2-15c347f44082eb2d",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-testing-63a943d89bbfd80f",
             "relationshipType": "DEPENDENCY_OF"
         },
         {
             "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-sdk-v2-fc02aa6725beb436",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-hashicorp-terraform-plugin-testing-63a943d89bbfd80f",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-ciscoecosystem-aci-go-client-v2-bd52274c33ad5d06",
             "relationshipType": "DEPENDENCY_OF"
         },
         {
@@ -2252,12 +2252,6 @@
         },
         {
             "spdxElementId": "SPDXRef-Package-go-module-github.com-kr-text-149bb08a88b6158e",
-            "relatedSpdxElement": "SPDXRef-File-go.mod-3fc5a8d3d86e9790",
-            "relationshipType": "OTHER",
-            "comment": "evident-by: indicates the package's existence is evident by the given file"
-        },
-        {
-            "spdxElementId": "SPDXRef-Package-go-module-github.com-ciscoecosystem-aci-go-client-v2-15c347f44082eb2d",
             "relatedSpdxElement": "SPDXRef-File-go.mod-3fc5a8d3d86e9790",
             "relationshipType": "OTHER",
             "comment": "evident-by: indicates the package's existence is evident by the given file"
@@ -2503,6 +2497,12 @@
             "comment": "evident-by: indicates the package's existence is evident by the given file"
         },
         {
+            "spdxElementId": "SPDXRef-Package-go-module-github.com-ciscoecosystem-aci-go-client-v2-bd52274c33ad5d06",
+            "relatedSpdxElement": "SPDXRef-File-go.mod-3fc5a8d3d86e9790",
+            "relationshipType": "OTHER",
+            "comment": "evident-by: indicates the package's existence is evident by the given file"
+        },
+        {
             "spdxElementId": "SPDXRef-Package-go-module-github.com-hashicorp-logutils-d3320a3e78bdec53",
             "relatedSpdxElement": "SPDXRef-File-go.mod-3fc5a8d3d86e9790",
             "relationshipType": "OTHER",
@@ -2614,7 +2614,7 @@
         },
         {
             "spdxElementId": "SPDXRef-DocumentRoot-Directory-.-",
-            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-ciscoecosystem-aci-go-client-v2-15c347f44082eb2d",
+            "relatedSpdxElement": "SPDXRef-Package-go-module-github.com-ciscoecosystem-aci-go-client-v2-bd52274c33ad5d06",
             "relationshipType": "CONTAINS"
         },
         {
