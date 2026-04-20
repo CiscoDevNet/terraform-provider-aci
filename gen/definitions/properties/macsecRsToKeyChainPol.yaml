@@ -1,0 +1,11 @@
+targets:
+    - class_name: macsecKeyChainPol
+      properties:
+        name: macsec_key_chain_0
+      relation_resource_name: macsec_key_chain
+      target_dn: uni/infra/macsecpcont/keychainp-macsec_key_chain_0
+    - class_name: macsecKeyChainPol
+      properties:
+        name: macsec_key_chain_1
+      relation_resource_name: macsec_key_chain
+      target_dn: uni/infra/macsecpcont/keychainp-macsec_key_chain_1
