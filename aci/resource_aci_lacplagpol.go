@@ -75,6 +75,7 @@ func resourceAciLACPPolicy() *schema.Resource {
 					"passive",
 					"mac-pin",
 					"mac-pin-nicload",
+					"explicit-failover",
 				}, false),
 			},
 
