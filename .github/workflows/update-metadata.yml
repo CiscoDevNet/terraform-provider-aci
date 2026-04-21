@@ -11,15 +11,15 @@ jobs:
     steps:
       # Checkout
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Unshallow
         run: git fetch --prune --unshallow
 
       # Get latest metadata
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v6
         with:
           go-version-file: 'go.mod'
-      - uses: hashicorp/setup-terraform@v3
+      - uses: hashicorp/setup-terraform@v4
       - name: Get latest metadata and generate provider code
         run: go generate
         env:
@@ -58,7 +58,7 @@ jobs:
       # Create PR
       - run: |
           echo -e "These changes are the result of ACI meta-data updates.\nPlease review and adjust the version bump commit prefix if necessary." \
-            | gh pr create --base master --head update_metadata --title "ACI Metadata Update PR" --body-file -
+            | gh pr create --base develop --head update_metadata --title "ACI Metadata Update PR" --body-file -
         if: steps.code.outputs.diff == '1'
         id: pr
         continue-on-error: true # PR already exists so it will get updated with the latest changes instead

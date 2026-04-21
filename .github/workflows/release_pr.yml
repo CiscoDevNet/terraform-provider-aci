@@ -3,19 +3,19 @@ name: release_pr
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   release-pr:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Unshallow
         run: git fetch --prune --unshallow
 
       # git-cliff generates CHANGELOG.md
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.10"
       - run: pip install git-cliff==2.4.0 typos
@@ -52,10 +52,10 @@ jobs:
         run: git cliff --bump --unreleased -p CHANGELOG.md --with-commit "${{ steps.type.outputs.bump }}"
 
       # Generate annotation_unsupported.go
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v6
         with:
           go-version-file: "go.mod"
-      - uses: hashicorp/setup-terraform@v3
+      - uses: hashicorp/setup-terraform@v4
       - name: Generate annotation unsupported provider code
         run: go generate
         env:
@@ -82,7 +82,7 @@ jobs:
         run: git checkout -b release_pr && git push --set-upstream origin release_pr --force && git clean -f -d
 
       # Create or update release PR
-      - run: gh pr create --base master --head release_pr --title "Pre-Release PR (${{ steps.vars.outputs.version }})" --body ""
+      - run: gh pr create --base main --head release_pr --title "Pre-Release PR (${{ steps.vars.outputs.version }})" --body ""
         id: pr
         continue-on-error: true
         env:
