@@ -57,6 +57,11 @@ type ClassDocumentationDefinition struct {
 type PropertyDefinition struct {
 	// Overrides the default attribute name derived from the meta property name in snake_case notation.
 	AttributeName string `yaml:"attribute_name"`
+	// Indicates that the property is deprecated. A deprecation warning will be included in the schemas.
+	Deprecated bool `yaml:"deprecated"`
+	// The deprecated APIC versions for the property. Format: "1.0(1e)-" or "4.2(7f)-4.2(7w),5.2(1g)-".
+	// Used to indicate versions where the property is deprecated but still functional.
+	DeprecatedVersions string `yaml:"deprecated_versions"`
 	// Controls the schema behavior of the property.
 	// Valid values: "required", "optional", "read_only", "exclude".
 	// When empty, the default behavior is derived from the meta file (isConfigurable+isNaming → required, isConfigurable → optional).
@@ -64,6 +69,8 @@ type PropertyDefinition struct {
 	// Overrides the sensitive flag for the property.
 	// When true, the property is marked as sensitive in the Terraform schema regardless of the meta file.
 	Sensitive bool `yaml:"sensitive"`
+	// Overrides the versions from the meta file. Format: "1.0(1e)-" or "4.2(7f)-4.2(7w),5.2(1g)-".
+	SupportedVersions string `yaml:"supported_versions"`
 }
 
 type ClassDefinition struct {
