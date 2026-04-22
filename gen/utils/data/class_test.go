@@ -1117,12 +1117,12 @@ func TestSortAndConvertToClassNames(t *testing.T) {
 	}
 }
 
-type setSupportedVersionsInput struct {
-	ClassDefinitionVersions string
-	MetaVersions            interface{}
+type setClassSupportedVersionsInput struct {
+	MetaFileContent map[string]interface{}
+	ClassDefinition ClassDefinition
 }
 
-type setSupportedVersionsExpected struct {
+type setClassSupportedVersionsExpected struct {
 	Raw      string
 	String   string
 	Error    bool
@@ -1136,110 +1136,110 @@ func TestSetSupportedVersions(t *testing.T) {
 	testCases := []test.TestCase{
 		{
 			Name: "test_versions_from_meta_file",
-			Input: setSupportedVersionsInput{
-				ClassDefinitionVersions: "",
-				MetaVersions:            "4.2(7f)-",
+			Input: setClassSupportedVersionsInput{
+				MetaFileContent: map[string]interface{}{"versions": "4.2(7f)-"},
+				ClassDefinition: ClassDefinition{},
 			},
-			Expected: setSupportedVersionsExpected{
+			Expected: setClassSupportedVersionsExpected{
 				Raw:    "4.2(7f)-",
 				String: "4.2(7f) and later",
 			},
 		},
 		{
 			Name: "test_versions_from_class_definition_override",
-			Input: setSupportedVersionsInput{
-				ClassDefinitionVersions: "5.0(1a)-",
-				MetaVersions:            "4.2(7f)-",
+			Input: setClassSupportedVersionsInput{
+				MetaFileContent: map[string]interface{}{"versions": "4.2(7f)-"},
+				ClassDefinition: ClassDefinition{SupportedVersions: "5.0(1a)-"},
 			},
-			Expected: setSupportedVersionsExpected{
+			Expected: setClassSupportedVersionsExpected{
 				Raw:    "5.0(1a)-",
 				String: "5.0(1a) and later",
 			},
 		},
 		{
 			Name: "test_versions_from_class_definition_when_meta_empty",
-			Input: setSupportedVersionsInput{
-				ClassDefinitionVersions: "5.0(1a)-",
-				MetaVersions:            "",
+			Input: setClassSupportedVersionsInput{
+				MetaFileContent: map[string]interface{}{"versions": ""},
+				ClassDefinition: ClassDefinition{SupportedVersions: "5.0(1a)-"},
 			},
-			Expected: setSupportedVersionsExpected{
+			Expected: setClassSupportedVersionsExpected{
 				Raw:    "5.0(1a)-",
 				String: "5.0(1a) and later",
 			},
 		},
 		{
 			Name: "test_versions_from_class_definition_when_meta_nil",
-			Input: setSupportedVersionsInput{
-				ClassDefinitionVersions: "5.0(1a)-",
-				MetaVersions:            nil,
+			Input: setClassSupportedVersionsInput{
+				MetaFileContent: map[string]interface{}{},
+				ClassDefinition: ClassDefinition{SupportedVersions: "5.0(1a)-"},
 			},
-			Expected: setSupportedVersionsExpected{
+			Expected: setClassSupportedVersionsExpected{
 				Raw:    "5.0(1a)-",
 				String: "5.0(1a) and later",
 			},
 		},
 		{
 			Name: "test_multiple_ranges",
-			Input: setSupportedVersionsInput{
-				ClassDefinitionVersions: "",
-				MetaVersions:            "3.2(10e)-3.2(10g),4.2(7f)-",
+			Input: setClassSupportedVersionsInput{
+				MetaFileContent: map[string]interface{}{"versions": "3.2(10e)-3.2(10g),4.2(7f)-"},
+				ClassDefinition: ClassDefinition{},
 			},
-			Expected: setSupportedVersionsExpected{
+			Expected: setClassSupportedVersionsExpected{
 				Raw:    "3.2(10e)-3.2(10g),4.2(7f)-",
 				String: "3.2(10e) to 3.2(10g), 4.2(7f) and later",
 			},
 		},
 		{
 			Name: "test_multiple_ranges_sorted",
-			Input: setSupportedVersionsInput{
-				ClassDefinitionVersions: "",
-				MetaVersions:            "5.2(1g)-,3.2(10e)-3.2(10g)",
+			Input: setClassSupportedVersionsInput{
+				MetaFileContent: map[string]interface{}{"versions": "5.2(1g)-,3.2(10e)-3.2(10g)"},
+				ClassDefinition: ClassDefinition{},
 			},
-			Expected: setSupportedVersionsExpected{
+			Expected: setClassSupportedVersionsExpected{
 				Raw:    "5.2(1g)-,3.2(10e)-3.2(10g)",
 				String: "3.2(10e) to 3.2(10g), 5.2(1g) and later",
 			},
 		},
 		{
 			Name: "test_error_empty_versions",
-			Input: setSupportedVersionsInput{
-				ClassDefinitionVersions: "",
-				MetaVersions:            "",
+			Input: setClassSupportedVersionsInput{
+				MetaFileContent: map[string]interface{}{"versions": ""},
+				ClassDefinition: ClassDefinition{},
 			},
-			Expected: setSupportedVersionsExpected{
+			Expected: setClassSupportedVersionsExpected{
 				Error:    true,
 				ErrorMsg: "versions not specified for class 'fvTenant': add versions to the class definition file",
 			},
 		},
 		{
 			Name: "test_error_nil_versions",
-			Input: setSupportedVersionsInput{
-				ClassDefinitionVersions: "",
-				MetaVersions:            nil,
+			Input: setClassSupportedVersionsInput{
+				MetaFileContent: map[string]interface{}{},
+				ClassDefinition: ClassDefinition{},
 			},
-			Expected: setSupportedVersionsExpected{
+			Expected: setClassSupportedVersionsExpected{
 				Error:    true,
 				ErrorMsg: "versions not specified for class 'fvTenant': add versions to the class definition file",
 			},
 		},
 		{
 			Name: "test_error_invalid_version",
-			Input: setSupportedVersionsInput{
-				ClassDefinitionVersions: "",
-				MetaVersions:            "invalid",
+			Input: setClassSupportedVersionsInput{
+				MetaFileContent: map[string]interface{}{"versions": "invalid"},
+				ClassDefinition: ClassDefinition{},
 			},
-			Expected: setSupportedVersionsExpected{
+			Expected: setClassSupportedVersionsExpected{
 				Error:    true,
 				ErrorMsg: "failed to parse versions for class 'fvTenant': invalid version 'invalid': unknown",
 			},
 		},
 		{
 			Name: "test_error_invalid_version_in_range",
-			Input: setSupportedVersionsInput{
-				ClassDefinitionVersions: "",
-				MetaVersions:            "4.2(7f)-,invalid",
+			Input: setClassSupportedVersionsInput{
+				MetaFileContent: map[string]interface{}{"versions": "4.2(7f)-,invalid"},
+				ClassDefinition: ClassDefinition{},
 			},
-			Expected: setSupportedVersionsExpected{
+			Expected: setClassSupportedVersionsExpected{
 				Error:    true,
 				ErrorMsg: "failed to parse versions for class 'fvTenant': invalid version 'invalid': unknown",
 			},
@@ -1249,18 +1249,13 @@ func TestSetSupportedVersions(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run(testCase.Name, func(t *testing.T) {
 			t.Parallel()
-			input := testCase.Input.(setSupportedVersionsInput)
-			expected := testCase.Expected.(setSupportedVersionsExpected)
+			input := testCase.Input.(setClassSupportedVersionsInput)
+			expected := testCase.Expected.(setClassSupportedVersionsExpected)
 
 			class := Class{
-				Name: testClassName("fvTenant"),
-				ClassDefinition: ClassDefinition{
-					SupportedVersions: input.ClassDefinitionVersions,
-				},
-				MetaFileContent: map[string]interface{}{},
-			}
-			if input.MetaVersions != nil {
-				class.MetaFileContent["versions"] = input.MetaVersions
+				Name:            testClassName("fvTenant"),
+				ClassDefinition: input.ClassDefinition,
+				MetaFileContent: input.MetaFileContent,
 			}
 
 			err := class.setSupportedVersions()
@@ -1276,11 +1271,11 @@ func TestSetSupportedVersions(t *testing.T) {
 	}
 }
 
-type setDeprecatedVersionsInput struct {
+type setClassDeprecatedVersionsInput struct {
 	ClassDefinitionVersions string
 }
 
-type setDeprecatedVersionsExpected struct {
+type setClassDeprecatedVersionsExpected struct {
 	Raw      string
 	String   string
 	Nil      bool
@@ -1295,59 +1290,59 @@ func TestSetDeprecatedVersions(t *testing.T) {
 	testCases := []test.TestCase{
 		{
 			Name: "test_deprecated_versions_not_set",
-			Input: setDeprecatedVersionsInput{
+			Input: setClassDeprecatedVersionsInput{
 				ClassDefinitionVersions: "",
 			},
-			Expected: setDeprecatedVersionsExpected{
+			Expected: setClassDeprecatedVersionsExpected{
 				Nil: true,
 			},
 		},
 		{
 			Name: "test_deprecated_versions_single_range",
-			Input: setDeprecatedVersionsInput{
+			Input: setClassDeprecatedVersionsInput{
 				ClassDefinitionVersions: "4.2(7f)-",
 			},
-			Expected: setDeprecatedVersionsExpected{
+			Expected: setClassDeprecatedVersionsExpected{
 				Raw:    "4.2(7f)-",
 				String: "4.2(7f) and later",
 			},
 		},
 		{
 			Name: "test_deprecated_versions_bounded_range",
-			Input: setDeprecatedVersionsInput{
+			Input: setClassDeprecatedVersionsInput{
 				ClassDefinitionVersions: "3.2(10e)-4.2(7f)",
 			},
-			Expected: setDeprecatedVersionsExpected{
+			Expected: setClassDeprecatedVersionsExpected{
 				Raw:    "3.2(10e)-4.2(7f)",
 				String: "3.2(10e) to 4.2(7f)",
 			},
 		},
 		{
 			Name: "test_deprecated_versions_multiple_ranges",
-			Input: setDeprecatedVersionsInput{
+			Input: setClassDeprecatedVersionsInput{
 				ClassDefinitionVersions: "3.2(10e)-3.2(10g),4.2(7f)-",
 			},
-			Expected: setDeprecatedVersionsExpected{
+			Expected: setClassDeprecatedVersionsExpected{
 				Raw:    "3.2(10e)-3.2(10g),4.2(7f)-",
 				String: "3.2(10e) to 3.2(10g), 4.2(7f) and later",
 			},
 		},
 		{
 			Name: "test_error_invalid_deprecated_version",
-			Input: setDeprecatedVersionsInput{
+			Input: setClassDeprecatedVersionsInput{
 				ClassDefinitionVersions: "invalid",
 			},
-			Expected: setDeprecatedVersionsExpected{
+			Expected: setClassDeprecatedVersionsExpected{
 				Error:    true,
 				ErrorMsg: "failed to parse deprecated versions for class 'fvTenant': invalid version 'invalid': unknown",
 			},
 		},
 		{
 			Name: "test_error_invalid_deprecated_version_in_range",
-			Input: setDeprecatedVersionsInput{
+			Input: setClassDeprecatedVersionsInput{
 				ClassDefinitionVersions: "4.2(7f)-,invalid",
 			},
-			Expected: setDeprecatedVersionsExpected{
+			Expected: setClassDeprecatedVersionsExpected{
 				Error:    true,
 				ErrorMsg: "failed to parse deprecated versions for class 'fvTenant': invalid version 'invalid': unknown",
 			},
@@ -1357,8 +1352,8 @@ func TestSetDeprecatedVersions(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run(testCase.Name, func(t *testing.T) {
 			t.Parallel()
-			input := testCase.Input.(setDeprecatedVersionsInput)
-			expected := testCase.Expected.(setDeprecatedVersionsExpected)
+			input := testCase.Input.(setClassDeprecatedVersionsInput)
+			expected := testCase.Expected.(setClassDeprecatedVersionsExpected)
 
 			class := Class{
 				Name: testClassName("fvTenant"),
@@ -2350,7 +2345,8 @@ func TestSetProperties(t *testing.T) {
 				GlobalMetaDefinition: input.GlobalMetaDefinition,
 			}
 
-			class.setProperties(ds)
+			err := class.setProperties(ds)
+			assert.NoError(t, err, test.MessageUnexpectedError(err))
 
 			test.AssertStringSlice(t, expected.PropertiesAll, class.PropertiesAll, testCase.Name)
 			test.AssertStringSlice(t, expected.PropertiesRequired, class.PropertiesRequired, testCase.Name)
