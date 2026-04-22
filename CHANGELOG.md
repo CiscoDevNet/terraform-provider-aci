@@ -2,11 +2,6 @@
 
 All notable changes to this project will be documented in this file.
 
-## Unreleased
-
-IMPROVEMENTS:
-- Add `explicit-failover` as a valid `mode` for the `aci_lacp_policy` resource.
-
 ## 2.19.0 (April 17, 2026)
 
 This release includes resources and data sources that have been migrated from SDKv2 to the Terraform Provider Framework. Those resources and data sources will continue to accept legacy attributes but deprecation warnings will be displayed. See the [migration guide](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/guides/migration) for more details on the migration and how to upgrade the provider to this release and any subsequent v2.x release that will include migrated resources and data sources.
