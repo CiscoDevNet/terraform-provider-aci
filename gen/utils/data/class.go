@@ -217,7 +217,10 @@ func (c *Class) setClassData(ds *DataStore) error {
 	c.setPlatformType()
 
 	// TODO: add function to set Properties
-	c.setProperties(ds)
+	err = c.setProperties(ds)
+	if err != nil {
+		return err
+	}
 
 	err = c.setRelation()
 	if err != nil {
@@ -451,7 +454,7 @@ func (c *Class) setPlatformType() {
 	genLogger.Debug(fmt.Sprintf("Successfully set PlatformType for class '%s': %s.", c.Name, c.PlatformType))
 }
 
-func (c *Class) setProperties(ds *DataStore) {
+func (c *Class) setProperties(ds *DataStore) error {
 	genLogger.Debug(fmt.Sprintf("Setting properties for class '%s'.", c.Name))
 
 	if properties, ok := c.MetaFileContent["properties"]; ok {
@@ -476,7 +479,10 @@ func (c *Class) setProperties(ds *DataStore) {
 			// Include configurable properties (default behavior from meta file).
 			// Include non-configurable properties only when the restriction is "read_only".
 			if details["isConfigurable"] == true || propertyDefinition.Restriction == "read_only" {
-				property := NewProperty(name, details, propertyDefinition, ds.GlobalMetaDefinition)
+				property, err := NewProperty(name, details, propertyDefinition, ds.GlobalMetaDefinition)
+				if err != nil {
+					return err
+				}
 				c.Properties[name] = property
 				c.PropertiesAll = append(c.PropertiesAll, name)
 
@@ -498,6 +504,7 @@ func (c *Class) setProperties(ds *DataStore) {
 	slices.Sort(c.PropertiesRequired)
 
 	genLogger.Debug(fmt.Sprintf("Successfully set properties for class '%s'.", c.Name))
+	return nil
 }
 
 func (c *Class) setRelation() error {
