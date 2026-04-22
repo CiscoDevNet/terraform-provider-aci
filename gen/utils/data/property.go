@@ -17,6 +17,9 @@ type Property struct {
 	// Indicates if the property is deprecated in the resource and datasource schemas.
 	// Deprecated properties include a warning the resource and datasource schemas.
 	Deprecated bool
+	// The deprecated APIC versions for the property.
+	// Used to indicate versions where the property is deprecated but still functional.
+	DeprecatedVersions *Versions
 	// Documentation specific information for the property.
 	Documentation PropertyDocumentation
 	// Migration specific information for the property.
@@ -42,7 +45,6 @@ type Property struct {
 	// Each version range is separated by a comma, ex "4.2(7f)-4.2(7w),5.2(1g)-".
 	// The first version is the minimum version and the second version is the maximum version.
 	// A dash at the end of a range (ex. 4.2(7f)-) indicates that the class is supported from the first version to the latest version.
-	// TODO: Add DeprecatedVersions field when meta file exposes deprecation information.
 	SupportedVersions *Versions
 	// Test specific information for the property.
 	// This is used to generate the test cases and examples for the property.
@@ -137,7 +139,7 @@ const (
 	List
 )
 
-func NewProperty(name string, details map[string]interface{}, definition PropertyDefinition, globalDefinition GlobalMetaDefinition) *Property {
+func NewProperty(name string, details map[string]interface{}, definition PropertyDefinition, globalDefinition GlobalMetaDefinition) (*Property, error) {
 	genLogger.Trace(fmt.Sprintf("Creating new property struct for property: %s.", name))
 
 	property := &Property{
@@ -147,27 +149,30 @@ func NewProperty(name string, details map[string]interface{}, definition Propert
 		propertyDefinition: definition,
 	}
 
-	property.setPropertyData()
+	err := property.setPropertyData()
+	if err != nil {
+		return nil, err
+	}
 
 	genLogger.Trace(fmt.Sprintf("Successfully created new property struct for property: %s.", name))
 
-	return property
+	return property, nil
 }
 
-func (p *Property) setPropertyData() {
+func (p *Property) setPropertyData() error {
 	genLogger.Debug(fmt.Sprintf("Setting property data for property '%s'.", p.PropertyName))
 
-	// TODO: add function to set AttributeName
 	p.setAttributeName()
 
 	// TODO: add function to set CustomType
 	p.setCustomType()
 
-	// TODO: add placeholder function for Deprecated
 	p.setDeprecated()
 
-	// TODO: add placeholder function for DeprecatedVersions
-	p.setDeprecatedVersions()
+	err := p.setDeprecatedVersions()
+	if err != nil {
+		return err
+	}
 
 	// TODO: add function to set Documentation
 	p.setDocumentation()
@@ -202,10 +207,13 @@ func (p *Property) setPropertyData() {
 	// TODO: add function to set ValueType
 	p.setValueType()
 
-	// TODO: add function to set Versions
-	p.setVersions()
+	err = p.setSupportedVersions()
+	if err != nil {
+		return err
+	}
 
 	genLogger.Debug(fmt.Sprintf("Successfully set property data for property '%s'.", p.PropertyName))
+	return nil
 }
 
 func (p *Property) setAttributeName() {
@@ -244,13 +252,31 @@ func (p *Property) setCustomType() {
 func (p *Property) setDeprecated() {
 	// Determine if the property is deprecated.
 	genLogger.Debug(fmt.Sprintf("Setting Deprecated for property '%s'.", p.PropertyName))
-	genLogger.Debug(fmt.Sprintf("Successfully set Deprecated for property '%s'.", p.PropertyName))
+
+	p.Deprecated = p.propertyDefinition.Deprecated
+
+	genLogger.Debug(fmt.Sprintf("Successfully set Deprecated '%t' for property '%s'.", p.Deprecated, p.PropertyName))
 }
 
-func (p *Property) setDeprecatedVersions() {
-	// Determine the APIC versions in which the property is deprecated.
+func (p *Property) setDeprecatedVersions() error {
+	// Determine the deprecated APIC versions for the property from the definition file.
 	genLogger.Debug(fmt.Sprintf("Setting DeprecatedVersions for property '%s'.", p.PropertyName))
-	genLogger.Debug(fmt.Sprintf("Successfully set DeprecatedVersions for property '%s'.", p.PropertyName))
+
+	// DeprecatedVersions is only set from the definition file (meta file doesn't support this yet).
+	metaVersions := p.propertyDefinition.DeprecatedVersions
+	if metaVersions == "" {
+		genLogger.Debug(fmt.Sprintf("No DeprecatedVersions specified for property '%s'.", p.PropertyName))
+		return nil
+	}
+
+	versions, err := NewVersions(metaVersions)
+	if err != nil {
+		return fmt.Errorf("failed to parse deprecated versions for property '%s': %w", p.PropertyName, err)
+	}
+	p.DeprecatedVersions = versions
+
+	genLogger.Debug(fmt.Sprintf("Successfully set DeprecatedVersions for property '%s'. Versions: '%s'", p.PropertyName, p.DeprecatedVersions))
+	return nil
 }
 
 func (p *Property) setDocumentation() {
@@ -353,8 +379,27 @@ func (p *Property) setValueType() {
 	genLogger.Debug(fmt.Sprintf("Successfully set ValueType for property '%s'.", p.PropertyName))
 }
 
-func (p *Property) setVersions() {
+func (p *Property) setSupportedVersions() error {
 	// Determine the supported APIC versions for the property.
-	genLogger.Debug(fmt.Sprintf("Setting Versions for property '%s'.", p.PropertyName))
-	genLogger.Debug(fmt.Sprintf("Successfully set Versions for property '%s'.", p.PropertyName))
+	genLogger.Debug(fmt.Sprintf("Setting SupportedVersions for property '%s'.", p.PropertyName))
+
+	// Initialize with versions from PropertyDefinition, if not defined set the versions from meta file.
+	metaVersions := p.propertyDefinition.SupportedVersions
+	if metaVersions == "" {
+		metaVersions, _ = p.metaDetails["versions"].(string)
+	}
+
+	if metaVersions == "" {
+		genLogger.Debug(fmt.Sprintf("No SupportedVersions specified for property '%s'.", p.PropertyName))
+		return nil
+	}
+
+	versions, err := NewVersions(metaVersions)
+	if err != nil {
+		return fmt.Errorf("failed to parse versions for property '%s': %w", p.PropertyName, err)
+	}
+	p.SupportedVersions = versions
+
+	genLogger.Debug(fmt.Sprintf("Successfully set SupportedVersions for property '%s'. Versions: '%s'", p.PropertyName, p.SupportedVersions))
+	return nil
 }
