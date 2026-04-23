@@ -33,10 +33,15 @@ import (
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &FvApResource{}
+var _ resource.ResourceWithIdentity = &FvApResource{}
 var _ resource.ResourceWithImportState = &FvApResource{}
 
 func NewFvApResource() resource.Resource {
 	return &FvApResource{}
+}
+
+func (r FvApResource) IdentitySchema(_ context.Context, _ resource.IdentitySchemaRequest, resp *resource.IdentitySchemaResponse) {
+	resp.IdentitySchema = getIdentitySchema()
 }
 
 // FvApResource defines the resource implementation.
@@ -820,6 +825,7 @@ func (r *FvApResource) Create(ctx context.Context, req resource.CreateRequest, r
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_application_profile with id '%s'", data.Id.ValueString()))
 }
 
@@ -844,6 +850,7 @@ func (r *FvApResource) Read(ctx context.Context, req resource.ReadRequest, resp 
 		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
 	} else {
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+		resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_application_profile with id '%s'", data.Id.ValueString()))
@@ -889,6 +896,7 @@ func (r *FvApResource) Update(ctx context.Context, req resource.UpdateRequest, r
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_application_profile with id '%s'", data.Id.ValueString()))
 }
 
@@ -917,10 +925,11 @@ func (r *FvApResource) Delete(ctx context.Context, req resource.DeleteRequest, r
 
 func (r *FvApResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_application_profile")
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	resource.ImportStatePassthroughWithIdentity(ctx, path.Root("id"), path.Root("id"), req, resp)
 
 	var stateData *FvApResourceModel
 	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: stateData.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_application_profile with id '%s'", stateData.Id.ValueString()))
 
 	tflog.Debug(ctx, "End import of state resource: aci_application_profile")
@@ -930,11 +939,17 @@ func getAndSetFvApAttributes(ctx context.Context, diags *diag.Diagnostics, clien
 	childClasses := getChildClassesForGetRequest([]string{"fvRsApMonPol", "tagAnnotation", "tagTag"})
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), strings.Join(childClasses, ",")), "GET", nil)
 
-	readData := getEmptyFvApResourceModel()
-
 	if diags.HasError() {
 		return
 	}
+
+	setFvApAttributes(ctx, diags, data, requestData)
+}
+
+func setFvApAttributes(ctx context.Context, diags *diag.Diagnostics, data *FvApResourceModel, requestData *container.Container) {
+
+	readData := getEmptyFvApResourceModel()
+
 	if requestData.Search("imdata").Search("fvAp").Data() != nil {
 		classReadInfo := requestData.Search("imdata").Search("fvAp").Data().([]interface{})
 		if len(classReadInfo) == 1 {
