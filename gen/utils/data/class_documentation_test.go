@@ -7,6 +7,38 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestSetClassName(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	testCases := []test.TestCase{
+		{
+			Name:     "test_basic_class_name",
+			Input:    "fvTenant",
+			Expected: "[fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview)",
+		},
+		{
+			Name:     "test_long_class_name",
+			Input:    "l3extRsLblToInstP",
+			Expected: "[l3extRsLblToInstP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extRsLblToInstP/overview)",
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.(string)
+			expected := testCase.Expected.(string)
+
+			class := Class{Name: testClassName(input)}
+
+			class.Documentation.setClassName(&class)
+
+			assert.Equal(t, expected, class.Documentation.ClassName, test.MessageEqual(expected, class.Documentation.ClassName, testCase.Name))
+		})
+	}
+}
+
 type setSubCategoryInput struct {
 	SubCategory                      string
 	IsSingleNestedWhenDefinedAsChild bool
