@@ -1,11 +1,44 @@
 package data
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils/test"
 	"github.com/stretchr/testify/assert"
 )
+
+func TestSetClassName(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	testCases := []test.TestCase{
+		{
+			Name:     "test_basic_class_name",
+			Input:    "fvTenant",
+			Expected: "[fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview)",
+		},
+		{
+			Name:     "test_long_class_name",
+			Input:    "l3extRsLblToInstP",
+			Expected: "[l3extRsLblToInstP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extRsLblToInstP/overview)",
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.(string)
+			expected := testCase.Expected.(string)
+
+			class := Class{Name: testClassName(input)}
+
+			class.Documentation.setClassName(&class)
+
+			assert.Equal(t, expected, class.Documentation.ClassName, test.MessageEqual(expected, class.Documentation.ClassName, testCase.Name))
+		})
+	}
+}
 
 type setSubCategoryInput struct {
 	SubCategory                      string
@@ -226,6 +259,892 @@ func TestSetUiLocations(t *testing.T) {
 				assert.NoError(t, err, test.MessageUnexpectedError(err))
 				assert.Equal(t, expected.UiLocations, class.Documentation.UiLocations, test.MessageEqual(expected.UiLocations, class.Documentation.UiLocations, testCase.Name))
 			}
+		})
+	}
+}
+
+type setNotesInput struct {
+	Shared     []string
+	Resource   []string
+	Datasource []string
+}
+
+type setNotesExpected struct {
+	ResourceNotes   []string
+	DatasourceNotes []string
+}
+
+func TestSetNotes(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	testCases := []test.TestCase{
+		{
+			Name:     "test_all_empty",
+			Input:    setNotesInput{},
+			Expected: setNotesExpected{ResourceNotes: nil, DatasourceNotes: nil},
+		},
+		{
+			Name: "test_only_shared",
+			Input: setNotesInput{
+				Shared: []string{"shared note 1", "shared note 2"},
+			},
+			Expected: setNotesExpected{
+				ResourceNotes:   []string{"shared note 1", "shared note 2"},
+				DatasourceNotes: []string{"shared note 1", "shared note 2"},
+			},
+		},
+		{
+			Name: "test_only_resource",
+			Input: setNotesInput{
+				Resource: []string{"resource note"},
+			},
+			Expected: setNotesExpected{
+				ResourceNotes:   []string{"resource note"},
+				DatasourceNotes: nil,
+			},
+		},
+		{
+			Name: "test_only_datasource",
+			Input: setNotesInput{
+				Datasource: []string{"datasource note"},
+			},
+			Expected: setNotesExpected{
+				ResourceNotes:   nil,
+				DatasourceNotes: []string{"datasource note"},
+			},
+		},
+		{
+			Name: "test_shared_and_resource",
+			Input: setNotesInput{
+				Shared:   []string{"shared note"},
+				Resource: []string{"resource note"},
+			},
+			Expected: setNotesExpected{
+				ResourceNotes:   []string{"shared note", "resource note"},
+				DatasourceNotes: []string{"shared note"},
+			},
+		},
+		{
+			Name: "test_shared_resource_and_datasource",
+			Input: setNotesInput{
+				Shared:     []string{"shared note"},
+				Resource:   []string{"resource note"},
+				Datasource: []string{"datasource note 1", "datasource note 2"},
+			},
+			Expected: setNotesExpected{
+				ResourceNotes:   []string{"shared note", "resource note"},
+				DatasourceNotes: []string{"shared note", "datasource note 1", "datasource note 2"},
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.(setNotesInput)
+			expected := testCase.Expected.(setNotesExpected)
+
+			class := Class{
+				Name: testClassName("fvTenant"),
+				ClassDefinition: ClassDefinition{
+					Documentation: ClassDocumentationDefinition{
+						Notes:      input.Shared,
+						Resource:   ArtifactDocumentationDefinition{Notes: input.Resource},
+						Datasource: ArtifactDocumentationDefinition{Notes: input.Datasource},
+					},
+				},
+			}
+
+			class.Documentation.setNotes(&class)
+
+			assert.Equal(t, expected.ResourceNotes, class.Documentation.ResourceNotes, test.MessageEqual(expected.ResourceNotes, class.Documentation.ResourceNotes, testCase.Name))
+			assert.Equal(t, expected.DatasourceNotes, class.Documentation.DatasourceNotes, test.MessageEqual(expected.DatasourceNotes, class.Documentation.DatasourceNotes, testCase.Name))
+		})
+	}
+}
+
+type setWarningsInput struct {
+	Shared     []string
+	Resource   []string
+	Datasource []string
+}
+
+type setWarningsExpected struct {
+	ResourceWarnings   []string
+	DatasourceWarnings []string
+}
+
+func TestSetWarnings(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	testCases := []test.TestCase{
+		{
+			Name:     "test_all_empty",
+			Input:    setWarningsInput{},
+			Expected: setWarningsExpected{ResourceWarnings: nil, DatasourceWarnings: nil},
+		},
+		{
+			Name: "test_only_shared",
+			Input: setWarningsInput{
+				Shared: []string{"shared warning"},
+			},
+			Expected: setWarningsExpected{
+				ResourceWarnings:   []string{"shared warning"},
+				DatasourceWarnings: []string{"shared warning"},
+			},
+		},
+		{
+			Name: "test_only_resource",
+			Input: setWarningsInput{
+				Resource: []string{"resource warning"},
+			},
+			Expected: setWarningsExpected{
+				ResourceWarnings:   []string{"resource warning"},
+				DatasourceWarnings: nil,
+			},
+		},
+		{
+			Name: "test_only_datasource",
+			Input: setWarningsInput{
+				Datasource: []string{"datasource warning"},
+			},
+			Expected: setWarningsExpected{
+				ResourceWarnings:   nil,
+				DatasourceWarnings: []string{"datasource warning"},
+			},
+		},
+		{
+			Name: "test_shared_and_resource",
+			Input: setWarningsInput{
+				Shared:   []string{"shared warning"},
+				Resource: []string{"resource warning"},
+			},
+			Expected: setWarningsExpected{
+				ResourceWarnings:   []string{"shared warning", "resource warning"},
+				DatasourceWarnings: []string{"shared warning"},
+			},
+		},
+		{
+			Name: "test_shared_resource_and_datasource",
+			Input: setWarningsInput{
+				Shared:     []string{"shared warning"},
+				Resource:   []string{"resource warning"},
+				Datasource: []string{"datasource warning 1", "datasource warning 2"},
+			},
+			Expected: setWarningsExpected{
+				ResourceWarnings:   []string{"shared warning", "resource warning"},
+				DatasourceWarnings: []string{"shared warning", "datasource warning 1", "datasource warning 2"},
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.(setWarningsInput)
+			expected := testCase.Expected.(setWarningsExpected)
+
+			class := Class{
+				Name: testClassName("fvTenant"),
+				ClassDefinition: ClassDefinition{
+					Documentation: ClassDocumentationDefinition{
+						Warnings:   input.Shared,
+						Resource:   ArtifactDocumentationDefinition{Warnings: input.Resource},
+						Datasource: ArtifactDocumentationDefinition{Warnings: input.Datasource},
+					},
+				},
+			}
+
+			class.Documentation.setWarnings(&class)
+
+			assert.Equal(t, expected.ResourceWarnings, class.Documentation.ResourceWarnings, test.MessageEqual(expected.ResourceWarnings, class.Documentation.ResourceWarnings, testCase.Name))
+			assert.Equal(t, expected.DatasourceWarnings, class.Documentation.DatasourceWarnings, test.MessageEqual(expected.DatasourceWarnings, class.Documentation.DatasourceWarnings, testCase.Name))
+		})
+	}
+}
+
+type setDocumentationChildrenInput struct {
+	RnMap                      map[string]interface{}
+	ChildrenIncludedInResource []string
+	StoreClasses               map[string]Class
+}
+
+type setDocumentationChildrenExpected struct {
+	Children []string
+}
+
+func TestSetDocumentationChildren(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	testCases := []test.TestCase{
+		{
+			Name:     "test_no_rnmap",
+			Input:    setDocumentationChildrenInput{},
+			Expected: setDocumentationChildrenExpected{Children: nil},
+		},
+		{
+			Name: "test_child_included_in_resource_excluded",
+			Input: setDocumentationChildrenInput{
+				RnMap: map[string]interface{}{
+					"rstoEpg": "fv:RsToEpg",
+				},
+				ChildrenIncludedInResource: []string{"fvRsToEpg"},
+				StoreClasses: map[string]Class{
+					"fvRsToEpg": {ResourceName: "relation_to_epg"},
+				},
+			},
+			Expected: setDocumentationChildrenExpected{Children: []string{}},
+		},
+		{
+			Name: "test_unknown_child_excluded",
+			Input: setDocumentationChildrenInput{
+				RnMap: map[string]interface{}{
+					"unknown-{name}": "foo:Bar",
+				},
+				StoreClasses: map[string]Class{},
+			},
+			Expected: setDocumentationChildrenExpected{Children: []string{}},
+		},
+		{
+			Name: "test_child_without_resource_name_excluded",
+			Input: setDocumentationChildrenInput{
+				RnMap: map[string]interface{}{
+					"noresource-{name}": "foo:NoResource",
+				},
+				StoreClasses: map[string]Class{
+					"fooNoResource": {ResourceName: ""},
+				},
+			},
+			Expected: setDocumentationChildrenExpected{Children: []string{}},
+		},
+		{
+			Name: "test_two_valid_children_sorted",
+			Input: setDocumentationChildrenInput{
+				RnMap: map[string]interface{}{
+					"zeta-{name}":  "fv:Zeta",
+					"alpha-{name}": "fv:Alpha",
+				},
+				StoreClasses: map[string]Class{
+					"fvZeta":  {ResourceName: "zeta"},
+					"fvAlpha": {ResourceName: "alpha"},
+				},
+			},
+			Expected: setDocumentationChildrenExpected{Children: []string{
+				"[aci_alpha](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/alpha)",
+				"[aci_zeta](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/zeta)",
+			}},
+		},
+		{
+			Name: "test_mixed_included_in_resource_and_valid",
+			Input: setDocumentationChildrenInput{
+				RnMap: map[string]interface{}{
+					"included-{name}": "fv:Included",
+					"valid-{name}":    "fv:Valid",
+					"missing-{name}":  "fv:Missing",
+				},
+				ChildrenIncludedInResource: []string{"fvIncluded"},
+				StoreClasses: map[string]Class{
+					"fvIncluded": {ResourceName: "included"},
+					"fvValid":    {ResourceName: "valid"},
+				},
+			},
+			Expected: setDocumentationChildrenExpected{Children: []string{
+				"[aci_valid](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/valid)",
+			}},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.(setDocumentationChildrenInput)
+			expected := testCase.Expected.(setDocumentationChildrenExpected)
+
+			childrenIncludedInResource := make([]*ClassName, 0, len(input.ChildrenIncludedInResource))
+			for _, name := range input.ChildrenIncludedInResource {
+				childrenIncludedInResource = append(childrenIncludedInResource, testClassName(name))
+			}
+
+			class := Class{
+				Name:     testClassName("fvTenant"),
+				Children: childrenIncludedInResource,
+			}
+			if input.RnMap != nil {
+				class.MetaFileContent = map[string]interface{}{"rnMap": input.RnMap}
+			}
+
+			ds := &DataStore{Classes: input.StoreClasses}
+
+			class.Documentation.setChildren(&class, ds)
+
+			assert.Equal(t, expected.Children, class.Documentation.Children, test.MessageEqual(expected.Children, class.Documentation.Children, testCase.Name))
+		})
+	}
+}
+
+func TestSetDeprecationWarning(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	testCases := []test.TestCase{
+		{
+			Name:     "test_not_deprecated",
+			Input:    false,
+			Expected: "",
+		},
+		{
+			Name:     "test_deprecated",
+			Input:    true,
+			Expected: "The [fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview) class is deprecated and will be removed in a future release.",
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+
+			class := Class{
+				Name:       testClassName("fvTenant"),
+				Deprecated: testCase.Input.(bool),
+			}
+			class.Documentation.setClassName(&class)
+			class.Documentation.setDeprecationWarning(&class)
+
+			expected := testCase.Expected.(string)
+			assert.Equal(t, expected, class.Documentation.DeprecationWarning, test.MessageEqual(expected, class.Documentation.DeprecationWarning, testCase.Name))
+		})
+	}
+}
+
+type setLabelInput struct {
+	ResourceName string
+	Label        string
+	Overrides    map[string]string
+}
+
+func TestSetLabel(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	testCases := []test.TestCase{
+		{
+			Name: "test_label_override_used",
+			Input: setLabelInput{
+				ResourceName: "application_epg",
+				Label:        "Custom Label",
+				Overrides:    map[string]string{"Application": "App"},
+			},
+			Expected: "Custom Label",
+		},
+		{
+			Name: "test_humanize_no_overrides",
+			Input: setLabelInput{
+				ResourceName: "application_epg",
+			},
+			Expected: "Application Epg",
+		},
+		{
+			Name: "test_humanize_single_word_override",
+			Input: setLabelInput{
+				ResourceName: "bgp_timers",
+				Overrides:    map[string]string{"Bgp": "BGP"},
+			},
+			Expected: "BGP Timers",
+		},
+		{
+			Name: "test_humanize_multi_word_override",
+			Input: setLabelInput{
+				ResourceName: "external_network_instance_profile",
+				Overrides:    map[string]string{"External Network Instance Profile": "External EPG"},
+			},
+			Expected: "External EPG",
+		},
+		{
+			Name: "test_single_word_override_no_partial_match",
+			Input: setLabelInput{
+				ResourceName: "applications_epg",
+				Overrides:    map[string]string{"Application": "App"},
+			},
+			Expected: "Applications Epg",
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.(setLabelInput)
+			expected := testCase.Expected.(string)
+
+			class := Class{
+				Name:         testClassName("fvFoo"),
+				ResourceName: input.ResourceName,
+				ClassDefinition: ClassDefinition{
+					Documentation: ClassDocumentationDefinition{Label: input.Label},
+				},
+			}
+			ds := &DataStore{
+				GlobalMetaDefinition: GlobalMetaDefinition{
+					DocumentationLabelOverrides: input.Overrides,
+				},
+			}
+
+			class.Documentation.setLabel(&class, ds)
+
+			assert.Equal(t, expected, class.Documentation.Label, test.MessageEqual(expected, class.Documentation.Label, testCase.Name))
+		})
+	}
+}
+
+type setDescriptionInput struct {
+	Label               string
+	SharedDescription   string
+	ResourceDescription string
+	DataDescription     string
+}
+
+type setDescriptionExpected struct {
+	ResourceDescription   string
+	DatasourceDescription string
+}
+
+func TestSetDescription(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	testCases := []test.TestCase{
+		{
+			Name: "test_no_appendix",
+			Input: setDescriptionInput{
+				Label: "Application EPG",
+			},
+			Expected: setDescriptionExpected{
+				ResourceDescription:   "Manages ACI Application EPG.",
+				DatasourceDescription: "Data source for ACI Application EPG.",
+			},
+		},
+		{
+			Name: "test_shared_only",
+			Input: setDescriptionInput{
+				Label:             "Application EPG",
+				SharedDescription: "Provides custom routing.",
+			},
+			Expected: setDescriptionExpected{
+				ResourceDescription:   "Manages ACI Application EPG. Provides custom routing.",
+				DatasourceDescription: "Data source for ACI Application EPG. Provides custom routing.",
+			},
+		},
+		{
+			Name: "test_resource_only",
+			Input: setDescriptionInput{
+				Label:               "Application EPG",
+				ResourceDescription: "Use with caution.",
+			},
+			Expected: setDescriptionExpected{
+				ResourceDescription:   "Manages ACI Application EPG. Use with caution.",
+				DatasourceDescription: "Data source for ACI Application EPG.",
+			},
+		},
+		{
+			Name: "test_datasource_only",
+			Input: setDescriptionInput{
+				Label:           "Application EPG",
+				DataDescription: "Returns matching objects.",
+			},
+			Expected: setDescriptionExpected{
+				ResourceDescription:   "Manages ACI Application EPG.",
+				DatasourceDescription: "Data source for ACI Application EPG. Returns matching objects.",
+			},
+		},
+		{
+			Name: "test_shared_plus_resource",
+			Input: setDescriptionInput{
+				Label:               "Application EPG",
+				SharedDescription:   "Provides custom routing.",
+				ResourceDescription: "Use with caution.",
+			},
+			Expected: setDescriptionExpected{
+				ResourceDescription:   "Manages ACI Application EPG. Provides custom routing. Use with caution.",
+				DatasourceDescription: "Data source for ACI Application EPG. Provides custom routing.",
+			},
+		},
+		{
+			Name: "test_shared_plus_datasource",
+			Input: setDescriptionInput{
+				Label:             "Application EPG",
+				SharedDescription: "Provides custom routing.",
+				DataDescription:   "Returns matching objects.",
+			},
+			Expected: setDescriptionExpected{
+				ResourceDescription:   "Manages ACI Application EPG. Provides custom routing.",
+				DatasourceDescription: "Data source for ACI Application EPG. Provides custom routing. Returns matching objects.",
+			},
+		},
+		{
+			Name: "test_all_three",
+			Input: setDescriptionInput{
+				Label:               "Application EPG",
+				SharedDescription:   "Provides custom routing.",
+				ResourceDescription: "Use with caution.",
+				DataDescription:     "Returns matching objects.",
+			},
+			Expected: setDescriptionExpected{
+				ResourceDescription:   "Manages ACI Application EPG. Provides custom routing. Use with caution.",
+				DatasourceDescription: "Data source for ACI Application EPG. Provides custom routing. Returns matching objects.",
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.(setDescriptionInput)
+			expected := testCase.Expected.(setDescriptionExpected)
+
+			class := Class{
+				Name: testClassName("fvFoo"),
+				ClassDefinition: ClassDefinition{
+					Documentation: ClassDocumentationDefinition{
+						Description: input.SharedDescription,
+						Resource:    ArtifactDocumentationDefinition{Description: input.ResourceDescription},
+						Datasource:  ArtifactDocumentationDefinition{Description: input.DataDescription},
+					},
+				},
+			}
+			class.Documentation.Label = input.Label
+
+			class.Documentation.setDescription(&class)
+
+			assert.Equal(t, expected.ResourceDescription, class.Documentation.ResourceDescription, test.MessageEqual(expected.ResourceDescription, class.Documentation.ResourceDescription, testCase.Name+"/resource"))
+			assert.Equal(t, expected.DatasourceDescription, class.Documentation.DatasourceDescription, test.MessageEqual(expected.DatasourceDescription, class.Documentation.DatasourceDescription, testCase.Name+"/datasource"))
+		})
+	}
+}
+
+type setDnFormatsInput struct {
+	MetaFormats     []interface{}
+	OverrideFormats []string
+}
+
+func TestSetDnFormats(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	tooManyNotice := "Too many DN formats to display, see model documentation for all possible parents of [fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview)."
+
+	testCases := []test.TestCase{
+		{
+			Name:     "test_no_meta_no_override",
+			Input:    setDnFormatsInput{},
+			Expected: []string(nil),
+		},
+		{
+			Name: "test_meta_single",
+			Input: setDnFormatsInput{
+				MetaFormats: []interface{}{"uni/tn-{name}/ap-{name}/epg-{name}"},
+			},
+			Expected: []string{"uni/tn-{name}/ap-{name}/epg-{name}"},
+		},
+		{
+			Name: "test_meta_multiple_sorted",
+			Input: setDnFormatsInput{
+				MetaFormats: []interface{}{
+					"uni/tn-{name}/certstore/keyring-{name}",
+					"uni/userext/pkiext/keyring-{name}",
+				},
+			},
+			Expected: []string{
+				"uni/tn-{name}/certstore/keyring-{name}",
+				"uni/userext/pkiext/keyring-{name}",
+			},
+		},
+		{
+			Name: "test_meta_unsorted_input_is_sorted",
+			Input: setDnFormatsInput{
+				MetaFormats: []interface{}{"b/{name}", "a/{name}", "c/{name}"},
+			},
+			Expected: []string{"a/{name}", "b/{name}", "c/{name}"},
+		},
+		{
+			Name: "test_override_replaces_meta",
+			Input: setDnFormatsInput{
+				MetaFormats:     []interface{}{"meta/{name}"},
+				OverrideFormats: []string{"override/{name}"},
+			},
+			Expected: []string{"override/{name}"},
+		},
+		{
+			Name: "test_override_is_sorted",
+			Input: setDnFormatsInput{
+				OverrideFormats: []string{"z/{name}", "a/{name}"},
+			},
+			Expected: []string{"a/{name}", "z/{name}"},
+		},
+		{
+			Name: "test_at_cap_no_notice",
+			Input: setDnFormatsInput{
+				MetaFormats: []interface{}{"e/{name}", "d/{name}", "c/{name}", "b/{name}", "a/{name}"},
+			},
+			Expected: []string{"a/{name}", "b/{name}", "c/{name}", "d/{name}", "e/{name}"},
+		},
+		{
+			Name: "test_over_cap_prepends_notice_and_truncates",
+			Input: setDnFormatsInput{
+				MetaFormats: []interface{}{"f/{name}", "e/{name}", "d/{name}", "c/{name}", "b/{name}", "a/{name}"},
+			},
+			Expected: []string{
+				tooManyNotice,
+				"a/{name}", "b/{name}", "c/{name}", "d/{name}", "e/{name}",
+			},
+		},
+		{
+			Name: "test_meta_non_string_entries_skipped",
+			Input: setDnFormatsInput{
+				MetaFormats: []interface{}{"a/{name}", 42, "b/{name}"},
+			},
+			Expected: []string{"a/{name}", "b/{name}"},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.(setDnFormatsInput)
+			expected := testCase.Expected.([]string)
+
+			class := Class{
+				Name: testClassName("fvTenant"),
+				ClassDefinition: ClassDefinition{
+					Documentation: ClassDocumentationDefinition{DnFormats: input.OverrideFormats},
+				},
+			}
+			if input.MetaFormats != nil {
+				class.MetaFileContent = map[string]interface{}{"dnFormats": input.MetaFormats}
+			}
+
+			class.Documentation.setClassName(&class)
+			class.Documentation.setDnFormats(&class)
+
+			assert.Equal(t, expected, class.Documentation.DnFormats, test.MessageEqual(expected, class.Documentation.DnFormats, testCase.Name))
+		})
+	}
+}
+
+func TestSetMigrationWarning(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	migrationWarning := "This resource has been migrated to the terraform plugin protocol version 6, refer to the [migration guide](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/guides/migration) for more details and implications for already managed resources."
+
+	testCases := []test.TestCase{
+		{
+			Name:     "test_not_migration",
+			Input:    false,
+			Expected: "",
+		},
+		{
+			Name:     "test_migration",
+			Input:    true,
+			Expected: migrationWarning,
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+
+			class := Class{
+				Name:        testClassName("fvTenant"),
+				IsMigration: testCase.Input.(bool),
+			}
+			class.Documentation.setMigrationWarning(&class)
+
+			expected := testCase.Expected.(string)
+			assert.Equal(t, expected, class.Documentation.MigrationWarning, test.MessageEqual(expected, class.Documentation.MigrationWarning, testCase.Name))
+		})
+	}
+}
+
+type setParentDnsInput struct {
+	Parents      []string
+	StoreClasses map[string]Class
+}
+
+func TestSetParentDns(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	const note = "The distinguished name (DN) of classes below can be used but currently there is no available resource for it:"
+	link := func(className string) string {
+		return fmt.Sprintf("[%s](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/%s/overview)", className, className)
+	}
+	resourceEntry := func(resourceName, className string) string {
+		return fmt.Sprintf("[aci_%s](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/%s) (%s)", resourceName, resourceName, link(className))
+	}
+	tooManyResources := "Too many parent DNs to display, see model documentation for all possible parents of " + link("fvFoo") + "."
+	tooManyClasses := "Too many classes to display, see model documentation for all possible classes of " + link("fvFoo") + "."
+
+	// Helpers to build large input sets for the over-cap cases.
+	manyParentNames := func(prefix string, count int) []string {
+		out := make([]string, count)
+		for i := 0; i < count; i++ {
+			out[i] = fmt.Sprintf("%s%02d", prefix, i)
+		}
+		return out
+	}
+	manyResourceStore := func(names []string) map[string]Class {
+		store := make(map[string]Class, len(names))
+		for _, n := range names {
+			store[n] = Class{ResourceName: n}
+		}
+		return store
+	}
+
+	testCases := []test.TestCase{
+		{
+			Name:     "test_no_parents",
+			Input:    setParentDnsInput{},
+			Expected: []string(nil),
+		},
+		{
+			Name: "test_single_resource",
+			Input: setParentDnsInput{
+				Parents: []string{"fvTenant"},
+				StoreClasses: map[string]Class{
+					"fvTenant": {ResourceName: "tenant"},
+				},
+			},
+			Expected: []string{resourceEntry("tenant", "fvTenant")},
+		},
+		{
+			Name: "test_multiple_resources_preserve_order",
+			Input: setParentDnsInput{
+				Parents: []string{"fvAlpha", "fvZeta"},
+				StoreClasses: map[string]Class{
+					"fvAlpha": {ResourceName: "alpha"},
+					"fvZeta":  {ResourceName: "zeta"},
+				},
+			},
+			Expected: []string{
+				resourceEntry("alpha", "fvAlpha"),
+				resourceEntry("zeta", "fvZeta"),
+			},
+		},
+		{
+			Name: "test_only_class_only_with_note",
+			Input: setParentDnsInput{
+				Parents:      []string{"fvAlpha", "fvZeta"},
+				StoreClasses: map[string]Class{},
+			},
+			Expected: []string{note, link("fvAlpha"), link("fvZeta")},
+		},
+		{
+			Name: "test_unknown_in_store_treated_as_class_only",
+			Input: setParentDnsInput{
+				Parents: []string{"fvKnown", "fvUnknown"},
+				StoreClasses: map[string]Class{
+					"fvKnown": {ResourceName: "known"},
+				},
+			},
+			Expected: []string{
+				resourceEntry("known", "fvKnown"),
+				note,
+				link("fvUnknown"),
+			},
+		},
+		{
+			Name: "test_known_without_resource_name_treated_as_class_only",
+			Input: setParentDnsInput{
+				Parents: []string{"fvNoResource"},
+				StoreClasses: map[string]Class{
+					"fvNoResource": {ResourceName: ""},
+				},
+			},
+			Expected: []string{note, link("fvNoResource")},
+		},
+		{
+			Name: "test_resources_over_cap_replaced_by_notice",
+			Input: setParentDnsInput{
+				Parents:      manyParentNames("fvRes", 21),
+				StoreClasses: manyResourceStore(manyParentNames("fvRes", 21)),
+			},
+			Expected: []string{tooManyResources},
+		},
+		{
+			Name: "test_classes_over_cap_replaced_by_notice",
+			Input: setParentDnsInput{
+				Parents:      manyParentNames("fvCls", 21),
+				StoreClasses: map[string]Class{},
+			},
+			Expected: []string{note, tooManyClasses},
+		},
+		{
+			Name: "test_resources_over_cap_with_class_only_entries",
+			Input: setParentDnsInput{
+				Parents:      append(manyParentNames("fvRes", 21), "fvOrphan"),
+				StoreClasses: manyResourceStore(manyParentNames("fvRes", 21)),
+			},
+			Expected: []string{tooManyResources, note, link("fvOrphan")},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.(setParentDnsInput)
+			expected := testCase.Expected.([]string)
+
+			parents := make([]*ClassName, 0, len(input.Parents))
+			for _, name := range input.Parents {
+				parents = append(parents, testClassName(name))
+			}
+
+			class := Class{
+				Name:    testClassName("fvFoo"),
+				Parents: parents,
+			}
+			ds := &DataStore{Classes: input.StoreClasses}
+
+			class.Documentation.setClassName(&class)
+			class.Documentation.setParentDns(&class, ds)
+
+			assert.Equal(t, expected, class.Documentation.ParentDns, test.MessageEqual(expected, class.Documentation.ParentDns, testCase.Name))
+		})
+	}
+}
+
+func TestSetClassDocumentationSupportedVersions(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	testCases := []test.TestCase{
+		{Name: "test_nil_versions", Input: "", Expected: ""},
+		{Name: "test_single_version", Input: "1.0(1e)", Expected: "1.0(1e)"},
+		{Name: "test_bounded_range", Input: "4.2(7f)-4.2(7w)", Expected: "4.2(7f) to 4.2(7w)"},
+		{Name: "test_unbounded_max", Input: "5.2(1g)-", Expected: "5.2(1g) and later"},
+		{Name: "test_unbounded_min", Input: "-4.2(7w)", Expected: "up to 4.2(7w)"},
+		{Name: "test_multiple_ranges_sorted", Input: "5.2(1g)-,3.2(10e)-3.2(10g)", Expected: "3.2(10e) to 3.2(10g), 5.2(1g) and later"},
+		{Name: "test_mixed_single_and_range", Input: "1.0(1e),4.2(7f)-", Expected: "1.0(1e), 4.2(7f) and later"},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			raw := testCase.Input.(string)
+			expected := testCase.Expected.(string)
+
+			class := Class{Name: testClassName("fvFoo")}
+			if raw != "" {
+				versions, err := NewVersions(raw)
+				assert.NoError(t, err)
+				class.SupportedVersions = versions
+			}
+
+			class.Documentation.setSupportedVersions(&class)
+
+			assert.Equal(t, expected, class.Documentation.SupportedVersions, test.MessageEqual(expected, class.Documentation.SupportedVersions, testCase.Name))
 		})
 	}
 }
