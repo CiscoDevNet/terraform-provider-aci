@@ -229,3 +229,205 @@ func TestSetUiLocations(t *testing.T) {
 		})
 	}
 }
+
+type setNotesInput struct {
+	Shared     []string
+	Resource   []string
+	Datasource []string
+}
+
+type setNotesExpected struct {
+	ResourceNotes   []string
+	DatasourceNotes []string
+}
+
+func TestSetNotes(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	testCases := []test.TestCase{
+		{
+			Name:     "test_all_empty",
+			Input:    setNotesInput{},
+			Expected: setNotesExpected{ResourceNotes: nil, DatasourceNotes: nil},
+		},
+		{
+			Name: "test_only_shared",
+			Input: setNotesInput{
+				Shared: []string{"shared note 1", "shared note 2"},
+			},
+			Expected: setNotesExpected{
+				ResourceNotes:   []string{"shared note 1", "shared note 2"},
+				DatasourceNotes: []string{"shared note 1", "shared note 2"},
+			},
+		},
+		{
+			Name: "test_only_resource",
+			Input: setNotesInput{
+				Resource: []string{"resource note"},
+			},
+			Expected: setNotesExpected{
+				ResourceNotes:   []string{"resource note"},
+				DatasourceNotes: nil,
+			},
+		},
+		{
+			Name: "test_only_datasource",
+			Input: setNotesInput{
+				Datasource: []string{"datasource note"},
+			},
+			Expected: setNotesExpected{
+				ResourceNotes:   nil,
+				DatasourceNotes: []string{"datasource note"},
+			},
+		},
+		{
+			Name: "test_shared_and_resource",
+			Input: setNotesInput{
+				Shared:   []string{"shared note"},
+				Resource: []string{"resource note"},
+			},
+			Expected: setNotesExpected{
+				ResourceNotes:   []string{"shared note", "resource note"},
+				DatasourceNotes: []string{"shared note"},
+			},
+		},
+		{
+			Name: "test_shared_resource_and_datasource",
+			Input: setNotesInput{
+				Shared:     []string{"shared note"},
+				Resource:   []string{"resource note"},
+				Datasource: []string{"datasource note 1", "datasource note 2"},
+			},
+			Expected: setNotesExpected{
+				ResourceNotes:   []string{"shared note", "resource note"},
+				DatasourceNotes: []string{"shared note", "datasource note 1", "datasource note 2"},
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.(setNotesInput)
+			expected := testCase.Expected.(setNotesExpected)
+
+			class := Class{
+				Name: testClassName("fvTenant"),
+				ClassDefinition: ClassDefinition{
+					Documentation: ClassDocumentationDefinition{
+						Notes:      input.Shared,
+						Resource:   ArtifactDocumentationDefinition{Notes: input.Resource},
+						Datasource: ArtifactDocumentationDefinition{Notes: input.Datasource},
+					},
+				},
+			}
+
+			class.Documentation.setNotes(&class)
+
+			assert.Equal(t, expected.ResourceNotes, class.Documentation.ResourceNotes, test.MessageEqual(expected.ResourceNotes, class.Documentation.ResourceNotes, testCase.Name))
+			assert.Equal(t, expected.DatasourceNotes, class.Documentation.DatasourceNotes, test.MessageEqual(expected.DatasourceNotes, class.Documentation.DatasourceNotes, testCase.Name))
+		})
+	}
+}
+
+type setWarningsInput struct {
+	Shared     []string
+	Resource   []string
+	Datasource []string
+}
+
+type setWarningsExpected struct {
+	ResourceWarnings   []string
+	DatasourceWarnings []string
+}
+
+func TestSetWarnings(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	testCases := []test.TestCase{
+		{
+			Name:     "test_all_empty",
+			Input:    setWarningsInput{},
+			Expected: setWarningsExpected{ResourceWarnings: nil, DatasourceWarnings: nil},
+		},
+		{
+			Name: "test_only_shared",
+			Input: setWarningsInput{
+				Shared: []string{"shared warning"},
+			},
+			Expected: setWarningsExpected{
+				ResourceWarnings:   []string{"shared warning"},
+				DatasourceWarnings: []string{"shared warning"},
+			},
+		},
+		{
+			Name: "test_only_resource",
+			Input: setWarningsInput{
+				Resource: []string{"resource warning"},
+			},
+			Expected: setWarningsExpected{
+				ResourceWarnings:   []string{"resource warning"},
+				DatasourceWarnings: nil,
+			},
+		},
+		{
+			Name: "test_only_datasource",
+			Input: setWarningsInput{
+				Datasource: []string{"datasource warning"},
+			},
+			Expected: setWarningsExpected{
+				ResourceWarnings:   nil,
+				DatasourceWarnings: []string{"datasource warning"},
+			},
+		},
+		{
+			Name: "test_shared_and_resource",
+			Input: setWarningsInput{
+				Shared:   []string{"shared warning"},
+				Resource: []string{"resource warning"},
+			},
+			Expected: setWarningsExpected{
+				ResourceWarnings:   []string{"shared warning", "resource warning"},
+				DatasourceWarnings: []string{"shared warning"},
+			},
+		},
+		{
+			Name: "test_shared_resource_and_datasource",
+			Input: setWarningsInput{
+				Shared:     []string{"shared warning"},
+				Resource:   []string{"resource warning"},
+				Datasource: []string{"datasource warning 1", "datasource warning 2"},
+			},
+			Expected: setWarningsExpected{
+				ResourceWarnings:   []string{"shared warning", "resource warning"},
+				DatasourceWarnings: []string{"shared warning", "datasource warning 1", "datasource warning 2"},
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.(setWarningsInput)
+			expected := testCase.Expected.(setWarningsExpected)
+
+			class := Class{
+				Name: testClassName("fvTenant"),
+				ClassDefinition: ClassDefinition{
+					Documentation: ClassDocumentationDefinition{
+						Warnings:   input.Shared,
+						Resource:   ArtifactDocumentationDefinition{Warnings: input.Resource},
+						Datasource: ArtifactDocumentationDefinition{Warnings: input.Datasource},
+					},
+				},
+			}
+
+			class.Documentation.setWarnings(&class)
+
+			assert.Equal(t, expected.ResourceWarnings, class.Documentation.ResourceWarnings, test.MessageEqual(expected.ResourceWarnings, class.Documentation.ResourceWarnings, testCase.Name))
+			assert.Equal(t, expected.DatasourceWarnings, class.Documentation.DatasourceWarnings, test.MessageEqual(expected.DatasourceWarnings, class.Documentation.DatasourceWarnings, testCase.Name))
+		})
+	}
+}
