@@ -47,7 +47,8 @@ func validateSubCategory(class *Class) error {
 }
 
 type ClassDocumentation struct {
-	// The class name for referencing in documentation.
+	// A markdown link to the DevNet documentation page for the class, used to reference the class in the documentation.
+	// Format: "[<className>](https://<host>/app/index.html#/objects/<className>/overview)".
 	ClassName string
 	// Child classes that have their own standalone resource but are not inline children.
 	Children []string
@@ -121,7 +122,10 @@ func (c *Class) setDocumentation() error {
 
 func (d *ClassDocumentation) setClassName(class *Class) {
 	genLogger.Debug(fmt.Sprintf("Setting Documentation ClassName for class '%s'.", class.Name.full))
-	genLogger.Debug(fmt.Sprintf("Successfully set Documentation ClassName for class '%s'.", class.Name.full))
+
+	d.ClassName = fmt.Sprintf("[%s](https://%s/app/index.html#/objects/%s/overview)", class.Name.full, constPubhubDevnetHost, class.Name.full)
+
+	genLogger.Debug(fmt.Sprintf("Successfully set Documentation ClassName for class '%s'. ClassName: %s", class.Name.full, d.ClassName))
 }
 
 func (d *ClassDocumentation) setChildren(class *Class) {
