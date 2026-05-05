@@ -64,14 +64,22 @@ type ClassDocumentation struct {
 	MigrationWarning string
 	// The supported APIC versions string for display in documentation.
 	SupportedVersions string
-	// Notes rendered with -> prefix in docs.
-	Notes []string
+	// Notes rendered with -> prefix in the resource documentation.
+	// Resolved as the shared ClassDocumentationDefinition.Notes followed by ClassDocumentationDefinition.Resource.Notes.
+	ResourceNotes []string
+	// Warnings rendered with !> prefix in the resource documentation.
+	// Resolved as the shared ClassDocumentationDefinition.Warnings followed by ClassDocumentationDefinition.Resource.Warnings.
+	ResourceWarnings []string
+	// Notes rendered with -> prefix in the datasource documentation.
+	// Resolved as the shared ClassDocumentationDefinition.Notes followed by ClassDocumentationDefinition.Datasource.Notes.
+	DatasourceNotes []string
+	// Warnings rendered with !> prefix in the datasource documentation.
+	// Resolved as the shared ClassDocumentationDefinition.Warnings followed by ClassDocumentationDefinition.Datasource.Warnings.
+	DatasourceWarnings []string
 	// Sub-category for Terraform Registry sidebar grouping.
 	SubCategory string
 	// GUI locations in APIC (e.g., "Tenants -> Networking -> VRFs").
 	UiLocations []string
-	// Warnings rendered with !> prefix in docs.
-	Warnings []string
 }
 
 func (c *Class) setDocumentation() error {
@@ -153,7 +161,12 @@ func (d *ClassDocumentation) setSupportedVersions(class *Class) {
 
 func (d *ClassDocumentation) setNotes(class *Class) {
 	genLogger.Debug(fmt.Sprintf("Setting Documentation Notes for class '%s'.", class.Name.full))
-	genLogger.Debug(fmt.Sprintf("Successfully set Documentation Notes for class '%s'.", class.Name.full))
+
+	docDef := class.ClassDefinition.Documentation
+	d.ResourceNotes = slices.Concat(docDef.Notes, docDef.Resource.Notes)
+	d.DatasourceNotes = slices.Concat(docDef.Notes, docDef.Datasource.Notes)
+
+	genLogger.Debug(fmt.Sprintf("Successfully set Documentation Notes for class '%s'. ResourceNotes: %v, DatasourceNotes: %v", class.Name.full, d.ResourceNotes, d.DatasourceNotes))
 }
 
 func (d *ClassDocumentation) setUiLocations(class *Class) error {
@@ -174,7 +187,12 @@ func (d *ClassDocumentation) setUiLocations(class *Class) error {
 
 func (d *ClassDocumentation) setWarnings(class *Class) {
 	genLogger.Debug(fmt.Sprintf("Setting Documentation Warnings for class '%s'.", class.Name.full))
-	genLogger.Debug(fmt.Sprintf("Successfully set Documentation Warnings for class '%s'.", class.Name.full))
+
+	docDef := class.ClassDefinition.Documentation
+	d.ResourceWarnings = slices.Concat(docDef.Warnings, docDef.Resource.Warnings)
+	d.DatasourceWarnings = slices.Concat(docDef.Warnings, docDef.Datasource.Warnings)
+
+	genLogger.Debug(fmt.Sprintf("Successfully set Documentation Warnings for class '%s'. ResourceWarnings: %v, DatasourceWarnings: %v", class.Name.full, d.ResourceWarnings, d.DatasourceWarnings))
 }
 
 func (d *ClassDocumentation) setSubCategory(class *Class) error {
