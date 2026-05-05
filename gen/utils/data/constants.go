@@ -28,4 +28,7 @@ const (
 	// The maximum number of DN formats rendered in the documentation. When the source
 	// list exceeds this, a notice line is prepended and only the first N entries are kept.
 	constMaxDnFormatsToDisplay = 5
+	// The maximum number of parent DN entries (per section: resources and class-only)
+	// rendered in the documentation. Beyond this, a notice line replaces that section's list.
+	constMaxParentDnsToDisplay = 20
 )
