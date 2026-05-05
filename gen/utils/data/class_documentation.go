@@ -169,7 +169,12 @@ func (d *ClassDocumentation) setChildren(class *Class, ds *DataStore) {
 
 func (d *ClassDocumentation) setDeprecationWarning(class *Class) {
 	genLogger.Debug(fmt.Sprintf("Setting Documentation DeprecationWarning for class '%s'.", class.Name.full))
-	genLogger.Debug(fmt.Sprintf("Successfully set Documentation DeprecationWarning for class '%s'.", class.Name.full))
+
+	if class.Deprecated {
+		d.DeprecationWarning = fmt.Sprintf("The %s class is deprecated and will be removed in a future release.", d.ClassName)
+	}
+
+	genLogger.Debug(fmt.Sprintf("Successfully set Documentation DeprecationWarning for class '%s'. DeprecationWarning: %s", class.Name.full, d.DeprecationWarning))
 }
 
 func (d *ClassDocumentation) setDescription(class *Class) {
