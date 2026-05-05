@@ -1,6 +1,7 @@
 package data
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils/test"
@@ -962,6 +963,154 @@ func TestSetMigrationWarning(t *testing.T) {
 
 			expected := testCase.Expected.(string)
 			assert.Equal(t, expected, class.Documentation.MigrationWarning, test.MessageEqual(expected, class.Documentation.MigrationWarning, testCase.Name))
+		})
+	}
+}
+
+type setParentDnsInput struct {
+	Parents      []string
+	StoreClasses map[string]Class
+}
+
+func TestSetParentDns(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	const note = "The distinguished name (DN) of classes below can be used but currently there is no available resource for it:"
+	link := func(className string) string {
+		return fmt.Sprintf("[%s](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/%s/overview)", className, className)
+	}
+	resourceEntry := func(resourceName, className string) string {
+		return fmt.Sprintf("[aci_%s](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/%s) (%s)", resourceName, resourceName, link(className))
+	}
+	tooManyResources := "Too many parent DNs to display, see model documentation for all possible parents of " + link("fvFoo") + "."
+	tooManyClasses := "Too many classes to display, see model documentation for all possible classes of " + link("fvFoo") + "."
+
+	// Helpers to build large input sets for the over-cap cases.
+	manyParentNames := func(prefix string, count int) []string {
+		out := make([]string, count)
+		for i := 0; i < count; i++ {
+			out[i] = fmt.Sprintf("%s%02d", prefix, i)
+		}
+		return out
+	}
+	manyResourceStore := func(names []string) map[string]Class {
+		store := make(map[string]Class, len(names))
+		for _, n := range names {
+			store[n] = Class{ResourceName: n}
+		}
+		return store
+	}
+
+	testCases := []test.TestCase{
+		{
+			Name:     "test_no_parents",
+			Input:    setParentDnsInput{},
+			Expected: []string(nil),
+		},
+		{
+			Name: "test_single_resource",
+			Input: setParentDnsInput{
+				Parents: []string{"fvTenant"},
+				StoreClasses: map[string]Class{
+					"fvTenant": {ResourceName: "tenant"},
+				},
+			},
+			Expected: []string{resourceEntry("tenant", "fvTenant")},
+		},
+		{
+			Name: "test_multiple_resources_preserve_order",
+			Input: setParentDnsInput{
+				Parents: []string{"fvAlpha", "fvZeta"},
+				StoreClasses: map[string]Class{
+					"fvAlpha": {ResourceName: "alpha"},
+					"fvZeta":  {ResourceName: "zeta"},
+				},
+			},
+			Expected: []string{
+				resourceEntry("alpha", "fvAlpha"),
+				resourceEntry("zeta", "fvZeta"),
+			},
+		},
+		{
+			Name: "test_only_class_only_with_note",
+			Input: setParentDnsInput{
+				Parents:      []string{"fvAlpha", "fvZeta"},
+				StoreClasses: map[string]Class{},
+			},
+			Expected: []string{note, link("fvAlpha"), link("fvZeta")},
+		},
+		{
+			Name: "test_unknown_in_store_treated_as_class_only",
+			Input: setParentDnsInput{
+				Parents: []string{"fvKnown", "fvUnknown"},
+				StoreClasses: map[string]Class{
+					"fvKnown": {ResourceName: "known"},
+				},
+			},
+			Expected: []string{
+				resourceEntry("known", "fvKnown"),
+				note,
+				link("fvUnknown"),
+			},
+		},
+		{
+			Name: "test_known_without_resource_name_treated_as_class_only",
+			Input: setParentDnsInput{
+				Parents: []string{"fvNoResource"},
+				StoreClasses: map[string]Class{
+					"fvNoResource": {ResourceName: ""},
+				},
+			},
+			Expected: []string{note, link("fvNoResource")},
+		},
+		{
+			Name: "test_resources_over_cap_replaced_by_notice",
+			Input: setParentDnsInput{
+				Parents:      manyParentNames("fvRes", 21),
+				StoreClasses: manyResourceStore(manyParentNames("fvRes", 21)),
+			},
+			Expected: []string{tooManyResources},
+		},
+		{
+			Name: "test_classes_over_cap_replaced_by_notice",
+			Input: setParentDnsInput{
+				Parents:      manyParentNames("fvCls", 21),
+				StoreClasses: map[string]Class{},
+			},
+			Expected: []string{note, tooManyClasses},
+		},
+		{
+			Name: "test_resources_over_cap_with_class_only_entries",
+			Input: setParentDnsInput{
+				Parents:      append(manyParentNames("fvRes", 21), "fvOrphan"),
+				StoreClasses: manyResourceStore(manyParentNames("fvRes", 21)),
+			},
+			Expected: []string{tooManyResources, note, link("fvOrphan")},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.(setParentDnsInput)
+			expected := testCase.Expected.([]string)
+
+			parents := make([]*ClassName, 0, len(input.Parents))
+			for _, name := range input.Parents {
+				parents = append(parents, testClassName(name))
+			}
+
+			class := Class{
+				Name:    testClassName("fvFoo"),
+				Parents: parents,
+			}
+			ds := &DataStore{Classes: input.StoreClasses}
+
+			class.Documentation.setClassName(&class)
+			class.Documentation.setParentDns(&class, ds)
+
+			assert.Equal(t, expected, class.Documentation.ParentDns, test.MessageEqual(expected, class.Documentation.ParentDns, testCase.Name))
 		})
 	}
 }
