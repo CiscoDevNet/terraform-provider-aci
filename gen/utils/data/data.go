@@ -179,7 +179,7 @@ func (ds *DataStore) loadClasses() error {
 	// Set documentation for classes after all class data is loaded.
 	// This ensures that all child class information from the DataStore is available.
 	for classNameStr, class := range ds.Classes {
-		err := class.setDocumentation()
+		err := class.setDocumentation(ds)
 		if err != nil {
 			return err
 		}
