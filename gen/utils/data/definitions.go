@@ -45,12 +45,30 @@ type ClassDocumentationDefinition struct {
 	// A list of child class names to force-include in the documentation children list.
 	IncludeChildren []string `yaml:"include_children"`
 	// Notes rendered with -> prefix in the documentation.
+	// These are shared and applied to both the resource and datasource documentation.
+	// Per-artifact entries in Resource.Notes / Datasource.Notes are appended after this shared list.
 	Notes []string `yaml:"notes"`
 	// Sub-category for Terraform Registry sidebar grouping.
 	SubCategory string `yaml:"sub_category"`
 	// GUI locations in APIC (e.g., "Tenants -> Networking -> VRFs").
 	UiLocations []string `yaml:"ui_locations"`
 	// Warnings rendered with !> prefix in the documentation.
+	// These are shared and applied to both the resource and datasource documentation.
+	// Per-artifact entries in Resource.Warnings / Datasource.Warnings are appended after this shared list.
+	Warnings []string `yaml:"warnings"`
+	// Resource-only notes/warnings appended to the shared lists for the resource documentation.
+	Resource ArtifactDocumentationDefinition `yaml:"resource"`
+	// Datasource-only notes/warnings appended to the shared lists for the datasource documentation.
+	Datasource ArtifactDocumentationDefinition `yaml:"datasource"`
+}
+
+// ArtifactDocumentationDefinition holds notes/warnings specific to a single
+// generated artifact (resource or datasource). Entries here are appended to
+// the shared ClassDocumentationDefinition.Notes / .Warnings lists.
+type ArtifactDocumentationDefinition struct {
+	// Notes rendered with -> prefix in the documentation, appended after the shared notes.
+	Notes []string `yaml:"notes"`
+	// Warnings rendered with !> prefix in the documentation, appended after the shared warnings.
 	Warnings []string `yaml:"warnings"`
 }
 
