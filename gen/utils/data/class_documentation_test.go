@@ -821,3 +821,112 @@ func TestSetDescription(t *testing.T) {
 		})
 	}
 }
+
+type setDnFormatsInput struct {
+	MetaFormats     []interface{}
+	OverrideFormats []string
+}
+
+func TestSetDnFormats(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	tooManyNotice := "Too many DN formats to display, see model documentation for all possible parents of [fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview)."
+
+	testCases := []test.TestCase{
+		{
+			Name:     "test_no_meta_no_override",
+			Input:    setDnFormatsInput{},
+			Expected: []string(nil),
+		},
+		{
+			Name: "test_meta_single",
+			Input: setDnFormatsInput{
+				MetaFormats: []interface{}{"uni/tn-{name}/ap-{name}/epg-{name}"},
+			},
+			Expected: []string{"uni/tn-{name}/ap-{name}/epg-{name}"},
+		},
+		{
+			Name: "test_meta_multiple_sorted",
+			Input: setDnFormatsInput{
+				MetaFormats: []interface{}{
+					"uni/tn-{name}/certstore/keyring-{name}",
+					"uni/userext/pkiext/keyring-{name}",
+				},
+			},
+			Expected: []string{
+				"uni/tn-{name}/certstore/keyring-{name}",
+				"uni/userext/pkiext/keyring-{name}",
+			},
+		},
+		{
+			Name: "test_meta_unsorted_input_is_sorted",
+			Input: setDnFormatsInput{
+				MetaFormats: []interface{}{"b/{name}", "a/{name}", "c/{name}"},
+			},
+			Expected: []string{"a/{name}", "b/{name}", "c/{name}"},
+		},
+		{
+			Name: "test_override_replaces_meta",
+			Input: setDnFormatsInput{
+				MetaFormats:     []interface{}{"meta/{name}"},
+				OverrideFormats: []string{"override/{name}"},
+			},
+			Expected: []string{"override/{name}"},
+		},
+		{
+			Name: "test_override_is_sorted",
+			Input: setDnFormatsInput{
+				OverrideFormats: []string{"z/{name}", "a/{name}"},
+			},
+			Expected: []string{"a/{name}", "z/{name}"},
+		},
+		{
+			Name: "test_at_cap_no_notice",
+			Input: setDnFormatsInput{
+				MetaFormats: []interface{}{"e/{name}", "d/{name}", "c/{name}", "b/{name}", "a/{name}"},
+			},
+			Expected: []string{"a/{name}", "b/{name}", "c/{name}", "d/{name}", "e/{name}"},
+		},
+		{
+			Name: "test_over_cap_prepends_notice_and_truncates",
+			Input: setDnFormatsInput{
+				MetaFormats: []interface{}{"f/{name}", "e/{name}", "d/{name}", "c/{name}", "b/{name}", "a/{name}"},
+			},
+			Expected: []string{
+				tooManyNotice,
+				"a/{name}", "b/{name}", "c/{name}", "d/{name}", "e/{name}",
+			},
+		},
+		{
+			Name: "test_meta_non_string_entries_skipped",
+			Input: setDnFormatsInput{
+				MetaFormats: []interface{}{"a/{name}", 42, "b/{name}"},
+			},
+			Expected: []string{"a/{name}", "b/{name}"},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.(setDnFormatsInput)
+			expected := testCase.Expected.([]string)
+
+			class := Class{
+				Name: testClassName("fvTenant"),
+				ClassDefinition: ClassDefinition{
+					Documentation: ClassDocumentationDefinition{DnFormats: input.OverrideFormats},
+				},
+			}
+			if input.MetaFormats != nil {
+				class.MetaFileContent = map[string]interface{}{"dnFormats": input.MetaFormats}
+			}
+
+			class.Documentation.setClassName(&class)
+			class.Documentation.setDnFormats(&class)
+
+			assert.Equal(t, expected, class.Documentation.DnFormats, test.MessageEqual(expected, class.Documentation.DnFormats, testCase.Name))
+		})
+	}
+}
