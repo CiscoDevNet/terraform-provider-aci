@@ -930,3 +930,38 @@ func TestSetDnFormats(t *testing.T) {
 		})
 	}
 }
+
+func TestSetMigrationWarning(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	migrationWarning := "This resource has been migrated to the terraform plugin protocol version 6, refer to the [migration guide](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/guides/migration) for more details and implications for already managed resources."
+
+	testCases := []test.TestCase{
+		{
+			Name:     "test_not_migration",
+			Input:    false,
+			Expected: "",
+		},
+		{
+			Name:     "test_migration",
+			Input:    true,
+			Expected: migrationWarning,
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+
+			class := Class{
+				Name:        testClassName("fvTenant"),
+				IsMigration: testCase.Input.(bool),
+			}
+			class.Documentation.setMigrationWarning(&class)
+
+			expected := testCase.Expected.(string)
+			assert.Equal(t, expected, class.Documentation.MigrationWarning, test.MessageEqual(expected, class.Documentation.MigrationWarning, testCase.Name))
+		})
+	}
+}
