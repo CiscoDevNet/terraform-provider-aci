@@ -25,4 +25,7 @@ const (
 	constRegistryResourceBaseUrl = "https://registry.terraform.io/providers/CiscoDevNet/" + constProviderName + "/latest/docs/resources"
 	// The path to the meta data files.
 	constMetaPath = "./gen/meta"
+	// The maximum number of DN formats rendered in the documentation. When the source
+	// list exceeds this, a notice line is prepended and only the first N entries are kept.
+	constMaxDnFormatsToDisplay = 5
 )
