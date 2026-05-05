@@ -51,6 +51,9 @@ type ClassDocumentationDefinition struct {
 	// Shared and applied to both the resource and datasource documentation.
 	// Per-artifact entries in Resource.Description / Datasource.Description are appended after this shared text.
 	Description string `yaml:"description"`
+	// Overrides the DN format strings sourced from the meta file. When set, these values are
+	// used verbatim. Sorting and the constMaxDnFormatsToDisplay cap still apply.
+	DnFormats []string `yaml:"dn_formats"`
 	// A list of child class names to exclude from the documentation children list.
 	ExcludeChildren []string `yaml:"exclude_children"`
 	// A list of child class names to force-include in the documentation children list.
