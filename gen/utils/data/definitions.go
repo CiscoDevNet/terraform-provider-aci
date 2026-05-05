@@ -20,6 +20,10 @@ type GlobalMetaDefinition struct {
 	// A map containing class names as keys and their corresponding resource names as values.
 	// This is used to search for the resource name of a class when it is not defined in meta directory.
 	NoMetaFile map[string]string `yaml:"no_meta_file"`
+	// A map of word substitutions applied when humanizing a snake_case resource name into a documentation label.
+	// e.g., "Bgp" → "BGP", "External Network Instance Profile" → "External EPG".
+	// Multi-word keys are matched as substrings; single-word keys are only replaced on whole-word matches.
+	DocumentationLabelOverrides map[string]string `yaml:"documentation_label_overrides"`
 }
 
 func loadGlobalMetaDefinition() GlobalMetaDefinition {
@@ -38,7 +42,14 @@ func loadGlobalMetaDefinition() GlobalMetaDefinition {
 }
 
 type ClassDocumentationDefinition struct {
-	// Overrides the description from meta file comment[] array.
+	// Overrides the humanized documentation label for this class (e.g., "Application EPG").
+	// Used to build "Manages ACI <Label>" / "Data source for ACI <Label>" and any other
+	// documentation text that references the class by its label.
+	// When empty, the label is derived from class.ResourceName via humanization + DocumentationLabelOverrides.
+	Label string `yaml:"label"`
+	// Additional sentence(s) appended after the standard description prefix.
+	// Shared and applied to both the resource and datasource documentation.
+	// Per-artifact entries in Resource.Description / Datasource.Description are appended after this shared text.
 	Description string `yaml:"description"`
 	// A list of child class names to exclude from the documentation children list.
 	ExcludeChildren []string `yaml:"exclude_children"`
@@ -62,10 +73,12 @@ type ClassDocumentationDefinition struct {
 	Datasource ArtifactDocumentationDefinition `yaml:"datasource"`
 }
 
-// ArtifactDocumentationDefinition holds notes/warnings specific to a single
-// generated artifact (resource or datasource). Entries here are appended to
-// the shared ClassDocumentationDefinition.Notes / .Warnings lists.
+// ArtifactDocumentationDefinition holds documentation overrides specific to a single
+// generated artifact (resource or datasource). Description/notes/warnings entries here
+// are appended to the shared ClassDocumentationDefinition lists.
 type ArtifactDocumentationDefinition struct {
+	// Additional sentence(s) appended after the shared description text for this artifact.
+	Description string `yaml:"description"`
 	// Notes rendered with -> prefix in the documentation, appended after the shared notes.
 	Notes []string `yaml:"notes"`
 	// Warnings rendered with !> prefix in the documentation, appended after the shared warnings.
