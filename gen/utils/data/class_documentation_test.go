@@ -617,3 +617,207 @@ func TestSetDeprecationWarning(t *testing.T) {
 		})
 	}
 }
+
+type setLabelInput struct {
+	ResourceName string
+	Label        string
+	Overrides    map[string]string
+}
+
+func TestSetLabel(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	testCases := []test.TestCase{
+		{
+			Name: "test_label_override_used",
+			Input: setLabelInput{
+				ResourceName: "application_epg",
+				Label:        "Custom Label",
+				Overrides:    map[string]string{"Application": "App"},
+			},
+			Expected: "Custom Label",
+		},
+		{
+			Name: "test_humanize_no_overrides",
+			Input: setLabelInput{
+				ResourceName: "application_epg",
+			},
+			Expected: "Application Epg",
+		},
+		{
+			Name: "test_humanize_single_word_override",
+			Input: setLabelInput{
+				ResourceName: "bgp_timers",
+				Overrides:    map[string]string{"Bgp": "BGP"},
+			},
+			Expected: "BGP Timers",
+		},
+		{
+			Name: "test_humanize_multi_word_override",
+			Input: setLabelInput{
+				ResourceName: "external_network_instance_profile",
+				Overrides:    map[string]string{"External Network Instance Profile": "External EPG"},
+			},
+			Expected: "External EPG",
+		},
+		{
+			Name: "test_single_word_override_no_partial_match",
+			Input: setLabelInput{
+				ResourceName: "applications_epg",
+				Overrides:    map[string]string{"Application": "App"},
+			},
+			Expected: "Applications Epg",
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.(setLabelInput)
+			expected := testCase.Expected.(string)
+
+			class := Class{
+				Name:         testClassName("fvFoo"),
+				ResourceName: input.ResourceName,
+				ClassDefinition: ClassDefinition{
+					Documentation: ClassDocumentationDefinition{Label: input.Label},
+				},
+			}
+			ds := &DataStore{
+				GlobalMetaDefinition: GlobalMetaDefinition{
+					DocumentationLabelOverrides: input.Overrides,
+				},
+			}
+
+			class.Documentation.setLabel(&class, ds)
+
+			assert.Equal(t, expected, class.Documentation.Label, test.MessageEqual(expected, class.Documentation.Label, testCase.Name))
+		})
+	}
+}
+
+type setDescriptionInput struct {
+	Label               string
+	SharedDescription   string
+	ResourceDescription string
+	DataDescription     string
+}
+
+type setDescriptionExpected struct {
+	ResourceDescription   string
+	DatasourceDescription string
+}
+
+func TestSetDescription(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	testCases := []test.TestCase{
+		{
+			Name: "test_no_appendix",
+			Input: setDescriptionInput{
+				Label: "Application EPG",
+			},
+			Expected: setDescriptionExpected{
+				ResourceDescription:   "Manages ACI Application EPG.",
+				DatasourceDescription: "Data source for ACI Application EPG.",
+			},
+		},
+		{
+			Name: "test_shared_only",
+			Input: setDescriptionInput{
+				Label:             "Application EPG",
+				SharedDescription: "Provides custom routing.",
+			},
+			Expected: setDescriptionExpected{
+				ResourceDescription:   "Manages ACI Application EPG. Provides custom routing.",
+				DatasourceDescription: "Data source for ACI Application EPG. Provides custom routing.",
+			},
+		},
+		{
+			Name: "test_resource_only",
+			Input: setDescriptionInput{
+				Label:               "Application EPG",
+				ResourceDescription: "Use with caution.",
+			},
+			Expected: setDescriptionExpected{
+				ResourceDescription:   "Manages ACI Application EPG. Use with caution.",
+				DatasourceDescription: "Data source for ACI Application EPG.",
+			},
+		},
+		{
+			Name: "test_datasource_only",
+			Input: setDescriptionInput{
+				Label:           "Application EPG",
+				DataDescription: "Returns matching objects.",
+			},
+			Expected: setDescriptionExpected{
+				ResourceDescription:   "Manages ACI Application EPG.",
+				DatasourceDescription: "Data source for ACI Application EPG. Returns matching objects.",
+			},
+		},
+		{
+			Name: "test_shared_plus_resource",
+			Input: setDescriptionInput{
+				Label:               "Application EPG",
+				SharedDescription:   "Provides custom routing.",
+				ResourceDescription: "Use with caution.",
+			},
+			Expected: setDescriptionExpected{
+				ResourceDescription:   "Manages ACI Application EPG. Provides custom routing. Use with caution.",
+				DatasourceDescription: "Data source for ACI Application EPG. Provides custom routing.",
+			},
+		},
+		{
+			Name: "test_shared_plus_datasource",
+			Input: setDescriptionInput{
+				Label:             "Application EPG",
+				SharedDescription: "Provides custom routing.",
+				DataDescription:   "Returns matching objects.",
+			},
+			Expected: setDescriptionExpected{
+				ResourceDescription:   "Manages ACI Application EPG. Provides custom routing.",
+				DatasourceDescription: "Data source for ACI Application EPG. Provides custom routing. Returns matching objects.",
+			},
+		},
+		{
+			Name: "test_all_three",
+			Input: setDescriptionInput{
+				Label:               "Application EPG",
+				SharedDescription:   "Provides custom routing.",
+				ResourceDescription: "Use with caution.",
+				DataDescription:     "Returns matching objects.",
+			},
+			Expected: setDescriptionExpected{
+				ResourceDescription:   "Manages ACI Application EPG. Provides custom routing. Use with caution.",
+				DatasourceDescription: "Data source for ACI Application EPG. Provides custom routing. Returns matching objects.",
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.(setDescriptionInput)
+			expected := testCase.Expected.(setDescriptionExpected)
+
+			class := Class{
+				Name: testClassName("fvFoo"),
+				ClassDefinition: ClassDefinition{
+					Documentation: ClassDocumentationDefinition{
+						Description: input.SharedDescription,
+						Resource:    ArtifactDocumentationDefinition{Description: input.ResourceDescription},
+						Datasource:  ArtifactDocumentationDefinition{Description: input.DataDescription},
+					},
+				},
+			}
+			class.Documentation.Label = input.Label
+
+			class.Documentation.setDescription(&class)
+
+			assert.Equal(t, expected.ResourceDescription, class.Documentation.ResourceDescription, test.MessageEqual(expected.ResourceDescription, class.Documentation.ResourceDescription, testCase.Name+"/resource"))
+			assert.Equal(t, expected.DatasourceDescription, class.Documentation.DatasourceDescription, test.MessageEqual(expected.DatasourceDescription, class.Documentation.DatasourceDescription, testCase.Name+"/datasource"))
+		})
+	}
+}
