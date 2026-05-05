@@ -463,3 +463,123 @@ func TestSetWarnings(t *testing.T) {
 		})
 	}
 }
+
+type setDocumentationChildrenInput struct {
+	RnMap                      map[string]interface{}
+	ChildrenIncludedInResource []string
+	StoreClasses               map[string]Class
+}
+
+type setDocumentationChildrenExpected struct {
+	Children []string
+}
+
+func TestSetDocumentationChildren(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	testCases := []test.TestCase{
+		{
+			Name:     "test_no_rnmap",
+			Input:    setDocumentationChildrenInput{},
+			Expected: setDocumentationChildrenExpected{Children: nil},
+		},
+		{
+			Name: "test_child_included_in_resource_excluded",
+			Input: setDocumentationChildrenInput{
+				RnMap: map[string]interface{}{
+					"rstoEpg": "fv:RsToEpg",
+				},
+				ChildrenIncludedInResource: []string{"fvRsToEpg"},
+				StoreClasses: map[string]Class{
+					"fvRsToEpg": {ResourceName: "relation_to_epg"},
+				},
+			},
+			Expected: setDocumentationChildrenExpected{Children: []string{}},
+		},
+		{
+			Name: "test_unknown_child_excluded",
+			Input: setDocumentationChildrenInput{
+				RnMap: map[string]interface{}{
+					"unknown-{name}": "foo:Bar",
+				},
+				StoreClasses: map[string]Class{},
+			},
+			Expected: setDocumentationChildrenExpected{Children: []string{}},
+		},
+		{
+			Name: "test_child_without_resource_name_excluded",
+			Input: setDocumentationChildrenInput{
+				RnMap: map[string]interface{}{
+					"noresource-{name}": "foo:NoResource",
+				},
+				StoreClasses: map[string]Class{
+					"fooNoResource": {ResourceName: ""},
+				},
+			},
+			Expected: setDocumentationChildrenExpected{Children: []string{}},
+		},
+		{
+			Name: "test_two_valid_children_sorted",
+			Input: setDocumentationChildrenInput{
+				RnMap: map[string]interface{}{
+					"zeta-{name}":  "fv:Zeta",
+					"alpha-{name}": "fv:Alpha",
+				},
+				StoreClasses: map[string]Class{
+					"fvZeta":  {ResourceName: "zeta"},
+					"fvAlpha": {ResourceName: "alpha"},
+				},
+			},
+			Expected: setDocumentationChildrenExpected{Children: []string{
+				"[aci_alpha](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/alpha)",
+				"[aci_zeta](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/zeta)",
+			}},
+		},
+		{
+			Name: "test_mixed_included_in_resource_and_valid",
+			Input: setDocumentationChildrenInput{
+				RnMap: map[string]interface{}{
+					"included-{name}": "fv:Included",
+					"valid-{name}":    "fv:Valid",
+					"missing-{name}":  "fv:Missing",
+				},
+				ChildrenIncludedInResource: []string{"fvIncluded"},
+				StoreClasses: map[string]Class{
+					"fvIncluded": {ResourceName: "included"},
+					"fvValid":    {ResourceName: "valid"},
+				},
+			},
+			Expected: setDocumentationChildrenExpected{Children: []string{
+				"[aci_valid](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/valid)",
+			}},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.(setDocumentationChildrenInput)
+			expected := testCase.Expected.(setDocumentationChildrenExpected)
+
+			childrenIncludedInResource := make([]*ClassName, 0, len(input.ChildrenIncludedInResource))
+			for _, name := range input.ChildrenIncludedInResource {
+				childrenIncludedInResource = append(childrenIncludedInResource, testClassName(name))
+			}
+
+			class := Class{
+				Name:     testClassName("fvTenant"),
+				Children: childrenIncludedInResource,
+			}
+			if input.RnMap != nil {
+				class.MetaFileContent = map[string]interface{}{"rnMap": input.RnMap}
+			}
+
+			ds := &DataStore{Classes: input.StoreClasses}
+
+			class.Documentation.setChildren(&class, ds)
+
+			assert.Equal(t, expected.Children, class.Documentation.Children, test.MessageEqual(expected.Children, class.Documentation.Children, testCase.Name))
+		})
+	}
+}
