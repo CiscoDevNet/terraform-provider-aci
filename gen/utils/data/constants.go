@@ -19,6 +19,10 @@ const (
 	constEnvMetaClasses   = "GEN_ACI_TF_META_CLASSES"
 	constPubhubDevnetHost = "pubhub.devnetcloud.com/media/model-doc-latest/docs"
 	constMetaFileUrl      = "https://%s/doc/jsonmeta/%s/%s.json"
+	// The Terraform provider name used in documentation links and resource name prefixes (e.g., "aci_tenant").
+	constProviderName = "aci"
+	// The base URL for the Terraform Registry resource documentation pages for this provider.
+	constRegistryResourceBaseUrl = "https://registry.terraform.io/providers/CiscoDevNet/" + constProviderName + "/latest/docs/resources"
 	// The path to the meta data files.
 	constMetaPath = "./gen/meta"
 )
