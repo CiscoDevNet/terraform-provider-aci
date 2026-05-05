@@ -1114,3 +1114,37 @@ func TestSetParentDns(t *testing.T) {
 		})
 	}
 }
+
+func TestSetClassDocumentationSupportedVersions(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	testCases := []test.TestCase{
+		{Name: "test_nil_versions", Input: "", Expected: ""},
+		{Name: "test_single_version", Input: "1.0(1e)", Expected: "1.0(1e)"},
+		{Name: "test_bounded_range", Input: "4.2(7f)-4.2(7w)", Expected: "4.2(7f) to 4.2(7w)"},
+		{Name: "test_unbounded_max", Input: "5.2(1g)-", Expected: "5.2(1g) and later"},
+		{Name: "test_unbounded_min", Input: "-4.2(7w)", Expected: "up to 4.2(7w)"},
+		{Name: "test_multiple_ranges_sorted", Input: "5.2(1g)-,3.2(10e)-3.2(10g)", Expected: "3.2(10e) to 3.2(10g), 5.2(1g) and later"},
+		{Name: "test_mixed_single_and_range", Input: "1.0(1e),4.2(7f)-", Expected: "1.0(1e), 4.2(7f) and later"},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			raw := testCase.Input.(string)
+			expected := testCase.Expected.(string)
+
+			class := Class{Name: testClassName("fvFoo")}
+			if raw != "" {
+				versions, err := NewVersions(raw)
+				assert.NoError(t, err)
+				class.SupportedVersions = versions
+			}
+
+			class.Documentation.setSupportedVersions(&class)
+
+			assert.Equal(t, expected, class.Documentation.SupportedVersions, test.MessageEqual(expected, class.Documentation.SupportedVersions, testCase.Name))
+		})
+	}
+}

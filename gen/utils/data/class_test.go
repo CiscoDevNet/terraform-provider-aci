@@ -1129,7 +1129,7 @@ type setClassSupportedVersionsExpected struct {
 	ErrorMsg string
 }
 
-func TestSetSupportedVersions(t *testing.T) {
+func TestSetClassSupportedVersions(t *testing.T) {
 	t.Parallel()
 	test.InitializeTest(t)
 

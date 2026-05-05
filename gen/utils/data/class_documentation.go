@@ -323,7 +323,12 @@ func (d *ClassDocumentation) setParentDns(class *Class, ds *DataStore) {
 
 func (d *ClassDocumentation) setSupportedVersions(class *Class) {
 	genLogger.Debug(fmt.Sprintf("Setting Documentation SupportedVersions for class '%s'.", class.Name.full))
-	genLogger.Debug(fmt.Sprintf("Successfully set Documentation SupportedVersions for class '%s'.", class.Name.full))
+
+	if class.SupportedVersions != nil {
+		d.SupportedVersions = class.SupportedVersions.String()
+	}
+
+	genLogger.Debug(fmt.Sprintf("Successfully set Documentation SupportedVersions for class '%s'. SupportedVersions: %s", class.Name.full, d.SupportedVersions))
 }
 
 func (d *ClassDocumentation) setNotes(class *Class) {
