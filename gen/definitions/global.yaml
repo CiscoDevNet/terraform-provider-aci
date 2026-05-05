@@ -1,30 +1,3 @@
-no_meta_file:
-  bgpCtxAfPol: bgp_address_family_context
-  bgpCtxPol: bgp_timers
-  dhcpRelayP: dhcp_relay_policy
-  extdevSDWanVpnEntry: wan_vpn
-  fabricNode: fabric_node
-  fabricPathEp: fabric_path_endpoint
-  fvABDPol: bridge_domain
-  fvEPg: epg
-  fvEpRetPol: endpoint_retention_policy
-  fvIPSLAMonitoringPol: ip_sla_monitoring_policy
-  infraAccBaseGrp: infra_access_base_group
-  infraDomP: infra_domain_policy
-  l3extAConsLbl: l3out_consumer_label
-  l3extInstP: external_network_instance_profile
-  l3extOut: l3_outside
-  l3extRouteTagPol: route_tag_policy
-  monEPGPol: monitoring_policy
-  netflowAExporterPol: netflow_exporter_policy
-  ospfCtxPol: ospf_timers
-  vzBrCP: contract
-  vzCPIf: imported_contract
-  vzFilter: filter
-  infraADomP: abstract_domain
-  infraAccBndlSubgrp: aci_leaf_access_bundle_policy_sub_group
-  infraSpAccGrp: spine_port_policy_group
-
 always_include_as_child:
   - tagAnnotation
   - tagTag
@@ -52,5 +25,82 @@ attribute_name_overrides:
     seg: segment
     tDn: target_dn
 
+documentation_label_overrides:
+  Ad: AD
+  Bd: BD
+  Bgp: BGP
+  Cdp: CDP
+  Copp: CoPP
+  Dhcp: DHCP
+  Dns: DNS
+  Dot1x: 802.1x
+  Dscp To: DSCP to
+  Dwdm: DWDM
+  Eigrp: EIGRP
+  Epg: EPG
+  Epgs: EPGs
+  Esg: ESG
+  Evpn: EVPN
+  External Network Instance Profile: External EPG
+  Fex: FEX
+  From Attachable Access Entity Profile To Domains: To Domains
+  Http Service: HTTP Service
+  Http Ssl Configuration: HTTPS Service
+  Igmp: IGMP
+  Ip: IP
+  L3out: L3Out
+  Lacp: LACP
+  Lacp Enhanced Lag Policy: LACP Enhanced Lag Policy
+  Lldp: LLDP
+  Mac: MAC
+  Mcp: MCP
+  Mld: MLD
+  Mtu: MTU
+  Nd: Neighbor Discovery (ND)
+  Netflow: NetFlow
+  No Drop Dscp: No-Drop-DSCP
+  Ospf: OSPF
+  Pc Vpc Override Policy: PC VPC Override Policy
+  Pim: PIM
+  Poe: PoE
+  Policys: Policies
+  Qos: QoS
+  Shellinabox Service: SSH access via WEB
+  Sid: SR-MPLS Segment ID
+  Sla: SLA
+  Ssh Service: SSH Service
+  Synce: SyncE
+  Tp: Certificate Authority
+  Useg: uSeg
+  Vm: VM
+  Vmm: VMM
+
 exclude_properties:
   - userdom
+
+no_meta_file:
+  bgpCtxAfPol: bgp_address_family_context
+  bgpCtxPol: bgp_timers
+  dhcpRelayP: dhcp_relay_policy
+  extdevSDWanVpnEntry: wan_vpn
+  fabricNode: fabric_node
+  fabricPathEp: fabric_path_endpoint
+  fvABDPol: bridge_domain
+  fvEPg: epg
+  fvEpRetPol: endpoint_retention_policy
+  fvIPSLAMonitoringPol: ip_sla_monitoring_policy
+  infraADomP: abstract_domain
+  infraAccBaseGrp: infra_access_base_group
+  infraAccBndlSubgrp: aci_leaf_access_bundle_policy_sub_group
+  infraDomP: infra_domain_policy
+  infraSpAccGrp: spine_port_policy_group
+  l3extAConsLbl: l3out_consumer_label
+  l3extInstP: external_network_instance_profile
+  l3extOut: l3_outside
+  l3extRouteTagPol: route_tag_policy
+  monEPGPol: monitoring_policy
+  netflowAExporterPol: netflow_exporter_policy
+  ospfCtxPol: ospf_timers
+  vzBrCP: contract
+  vzCPIf: imported_contract
+  vzFilter: filter

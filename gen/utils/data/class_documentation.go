@@ -3,6 +3,10 @@ package data
 import (
 	"fmt"
 	"slices"
+	"strings"
+
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 // validSubCategories contains the allowed sub-category values for Terraform Registry sidebar grouping.
@@ -54,9 +58,14 @@ type ClassDocumentation struct {
 	Children []string
 	// A deprecation warning message for the documentation when the class is deprecated.
 	DeprecationWarning string
-	// The description of the class, used at the top of the documentation.
-	// From meta comment[] or definition override.
-	Description string
+	// The human-readable documentation label derived from class.ResourceName, with
+	// DocumentationLabelOverrides applied (e.g., "Application EPG", "BGP Timers").
+	// Resolved as ClassDocumentationDefinition.Label when set, otherwise humanized from class.ResourceName.
+	Label string
+	// The description line for the resource documentation (e.g., "Manages ACI Application EPG").
+	ResourceDescription string
+	// The description line for the datasource documentation (e.g., "Data source for ACI Application EPG").
+	DatasourceDescription string
 	// The description used when this class appears as a nested child in a parent resource.
 	DescriptionWhenDefinedAsChild string
 	// DN format strings from meta file (e.g., "uni/tn-{name}").
@@ -91,6 +100,8 @@ func (c *Class) setDocumentation(ds *DataStore) error {
 	c.Documentation.setChildren(c, ds)
 
 	c.Documentation.setDeprecationWarning(c)
+
+	c.Documentation.setLabel(c, ds)
 
 	c.Documentation.setDescription(c)
 
@@ -177,9 +188,53 @@ func (d *ClassDocumentation) setDeprecationWarning(class *Class) {
 	genLogger.Debug(fmt.Sprintf("Successfully set Documentation DeprecationWarning for class '%s'. DeprecationWarning: %s", class.Name.full, d.DeprecationWarning))
 }
 
+func (d *ClassDocumentation) setLabel(class *Class, ds *DataStore) {
+	genLogger.Debug(fmt.Sprintf("Setting Documentation Label for class '%s'.", class.Name.full))
+
+	if class.ClassDefinition.Documentation.Label != "" {
+		d.Label = class.ClassDefinition.Documentation.Label
+	} else {
+		d.Label = cases.Title(language.English).String(strings.ReplaceAll(class.ResourceName, "_", " "))
+		// Apply word substitutions: multi-word keys are matched as substrings;
+		// single-word keys are only replaced on whole-word matches to avoid partial-word collisions.
+		for key, replacement := range ds.GlobalMetaDefinition.DocumentationLabelOverrides {
+			if strings.Contains(key, " ") {
+				d.Label = strings.ReplaceAll(d.Label, key, replacement)
+			} else if slices.Contains(strings.Split(d.Label, " "), key) {
+				d.Label = strings.ReplaceAll(d.Label, key, replacement)
+			}
+		}
+	}
+
+	genLogger.Debug(fmt.Sprintf("Successfully set Documentation Label for class '%s'. Label: %s", class.Name.full, d.Label))
+}
+
 func (d *ClassDocumentation) setDescription(class *Class) {
 	genLogger.Debug(fmt.Sprintf("Setting Documentation Description for class '%s'.", class.Name.full))
-	genLogger.Debug(fmt.Sprintf("Successfully set Documentation Description for class '%s'.", class.Name.full))
+
+	docDef := class.ClassDefinition.Documentation
+
+	// Build the resource and datasource description lines. The standard prefix sentence is always
+	// applied; shared and artifact-specific text is appended afterwards, separated by a single space.
+	resourceParts := []string{fmt.Sprintf("Manages ACI %s.", d.Label)}
+	if docDef.Description != "" {
+		resourceParts = append(resourceParts, docDef.Description)
+	}
+	if docDef.Resource.Description != "" {
+		resourceParts = append(resourceParts, docDef.Resource.Description)
+	}
+	d.ResourceDescription = strings.Join(resourceParts, " ")
+
+	datasourceParts := []string{fmt.Sprintf("Data source for ACI %s.", d.Label)}
+	if docDef.Description != "" {
+		datasourceParts = append(datasourceParts, docDef.Description)
+	}
+	if docDef.Datasource.Description != "" {
+		datasourceParts = append(datasourceParts, docDef.Datasource.Description)
+	}
+	d.DatasourceDescription = strings.Join(datasourceParts, " ")
+
+	genLogger.Debug(fmt.Sprintf("Successfully set Documentation Description for class '%s'. ResourceDescription: %s, DatasourceDescription: %s", class.Name.full, d.ResourceDescription, d.DatasourceDescription))
 }
 
 func (d *ClassDocumentation) setDescriptionWhenDefinedAsChild(class *Class) {
