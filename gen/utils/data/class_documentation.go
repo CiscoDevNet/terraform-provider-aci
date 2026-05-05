@@ -244,7 +244,28 @@ func (d *ClassDocumentation) setDescriptionWhenDefinedAsChild(class *Class) {
 
 func (d *ClassDocumentation) setDnFormats(class *Class) {
 	genLogger.Debug(fmt.Sprintf("Setting Documentation DnFormats for class '%s'.", class.Name.full))
-	genLogger.Debug(fmt.Sprintf("Successfully set Documentation DnFormats for class '%s'.", class.Name.full))
+
+	if override := class.ClassDefinition.Documentation.DnFormats; len(override) > 0 {
+		d.DnFormats = override
+	} else if rawFormats, ok := class.MetaFileContent["dnFormats"].([]interface{}); ok {
+		for _, raw := range rawFormats {
+			if s, ok := raw.(string); ok {
+				d.DnFormats = append(d.DnFormats, s)
+			}
+		}
+	} else {
+		genLogger.Debug(fmt.Sprintf("No dnFormats available for class '%s'.", class.Name.full))
+	}
+
+	// Sort to guarantee stable, deterministic output across regenerations.
+	slices.Sort(d.DnFormats)
+
+	if len(d.DnFormats) > constMaxDnFormatsToDisplay {
+		notice := fmt.Sprintf("Too many DN formats to display, see model documentation for all possible parents of %s.", d.ClassName)
+		d.DnFormats = append([]string{notice}, d.DnFormats[:constMaxDnFormatsToDisplay]...)
+	}
+
+	genLogger.Debug(fmt.Sprintf("Successfully set Documentation DnFormats for class '%s'. DnFormats: %v", class.Name.full, d.DnFormats))
 }
 
 func (d *ClassDocumentation) setMigrationWarning(class *Class) {
