@@ -70,6 +70,12 @@ type ClassDocumentation struct {
 	DescriptionWhenDefinedAsChild string
 	// DN format strings from meta file (e.g., "uni/tn-{name}").
 	DnFormats []string
+	// Parent DN references rendered in the documentation. Built from class.Parents.
+	// Resources (parent classes that have a Terraform resource) are listed first in
+	// alphabetical order, followed by parent classes without a resource under an
+	// explanatory note. Each section is independently capped by constMaxParentDnsToDisplay;
+	// a notice line replaces that section's list when exceeded.
+	ParentDns []string
 	// A migration warning message for the documentation when the class has been migrated from a previous provider version.
 	MigrationWarning string
 	// The supported APIC versions string for display in documentation.
@@ -108,6 +114,8 @@ func (c *Class) setDocumentation(ds *DataStore) error {
 	c.Documentation.setDescriptionWhenDefinedAsChild(c)
 
 	c.Documentation.setDnFormats(c)
+
+	c.Documentation.setParentDns(c, ds)
 
 	c.Documentation.setMigrationWarning(c)
 
@@ -276,6 +284,41 @@ func (d *ClassDocumentation) setMigrationWarning(class *Class) {
 	}
 
 	genLogger.Debug(fmt.Sprintf("Successfully set Documentation MigrationWarning for class '%s'. MigrationWarning: %s", class.Name.full, d.MigrationWarning))
+}
+
+func (d *ClassDocumentation) setParentDns(class *Class, ds *DataStore) {
+	genLogger.Debug(fmt.Sprintf("Setting Documentation ParentDns for class '%s'.", class.Name.full))
+
+	var resourceEntries, classOnlyEntries []string
+	for _, parent := range class.Parents {
+		parentLink := fmt.Sprintf("[%s](https://%s/app/index.html#/objects/%s/overview)", parent.full, constPubhubDevnetHost, parent.full)
+		parentClass, knownInStore := ds.Classes[parent.full]
+		if knownInStore && parentClass.ResourceName != "" {
+			resourceEntries = append(resourceEntries, fmt.Sprintf("[%s_%s](%s/%s) (%s)", constProviderName, parentClass.ResourceName, constRegistryResourceBaseUrl, parentClass.ResourceName, parentLink))
+		} else {
+			classOnlyEntries = append(classOnlyEntries, parentLink)
+		}
+	}
+
+	// class.Parents is already sorted by sortAndConvertToClassNames, so the partitioned
+	// slices preserve that order; no extra sort needed.
+
+	if len(resourceEntries) > constMaxParentDnsToDisplay {
+		d.ParentDns = []string{fmt.Sprintf("Too many parent DNs to display, see model documentation for all possible parents of %s.", d.ClassName)}
+	} else {
+		d.ParentDns = resourceEntries
+	}
+
+	if len(classOnlyEntries) > 0 {
+		d.ParentDns = append(d.ParentDns, "The distinguished name (DN) of classes below can be used but currently there is no available resource for it:")
+		if len(classOnlyEntries) > constMaxParentDnsToDisplay {
+			d.ParentDns = append(d.ParentDns, fmt.Sprintf("Too many classes to display, see model documentation for all possible classes of %s.", d.ClassName))
+		} else {
+			d.ParentDns = append(d.ParentDns, classOnlyEntries...)
+		}
+	}
+
+	genLogger.Debug(fmt.Sprintf("Successfully set Documentation ParentDns for class '%s'. ParentDns: %v", class.Name.full, d.ParentDns))
 }
 
 func (d *ClassDocumentation) setSupportedVersions(class *Class) {
