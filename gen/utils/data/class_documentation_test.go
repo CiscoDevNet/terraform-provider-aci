@@ -583,3 +583,37 @@ func TestSetDocumentationChildren(t *testing.T) {
 		})
 	}
 }
+
+func TestSetDeprecationWarning(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	testCases := []test.TestCase{
+		{
+			Name:     "test_not_deprecated",
+			Input:    false,
+			Expected: "",
+		},
+		{
+			Name:     "test_deprecated",
+			Input:    true,
+			Expected: "The [fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview) class is deprecated and will be removed in a future release.",
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+
+			class := Class{
+				Name:       testClassName("fvTenant"),
+				Deprecated: testCase.Input.(bool),
+			}
+			class.Documentation.setClassName(&class)
+			class.Documentation.setDeprecationWarning(&class)
+
+			expected := testCase.Expected.(string)
+			assert.Equal(t, expected, class.Documentation.DeprecationWarning, test.MessageEqual(expected, class.Documentation.DeprecationWarning, testCase.Name))
+		})
+	}
+}
