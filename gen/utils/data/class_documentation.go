@@ -270,7 +270,12 @@ func (d *ClassDocumentation) setDnFormats(class *Class) {
 
 func (d *ClassDocumentation) setMigrationWarning(class *Class) {
 	genLogger.Debug(fmt.Sprintf("Setting Documentation MigrationWarning for class '%s'.", class.Name.full))
-	genLogger.Debug(fmt.Sprintf("Successfully set Documentation MigrationWarning for class '%s'.", class.Name.full))
+
+	if class.IsMigration {
+		d.MigrationWarning = "This resource has been migrated to the terraform plugin protocol version 6, refer to the [migration guide](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/guides/migration) for more details and implications for already managed resources."
+	}
+
+	genLogger.Debug(fmt.Sprintf("Successfully set Documentation MigrationWarning for class '%s'. MigrationWarning: %s", class.Name.full, d.MigrationWarning))
 }
 
 func (d *ClassDocumentation) setSupportedVersions(class *Class) {
