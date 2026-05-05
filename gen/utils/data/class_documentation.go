@@ -83,12 +83,12 @@ type ClassDocumentation struct {
 	UiLocations []string
 }
 
-func (c *Class) setDocumentation() error {
+func (c *Class) setDocumentation(ds *DataStore) error {
 	genLogger.Debug(fmt.Sprintf("Setting Documentation for class '%s'.", c.Name))
 
 	c.Documentation.setClassName(c)
 
-	c.Documentation.setChildren(c)
+	c.Documentation.setChildren(c, ds)
 
 	c.Documentation.setDeprecationWarning(c)
 
@@ -128,9 +128,43 @@ func (d *ClassDocumentation) setClassName(class *Class) {
 	genLogger.Debug(fmt.Sprintf("Successfully set Documentation ClassName for class '%s'. ClassName: %s", class.Name.full, d.ClassName))
 }
 
-func (d *ClassDocumentation) setChildren(class *Class) {
+func (d *ClassDocumentation) setChildren(class *Class, ds *DataStore) {
 	genLogger.Debug(fmt.Sprintf("Setting Documentation Children for class '%s'.", class.Name.full))
-	genLogger.Debug(fmt.Sprintf("Successfully set Documentation Children for class '%s'.", class.Name.full))
+
+	rnMap, ok := class.MetaFileContent["rnMap"].(map[string]interface{})
+	if !ok {
+		genLogger.Debug(fmt.Sprintf("No rnMap available for class '%s'; skipping documentation children.", class.Name.full))
+		return
+	}
+
+	// Build a set of children already embedded as nested attributes in this resource
+	// so they can be excluded from the documentation children list.
+	childrenIncludedInResource := make(map[string]struct{}, len(class.Children))
+	for _, child := range class.Children {
+		childrenIncludedInResource[child.full] = struct{}{}
+	}
+
+	links := make([]string, 0)
+	for _, classNameInterface := range rnMap {
+		childName, err := sanitizeClassName(classNameInterface.(string))
+		if err != nil {
+			genLogger.Warn(fmt.Sprintf("Skipping invalid child class name in rnMap for class '%s': %s", class.Name.full, err))
+			continue
+		}
+		if _, isIncluded := childrenIncludedInResource[childName]; isIncluded {
+			continue
+		}
+		childClass, ok := ds.Classes[childName]
+		if !ok || childClass.ResourceName == "" {
+			continue
+		}
+		links = append(links, fmt.Sprintf("[%s_%s](%s/%s)", constProviderName, childClass.ResourceName, constRegistryResourceBaseUrl, childClass.ResourceName))
+	}
+
+	slices.Sort(links)
+	d.Children = slices.Compact(links)
+
+	genLogger.Debug(fmt.Sprintf("Successfully set Documentation Children for class '%s'. Children: %v", class.Name.full, d.Children))
 }
 
 func (d *ClassDocumentation) setDeprecationWarning(class *Class) {
