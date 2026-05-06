@@ -16,12 +16,20 @@ type Property struct {
 	CustomType bool
 	// Indicates if the property is deprecated in the resource and datasource schemas.
 	// Deprecated properties include a warning the resource and datasource schemas.
+	// Driven by the meta `isDeprecated` flag with an optional definition override (logical OR).
 	Deprecated bool
 	// The deprecated APIC versions for the property.
 	// Used to indicate versions where the property is deprecated but still functional.
+	// Driven by the meta `deprecatedSince` value with an optional definition override.
 	DeprecatedVersions *Versions
 	// Documentation specific information for the property.
 	Documentation PropertyDocumentation
+	// Hidden indicates that the property is no longer accepted by the APIC API.
+	// Driven by the meta `isHidden` flag with an optional definition override (logical OR).
+	Hidden bool
+	// The hidden APIC versions for the property.
+	// Driven by the meta `hiddenSince` value with an optional definition override.
+	HiddenVersions *Versions
 	// Migration specific information for the property.
 	// This is a map that contains the migration value details of the attribute for a specific schema version.
 	MigrationValues map[int]MigrationValue
@@ -174,6 +182,13 @@ func (p *Property) setPropertyData() error {
 		return err
 	}
 
+	p.setHidden()
+
+	err = p.setHiddenVersions()
+	if err != nil {
+		return err
+	}
+
 	// TODO: add function to set Documentation
 	p.setDocumentation()
 
@@ -253,29 +268,71 @@ func (p *Property) setDeprecated() {
 	// Determine if the property is deprecated.
 	genLogger.Debugf("Setting Deprecated for property '%s'.", p.PropertyName)
 
-	p.Deprecated = p.propertyDefinition.Deprecated
+	if p.propertyDefinition.Deprecated {
+		p.Deprecated = true
+	} else if metaDeprecated, ok := p.metaDetails["isDeprecated"].(bool); ok {
+		p.Deprecated = metaDeprecated
+	}
 
 	genLogger.Debugf("Successfully set Deprecated '%t' for property '%s'.", p.Deprecated, p.PropertyName)
 }
 
 func (p *Property) setDeprecatedVersions() error {
-	// Determine the deprecated APIC versions for the property from the definition file.
+	// Determine the deprecated APIC versions for the property from the definition file (override) or meta `deprecatedSince`.
 	genLogger.Debugf("Setting DeprecatedVersions for property '%s'.", p.PropertyName)
 
-	// DeprecatedVersions is only set from the definition file (meta file doesn't support this yet).
-	metaVersions := p.propertyDefinition.DeprecatedVersions
-	if metaVersions == "" {
+	deprecatedVersions := p.propertyDefinition.DeprecatedVersions
+	if deprecatedVersions == "" {
+		deprecatedVersions, _ = p.metaDetails["deprecatedSince"].(string)
+	}
+	if deprecatedVersions == "" {
 		genLogger.Debugf("No DeprecatedVersions specified for property '%s'.", p.PropertyName)
 		return nil
 	}
 
-	versions, err := NewVersions(metaVersions)
+	parsedVersions, err := NewVersions(deprecatedVersions)
 	if err != nil {
 		return fmt.Errorf("failed to parse deprecated versions for property '%s': %w", p.PropertyName, err)
 	}
-	p.DeprecatedVersions = versions
+	p.DeprecatedVersions = parsedVersions
 
 	genLogger.Debugf("Successfully set DeprecatedVersions for property '%s'. Versions: '%s'", p.PropertyName, p.DeprecatedVersions)
+	return nil
+}
+
+func (p *Property) setHidden() {
+	// Determine if the property is hidden by the APIC API.
+	genLogger.Debugf("Setting Hidden for property '%s'.", p.PropertyName)
+
+	if p.propertyDefinition.Hidden {
+		p.Hidden = true
+	} else if metaHidden, ok := p.metaDetails["isHidden"].(bool); ok {
+		p.Hidden = metaHidden
+	}
+
+	genLogger.Debugf("Successfully set Hidden '%t' for property '%s'.", p.Hidden, p.PropertyName)
+}
+
+func (p *Property) setHiddenVersions() error {
+	// Determine the hidden APIC versions for the property from the definition file (override) or meta `hiddenSince`.
+	genLogger.Debugf("Setting HiddenVersions for property '%s'.", p.PropertyName)
+
+	hiddenVersions := p.propertyDefinition.HiddenVersions
+	if hiddenVersions == "" {
+		hiddenVersions, _ = p.metaDetails["hiddenSince"].(string)
+	}
+	if hiddenVersions == "" {
+		genLogger.Debugf("No HiddenVersions specified for property '%s'.", p.PropertyName)
+		return nil
+	}
+
+	parsedVersions, err := NewVersions(hiddenVersions)
+	if err != nil {
+		return fmt.Errorf("failed to parse hidden versions for property '%s': %w", p.PropertyName, err)
+	}
+	p.HiddenVersions = parsedVersions
+
+	genLogger.Debugf("Successfully set HiddenVersions for property '%s'. Versions: '%s'", p.PropertyName, p.HiddenVersions)
 	return nil
 }
 
