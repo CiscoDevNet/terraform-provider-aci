@@ -16,7 +16,7 @@ func main() {
 	genLogger.Trace("Initializing Data Store")
 	_, err := data.NewDataStore()
 	if err != nil {
-		genLogger.Fatal("Error during initialization of Data Store: " + err.Error())
+		genLogger.Fatalf("Error during initialization of Data Store: %s", err.Error())
 	}
 	genLogger.Trace("Initialization of Data Store complete")
 }

@@ -154,7 +154,7 @@ func loadClassDefinition(className string) ClassDefinition {
 
 	classDefinitionBytes, err := os.ReadFile(classDefinitionPath)
 	if err != nil {
-		genLogger.Debug(fmt.Sprintf("The file '%s' was not found in the definitions folder.", classDefinitionPath))
+		genLogger.Debugf("The file '%s' was not found in the definitions folder.", classDefinitionPath)
 		return classDefinitionData
 	}
 

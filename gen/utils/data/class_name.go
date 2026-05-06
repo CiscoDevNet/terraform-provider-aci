@@ -23,7 +23,7 @@ func NewClassName(className string) (*ClassName, error) {
 	//   - Full class name: "fvTenant"
 	//   - Meta-style with colon: "fv:Tenant"
 	// Returns an error if the class name cannot be split into package and short parts.
-	genLogger.Trace(fmt.Sprintf("Creating ClassName from '%s'.", className))
+	genLogger.Tracef("Creating ClassName from '%s'.", className)
 
 	className, err := sanitizeClassName(className)
 	if err != nil {
@@ -35,7 +35,7 @@ func NewClassName(className string) (*ClassName, error) {
 		return nil, err
 	}
 
-	genLogger.Debug(fmt.Sprintf("ClassName created: full='%s', packageName='%s', short='%s'.", className, packageName, short))
+	genLogger.Debugf("ClassName created: full='%s', packageName='%s', short='%s'.", className, packageName, short)
 
 	return &ClassName{
 		full:        className,
@@ -95,7 +95,7 @@ func splitClassNameToPackageNameAndShortName(className string) (string, string, 
 	//   - Meta-style with colon: "fv:Tenant" -> ("fv", "Tenant")
 	// The package and short names are used for the meta file download, documentation links and lookup in the raw data.
 	// Returns an error if the class name cannot be split (no uppercase letter found after package prefix).
-	genLogger.Trace(fmt.Sprintf("Splitting class name '%s' for name space separation.", className))
+	genLogger.Tracef("Splitting class name '%s' for name space separation.", className)
 
 	className, err := sanitizeClassName(className)
 	if err != nil {
@@ -104,14 +104,14 @@ func splitClassNameToPackageNameAndShortName(className string) (string, string, 
 
 	index := strings.IndexFunc(className, unicode.IsUpper)
 	if index <= 0 {
-		genLogger.Error(fmt.Sprintf("Failed to split class name '%s' for name space separation.", className))
+		genLogger.Errorf("Failed to split class name '%s' for name space separation.", className)
 		return "", "", fmt.Errorf("failed to split class name '%s' for name space separation", className)
 	}
 
 	packageName := className[:index]
 	shortName := className[index:]
 
-	genLogger.Debug(fmt.Sprintf("Class name '%s' got split into package name '%s' and short name '%s'.", className, packageName, shortName))
+	genLogger.Debugf("Class name '%s' got split into package name '%s' and short name '%s'.", className, packageName, shortName)
 
 	return packageName, shortName, nil
 }

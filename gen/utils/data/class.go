@@ -130,7 +130,7 @@ func setRelationshipTypeEnum(relationType string) (RelationshipTypeEnum, error) 
 }
 
 func NewClass(className string, ds *DataStore) (*Class, error) {
-	genLogger.Trace(fmt.Sprintf("Creating new class struct with class name: %s.", className))
+	genLogger.Tracef("Creating new class struct with class name: %s.", className)
 
 	name, err := NewClassName(className)
 	if err != nil {
@@ -143,7 +143,7 @@ func NewClass(className string, ds *DataStore) (*Class, error) {
 		Properties:      make(map[string]*Property),
 	}
 
-	genLogger.Trace(fmt.Sprintf("Successfully created new class struct with class name: %s.", className))
+	genLogger.Tracef("Successfully created new class struct with class name: %s.", className)
 
 	err = class.loadMetaFile()
 	if err != nil {
@@ -159,14 +159,14 @@ func NewClass(className string, ds *DataStore) (*Class, error) {
 }
 
 func (c *Class) loadMetaFile() error {
-	genLogger.Debug(fmt.Sprintf("Loading meta file for class '%s'.", c.Name))
+	genLogger.Debugf("Loading meta file for class '%s'.", c.Name)
 
 	fileContent, err := os.ReadFile(fmt.Sprintf("%s/%s.json", constMetaPath, c.Name))
 	if err != nil {
 		return fmt.Errorf("failed to load meta file for class '%s': %s", c.Name, err.Error())
 	}
 
-	genLogger.Trace(fmt.Sprintf("Parsing meta file for class '%s'.", c.Name))
+	genLogger.Tracef("Parsing meta file for class '%s'.", c.Name)
 	// For now, the file content is unmarshalled into a map[string]interface{} and then set the class data.
 	// This is done because we add logic on top of the file content to set the class data.
 	// ENHANCEMENT: investigate if we can unmarshal the file content directly into a class struct specific for meta.
@@ -178,13 +178,13 @@ func (c *Class) loadMetaFile() error {
 
 	c.MetaFileContent = metaFileContent[c.Name.MetaStyle()].(map[string]interface{})
 
-	genLogger.Debug(fmt.Sprintf("Successfully loaded meta file for class '%s'.", c.Name))
+	genLogger.Debugf("Successfully loaded meta file for class '%s'.", c.Name)
 
 	return nil
 }
 
 func (c *Class) setClassData(ds *DataStore) error {
-	genLogger.Debug(fmt.Sprintf("Setting class data for class '%s'.", c.Name))
+	genLogger.Debugf("Setting class data for class '%s'.", c.Name)
 
 	var err error
 
@@ -244,13 +244,13 @@ func (c *Class) setClassData(ds *DataStore) error {
 		return err
 	}
 
-	genLogger.Debug(fmt.Sprintf("Successfully set class data for class '%s'.", c.Name))
+	genLogger.Debugf("Successfully set class data for class '%s'.", c.Name)
 	return nil
 }
 
 func (c *Class) setAllowDelete() {
 	// Determine if the class can be deleted.
-	genLogger.Debug(fmt.Sprintf("Setting AllowDelete for class '%s'.", c.Name))
+	genLogger.Debugf("Setting AllowDelete for class '%s'.", c.Name)
 	if c.ClassDefinition.AllowDelete == "" {
 		isCreatableDeletable, ok := c.MetaFileContent["isCreatableDeletable"]
 		if ok && isCreatableDeletable.(string) != "never" {
@@ -259,17 +259,17 @@ func (c *Class) setAllowDelete() {
 	} else if c.ClassDefinition.AllowDelete != "never" {
 		c.AllowDelete = true
 	}
-	genLogger.Debug(fmt.Sprintf("The AllowDelete property was successfully set to '%t' for the class '%s'.", c.AllowDelete, c.Name))
+	genLogger.Debugf("The AllowDelete property was successfully set to '%t' for the class '%s'.", c.AllowDelete, c.Name)
 }
 
 func (c *Class) setChildren(ds *DataStore) error {
 	// Determine the child classes for the class.
-	genLogger.Debug(fmt.Sprintf("Setting Children for class '%s'.", c.Name))
+	genLogger.Debugf("Setting Children for class '%s'.", c.Name)
 
 	// Warn if a class is defined in both IncludeChildren and ExcludeChildren.
 	for _, includedChild := range c.ClassDefinition.IncludeChildren {
 		if slices.Contains(c.ClassDefinition.ExcludeChildren, includedChild) {
-			genLogger.Warn(fmt.Sprintf("Child class '%s' is defined in both IncludeChildren and ExcludeChildren for class '%s'. IncludeChildren takes precedence.", includedChild, c.Name))
+			genLogger.Warnf("Child class '%s' is defined in both IncludeChildren and ExcludeChildren for class '%s'. IncludeChildren takes precedence.", includedChild, c.Name)
 		}
 	}
 
@@ -299,26 +299,26 @@ func (c *Class) setChildren(ds *DataStore) error {
 	}
 	c.Children = children
 
-	genLogger.Debug(fmt.Sprintf("Successfully set Children for class '%s'. Found %d children.", c.Name, len(c.Children)))
+	genLogger.Debugf("Successfully set Children for class '%s'. Found %d children.", c.Name, len(c.Children))
 	return nil
 }
 
 func (c *Class) setDeprecated() {
-	genLogger.Debug(fmt.Sprintf("Setting Deprecated for class '%s'.", c.Name))
+	genLogger.Debugf("Setting Deprecated for class '%s'.", c.Name)
 
 	c.Deprecated = c.ClassDefinition.Deprecated
 
-	genLogger.Debug(fmt.Sprintf("Successfully set Deprecated for class '%s'. Deprecated: %t", c.Name, c.Deprecated))
+	genLogger.Debugf("Successfully set Deprecated for class '%s'. Deprecated: %t", c.Name, c.Deprecated)
 }
 
 func (c *Class) setDeprecatedVersions() error {
 	// Determine the deprecated APIC versions for the class from the definition file.
-	genLogger.Debug(fmt.Sprintf("Setting DeprecatedVersions for class '%s'.", c.Name))
+	genLogger.Debugf("Setting DeprecatedVersions for class '%s'.", c.Name)
 
 	// DeprecatedVersions is only set from the definition file (meta file doesn't support this yet).
 	metaVersions := c.ClassDefinition.DeprecatedVersions
 	if metaVersions == "" {
-		genLogger.Debug(fmt.Sprintf("No DeprecatedVersions specified for class '%s'.", c.Name))
+		genLogger.Debugf("No DeprecatedVersions specified for class '%s'.", c.Name)
 		return nil
 	}
 
@@ -328,13 +328,13 @@ func (c *Class) setDeprecatedVersions() error {
 	}
 	c.DeprecatedVersions = versions
 
-	genLogger.Debug(fmt.Sprintf("Successfully set DeprecatedVersions for class '%s'. Versions: '%s'", c.Name, c.DeprecatedVersions))
+	genLogger.Debugf("Successfully set DeprecatedVersions for class '%s'. Versions: '%s'", c.Name, c.DeprecatedVersions)
 	return nil
 }
 
 func (c *Class) setIdentifiedBy() {
 	// Determine the identifying properties of the class.
-	genLogger.Debug(fmt.Sprintf("Setting IdentifiedBy for class '%s'.", c.Name))
+	genLogger.Debugf("Setting IdentifiedBy for class '%s'.", c.Name)
 
 	// Use ClassDefinition override if specified, otherwise read from meta file.
 	if len(c.ClassDefinition.IdentifiedBy) > 0 {
@@ -349,32 +349,32 @@ func (c *Class) setIdentifiedBy() {
 
 	slices.Sort(c.IdentifiedBy)
 
-	genLogger.Debug(fmt.Sprintf("Successfully set IdentifiedBy for class '%s'. IdentifiedBy: %v", c.Name, c.IdentifiedBy))
+	genLogger.Debugf("Successfully set IdentifiedBy for class '%s'. IdentifiedBy: %v", c.Name, c.IdentifiedBy)
 }
 
 func (c *Class) setIsMigration() {
 	// Determine if the class is migrated from previous version of the provider.
-	genLogger.Debug(fmt.Sprintf("Setting IsMigration for class '%s'.", c.Name))
-	genLogger.Debug(fmt.Sprintf("Successfully set IsMigration for class '%s'.", c.Name))
+	genLogger.Debugf("Setting IsMigration for class '%s'.", c.Name)
+	genLogger.Debugf("Successfully set IsMigration for class '%s'.", c.Name)
 }
 
 func (c *Class) setIsSingleNestedWhenDefinedAsChild() {
 	// Determine if the class can only be configured once when used as a nested attribute in a parent resource.
-	genLogger.Debug(fmt.Sprintf("Setting IsSingleNestedWhenDefinedAsChild for class '%s'.", c.Name))
+	genLogger.Debugf("Setting IsSingleNestedWhenDefinedAsChild for class '%s'.", c.Name)
 
 	c.IsSingleNestedWhenDefinedAsChild = c.ClassDefinition.IsSingleNestedWhenDefinedAsChild || len(c.IdentifiedBy) == 0
 
-	genLogger.Debug(fmt.Sprintf("Successfully set IsSingleNestedWhenDefinedAsChild for class '%s'. IsSingleNestedWhenDefinedAsChild: %t", c.Name, c.IsSingleNestedWhenDefinedAsChild))
+	genLogger.Debugf("Successfully set IsSingleNestedWhenDefinedAsChild for class '%s'. IsSingleNestedWhenDefinedAsChild: %t", c.Name, c.IsSingleNestedWhenDefinedAsChild)
 }
 
 func (c *Class) setParents() error {
 	// Determine the parent classes for the class.
-	genLogger.Debug(fmt.Sprintf("Setting Parents for class '%s'.", c.Name))
+	genLogger.Debugf("Setting Parents for class '%s'.", c.Name)
 
 	// Warn if a class is defined in both IncludeParents and ExcludeParents.
 	for _, included := range c.ClassDefinition.IncludeParents {
 		if slices.Contains(c.ClassDefinition.ExcludeParents, included) {
-			genLogger.Warn(fmt.Sprintf("Parent class '%s' is defined in both IncludeParents and ExcludeParents for class '%s'. IncludeParents takes precedence.", included, c.Name))
+			genLogger.Warnf("Parent class '%s' is defined in both IncludeParents and ExcludeParents for class '%s'. IncludeParents takes precedence.", included, c.Name)
 		}
 	}
 
@@ -404,13 +404,13 @@ func (c *Class) setParents() error {
 	}
 	c.Parents = parents
 
-	genLogger.Debug(fmt.Sprintf("Successfully set Parents for class '%s'. Found %d parents.", c.Name, len(c.Parents)))
+	genLogger.Debugf("Successfully set Parents for class '%s'. Found %d parents.", c.Name, len(c.Parents))
 	return nil
 }
 
 func (c *Class) setPlatformType() {
 	// Determine the platform type of the class.
-	genLogger.Debug(fmt.Sprintf("Setting PlatformType for class '%s'.", c.Name))
+	genLogger.Debugf("Setting PlatformType for class '%s'.", c.Name)
 
 	// Use ClassDefinition override if specified.
 	if c.ClassDefinition.PlatformType != "" {
@@ -422,7 +422,7 @@ func (c *Class) setPlatformType() {
 		case "both":
 			c.PlatformType = Both
 		}
-		genLogger.Debug(fmt.Sprintf("Successfully set PlatformType for class '%s' from definition: %s.", c.Name, c.PlatformType))
+		genLogger.Debugf("Successfully set PlatformType for class '%s' from definition: %s.", c.Name, c.PlatformType)
 		return
 	}
 
@@ -438,7 +438,7 @@ func (c *Class) setPlatformType() {
 				case "capic":
 					hasCloud = true
 				default:
-					genLogger.Warn(fmt.Sprintf("Unknown platform flavor '%s' found for class '%s'.", flavorStr, c.Name))
+					genLogger.Warnf("Unknown platform flavor '%s' found for class '%s'.", flavorStr, c.Name)
 				}
 			}
 		}
@@ -451,11 +451,11 @@ func (c *Class) setPlatformType() {
 		}
 	}
 
-	genLogger.Debug(fmt.Sprintf("Successfully set PlatformType for class '%s': %s.", c.Name, c.PlatformType))
+	genLogger.Debugf("Successfully set PlatformType for class '%s': %s.", c.Name, c.PlatformType)
 }
 
 func (c *Class) setProperties(ds *DataStore) error {
-	genLogger.Debug(fmt.Sprintf("Setting properties for class '%s'.", c.Name))
+	genLogger.Debugf("Setting properties for class '%s'.", c.Name)
 
 	if properties, ok := c.MetaFileContent["properties"]; ok {
 		for name, propertyDetails := range properties.(map[string]interface{}) {
@@ -466,13 +466,13 @@ func (c *Class) setProperties(ds *DataStore) error {
 
 			// Skip the property entirely when the restriction is "exclude".
 			if propertyDefinition.Restriction == "exclude" {
-				genLogger.Debug(fmt.Sprintf("Property '%s' excluded via definition restriction for class '%s'.", name, c.Name))
+				genLogger.Debugf("Property '%s' excluded via definition restriction for class '%s'.", name, c.Name)
 				continue
 			}
 
 			// Skip globally excluded properties unless the class definition explicitly defines the property.
 			if !hasClassDefinition && slices.Contains(ds.GlobalMetaDefinition.ExcludeProperties, name) {
-				genLogger.Debug(fmt.Sprintf("Property '%s' excluded via global exclude for class '%s'.", name, c.Name))
+				genLogger.Debugf("Property '%s' excluded via global exclude for class '%s'.", name, c.Name)
 				continue
 			}
 
@@ -503,13 +503,13 @@ func (c *Class) setProperties(ds *DataStore) error {
 	slices.Sort(c.PropertiesReadOnly)
 	slices.Sort(c.PropertiesRequired)
 
-	genLogger.Debug(fmt.Sprintf("Successfully set properties for class '%s'.", c.Name))
+	genLogger.Debugf("Successfully set properties for class '%s'.", c.Name)
 	return nil
 }
 
 func (c *Class) setRelation() error {
 	// Determine if the class is a relational class.
-	genLogger.Debug(fmt.Sprintf("Setting Relation details for class '%s'.", c.Name))
+	genLogger.Debugf("Setting Relation details for class '%s'.", c.Name)
 
 	// TODO: add logic to override the relational status from a definition file.
 	if relationInfo, ok := c.MetaFileContent["relationInfo"]; ok {
@@ -537,22 +537,22 @@ func (c *Class) setRelation() error {
 		c.Relation.Type = RelationshipTypeEnum(relationType)
 
 	}
-	genLogger.Debug(fmt.Sprintf("Successfully set Relation details for class '%s'.", c.Name))
+	genLogger.Debugf("Successfully set Relation details for class '%s'.", c.Name)
 
 	return nil
 }
 
 func (c *Class) setRequiredAsChild() {
 	// Determine if the class is required when defined as a child in a parent resource.
-	genLogger.Debug(fmt.Sprintf("Setting RequiredAsChild for class '%s'.", c.Name))
+	genLogger.Debugf("Setting RequiredAsChild for class '%s'.", c.Name)
 
 	c.RequiredAsChild = c.ClassDefinition.RequiredAsChild
 
-	genLogger.Debug(fmt.Sprintf("Successfully set RequiredAsChild for class '%s'. RequiredAsChild: %t", c.Name, c.RequiredAsChild))
+	genLogger.Debugf("Successfully set RequiredAsChild for class '%s'. RequiredAsChild: %t", c.Name, c.RequiredAsChild)
 }
 
 func (c *Class) setResourceName(ds *DataStore) error {
-	genLogger.Debug(fmt.Sprintf("Setting resource name for class '%s'.", c.Name))
+	genLogger.Debugf("Setting resource name for class '%s'.", c.Name)
 
 	// Get the resource name from definition, else construct the resource name from label, error when both not found.
 	if c.ClassDefinition.ResourceName != "" {
@@ -582,13 +582,13 @@ func (c *Class) setResourceName(ds *DataStore) error {
 		c.ResourceNameNested = utils.Plural(c.ResourceNameNested)
 	}
 
-	genLogger.Debug(fmt.Sprintf("Successfully set resource name '%s' for class '%s'.", c.ResourceName, c.Name))
+	genLogger.Debugf("Successfully set resource name '%s' for class '%s'.", c.ResourceName, c.Name)
 	return nil
 }
 
 func (c *Class) setRnFormat() error {
 	// Determine the relative name (RN) format of the class.
-	genLogger.Debug(fmt.Sprintf("Setting RnFormat for class '%s'.", c.Name))
+	genLogger.Debugf("Setting RnFormat for class '%s'.", c.Name)
 
 	// Use ClassDefinition override if specified, otherwise read from meta file.
 	if c.ClassDefinition.RnFormat != "" {
@@ -607,13 +607,13 @@ func (c *Class) setRnFormat() error {
 		c.RnFormat = fmt.Sprintf("%s/%s", c.ClassDefinition.RnPrepend, c.RnFormat)
 	}
 
-	genLogger.Debug(fmt.Sprintf("Successfully set RnFormat '%s' for class '%s'.", c.RnFormat, c.Name))
+	genLogger.Debugf("Successfully set RnFormat '%s' for class '%s'.", c.RnFormat, c.Name)
 	return nil
 }
 
 func (c *Class) setSupportedVersions() error {
 	// Determine the supported APIC versions for the class.
-	genLogger.Debug(fmt.Sprintf("Setting SupportedVersions for class '%s'.", c.Name))
+	genLogger.Debugf("Setting SupportedVersions for class '%s'.", c.Name)
 
 	// Initialize with versions from ClassDefinition, if not defined set the versions from meta file.
 	metaVersions := c.ClassDefinition.SupportedVersions
@@ -632,7 +632,7 @@ func (c *Class) setSupportedVersions() error {
 	}
 	c.SupportedVersions = versions
 
-	genLogger.Debug(fmt.Sprintf("Successfully set SupportedVersions for class '%s'. Versions: '%s'", c.Name, c.SupportedVersions))
+	genLogger.Debugf("Successfully set SupportedVersions for class '%s'. Versions: '%s'", c.Name, c.SupportedVersions)
 	return nil
 }
 
@@ -641,7 +641,7 @@ func getRelationshipResourceName(ds *DataStore, toClass string) string {
 	if err != nil {
 		// If the class is not found, try returning the resource name of the class from global definition file.
 		if resourceName, ok := ds.GlobalMetaDefinition.NoMetaFile[toClass]; ok {
-			genLogger.Debug(fmt.Sprintf("Failed to load class '%s'. Using resource name from global definition file: %s.", toClass, resourceName))
+			genLogger.Debugf("Failed to load class '%s'. Using resource name from global definition file: %s.", toClass, resourceName)
 			return resourceName
 		}
 		if !slices.Contains(failedToLoadClasses, toClass) {
@@ -663,29 +663,29 @@ func shouldIncludeChild(rn, className string, excludeChildrenFromClassDef, alway
 	//  4. The RN format does NOT end with "-" (non-named classes without a specific identifier)
 	// Exclude if the class is explicitly excluded via ClassDefinition.ExcludeChildren.
 	if slices.Contains(excludeChildrenFromClassDef, className) {
-		genLogger.Trace(fmt.Sprintf("Child class '%s' excluded via excludeChildrenFromClassDef.", className))
+		genLogger.Tracef("Child class '%s' excluded via excludeChildrenFromClassDef.", className)
 		return false
 	}
 
 	// Include if the class is in GlobalMetaDefinition.AlwaysIncludeAsChild.
 	if slices.Contains(alwaysIncludeFromGlobalDef, className) {
-		genLogger.Trace(fmt.Sprintf("Child class '%s' included via alwaysIncludeFromGlobalDef.", className))
+		genLogger.Tracef("Child class '%s' included via alwaysIncludeFromGlobalDef.", className)
 		return true
 	}
 
 	// Include classes where the RN starts with "rs" (relation source).
 	if strings.HasPrefix(rn, "rs") {
-		genLogger.Trace(fmt.Sprintf("Child class '%s' included because RN starts with 'rs'.", className))
+		genLogger.Tracef("Child class '%s' included because RN starts with 'rs'.", className)
 		return true
 	}
 
 	// Include classes where the RN does NOT end with "-" (non-named classes without a specific identifier).
 	if !strings.HasSuffix(rn, "-") {
-		genLogger.Trace(fmt.Sprintf("Child class '%s' included because RN '%s' does not end with '-'.", className, rn))
+		genLogger.Tracef("Child class '%s' included because RN '%s' does not end with '-'.", className, rn)
 		return true
 	}
 
-	genLogger.Trace(fmt.Sprintf("Child class '%s' excluded by default (RN ends with '-').", className))
+	genLogger.Tracef("Child class '%s' excluded by default (RN ends with '-').", className)
 	return false
 }
 
