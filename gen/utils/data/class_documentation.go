@@ -99,7 +99,7 @@ type ClassDocumentation struct {
 }
 
 func (c *Class) setDocumentation(ds *DataStore) error {
-	genLogger.Debug(fmt.Sprintf("Setting Documentation for class '%s'.", c.Name))
+	genLogger.Debugf("Setting Documentation for class '%s'.", c.Name)
 
 	c.Documentation.setClassName(c)
 
@@ -135,24 +135,24 @@ func (c *Class) setDocumentation(ds *DataStore) error {
 
 	c.Documentation.setWarnings(c)
 
-	genLogger.Debug(fmt.Sprintf("Successfully set Documentation for class '%s'.", c.Name))
+	genLogger.Debugf("Successfully set Documentation for class '%s'.", c.Name)
 	return nil
 }
 
 func (d *ClassDocumentation) setClassName(class *Class) {
-	genLogger.Debug(fmt.Sprintf("Setting Documentation ClassName for class '%s'.", class.Name.full))
+	genLogger.Debugf("Setting Documentation ClassName for class '%s'.", class.Name.full)
 
 	d.ClassName = fmt.Sprintf("[%s](https://%s/app/index.html#/objects/%s/overview)", class.Name.full, constPubhubDevnetHost, class.Name.full)
 
-	genLogger.Debug(fmt.Sprintf("Successfully set Documentation ClassName for class '%s'. ClassName: %s", class.Name.full, d.ClassName))
+	genLogger.Debugf("Successfully set Documentation ClassName for class '%s'. ClassName: %s", class.Name.full, d.ClassName)
 }
 
 func (d *ClassDocumentation) setChildren(class *Class, ds *DataStore) {
-	genLogger.Debug(fmt.Sprintf("Setting Documentation Children for class '%s'.", class.Name.full))
+	genLogger.Debugf("Setting Documentation Children for class '%s'.", class.Name.full)
 
 	rnMap, ok := class.MetaFileContent["rnMap"].(map[string]interface{})
 	if !ok {
-		genLogger.Debug(fmt.Sprintf("No rnMap available for class '%s'; skipping documentation children.", class.Name.full))
+		genLogger.Debugf("No rnMap available for class '%s'; skipping documentation children.", class.Name.full)
 		return
 	}
 
@@ -167,7 +167,7 @@ func (d *ClassDocumentation) setChildren(class *Class, ds *DataStore) {
 	for _, classNameInterface := range rnMap {
 		childName, err := sanitizeClassName(classNameInterface.(string))
 		if err != nil {
-			genLogger.Warn(fmt.Sprintf("Skipping invalid child class name in rnMap for class '%s': %s", class.Name.full, err))
+			genLogger.Warnf("Skipping invalid child class name in rnMap for class '%s': %s", class.Name.full, err)
 			continue
 		}
 		if _, isIncluded := childrenIncludedInResource[childName]; isIncluded {
@@ -183,21 +183,21 @@ func (d *ClassDocumentation) setChildren(class *Class, ds *DataStore) {
 	slices.Sort(links)
 	d.Children = slices.Compact(links)
 
-	genLogger.Debug(fmt.Sprintf("Successfully set Documentation Children for class '%s'. Children: %v", class.Name.full, d.Children))
+	genLogger.Debugf("Successfully set Documentation Children for class '%s'. Children: %v", class.Name.full, d.Children)
 }
 
 func (d *ClassDocumentation) setDeprecationWarning(class *Class) {
-	genLogger.Debug(fmt.Sprintf("Setting Documentation DeprecationWarning for class '%s'.", class.Name.full))
+	genLogger.Debugf("Setting Documentation DeprecationWarning for class '%s'.", class.Name.full)
 
 	if class.Deprecated {
 		d.DeprecationWarning = fmt.Sprintf("The %s class is deprecated and will be removed in a future release.", d.ClassName)
 	}
 
-	genLogger.Debug(fmt.Sprintf("Successfully set Documentation DeprecationWarning for class '%s'. DeprecationWarning: %s", class.Name.full, d.DeprecationWarning))
+	genLogger.Debugf("Successfully set Documentation DeprecationWarning for class '%s'. DeprecationWarning: %s", class.Name.full, d.DeprecationWarning)
 }
 
 func (d *ClassDocumentation) setLabel(class *Class, ds *DataStore) {
-	genLogger.Debug(fmt.Sprintf("Setting Documentation Label for class '%s'.", class.Name.full))
+	genLogger.Debugf("Setting Documentation Label for class '%s'.", class.Name.full)
 
 	if class.ClassDefinition.Documentation.Label != "" {
 		d.Label = class.ClassDefinition.Documentation.Label
@@ -214,11 +214,11 @@ func (d *ClassDocumentation) setLabel(class *Class, ds *DataStore) {
 		}
 	}
 
-	genLogger.Debug(fmt.Sprintf("Successfully set Documentation Label for class '%s'. Label: %s", class.Name.full, d.Label))
+	genLogger.Debugf("Successfully set Documentation Label for class '%s'. Label: %s", class.Name.full, d.Label)
 }
 
 func (d *ClassDocumentation) setDescription(class *Class) {
-	genLogger.Debug(fmt.Sprintf("Setting Documentation Description for class '%s'.", class.Name.full))
+	genLogger.Debugf("Setting Documentation Description for class '%s'.", class.Name.full)
 
 	docDef := class.ClassDefinition.Documentation
 
@@ -242,11 +242,11 @@ func (d *ClassDocumentation) setDescription(class *Class) {
 	}
 	d.DatasourceDescription = strings.Join(datasourceParts, " ")
 
-	genLogger.Debug(fmt.Sprintf("Successfully set Documentation Description for class '%s'. ResourceDescription: %s, DatasourceDescription: %s", class.Name.full, d.ResourceDescription, d.DatasourceDescription))
+	genLogger.Debugf("Successfully set Documentation Description for class '%s'. ResourceDescription: %s, DatasourceDescription: %s", class.Name.full, d.ResourceDescription, d.DatasourceDescription)
 }
 
 func (d *ClassDocumentation) setDescriptionWhenDefinedAsChild(class *Class, ds *DataStore) {
-	genLogger.Debug(fmt.Sprintf("Setting Documentation DescriptionWhenDefinedAsChild for class '%s'.", class.Name.full))
+	genLogger.Debugf("Setting Documentation DescriptionWhenDefinedAsChild for class '%s'.", class.Name.full)
 
 	nestingType := "list"
 	if class.IsSingleNestedWhenDefinedAsChild {
@@ -281,11 +281,11 @@ func (d *ClassDocumentation) setDescriptionWhenDefinedAsChild(class *Class, ds *
 
 	d.DescriptionWhenDefinedAsChild = header + " " + sentence
 
-	genLogger.Debug(fmt.Sprintf("Successfully set Documentation DescriptionWhenDefinedAsChild for class '%s'. DescriptionWhenDefinedAsChild: %s", class.Name.full, d.DescriptionWhenDefinedAsChild))
+	genLogger.Debugf("Successfully set Documentation DescriptionWhenDefinedAsChild for class '%s'. DescriptionWhenDefinedAsChild: %s", class.Name.full, d.DescriptionWhenDefinedAsChild)
 }
 
 func (d *ClassDocumentation) setDnFormats(class *Class) {
-	genLogger.Debug(fmt.Sprintf("Setting Documentation DnFormats for class '%s'.", class.Name.full))
+	genLogger.Debugf("Setting Documentation DnFormats for class '%s'.", class.Name.full)
 
 	if override := class.ClassDefinition.Documentation.DnFormats; len(override) > 0 {
 		d.DnFormats = override
@@ -296,7 +296,7 @@ func (d *ClassDocumentation) setDnFormats(class *Class) {
 			}
 		}
 	} else {
-		genLogger.Debug(fmt.Sprintf("No dnFormats available for class '%s'.", class.Name.full))
+		genLogger.Debugf("No dnFormats available for class '%s'.", class.Name.full)
 	}
 
 	// Sort to guarantee stable, deterministic output across regenerations.
@@ -307,21 +307,21 @@ func (d *ClassDocumentation) setDnFormats(class *Class) {
 		d.DnFormats = append([]string{notice}, d.DnFormats[:constMaxDnFormatsToDisplay]...)
 	}
 
-	genLogger.Debug(fmt.Sprintf("Successfully set Documentation DnFormats for class '%s'. DnFormats: %v", class.Name.full, d.DnFormats))
+	genLogger.Debugf("Successfully set Documentation DnFormats for class '%s'. DnFormats: %v", class.Name.full, d.DnFormats)
 }
 
 func (d *ClassDocumentation) setMigrationWarning(class *Class) {
-	genLogger.Debug(fmt.Sprintf("Setting Documentation MigrationWarning for class '%s'.", class.Name.full))
+	genLogger.Debugf("Setting Documentation MigrationWarning for class '%s'.", class.Name.full)
 
 	if class.IsMigration {
 		d.MigrationWarning = "This resource has been migrated to the terraform plugin protocol version 6, refer to the [migration guide](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/guides/migration) for more details and implications for already managed resources."
 	}
 
-	genLogger.Debug(fmt.Sprintf("Successfully set Documentation MigrationWarning for class '%s'. MigrationWarning: %s", class.Name.full, d.MigrationWarning))
+	genLogger.Debugf("Successfully set Documentation MigrationWarning for class '%s'. MigrationWarning: %s", class.Name.full, d.MigrationWarning)
 }
 
 func (d *ClassDocumentation) setParentDns(class *Class, ds *DataStore) {
-	genLogger.Debug(fmt.Sprintf("Setting Documentation ParentDns for class '%s'.", class.Name.full))
+	genLogger.Debugf("Setting Documentation ParentDns for class '%s'.", class.Name.full)
 
 	var resourceEntries, classOnlyEntries []string
 	for _, parent := range class.Parents {
@@ -352,31 +352,31 @@ func (d *ClassDocumentation) setParentDns(class *Class, ds *DataStore) {
 		}
 	}
 
-	genLogger.Debug(fmt.Sprintf("Successfully set Documentation ParentDns for class '%s'. ParentDns: %v", class.Name.full, d.ParentDns))
+	genLogger.Debugf("Successfully set Documentation ParentDns for class '%s'. ParentDns: %v", class.Name.full, d.ParentDns)
 }
 
 func (d *ClassDocumentation) setSupportedVersions(class *Class) {
-	genLogger.Debug(fmt.Sprintf("Setting Documentation SupportedVersions for class '%s'.", class.Name.full))
+	genLogger.Debugf("Setting Documentation SupportedVersions for class '%s'.", class.Name.full)
 
 	if class.SupportedVersions != nil {
 		d.SupportedVersions = class.SupportedVersions.String()
 	}
 
-	genLogger.Debug(fmt.Sprintf("Successfully set Documentation SupportedVersions for class '%s'. SupportedVersions: %s", class.Name.full, d.SupportedVersions))
+	genLogger.Debugf("Successfully set Documentation SupportedVersions for class '%s'. SupportedVersions: %s", class.Name.full, d.SupportedVersions)
 }
 
 func (d *ClassDocumentation) setNotes(class *Class) {
-	genLogger.Debug(fmt.Sprintf("Setting Documentation Notes for class '%s'.", class.Name.full))
+	genLogger.Debugf("Setting Documentation Notes for class '%s'.", class.Name.full)
 
 	docDef := class.ClassDefinition.Documentation
 	d.ResourceNotes = slices.Concat(docDef.Notes, docDef.Resource.Notes)
 	d.DatasourceNotes = slices.Concat(docDef.Notes, docDef.Datasource.Notes)
 
-	genLogger.Debug(fmt.Sprintf("Successfully set Documentation Notes for class '%s'. ResourceNotes: %v, DatasourceNotes: %v", class.Name.full, d.ResourceNotes, d.DatasourceNotes))
+	genLogger.Debugf("Successfully set Documentation Notes for class '%s'. ResourceNotes: %v, DatasourceNotes: %v", class.Name.full, d.ResourceNotes, d.DatasourceNotes)
 }
 
 func (d *ClassDocumentation) setUiLocations(class *Class) error {
-	genLogger.Debug(fmt.Sprintf("Setting Documentation UiLocations for class '%s'.", class.Name.full))
+	genLogger.Debugf("Setting Documentation UiLocations for class '%s'.", class.Name.full)
 
 	if len(class.ClassDefinition.Documentation.UiLocations) == 0 {
 		if class.IsSingleNestedWhenDefinedAsChild {
@@ -387,22 +387,22 @@ func (d *ClassDocumentation) setUiLocations(class *Class) error {
 
 	d.UiLocations = class.ClassDefinition.Documentation.UiLocations
 
-	genLogger.Debug(fmt.Sprintf("Successfully set Documentation UiLocations for class '%s'. UiLocations: %v", class.Name.full, d.UiLocations))
+	genLogger.Debugf("Successfully set Documentation UiLocations for class '%s'. UiLocations: %v", class.Name.full, d.UiLocations)
 	return nil
 }
 
 func (d *ClassDocumentation) setWarnings(class *Class) {
-	genLogger.Debug(fmt.Sprintf("Setting Documentation Warnings for class '%s'.", class.Name.full))
+	genLogger.Debugf("Setting Documentation Warnings for class '%s'.", class.Name.full)
 
 	docDef := class.ClassDefinition.Documentation
 	d.ResourceWarnings = slices.Concat(docDef.Warnings, docDef.Resource.Warnings)
 	d.DatasourceWarnings = slices.Concat(docDef.Warnings, docDef.Datasource.Warnings)
 
-	genLogger.Debug(fmt.Sprintf("Successfully set Documentation Warnings for class '%s'. ResourceWarnings: %v, DatasourceWarnings: %v", class.Name.full, d.ResourceWarnings, d.DatasourceWarnings))
+	genLogger.Debugf("Successfully set Documentation Warnings for class '%s'. ResourceWarnings: %v, DatasourceWarnings: %v", class.Name.full, d.ResourceWarnings, d.DatasourceWarnings)
 }
 
 func (d *ClassDocumentation) setSubCategory(class *Class) error {
-	genLogger.Debug(fmt.Sprintf("Setting Documentation SubCategory for class '%s'.", class.Name.full))
+	genLogger.Debugf("Setting Documentation SubCategory for class '%s'.", class.Name.full)
 
 	if err := validateSubCategory(class); err != nil {
 		return fmt.Errorf("class '%s': %w", class.Name.full, err)
@@ -410,6 +410,6 @@ func (d *ClassDocumentation) setSubCategory(class *Class) error {
 
 	d.SubCategory = class.ClassDefinition.Documentation.SubCategory
 
-	genLogger.Debug(fmt.Sprintf("Successfully set Documentation SubCategory '%s' for class '%s'.", d.SubCategory, class.Name.full))
+	genLogger.Debugf("Successfully set Documentation SubCategory '%s' for class '%s'.", d.SubCategory, class.Name.full)
 	return nil
 }

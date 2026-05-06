@@ -119,3 +119,64 @@ func TestSetOutputForTesting(t *testing.T) {
 	expectedLogEntry := fmt.Sprintf("WARN: %s", expectedMessage)
 	assert.Contains(t, logOutput, expectedLogEntry, test.MessageContains(logOutput, expectedLogEntry, t.Name()))
 }
+
+// TestFormattedMethods verifies that the *f variants format their arguments
+// in the manner of fmt.Printf and emit the level prefix expected by callers.
+func TestFormattedMethods(t *testing.T) {
+	genLogger := initializeLogTest(t)
+	genLogger.SetLogLevel("TRACE")
+	t.Cleanup(func() {
+		genLogger.SetLogLevel("INFO")
+	})
+
+	var logBuffer bytes.Buffer
+	genLogger.SetOutputForTesting(&logBuffer)
+	t.Cleanup(func() {
+		genLogger.SetOutputForTesting(os.Stdout)
+	})
+
+	genLogger.Tracef("trace count=%d name=%s", 1, "foo")
+	genLogger.Debugf("debug count=%d name=%s", 2, "bar")
+	genLogger.Infof("info count=%d name=%s", 3, "baz")
+	genLogger.Warnf("warn count=%d name=%s", 4, "qux")
+	genLogger.Errorf("error count=%d name=%s", 5, "quux")
+
+	logOutput := logBuffer.String()
+	expectedEntries := []string{
+		"TRACE: trace count=1 name=foo",
+		"DEBUG: debug count=2 name=bar",
+		"INFO: info count=3 name=baz",
+		"WARN: warn count=4 name=qux",
+		"ERROR: error count=5 name=quux",
+	}
+	for _, entry := range expectedEntries {
+		assert.Contains(t, logOutput, entry, test.MessageContains(logOutput, entry, t.Name()))
+	}
+}
+
+// TestLogCallDepth verifies that Llongfile/Lshortfile in the log output points
+// at the caller of the public level method (this test file), not at logger.go.
+// This locks in the calldepth chosen by constLogCallDepth.
+func TestLogCallDepth(t *testing.T) {
+	genLogger := initializeLogTest(t)
+	genLogger.SetLogLevel("TRACE")
+	t.Cleanup(func() {
+		genLogger.SetLogLevel("INFO")
+	})
+
+	var logBuffer bytes.Buffer
+	genLogger.SetOutputForTesting(&logBuffer)
+	t.Cleanup(func() {
+		genLogger.SetOutputForTesting(os.Stdout)
+	})
+
+	// Each of these calls should report logger_test.go as the source file.
+	genLogger.Debug("calldepth-debug")
+	genLogger.Debugf("calldepth-debugf=%d", 1)
+	genLogger.Info("calldepth-info")
+	genLogger.Infof("calldepth-infof=%d", 2)
+
+	logOutput := logBuffer.String()
+	assert.Contains(t, logOutput, "logger_test.go:", test.MessageContains(logOutput, "logger_test.go:", t.Name()))
+	assert.NotContains(t, logOutput, "logger.go:", test.MessageNotContains(logOutput, "logger.go:", t.Name()))
+}
