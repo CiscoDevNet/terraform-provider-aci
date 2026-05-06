@@ -189,9 +189,28 @@ func (d *ClassDocumentation) setChildren(class *Class, ds *DataStore) {
 func (d *ClassDocumentation) setDeprecationWarning(class *Class) {
 	genLogger.Debugf("Setting Documentation DeprecationWarning for class '%s'.", class.Name.full)
 
-	if class.Deprecated {
-		d.DeprecationWarning = fmt.Sprintf("The %s class is deprecated and will be removed in a future release.", d.ClassName)
+	var warningParts []string
+
+	switch {
+	case class.Hidden:
+		if class.HiddenVersions != nil {
+			warningParts = append(warningParts, fmt.Sprintf("The %s class is no longer accepted by the APIC API as of version %s.", d.ClassName, class.HiddenVersions))
+		} else {
+			warningParts = append(warningParts, fmt.Sprintf("The %s class is no longer accepted by the APIC API.", d.ClassName))
+		}
+	case class.Deprecated:
+		if class.DeprecatedVersions != nil {
+			warningParts = append(warningParts, fmt.Sprintf("The %s class is deprecated by the APIC API as of version %s and may be removed in a future APIC release.", d.ClassName, class.DeprecatedVersions))
+		} else {
+			warningParts = append(warningParts, fmt.Sprintf("The %s class is deprecated by the APIC API and may be removed in a future APIC release.", d.ClassName))
+		}
 	}
+
+	if class.Hidden || class.Deprecated {
+		warningParts = append(warningParts, fmt.Sprintf("The `aci_%s` resource and datasource are deprecated and will be removed in a future release of the provider.", class.ResourceName))
+	}
+
+	d.DeprecationWarning = strings.Join(warningParts, " ")
 
 	genLogger.Debugf("Successfully set Documentation DeprecationWarning for class '%s'. DeprecationWarning: %s", class.Name.full, d.DeprecationWarning)
 }
