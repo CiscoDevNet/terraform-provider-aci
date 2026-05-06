@@ -81,9 +81,9 @@ func InitializeLogger() *Logger {
 func (l *Logger) SetLogFile(logPath string) {
 	file, err := os.OpenFile(logPath, constLogFileFlags, constLogFilePermissions)
 	if err != nil {
-		logger.Fatal(fmt.Sprintf("Failed to open log file: %s", err.Error()))
+		logger.Fatalf("Failed to open log file: %s", err.Error())
 	}
-	logger.Trace(fmt.Sprintf("Logging to file: %s", logPath))
+	logger.Tracef("Logging to file: %s", logPath)
 	logger.log.SetOutput(file)
 	logger.logFile = file
 }
@@ -109,7 +109,7 @@ func (l *Logger) SetOutputForTesting(w io.Writer) {
 func (l *Logger) SetLogLevel(logLevel string) {
 	if level, ok := logLevels[logLevel]; ok {
 		l.logLevel = level
-		logger.Trace(fmt.Sprintf("Log level set to: %s", logLevel))
+		logger.Tracef("Log level set to: %s", logLevel)
 		return
 	}
 
@@ -118,25 +118,67 @@ func (l *Logger) SetLogLevel(logLevel string) {
 	for allowedLevel := range logLevels {
 		allowedLevels = append(allowedLevels, allowedLevel)
 	}
-	logger.Fatal(fmt.Sprintf("Invalid log level: %s. Allowed levels are: %s", logLevel, allowedLevels))
+	logger.Fatalf("Invalid log level: %s. Allowed levels are: %s", logLevel, allowedLevels)
 
 }
 
-// Logs a message when the log level is valid to be logged.
+// The calldepth passed to log.Output so that Llongfile/Lshortfile resolve to
+// the original caller (the user's code), not a frame inside this package.
+//
+// Stack at the moment runtime.Caller is invoked from inside log.Output:
+//
+//	0: log.Output
+//	1: (*Logger).println / (*Logger).printf / (*Logger).fatal
+//	2: (*Logger).Debug / Debugf / Info / ... / Fatal / Fatalf
+//	3: caller of the public method   ← what we want printed
+const constLogCallDepth = 3
+
+// Logs a plain message when the log level is valid to be logged.
+// Used by Trace/Debug/Info/Warn/Error.
 func (l *Logger) println(errorLevel, message string) {
 	if logLevels[errorLevel] <= l.logLevel {
-		l.log.Printf("%s: %s", errorLevel, message)
+		// calldepth=constLogCallDepth so Llongfile points at the caller of the public level method.
+		l.log.Output(constLogCallDepth, errorLevel+": "+message)
 	}
+}
+
+// Logs a formatted message when the log level is valid to be logged.
+// Used by Tracef/Debugf/Infof/Warnf/Errorf. Arguments are handled in the manner of fmt.Printf.
+func (l *Logger) printf(errorLevel, format string, v ...any) {
+	if logLevels[errorLevel] <= l.logLevel {
+		// calldepth=constLogCallDepth so Llongfile points at the caller of the public level method.
+		l.log.Output(constLogCallDepth, errorLevel+": "+fmt.Sprintf(format, v...))
+	}
+}
+
+// Logs a fatal message and exits the program. Shared by Fatal and Fatalf so
+// both share the same calldepth as the other levels.
+func (l *Logger) fatal(message string) {
+	// calldepth=constLogCallDepth so Llongfile points at the caller of Fatal/Fatalf.
+	l.log.Output(constLogCallDepth, "FATAL: "+message)
+	os.Exit(1)
 }
 
 // Fatal logs a fatal message and exits the program.
 func (l *Logger) Fatal(message string) {
-	l.log.Fatalf("FATAL: %s", message)
+	l.fatal(message)
 }
 
-// Error logs an error message
+// Fatalf logs a formatted fatal message and exits the program.
+// Arguments are handled in the manner of fmt.Printf.
+func (l *Logger) Fatalf(format string, v ...any) {
+	l.fatal(fmt.Sprintf(format, v...))
+}
+
+// Error logs an error message.
 func (l *Logger) Error(message string) {
 	l.println("ERROR", message)
+}
+
+// Errorf logs a formatted error message.
+// Arguments are handled in the manner of fmt.Printf.
+func (l *Logger) Errorf(format string, v ...any) {
+	l.printf("ERROR", format, v...)
 }
 
 // Warn logs a warning message.
@@ -144,9 +186,21 @@ func (l *Logger) Warn(message string) {
 	l.println("WARN", message)
 }
 
+// Warnf logs a formatted warning message.
+// Arguments are handled in the manner of fmt.Printf.
+func (l *Logger) Warnf(format string, v ...any) {
+	l.printf("WARN", format, v...)
+}
+
 // Info logs an info message.
 func (l *Logger) Info(message string) {
 	l.println("INFO", message)
+}
+
+// Infof logs a formatted info message.
+// Arguments are handled in the manner of fmt.Printf.
+func (l *Logger) Infof(format string, v ...any) {
+	l.printf("INFO", format, v...)
 }
 
 // Debug logs a debug message.
@@ -154,7 +208,19 @@ func (l *Logger) Debug(message string) {
 	l.println("DEBUG", message)
 }
 
+// Debugf logs a formatted debug message.
+// Arguments are handled in the manner of fmt.Printf.
+func (l *Logger) Debugf(format string, v ...any) {
+	l.printf("DEBUG", format, v...)
+}
+
 // Trace logs a trace message.
 func (l *Logger) Trace(message string) {
 	l.println("TRACE", message)
+}
+
+// Tracef logs a formatted trace message.
+// Arguments are handled in the manner of fmt.Printf.
+func (l *Logger) Tracef(format string, v ...any) {
+	l.printf("TRACE", format, v...)
 }
