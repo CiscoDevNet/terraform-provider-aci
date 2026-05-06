@@ -111,7 +111,7 @@ func (c *Class) setDocumentation(ds *DataStore) error {
 
 	c.Documentation.setDescription(c)
 
-	c.Documentation.setDescriptionWhenDefinedAsChild(c)
+	c.Documentation.setDescriptionWhenDefinedAsChild(c, ds)
 
 	c.Documentation.setDnFormats(c)
 
@@ -245,9 +245,43 @@ func (d *ClassDocumentation) setDescription(class *Class) {
 	genLogger.Debug(fmt.Sprintf("Successfully set Documentation Description for class '%s'. ResourceDescription: %s, DatasourceDescription: %s", class.Name.full, d.ResourceDescription, d.DatasourceDescription))
 }
 
-func (d *ClassDocumentation) setDescriptionWhenDefinedAsChild(class *Class) {
+func (d *ClassDocumentation) setDescriptionWhenDefinedAsChild(class *Class, ds *DataStore) {
 	genLogger.Debug(fmt.Sprintf("Setting Documentation DescriptionWhenDefinedAsChild for class '%s'.", class.Name.full))
-	genLogger.Debug(fmt.Sprintf("Successfully set Documentation DescriptionWhenDefinedAsChild for class '%s'.", class.Name.full))
+
+	nestingType := "list"
+	if class.IsSingleNestedWhenDefinedAsChild {
+		nestingType = "map"
+	}
+
+	header := fmt.Sprintf("%s - (%s) - (%s)", class.ResourceNameNested, d.ClassName, nestingType)
+
+	var sentence string
+	if class.Relation.RelationalClass {
+		toClassFull := class.Relation.ToClass
+		toClassLink := fmt.Sprintf("[%s](https://%s/app/index.html#/objects/%s/overview)", toClassFull, constPubhubDevnetHost, toClassFull)
+		toClass, ok := ds.Classes[toClassFull]
+		toLabel := toClassFull
+		if ok && toClass.Documentation.Label != "" {
+			toLabel = toClass.Documentation.Label
+		}
+		// Single-nested (map) children are only configurable through their parent, so the
+		// standalone resource clause is omitted to avoid suggesting a separate resource.
+		if ok && toClass.ResourceName != "" && !class.IsSingleNestedWhenDefinedAsChild {
+			sentence = fmt.Sprintf("A %s of %s pointing to %s (%s) which can be configured using the [%s_%s](%s/%s) resource.", nestingType, d.Label, toLabel, toClassLink, constProviderName, toClass.ResourceName, constRegistryResourceBaseUrl, toClass.ResourceName)
+		} else {
+			sentence = fmt.Sprintf("A %s of %s pointing to %s (%s).", nestingType, d.Label, toLabel, toClassLink)
+		}
+	} else if class.IsSingleNestedWhenDefinedAsChild {
+		// Single-nested (map) children are only configurable through their parent, so the
+		// standalone resource clause is omitted to avoid suggesting a separate resource.
+		sentence = fmt.Sprintf("A %s of %s.", nestingType, d.Label)
+	} else {
+		sentence = fmt.Sprintf("A %s of %s which can also be configured using a separate [%s_%s](%s/%s) resource.", nestingType, d.Label, constProviderName, class.ResourceName, constRegistryResourceBaseUrl, class.ResourceName)
+	}
+
+	d.DescriptionWhenDefinedAsChild = header + " " + sentence
+
+	genLogger.Debug(fmt.Sprintf("Successfully set Documentation DescriptionWhenDefinedAsChild for class '%s'. DescriptionWhenDefinedAsChild: %s", class.Name.full, d.DescriptionWhenDefinedAsChild))
 }
 
 func (d *ClassDocumentation) setDnFormats(class *Class) {
