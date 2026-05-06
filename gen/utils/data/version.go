@@ -67,7 +67,7 @@ func NewVersionRange(metaVersionRange string) (*VersionRange, error) {
 	//   - "4.2(7f)-4.2(7w)" -> bounded range
 	//   - "4.2(7f)-" -> unbounded range (max is nil)
 	//   - "-4.2(7w)" -> unbounded range (min is nil)
-	genLogger.Trace(fmt.Sprintf("Parsing version range: %s", metaVersionRange))
+	genLogger.Tracef("Parsing version range: %s", metaVersionRange)
 
 	minVersion, maxVersion, err := parseVersionBounds(metaVersionRange)
 	if err != nil {
@@ -76,7 +76,7 @@ func NewVersionRange(metaVersionRange string) (*VersionRange, error) {
 
 	versionRange := &VersionRange{raw: metaVersionRange, min: minVersion, max: maxVersion}
 
-	genLogger.Trace(fmt.Sprintf("Successfully parsed version range '%s': %s", metaVersionRange, versionRange))
+	genLogger.Tracef("Successfully parsed version range '%s': %s", metaVersionRange, versionRange)
 	return versionRange, nil
 }
 
@@ -206,7 +206,7 @@ func NewVersions(metaVersions string) (*Versions, error) {
 	//   - An unbounded range: "4.2(7f)-" (min to unlimited, max is nil)
 	//
 	// Example: "3.2(10e)-3.2(10g),3.2(7f)-" produces two ranges.
-	genLogger.Trace(fmt.Sprintf("Parsing version string: %s", metaVersions))
+	genLogger.Tracef("Parsing version string: %s", metaVersions)
 
 	ranges, err := parseVersionRanges(metaVersions)
 	if err != nil {
@@ -216,8 +216,8 @@ func NewVersions(metaVersions string) (*Versions, error) {
 	versions := &Versions{raw: metaVersions, ranges: ranges}
 	versions.Sort()
 
-	genLogger.Trace(fmt.Sprintf("Successfully parsed version string '%s' into %d ranges.", metaVersions, len(versions.ranges)))
-	genLogger.Trace(fmt.Sprintf("Constructed version string: %s", versions))
+	genLogger.Tracef("Successfully parsed version string '%s' into %d ranges.", metaVersions, len(versions.ranges))
+	genLogger.Tracef("Constructed version string: %s", versions)
 	return versions, nil
 }
 

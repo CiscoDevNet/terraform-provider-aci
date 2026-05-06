@@ -14,7 +14,7 @@ import (
 var genLogger = logger.InitializeLogger()
 
 func GetFileNamesFromDirectory(path string, removeExtension bool) []string {
-	genLogger.Debug(fmt.Sprintf("Getting file names from directory: %s.", path))
+	genLogger.Debugf("Getting file names from directory: %s.", path)
 	var names []string
 	entries, err := os.ReadDir(path)
 	if err == nil && len(entries) > 0 {
@@ -31,7 +31,7 @@ func GetFileNamesFromDirectory(path string, removeExtension bool) []string {
 			}
 		}
 	}
-	genLogger.Debug(fmt.Sprintf("The directory '%s' contains the file names: %s.", path, names))
+	genLogger.Debugf("The directory '%s' contains the file names: %s.", path, names)
 	return names
 }
 
