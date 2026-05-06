@@ -1273,6 +1273,7 @@ func TestSetClassSupportedVersions(t *testing.T) {
 
 type setClassDeprecatedVersionsInput struct {
 	ClassDefinitionVersions string
+	MetaDeprecatedSince     interface{}
 }
 
 type setClassDeprecatedVersionsExpected struct {
@@ -1347,6 +1348,46 @@ func TestSetDeprecatedVersions(t *testing.T) {
 				ErrorMsg: "failed to parse deprecated versions for class 'fvTenant': invalid version 'invalid': unknown",
 			},
 		},
+		{
+			Name: "test_meta_deprecated_since_single_range",
+			Input: setClassDeprecatedVersionsInput{
+				MetaDeprecatedSince: "5.2(1g)-",
+			},
+			Expected: setClassDeprecatedVersionsExpected{
+				Raw:    "5.2(1g)-",
+				String: "5.2(1g) and later",
+			},
+		},
+		{
+			Name: "test_meta_deprecated_since_wrong_type",
+			Input: setClassDeprecatedVersionsInput{
+				MetaDeprecatedSince: 123,
+			},
+			Expected: setClassDeprecatedVersionsExpected{
+				Nil: true,
+			},
+		},
+		{
+			Name: "test_override_replaces_meta",
+			Input: setClassDeprecatedVersionsInput{
+				ClassDefinitionVersions: "4.2(7f)-",
+				MetaDeprecatedSince:     "5.2(1g)-",
+			},
+			Expected: setClassDeprecatedVersionsExpected{
+				Raw:    "4.2(7f)-",
+				String: "4.2(7f) and later",
+			},
+		},
+		{
+			Name: "test_meta_parse_error",
+			Input: setClassDeprecatedVersionsInput{
+				MetaDeprecatedSince: "invalid",
+			},
+			Expected: setClassDeprecatedVersionsExpected{
+				Error:    true,
+				ErrorMsg: "failed to parse deprecated versions for class 'fvTenant': invalid version 'invalid': unknown",
+			},
+		},
 	}
 
 	for _, testCase := range testCases {
@@ -1355,8 +1396,14 @@ func TestSetDeprecatedVersions(t *testing.T) {
 			input := testCase.Input.(setClassDeprecatedVersionsInput)
 			expected := testCase.Expected.(setClassDeprecatedVersionsExpected)
 
+			metaContent := map[string]interface{}{}
+			if input.MetaDeprecatedSince != nil {
+				metaContent["deprecatedSince"] = input.MetaDeprecatedSince
+			}
+
 			class := Class{
-				Name: testClassName("fvTenant"),
+				Name:            testClassName("fvTenant"),
+				MetaFileContent: metaContent,
 				ClassDefinition: ClassDefinition{
 					DeprecatedVersions: input.ClassDefinitionVersions,
 				},
@@ -1586,19 +1633,49 @@ func TestSetIsSingleNestedWhenDefinedAsChild(t *testing.T) {
 	}
 }
 
+type setClassDeprecatedInput struct {
+	ClassDefinitionDeprecated bool
+	MetaIsDeprecated          interface{}
+}
+
 func TestSetDeprecated(t *testing.T) {
 	t.Parallel()
 	test.InitializeTest(t)
 
 	testCases := []test.TestCase{
 		{
-			Name:     "test_deprecated_false",
-			Input:    false,
+			Name:     "test_meta_missing_no_override",
+			Input:    setClassDeprecatedInput{},
 			Expected: false,
 		},
 		{
-			Name:     "test_deprecated_true",
-			Input:    true,
+			Name:     "test_meta_false_no_override",
+			Input:    setClassDeprecatedInput{MetaIsDeprecated: false},
+			Expected: false,
+		},
+		{
+			Name:     "test_meta_true_no_override",
+			Input:    setClassDeprecatedInput{MetaIsDeprecated: true},
+			Expected: true,
+		},
+		{
+			Name:     "test_meta_wrong_type",
+			Input:    setClassDeprecatedInput{MetaIsDeprecated: "yes"},
+			Expected: false,
+		},
+		{
+			Name:     "test_override_true_meta_missing",
+			Input:    setClassDeprecatedInput{ClassDefinitionDeprecated: true},
+			Expected: true,
+		},
+		{
+			Name:     "test_override_true_meta_false",
+			Input:    setClassDeprecatedInput{ClassDefinitionDeprecated: true, MetaIsDeprecated: false},
+			Expected: true,
+		},
+		{
+			Name:     "test_override_false_meta_true",
+			Input:    setClassDeprecatedInput{ClassDefinitionDeprecated: false, MetaIsDeprecated: true},
 			Expected: true,
 		},
 	}
@@ -1606,17 +1683,218 @@ func TestSetDeprecated(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run(testCase.Name, func(t *testing.T) {
 			t.Parallel()
+			input := testCase.Input.(setClassDeprecatedInput)
+
+			metaContent := map[string]interface{}{}
+			if input.MetaIsDeprecated != nil {
+				metaContent["isDeprecated"] = input.MetaIsDeprecated
+			}
 
 			class := Class{
-				Name: testClassName("fvTenant"),
+				Name:            testClassName("fvTenant"),
+				MetaFileContent: metaContent,
 				ClassDefinition: ClassDefinition{
-					Deprecated: testCase.Input.(bool),
+					Deprecated: input.ClassDefinitionDeprecated,
 				},
 			}
 
 			class.setDeprecated()
 
 			assert.Equal(t, testCase.Expected, class.Deprecated, test.MessageEqual(testCase.Expected, class.Deprecated, testCase.Name))
+		})
+	}
+}
+
+type setClassHiddenInput struct {
+	ClassDefinitionHidden bool
+	MetaIsHidden          interface{}
+}
+
+func TestSetHidden(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	testCases := []test.TestCase{
+		{
+			Name:     "test_meta_missing_no_override",
+			Input:    setClassHiddenInput{},
+			Expected: false,
+		},
+		{
+			Name:     "test_meta_false_no_override",
+			Input:    setClassHiddenInput{MetaIsHidden: false},
+			Expected: false,
+		},
+		{
+			Name:     "test_meta_true_no_override",
+			Input:    setClassHiddenInput{MetaIsHidden: true},
+			Expected: true,
+		},
+		{
+			Name:     "test_meta_wrong_type",
+			Input:    setClassHiddenInput{MetaIsHidden: "yes"},
+			Expected: false,
+		},
+		{
+			Name:     "test_override_true_meta_missing",
+			Input:    setClassHiddenInput{ClassDefinitionHidden: true},
+			Expected: true,
+		},
+		{
+			Name:     "test_override_true_meta_false",
+			Input:    setClassHiddenInput{ClassDefinitionHidden: true, MetaIsHidden: false},
+			Expected: true,
+		},
+		{
+			Name:     "test_override_false_meta_true",
+			Input:    setClassHiddenInput{ClassDefinitionHidden: false, MetaIsHidden: true},
+			Expected: true,
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.(setClassHiddenInput)
+
+			metaContent := map[string]interface{}{}
+			if input.MetaIsHidden != nil {
+				metaContent["isHidden"] = input.MetaIsHidden
+			}
+
+			class := Class{
+				Name:            testClassName("fvTenant"),
+				MetaFileContent: metaContent,
+				ClassDefinition: ClassDefinition{
+					Hidden: input.ClassDefinitionHidden,
+				},
+			}
+
+			class.setHidden()
+
+			assert.Equal(t, testCase.Expected, class.Hidden, test.MessageEqual(testCase.Expected, class.Hidden, testCase.Name))
+		})
+	}
+}
+
+type setClassHiddenVersionsInput struct {
+	ClassDefinitionVersions string
+	MetaHiddenSince         interface{}
+}
+
+type setClassHiddenVersionsExpected struct {
+	Raw      string
+	String   string
+	Nil      bool
+	Error    bool
+	ErrorMsg string
+}
+
+func TestSetHiddenVersions(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	testCases := []test.TestCase{
+		{
+			Name:  "test_hidden_versions_not_set",
+			Input: setClassHiddenVersionsInput{},
+			Expected: setClassHiddenVersionsExpected{
+				Nil: true,
+			},
+		},
+		{
+			Name: "test_definition_single_range",
+			Input: setClassHiddenVersionsInput{
+				ClassDefinitionVersions: "4.2(7f)-",
+			},
+			Expected: setClassHiddenVersionsExpected{
+				Raw:    "4.2(7f)-",
+				String: "4.2(7f) and later",
+			},
+		},
+		{
+			Name: "test_meta_hidden_since_single_range",
+			Input: setClassHiddenVersionsInput{
+				MetaHiddenSince: "5.2(1g)-",
+			},
+			Expected: setClassHiddenVersionsExpected{
+				Raw:    "5.2(1g)-",
+				String: "5.2(1g) and later",
+			},
+		},
+		{
+			Name: "test_meta_hidden_since_wrong_type",
+			Input: setClassHiddenVersionsInput{
+				MetaHiddenSince: 123,
+			},
+			Expected: setClassHiddenVersionsExpected{
+				Nil: true,
+			},
+		},
+		{
+			Name: "test_override_replaces_meta",
+			Input: setClassHiddenVersionsInput{
+				ClassDefinitionVersions: "4.2(7f)-",
+				MetaHiddenSince:         "5.2(1g)-",
+			},
+			Expected: setClassHiddenVersionsExpected{
+				Raw:    "4.2(7f)-",
+				String: "4.2(7f) and later",
+			},
+		},
+		{
+			Name: "test_definition_parse_error",
+			Input: setClassHiddenVersionsInput{
+				ClassDefinitionVersions: "invalid",
+			},
+			Expected: setClassHiddenVersionsExpected{
+				Error:    true,
+				ErrorMsg: "failed to parse hidden versions for class 'fvTenant': invalid version 'invalid': unknown",
+			},
+		},
+		{
+			Name: "test_meta_parse_error",
+			Input: setClassHiddenVersionsInput{
+				MetaHiddenSince: "invalid",
+			},
+			Expected: setClassHiddenVersionsExpected{
+				Error:    true,
+				ErrorMsg: "failed to parse hidden versions for class 'fvTenant': invalid version 'invalid': unknown",
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.(setClassHiddenVersionsInput)
+			expected := testCase.Expected.(setClassHiddenVersionsExpected)
+
+			metaContent := map[string]interface{}{}
+			if input.MetaHiddenSince != nil {
+				metaContent["hiddenSince"] = input.MetaHiddenSince
+			}
+
+			class := Class{
+				Name:            testClassName("fvTenant"),
+				MetaFileContent: metaContent,
+				ClassDefinition: ClassDefinition{
+					HiddenVersions: input.ClassDefinitionVersions,
+				},
+			}
+
+			err := class.setHiddenVersions()
+
+			if expected.Error {
+				assert.EqualError(t, err, expected.ErrorMsg)
+			} else if expected.Nil {
+				assert.NoError(t, err, test.MessageUnexpectedError(err))
+				assert.Nil(t, class.HiddenVersions, "expected HiddenVersions to be nil")
+			} else {
+				assert.NoError(t, err, test.MessageUnexpectedError(err))
+				assert.Equal(t, expected.Raw, class.HiddenVersions.Raw(), test.MessageEqual(expected.Raw, class.HiddenVersions.Raw(), testCase.Name))
+				assert.Equal(t, expected.String, class.HiddenVersions.String(), test.MessageEqual(expected.String, class.HiddenVersions.String(), testCase.Name))
+			}
 		})
 	}
 }
