@@ -1148,3 +1148,134 @@ func TestSetClassDocumentationSupportedVersions(t *testing.T) {
 		})
 	}
 }
+
+type setDescriptionWhenDefinedAsChildInput struct {
+	Label              string
+	ResourceName       string
+	ResourceNameNested string
+	IsSingleNested     bool
+	Relation           Relation
+	StoreClasses       map[string]Class
+}
+
+func TestSetDescriptionWhenDefinedAsChild(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	fooLink := "[fvFoo](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvFoo/overview)"
+	bdLink := "[fvBD](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvBD/overview)"
+
+	testCases := []test.TestCase{
+		{
+			Name: "test_non_relational_list",
+			Input: setDescriptionWhenDefinedAsChildInput{
+				Label:              "Foo",
+				ResourceName:       "foo",
+				ResourceNameNested: "foo",
+				IsSingleNested:     false,
+			},
+			Expected: "foo - (" + fooLink + ") - (list) A list of Foo which can also be configured using a separate [aci_foo](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/foo) resource.",
+		},
+		{
+			Name: "test_non_relational_map",
+			Input: setDescriptionWhenDefinedAsChildInput{
+				Label:              "Foo",
+				ResourceName:       "foo",
+				ResourceNameNested: "foo",
+				IsSingleNested:     true,
+			},
+			Expected: "foo - (" + fooLink + ") - (map) A map of Foo.",
+		},
+		{
+			Name: "test_relational_list",
+			Input: setDescriptionWhenDefinedAsChildInput{
+				Label:              "Relation From Foo To BD",
+				ResourceName:       "relation_from_foo_to_bd",
+				ResourceNameNested: "relation_to_bd",
+				IsSingleNested:     false,
+				Relation:           Relation{RelationalClass: true, ToClass: "fvBD"},
+				StoreClasses: map[string]Class{
+					"fvBD": {ResourceName: "bridge_domain", Documentation: ClassDocumentation{Label: "Bridge Domain"}},
+				},
+			},
+			Expected: "relation_to_bd - (" + fooLink + ") - (list) A list of Relation From Foo To BD pointing to Bridge Domain (" + bdLink + ") which can be configured using the [aci_bridge_domain](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bridge_domain) resource.",
+		},
+		{
+			Name: "test_relational_map",
+			Input: setDescriptionWhenDefinedAsChildInput{
+				Label:              "Relation From Foo To BD",
+				ResourceName:       "relation_from_foo_to_bd",
+				ResourceNameNested: "relation_to_bd",
+				IsSingleNested:     true,
+				Relation:           Relation{RelationalClass: true, ToClass: "fvBD"},
+				StoreClasses: map[string]Class{
+					"fvBD": {ResourceName: "bridge_domain", Documentation: ClassDocumentation{Label: "Bridge Domain"}},
+				},
+			},
+			Expected: "relation_to_bd - (" + fooLink + ") - (map) A map of Relation From Foo To BD pointing to Bridge Domain (" + bdLink + ").",
+		},
+		{
+			Name: "test_relational_toclass_missing_in_store",
+			Input: setDescriptionWhenDefinedAsChildInput{
+				Label:              "Relation From Foo To BD",
+				ResourceName:       "relation_from_foo_to_bd",
+				ResourceNameNested: "relation_to_bd",
+				IsSingleNested:     false,
+				Relation:           Relation{RelationalClass: true, ToClass: "fvBD"},
+				StoreClasses:       map[string]Class{},
+			},
+			Expected: "relation_to_bd - (" + fooLink + ") - (list) A list of Relation From Foo To BD pointing to fvBD (" + bdLink + ").",
+		},
+		{
+			Name: "test_relational_toclass_no_resource",
+			Input: setDescriptionWhenDefinedAsChildInput{
+				Label:              "Relation From Foo To BD",
+				ResourceName:       "relation_from_foo_to_bd",
+				ResourceNameNested: "relation_to_bd",
+				IsSingleNested:     false,
+				Relation:           Relation{RelationalClass: true, ToClass: "fvBD"},
+				StoreClasses: map[string]Class{
+					"fvBD": {ResourceName: "", Documentation: ClassDocumentation{Label: "Bridge Domain"}},
+				},
+			},
+			Expected: "relation_to_bd - (" + fooLink + ") - (list) A list of Relation From Foo To BD pointing to Bridge Domain (" + bdLink + ").",
+		},
+		{
+			Name: "test_relational_toclass_empty_label",
+			Input: setDescriptionWhenDefinedAsChildInput{
+				Label:              "Relation From Foo To BD",
+				ResourceName:       "relation_from_foo_to_bd",
+				ResourceNameNested: "relation_to_bd",
+				IsSingleNested:     false,
+				Relation:           Relation{RelationalClass: true, ToClass: "fvBD"},
+				StoreClasses: map[string]Class{
+					"fvBD": {ResourceName: "bridge_domain"},
+				},
+			},
+			Expected: "relation_to_bd - (" + fooLink + ") - (list) A list of Relation From Foo To BD pointing to fvBD (" + bdLink + ") which can be configured using the [aci_bridge_domain](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bridge_domain) resource.",
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.(setDescriptionWhenDefinedAsChildInput)
+			expected := testCase.Expected.(string)
+
+			class := Class{
+				Name:                             testClassName("fvFoo"),
+				ResourceName:                     input.ResourceName,
+				ResourceNameNested:               input.ResourceNameNested,
+				IsSingleNestedWhenDefinedAsChild: input.IsSingleNested,
+				Relation:                         input.Relation,
+			}
+			class.Documentation.Label = input.Label
+			ds := &DataStore{Classes: input.StoreClasses}
+
+			class.Documentation.setClassName(&class)
+			class.Documentation.setDescriptionWhenDefinedAsChild(&class, ds)
+
+			assert.Equal(t, expected, class.Documentation.DescriptionWhenDefinedAsChild, test.MessageEqual(expected, class.Documentation.DescriptionWhenDefinedAsChild, testCase.Name))
+		})
+	}
+}
