@@ -140,7 +140,7 @@ const (
 )
 
 func NewProperty(name string, details map[string]interface{}, definition PropertyDefinition, globalDefinition GlobalMetaDefinition) (*Property, error) {
-	genLogger.Trace(fmt.Sprintf("Creating new property struct for property: %s.", name))
+	genLogger.Tracef("Creating new property struct for property: %s.", name)
 
 	property := &Property{
 		PropertyName:       name,
@@ -154,13 +154,13 @@ func NewProperty(name string, details map[string]interface{}, definition Propert
 		return nil, err
 	}
 
-	genLogger.Trace(fmt.Sprintf("Successfully created new property struct for property: %s.", name))
+	genLogger.Tracef("Successfully created new property struct for property: %s.", name)
 
 	return property, nil
 }
 
 func (p *Property) setPropertyData() error {
-	genLogger.Debug(fmt.Sprintf("Setting property data for property '%s'.", p.PropertyName))
+	genLogger.Debugf("Setting property data for property '%s'.", p.PropertyName)
 
 	p.setAttributeName()
 
@@ -212,14 +212,14 @@ func (p *Property) setPropertyData() error {
 		return err
 	}
 
-	genLogger.Debug(fmt.Sprintf("Successfully set property data for property '%s'.", p.PropertyName))
+	genLogger.Debugf("Successfully set property data for property '%s'.", p.PropertyName)
 	return nil
 }
 
 func (p *Property) setAttributeName() {
 	// Determine the attribute name of the property.
 	// Priority: per-class definition override > global attribute name override > default snake_case derivation.
-	genLogger.Debug(fmt.Sprintf("Setting AttributeName for property '%s'.", p.PropertyName))
+	genLogger.Debugf("Setting AttributeName for property '%s'.", p.PropertyName)
 
 	if p.propertyDefinition.AttributeName != "" {
 		p.AttributeName = p.propertyDefinition.AttributeName
@@ -229,43 +229,43 @@ func (p *Property) setAttributeName() {
 		p.AttributeName = utils.Underscore(p.PropertyName)
 	}
 
-	genLogger.Debug(fmt.Sprintf("Successfully set AttributeName '%s' for property '%s'.", p.AttributeName, p.PropertyName))
+	genLogger.Debugf("Successfully set AttributeName '%s' for property '%s'.", p.AttributeName, p.PropertyName)
 }
 
 func (p *Property) setComputed() {
 	// Determine if the property is computed.
 	// By default all properties are computed except required properties,
 	// because optional properties can have server-side defaults and read-only properties are always computed.
-	genLogger.Debug(fmt.Sprintf("Setting Computed for property '%s'.", p.PropertyName))
+	genLogger.Debugf("Setting Computed for property '%s'.", p.PropertyName)
 
 	p.Computed = !p.Required
 
-	genLogger.Debug(fmt.Sprintf("Successfully set Computed '%t' for property '%s'.", p.Computed, p.PropertyName))
+	genLogger.Debugf("Successfully set Computed '%t' for property '%s'.", p.Computed, p.PropertyName)
 }
 
 func (p *Property) setCustomType() {
 	// Determine if the property has a custom type.
-	genLogger.Debug(fmt.Sprintf("Setting CustomType for property '%s'.", p.PropertyName))
-	genLogger.Debug(fmt.Sprintf("Successfully set CustomType for property '%s'.", p.PropertyName))
+	genLogger.Debugf("Setting CustomType for property '%s'.", p.PropertyName)
+	genLogger.Debugf("Successfully set CustomType for property '%s'.", p.PropertyName)
 }
 
 func (p *Property) setDeprecated() {
 	// Determine if the property is deprecated.
-	genLogger.Debug(fmt.Sprintf("Setting Deprecated for property '%s'.", p.PropertyName))
+	genLogger.Debugf("Setting Deprecated for property '%s'.", p.PropertyName)
 
 	p.Deprecated = p.propertyDefinition.Deprecated
 
-	genLogger.Debug(fmt.Sprintf("Successfully set Deprecated '%t' for property '%s'.", p.Deprecated, p.PropertyName))
+	genLogger.Debugf("Successfully set Deprecated '%t' for property '%s'.", p.Deprecated, p.PropertyName)
 }
 
 func (p *Property) setDeprecatedVersions() error {
 	// Determine the deprecated APIC versions for the property from the definition file.
-	genLogger.Debug(fmt.Sprintf("Setting DeprecatedVersions for property '%s'.", p.PropertyName))
+	genLogger.Debugf("Setting DeprecatedVersions for property '%s'.", p.PropertyName)
 
 	// DeprecatedVersions is only set from the definition file (meta file doesn't support this yet).
 	metaVersions := p.propertyDefinition.DeprecatedVersions
 	if metaVersions == "" {
-		genLogger.Debug(fmt.Sprintf("No DeprecatedVersions specified for property '%s'.", p.PropertyName))
+		genLogger.Debugf("No DeprecatedVersions specified for property '%s'.", p.PropertyName)
 		return nil
 	}
 
@@ -275,27 +275,27 @@ func (p *Property) setDeprecatedVersions() error {
 	}
 	p.DeprecatedVersions = versions
 
-	genLogger.Debug(fmt.Sprintf("Successfully set DeprecatedVersions for property '%s'. Versions: '%s'", p.PropertyName, p.DeprecatedVersions))
+	genLogger.Debugf("Successfully set DeprecatedVersions for property '%s'. Versions: '%s'", p.PropertyName, p.DeprecatedVersions)
 	return nil
 }
 
 func (p *Property) setDocumentation() {
 	// Determine the documentation specific information for the property.
-	genLogger.Debug(fmt.Sprintf("Setting Documentation for property '%s'.", p.PropertyName))
-	genLogger.Debug(fmt.Sprintf("Successfully set Documentation for property '%s'.", p.PropertyName))
+	genLogger.Debugf("Setting Documentation for property '%s'.", p.PropertyName)
+	genLogger.Debugf("Successfully set Documentation for property '%s'.", p.PropertyName)
 }
 
 func (p *Property) setMigrationValues() {
 	// Determine the migration values for the property.
-	genLogger.Debug(fmt.Sprintf("Setting MigrationValues for property '%s'.", p.PropertyName))
-	genLogger.Debug(fmt.Sprintf("Successfully set MigrationValues for property '%s'.", p.PropertyName))
+	genLogger.Debugf("Setting MigrationValues for property '%s'.", p.PropertyName)
+	genLogger.Debugf("Successfully set MigrationValues for property '%s'.", p.PropertyName)
 }
 
 func (p *Property) setOptional() {
 	// Determine if the property is optional.
 	// A property is optional when the definition restriction is "optional",
 	// or when the meta file indicates isConfigurable is true and the property is not required and the restriction is not "read_only".
-	genLogger.Debug(fmt.Sprintf("Setting Optional for property '%s'.", p.PropertyName))
+	genLogger.Debugf("Setting Optional for property '%s'.", p.PropertyName)
 
 	if p.propertyDefinition.Restriction == "optional" {
 		p.Optional = true
@@ -303,33 +303,33 @@ func (p *Property) setOptional() {
 		p.Optional = true
 	}
 
-	genLogger.Debug(fmt.Sprintf("Successfully set Optional '%t' for property '%s'.", p.Optional, p.PropertyName))
+	genLogger.Debugf("Successfully set Optional '%t' for property '%s'.", p.Optional, p.PropertyName)
 }
 
 func (p *Property) setPointsToClass() {
 	// Determine the class to which the property points.
-	genLogger.Debug(fmt.Sprintf("Setting PointsToClass for property '%s'.", p.PropertyName))
-	genLogger.Debug(fmt.Sprintf("Successfully set PointsToClass for property '%s'.", p.PropertyName))
+	genLogger.Debugf("Setting PointsToClass for property '%s'.", p.PropertyName)
+	genLogger.Debugf("Successfully set PointsToClass for property '%s'.", p.PropertyName)
 }
 
 func (p *Property) setReadOnly() {
 	// Determine if the property is read-only.
 	// A property is read-only only when the definition restriction is "read_only".
 	// This is used to include isConfigurable=false properties as read-only attributes in the schema.
-	genLogger.Debug(fmt.Sprintf("Setting ReadOnly for property '%s'.", p.PropertyName))
+	genLogger.Debugf("Setting ReadOnly for property '%s'.", p.PropertyName)
 
 	if p.propertyDefinition.Restriction == "read_only" {
 		p.ReadOnly = true
 	}
 
-	genLogger.Debug(fmt.Sprintf("Successfully set ReadOnly '%t' for property '%s'.", p.ReadOnly, p.PropertyName))
+	genLogger.Debugf("Successfully set ReadOnly '%t' for property '%s'.", p.ReadOnly, p.PropertyName)
 }
 
 func (p *Property) setRequired() {
 	// Determine if the property is required.
 	// A property is required when the definition restriction is "required",
 	// or when the meta file indicates isConfigurable and isNaming are both true.
-	genLogger.Debug(fmt.Sprintf("Setting Required for property '%s'.", p.PropertyName))
+	genLogger.Debugf("Setting Required for property '%s'.", p.PropertyName)
 
 	if p.propertyDefinition.Restriction == "required" {
 		p.Required = true
@@ -337,14 +337,14 @@ func (p *Property) setRequired() {
 		p.Required = true
 	}
 
-	genLogger.Debug(fmt.Sprintf("Successfully set Required '%t' for property '%s'.", p.Required, p.PropertyName))
+	genLogger.Debugf("Successfully set Required '%t' for property '%s'.", p.Required, p.PropertyName)
 }
 
 func (p *Property) setSensitive() {
 	// Determine if the property is sensitive.
 	// A property is sensitive when the definition override is true,
 	// or when the meta file indicates secure is true.
-	genLogger.Debug(fmt.Sprintf("Setting Sensitive for property '%s'.", p.PropertyName))
+	genLogger.Debugf("Setting Sensitive for property '%s'.", p.PropertyName)
 
 	if p.propertyDefinition.Sensitive {
 		p.Sensitive = true
@@ -352,36 +352,36 @@ func (p *Property) setSensitive() {
 		p.Sensitive = true
 	}
 
-	genLogger.Debug(fmt.Sprintf("Successfully set Sensitive '%t' for property '%s'.", p.Sensitive, p.PropertyName))
+	genLogger.Debugf("Successfully set Sensitive '%t' for property '%s'.", p.Sensitive, p.PropertyName)
 }
 
 func (p *Property) setTestValues() {
 	// Determine the test values for the property.
-	genLogger.Debug(fmt.Sprintf("Setting TestValues for property '%s'.", p.PropertyName))
-	genLogger.Debug(fmt.Sprintf("Successfully set TestValues for property '%s'.", p.PropertyName))
+	genLogger.Debugf("Setting TestValues for property '%s'.", p.PropertyName)
+	genLogger.Debugf("Successfully set TestValues for property '%s'.", p.PropertyName)
 }
 
 func (p *Property) setValidators() {
 	// Determine the validators for the property.
-	genLogger.Debug(fmt.Sprintf("Setting Validators for property '%s'.", p.PropertyName))
-	genLogger.Debug(fmt.Sprintf("Successfully set Validators for property '%s'.", p.PropertyName))
+	genLogger.Debugf("Setting Validators for property '%s'.", p.PropertyName)
+	genLogger.Debugf("Successfully set Validators for property '%s'.", p.PropertyName)
 }
 
 func (p *Property) setValidValues() {
 	// Determine the valid values for the property.
-	genLogger.Debug(fmt.Sprintf("Setting ValidValues for property '%s'.", p.PropertyName))
-	genLogger.Debug(fmt.Sprintf("Successfully set ValidValues for property '%s'.", p.PropertyName))
+	genLogger.Debugf("Setting ValidValues for property '%s'.", p.PropertyName)
+	genLogger.Debugf("Successfully set ValidValues for property '%s'.", p.PropertyName)
 }
 
 func (p *Property) setValueType() {
 	// Determine the value type of the property.
-	genLogger.Debug(fmt.Sprintf("Setting ValueType for property '%s'.", p.PropertyName))
-	genLogger.Debug(fmt.Sprintf("Successfully set ValueType for property '%s'.", p.PropertyName))
+	genLogger.Debugf("Setting ValueType for property '%s'.", p.PropertyName)
+	genLogger.Debugf("Successfully set ValueType for property '%s'.", p.PropertyName)
 }
 
 func (p *Property) setSupportedVersions() error {
 	// Determine the supported APIC versions for the property.
-	genLogger.Debug(fmt.Sprintf("Setting SupportedVersions for property '%s'.", p.PropertyName))
+	genLogger.Debugf("Setting SupportedVersions for property '%s'.", p.PropertyName)
 
 	// Initialize with versions from PropertyDefinition, if not defined set the versions from meta file.
 	metaVersions := p.propertyDefinition.SupportedVersions
@@ -390,7 +390,7 @@ func (p *Property) setSupportedVersions() error {
 	}
 
 	if metaVersions == "" {
-		genLogger.Debug(fmt.Sprintf("No SupportedVersions specified for property '%s'.", p.PropertyName))
+		genLogger.Debugf("No SupportedVersions specified for property '%s'.", p.PropertyName)
 		return nil
 	}
 
@@ -400,6 +400,6 @@ func (p *Property) setSupportedVersions() error {
 	}
 	p.SupportedVersions = versions
 
-	genLogger.Debug(fmt.Sprintf("Successfully set SupportedVersions for property '%s'. Versions: '%s'", p.PropertyName, p.SupportedVersions))
+	genLogger.Debugf("Successfully set SupportedVersions for property '%s'. Versions: '%s'", p.PropertyName, p.SupportedVersions)
 	return nil
 }
