@@ -19,12 +19,20 @@ type Class struct {
 	// Custom class definition to override class meta properties
 	ClassDefinition ClassDefinition
 	// Deprecated resources include a warning the resource and datasource schemas.
+	// Driven by the meta `isDeprecated` flag with an optional definition override (logical OR).
 	Deprecated bool
 	// The deprecated APIC versions for the class.
 	// Used to indicate versions where the class is deprecated but still functional.
+	// Driven by the meta `deprecatedSince` value with an optional definition override.
 	DeprecatedVersions *Versions
 	// Documentation specific information for the class.
 	Documentation ClassDocumentation
+	// Hidden indicates that the class is no longer accepted by the APIC API.
+	// Driven by the meta `isHidden` flag with an optional definition override (logical OR).
+	Hidden bool
+	// The hidden APIC versions for the class.
+	// Driven by the meta `hiddenSince` value with an optional definition override.
+	HiddenVersions *Versions
 	// List of all identifying properties of the class.
 	// These are properties that are part of the relative name (RN) format, ex 'tn-{name}' where name is the identifying property.
 	IdentifiedBy []string
@@ -202,6 +210,13 @@ func (c *Class) setClassData(ds *DataStore) error {
 		return err
 	}
 
+	c.setHidden()
+
+	err = c.setHiddenVersions()
+	if err != nil {
+		return err
+	}
+
 	c.setIdentifiedBy()
 
 	// TODO: add function to set IsMigration
@@ -306,29 +321,70 @@ func (c *Class) setChildren(ds *DataStore) error {
 func (c *Class) setDeprecated() {
 	genLogger.Debugf("Setting Deprecated for class '%s'.", c.Name)
 
-	c.Deprecated = c.ClassDefinition.Deprecated
+	if c.ClassDefinition.Deprecated {
+		c.Deprecated = true
+	} else if metaDeprecated, ok := c.MetaFileContent["isDeprecated"].(bool); ok {
+		c.Deprecated = metaDeprecated
+	}
 
 	genLogger.Debugf("Successfully set Deprecated for class '%s'. Deprecated: %t", c.Name, c.Deprecated)
 }
 
 func (c *Class) setDeprecatedVersions() error {
-	// Determine the deprecated APIC versions for the class from the definition file.
+	// Determine the deprecated APIC versions for the class from the definition file (override) or meta `deprecatedSince`.
 	genLogger.Debugf("Setting DeprecatedVersions for class '%s'.", c.Name)
 
-	// DeprecatedVersions is only set from the definition file (meta file doesn't support this yet).
-	metaVersions := c.ClassDefinition.DeprecatedVersions
-	if metaVersions == "" {
+	deprecatedVersions := c.ClassDefinition.DeprecatedVersions
+	if deprecatedVersions == "" {
+		deprecatedVersions, _ = c.MetaFileContent["deprecatedSince"].(string)
+	}
+	if deprecatedVersions == "" {
 		genLogger.Debugf("No DeprecatedVersions specified for class '%s'.", c.Name)
 		return nil
 	}
 
-	versions, err := NewVersions(metaVersions)
+	parsedVersions, err := NewVersions(deprecatedVersions)
 	if err != nil {
 		return fmt.Errorf("failed to parse deprecated versions for class '%s': %w", c.Name, err)
 	}
-	c.DeprecatedVersions = versions
+	c.DeprecatedVersions = parsedVersions
 
 	genLogger.Debugf("Successfully set DeprecatedVersions for class '%s'. Versions: '%s'", c.Name, c.DeprecatedVersions)
+	return nil
+}
+
+func (c *Class) setHidden() {
+	genLogger.Debugf("Setting Hidden for class '%s'.", c.Name)
+
+	if c.ClassDefinition.Hidden {
+		c.Hidden = true
+	} else if metaHidden, ok := c.MetaFileContent["isHidden"].(bool); ok {
+		c.Hidden = metaHidden
+	}
+
+	genLogger.Debugf("Successfully set Hidden for class '%s'. Hidden: %t", c.Name, c.Hidden)
+}
+
+func (c *Class) setHiddenVersions() error {
+	// Determine the hidden APIC versions for the class from the definition file (override) or meta `hiddenSince`.
+	genLogger.Debugf("Setting HiddenVersions for class '%s'.", c.Name)
+
+	hiddenVersions := c.ClassDefinition.HiddenVersions
+	if hiddenVersions == "" {
+		hiddenVersions, _ = c.MetaFileContent["hiddenSince"].(string)
+	}
+	if hiddenVersions == "" {
+		genLogger.Debugf("No HiddenVersions specified for class '%s'.", c.Name)
+		return nil
+	}
+
+	parsedVersions, err := NewVersions(hiddenVersions)
+	if err != nil {
+		return fmt.Errorf("failed to parse hidden versions for class '%s': %w", c.Name, err)
+	}
+	c.HiddenVersions = parsedVersions
+
+	genLogger.Debugf("Successfully set HiddenVersions for class '%s'. Versions: '%s'", c.Name, c.HiddenVersions)
 	return nil
 }
 
