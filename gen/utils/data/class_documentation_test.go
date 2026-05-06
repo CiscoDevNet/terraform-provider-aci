@@ -585,31 +585,75 @@ func TestSetDocumentationChildren(t *testing.T) {
 	}
 }
 
+type setDeprecationWarningInput struct {
+	Deprecated         bool
+	DeprecatedVersions string
+	Hidden             bool
+	HiddenVersions     string
+}
+
 func TestSetDeprecationWarning(t *testing.T) {
 	t.Parallel()
 	test.InitializeTest(t)
 
+	classNameLink := "[fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview)"
+	terraformSentence := "The `aci_tenant` resource and datasource are deprecated and will be removed in a future release of the provider."
+
 	testCases := []test.TestCase{
 		{
-			Name:     "test_not_deprecated",
-			Input:    false,
+			Name:     "test_none",
+			Input:    setDeprecationWarningInput{},
 			Expected: "",
 		},
 		{
-			Name:     "test_deprecated",
-			Input:    true,
-			Expected: "The [fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview) class is deprecated and will be removed in a future release.",
+			Name:  "test_deprecated_only_no_versions",
+			Input: setDeprecationWarningInput{Deprecated: true},
+			Expected: "The " + classNameLink + " class is deprecated by the APIC API and may be removed in a future APIC release. " + terraformSentence,
+		},
+		{
+			Name:  "test_deprecated_only_with_versions",
+			Input: setDeprecationWarningInput{Deprecated: true, DeprecatedVersions: "6.0(1a)-"},
+			Expected: "The " + classNameLink + " class is deprecated by the APIC API as of version 6.0(1a) and later and may be removed in a future APIC release. " + terraformSentence,
+		},
+		{
+			Name:  "test_hidden_only_no_versions",
+			Input: setDeprecationWarningInput{Hidden: true},
+			Expected: "The " + classNameLink + " class is no longer accepted by the APIC API. " + terraformSentence,
+		},
+		{
+			Name:  "test_hidden_only_with_versions",
+			Input: setDeprecationWarningInput{Hidden: true, HiddenVersions: "6.0(1a)-"},
+			Expected: "The " + classNameLink + " class is no longer accepted by the APIC API as of version 6.0(1a) and later. " + terraformSentence,
+		},
+		{
+			Name:  "test_hidden_supersedes_deprecated",
+			Input: setDeprecationWarningInput{Hidden: true, Deprecated: true, DeprecatedVersions: "5.0(1a)-"},
+			Expected: "The " + classNameLink + " class is no longer accepted by the APIC API. " + terraformSentence,
 		},
 	}
 
 	for _, testCase := range testCases {
 		t.Run(testCase.Name, func(t *testing.T) {
 			t.Parallel()
+			input := testCase.Input.(setDeprecationWarningInput)
 
 			class := Class{
-				Name:       testClassName("fvTenant"),
-				Deprecated: testCase.Input.(bool),
+				Name:         testClassName("fvTenant"),
+				ResourceName: "tenant",
+				Deprecated:   input.Deprecated,
+				Hidden:       input.Hidden,
 			}
+			if input.DeprecatedVersions != "" {
+				parsed, err := NewVersions(input.DeprecatedVersions)
+				assert.NoError(t, err)
+				class.DeprecatedVersions = parsed
+			}
+			if input.HiddenVersions != "" {
+				parsed, err := NewVersions(input.HiddenVersions)
+				assert.NoError(t, err)
+				class.HiddenVersions = parsed
+			}
+
 			class.Documentation.setClassName(&class)
 			class.Documentation.setDeprecationWarning(&class)
 

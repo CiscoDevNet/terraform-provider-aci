@@ -471,19 +471,49 @@ func TestSetSensitive(t *testing.T) {
 	}
 }
 
+type setPropertyDeprecatedInput struct {
+	PropertyDefinition PropertyDefinition
+	MetaDetails        map[string]interface{}
+}
+
 func TestPropertySetDeprecated(t *testing.T) {
 	t.Parallel()
 	test.InitializeTest(t)
 
 	testCases := []test.TestCase{
 		{
-			Name:     "test_deprecated_false",
-			Input:    PropertyDefinition{},
+			Name:     "test_meta_missing_no_override",
+			Input:    setPropertyDeprecatedInput{},
 			Expected: false,
 		},
 		{
-			Name:     "test_deprecated_true",
-			Input:    PropertyDefinition{Deprecated: true},
+			Name:     "test_meta_false_no_override",
+			Input:    setPropertyDeprecatedInput{MetaDetails: map[string]interface{}{"isDeprecated": false}},
+			Expected: false,
+		},
+		{
+			Name:     "test_meta_true_no_override",
+			Input:    setPropertyDeprecatedInput{MetaDetails: map[string]interface{}{"isDeprecated": true}},
+			Expected: true,
+		},
+		{
+			Name:     "test_meta_wrong_type",
+			Input:    setPropertyDeprecatedInput{MetaDetails: map[string]interface{}{"isDeprecated": "yes"}},
+			Expected: false,
+		},
+		{
+			Name:     "test_override_true_meta_missing",
+			Input:    setPropertyDeprecatedInput{PropertyDefinition: PropertyDefinition{Deprecated: true}},
+			Expected: true,
+		},
+		{
+			Name:     "test_override_true_meta_false",
+			Input:    setPropertyDeprecatedInput{PropertyDefinition: PropertyDefinition{Deprecated: true}, MetaDetails: map[string]interface{}{"isDeprecated": false}},
+			Expected: true,
+		},
+		{
+			Name:     "test_override_false_meta_true",
+			Input:    setPropertyDeprecatedInput{PropertyDefinition: PropertyDefinition{Deprecated: false}, MetaDetails: map[string]interface{}{"isDeprecated": true}},
 			Expected: true,
 		},
 	}
@@ -491,10 +521,12 @@ func TestPropertySetDeprecated(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run(testCase.Name, func(t *testing.T) {
 			t.Parallel()
+			input := testCase.Input.(setPropertyDeprecatedInput)
 
 			property := &Property{
 				PropertyName:       "testProp",
-				propertyDefinition: testCase.Input.(PropertyDefinition),
+				propertyDefinition: input.PropertyDefinition,
+				metaDetails:        input.MetaDetails,
 			}
 
 			property.setDeprecated()
@@ -502,6 +534,11 @@ func TestPropertySetDeprecated(t *testing.T) {
 			assert.Equal(t, testCase.Expected, property.Deprecated, test.MessageEqual(testCase.Expected, property.Deprecated, testCase.Name))
 		})
 	}
+}
+
+type setPropertyDeprecatedVersionsInput struct {
+	PropertyDefinition PropertyDefinition
+	MetaDetails        map[string]interface{}
 }
 
 type setPropertyDeprecatedVersionsExpected struct {
@@ -519,14 +556,14 @@ func TestPropertySetDeprecatedVersions(t *testing.T) {
 	testCases := []test.TestCase{
 		{
 			Name:  "test_deprecated_versions_not_set",
-			Input: PropertyDefinition{},
+			Input: setPropertyDeprecatedVersionsInput{},
 			Expected: setPropertyDeprecatedVersionsExpected{
 				Nil: true,
 			},
 		},
 		{
 			Name:  "test_deprecated_versions_single_range",
-			Input: PropertyDefinition{DeprecatedVersions: "4.2(7f)-"},
+			Input: setPropertyDeprecatedVersionsInput{PropertyDefinition: PropertyDefinition{DeprecatedVersions: "4.2(7f)-"}},
 			Expected: setPropertyDeprecatedVersionsExpected{
 				Raw:    "4.2(7f)-",
 				String: "4.2(7f) and later",
@@ -534,7 +571,7 @@ func TestPropertySetDeprecatedVersions(t *testing.T) {
 		},
 		{
 			Name:  "test_deprecated_versions_bounded_range",
-			Input: PropertyDefinition{DeprecatedVersions: "3.2(10e)-4.2(7f)"},
+			Input: setPropertyDeprecatedVersionsInput{PropertyDefinition: PropertyDefinition{DeprecatedVersions: "3.2(10e)-4.2(7f)"}},
 			Expected: setPropertyDeprecatedVersionsExpected{
 				Raw:    "3.2(10e)-4.2(7f)",
 				String: "3.2(10e) to 4.2(7f)",
@@ -542,7 +579,7 @@ func TestPropertySetDeprecatedVersions(t *testing.T) {
 		},
 		{
 			Name:  "test_deprecated_versions_multiple_ranges",
-			Input: PropertyDefinition{DeprecatedVersions: "3.2(10e)-3.2(10g),4.2(7f)-"},
+			Input: setPropertyDeprecatedVersionsInput{PropertyDefinition: PropertyDefinition{DeprecatedVersions: "3.2(10e)-3.2(10g),4.2(7f)-"}},
 			Expected: setPropertyDeprecatedVersionsExpected{
 				Raw:    "3.2(10e)-3.2(10g),4.2(7f)-",
 				String: "3.2(10e) to 3.2(10g), 4.2(7f) and later",
@@ -550,7 +587,7 @@ func TestPropertySetDeprecatedVersions(t *testing.T) {
 		},
 		{
 			Name:  "test_error_invalid_deprecated_version",
-			Input: PropertyDefinition{DeprecatedVersions: "invalid"},
+			Input: setPropertyDeprecatedVersionsInput{PropertyDefinition: PropertyDefinition{DeprecatedVersions: "invalid"}},
 			Expected: setPropertyDeprecatedVersionsExpected{
 				Error:    true,
 				ErrorMsg: "failed to parse deprecated versions for property 'testProp': invalid version 'invalid': unknown",
@@ -558,7 +595,41 @@ func TestPropertySetDeprecatedVersions(t *testing.T) {
 		},
 		{
 			Name:  "test_error_invalid_deprecated_version_in_range",
-			Input: PropertyDefinition{DeprecatedVersions: "4.2(7f)-,invalid"},
+			Input: setPropertyDeprecatedVersionsInput{PropertyDefinition: PropertyDefinition{DeprecatedVersions: "4.2(7f)-,invalid"}},
+			Expected: setPropertyDeprecatedVersionsExpected{
+				Error:    true,
+				ErrorMsg: "failed to parse deprecated versions for property 'testProp': invalid version 'invalid': unknown",
+			},
+		},
+		{
+			Name:  "test_meta_deprecated_since_single_range",
+			Input: setPropertyDeprecatedVersionsInput{MetaDetails: map[string]interface{}{"deprecatedSince": "5.2(1g)-"}},
+			Expected: setPropertyDeprecatedVersionsExpected{
+				Raw:    "5.2(1g)-",
+				String: "5.2(1g) and later",
+			},
+		},
+		{
+			Name:  "test_meta_deprecated_since_wrong_type",
+			Input: setPropertyDeprecatedVersionsInput{MetaDetails: map[string]interface{}{"deprecatedSince": 123}},
+			Expected: setPropertyDeprecatedVersionsExpected{
+				Nil: true,
+			},
+		},
+		{
+			Name: "test_override_replaces_meta",
+			Input: setPropertyDeprecatedVersionsInput{
+				PropertyDefinition: PropertyDefinition{DeprecatedVersions: "4.2(7f)-"},
+				MetaDetails:        map[string]interface{}{"deprecatedSince": "5.2(1g)-"},
+			},
+			Expected: setPropertyDeprecatedVersionsExpected{
+				Raw:    "4.2(7f)-",
+				String: "4.2(7f) and later",
+			},
+		},
+		{
+			Name:  "test_meta_parse_error",
+			Input: setPropertyDeprecatedVersionsInput{MetaDetails: map[string]interface{}{"deprecatedSince": "invalid"}},
 			Expected: setPropertyDeprecatedVersionsExpected{
 				Error:    true,
 				ErrorMsg: "failed to parse deprecated versions for property 'testProp': invalid version 'invalid': unknown",
@@ -569,11 +640,13 @@ func TestPropertySetDeprecatedVersions(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run(testCase.Name, func(t *testing.T) {
 			t.Parallel()
+			input := testCase.Input.(setPropertyDeprecatedVersionsInput)
 			expected := testCase.Expected.(setPropertyDeprecatedVersionsExpected)
 
 			property := &Property{
 				PropertyName:       "testProp",
-				propertyDefinition: testCase.Input.(PropertyDefinition),
+				propertyDefinition: input.PropertyDefinition,
+				metaDetails:        input.MetaDetails,
 			}
 
 			err := property.setDeprecatedVersions()
@@ -587,6 +660,176 @@ func TestPropertySetDeprecatedVersions(t *testing.T) {
 				assert.NoError(t, err, test.MessageUnexpectedError(err))
 				assert.Equal(t, expected.Raw, property.DeprecatedVersions.Raw(), test.MessageEqual(expected.Raw, property.DeprecatedVersions.Raw(), testCase.Name))
 				assert.Equal(t, expected.String, property.DeprecatedVersions.String(), test.MessageEqual(expected.String, property.DeprecatedVersions.String(), testCase.Name))
+			}
+		})
+	}
+}
+
+type setPropertyHiddenInput struct {
+	PropertyDefinition PropertyDefinition
+	MetaDetails        map[string]interface{}
+}
+
+func TestPropertySetHidden(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	testCases := []test.TestCase{
+		{
+			Name:     "test_meta_missing_no_override",
+			Input:    setPropertyHiddenInput{},
+			Expected: false,
+		},
+		{
+			Name:     "test_meta_false_no_override",
+			Input:    setPropertyHiddenInput{MetaDetails: map[string]interface{}{"isHidden": false}},
+			Expected: false,
+		},
+		{
+			Name:     "test_meta_true_no_override",
+			Input:    setPropertyHiddenInput{MetaDetails: map[string]interface{}{"isHidden": true}},
+			Expected: true,
+		},
+		{
+			Name:     "test_meta_wrong_type",
+			Input:    setPropertyHiddenInput{MetaDetails: map[string]interface{}{"isHidden": "yes"}},
+			Expected: false,
+		},
+		{
+			Name:     "test_override_true_meta_missing",
+			Input:    setPropertyHiddenInput{PropertyDefinition: PropertyDefinition{Hidden: true}},
+			Expected: true,
+		},
+		{
+			Name:     "test_override_true_meta_false",
+			Input:    setPropertyHiddenInput{PropertyDefinition: PropertyDefinition{Hidden: true}, MetaDetails: map[string]interface{}{"isHidden": false}},
+			Expected: true,
+		},
+		{
+			Name:     "test_override_false_meta_true",
+			Input:    setPropertyHiddenInput{PropertyDefinition: PropertyDefinition{Hidden: false}, MetaDetails: map[string]interface{}{"isHidden": true}},
+			Expected: true,
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.(setPropertyHiddenInput)
+
+			property := &Property{
+				PropertyName:       "testProp",
+				propertyDefinition: input.PropertyDefinition,
+				metaDetails:        input.MetaDetails,
+			}
+
+			property.setHidden()
+
+			assert.Equal(t, testCase.Expected, property.Hidden, test.MessageEqual(testCase.Expected, property.Hidden, testCase.Name))
+		})
+	}
+}
+
+type setPropertyHiddenVersionsInput struct {
+	PropertyDefinition PropertyDefinition
+	MetaDetails        map[string]interface{}
+}
+
+type setPropertyHiddenVersionsExpected struct {
+	Raw      string
+	String   string
+	Nil      bool
+	Error    bool
+	ErrorMsg string
+}
+
+func TestPropertySetHiddenVersions(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	testCases := []test.TestCase{
+		{
+			Name:  "test_hidden_versions_not_set",
+			Input: setPropertyHiddenVersionsInput{},
+			Expected: setPropertyHiddenVersionsExpected{
+				Nil: true,
+			},
+		},
+		{
+			Name:  "test_definition_single_range",
+			Input: setPropertyHiddenVersionsInput{PropertyDefinition: PropertyDefinition{HiddenVersions: "4.2(7f)-"}},
+			Expected: setPropertyHiddenVersionsExpected{
+				Raw:    "4.2(7f)-",
+				String: "4.2(7f) and later",
+			},
+		},
+		{
+			Name:  "test_meta_hidden_since_single_range",
+			Input: setPropertyHiddenVersionsInput{MetaDetails: map[string]interface{}{"hiddenSince": "5.2(1g)-"}},
+			Expected: setPropertyHiddenVersionsExpected{
+				Raw:    "5.2(1g)-",
+				String: "5.2(1g) and later",
+			},
+		},
+		{
+			Name:  "test_meta_hidden_since_wrong_type",
+			Input: setPropertyHiddenVersionsInput{MetaDetails: map[string]interface{}{"hiddenSince": 123}},
+			Expected: setPropertyHiddenVersionsExpected{
+				Nil: true,
+			},
+		},
+		{
+			Name: "test_override_replaces_meta",
+			Input: setPropertyHiddenVersionsInput{
+				PropertyDefinition: PropertyDefinition{HiddenVersions: "4.2(7f)-"},
+				MetaDetails:        map[string]interface{}{"hiddenSince": "5.2(1g)-"},
+			},
+			Expected: setPropertyHiddenVersionsExpected{
+				Raw:    "4.2(7f)-",
+				String: "4.2(7f) and later",
+			},
+		},
+		{
+			Name:  "test_definition_parse_error",
+			Input: setPropertyHiddenVersionsInput{PropertyDefinition: PropertyDefinition{HiddenVersions: "invalid"}},
+			Expected: setPropertyHiddenVersionsExpected{
+				Error:    true,
+				ErrorMsg: "failed to parse hidden versions for property 'testProp': invalid version 'invalid': unknown",
+			},
+		},
+		{
+			Name:  "test_meta_parse_error",
+			Input: setPropertyHiddenVersionsInput{MetaDetails: map[string]interface{}{"hiddenSince": "invalid"}},
+			Expected: setPropertyHiddenVersionsExpected{
+				Error:    true,
+				ErrorMsg: "failed to parse hidden versions for property 'testProp': invalid version 'invalid': unknown",
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.(setPropertyHiddenVersionsInput)
+			expected := testCase.Expected.(setPropertyHiddenVersionsExpected)
+
+			property := &Property{
+				PropertyName:       "testProp",
+				propertyDefinition: input.PropertyDefinition,
+				metaDetails:        input.MetaDetails,
+			}
+
+			err := property.setHiddenVersions()
+
+			if expected.Error {
+				assert.EqualError(t, err, expected.ErrorMsg)
+			} else if expected.Nil {
+				assert.NoError(t, err, test.MessageUnexpectedError(err))
+				assert.Nil(t, property.HiddenVersions, "expected HiddenVersions to be nil")
+			} else {
+				assert.NoError(t, err, test.MessageUnexpectedError(err))
+				assert.Equal(t, expected.Raw, property.HiddenVersions.Raw(), test.MessageEqual(expected.Raw, property.HiddenVersions.Raw(), testCase.Name))
+				assert.Equal(t, expected.String, property.HiddenVersions.String(), test.MessageEqual(expected.String, property.HiddenVersions.String(), testCase.Name))
 			}
 		})
 	}

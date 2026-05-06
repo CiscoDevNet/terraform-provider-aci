@@ -92,10 +92,18 @@ type PropertyDefinition struct {
 	// Overrides the default attribute name derived from the meta property name in snake_case notation.
 	AttributeName string `yaml:"attribute_name"`
 	// Indicates that the property is deprecated. A deprecation warning will be included in the schemas.
+	// When true, this overrides the meta `isDeprecated` flag with logical OR semantics: definition can flip true on top of meta but cannot force-off.
 	Deprecated bool `yaml:"deprecated"`
 	// The deprecated APIC versions for the property. Format: "1.0(1e)-" or "4.2(7f)-4.2(7w),5.2(1g)-".
 	// Used to indicate versions where the property is deprecated but still functional.
+	// When non-empty, this overrides the meta `deprecatedSince` value.
 	DeprecatedVersions string `yaml:"deprecated_versions"`
+	// Indicates that the property is hidden by the APIC API (no longer accepted).
+	// When true, this overrides the meta `isHidden` flag with logical OR semantics.
+	Hidden bool `yaml:"hidden"`
+	// The hidden APIC versions for the property. Format: "1.0(1e)-" or "4.2(7f)-4.2(7w),5.2(1g)-".
+	// When non-empty, this overrides the meta `hiddenSince` value.
+	HiddenVersions string `yaml:"hidden_versions"`
 	// Controls the schema behavior of the property.
 	// Valid values: "required", "optional", "read_only", "exclude".
 	// When empty, the default behavior is derived from the meta file (isConfigurable+isNaming → required, isConfigurable → optional).
@@ -112,10 +120,18 @@ type ClassDefinition struct {
 	// The value "never" is used to keep the input consistent with the meta data file.
 	AllowDelete string `yaml:"allow_delete"`
 	// Indicates that the resource and datasource are deprecated. A deprecation warning will be included in the schemas.
+	// When true, this overrides the meta `isDeprecated` flag with logical OR semantics: definition can flip true on top of meta but cannot force-off.
 	Deprecated bool `yaml:"deprecated"`
 	// The deprecated APIC versions for the class. Format: "1.0(1e)-" or "4.2(7f)-4.2(7w),5.2(1g)-".
 	// Used to indicate versions where the class is deprecated but still functional.
+	// When non-empty, this overrides the meta `deprecatedSince` value.
 	DeprecatedVersions string `yaml:"deprecated_versions"`
+	// Indicates that the class is hidden by the APIC API (no longer accepted).
+	// When true, this overrides the meta `isHidden` flag with logical OR semantics.
+	Hidden bool `yaml:"hidden"`
+	// The hidden APIC versions for the class. Format: "1.0(1e)-" or "4.2(7f)-4.2(7w),5.2(1g)-".
+	// When non-empty, this overrides the meta `hiddenSince` value.
+	HiddenVersions string `yaml:"hidden_versions"`
 	// Documentation specific overrides for the class.
 	Documentation ClassDocumentationDefinition `yaml:"documentation"`
 	// A list of child class names to exclude from the Children list.
