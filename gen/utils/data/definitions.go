@@ -113,6 +113,21 @@ type PropertyDefinition struct {
 	Sensitive bool `yaml:"sensitive"`
 	// Overrides the versions from the meta file. Format: "1.0(1e)-" or "4.2(7f)-4.2(7w),5.2(1g)-".
 	SupportedVersions string `yaml:"supported_versions"`
+	// Overrides the meta `validators` array. When non-empty, replaces the meta validators entirely.
+	Validators []ValidatorDefinition `yaml:"validators"`
+}
+
+// ValidatorDefinition mirrors the YAML/JSON shape of a single validator entry (min/max plus optional regex statements).
+type ValidatorDefinition struct {
+	Min       int64                      `yaml:"min"`
+	Max       int64                      `yaml:"max"`
+	RegexList []RegexStatementDefinition `yaml:"regexs"`
+}
+
+// RegexStatementDefinition mirrors the YAML/JSON shape of a single regex entry inside a validator.
+type RegexStatementDefinition struct {
+	Regex string `yaml:"regex"`
+	Type  string `yaml:"type"`
 }
 
 type ClassDefinition struct {

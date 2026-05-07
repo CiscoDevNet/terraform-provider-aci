@@ -2,6 +2,7 @@ package data
 
 import (
 	"fmt"
+	"math"
 
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils"
 )
@@ -123,8 +124,8 @@ type TestValue struct {
 
 type Validator struct {
 	// If the property has a range of values, these are the minimum and maximum values of the range.
-	Max float64
-	Min float64
+	Max int64
+	Min int64
 	// If the property has one or more regex statements it requires to match.
 	RegexList []RegexStatement
 }
@@ -213,8 +214,10 @@ func (p *Property) setPropertyData() error {
 	// TODO: add function to set TestValues
 	p.setTestValues()
 
-	// TODO: add function to set Validators
-	p.setValidators()
+	err = p.setValidators()
+	if err != nil {
+		return err
+	}
 
 	// TODO: add function to set ValidValues
 	p.setValidValues()
@@ -418,10 +421,139 @@ func (p *Property) setTestValues() {
 	genLogger.Debugf("Successfully set TestValues for property '%s'.", p.PropertyName)
 }
 
-func (p *Property) setValidators() {
+func (p *Property) setValidators() error {
 	// Determine the validators for the property.
+	// Driven by the meta `validators` array; the property definition replaces the meta entirely when non-empty.
 	genLogger.Debugf("Setting Validators for property '%s'.", p.PropertyName)
-	genLogger.Debugf("Successfully set Validators for property '%s'.", p.PropertyName)
+
+	var validators []Validator
+	var err error
+
+	if len(p.propertyDefinition.Validators) > 0 {
+		validators, err = validatorsFromDefinition(p.propertyDefinition.Validators)
+	} else {
+		validators, err = parseValidatorsFromMeta(p.metaDetails["validators"])
+	}
+	if err != nil {
+		return fmt.Errorf("failed to parse validators for property '%s': %w", p.PropertyName, err)
+	}
+
+	p.Validators = validators
+
+	genLogger.Debugf("Successfully set Validators for property '%s'. Count: %d", p.PropertyName, len(p.Validators))
+	return nil
+}
+
+// parseValidatorsFromMeta converts the raw `validators` value from the meta JSON (already decoded into interface{}) into a typed slice.
+// Returns nil when the value is absent. Returns an error on shape mismatch or unknown regex statement type.
+func parseValidatorsFromMeta(rawValidators interface{}) ([]Validator, error) {
+	if rawValidators == nil {
+		return nil, nil
+	}
+
+	validatorList, ok := rawValidators.([]interface{})
+	if !ok {
+		return nil, fmt.Errorf("expected validators to be a list, got %T", rawValidators)
+	}
+	if len(validatorList) == 0 {
+		return nil, nil
+	}
+
+	validators := make([]Validator, 0, len(validatorList))
+	for index, rawValidator := range validatorList {
+		validatorMap, ok := rawValidator.(map[string]interface{})
+		if !ok {
+			return nil, fmt.Errorf("expected validator entry %d to be a map, got %T", index, rawValidator)
+		}
+
+		minValue, err := readOptionalInt64(validatorMap, "min")
+		if err != nil {
+			return nil, fmt.Errorf("validator entry %d: %w", index, err)
+		}
+		maxValue, err := readOptionalInt64(validatorMap, "max")
+		if err != nil {
+			return nil, fmt.Errorf("validator entry %d: %w", index, err)
+		}
+
+		validator := Validator{Min: minValue, Max: maxValue}
+
+		if rawRegexes, hasRegexes := validatorMap["regexs"]; hasRegexes && rawRegexes != nil {
+			regexList, ok := rawRegexes.([]interface{})
+			if !ok {
+				return nil, fmt.Errorf("validator entry %d: expected regexs to be a list, got %T", index, rawRegexes)
+			}
+			regexStatements := make([]RegexStatement, 0, len(regexList))
+			for regexIndex, rawRegexEntry := range regexList {
+				regexMap, ok := rawRegexEntry.(map[string]interface{})
+				if !ok {
+					return nil, fmt.Errorf("validator entry %d regex %d: expected map, got %T", index, regexIndex, rawRegexEntry)
+				}
+				regexValue, _ := regexMap["regex"].(string)
+				typeValue, _ := regexMap["type"].(string)
+				parsedType, err := parseRegexStatementType(typeValue)
+				if err != nil {
+					return nil, fmt.Errorf("validator entry %d regex %d: %w", index, regexIndex, err)
+				}
+				regexStatements = append(regexStatements, RegexStatement{Regex: regexValue, Type: parsedType})
+			}
+			validator.RegexList = regexStatements
+		}
+
+		validators = append(validators, validator)
+	}
+
+	return validators, nil
+}
+
+// validatorsFromDefinition converts ValidatorDefinition entries from a property definition into typed Validator structs.
+func validatorsFromDefinition(definitionValidators []ValidatorDefinition) ([]Validator, error) {
+	validators := make([]Validator, 0, len(definitionValidators))
+	for index, definitionValidator := range definitionValidators {
+		validator := Validator{Min: definitionValidator.Min, Max: definitionValidator.Max}
+
+		if len(definitionValidator.RegexList) > 0 {
+			regexStatements := make([]RegexStatement, 0, len(definitionValidator.RegexList))
+			for regexIndex, definitionRegex := range definitionValidator.RegexList {
+				parsedType, err := parseRegexStatementType(definitionRegex.Type)
+				if err != nil {
+					return nil, fmt.Errorf("validator entry %d regex %d: %w", index, regexIndex, err)
+				}
+				regexStatements = append(regexStatements, RegexStatement{Regex: definitionRegex.Regex, Type: parsedType})
+			}
+			validator.RegexList = regexStatements
+		}
+
+		validators = append(validators, validator)
+	}
+	return validators, nil
+}
+
+// parseRegexStatementType maps the raw string form to the typed enum.
+func parseRegexStatementType(rawType string) (RegexStatementTypeEnum, error) {
+	switch rawType {
+	case "include":
+		return Include, nil
+	default:
+		return 0, fmt.Errorf("unknown regex statement type %q", rawType)
+	}
+}
+
+// readOptionalInt64 returns the value at key as int64. The zero value is returned when the key is absent or nil.
+// Returns an error when the value is not a JSON number or when the number is not an integer within int64 range.
+// (encoding/json decodes JSON numbers into float64 when the target is interface{}, so we type-assert float64 first.)
+func readOptionalInt64(source map[string]interface{}, key string) (int64, error) {
+	rawValue, present := source[key]
+	if !present || rawValue == nil {
+		return 0, nil
+	}
+	numericValue, ok := rawValue.(float64)
+	if !ok {
+		return 0, fmt.Errorf("expected %s to be a number, got %T", key, rawValue)
+	}
+	if numericValue != math.Trunc(numericValue) || numericValue < math.MinInt64 || numericValue > math.MaxInt64 {
+		return 0, fmt.Errorf("expected %s to be an integer, got %v", key, numericValue)
+	}
+	return int64(numericValue), nil
 }
 
 func (p *Property) setValidValues() {

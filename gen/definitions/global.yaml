@@ -89,6 +89,8 @@ no_meta_file:
   fvEPg: epg
   fvEpRetPol: endpoint_retention_policy
   fvIPSLAMonitoringPol: ip_sla_monitoring_policy
+  fvnsMcastAddrInstP: multicast_pool
+  fvnsVlanInstP: vlan_pool
   infraADomP: abstract_domain
   infraAccBaseGrp: infra_access_base_group
   infraAccBndlSubgrp: aci_leaf_access_bundle_policy_sub_group
