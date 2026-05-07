@@ -835,6 +835,244 @@ func TestPropertySetHiddenVersions(t *testing.T) {
 	}
 }
 
+type setPropertyValidatorsInput struct {
+	PropertyDefinition PropertyDefinition
+	MetaDetails        map[string]interface{}
+}
+
+type setPropertyValidatorsExpected struct {
+	Validators []Validator
+	Error      bool
+	ErrorMsg   string
+}
+
+func TestPropertySetValidators(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	regexInclude := []interface{}{
+		map[string]interface{}{"regex": "^[a-zA-Z0-9_.-]+$", "type": "include"},
+	}
+
+	testCases := []test.TestCase{
+		{
+			Name:     "test_meta_missing",
+			Input:    setPropertyValidatorsInput{},
+			Expected: setPropertyValidatorsExpected{Validators: nil},
+		},
+		{
+			Name: "test_meta_empty_array",
+			Input: setPropertyValidatorsInput{
+				MetaDetails: map[string]interface{}{"validators": []interface{}{}},
+			},
+			Expected: setPropertyValidatorsExpected{Validators: nil},
+		},
+		{
+			Name: "test_meta_min_max_only",
+			Input: setPropertyValidatorsInput{
+				MetaDetails: map[string]interface{}{
+					"validators": []interface{}{
+						map[string]interface{}{"min": float64(0), "max": float64(7)},
+					},
+				},
+			},
+			Expected: setPropertyValidatorsExpected{
+				Validators: []Validator{{Min: 0, Max: 7}},
+			},
+		},
+		{
+			Name: "test_meta_min_max_with_regex_include",
+			Input: setPropertyValidatorsInput{
+				MetaDetails: map[string]interface{}{
+					"validators": []interface{}{
+						map[string]interface{}{
+							"min":    float64(0),
+							"max":    float64(63),
+							"regexs": regexInclude,
+						},
+					},
+				},
+			},
+			Expected: setPropertyValidatorsExpected{
+				Validators: []Validator{{
+					Min: 0, Max: 63,
+					RegexList: []RegexStatement{{Regex: "^[a-zA-Z0-9_.-]+$", Type: Include}},
+				}},
+			},
+		},
+		{
+			Name: "test_meta_multiple_validators",
+			Input: setPropertyValidatorsInput{
+				MetaDetails: map[string]interface{}{
+					"validators": []interface{}{
+						map[string]interface{}{"min": float64(0), "max": float64(7)},
+						map[string]interface{}{"min": float64(0), "max": float64(63), "regexs": regexInclude},
+					},
+				},
+			},
+			Expected: setPropertyValidatorsExpected{
+				Validators: []Validator{
+					{Min: 0, Max: 7},
+					{Min: 0, Max: 63, RegexList: []RegexStatement{{Regex: "^[a-zA-Z0-9_.-]+$", Type: Include}}},
+				},
+			},
+		},
+		{
+			Name: "test_meta_wrong_top_type",
+			Input: setPropertyValidatorsInput{
+				MetaDetails: map[string]interface{}{"validators": "not-a-list"},
+			},
+			Expected: setPropertyValidatorsExpected{
+				Error:    true,
+				ErrorMsg: "failed to parse validators for property 'testProp': expected validators to be a list, got string",
+			},
+		},
+		{
+			Name: "test_meta_entry_wrong_type",
+			Input: setPropertyValidatorsInput{
+				MetaDetails: map[string]interface{}{"validators": []interface{}{42}},
+			},
+			Expected: setPropertyValidatorsExpected{
+				Error:    true,
+				ErrorMsg: "failed to parse validators for property 'testProp': expected validator entry 0 to be a map, got int",
+			},
+		},
+		{
+			Name: "test_meta_unknown_regex_type",
+			Input: setPropertyValidatorsInput{
+				MetaDetails: map[string]interface{}{
+					"validators": []interface{}{
+						map[string]interface{}{
+							"min": float64(0),
+							"max": float64(63),
+							"regexs": []interface{}{
+								map[string]interface{}{"regex": ".+", "type": "exclude"},
+							},
+						},
+					},
+				},
+			},
+			Expected: setPropertyValidatorsExpected{
+				Error:    true,
+				ErrorMsg: `failed to parse validators for property 'testProp': validator entry 0 regex 0: unknown regex statement type "exclude"`,
+			},
+		},
+		{
+			Name: "test_meta_min_wrong_type",
+			Input: setPropertyValidatorsInput{
+				MetaDetails: map[string]interface{}{
+					"validators": []interface{}{
+						map[string]interface{}{"min": "low", "max": float64(7)},
+					},
+				},
+			},
+			Expected: setPropertyValidatorsExpected{
+				Error:    true,
+				ErrorMsg: "failed to parse validators for property 'testProp': validator entry 0: expected min to be a number, got string",
+			},
+		},
+		{
+			Name: "test_meta_min_not_integer",
+			Input: setPropertyValidatorsInput{
+				MetaDetails: map[string]interface{}{
+					"validators": []interface{}{
+						map[string]interface{}{"min": float64(0.5), "max": float64(7)},
+					},
+				},
+			},
+			Expected: setPropertyValidatorsExpected{
+				Error:    true,
+				ErrorMsg: "failed to parse validators for property 'testProp': validator entry 0: expected min to be an integer, got 0.5",
+			},
+		},
+		{
+			Name: "test_meta_min_not_integer",
+			Input: setPropertyValidatorsInput{
+				MetaDetails: map[string]interface{}{
+					"validators": []interface{}{
+						map[string]interface{}{"min": float64(0.5), "max": float64(7)},
+					},
+				},
+			},
+			Expected: setPropertyValidatorsExpected{
+				Error:    true,
+				ErrorMsg: "failed to parse validators for property 'testProp': validator entry 0: expected min to be an integer, got 0.5",
+			},
+		},
+		{
+			Name: "test_definition_only_meta_missing",
+			Input: setPropertyValidatorsInput{
+				PropertyDefinition: PropertyDefinition{
+					Validators: []ValidatorDefinition{
+						{Min: 1, Max: 10},
+					},
+				},
+			},
+			Expected: setPropertyValidatorsExpected{
+				Validators: []Validator{{Min: 1, Max: 10}},
+			},
+		},
+		{
+			Name: "test_definition_replaces_meta",
+			Input: setPropertyValidatorsInput{
+				PropertyDefinition: PropertyDefinition{
+					Validators: []ValidatorDefinition{
+						{Min: 1, Max: 10, RegexList: []RegexStatementDefinition{{Regex: "^x$", Type: "include"}}},
+					},
+				},
+				MetaDetails: map[string]interface{}{
+					"validators": []interface{}{
+						map[string]interface{}{"min": float64(0), "max": float64(7)},
+					},
+				},
+			},
+			Expected: setPropertyValidatorsExpected{
+				Validators: []Validator{{
+					Min: 1, Max: 10,
+					RegexList: []RegexStatement{{Regex: "^x$", Type: Include}},
+				}},
+			},
+		},
+		{
+			Name: "test_definition_unknown_regex_type",
+			Input: setPropertyValidatorsInput{
+				PropertyDefinition: PropertyDefinition{
+					Validators: []ValidatorDefinition{
+						{Min: 0, Max: 1, RegexList: []RegexStatementDefinition{{Regex: ".+", Type: "exclude"}}},
+					},
+				},
+			},
+			Expected: setPropertyValidatorsExpected{
+				Error:    true,
+				ErrorMsg: `failed to parse validators for property 'testProp': validator entry 0 regex 0: unknown regex statement type "exclude"`,
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.(setPropertyValidatorsInput)
+			expected := testCase.Expected.(setPropertyValidatorsExpected)
+
+			property := &Property{
+				PropertyName:       "testProp",
+				propertyDefinition: input.PropertyDefinition,
+				metaDetails:        input.MetaDetails,
+			}
+
+			err := property.setValidators()
+
+			if expected.Error {
+				assert.EqualError(t, err, expected.ErrorMsg)
+			} else {
+				assert.NoError(t, err, test.MessageUnexpectedError(err))
+				assert.Equal(t, expected.Validators, property.Validators, test.MessageEqual(expected.Validators, property.Validators, testCase.Name))
+			}
+		})
+	}
+}
+
 type setPropertySupportedVersionsInput struct {
 	MetaDetails        map[string]interface{}
 	PropertyDefinition PropertyDefinition
