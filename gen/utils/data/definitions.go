@@ -115,6 +115,13 @@ type PropertyDefinition struct {
 	SupportedVersions string `yaml:"supported_versions"`
 	// Overrides the meta `validators` array. When non-empty, replaces the meta validators entirely.
 	Validators []ValidatorDefinition `yaml:"validators"`
+	// Adds extra valid values to the property on top of the meta `validValues` array.
+	// Each entry is treated as both the wire value and the localName.
+	// A warning is logged when an entry is already present in the meta valid values.
+	AddValidValues []string `yaml:"add_valid_values"`
+	// Removes valid values from the meta `validValues` array by localName.
+	// A warning is logged when an entry is not present in the meta valid values.
+	RemoveValidValues []string `yaml:"remove_valid_values"`
 }
 
 // ValidatorDefinition mirrors the YAML/JSON shape of a single validator entry (min/max plus optional regex statements).
