@@ -3,6 +3,7 @@ package data
 import (
 	"fmt"
 	"math"
+	"slices"
 
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils"
 )
@@ -64,7 +65,8 @@ type Property struct {
 	// TODO: re-evaluate the structure when creating resource templates. We might want to create a separate struct type for each type of validation.
 	Validators []Validator
 	// Specifies the valid values for the property when only certain values are allowed as input.
-	ValidValues []ValidValue
+	// Sourced from the meta `validValues` array, with definition-driven AddValidValues and RemoveValidValues overrides.
+	ValidValues ValidValues
 	// The ValueTypeEnum type is used to indicate the type of the property in the resource and datasource schemas.
 	ValueType ValueTypeEnum
 	// The global meta definition containing global overrides. Unexported because it is only used internally by setter methods.
@@ -89,9 +91,9 @@ type MigrationValue struct {
 }
 
 type PropertyDocumentation struct {
-	// The default values of the property in APIC.
-	// Defauls values is a list of valid to be able to determine if the default value is changed in versions of APIC.
-	DefaultValues []ValidValue
+	// The default values of the property in APIC, expressed as localNames.
+	// Stored as a list to track default value changes across APIC versions.
+	DefaultValues []string
 	// A generic explanation of the property and its usage.
 	// When applicable, a reference to classes the property points to and which resources/datasources are used for this is included.
 	// When version is higher than the class version, a property specific version is included.
@@ -130,10 +132,48 @@ type Validator struct {
 	RegexList []RegexStatement
 }
 
+// ValidValues is a map keyed by the wire value (e.g. "1") with details about that valid value.
+// The map is sourced from the meta `validValues` array, with optional add/remove overrides from the property definition.
+type ValidValues map[string]ValidValue
+
+// ValidValue describes a single allowed value for a property.
+// Currently it only carries the localName (the human-readable identifier, e.g. "level3") but is
+// designed to be extended later with additional fields without changing the shape of the
+// surrounding map. For example, when valid values become version-specific, a Versions field
+// can be added here so that templates can render only the values supported by a given APIC
+// version. Other anticipated extensions include Label, Comment, and PlatformFlavors.
 type ValidValue struct {
-	// The valid value of the property.
-	Value    string
-	Versions []VersionRange
+	// The localName of the valid value (e.g. "level3").
+	LocalName string
+}
+
+// LocalNamesList returns the localNames of all valid values, sorted alphabetically.
+func (vv ValidValues) LocalNamesList() []string {
+	localNames := make([]string, 0, len(vv))
+	for _, entry := range vv {
+		localNames = append(localNames, entry.LocalName)
+	}
+	slices.Sort(localNames)
+	return localNames
+}
+
+// ValuesList returns the wire values of all valid values, sorted alphabetically.
+func (vv ValidValues) ValuesList() []string {
+	values := make([]string, 0, len(vv))
+	for value := range vv {
+		values = append(values, value)
+	}
+	slices.Sort(values)
+	return values
+}
+
+// ValueLocalNameMap returns a flattened map of wire value to localName, useful for templates.
+func (vv ValidValues) ValueLocalNameMap() map[string]string {
+	out := make(map[string]string, len(vv))
+	for value, entry := range vv {
+		out[value] = entry.LocalName
+	}
+	return out
 }
 
 type ValueTypeEnum int
@@ -219,8 +259,10 @@ func (p *Property) setPropertyData() error {
 		return err
 	}
 
-	// TODO: add function to set ValidValues
-	p.setValidValues()
+	err = p.setValidValues()
+	if err != nil {
+		return err
+	}
 
 	// TODO: add function to set ValueType
 	p.setValueType()
@@ -556,10 +598,87 @@ func readOptionalInt64(source map[string]interface{}, key string) (int64, error)
 	return int64(numericValue), nil
 }
 
-func (p *Property) setValidValues() {
+func (p *Property) setValidValues() error {
 	// Determine the valid values for the property.
+	// Driven by the meta `validValues` array; the property definition can add or remove entries by localName.
+	// Entries with localName "defaultValue" are skipped as they only carry the default value information.
 	genLogger.Debugf("Setting ValidValues for property '%s'.", p.PropertyName)
-	genLogger.Debugf("Successfully set ValidValues for property '%s'.", p.PropertyName)
+
+	validValues := ValidValues{}
+
+	removeSet := make(map[string]struct{}, len(p.propertyDefinition.RemoveValidValues))
+	for _, name := range p.propertyDefinition.RemoveValidValues {
+		removeSet[name] = struct{}{}
+	}
+
+	// Warn when a name appears in both AddValidValues and RemoveValidValues: the Add wins but the
+	// definition is contradictory and likely a mistake.
+	for _, localName := range p.propertyDefinition.AddValidValues {
+		if _, contradicts := removeSet[localName]; contradicts {
+			genLogger.Warnf("AddValidValues %q also listed in RemoveValidValues for property %q; the Add takes precedence.", localName, p.PropertyName)
+		}
+	}
+
+	if rawValidValues := p.metaDetails["validValues"]; rawValidValues != nil {
+		validValueList, ok := rawValidValues.([]interface{})
+		if !ok {
+			return fmt.Errorf("failed to parse validValues for property '%s': expected validValues to be a list, got %T", p.PropertyName, rawValidValues)
+		}
+		for index, rawEntry := range validValueList {
+			entry, ok := rawEntry.(map[string]interface{})
+			if !ok {
+				return fmt.Errorf("failed to parse validValues for property '%s': expected validValues entry %d to be a map, got %T", p.PropertyName, index, rawEntry)
+			}
+			localName, localOk := entry["localName"].(string)
+			value, valueOk := entry["value"].(string)
+			if !localOk || !valueOk {
+				return fmt.Errorf("failed to parse validValues for property '%s': validValues entry %d is missing or has non-string localName/value", p.PropertyName, index)
+			}
+			if localName == "defaultValue" {
+				continue
+			}
+			if _, drop := removeSet[localName]; drop {
+				// Delete on hit so any names still in removeSet after the loop are stale.
+				delete(removeSet, localName)
+				continue
+			}
+			if existing, exists := validValues[value]; exists {
+				// Multiple localNames can legitimately alias the same wire value in the meta
+				// (e.g. "aqua" and "cyan" both map to "0x00FFFF"). Keep the first-seen entry
+				// under the wire-value key and fall back to inserting the alias under its
+				// localName key so it is still addressable (mirroring how AddValidValues
+				// entries are keyed). If the localName key is also already taken (e.g. the
+				// same localName appears more than once in the meta, or a prior alias already
+				// claimed it), skip the alias entirely with a warning. Use RemoveValidValues
+				// in the property definition if a different localName should win the
+				// wire-value slot.
+				if _, localTaken := validValues[localName]; localTaken {
+					genLogger.Warnf("Duplicate validValues value %q for property %q: keeping localName %q, skipping alias %q (localName key already in use).", value, p.PropertyName, existing.LocalName, localName)
+					continue
+				}
+				genLogger.Warnf("Duplicate validValues value %q for property %q: keeping localName %q under value key, registering alias %q under its localName key.", value, p.PropertyName, existing.LocalName, localName)
+				validValues[localName] = ValidValue{LocalName: localName}
+				continue
+			}
+			validValues[value] = ValidValue{LocalName: localName}
+		}
+	}
+
+	for name := range removeSet {
+		genLogger.Warnf("RemoveValidValues %q not found in meta for property %q.", name, p.PropertyName)
+	}
+
+	for _, localName := range p.propertyDefinition.AddValidValues {
+		if _, exists := validValues[localName]; exists {
+			genLogger.Warnf("AddValidValues %q already present in meta for property %q.", localName, p.PropertyName)
+		}
+		validValues[localName] = ValidValue{LocalName: localName}
+	}
+
+	p.ValidValues = validValues
+
+	genLogger.Debugf("Successfully set ValidValues for property '%s'. Count: %d", p.PropertyName, len(p.ValidValues))
+	return nil
 }
 
 func (p *Property) setValueType() {
