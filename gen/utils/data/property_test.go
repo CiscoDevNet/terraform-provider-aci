@@ -1,6 +1,9 @@
 package data
 
 import (
+	"bytes"
+	"os"
+	"strings"
 	"testing"
 
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils/test"
@@ -1206,4 +1209,355 @@ func TestPropertySetSupportedVersions(t *testing.T) {
 			}
 		})
 	}
+}
+
+type setPropertyValidValuesInput struct {
+	PropertyDefinition PropertyDefinition
+	MetaDetails        map[string]interface{}
+}
+
+type setPropertyValidValuesExpected struct {
+	ValidValues ValidValues
+	Error       bool
+	ErrorMsg    string
+	Warning     string
+}
+
+func TestPropertySetValidValues(t *testing.T) {
+	test.InitializeTest(t)
+
+	testCases := []test.TestCase{
+		{
+			Name:  "test_meta_missing",
+			Input: setPropertyValidValuesInput{},
+			Expected: setPropertyValidValuesExpected{
+				ValidValues: ValidValues{},
+			},
+		},
+		{
+			Name: "test_meta_simple_enum_skips_default_value",
+			Input: setPropertyValidValuesInput{
+				MetaDetails: map[string]interface{}{
+					"validValues": []interface{}{
+						map[string]interface{}{"localName": "defaultValue", "value": "1"},
+						map[string]interface{}{"localName": "level1", "value": "1"},
+						map[string]interface{}{"localName": "level3", "value": "3"},
+					},
+				},
+			},
+			Expected: setPropertyValidValuesExpected{
+				ValidValues: ValidValues{
+					"1": ValidValue{LocalName: "level1"},
+					"3": ValidValue{LocalName: "level3"},
+				},
+			},
+		},
+		{
+			Name: "test_meta_only_default_value",
+			Input: setPropertyValidValuesInput{
+				MetaDetails: map[string]interface{}{
+					"validValues": []interface{}{
+						map[string]interface{}{"localName": "defaultValue", "value": "1"},
+					},
+				},
+			},
+			Expected: setPropertyValidValuesExpected{
+				ValidValues: ValidValues{},
+			},
+		},
+		{
+			Name: "test_meta_bitmask",
+			Input: setPropertyValidValuesInput{
+				MetaDetails: map[string]interface{}{
+					"validValues": []interface{}{
+						map[string]interface{}{"localName": "read", "value": "1"},
+						map[string]interface{}{"localName": "write", "value": "2"},
+						map[string]interface{}{"localName": "execute", "value": "4"},
+					},
+				},
+			},
+			Expected: setPropertyValidValuesExpected{
+				ValidValues: ValidValues{
+					"1": ValidValue{LocalName: "read"},
+					"2": ValidValue{LocalName: "write"},
+					"4": ValidValue{LocalName: "execute"},
+				},
+			},
+		},
+		{
+			Name: "test_meta_wrong_top_type",
+			Input: setPropertyValidValuesInput{
+				MetaDetails: map[string]interface{}{"validValues": "not-a-list"},
+			},
+			Expected: setPropertyValidValuesExpected{
+				Error:    true,
+				ErrorMsg: "failed to parse validValues for property 'testProp': expected validValues to be a list, got string",
+			},
+		},
+		{
+			Name: "test_meta_entry_wrong_type",
+			Input: setPropertyValidValuesInput{
+				MetaDetails: map[string]interface{}{"validValues": []interface{}{42}},
+			},
+			Expected: setPropertyValidValuesExpected{
+				Error:    true,
+				ErrorMsg: "failed to parse validValues for property 'testProp': expected validValues entry 0 to be a map, got int",
+			},
+		},
+		{
+			Name: "test_meta_entry_missing_value",
+			Input: setPropertyValidValuesInput{
+				MetaDetails: map[string]interface{}{
+					"validValues": []interface{}{
+						map[string]interface{}{"localName": "level1"},
+					},
+				},
+			},
+			Expected: setPropertyValidValuesExpected{
+				Error:    true,
+				ErrorMsg: "failed to parse validValues for property 'testProp': validValues entry 0 is missing or has non-string localName/value",
+			},
+		},
+		{
+			Name: "test_meta_entry_missing_local_name",
+			Input: setPropertyValidValuesInput{
+				MetaDetails: map[string]interface{}{
+					"validValues": []interface{}{
+						map[string]interface{}{"value": "1"},
+					},
+				},
+			},
+			Expected: setPropertyValidValuesExpected{
+				Error:    true,
+				ErrorMsg: "failed to parse validValues for property 'testProp': validValues entry 0 is missing or has non-string localName/value",
+			},
+		},
+		{
+			Name: "test_meta_duplicate_values",
+			Input: setPropertyValidValuesInput{
+				MetaDetails: map[string]interface{}{
+					"validValues": []interface{}{
+						map[string]interface{}{"localName": "alpha", "value": "1"},
+						map[string]interface{}{"localName": "beta", "value": "1"},
+					},
+				},
+			},
+			Expected: setPropertyValidValuesExpected{
+				ValidValues: ValidValues{
+					"1":    {LocalName: "alpha"},
+					"beta": {LocalName: "beta"},
+				},
+				Warning: `Duplicate validValues value "1" for property "testProp": keeping localName "alpha" under value key, registering alias "beta" under its localName key.`,
+			},
+		},
+		{
+			Name: "test_meta_duplicate_value_and_localname_collision",
+			Input: setPropertyValidValuesInput{
+				MetaDetails: map[string]interface{}{
+					"validValues": []interface{}{
+						map[string]interface{}{"localName": "alpha", "value": "1"},
+						map[string]interface{}{"localName": "beta", "value": "1"},
+						map[string]interface{}{"localName": "beta", "value": "1"},
+					},
+				},
+			},
+			Expected: setPropertyValidValuesExpected{
+				ValidValues: ValidValues{
+					"1":    {LocalName: "alpha"},
+					"beta": {LocalName: "beta"},
+				},
+				Warning: `Duplicate validValues value "1" for property "testProp": keeping localName "alpha", skipping alias "beta" (localName key already in use).`,
+			},
+		},
+		{
+			Name: "test_definition_remove_only",
+			Input: setPropertyValidValuesInput{
+				PropertyDefinition: PropertyDefinition{
+					RemoveValidValues: []string{"level1"},
+				},
+				MetaDetails: map[string]interface{}{
+					"validValues": []interface{}{
+						map[string]interface{}{"localName": "level1", "value": "1"},
+						map[string]interface{}{"localName": "level3", "value": "3"},
+					},
+				},
+			},
+			Expected: setPropertyValidValuesExpected{
+				ValidValues: ValidValues{
+					"3": ValidValue{LocalName: "level3"},
+				},
+			},
+		},
+		{
+			Name: "test_definition_remove_non_existent_warns",
+			Input: setPropertyValidValuesInput{
+				PropertyDefinition: PropertyDefinition{
+					RemoveValidValues: []string{"missing"},
+				},
+				MetaDetails: map[string]interface{}{
+					"validValues": []interface{}{
+						map[string]interface{}{"localName": "level1", "value": "1"},
+					},
+				},
+			},
+			Expected: setPropertyValidValuesExpected{
+				ValidValues: ValidValues{
+					"1": ValidValue{LocalName: "level1"},
+				},
+				Warning: `RemoveValidValues "missing" not found in meta for property "testProp"`,
+			},
+		},
+		{
+			Name: "test_definition_add_only_meta_missing",
+			Input: setPropertyValidValuesInput{
+				PropertyDefinition: PropertyDefinition{
+					AddValidValues: []string{"custom"},
+				},
+			},
+			Expected: setPropertyValidValuesExpected{
+				ValidValues: ValidValues{
+					"custom": ValidValue{LocalName: "custom"},
+				},
+			},
+		},
+		{
+			Name: "test_definition_add_appends_to_meta",
+			Input: setPropertyValidValuesInput{
+				PropertyDefinition: PropertyDefinition{
+					AddValidValues: []string{"extra"},
+				},
+				MetaDetails: map[string]interface{}{
+					"validValues": []interface{}{
+						map[string]interface{}{"localName": "level1", "value": "1"},
+					},
+				},
+			},
+			Expected: setPropertyValidValuesExpected{
+				ValidValues: ValidValues{
+					"1":     ValidValue{LocalName: "level1"},
+					"extra": ValidValue{LocalName: "extra"},
+				},
+			},
+		},
+		{
+			Name: "test_definition_add_overlaps_meta_warns",
+			Input: setPropertyValidValuesInput{
+				PropertyDefinition: PropertyDefinition{
+					AddValidValues: []string{"1"},
+				},
+				MetaDetails: map[string]interface{}{
+					"validValues": []interface{}{
+						map[string]interface{}{"localName": "level1", "value": "1"},
+					},
+				},
+			},
+			Expected: setPropertyValidValuesExpected{
+				ValidValues: ValidValues{
+					"1": ValidValue{LocalName: "1"},
+				},
+				Warning: `AddValidValues "1" already present in meta for property "testProp"`,
+			},
+		},
+		{
+			Name: "test_definition_add_and_remove",
+			Input: setPropertyValidValuesInput{
+				PropertyDefinition: PropertyDefinition{
+					AddValidValues:    []string{"custom"},
+					RemoveValidValues: []string{"level1"},
+				},
+				MetaDetails: map[string]interface{}{
+					"validValues": []interface{}{
+						map[string]interface{}{"localName": "level1", "value": "1"},
+						map[string]interface{}{"localName": "level3", "value": "3"},
+					},
+				},
+			},
+			Expected: setPropertyValidValuesExpected{
+				ValidValues: ValidValues{
+					"3":      ValidValue{LocalName: "level3"},
+					"custom": ValidValue{LocalName: "custom"},
+				},
+			},
+		},
+		{
+			Name: "test_definition_add_and_remove_overlap_warns",
+			Input: setPropertyValidValuesInput{
+				PropertyDefinition: PropertyDefinition{
+					AddValidValues:    []string{"level1"},
+					RemoveValidValues: []string{"level1"},
+				},
+				MetaDetails: map[string]interface{}{
+					"validValues": []interface{}{
+						map[string]interface{}{"localName": "level1", "value": "1"},
+					},
+				},
+			},
+			Expected: setPropertyValidValuesExpected{
+				ValidValues: ValidValues{
+					"level1": ValidValue{LocalName: "level1"},
+				},
+				Warning: `AddValidValues "level1" also listed in RemoveValidValues for property "testProp"`,
+			},
+		},
+	}
+
+	// Capture warnings via the package logger; restored after the test.
+	var logBuffer bytes.Buffer
+	genLogger.SetOutputForTesting(&logBuffer)
+	genLogger.SetLogLevel("WARN")
+	defer func() {
+		genLogger.SetOutputForTesting(os.Stdout)
+	}()
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			input := testCase.Input.(setPropertyValidValuesInput)
+			expected := testCase.Expected.(setPropertyValidValuesExpected)
+
+			logBuffer.Reset()
+
+			property := &Property{
+				PropertyName:       "testProp",
+				propertyDefinition: input.PropertyDefinition,
+				metaDetails:        input.MetaDetails,
+			}
+
+			err := property.setValidValues()
+
+			if expected.Error {
+				assert.EqualError(t, err, expected.ErrorMsg)
+				return
+			}
+
+			assert.NoError(t, err, test.MessageUnexpectedError(err))
+			assert.Equal(t, expected.ValidValues, property.ValidValues, test.MessageEqual(expected.ValidValues, property.ValidValues, testCase.Name))
+
+			logOutput := logBuffer.String()
+			if expected.Warning == "" {
+				assert.False(t, strings.Contains(logOutput, "WARN:"), "unexpected warning logged: %s", logOutput)
+			} else {
+				assert.Contains(t, logOutput, expected.Warning, test.MessageEqual(expected.Warning, logOutput, "warning log message"))
+			}
+		})
+	}
+}
+
+func TestValidValuesMethods(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	vv := ValidValues{
+		"3": ValidValue{LocalName: "level3"},
+		"1": ValidValue{LocalName: "level1"},
+		"2": ValidValue{LocalName: "level2"},
+	}
+
+	assert.Equal(t, []string{"level1", "level2", "level3"}, vv.LocalNamesList())
+	assert.Equal(t, []string{"1", "2", "3"}, vv.ValuesList())
+	assert.Equal(t, map[string]string{"1": "level1", "2": "level2", "3": "level3"}, vv.ValueLocalNameMap())
+
+	empty := ValidValues{}
+	assert.Equal(t, []string{}, empty.LocalNamesList())
+	assert.Equal(t, []string{}, empty.ValuesList())
+	assert.Equal(t, map[string]string{}, empty.ValueLocalNameMap())
 }
