@@ -35,8 +35,6 @@ type Property struct {
 	// Indicates if a property is optional in the resource and datasource schemas.
 	// Exposed as a separate bool because it directly maps to a Terraform schema construct, which makes templating easier.
 	Optional bool
-	// When a property that points to another class, this is the class to which the property points to.
-	PointsToClass string
 	// The name of the property in the APIC class.
 	PropertyName string
 	// Indicates if the property is read-only in the resource schemas.
@@ -270,9 +268,6 @@ func (p *Property) setPropertyData() error {
 	// TODO: add function to set MigrationValues
 	p.setMigrationValues()
 
-	// TODO: add function to set PointsToClass
-	p.setPointsToClass()
-
 	p.setRequired()
 
 	// setOptional is called after setRequired because it depends on p.Required.
@@ -436,12 +431,6 @@ func (p *Property) setOptional() {
 	}
 
 	genLogger.Debugf("Successfully set Optional '%t' for property '%s'.", p.Optional, p.PropertyName)
-}
-
-func (p *Property) setPointsToClass() {
-	// Determine the class to which the property points.
-	genLogger.Debugf("Setting PointsToClass for property '%s'.", p.PropertyName)
-	genLogger.Debugf("Successfully set PointsToClass for property '%s'.", p.PropertyName)
 }
 
 func (p *Property) setReadOnly() {
