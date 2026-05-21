@@ -606,28 +606,28 @@ func TestSetDeprecationWarning(t *testing.T) {
 			Expected: "",
 		},
 		{
-			Name:  "test_deprecated_only_no_versions",
-			Input: setDeprecationWarningInput{Deprecated: true},
+			Name:     "test_deprecated_only_no_versions",
+			Input:    setDeprecationWarningInput{Deprecated: true},
 			Expected: "The " + classNameLink + " class is deprecated by the APIC API and may be removed in a future APIC release. " + terraformSentence,
 		},
 		{
-			Name:  "test_deprecated_only_with_versions",
-			Input: setDeprecationWarningInput{Deprecated: true, DeprecatedVersions: "6.0(1a)-"},
+			Name:     "test_deprecated_only_with_versions",
+			Input:    setDeprecationWarningInput{Deprecated: true, DeprecatedVersions: "6.0(1a)-"},
 			Expected: "The " + classNameLink + " class is deprecated by the APIC API as of version 6.0(1a) and later and may be removed in a future APIC release. " + terraformSentence,
 		},
 		{
-			Name:  "test_hidden_only_no_versions",
-			Input: setDeprecationWarningInput{Hidden: true},
+			Name:     "test_hidden_only_no_versions",
+			Input:    setDeprecationWarningInput{Hidden: true},
 			Expected: "The " + classNameLink + " class is no longer accepted by the APIC API. " + terraformSentence,
 		},
 		{
-			Name:  "test_hidden_only_with_versions",
-			Input: setDeprecationWarningInput{Hidden: true, HiddenVersions: "6.0(1a)-"},
+			Name:     "test_hidden_only_with_versions",
+			Input:    setDeprecationWarningInput{Hidden: true, HiddenVersions: "6.0(1a)-"},
 			Expected: "The " + classNameLink + " class is no longer accepted by the APIC API as of version 6.0(1a) and later. " + terraformSentence,
 		},
 		{
-			Name:  "test_hidden_supersedes_deprecated",
-			Input: setDeprecationWarningInput{Hidden: true, Deprecated: true, DeprecatedVersions: "5.0(1a)-"},
+			Name:     "test_hidden_supersedes_deprecated",
+			Input:    setDeprecationWarningInput{Hidden: true, Deprecated: true, DeprecatedVersions: "5.0(1a)-"},
 			Expected: "The " + classNameLink + " class is no longer accepted by the APIC API. " + terraformSentence,
 		},
 	}
@@ -1237,7 +1237,7 @@ func TestSetDescriptionWhenDefinedAsChild(t *testing.T) {
 				ResourceName:       "relation_from_foo_to_bd",
 				ResourceNameNested: "relation_to_bd",
 				IsSingleNested:     false,
-				Relation:           Relation{RelationalClass: true, ToClass: "fvBD"},
+				Relation:           Relation{RelationalClass: true, ToClasses: []*ClassName{testClassName("fvBD")}},
 				StoreClasses: map[string]Class{
 					"fvBD": {ResourceName: "bridge_domain", Documentation: ClassDocumentation{Label: "Bridge Domain"}},
 				},
@@ -1251,7 +1251,7 @@ func TestSetDescriptionWhenDefinedAsChild(t *testing.T) {
 				ResourceName:       "relation_from_foo_to_bd",
 				ResourceNameNested: "relation_to_bd",
 				IsSingleNested:     true,
-				Relation:           Relation{RelationalClass: true, ToClass: "fvBD"},
+				Relation:           Relation{RelationalClass: true, ToClasses: []*ClassName{testClassName("fvBD")}},
 				StoreClasses: map[string]Class{
 					"fvBD": {ResourceName: "bridge_domain", Documentation: ClassDocumentation{Label: "Bridge Domain"}},
 				},
@@ -1265,7 +1265,7 @@ func TestSetDescriptionWhenDefinedAsChild(t *testing.T) {
 				ResourceName:       "relation_from_foo_to_bd",
 				ResourceNameNested: "relation_to_bd",
 				IsSingleNested:     false,
-				Relation:           Relation{RelationalClass: true, ToClass: "fvBD"},
+				Relation:           Relation{RelationalClass: true, ToClasses: []*ClassName{testClassName("fvBD")}},
 				StoreClasses:       map[string]Class{},
 			},
 			Expected: "relation_to_bd - (" + fooLink + ") - (list) A list of Relation From Foo To BD pointing to fvBD (" + bdLink + ").",
@@ -1277,7 +1277,7 @@ func TestSetDescriptionWhenDefinedAsChild(t *testing.T) {
 				ResourceName:       "relation_from_foo_to_bd",
 				ResourceNameNested: "relation_to_bd",
 				IsSingleNested:     false,
-				Relation:           Relation{RelationalClass: true, ToClass: "fvBD"},
+				Relation:           Relation{RelationalClass: true, ToClasses: []*ClassName{testClassName("fvBD")}},
 				StoreClasses: map[string]Class{
 					"fvBD": {ResourceName: "", Documentation: ClassDocumentation{Label: "Bridge Domain"}},
 				},
@@ -1291,7 +1291,7 @@ func TestSetDescriptionWhenDefinedAsChild(t *testing.T) {
 				ResourceName:       "relation_from_foo_to_bd",
 				ResourceNameNested: "relation_to_bd",
 				IsSingleNested:     false,
-				Relation:           Relation{RelationalClass: true, ToClass: "fvBD"},
+				Relation:           Relation{RelationalClass: true, ToClasses: []*ClassName{testClassName("fvBD")}},
 				StoreClasses: map[string]Class{
 					"fvBD": {ResourceName: "bridge_domain"},
 				},

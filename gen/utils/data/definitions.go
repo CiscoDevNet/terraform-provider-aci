@@ -141,6 +141,28 @@ type RegexStatementDefinition struct {
 	Type  string `yaml:"type"`
 }
 
+// RelationInfoDefinition mirrors the meta `relationInfo` block and allows per-field overrides
+// from the class definition file. Empty fields fall back to the corresponding meta value.
+type RelationInfoDefinition struct {
+	// When true, the class is treated as non-relational regardless of the meta `relationInfo`
+	// block. Used to opt out of relational handling for classes whose meta declares a relation
+	// that should not be exposed by the provider. Mutually exclusive with the override fields
+	// below; an error is returned during generation when `Disabled` is combined with any of
+	// `Type`, `FromClass`, or `ToClasses`.
+	Disabled bool `yaml:"disabled"`
+	// Relationship type. Valid values: "named", "explicit".
+	Type string `yaml:"type"`
+	// Source class of the relation in `pkg:Class` form (e.g., "fv:EPg").
+	FromClass string `yaml:"from_class"`
+	// Target classes of the relation in `pkg:Class` form (e.g., ["vz:BrCP"]).
+	// Replaces the meta `toMo` entirely when set; a single-element list is the common case,
+	// while a multi-element list is required when the meta `toMo` is an abstract superclass
+	// (e.g., "infra:DomP") that maps to multiple concrete target classes. When more than one
+	// class is listed, the class definition must also provide an explicit `resource_name`
+	// since auto-naming from a single target is no longer meaningful.
+	ToClasses []string `yaml:"to_classes"`
+}
+
 type ClassDefinition struct {
 	// Overrides the default deletion behavior from meta file. Set to "never" to prevent deletion of the class.
 	// The value "never" is used to keep the input consistent with the meta data file.
@@ -178,6 +200,14 @@ type ClassDefinition struct {
 	// Property-level overrides keyed by the meta property name (e.g., "pcTag", "name").
 	// Used to override the attribute name, or control the schema restriction (required, optional, read_only, exclude).
 	Properties map[string]PropertyDefinition `yaml:"properties"`
+	// Overrides (or supplies) the meta `relationInfo` block on a per-field basis.
+	// Any non-empty field replaces the matching field from the meta file; empty fields fall back to meta.
+	// When the meta file has no `relationInfo` and this definition supplies at least one field,
+	// the class is treated as a relational class driven entirely by the definition.
+	// `to_classes` directly maps to `Relation.ToClasses`; when more than one class is listed,
+	// `resource_name` must also be set explicitly since auto-naming from a single target is no longer meaningful.
+	// Set `disabled: true` to opt out of relational handling entirely, even when the meta declares a relation.
+	RelationInfo RelationInfoDefinition `yaml:"relation_info"`
 	// Indicates that the class is required when defined as a child in a parent resource.
 	RequiredAsChild bool `yaml:"required_as_child"`
 	// Overrides the resource name derived from the meta file label (e.g., "vrf" instead of "context").

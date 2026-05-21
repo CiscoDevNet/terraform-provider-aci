@@ -197,11 +197,12 @@ func TestSetResourceNameFromDefinitionOverrideWithoutLabel(t *testing.T) {
 type setRelationInput struct {
 	ClassName       string
 	MetaFileContent map[string]interface{}
+	ClassDefinition ClassDefinition
 }
 
 type setRelationExpected struct {
-	FromClass       string
-	ToClass         string
+	FromClass       *ClassName
+	ToClasses       []*ClassName
 	Type            RelationshipTypeEnum
 	IncludeFrom     bool
 	RelationalClass bool
@@ -221,8 +222,8 @@ func TestSetRelation(t *testing.T) {
 				MetaFileContent: nil,
 			},
 			Expected: setRelationExpected{
-				FromClass:       "",
-				ToClass:         "",
+				FromClass:       nil,
+				ToClasses:       nil,
 				Type:            RelationshipTypeEnum(0),
 				IncludeFrom:     false,
 				RelationalClass: false,
@@ -242,8 +243,8 @@ func TestSetRelation(t *testing.T) {
 				},
 			},
 			Expected: setRelationExpected{
-				FromClass:       "fvEPg",
-				ToClass:         "vzBrCP",
+				FromClass:       testClassName("fvEPg"),
+				ToClasses:       []*ClassName{testClassName("vzBrCP")},
 				Type:            Named,
 				IncludeFrom:     false,
 				RelationalClass: true,
@@ -264,11 +265,99 @@ func TestSetRelation(t *testing.T) {
 				},
 			},
 			Expected: setRelationExpected{
-				FromClass:       "netflowAExporterPol",
-				ToClass:         "fvCtx",
+				FromClass:       testClassName("netflowAExporterPol"),
+				ToClasses:       []*ClassName{testClassName("fvCtx")},
 				Type:            Explicit,
 				IncludeFrom:     true,
 				RelationalClass: true,
+			},
+		},
+		{
+			Name: "test_relation_to_classes_override",
+			Input: setRelationInput{
+				ClassName: "fvRsDomAtt",
+				MetaFileContent: map[string]interface{}{
+					"label": "domain attachment",
+					"relationInfo": map[string]interface{}{
+						"type":   "named",
+						"fromMo": "fv:AEPg",
+						"toMo":   "infra:DomP",
+					},
+				},
+				ClassDefinition: ClassDefinition{
+					RelationInfo: RelationInfoDefinition{
+						ToClasses: []string{"vmm:DomP", "phys:DomP", "fc:DomP", "l2ext:DomP"},
+					},
+				},
+			},
+			Expected: setRelationExpected{
+				FromClass:       testClassName("fvAEPg"),
+				ToClasses:       []*ClassName{testClassName("fcDomP"), testClassName("l2extDomP"), testClassName("physDomP"), testClassName("vmmDomP")},
+				Type:            Named,
+				IncludeFrom:     false,
+				RelationalClass: true,
+			},
+		},
+		{
+			Name: "test_relation_info_field_override",
+			Input: setRelationInput{
+				ClassName: "fvRsCons",
+				MetaFileContent: map[string]interface{}{
+					"label": "contract",
+					"relationInfo": map[string]interface{}{
+						"type":   "named",
+						"fromMo": "fv:EPg",
+						"toMo":   "vz:BrCP",
+					},
+				},
+				ClassDefinition: ClassDefinition{
+					RelationInfo: RelationInfoDefinition{ToClasses: []string{"vz:OOBBrCP"}},
+				},
+			},
+			Expected: setRelationExpected{
+				FromClass:       testClassName("fvEPg"),
+				ToClasses:       []*ClassName{testClassName("vzOOBBrCP")},
+				Type:            Named,
+				IncludeFrom:     false,
+				RelationalClass: true,
+			},
+		},
+		{
+			Name: "test_relation_info_full_definition_only",
+			Input: setRelationInput{
+				ClassName:       "fakeRsCustom",
+				MetaFileContent: map[string]interface{}{},
+				ClassDefinition: ClassDefinition{
+					RelationInfo: RelationInfoDefinition{
+						Type:      "explicit",
+						FromClass: "fv:AEPg",
+						ToClasses: []string{"vz:BrCP"},
+					},
+				},
+			},
+			Expected: setRelationExpected{
+				FromClass:       testClassName("fvAEPg"),
+				ToClasses:       []*ClassName{testClassName("vzBrCP")},
+				Type:            Explicit,
+				IncludeFrom:     false,
+				RelationalClass: true,
+			},
+		},
+		{
+			Name: "test_relation_info_missing_to_class_error",
+			Input: setRelationInput{
+				ClassName:       "fakeRsCustom",
+				MetaFileContent: map[string]interface{}{},
+				ClassDefinition: ClassDefinition{
+					RelationInfo: RelationInfoDefinition{
+						Type:      "named",
+						FromClass: "fv:AEPg",
+					},
+				},
+			},
+			Expected: setRelationExpected{
+				Error:    true,
+				ErrorMsg: "missing required relation_info fields: to_classes",
 			},
 		},
 		{
@@ -288,6 +377,48 @@ func TestSetRelation(t *testing.T) {
 				ErrorMsg: "undefined relationship type",
 			},
 		},
+		{
+			Name: "test_relation_info_disabled_overrides_meta",
+			Input: setRelationInput{
+				ClassName: "fvRsCtx",
+				MetaFileContent: map[string]interface{}{
+					"relationInfo": map[string]interface{}{
+						"type":   "named",
+						"fromMo": "fv:EPg",
+						"toMo":   "vz:BrCP",
+					},
+				},
+				ClassDefinition: ClassDefinition{
+					RelationInfo: RelationInfoDefinition{Disabled: true},
+				},
+			},
+			Expected: setRelationExpected{
+				FromClass:       nil,
+				ToClasses:       nil,
+				Type:            RelationshipTypeEnum(0),
+				IncludeFrom:     false,
+				RelationalClass: false,
+			},
+		},
+		{
+			Name: "test_relation_info_disabled_conflict_error",
+			Input: setRelationInput{
+				ClassName:       "fvRsCtx",
+				MetaFileContent: map[string]interface{}{},
+				ClassDefinition: ClassDefinition{
+					RelationInfo: RelationInfoDefinition{
+						Disabled:  true,
+						Type:      "named",
+						FromClass: "fv:EPg",
+						ToClasses: []string{"vz:BrCP"},
+					},
+				},
+			},
+			Expected: setRelationExpected{
+				Error:    true,
+				ErrorMsg: "relation_info.disabled is mutually exclusive with type, from_class, and to_classes",
+			},
+		},
 	}
 
 	for _, testCase := range testCases {
@@ -297,6 +428,7 @@ func TestSetRelation(t *testing.T) {
 			expected := testCase.Expected.(setRelationExpected)
 			class := Class{Name: testClassName(input.ClassName)}
 			class.MetaFileContent = input.MetaFileContent
+			class.ClassDefinition = input.ClassDefinition
 
 			err := class.setRelation()
 
@@ -310,7 +442,7 @@ func TestSetRelation(t *testing.T) {
 
 			assert.NoError(t, err, test.MessageUnexpectedError(err))
 			assert.Equal(t, expected.FromClass, class.Relation.FromClass, test.MessageEqual(expected.FromClass, class.Relation.FromClass, testCase.Name))
-			assert.Equal(t, expected.ToClass, class.Relation.ToClass, test.MessageEqual(expected.ToClass, class.Relation.ToClass, testCase.Name))
+			assert.Equal(t, expected.ToClasses, class.Relation.ToClasses, test.MessageEqual(expected.ToClasses, class.Relation.ToClasses, testCase.Name))
 			assert.Equal(t, expected.Type, class.Relation.Type, test.MessageEqual(expected.Type, class.Relation.Type, testCase.Name))
 			assert.Equal(t, expected.IncludeFrom, class.Relation.IncludeFrom, test.MessageEqual(expected.IncludeFrom, class.Relation.IncludeFrom, testCase.Name))
 			assert.Equal(t, expected.RelationalClass, class.Relation.RelationalClass, test.MessageEqual(expected.RelationalClass, class.Relation.RelationalClass, testCase.Name))
