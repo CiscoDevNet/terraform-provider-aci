@@ -122,6 +122,10 @@ type PropertyDefinition struct {
 	// Removes valid values from the meta `validValues` array by localName.
 	// A warning is logged when an entry is not present in the meta valid values.
 	RemoveValidValues []string `yaml:"remove_valid_values"`
+	// Overrides the value type derived from the meta `uitype`.
+	// Accepted values mirror the ValueTypeEnum vocabulary: "string", "set", "ip_address", "semantic_equality".
+	// An error is returned during generation when set to an unrecognized value.
+	ValueType string `yaml:"value_type"`
 }
 
 // ValidatorDefinition mirrors the YAML/JSON shape of a single validator entry (min/max plus optional regex statements).

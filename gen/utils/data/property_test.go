@@ -1561,3 +1561,213 @@ func TestValidValuesMethods(t *testing.T) {
 	assert.Equal(t, []string{}, empty.ValuesList())
 	assert.Equal(t, map[string]string{}, empty.ValueLocalNameMap())
 }
+
+type setValueTypeInput struct {
+	PropertyDefinition PropertyDefinition
+	MetaDetails        map[string]interface{}
+	ValidValues        ValidValues
+	Validators         []Validator
+}
+
+type setValueTypeExpected struct {
+	ValueType ValueTypeEnum
+	Error     bool
+	ErrorMsg  string
+	Warning   string
+}
+
+func TestPropertySetValueType(t *testing.T) {
+	test.InitializeTest(t)
+
+	testCases := []test.TestCase{
+		{
+			Name: "test_meta_bitmask_to_set",
+			Input: setValueTypeInput{
+				MetaDetails: map[string]interface{}{"uitype": "bitmask"},
+			},
+			Expected: setValueTypeExpected{ValueType: Set},
+		},
+		{
+			Name: "test_meta_string_to_string",
+			Input: setValueTypeInput{
+				MetaDetails: map[string]interface{}{"uitype": "string"},
+			},
+			Expected: setValueTypeExpected{ValueType: String},
+		},
+		{
+			Name: "test_meta_enum_no_warn",
+			Input: setValueTypeInput{
+				MetaDetails: map[string]interface{}{"uitype": "enum"},
+			},
+			Expected: setValueTypeExpected{ValueType: String},
+		},
+		{
+			Name: "test_meta_auto_no_warn",
+			Input: setValueTypeInput{
+				MetaDetails: map[string]interface{}{"uitype": "auto"},
+			},
+			Expected: setValueTypeExpected{ValueType: String},
+		},
+		{
+			Name: "test_meta_number_no_warn",
+			Input: setValueTypeInput{
+				MetaDetails: map[string]interface{}{"uitype": "number"},
+			},
+			Expected: setValueTypeExpected{ValueType: String},
+		},
+		{
+			Name: "test_meta_boolean_no_warn",
+			Input: setValueTypeInput{
+				MetaDetails: map[string]interface{}{"uitype": "boolean"},
+			},
+			Expected: setValueTypeExpected{ValueType: String},
+		},
+		{
+			Name: "test_meta_password_no_warn",
+			Input: setValueTypeInput{
+				MetaDetails: map[string]interface{}{"uitype": "password"},
+			},
+			Expected: setValueTypeExpected{ValueType: String},
+		},
+		{
+			Name:     "test_meta_missing_uitype_defaults_string",
+			Input:    setValueTypeInput{MetaDetails: map[string]interface{}{}},
+			Expected: setValueTypeExpected{ValueType: String},
+		},
+		{
+			Name: "test_meta_unknown_uitype_warns",
+			Input: setValueTypeInput{
+				MetaDetails: map[string]interface{}{"uitype": "weirdtype"},
+			},
+			Expected: setValueTypeExpected{
+				ValueType: String,
+				Warning:   `Unmapped meta uiType "weirdtype" for property "testProp"`,
+			},
+		},
+		{
+			Name: "test_meta_validate_as_ip_to_ip_address",
+			Input: setValueTypeInput{
+				MetaDetails: map[string]interface{}{"uitype": "string", "validateAsIPv4OrIPv6": true},
+			},
+			Expected: setValueTypeExpected{ValueType: IpAddress},
+		},
+		{
+			Name: "test_meta_bitmask_outranks_ip",
+			Input: setValueTypeInput{
+				MetaDetails: map[string]interface{}{"uitype": "bitmask", "validateAsIPv4OrIPv6": true},
+			},
+			Expected: setValueTypeExpected{ValueType: Set},
+		},
+		{
+			Name: "test_meta_ip_outranks_semantic_equality",
+			Input: setValueTypeInput{
+				MetaDetails: map[string]interface{}{"uitype": "string", "validateAsIPv4OrIPv6": true},
+				ValidValues: ValidValues{"1": ValidValue{LocalName: "one"}},
+				Validators:  []Validator{{Min: 0, Max: 10}},
+			},
+			Expected: setValueTypeExpected{ValueType: IpAddress},
+		},
+		{
+			Name: "test_validators_and_valid_values_to_semantic_equality",
+			Input: setValueTypeInput{
+				MetaDetails: map[string]interface{}{"uitype": "number"},
+				ValidValues: ValidValues{"22": ValidValue{LocalName: "ssh"}},
+				Validators:  []Validator{{Min: 0, Max: 65535}},
+			},
+			Expected: setValueTypeExpected{ValueType: SemanticEquality},
+		},
+		{
+			Name: "test_only_validators_no_semantic_equality",
+			Input: setValueTypeInput{
+				MetaDetails: map[string]interface{}{"uitype": "number"},
+				Validators:  []Validator{{Min: 0, Max: 65535}},
+			},
+			Expected: setValueTypeExpected{ValueType: String},
+		},
+		{
+			Name: "test_only_valid_values_no_semantic_equality",
+			Input: setValueTypeInput{
+				MetaDetails: map[string]interface{}{"uitype": "enum"},
+				ValidValues: ValidValues{"1": ValidValue{LocalName: "one"}},
+			},
+			Expected: setValueTypeExpected{ValueType: String},
+		},
+		{
+			Name: "test_definition_override_set",
+			Input: setValueTypeInput{
+				PropertyDefinition: PropertyDefinition{ValueType: "set"},
+				MetaDetails:        map[string]interface{}{"uitype": "string"},
+			},
+			Expected: setValueTypeExpected{ValueType: Set},
+		},
+		{
+			Name: "test_definition_override_ip_address",
+			Input: setValueTypeInput{
+				PropertyDefinition: PropertyDefinition{ValueType: "ip_address"},
+				MetaDetails:        map[string]interface{}{},
+			},
+			Expected: setValueTypeExpected{ValueType: IpAddress},
+		},
+		{
+			Name: "test_definition_override_semantic_equality",
+			Input: setValueTypeInput{
+				PropertyDefinition: PropertyDefinition{ValueType: "semantic_equality"},
+				MetaDetails:        map[string]interface{}{"uitype": "bitmask"},
+			},
+			Expected: setValueTypeExpected{ValueType: SemanticEquality},
+		},
+		{
+			Name: "test_definition_override_invalid_errors",
+			Input: setValueTypeInput{
+				PropertyDefinition: PropertyDefinition{ValueType: "weird"},
+				MetaDetails:        map[string]interface{}{},
+			},
+			Expected: setValueTypeExpected{
+				Error:    true,
+				ErrorMsg: `failed to parse value_type for property 'testProp': unknown value_type "weird"`,
+			},
+		},
+	}
+
+	// Capture warnings via the package logger; restored after the test.
+	var logBuffer bytes.Buffer
+	genLogger.SetOutputForTesting(&logBuffer)
+	genLogger.SetLogLevel("WARN")
+	defer func() {
+		genLogger.SetOutputForTesting(os.Stdout)
+	}()
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			input := testCase.Input.(setValueTypeInput)
+			expected := testCase.Expected.(setValueTypeExpected)
+
+			logBuffer.Reset()
+
+			property := &Property{
+				PropertyName:       "testProp",
+				propertyDefinition: input.PropertyDefinition,
+				metaDetails:        input.MetaDetails,
+				ValidValues:        input.ValidValues,
+				Validators:         input.Validators,
+			}
+
+			err := property.setValueType()
+
+			if expected.Error {
+				assert.EqualError(t, err, expected.ErrorMsg)
+				return
+			}
+
+			assert.NoError(t, err, test.MessageUnexpectedError(err))
+			assert.Equal(t, expected.ValueType, property.ValueType, test.MessageEqual(expected.ValueType, property.ValueType, testCase.Name))
+
+			logOutput := logBuffer.String()
+			if expected.Warning == "" {
+				assert.False(t, strings.Contains(logOutput, "WARN:"), "unexpected warning logged: %s", logOutput)
+			} else {
+				assert.Contains(t, logOutput, expected.Warning, test.MessageEqual(expected.Warning, logOutput, "warning log message"))
+			}
+		})
+	}
+}
