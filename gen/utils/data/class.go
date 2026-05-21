@@ -102,14 +102,18 @@ func (p PlatformTypeEnum) String() string {
 
 type Relation struct {
 	// The class from which the relationship is defined.
-	FromClass string
+	FromClass *ClassName
 	// Indicates if _from_ should be included in the resource name.
 	//  ex. "fvRsBdToOut" would be "data_source_aci_relation_from_bridge_domain_to_l3_outside".
 	IncludeFrom bool
 	// Indicates if the class is a relational class.
 	RelationalClass bool
-	// The class to which the relationship points.
-	ToClass string
+	// The list of concrete target classes the relationship points to.
+	// Seeded from the meta `relationInfo.toMo` (single element) and replaced by the
+	// `relation_to_classes` definition override when present. A length greater than 1
+	// indicates a multi-target (plural) relation, in which case the class definition
+	// must provide an explicit `resource_name`.
+	ToClasses []*ClassName
 	// The type of the relationship.
 	Type RelationshipTypeEnum
 }
@@ -567,32 +571,85 @@ func (c *Class) setRelation() error {
 	// Determine if the class is a relational class.
 	genLogger.Debugf("Setting Relation details for class '%s'.", c.Name)
 
-	// TODO: add logic to override the relational status from a definition file.
-	if relationInfo, ok := c.MetaFileContent["relationInfo"]; ok {
-		relationType, err := setRelationshipTypeEnum(relationInfo.(map[string]interface{})["type"].(string))
-		if err != nil {
-			return err
-		}
+	metaRelationInfo, _ := c.MetaFileContent["relationInfo"].(map[string]interface{})
+	defRelationInfo := c.ClassDefinition.RelationInfo
 
-		fromClass, err := sanitizeClassName(relationInfo.(map[string]interface{})["fromMo"].(string))
-		if err != nil {
-			return err
+	// Allow the definition file to opt out of relational handling entirely. This is mutually
+	// exclusive with supplying any other `relation_info` override; mixing them is almost
+	// always a YAML authoring mistake, so fail fast rather than silently ignoring fields.
+	if defRelationInfo.Disabled {
+		if defRelationInfo.Type != "" || defRelationInfo.FromClass != "" || len(defRelationInfo.ToClasses) > 0 {
+			return fmt.Errorf("failed to set relation for class '%s': relation_info.disabled is mutually exclusive with type, from_class, and to_classes", c.Name)
 		}
-		c.Relation.FromClass = fromClass
-
-		if strings.Contains(c.Name.String(), "To") {
-			c.Relation.IncludeFrom = true
-		}
-		c.Relation.RelationalClass = true
-
-		toClass, err := sanitizeClassName(relationInfo.(map[string]interface{})["toMo"].(string))
-		if err != nil {
-			return err
-		}
-		c.Relation.ToClass = toClass
-		c.Relation.Type = RelationshipTypeEnum(relationType)
-
+		genLogger.Debugf("Class '%s' has relation_info.disabled=true; skipping relational handling.", c.Name)
+		return nil
 	}
+
+	// Skip non-relational classes entirely. A class is relational when either the meta file
+	// declares a `relationInfo` block or the definition file supplies a `relation_info` override.
+	if metaRelationInfo == nil && defRelationInfo.Type == "" && defRelationInfo.FromClass == "" && len(defRelationInfo.ToClasses) == 0 {
+		genLogger.Debugf("Class '%s' is not a relational class; no Relation details to set.", c.Name)
+		return nil
+	}
+	c.Relation.RelationalClass = true
+
+	// Resolve each relationInfo field with the definition taking precedence over meta.
+	typeStr := utils.GetValueFromMapWithOverride(metaRelationInfo, "type", defRelationInfo.Type)
+	fromMo := utils.GetValueFromMapWithOverride(metaRelationInfo, "fromMo", defRelationInfo.FromClass)
+	metaToMo := utils.GetValueFromMapWithOverride(metaRelationInfo, "toMo", "")
+
+	// Validate all required relation_info fields together so the user sees every missing
+	// field in a single error rather than fix-rebuild-fix-rebuild.
+	var missing []string
+	if typeStr == "" {
+		missing = append(missing, "type")
+	}
+	if fromMo == "" {
+		missing = append(missing, "from_class")
+	}
+	if metaToMo == "" && len(defRelationInfo.ToClasses) == 0 {
+		missing = append(missing, "to_classes")
+	}
+	if len(missing) > 0 {
+		return fmt.Errorf("failed to set relation for class '%s': missing required relation_info fields: %s", c.Name, strings.Join(missing, ", "))
+	}
+
+	relationType, err := setRelationshipTypeEnum(typeStr)
+	if err != nil {
+		return err
+	}
+	c.Relation.Type = relationType
+
+	fromClass, err := NewClassName(fromMo)
+	if err != nil {
+		return err
+	}
+	c.Relation.FromClass = fromClass
+
+	if strings.Contains(c.Name.String(), "To") {
+		c.Relation.IncludeFrom = true
+	}
+
+	// Resolve the target classes. The `relation_info.to_classes` definition override replaces
+	// the meta `toMo` entirely when present, supporting both a single concrete target and a list
+	// of concrete targets when the meta `toMo` is abstract.
+	toMos := defRelationInfo.ToClasses
+	if len(toMos) == 0 {
+		toMos = []string{metaToMo}
+	}
+	toClasses := make([]*ClassName, 0, len(toMos))
+	for _, target := range toMos {
+		toClass, err := NewClassName(target)
+		if err != nil {
+			return err
+		}
+		toClasses = append(toClasses, toClass)
+	}
+	// Sort and deduplicate by full class name. Pointer comparison is not meaningful here,
+	// so SortFunc/CompactFunc are used instead of Sort/Compact.
+	slices.SortFunc(toClasses, func(a, b *ClassName) int { return strings.Compare(a.String(), b.String()) })
+	c.Relation.ToClasses = slices.CompactFunc(toClasses, func(a, b *ClassName) bool { return a.String() == b.String() })
+
 	genLogger.Debugf("Successfully set Relation details for class '%s'.", c.Name)
 
 	return nil
@@ -622,15 +679,26 @@ func (c *Class) setResourceName(ds *DataStore) error {
 
 	// Determine if the class is relational and set the ResourceName and ResourceNameNested based on the relation.
 	if c.Relation.RelationalClass {
-		// If the relation includes 'To' in the classname, the resource name will be in the format 'relation_from_{from_class}_to_{to_class}'.
-		// If the relation does not include 'To' in the classname, the resource name will be in the format 'relation_to_{to_class}'.
-		toClass := getRelationshipResourceName(ds, c.Relation.ToClass)
-		if c.Relation.IncludeFrom {
-			c.ResourceName = fmt.Sprintf("relation_from_%s_to_%s", getRelationshipResourceName(ds, c.Relation.FromClass), toClass)
+		// When the relation has more than one target class, the meta `toMo` is abstract or
+		// has been overridden with a list of concrete targets via `relation_info.to_classes`.
+		// In that case no single target can drive auto-naming, so the class definition
+		// must provide an explicit `resource_name`.
+		if len(c.Relation.ToClasses) > 1 {
+			if c.ClassDefinition.ResourceName == "" {
+				return fmt.Errorf("failed to set resource name for class '%s': resource_name is required when relation_info.to_classes has more than one entry", c.Name)
+			}
+			// Keep the definition-provided ResourceName and ResourceNameNested as-is.
 		} else {
-			c.ResourceName = fmt.Sprintf("relation_to_%s", toClass)
+			// Single-target relation: auto-generate `relation_to_<x>` (or
+			// `relation_from_<from>_to_<x>`) from the only target class.
+			toClass := getRelationshipResourceName(ds, c.Relation.ToClasses[0].String())
+			if c.Relation.IncludeFrom {
+				c.ResourceName = fmt.Sprintf("relation_from_%s_to_%s", getRelationshipResourceName(ds, c.Relation.FromClass.String()), toClass)
+			} else {
+				c.ResourceName = fmt.Sprintf("relation_to_%s", toClass)
+			}
+			c.ResourceNameNested = fmt.Sprintf("relation_to_%s", toClass)
 		}
-		c.ResourceNameNested = fmt.Sprintf("relation_to_%s", toClass)
 	}
 
 	// Set the plural form for the nested resource name when the class has identifiers.

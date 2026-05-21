@@ -276,19 +276,32 @@ func (d *ClassDocumentation) setDescriptionWhenDefinedAsChild(class *Class, ds *
 
 	var sentence string
 	if class.Relation.RelationalClass {
-		toClassFull := class.Relation.ToClass
-		toClassLink := fmt.Sprintf("[%s](https://%s/app/index.html#/objects/%s/overview)", toClassFull, constPubhubDevnetHost, toClassFull)
-		toClass, ok := ds.Classes[toClassFull]
-		toLabel := toClassFull
-		if ok && toClass.Documentation.Label != "" {
-			toLabel = toClass.Documentation.Label
+		targetParts := make([]string, 0, len(class.Relation.ToClasses))
+		resourceParts := make([]string, 0, len(class.Relation.ToClasses))
+		for _, toClassName := range class.Relation.ToClasses {
+			toClassFull := toClassName.String()
+			toClassLink := fmt.Sprintf("[%s](https://%s/app/index.html#/objects/%s/overview)", toClassFull, constPubhubDevnetHost, toClassFull)
+			toClass, ok := ds.Classes[toClassFull]
+			toLabel := toClassFull
+			if ok && toClass.Documentation.Label != "" {
+				toLabel = toClass.Documentation.Label
+			}
+			targetParts = append(targetParts, fmt.Sprintf("%s (%s)", toLabel, toClassLink))
+			if ok && toClass.ResourceName != "" {
+				resourceParts = append(resourceParts, fmt.Sprintf("[%s_%s](%s/%s)", constProviderName, toClass.ResourceName, constRegistryResourceBaseUrl, toClass.ResourceName))
+			}
 		}
+		targets := strings.Join(targetParts, ", ")
 		// Single-nested (map) children are only configurable through their parent, so the
 		// standalone resource clause is omitted to avoid suggesting a separate resource.
-		if ok && toClass.ResourceName != "" && !class.IsSingleNestedWhenDefinedAsChild {
-			sentence = fmt.Sprintf("A %s of %s pointing to %s (%s) which can be configured using the [%s_%s](%s/%s) resource.", nestingType, d.Label, toLabel, toClassLink, constProviderName, toClass.ResourceName, constRegistryResourceBaseUrl, toClass.ResourceName)
+		if len(resourceParts) > 0 && len(resourceParts) == len(class.Relation.ToClasses) && !class.IsSingleNestedWhenDefinedAsChild {
+			resourceWord := "resource"
+			if len(resourceParts) > 1 {
+				resourceWord = "resources"
+			}
+			sentence = fmt.Sprintf("A %s of %s pointing to %s which can be configured using the %s %s.", nestingType, d.Label, targets, strings.Join(resourceParts, ", "), resourceWord)
 		} else {
-			sentence = fmt.Sprintf("A %s of %s pointing to %s (%s).", nestingType, d.Label, toLabel, toClassLink)
+			sentence = fmt.Sprintf("A %s of %s pointing to %s.", nestingType, d.Label, targets)
 		}
 	} else if class.IsSingleNestedWhenDefinedAsChild {
 		// Single-nested (map) children are only configurable through their parent, so the
