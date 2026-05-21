@@ -58,3 +58,26 @@ func Underscore(s string) string {
 	s = strings.ReplaceAll(s, "-", "_")
 	return s
 }
+
+// GetValueFromMapWithOverride returns override when it is not the zero value of T.
+// Otherwise it returns the value stored under key in m, type-asserted to T. Returns the
+// zero value of T when m is nil, the key is missing, or the stored value is not a T.
+//
+// The "non-zero override wins" precedence fits string-shaped overrides (empty string means
+// "unset") and any pointer/interface T (nil means "unset"). For bool or numeric T the zero
+// value (false / 0) cannot be expressed as a meaningful override, so a different mechanism
+// is required for those cases.
+//
+// Typical use: merging a per-field override from a definition file with a value read from
+// a JSON-unmarshalled meta sub-map (map[string]interface{}).
+func GetValueFromMapWithOverride[T comparable](m map[string]interface{}, key string, override T) T {
+	var zero T
+	if override != zero {
+		return override
+	}
+	if m == nil {
+		return zero
+	}
+	v, _ := m[key].(T)
+	return v
+}

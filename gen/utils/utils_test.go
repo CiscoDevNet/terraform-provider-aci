@@ -120,3 +120,71 @@ func TestGetFileNamesFromDirectoryNonExistent(t *testing.T) {
 
 	assert.Empty(t, filenames, test.MessageEmpty(filenames, t.Name()))
 }
+
+func TestGetValueFromMapWithOverrideString(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	t.Run("nil_map_empty_override", func(t *testing.T) {
+		t.Parallel()
+		assert.Equal(t, "", GetValueFromMapWithOverride[string](nil, "x", ""))
+	})
+	t.Run("nil_map_with_override", func(t *testing.T) {
+		t.Parallel()
+		assert.Equal(t, "v", GetValueFromMapWithOverride[string](nil, "x", "v"))
+	})
+	t.Run("missing_key_empty_override", func(t *testing.T) {
+		t.Parallel()
+		assert.Equal(t, "", GetValueFromMapWithOverride(map[string]interface{}{}, "x", ""))
+	})
+	t.Run("missing_key_with_override", func(t *testing.T) {
+		t.Parallel()
+		assert.Equal(t, "v", GetValueFromMapWithOverride(map[string]interface{}{}, "x", "v"))
+	})
+	t.Run("string_value_no_override", func(t *testing.T) {
+		t.Parallel()
+		assert.Equal(t, "m", GetValueFromMapWithOverride(map[string]interface{}{"x": "m"}, "x", ""))
+	})
+	t.Run("string_value_override_wins", func(t *testing.T) {
+		t.Parallel()
+		assert.Equal(t, "v", GetValueFromMapWithOverride(map[string]interface{}{"x": "m"}, "x", "v"))
+	})
+	t.Run("non_string_value_returns_zero", func(t *testing.T) {
+		t.Parallel()
+		assert.Equal(t, "", GetValueFromMapWithOverride[string](map[string]interface{}{"x": 42}, "x", ""))
+	})
+	t.Run("nil_value_returns_zero", func(t *testing.T) {
+		t.Parallel()
+		assert.Equal(t, "", GetValueFromMapWithOverride[string](map[string]interface{}{"x": nil}, "x", ""))
+	})
+}
+
+func TestGetValueFromMapWithOverrideOtherTypes(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	t.Run("int_value_no_override", func(t *testing.T) {
+		t.Parallel()
+		assert.Equal(t, 7, GetValueFromMapWithOverride(map[string]interface{}{"x": 7}, "x", 0))
+	})
+	t.Run("int_override_wins", func(t *testing.T) {
+		t.Parallel()
+		assert.Equal(t, 9, GetValueFromMapWithOverride(map[string]interface{}{"x": 7}, "x", 9))
+	})
+	t.Run("bool_true_value_no_override", func(t *testing.T) {
+		t.Parallel()
+		assert.Equal(t, true, GetValueFromMapWithOverride(map[string]interface{}{"x": true}, "x", false))
+	})
+	t.Run("pointer_override_wins", func(t *testing.T) {
+		t.Parallel()
+		s := "v"
+		got := GetValueFromMapWithOverride[*string](nil, "x", &s)
+		assert.Equal(t, &s, got)
+	})
+	t.Run("pointer_nil_override_falls_back", func(t *testing.T) {
+		t.Parallel()
+		s := "m"
+		got := GetValueFromMapWithOverride[*string](map[string]interface{}{"x": &s}, "x", nil)
+		assert.Equal(t, &s, got)
+	})
+}
