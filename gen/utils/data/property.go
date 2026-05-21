@@ -13,9 +13,6 @@ type Property struct {
 	AttributeName string
 	// Indicates if the property is computed in the resource schemas.
 	Computed bool
-	// Indicates if the property has a custom type.
-	// Custom types are used for valid values that have a string and an integer value pointing to the same value. (ex. ssh and 22)
-	CustomType bool
 	// Indicates if the property is deprecated in the resource and datasource schemas.
 	// Deprecated properties include a warning the resource and datasource schemas.
 	// Driven by the meta `isDeprecated` flag with an optional definition override (logical OR).
@@ -176,17 +173,57 @@ func (vv ValidValues) ValueLocalNameMap() map[string]string {
 	return out
 }
 
+// ValueTypeEnum identifies the data shape of a property and is the single dispatch point
+// for type-specific schema and template behavior. New named custom types should be added
+// here as constants and registered in parseValueType so the same definition `value_type`
+// override key can select them.
 type ValueTypeEnum int
 
 // The enumeration options of the ValueType.
 const (
-	// String indicates that the property is a string value.
+	// String indicates that the property is a plain string value.
 	String ValueTypeEnum = iota + 1
-	// Set indicates that the property is a set value.
+	// Set indicates that the property is a set value (driven by meta uitype "bitmask").
 	Set
-	// List indicates that the property is a list value.
-	List
+	// IpAddress indicates that the property is an IP address (IPv4 or IPv6); driven by
+	// meta `validateAsIPv4OrIPv6`. Renders with the IP-address custom type for parsing,
+	// validation, and semantic-equality (e.g. zero-padding normalization).
+	IpAddress
+	// SemanticEquality indicates that the property has both ValidValues and Validators,
+	// meaning the wire form (e.g. "22") and the human form (e.g. "ssh") must compare equal.
+	// Templates render this with the semantic-equality custom type.
+	SemanticEquality
 )
+
+// parseValueType maps the snake_case form used in property definition `value_type` overrides
+// to the typed enum. Returns (0, false) for unknown values. Extend this when adding new
+// ValueTypeEnum entries so the override key vocabulary stays in sync with the enum.
+func parseValueType(rawType string) (ValueTypeEnum, bool) {
+	switch rawType {
+	case "string":
+		return String, true
+	case "set":
+		return Set, true
+	case "ip_address":
+		return IpAddress, true
+	case "semantic_equality":
+		return SemanticEquality, true
+	default:
+		return 0, false
+	}
+}
+
+// knownStringUiTypes are the meta `uitype` values that legitimately render as a string-typed
+// schema attribute. Listed explicitly so that genuinely new uitype values surface via WARN.
+var knownStringUiTypes = map[string]struct{}{
+	"":         {}, // missing key
+	"string":   {},
+	"enum":     {},
+	"number":   {},
+	"boolean":  {},
+	"auto":     {},
+	"password": {}, // sensitive string; sensitivity is handled separately via meta `secure`.
+}
 
 func NewProperty(name string, details map[string]interface{}, definition PropertyDefinition, globalDefinition GlobalMetaDefinition) (*Property, error) {
 	genLogger.Tracef("Creating new property struct for property: %s.", name)
@@ -212,9 +249,6 @@ func (p *Property) setPropertyData() error {
 	genLogger.Debugf("Setting property data for property '%s'.", p.PropertyName)
 
 	p.setAttributeName()
-
-	// TODO: add function to set CustomType
-	p.setCustomType()
 
 	p.setDeprecated()
 
@@ -264,8 +298,10 @@ func (p *Property) setPropertyData() error {
 		return err
 	}
 
-	// TODO: add function to set ValueType
-	p.setValueType()
+	err = p.setValueType()
+	if err != nil {
+		return err
+	}
 
 	err = p.setSupportedVersions()
 	if err != nil {
@@ -301,12 +337,6 @@ func (p *Property) setComputed() {
 	p.Computed = !p.Required
 
 	genLogger.Debugf("Successfully set Computed '%t' for property '%s'.", p.Computed, p.PropertyName)
-}
-
-func (p *Property) setCustomType() {
-	// Determine if the property has a custom type.
-	genLogger.Debugf("Setting CustomType for property '%s'.", p.PropertyName)
-	genLogger.Debugf("Successfully set CustomType for property '%s'.", p.PropertyName)
 }
 
 func (p *Property) setDeprecated() {
@@ -681,10 +711,47 @@ func (p *Property) setValidValues() error {
 	return nil
 }
 
-func (p *Property) setValueType() {
+func (p *Property) setValueType() error {
 	// Determine the value type of the property.
+	// Precedence (first match wins):
+	//   1. Definition `value_type` override (errors on unknown).
+	//   2. Meta `uitype == "bitmask"` -> Set.
+	//   3. Meta `validateAsIPv4OrIPv6 == true` -> IpAddress.
+	//   4. Has both ValidValues and Validators -> SemanticEquality.
+	//      (Reads fields populated earlier in setPropertyData by setValidators and
+	//      setValidValues; pipeline order matters here.)
+	//   5. Meta `uitype` in the known string-rendered set (or missing) -> String silently.
+	//   6. Anything else -> String + WARN so new meta vocabulary surfaces.
 	genLogger.Debugf("Setting ValueType for property '%s'.", p.PropertyName)
-	genLogger.Debugf("Successfully set ValueType for property '%s'.", p.PropertyName)
+
+	if override := p.propertyDefinition.ValueType; override != "" {
+		parsed, ok := parseValueType(override)
+		if !ok {
+			return fmt.Errorf("failed to parse value_type for property '%s': unknown value_type %q", p.PropertyName, override)
+		}
+		p.ValueType = parsed
+		genLogger.Debugf("Successfully set ValueType '%v' for property '%s' from definition override.", p.ValueType, p.PropertyName)
+		return nil
+	}
+
+	uiType, _ := p.metaDetails["uitype"].(string)
+
+	switch {
+	case uiType == "bitmask":
+		p.ValueType = Set
+	case p.metaDetails["validateAsIPv4OrIPv6"] == true:
+		p.ValueType = IpAddress
+	case len(p.ValidValues) > 0 && len(p.Validators) > 0:
+		p.ValueType = SemanticEquality
+	default:
+		if _, known := knownStringUiTypes[uiType]; !known {
+			genLogger.Warnf("Unmapped meta uiType %q for property %q; defaulting to String.", uiType, p.PropertyName)
+		}
+		p.ValueType = String
+	}
+
+	genLogger.Debugf("Successfully set ValueType '%v' for property '%s'.", p.ValueType, p.PropertyName)
+	return nil
 }
 
 func (p *Property) setSupportedVersions() error {
