@@ -44,7 +44,7 @@ type Class struct {
 	IsSingleNestedWhenDefinedAsChild bool
 	// The full content from the meta file.
 	// Storing the content proactively in case we need to access the data at a later stage.
-	MetaFileContent map[string]interface{}
+	MetaFileContent map[string]any
 	// The class name with all its representations.
 	Name *ClassName
 	// List of all possible parent classes.
@@ -179,16 +179,16 @@ func (c *Class) loadMetaFile() error {
 	}
 
 	genLogger.Tracef("Parsing meta file for class '%s'.", c.Name)
-	// For now, the file content is unmarshalled into a map[string]interface{} and then set the class data.
+	// For now, the file content is unmarshalled into a map[string]any and then set the class data.
 	// This is done because we add logic on top of the file content to set the class data.
 	// ENHANCEMENT: investigate if we can unmarshal the file content directly into a class struct specific for meta.
-	var metaFileContent map[string]interface{}
+	var metaFileContent map[string]any
 	err = json.Unmarshal(fileContent, &metaFileContent)
 	if err != nil {
 		return fmt.Errorf("failed to parse meta file for class '%s': %s", c.Name, err.Error())
 	}
 
-	c.MetaFileContent = metaFileContent[c.Name.MetaStyle()].(map[string]interface{})
+	c.MetaFileContent = metaFileContent[c.Name.MetaStyle()].(map[string]any)
 
 	genLogger.Debugf("Successfully loaded meta file for class '%s'.", c.Name)
 
@@ -297,7 +297,7 @@ func (c *Class) setChildren(ds *DataStore) error {
 
 	// Retrieve the rnMap from MetaFileContent which holds the rnFormat as key and class name as value.
 	// The class name is in the format "{ClassNamePackage}:{ClassName}".
-	if rnMap, ok := c.MetaFileContent["rnMap"].(map[string]interface{}); ok {
+	if rnMap, ok := c.MetaFileContent["rnMap"].(map[string]any); ok {
 		for rn, classNameInterface := range rnMap {
 			// Remove the colon separator from the class name (e.g., "fv:Tenant" -> "fvTenant").
 			classNameStr, err := sanitizeClassName(classNameInterface.(string))
@@ -399,7 +399,7 @@ func (c *Class) setIdentifiedBy() {
 	// Use ClassDefinition override if specified, otherwise read from meta file.
 	if len(c.ClassDefinition.IdentifiedBy) > 0 {
 		c.IdentifiedBy = c.ClassDefinition.IdentifiedBy
-	} else if identifiedBy, ok := c.MetaFileContent["identifiedBy"].([]interface{}); ok {
+	} else if identifiedBy, ok := c.MetaFileContent["identifiedBy"].([]any); ok {
 		for _, identifier := range identifiedBy {
 			if identifierString, ok := identifier.(string); ok && !slices.Contains(c.IdentifiedBy, identifierString) {
 				c.IdentifiedBy = append(c.IdentifiedBy, identifierString)
@@ -442,7 +442,7 @@ func (c *Class) setParents() error {
 	parentClassNames := c.ClassDefinition.IncludeParents
 
 	// Retrieve the containedBy from MetaFileContent which holds the parent class names as keys.
-	if containedBy, ok := c.MetaFileContent["containedBy"].(map[string]interface{}); ok {
+	if containedBy, ok := c.MetaFileContent["containedBy"].(map[string]any); ok {
 		for classNameWithColon := range containedBy {
 			// Remove the colon separator from the class name (e.g., "fv:AEPg" -> "fvAEPg").
 			classNameStr, err := sanitizeClassName(classNameWithColon)
@@ -487,7 +487,7 @@ func (c *Class) setPlatformType() {
 	}
 
 	// Fall back to meta file platformFlavors.
-	if platformFlavors, ok := c.MetaFileContent["platformFlavors"].([]interface{}); ok {
+	if platformFlavors, ok := c.MetaFileContent["platformFlavors"].([]any); ok {
 		hasApic := false
 		hasCloud := false
 		for _, flavor := range platformFlavors {
@@ -518,8 +518,8 @@ func (c *Class) setProperties(ds *DataStore) error {
 	genLogger.Debugf("Setting properties for class '%s'.", c.Name)
 
 	if properties, ok := c.MetaFileContent["properties"]; ok {
-		for name, propertyDetails := range properties.(map[string]interface{}) {
-			details := propertyDetails.(map[string]interface{})
+		for name, propertyDetails := range properties.(map[string]any) {
+			details := propertyDetails.(map[string]any)
 
 			// Look up the property definition override from the class definition file.
 			propertyDefinition, hasClassDefinition := c.ClassDefinition.Properties[name]
@@ -571,7 +571,7 @@ func (c *Class) setRelation() error {
 	// Determine if the class is a relational class.
 	genLogger.Debugf("Setting Relation details for class '%s'.", c.Name)
 
-	metaRelationInfo, _ := c.MetaFileContent["relationInfo"].(map[string]interface{})
+	metaRelationInfo, _ := c.MetaFileContent["relationInfo"].(map[string]any)
 	defRelationInfo := c.ClassDefinition.RelationInfo
 
 	// Allow the definition file to opt out of relational handling entirely. This is mutually
