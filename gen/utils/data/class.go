@@ -235,7 +235,6 @@ func (c *Class) setClassData(ds *DataStore) error {
 
 	c.setPlatformType()
 
-	// TODO: add function to set Properties
 	err = c.setProperties(ds)
 	if err != nil {
 		return err
