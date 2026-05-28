@@ -53,11 +53,9 @@ type Property struct {
 	SupportedVersions *Versions
 	// Test specific information for the property.
 	// This is used to generate the test cases and examples for the property.
-	// TODO: re-evaluate the structure when creating example and test templates.
 	TestValues []TestValue
 	// Validation specific information for the property.
 	// In the meta file for the class this is a regex statement that is used to validate the property.
-	// TODO: re-evaluate the structure when creating resource templates. We might want to create a separate struct type for each type of validation.
 	Validators []Validator
 	// Specifies the valid values for the property when only certain values are allowed as input.
 	// Sourced from the meta `validValues` array, with definition-driven AddValidValues and RemoveValidValues overrides.
@@ -85,8 +83,6 @@ type MigrationValue struct {
 	Type ValueTypeEnum
 }
 
-
-
 type RegexStatement struct {
 	// The regex string.
 	Regex string
@@ -100,7 +96,6 @@ type RegexStatementTypeEnum int
 const (
 	// Include indicates that the value must match the regex statement.
 	Include RegexStatementTypeEnum = iota + 1
-	// TODO: re-evaluate the possible regex statements type options.
 )
 
 type TestValue struct {
@@ -401,8 +396,6 @@ func (p *Property) setHiddenVersions() error {
 	genLogger.Debugf("Successfully set HiddenVersions for property '%s'. Versions: '%s'", p.PropertyName, p.HiddenVersions)
 	return nil
 }
-
-
 
 func (p *Property) setMigrationValues() {
 	// Determine the migration values for the property.
