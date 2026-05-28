@@ -85,15 +85,7 @@ type MigrationValue struct {
 	Type ValueTypeEnum
 }
 
-type PropertyDocumentation struct {
-	// The default values of the property in APIC, expressed as localNames.
-	// Stored as a list to track default value changes across APIC versions.
-	DefaultValues []string
-	// A generic explanation of the property and its usage.
-	// When applicable, a reference to classes the property points to and which resources/datasources are used for this is included.
-	// When version is higher than the class version, a property specific version is included.
-	Description string
-}
+
 
 type RegexStatement struct {
 	// The regex string.
@@ -262,9 +254,6 @@ func (p *Property) setPropertyData() error {
 		return err
 	}
 
-	// TODO: add function to set Documentation
-	p.setDocumentation()
-
 	// TODO: add function to set MigrationValues
 	p.setMigrationValues()
 
@@ -294,6 +283,13 @@ func (p *Property) setPropertyData() error {
 	}
 
 	err = p.setValueType()
+	if err != nil {
+		return err
+	}
+
+	// setDocumentation is called after setValidValues and setValueType because
+	// setDefaultValues depends on p.ValidValues and p.ValueType.
+	err = p.setDocumentation()
 	if err != nil {
 		return err
 	}
@@ -406,11 +402,7 @@ func (p *Property) setHiddenVersions() error {
 	return nil
 }
 
-func (p *Property) setDocumentation() {
-	// Determine the documentation specific information for the property.
-	genLogger.Debugf("Setting Documentation for property '%s'.", p.PropertyName)
-	genLogger.Debugf("Successfully set Documentation for property '%s'.", p.PropertyName)
-}
+
 
 func (p *Property) setMigrationValues() {
 	// Determine the migration values for the property.
