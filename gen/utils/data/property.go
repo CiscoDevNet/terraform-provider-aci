@@ -67,7 +67,7 @@ type Property struct {
 	// The global meta definition containing global overrides. Unexported because it is only used internally by setter methods.
 	globalDefinition GlobalMetaDefinition
 	// The meta file details for the property. Unexported because it is only used internally by setter methods.
-	metaDetails map[string]interface{}
+	metaDetails map[string]any
 	// The property definition overrides from the class definition file. Unexported because it is only used internally by setter methods.
 	propertyDefinition PropertyDefinition
 }
@@ -223,7 +223,7 @@ var knownStringUiTypes = map[string]struct{}{
 	"password": {}, // sensitive string; sensitivity is handled separately via meta `secure`.
 }
 
-func NewProperty(name string, details map[string]interface{}, definition PropertyDefinition, globalDefinition GlobalMetaDefinition) (*Property, error) {
+func NewProperty(name string, details map[string]any, definition PropertyDefinition, globalDefinition GlobalMetaDefinition) (*Property, error) {
 	genLogger.Tracef("Creating new property struct for property: %s.", name)
 
 	property := &Property{
@@ -505,14 +505,14 @@ func (p *Property) setValidators() error {
 	return nil
 }
 
-// parseValidatorsFromMeta converts the raw `validators` value from the meta JSON (already decoded into interface{}) into a typed slice.
+// parseValidatorsFromMeta converts the raw `validators` value from the meta JSON (already decoded into any) into a typed slice.
 // Returns nil when the value is absent. Returns an error on shape mismatch or unknown regex statement type.
-func parseValidatorsFromMeta(rawValidators interface{}) ([]Validator, error) {
+func parseValidatorsFromMeta(rawValidators any) ([]Validator, error) {
 	if rawValidators == nil {
 		return nil, nil
 	}
 
-	validatorList, ok := rawValidators.([]interface{})
+	validatorList, ok := rawValidators.([]any)
 	if !ok {
 		return nil, fmt.Errorf("expected validators to be a list, got %T", rawValidators)
 	}
@@ -522,7 +522,7 @@ func parseValidatorsFromMeta(rawValidators interface{}) ([]Validator, error) {
 
 	validators := make([]Validator, 0, len(validatorList))
 	for index, rawValidator := range validatorList {
-		validatorMap, ok := rawValidator.(map[string]interface{})
+		validatorMap, ok := rawValidator.(map[string]any)
 		if !ok {
 			return nil, fmt.Errorf("expected validator entry %d to be a map, got %T", index, rawValidator)
 		}
@@ -539,13 +539,13 @@ func parseValidatorsFromMeta(rawValidators interface{}) ([]Validator, error) {
 		validator := Validator{Min: minValue, Max: maxValue}
 
 		if rawRegexes, hasRegexes := validatorMap["regexs"]; hasRegexes && rawRegexes != nil {
-			regexList, ok := rawRegexes.([]interface{})
+			regexList, ok := rawRegexes.([]any)
 			if !ok {
 				return nil, fmt.Errorf("validator entry %d: expected regexs to be a list, got %T", index, rawRegexes)
 			}
 			regexStatements := make([]RegexStatement, 0, len(regexList))
 			for regexIndex, rawRegexEntry := range regexList {
-				regexMap, ok := rawRegexEntry.(map[string]interface{})
+				regexMap, ok := rawRegexEntry.(map[string]any)
 				if !ok {
 					return nil, fmt.Errorf("validator entry %d regex %d: expected map, got %T", index, regexIndex, rawRegexEntry)
 				}
@@ -601,8 +601,8 @@ func parseRegexStatementType(rawType string) (RegexStatementTypeEnum, error) {
 
 // readOptionalInt64 returns the value at key as int64. The zero value is returned when the key is absent or nil.
 // Returns an error when the value is not a JSON number or when the number is not an integer within int64 range.
-// (encoding/json decodes JSON numbers into float64 when the target is interface{}, so we type-assert float64 first.)
-func readOptionalInt64(source map[string]interface{}, key string) (int64, error) {
+// (encoding/json decodes JSON numbers into float64 when the target is any, so we type-assert float64 first.)
+func readOptionalInt64(source map[string]any, key string) (int64, error) {
 	rawValue, present := source[key]
 	if !present || rawValue == nil {
 		return 0, nil
@@ -639,12 +639,12 @@ func (p *Property) setValidValues() error {
 	}
 
 	if rawValidValues := p.metaDetails["validValues"]; rawValidValues != nil {
-		validValueList, ok := rawValidValues.([]interface{})
+		validValueList, ok := rawValidValues.([]any)
 		if !ok {
 			return fmt.Errorf("failed to parse validValues for property '%s': expected validValues to be a list, got %T", p.PropertyName, rawValidValues)
 		}
 		for index, rawEntry := range validValueList {
-			entry, ok := rawEntry.(map[string]interface{})
+			entry, ok := rawEntry.(map[string]any)
 			if !ok {
 				return fmt.Errorf("failed to parse validValues for property '%s': expected validValues entry %d to be a map, got %T", p.PropertyName, index, rawEntry)
 			}

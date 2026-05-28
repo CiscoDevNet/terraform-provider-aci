@@ -365,10 +365,10 @@ func getVersionAPIC(ctx context.Context, diags *diag.Diagnostics, client *client
 	}
 
 	if requestData.Search("imdata").Search("topSystem").Data() != nil {
-		attributes := requestData.Search("imdata").Search("topSystem").Search("attributes").Data().([]interface{})
+		attributes := requestData.Search("imdata").Search("topSystem").Search("attributes").Data().([]any)
 		var versions []string
 		for _, attributeMap := range attributes {
-			if version, ok := attributeMap.(map[string]interface{})["version"].(string); ok {
+			if version, ok := attributeMap.(map[string]any)["version"].(string); ok {
 				versions = append(versions, version)
 			}
 		}

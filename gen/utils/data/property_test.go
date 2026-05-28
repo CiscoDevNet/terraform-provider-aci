@@ -122,7 +122,7 @@ func TestSetAttributeName(t *testing.T) {
 }
 
 type setRequiredInput struct {
-	MetaDetails        map[string]interface{}
+	MetaDetails        map[string]any
 	PropertyDefinition PropertyDefinition
 }
 
@@ -134,7 +134,7 @@ func TestSetRequired(t *testing.T) {
 		{
 			Name: "test_isConfigurable_and_isNaming_true",
 			Input: setRequiredInput{
-				MetaDetails:        map[string]interface{}{"isConfigurable": true, "isNaming": true},
+				MetaDetails:        map[string]any{"isConfigurable": true, "isNaming": true},
 				PropertyDefinition: PropertyDefinition{},
 			},
 			Expected: true,
@@ -142,7 +142,7 @@ func TestSetRequired(t *testing.T) {
 		{
 			Name: "test_isConfigurable_true_isNaming_false",
 			Input: setRequiredInput{
-				MetaDetails:        map[string]interface{}{"isConfigurable": true, "isNaming": false},
+				MetaDetails:        map[string]any{"isConfigurable": true, "isNaming": false},
 				PropertyDefinition: PropertyDefinition{},
 			},
 			Expected: false,
@@ -150,7 +150,7 @@ func TestSetRequired(t *testing.T) {
 		{
 			Name: "test_isConfigurable_false_isNaming_true",
 			Input: setRequiredInput{
-				MetaDetails:        map[string]interface{}{"isConfigurable": false, "isNaming": true},
+				MetaDetails:        map[string]any{"isConfigurable": false, "isNaming": true},
 				PropertyDefinition: PropertyDefinition{},
 			},
 			Expected: false,
@@ -158,7 +158,7 @@ func TestSetRequired(t *testing.T) {
 		{
 			Name: "test_isConfigurable_false_isNaming_false",
 			Input: setRequiredInput{
-				MetaDetails:        map[string]interface{}{"isConfigurable": false, "isNaming": false},
+				MetaDetails:        map[string]any{"isConfigurable": false, "isNaming": false},
 				PropertyDefinition: PropertyDefinition{},
 			},
 			Expected: false,
@@ -166,7 +166,7 @@ func TestSetRequired(t *testing.T) {
 		{
 			Name: "test_definition_restriction_required",
 			Input: setRequiredInput{
-				MetaDetails:        map[string]interface{}{"isConfigurable": true, "isNaming": false},
+				MetaDetails:        map[string]any{"isConfigurable": true, "isNaming": false},
 				PropertyDefinition: PropertyDefinition{Restriction: "required"},
 			},
 			Expected: true,
@@ -174,7 +174,7 @@ func TestSetRequired(t *testing.T) {
 		{
 			Name: "test_definition_restriction_required_overrides_non_naming",
 			Input: setRequiredInput{
-				MetaDetails:        map[string]interface{}{"isConfigurable": false, "isNaming": false},
+				MetaDetails:        map[string]any{"isConfigurable": false, "isNaming": false},
 				PropertyDefinition: PropertyDefinition{Restriction: "required"},
 			},
 			Expected: true,
@@ -182,7 +182,7 @@ func TestSetRequired(t *testing.T) {
 		{
 			Name: "test_empty_meta_details",
 			Input: setRequiredInput{
-				MetaDetails:        map[string]interface{}{},
+				MetaDetails:        map[string]any{},
 				PropertyDefinition: PropertyDefinition{},
 			},
 			Expected: false,
@@ -209,7 +209,7 @@ func TestSetRequired(t *testing.T) {
 }
 
 type setOptionalInput struct {
-	MetaDetails        map[string]interface{}
+	MetaDetails        map[string]any
 	PropertyDefinition PropertyDefinition
 	Required           bool
 }
@@ -222,7 +222,7 @@ func TestSetOptional(t *testing.T) {
 		{
 			Name: "test_isConfigurable_true_not_required",
 			Input: setOptionalInput{
-				MetaDetails:        map[string]interface{}{"isConfigurable": true},
+				MetaDetails:        map[string]any{"isConfigurable": true},
 				PropertyDefinition: PropertyDefinition{},
 				Required:           false,
 			},
@@ -231,7 +231,7 @@ func TestSetOptional(t *testing.T) {
 		{
 			Name: "test_isConfigurable_true_already_required",
 			Input: setOptionalInput{
-				MetaDetails:        map[string]interface{}{"isConfigurable": true},
+				MetaDetails:        map[string]any{"isConfigurable": true},
 				PropertyDefinition: PropertyDefinition{},
 				Required:           true,
 			},
@@ -240,7 +240,7 @@ func TestSetOptional(t *testing.T) {
 		{
 			Name: "test_isConfigurable_false",
 			Input: setOptionalInput{
-				MetaDetails:        map[string]interface{}{"isConfigurable": false},
+				MetaDetails:        map[string]any{"isConfigurable": false},
 				PropertyDefinition: PropertyDefinition{},
 				Required:           false,
 			},
@@ -249,7 +249,7 @@ func TestSetOptional(t *testing.T) {
 		{
 			Name: "test_definition_restriction_optional",
 			Input: setOptionalInput{
-				MetaDetails:        map[string]interface{}{"isConfigurable": false},
+				MetaDetails:        map[string]any{"isConfigurable": false},
 				PropertyDefinition: PropertyDefinition{Restriction: "optional"},
 				Required:           false,
 			},
@@ -258,7 +258,7 @@ func TestSetOptional(t *testing.T) {
 		{
 			Name: "test_definition_restriction_read_only_isConfigurable_true",
 			Input: setOptionalInput{
-				MetaDetails:        map[string]interface{}{"isConfigurable": true},
+				MetaDetails:        map[string]any{"isConfigurable": true},
 				PropertyDefinition: PropertyDefinition{Restriction: "read_only"},
 				Required:           false,
 			},
@@ -267,7 +267,7 @@ func TestSetOptional(t *testing.T) {
 		{
 			Name: "test_empty_meta_details",
 			Input: setOptionalInput{
-				MetaDetails:        map[string]interface{}{},
+				MetaDetails:        map[string]any{},
 				PropertyDefinition: PropertyDefinition{},
 				Required:           false,
 			},
@@ -349,7 +349,7 @@ func TestSetReadOnly(t *testing.T) {
 
 			property := &Property{
 				PropertyName:       "testProp",
-				metaDetails:        map[string]interface{}{},
+				metaDetails:        map[string]any{},
 				propertyDefinition: input.PropertyDefinition,
 			}
 
@@ -404,7 +404,7 @@ func TestSetComputed(t *testing.T) {
 }
 
 type setSensitiveInput struct {
-	MetaDetails        map[string]interface{}
+	MetaDetails        map[string]any
 	PropertyDefinition PropertyDefinition
 }
 
@@ -416,7 +416,7 @@ func TestSetSensitive(t *testing.T) {
 		{
 			Name: "test_meta_secure_true",
 			Input: setSensitiveInput{
-				MetaDetails:        map[string]interface{}{"secure": true},
+				MetaDetails:        map[string]any{"secure": true},
 				PropertyDefinition: PropertyDefinition{},
 			},
 			Expected: true,
@@ -424,7 +424,7 @@ func TestSetSensitive(t *testing.T) {
 		{
 			Name: "test_meta_secure_false",
 			Input: setSensitiveInput{
-				MetaDetails:        map[string]interface{}{"secure": false},
+				MetaDetails:        map[string]any{"secure": false},
 				PropertyDefinition: PropertyDefinition{},
 			},
 			Expected: false,
@@ -432,7 +432,7 @@ func TestSetSensitive(t *testing.T) {
 		{
 			Name: "test_definition_override_true",
 			Input: setSensitiveInput{
-				MetaDetails:        map[string]interface{}{"secure": false},
+				MetaDetails:        map[string]any{"secure": false},
 				PropertyDefinition: PropertyDefinition{Sensitive: true},
 			},
 			Expected: true,
@@ -440,7 +440,7 @@ func TestSetSensitive(t *testing.T) {
 		{
 			Name: "test_definition_override_true_no_meta_secure",
 			Input: setSensitiveInput{
-				MetaDetails:        map[string]interface{}{},
+				MetaDetails:        map[string]any{},
 				PropertyDefinition: PropertyDefinition{Sensitive: true},
 			},
 			Expected: true,
@@ -448,7 +448,7 @@ func TestSetSensitive(t *testing.T) {
 		{
 			Name: "test_no_override_no_meta_secure",
 			Input: setSensitiveInput{
-				MetaDetails:        map[string]interface{}{},
+				MetaDetails:        map[string]any{},
 				PropertyDefinition: PropertyDefinition{},
 			},
 			Expected: false,
@@ -476,7 +476,7 @@ func TestSetSensitive(t *testing.T) {
 
 type setPropertyDeprecatedInput struct {
 	PropertyDefinition PropertyDefinition
-	MetaDetails        map[string]interface{}
+	MetaDetails        map[string]any
 }
 
 func TestPropertySetDeprecated(t *testing.T) {
@@ -491,17 +491,17 @@ func TestPropertySetDeprecated(t *testing.T) {
 		},
 		{
 			Name:     "test_meta_false_no_override",
-			Input:    setPropertyDeprecatedInput{MetaDetails: map[string]interface{}{"isDeprecated": false}},
+			Input:    setPropertyDeprecatedInput{MetaDetails: map[string]any{"isDeprecated": false}},
 			Expected: false,
 		},
 		{
 			Name:     "test_meta_true_no_override",
-			Input:    setPropertyDeprecatedInput{MetaDetails: map[string]interface{}{"isDeprecated": true}},
+			Input:    setPropertyDeprecatedInput{MetaDetails: map[string]any{"isDeprecated": true}},
 			Expected: true,
 		},
 		{
 			Name:     "test_meta_wrong_type",
-			Input:    setPropertyDeprecatedInput{MetaDetails: map[string]interface{}{"isDeprecated": "yes"}},
+			Input:    setPropertyDeprecatedInput{MetaDetails: map[string]any{"isDeprecated": "yes"}},
 			Expected: false,
 		},
 		{
@@ -511,12 +511,12 @@ func TestPropertySetDeprecated(t *testing.T) {
 		},
 		{
 			Name:     "test_override_true_meta_false",
-			Input:    setPropertyDeprecatedInput{PropertyDefinition: PropertyDefinition{Deprecated: true}, MetaDetails: map[string]interface{}{"isDeprecated": false}},
+			Input:    setPropertyDeprecatedInput{PropertyDefinition: PropertyDefinition{Deprecated: true}, MetaDetails: map[string]any{"isDeprecated": false}},
 			Expected: true,
 		},
 		{
 			Name:     "test_override_false_meta_true",
-			Input:    setPropertyDeprecatedInput{PropertyDefinition: PropertyDefinition{Deprecated: false}, MetaDetails: map[string]interface{}{"isDeprecated": true}},
+			Input:    setPropertyDeprecatedInput{PropertyDefinition: PropertyDefinition{Deprecated: false}, MetaDetails: map[string]any{"isDeprecated": true}},
 			Expected: true,
 		},
 	}
@@ -541,7 +541,7 @@ func TestPropertySetDeprecated(t *testing.T) {
 
 type setPropertyDeprecatedVersionsInput struct {
 	PropertyDefinition PropertyDefinition
-	MetaDetails        map[string]interface{}
+	MetaDetails        map[string]any
 }
 
 type setPropertyDeprecatedVersionsExpected struct {
@@ -606,7 +606,7 @@ func TestPropertySetDeprecatedVersions(t *testing.T) {
 		},
 		{
 			Name:  "test_meta_deprecated_since_single_range",
-			Input: setPropertyDeprecatedVersionsInput{MetaDetails: map[string]interface{}{"deprecatedSince": "5.2(1g)-"}},
+			Input: setPropertyDeprecatedVersionsInput{MetaDetails: map[string]any{"deprecatedSince": "5.2(1g)-"}},
 			Expected: setPropertyDeprecatedVersionsExpected{
 				Raw:    "5.2(1g)-",
 				String: "5.2(1g) and later",
@@ -614,7 +614,7 @@ func TestPropertySetDeprecatedVersions(t *testing.T) {
 		},
 		{
 			Name:  "test_meta_deprecated_since_wrong_type",
-			Input: setPropertyDeprecatedVersionsInput{MetaDetails: map[string]interface{}{"deprecatedSince": 123}},
+			Input: setPropertyDeprecatedVersionsInput{MetaDetails: map[string]any{"deprecatedSince": 123}},
 			Expected: setPropertyDeprecatedVersionsExpected{
 				Nil: true,
 			},
@@ -623,7 +623,7 @@ func TestPropertySetDeprecatedVersions(t *testing.T) {
 			Name: "test_override_replaces_meta",
 			Input: setPropertyDeprecatedVersionsInput{
 				PropertyDefinition: PropertyDefinition{DeprecatedVersions: "4.2(7f)-"},
-				MetaDetails:        map[string]interface{}{"deprecatedSince": "5.2(1g)-"},
+				MetaDetails:        map[string]any{"deprecatedSince": "5.2(1g)-"},
 			},
 			Expected: setPropertyDeprecatedVersionsExpected{
 				Raw:    "4.2(7f)-",
@@ -632,7 +632,7 @@ func TestPropertySetDeprecatedVersions(t *testing.T) {
 		},
 		{
 			Name:  "test_meta_parse_error",
-			Input: setPropertyDeprecatedVersionsInput{MetaDetails: map[string]interface{}{"deprecatedSince": "invalid"}},
+			Input: setPropertyDeprecatedVersionsInput{MetaDetails: map[string]any{"deprecatedSince": "invalid"}},
 			Expected: setPropertyDeprecatedVersionsExpected{
 				Error:    true,
 				ErrorMsg: "failed to parse deprecated versions for property 'testProp': invalid version 'invalid': unknown",
@@ -670,7 +670,7 @@ func TestPropertySetDeprecatedVersions(t *testing.T) {
 
 type setPropertyHiddenInput struct {
 	PropertyDefinition PropertyDefinition
-	MetaDetails        map[string]interface{}
+	MetaDetails        map[string]any
 }
 
 func TestPropertySetHidden(t *testing.T) {
@@ -685,17 +685,17 @@ func TestPropertySetHidden(t *testing.T) {
 		},
 		{
 			Name:     "test_meta_false_no_override",
-			Input:    setPropertyHiddenInput{MetaDetails: map[string]interface{}{"isHidden": false}},
+			Input:    setPropertyHiddenInput{MetaDetails: map[string]any{"isHidden": false}},
 			Expected: false,
 		},
 		{
 			Name:     "test_meta_true_no_override",
-			Input:    setPropertyHiddenInput{MetaDetails: map[string]interface{}{"isHidden": true}},
+			Input:    setPropertyHiddenInput{MetaDetails: map[string]any{"isHidden": true}},
 			Expected: true,
 		},
 		{
 			Name:     "test_meta_wrong_type",
-			Input:    setPropertyHiddenInput{MetaDetails: map[string]interface{}{"isHidden": "yes"}},
+			Input:    setPropertyHiddenInput{MetaDetails: map[string]any{"isHidden": "yes"}},
 			Expected: false,
 		},
 		{
@@ -705,12 +705,12 @@ func TestPropertySetHidden(t *testing.T) {
 		},
 		{
 			Name:     "test_override_true_meta_false",
-			Input:    setPropertyHiddenInput{PropertyDefinition: PropertyDefinition{Hidden: true}, MetaDetails: map[string]interface{}{"isHidden": false}},
+			Input:    setPropertyHiddenInput{PropertyDefinition: PropertyDefinition{Hidden: true}, MetaDetails: map[string]any{"isHidden": false}},
 			Expected: true,
 		},
 		{
 			Name:     "test_override_false_meta_true",
-			Input:    setPropertyHiddenInput{PropertyDefinition: PropertyDefinition{Hidden: false}, MetaDetails: map[string]interface{}{"isHidden": true}},
+			Input:    setPropertyHiddenInput{PropertyDefinition: PropertyDefinition{Hidden: false}, MetaDetails: map[string]any{"isHidden": true}},
 			Expected: true,
 		},
 	}
@@ -735,7 +735,7 @@ func TestPropertySetHidden(t *testing.T) {
 
 type setPropertyHiddenVersionsInput struct {
 	PropertyDefinition PropertyDefinition
-	MetaDetails        map[string]interface{}
+	MetaDetails        map[string]any
 }
 
 type setPropertyHiddenVersionsExpected struct {
@@ -768,7 +768,7 @@ func TestPropertySetHiddenVersions(t *testing.T) {
 		},
 		{
 			Name:  "test_meta_hidden_since_single_range",
-			Input: setPropertyHiddenVersionsInput{MetaDetails: map[string]interface{}{"hiddenSince": "5.2(1g)-"}},
+			Input: setPropertyHiddenVersionsInput{MetaDetails: map[string]any{"hiddenSince": "5.2(1g)-"}},
 			Expected: setPropertyHiddenVersionsExpected{
 				Raw:    "5.2(1g)-",
 				String: "5.2(1g) and later",
@@ -776,7 +776,7 @@ func TestPropertySetHiddenVersions(t *testing.T) {
 		},
 		{
 			Name:  "test_meta_hidden_since_wrong_type",
-			Input: setPropertyHiddenVersionsInput{MetaDetails: map[string]interface{}{"hiddenSince": 123}},
+			Input: setPropertyHiddenVersionsInput{MetaDetails: map[string]any{"hiddenSince": 123}},
 			Expected: setPropertyHiddenVersionsExpected{
 				Nil: true,
 			},
@@ -785,7 +785,7 @@ func TestPropertySetHiddenVersions(t *testing.T) {
 			Name: "test_override_replaces_meta",
 			Input: setPropertyHiddenVersionsInput{
 				PropertyDefinition: PropertyDefinition{HiddenVersions: "4.2(7f)-"},
-				MetaDetails:        map[string]interface{}{"hiddenSince": "5.2(1g)-"},
+				MetaDetails:        map[string]any{"hiddenSince": "5.2(1g)-"},
 			},
 			Expected: setPropertyHiddenVersionsExpected{
 				Raw:    "4.2(7f)-",
@@ -802,7 +802,7 @@ func TestPropertySetHiddenVersions(t *testing.T) {
 		},
 		{
 			Name:  "test_meta_parse_error",
-			Input: setPropertyHiddenVersionsInput{MetaDetails: map[string]interface{}{"hiddenSince": "invalid"}},
+			Input: setPropertyHiddenVersionsInput{MetaDetails: map[string]any{"hiddenSince": "invalid"}},
 			Expected: setPropertyHiddenVersionsExpected{
 				Error:    true,
 				ErrorMsg: "failed to parse hidden versions for property 'testProp': invalid version 'invalid': unknown",
@@ -840,7 +840,7 @@ func TestPropertySetHiddenVersions(t *testing.T) {
 
 type setPropertyValidatorsInput struct {
 	PropertyDefinition PropertyDefinition
-	MetaDetails        map[string]interface{}
+	MetaDetails        map[string]any
 }
 
 type setPropertyValidatorsExpected struct {
@@ -853,8 +853,8 @@ func TestPropertySetValidators(t *testing.T) {
 	t.Parallel()
 	test.InitializeTest(t)
 
-	regexInclude := []interface{}{
-		map[string]interface{}{"regex": "^[a-zA-Z0-9_.-]+$", "type": "include"},
+	regexInclude := []any{
+		map[string]any{"regex": "^[a-zA-Z0-9_.-]+$", "type": "include"},
 	}
 
 	testCases := []test.TestCase{
@@ -866,16 +866,16 @@ func TestPropertySetValidators(t *testing.T) {
 		{
 			Name: "test_meta_empty_array",
 			Input: setPropertyValidatorsInput{
-				MetaDetails: map[string]interface{}{"validators": []interface{}{}},
+				MetaDetails: map[string]any{"validators": []any{}},
 			},
 			Expected: setPropertyValidatorsExpected{Validators: nil},
 		},
 		{
 			Name: "test_meta_min_max_only",
 			Input: setPropertyValidatorsInput{
-				MetaDetails: map[string]interface{}{
-					"validators": []interface{}{
-						map[string]interface{}{"min": float64(0), "max": float64(7)},
+				MetaDetails: map[string]any{
+					"validators": []any{
+						map[string]any{"min": float64(0), "max": float64(7)},
 					},
 				},
 			},
@@ -886,9 +886,9 @@ func TestPropertySetValidators(t *testing.T) {
 		{
 			Name: "test_meta_min_max_with_regex_include",
 			Input: setPropertyValidatorsInput{
-				MetaDetails: map[string]interface{}{
-					"validators": []interface{}{
-						map[string]interface{}{
+				MetaDetails: map[string]any{
+					"validators": []any{
+						map[string]any{
 							"min":    float64(0),
 							"max":    float64(63),
 							"regexs": regexInclude,
@@ -906,10 +906,10 @@ func TestPropertySetValidators(t *testing.T) {
 		{
 			Name: "test_meta_multiple_validators",
 			Input: setPropertyValidatorsInput{
-				MetaDetails: map[string]interface{}{
-					"validators": []interface{}{
-						map[string]interface{}{"min": float64(0), "max": float64(7)},
-						map[string]interface{}{"min": float64(0), "max": float64(63), "regexs": regexInclude},
+				MetaDetails: map[string]any{
+					"validators": []any{
+						map[string]any{"min": float64(0), "max": float64(7)},
+						map[string]any{"min": float64(0), "max": float64(63), "regexs": regexInclude},
 					},
 				},
 			},
@@ -923,7 +923,7 @@ func TestPropertySetValidators(t *testing.T) {
 		{
 			Name: "test_meta_wrong_top_type",
 			Input: setPropertyValidatorsInput{
-				MetaDetails: map[string]interface{}{"validators": "not-a-list"},
+				MetaDetails: map[string]any{"validators": "not-a-list"},
 			},
 			Expected: setPropertyValidatorsExpected{
 				Error:    true,
@@ -933,7 +933,7 @@ func TestPropertySetValidators(t *testing.T) {
 		{
 			Name: "test_meta_entry_wrong_type",
 			Input: setPropertyValidatorsInput{
-				MetaDetails: map[string]interface{}{"validators": []interface{}{42}},
+				MetaDetails: map[string]any{"validators": []any{42}},
 			},
 			Expected: setPropertyValidatorsExpected{
 				Error:    true,
@@ -943,13 +943,13 @@ func TestPropertySetValidators(t *testing.T) {
 		{
 			Name: "test_meta_unknown_regex_type",
 			Input: setPropertyValidatorsInput{
-				MetaDetails: map[string]interface{}{
-					"validators": []interface{}{
-						map[string]interface{}{
+				MetaDetails: map[string]any{
+					"validators": []any{
+						map[string]any{
 							"min": float64(0),
 							"max": float64(63),
-							"regexs": []interface{}{
-								map[string]interface{}{"regex": ".+", "type": "exclude"},
+							"regexs": []any{
+								map[string]any{"regex": ".+", "type": "exclude"},
 							},
 						},
 					},
@@ -963,9 +963,9 @@ func TestPropertySetValidators(t *testing.T) {
 		{
 			Name: "test_meta_min_wrong_type",
 			Input: setPropertyValidatorsInput{
-				MetaDetails: map[string]interface{}{
-					"validators": []interface{}{
-						map[string]interface{}{"min": "low", "max": float64(7)},
+				MetaDetails: map[string]any{
+					"validators": []any{
+						map[string]any{"min": "low", "max": float64(7)},
 					},
 				},
 			},
@@ -977,9 +977,9 @@ func TestPropertySetValidators(t *testing.T) {
 		{
 			Name: "test_meta_min_not_integer",
 			Input: setPropertyValidatorsInput{
-				MetaDetails: map[string]interface{}{
-					"validators": []interface{}{
-						map[string]interface{}{"min": float64(0.5), "max": float64(7)},
+				MetaDetails: map[string]any{
+					"validators": []any{
+						map[string]any{"min": float64(0.5), "max": float64(7)},
 					},
 				},
 			},
@@ -991,9 +991,9 @@ func TestPropertySetValidators(t *testing.T) {
 		{
 			Name: "test_meta_min_not_integer",
 			Input: setPropertyValidatorsInput{
-				MetaDetails: map[string]interface{}{
-					"validators": []interface{}{
-						map[string]interface{}{"min": float64(0.5), "max": float64(7)},
+				MetaDetails: map[string]any{
+					"validators": []any{
+						map[string]any{"min": float64(0.5), "max": float64(7)},
 					},
 				},
 			},
@@ -1023,9 +1023,9 @@ func TestPropertySetValidators(t *testing.T) {
 						{Min: 1, Max: 10, RegexList: []RegexStatementDefinition{{Regex: "^x$", Type: "include"}}},
 					},
 				},
-				MetaDetails: map[string]interface{}{
-					"validators": []interface{}{
-						map[string]interface{}{"min": float64(0), "max": float64(7)},
+				MetaDetails: map[string]any{
+					"validators": []any{
+						map[string]any{"min": float64(0), "max": float64(7)},
 					},
 				},
 			},
@@ -1077,7 +1077,7 @@ func TestPropertySetValidators(t *testing.T) {
 }
 
 type setPropertySupportedVersionsInput struct {
-	MetaDetails        map[string]interface{}
+	MetaDetails        map[string]any
 	PropertyDefinition PropertyDefinition
 }
 
@@ -1097,7 +1097,7 @@ func TestPropertySetSupportedVersions(t *testing.T) {
 		{
 			Name: "test_versions_not_set",
 			Input: setPropertySupportedVersionsInput{
-				MetaDetails:        map[string]interface{}{},
+				MetaDetails:        map[string]any{},
 				PropertyDefinition: PropertyDefinition{},
 			},
 			Expected: setPropertySupportedVersionsExpected{
@@ -1107,7 +1107,7 @@ func TestPropertySetSupportedVersions(t *testing.T) {
 		{
 			Name: "test_versions_from_meta_file",
 			Input: setPropertySupportedVersionsInput{
-				MetaDetails:        map[string]interface{}{"versions": "4.2(7f)-"},
+				MetaDetails:        map[string]any{"versions": "4.2(7f)-"},
 				PropertyDefinition: PropertyDefinition{},
 			},
 			Expected: setPropertySupportedVersionsExpected{
@@ -1118,7 +1118,7 @@ func TestPropertySetSupportedVersions(t *testing.T) {
 		{
 			Name: "test_versions_from_definition_override",
 			Input: setPropertySupportedVersionsInput{
-				MetaDetails:        map[string]interface{}{"versions": "4.2(7f)-"},
+				MetaDetails:        map[string]any{"versions": "4.2(7f)-"},
 				PropertyDefinition: PropertyDefinition{SupportedVersions: "5.0(1a)-"},
 			},
 			Expected: setPropertySupportedVersionsExpected{
@@ -1129,7 +1129,7 @@ func TestPropertySetSupportedVersions(t *testing.T) {
 		{
 			Name: "test_versions_from_definition_when_meta_empty",
 			Input: setPropertySupportedVersionsInput{
-				MetaDetails:        map[string]interface{}{},
+				MetaDetails:        map[string]any{},
 				PropertyDefinition: PropertyDefinition{SupportedVersions: "5.0(1a)-"},
 			},
 			Expected: setPropertySupportedVersionsExpected{
@@ -1140,7 +1140,7 @@ func TestPropertySetSupportedVersions(t *testing.T) {
 		{
 			Name: "test_bounded_range",
 			Input: setPropertySupportedVersionsInput{
-				MetaDetails:        map[string]interface{}{"versions": "3.2(10e)-4.2(7f)"},
+				MetaDetails:        map[string]any{"versions": "3.2(10e)-4.2(7f)"},
 				PropertyDefinition: PropertyDefinition{},
 			},
 			Expected: setPropertySupportedVersionsExpected{
@@ -1151,7 +1151,7 @@ func TestPropertySetSupportedVersions(t *testing.T) {
 		{
 			Name: "test_multiple_ranges",
 			Input: setPropertySupportedVersionsInput{
-				MetaDetails:        map[string]interface{}{"versions": "3.2(10e)-3.2(10g),4.2(7f)-"},
+				MetaDetails:        map[string]any{"versions": "3.2(10e)-3.2(10g),4.2(7f)-"},
 				PropertyDefinition: PropertyDefinition{},
 			},
 			Expected: setPropertySupportedVersionsExpected{
@@ -1162,7 +1162,7 @@ func TestPropertySetSupportedVersions(t *testing.T) {
 		{
 			Name: "test_error_invalid_version",
 			Input: setPropertySupportedVersionsInput{
-				MetaDetails:        map[string]interface{}{"versions": "invalid"},
+				MetaDetails:        map[string]any{"versions": "invalid"},
 				PropertyDefinition: PropertyDefinition{},
 			},
 			Expected: setPropertySupportedVersionsExpected{
@@ -1173,7 +1173,7 @@ func TestPropertySetSupportedVersions(t *testing.T) {
 		{
 			Name: "test_error_invalid_version_in_range",
 			Input: setPropertySupportedVersionsInput{
-				MetaDetails:        map[string]interface{}{"versions": "4.2(7f)-,invalid"},
+				MetaDetails:        map[string]any{"versions": "4.2(7f)-,invalid"},
 				PropertyDefinition: PropertyDefinition{},
 			},
 			Expected: setPropertySupportedVersionsExpected{
@@ -1213,7 +1213,7 @@ func TestPropertySetSupportedVersions(t *testing.T) {
 
 type setPropertyValidValuesInput struct {
 	PropertyDefinition PropertyDefinition
-	MetaDetails        map[string]interface{}
+	MetaDetails        map[string]any
 }
 
 type setPropertyValidValuesExpected struct {
@@ -1237,11 +1237,11 @@ func TestPropertySetValidValues(t *testing.T) {
 		{
 			Name: "test_meta_simple_enum_skips_default_value",
 			Input: setPropertyValidValuesInput{
-				MetaDetails: map[string]interface{}{
-					"validValues": []interface{}{
-						map[string]interface{}{"localName": "defaultValue", "value": "1"},
-						map[string]interface{}{"localName": "level1", "value": "1"},
-						map[string]interface{}{"localName": "level3", "value": "3"},
+				MetaDetails: map[string]any{
+					"validValues": []any{
+						map[string]any{"localName": "defaultValue", "value": "1"},
+						map[string]any{"localName": "level1", "value": "1"},
+						map[string]any{"localName": "level3", "value": "3"},
 					},
 				},
 			},
@@ -1255,9 +1255,9 @@ func TestPropertySetValidValues(t *testing.T) {
 		{
 			Name: "test_meta_only_default_value",
 			Input: setPropertyValidValuesInput{
-				MetaDetails: map[string]interface{}{
-					"validValues": []interface{}{
-						map[string]interface{}{"localName": "defaultValue", "value": "1"},
+				MetaDetails: map[string]any{
+					"validValues": []any{
+						map[string]any{"localName": "defaultValue", "value": "1"},
 					},
 				},
 			},
@@ -1268,11 +1268,11 @@ func TestPropertySetValidValues(t *testing.T) {
 		{
 			Name: "test_meta_bitmask",
 			Input: setPropertyValidValuesInput{
-				MetaDetails: map[string]interface{}{
-					"validValues": []interface{}{
-						map[string]interface{}{"localName": "read", "value": "1"},
-						map[string]interface{}{"localName": "write", "value": "2"},
-						map[string]interface{}{"localName": "execute", "value": "4"},
+				MetaDetails: map[string]any{
+					"validValues": []any{
+						map[string]any{"localName": "read", "value": "1"},
+						map[string]any{"localName": "write", "value": "2"},
+						map[string]any{"localName": "execute", "value": "4"},
 					},
 				},
 			},
@@ -1287,7 +1287,7 @@ func TestPropertySetValidValues(t *testing.T) {
 		{
 			Name: "test_meta_wrong_top_type",
 			Input: setPropertyValidValuesInput{
-				MetaDetails: map[string]interface{}{"validValues": "not-a-list"},
+				MetaDetails: map[string]any{"validValues": "not-a-list"},
 			},
 			Expected: setPropertyValidValuesExpected{
 				Error:    true,
@@ -1297,7 +1297,7 @@ func TestPropertySetValidValues(t *testing.T) {
 		{
 			Name: "test_meta_entry_wrong_type",
 			Input: setPropertyValidValuesInput{
-				MetaDetails: map[string]interface{}{"validValues": []interface{}{42}},
+				MetaDetails: map[string]any{"validValues": []any{42}},
 			},
 			Expected: setPropertyValidValuesExpected{
 				Error:    true,
@@ -1307,9 +1307,9 @@ func TestPropertySetValidValues(t *testing.T) {
 		{
 			Name: "test_meta_entry_missing_value",
 			Input: setPropertyValidValuesInput{
-				MetaDetails: map[string]interface{}{
-					"validValues": []interface{}{
-						map[string]interface{}{"localName": "level1"},
+				MetaDetails: map[string]any{
+					"validValues": []any{
+						map[string]any{"localName": "level1"},
 					},
 				},
 			},
@@ -1321,9 +1321,9 @@ func TestPropertySetValidValues(t *testing.T) {
 		{
 			Name: "test_meta_entry_missing_local_name",
 			Input: setPropertyValidValuesInput{
-				MetaDetails: map[string]interface{}{
-					"validValues": []interface{}{
-						map[string]interface{}{"value": "1"},
+				MetaDetails: map[string]any{
+					"validValues": []any{
+						map[string]any{"value": "1"},
 					},
 				},
 			},
@@ -1335,10 +1335,10 @@ func TestPropertySetValidValues(t *testing.T) {
 		{
 			Name: "test_meta_duplicate_values",
 			Input: setPropertyValidValuesInput{
-				MetaDetails: map[string]interface{}{
-					"validValues": []interface{}{
-						map[string]interface{}{"localName": "alpha", "value": "1"},
-						map[string]interface{}{"localName": "beta", "value": "1"},
+				MetaDetails: map[string]any{
+					"validValues": []any{
+						map[string]any{"localName": "alpha", "value": "1"},
+						map[string]any{"localName": "beta", "value": "1"},
 					},
 				},
 			},
@@ -1353,11 +1353,11 @@ func TestPropertySetValidValues(t *testing.T) {
 		{
 			Name: "test_meta_duplicate_value_and_localname_collision",
 			Input: setPropertyValidValuesInput{
-				MetaDetails: map[string]interface{}{
-					"validValues": []interface{}{
-						map[string]interface{}{"localName": "alpha", "value": "1"},
-						map[string]interface{}{"localName": "beta", "value": "1"},
-						map[string]interface{}{"localName": "beta", "value": "1"},
+				MetaDetails: map[string]any{
+					"validValues": []any{
+						map[string]any{"localName": "alpha", "value": "1"},
+						map[string]any{"localName": "beta", "value": "1"},
+						map[string]any{"localName": "beta", "value": "1"},
 					},
 				},
 			},
@@ -1375,10 +1375,10 @@ func TestPropertySetValidValues(t *testing.T) {
 				PropertyDefinition: PropertyDefinition{
 					RemoveValidValues: []string{"level1"},
 				},
-				MetaDetails: map[string]interface{}{
-					"validValues": []interface{}{
-						map[string]interface{}{"localName": "level1", "value": "1"},
-						map[string]interface{}{"localName": "level3", "value": "3"},
+				MetaDetails: map[string]any{
+					"validValues": []any{
+						map[string]any{"localName": "level1", "value": "1"},
+						map[string]any{"localName": "level3", "value": "3"},
 					},
 				},
 			},
@@ -1394,9 +1394,9 @@ func TestPropertySetValidValues(t *testing.T) {
 				PropertyDefinition: PropertyDefinition{
 					RemoveValidValues: []string{"missing"},
 				},
-				MetaDetails: map[string]interface{}{
-					"validValues": []interface{}{
-						map[string]interface{}{"localName": "level1", "value": "1"},
+				MetaDetails: map[string]any{
+					"validValues": []any{
+						map[string]any{"localName": "level1", "value": "1"},
 					},
 				},
 			},
@@ -1426,9 +1426,9 @@ func TestPropertySetValidValues(t *testing.T) {
 				PropertyDefinition: PropertyDefinition{
 					AddValidValues: []string{"extra"},
 				},
-				MetaDetails: map[string]interface{}{
-					"validValues": []interface{}{
-						map[string]interface{}{"localName": "level1", "value": "1"},
+				MetaDetails: map[string]any{
+					"validValues": []any{
+						map[string]any{"localName": "level1", "value": "1"},
 					},
 				},
 			},
@@ -1445,9 +1445,9 @@ func TestPropertySetValidValues(t *testing.T) {
 				PropertyDefinition: PropertyDefinition{
 					AddValidValues: []string{"1"},
 				},
-				MetaDetails: map[string]interface{}{
-					"validValues": []interface{}{
-						map[string]interface{}{"localName": "level1", "value": "1"},
+				MetaDetails: map[string]any{
+					"validValues": []any{
+						map[string]any{"localName": "level1", "value": "1"},
 					},
 				},
 			},
@@ -1465,10 +1465,10 @@ func TestPropertySetValidValues(t *testing.T) {
 					AddValidValues:    []string{"custom"},
 					RemoveValidValues: []string{"level1"},
 				},
-				MetaDetails: map[string]interface{}{
-					"validValues": []interface{}{
-						map[string]interface{}{"localName": "level1", "value": "1"},
-						map[string]interface{}{"localName": "level3", "value": "3"},
+				MetaDetails: map[string]any{
+					"validValues": []any{
+						map[string]any{"localName": "level1", "value": "1"},
+						map[string]any{"localName": "level3", "value": "3"},
 					},
 				},
 			},
@@ -1486,9 +1486,9 @@ func TestPropertySetValidValues(t *testing.T) {
 					AddValidValues:    []string{"level1"},
 					RemoveValidValues: []string{"level1"},
 				},
-				MetaDetails: map[string]interface{}{
-					"validValues": []interface{}{
-						map[string]interface{}{"localName": "level1", "value": "1"},
+				MetaDetails: map[string]any{
+					"validValues": []any{
+						map[string]any{"localName": "level1", "value": "1"},
 					},
 				},
 			},
@@ -1564,7 +1564,7 @@ func TestValidValuesMethods(t *testing.T) {
 
 type setValueTypeInput struct {
 	PropertyDefinition PropertyDefinition
-	MetaDetails        map[string]interface{}
+	MetaDetails        map[string]any
 	ValidValues        ValidValues
 	Validators         []Validator
 }
@@ -1583,61 +1583,61 @@ func TestPropertySetValueType(t *testing.T) {
 		{
 			Name: "test_meta_bitmask_to_set",
 			Input: setValueTypeInput{
-				MetaDetails: map[string]interface{}{"uitype": "bitmask"},
+				MetaDetails: map[string]any{"uitype": "bitmask"},
 			},
 			Expected: setValueTypeExpected{ValueType: Set},
 		},
 		{
 			Name: "test_meta_string_to_string",
 			Input: setValueTypeInput{
-				MetaDetails: map[string]interface{}{"uitype": "string"},
+				MetaDetails: map[string]any{"uitype": "string"},
 			},
 			Expected: setValueTypeExpected{ValueType: String},
 		},
 		{
 			Name: "test_meta_enum_no_warn",
 			Input: setValueTypeInput{
-				MetaDetails: map[string]interface{}{"uitype": "enum"},
+				MetaDetails: map[string]any{"uitype": "enum"},
 			},
 			Expected: setValueTypeExpected{ValueType: String},
 		},
 		{
 			Name: "test_meta_auto_no_warn",
 			Input: setValueTypeInput{
-				MetaDetails: map[string]interface{}{"uitype": "auto"},
+				MetaDetails: map[string]any{"uitype": "auto"},
 			},
 			Expected: setValueTypeExpected{ValueType: String},
 		},
 		{
 			Name: "test_meta_number_no_warn",
 			Input: setValueTypeInput{
-				MetaDetails: map[string]interface{}{"uitype": "number"},
+				MetaDetails: map[string]any{"uitype": "number"},
 			},
 			Expected: setValueTypeExpected{ValueType: String},
 		},
 		{
 			Name: "test_meta_boolean_no_warn",
 			Input: setValueTypeInput{
-				MetaDetails: map[string]interface{}{"uitype": "boolean"},
+				MetaDetails: map[string]any{"uitype": "boolean"},
 			},
 			Expected: setValueTypeExpected{ValueType: String},
 		},
 		{
 			Name: "test_meta_password_no_warn",
 			Input: setValueTypeInput{
-				MetaDetails: map[string]interface{}{"uitype": "password"},
+				MetaDetails: map[string]any{"uitype": "password"},
 			},
 			Expected: setValueTypeExpected{ValueType: String},
 		},
 		{
 			Name:     "test_meta_missing_uitype_defaults_string",
-			Input:    setValueTypeInput{MetaDetails: map[string]interface{}{}},
+			Input:    setValueTypeInput{MetaDetails: map[string]any{}},
 			Expected: setValueTypeExpected{ValueType: String},
 		},
 		{
 			Name: "test_meta_unknown_uitype_warns",
 			Input: setValueTypeInput{
-				MetaDetails: map[string]interface{}{"uitype": "weirdtype"},
+				MetaDetails: map[string]any{"uitype": "weirdtype"},
 			},
 			Expected: setValueTypeExpected{
 				ValueType: String,
@@ -1647,21 +1647,21 @@ func TestPropertySetValueType(t *testing.T) {
 		{
 			Name: "test_meta_validate_as_ip_to_ip_address",
 			Input: setValueTypeInput{
-				MetaDetails: map[string]interface{}{"uitype": "string", "validateAsIPv4OrIPv6": true},
+				MetaDetails: map[string]any{"uitype": "string", "validateAsIPv4OrIPv6": true},
 			},
 			Expected: setValueTypeExpected{ValueType: IpAddress},
 		},
 		{
 			Name: "test_meta_bitmask_outranks_ip",
 			Input: setValueTypeInput{
-				MetaDetails: map[string]interface{}{"uitype": "bitmask", "validateAsIPv4OrIPv6": true},
+				MetaDetails: map[string]any{"uitype": "bitmask", "validateAsIPv4OrIPv6": true},
 			},
 			Expected: setValueTypeExpected{ValueType: Set},
 		},
 		{
 			Name: "test_meta_ip_outranks_semantic_equality",
 			Input: setValueTypeInput{
-				MetaDetails: map[string]interface{}{"uitype": "string", "validateAsIPv4OrIPv6": true},
+				MetaDetails: map[string]any{"uitype": "string", "validateAsIPv4OrIPv6": true},
 				ValidValues: ValidValues{"1": ValidValue{LocalName: "one"}},
 				Validators:  []Validator{{Min: 0, Max: 10}},
 			},
@@ -1670,7 +1670,7 @@ func TestPropertySetValueType(t *testing.T) {
 		{
 			Name: "test_validators_and_valid_values_to_semantic_equality",
 			Input: setValueTypeInput{
-				MetaDetails: map[string]interface{}{"uitype": "number"},
+				MetaDetails: map[string]any{"uitype": "number"},
 				ValidValues: ValidValues{"22": ValidValue{LocalName: "ssh"}},
 				Validators:  []Validator{{Min: 0, Max: 65535}},
 			},
@@ -1679,7 +1679,7 @@ func TestPropertySetValueType(t *testing.T) {
 		{
 			Name: "test_only_validators_no_semantic_equality",
 			Input: setValueTypeInput{
-				MetaDetails: map[string]interface{}{"uitype": "number"},
+				MetaDetails: map[string]any{"uitype": "number"},
 				Validators:  []Validator{{Min: 0, Max: 65535}},
 			},
 			Expected: setValueTypeExpected{ValueType: String},
@@ -1687,7 +1687,7 @@ func TestPropertySetValueType(t *testing.T) {
 		{
 			Name: "test_only_valid_values_no_semantic_equality",
 			Input: setValueTypeInput{
-				MetaDetails: map[string]interface{}{"uitype": "enum"},
+				MetaDetails: map[string]any{"uitype": "enum"},
 				ValidValues: ValidValues{"1": ValidValue{LocalName: "one"}},
 			},
 			Expected: setValueTypeExpected{ValueType: String},
@@ -1696,7 +1696,7 @@ func TestPropertySetValueType(t *testing.T) {
 			Name: "test_definition_override_set",
 			Input: setValueTypeInput{
 				PropertyDefinition: PropertyDefinition{ValueType: "set"},
-				MetaDetails:        map[string]interface{}{"uitype": "string"},
+				MetaDetails:        map[string]any{"uitype": "string"},
 			},
 			Expected: setValueTypeExpected{ValueType: Set},
 		},
@@ -1704,7 +1704,7 @@ func TestPropertySetValueType(t *testing.T) {
 			Name: "test_definition_override_ip_address",
 			Input: setValueTypeInput{
 				PropertyDefinition: PropertyDefinition{ValueType: "ip_address"},
-				MetaDetails:        map[string]interface{}{},
+				MetaDetails:        map[string]any{},
 			},
 			Expected: setValueTypeExpected{ValueType: IpAddress},
 		},
@@ -1712,7 +1712,7 @@ func TestPropertySetValueType(t *testing.T) {
 			Name: "test_definition_override_semantic_equality",
 			Input: setValueTypeInput{
 				PropertyDefinition: PropertyDefinition{ValueType: "semantic_equality"},
-				MetaDetails:        map[string]interface{}{"uitype": "bitmask"},
+				MetaDetails:        map[string]any{"uitype": "bitmask"},
 			},
 			Expected: setValueTypeExpected{ValueType: SemanticEquality},
 		},
@@ -1720,7 +1720,7 @@ func TestPropertySetValueType(t *testing.T) {
 			Name: "test_definition_override_invalid_errors",
 			Input: setValueTypeInput{
 				PropertyDefinition: PropertyDefinition{ValueType: "weird"},
-				MetaDetails:        map[string]interface{}{},
+				MetaDetails:        map[string]any{},
 			},
 			Expected: setValueTypeExpected{
 				Error:    true,
