@@ -69,8 +69,8 @@ func Underscore(s string) string {
 // is required for those cases.
 //
 // Typical use: merging a per-field override from a definition file with a value read from
-// a JSON-unmarshalled meta sub-map (map[string]interface{}).
-func GetValueFromMapWithOverride[T comparable](m map[string]interface{}, key string, override T) T {
+// a JSON-unmarshalled meta sub-map (map[string]any).
+func GetValueFromMapWithOverride[T comparable](m map[string]any, key string, override T) T {
 	var zero T
 	if override != zero {
 		return override
