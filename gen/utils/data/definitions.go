@@ -126,6 +126,14 @@ type PropertyDefinition struct {
 	// Accepted values mirror the ValueTypeEnum vocabulary: "string", "set", "ip_address", "semantic_equality".
 	// An error is returned during generation when set to an unrecognized value.
 	ValueType string `yaml:"value_type"`
+	// Per-property documentation overrides (description, notes, warnings).
+	// Reuses the shared ArtifactDocumentationDefinition struct.
+	Documentation ArtifactDocumentationDefinition `yaml:"documentation"`
+	// Overrides the default values derived from the meta `default` field.
+	// Each key is the default value and the map value is an optional version range string (e.g., "5.0(1a)-").
+	// An empty version string means the default applies to all versions.
+	// When non-empty, completely replaces the meta-derived defaults.
+	DefaultValues map[string]string `yaml:"default_values"`
 }
 
 // ValidatorDefinition mirrors the YAML/JSON shape of a single validator entry (min/max plus optional regex statements).
