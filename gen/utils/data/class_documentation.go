@@ -150,7 +150,7 @@ func (d *ClassDocumentation) setClassName(class *Class) {
 func (d *ClassDocumentation) setChildren(class *Class, ds *DataStore) {
 	genLogger.Debugf("Setting Documentation Children for class '%s'.", class.Name.full)
 
-	rnMap, ok := class.MetaFileContent["rnMap"].(map[string]interface{})
+	rnMap, ok := class.MetaFileContent["rnMap"].(map[string]any)
 	if !ok {
 		genLogger.Debugf("No rnMap available for class '%s'; skipping documentation children.", class.Name.full)
 		return
@@ -321,7 +321,7 @@ func (d *ClassDocumentation) setDnFormats(class *Class) {
 
 	if override := class.ClassDefinition.Documentation.DnFormats; len(override) > 0 {
 		d.DnFormats = override
-	} else if rawFormats, ok := class.MetaFileContent["dnFormats"].([]interface{}); ok {
+	} else if rawFormats, ok := class.MetaFileContent["dnFormats"].([]any); ok {
 		for _, raw := range rawFormats {
 			if s, ok := raw.(string); ok {
 				d.DnFormats = append(d.DnFormats, s)
