@@ -32,7 +32,7 @@ func TestSetResourceNameFromLabelNoRelationWithIdentifier(t *testing.T) {
 	t.Parallel()
 	ds := initializeDataStoreTest(t)
 	class := Class{Name: testClassName("tagAnnotation"), IdentifiedBy: []string{"key"}}
-	class.MetaFileContent = map[string]interface{}{
+	class.MetaFileContent = map[string]any{
 		"label": "annotation",
 	}
 
@@ -52,9 +52,9 @@ func TestSetResourceNameFromLabelNoRelationWithoutIdentifier(t *testing.T) {
 		},
 	}
 	class := Class{Name: testClassName("fvRsScope")}
-	class.MetaFileContent = map[string]interface{}{
+	class.MetaFileContent = map[string]any{
 		"label": "Private Network",
-		"relationInfo": map[string]interface{}{
+		"relationInfo": map[string]any{
 			"type":   "named",
 			"fromMo": "fv:ESg",
 			"toMo":   "fv:Ctx",
@@ -79,9 +79,9 @@ func TestSetResourceNameToRelation(t *testing.T) {
 		},
 	}
 	class := Class{Name: testClassName("fvRsCons"), IdentifiedBy: []string{"tnVzBrCPName"}}
-	class.MetaFileContent = map[string]interface{}{
+	class.MetaFileContent = map[string]any{
 		"label": "contract",
-		"relationInfo": map[string]interface{}{
+		"relationInfo": map[string]any{
 			"type":   "named",
 			"fromMo": "fv:EPg",
 			"toMo":   "vz:BrCP",
@@ -107,9 +107,9 @@ func TestSetResourceNameFromToRelation(t *testing.T) {
 		},
 	}
 	class := Class{Name: testClassName("netflowRsExporterToCtx")}
-	class.MetaFileContent = map[string]interface{}{
+	class.MetaFileContent = map[string]any{
 		"label": "netflow exporter",
-		"relationInfo": map[string]interface{}{
+		"relationInfo": map[string]any{
 			"type":   "explicit",
 			"fromMo": "netflow:AExporterPol",
 			"toMo":   "fv:Ctx",
@@ -130,7 +130,7 @@ func TestSetResourceNameFromEmptyLabelError(t *testing.T) {
 	t.Parallel()
 	ds := initializeDataStoreTest(t)
 	class := Class{Name: testClassName("fvTenant")}
-	class.MetaFileContent = map[string]interface{}{"label": ""}
+	class.MetaFileContent = map[string]any{"label": ""}
 
 	err := class.setResourceName(ds)
 
@@ -141,7 +141,7 @@ func TestSetResourceNameFromNoLabelError(t *testing.T) {
 	t.Parallel()
 	ds := initializeDataStoreTest(t)
 	class := Class{Name: testClassName("fvTenant")}
-	class.MetaFileContent = map[string]interface{}{"no_label": ""}
+	class.MetaFileContent = map[string]any{"no_label": ""}
 
 	err := class.setResourceName(ds)
 
@@ -152,7 +152,7 @@ func TestSetResourceNameFromDefinitionOverride(t *testing.T) {
 	t.Parallel()
 	ds := initializeDataStoreTest(t)
 	class := Class{Name: testClassName("fvCtx"), IdentifiedBy: []string{"name"}}
-	class.MetaFileContent = map[string]interface{}{
+	class.MetaFileContent = map[string]any{
 		"label": "context",
 	}
 	class.ClassDefinition = ClassDefinition{ResourceName: "vrf"}
@@ -168,7 +168,7 @@ func TestSetResourceNameFromDefinitionOverrideWithoutIdentifier(t *testing.T) {
 	t.Parallel()
 	ds := initializeDataStoreTest(t)
 	class := Class{Name: testClassName("fvRsCtx")}
-	class.MetaFileContent = map[string]interface{}{
+	class.MetaFileContent = map[string]any{
 		"label": "context",
 	}
 	class.ClassDefinition = ClassDefinition{ResourceName: "vrf"}
@@ -184,7 +184,7 @@ func TestSetResourceNameFromDefinitionOverrideWithoutLabel(t *testing.T) {
 	t.Parallel()
 	ds := initializeDataStoreTest(t)
 	class := Class{Name: testClassName("fvRsCtx")}
-	class.MetaFileContent = map[string]interface{}{}
+	class.MetaFileContent = map[string]any{}
 	class.ClassDefinition = ClassDefinition{ResourceName: "vrf"}
 
 	err := class.setResourceName(ds)
@@ -196,7 +196,7 @@ func TestSetResourceNameFromDefinitionOverrideWithoutLabel(t *testing.T) {
 
 type setRelationInput struct {
 	ClassName       string
-	MetaFileContent map[string]interface{}
+	MetaFileContent map[string]any
 	ClassDefinition ClassDefinition
 }
 
@@ -233,9 +233,9 @@ func TestSetRelation(t *testing.T) {
 			Name: "test_include_from_false_type_named",
 			Input: setRelationInput{
 				ClassName: "fvRsCons",
-				MetaFileContent: map[string]interface{}{
+				MetaFileContent: map[string]any{
 					"label": "contract",
-					"relationInfo": map[string]interface{}{
+					"relationInfo": map[string]any{
 						"type":   "named",
 						"fromMo": "fv:EPg",
 						"toMo":   "vz:BrCP",
@@ -254,9 +254,9 @@ func TestSetRelation(t *testing.T) {
 			Name: "test_include_from_true_type_explicit",
 			Input: setRelationInput{
 				ClassName: "netflowRsExporterToCtx",
-				MetaFileContent: map[string]interface{}{
+				MetaFileContent: map[string]any{
 					"label": "netflow exporter",
-					"relationInfo": map[string]interface{}{
+					"relationInfo": map[string]any{
 						"type":   "explicit",
 						"fromMo": "netflow:AExporterPol",
 						"toMo":   "fv:Ctx",
@@ -276,9 +276,9 @@ func TestSetRelation(t *testing.T) {
 			Name: "test_relation_to_classes_override",
 			Input: setRelationInput{
 				ClassName: "fvRsDomAtt",
-				MetaFileContent: map[string]interface{}{
+				MetaFileContent: map[string]any{
 					"label": "domain attachment",
-					"relationInfo": map[string]interface{}{
+					"relationInfo": map[string]any{
 						"type":   "named",
 						"fromMo": "fv:AEPg",
 						"toMo":   "infra:DomP",
@@ -302,9 +302,9 @@ func TestSetRelation(t *testing.T) {
 			Name: "test_relation_info_field_override",
 			Input: setRelationInput{
 				ClassName: "fvRsCons",
-				MetaFileContent: map[string]interface{}{
+				MetaFileContent: map[string]any{
 					"label": "contract",
-					"relationInfo": map[string]interface{}{
+					"relationInfo": map[string]any{
 						"type":   "named",
 						"fromMo": "fv:EPg",
 						"toMo":   "vz:BrCP",
@@ -326,7 +326,7 @@ func TestSetRelation(t *testing.T) {
 			Name: "test_relation_info_full_definition_only",
 			Input: setRelationInput{
 				ClassName:       "fakeRsCustom",
-				MetaFileContent: map[string]interface{}{},
+				MetaFileContent: map[string]any{},
 				ClassDefinition: ClassDefinition{
 					RelationInfo: RelationInfoDefinition{
 						Type:      "explicit",
@@ -347,7 +347,7 @@ func TestSetRelation(t *testing.T) {
 			Name: "test_relation_info_missing_to_class_error",
 			Input: setRelationInput{
 				ClassName:       "fakeRsCustom",
-				MetaFileContent: map[string]interface{}{},
+				MetaFileContent: map[string]any{},
 				ClassDefinition: ClassDefinition{
 					RelationInfo: RelationInfoDefinition{
 						Type:      "named",
@@ -364,8 +364,8 @@ func TestSetRelation(t *testing.T) {
 			Name: "test_undefined_type_error",
 			Input: setRelationInput{
 				ClassName: "netflowRsExporterToCtx",
-				MetaFileContent: map[string]interface{}{
-					"relationInfo": map[string]interface{}{
+				MetaFileContent: map[string]any{
+					"relationInfo": map[string]any{
 						"type":   "undefinedType",
 						"fromMo": "netflow:AExporterPol",
 						"toMo":   "fv:Ctx",
@@ -381,8 +381,8 @@ func TestSetRelation(t *testing.T) {
 			Name: "test_relation_info_disabled_overrides_meta",
 			Input: setRelationInput{
 				ClassName: "fvRsCtx",
-				MetaFileContent: map[string]interface{}{
-					"relationInfo": map[string]interface{}{
+				MetaFileContent: map[string]any{
+					"relationInfo": map[string]any{
 						"type":   "named",
 						"fromMo": "fv:EPg",
 						"toMo":   "vz:BrCP",
@@ -404,7 +404,7 @@ func TestSetRelation(t *testing.T) {
 			Name: "test_relation_info_disabled_conflict_error",
 			Input: setRelationInput{
 				ClassName:       "fvRsCtx",
-				MetaFileContent: map[string]interface{}{},
+				MetaFileContent: map[string]any{},
 				ClassDefinition: ClassDefinition{
 					RelationInfo: RelationInfoDefinition{
 						Disabled:  true,
@@ -451,7 +451,7 @@ func TestSetRelation(t *testing.T) {
 }
 
 type setAllowDeleteInput struct {
-	MetaFileContent map[string]interface{}
+	MetaFileContent map[string]any
 	ClassDefinition ClassDefinition
 }
 
@@ -463,7 +463,7 @@ func TestSetAllowDelete(t *testing.T) {
 		{
 			Name: "test_isCreatableDeletable_never",
 			Input: setAllowDeleteInput{
-				MetaFileContent: map[string]interface{}{"isCreatableDeletable": "never"},
+				MetaFileContent: map[string]any{"isCreatableDeletable": "never"},
 				ClassDefinition: ClassDefinition{},
 			},
 			Expected: false,
@@ -471,7 +471,7 @@ func TestSetAllowDelete(t *testing.T) {
 		{
 			Name: "test_isCreatableDeletable_always",
 			Input: setAllowDeleteInput{
-				MetaFileContent: map[string]interface{}{"isCreatableDeletable": "always"},
+				MetaFileContent: map[string]any{"isCreatableDeletable": "always"},
 				ClassDefinition: ClassDefinition{},
 			},
 			Expected: true,
@@ -479,7 +479,7 @@ func TestSetAllowDelete(t *testing.T) {
 		{
 			Name: "test_definition_allow_delete_never",
 			Input: setAllowDeleteInput{
-				MetaFileContent: map[string]interface{}{},
+				MetaFileContent: map[string]any{},
 				ClassDefinition: ClassDefinition{AllowDelete: "never"},
 			},
 			Expected: false,
@@ -487,7 +487,7 @@ func TestSetAllowDelete(t *testing.T) {
 		{
 			Name: "test_definition_allow_delete_always",
 			Input: setAllowDeleteInput{
-				MetaFileContent: map[string]interface{}{},
+				MetaFileContent: map[string]any{},
 				ClassDefinition: ClassDefinition{AllowDelete: "always"},
 			},
 			Expected: true,
@@ -630,7 +630,7 @@ type setChildrenInput struct {
 	IncludeChildren      []string
 	ExcludeChildren      []string
 	AlwaysIncludeAsChild []string
-	RnMap                map[string]interface{}
+	RnMap                map[string]any
 }
 
 func TestSetChildren(t *testing.T) {
@@ -644,7 +644,7 @@ func TestSetChildren(t *testing.T) {
 				IncludeChildren:      []string{"fvSubnet"},
 				ExcludeChildren:      []string{},
 				AlwaysIncludeAsChild: []string{},
-				RnMap:                map[string]interface{}{},
+				RnMap:                map[string]any{},
 			},
 			Expected: []string{"fvSubnet"},
 		},
@@ -654,7 +654,7 @@ func TestSetChildren(t *testing.T) {
 				IncludeChildren:      []string{},
 				ExcludeChildren:      []string{},
 				AlwaysIncludeAsChild: []string{},
-				RnMap: map[string]interface{}{
+				RnMap: map[string]any{
 					"rsBDToOut": "fv:RsBDToOut",
 					"rsCtx":     "fv:RsCtx",
 				},
@@ -667,7 +667,7 @@ func TestSetChildren(t *testing.T) {
 				IncludeChildren:      []string{},
 				ExcludeChildren:      []string{},
 				AlwaysIncludeAsChild: []string{},
-				RnMap: map[string]interface{}{
+				RnMap: map[string]any{
 					"ctx-":      "fv:Ctx",
 					"rsBDToOut": "fv:RsBDToOut",
 				},
@@ -680,7 +680,7 @@ func TestSetChildren(t *testing.T) {
 				IncludeChildren:      []string{},
 				ExcludeChildren:      []string{},
 				AlwaysIncludeAsChild: []string{"tagAnnotation", "tagTag"},
-				RnMap: map[string]interface{}{
+				RnMap: map[string]any{
 					"annotationKey-": "tag:Annotation",
 				},
 			},
@@ -692,7 +692,7 @@ func TestSetChildren(t *testing.T) {
 				IncludeChildren:      []string{},
 				ExcludeChildren:      []string{"fvRsBDToOut"},
 				AlwaysIncludeAsChild: []string{},
-				RnMap: map[string]interface{}{
+				RnMap: map[string]any{
 					"rsBDToOut": "fv:RsBDToOut",
 					"rsCtx":     "fv:RsCtx",
 				},
@@ -705,7 +705,7 @@ func TestSetChildren(t *testing.T) {
 				IncludeChildren:      []string{"fvSubnet"},
 				ExcludeChildren:      []string{},
 				AlwaysIncludeAsChild: []string{},
-				RnMap: map[string]interface{}{
+				RnMap: map[string]any{
 					"rsBDToOut": "fv:RsBDToOut",
 				},
 			},
@@ -717,7 +717,7 @@ func TestSetChildren(t *testing.T) {
 				IncludeChildren:      []string{"fvRsBDToOut"},
 				ExcludeChildren:      []string{},
 				AlwaysIncludeAsChild: []string{},
-				RnMap: map[string]interface{}{
+				RnMap: map[string]any{
 					"rsBDToOut": "fv:RsBDToOut",
 				},
 			},
@@ -729,7 +729,7 @@ func TestSetChildren(t *testing.T) {
 				IncludeChildren:      []string{"fvZone", "fvAp"},
 				ExcludeChildren:      []string{},
 				AlwaysIncludeAsChild: []string{},
-				RnMap: map[string]interface{}{
+				RnMap: map[string]any{
 					"rsBDToOut": "fv:RsBDToOut",
 				},
 			},
@@ -751,7 +751,7 @@ func TestSetChildren(t *testing.T) {
 				IncludeChildren:      []string{},
 				ExcludeChildren:      []string{},
 				AlwaysIncludeAsChild: []string{},
-				RnMap:                map[string]interface{}{},
+				RnMap:                map[string]any{},
 			},
 			Expected: []string{},
 		},
@@ -761,7 +761,7 @@ func TestSetChildren(t *testing.T) {
 				IncludeChildren:      []string{"fvSubnet"},
 				ExcludeChildren:      []string{"fvSubnet"},
 				AlwaysIncludeAsChild: []string{},
-				RnMap:                map[string]interface{}{},
+				RnMap:                map[string]any{},
 			},
 			Expected: []string{"fvSubnet"},
 		},
@@ -779,7 +779,7 @@ func TestSetChildren(t *testing.T) {
 					IncludeChildren: input.IncludeChildren,
 					ExcludeChildren: input.ExcludeChildren,
 				},
-				MetaFileContent: map[string]interface{}{
+				MetaFileContent: map[string]any{
 					"rnMap": input.RnMap,
 				},
 			}
@@ -821,8 +821,8 @@ func TestSetChildrenWarnsWhenClassInBothIncludeAndExclude(t *testing.T) {
 			IncludeChildren: []string{"fvSubnet"},
 			ExcludeChildren: []string{"fvSubnet"},
 		},
-		MetaFileContent: map[string]interface{}{
-			"rnMap": map[string]interface{}{},
+		MetaFileContent: map[string]any{
+			"rnMap": map[string]any{},
 		},
 	}
 
@@ -856,7 +856,7 @@ func TestSetChildrenErrors(t *testing.T) {
 				IncludeChildren:      []string{},
 				ExcludeChildren:      []string{},
 				AlwaysIncludeAsChild: []string{},
-				RnMap: map[string]interface{}{
+				RnMap: map[string]any{
 					"rsBDToOut": "fv:Rs:BDToOut",
 				},
 			},
@@ -870,7 +870,7 @@ func TestSetChildrenErrors(t *testing.T) {
 				IncludeChildren:      []string{"invalidclass"},
 				ExcludeChildren:      []string{},
 				AlwaysIncludeAsChild: []string{},
-				RnMap:                map[string]interface{}{},
+				RnMap:                map[string]any{},
 			},
 			Expected: setChildrenErrorExpected{
 				ErrorMsg: "failed to split class name 'invalidclass' for name space separation",
@@ -882,7 +882,7 @@ func TestSetChildrenErrors(t *testing.T) {
 				IncludeChildren:      []string{""},
 				ExcludeChildren:      []string{},
 				AlwaysIncludeAsChild: []string{},
-				RnMap:                map[string]interface{}{},
+				RnMap:                map[string]any{},
 			},
 			Expected: setChildrenErrorExpected{
 				ErrorMsg: "failed to split class name '' for name space separation",
@@ -902,7 +902,7 @@ func TestSetChildrenErrors(t *testing.T) {
 					IncludeChildren: input.IncludeChildren,
 					ExcludeChildren: input.ExcludeChildren,
 				},
-				MetaFileContent: map[string]interface{}{
+				MetaFileContent: map[string]any{
 					"rnMap": input.RnMap,
 				},
 			}
@@ -922,7 +922,7 @@ func TestSetChildrenErrors(t *testing.T) {
 type setParentsInput struct {
 	IncludeParents []string
 	ExcludeParents []string
-	ContainedBy    map[string]interface{}
+	ContainedBy    map[string]any
 }
 
 func TestSetParents(t *testing.T) {
@@ -935,7 +935,7 @@ func TestSetParents(t *testing.T) {
 			Input: setParentsInput{
 				IncludeParents: []string{"fvTenant"},
 				ExcludeParents: []string{},
-				ContainedBy:    map[string]interface{}{},
+				ContainedBy:    map[string]any{},
 			},
 			Expected: []string{"fvTenant"},
 		},
@@ -944,7 +944,7 @@ func TestSetParents(t *testing.T) {
 			Input: setParentsInput{
 				IncludeParents: []string{},
 				ExcludeParents: []string{},
-				ContainedBy: map[string]interface{}{
+				ContainedBy: map[string]any{
 					"fv:AEPg": "",
 					"fv:BD":   "",
 				},
@@ -956,7 +956,7 @@ func TestSetParents(t *testing.T) {
 			Input: setParentsInput{
 				IncludeParents: []string{},
 				ExcludeParents: []string{},
-				ContainedBy: map[string]interface{}{
+				ContainedBy: map[string]any{
 					"fv:Tenant": "",
 				},
 			},
@@ -967,7 +967,7 @@ func TestSetParents(t *testing.T) {
 			Input: setParentsInput{
 				IncludeParents: []string{},
 				ExcludeParents: []string{"fvAEPg"},
-				ContainedBy: map[string]interface{}{
+				ContainedBy: map[string]any{
 					"fv:AEPg": "",
 					"fv:BD":   "",
 				},
@@ -979,7 +979,7 @@ func TestSetParents(t *testing.T) {
 			Input: setParentsInput{
 				IncludeParents: []string{"fvTenant"},
 				ExcludeParents: []string{},
-				ContainedBy: map[string]interface{}{
+				ContainedBy: map[string]any{
 					"fv:AEPg": "",
 				},
 			},
@@ -990,7 +990,7 @@ func TestSetParents(t *testing.T) {
 			Input: setParentsInput{
 				IncludeParents: []string{"fvAEPg"},
 				ExcludeParents: []string{},
-				ContainedBy: map[string]interface{}{
+				ContainedBy: map[string]any{
 					"fv:AEPg": "",
 				},
 			},
@@ -1001,7 +1001,7 @@ func TestSetParents(t *testing.T) {
 			Input: setParentsInput{
 				IncludeParents: []string{"fvCtx", "fvAp"},
 				ExcludeParents: []string{},
-				ContainedBy: map[string]interface{}{
+				ContainedBy: map[string]any{
 					"fv:BD": "",
 				},
 			},
@@ -1021,7 +1021,7 @@ func TestSetParents(t *testing.T) {
 			Input: setParentsInput{
 				IncludeParents: []string{},
 				ExcludeParents: []string{},
-				ContainedBy:    map[string]interface{}{},
+				ContainedBy:    map[string]any{},
 			},
 			Expected: []string{},
 		},
@@ -1030,7 +1030,7 @@ func TestSetParents(t *testing.T) {
 			Input: setParentsInput{
 				IncludeParents: []string{"fvTenant"},
 				ExcludeParents: []string{"fvTenant"},
-				ContainedBy:    map[string]interface{}{},
+				ContainedBy:    map[string]any{},
 			},
 			Expected: []string{"fvTenant"},
 		},
@@ -1048,7 +1048,7 @@ func TestSetParents(t *testing.T) {
 					IncludeParents: input.IncludeParents,
 					ExcludeParents: input.ExcludeParents,
 				},
-				MetaFileContent: map[string]interface{}{
+				MetaFileContent: map[string]any{
 					"containedBy": input.ContainedBy,
 				},
 			}
@@ -1084,8 +1084,8 @@ func TestSetParentsWarnsWhenClassInBothIncludeAndExclude(t *testing.T) {
 			IncludeParents: []string{"fvTenant"},
 			ExcludeParents: []string{"fvTenant"},
 		},
-		MetaFileContent: map[string]interface{}{
-			"containedBy": map[string]interface{}{},
+		MetaFileContent: map[string]any{
+			"containedBy": map[string]any{},
 		},
 	}
 
@@ -1112,7 +1112,7 @@ func TestSetParentsErrors(t *testing.T) {
 			Input: setParentsInput{
 				IncludeParents: []string{},
 				ExcludeParents: []string{},
-				ContainedBy: map[string]interface{}{
+				ContainedBy: map[string]any{
 					"fv:AE:Pg": "",
 				},
 			},
@@ -1125,7 +1125,7 @@ func TestSetParentsErrors(t *testing.T) {
 			Input: setParentsInput{
 				IncludeParents: []string{"invalidparent"},
 				ExcludeParents: []string{},
-				ContainedBy:    map[string]interface{}{},
+				ContainedBy:    map[string]any{},
 			},
 			Expected: setParentsErrorExpected{
 				ErrorMsg: "failed to split class name 'invalidparent' for name space separation",
@@ -1136,7 +1136,7 @@ func TestSetParentsErrors(t *testing.T) {
 			Input: setParentsInput{
 				IncludeParents: []string{""},
 				ExcludeParents: []string{},
-				ContainedBy:    map[string]interface{}{},
+				ContainedBy:    map[string]any{},
 			},
 			Expected: setParentsErrorExpected{
 				ErrorMsg: "failed to split class name '' for name space separation",
@@ -1156,7 +1156,7 @@ func TestSetParentsErrors(t *testing.T) {
 					IncludeParents: input.IncludeParents,
 					ExcludeParents: input.ExcludeParents,
 				},
-				MetaFileContent: map[string]interface{}{
+				MetaFileContent: map[string]any{
 					"containedBy": input.ContainedBy,
 				},
 			}
@@ -1250,7 +1250,7 @@ func TestSortAndConvertToClassNames(t *testing.T) {
 }
 
 type setClassSupportedVersionsInput struct {
-	MetaFileContent map[string]interface{}
+	MetaFileContent map[string]any
 	ClassDefinition ClassDefinition
 }
 
@@ -1269,7 +1269,7 @@ func TestSetClassSupportedVersions(t *testing.T) {
 		{
 			Name: "test_versions_from_meta_file",
 			Input: setClassSupportedVersionsInput{
-				MetaFileContent: map[string]interface{}{"versions": "4.2(7f)-"},
+				MetaFileContent: map[string]any{"versions": "4.2(7f)-"},
 				ClassDefinition: ClassDefinition{},
 			},
 			Expected: setClassSupportedVersionsExpected{
@@ -1280,7 +1280,7 @@ func TestSetClassSupportedVersions(t *testing.T) {
 		{
 			Name: "test_versions_from_class_definition_override",
 			Input: setClassSupportedVersionsInput{
-				MetaFileContent: map[string]interface{}{"versions": "4.2(7f)-"},
+				MetaFileContent: map[string]any{"versions": "4.2(7f)-"},
 				ClassDefinition: ClassDefinition{SupportedVersions: "5.0(1a)-"},
 			},
 			Expected: setClassSupportedVersionsExpected{
@@ -1291,7 +1291,7 @@ func TestSetClassSupportedVersions(t *testing.T) {
 		{
 			Name: "test_versions_from_class_definition_when_meta_empty",
 			Input: setClassSupportedVersionsInput{
-				MetaFileContent: map[string]interface{}{"versions": ""},
+				MetaFileContent: map[string]any{"versions": ""},
 				ClassDefinition: ClassDefinition{SupportedVersions: "5.0(1a)-"},
 			},
 			Expected: setClassSupportedVersionsExpected{
@@ -1302,7 +1302,7 @@ func TestSetClassSupportedVersions(t *testing.T) {
 		{
 			Name: "test_versions_from_class_definition_when_meta_nil",
 			Input: setClassSupportedVersionsInput{
-				MetaFileContent: map[string]interface{}{},
+				MetaFileContent: map[string]any{},
 				ClassDefinition: ClassDefinition{SupportedVersions: "5.0(1a)-"},
 			},
 			Expected: setClassSupportedVersionsExpected{
@@ -1313,7 +1313,7 @@ func TestSetClassSupportedVersions(t *testing.T) {
 		{
 			Name: "test_multiple_ranges",
 			Input: setClassSupportedVersionsInput{
-				MetaFileContent: map[string]interface{}{"versions": "3.2(10e)-3.2(10g),4.2(7f)-"},
+				MetaFileContent: map[string]any{"versions": "3.2(10e)-3.2(10g),4.2(7f)-"},
 				ClassDefinition: ClassDefinition{},
 			},
 			Expected: setClassSupportedVersionsExpected{
@@ -1324,7 +1324,7 @@ func TestSetClassSupportedVersions(t *testing.T) {
 		{
 			Name: "test_multiple_ranges_sorted",
 			Input: setClassSupportedVersionsInput{
-				MetaFileContent: map[string]interface{}{"versions": "5.2(1g)-,3.2(10e)-3.2(10g)"},
+				MetaFileContent: map[string]any{"versions": "5.2(1g)-,3.2(10e)-3.2(10g)"},
 				ClassDefinition: ClassDefinition{},
 			},
 			Expected: setClassSupportedVersionsExpected{
@@ -1335,7 +1335,7 @@ func TestSetClassSupportedVersions(t *testing.T) {
 		{
 			Name: "test_error_empty_versions",
 			Input: setClassSupportedVersionsInput{
-				MetaFileContent: map[string]interface{}{"versions": ""},
+				MetaFileContent: map[string]any{"versions": ""},
 				ClassDefinition: ClassDefinition{},
 			},
 			Expected: setClassSupportedVersionsExpected{
@@ -1346,7 +1346,7 @@ func TestSetClassSupportedVersions(t *testing.T) {
 		{
 			Name: "test_error_nil_versions",
 			Input: setClassSupportedVersionsInput{
-				MetaFileContent: map[string]interface{}{},
+				MetaFileContent: map[string]any{},
 				ClassDefinition: ClassDefinition{},
 			},
 			Expected: setClassSupportedVersionsExpected{
@@ -1357,7 +1357,7 @@ func TestSetClassSupportedVersions(t *testing.T) {
 		{
 			Name: "test_error_invalid_version",
 			Input: setClassSupportedVersionsInput{
-				MetaFileContent: map[string]interface{}{"versions": "invalid"},
+				MetaFileContent: map[string]any{"versions": "invalid"},
 				ClassDefinition: ClassDefinition{},
 			},
 			Expected: setClassSupportedVersionsExpected{
@@ -1368,7 +1368,7 @@ func TestSetClassSupportedVersions(t *testing.T) {
 		{
 			Name: "test_error_invalid_version_in_range",
 			Input: setClassSupportedVersionsInput{
-				MetaFileContent: map[string]interface{}{"versions": "4.2(7f)-,invalid"},
+				MetaFileContent: map[string]any{"versions": "4.2(7f)-,invalid"},
 				ClassDefinition: ClassDefinition{},
 			},
 			Expected: setClassSupportedVersionsExpected{
@@ -1405,7 +1405,7 @@ func TestSetClassSupportedVersions(t *testing.T) {
 
 type setClassDeprecatedVersionsInput struct {
 	ClassDefinitionVersions string
-	MetaDeprecatedSince     interface{}
+	MetaDeprecatedSince     any
 }
 
 type setClassDeprecatedVersionsExpected struct {
@@ -1528,7 +1528,7 @@ func TestSetDeprecatedVersions(t *testing.T) {
 			input := testCase.Input.(setClassDeprecatedVersionsInput)
 			expected := testCase.Expected.(setClassDeprecatedVersionsExpected)
 
-			metaContent := map[string]interface{}{}
+			metaContent := map[string]any{}
 			if input.MetaDeprecatedSince != nil {
 				metaContent["deprecatedSince"] = input.MetaDeprecatedSince
 			}
@@ -1559,7 +1559,7 @@ func TestSetDeprecatedVersions(t *testing.T) {
 
 type setIdentifiedByInput struct {
 	ClassDefinitionIdentifiedBy []string
-	MetaIdentifiedBy            interface{}
+	MetaIdentifiedBy            any
 }
 
 func TestSetIdentifiedBy(t *testing.T) {
@@ -1571,7 +1571,7 @@ func TestSetIdentifiedBy(t *testing.T) {
 			Name: "test_identified_by_from_meta_file",
 			Input: setIdentifiedByInput{
 				ClassDefinitionIdentifiedBy: nil,
-				MetaIdentifiedBy:            []interface{}{"name"},
+				MetaIdentifiedBy:            []any{"name"},
 			},
 			Expected: []string{"name"},
 		},
@@ -1579,7 +1579,7 @@ func TestSetIdentifiedBy(t *testing.T) {
 			Name: "test_identified_by_from_meta_file_multiple",
 			Input: setIdentifiedByInput{
 				ClassDefinitionIdentifiedBy: nil,
-				MetaIdentifiedBy:            []interface{}{"key", "value"},
+				MetaIdentifiedBy:            []any{"key", "value"},
 			},
 			Expected: []string{"key", "value"},
 		},
@@ -1587,7 +1587,7 @@ func TestSetIdentifiedBy(t *testing.T) {
 			Name: "test_identified_by_from_meta_file_sorted",
 			Input: setIdentifiedByInput{
 				ClassDefinitionIdentifiedBy: nil,
-				MetaIdentifiedBy:            []interface{}{"value", "key"},
+				MetaIdentifiedBy:            []any{"value", "key"},
 			},
 			Expected: []string{"key", "value"},
 		},
@@ -1595,7 +1595,7 @@ func TestSetIdentifiedBy(t *testing.T) {
 			Name: "test_identified_by_from_meta_file_deduplicated",
 			Input: setIdentifiedByInput{
 				ClassDefinitionIdentifiedBy: nil,
-				MetaIdentifiedBy:            []interface{}{"name", "name"},
+				MetaIdentifiedBy:            []any{"name", "name"},
 			},
 			Expected: []string{"name"},
 		},
@@ -1603,7 +1603,7 @@ func TestSetIdentifiedBy(t *testing.T) {
 			Name: "test_class_definition_overrides_meta_file",
 			Input: setIdentifiedByInput{
 				ClassDefinitionIdentifiedBy: []string{"overrideKey"},
-				MetaIdentifiedBy:            []interface{}{"metaKey"},
+				MetaIdentifiedBy:            []any{"metaKey"},
 			},
 			Expected: []string{"overrideKey"},
 		},
@@ -1627,7 +1627,7 @@ func TestSetIdentifiedBy(t *testing.T) {
 			Name: "test_empty_class_definition_falls_back_to_meta",
 			Input: setIdentifiedByInput{
 				ClassDefinitionIdentifiedBy: []string{},
-				MetaIdentifiedBy:            []interface{}{"metaKey"},
+				MetaIdentifiedBy:            []any{"metaKey"},
 			},
 			Expected: []string{"metaKey"},
 		},
@@ -1643,7 +1643,7 @@ func TestSetIdentifiedBy(t *testing.T) {
 			Name: "test_empty_class_definition_and_empty_meta_returns_empty",
 			Input: setIdentifiedByInput{
 				ClassDefinitionIdentifiedBy: []string{},
-				MetaIdentifiedBy:            []interface{}{},
+				MetaIdentifiedBy:            []any{},
 			},
 			Expected: []string{},
 		},
@@ -1668,7 +1668,7 @@ func TestSetIdentifiedBy(t *testing.T) {
 				ClassDefinition: ClassDefinition{
 					IdentifiedBy: input.ClassDefinitionIdentifiedBy,
 				},
-				MetaFileContent: map[string]interface{}{},
+				MetaFileContent: map[string]any{},
 			}
 			if input.MetaIdentifiedBy != nil {
 				class.MetaFileContent["identifiedBy"] = input.MetaIdentifiedBy
@@ -1767,7 +1767,7 @@ func TestSetIsSingleNestedWhenDefinedAsChild(t *testing.T) {
 
 type setClassDeprecatedInput struct {
 	ClassDefinitionDeprecated bool
-	MetaIsDeprecated          interface{}
+	MetaIsDeprecated          any
 }
 
 func TestSetDeprecated(t *testing.T) {
@@ -1817,7 +1817,7 @@ func TestSetDeprecated(t *testing.T) {
 			t.Parallel()
 			input := testCase.Input.(setClassDeprecatedInput)
 
-			metaContent := map[string]interface{}{}
+			metaContent := map[string]any{}
 			if input.MetaIsDeprecated != nil {
 				metaContent["isDeprecated"] = input.MetaIsDeprecated
 			}
@@ -1839,7 +1839,7 @@ func TestSetDeprecated(t *testing.T) {
 
 type setClassHiddenInput struct {
 	ClassDefinitionHidden bool
-	MetaIsHidden          interface{}
+	MetaIsHidden          any
 }
 
 func TestSetHidden(t *testing.T) {
@@ -1889,7 +1889,7 @@ func TestSetHidden(t *testing.T) {
 			t.Parallel()
 			input := testCase.Input.(setClassHiddenInput)
 
-			metaContent := map[string]interface{}{}
+			metaContent := map[string]any{}
 			if input.MetaIsHidden != nil {
 				metaContent["isHidden"] = input.MetaIsHidden
 			}
@@ -1911,7 +1911,7 @@ func TestSetHidden(t *testing.T) {
 
 type setClassHiddenVersionsInput struct {
 	ClassDefinitionVersions string
-	MetaHiddenSince         interface{}
+	MetaHiddenSince         any
 }
 
 type setClassHiddenVersionsExpected struct {
@@ -2002,7 +2002,7 @@ func TestSetHiddenVersions(t *testing.T) {
 			input := testCase.Input.(setClassHiddenVersionsInput)
 			expected := testCase.Expected.(setClassHiddenVersionsExpected)
 
-			metaContent := map[string]interface{}{}
+			metaContent := map[string]any{}
 			if input.MetaHiddenSince != nil {
 				metaContent["hiddenSince"] = input.MetaHiddenSince
 			}
@@ -2033,7 +2033,7 @@ func TestSetHiddenVersions(t *testing.T) {
 
 type setPlatformTypeInput struct {
 	ClassDefinitionPlatformType string
-	PlatformFlavors             interface{}
+	PlatformFlavors             any
 }
 
 func TestSetPlatformType(t *testing.T) {
@@ -2045,7 +2045,7 @@ func TestSetPlatformType(t *testing.T) {
 			Name: "test_apic_only_from_meta",
 			Input: setPlatformTypeInput{
 				ClassDefinitionPlatformType: "",
-				PlatformFlavors:             []interface{}{"apic"},
+				PlatformFlavors:             []any{"apic"},
 			},
 			Expected: Apic,
 		},
@@ -2053,7 +2053,7 @@ func TestSetPlatformType(t *testing.T) {
 			Name: "test_cloud_only_from_meta",
 			Input: setPlatformTypeInput{
 				ClassDefinitionPlatformType: "",
-				PlatformFlavors:             []interface{}{"capic"},
+				PlatformFlavors:             []any{"capic"},
 			},
 			Expected: Cloud,
 		},
@@ -2061,7 +2061,7 @@ func TestSetPlatformType(t *testing.T) {
 			Name: "test_both_from_meta",
 			Input: setPlatformTypeInput{
 				ClassDefinitionPlatformType: "",
-				PlatformFlavors:             []interface{}{"apic", "capic"},
+				PlatformFlavors:             []any{"apic", "capic"},
 			},
 			Expected: Both,
 		},
@@ -2069,7 +2069,7 @@ func TestSetPlatformType(t *testing.T) {
 			Name: "test_both_from_meta_reverse_order",
 			Input: setPlatformTypeInput{
 				ClassDefinitionPlatformType: "",
-				PlatformFlavors:             []interface{}{"capic", "apic"},
+				PlatformFlavors:             []any{"capic", "apic"},
 			},
 			Expected: Both,
 		},
@@ -2077,7 +2077,7 @@ func TestSetPlatformType(t *testing.T) {
 			Name: "test_definition_overrides_meta_apic",
 			Input: setPlatformTypeInput{
 				ClassDefinitionPlatformType: "apic",
-				PlatformFlavors:             []interface{}{"capic"},
+				PlatformFlavors:             []any{"capic"},
 			},
 			Expected: Apic,
 		},
@@ -2085,7 +2085,7 @@ func TestSetPlatformType(t *testing.T) {
 			Name: "test_definition_overrides_meta_cloud",
 			Input: setPlatformTypeInput{
 				ClassDefinitionPlatformType: "cloud",
-				PlatformFlavors:             []interface{}{"apic"},
+				PlatformFlavors:             []any{"apic"},
 			},
 			Expected: Cloud,
 		},
@@ -2114,7 +2114,7 @@ func TestSetPlatformType(t *testing.T) {
 			Name: "test_empty_platform_flavors_defaults_to_apic",
 			Input: setPlatformTypeInput{
 				ClassDefinitionPlatformType: "",
-				PlatformFlavors:             []interface{}{},
+				PlatformFlavors:             []any{},
 			},
 			Expected: Apic,
 		},
@@ -2122,7 +2122,7 @@ func TestSetPlatformType(t *testing.T) {
 			Name: "test_unknown_flavor_defaults_to_apic",
 			Input: setPlatformTypeInput{
 				ClassDefinitionPlatformType: "",
-				PlatformFlavors:             []interface{}{"unknown"},
+				PlatformFlavors:             []any{"unknown"},
 			},
 			Expected: Apic,
 		},
@@ -2130,7 +2130,7 @@ func TestSetPlatformType(t *testing.T) {
 			Name: "test_unknown_flavor_with_apic",
 			Input: setPlatformTypeInput{
 				ClassDefinitionPlatformType: "",
-				PlatformFlavors:             []interface{}{"apic", "unknown"},
+				PlatformFlavors:             []any{"apic", "unknown"},
 			},
 			Expected: Apic,
 		},
@@ -2146,7 +2146,7 @@ func TestSetPlatformType(t *testing.T) {
 				ClassDefinition: ClassDefinition{
 					PlatformType: input.ClassDefinitionPlatformType,
 				},
-				MetaFileContent: map[string]interface{}{},
+				MetaFileContent: map[string]any{},
 			}
 			if input.PlatformFlavors != nil {
 				class.MetaFileContent["platformFlavors"] = input.PlatformFlavors
@@ -2174,8 +2174,8 @@ func TestSetPlatformTypeWarnsOnUnknownFlavor(t *testing.T) {
 
 	class := Class{
 		Name: testClassName("fvTenant"),
-		MetaFileContent: map[string]interface{}{
-			"platformFlavors": []interface{}{"unknownFlavor"},
+		MetaFileContent: map[string]any{
+			"platformFlavors": []any{"unknownFlavor"},
 		},
 	}
 
@@ -2223,7 +2223,7 @@ func TestSetRequiredAsChild(t *testing.T) {
 }
 
 type setRnFormatInput struct {
-	MetaFileContent map[string]interface{}
+	MetaFileContent map[string]any
 	ClassDefinition ClassDefinition
 }
 
@@ -2235,7 +2235,7 @@ func TestSetRnFormat(t *testing.T) {
 		{
 			Name: "test_rn_format_from_meta_file",
 			Input: setRnFormatInput{
-				MetaFileContent: map[string]interface{}{"rnFormat": "tn-{name}"},
+				MetaFileContent: map[string]any{"rnFormat": "tn-{name}"},
 				ClassDefinition: ClassDefinition{},
 			},
 			Expected: "tn-{name}",
@@ -2243,7 +2243,7 @@ func TestSetRnFormat(t *testing.T) {
 		{
 			Name: "test_rn_format_definition_override",
 			Input: setRnFormatInput{
-				MetaFileContent: map[string]interface{}{"rnFormat": "tn-{name}"},
+				MetaFileContent: map[string]any{"rnFormat": "tn-{name}"},
 				ClassDefinition: ClassDefinition{RnFormat: "custom-{name}"},
 			},
 			Expected: "custom-{name}",
@@ -2251,7 +2251,7 @@ func TestSetRnFormat(t *testing.T) {
 		{
 			Name: "test_rn_format_definition_override_without_meta",
 			Input: setRnFormatInput{
-				MetaFileContent: map[string]interface{}{},
+				MetaFileContent: map[string]any{},
 				ClassDefinition: ClassDefinition{RnFormat: "custom-{name}"},
 			},
 			Expected: "custom-{name}",
@@ -2259,7 +2259,7 @@ func TestSetRnFormat(t *testing.T) {
 		{
 			Name: "test_rn_prepend_with_meta_format",
 			Input: setRnFormatInput{
-				MetaFileContent: map[string]interface{}{"rnFormat": "sdifpol-{name}"},
+				MetaFileContent: map[string]any{"rnFormat": "sdifpol-{name}"},
 				ClassDefinition: ClassDefinition{RnPrepend: "infra"},
 			},
 			Expected: "infra/sdifpol-{name}",
@@ -2267,7 +2267,7 @@ func TestSetRnFormat(t *testing.T) {
 		{
 			Name: "test_rn_prepend_with_definition_override",
 			Input: setRnFormatInput{
-				MetaFileContent: map[string]interface{}{"rnFormat": "tn-{name}"},
+				MetaFileContent: map[string]any{"rnFormat": "tn-{name}"},
 				ClassDefinition: ClassDefinition{RnFormat: "custom-{name}", RnPrepend: "bar"},
 			},
 			Expected: "bar/custom-{name}",
@@ -2275,7 +2275,7 @@ func TestSetRnFormat(t *testing.T) {
 		{
 			Name: "test_rn_prepend_multi_segment",
 			Input: setRnFormatInput{
-				MetaFileContent: map[string]interface{}{"rnFormat": "instP-{name}"},
+				MetaFileContent: map[string]any{"rnFormat": "instP-{name}"},
 				ClassDefinition: ClassDefinition{RnPrepend: "tn-mgmt/extmgmt-default"},
 			},
 			Expected: "tn-mgmt/extmgmt-default/instP-{name}",
@@ -2306,7 +2306,7 @@ func TestSetRnFormatErrors(t *testing.T) {
 		{
 			Name: "test_error_no_rn_format_from_any_source",
 			Input: setRnFormatInput{
-				MetaFileContent: map[string]interface{}{},
+				MetaFileContent: map[string]any{},
 				ClassDefinition: ClassDefinition{},
 			},
 			Expected: "rnFormat not specified for class 'fvTenant': add rn_format to the class definition file",
@@ -2314,7 +2314,7 @@ func TestSetRnFormatErrors(t *testing.T) {
 		{
 			Name: "test_error_rn_prepend_only_without_rn_format",
 			Input: setRnFormatInput{
-				MetaFileContent: map[string]interface{}{},
+				MetaFileContent: map[string]any{},
 				ClassDefinition: ClassDefinition{RnPrepend: "infra"},
 			},
 			Expected: "rnFormat not specified for class 'fvTenant': add rn_format to the class definition file",
@@ -2337,7 +2337,7 @@ func TestSetRnFormatErrors(t *testing.T) {
 }
 
 type setPropertiesInput struct {
-	MetaFileContent      map[string]interface{}
+	MetaFileContent      map[string]any
 	ClassDefinition      ClassDefinition
 	GlobalMetaDefinition GlobalMetaDefinition
 }
@@ -2363,9 +2363,9 @@ func TestSetProperties(t *testing.T) {
 		{
 			Name: "test_configurable_naming_property_is_required",
 			Input: setPropertiesInput{
-				MetaFileContent: map[string]interface{}{
-					"properties": map[string]interface{}{
-						"name": map[string]interface{}{
+				MetaFileContent: map[string]any{
+					"properties": map[string]any{
+						"name": map[string]any{
 							"isConfigurable": true,
 							"isNaming":       true,
 						},
@@ -2391,9 +2391,9 @@ func TestSetProperties(t *testing.T) {
 		{
 			Name: "test_configurable_non_naming_property_is_optional",
 			Input: setPropertiesInput{
-				MetaFileContent: map[string]interface{}{
-					"properties": map[string]interface{}{
-						"nameAlias": map[string]interface{}{
+				MetaFileContent: map[string]any{
+					"properties": map[string]any{
+						"nameAlias": map[string]any{
 							"isConfigurable": true,
 							"isNaming":       false,
 						},
@@ -2419,9 +2419,9 @@ func TestSetProperties(t *testing.T) {
 		{
 			Name: "test_non_configurable_excluded_by_default",
 			Input: setPropertiesInput{
-				MetaFileContent: map[string]interface{}{
-					"properties": map[string]interface{}{
-						"pcTag": map[string]interface{}{
+				MetaFileContent: map[string]any{
+					"properties": map[string]any{
+						"pcTag": map[string]any{
 							"isConfigurable": false,
 							"isNaming":       false,
 						},
@@ -2439,9 +2439,9 @@ func TestSetProperties(t *testing.T) {
 		{
 			Name: "test_non_configurable_with_read_only_restriction",
 			Input: setPropertiesInput{
-				MetaFileContent: map[string]interface{}{
-					"properties": map[string]interface{}{
-						"pcTag": map[string]interface{}{
+				MetaFileContent: map[string]any{
+					"properties": map[string]any{
+						"pcTag": map[string]any{
 							"isConfigurable": false,
 							"isNaming":       false,
 						},
@@ -2471,9 +2471,9 @@ func TestSetProperties(t *testing.T) {
 		{
 			Name: "test_configurable_with_exclude_restriction",
 			Input: setPropertiesInput{
-				MetaFileContent: map[string]interface{}{
-					"properties": map[string]interface{}{
-						"annotation": map[string]interface{}{
+				MetaFileContent: map[string]any{
+					"properties": map[string]any{
+						"annotation": map[string]any{
 							"isConfigurable": true,
 							"isNaming":       false,
 						},
@@ -2495,9 +2495,9 @@ func TestSetProperties(t *testing.T) {
 		{
 			Name: "test_configurable_with_required_restriction_override",
 			Input: setPropertiesInput{
-				MetaFileContent: map[string]interface{}{
-					"properties": map[string]interface{}{
-						"value": map[string]interface{}{
+				MetaFileContent: map[string]any{
+					"properties": map[string]any{
+						"value": map[string]any{
 							"isConfigurable": true,
 							"isNaming":       false,
 						},
@@ -2527,9 +2527,9 @@ func TestSetProperties(t *testing.T) {
 		{
 			Name: "test_attribute_name_override",
 			Input: setPropertiesInput{
-				MetaFileContent: map[string]interface{}{
-					"properties": map[string]interface{}{
-						"pcEnfPref": map[string]interface{}{
+				MetaFileContent: map[string]any{
+					"properties": map[string]any{
+						"pcEnfPref": map[string]any{
 							"isConfigurable": true,
 							"isNaming":       false,
 						},
@@ -2559,9 +2559,9 @@ func TestSetProperties(t *testing.T) {
 		{
 			Name: "test_global_attribute_name_override",
 			Input: setPropertiesInput{
-				MetaFileContent: map[string]interface{}{
-					"properties": map[string]interface{}{
-						"descr": map[string]interface{}{
+				MetaFileContent: map[string]any{
+					"properties": map[string]any{
+						"descr": map[string]any{
 							"isConfigurable": true,
 							"isNaming":       false,
 						},
@@ -2592,25 +2592,25 @@ func TestSetProperties(t *testing.T) {
 		{
 			Name: "test_multiple_properties_sorted_alphabetically",
 			Input: setPropertiesInput{
-				MetaFileContent: map[string]interface{}{
-					"properties": map[string]interface{}{
-						"nameAlias": map[string]interface{}{
+				MetaFileContent: map[string]any{
+					"properties": map[string]any{
+						"nameAlias": map[string]any{
 							"isConfigurable": true,
 							"isNaming":       false,
 						},
-						"annotation": map[string]interface{}{
+						"annotation": map[string]any{
 							"isConfigurable": true,
 							"isNaming":       false,
 						},
-						"name": map[string]interface{}{
+						"name": map[string]any{
 							"isConfigurable": true,
 							"isNaming":       true,
 						},
-						"pcTag": map[string]interface{}{
+						"pcTag": map[string]any{
 							"isConfigurable": false,
 							"isNaming":       false,
 						},
-						"scope": map[string]interface{}{
+						"scope": map[string]any{
 							"isConfigurable": false,
 							"isNaming":       false,
 						},
@@ -2643,7 +2643,7 @@ func TestSetProperties(t *testing.T) {
 		{
 			Name: "test_empty_properties",
 			Input: setPropertiesInput{
-				MetaFileContent: map[string]interface{}{},
+				MetaFileContent: map[string]any{},
 				ClassDefinition: ClassDefinition{},
 			},
 			Expected: setPropertiesExpected{
@@ -2656,7 +2656,7 @@ func TestSetProperties(t *testing.T) {
 		{
 			Name: "test_no_properties_key_in_meta",
 			Input: setPropertiesInput{
-				MetaFileContent: map[string]interface{}{"label": "test"},
+				MetaFileContent: map[string]any{"label": "test"},
 				ClassDefinition: ClassDefinition{},
 			},
 			Expected: setPropertiesExpected{
@@ -2669,13 +2669,13 @@ func TestSetProperties(t *testing.T) {
 		{
 			Name: "test_global_exclude_property",
 			Input: setPropertiesInput{
-				MetaFileContent: map[string]interface{}{
-					"properties": map[string]interface{}{
-						"userdom": map[string]interface{}{
+				MetaFileContent: map[string]any{
+					"properties": map[string]any{
+						"userdom": map[string]any{
 							"isConfigurable": true,
 							"isNaming":       false,
 						},
-						"name": map[string]interface{}{
+						"name": map[string]any{
 							"isConfigurable": true,
 							"isNaming":       true,
 						},
@@ -2704,9 +2704,9 @@ func TestSetProperties(t *testing.T) {
 		{
 			Name: "test_global_exclude_overridden_by_class_definition",
 			Input: setPropertiesInput{
-				MetaFileContent: map[string]interface{}{
-					"properties": map[string]interface{}{
-						"userdom": map[string]interface{}{
+				MetaFileContent: map[string]any{
+					"properties": map[string]any{
+						"userdom": map[string]any{
 							"isConfigurable": true,
 							"isNaming":       false,
 						},

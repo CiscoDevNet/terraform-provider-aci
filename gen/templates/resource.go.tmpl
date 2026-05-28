@@ -630,7 +630,7 @@ func (r *{{.ResourceClassName}}Resource) UpgradeState(ctx context.Context) map[i
 	}
 }
 
-func set{{ .ResourceClassName }}LegacyAttributes(ctx context.Context, diags *diag.Diagnostics, data, staticData *{{.ResourceClassName}}ResourceModel, classReadInfo []interface{}) {
+func set{{ .ResourceClassName }}LegacyAttributes(ctx context.Context, diags *diag.Diagnostics, data, staticData *{{.ResourceClassName}}ResourceModel, classReadInfo []any) {
 	{{- if .HasParent}}
 	data.DeprecatedParentDn = data.ParentDn
 	{{- end}}
@@ -666,7 +666,7 @@ func set{{ .ResourceClassName }}LegacyAttributes(ctx context.Context, diags *dia
 		{{- end}}
 	{{- end}}
 	{{- if $changed}}
-	attributes := classReadInfo[0].(map[string]interface{})["attributes"].(map[string]interface{})
+	attributes := classReadInfo[0].(map[string]any)["attributes"].(map[string]any)
 	for attributeName, attributeValue := range attributes {
 		{{- range .LegacyAttributes}}{{- if and (ne .ReplacedBy.AttributeName "") (not (isSensitiveAttribute .AttributeName $.Properties)) }}
 			{{- if and (isNewAttributeStringType .ReplacedBy.AttributeName) (ne .Name "ParentDn")}}
@@ -709,12 +709,12 @@ func set{{ .ResourceClassName }}LegacyAttributes(ctx context.Context, diags *dia
 	{{- end }}
 	{{- if .LegacyChildren}}
 
-	_, ok := classReadInfo[0].(map[string]interface{})["children"]
+	_, ok := classReadInfo[0].(map[string]any)["children"]
 	if ok {
-		children := classReadInfo[0].(map[string]interface{})["children"].([]interface{})
+		children := classReadInfo[0].(map[string]any)["children"].([]any)
 		for _, child := range children {
-			for childClassName, childClassDetails := range child.(map[string]interface{}) {
-				childAttributes := childClassDetails.(map[string]interface{})["attributes"].(map[string]interface{})
+			for childClassName, childClassDetails := range child.(map[string]any) {
+				childAttributes := childClassDetails.(map[string]any)["attributes"].(map[string]any)
 				{{- range .Children}}
 					{{- if isLegacyChild .PkgName $.LegacyChildren}}{{$ResourceName := .ResourceName}}
 				{{- $childClassType := getValueFromMap .PkgName $.MigrationClassTypes}}
@@ -2101,9 +2101,9 @@ func getAndSet{{.ResourceClassName}}Attributes(ctx context.Context, diags *diag.
 		return
 	}
 	if requestData.Search("imdata").Search("{{.PkgName}}").Data() != nil {
-		classReadInfo := requestData.Search("imdata").Search("{{.PkgName}}").Data().([]interface{})
+		classReadInfo := requestData.Search("imdata").Search("{{.PkgName}}").Data().([]any)
 		if len(classReadInfo) == 1 {
-			attributes := classReadInfo[0].(map[string]interface{})["attributes"].(map[string]interface{})
+			attributes := classReadInfo[0].(map[string]any)["attributes"].(map[string]any)
 			for attributeName, attributeValue := range attributes {
 				if attributeName == "dn" {
 					readData.Id = basetypes.NewStringValue(attributeValue.(string))
@@ -2150,12 +2150,12 @@ func getAndSet{{.ResourceClassName}}Attributes(ctx context.Context, diags *diag.
 				{{- range .Children}}
 					{{- template "declareChildListsInGetandSetAttributesFunction" . }}
 				{{- end}}
-			_, ok := classReadInfo[0].(map[string]interface{})["children"]
+			_, ok := classReadInfo[0].(map[string]any)["children"]
 			if ok {
-				children := classReadInfo[0].(map[string]interface{})["children"].([]interface{})
+				children := classReadInfo[0].(map[string]any)["children"].([]any)
 				for _, child := range children {
-					for childClassName, childClassDetails := range child.(map[string]interface{}) {
-						childAttributes := childClassDetails.(map[string]interface{})["attributes"].(map[string]interface{})
+					for childClassName, childClassDetails := range child.(map[string]any) {
+						childAttributes := childClassDetails.(map[string]any)["attributes"].(map[string]any)
 						{{- range .Children}}
 						if childClassName == "{{ .PkgName }}" {
 							{{.ResourceClassName}}{{.ParentHierarchy}} := getEmpty{{.ResourceClassName}}{{.ParentHierarchy}}ResourceModel()
@@ -2224,10 +2224,10 @@ func getAndSet{{.ResourceClassName}}Attributes(ctx context.Context, diags *diag.
 										{{- range $children}}
 										{{ .ResourceClassName }}{{.ParentHierarchy}}List := make([]{{.ResourceClassName}}{{.ParentHierarchy}}ResourceModel, 0)
 										{{- end}}
-										childrenOf{{.ParentHierarchy}}, childrenOf{{.ParentHierarchy}}Exist:= childClassDetails.(map[string]interface{})["children"]
+										childrenOf{{.ParentHierarchy}}, childrenOf{{.ParentHierarchy}}Exist:= childClassDetails.(map[string]any)["children"]
 										if childrenOf{{.ParentHierarchy}}Exist {
-										for _, child{{.ParentHierarchy}} := range childrenOf{{.ParentHierarchy}}.([]interface{}) {
-											for childClassName{{.ParentHierarchy}}, childClassDetails{{.ParentHierarchy}} := range child{{.ParentHierarchy}}.(map[string]interface{}) {
+										for _, child{{.ParentHierarchy}} := range childrenOf{{.ParentHierarchy}}.([]any) {
+											for childClassName{{.ParentHierarchy}}, childClassDetails{{.ParentHierarchy}} := range child{{.ParentHierarchy}}.(map[string]any) {
 									{{- end}}
 								    {{- template "getAndSetGrandChildren" . }}
 								{{- end }}
@@ -2363,8 +2363,8 @@ func set{{.ResourceClassName}}Id(ctx context.Context, data *{{.ResourceClassName
 
 {{ range .Children}}
 {{- $child:= .}}
-func get{{$.ResourceClassName}}{{ .ResourceClassName }}ChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *{{$.ResourceClassName}}ResourceModel, {{.PkgName}}{{.ParentHierarchy}}Plan, {{.PkgName}}{{.ParentHierarchy}}State {{if not ( or (not .IdentifiedBy) .MaxOneClassAllowed)}}[]{{end}}{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel) []map[string]interface{} {
-	childPayloads := []map[string]interface{}{}
+func get{{$.ResourceClassName}}{{ .ResourceClassName }}ChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *{{$.ResourceClassName}}ResourceModel, {{.PkgName}}{{.ParentHierarchy}}Plan, {{.PkgName}}{{.ParentHierarchy}}State {{if not ( or (not .IdentifiedBy) .MaxOneClassAllowed)}}[]{{end}}{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel) []map[string]any {
+	childPayloads := []map[string]any{}
 	{{- $enteredGrandChildDeclarationZone := false }}
 	if !data.{{.ResourceClassName}}.IsNull() && !data.{{.ResourceClassName}}.IsUnknown() {
         {{- if and (and .IdentifiedBy (not (and .MaxOneClassAllowed (hasPrefix .RnFormat  "rs")))) (not (or (not .IdentifiedBy) .MaxOneClassAllowed))}}
@@ -2375,7 +2375,7 @@ func get{{$.ResourceClassName}}{{ .ResourceClassName }}ChildPayloads(ctx context
 			{{- $enteredGrandChildDeclarationZone = true }}
 			{{- template "grandChildDeclarationInChildPayloadFunction" . }}
     	{{- end}}
-		{{.ResourceClassName}}{{.ParentHierarchy}}Children := make([]map[string]interface{}, 0)
+		{{.ResourceClassName}}{{.ParentHierarchy}}Children := make([]map[string]any, 0)
 		childMap := NewAciObject()
 		if !IsEmptySingleNestedAttribute(data.{{ .ResourceClassName }}.Attributes()) {
 			{{- range .Properties}}
@@ -2405,7 +2405,7 @@ func get{{$.ResourceClassName}}{{ .ResourceClassName }}ChildPayloads(ctx context
 		{{- end}}
 		{{- end}}
 			{{- if not .AllowDelete}}
-		childPayloads = append(childPayloads, map[string]interface{}{"{{ .PkgName }}": childMap})
+		childPayloads = append(childPayloads, map[string]any{"{{ .PkgName }}": childMap})
 			{{- end}}
 		}{{- if .AllowDelete}} else {
 			{{- range .Properties}}
@@ -2415,7 +2415,7 @@ func get{{$.ResourceClassName}}{{ .ResourceClassName }}ChildPayloads(ctx context
 			{{- end}}
 			childMap.Attributes["status"] = "deleted"
 		}
-		childPayloads = append(childPayloads, map[string]interface{}{"{{ .PkgName }}": childMap})
+		childPayloads = append(childPayloads, map[string]any{"{{ .PkgName }}": childMap})
 		{{- end}}
 		{{- else}}
 	for _, {{ .PkgName }}{{.ParentHierarchy}} := range {{ .PkgName }}{{.ParentHierarchy}}Plan {
@@ -2425,7 +2425,7 @@ func get{{$.ResourceClassName}}{{ .ResourceClassName }}ChildPayloads(ctx context
 			{{- end}}
 			{{- if $enteredGrandChildDeclarationZone }}
 			{{- $enteredGrandChildDeclarationZone = false }}
-			{{.ResourceClassName}}{{.ParentHierarchy}}Children := make([]map[string]interface{}, 0)
+			{{.ResourceClassName}}{{.ParentHierarchy}}Children := make([]map[string]any, 0)
 			{{- end}}
 			childMap := NewAciObject()
             {{- range .Properties}}
@@ -2455,7 +2455,7 @@ func get{{$.ResourceClassName}}{{ .ResourceClassName }}ChildPayloads(ctx context
 		childMap.Children = {{.ParentHierarchy}}Children
 		{{- end}}
 		{{- end}}
-		childPayloads = append(childPayloads, map[string]interface{}{"{{ .PkgName }}": childMap})
+		childPayloads = append(childPayloads, map[string]any{"{{ .PkgName }}": childMap})
 		{{- if and .IdentifiedBy (not (and .MaxOneClassAllowed (hasPrefix .RnFormat  "rs")))}}
 			{{ .PkgName }}Identifier := {{ .ResourceClassName }}Identifier{}
 					{{- range .Properties}}
@@ -2496,7 +2496,7 @@ func get{{$.ResourceClassName}}{{ .ResourceClassName }}ChildPayloads(ctx context
 				{{.PkgName}}{{$.ParentHierarchy}}ChildMapForDelete.Attributes["{{.PropertyName}}"] = {{ .PkgName }}.{{- if eq .Name "Id"}}{{.ResourceClassName}}{{ .Name }}{{- else}}{{.Name}}{{- end}}.ValueString()
 				{{- end}}
 			{{- end}}
-				childPayloads = append(childPayloads, map[string]interface{}{"{{ .PkgName }}": {{.PkgName}}{{$.ParentHierarchy}}ChildMapForDelete})
+				childPayloads = append(childPayloads, map[string]any{"{{ .PkgName }}": {{.PkgName}}{{$.ParentHierarchy}}ChildMapForDelete})
 			}
 		}
 		{{- else}}
@@ -2512,7 +2512,7 @@ func get{{$.ResourceClassName}}{{ .ResourceClassName }}ChildPayloads(ctx context
 								{{- end}}
 							{{- end}}
 						{{- end}}
-			childPayloads = append(childPayloads, map[string]interface{}{"{{ .PkgName }}": {{.PkgName}}{{.ParentHierarchy}}ChildMapForDelete})
+			childPayloads = append(childPayloads, map[string]any{"{{ .PkgName }}": {{.PkgName}}{{.ParentHierarchy}}ChildMapForDelete})
 			{{- else}}
 			diags.AddError(
 				"{{ .ResourceClassName }} object defined by {{.ResourceName}} cannot be deleted",
@@ -2538,7 +2538,7 @@ func get{{$.ResourceClassName}}{{ .ResourceClassName }}ChildPayloads(ctx context
 {{ end}}
 
 func get{{.ResourceClassName}}CreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *{{.ResourceClassName}}ResourceModel{{- range .Children}}, {{.PkgName}}Plan, {{.PkgName}}State {{if not ( or (not .IdentifiedBy) .MaxOneClassAllowed)}}[]{{end}}{{.ResourceClassName}}{{$.ResourceClassName}}ResourceModel{{- end}}) *container.Container {
-	payloadMap := map[string]interface{}{}
+	payloadMap := map[string]any{}
 	payloadMap["attributes"] = map[string]string{}
 
 	if createType && !globalAllowExistingOnCreate {
@@ -2546,7 +2546,7 @@ func get{{.ResourceClassName}}CreateJsonPayload(ctx context.Context, diags *diag
 	}
 
 	{{- if .HasChild}}
-	childPayloads := []map[string]interface{}{}
+	childPayloads := []map[string]any{}
 		{{ range .Children}}
 	{{ .ResourceClassName }}childPayloads := get{{$.ResourceClassName}}{{ .ResourceClassName }}ChildPayloads(ctx, diags, data, {{.PkgName}}Plan, {{.PkgName}}State)
 	if {{ .ResourceClassName }}childPayloads == nil {
@@ -2582,21 +2582,21 @@ func get{{.ResourceClassName}}CreateJsonPayload(ctx context.Context, diags *diag
     var err error
     for rnPrepend, wrapperClass := range wrapperClassMap {
         if strings.Contains(data.Id.ValueString(), rnPrepend) && wrapperClass != "" && createType {
-            wrapperPayloadMap := map[string]interface{}{
-                wrapperClass: map[string]interface{}{
-                    "attributes": map[string]interface{}{},
-                    "children":   []interface{}{map[string]interface{}{"{{ .PkgName }}": payloadMap}},
+            wrapperPayloadMap := map[string]any{
+                wrapperClass: map[string]any{
+                    "attributes": map[string]any{},
+                    "children":   []any{map[string]any{"{{ .PkgName }}": payloadMap}},
                 },
             }
             payload, err = json.Marshal(wrapperPayloadMap)
 			break
         } else if (strings.Contains(data.Id.ValueString(), rnPrepend) && wrapperClass == "") || !createType {
-            payload, err = json.Marshal(map[string]interface{}{"{{ .PkgName }}": payloadMap})
+            payload, err = json.Marshal(map[string]any{"{{ .PkgName }}": payloadMap})
 			break
         }
     }
 	{{- else }}
-	payload, err := json.Marshal(map[string]interface{}{"{{.PkgName}}": payloadMap})
+	payload, err := json.Marshal(map[string]any{"{{.PkgName}}": payloadMap})
 	{{- end}}
 	if err != nil {
 		diags.AddError(
@@ -3053,11 +3053,11 @@ if !{{ .ParentHierarchy | decapitalize}}Plan.{{.ResourceClassName}}.IsNull() && 
 	{{$.PkgName}}{{$.ParentHierarchy}}ChildMap.Children = {{.ParentHierarchy}}Children
 		{{- end}}
 	{{- end}}
-	{{ .ParentHierarchy }}Children = append({{ .ParentHierarchy }}Children, map[string]interface{}{"{{.PkgName}}": {{.PkgName}}{{$.ParentHierarchy}}ChildMap})
+	{{ .ParentHierarchy }}Children = append({{ .ParentHierarchy }}Children, map[string]any{"{{.PkgName}}": {{.PkgName}}{{$.ParentHierarchy}}ChildMap})
 		{{- else}}
 for _, {{ .PkgName }}{{.ParentHierarchy}} := range {{.PkgName}}{{.ParentHierarchy}}Plan {
 	{{- if .Children}}
-	{{capitalize .PkgName}}{{.ParentHierarchy}}Children = make([]map[string]interface{}, 0)
+	{{capitalize .PkgName}}{{.ParentHierarchy}}Children = make([]map[string]any, 0)
 	{{- end}}
 	{{.PkgName}}{{.ParentHierarchy}}ChildMap := NewAciObject()
 	{{- range .Properties}}
@@ -3087,7 +3087,7 @@ for _, {{ .PkgName }}{{.ParentHierarchy}} := range {{.PkgName}}{{.ParentHierarch
 	{{$.PkgName}}{{$.ParentHierarchy}}ChildMap.Children = {{.ParentHierarchy}}Children
 		{{- end}}
 	{{- end}}
-	{{ .ParentHierarchy }}Children = append({{ .ParentHierarchy }}Children, map[string]interface{}{"{{.PkgName}}": {{.PkgName}}{{$.ParentHierarchy}}ChildMap})
+	{{ .ParentHierarchy }}Children = append({{ .ParentHierarchy }}Children, map[string]any{"{{.PkgName}}": {{.PkgName}}{{$.ParentHierarchy}}ChildMap})
 	{{- if .IdentifiedBy}}
 	{{ .PkgName }}Identifier := {{ .ResourceClassName }}Identifier{}
 		{{- range .Properties}}
@@ -3121,7 +3121,7 @@ for _, {{ .PkgName }}{{.ParentHierarchy}} := range {{.PkgName}}{{.ParentHierarch
 		{{.PkgName}}{{$.ParentHierarchy}}ChildMapForDelete.Attributes["{{.PropertyName}}"] = {{ .PkgName }}{{$grandChild.ParentHierarchy}}.{{- if eq .Name "Id"}}{{.ResourceClassName}}{{ .Name }}{{- else}}{{.Name}}{{- end}}.ValueString()
 		{{- end}}
 	{{- end}}
-		{{ .ParentHierarchy }}Children = append({{ .ParentHierarchy }}Children, map[string]interface{}{"{{ .PkgName }}": {{.PkgName}}{{$.ParentHierarchy}}ChildMapForDelete})
+		{{ .ParentHierarchy }}Children = append({{ .ParentHierarchy }}Children, map[string]any{"{{ .PkgName }}": {{.PkgName}}{{$.ParentHierarchy}}ChildMapForDelete})
 			}
 		}
 	}
@@ -3138,7 +3138,7 @@ for _, {{ .PkgName }}{{.ParentHierarchy}} := range {{.PkgName}}{{.ParentHierarch
 								{{- end}}
 							{{- end}}
 						{{- end}}
-			{{ .ParentHierarchy }}Children = append({{ .ParentHierarchy }}Children, map[string]interface{}{"{{.PkgName}}": {{.PkgName}}{{.ParentHierarchy}}ChildMapForDelete})
+			{{ .ParentHierarchy }}Children = append({{ .ParentHierarchy }}Children, map[string]any{"{{.PkgName}}": {{.PkgName}}{{.ParentHierarchy}}ChildMapForDelete})
 			{{- else}}
 			diags.AddError(
 				"{{ .ResourceClassName }} object defined by {{.ResourceName}} cannot be deleted",
@@ -3170,7 +3170,7 @@ for _, {{ .PkgName }}{{.ParentHierarchy}} := range {{.PkgName}}{{.ParentHierarch
 {{- define "getAndSetGrandChildren" }}
 if childClassName{{.ParentHierarchy}} == "{{.PkgName}}"{
 {{.ResourceClassName}}{{.ParentHierarchy}} := getEmpty{{ .ResourceClassName}}{{.ParentHierarchy}}ResourceModel()
-{{.PkgName}}childAttributeValue:= childClassDetails{{.ParentHierarchy}}.(map[string]interface{})["attributes"].(map[string]interface{})
+{{.PkgName}}childAttributeValue:= childClassDetails{{.ParentHierarchy}}.(map[string]any)["attributes"].(map[string]any)
 for childAttributeName, childAttributeValue := range {{.PkgName}}childAttributeValue {
 	{{- range .Properties}}
 		{{- if eq .ValueType "bitmask"}}
@@ -3221,10 +3221,10 @@ for childAttributeName, childAttributeValue := range {{.PkgName}}childAttributeV
 			{{- range $children}}
 			{{ .ResourceClassName }}{{.ParentHierarchy}}List := make([]{{.ResourceClassName}}{{.ParentHierarchy}}ResourceModel, 0)
 			{{- end}}
-			childrenOf{{.ParentHierarchy}}, childrenOf{{.ParentHierarchy}}Exist:= childClassDetails{{$.ParentHierarchy}}.(map[string]interface{})["children"]
+			childrenOf{{.ParentHierarchy}}, childrenOf{{.ParentHierarchy}}Exist:= childClassDetails{{$.ParentHierarchy}}.(map[string]any)["children"]
 			if childrenOf{{.ParentHierarchy}}Exist {
-				for _, child{{.ParentHierarchy}} := range childrenOf{{.ParentHierarchy}}.([]interface{}) {
-					for childClassName{{.ParentHierarchy}}, childClassDetails{{.ParentHierarchy}} := range child{{.ParentHierarchy}}.(map[string]interface{}) {
+				for _, child{{.ParentHierarchy}} := range childrenOf{{.ParentHierarchy}}.([]any) {
+					for childClassName{{.ParentHierarchy}}, childClassDetails{{.ParentHierarchy}} := range child{{.ParentHierarchy}}.(map[string]any) {
 		{{- end}}
 		{{- template "getAndSetGrandChildren" . }}
 	{{- end }}
@@ -3264,7 +3264,7 @@ for childAttributeName, childAttributeValue := range {{.PkgName}}childAttributeV
 {{- range .Children}}
 	{{- if $enteredGrandChildDeclarationZone }}
 		{{- $enteredGrandChildDeclarationZone = false }}
-{{.ParentHierarchy}}Children := make([]map[string]interface{}, 0)
+{{.ParentHierarchy}}Children := make([]map[string]any, 0)
 	{{- end}}
 {{- end}}
 {{- end}}

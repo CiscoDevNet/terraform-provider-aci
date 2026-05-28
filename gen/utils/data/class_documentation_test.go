@@ -466,7 +466,7 @@ func TestSetWarnings(t *testing.T) {
 }
 
 type setDocumentationChildrenInput struct {
-	RnMap                      map[string]interface{}
+	RnMap                      map[string]any
 	ChildrenIncludedInResource []string
 	StoreClasses               map[string]Class
 }
@@ -488,7 +488,7 @@ func TestSetDocumentationChildren(t *testing.T) {
 		{
 			Name: "test_child_included_in_resource_excluded",
 			Input: setDocumentationChildrenInput{
-				RnMap: map[string]interface{}{
+				RnMap: map[string]any{
 					"rstoEpg": "fv:RsToEpg",
 				},
 				ChildrenIncludedInResource: []string{"fvRsToEpg"},
@@ -501,7 +501,7 @@ func TestSetDocumentationChildren(t *testing.T) {
 		{
 			Name: "test_unknown_child_excluded",
 			Input: setDocumentationChildrenInput{
-				RnMap: map[string]interface{}{
+				RnMap: map[string]any{
 					"unknown-{name}": "foo:Bar",
 				},
 				StoreClasses: map[string]Class{},
@@ -511,7 +511,7 @@ func TestSetDocumentationChildren(t *testing.T) {
 		{
 			Name: "test_child_without_resource_name_excluded",
 			Input: setDocumentationChildrenInput{
-				RnMap: map[string]interface{}{
+				RnMap: map[string]any{
 					"noresource-{name}": "foo:NoResource",
 				},
 				StoreClasses: map[string]Class{
@@ -523,7 +523,7 @@ func TestSetDocumentationChildren(t *testing.T) {
 		{
 			Name: "test_two_valid_children_sorted",
 			Input: setDocumentationChildrenInput{
-				RnMap: map[string]interface{}{
+				RnMap: map[string]any{
 					"zeta-{name}":  "fv:Zeta",
 					"alpha-{name}": "fv:Alpha",
 				},
@@ -540,7 +540,7 @@ func TestSetDocumentationChildren(t *testing.T) {
 		{
 			Name: "test_mixed_included_in_resource_and_valid",
 			Input: setDocumentationChildrenInput{
-				RnMap: map[string]interface{}{
+				RnMap: map[string]any{
 					"included-{name}": "fv:Included",
 					"valid-{name}":    "fv:Valid",
 					"missing-{name}":  "fv:Missing",
@@ -573,7 +573,7 @@ func TestSetDocumentationChildren(t *testing.T) {
 				Children: childrenIncludedInResource,
 			}
 			if input.RnMap != nil {
-				class.MetaFileContent = map[string]interface{}{"rnMap": input.RnMap}
+				class.MetaFileContent = map[string]any{"rnMap": input.RnMap}
 			}
 
 			ds := &DataStore{Classes: input.StoreClasses}
@@ -868,7 +868,7 @@ func TestSetDescription(t *testing.T) {
 }
 
 type setDnFormatsInput struct {
-	MetaFormats     []interface{}
+	MetaFormats     []any
 	OverrideFormats []string
 }
 
@@ -887,14 +887,14 @@ func TestSetDnFormats(t *testing.T) {
 		{
 			Name: "test_meta_single",
 			Input: setDnFormatsInput{
-				MetaFormats: []interface{}{"uni/tn-{name}/ap-{name}/epg-{name}"},
+				MetaFormats: []any{"uni/tn-{name}/ap-{name}/epg-{name}"},
 			},
 			Expected: []string{"uni/tn-{name}/ap-{name}/epg-{name}"},
 		},
 		{
 			Name: "test_meta_multiple_sorted",
 			Input: setDnFormatsInput{
-				MetaFormats: []interface{}{
+				MetaFormats: []any{
 					"uni/tn-{name}/certstore/keyring-{name}",
 					"uni/userext/pkiext/keyring-{name}",
 				},
@@ -907,14 +907,14 @@ func TestSetDnFormats(t *testing.T) {
 		{
 			Name: "test_meta_unsorted_input_is_sorted",
 			Input: setDnFormatsInput{
-				MetaFormats: []interface{}{"b/{name}", "a/{name}", "c/{name}"},
+				MetaFormats: []any{"b/{name}", "a/{name}", "c/{name}"},
 			},
 			Expected: []string{"a/{name}", "b/{name}", "c/{name}"},
 		},
 		{
 			Name: "test_override_replaces_meta",
 			Input: setDnFormatsInput{
-				MetaFormats:     []interface{}{"meta/{name}"},
+				MetaFormats:     []any{"meta/{name}"},
 				OverrideFormats: []string{"override/{name}"},
 			},
 			Expected: []string{"override/{name}"},
@@ -929,14 +929,14 @@ func TestSetDnFormats(t *testing.T) {
 		{
 			Name: "test_at_cap_no_notice",
 			Input: setDnFormatsInput{
-				MetaFormats: []interface{}{"e/{name}", "d/{name}", "c/{name}", "b/{name}", "a/{name}"},
+				MetaFormats: []any{"e/{name}", "d/{name}", "c/{name}", "b/{name}", "a/{name}"},
 			},
 			Expected: []string{"a/{name}", "b/{name}", "c/{name}", "d/{name}", "e/{name}"},
 		},
 		{
 			Name: "test_over_cap_prepends_notice_and_truncates",
 			Input: setDnFormatsInput{
-				MetaFormats: []interface{}{"f/{name}", "e/{name}", "d/{name}", "c/{name}", "b/{name}", "a/{name}"},
+				MetaFormats: []any{"f/{name}", "e/{name}", "d/{name}", "c/{name}", "b/{name}", "a/{name}"},
 			},
 			Expected: []string{
 				tooManyNotice,
@@ -946,7 +946,7 @@ func TestSetDnFormats(t *testing.T) {
 		{
 			Name: "test_meta_non_string_entries_skipped",
 			Input: setDnFormatsInput{
-				MetaFormats: []interface{}{"a/{name}", 42, "b/{name}"},
+				MetaFormats: []any{"a/{name}", 42, "b/{name}"},
 			},
 			Expected: []string{"a/{name}", "b/{name}"},
 		},
@@ -965,7 +965,7 @@ func TestSetDnFormats(t *testing.T) {
 				},
 			}
 			if input.MetaFormats != nil {
-				class.MetaFileContent = map[string]interface{}{"dnFormats": input.MetaFormats}
+				class.MetaFileContent = map[string]any{"dnFormats": input.MetaFormats}
 			}
 
 			class.Documentation.setClassName(&class)
