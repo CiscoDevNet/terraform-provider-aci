@@ -329,7 +329,7 @@ func TestSetRelation(t *testing.T) {
 				MetaFileContent: map[string]any{},
 				ClassDefinition: ClassDefinition{
 					RelationInfo: RelationInfoDefinition{
-						Type:      "explicit",
+						Type:      Explicit,
 						FromClass: "fv:AEPg",
 						ToClasses: []string{"vz:BrCP"},
 					},
@@ -350,7 +350,7 @@ func TestSetRelation(t *testing.T) {
 				MetaFileContent: map[string]any{},
 				ClassDefinition: ClassDefinition{
 					RelationInfo: RelationInfoDefinition{
-						Type:      "named",
+						Type:      Named,
 						FromClass: "fv:AEPg",
 					},
 				},
@@ -374,7 +374,7 @@ func TestSetRelation(t *testing.T) {
 			},
 			Expected: setRelationExpected{
 				Error:    true,
-				ErrorMsg: "undefined relationship type",
+				ErrorMsg: `unknown relationship type "undefinedType"`,
 			},
 		},
 		{
@@ -408,7 +408,7 @@ func TestSetRelation(t *testing.T) {
 				ClassDefinition: ClassDefinition{
 					RelationInfo: RelationInfoDefinition{
 						Disabled:  true,
-						Type:      "named",
+						Type:      Named,
 						FromClass: "fv:EPg",
 						ToClasses: []string{"vz:BrCP"},
 					},
@@ -1053,7 +1053,7 @@ func TestSetParents(t *testing.T) {
 				},
 			}
 
-			err := class.setParents()
+			err := class.setParents(&DataStore{})
 			assert.NoError(t, err, test.MessageUnexpectedError(err))
 
 			if len(expected) == 0 {
@@ -1089,13 +1089,173 @@ func TestSetParentsWarnsWhenClassInBothIncludeAndExclude(t *testing.T) {
 		},
 	}
 
-	err := class.setParents()
+	err := class.setParents(&DataStore{})
 	assert.NoError(t, err, test.MessageUnexpectedError(err))
 
 	// Verify the warning was logged.
 	logOutput := logBuffer.String()
 	expectedWarning := "WARN: Parent class 'fvTenant' is defined in both IncludeParents and ExcludeParents for class 'testClass'. IncludeParents takes precedence."
 	assert.Contains(t, logOutput, expectedWarning, test.MessageEqual(expectedWarning, logOutput, "warning log message"))
+}
+
+func TestSetParentsGlobalExcludeParents(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	testCases := []test.TestCase{
+		{
+			Name: "test_global_exclude_filters_containedBy_class",
+			Input: setParentsInput{
+				IncludeParents: []string{},
+				ExcludeParents: []string{},
+				ContainedBy: map[string]any{
+					"pol:Uni": "",
+					"fv:AEPg": "",
+				},
+			},
+			Expected: []string{"fvAEPg"},
+		},
+		{
+			Name: "test_global_exclude_filters_multiple_classes",
+			Input: setParentsInput{
+				IncludeParents: []string{},
+				ExcludeParents: []string{},
+				ContainedBy: map[string]any{
+					"pol:Uni":     "",
+					"fabric:Inst": "",
+					"fv:Tenant":   "",
+				},
+			},
+			Expected: []string{"fvTenant"},
+		},
+		{
+			Name: "test_global_exclude_does_not_affect_includeParents",
+			Input: setParentsInput{
+				IncludeParents: []string{"polUni"},
+				ExcludeParents: []string{},
+				ContainedBy:    map[string]any{},
+			},
+			Expected: []string{"polUni"},
+		},
+		{
+			Name: "test_global_and_class_exclude_combined",
+			Input: setParentsInput{
+				IncludeParents: []string{},
+				ExcludeParents: []string{"fvAEPg"},
+				ContainedBy: map[string]any{
+					"pol:Uni": "",
+					"fv:AEPg": "",
+					"fv:BD":   "",
+				},
+			},
+			Expected: []string{"fvBD"},
+		},
+		{
+			Name: "test_global_exclude_all_containedBy_returns_empty",
+			Input: setParentsInput{
+				IncludeParents: []string{},
+				ExcludeParents: []string{},
+				ContainedBy: map[string]any{
+					"pol:Uni":     "",
+					"fabric:Inst": "",
+				},
+			},
+			Expected: []string{},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.(setParentsInput)
+			expected := testCase.Expected.([]string)
+
+			class := &Class{
+				Name: testClassName("testClass"),
+				ClassDefinition: ClassDefinition{
+					IncludeParents: input.IncludeParents,
+					ExcludeParents: input.ExcludeParents,
+				},
+				MetaFileContent: map[string]any{
+					"containedBy": input.ContainedBy,
+				},
+			}
+
+			ds := &DataStore{
+				GlobalMetaDefinition: GlobalMetaDefinition{
+					ExcludeParents: []string{"polUni", "fabricInst"},
+				},
+			}
+
+			err := class.setParents(ds)
+			assert.NoError(t, err, test.MessageUnexpectedError(err))
+
+			if len(expected) == 0 {
+				assert.Empty(t, class.Parents, test.MessageEqual(expected, class.Parents, testCase.Name))
+			} else {
+				assert.Equal(t, expected, classNamesToStrings(class.Parents), test.MessageEqual(expected, class.Parents, testCase.Name))
+			}
+		})
+	}
+}
+
+func TestSetParentsExcludeParents(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	testCases := []test.TestCase{
+		{
+			Name: "test_empty_exclude_lists_preserve_full_containedBy",
+			Input: setParentsInput{
+				IncludeParents: []string{},
+				ExcludeParents: []string{},
+				ContainedBy: map[string]any{
+					"fv:Tenant": "",
+					"fv:AEPg":   "",
+				},
+			},
+			Expected: []string{"fvAEPg", "fvTenant"},
+		},
+		{
+			Name: "test_excluded_entry_not_in_containedBy_is_noop",
+			Input: setParentsInput{
+				IncludeParents: []string{},
+				ExcludeParents: []string{"fvCtx"},
+				ContainedBy: map[string]any{
+					"fv:Tenant": "",
+				},
+			},
+			Expected: []string{"fvTenant"},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.(setParentsInput)
+			expected := testCase.Expected.([]string)
+
+			class := &Class{
+				Name: testClassName("testClass"),
+				ClassDefinition: ClassDefinition{
+					IncludeParents: input.IncludeParents,
+					ExcludeParents: input.ExcludeParents,
+				},
+				MetaFileContent: map[string]any{
+					"containedBy": input.ContainedBy,
+				},
+			}
+
+			err := class.setParents(&DataStore{})
+			assert.NoError(t, err, test.MessageUnexpectedError(err))
+
+			if len(expected) == 0 {
+				assert.Empty(t, class.Parents, test.MessageEqual(expected, class.Parents, testCase.Name))
+			} else {
+				assert.Equal(t, expected, classNamesToStrings(class.Parents), test.MessageEqual(expected, class.Parents, testCase.Name))
+			}
+		})
+	}
 }
 
 type setParentsErrorExpected struct {
@@ -1161,7 +1321,7 @@ func TestSetParentsErrors(t *testing.T) {
 				},
 			}
 
-			err := class.setParents()
+			err := class.setParents(&DataStore{})
 			assert.EqualError(t, err, expected.ErrorMsg)
 		})
 	}
@@ -2449,7 +2609,7 @@ func TestSetProperties(t *testing.T) {
 				},
 				ClassDefinition: ClassDefinition{
 					Properties: map[string]PropertyDefinition{
-						"pcTag": {Restriction: "read_only"},
+						"pcTag": {Restriction: ReadOnly},
 					},
 				},
 			},
@@ -2481,7 +2641,7 @@ func TestSetProperties(t *testing.T) {
 				},
 				ClassDefinition: ClassDefinition{
 					Properties: map[string]PropertyDefinition{
-						"annotation": {Restriction: "exclude"},
+						"annotation": {Restriction: Exclude},
 					},
 				},
 			},
@@ -2505,7 +2665,7 @@ func TestSetProperties(t *testing.T) {
 				},
 				ClassDefinition: ClassDefinition{
 					Properties: map[string]PropertyDefinition{
-						"value": {Restriction: "required"},
+						"value": {Restriction: Required},
 					},
 				},
 			},
@@ -2618,7 +2778,7 @@ func TestSetProperties(t *testing.T) {
 				},
 				ClassDefinition: ClassDefinition{
 					Properties: map[string]PropertyDefinition{
-						"scope": {Restriction: "read_only"},
+						"scope": {Restriction: ReadOnly},
 					},
 				},
 			},
@@ -2714,7 +2874,7 @@ func TestSetProperties(t *testing.T) {
 				},
 				ClassDefinition: ClassDefinition{
 					Properties: map[string]PropertyDefinition{
-						"userdom": {Restriction: "optional"},
+						"userdom": {Restriction: Optional},
 					},
 				},
 				GlobalMetaDefinition: GlobalMetaDefinition{
