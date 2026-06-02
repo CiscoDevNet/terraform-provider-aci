@@ -43,6 +43,9 @@ type Property struct {
 	// Indicates if the property is required in the resource and datasource schemas.
 	// Exposed as a separate bool because it directly maps to a Terraform schema construct, which makes templating easier.
 	Required bool
+	// Indicates if changing the property forces resource replacement (destroy + recreate).
+	// Driven by meta `isNaming` with an optional definition override (*bool for tri-state).
+	RequiresReplace bool
 	// Indicates if the property is sensitive in the resource and datasource schemas.
 	// Exposed as a separate bool because it directly maps to a Terraform schema construct, which makes templating easier.
 	Sensitive bool
@@ -51,9 +54,6 @@ type Property struct {
 	// The first version is the minimum version and the second version is the maximum version.
 	// A dash at the end of a range (ex. 4.2(7f)-) indicates that the class is supported from the first version to the latest version.
 	SupportedVersions *Versions
-	// Test specific information for the property.
-	// This is used to generate the test cases and examples for the property.
-	TestValues []TestValue
 	// Validation specific information for the property.
 	// In the meta file for the class this is a regex statement that is used to validate the property.
 	Validators []Validator
@@ -88,22 +88,6 @@ type RegexStatement struct {
 	Regex string
 	// The type of the regex statement.
 	Type RegexStatementTypeEnum
-}
-
-type RegexStatementTypeEnum int
-
-// The enumeration options of the RegexStatement Type.
-const (
-	// Include indicates that the value must match the regex statement.
-	Include RegexStatementTypeEnum = iota + 1
-)
-
-type TestValue struct {
-	// The changed value of the property to be used in the test when a property is allowed to be changed without destruction of the resource.
-	Changed []string
-	// The initial value of the property to be used in the test.
-	// This is set to the default value of the property in APIC when it is not a required value.
-	Initial []string
 }
 
 type Validator struct {
@@ -156,46 +140,6 @@ func (vv ValidValues) ValueLocalNameMap() map[string]string {
 		out[value] = entry.LocalName
 	}
 	return out
-}
-
-// ValueTypeEnum identifies the data shape of a property and is the single dispatch point
-// for type-specific schema and template behavior. New named custom types should be added
-// here as constants and registered in parseValueType so the same definition `value_type`
-// override key can select them.
-type ValueTypeEnum int
-
-// The enumeration options of the ValueType.
-const (
-	// String indicates that the property is a plain string value.
-	String ValueTypeEnum = iota + 1
-	// Set indicates that the property is a set value (driven by meta uitype "bitmask").
-	Set
-	// IpAddress indicates that the property is an IP address (IPv4 or IPv6); driven by
-	// meta `validateAsIPv4OrIPv6`. Renders with the IP-address custom type for parsing,
-	// validation, and semantic-equality (e.g. zero-padding normalization).
-	IpAddress
-	// SemanticEquality indicates that the property has both ValidValues and Validators,
-	// meaning the wire form (e.g. "22") and the human form (e.g. "ssh") must compare equal.
-	// Templates render this with the semantic-equality custom type.
-	SemanticEquality
-)
-
-// parseValueType maps the snake_case form used in property definition `value_type` overrides
-// to the typed enum. Returns (0, false) for unknown values. Extend this when adding new
-// ValueTypeEnum entries so the override key vocabulary stays in sync with the enum.
-func parseValueType(rawType string) (ValueTypeEnum, bool) {
-	switch rawType {
-	case "string":
-		return String, true
-	case "set":
-		return Set, true
-	case "ip_address":
-		return IpAddress, true
-	case "semantic_equality":
-		return SemanticEquality, true
-	default:
-		return 0, false
-	}
 }
 
 // knownStringUiTypes are the meta `uitype` values that legitimately render as a string-typed
@@ -254,6 +198,8 @@ func (p *Property) setPropertyData() error {
 
 	p.setRequired()
 
+	p.setRequiresReplace()
+
 	// setOptional is called after setRequired because it depends on p.Required.
 	p.setOptional()
 
@@ -263,9 +209,6 @@ func (p *Property) setPropertyData() error {
 	p.setComputed()
 
 	p.setSensitive()
-
-	// TODO: add function to set TestValues
-	p.setTestValues()
 
 	err = p.setValidators()
 	if err != nil {
@@ -409,9 +352,9 @@ func (p *Property) setOptional() {
 	// or when the meta file indicates isConfigurable is true and the property is not required and the restriction is not "read_only".
 	genLogger.Debugf("Setting Optional for property '%s'.", p.PropertyName)
 
-	if p.propertyDefinition.Restriction == "optional" {
+	if p.propertyDefinition.Restriction == Optional {
 		p.Optional = true
-	} else if p.propertyDefinition.Restriction != "read_only" && p.metaDetails["isConfigurable"] == true && !p.Required {
+	} else if p.propertyDefinition.Restriction != ReadOnly && p.metaDetails["isConfigurable"] == true && !p.Required {
 		p.Optional = true
 	}
 
@@ -424,7 +367,7 @@ func (p *Property) setReadOnly() {
 	// This is used to include isConfigurable=false properties as read-only attributes in the schema.
 	genLogger.Debugf("Setting ReadOnly for property '%s'.", p.PropertyName)
 
-	if p.propertyDefinition.Restriction == "read_only" {
+	if p.propertyDefinition.Restriction == ReadOnly {
 		p.ReadOnly = true
 	}
 
@@ -437,13 +380,27 @@ func (p *Property) setRequired() {
 	// or when the meta file indicates isConfigurable and isNaming are both true.
 	genLogger.Debugf("Setting Required for property '%s'.", p.PropertyName)
 
-	if p.propertyDefinition.Restriction == "required" {
+	if p.propertyDefinition.Restriction == Required {
 		p.Required = true
 	} else if p.metaDetails["isConfigurable"] == true && p.metaDetails["isNaming"] == true {
 		p.Required = true
 	}
 
 	genLogger.Debugf("Successfully set Required '%t' for property '%s'.", p.Required, p.PropertyName)
+}
+
+func (p *Property) setRequiresReplace() {
+	// Determine if changing the property forces resource replacement.
+	// Priority: definition override > meta isNaming.
+	genLogger.Debugf("Setting RequiresReplace for property '%s'.", p.PropertyName)
+
+	if p.propertyDefinition.RequiresReplace != nil {
+		p.RequiresReplace = *p.propertyDefinition.RequiresReplace
+	} else if p.metaDetails["isNaming"] == true {
+		p.RequiresReplace = true
+	}
+
+	genLogger.Debugf("Successfully set RequiresReplace '%t' for property '%s'.", p.RequiresReplace, p.PropertyName)
 }
 
 func (p *Property) setSensitive() {
@@ -459,12 +416,6 @@ func (p *Property) setSensitive() {
 	}
 
 	genLogger.Debugf("Successfully set Sensitive '%t' for property '%s'.", p.Sensitive, p.PropertyName)
-}
-
-func (p *Property) setTestValues() {
-	// Determine the test values for the property.
-	genLogger.Debugf("Setting TestValues for property '%s'.", p.PropertyName)
-	genLogger.Debugf("Successfully set TestValues for property '%s'.", p.PropertyName)
 }
 
 func (p *Property) setValidators() error {
@@ -490,9 +441,9 @@ func (p *Property) setValidators() error {
 	return nil
 }
 
-// parseValidatorsFromMeta converts the raw `validators` value from the meta JSON (already decoded into any) into a typed slice.
-// Returns nil when the value is absent. Returns an error on shape mismatch or unknown regex statement type.
 func parseValidatorsFromMeta(rawValidators any) ([]Validator, error) {
+	// Convert the raw `validators` value from the meta JSON (already decoded into any) into a typed slice.
+	// Returns nil when the value is absent. Returns an error on shape mismatch or unknown regex statement type.
 	if rawValidators == nil {
 		return nil, nil
 	}
@@ -551,8 +502,8 @@ func parseValidatorsFromMeta(rawValidators any) ([]Validator, error) {
 	return validators, nil
 }
 
-// validatorsFromDefinition converts ValidatorDefinition entries from a property definition into typed Validator structs.
 func validatorsFromDefinition(definitionValidators []ValidatorDefinition) ([]Validator, error) {
+	// Convert ValidatorDefinition entries from a property definition into typed Validator structs.
 	validators := make([]Validator, 0, len(definitionValidators))
 	for index, definitionValidator := range definitionValidators {
 		validator := Validator{Min: definitionValidator.Min, Max: definitionValidator.Max}
@@ -574,20 +525,21 @@ func validatorsFromDefinition(definitionValidators []ValidatorDefinition) ([]Val
 	return validators, nil
 }
 
-// parseRegexStatementType maps the raw string form to the typed enum.
 func parseRegexStatementType(rawType string) (RegexStatementTypeEnum, error) {
-	switch rawType {
-	case "include":
-		return Include, nil
-	default:
-		return 0, fmt.Errorf("unknown regex statement type %q", rawType)
+	// Thin wrapper over RegexStatementTypeEnum.UnmarshalText used by the meta JSON-map loader,
+	// which only has string values from a parsed map[string]any. The YAML-driven path
+	// (validatorsFromDefinition) decodes directly into the enum via UnmarshalText.
+	var t RegexStatementTypeEnum
+	if err := t.UnmarshalText([]byte(rawType)); err != nil {
+		return 0, err
 	}
+	return t, nil
 }
 
-// readOptionalInt64 returns the value at key as int64. The zero value is returned when the key is absent or nil.
-// Returns an error when the value is not a JSON number or when the number is not an integer within int64 range.
-// (encoding/json decodes JSON numbers into float64 when the target is any, so we type-assert float64 first.)
 func readOptionalInt64(source map[string]any, key string) (int64, error) {
+	// Return the value at key as int64. The zero value is returned when the key is absent or nil.
+	// Returns an error when the value is not a JSON number or when the number is not an integer within int64 range.
+	// (encoding/json decodes JSON numbers into float64 when the target is any, so we type-assert float64 first.)
 	rawValue, present := source[key]
 	if !present || rawValue == nil {
 		return 0, nil
@@ -698,12 +650,8 @@ func (p *Property) setValueType() error {
 	//   6. Anything else -> String + WARN so new meta vocabulary surfaces.
 	genLogger.Debugf("Setting ValueType for property '%s'.", p.PropertyName)
 
-	if override := p.propertyDefinition.ValueType; override != "" {
-		parsed, ok := parseValueType(override)
-		if !ok {
-			return fmt.Errorf("failed to parse value_type for property '%s': unknown value_type %q", p.PropertyName, override)
-		}
-		p.ValueType = parsed
+	if override := p.propertyDefinition.ValueType; override != 0 {
+		p.ValueType = override
 		genLogger.Debugf("Successfully set ValueType '%v' for property '%s' from definition override.", p.ValueType, p.PropertyName)
 		return nil
 	}
