@@ -233,6 +233,38 @@ func TestSetPropertyDefaultValues(t *testing.T) {
 			},
 		},
 		{
+			Name: "test_definition_override_multi_version",
+			Input: setPropertyDefaultValuesInput{
+				DefinitionDefaultValues: map[string]string{
+					"legacy":  "-4.2(7w)",
+					"current": "5.0(1a)-6.0(2h)",
+					"future":  "6.1(1a)-",
+				},
+			},
+			Expected: setPropertyDefaultValuesExpected{
+				DefaultValues: []DefaultValue{
+					{Value: "current", Versions: testVersions(t, "5.0(1a)-6.0(2h)")},
+					{Value: "future", Versions: testVersions(t, "6.1(1a)-")},
+					{Value: "legacy", Versions: testVersions(t, "-4.2(7w)")},
+				},
+			},
+		},
+		{
+			Name: "test_definition_override_mixed_versioned_and_unversioned",
+			Input: setPropertyDefaultValuesInput{
+				DefinitionDefaultValues: map[string]string{
+					"baseline": "",
+					"v5_plus":  "5.0(1a)-",
+				},
+			},
+			Expected: setPropertyDefaultValuesExpected{
+				DefaultValues: []DefaultValue{
+					{Value: "baseline"},
+					{Value: "v5_plus", Versions: testVersions(t, "5.0(1a)-")},
+				},
+			},
+		},
+		{
 			Name: "test_definition_override_invalid_versions",
 			Input: setPropertyDefaultValuesInput{
 				DefinitionDefaultValues: map[string]string{"enabled": "invalid"},
