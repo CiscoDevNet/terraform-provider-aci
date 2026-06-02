@@ -167,7 +167,7 @@ func TestSetRequired(t *testing.T) {
 			Name: "test_definition_restriction_required",
 			Input: setRequiredInput{
 				MetaDetails:        map[string]any{"isConfigurable": true, "isNaming": false},
-				PropertyDefinition: PropertyDefinition{Restriction: "required"},
+				PropertyDefinition: PropertyDefinition{Restriction: Required},
 			},
 			Expected: true,
 		},
@@ -175,7 +175,7 @@ func TestSetRequired(t *testing.T) {
 			Name: "test_definition_restriction_required_overrides_non_naming",
 			Input: setRequiredInput{
 				MetaDetails:        map[string]any{"isConfigurable": false, "isNaming": false},
-				PropertyDefinition: PropertyDefinition{Restriction: "required"},
+				PropertyDefinition: PropertyDefinition{Restriction: Required},
 			},
 			Expected: true,
 		},
@@ -204,6 +204,88 @@ func TestSetRequired(t *testing.T) {
 			property.setRequired()
 
 			assert.Equal(t, expected, property.Required, test.MessageEqual(expected, property.Required, testCase.Name))
+		})
+	}
+}
+
+type setRequiresReplaceInput struct {
+	MetaDetails        map[string]any
+	PropertyDefinition PropertyDefinition
+}
+
+func TestSetRequiresReplace(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	boolTrue := true
+	boolFalse := false
+
+	testCases := []test.TestCase{
+		{
+			Name: "test_isNaming_true",
+			Input: setRequiresReplaceInput{
+				MetaDetails:        map[string]any{"isNaming": true},
+				PropertyDefinition: PropertyDefinition{},
+			},
+			Expected: true,
+		},
+		{
+			Name: "test_isNaming_false",
+			Input: setRequiresReplaceInput{
+				MetaDetails:        map[string]any{"isNaming": false},
+				PropertyDefinition: PropertyDefinition{},
+			},
+			Expected: false,
+		},
+		{
+			Name: "test_isNaming_missing",
+			Input: setRequiresReplaceInput{
+				MetaDetails:        map[string]any{},
+				PropertyDefinition: PropertyDefinition{},
+			},
+			Expected: false,
+		},
+		{
+			Name: "test_definition_override_true",
+			Input: setRequiresReplaceInput{
+				MetaDetails:        map[string]any{"isNaming": false},
+				PropertyDefinition: PropertyDefinition{RequiresReplace: &boolTrue},
+			},
+			Expected: true,
+		},
+		{
+			Name: "test_definition_override_false_suppresses_naming",
+			Input: setRequiresReplaceInput{
+				MetaDetails:        map[string]any{"isNaming": true},
+				PropertyDefinition: PropertyDefinition{RequiresReplace: &boolFalse},
+			},
+			Expected: false,
+		},
+		{
+			Name: "test_definition_override_true_without_naming",
+			Input: setRequiresReplaceInput{
+				MetaDetails:        map[string]any{},
+				PropertyDefinition: PropertyDefinition{RequiresReplace: &boolTrue},
+			},
+			Expected: true,
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.(setRequiresReplaceInput)
+			expected := testCase.Expected.(bool)
+
+			property := &Property{
+				PropertyName:       "testProp",
+				metaDetails:        input.MetaDetails,
+				propertyDefinition: input.PropertyDefinition,
+			}
+
+			property.setRequiresReplace()
+
+			assert.Equal(t, expected, property.RequiresReplace, test.MessageEqual(expected, property.RequiresReplace, testCase.Name))
 		})
 	}
 }
@@ -250,7 +332,7 @@ func TestSetOptional(t *testing.T) {
 			Name: "test_definition_restriction_optional",
 			Input: setOptionalInput{
 				MetaDetails:        map[string]any{"isConfigurable": false},
-				PropertyDefinition: PropertyDefinition{Restriction: "optional"},
+				PropertyDefinition: PropertyDefinition{Restriction: Optional},
 				Required:           false,
 			},
 			Expected: true,
@@ -259,7 +341,7 @@ func TestSetOptional(t *testing.T) {
 			Name: "test_definition_restriction_read_only_isConfigurable_true",
 			Input: setOptionalInput{
 				MetaDetails:        map[string]any{"isConfigurable": true},
-				PropertyDefinition: PropertyDefinition{Restriction: "read_only"},
+				PropertyDefinition: PropertyDefinition{Restriction: ReadOnly},
 				Required:           false,
 			},
 			Expected: false,
@@ -307,7 +389,7 @@ func TestSetReadOnly(t *testing.T) {
 		{
 			Name: "test_definition_restriction_read_only",
 			Input: setReadOnlyInput{
-				PropertyDefinition: PropertyDefinition{Restriction: "read_only"},
+				PropertyDefinition: PropertyDefinition{Restriction: ReadOnly},
 			},
 			Expected: true,
 		},
@@ -321,21 +403,21 @@ func TestSetReadOnly(t *testing.T) {
 		{
 			Name: "test_definition_restriction_required",
 			Input: setReadOnlyInput{
-				PropertyDefinition: PropertyDefinition{Restriction: "required"},
+				PropertyDefinition: PropertyDefinition{Restriction: Required},
 			},
 			Expected: false,
 		},
 		{
 			Name: "test_definition_restriction_optional",
 			Input: setReadOnlyInput{
-				PropertyDefinition: PropertyDefinition{Restriction: "optional"},
+				PropertyDefinition: PropertyDefinition{Restriction: Optional},
 			},
 			Expected: false,
 		},
 		{
 			Name: "test_definition_restriction_exclude",
 			Input: setReadOnlyInput{
-				PropertyDefinition: PropertyDefinition{Restriction: "exclude"},
+				PropertyDefinition: PropertyDefinition{Restriction: Exclude},
 			},
 			Expected: false,
 		},
@@ -957,7 +1039,7 @@ func TestPropertySetValidators(t *testing.T) {
 			},
 			Expected: setPropertyValidatorsExpected{
 				Error:    true,
-				ErrorMsg: `failed to parse validators for property 'testProp': validator entry 0 regex 0: unknown regex statement type "exclude"`,
+				ErrorMsg: `failed to parse validators for property 'testProp': validator entry 0 regex 0: unknown regex statement type "exclude" (expected one of: include)`,
 			},
 		},
 		{
@@ -1047,7 +1129,7 @@ func TestPropertySetValidators(t *testing.T) {
 			},
 			Expected: setPropertyValidatorsExpected{
 				Error:    true,
-				ErrorMsg: `failed to parse validators for property 'testProp': validator entry 0 regex 0: unknown regex statement type "exclude"`,
+				ErrorMsg: `failed to parse validators for property 'testProp': validator entry 0 regex 0: unknown regex statement type "exclude" (expected one of: include)`,
 			},
 		},
 	}
@@ -1695,7 +1777,7 @@ func TestPropertySetValueType(t *testing.T) {
 		{
 			Name: "test_definition_override_set",
 			Input: setValueTypeInput{
-				PropertyDefinition: PropertyDefinition{ValueType: "set"},
+				PropertyDefinition: PropertyDefinition{ValueType: Set},
 				MetaDetails:        map[string]any{"uitype": "string"},
 			},
 			Expected: setValueTypeExpected{ValueType: Set},
@@ -1703,7 +1785,7 @@ func TestPropertySetValueType(t *testing.T) {
 		{
 			Name: "test_definition_override_ip_address",
 			Input: setValueTypeInput{
-				PropertyDefinition: PropertyDefinition{ValueType: "ip_address"},
+				PropertyDefinition: PropertyDefinition{ValueType: IpAddress},
 				MetaDetails:        map[string]any{},
 			},
 			Expected: setValueTypeExpected{ValueType: IpAddress},
@@ -1711,21 +1793,10 @@ func TestPropertySetValueType(t *testing.T) {
 		{
 			Name: "test_definition_override_semantic_equality",
 			Input: setValueTypeInput{
-				PropertyDefinition: PropertyDefinition{ValueType: "semantic_equality"},
+				PropertyDefinition: PropertyDefinition{ValueType: SemanticEquality},
 				MetaDetails:        map[string]any{"uitype": "bitmask"},
 			},
 			Expected: setValueTypeExpected{ValueType: SemanticEquality},
-		},
-		{
-			Name: "test_definition_override_invalid_errors",
-			Input: setValueTypeInput{
-				PropertyDefinition: PropertyDefinition{ValueType: "weird"},
-				MetaDetails:        map[string]any{},
-			},
-			Expected: setValueTypeExpected{
-				Error:    true,
-				ErrorMsg: `failed to parse value_type for property 'testProp': unknown value_type "weird"`,
-			},
 		},
 	}
 
@@ -1771,3 +1842,4 @@ func TestPropertySetValueType(t *testing.T) {
 		})
 	}
 }
+

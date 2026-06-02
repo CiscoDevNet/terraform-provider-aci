@@ -76,30 +76,6 @@ type Class struct {
 	SupportedVersions *Versions
 }
 
-// PlatformTypeEnum represents the APIC platform type. The default value is Apic.
-type PlatformTypeEnum int
-
-// The enumeration options of the Platform type.
-const (
-	// Apic indicates that the class is available on the on-premises version of APIC. This is the default value.
-	Apic PlatformTypeEnum = iota
-	// Both indicates that the class is available on both the on-premises and cloud versions of APIC.
-	Both
-	// Cloud indicates that the class is available on the cloud version of APIC.
-	Cloud
-)
-
-func (p PlatformTypeEnum) String() string {
-	switch p {
-	case Both:
-		return "both"
-	case Cloud:
-		return "cloud"
-	default:
-		return "apic"
-	}
-}
-
 type Relation struct {
 	// The class from which the relationship is defined.
 	FromClass *ClassName
@@ -116,29 +92,6 @@ type Relation struct {
 	ToClasses []*ClassName
 	// The type of the relationship.
 	Type RelationshipTypeEnum
-}
-
-// The enumeration options of the relationship type.
-type RelationshipTypeEnum int
-
-const (
-	// Named indicates that the relationship is a named relation.
-	Named RelationshipTypeEnum = iota + 1
-	// Explicit indicates that the relationship is an explicit relation.
-	Explicit
-	// Undefined indicates that the relationship type is unknown.
-	Undefined RelationshipTypeEnum = iota
-)
-
-func setRelationshipTypeEnum(relationType string) (RelationshipTypeEnum, error) {
-	switch relationType {
-	case "named":
-		return Named, nil
-	case "explicit":
-		return Explicit, nil
-	default:
-		return Undefined, fmt.Errorf("undefined relationship type '%s'", relationType)
-	}
 }
 
 func NewClass(className string, ds *DataStore) (*Class, error) {
@@ -228,7 +181,7 @@ func (c *Class) setClassData(ds *DataStore) error {
 
 	c.setIsSingleNestedWhenDefinedAsChild()
 
-	err = c.setParents()
+	err = c.setParents(ds)
 	if err != nil {
 		return err
 	}
@@ -426,7 +379,7 @@ func (c *Class) setIsSingleNestedWhenDefinedAsChild() {
 	genLogger.Debugf("Successfully set IsSingleNestedWhenDefinedAsChild for class '%s'. IsSingleNestedWhenDefinedAsChild: %t", c.Name, c.IsSingleNestedWhenDefinedAsChild)
 }
 
-func (c *Class) setParents() error {
+func (c *Class) setParents(ds *DataStore) error {
 	// Determine the parent classes for the class.
 	genLogger.Debugf("Setting Parents for class '%s'.", c.Name)
 
@@ -449,8 +402,9 @@ func (c *Class) setParents() error {
 				return err
 			}
 
-			// Exclude if the class is explicitly excluded via ClassDefinition.ExcludeParents.
-			if !slices.Contains(c.ClassDefinition.ExcludeParents, classNameStr) {
+			// Exclude if the class is explicitly excluded via ClassDefinition.ExcludeParents or global ExcludeParents.
+			if !slices.Contains(c.ClassDefinition.ExcludeParents, classNameStr) &&
+				!slices.Contains(ds.GlobalMetaDefinition.ExcludeParents, classNameStr) {
 				parentClassNames = append(parentClassNames, classNameStr)
 			}
 		}
@@ -523,8 +477,8 @@ func (c *Class) setProperties(ds *DataStore) error {
 			// Look up the property definition override from the class definition file.
 			propertyDefinition, hasClassDefinition := c.ClassDefinition.Properties[name]
 
-			// Skip the property entirely when the restriction is "exclude".
-			if propertyDefinition.Restriction == "exclude" {
+			// Skip the property entirely when the restriction is Exclude.
+			if propertyDefinition.Restriction == Exclude {
 				genLogger.Debugf("Property '%s' excluded via definition restriction for class '%s'.", name, c.Name)
 				continue
 			}
@@ -536,8 +490,8 @@ func (c *Class) setProperties(ds *DataStore) error {
 			}
 
 			// Include configurable properties (default behavior from meta file).
-			// Include non-configurable properties only when the restriction is "read_only".
-			if details["isConfigurable"] == true || propertyDefinition.Restriction == "read_only" {
+			// Include non-configurable properties only when the restriction is ReadOnly.
+			if details["isConfigurable"] == true || propertyDefinition.Restriction == ReadOnly {
 				property, err := NewProperty(name, details, propertyDefinition, ds.GlobalMetaDefinition)
 				if err != nil {
 					return err
@@ -577,7 +531,7 @@ func (c *Class) setRelation() error {
 	// exclusive with supplying any other `relation_info` override; mixing them is almost
 	// always a YAML authoring mistake, so fail fast rather than silently ignoring fields.
 	if defRelationInfo.Disabled {
-		if defRelationInfo.Type != "" || defRelationInfo.FromClass != "" || len(defRelationInfo.ToClasses) > 0 {
+		if defRelationInfo.Type != UndefinedRelationshipType || defRelationInfo.FromClass != "" || len(defRelationInfo.ToClasses) > 0 {
 			return fmt.Errorf("failed to set relation for class '%s': relation_info.disabled is mutually exclusive with type, from_class, and to_classes", c.Name)
 		}
 		genLogger.Debugf("Class '%s' has relation_info.disabled=true; skipping relational handling.", c.Name)
@@ -586,14 +540,16 @@ func (c *Class) setRelation() error {
 
 	// Skip non-relational classes entirely. A class is relational when either the meta file
 	// declares a `relationInfo` block or the definition file supplies a `relation_info` override.
-	if metaRelationInfo == nil && defRelationInfo.Type == "" && defRelationInfo.FromClass == "" && len(defRelationInfo.ToClasses) == 0 {
+	if metaRelationInfo == nil && defRelationInfo.Type == UndefinedRelationshipType && defRelationInfo.FromClass == "" && len(defRelationInfo.ToClasses) == 0 {
 		genLogger.Debugf("Class '%s' is not a relational class; no Relation details to set.", c.Name)
 		return nil
 	}
 	c.Relation.RelationalClass = true
 
 	// Resolve each relationInfo field with the definition taking precedence over meta.
-	typeStr := utils.GetValueFromMapWithOverride(metaRelationInfo, "type", defRelationInfo.Type)
+	// defRelationInfo.Type.String() returns "" for the UndefinedRelationshipType zero value,
+	// which lets the override-merge fall back to the meta value.
+	typeStr := utils.GetValueFromMapWithOverride(metaRelationInfo, "type", defRelationInfo.Type.String())
 	fromMo := utils.GetValueFromMapWithOverride(metaRelationInfo, "fromMo", defRelationInfo.FromClass)
 	metaToMo := utils.GetValueFromMapWithOverride(metaRelationInfo, "toMo", "")
 
@@ -613,9 +569,9 @@ func (c *Class) setRelation() error {
 		return fmt.Errorf("failed to set relation for class '%s': missing required relation_info fields: %s", c.Name, strings.Join(missing, ", "))
 	}
 
-	relationType, err := setRelationshipTypeEnum(typeStr)
-	if err != nil {
-		return err
+	var relationType RelationshipTypeEnum
+	if err := relationType.UnmarshalText([]byte(typeStr)); err != nil {
+		return fmt.Errorf("failed to set relation for class '%s': %w", c.Name, err)
 	}
 	c.Relation.Type = relationType
 
