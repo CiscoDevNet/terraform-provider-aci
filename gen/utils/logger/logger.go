@@ -21,14 +21,9 @@ const (
 	// The log file permissions for the log file.
 	// This is set to 0666 to allow all users to read and write to the log file.
 	constLogFilePermissions = 0666
+	// The default log level used when neither the environment variable nor SetLogLevel is called.
+	constDefaultLogLevel = "INFO"
 )
-
-// The logger variable is a singleton instance of the Logger struct.
-// Chose to use the standard log package to avoid adding a dependency on a third-party logging library.
-var logger *Logger
-
-// The default log level for the logger.
-var logLevel = "INFO"
 
 // The available log levels for the logger.
 var logLevels = map[string]int{
@@ -40,6 +35,10 @@ var logLevels = map[string]int{
 	"TRACE": 6,
 }
 
+// The logger variable is a singleton instance of the Logger struct.
+// Chose to use the standard log package to avoid adding a dependency on a third-party logging library.
+var logger *Logger
+
 // Logger is a wrapper for the standard log package.
 type Logger struct {
 	// Log is the standard logger.
@@ -49,13 +48,18 @@ type Logger struct {
 	logFile *os.File
 	// LogLevel is the current log level for the logger.
 	logLevel int
+	// exitFunc is called by Fatal/Fatalf. Defaults to os.Exit; overridden in tests.
+	exitFunc func(int)
 }
 
 // Initialize a singleton logger instance if one does not exist yet else return existing logger.
 func InitializeLogger() *Logger {
 	if logger == nil {
 		// Create a new logger instance with default settings.
-		logger = &Logger{log: log.New(os.Stdout, "", constLogFlags)}
+		logger = &Logger{
+			log:      log.New(os.Stdout, "", constLogFlags),
+			exitFunc: os.Exit,
+		}
 	}
 
 	// Check if the log path is set in the environment variables.
@@ -67,25 +71,41 @@ func InitializeLogger() *Logger {
 	// Check if the log level is set in the environment variables.
 	// If it is set, set the log level for the logger.
 	// If it is not set, use the default log level.
+	level := constDefaultLogLevel
 	if envLogLevel := os.Getenv(constEnvLogLevel); envLogLevel != "" {
-		logLevel = envLogLevel
+		level = envLogLevel
 	}
 
 	// Set the log level for the logger.
-	logger.SetLogLevel(logLevel)
+	logger.SetLogLevel(level)
 
 	return logger
+}
+
+// ResetForTest clears the singleton (closing any open log file) so the next
+// InitializeLogger call constructs a fresh instance. Intended for tests only.
+func ResetForTest() {
+	if logger != nil && logger.logFile != nil {
+		_ = logger.logFile.Close()
+	}
+	logger = nil
+}
+
+// SetExitFunc overrides the function called by Fatal/Fatalf. Intended for tests.
+func (l *Logger) SetExitFunc(f func(int)) {
+	l.exitFunc = f
 }
 
 // Sets the log file for the logger from a path.
 func (l *Logger) SetLogFile(logPath string) {
 	file, err := os.OpenFile(logPath, constLogFileFlags, constLogFilePermissions)
 	if err != nil {
-		logger.Fatalf("Failed to open log file: %s", err.Error())
+		l.Fatalf("Failed to open log file: %s", err.Error())
+		return
 	}
-	logger.Tracef("Logging to file: %s", logPath)
-	logger.log.SetOutput(file)
-	logger.logFile = file
+	l.Tracef("Logging to file: %s", logPath)
+	l.log.SetOutput(file)
+	l.logFile = file
 }
 
 // Closes the log file if it is open and resets the logger to log to stdout.
@@ -109,7 +129,7 @@ func (l *Logger) SetOutputForTesting(w io.Writer) {
 func (l *Logger) SetLogLevel(logLevel string) {
 	if level, ok := logLevels[logLevel]; ok {
 		l.logLevel = level
-		logger.Tracef("Log level set to: %s", logLevel)
+		l.Tracef("Log level set to: %s", logLevel)
 		return
 	}
 
@@ -118,8 +138,7 @@ func (l *Logger) SetLogLevel(logLevel string) {
 	for allowedLevel := range logLevels {
 		allowedLevels = append(allowedLevels, allowedLevel)
 	}
-	logger.Fatalf("Invalid log level: %s. Allowed levels are: %s", logLevel, allowedLevels)
-
+	l.Fatalf("Invalid log level: %s. Allowed levels are: %s", logLevel, allowedLevels)
 }
 
 // The calldepth passed to log.Output so that Llongfile/Lshortfile resolve to
@@ -151,12 +170,12 @@ func (l *Logger) printf(errorLevel, format string, v ...any) {
 	}
 }
 
-// Logs a fatal message and exits the program. Shared by Fatal and Fatalf so
-// both share the same calldepth as the other levels.
+// Logs a fatal message and exits the program via exitFunc. Shared by Fatal and
+// Fatalf so both share the same calldepth as the other levels.
 func (l *Logger) fatal(message string) {
 	// calldepth=constLogCallDepth so Llongfile points at the caller of Fatal/Fatalf.
 	l.log.Output(constLogCallDepth, "FATAL: "+message)
-	os.Exit(1)
+	l.exitFunc(1)
 }
 
 // Fatal logs a fatal message and exits the program.
