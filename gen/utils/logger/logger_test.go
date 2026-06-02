@@ -4,153 +4,194 @@ import (
 	"bytes"
 	"fmt"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils/test"
 	"github.com/stretchr/testify/assert"
 )
 
-const (
-	logFilePath = "./loggertest.log"
-)
-
-func initializeLogTest(t *testing.T) *Logger {
+// newTestLogger resets the package singleton, constructs a fresh logger,
+// installs a no-op exitFunc so Fatal/Fatalf don't terminate the test process,
+// and points output at the provided buffer. The cleanup closes any open
+// log file and resets the singleton again.
+func newTestLogger(t *testing.T, outputBuffer *bytes.Buffer) *Logger {
+	t.Helper()
 	test.InitializeTest(t)
-	genLogger := InitializeLogger()
-	assert.NotNil(t, genLogger, "logger must be initialized")
-	return genLogger
+	ResetForTest()
+	t.Cleanup(ResetForTest)
+
+	testLogger := InitializeLogger()
+	testLogger.SetExitFunc(func(int) {}) // make Fatal/Fatalf non-terminating
+	if outputBuffer != nil {
+		testLogger.SetOutputForTesting(outputBuffer)
+	}
+	return testLogger
 }
 
-func TestInitializeLogger(t *testing.T) {
-	t.Parallel()
-	genLogger := initializeLogTest(t)
+func TestInitializeLogger_FreshState(t *testing.T) {
+	testLogger := newTestLogger(t, nil)
 
-	assert.Nil(t, genLogger.logFile)
-	assert.NotNil(t, genLogger.logLevel)
+	assert.NotNil(t, testLogger)
+	assert.Nil(t, testLogger.logFile)
+	assert.Equal(t, logLevels[constDefaultLogLevel], testLogger.logLevel)
 }
 
-func TestLogFile(t *testing.T) {
-	t.Setenv(constEnvLogPath, logFilePath)
-	t.Cleanup(func() {
-		os.Remove(logFilePath)
-	})
-
-	genLogger := initializeLogTest(t)
-
-	assert.NotNil(t, genLogger.logFile)
-	assert.Equal(t, logFilePath, genLogger.logFile.Name(), test.MessageEqual(logFilePath, genLogger.logFile.Name(), t.Name()))
-}
-
-func TestSetLogLevel(t *testing.T) {
-	// Note: This test cannot use t.Parallel() because it shares state via genLogger and log file
+func TestInitializeLogger_FromEnv(t *testing.T) {
+	logFilePath := filepath.Join(t.TempDir(), "env.log")
 	t.Setenv(constEnvLogPath, logFilePath)
 	t.Setenv(constEnvLogLevel, "TRACE")
-	t.Cleanup(func() {
-		os.Remove(logFilePath)
+
+	testLogger := newTestLogger(t, nil)
+
+	assert.NotNil(t, testLogger.logFile)
+	assert.Equal(t, logFilePath, testLogger.logFile.Name())
+	assert.Equal(t, logLevels["TRACE"], testLogger.logLevel)
+}
+
+func TestSetLogFile_OpenFailureCallsExitFunc(t *testing.T) {
+	testLogger := newTestLogger(t, &bytes.Buffer{})
+
+	var exitCode int
+	called := false
+	testLogger.SetExitFunc(func(code int) {
+		exitCode = code
+		called = true
 	})
 
-	genLogger := initializeLogTest(t)
-	t.Cleanup(func() {
-		genLogger.CloseLogFile()
+	// A path under a non-existent directory cannot be opened.
+	testLogger.SetLogFile(filepath.Join(t.TempDir(), "nope", "no-such-dir", "x.log"))
+
+	assert.True(t, called, "expected exitFunc to be invoked on open failure")
+	assert.Equal(t, 1, exitCode)
+	assert.Nil(t, testLogger.logFile, "logFile must not be set when open fails")
+}
+
+func TestSetLogLevel_InvalidCallsExitFunc(t *testing.T) {
+	testLogger := newTestLogger(t, &bytes.Buffer{})
+
+	var exitCode int
+	called := false
+	testLogger.SetExitFunc(func(code int) {
+		exitCode = code
+		called = true
 	})
 
-	// Define ordered log levels to ensure deterministic execution
-	// Using a slice instead of ranging over map to ensure consistent order
-	testCases := []test.TestCase{
-		{Name: "test_TRACE", Input: "TRACE", Expected: logLevels["TRACE"]},
-		{Name: "test_DEBUG", Input: "DEBUG", Expected: logLevels["DEBUG"]},
-		{Name: "test_INFO", Input: "INFO", Expected: logLevels["INFO"]},
-		{Name: "test_WARN", Input: "WARN", Expected: logLevels["WARN"]},
-		{Name: "test_ERROR", Input: "ERROR", Expected: logLevels["ERROR"]},
+	testLogger.SetLogLevel("NOT_A_LEVEL")
+
+	assert.True(t, called, "expected exitFunc to be invoked on invalid level")
+	assert.Equal(t, 1, exitCode)
+}
+
+func TestFatalAndFatalf_RouteThroughExitFunc(t *testing.T) {
+	var outputBuffer bytes.Buffer
+	testLogger := newTestLogger(t, &outputBuffer)
+
+	exitCodes := []int{}
+	testLogger.SetExitFunc(func(code int) { exitCodes = append(exitCodes, code) })
+
+	testLogger.Fatal("plain fatal")
+	testLogger.Fatalf("formatted fatal: %d", 42)
+
+	assert.Equal(t, []int{1, 1}, exitCodes)
+	out := outputBuffer.String()
+	assert.Contains(t, out, "FATAL: plain fatal")
+	assert.Contains(t, out, "FATAL: formatted fatal: 42")
+}
+
+func TestLogLevelFiltering(t *testing.T) {
+	// Use a fresh buffer per case so assertions are independent.
+	cases := []struct {
+		level      string
+		expectShow []string
+		expectHide []string
+	}{
+		{
+			level:      "WARN",
+			expectShow: []string{"FATAL: f", "ERROR: e", "WARN: w"},
+			expectHide: []string{"INFO: i", "DEBUG: d", "TRACE: t"},
+		},
+		{
+			level:      "INFO",
+			expectShow: []string{"FATAL: f", "ERROR: e", "WARN: w", "INFO: i"},
+			expectHide: []string{"DEBUG: d", "TRACE: t"},
+		},
+		{
+			level:      "TRACE",
+			expectShow: []string{"FATAL: f", "ERROR: e", "WARN: w", "INFO: i", "DEBUG: d", "TRACE: t"},
+			expectHide: nil,
+		},
 	}
 
-	// Sequential execution - subtests share genLogger state so cannot be parallel
-	for _, testCase := range testCases {
-		genLogger.SetLogLevel(testCase.Input.(string))
-		assert.Equal(t, testCase.Expected.(int), genLogger.logLevel, test.MessageEqual(testCase.Expected.(int), genLogger.logLevel, testCase.Name))
+	for _, testCase := range cases {
+		t.Run(testCase.level, func(t *testing.T) {
+			var outputBuffer bytes.Buffer
+			testLogger := newTestLogger(t, &outputBuffer)
+			testLogger.SetLogLevel(testCase.level)
 
-		logMessage := fmt.Sprintf("%v message", testCase.Expected.(int))
-		switch testCase.Input.(string) {
-		case "TRACE":
-			genLogger.Trace(logMessage)
-		case "DEBUG":
-			genLogger.Debug(logMessage)
-		case "INFO":
-			genLogger.Info(logMessage)
-		case "WARN":
-			genLogger.Warn(logMessage)
-		case "ERROR":
-			genLogger.Error(logMessage)
-		}
+			testLogger.Fatal("f")
+			testLogger.Error("e")
+			testLogger.Warn("w")
+			testLogger.Info("i")
+			testLogger.Debug("d")
+			testLogger.Trace("t")
+
+			out := outputBuffer.String()
+			for _, want := range testCase.expectShow {
+				assert.Contains(t, out, want, test.MessageContains(out, want, testCase.level))
+			}
+			for _, hide := range testCase.expectHide {
+				assert.NotContains(t, out, hide, test.MessageNotContains(out, hide, testCase.level))
+			}
+		})
 	}
+}
 
-	bytes, err := os.ReadFile(logFilePath)
-	assert.NoError(t, err, test.MessageUnexpectedError(err))
+func TestCloseLogFile(t *testing.T) {
+	logFilePath := filepath.Join(t.TempDir(), "close.log")
+	testLogger := newTestLogger(t, nil)
+	testLogger.SetLogFile(logFilePath)
+	assert.NotNil(t, testLogger.logFile)
 
-	logFileContent := string(bytes)
-	for _, testCase := range testCases {
-		logEntry := fmt.Sprintf("%s: %v message", testCase.Input.(string), testCase.Expected.(int))
-		assert.Contains(t, logFileContent, logEntry, test.MessageContains(logFileContent, logEntry, testCase.Name))
-	}
-	assert.NotContains(t, logFileContent, "FATAL message", test.MessageNotContains(logFileContent, "FATAL message", t.Name()))
+	testLogger.CloseLogFile()
 
-	genLogger.SetLogLevel("INFO")
+	assert.Nil(t, testLogger.logFile, "logFile should be nil after close")
+	// Second close must be a no-op.
+	testLogger.CloseLogFile()
+	assert.Nil(t, testLogger.logFile)
 }
 
 func TestSetOutputForTesting(t *testing.T) {
-	genLogger := initializeLogTest(t)
-	genLogger.SetLogLevel("WARN")
+	var outputBuffer bytes.Buffer
+	testLogger := newTestLogger(t, &outputBuffer)
+	testLogger.SetLogLevel("WARN")
 
-	// Capture log output using a buffer.
-	var logBuffer bytes.Buffer
-	genLogger.SetOutputForTesting(&logBuffer)
+	expected := "Test warning message for SetOutputForTesting"
+	testLogger.Warn(expected)
 
-	// Restore original log output after test.
-	defer func() {
-		genLogger.SetOutputForTesting(os.Stdout)
-	}()
-
-	// Log a warning message.
-	expectedMessage := "Test warning message for SetOutputForTesting"
-	genLogger.Warn(expectedMessage)
-
-	// Verify the warning was captured in the buffer.
-	logOutput := logBuffer.String()
-	expectedLogEntry := fmt.Sprintf("WARN: %s", expectedMessage)
-	assert.Contains(t, logOutput, expectedLogEntry, test.MessageContains(logOutput, expectedLogEntry, t.Name()))
+	assert.Contains(t, outputBuffer.String(), fmt.Sprintf("WARN: %s", expected))
 }
 
-// TestFormattedMethods verifies that the *f variants format their arguments
-// in the manner of fmt.Printf and emit the level prefix expected by callers.
 func TestFormattedMethods(t *testing.T) {
-	genLogger := initializeLogTest(t)
-	genLogger.SetLogLevel("TRACE")
-	t.Cleanup(func() {
-		genLogger.SetLogLevel("INFO")
-	})
+	var outputBuffer bytes.Buffer
+	testLogger := newTestLogger(t, &outputBuffer)
+	testLogger.SetLogLevel("TRACE")
 
-	var logBuffer bytes.Buffer
-	genLogger.SetOutputForTesting(&logBuffer)
-	t.Cleanup(func() {
-		genLogger.SetOutputForTesting(os.Stdout)
-	})
+	testLogger.Tracef("trace count=%d name=%s", 1, "foo")
+	testLogger.Debugf("debug count=%d name=%s", 2, "bar")
+	testLogger.Infof("info count=%d name=%s", 3, "baz")
+	testLogger.Warnf("warn count=%d name=%s", 4, "qux")
+	testLogger.Errorf("error count=%d name=%s", 5, "quux")
 
-	genLogger.Tracef("trace count=%d name=%s", 1, "foo")
-	genLogger.Debugf("debug count=%d name=%s", 2, "bar")
-	genLogger.Infof("info count=%d name=%s", 3, "baz")
-	genLogger.Warnf("warn count=%d name=%s", 4, "qux")
-	genLogger.Errorf("error count=%d name=%s", 5, "quux")
-
-	logOutput := logBuffer.String()
-	expectedEntries := []string{
+	out := outputBuffer.String()
+	for _, entry := range []string{
 		"TRACE: trace count=1 name=foo",
 		"DEBUG: debug count=2 name=bar",
 		"INFO: info count=3 name=baz",
 		"WARN: warn count=4 name=qux",
 		"ERROR: error count=5 name=quux",
-	}
-	for _, entry := range expectedEntries {
-		assert.Contains(t, logOutput, entry, test.MessageContains(logOutput, entry, t.Name()))
+	} {
+		assert.Contains(t, out, entry, test.MessageContains(out, entry, t.Name()))
 	}
 }
 
@@ -158,25 +199,46 @@ func TestFormattedMethods(t *testing.T) {
 // at the caller of the public level method (this test file), not at logger.go.
 // This locks in the calldepth chosen by constLogCallDepth.
 func TestLogCallDepth(t *testing.T) {
-	genLogger := initializeLogTest(t)
-	genLogger.SetLogLevel("TRACE")
-	t.Cleanup(func() {
-		genLogger.SetLogLevel("INFO")
-	})
+	var outputBuffer bytes.Buffer
+	testLogger := newTestLogger(t, &outputBuffer)
+	testLogger.SetLogLevel("TRACE")
+	// SetLogLevel itself emits a Tracef from logger.go; reset so the assertion
+	// only inspects output produced by the calls under test below.
+	outputBuffer.Reset()
 
-	var logBuffer bytes.Buffer
-	genLogger.SetOutputForTesting(&logBuffer)
-	t.Cleanup(func() {
-		genLogger.SetOutputForTesting(os.Stdout)
-	})
+	testLogger.Debug("calldepth-debug")
+	testLogger.Debugf("calldepth-debugf=%d", 1)
+	testLogger.Info("calldepth-info")
+	testLogger.Infof("calldepth-infof=%d", 2)
 
-	// Each of these calls should report logger_test.go as the source file.
-	genLogger.Debug("calldepth-debug")
-	genLogger.Debugf("calldepth-debugf=%d", 1)
-	genLogger.Info("calldepth-info")
-	genLogger.Infof("calldepth-infof=%d", 2)
+	out := outputBuffer.String()
+	assert.Contains(t, out, "logger_test.go:", test.MessageContains(out, "logger_test.go:", t.Name()))
+	assert.NotContains(t, out, "logger.go:", test.MessageNotContains(out, "logger.go:", t.Name()))
+}
 
-	logOutput := logBuffer.String()
-	assert.Contains(t, logOutput, "logger_test.go:", test.MessageContains(logOutput, "logger_test.go:", t.Name()))
-	assert.NotContains(t, logOutput, "logger.go:", test.MessageNotContains(logOutput, "logger.go:", t.Name()))
+func TestSetLogFile_WritesToFile(t *testing.T) {
+	logFilePath := filepath.Join(t.TempDir(), "writes.log")
+	testLogger := newTestLogger(t, nil)
+	testLogger.SetLogFile(logFilePath)
+	t.Cleanup(testLogger.CloseLogFile)
+
+	testLogger.SetLogLevel("INFO")
+	testLogger.Info("hello-file")
+
+	contents, err := os.ReadFile(logFilePath)
+	assert.NoError(t, err)
+	assert.Contains(t, string(contents), "INFO: hello-file")
+}
+
+// TestInitializeLogger_Idempotent verifies that calling InitializeLogger
+// twice returns the same singleton instance (production behavior relied on
+// by per-package var genLogger = logger.InitializeLogger()).
+func TestInitializeLogger_Idempotent(t *testing.T) {
+	test.InitializeTest(t)
+	ResetForTest()
+	t.Cleanup(ResetForTest)
+
+	a := InitializeLogger()
+	b := InitializeLogger()
+	assert.Same(t, a, b, "InitializeLogger must return the same singleton on subsequent calls")
 }
