@@ -134,21 +134,18 @@ func (ds *DataStore) retrieveMetaFileFromRemote(classNameStr string) error {
 
 		res, err := ds.client.Get(url)
 		if err != nil {
-			genLogger.Errorf("Error during retrieval of meta file for class '%s': %s.", classNameStr, err.Error())
-			return err
+			return fmt.Errorf("retrieve meta file for class '%s': %w", classNameStr, err)
 		}
 
 		outputFile, err := os.Create(fmt.Sprintf("%s/%s.json", constMetaPath, classNameStr))
 		if err != nil {
-			genLogger.Errorf("Error during creation of file for class '%s': %s.", classNameStr, err.Error())
-			return err
+			return fmt.Errorf("create meta file for class '%s': %w", classNameStr, err)
 		}
 
 		defer outputFile.Close()
 		_, err = io.Copy(outputFile, res.Body)
 		if err != nil {
-			genLogger.Errorf("Error during writing to file for class '%s': %s.", classNameStr, err.Error())
-			return err
+			return fmt.Errorf("write meta file for class '%s': %w", classNameStr, err)
 		}
 
 		ds.retrievedClasses[classNameStr] = true
