@@ -74,6 +74,14 @@ type Class struct {
 	// The supported APIC versions for the class.
 	// Parsed from the "versions" field in the meta file (e.g., "1.0(1e)-", "4.2(7f)-4.2(7w),5.2(1g)-").
 	SupportedVersions *Versions
+	// Test dependencies resolved from explicit definitions first (allowing overrides),
+	// then auto-filled from Parents and Relation for any remaining references.
+	// A slice is used instead of a map to preserve declaration order, which is required for deterministic HCL output
+	// (dependencies must appear before the resources that reference them).
+	TestDependencies []*TestDependency
+	// Test children resolved from child classes' TestValues with optional manual override.
+	// A slice is used instead of a map to preserve declaration order for deterministic HCL output.
+	TestChildren []*TestChild
 }
 
 type Relation struct {
@@ -92,6 +100,49 @@ type Relation struct {
 	ToClasses []*ClassName
 	// The type of the relationship.
 	Type RelationshipTypeEnum
+}
+
+// TestDependency describes a prerequisite resource needed for tests (parent or target).
+// Dependencies are recursive: a dependency can itself require other resources to exist.
+type TestDependency struct {
+	// The class of the dependency resource.
+	Class *ClassName
+	// The reference value: either a static DN string or a Terraform resource/datasource attribute path.
+	Reference string
+	// How to interpret the Reference field.
+	ReferenceType ReferenceTypeEnum
+	// The role of this dependency relative to the resource-under-test.
+	// Only meaningful on TOP-LEVEL entries in Class.TestDependencies.
+	// Nested entries (inside Dependencies) are pure prerequisites — Role is UndefinedRole.
+	Role TestDependencyRoleEnum
+	// Recursive dependencies: resources that THIS dependency needs to exist first.
+	// These are order-only prerequisites — they have no Role (always UndefinedRole).
+	Dependencies []*TestDependency
+	// Optional property overrides for the dependency resource's HCL configuration.
+	// When empty, the dependency is rendered using its class's own TestValues.Create.
+	// When populated, the specified properties override the auto-derived values.
+	ConfigOverrides map[string]string
+	// Optional child block overrides for the dependency resource's HCL nested blocks.
+	// When empty, the dependency is rendered using its class's own TestChildren.
+	// When populated, the specified children override the auto-derived nested blocks.
+	Children map[string]*TestChild
+}
+
+// TestChildInstance holds the property values and nested children for a single child instance.
+type TestChildInstance struct {
+	// The property values for this child instance, keyed by attribute name.
+	Properties map[string]TestValueEntry
+	// Children nested inside this specific instance block.
+	// Per-instance because in HCL, each block owns its own nested blocks.
+	Children []*TestChild
+}
+
+// TestChild represents a child class's test data with one or more instances.
+type TestChild struct {
+	// The child class.
+	Class *ClassName
+	// The instances to render in test HCL.
+	Instances []TestChildInstance
 }
 
 func NewClass(className string, ds *DataStore) (*Class, error) {
@@ -510,6 +561,24 @@ func (c *Class) setProperties(ds *DataStore) error {
 		}
 	}
 
+	// Add synthetic parentDn property when the class has parents.
+	// parentDn is not in the meta file; it represents the parent DN in Terraform.
+	if len(c.Parents) > 0 {
+		parentDnDefinition := c.ClassDefinition.Properties["parentDn"]
+		property, err := NewProperty("parentDn", map[string]any{
+			"isConfigurable": true,
+			"isNaming":       true,
+		}, parentDnDefinition, ds.GlobalMetaDefinition)
+		if err != nil {
+			return err
+		}
+		property.AttributeName = "parent_dn"
+		property.Documentation.Description = "The distinguished name (DN) of the parent object."
+		c.Properties["parentDn"] = property
+		c.PropertiesAll = append(c.PropertiesAll, "parentDn")
+		c.PropertiesRequired = append(c.PropertiesRequired, "parentDn")
+	}
+
 	// Sort all property lists alphabetically to ensure deterministic output when iterating over properties in templates.
 	slices.Sort(c.PropertiesAll)
 	slices.Sort(c.PropertiesOptional)
@@ -782,4 +851,992 @@ func sortAndConvertToClassNames(classNameStrings []string) ([]*ClassName, error)
 		classNames = append(classNames, name)
 	}
 	return classNames, nil
+}
+
+func (c *Class) setTestDependencies(ds *DataStore) {
+	// Resolve the test dependencies for the class.
+	// By default, explicit definitions are processed first (allowing overrides with ConfigOverrides),
+	// then auto-resolution fills in the remainder from Parents and Relation.
+	// When ReplaceAutoResolved is true, only explicit dependencies are used.
+	genLogger.Debugf("Setting TestDependencies for class '%s'.", c.Name)
+
+	testDependencies := make(map[string]*TestDependency)
+
+	if c.ClassDefinition.TestConfig.ReplaceAutoResolved {
+		// Full replacement: skip auto-resolution entirely.
+		c.TestDependencies = c.getTestDependenciesFromDefinitions(c.ClassDefinition.TestConfig.Dependencies, ds, testDependencies, 0)
+	} else {
+		// Process explicit definitions first (allows overriding auto-resolved defaults).
+		if len(c.ClassDefinition.TestConfig.Dependencies) > 0 {
+			c.TestDependencies = c.getTestDependenciesFromDefinitions(c.ClassDefinition.TestConfig.Dependencies, ds, testDependencies, 0)
+		}
+
+		// Auto-resolve remainder from Parents and Relation (skips already-defined references).
+		for _, resolvedTestDependency := range slices.Concat(c.resolveParentDependencies(ds, testDependencies), c.resolveTargetDependencies(ds, testDependencies)) {
+			if !slices.ContainsFunc(c.TestDependencies, func(td *TestDependency) bool {
+				return td.Reference == resolvedTestDependency.Reference
+			}) {
+				c.TestDependencies = append(c.TestDependencies, resolvedTestDependency)
+			}
+		}
+	}
+
+	// Resolve placeholders in ConfigOverrides against the full DAG.
+	c.resolveConfigOverridePlaceholders(testDependencies)
+	genLogger.Debugf("Successfully set TestDependencies for class '%s'. Top-level: %d, total in DAG: %d", c.Name, len(c.TestDependencies), len(testDependencies))
+}
+
+func (c *Class) getTestDependenciesFromDefinitions(testDependencyDefinitions []TestDependencyDefinition, ds *DataStore, testDependencies map[string]*TestDependency, depth int) []*TestDependency {
+	// Convert YAML-driven TestDependencyDefinition entries to TestDependency structs.
+	// Validates Role at the given depth (required at depth 0, ignored at depth > 0).
+	// Returns a slice rather than assigning directly because this function is called recursively:
+	// at depth 0 the result is assigned to c.TestDependencies, at depth > 0 to td.Dependencies.
+	genLogger.Tracef("Converting %d test dependency definitions for class '%s' at depth %d.", len(testDependencyDefinitions), c.Name, depth)
+	result := make([]*TestDependency, 0, len(testDependencyDefinitions))
+
+	for _, testDependencyDefinition := range testDependencyDefinitions {
+		// Validate role based on depth.
+		if depth == 0 && testDependencyDefinition.Role == UndefinedRole {
+			ds.ctx.Diagnostics.AddError("Class '%s': top-level test dependency for '%s' is missing required 'role' field.", c.Name, testDependencyDefinition.ClassName)
+			continue
+		}
+		if depth > 0 && testDependencyDefinition.Role != UndefinedRole {
+			genLogger.Tracef("Class '%s': nested test dependency for '%s' has 'role' field set (role is ignored for nested dependencies).", c.Name, testDependencyDefinition.ClassName)
+		}
+
+		// Dedup by reference: reuse existing node when the same reference appears more than once.
+		// At depth 0 we still validate the duplicate's Role to allow promoting an existing dep that
+		// was first introduced nested (Role=UndefinedRole) into a Parent/Target slot.
+		if existing, ok := testDependencies[testDependencyDefinition.Reference]; ok {
+			if depth == 0 {
+				newRole := testDependencyDefinition.Role
+				switch {
+				case existing.Role == UndefinedRole && newRole != UndefinedRole:
+					existing.Role = newRole
+				case existing.Role != UndefinedRole && newRole != UndefinedRole && existing.Role != newRole:
+					ds.ctx.Diagnostics.AddError("Class '%s': duplicate test dependency for '%s' declares conflicting roles ('%s' vs '%s'); first declaration wins.", c.Name, testDependencyDefinition.ClassName, existing.Role, newRole)
+				}
+				if len(testDependencyDefinition.ConfigOverrides) > 0 {
+					ds.ctx.Diagnostics.AddError("Class '%s': duplicate test dependency for '%s' carries config_overrides; merge them into the first declaration.", c.Name, testDependencyDefinition.ClassName)
+				}
+				if len(testDependencyDefinition.Dependencies) > 0 {
+					ds.ctx.Diagnostics.AddError("Class '%s': duplicate test dependency for '%s' carries dependencies; merge them into the first declaration.", c.Name, testDependencyDefinition.ClassName)
+				}
+			} else {
+				genLogger.Tracef("Class '%s': nested duplicate reference '%s' reuses existing DAG node.", c.Name, testDependencyDefinition.Reference)
+			}
+			result = append(result, existing)
+			continue
+		}
+
+		className, err := NewClassName(testDependencyDefinition.ClassName)
+		if err != nil {
+			ds.ctx.Diagnostics.AddError("Class '%s': failed to parse dependency class name '%s': %v", c.Name, testDependencyDefinition.ClassName, err)
+			continue
+		}
+
+		testDependency := &TestDependency{
+			Class:           className,
+			Reference:       testDependencyDefinition.Reference,
+			ReferenceType:   testDependencyDefinition.ReferenceType,
+			Role:            testDependencyDefinition.Role,
+			ConfigOverrides: testDependencyDefinition.ConfigOverrides,
+		}
+
+		testDependencies[testDependencyDefinition.Reference] = testDependency
+
+		// Recursively resolve nested dependencies.
+		if len(testDependencyDefinition.Dependencies) > 0 {
+			testDependency.Dependencies = c.getTestDependenciesFromDefinitions(testDependencyDefinition.Dependencies, ds, testDependencies, depth+1)
+		}
+
+		// Populate per-dependency child overrides (used when this dependency's resource block
+		// is rendered in tests). Keys are child class names; values are TestChild instances
+		// built from the override, with grandchildren preserved via merge.
+		if len(testDependencyDefinition.Children) > 0 {
+			testDependency.Children = make(map[string]*TestChild, len(testDependencyDefinition.Children))
+			for childClassStr, childOverride := range testDependencyDefinition.Children {
+				if len(childOverride.Instances) == 0 {
+					continue
+				}
+				childClassName, err := NewClassName(childClassStr)
+				if err != nil {
+					ds.ctx.Diagnostics.AddError("Class '%s': dependency '%s' has invalid child class name '%s': %v", c.Name, testDependencyDefinition.Reference, childClassStr, err)
+					continue
+				}
+				var grandChildClass *Class
+				if gc, ok := ds.Classes[childClassStr]; ok {
+					grandChildClass = &gc
+				}
+				testDependency.Children[childClassStr] = &TestChild{
+					Class:     childClassName,
+					Instances: buildOverrideInstances(ds, grandChildClass, childOverride.Instances),
+				}
+			}
+		}
+
+		result = append(result, testDependency)
+	}
+
+	genLogger.Tracef("Successfully converted %d test dependency definitions for class '%s' at depth %d.", len(result), c.Name, depth)
+	return result
+}
+
+func (c *Class) resolveParentDependencies(ds *DataStore, testDependencies map[string]*TestDependency) []*TestDependency {
+	// Resolve parent test dependencies.
+	// First parent class gets 2 instances (for ForceNew testing), second parent class gets 1.
+	genLogger.Tracef("Resolving parent dependencies for class '%s'.", c.Name)
+	var result []*TestDependency
+
+	for i, parent := range c.Parents {
+		if i >= 2 {
+			// Only auto-resolve first 2 parent classes; remaining parents are available via explicit test_config.dependencies if needed.
+			genLogger.Tracef("Class '%s': has %d parents, auto-resolving first 2 only.", c.Name, len(c.Parents))
+			break
+		}
+
+		resourceName := c.getResourceNameForClass(parent.String(), ds)
+		if resourceName == "" {
+			genLogger.Tracef("Class '%s': parent '%s' not found in DataStore or NoMetaFile, skipping.", c.Name, parent)
+			continue
+		}
+
+		if i == 0 {
+			// First parent: 2 instances for ForceNew testing.
+			result = append(result,
+				c.buildDependency(parent, fmt.Sprintf("aci_%s.test.id", resourceName), ResourceReference, Parent, ds, testDependencies),
+				c.buildDependency(parent, fmt.Sprintf("aci_%s.test_2.id", resourceName), ResourceReference, Parent, ds, testDependencies),
+			)
+		} else {
+			// Additional parent: 1 instance for compatibility testing.
+			result = append(result, c.buildDependency(parent, fmt.Sprintf("aci_%s.test.id", resourceName), ResourceReference, Parent, ds, testDependencies))
+		}
+	}
+
+	genLogger.Tracef("Successfully resolved %d parent dependencies for class '%s'.", len(result), c.Name)
+	return result
+}
+
+func (c *Class) resolveTargetDependencies(ds *DataStore, testDependencies map[string]*TestDependency) []*TestDependency {
+	// Resolve target test dependencies from Relation.ToClasses.
+	genLogger.Tracef("Resolving target dependencies for class '%s'.", c.Name)
+	if !c.Relation.RelationalClass || len(c.Relation.ToClasses) == 0 {
+		genLogger.Tracef("No target dependencies to resolve for class '%s'.", c.Name)
+		return nil
+	}
+
+	// Multi-target: require explicit YAML.
+	if len(c.Relation.ToClasses) > 1 {
+		if !slices.ContainsFunc(c.TestDependencies, func(td *TestDependency) bool {
+			return td.Role == Target
+		}) {
+			ds.ctx.Diagnostics.AddError("Class '%s': multi-target relation (%d targets) requires explicit test_config.dependencies with role 'target'.", c.Name, len(c.Relation.ToClasses))
+		}
+		return nil
+	}
+
+	// Single-target: 2 instances for toggling in update tests.
+	target := c.Relation.ToClasses[0]
+	resourceName := c.getResourceNameForClass(target.String(), ds)
+	if resourceName == "" {
+		ds.ctx.Diagnostics.AddError("Class '%s': target '%s' has no resource (not in DataStore or NoMetaFile). Provide explicit test_config.dependencies.", c.Name, target)
+		return nil
+	}
+
+	return []*TestDependency{
+		c.buildDependency(target, fmt.Sprintf("aci_%s.test.id", resourceName), ResourceReference, Target, ds, testDependencies),
+		c.buildDependency(target, fmt.Sprintf("aci_%s.test_2.id", resourceName), ResourceReference, Target, ds, testDependencies),
+	}
+}
+
+func (c *Class) buildDependency(className *ClassName, reference string, refType ReferenceTypeEnum, role TestDependencyRoleEnum, ds *DataStore, testDependencies map[string]*TestDependency) *TestDependency {
+	// Create a TestDependency node and recursively resolve its parent chain.
+	genLogger.Tracef("Building dependency '%s' for class '%s'.", reference, c.Name)
+	if existing, ok := testDependencies[reference]; ok {
+		genLogger.Tracef("Reusing existing dependency '%s' for class '%s'.", reference, c.Name)
+		return existing
+	}
+
+	testDependency := &TestDependency{
+		Class:         className,
+		Reference:     reference,
+		ReferenceType: refType,
+		Role:          role,
+	}
+	testDependencies[reference] = testDependency
+
+	// Recursively resolve the dependency's own parents as prerequisites.
+	depClass, exists := ds.Classes[className.String()]
+	if exists {
+		for _, depParent := range depClass.Parents {
+			dependencyResourceName := c.getResourceNameForClass(depParent.String(), ds)
+			if dependencyResourceName == "" {
+				genLogger.Tracef("Class '%s': dependency parent '%s' not found in DataStore or NoMetaFile, skipping.", c.Name, depParent)
+				continue
+			}
+			testDependency.Dependencies = append(testDependency.Dependencies, c.buildDependency(depParent, fmt.Sprintf("aci_%s.test.id", dependencyResourceName), ResourceReference, UndefinedRole, ds, testDependencies))
+		}
+	}
+
+	genLogger.Tracef("Successfully built dependency '%s' for class '%s'.", reference, c.Name)
+	return testDependency
+}
+
+func (c *Class) getResourceNameForClass(className string, ds *DataStore) string {
+	// Return the resource name for a class, or empty string if not found in DataStore or NoMetaFile.
+	if class, ok := ds.Classes[className]; ok {
+		return class.ResourceName
+	}
+	if resourceName, ok := ds.GlobalMetaDefinition.NoMetaFile[className]; ok {
+		return resourceName
+	}
+	return ""
+}
+
+func (c *Class) resolveConfigOverridePlaceholders(testDependencies map[string]*TestDependency) {
+	// Resolve {{<reference>}} placeholders in ConfigOverrides values for THIS class's
+	// TestDependencies only. The testDependencies map is the per-class DAG keyed by
+	// class name; it is not shared across classes. Cross-class resolution is not
+	// supported here.
+	// Unresolved placeholders are left as-is: resolution happens in multiple passes
+	// (dependencies → properties → children), so erroring immediately on an unresolved
+	// placeholder mid-resolution would be premature. validateTestCompleteness catches
+	// everything that is still unresolved after all passes complete.
+	genLogger.Tracef("Resolving ConfigOverride placeholders for class '%s'.", c.Name)
+	for _, testDependency := range testDependencies {
+		if len(testDependency.ConfigOverrides) == 0 {
+			continue
+		}
+		for key, value := range testDependency.ConfigOverrides {
+			reference, ok := parsePlaceholder(value)
+			if !ok {
+				continue
+			}
+			if resolved, ok := testDependencies[reference]; ok {
+				testDependency.ConfigOverrides[key] = resolved.Reference
+			}
+		}
+	}
+	genLogger.Tracef("Successfully resolved ConfigOverride placeholders for class '%s'.", c.Name)
+}
+
+func (c *Class) setPropertyTestValues(ds *DataStore) {
+	// Wire dependency-derived property values (tDn, parent_dn, tn<Cap>Name) and resolve placeholders in TestValues.
+	genLogger.Debugf("Resolving property test values for class '%s'.", c.Name)
+
+	// Auto-wire parent_dn from Parent dependencies.
+	c.setParentDn()
+
+	// Auto-wire target property for relational classes.
+	// Explicit relations expose `tDn` (full DN). Named relations expose `tn<TargetCap>Name`
+	// (target's name attribute). Other RelationalClass types are unsupported.
+	if c.Relation.RelationalClass {
+		switch c.Relation.Type {
+		case Explicit:
+			c.setTargetDn()
+		case Named:
+			c.setTargetNameProperty(ds)
+		default:
+			ds.ctx.Diagnostics.AddError("Class '%s': relational class has unsupported relationship type (expected named or explicit).", c.Name)
+		}
+	}
+
+	// Resolve placeholders in any explicitly-defined property TestValues.
+	c.resolvePlaceholdersInProperties()
+
+	genLogger.Debugf("Successfully resolved property test values for class '%s'.", c.Name)
+}
+
+func (c *Class) setParentDn() {
+	// Wire the parent_dn property's TestValues from Parent dependencies.
+	// parent_dn is a synthetic property that exists only when the class has resolvable parents.
+	// Create, Update, and Default use the SAME first parent reference (parent doesn't change).
+	// ForceNew uses the second parent reference to trigger destroy+recreate.
+	genLogger.Tracef("Setting parentDn test values for class '%s'.", c.Name)
+
+	// Find the parentDn property.
+	parentDn, exists := c.Properties["parentDn"]
+	if !exists {
+		return
+	}
+
+	// Only auto-wire if no explicit TestConfig was provided for this property.
+	if parentDn.hasTestConfigDefinition() {
+		return
+	}
+
+	// Collect up to the first two Parent dependencies (mirrors resolveTargetDependencies).
+	var parents []*TestDependency
+	for _, testDependency := range c.TestDependencies {
+		if testDependency.Role != Parent {
+			continue
+		}
+		parents = append(parents, testDependency)
+		if len(parents) == 2 {
+			break
+		}
+	}
+	if len(parents) == 0 {
+		return
+	}
+
+	// Wire Create, Update, and Default from the first parent reference.
+	parentDn.TestValues = &TestValues{
+		Create: []TestValueEntry{{
+			ConfigValue:   parents[0].Reference,
+			ConfigInclude: true,
+			AssertValue:   parents[0].Reference,
+			ValueType:     ReferenceValue,
+		}},
+		Update: []TestValueEntry{{
+			ConfigValue:   parents[0].Reference,
+			ConfigInclude: true,
+			AssertValue:   parents[0].Reference,
+			ValueType:     ReferenceValue,
+		}},
+		Default: []TestValueEntry{{
+			ConfigValue:   parents[0].Reference,
+			ConfigInclude: true,
+			AssertValue:   parents[0].Reference,
+			ValueType:     ReferenceValue,
+		}},
+	}
+
+	// Wire ForceNew from the second parent reference (triggers destroy+recreate).
+	if len(parents) > 1 {
+		parentDn.TestValues.ForceNew = []TestValueEntry{{
+			ConfigValue:   parents[1].Reference,
+			ConfigInclude: true,
+			AssertValue:   parents[1].Reference,
+			ValueType:     ReferenceValue,
+		}}
+	}
+	genLogger.Tracef("Successfully set parentDn test values for class '%s'.", c.Name)
+}
+
+func (c *Class) setTargetDn() {
+	// Wire the tDn property's TestValues from Target dependencies (Explicit relations).
+	// Caller (setPropertyTestValues) already gates on c.Relation.RelationalClass && Explicit.
+	genLogger.Tracef("Setting targetDn test values for class '%s'.", c.Name)
+
+	// Find the target dependencies. At least one is required to wire the tDn property.
+	var targets []*TestDependency
+	for _, testDependency := range c.TestDependencies {
+		if testDependency.Role == Target {
+			targets = append(targets, testDependency)
+		}
+	}
+	if len(targets) == 0 {
+		return
+	}
+
+	// Find the tDn property.
+	tDn, exists := c.Properties["tDn"]
+	if !exists {
+		return
+	}
+
+	// Only auto-wire if no explicit TestConfig was provided for this property.
+	if tDn.hasTestConfigDefinition() {
+		return
+	}
+
+	// With a single target, every step (Create/Update/Default/ForceNew) uses the same reference.
+	// With two or more targets, Create uses the first and Update uses the second so plan diffs
+	// exercise both target references.
+	createTarget := targets[0]
+	updateTarget := targets[0]
+	if len(targets) > 1 {
+		updateTarget = targets[1]
+	} else {
+		genLogger.Tracef("Class '%s': only one Target dependency available; Update reuses Create target.", c.Name)
+	}
+
+	tDn.TestValues = &TestValues{
+		Create: []TestValueEntry{{
+			ConfigValue:   createTarget.Reference,
+			ConfigInclude: true,
+			AssertValue:   createTarget.Reference,
+			ValueType:     ReferenceValue,
+		}},
+		Update: []TestValueEntry{{
+			ConfigValue:   updateTarget.Reference,
+			ConfigInclude: true,
+			AssertValue:   updateTarget.Reference,
+			ValueType:     ReferenceValue,
+		}},
+		Default: []TestValueEntry{{
+			ConfigValue:   createTarget.Reference,
+			ConfigInclude: true,
+			AssertValue:   createTarget.Reference,
+			ValueType:     ReferenceValue,
+		}},
+		ForceNew: []TestValueEntry{{
+			ConfigValue:   createTarget.Reference,
+			ConfigInclude: true,
+			AssertValue:   createTarget.Reference,
+			ValueType:     ReferenceValue,
+		}},
+	}
+	genLogger.Tracef("Successfully set targetDn test values for class '%s'.", c.Name)
+}
+
+func (c *Class) setTargetNameProperty(ds *DataStore) {
+	// Wire the tn<TargetCap>Name property's TestValues from Target dependencies (Named relations).
+	// Named relations always have exactly one target class (ToClasses[0]); the property
+	// holds the target resource's name attribute rather than its full DN.
+	genLogger.Tracef("Setting target-name test values for class '%s'.", c.Name)
+
+	if len(c.Relation.ToClasses) == 0 {
+		ds.ctx.Diagnostics.AddError("Class '%s': named relation has no target classes.", c.Name)
+		return
+	}
+	targetClass := c.Relation.ToClasses[0]
+	propertyName := "tn" + targetClass.Capitalized() + "Name"
+
+	property, exists := c.Properties[propertyName]
+	if !exists {
+		// Not every named-relation class exposes the canonical tn<Cap>Name property
+		// (some use property overrides). Caller should set TestValues explicitly via test_config.
+		genLogger.Tracef("Class '%s': named target property '%s' not found; skipping auto-wire.", c.Name, propertyName)
+		return
+	}
+
+	// Skip when an explicit TestConfig already drives the property.
+	if property.hasTestConfigDefinition() {
+		return
+	}
+
+	// Find Target dependencies.
+	var targets []*TestDependency
+	for _, testDependency := range c.TestDependencies {
+		if testDependency.Role == Target {
+			targets = append(targets, testDependency)
+		}
+	}
+	if len(targets) == 0 {
+		return
+	}
+
+	// Static references resolve to literal DNs; they have no `.name` attribute to project.
+	// Diagnose and bail rather than emit a broken Terraform expression.
+	for _, target := range targets {
+		if target.ReferenceType == StaticReference {
+			ds.ctx.Diagnostics.AddError("Class '%s': named relation target '%s' uses a static reference; property '%s' needs a resource or data_source target (or an explicit test_config).", c.Name, target.Reference, propertyName)
+			return
+		}
+	}
+
+	createTarget := targets[0]
+	updateTarget := targets[0]
+	if len(targets) > 1 {
+		updateTarget = targets[1]
+	} else {
+		genLogger.Tracef("Class '%s': only one Target dependency available for named relation; Update reuses Create target.", c.Name)
+	}
+
+	createRef := targetReferenceToName(createTarget.Reference)
+	updateRef := targetReferenceToName(updateTarget.Reference)
+
+	property.TestValues = &TestValues{
+		Create: []TestValueEntry{{
+			ConfigValue:   createRef,
+			ConfigInclude: true,
+			AssertValue:   createRef,
+			ValueType:     ReferenceValue,
+		}},
+		Update: []TestValueEntry{{
+			ConfigValue:   updateRef,
+			ConfigInclude: true,
+			AssertValue:   updateRef,
+			ValueType:     ReferenceValue,
+		}},
+		Default: []TestValueEntry{{
+			ConfigValue:   createRef,
+			ConfigInclude: true,
+			AssertValue:   createRef,
+			ValueType:     ReferenceValue,
+		}},
+		ForceNew: []TestValueEntry{{
+			ConfigValue:   createRef,
+			ConfigInclude: true,
+			AssertValue:   createRef,
+			ValueType:     ReferenceValue,
+		}},
+	}
+	genLogger.Tracef("Successfully set targetDn test values for class '%s'.", c.Name)
+}
+
+func targetReferenceToName(ref string) string {
+	// Rewrite a target-resource reference from its `.id` form to its `.name` form so the
+	// named-relation property points at the target's name attribute rather than its DN.
+	if strings.HasSuffix(ref, ".id") {
+		return strings.TrimSuffix(ref, ".id") + ".name"
+	}
+	return ref
+}
+
+func (c *Class) resolvePlaceholdersInProperties() {
+	// Resolve {{<reference>}} placeholders in property TestValues against the class's TestDependencies.
+	genLogger.Tracef("Resolving placeholders in property TestValues for class '%s'.", c.Name)
+	for _, property := range c.Properties {
+		if property.TestValues == nil {
+			continue
+		}
+		c.resolvePlaceholdersInEntries(property.TestValues.Create)
+		c.resolvePlaceholdersInEntries(property.TestValues.Update)
+		c.resolvePlaceholdersInEntries(property.TestValues.Default)
+		c.resolvePlaceholdersInEntries(property.TestValues.ForceNew)
+	}
+	genLogger.Tracef("Successfully resolved placeholders in property TestValues for class '%s'.", c.Name)
+}
+
+func (c *Class) resolvePlaceholdersInEntries(entries []TestValueEntry) {
+	// Resolve placeholders in a slice of TestValueEntry.
+	// Unresolved placeholders are left as-is (see resolveConfigOverridePlaceholders for rationale).
+	genLogger.Tracef("Resolving placeholders in %d test value entries.", len(entries))
+	for i := range entries {
+		entry := &entries[i]
+		reference, ok := parsePlaceholder(entry.ConfigValue)
+		if !ok {
+			continue
+		}
+		resolved := c.findDependencyByRefRecursive(c.TestDependencies, reference)
+		if resolved == nil {
+			continue
+		}
+		entry.ConfigValue = resolved.Reference
+		entry.AssertValue = resolved.Reference
+		entry.ValueType = ReferenceValue
+	}
+}
+
+func isPlaceholder(value string) bool {
+	// Check if a value is a placeholder (e.g., "{{aci_bd.test.id}}").
+	return strings.HasPrefix(value, "{{") && strings.HasSuffix(value, "}}")
+}
+
+func parsePlaceholder(value string) (string, bool) {
+	// Extract the reference from a placeholder string.
+	// Returns the trimmed reference and true if the value is a placeholder, or empty and false otherwise.
+	if !isPlaceholder(value) {
+		return "", false
+	}
+	return strings.TrimSpace(value[2 : len(value)-2]), true
+}
+
+func (c *Class) findDependencyByRefRecursive(testDependencies []*TestDependency, reference string) *TestDependency {
+	// Search the entire DAG for a dependency with the given reference.
+	for _, testDependency := range testDependencies {
+		if testDependency.Reference == reference {
+			return testDependency
+		}
+		if found := c.findDependencyByRefRecursive(testDependency.Dependencies, reference); found != nil {
+			return found
+		}
+	}
+	return nil
+}
+
+func (c *Class) setChildTestValues(ds *DataStore) {
+	// Build TestChildren from child classes' TestValues.
+	// Also auto-collects child-driven dependencies into the parent's TestDependencies.
+	genLogger.Debugf("Resolving child test values for class '%s'.", c.Name)
+
+	// Track visited classes to prevent infinite recursion from circular child relationships.
+	visited := map[string]bool{c.Name.String(): true}
+
+	// Build TestChildren from the class's direct children.
+	c.TestChildren = c.buildTestChildren(ds, c.Children, visited)
+
+	// Apply overrides from ClassDefinition.TestConfig.Children.
+	if len(c.ClassDefinition.TestConfig.Children) > 0 {
+		c.applyChildOverrides(ds)
+	}
+
+	// Collect child-driven dependencies.
+	c.collectChildDrivenDependencies(ds)
+
+	// Resolve placeholders in child instance properties against parent's TestDependencies.
+	c.resolvePlaceholdersInChildren()
+
+	genLogger.Debugf("Successfully resolved child test values for class '%s'. TestChildren count: %d", c.Name, len(c.TestChildren))
+}
+
+func (c *Class) buildTestChildren(ds *DataStore, children []*ClassName, visited map[string]bool) []*TestChild {
+	// Create TestChild entries for a list of child classes.
+	// The visited map tracks the current ancestor chain to prevent infinite
+	// recursion from circular child relationships in the ACI meta data. It is
+	// NOT a "seen anywhere" set — entries are removed after each child's subtree
+	// is built so that siblings (and cousins) can independently include the same
+	// child class (e.g. tagAnnotation / tagTag, which apply to almost every class).
+	genLogger.Tracef("Building test children for class '%s'. Child count: %d.", c.Name, len(children))
+	var result []*TestChild
+
+	for _, childClassName := range children {
+		if visited[childClassName.String()] {
+			genLogger.Tracef("Class '%s': child class '%s' is an ancestor in the current branch, skipping to prevent cycle.", c.Name, childClassName)
+			continue
+		}
+
+		childClass, exists := ds.Classes[childClassName.String()]
+		if !exists {
+			genLogger.Tracef("Class '%s': child class '%s' not found in DataStore, skipping.", c.Name, childClassName)
+			continue
+		}
+
+		visited[childClassName.String()] = true
+		testChild := c.buildTestChild(ds, &childClass, childClassName, visited)
+		delete(visited, childClassName.String())
+		if testChild != nil {
+			result = append(result, testChild)
+		}
+	}
+
+	genLogger.Tracef("Successfully built %d test children for class '%s'.", len(result), c.Name)
+	return result
+}
+
+func (c *Class) buildTestChild(ds *DataStore, childClass *Class, childClassName *ClassName, visited map[string]bool) *TestChild {
+	// Create a TestChild for a single child class with appropriate instances.
+	genLogger.Tracef("Building test child '%s' for class '%s'.", childClassName, c.Name)
+	instanceCount := 2
+	if childClass.IsSingleNestedWhenDefinedAsChild {
+		instanceCount = 1
+	}
+
+	testChild := &TestChild{
+		Class:     childClassName,
+		Instances: make([]TestChildInstance, 0, instanceCount),
+	}
+
+	// Instance 0: uses child's TestValues.Create.
+	instance0 := buildChildInstance(childClass, true)
+	instance0.Children = c.buildTestChildren(ds, childClass.Children, visited)
+	testChild.Instances = append(testChild.Instances, instance0)
+
+	// Instance 1 (if list-type): uses child's TestValues.Update.
+	if instanceCount > 1 {
+		instance1 := buildChildInstance(childClass, false)
+		instance1.Children = c.buildTestChildren(ds, childClass.Children, visited)
+		testChild.Instances = append(testChild.Instances, instance1)
+	}
+
+	genLogger.Tracef("Successfully built test child '%s' for class '%s'.", childClassName, c.Name)
+	return testChild
+}
+
+func buildChildInstance(childClass *Class, useCreate bool) TestChildInstance {
+	// Create a TestChildInstance from a child class's properties.
+	// If useCreate is true, uses Create values; otherwise uses Update values (falling back to Create).
+	instance := TestChildInstance{
+		Properties: make(map[string]TestValueEntry),
+	}
+
+	for _, property := range childClass.Properties {
+		if property.TestValues == nil || property.IgnoreInTest || property.ReadOnly {
+			continue
+		}
+
+		var entry TestValueEntry
+		if useCreate {
+			if len(property.TestValues.Create) > 0 {
+				entry = property.TestValues.Create[0]
+			}
+		} else {
+			if len(property.TestValues.Update) > 0 {
+				entry = property.TestValues.Update[0]
+			} else if len(property.TestValues.Create) > 0 {
+				entry = property.TestValues.Create[0]
+			}
+		}
+
+		if entry.ConfigValue != "" {
+			instance.Properties[property.AttributeName] = entry
+		}
+	}
+
+	return instance
+}
+
+func (c *Class) applyChildOverrides(ds *DataStore) {
+	// Apply explicit overrides from ClassDefinition.TestConfig.Children.
+	genLogger.Tracef("Applying child overrides for class '%s'.", c.Name)
+	for childClassStr, override := range c.ClassDefinition.TestConfig.Children {
+		// Find the matching TestChild.
+		var targetChild *TestChild
+		for _, testChild := range c.TestChildren {
+			if testChild.Class.String() == childClassStr {
+				targetChild = testChild
+				break
+			}
+		}
+		if targetChild == nil {
+			genLogger.Warnf("Class '%s': child override for '%s' does not match any resolved child.", c.Name, childClassStr)
+			continue
+		}
+
+		// Full replacement semantics: if instances are specified, replace all.
+		if len(override.Instances) > 0 {
+			var childClass *Class
+			if cc, ok := ds.Classes[childClassStr]; ok {
+				childClass = &cc
+			}
+			targetChild.Instances = buildOverrideInstances(ds, childClass, override.Instances)
+		}
+	}
+	genLogger.Tracef("Successfully applied child overrides for class '%s'.", c.Name)
+}
+
+func buildOverrideInstances(ds *DataStore, childClass *Class, defs []ChildTestInstanceOverrideDefinition) []TestChildInstance {
+	// Convert override instance definitions into TestChildInstance values.
+	// For each instance, its Children default to the underlying child class's auto-derived
+	// TestChildren (when available) and are then overlaid per-key from the override.
+	// Result: grandchildren of classes not mentioned in the override are preserved.
+	instances := make([]TestChildInstance, 0, len(defs))
+	for _, def := range defs {
+		instance := TestChildInstance{
+			Properties: make(map[string]TestValueEntry),
+		}
+		for key, value := range def.Properties {
+			entry := TestValueEntry{
+				ConfigValue:   value,
+				ConfigInclude: true,
+				AssertValue:   value,
+				ValueType:     StringValue,
+			}
+			if isPlaceholder(value) {
+				entry.ValueType = ReferenceValue
+			}
+			instance.Properties[key] = entry
+		}
+
+		// Start each instance's Children from the underlying child class's auto-derived
+		// grandchildren so unrelated child types survive the override.
+		var baseChildren []*TestChild
+		if childClass != nil {
+			baseChildren = childClass.TestChildren
+		}
+		instance.Children = mergeOverrideChildren(ds, baseChildren, def.Children)
+		instances = append(instances, instance)
+	}
+	return instances
+}
+
+func mergeOverrideChildren(ds *DataStore, base []*TestChild, overlay map[string]ChildTestOverrideDefinition) []*TestChild {
+	// Per-key merge of an instance's grandchildren overlay onto its auto-derived base.
+	// - Base entries whose class is NOT in overlay are kept as-is.
+	// - Base entries whose class IS in overlay have their Instances rebuilt from the overlay.
+	// - Overlay entries with no matching base entry are appended as override-only TestChildren.
+	if len(base) == 0 && len(overlay) == 0 {
+		return nil
+	}
+	result := make([]*TestChild, 0, len(base)+len(overlay))
+	matched := make(map[string]bool, len(overlay))
+	for _, baseChild := range base {
+		classStr := baseChild.Class.String()
+		if override, ok := overlay[classStr]; ok && len(override.Instances) > 0 {
+			matched[classStr] = true
+			var grandChildClass *Class
+			if gc, ok := ds.Classes[classStr]; ok {
+				grandChildClass = &gc
+			}
+			result = append(result, &TestChild{
+				Class:     baseChild.Class,
+				Instances: buildOverrideInstances(ds, grandChildClass, override.Instances),
+			})
+			continue
+		}
+		result = append(result, baseChild)
+	}
+	for classStr, override := range overlay {
+		if matched[classStr] {
+			continue
+		}
+		if len(override.Instances) == 0 {
+			continue
+		}
+		className, err := NewClassName(classStr)
+		if err != nil {
+			genLogger.Warnf("Override-only child class '%s' failed to parse: %v.", classStr, err)
+			continue
+		}
+		grandChildClass := ds.Classes[classStr]
+		result = append(result, &TestChild{
+			Class:     className,
+			Instances: buildOverrideInstances(ds, &grandChildClass, override.Instances),
+		})
+	}
+	return result
+}
+
+func (c *Class) collectChildDrivenDependencies(ds *DataStore) {
+	// Auto-collect dependencies from child instances that have ReferenceValue properties
+	// pointing to resources not already in TestDependencies.
+	genLogger.Tracef("Collecting child-driven dependencies for class '%s'.", c.Name)
+	c.collectFromTestChildren(ds, c.TestChildren)
+	genLogger.Tracef("Successfully collected child-driven dependencies for class '%s'.", c.Name)
+}
+
+func (c *Class) collectFromTestChildren(ds *DataStore, testChildren []*TestChild) {
+	// Walks a TestChild slice (and recursively each instance's nested Children) collecting
+	// child-driven dependencies. Pulled out so grandchild instance properties also contribute.
+	for _, testChild := range testChildren {
+		childClass, exists := ds.Classes[testChild.Class.String()]
+		if !exists {
+			continue
+		}
+		for _, instance := range testChild.Instances {
+			for _, entry := range instance.Properties {
+				if entry.ValueType != ReferenceValue {
+					continue
+				}
+				// Skip when this reference is already present anywhere in our dependency DAG.
+				if c.findDependencyByRefRecursive(c.TestDependencies, entry.ConfigValue) != nil {
+					continue
+				}
+				// Search the child class's full TestDependencies DAG (not just top-level) for the reference.
+				if found := c.findDependencyByRefRecursive(childClass.TestDependencies, entry.ConfigValue); found != nil {
+					c.TestDependencies = append(c.TestDependencies, found)
+				}
+			}
+			// Recurse into per-instance nested children so grandchild references are collected too.
+			if len(instance.Children) > 0 {
+				c.collectFromTestChildren(ds, instance.Children)
+			}
+		}
+	}
+}
+
+func (c *Class) resolvePlaceholdersInChildren() {
+	// Resolve {{<reference>}} placeholders in child instance properties against the parent
+	// class's TestDependencies.
+	// Called after collectChildDrivenDependencies so the parent has both own and child-collected dependencies.
+	genLogger.Tracef("Resolving placeholders in children for class '%s'.", c.Name)
+	c.resolvePlaceholdersInTestChildren(c.TestChildren)
+	// Also resolve placeholders inside per-dependency child overrides.
+	visited := make(map[*TestDependency]bool)
+	c.resolvePlaceholdersInDependencyChildren(c.TestDependencies, visited)
+	genLogger.Tracef("Successfully resolved placeholders in children for class '%s'.", c.Name)
+}
+
+func (c *Class) resolvePlaceholdersInDependencyChildren(deps []*TestDependency, visited map[*TestDependency]bool) {
+	// Walks the TestDependency DAG and resolves placeholders inside each dependency's Children
+	// overrides. The visited map handles DAG-sharing without re-resolving the same node.
+	for _, testDependency := range deps {
+		if visited[testDependency] {
+			continue
+		}
+		visited[testDependency] = true
+		if len(testDependency.Children) > 0 {
+			children := make([]*TestChild, 0, len(testDependency.Children))
+			for _, testChild := range testDependency.Children {
+				children = append(children, testChild)
+			}
+			c.resolvePlaceholdersInTestChildren(children)
+		}
+		c.resolvePlaceholdersInDependencyChildren(testDependency.Dependencies, visited)
+	}
+}
+
+func (c *Class) resolvePlaceholdersInTestChildren(testChildren []*TestChild) {
+	// Recursively resolve placeholders in a slice of TestChild.
+	// Unresolved placeholders are left as-is (see resolveConfigOverridePlaceholders for rationale).
+	genLogger.Tracef("Resolving placeholders in %d test children.", len(testChildren))
+	for _, testChild := range testChildren {
+		for i := range testChild.Instances {
+			instance := &testChild.Instances[i]
+			for key, entry := range instance.Properties {
+				reference, ok := parsePlaceholder(entry.ConfigValue)
+				if !ok {
+					continue
+				}
+				resolved := c.findDependencyByRefRecursive(c.TestDependencies, reference)
+				if resolved == nil {
+					continue
+				}
+				entry.ConfigValue = resolved.Reference
+				entry.AssertValue = resolved.Reference
+				entry.ValueType = ReferenceValue
+				instance.Properties[key] = entry
+			}
+			// Recurse into grandchildren.
+			c.resolvePlaceholdersInTestChildren(instance.Children)
+		}
+	}
+}
+
+func (c *Class) validateTestCompleteness(ctx *Context) {
+	// Validate the resolved test data for unresolved placeholders and missing values.
+	// Runs after all resolution steps are complete so all errors are reported in a single pass.
+	// TODO: Add validation for missing test values, empty TestDependencies when parents exist,
+	// properties without any TestValues entries, and other completeness checks.
+
+	// Check ConfigOverrides for unresolved placeholders.
+	// validateTestDependencyPlaceholders walks both top-level and nested deps using a
+	// shared visited map, so DAG-shared dependencies are diagnosed at most once.
+	visited := make(map[*TestDependency]bool)
+	c.validateTestDependencyPlaceholders(ctx, c.TestDependencies, visited)
+
+	// Check property TestValues for unresolved placeholders.
+	for _, property := range c.Properties {
+		if property.TestValues == nil {
+			continue
+		}
+		c.validateEntriesPlaceholders(ctx, property.AttributeName, "Create", property.TestValues.Create)
+		c.validateEntriesPlaceholders(ctx, property.AttributeName, "Update", property.TestValues.Update)
+		c.validateEntriesPlaceholders(ctx, property.AttributeName, "Default", property.TestValues.Default)
+		c.validateEntriesPlaceholders(ctx, property.AttributeName, "ForceNew", property.TestValues.ForceNew)
+	}
+
+	// Check child instance properties for unresolved placeholders.
+	c.validateChildrenPlaceholders(ctx, c.TestChildren)
+}
+
+func (c *Class) validateTestDependencyPlaceholders(ctx *Context, testDependencies []*TestDependency, visited map[*TestDependency]bool) {
+	// Recursively check nested dependency ConfigOverrides for unresolved placeholders.
+	// The visited map prevents infinite recursion from circular dependency references.
+	for _, testDependency := range testDependencies {
+		if visited[testDependency] {
+			continue
+		}
+		visited[testDependency] = true
+		for key, value := range testDependency.ConfigOverrides {
+			if isPlaceholder(value) {
+				ctx.Diagnostics.AddError("Class '%s': ConfigOverrides placeholder '%s' (key '%s') on dependency '%s' could not be resolved.", c.Name, value, key, testDependency.Reference)
+			}
+		}
+		// Also validate per-dependency child overrides for unresolved placeholders.
+		if len(testDependency.Children) > 0 {
+			children := make([]*TestChild, 0, len(testDependency.Children))
+			for _, testChild := range testDependency.Children {
+				children = append(children, testChild)
+			}
+			c.validateChildrenPlaceholders(ctx, children)
+		}
+		c.validateTestDependencyPlaceholders(ctx, testDependency.Dependencies, visited)
+	}
+}
+
+func (c *Class) validateEntriesPlaceholders(ctx *Context, propName, step string, entries []TestValueEntry) {
+	// Check a slice of TestValueEntry for unresolved placeholders.
+	for _, entry := range entries {
+		if isPlaceholder(entry.ConfigValue) {
+			ctx.Diagnostics.AddError("Class '%s': property '%s' %s placeholder '%s' could not be resolved.", c.Name, propName, step, entry.ConfigValue)
+		}
+	}
+}
+
+func (c *Class) validateChildrenPlaceholders(ctx *Context, children []*TestChild) {
+	// Recursively check child instance properties for unresolved placeholders.
+	for _, testChild := range children {
+		for _, instance := range testChild.Instances {
+			for key, entry := range instance.Properties {
+				if isPlaceholder(entry.ConfigValue) {
+					ctx.Diagnostics.AddError("Class '%s': child '%s' property '%s' placeholder '%s' could not be resolved.", c.Name, testChild.Class, key, entry.ConfigValue)
+				}
+			}
+			c.validateChildrenPlaceholders(ctx, instance.Children)
+		}
+	}
 }
