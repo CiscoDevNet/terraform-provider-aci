@@ -1,11 +1,37 @@
 package test
 
 import (
+	"encoding"
 	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
+
+// MustUnmarshalText returns the value of T decoded from s via encoding.TextUnmarshaler.
+// Fails the test if UnmarshalText returns an error.
+// PT is the pointer type of T (the receiver type that implements TextUnmarshaler).
+func MustUnmarshalText[T any, PT interface {
+	*T
+	encoding.TextUnmarshaler
+}](t *testing.T, s string) T {
+	t.Helper()
+	var v T
+	if err := PT(&v).UnmarshalText([]byte(s)); err != nil {
+		t.Fatalf("unmarshal %q: %v", s, err)
+	}
+	return v
+}
+
+// UnmarshalTextErr returns the error from calling UnmarshalText on a fresh zero value of T.
+// Used to assert that invalid inputs are rejected.
+func UnmarshalTextErr[T any, PT interface {
+	*T
+	encoding.TextUnmarshaler
+}](s string) error {
+	var v T
+	return PT(&v).UnmarshalText([]byte(s))
+}
 
 // InitializeTest is a helper function that logs the test name.
 // It should be called at the beginning of each test.

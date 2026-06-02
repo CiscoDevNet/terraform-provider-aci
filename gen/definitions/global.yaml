@@ -75,6 +75,10 @@ documentation_label_overrides:
   Vm: VM
   Vmm: VMM
 
+exclude_parents:
+  - polUni
+  - fabricInst
+
 exclude_properties:
   - userdom
 
