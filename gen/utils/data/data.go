@@ -22,7 +22,9 @@ type DataStore struct {
 	// A map containing all the information about the classes required to render the templates.
 	Classes map[string]Class
 	// The client used to retrieve the meta data from the remote location.
-	client               *http.Client
+	client *http.Client
+	// The context carries shared state across the generation pipeline.
+	ctx                  *Context
 	GlobalMetaDefinition GlobalMetaDefinition
 	// The host from which the meta data is retrieved.
 	metaHost string
@@ -32,10 +34,11 @@ type DataStore struct {
 	retrievedClasses map[string]bool
 }
 
-func NewDataStore() (*DataStore, error) {
+func NewDataStore(ctx *Context) (*DataStore, error) {
 	dataStore := &DataStore{
 		Classes:              make(map[string]Class),
 		client:               &http.Client{Transport: &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}}},
+		ctx:                  ctx,
 		GlobalMetaDefinition: loadGlobalMetaDefinition(),
 		retrievedClasses:     make(map[string]bool),
 	}
