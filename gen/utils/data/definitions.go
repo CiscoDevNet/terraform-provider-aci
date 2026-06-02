@@ -14,6 +14,8 @@ type GlobalMetaDefinition struct {
 	// Used to globally override the default snake_case derivation for specific properties (e.g., "descr" → "description").
 	// Per-class PropertyDefinition.AttributeName takes precedence over this.
 	AttributeNameOverrides map[string]string `yaml:"attribute_name_overrides"`
+	// A list of class names to globally exclude from parent resolution (root-level singletons like polUni, fabricInst).
+	ExcludeParents []string `yaml:"exclude_parents"`
 	// A list of property names to exclude from all classes.
 	// A class-level PropertyDefinition entry for the same property takes precedence over this global exclude.
 	ExcludeProperties []string `yaml:"exclude_properties"`
@@ -32,13 +34,21 @@ func loadGlobalMetaDefinition() GlobalMetaDefinition {
 		genLogger.Fatal("A file 'global.yaml' is required to be defined in the definitions folder.")
 	}
 
-	var definitionGlobalMetaData GlobalMetaDefinition
-	err = yaml.Unmarshal(definition, &definitionGlobalMetaData)
+	definitionGlobalMetaData, err := parseGlobalMetaDefinition(definition)
 	if err != nil {
 		genLogger.Fatal(err.Error())
 	}
 
 	return definitionGlobalMetaData
+}
+
+// parseGlobalMetaDefinition decodes raw YAML bytes into a GlobalMetaDefinition.
+// UnmarshalStrict rejects unknown YAML keys so renamed/typo'd fields surface
+// as a generator error instead of being silently ignored.
+func parseGlobalMetaDefinition(data []byte) (GlobalMetaDefinition, error) {
+	var definitionGlobalMetaData GlobalMetaDefinition
+	err := yaml.UnmarshalStrict(data, &definitionGlobalMetaData)
+	return definitionGlobalMetaData, err
 }
 
 type ClassDocumentationDefinition struct {
@@ -106,8 +116,13 @@ type PropertyDefinition struct {
 	HiddenVersions string `yaml:"hidden_versions"`
 	// Controls the schema behavior of the property.
 	// Valid values: "required", "optional", "read_only", "exclude".
-	// When empty, the default behavior is derived from the meta file (isConfigurable+isNaming → required, isConfigurable → optional).
-	Restriction string `yaml:"restriction"`
+	// When the field is omitted or empty, the default behavior is derived from the meta file
+	// (isConfigurable+isNaming → required, isConfigurable → optional).
+	Restriction RestrictionEnum `yaml:"restriction"`
+	// Overrides the RequiresReplace behavior for the property.
+	// When non-nil, takes precedence over the meta-derived `isNaming` logic.
+	// Use true to force replacement on change; false to suppress even for naming properties.
+	RequiresReplace *bool `yaml:"requires_replace"`
 	// Overrides the sensitive flag for the property.
 	// When true, the property is marked as sensitive in the Terraform schema regardless of the meta file.
 	Sensitive bool `yaml:"sensitive"`
@@ -124,8 +139,8 @@ type PropertyDefinition struct {
 	RemoveValidValues []string `yaml:"remove_valid_values"`
 	// Overrides the value type derived from the meta `uitype`.
 	// Accepted values mirror the ValueTypeEnum vocabulary: "string", "set", "ip_address", "semantic_equality".
-	// An error is returned during generation when set to an unrecognized value.
-	ValueType string `yaml:"value_type"`
+	// An error is returned by YAML decoding when set to an unrecognized value.
+	ValueType ValueTypeEnum `yaml:"value_type"`
 	// Per-property documentation overrides (description, notes, warnings).
 	// Reuses the shared ArtifactDocumentationDefinition struct.
 	Documentation ArtifactDocumentationDefinition `yaml:"documentation"`
@@ -134,6 +149,34 @@ type PropertyDefinition struct {
 	// An empty version string means the default applies to all versions.
 	// When non-empty, completely replaces the meta-derived defaults.
 	DefaultValues map[string]string `yaml:"default_values"`
+	// Test configuration for the property. Controls test value generation and inclusion/exclusion.
+	TestConfig TestConfigDefinition `yaml:"test_config"`
+}
+
+// TestValueEntryDefinition is the YAML representation of a single test value entry.
+type TestValueEntryDefinition struct {
+	// The value to write into HCL configuration.
+	ConfigValue string `yaml:"config_value"`
+	// Whether to include this value in the test config. Pointer: nil = default true, explicit false = omit.
+	ConfigInclude *bool `yaml:"config_include"`
+	// Expected value in state after apply. Empty = same as ConfigValue.
+	AssertValue string `yaml:"assert_value"`
+	// Controls HCL rendering: "string" (default, quoted), "reference" (unquoted expression).
+	ValueType ValueRenderTypeEnum `yaml:"value_type"`
+}
+
+// TestConfigDefinition groups test-related overrides for a property definition.
+type TestConfigDefinition struct {
+	// Values for the "all attributes" create step. Each entry becomes a TestValueEntry.
+	Create []TestValueEntryDefinition `yaml:"create"`
+	// Values for the "required-only" step. Typically auto-derived; explicit overrides here.
+	Default []TestValueEntryDefinition `yaml:"default"`
+	// Values for the update step. Each entry becomes a TestValueEntry.
+	Update []TestValueEntryDefinition `yaml:"update"`
+	// Values for the ForceNew step. Typically auto-derived (same as Create for non-parent_dn).
+	ForceNew []TestValueEntryDefinition `yaml:"force_new"`
+	// When true, the property is excluded from generated tests entirely.
+	IgnoreInTest bool `yaml:"ignore_in_test"`
 }
 
 // ValidatorDefinition mirrors the YAML/JSON shape of a single validator entry (min/max plus optional regex statements).
@@ -158,8 +201,9 @@ type RelationInfoDefinition struct {
 	// below; an error is returned during generation when `Disabled` is combined with any of
 	// `Type`, `FromClass`, or `ToClasses`.
 	Disabled bool `yaml:"disabled"`
-	// Relationship type. Valid values: "named", "explicit".
-	Type string `yaml:"type"`
+	// Relationship type. Valid values: "named", "explicit". Zero value (UndefinedRelationshipType)
+	// means "no override" — fall back to meta `relationInfo.type`.
+	Type RelationshipTypeEnum `yaml:"type"`
 	// Source class of the relation in `pkg:Class` form (e.g., "fv:EPg").
 	FromClass string `yaml:"from_class"`
 	// Target classes of the relation in `pkg:Class` form (e.g., ["vz:BrCP"]).
@@ -226,6 +270,62 @@ type ClassDefinition struct {
 	RnPrepend string `yaml:"rn_prepend"`
 	// Overrides the versions from the meta file. Format: "1.0(1e)-" or "4.2(7f)-4.2(7w),5.2(1g)-".
 	SupportedVersions string `yaml:"supported_versions"`
+	// Test configuration for the class. Controls dependency resolution and child test value overrides.
+	TestConfig ClassTestConfigDefinition `yaml:"test_config"`
+}
+
+// TestDependencyDefinition is used at ALL levels of test_config.dependencies (top-level and nested).
+// Role is required at the top level (tells resource-under-test how to consume this dep).
+// Role must be empty at nested levels (pure prerequisites). Validated based on depth.
+type TestDependencyDefinition struct {
+	// The class name of the dependency resource. Always required.
+	ClassName string `yaml:"class_name"`
+	// The reference value: either a static DN string or a Terraform resource/datasource attribute path.
+	Reference string `yaml:"reference"`
+	// How to interpret the Reference field. Valid values: "static", "resource", "data_source".
+	// When omitted, defaults to ResourceReference.
+	ReferenceType ReferenceTypeEnum `yaml:"reference_type"`
+	// Role of this dependency. Valid values: "parent", "target". Required at top level, empty for nested.
+	Role TestDependencyRoleEnum `yaml:"role"`
+	// Recursive dependencies: resources that THIS dependency needs to exist first.
+	Dependencies []TestDependencyDefinition `yaml:"dependencies"`
+	// Optional property overrides for the dependency resource's HCL configuration.
+	ConfigOverrides map[string]string `yaml:"config_overrides"`
+	// Children of THIS dependency resource (i.e. nested blocks within the dependency's HCL),
+	// keyed by child class name. Overrides auto-derived child test values for the dependency.
+	Children map[string]ChildTestOverrideDefinition `yaml:"children"`
+}
+
+// ChildTestOverrideDefinition is the YAML representation of child test value overrides.
+// Keyed by child class name in the parent map. No instance_count — count is determined
+// by the child class's own IsSingleNestedWhenDefinedAsChild setting.
+type ChildTestOverrideDefinition struct {
+	// Full replacement: when present, ALL auto-derived instances are discarded and replaced by these.
+	Instances []ChildTestInstanceOverrideDefinition `yaml:"instances"`
+}
+
+// ChildTestInstanceOverrideDefinition represents a single instance override with its properties and nested children.
+type ChildTestInstanceOverrideDefinition struct {
+	// Property overrides for this instance, keyed by attribute name.
+	Properties map[string]string `yaml:"properties"`
+	// Grandchildren of THIS override instance (i.e. nested blocks within this child instance),
+	// keyed by grandchild class name. Recursively overrides auto-derived nested children.
+	Children map[string]ChildTestOverrideDefinition `yaml:"children"`
+}
+
+// ClassTestConfigDefinition groups all test-related configuration for a class.
+// Consistent with PropertyDefinition.TestConfig — both use the `test_config` YAML key.
+type ClassTestConfigDefinition struct {
+	// When true, Dependencies fully replaces all auto-resolved dependencies.
+	// When false (default), Dependencies are merged on top of auto-resolved dependencies.
+	ReplaceAutoResolved bool `yaml:"replace_auto_resolved"`
+	// Test dependencies for the class. By default additive on top of auto-resolved dependencies.
+	// Set replace_auto_resolved to true to skip auto-resolution entirely.
+	Dependencies []TestDependencyDefinition `yaml:"dependencies"`
+	// Children of THIS class (the one being generated), keyed by child class name.
+	// When an entry's `instances` is set, it fully replaces the auto-derived instances
+	// for that child class; unspecified child classes keep their auto-derived values.
+	Children map[string]ChildTestOverrideDefinition `yaml:"children"`
 }
 
 func loadClassDefinition(className string) ClassDefinition {
@@ -238,10 +338,19 @@ func loadClassDefinition(className string) ClassDefinition {
 		return classDefinitionData
 	}
 
-	err = yaml.Unmarshal(classDefinitionBytes, &classDefinitionData)
+	classDefinitionData, err = parseClassDefinition(classDefinitionBytes)
 	if err != nil {
 		genLogger.Fatal(err.Error())
 	}
 
 	return classDefinitionData
+}
+
+// parseClassDefinition decodes raw YAML bytes into a ClassDefinition.
+// UnmarshalStrict rejects unknown YAML keys so renamed/typo'd fields surface
+// as a generator error instead of being silently ignored.
+func parseClassDefinition(data []byte) (ClassDefinition, error) {
+	var classDefinitionData ClassDefinition
+	err := yaml.UnmarshalStrict(data, &classDefinitionData)
+	return classDefinitionData, err
 }
