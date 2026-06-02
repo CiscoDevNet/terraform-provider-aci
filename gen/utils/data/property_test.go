@@ -1843,3 +1843,350 @@ func TestPropertySetValueType(t *testing.T) {
 	}
 }
 
+type setTestValuesInput struct {
+	PropertyName       string
+	AttributeName      string
+	PropertyDefinition PropertyDefinition
+	ValidValues        ValidValues
+	ValueType          ValueTypeEnum
+	Documentation      PropertyDocumentation
+	Required           bool
+	Optional           bool
+	ReadOnly           bool
+}
+
+type setTestValuesExpected struct {
+	IgnoreInTest   bool
+	TestValuesNil  bool
+	CreateValues   []string
+	UpdateValues   []string
+	DefaultInclude []bool
+	DefaultAssert  []string
+	CreateTypes    []ValueRenderTypeEnum
+	ForceNewValues []string
+}
+
+func TestSetTestValues(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	boolTrue := true
+	boolFalse := false
+
+	testCases := []test.TestCase{
+		{
+			Name: "test_ignore_in_test",
+			Input: setTestValuesInput{
+				PropertyName: "testProp",
+				PropertyDefinition: PropertyDefinition{
+					TestConfig: TestConfigDefinition{
+						IgnoreInTest: true,
+					},
+				},
+			},
+			Expected: setTestValuesExpected{
+				IgnoreInTest:  true,
+				TestValuesNil: true,
+			},
+		},
+		{
+			Name: "test_read_only_property",
+			Input: setTestValuesInput{
+				PropertyName: "pcTag",
+				ReadOnly:     true,
+			},
+			Expected: setTestValuesExpected{
+				TestValuesNil: true,
+			},
+		},
+		{
+			Name: "test_explicit_config",
+			Input: setTestValuesInput{
+				PropertyName: "testProp",
+				PropertyDefinition: PropertyDefinition{
+					TestConfig: TestConfigDefinition{
+						Create: []TestValueEntryDefinition{
+							{ConfigValue: "create_val", ConfigInclude: &boolTrue, AssertValue: "assert_val", ValueType: StringValue},
+						},
+						Update: []TestValueEntryDefinition{
+							{ConfigValue: "update_val", ConfigInclude: &boolTrue},
+						},
+						Default: []TestValueEntryDefinition{
+							{ConfigValue: "", ConfigInclude: &boolFalse, AssertValue: "default_val"},
+						},
+						ForceNew: []TestValueEntryDefinition{
+							{ConfigValue: "force_new_val", ConfigInclude: &boolTrue},
+						},
+					},
+				},
+			},
+			Expected: setTestValuesExpected{
+				CreateValues:   []string{"create_val"},
+				UpdateValues:   []string{"update_val"},
+				DefaultInclude: []bool{false},
+				DefaultAssert:  []string{"default_val"},
+				ForceNewValues: []string{"force_new_val"},
+			},
+		},
+		{
+			Name: "test_explicit_reference_type",
+			Input: setTestValuesInput{
+				PropertyName: "tDn",
+				PropertyDefinition: PropertyDefinition{
+					TestConfig: TestConfigDefinition{
+						Create: []TestValueEntryDefinition{
+							{ConfigValue: "aci_tenant.test.id", ConfigInclude: &boolTrue, ValueType: ReferenceValue},
+						},
+					},
+				},
+			},
+			Expected: setTestValuesExpected{
+				CreateValues: []string{"aci_tenant.test.id"},
+				CreateTypes:  []ValueRenderTypeEnum{ReferenceValue},
+			},
+		},
+		{
+			Name: "test_auto_derive_from_valid_values",
+			Input: setTestValuesInput{
+				PropertyName: "mode",
+				Optional:     true,
+				ValidValues: ValidValues{
+					"1": {LocalName: "regular"},
+					"2": {LocalName: "native"},
+					"3": {LocalName: "untagged"},
+				},
+				Documentation: PropertyDocumentation{
+					DefaultValues: []DefaultValue{{Value: "regular"}},
+				},
+			},
+			Expected: setTestValuesExpected{
+				CreateValues:   []string{"native"},
+				UpdateValues:   []string{"regular"},
+				DefaultInclude: []bool{false},
+				DefaultAssert:  []string{"regular"},
+				ForceNewValues: []string{"native"},
+			},
+		},
+		{
+			Name: "test_auto_derive_from_valid_values_single_value",
+			Input: setTestValuesInput{
+				PropertyName: "mode",
+				Optional:     true,
+				ValidValues: ValidValues{
+					"1": {LocalName: "enabled"},
+				},
+			},
+			Expected: setTestValuesExpected{
+				CreateValues:   []string{"enabled"},
+				UpdateValues:   []string{"enabled"},
+				DefaultInclude: []bool{false},
+				DefaultAssert:  []string{""},
+			},
+		},
+		{
+			Name: "test_auto_derive_free_form_optional",
+			Input: setTestValuesInput{
+				PropertyName:  "descr",
+				AttributeName: "description",
+				Optional:      true,
+			},
+			Expected: setTestValuesExpected{
+				CreateValues:   []string{"description_create"},
+				UpdateValues:   []string{"description_update"},
+				DefaultInclude: []bool{false},
+				DefaultAssert:  []string{""},
+				ForceNewValues: []string{"description_create"},
+			},
+		},
+		{
+			Name: "test_auto_derive_free_form_required",
+			Input: setTestValuesInput{
+				PropertyName:  "name",
+				AttributeName: "name",
+				Required:      true,
+			},
+			Expected: setTestValuesExpected{
+				CreateValues:   []string{"test_name"},
+				UpdateValues:   []string{"test_name"},
+				DefaultInclude: []bool{true},
+				DefaultAssert:  []string{"test_name"},
+				ForceNewValues: []string{"test_name"},
+			},
+		},
+		{
+			Name: "test_auto_derive_set_type",
+			Input: setTestValuesInput{
+				PropertyName:  "matchT",
+				AttributeName: "match_type",
+				Optional:      true,
+				ValueType:     Set,
+				ValidValues: ValidValues{
+					"1": {LocalName: "all"},
+					"2": {LocalName: "atleast_one"},
+					"3": {LocalName: "atmost_one"},
+					"4": {LocalName: "none"},
+				},
+			},
+			Expected: setTestValuesExpected{
+				CreateValues:   []string{"all", "atleast_one"},
+				UpdateValues:   []string{"atmost_one", "none"},
+				DefaultInclude: []bool{false},
+				DefaultAssert:  []string{""},
+				ForceNewValues: []string{"all", "atleast_one"},
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.(setTestValuesInput)
+			expected := testCase.Expected.(setTestValuesExpected)
+
+			property := &Property{
+				PropertyName:       input.PropertyName,
+				AttributeName:      input.AttributeName,
+				propertyDefinition: input.PropertyDefinition,
+				ValidValues:        input.ValidValues,
+				ValueType:          input.ValueType,
+				Documentation:      input.Documentation,
+				Required:           input.Required,
+				Optional:           input.Optional,
+				ReadOnly:           input.ReadOnly,
+			}
+
+			property.setTestValues()
+
+			assert.Equal(t, expected.IgnoreInTest, property.IgnoreInTest, test.MessageEqual(expected.IgnoreInTest, property.IgnoreInTest, testCase.Name))
+
+			if expected.TestValuesNil {
+				assert.Nil(t, property.TestValues, testCase.Name+": TestValues should be nil")
+				return
+			}
+
+			assert.NotNil(t, property.TestValues, testCase.Name+": TestValues should not be nil")
+
+			if expected.CreateValues != nil {
+				assert.Len(t, property.TestValues.Create, len(expected.CreateValues), testCase.Name+": Create length mismatch")
+				for i, v := range expected.CreateValues {
+					assert.Equal(t, v, property.TestValues.Create[i].ConfigValue, test.MessageEqual(v, property.TestValues.Create[i].ConfigValue, testCase.Name))
+				}
+			}
+
+			if expected.UpdateValues != nil {
+				assert.Len(t, property.TestValues.Update, len(expected.UpdateValues), testCase.Name+": Update length mismatch")
+				for i, v := range expected.UpdateValues {
+					assert.Equal(t, v, property.TestValues.Update[i].ConfigValue, test.MessageEqual(v, property.TestValues.Update[i].ConfigValue, testCase.Name))
+				}
+			}
+
+			if expected.DefaultInclude != nil {
+				assert.Len(t, property.TestValues.Default, len(expected.DefaultInclude), testCase.Name+": Default length mismatch")
+				for i, inc := range expected.DefaultInclude {
+					assert.Equal(t, inc, property.TestValues.Default[i].ConfigInclude, test.MessageEqual(inc, property.TestValues.Default[i].ConfigInclude, testCase.Name))
+				}
+			}
+
+			if expected.DefaultAssert != nil {
+				for i, v := range expected.DefaultAssert {
+					assert.Equal(t, v, property.TestValues.Default[i].AssertValue, test.MessageEqual(v, property.TestValues.Default[i].AssertValue, testCase.Name))
+				}
+			}
+
+			if expected.CreateTypes != nil {
+				for i, vt := range expected.CreateTypes {
+					assert.Equal(t, vt, property.TestValues.Create[i].ValueType, test.MessageEqual(vt, property.TestValues.Create[i].ValueType, testCase.Name))
+				}
+			}
+
+			if expected.ForceNewValues != nil {
+				assert.Len(t, property.TestValues.ForceNew, len(expected.ForceNewValues), testCase.Name+": ForceNew length mismatch")
+				for i, v := range expected.ForceNewValues {
+					assert.Equal(t, v, property.TestValues.ForceNew[i].ConfigValue, test.MessageEqual(v, property.TestValues.ForceNew[i].ConfigValue, testCase.Name))
+				}
+			}
+		})
+	}
+}
+
+type convertTestValueEntriesExpected struct {
+	Nil           bool
+	Length        int
+	ConfigInclude []bool
+	AssertValues  []string
+}
+
+func TestConvertTestValueEntries(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	boolTrue := true
+
+	testCases := []test.TestCase{
+		{
+			Name:  "test_nil_input",
+			Input: []TestValueEntryDefinition(nil),
+			Expected: convertTestValueEntriesExpected{
+				Nil: true,
+			},
+		},
+		{
+			Name:  "test_empty_input",
+			Input: []TestValueEntryDefinition{},
+			Expected: convertTestValueEntriesExpected{
+				Nil: true,
+			},
+		},
+		{
+			Name: "test_nil_config_include_defaults_to_true",
+			Input: []TestValueEntryDefinition{
+				{ConfigValue: "value1", ConfigInclude: nil},
+			},
+			Expected: convertTestValueEntriesExpected{
+				Length:        1,
+				ConfigInclude: []bool{true},
+				AssertValues:  []string{"value1"},
+			},
+		},
+		{
+			Name: "test_explicit_config_include",
+			Input: []TestValueEntryDefinition{
+				{ConfigValue: "value1", ConfigInclude: &boolTrue, AssertValue: "custom_assert"},
+			},
+			Expected: convertTestValueEntriesExpected{
+				Length:        1,
+				ConfigInclude: []bool{true},
+				AssertValues:  []string{"custom_assert"},
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.([]TestValueEntryDefinition)
+			expected := testCase.Expected.(convertTestValueEntriesExpected)
+
+			result := convertTestValueEntries(input)
+
+			if expected.Nil {
+				assert.Nil(t, result, testCase.Name+": result should be nil")
+				return
+			}
+
+			assert.Len(t, result, expected.Length, test.MessageEqual(expected.Length, len(result), testCase.Name))
+
+			if expected.ConfigInclude != nil {
+				for i, inc := range expected.ConfigInclude {
+					assert.Equal(t, inc, result[i].ConfigInclude, test.MessageEqual(inc, result[i].ConfigInclude, testCase.Name))
+				}
+			}
+
+			if expected.AssertValues != nil {
+				for i, v := range expected.AssertValues {
+					assert.Equal(t, v, result[i].AssertValue, test.MessageEqual(v, result[i].AssertValue, testCase.Name))
+				}
+			}
+		})
+	}
+}

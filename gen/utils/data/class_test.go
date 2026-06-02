@@ -3,6 +3,7 @@ package data
 import (
 	"bytes"
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils/test"
@@ -2938,4 +2939,2150 @@ func TestSetProperties(t *testing.T) {
 			}
 		})
 	}
+}
+
+type setTestDependenciesInput struct {
+	Classes     map[string]Class
+	TargetClass string
+}
+
+type setTestDependenciesExpected struct {
+	DependencyCount int
+	Dependencies    []expectedDependency
+}
+
+type expectedDependency struct {
+	Role            TestDependencyRoleEnum
+	Reference       string
+	ReferenceType   ReferenceTypeEnum
+	Class           string
+	NestedCount     int
+	NestedRefs      []string
+	ConfigOverrides map[string]string
+}
+
+func TestSetTestDependencies(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	testCases := []test.TestCase{
+		{
+			Name: "test_auto_resolve_parents",
+			Input: setTestDependenciesInput{
+				TargetClass: "fvAp",
+				Classes: map[string]Class{
+					"fvTenant": {
+						Name:         testClassName("fvTenant"),
+						ResourceName: "tenant",
+					},
+					"fvAp": {
+						Name:            testClassName("fvAp"),
+						ResourceName:    "application_profile",
+						Parents:         []*ClassName{testClassName("fvTenant")},
+						ClassDefinition: ClassDefinition{},
+					},
+				},
+			},
+			Expected: setTestDependenciesExpected{
+				DependencyCount: 2,
+				Dependencies: []expectedDependency{
+					{Role: Parent, Reference: "aci_tenant.test.id", ReferenceType: ResourceReference},
+					{Role: Parent, Reference: "aci_tenant.test_2.id", ReferenceType: ResourceReference},
+				},
+			},
+		},
+		{
+			Name: "test_auto_resolve_targets_single_target",
+			Input: setTestDependenciesInput{
+				TargetClass: "fvRsBd",
+				Classes: map[string]Class{
+					"fvBD": {
+						Name:         testClassName("fvBD"),
+						ResourceName: "bridge_domain",
+					},
+					"fvRsBd": {
+						Name:         testClassName("fvRsBd"),
+						ResourceName: "relation_to_bridge_domain",
+						Relation: Relation{
+							RelationalClass: true,
+							ToClasses:       []*ClassName{testClassName("fvBD")},
+						},
+						ClassDefinition: ClassDefinition{},
+					},
+				},
+			},
+			Expected: setTestDependenciesExpected{
+				DependencyCount: 2,
+				Dependencies: []expectedDependency{
+					{Role: Target, Reference: "aci_bridge_domain.test.id", ReferenceType: ResourceReference},
+					{Role: Target, Reference: "aci_bridge_domain.test_2.id", ReferenceType: ResourceReference},
+				},
+			},
+		},
+		{
+			Name: "test_auto_resolve_recursive",
+			Input: setTestDependenciesInput{
+				TargetClass: "fvAEPg",
+				Classes: map[string]Class{
+					"fvTenant": {
+						Name:         testClassName("fvTenant"),
+						ResourceName: "tenant",
+					},
+					"fvAp": {
+						Name:         testClassName("fvAp"),
+						ResourceName: "application_profile",
+						Parents:      []*ClassName{testClassName("fvTenant")},
+					},
+					"fvAEPg": {
+						Name:            testClassName("fvAEPg"),
+						ResourceName:    "application_epg",
+						Parents:         []*ClassName{testClassName("fvAp")},
+						ClassDefinition: ClassDefinition{},
+					},
+				},
+			},
+			Expected: setTestDependenciesExpected{
+				DependencyCount: 2,
+				Dependencies: []expectedDependency{
+					{Role: Parent, Reference: "aci_application_profile.test.id", ReferenceType: ResourceReference, NestedCount: 1, NestedRefs: []string{"aci_tenant.test.id"}},
+					{Role: Parent, Reference: "aci_application_profile.test_2.id", ReferenceType: ResourceReference, NestedCount: 1, NestedRefs: []string{"aci_tenant.test.id"}},
+				},
+			},
+		},
+		{
+			Name: "test_explicit_replace_auto_resolved",
+			Input: setTestDependenciesInput{
+				TargetClass: "testClass",
+				Classes: map[string]Class{
+					"fvTenant": {
+						Name:         testClassName("fvTenant"),
+						ResourceName: "tenant",
+					},
+					"testClass": {
+						Name:         testClassName("testClass"),
+						ResourceName: "test_resource",
+						Parents:      []*ClassName{testClassName("fvTenant")},
+						ClassDefinition: ClassDefinition{
+							TestConfig: ClassTestConfigDefinition{
+								ReplaceAutoResolved: true,
+								Dependencies: []TestDependencyDefinition{
+									{
+										ClassName:     "fvTenant",
+										Reference:     "aci_tenant.test.id",
+										ReferenceType: ResourceReference,
+										Role:          Parent,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			Expected: setTestDependenciesExpected{
+				DependencyCount: 1,
+				Dependencies: []expectedDependency{
+					{Role: Parent, Reference: "aci_tenant.test.id", ReferenceType: ResourceReference, Class: "fvTenant"},
+				},
+			},
+		},
+		{
+			Name: "test_skip_root_level_parent",
+			Input: setTestDependenciesInput{
+				TargetClass: "fvTenant",
+				Classes: map[string]Class{
+					"fvTenant": {
+						Name:            testClassName("fvTenant"),
+						ResourceName:    "tenant",
+						Parents:         []*ClassName{testClassName("polUni")},
+						ClassDefinition: ClassDefinition{},
+					},
+				},
+			},
+			Expected: setTestDependenciesExpected{
+				DependencyCount: 0,
+			},
+		},
+		{
+			Name: "test_multi_target_requires_explicit",
+			Input: setTestDependenciesInput{
+				TargetClass: "fvRsProv",
+				Classes: map[string]Class{
+					"vzBrCP": {
+						Name:         testClassName("vzBrCP"),
+						ResourceName: "contract",
+					},
+					"vzTaboo": {
+						Name:         testClassName("vzTaboo"),
+						ResourceName: "taboo_contract",
+					},
+					"fvRsProv": {
+						Name:         testClassName("fvRsProv"),
+						ResourceName: "relation_to_provided_contract",
+						Relation: Relation{
+							RelationalClass: true,
+							ToClasses:       []*ClassName{testClassName("vzBrCP"), testClassName("vzTaboo")},
+						},
+						ClassDefinition: ClassDefinition{},
+					},
+				},
+			},
+			Expected: setTestDependenciesExpected{
+				DependencyCount: 0,
+			},
+		},
+		{
+			Name: "test_config_override_placeholder_resolution",
+			Input: setTestDependenciesInput{
+				TargetClass: "fvRsBd",
+				Classes: map[string]Class{
+					"fvTenant": {
+						Name:         testClassName("fvTenant"),
+						ResourceName: "tenant",
+					},
+					"fvBD": {
+						Name:         testClassName("fvBD"),
+						ResourceName: "bridge_domain",
+						Parents:      []*ClassName{testClassName("fvTenant")},
+					},
+					"fvRsBd": {
+						Name:         testClassName("fvRsBd"),
+						ResourceName: "relation_to_bridge_domain",
+						ClassDefinition: ClassDefinition{
+							TestConfig: ClassTestConfigDefinition{
+								ReplaceAutoResolved: true,
+								Dependencies: []TestDependencyDefinition{
+									{
+										ClassName:     "fvTenant",
+										Reference:     "aci_tenant.test.id",
+										ReferenceType: ResourceReference,
+										Role:          Parent,
+									},
+									{
+										ClassName:       "fvBD",
+										Reference:       "aci_bridge_domain.test.id",
+										ReferenceType:   ResourceReference,
+										Role:            Target,
+										ConfigOverrides: map[string]string{"tenant_dn": "{{aci_tenant.test.id}}"},
+										Dependencies: []TestDependencyDefinition{
+											{
+												ClassName:     "fvTenant",
+												Reference:     "aci_tenant.test.id",
+												ReferenceType: ResourceReference,
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			Expected: setTestDependenciesExpected{
+				DependencyCount: 2,
+				Dependencies: []expectedDependency{
+					{Role: Parent, Reference: "aci_tenant.test.id", ReferenceType: ResourceReference},
+					{Role: Target, Reference: "aci_bridge_domain.test.id", ReferenceType: ResourceReference, ConfigOverrides: map[string]string{"tenant_dn": "aci_tenant.test.id"}},
+				},
+			},
+		},
+		{
+			Name: "test_explicit_additive",
+			Input: setTestDependenciesInput{
+				TargetClass: "fvRsBd",
+				Classes: map[string]Class{
+					"fvTenant": {
+						Name:         testClassName("fvTenant"),
+						ResourceName: "tenant",
+					},
+					"fvAp": {
+						Name:         testClassName("fvAp"),
+						ResourceName: "application_profile",
+						Parents:      []*ClassName{testClassName("fvTenant")},
+					},
+					"fvBD": {
+						Name:         testClassName("fvBD"),
+						ResourceName: "bridge_domain",
+						Parents:      []*ClassName{testClassName("fvTenant")},
+					},
+					"fvRsBd": {
+						Name:         testClassName("fvRsBd"),
+						ResourceName: "relation_to_bridge_domain",
+						Parents:      []*ClassName{testClassName("fvAp")},
+						ClassDefinition: ClassDefinition{
+							TestConfig: ClassTestConfigDefinition{
+								Dependencies: []TestDependencyDefinition{
+									{
+										ClassName:     "fvBD",
+										Reference:     "aci_bridge_domain.extra.id",
+										ReferenceType: ResourceReference,
+										Role:          Target,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			Expected: setTestDependenciesExpected{
+				DependencyCount: 3,
+				Dependencies: []expectedDependency{
+					// Explicit definitions are processed first.
+					{Role: Target, Reference: "aci_bridge_domain.extra.id", ReferenceType: ResourceReference, Class: "fvBD"},
+					// Auto-resolved remainder fills in parents.
+					{Role: Parent, Reference: "aci_application_profile.test.id", ReferenceType: ResourceReference},
+					{Role: Parent, Reference: "aci_application_profile.test_2.id", ReferenceType: ResourceReference},
+				},
+			},
+		},
+		{
+			Name: "test_explicit_additive_dedup",
+			Input: setTestDependenciesInput{
+				TargetClass: "fvAp",
+				Classes: map[string]Class{
+					"fvTenant": {
+						Name:         testClassName("fvTenant"),
+						ResourceName: "tenant",
+					},
+					"fvAp": {
+						Name:         testClassName("fvAp"),
+						ResourceName: "application_profile",
+						Parents:      []*ClassName{testClassName("fvTenant")},
+						ClassDefinition: ClassDefinition{
+							TestConfig: ClassTestConfigDefinition{
+								Dependencies: []TestDependencyDefinition{
+									{
+										ClassName:     "fvTenant",
+										Reference:     "aci_tenant.test.id",
+										ReferenceType: ResourceReference,
+										Role:          Parent,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			Expected: setTestDependenciesExpected{
+				// Explicit defines aci_tenant.test.id first; auto-resolve adds aci_tenant.test_2.id.
+				DependencyCount: 2,
+				Dependencies: []expectedDependency{
+					{Role: Parent, Reference: "aci_tenant.test.id", ReferenceType: ResourceReference},
+					{Role: Parent, Reference: "aci_tenant.test_2.id", ReferenceType: ResourceReference},
+				},
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.(setTestDependenciesInput)
+			expected := testCase.Expected.(setTestDependenciesExpected)
+
+			ds := &DataStore{
+				Classes:              input.Classes,
+				GlobalMetaDefinition: GlobalMetaDefinition{},
+				ctx:                  NewContext(),
+			}
+
+			class := ds.Classes[input.TargetClass]
+			class.setTestDependencies(ds)
+
+			assert.Len(t, class.TestDependencies, expected.DependencyCount, test.MessageEqual(expected.DependencyCount, len(class.TestDependencies), testCase.Name))
+
+			for i, expectedDep := range expected.Dependencies {
+				if i >= len(class.TestDependencies) {
+					break
+				}
+				actual := class.TestDependencies[i]
+				assert.Equal(t, expectedDep.Role, actual.Role, test.MessageEqual(expectedDep.Role, actual.Role, testCase.Name))
+				assert.Equal(t, expectedDep.Reference, actual.Reference, test.MessageEqual(expectedDep.Reference, actual.Reference, testCase.Name))
+				assert.Equal(t, expectedDep.ReferenceType, actual.ReferenceType, test.MessageEqual(expectedDep.ReferenceType, actual.ReferenceType, testCase.Name))
+
+				if expectedDep.Class != "" {
+					assert.Equal(t, expectedDep.Class, actual.Class.String(), test.MessageEqual(expectedDep.Class, actual.Class.String(), testCase.Name))
+				}
+
+				if expectedDep.NestedCount > 0 {
+					assert.Len(t, actual.Dependencies, expectedDep.NestedCount, test.MessageEqual(expectedDep.NestedCount, len(actual.Dependencies), testCase.Name))
+					for j, nestedRef := range expectedDep.NestedRefs {
+						if j < len(actual.Dependencies) {
+							assert.Equal(t, nestedRef, actual.Dependencies[j].Reference, test.MessageEqual(nestedRef, actual.Dependencies[j].Reference, testCase.Name))
+						}
+					}
+				}
+
+				if expectedDep.ConfigOverrides != nil {
+					for key, val := range expectedDep.ConfigOverrides {
+						assert.Equal(t, val, actual.ConfigOverrides[key], test.MessageEqual(val, actual.ConfigOverrides[key], testCase.Name))
+					}
+				}
+			}
+		})
+	}
+}
+
+func TestSetTestDependenciesDagDedup(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	ds := &DataStore{
+		Classes: map[string]Class{
+			"fvTenant": {
+				Name:         testClassName("fvTenant"),
+				ResourceName: "tenant",
+			},
+			"fvAp": {
+				Name:         testClassName("fvAp"),
+				ResourceName: "application_profile",
+				Parents:      []*ClassName{testClassName("fvTenant")},
+			},
+			"fvBD": {
+				Name:         testClassName("fvBD"),
+				ResourceName: "bridge_domain",
+				Parents:      []*ClassName{testClassName("fvTenant")},
+			},
+			"fvRsBd": {
+				Name:         testClassName("fvRsBd"),
+				ResourceName: "relation_to_bridge_domain",
+				Parents:      []*ClassName{testClassName("fvAp")},
+				Relation: Relation{
+					RelationalClass: true,
+					ToClasses:       []*ClassName{testClassName("fvBD")},
+				},
+				ClassDefinition: ClassDefinition{},
+			},
+		},
+		GlobalMetaDefinition: GlobalMetaDefinition{},
+		ctx:                  NewContext(),
+	}
+
+	class := ds.Classes["fvRsBd"]
+	class.setTestDependencies(ds)
+
+	var tenantRefs []*TestDependency
+	collectAllDeps(class.TestDependencies, &tenantRefs, "aci_tenant.test.id")
+	if len(tenantRefs) > 1 {
+		for i := 1; i < len(tenantRefs); i++ {
+			assert.Same(t, tenantRefs[0], tenantRefs[i], "DAG dedup should reuse the same pointer")
+		}
+	}
+}
+
+type parsePlaceholderExpected struct {
+	Reference string
+	Ok        bool
+}
+
+func TestParsePlaceholder(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	testCases := []test.TestCase{
+		{
+			Name:     "test_valid_placeholder",
+			Input:    "{{aci_bridge_domain.test.id}}",
+			Expected: parsePlaceholderExpected{Reference: "aci_bridge_domain.test.id", Ok: true},
+		},
+		{
+			Name:     "test_leading_whitespace",
+			Input:    "{{ aci_bridge_domain.test.id}}",
+			Expected: parsePlaceholderExpected{Reference: "aci_bridge_domain.test.id", Ok: true},
+		},
+		{
+			Name:     "test_trailing_whitespace",
+			Input:    "{{aci_bridge_domain.test.id }}",
+			Expected: parsePlaceholderExpected{Reference: "aci_bridge_domain.test.id", Ok: true},
+		},
+		{
+			Name:     "test_both_whitespace",
+			Input:    "{{ aci_bridge_domain.test.id }}",
+			Expected: parsePlaceholderExpected{Reference: "aci_bridge_domain.test.id", Ok: true},
+		},
+		{
+			Name:     "test_not_a_placeholder_plain_string",
+			Input:    "aci_tenant.test.id",
+			Expected: parsePlaceholderExpected{Reference: "", Ok: false},
+		},
+		{
+			Name:     "test_not_a_placeholder_only_prefix",
+			Input:    "{{aci_tenant.test.id",
+			Expected: parsePlaceholderExpected{Reference: "", Ok: false},
+		},
+		{
+			Name:     "test_not_a_placeholder_only_suffix",
+			Input:    "aci_tenant.test.id}}",
+			Expected: parsePlaceholderExpected{Reference: "", Ok: false},
+		},
+		{
+			Name:     "test_empty_string",
+			Input:    "",
+			Expected: parsePlaceholderExpected{Reference: "", Ok: false},
+		},
+		{
+			Name:     "test_prefix_not_at_start",
+			Input:    "prefix{{aci_tenant.test.id}}",
+			Expected: parsePlaceholderExpected{Reference: "", Ok: false},
+		},
+		{
+			Name:     "test_suffix_not_at_end",
+			Input:    "{{aci_tenant.test.id}}suffix",
+			Expected: parsePlaceholderExpected{Reference: "", Ok: false},
+		},
+		{
+			Name:     "test_single_braces",
+			Input:    "{aci_tenant.test.id}",
+			Expected: parsePlaceholderExpected{Reference: "", Ok: false},
+		},
+		{
+			Name:     "test_tab_and_newline_whitespace_trimmed",
+			Input:    "{{\t\naci_tenant.test.id\n\t}}",
+			Expected: parsePlaceholderExpected{Reference: "aci_tenant.test.id", Ok: true},
+		},
+		{
+			Name: "test_empty_placeholder_documents_current_behavior",
+			// Known edge: "{{}}" parses as a placeholder with an empty reference.
+			// validateTestDependencyPlaceholders / lookup-by-reference will then fail
+			// loudly downstream, so this is preferred over silently returning false here.
+			Input:    "{{}}",
+			Expected: parsePlaceholderExpected{Reference: "", Ok: true},
+		},
+		{
+			Name:     "test_whitespace_only_placeholder",
+			Input:    "{{   }}",
+			Expected: parsePlaceholderExpected{Reference: "", Ok: true},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.(string)
+			expected := testCase.Expected.(parsePlaceholderExpected)
+
+			ref, ok := parsePlaceholder(input)
+
+			assert.Equal(t, expected.Ok, ok, test.MessageEqual(expected.Ok, ok, testCase.Name))
+			assert.Equal(t, expected.Reference, ref, test.MessageEqual(expected.Reference, ref, testCase.Name))
+		})
+	}
+}
+
+// TestIsPlaceholder exercises the boolean predicate directly. parsePlaceholder
+// delegates to isPlaceholder for its prefix/suffix check, but isPlaceholder is
+// also called on its own (e.g. validateTestDependencyPlaceholders) so its
+// behavior is worth pinning independently.
+func TestIsPlaceholder(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	cases := []test.TestCase{
+		{Name: "valid", Input: "{{aci_tenant.test.id}}", Expected: true},
+		{Name: "valid_with_whitespace", Input: "{{ aci_tenant.test.id }}", Expected: true},
+		{Name: "empty_placeholder", Input: "{{}}", Expected: true},
+		{Name: "plain_string", Input: "aci_tenant.test.id", Expected: false},
+		{Name: "empty_string", Input: "", Expected: false},
+		{Name: "only_prefix", Input: "{{aci_tenant.test.id", Expected: false},
+		{Name: "only_suffix", Input: "aci_tenant.test.id}}", Expected: false},
+		{Name: "prefix_not_at_start", Input: "prefix{{x}}", Expected: false},
+		{Name: "suffix_not_at_end", Input: "{{x}}suffix", Expected: false},
+		{Name: "single_braces", Input: "{x}", Expected: false},
+	}
+
+	for _, testCase := range cases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			got := isPlaceholder(testCase.Input.(string))
+			assert.Equal(t, testCase.Expected.(bool), got, test.MessageEqual(testCase.Expected, got, testCase.Name))
+		})
+	}
+}
+
+func TestConfigOverridePlaceholderWhitespace(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	ds := &DataStore{
+		Classes: map[string]Class{
+			"fvTenant": {
+				Name:         testClassName("fvTenant"),
+				ResourceName: "tenant",
+			},
+			"fvBD": {
+				Name:         testClassName("fvBD"),
+				ResourceName: "bridge_domain",
+				Parents:      []*ClassName{testClassName("fvTenant")},
+			},
+			"fvRsBd": {
+				Name:         testClassName("fvRsBd"),
+				ResourceName: "relation_to_bridge_domain",
+				ClassDefinition: ClassDefinition{
+					TestConfig: ClassTestConfigDefinition{
+						ReplaceAutoResolved: true,
+						Dependencies: []TestDependencyDefinition{
+							{
+								ClassName:     "fvTenant",
+								Reference:     "aci_tenant.test.id",
+								ReferenceType: ResourceReference,
+								Role:          Parent,
+							},
+							{
+								ClassName:       "fvBD",
+								Reference:       "aci_bridge_domain.test.id",
+								ReferenceType:   ResourceReference,
+								Role:            Target,
+								ConfigOverrides: map[string]string{"tenant_dn": "{{ aci_tenant.test.id }}"},
+								Dependencies: []TestDependencyDefinition{
+									{
+										ClassName:     "fvTenant",
+										Reference:     "aci_tenant.test.id",
+										ReferenceType: ResourceReference,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		GlobalMetaDefinition: GlobalMetaDefinition{},
+		ctx:                  NewContext(),
+	}
+
+	class := ds.Classes["fvRsBd"]
+	class.setTestDependencies(ds)
+
+	// ConfigOverrides placeholder with whitespace should resolve correctly.
+	assert.Len(t, class.TestDependencies, 2)
+	assert.Equal(t, "aci_tenant.test.id", class.TestDependencies[1].ConfigOverrides["tenant_dn"])
+}
+
+// collectAllDeps recursively collects all TestDependency nodes with the given reference.
+func collectAllDeps(deps []*TestDependency, result *[]*TestDependency, ref string) {
+	for _, d := range deps {
+		if d.Reference == ref {
+			*result = append(*result, d)
+		}
+		collectAllDeps(d.Dependencies, result, ref)
+	}
+}
+
+type resolvePropertyTestValuesInput struct {
+	Properties       map[string]*Property
+	TestDependencies []*TestDependency
+	Relation         Relation
+}
+
+type resolvePropertyTestValuesExpected struct {
+	PropertyChecks     map[string]expectedPropertyTestValues
+	DiagnosticContains string
+}
+
+type expectedPropertyTestValues struct {
+	Nil            bool
+	CreateValue    string
+	CreateType     ValueRenderTypeEnum
+	UpdateValue    string
+	UpdateType     ValueRenderTypeEnum
+	DefaultValue   string
+	DefaultInclude bool
+	ForceNewValue  string
+	ForceNewType   ValueRenderTypeEnum
+	ForceNewNil    bool
+}
+
+func TestResolvePropertyTestValues(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	boolTrue := true
+
+	testCases := []test.TestCase{
+		{
+			Name: "test_auto_wire_target_dn",
+			Input: resolvePropertyTestValuesInput{
+				Properties: map[string]*Property{
+					"tDn": {
+						PropertyName:  "tDn",
+						AttributeName: "target_dn",
+						Required:      true,
+					},
+				},
+				Relation: Relation{RelationalClass: true, Type: Explicit},
+				TestDependencies: []*TestDependency{
+					{Class: testClassName("fvBD"), Reference: "aci_bridge_domain.test.id", ReferenceType: ResourceReference, Role: Target},
+					{Class: testClassName("fvBD"), Reference: "aci_bridge_domain.test_2.id", ReferenceType: ResourceReference, Role: Target},
+				},
+			},
+			Expected: resolvePropertyTestValuesExpected{
+				PropertyChecks: map[string]expectedPropertyTestValues{
+					"tDn": {CreateValue: "aci_bridge_domain.test.id", CreateType: ReferenceValue, UpdateValue: "aci_bridge_domain.test_2.id", UpdateType: ReferenceValue, ForceNewValue: "aci_bridge_domain.test.id", ForceNewType: ReferenceValue},
+				},
+			},
+		},
+		{
+			Name: "test_placeholder_resolution",
+			Input: resolvePropertyTestValuesInput{
+				Properties: func() map[string]*Property {
+					prop := &Property{
+						PropertyName:  "tDn",
+						AttributeName: "target_dn",
+						propertyDefinition: PropertyDefinition{
+							TestConfig: TestConfigDefinition{
+								Create: []TestValueEntryDefinition{
+									{ConfigValue: "{{aci_tenant.test.id}}", ConfigInclude: &boolTrue, ValueType: ReferenceValue},
+								},
+							},
+						},
+					}
+					prop.setTestValues()
+					return map[string]*Property{"tDn": prop}
+				}(),
+				TestDependencies: []*TestDependency{
+					{Class: testClassName("fvTenant"), Reference: "aci_tenant.test.id", ReferenceType: ResourceReference, Role: Parent},
+				},
+			},
+			Expected: resolvePropertyTestValuesExpected{
+				PropertyChecks: map[string]expectedPropertyTestValues{
+					"tDn": {CreateValue: "aci_tenant.test.id", CreateType: ReferenceValue},
+				},
+			},
+		},
+		{
+			Name: "test_auto_wire_parent_dn",
+			Input: resolvePropertyTestValuesInput{
+				Properties: map[string]*Property{
+					"parentDn": {
+						PropertyName:  "parentDn",
+						AttributeName: "parent_dn",
+						Required:      true,
+					},
+				},
+				TestDependencies: []*TestDependency{
+					{Class: testClassName("fvTenant"), Reference: "aci_tenant.test.id", ReferenceType: ResourceReference, Role: Parent},
+					{Class: testClassName("fvTenant"), Reference: "aci_tenant.test_2.id", ReferenceType: ResourceReference, Role: Parent},
+				},
+			},
+			Expected: resolvePropertyTestValuesExpected{
+				PropertyChecks: map[string]expectedPropertyTestValues{
+					"parentDn": {CreateValue: "aci_tenant.test.id", CreateType: ReferenceValue, UpdateValue: "aci_tenant.test.id", UpdateType: ReferenceValue, DefaultValue: "aci_tenant.test.id", DefaultInclude: true, ForceNewValue: "aci_tenant.test_2.id", ForceNewType: ReferenceValue},
+				},
+			},
+		},
+		{
+			Name: "test_auto_wire_parent_dn_skip_if_no_parent_deps",
+			Input: resolvePropertyTestValuesInput{
+				Properties: map[string]*Property{
+					"parentDn": {
+						PropertyName:  "parentDn",
+						AttributeName: "parent_dn",
+						Required:      true,
+					},
+				},
+				TestDependencies: []*TestDependency{},
+			},
+			Expected: resolvePropertyTestValuesExpected{
+				PropertyChecks: map[string]expectedPropertyTestValues{
+					"parentDn": {Nil: true},
+				},
+			},
+		},
+		{
+			Name: "test_auto_wire_parent_dn_single_parent_dep",
+			Input: resolvePropertyTestValuesInput{
+				Properties: map[string]*Property{
+					"parentDn": {
+						PropertyName:  "parentDn",
+						AttributeName: "parent_dn",
+						Required:      true,
+					},
+				},
+				TestDependencies: []*TestDependency{
+					{Class: testClassName("fvTenant"), Reference: "aci_tenant.test.id", ReferenceType: ResourceReference, Role: Parent},
+				},
+			},
+			Expected: resolvePropertyTestValuesExpected{
+				PropertyChecks: map[string]expectedPropertyTestValues{
+					"parentDn": {
+						CreateValue:    "aci_tenant.test.id",
+						CreateType:     ReferenceValue,
+						UpdateValue:    "aci_tenant.test.id",
+						UpdateType:     ReferenceValue,
+						DefaultValue:   "aci_tenant.test.id",
+						DefaultInclude: true,
+						ForceNewNil:    true,
+					},
+				},
+			},
+		},
+		{
+			Name: "test_auto_wire_parent_dn_skip_if_explicit_config",
+			Input: resolvePropertyTestValuesInput{
+				Properties: func() map[string]*Property {
+					prop := &Property{
+						PropertyName:  "parentDn",
+						AttributeName: "parent_dn",
+						Required:      true,
+						propertyDefinition: PropertyDefinition{
+							TestConfig: TestConfigDefinition{
+								Create: []TestValueEntryDefinition{
+									{ConfigValue: "aci_tenant.custom.id", ConfigInclude: &boolTrue},
+								},
+							},
+						},
+					}
+					prop.setTestValues()
+					return map[string]*Property{"parentDn": prop}
+				}(),
+				TestDependencies: []*TestDependency{
+					{Class: testClassName("fvTenant"), Reference: "aci_tenant.test.id", ReferenceType: ResourceReference, Role: Parent},
+				},
+			},
+			Expected: resolvePropertyTestValuesExpected{
+				PropertyChecks: map[string]expectedPropertyTestValues{
+					"parentDn": {CreateValue: "aci_tenant.custom.id"},
+				},
+			},
+		},
+		{
+			Name: "test_named_relation_two_targets_wires_name",
+			Input: resolvePropertyTestValuesInput{
+				Properties: map[string]*Property{
+					"tnFvBDName": {PropertyName: "tnFvBDName", AttributeName: "tn_fv_bd_name", Required: true},
+				},
+				Relation: Relation{
+					RelationalClass: true,
+					Type:            Named,
+					ToClasses:       []*ClassName{testClassName("fvBD")},
+				},
+				TestDependencies: []*TestDependency{
+					{Class: testClassName("fvBD"), Reference: "aci_bridge_domain.test.id", ReferenceType: ResourceReference, Role: Target},
+					{Class: testClassName("fvBD"), Reference: "aci_bridge_domain.test_2.id", ReferenceType: ResourceReference, Role: Target},
+				},
+			},
+			Expected: resolvePropertyTestValuesExpected{
+				PropertyChecks: map[string]expectedPropertyTestValues{
+					"tnFvBDName": {
+						CreateValue:   "aci_bridge_domain.test.name",
+						CreateType:    ReferenceValue,
+						UpdateValue:   "aci_bridge_domain.test_2.name",
+						UpdateType:    ReferenceValue,
+						ForceNewValue: "aci_bridge_domain.test.name",
+						ForceNewType:  ReferenceValue,
+					},
+				},
+			},
+		},
+		{
+			Name: "test_named_relation_single_target_reuses_create",
+			Input: resolvePropertyTestValuesInput{
+				Properties: map[string]*Property{
+					"tnFvBDName": {PropertyName: "tnFvBDName", AttributeName: "tn_fv_bd_name", Required: true},
+				},
+				Relation: Relation{
+					RelationalClass: true,
+					Type:            Named,
+					ToClasses:       []*ClassName{testClassName("fvBD")},
+				},
+				TestDependencies: []*TestDependency{
+					{Class: testClassName("fvBD"), Reference: "aci_bridge_domain.test.id", ReferenceType: ResourceReference, Role: Target},
+				},
+			},
+			Expected: resolvePropertyTestValuesExpected{
+				PropertyChecks: map[string]expectedPropertyTestValues{
+					"tnFvBDName": {
+						CreateValue:   "aci_bridge_domain.test.name",
+						CreateType:    ReferenceValue,
+						UpdateValue:   "aci_bridge_domain.test.name",
+						UpdateType:    ReferenceValue,
+						ForceNewValue: "aci_bridge_domain.test.name",
+						ForceNewType:  ReferenceValue,
+					},
+				},
+			},
+		},
+		{
+			Name: "test_named_relation_no_property_no_op",
+			Input: resolvePropertyTestValuesInput{
+				Properties: map[string]*Property{},
+				Relation: Relation{
+					RelationalClass: true,
+					Type:            Named,
+					ToClasses:       []*ClassName{testClassName("fvBD")},
+				},
+				TestDependencies: []*TestDependency{
+					{Class: testClassName("fvBD"), Reference: "aci_bridge_domain.test.id", ReferenceType: ResourceReference, Role: Target},
+				},
+			},
+			Expected: resolvePropertyTestValuesExpected{
+				PropertyChecks: map[string]expectedPropertyTestValues{},
+			},
+		},
+		{
+			Name: "test_named_relation_static_reference_diagnostic",
+			Input: resolvePropertyTestValuesInput{
+				Properties: map[string]*Property{
+					"tnFvBDName": {PropertyName: "tnFvBDName", AttributeName: "tn_fv_bd_name", Required: true},
+				},
+				Relation: Relation{
+					RelationalClass: true,
+					Type:            Named,
+					ToClasses:       []*ClassName{testClassName("fvBD")},
+				},
+				TestDependencies: []*TestDependency{
+					{Class: testClassName("fvBD"), Reference: "uni/tn-common/BD-default", ReferenceType: StaticReference, Role: Target},
+				},
+			},
+			Expected: resolvePropertyTestValuesExpected{
+				PropertyChecks: map[string]expectedPropertyTestValues{
+					"tnFvBDName": {Nil: true},
+				},
+				DiagnosticContains: "static reference",
+			},
+		},
+		{
+			Name: "test_named_relation_with_test_config_skipped",
+			Input: resolvePropertyTestValuesInput{
+				Properties: func() map[string]*Property {
+					prop := &Property{
+						PropertyName:  "tnFvBDName",
+						AttributeName: "tn_fv_bd_name",
+						propertyDefinition: PropertyDefinition{
+							TestConfig: TestConfigDefinition{
+								Create: []TestValueEntryDefinition{
+									{ConfigValue: "explicit_name", ConfigInclude: &boolTrue},
+								},
+							},
+						},
+					}
+					prop.setTestValues()
+					return map[string]*Property{"tnFvBDName": prop}
+				}(),
+				Relation: Relation{
+					RelationalClass: true,
+					Type:            Named,
+					ToClasses:       []*ClassName{testClassName("fvBD")},
+				},
+				TestDependencies: []*TestDependency{
+					{Class: testClassName("fvBD"), Reference: "aci_bridge_domain.test.id", ReferenceType: ResourceReference, Role: Target},
+				},
+			},
+			Expected: resolvePropertyTestValuesExpected{
+				PropertyChecks: map[string]expectedPropertyTestValues{
+					"tnFvBDName": {CreateValue: "explicit_name"},
+				},
+			},
+		},
+		{
+			Name: "test_relational_unknown_type_diagnostic",
+			Input: resolvePropertyTestValuesInput{
+				Properties: map[string]*Property{
+					"tDn": {PropertyName: "tDn", AttributeName: "target_dn", Required: true},
+				},
+				Relation: Relation{RelationalClass: true, Type: UndefinedRelationshipType},
+				TestDependencies: []*TestDependency{
+					{Class: testClassName("fvBD"), Reference: "aci_bridge_domain.test.id", ReferenceType: ResourceReference, Role: Target},
+				},
+			},
+			Expected: resolvePropertyTestValuesExpected{
+				PropertyChecks: map[string]expectedPropertyTestValues{
+					"tDn": {Nil: true},
+				},
+				DiagnosticContains: "unsupported relationship type",
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.(resolvePropertyTestValuesInput)
+			expected := testCase.Expected.(resolvePropertyTestValuesExpected)
+
+			class := Class{
+				Relation:         input.Relation,
+				Properties:       input.Properties,
+				TestDependencies: input.TestDependencies,
+			}
+
+			ds := &DataStore{ctx: NewContext()}
+			class.setPropertyTestValues(ds)
+
+			if expected.DiagnosticContains != "" {
+				err := ds.ctx.Diagnostics.Error()
+				assert.Error(t, err, testCase.Name+": expected a diagnostic")
+				if err != nil {
+					assert.True(t, strings.Contains(err.Error(), expected.DiagnosticContains), testCase.Name+": diagnostic should contain %q, got: %s", expected.DiagnosticContains, err.Error())
+				}
+			}
+
+			for propName, check := range expected.PropertyChecks {
+				prop := class.Properties[propName]
+				if check.Nil {
+					assert.Nil(t, prop.TestValues, testCase.Name+": "+propName+" TestValues should be nil")
+					continue
+				}
+				assert.NotNil(t, prop.TestValues, testCase.Name+": "+propName+" TestValues should not be nil")
+				if prop.TestValues == nil {
+					continue
+				}
+				if check.CreateValue != "" {
+					assert.Equal(t, check.CreateValue, prop.TestValues.Create[0].ConfigValue, test.MessageEqual(check.CreateValue, prop.TestValues.Create[0].ConfigValue, testCase.Name))
+					if check.CreateType != 0 {
+						assert.Equal(t, check.CreateType, prop.TestValues.Create[0].ValueType, test.MessageEqual(check.CreateType, prop.TestValues.Create[0].ValueType, testCase.Name))
+					}
+				}
+				if check.UpdateValue != "" {
+					assert.Equal(t, check.UpdateValue, prop.TestValues.Update[0].ConfigValue, test.MessageEqual(check.UpdateValue, prop.TestValues.Update[0].ConfigValue, testCase.Name))
+					if check.UpdateType != 0 {
+						assert.Equal(t, check.UpdateType, prop.TestValues.Update[0].ValueType, test.MessageEqual(check.UpdateType, prop.TestValues.Update[0].ValueType, testCase.Name))
+					}
+				}
+				if check.DefaultValue != "" {
+					assert.Equal(t, check.DefaultValue, prop.TestValues.Default[0].ConfigValue, test.MessageEqual(check.DefaultValue, prop.TestValues.Default[0].ConfigValue, testCase.Name))
+					assert.Equal(t, check.DefaultInclude, prop.TestValues.Default[0].ConfigInclude, test.MessageEqual(check.DefaultInclude, prop.TestValues.Default[0].ConfigInclude, testCase.Name))
+				}
+				if check.ForceNewNil {
+					assert.Nil(t, prop.TestValues.ForceNew, testCase.Name+": "+propName+" ForceNew should be nil")
+				} else if check.ForceNewValue != "" {
+					assert.Equal(t, check.ForceNewValue, prop.TestValues.ForceNew[0].ConfigValue, test.MessageEqual(check.ForceNewValue, prop.TestValues.ForceNew[0].ConfigValue, testCase.Name))
+					if check.ForceNewType != 0 {
+						assert.Equal(t, check.ForceNewType, prop.TestValues.ForceNew[0].ValueType, test.MessageEqual(check.ForceNewType, prop.TestValues.ForceNew[0].ValueType, testCase.Name))
+					}
+				}
+			}
+		})
+	}
+}
+
+type resolveChildTestValuesInput struct {
+	Classes     map[string]Class
+	TargetClass string
+}
+
+type resolveChildTestValuesExpected struct {
+	ChildCount int
+	Children   []expectedTestChild
+}
+
+type expectedTestChild struct {
+	ClassName     string
+	InstanceCount int
+	Instances     []expectedTestChildInstance
+}
+
+type expectedTestChildInstance struct {
+	Properties map[string]expectedTestChildProperty
+}
+
+type expectedTestChildProperty struct {
+	ConfigValue string
+	ValueType   ValueRenderTypeEnum
+}
+
+func TestResolveChildTestValues(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	testCases := []test.TestCase{
+		{
+			Name: "test_single_nested",
+			Input: resolveChildTestValuesInput{
+				TargetClass: "fvAEPg",
+				Classes: map[string]Class{
+					"fvRsBd": {
+						Name:                             testClassName("fvRsBd"),
+						ResourceName:                     "relation_to_bridge_domain",
+						IsSingleNestedWhenDefinedAsChild: true,
+						Properties: map[string]*Property{
+							"tDn": {
+								PropertyName:  "tDn",
+								AttributeName: "target_dn",
+								Required:      true,
+								TestValues: &TestValues{
+									Create: []TestValueEntry{{ConfigValue: "aci_bd.test.id", ConfigInclude: true, AssertValue: "aci_bd.test.id", ValueType: ReferenceValue}},
+									Update: []TestValueEntry{{ConfigValue: "aci_bd.test_2.id", ConfigInclude: true, AssertValue: "aci_bd.test_2.id", ValueType: ReferenceValue}},
+								},
+							},
+						},
+					},
+					"fvAEPg": {
+						Name:            testClassName("fvAEPg"),
+						ResourceName:    "application_epg",
+						Children:        []*ClassName{testClassName("fvRsBd")},
+						ClassDefinition: ClassDefinition{},
+					},
+				},
+			},
+			Expected: resolveChildTestValuesExpected{
+				ChildCount: 1,
+				Children: []expectedTestChild{
+					{
+						ClassName:     "fvRsBd",
+						InstanceCount: 1,
+						Instances: []expectedTestChildInstance{
+							{Properties: map[string]expectedTestChildProperty{"target_dn": {ConfigValue: "aci_bd.test.id", ValueType: ReferenceValue}}},
+						},
+					},
+				},
+			},
+		},
+		{
+			Name: "test_list_type",
+			Input: resolveChildTestValuesInput{
+				TargetClass: "fvTenant",
+				Classes: map[string]Class{
+					"tagAnnotation": {
+						Name:                             testClassName("tagAnnotation"),
+						ResourceName:                     "annotation",
+						IsSingleNestedWhenDefinedAsChild: false,
+						Properties: map[string]*Property{
+							"key": {
+								PropertyName:  "key",
+								AttributeName: "key",
+								Required:      true,
+								TestValues: &TestValues{
+									Create: []TestValueEntry{{ConfigValue: "key_0", ConfigInclude: true, AssertValue: "key_0", ValueType: StringValue}},
+									Update: []TestValueEntry{{ConfigValue: "key_1", ConfigInclude: true, AssertValue: "key_1", ValueType: StringValue}},
+								},
+							},
+							"value": {
+								PropertyName:  "value",
+								AttributeName: "value",
+								Optional:      true,
+								TestValues: &TestValues{
+									Create: []TestValueEntry{{ConfigValue: "value_1", ConfigInclude: true, AssertValue: "value_1", ValueType: StringValue}},
+									Update: []TestValueEntry{{ConfigValue: "value_2", ConfigInclude: true, AssertValue: "value_2", ValueType: StringValue}},
+								},
+							},
+						},
+					},
+					"fvTenant": {
+						Name:            testClassName("fvTenant"),
+						ResourceName:    "tenant",
+						Children:        []*ClassName{testClassName("tagAnnotation")},
+						ClassDefinition: ClassDefinition{},
+					},
+				},
+			},
+			Expected: resolveChildTestValuesExpected{
+				ChildCount: 1,
+				Children: []expectedTestChild{
+					{
+						ClassName:     "tagAnnotation",
+						InstanceCount: 2,
+						Instances: []expectedTestChildInstance{
+							{Properties: map[string]expectedTestChildProperty{"key": {ConfigValue: "key_0", ValueType: StringValue}, "value": {ConfigValue: "value_1", ValueType: StringValue}}},
+							{Properties: map[string]expectedTestChildProperty{"key": {ConfigValue: "key_1", ValueType: StringValue}, "value": {ConfigValue: "value_2", ValueType: StringValue}}},
+						},
+					},
+				},
+			},
+		},
+		{
+			Name: "test_with_override",
+			Input: resolveChildTestValuesInput{
+				TargetClass: "fvTenant",
+				Classes: map[string]Class{
+					"tagAnnotation": {
+						Name:                             testClassName("tagAnnotation"),
+						ResourceName:                     "annotation",
+						IsSingleNestedWhenDefinedAsChild: false,
+						Properties: map[string]*Property{
+							"key": {
+								PropertyName:  "key",
+								AttributeName: "key",
+								Required:      true,
+								TestValues: &TestValues{
+									Create: []TestValueEntry{{ConfigValue: "auto_key", ConfigInclude: true, AssertValue: "auto_key", ValueType: StringValue}},
+									Update: []TestValueEntry{{ConfigValue: "auto_key_2", ConfigInclude: true, AssertValue: "auto_key_2", ValueType: StringValue}},
+								},
+							},
+						},
+					},
+					"fvTenant": {
+						Name:         testClassName("fvTenant"),
+						ResourceName: "tenant",
+						Children:     []*ClassName{testClassName("tagAnnotation")},
+						ClassDefinition: ClassDefinition{
+							TestConfig: ClassTestConfigDefinition{
+								Children: map[string]ChildTestOverrideDefinition{
+									"tagAnnotation": {
+										Instances: []ChildTestInstanceOverrideDefinition{
+											{Properties: map[string]string{"key": "override_key_0"}},
+											{Properties: map[string]string{"key": "override_key_1"}},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			Expected: resolveChildTestValuesExpected{
+				ChildCount: 1,
+				Children: []expectedTestChild{
+					{
+						ClassName:     "tagAnnotation",
+						InstanceCount: 2,
+						Instances: []expectedTestChildInstance{
+							{Properties: map[string]expectedTestChildProperty{"key": {ConfigValue: "override_key_0", ValueType: StringValue}}},
+							{Properties: map[string]expectedTestChildProperty{"key": {ConfigValue: "override_key_1", ValueType: StringValue}}},
+						},
+					},
+				},
+			},
+		},
+		{
+			Name: "test_placeholder_resolution",
+			Input: resolveChildTestValuesInput{
+				TargetClass: "fvAEPg",
+				Classes: map[string]Class{
+					"fvRsBd": {
+						Name:                             testClassName("fvRsBd"),
+						ResourceName:                     "relation_to_bridge_domain",
+						IsSingleNestedWhenDefinedAsChild: true,
+						Properties: map[string]*Property{
+							"tDn": {
+								PropertyName:  "tDn",
+								AttributeName: "target_dn",
+								Required:      true,
+								TestValues: &TestValues{
+									Create: []TestValueEntry{{ConfigValue: "aci_bridge_domain.test.id", ConfigInclude: true, AssertValue: "aci_bridge_domain.test.id", ValueType: ReferenceValue}},
+									Update: []TestValueEntry{{ConfigValue: "aci_bridge_domain.test_2.id", ConfigInclude: true, AssertValue: "aci_bridge_domain.test_2.id", ValueType: ReferenceValue}},
+								},
+							},
+						},
+					},
+					"fvAEPg": {
+						Name:         testClassName("fvAEPg"),
+						ResourceName: "application_epg",
+						Children:     []*ClassName{testClassName("fvRsBd")},
+						ClassDefinition: ClassDefinition{
+							TestConfig: ClassTestConfigDefinition{
+								Children: map[string]ChildTestOverrideDefinition{
+									"fvRsBd": {
+										Instances: []ChildTestInstanceOverrideDefinition{
+											{Properties: map[string]string{"target_dn": "{{aci_bridge_domain.test.id}}"}},
+										},
+									},
+								},
+							},
+						},
+						TestDependencies: []*TestDependency{
+							{Class: testClassName("fvBD"), Reference: "aci_bridge_domain.test.id", ReferenceType: ResourceReference, Role: Target},
+						},
+					},
+				},
+			},
+			Expected: resolveChildTestValuesExpected{
+				ChildCount: 1,
+				Children: []expectedTestChild{
+					{
+						ClassName:     "fvRsBd",
+						InstanceCount: 1,
+						Instances: []expectedTestChildInstance{
+							{Properties: map[string]expectedTestChildProperty{"target_dn": {ConfigValue: "aci_bridge_domain.test.id", ValueType: ReferenceValue}}},
+						},
+					},
+				},
+			},
+		},
+		{
+			// Item 8 case 3: list-type child where a property has only Create (no Update).
+			// instance[1] must fall back to the Create value for that property.
+			Name: "test_list_child_update_fallback_to_create",
+			Input: resolveChildTestValuesInput{
+				TargetClass: "fvTenant",
+				Classes: map[string]Class{
+					"tagAnnotation": {
+						Name:                             testClassName("tagAnnotation"),
+						ResourceName:                     "annotation",
+						IsSingleNestedWhenDefinedAsChild: false,
+						Properties: map[string]*Property{
+							"key": {
+								PropertyName:  "key",
+								AttributeName: "key",
+								Required:      true,
+								TestValues: &TestValues{
+									Create: []TestValueEntry{{ConfigValue: "key_0", ConfigInclude: true, AssertValue: "key_0", ValueType: StringValue}},
+									Update: []TestValueEntry{{ConfigValue: "key_1", ConfigInclude: true, AssertValue: "key_1", ValueType: StringValue}},
+								},
+							},
+							"value": {
+								PropertyName:  "value",
+								AttributeName: "value",
+								Optional:      true,
+								// Update is intentionally missing — instance[1] must reuse Create.
+								TestValues: &TestValues{
+									Create: []TestValueEntry{{ConfigValue: "value_only_create", ConfigInclude: true, AssertValue: "value_only_create", ValueType: StringValue}},
+								},
+							},
+						},
+					},
+					"fvTenant": {
+						Name:            testClassName("fvTenant"),
+						ResourceName:    "tenant",
+						Children:        []*ClassName{testClassName("tagAnnotation")},
+						ClassDefinition: ClassDefinition{},
+					},
+				},
+			},
+			Expected: resolveChildTestValuesExpected{
+				ChildCount: 1,
+				Children: []expectedTestChild{
+					{
+						ClassName:     "tagAnnotation",
+						InstanceCount: 2,
+						Instances: []expectedTestChildInstance{
+							{Properties: map[string]expectedTestChildProperty{"key": {ConfigValue: "key_0", ValueType: StringValue}, "value": {ConfigValue: "value_only_create", ValueType: StringValue}}},
+							{Properties: map[string]expectedTestChildProperty{"key": {ConfigValue: "key_1", ValueType: StringValue}, "value": {ConfigValue: "value_only_create", ValueType: StringValue}}},
+						},
+					},
+				},
+			},
+		},
+		{
+			// Item 8 case 4: child has a mix of normal, IgnoreInTest, and ReadOnly properties.
+			// Only the normal property must appear in the instance.
+			Name: "test_child_skips_ignored_and_readonly",
+			Input: resolveChildTestValuesInput{
+				TargetClass: "fvTenant",
+				Classes: map[string]Class{
+					"tagAnnotation": {
+						Name:                             testClassName("tagAnnotation"),
+						ResourceName:                     "annotation",
+						IsSingleNestedWhenDefinedAsChild: true,
+						Properties: map[string]*Property{
+							"key": {
+								PropertyName:  "key",
+								AttributeName: "key",
+								Required:      true,
+								TestValues: &TestValues{
+									Create: []TestValueEntry{{ConfigValue: "k", ConfigInclude: true, AssertValue: "k", ValueType: StringValue}},
+								},
+							},
+							"ignored": {
+								PropertyName:  "ignored",
+								AttributeName: "ignored",
+								Optional:      true,
+								IgnoreInTest:  true,
+								TestValues: &TestValues{
+									Create: []TestValueEntry{{ConfigValue: "skip_me", ConfigInclude: true, AssertValue: "skip_me", ValueType: StringValue}},
+								},
+							},
+							"readOnly": {
+								PropertyName:  "readOnly",
+								AttributeName: "read_only",
+								ReadOnly:      true,
+								TestValues: &TestValues{
+									Create: []TestValueEntry{{ConfigValue: "skip_me_too", ConfigInclude: true, AssertValue: "skip_me_too", ValueType: StringValue}},
+								},
+							},
+						},
+					},
+					"fvTenant": {
+						Name:         testClassName("fvTenant"),
+						ResourceName: "tenant",
+						Children:     []*ClassName{testClassName("tagAnnotation")},
+					},
+				},
+			},
+			Expected: resolveChildTestValuesExpected{
+				ChildCount: 1,
+				Children: []expectedTestChild{
+					{
+						ClassName:     "tagAnnotation",
+						InstanceCount: 1,
+						Instances: []expectedTestChildInstance{
+							{Properties: map[string]expectedTestChildProperty{"key": {ConfigValue: "k", ValueType: StringValue}}},
+						},
+					},
+				},
+			},
+		},
+		{
+			// Item 8 case 8: override value is a {{placeholder}} but no matching TestDependency
+			// exists, so resolution leaves the value as-is. ValueType must still be inferred
+			// as ReferenceValue by buildOverrideInstances based on the placeholder shape.
+			Name: "test_child_override_with_placeholder_inferred_as_reference",
+			Input: resolveChildTestValuesInput{
+				TargetClass: "fvAEPg",
+				Classes: map[string]Class{
+					"fvRsBd": {
+						Name:                             testClassName("fvRsBd"),
+						ResourceName:                     "relation_to_bridge_domain",
+						IsSingleNestedWhenDefinedAsChild: true,
+						Properties: map[string]*Property{
+							"tDn": {
+								PropertyName:  "tDn",
+								AttributeName: "target_dn",
+								Required:      true,
+								TestValues: &TestValues{
+									Create: []TestValueEntry{{ConfigValue: "aci_bridge_domain.test.id", ConfigInclude: true, AssertValue: "aci_bridge_domain.test.id", ValueType: ReferenceValue}},
+								},
+							},
+						},
+					},
+					"fvAEPg": {
+						Name:         testClassName("fvAEPg"),
+						ResourceName: "application_epg",
+						Children:     []*ClassName{testClassName("fvRsBd")},
+						ClassDefinition: ClassDefinition{
+							TestConfig: ClassTestConfigDefinition{
+								Children: map[string]ChildTestOverrideDefinition{
+									"fvRsBd": {
+										Instances: []ChildTestInstanceOverrideDefinition{
+											{Properties: map[string]string{"target_dn": "{{aci_bridge_domain.unresolved.id}}"}},
+										},
+									},
+								},
+							},
+						},
+						// No TestDependency matching "aci_bridge_domain.unresolved.id" → placeholder stays.
+					},
+				},
+			},
+			Expected: resolveChildTestValuesExpected{
+				ChildCount: 1,
+				Children: []expectedTestChild{
+					{
+						ClassName:     "fvRsBd",
+						InstanceCount: 1,
+						Instances: []expectedTestChildInstance{
+							{Properties: map[string]expectedTestChildProperty{"target_dn": {ConfigValue: "{{aci_bridge_domain.unresolved.id}}", ValueType: ReferenceValue}}},
+						},
+					},
+				},
+			},
+		},
+		{
+			// Verifies the visited map in setChildTestValues prevents infinite recursion
+			// when child relationships form a cycle (A → B → A).
+			Name: "test_circular_children_skipped",
+			Input: resolveChildTestValuesInput{
+				TargetClass: "aaA",
+				Classes: map[string]Class{
+					"aaA": {
+						Name:         testClassName("aaA"),
+						ResourceName: "class_a",
+						Children:     []*ClassName{testClassName("bbB")},
+					},
+					"bbB": {
+						Name:         testClassName("bbB"),
+						ResourceName: "class_b",
+						Children:     []*ClassName{testClassName("aaA")},
+					},
+				},
+			},
+			Expected: resolveChildTestValuesExpected{
+				// classA's TestChildren includes classB; classB's recursion would re-enter
+				// classA but visited blocks it. Asserting we get at least one entry without
+				// hanging is the safety check.
+				ChildCount: 1,
+			},
+		},
+		{
+			// Override targets a child class that is NOT in the parent's resolved children.
+			// applyChildOverrides logs a warning and continues without panicking.
+			Name: "test_child_override_no_match_warns",
+			Input: resolveChildTestValuesInput{
+				TargetClass: "fvTenant",
+				Classes: map[string]Class{
+					"fvTenant": {
+						Name:         testClassName("fvTenant"),
+						ResourceName: "tenant",
+						Children:     []*ClassName{},
+						ClassDefinition: ClassDefinition{
+							TestConfig: ClassTestConfigDefinition{
+								Children: map[string]ChildTestOverrideDefinition{
+									"unrelatedClass": {
+										Instances: []ChildTestInstanceOverrideDefinition{
+											{Properties: map[string]string{"foo": "bar"}},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			Expected: resolveChildTestValuesExpected{
+				ChildCount: 0,
+			},
+		},
+		{
+			// Verifies item 2: child-driven dependency collection walks the child class's
+			// full TestDependencies DAG (not just top-level), so a reference inside a
+			// child instance property to a deeply nested dependency is still picked up.
+			Name: "test_child_driven_dependency_collected_recursively",
+			Input: resolveChildTestValuesInput{
+				TargetClass: "fvAEPg",
+				Classes: map[string]Class{
+					"fvRsBd": {
+						Name:                             testClassName("fvRsBd"),
+						ResourceName:                     "relation_to_bridge_domain",
+						IsSingleNestedWhenDefinedAsChild: true,
+						Properties: map[string]*Property{
+							"tDn": {
+								PropertyName:  "tDn",
+								AttributeName: "target_dn",
+								Required:      true,
+								TestValues: &TestValues{
+									Create: []TestValueEntry{{ConfigValue: "aci_bridge_domain.deep.id", ConfigInclude: true, AssertValue: "aci_bridge_domain.deep.id", ValueType: ReferenceValue}},
+								},
+							},
+						},
+						// Reference appears nested inside fvBD's own dependencies (depth 1),
+						// not at top level. Item 2's recursive lookup must find it.
+						TestDependencies: []*TestDependency{
+							{
+								Class:         testClassName("fvTenant"),
+								Reference:     "aci_tenant.test.id",
+								ReferenceType: ResourceReference,
+								Role:          Parent,
+								Dependencies: []*TestDependency{
+									{Class: testClassName("fvBD"), Reference: "aci_bridge_domain.deep.id", ReferenceType: ResourceReference},
+								},
+							},
+						},
+					},
+					"fvAEPg": {
+						Name:         testClassName("fvAEPg"),
+						ResourceName: "application_epg",
+						Children:     []*ClassName{testClassName("fvRsBd")},
+					},
+				},
+			},
+			Expected: resolveChildTestValuesExpected{
+				ChildCount: 1,
+				Children: []expectedTestChild{
+					{
+						ClassName:     "fvRsBd",
+						InstanceCount: 1,
+						Instances: []expectedTestChildInstance{
+							{Properties: map[string]expectedTestChildProperty{"target_dn": {ConfigValue: "aci_bridge_domain.deep.id", ValueType: ReferenceValue}}},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.(resolveChildTestValuesInput)
+			expected := testCase.Expected.(resolveChildTestValuesExpected)
+
+			ds := &DataStore{
+				Classes:              input.Classes,
+				GlobalMetaDefinition: GlobalMetaDefinition{},
+				ctx:                  NewContext(),
+			}
+
+			class := ds.Classes[input.TargetClass]
+			class.setChildTestValues(ds)
+
+			assert.Len(t, class.TestChildren, expected.ChildCount, test.MessageEqual(expected.ChildCount, len(class.TestChildren), testCase.Name))
+
+			for i, expectedChild := range expected.Children {
+				if i >= len(class.TestChildren) {
+					break
+				}
+				actual := class.TestChildren[i]
+				assert.Equal(t, expectedChild.ClassName, actual.Class.String(), test.MessageEqual(expectedChild.ClassName, actual.Class.String(), testCase.Name))
+				assert.Len(t, actual.Instances, expectedChild.InstanceCount, test.MessageEqual(expectedChild.InstanceCount, len(actual.Instances), testCase.Name))
+
+				for j, expectedInstance := range expectedChild.Instances {
+					if j >= len(actual.Instances) {
+						break
+					}
+					for propName, expectedProp := range expectedInstance.Properties {
+						actualEntry, exists := actual.Instances[j].Properties[propName]
+						assert.True(t, exists, testCase.Name+": property "+propName+" should exist in instance")
+						if exists {
+							assert.Equal(t, expectedProp.ConfigValue, actualEntry.ConfigValue, test.MessageEqual(expectedProp.ConfigValue, actualEntry.ConfigValue, testCase.Name))
+							assert.Equal(t, expectedProp.ValueType, actualEntry.ValueType, test.MessageEqual(expectedProp.ValueType, actualEntry.ValueType, testCase.Name))
+						}
+					}
+				}
+			}
+		})
+	}
+}
+
+// Item 8 case 10: placeholder inside a grandchild (nested override Children at level 2)
+// must resolve against the parent class's TestDependencies via the recursive
+// resolvePlaceholdersInTestChildren call.
+func TestResolveChildTestValuesGrandchildPlaceholder(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	// Grandchild class fvSubnet (under fvBD) carries a placeholder property; the
+	// override-driven grandchild instance references aci_bridge_domain.test.id which is
+	// declared at fvAEPg's TestDependencies level.
+	classes := map[string]Class{
+		"fvSubnet": {
+			Name:                             testClassName("fvSubnet"),
+			ResourceName:                     "subnet",
+			IsSingleNestedWhenDefinedAsChild: true,
+			Properties: map[string]*Property{
+				"ip": {
+					PropertyName:  "ip",
+					AttributeName: "ip",
+					Required:      true,
+					TestValues: &TestValues{
+						Create: []TestValueEntry{{ConfigValue: "10.0.0.1/24", ConfigInclude: true, AssertValue: "10.0.0.1/24", ValueType: StringValue}},
+					},
+				},
+			},
+		},
+		"fvBD": {
+			Name:         testClassName("fvBD"),
+			ResourceName: "bridge_domain",
+			Children:     []*ClassName{testClassName("fvSubnet")},
+		},
+		"fvAEPg": {
+			Name:         testClassName("fvAEPg"),
+			ResourceName: "application_epg",
+			Children:     []*ClassName{testClassName("fvBD")},
+			ClassDefinition: ClassDefinition{
+				TestConfig: ClassTestConfigDefinition{
+					Children: map[string]ChildTestOverrideDefinition{
+						"fvBD": {
+							Instances: []ChildTestInstanceOverrideDefinition{
+								{
+									Properties: map[string]string{},
+									Children: map[string]ChildTestOverrideDefinition{
+										"fvSubnet": {
+											Instances: []ChildTestInstanceOverrideDefinition{
+												{Properties: map[string]string{"ip": "{{aci_bridge_domain.test.id}}"}},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			TestDependencies: []*TestDependency{
+				{Class: testClassName("fvBD"), Reference: "aci_bridge_domain.test.id", ReferenceType: ResourceReference, Role: Target},
+			},
+		},
+	}
+
+	ds := &DataStore{
+		Classes:              classes,
+		GlobalMetaDefinition: GlobalMetaDefinition{},
+		ctx:                  NewContext(),
+	}
+
+	class := ds.Classes["fvAEPg"]
+	class.setChildTestValues(ds)
+
+	// Drill down: fvAEPg.TestChildren[0] = fvBD, .Instances[0].Children[0] = fvSubnet, .Instances[0].Properties["ip"]
+	assert.Len(t, class.TestChildren, 1, "expected one top-level child (fvBD)")
+	if len(class.TestChildren) == 0 {
+		return
+	}
+	bd := class.TestChildren[0]
+	assert.Equal(t, "fvBD", bd.Class.String())
+	assert.Len(t, bd.Instances, 1, "expected one fvBD instance from override")
+	if len(bd.Instances) == 0 {
+		return
+	}
+	assert.Len(t, bd.Instances[0].Children, 1, "expected one grandchild (fvSubnet)")
+	if len(bd.Instances[0].Children) == 0 {
+		return
+	}
+	subnet := bd.Instances[0].Children[0]
+	assert.Equal(t, "fvSubnet", subnet.Class.String())
+	assert.Len(t, subnet.Instances, 1)
+	if len(subnet.Instances) == 0 {
+		return
+	}
+	ip, ok := subnet.Instances[0].Properties["ip"]
+	assert.True(t, ok, "grandchild property 'ip' must exist")
+	assert.Equal(t, "aci_bridge_domain.test.id", ip.ConfigValue, "grandchild placeholder must resolve against parent TestDependencies")
+	assert.Equal(t, ReferenceValue, ip.ValueType, "resolved grandchild value must be typed as ReferenceValue")
+}
+
+type validateTestCompletenessInput struct {
+	TestDependencies []*TestDependency
+	Properties       map[string]*Property
+	TestChildren     []*TestChild
+}
+
+func TestValidateTestCompleteness(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	testCases := []test.TestCase{
+		{
+			Name: "test_no_errors_when_all_resolved",
+			Input: validateTestCompletenessInput{
+				TestDependencies: []*TestDependency{
+					{Reference: "aci_tenant.test.id", ConfigOverrides: map[string]string{"key": "resolved_value"}},
+				},
+				Properties: map[string]*Property{
+					"name": {
+						AttributeName: "name",
+						TestValues: &TestValues{
+							Create: []TestValueEntry{{ConfigValue: "test_name"}},
+						},
+					},
+				},
+			},
+			Expected: 0,
+		},
+		{
+			Name: "test_unresolved_config_override_placeholder",
+			Input: validateTestCompletenessInput{
+				TestDependencies: []*TestDependency{
+					{Reference: "aci_bd.test.id", ConfigOverrides: map[string]string{"tenant_dn": "{{aci_tenant.test.id}}"}},
+				},
+			},
+			Expected: 1,
+		},
+		{
+			Name: "test_unresolved_nested_dependency_placeholder",
+			Input: validateTestCompletenessInput{
+				TestDependencies: []*TestDependency{
+					{
+						Reference: "aci_bd.test.id",
+						Dependencies: []*TestDependency{
+							{Reference: "aci_tenant.test.id", ConfigOverrides: map[string]string{"name": "{{aci_other.test.id}}"}},
+						},
+					},
+				},
+			},
+			Expected: 1,
+		},
+		{
+			Name: "test_unresolved_property_placeholder",
+			Input: validateTestCompletenessInput{
+				Properties: map[string]*Property{
+					"tDn": {
+						AttributeName: "target_dn",
+						TestValues: &TestValues{
+							Create: []TestValueEntry{{ConfigValue: "{{aci_bd.test.id}}"}},
+							Update: []TestValueEntry{{ConfigValue: "{{aci_bd.test_2.id}}"}},
+						},
+					},
+				},
+			},
+			Expected: 2,
+		},
+		{
+			Name: "test_unresolved_child_placeholder",
+			Input: validateTestCompletenessInput{
+				TestChildren: []*TestChild{
+					{
+						Class: testClassName("fvRsBd"),
+						Instances: []TestChildInstance{
+							{Properties: map[string]TestValueEntry{"target_dn": {ConfigValue: "{{aci_bd.test.id}}"}}},
+						},
+					},
+				},
+			},
+			Expected: 1,
+		},
+		{
+			Name: "test_multiple_errors_accumulated",
+			Input: validateTestCompletenessInput{
+				TestDependencies: []*TestDependency{
+					{Reference: "aci_bd.test.id", ConfigOverrides: map[string]string{"tenant_dn": "{{aci_tenant.test.id}}"}},
+				},
+				Properties: map[string]*Property{
+					"tDn": {
+						AttributeName: "target_dn",
+						TestValues: &TestValues{
+							Create:   []TestValueEntry{{ConfigValue: "{{aci_bd.test.id}}"}},
+							ForceNew: []TestValueEntry{{ConfigValue: "{{aci_bd.test.id}}"}},
+						},
+					},
+				},
+				TestChildren: []*TestChild{
+					{
+						Class: testClassName("fvRsBd"),
+						Instances: []TestChildInstance{
+							{Properties: map[string]TestValueEntry{"target_dn": {ConfigValue: "{{aci_bd.test.id}}"}}},
+						},
+					},
+				},
+			},
+			Expected: 4,
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.(validateTestCompletenessInput)
+			expectedErrorCount := testCase.Expected.(int)
+
+			ctx := NewContext()
+			class := &Class{
+				Name:             testClassName("testClass"),
+				TestDependencies: input.TestDependencies,
+				Properties:       input.Properties,
+				TestChildren:     input.TestChildren,
+			}
+
+			class.validateTestCompleteness(ctx)
+
+			assert.Len(t, ctx.Diagnostics.errors, expectedErrorCount, test.MessageEqual(expectedErrorCount, len(ctx.Diagnostics.errors), testCase.Name))
+		})
+	}
+}
+
+// TestValidateTestDependencyPlaceholders_CycleProtection verifies that the
+// `visited` map prevents infinite recursion when the dependency DAG forms a
+// cycle (A → B → A). The unresolved placeholder on each node must be reported
+// exactly once.
+func TestValidateTestDependencyPlaceholders_CycleProtection(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	dependencyA := &TestDependency{
+		Reference:       "aci_a.test.id",
+		ConfigOverrides: map[string]string{"k": "{{unresolved.a}}"},
+	}
+	dependencyB := &TestDependency{
+		Reference:       "aci_b.test.id",
+		ConfigOverrides: map[string]string{"k": "{{unresolved.b}}"},
+	}
+	dependencyA.Dependencies = []*TestDependency{dependencyB}
+	dependencyB.Dependencies = []*TestDependency{dependencyA} // cycle
+
+	ctx := NewContext()
+	class := &Class{Name: testClassName("testClass"), TestDependencies: []*TestDependency{dependencyA}}
+
+	class.validateTestDependencyPlaceholders(ctx, class.TestDependencies, make(map[*TestDependency]bool))
+
+	assert.Len(t, ctx.Diagnostics.errors, 2,
+		"each node in the cycle must be visited exactly once and emit one diagnostic")
+}
+
+// TestValidateTestDependencyPlaceholders_PerDependencyChildren verifies that
+// unresolved placeholders inside a dependency's `Children` overrides are also
+// surfaced (not only those inside `ConfigOverrides`).
+func TestValidateTestDependencyPlaceholders_PerDependencyChildren(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	dependency := &TestDependency{
+		Reference: "aci_bd.test.id",
+		Children: map[string]*TestChild{
+			"fvRsBd": {
+				Class: testClassName("fvRsBd"),
+				Instances: []TestChildInstance{
+					{Properties: map[string]TestValueEntry{
+						"target_dn": {ConfigValue: "{{aci_unknown.test.id}}"},
+					}},
+				},
+			},
+		},
+	}
+
+	ctx := NewContext()
+	class := &Class{Name: testClassName("testClass"), TestDependencies: []*TestDependency{dependency}}
+
+	class.validateTestDependencyPlaceholders(ctx, class.TestDependencies, make(map[*TestDependency]bool))
+
+	assert.Len(t, ctx.Diagnostics.errors, 1)
+	assert.Contains(t, ctx.Diagnostics.errors[0], "target_dn")
+}
+
+// TestResolvePlaceholdersInDependencyChildren_CycleProtection verifies the
+// placeholder resolver also terminates on cyclic dependency DAGs.
+func TestResolvePlaceholdersInDependencyChildren_CycleProtection(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	dependencyA := &TestDependency{
+		Reference: "aci_a.test.id",
+		Children: map[string]*TestChild{
+			"fvRsBd": {
+				Class: testClassName("fvRsBd"),
+				Instances: []TestChildInstance{
+					{Properties: map[string]TestValueEntry{
+						"k": {ConfigValue: "{{aci_a.test.id}}"},
+					}},
+				},
+			},
+		},
+	}
+	dependencyB := &TestDependency{Reference: "aci_b.test.id"}
+	dependencyA.Dependencies = []*TestDependency{dependencyB}
+	dependencyB.Dependencies = []*TestDependency{dependencyA} // cycle
+
+	class := &Class{
+		Name:             testClassName("testClass"),
+		TestDependencies: []*TestDependency{dependencyA},
+	}
+
+	// Must terminate; the placeholder resolves to dependencyA's own reference.
+	class.resolvePlaceholdersInDependencyChildren(class.TestDependencies, make(map[*TestDependency]bool))
+
+	entry := dependencyA.Children["fvRsBd"].Instances[0].Properties["k"]
+	assert.Equal(t, "aci_a.test.id", entry.ConfigValue)
+	assert.Equal(t, ReferenceValue, entry.ValueType)
+}
+
+// TestMergeOverrideChildren covers the three branches:
+//   - base entry kept as-is (no overlay key)
+//   - base entry replaced (matching overlay key with instances)
+//   - overlay-only entry appended (no matching base)
+//
+// Plus edge cases: both empty → nil, invalid overlay class name → skipped with
+// warning, overlay key with empty Instances → ignored.
+func TestMergeOverrideChildren(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	t.Run("both_empty_returns_nil", func(t *testing.T) {
+		t.Parallel()
+		ds := &DataStore{Classes: map[string]Class{}}
+		got := mergeOverrideChildren(ds, nil, nil)
+		assert.Nil(t, got)
+	})
+
+	t.Run("base_only_kept_as_is", func(t *testing.T) {
+		t.Parallel()
+		ds := &DataStore{Classes: map[string]Class{}}
+		base := []*TestChild{{Class: testClassName("fvRsBd")}}
+		got := mergeOverrideChildren(ds, base, nil)
+		assert.Len(t, got, 1)
+		assert.Same(t, base[0], got[0], "base entry must be kept by-pointer when no overlay matches")
+	})
+
+	t.Run("base_replaced_by_overlay", func(t *testing.T) {
+		t.Parallel()
+		ds := &DataStore{Classes: map[string]Class{}}
+		base := []*TestChild{{
+			Class: testClassName("fvRsBd"),
+			Instances: []TestChildInstance{
+				{Properties: map[string]TestValueEntry{"k": {ConfigValue: "old"}}},
+			},
+		}}
+		overlay := map[string]ChildTestOverrideDefinition{
+			"fvRsBd": {Instances: []ChildTestInstanceOverrideDefinition{
+				{Properties: map[string]string{"k": "new"}},
+			}},
+		}
+
+		got := mergeOverrideChildren(ds, base, overlay)
+		assert.Len(t, got, 1)
+		assert.Equal(t, "fvRsBd", got[0].Class.String())
+		assert.Len(t, got[0].Instances, 1)
+		assert.Equal(t, "new", got[0].Instances[0].Properties["k"].ConfigValue)
+	})
+
+	t.Run("overlay_only_appended", func(t *testing.T) {
+		t.Parallel()
+		ds := &DataStore{Classes: map[string]Class{}}
+		overlay := map[string]ChildTestOverrideDefinition{
+			"fvRsBd": {Instances: []ChildTestInstanceOverrideDefinition{
+				{Properties: map[string]string{"k": "v"}},
+			}},
+		}
+
+		got := mergeOverrideChildren(ds, nil, overlay)
+		assert.Len(t, got, 1)
+		assert.Equal(t, "fvRsBd", got[0].Class.String())
+		assert.Equal(t, "v", got[0].Instances[0].Properties["k"].ConfigValue)
+	})
+
+	t.Run("overlay_only_with_empty_instances_skipped", func(t *testing.T) {
+		t.Parallel()
+		ds := &DataStore{Classes: map[string]Class{}}
+		overlay := map[string]ChildTestOverrideDefinition{
+			"fvRsBd": {Instances: nil},
+		}
+
+		got := mergeOverrideChildren(ds, nil, overlay)
+		assert.Empty(t, got, "overlay-only entry with no instances must not be appended")
+	})
+
+	t.Run("overlay_invalid_class_name_skipped", func(t *testing.T) {
+		t.Parallel()
+		ds := &DataStore{Classes: map[string]Class{}}
+		overlay := map[string]ChildTestOverrideDefinition{
+			// lowercase first letter of short name => NewClassName fails.
+			"badclassname": {Instances: []ChildTestInstanceOverrideDefinition{
+				{Properties: map[string]string{"k": "v"}},
+			}},
+		}
+
+		got := mergeOverrideChildren(ds, nil, overlay)
+		assert.Empty(t, got, "overlay entry with invalid class name must be skipped (logged as warning)")
+	})
+
+	t.Run("base_kept_when_overlay_has_empty_instances_for_same_class", func(t *testing.T) {
+		t.Parallel()
+		ds := &DataStore{Classes: map[string]Class{}}
+		base := []*TestChild{{Class: testClassName("fvRsBd")}}
+		overlay := map[string]ChildTestOverrideDefinition{
+			// Match exists but Instances is empty -> base entry must be preserved unchanged.
+			"fvRsBd": {Instances: nil},
+		}
+
+		got := mergeOverrideChildren(ds, base, overlay)
+		assert.Len(t, got, 1)
+		assert.Same(t, base[0], got[0])
+	})
+}
+
+// TestSetTestDependencies_ParentCycleProtection verifies setTestDependencies
+// terminates when two classes are each other's parent (A.Parents=[B],
+// B.Parents=[A]). Cycle protection lives in buildDependency via the
+// testDependencies map keyed by Reference.
+func TestSetTestDependencies_ParentCycleProtection(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	classNameA := testClassName("fvA")
+	classNameB := testClassName("fvB")
+
+	classA := Class{
+		Name:         classNameA,
+		ResourceName: "a",
+		Parents:      []*ClassName{classNameB},
+	}
+	classB := Class{
+		Name:         classNameB,
+		ResourceName: "b",
+		Parents:      []*ClassName{classNameA},
+	}
+
+	ctx := NewContext()
+	ds := &DataStore{
+		Classes: map[string]Class{
+			"fvA": classA,
+			"fvB": classB,
+		},
+		ctx: ctx,
+	}
+
+	// Must terminate (no stack overflow / hang).
+	classA.setTestDependencies(ds)
+
+	// First parent of A is B → two top-level Parent deps: aci_b.test.id and aci_b.test_2.id.
+	assert.Len(t, classA.TestDependencies, 2)
+	for _, testDependency := range classA.TestDependencies {
+		assert.Equal(t, Parent, testDependency.Role)
+		assert.Equal(t, "fvB", testDependency.Class.String())
+	}
+	// Each B-dep recurses into A's parent (B) which dedupes against the map.
+	// aci_b.test.id has Dependencies=[aci_a.test.id]; that nested aci_a.test.id
+	// in turn points back at the already-built aci_b.test.id node (same pointer)
+	// rather than building a fresh one — proving the cycle terminated.
+	assert.Len(t, classA.TestDependencies[0].Dependencies, 1)
+	nestedDependencyA := classA.TestDependencies[0].Dependencies[0]
+	assert.Equal(t, "aci_a.test.id", nestedDependencyA.Reference)
+	if assert.Len(t, nestedDependencyA.Dependencies, 1) {
+		assert.Same(t, classA.TestDependencies[0], nestedDependencyA.Dependencies[0],
+			"cycle must short-circuit by returning the already-built dependency pointer")
+	}
+
+	assert.NoError(t, ctx.Diagnostics.Error())
+}
+
+// TestGetTestDependenciesFromDefinitions_MissingRoleAtTopLevel verifies the
+// depth==0 + UndefinedRole validation path: a top-level entry without a role
+// must produce a diagnostic and be skipped.
+func TestGetTestDependenciesFromDefinitions_MissingRoleAtTopLevel(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	ctx := NewContext()
+	ds := &DataStore{Classes: map[string]Class{}, ctx: ctx}
+	class := &Class{Name: testClassName("testClass")}
+
+	dependencyDefinitions := []TestDependencyDefinition{
+		{ClassName: "fvTenant", Reference: "aci_tenant.test.id"}, // Role omitted
+	}
+
+	got := class.getTestDependenciesFromDefinitions(dependencyDefinitions, ds, map[string]*TestDependency{}, 0)
+	assert.Empty(t, got, "top-level entry without role must be skipped")
+	assert.Len(t, ctx.Diagnostics.errors, 1)
+	assert.Contains(t, ctx.Diagnostics.errors[0], "missing required 'role'")
+}
+
+// TestGetTestDependenciesFromDefinitions_DuplicateConflictingRoles verifies the
+// duplicate-detection branch: two top-level entries with the same Reference but
+// different non-Undefined Roles must emit a "conflicting roles" diagnostic.
+func TestGetTestDependenciesFromDefinitions_DuplicateConflictingRoles(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	ctx := NewContext()
+	ds := &DataStore{Classes: map[string]Class{}, ctx: ctx}
+	class := &Class{Name: testClassName("testClass")}
+
+	dependencyDefinitions := []TestDependencyDefinition{
+		{ClassName: "fvTenant", Reference: "aci_tenant.test.id", Role: Parent},
+		{ClassName: "fvTenant", Reference: "aci_tenant.test.id", Role: Target},
+	}
+
+	class.getTestDependenciesFromDefinitions(dependencyDefinitions, ds, map[string]*TestDependency{}, 0)
+	if assert.Len(t, ctx.Diagnostics.errors, 1) {
+		assert.Contains(t, ctx.Diagnostics.errors[0], "conflicting roles")
+	}
+}
+
+// TestGetTestDependenciesFromDefinitions_DuplicateWithConfigOverrides verifies
+// that a duplicate top-level entry carrying ConfigOverrides is flagged so the
+// author folds them into the first declaration.
+func TestGetTestDependenciesFromDefinitions_DuplicateWithConfigOverrides(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	ctx := NewContext()
+	ds := &DataStore{Classes: map[string]Class{}, ctx: ctx}
+	class := &Class{Name: testClassName("testClass")}
+
+	dependencyDefinitions := []TestDependencyDefinition{
+		{ClassName: "fvTenant", Reference: "aci_tenant.test.id", Role: Parent},
+		{ClassName: "fvTenant", Reference: "aci_tenant.test.id", Role: Parent,
+			ConfigOverrides: map[string]string{"name": "override"}},
+	}
+
+	class.getTestDependenciesFromDefinitions(dependencyDefinitions, ds, map[string]*TestDependency{}, 0)
+	if assert.Len(t, ctx.Diagnostics.errors, 1) {
+		assert.Contains(t, ctx.Diagnostics.errors[0], "carries config_overrides")
+	}
+}
+
+// TestGetTestDependenciesFromDefinitions_RolePromotion verifies the
+// nested-then-top-level promotion branch: a dep first introduced nested
+// (Role=UndefinedRole) is promoted in place when later declared at top level
+// with a real role — no diagnostic should fire.
+func TestGetTestDependenciesFromDefinitions_RolePromotion(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	ctx := NewContext()
+	ds := &DataStore{Classes: map[string]Class{}, ctx: ctx}
+	class := &Class{Name: testClassName("testClass")}
+
+	existingDependencies := map[string]*TestDependency{}
+	// Seed the map with a nested-style entry (UndefinedRole).
+	existingDependencies["aci_tenant.test.id"] = &TestDependency{
+		Class:     testClassName("fvTenant"),
+		Reference: "aci_tenant.test.id",
+		Role:      UndefinedRole,
+	}
+
+	dependencyDefinitions := []TestDependencyDefinition{
+		{ClassName: "fvTenant", Reference: "aci_tenant.test.id", Role: Parent},
+	}
+
+	class.getTestDependenciesFromDefinitions(dependencyDefinitions, ds, existingDependencies, 0)
+	assert.NoError(t, ctx.Diagnostics.Error())
+	assert.Equal(t, Parent, existingDependencies["aci_tenant.test.id"].Role,
+		"nested entry must be promoted to Parent in place")
 }
