@@ -54,6 +54,14 @@ type Property struct {
 	// The first version is the minimum version and the second version is the maximum version.
 	// A dash at the end of a range (ex. 4.2(7f)-) indicates that the class is supported from the first version to the latest version.
 	SupportedVersions *Versions
+	// Indicates if the property should be excluded from generated tests entirely.
+	// For properties that are untestable regardless of version (e.g., server-generated values).
+	// Version-gating is handled separately via SupportedVersions.
+	IgnoreInTest bool
+	// Test specific information for the property.
+	// This is used to generate the test cases and examples for the property.
+	// Nil means no test values have been resolved for this property.
+	TestValues *TestValues
 	// Validation specific information for the property.
 	// In the meta file for the class this is a regex statement that is used to validate the property.
 	Validators []Validator
@@ -88,6 +96,45 @@ type RegexStatement struct {
 	Regex string
 	// The type of the regex statement.
 	Type RegexStatementTypeEnum
+}
+
+// TestValueEntry represents a single value used in a test scenario with behavior metadata.
+type TestValueEntry struct {
+	// ConfigValue is the value written into the HCL configuration.
+	ConfigValue string
+	// ConfigInclude controls whether this value is included in test configs.
+	// When false, the value is omitted (used for required-only test steps where optional properties are skipped).
+	ConfigInclude bool
+	// AssertValue is the expected value in terraform state after apply.
+	// When empty, defaults to ConfigValue. Used when the server normalizes the value
+	// (e.g. IP zero-padding: config "fe80::1" -> state "fe80::0001").
+	AssertValue string
+	// ValueType controls HCL rendering: StringValue = quoted, ReferenceValue = unquoted expression.
+	ValueType ValueRenderTypeEnum
+	// Versions restricts this entry to specific APIC versions.
+	// Only set for Default step entries where the server default value is version-dependent.
+	// Nil means the entry applies to all versions.
+	Versions *Versions
+}
+
+// TestValues holds the per-property test values for each test scenario.
+// Each field is a full step description — the template renders all steps uniformly by iterating entries.
+// For set-typed properties, each slice contains multiple entries (one per set member).
+type TestValues struct {
+	// Create is the value(s) for the "all attributes" create step (Step 1).
+	// ConfigInclude=true for all properties that should appear in the HCL config.
+	Create []TestValueEntry
+	// Update is the changed value(s) for the update step (Step 2).
+	// ConfigInclude=true for all properties that should appear in the HCL config.
+	Update []TestValueEntry
+	// Default is the full step description for the "required-only" create step (Step 3).
+	// Required properties: ConfigInclude=true (still in config), AssertValue=same as Create.
+	// Optional properties: ConfigInclude=false (omitted from config), AssertValue=server default.
+	Default []TestValueEntry
+	// ForceNew is the full step description for the ForceNew step (Step 4).
+	// parent_dn: uses second parent reference (triggers destroy+recreate).
+	// All other properties: same as Create (resource is recreated with same attribute values).
+	ForceNew []TestValueEntry
 }
 
 type Validator struct {
@@ -231,6 +278,10 @@ func (p *Property) setPropertyData() error {
 	if err != nil {
 		return err
 	}
+
+	// setTestValues is called after setValidValues, setValueType, and setDocumentation because
+	// auto-derivation depends on p.ValidValues, p.ValueType, p.Required, and p.Documentation.DefaultValues.
+	p.setTestValues()
 
 	err = p.setSupportedVersions()
 	if err != nil {
@@ -416,6 +467,275 @@ func (p *Property) setSensitive() {
 	}
 
 	genLogger.Debugf("Successfully set Sensitive '%t' for property '%s'.", p.Sensitive, p.PropertyName)
+}
+
+func (p *Property) setTestValues() {
+	// Determine the test values for the property.
+	genLogger.Debugf("Setting TestValues for property '%s'.", p.PropertyName)
+
+	// Check if the property should be ignored in tests.
+	if p.propertyDefinition.TestConfig.IgnoreInTest {
+		p.IgnoreInTest = true
+		genLogger.Debugf("Property '%s' marked as IgnoreInTest.", p.PropertyName)
+		return
+	}
+
+	// If explicit test config is defined, convert it.
+	if p.hasTestConfigDefinition() {
+		p.TestValues = p.convertTestConfigDefinition()
+		genLogger.Debugf("Successfully set TestValues for property '%s' from definition.", p.PropertyName)
+		return
+	}
+
+	// Properties whose TestValues are references derived later by dependency resolution (autoWireParentDn, autoWireTargetDn).
+	// Skip auto-derivation — explicit TestConfig definitions are still honored above.
+	if p.PropertyName == "parentDn" || p.PropertyName == "tDn" {
+		genLogger.Debugf("Skipping auto-derivation for reference property '%s'; values will be derived during dependency resolution.", p.PropertyName)
+		return
+	}
+
+	// Auto-derive test values based on property characteristics.
+	p.TestValues = p.generateTestValues()
+
+	genLogger.Debugf("Successfully set TestValues for property '%s'.", p.PropertyName)
+}
+
+func (p *Property) hasTestConfigDefinition() bool {
+	// Determine if the property definition has any explicit test values configured.
+	// Returns true when at least one test step (Create, Update, Default, ForceNew) has entries.
+	genLogger.Tracef("Checking for explicit test config definition for property '%s'.", p.PropertyName)
+	testConfig := p.propertyDefinition.TestConfig
+	return len(testConfig.Create) > 0 || len(testConfig.Update) > 0 || len(testConfig.Default) > 0 || len(testConfig.ForceNew) > 0
+}
+
+func (p *Property) convertTestConfigDefinition() *TestValues {
+	// Convert the YAML-driven TestConfigDefinition entries into TestValues.
+	genLogger.Tracef("Converting test config definition for property '%s'.", p.PropertyName)
+	testConfig := p.propertyDefinition.TestConfig
+	testValues := &TestValues{}
+
+	testValues.Create = convertTestValueEntries(testConfig.Create)
+	testValues.Update = convertTestValueEntries(testConfig.Update)
+	testValues.Default = convertTestValueEntries(testConfig.Default)
+	testValues.ForceNew = convertTestValueEntries(testConfig.ForceNew)
+
+	genLogger.Tracef("Successfully converted test config definition for property '%s'.", p.PropertyName)
+	return testValues
+}
+
+func convertTestValueEntries(testValueEntryDefinitions []TestValueEntryDefinition) []TestValueEntry {
+	// Convert a slice of TestValueEntryDefinition to TestValueEntry.
+	// This is done manually rather than via unmarshal because the conversion applies non-trivial defaults:
+	//   - ConfigInclude defaults to true (not Go's zero value false) when the definition's *bool is nil.
+	//   - AssertValue defaults to ConfigValue (a sibling field), not a static value.
+	//   - ValueType maps from a string ("reference") to a typed enum (ReferenceValue), with StringValue as default.
+	genLogger.Tracef("Converting %d test value entry definitions.", len(testValueEntryDefinitions))
+	if len(testValueEntryDefinitions) == 0 {
+		return nil
+	}
+	result := make([]TestValueEntry, 0, len(testValueEntryDefinitions))
+	for _, testValueEntryDefinition := range testValueEntryDefinitions {
+		testValueEntry := TestValueEntry{
+			ConfigValue:   testValueEntryDefinition.ConfigValue,
+			ConfigInclude: true,
+			AssertValue:   testValueEntryDefinition.ConfigValue,
+			ValueType:     StringValue,
+		}
+		if testValueEntryDefinition.ConfigInclude != nil {
+			testValueEntry.ConfigInclude = *testValueEntryDefinition.ConfigInclude
+		}
+		if testValueEntryDefinition.AssertValue != "" {
+			testValueEntry.AssertValue = testValueEntryDefinition.AssertValue
+		}
+		if testValueEntryDefinition.ValueType != 0 {
+			testValueEntry.ValueType = testValueEntryDefinition.ValueType
+		}
+		result = append(result, testValueEntry)
+	}
+	return result
+}
+
+func (p *Property) generateTestValues() *TestValues {
+	// Generate test values automatically based on property characteristics.
+	// Returns nil if auto-derivation is not possible (e.g., read-only properties).
+	genLogger.Tracef("Generating test values for property '%s'.", p.PropertyName)
+
+	// Read-only properties don't need test values — they are never in HCL config.
+	if p.ReadOnly {
+		genLogger.Tracef("Skipping test value generation for read-only property '%s'.", p.PropertyName)
+		return nil
+	}
+
+	testValues := &TestValues{}
+
+	// Auto-derive Create and Update values.
+	switch {
+	case p.ValueType == Set:
+		testValues.Create, testValues.Update = p.generateSetValues()
+	case len(p.ValidValues) > 0:
+		testValues.Create, testValues.Update = p.generateFromValidValues()
+	default:
+		testValues.Create, testValues.Update = p.generateStringValues()
+	}
+
+	// Auto-derive Default step.
+	testValues.Default = p.generateDefault(testValues.Create)
+
+	// Auto-derive ForceNew step (same as Create — resource is recreated).
+	testValues.ForceNew = p.generateForceNew(testValues.Create)
+
+	genLogger.Tracef("Successfully generated test values for property '%s'.", p.PropertyName)
+	return testValues
+}
+
+func (p *Property) generateFromValidValues() ([]TestValueEntry, []TestValueEntry) {
+	// Pick test values from the property's ValidValues list.
+	// Returns Create and Update slices (each with one entry).
+	genLogger.Tracef("Generating test values from ValidValues for property '%s'.", p.PropertyName)
+	localNames := p.ValidValues.LocalNamesList()
+	if len(localNames) == 0 {
+		return nil, nil
+	}
+
+	createValue := localNames[0]
+	updateValue := createValue
+	if len(localNames) > 1 {
+		updateValue = localNames[1]
+	}
+
+	create := []TestValueEntry{{ConfigValue: createValue, ConfigInclude: true, AssertValue: createValue, ValueType: StringValue}}
+	update := []TestValueEntry{{ConfigValue: updateValue, ConfigInclude: true, AssertValue: updateValue, ValueType: StringValue}}
+	genLogger.Tracef("Successfully generated test values from ValidValues for property '%s'.", p.PropertyName)
+	return create, update
+}
+
+func (p *Property) generateSetValues() ([]TestValueEntry, []TestValueEntry) {
+	// Pick test values for set-typed (bitmask) properties.
+	// Returns Create (2 members) and Update (2 different members) slices.
+	genLogger.Tracef("Generating set test values for property '%s'.", p.PropertyName)
+	localNames := p.ValidValues.LocalNamesList()
+	if len(localNames) == 0 {
+		return nil, nil
+	}
+
+	// Pick members for Create: first and second (if available).
+	var create []TestValueEntry
+	create = append(create, TestValueEntry{ConfigValue: localNames[0], ConfigInclude: true, AssertValue: localNames[0], ValueType: StringValue})
+	if len(localNames) > 1 {
+		create = append(create, TestValueEntry{ConfigValue: localNames[1], ConfigInclude: true, AssertValue: localNames[1], ValueType: StringValue})
+	}
+
+	// Pick members for Update: third and fourth (if available), otherwise overlap.
+	var update []TestValueEntry
+	switch {
+	case len(localNames) > 3:
+		update = append(update,
+			TestValueEntry{ConfigValue: localNames[2], ConfigInclude: true, AssertValue: localNames[2], ValueType: StringValue},
+			TestValueEntry{ConfigValue: localNames[3], ConfigInclude: true, AssertValue: localNames[3], ValueType: StringValue},
+		)
+	case len(localNames) > 2:
+		update = append(update,
+			TestValueEntry{ConfigValue: localNames[2], ConfigInclude: true, AssertValue: localNames[2], ValueType: StringValue},
+			TestValueEntry{ConfigValue: localNames[0], ConfigInclude: true, AssertValue: localNames[0], ValueType: StringValue},
+		)
+	default:
+		// Fewer than 3 values: reuse create values for update.
+		update = create
+	}
+
+	genLogger.Tracef("Successfully generated set test values for property '%s'.", p.PropertyName)
+	return create, update
+}
+
+func (p *Property) generateStringValues() ([]TestValueEntry, []TestValueEntry) {
+	// Generate test values for free-form string properties.
+	genLogger.Tracef("Generating string test values for property '%s'.", p.PropertyName)
+
+	// Required naming properties (part of RnFormat) get a stable test name.
+	if p.Required {
+		value := "test_" + p.AttributeName
+		create := []TestValueEntry{{ConfigValue: value, ConfigInclude: true, AssertValue: value, ValueType: StringValue}}
+		genLogger.Tracef("Successfully generated string test values for property '%s'.", p.PropertyName)
+		return create, create
+	}
+
+	// Optional/free-form string properties: use attribute name + scenario suffix.
+	createValue := p.AttributeName + "_create"
+	updateValue := p.AttributeName + "_update"
+	create := []TestValueEntry{{ConfigValue: createValue, ConfigInclude: true, AssertValue: createValue, ValueType: StringValue}}
+	update := []TestValueEntry{{ConfigValue: updateValue, ConfigInclude: true, AssertValue: updateValue, ValueType: StringValue}}
+	genLogger.Tracef("Successfully generated string test values for property '%s'.", p.PropertyName)
+	return create, update
+}
+
+func (p *Property) generateDefault(create []TestValueEntry) []TestValueEntry {
+	// Build the Default step description for the "required-only" test step.
+	genLogger.Tracef("Generating default test values for property '%s'.", p.PropertyName)
+	if len(create) == 0 {
+		return nil
+	}
+
+	if p.Required {
+		// Required properties remain in HCL config during the required-only step.
+		defaults := make([]TestValueEntry, 0, len(create))
+		for _, c := range create {
+			defaults = append(defaults, TestValueEntry{
+				ConfigValue:   c.ConfigValue,
+				ConfigInclude: true,
+				AssertValue:   c.AssertValue,
+				ValueType:     c.ValueType,
+				Versions:      c.Versions,
+			})
+		}
+		genLogger.Tracef("Successfully generated default test values for property '%s'.", p.PropertyName)
+		return defaults
+	}
+
+	// Optional properties: omitted from config, assert server default.
+	if len(p.Documentation.DefaultValues) == 0 {
+		genLogger.Tracef("Successfully generated default test values for property '%s'.", p.PropertyName)
+		return []TestValueEntry{{
+			ConfigValue:   "",
+			ConfigInclude: false,
+			AssertValue:   "",
+			ValueType:     StringValue,
+		}}
+	}
+	defaults := make([]TestValueEntry, 0, len(p.Documentation.DefaultValues))
+	for _, dv := range p.Documentation.DefaultValues {
+		defaults = append(defaults, TestValueEntry{
+			ConfigValue:   "",
+			ConfigInclude: false,
+			AssertValue:   dv.Value,
+			ValueType:     StringValue,
+			Versions:      dv.Versions,
+		})
+	}
+	genLogger.Tracef("Successfully generated default test values for property '%s'.", p.PropertyName)
+	return defaults
+}
+
+func (p *Property) generateForceNew(create []TestValueEntry) []TestValueEntry {
+	// Build the ForceNew step description.
+	// ForceNew re-creates the resource under a different parent, so all properties use Create values.
+	// parent_dn is handled separately by autoWireParentDn (uses second parent reference).
+	genLogger.Tracef("Generating force new test values for property '%s'.", p.PropertyName)
+	if len(create) == 0 {
+		return nil
+	}
+
+	// All properties use the same values as Create in the ForceNew step.
+	forceNew := make([]TestValueEntry, 0, len(create))
+	for _, c := range create {
+		forceNew = append(forceNew, TestValueEntry{
+			ConfigValue:   c.ConfigValue,
+			ConfigInclude: c.ConfigInclude,
+			AssertValue:   c.AssertValue,
+			ValueType:     c.ValueType,
+		})
+	}
+	genLogger.Tracef("Successfully generated force new test values for property '%s'.", p.PropertyName)
+	return forceNew
 }
 
 func (p *Property) setValidators() error {
