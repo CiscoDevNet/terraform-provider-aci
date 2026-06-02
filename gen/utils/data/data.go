@@ -186,6 +186,11 @@ func (ds *DataStore) loadClasses() error {
 		ds.Classes[classNameStr] = class
 	}
 
+	// Set test dependencies and values for all loaded classes.
+	// This requires all classes to be present in the data store for cross-class lookups
+	// (e.g. parent and target classes).
+	ds.setTestData()
+
 	genLogger.Debugf("Successfully loaded classes from: %s.", constMetaPath)
 	return nil
 }
@@ -205,3 +210,30 @@ func (ds *DataStore) loadClass(classNameStr string) error {
 	return nil
 }
 
+func (ds *DataStore) setTestData() {
+	// Set test dependencies, property test values, child test values,
+	// and validate completeness by iterating all loaded classes in the data store.
+	// setChildTestValues requires a separate loop because it reads property test values
+	// from other classes that must already be set.
+	genLogger.Debugf("Setting test data for all classes.")
+
+	// Set test dependencies and property test values for all classes.
+	// setPropertyTestValues only reads the class's own TestDependencies so it can
+	// run in the same loop immediately after setTestDependencies.
+	for classNameStr, class := range ds.Classes {
+		class.setTestDependencies(ds)
+		class.setPropertyTestValues(ds)
+		ds.Classes[classNameStr] = class
+	}
+
+	// Set child test values and validate test completeness.
+	// This requires a separate loop because buildChildInstance reads property TestValues
+	// from other classes that must already be set above.
+	for classNameStr, class := range ds.Classes {
+		class.setChildTestValues(ds)
+		class.validateTestCompleteness(ds.ctx)
+		ds.Classes[classNameStr] = class
+	}
+
+	genLogger.Debugf("Successfully set test data for all classes.")
+}
