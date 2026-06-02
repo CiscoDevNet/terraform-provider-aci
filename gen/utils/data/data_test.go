@@ -330,3 +330,26 @@ func TestRetrieveMetaFileFromRemoteAlreadyRetrieved(t *testing.T) {
 
 	assert.NoError(t, err, test.MessageUnexpectedError(err))
 }
+
+// TestRetrieveMetaFileFromRemote_HTTPTransportError verifies the
+// fmt.Errorf("retrieve meta file for class '%s': %w", ...) error path when
+// the HTTP client cannot reach the server.
+func TestRetrieveMetaFileFromRemote_HTTPTransportError(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	// Spin up a server then close it immediately so the dial fails.
+	server := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}))
+	server.Close()
+
+	ds := &DataStore{
+		Classes:          make(map[string]Class),
+		client:           server.Client(),
+		metaHost:         server.URL[8:],
+		retrievedClasses: make(map[string]bool),
+	}
+
+	err := ds.retrieveMetaFileFromRemote("fvTenant")
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "retrieve meta file for class 'fvTenant'")
+}
