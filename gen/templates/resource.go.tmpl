@@ -191,7 +191,7 @@ var deprecated{{ capitalize .ClassName }}Type = types.ObjectType{
 
 type {{.ResourceClassName}}ResourceModelV{{.LegacySchemaVersion}} struct {
 	{{- range .LegacyAttributes}}
-	{{ .Name }} {{ if .StaticCustomType}} customTypes.{{.StaticCustomType}}StringValue{{else}}types.{{getMigrationType .ValueType}}{{ end}} `tfsdk:"{{.AttributeName}}"`
+	{{ .Name }} {{ if and .StaticCustomType (ne .StaticCustomType "VMMArpLearning")}} customTypes.{{.StaticCustomType}}StringValue{{else}}types.{{getMigrationType .ValueType}}{{ end}} `tfsdk:"{{.AttributeName}}"`
 	{{- end }}
 	{{- range .LegacyBlocks}}
 	{{ capitalize .ClassName }} types.Set `tfsdk:"{{.Name}}"`
@@ -299,7 +299,7 @@ func (r *{{.ResourceClassName}}Resource) UpgradeState(ctx context.Context) map[i
 					{{- range .Properties}}
 						{{- if isLegacyAttribute .Name $.LegacyAttributes}}{{$LegacyAttribute := getLegacyAttribute .Name $.LegacyAttributes}}
 							{{- if .HasCustomType}}
-					{{ .Name }}: customTypes.{{- if .StaticCustomType}}{{.StaticCustomType}}StringValue{ StringValue: basetypes.NewStringValue(priorStateData.{{ .Name }}.NamedValueString()){{else}}{{.ResourceClassName}}{{.Name}}StringValue{ StringValue: priorStateData.{{ .Name }}{{- end}} },
+					{{ .Name }}: customTypes.{{- if .StaticCustomType}}{{.StaticCustomType}}StringValue{ StringValue: basetypes.NewStringValue(priorStateData.{{ .Name }}.{{ if ne .StaticCustomType "VMMArpLearning"}}Named{{end}}ValueString()){{else}}{{.ResourceClassName}}{{.Name}}StringValue{ StringValue: priorStateData.{{ .Name }}{{- end}} },
 							{{- else if ne (getMigrationType $LegacyAttribute.ValueType) "List"}}
 					{{ .Name }}: priorStateData.{{ .Name }},
 							{{- end}}
