@@ -1538,21 +1538,17 @@ func buildChildInstance(childClass *Class, useCreate bool) TestChildInstance {
 			continue
 		}
 
-		var entry TestValueEntry
 		if useCreate {
 			if len(property.TestValues.Create) > 0 {
-				entry = property.TestValues.Create[0]
+				instance.Properties[property.AttributeName] = property.TestValues.Create[0]
 			}
-		} else {
-			if len(property.TestValues.Update) > 0 {
-				entry = property.TestValues.Update[0]
-			} else if len(property.TestValues.Create) > 0 {
-				entry = property.TestValues.Create[0]
-			}
+			continue
 		}
 
-		if entry.ConfigValue != "" {
-			instance.Properties[property.AttributeName] = entry
+		if len(property.TestValues.Update) > 0 {
+			instance.Properties[property.AttributeName] = property.TestValues.Update[0]
+		} else if len(property.TestValues.Create) > 0 {
+			instance.Properties[property.AttributeName] = property.TestValues.Create[0]
 		}
 	}
 
