@@ -1364,7 +1364,7 @@ func (c *Class) setTargetNameProperty(ds *DataStore) {
 			ValueType:     ReferenceValue,
 		}},
 	}
-	genLogger.Tracef("Successfully set targetDn test values for class '%s'.", c.Name)
+	genLogger.Tracef("Successfully set target-name test values for class '%s'.", c.Name)
 }
 
 func targetReferenceToName(ref string) string {
