@@ -4243,6 +4243,112 @@ func TestResolveChildTestValues(t *testing.T) {
 			},
 		},
 		{
+			// list-type child whose IdentifiedBy property has distinct Create/Update values
+			// (the auto-derived shape: required naming attribute returns "<attr>_1" and
+			// "<attr>_2"). Instance 0 takes Create, instance 1 takes Update, producing
+			// distinct APIC Dns naturally. Optional non-naming properties follow the same
+			// per-instance Create/Update split.
+			Name: "test_list_child_naming_attr_distinct_across_instances",
+			Input: resolveChildTestValuesInput{
+				TargetClass: "fvTenant",
+				Classes: map[string]Class{
+					"tagAnnotation": {
+						Name:                             testClassName("tagAnnotation"),
+						ResourceName:                     "annotation",
+						IsSingleNestedWhenDefinedAsChild: false,
+						IdentifiedBy:                     []string{"key"},
+						Properties: map[string]*Property{
+							"key": {
+								PropertyName:  "key",
+								AttributeName: "key",
+								Required:      true,
+								TestValues: &TestValues{
+									Create: []TestValueEntry{{ConfigValue: "key_1", ConfigInclude: true, AssertValue: "key_1", ValueType: StringValue}},
+									Update: []TestValueEntry{{ConfigValue: "key_2", ConfigInclude: true, AssertValue: "key_2", ValueType: StringValue}},
+								},
+							},
+							"value": {
+								PropertyName:  "value",
+								AttributeName: "value",
+								Optional:      true,
+								TestValues: &TestValues{
+									Create: []TestValueEntry{{ConfigValue: "value_1", ConfigInclude: true, AssertValue: "value_1", ValueType: StringValue}},
+									Update: []TestValueEntry{{ConfigValue: "value_2", ConfigInclude: true, AssertValue: "value_2", ValueType: StringValue}},
+								},
+							},
+						},
+					},
+					"fvTenant": {
+						Name:            testClassName("fvTenant"),
+						ResourceName:    "tenant",
+						Children:        []*ClassName{testClassName("tagAnnotation")},
+						ClassDefinition: ClassDefinition{},
+					},
+				},
+			},
+			Expected: resolveChildTestValuesExpected{
+				ChildCount: 1,
+				Children: []expectedTestChild{
+					{
+						ClassName:     "tagAnnotation",
+						InstanceCount: 2,
+						Instances: []expectedTestChildInstance{
+							{Properties: map[string]expectedTestChildProperty{"key": {ConfigValue: "key_1", ValueType: StringValue}, "value": {ConfigValue: "value_1", ValueType: StringValue}}},
+							{Properties: map[string]expectedTestChildProperty{"key": {ConfigValue: "key_2", ValueType: StringValue}, "value": {ConfigValue: "value_2", ValueType: StringValue}}},
+						},
+					},
+				},
+			},
+		},
+		{
+			// Reference-typed IdentifiedBy values flow through verbatim: instance 0 takes
+			// the Create reference and instance 1 takes the Update reference, with no
+			// per-instance mangling. Upstream auto-wiring produces distinct references
+			// (test vs test_2) for these.
+			Name: "test_list_child_reference_identifier_propagates",
+			Input: resolveChildTestValuesInput{
+				TargetClass: "fvAEPg",
+				Classes: map[string]Class{
+					"fvRsCons": {
+						Name:                             testClassName("fvRsCons"),
+						ResourceName:                     "relation_to_consumed_contract",
+						IsSingleNestedWhenDefinedAsChild: false,
+						IdentifiedBy:                     []string{"tnVzBrCPName"},
+						Properties: map[string]*Property{
+							"tnVzBrCPName": {
+								PropertyName:  "tnVzBrCPName",
+								AttributeName: "tn_vz_br_cp_name",
+								Required:      true,
+								TestValues: &TestValues{
+									Create: []TestValueEntry{{ConfigValue: "aci_contract.test.name", ConfigInclude: true, AssertValue: "aci_contract.test.name", ValueType: ReferenceValue}},
+									Update: []TestValueEntry{{ConfigValue: "aci_contract.test_2.name", ConfigInclude: true, AssertValue: "aci_contract.test_2.name", ValueType: ReferenceValue}},
+								},
+							},
+						},
+					},
+					"fvAEPg": {
+						Name:            testClassName("fvAEPg"),
+						ResourceName:    "application_epg",
+						Children:        []*ClassName{testClassName("fvRsCons")},
+						ClassDefinition: ClassDefinition{},
+					},
+				},
+			},
+			Expected: resolveChildTestValuesExpected{
+				ChildCount: 1,
+				Children: []expectedTestChild{
+					{
+						ClassName:     "fvRsCons",
+						InstanceCount: 2,
+						Instances: []expectedTestChildInstance{
+							{Properties: map[string]expectedTestChildProperty{"tn_vz_br_cp_name": {ConfigValue: "aci_contract.test.name", ValueType: ReferenceValue}}},
+							{Properties: map[string]expectedTestChildProperty{"tn_vz_br_cp_name": {ConfigValue: "aci_contract.test_2.name", ValueType: ReferenceValue}}},
+						},
+					},
+				},
+			},
+		},
+		{
 			// Item 8 case 4: child has a mix of normal, IgnoreInTest, and ReadOnly properties.
 			// Only the normal property must appear in the instance.
 			Name: "test_child_skips_ignored_and_readonly",
@@ -4512,6 +4618,93 @@ func TestResolveChildTestValues(t *testing.T) {
 	}
 }
 
+// Exercises the full seam from YAML-defined test_config overrides on a child
+// class's properties through property.setTestValues() into TestValues and from
+// there into TestChildInstance values via class.setChildTestValues(). Other
+// resolveChildTestValues cases pre-populate TestValues directly and bypass the
+// YAML conversion layer; this case guarantees explicit Create/Update overrides
+// (arbitrary literals such as MAC addresses, IP addresses, or custom strings)
+// land in instance 0 / instance 1 respectively without being overwritten by
+// auto-derivation. Required all-four-bucket completeness mirrors the runtime
+// validateStandardBucketsComplete rule.
+func TestResolveChildTestValuesYAMLOverridesPropagate(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	boolTrue := true
+	boolFalse := false
+
+	keyOverride := TestConfigDefinition{
+		Create:   []TestValueEntryDefinition{{ConfigValue: "00:00:00:00:00:01", ConfigInclude: &boolTrue, ValueType: StringValue}},
+		Update:   []TestValueEntryDefinition{{ConfigValue: "00:00:00:00:00:02", ConfigInclude: &boolTrue, ValueType: StringValue}},
+		Default:  []TestValueEntryDefinition{{ConfigValue: "00:00:00:00:00:01", ConfigInclude: &boolTrue, ValueType: StringValue}},
+		ForceNew: []TestValueEntryDefinition{{ConfigValue: "00:00:00:00:00:01", ConfigInclude: &boolTrue, ValueType: StringValue}},
+	}
+	valueOverride := TestConfigDefinition{
+		Create:   []TestValueEntryDefinition{{ConfigValue: "custom_value_create", ConfigInclude: &boolTrue, ValueType: StringValue}},
+		Update:   []TestValueEntryDefinition{{ConfigValue: "custom_value_update", ConfigInclude: &boolTrue, ValueType: StringValue}},
+		Default:  []TestValueEntryDefinition{{ConfigValue: "", ConfigInclude: &boolFalse, ValueType: StringValue}},
+		ForceNew: []TestValueEntryDefinition{{ConfigValue: "custom_value_create", ConfigInclude: &boolTrue, ValueType: StringValue}},
+	}
+
+	childClass := Class{
+		Name:                             testClassName("tagAnnotation"),
+		ResourceName:                     "annotation",
+		IsSingleNestedWhenDefinedAsChild: false,
+		IdentifiedBy:                     []string{"key"},
+		Properties: map[string]*Property{
+			"key": {
+				PropertyName:       "key",
+				AttributeName:      "key",
+				Required:           true,
+				propertyDefinition: PropertyDefinition{TestConfig: keyOverride},
+			},
+			"value": {
+				PropertyName:       "value",
+				AttributeName:      "value",
+				Optional:           true,
+				propertyDefinition: PropertyDefinition{TestConfig: valueOverride},
+			},
+		},
+	}
+	for _, property := range childClass.Properties {
+		property.setTestValues()
+	}
+
+	parentClass := Class{
+		Name:            testClassName("fvTenant"),
+		ResourceName:    "tenant",
+		Children:        []*ClassName{testClassName("tagAnnotation")},
+		ClassDefinition: ClassDefinition{},
+	}
+
+	ds := &DataStore{
+		Classes: map[string]Class{
+			"tagAnnotation": childClass,
+			"fvTenant":      parentClass,
+		},
+		GlobalMetaDefinition: GlobalMetaDefinition{},
+		ctx:                  NewContext(),
+	}
+
+	class := ds.Classes["fvTenant"]
+	class.setChildTestValues(ds)
+
+	if !assert.Len(t, class.TestChildren, 1, "expected exactly one resolved child") {
+		return
+	}
+	child := class.TestChildren[0]
+	assert.Equal(t, "tagAnnotation", child.Class.String())
+	if !assert.Len(t, child.Instances, 2, "expected two list-type child instances") {
+		return
+	}
+
+	assert.Equal(t, "00:00:00:00:00:01", child.Instances[0].Properties["key"].ConfigValue)
+	assert.Equal(t, "custom_value_create", child.Instances[0].Properties["value"].ConfigValue)
+	assert.Equal(t, "00:00:00:00:00:02", child.Instances[1].Properties["key"].ConfigValue)
+	assert.Equal(t, "custom_value_update", child.Instances[1].Properties["value"].ConfigValue)
+}
+
 // Item 8 case 10: placeholder inside a grandchild (nested override Children at level 2)
 // must resolve against the parent class's TestDependencies via the recursive
 // resolvePlaceholdersInTestChildren call.
@@ -4630,7 +4823,7 @@ func TestValidateTestCompleteness(t *testing.T) {
 					"name": {
 						AttributeName: "name",
 						TestValues: &TestValues{
-							Create: []TestValueEntry{{ConfigValue: "test_name"}},
+							Create: []TestValueEntry{{ConfigValue: "name_1"}},
 						},
 					},
 				},

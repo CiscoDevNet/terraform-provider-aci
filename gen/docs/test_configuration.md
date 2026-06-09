@@ -70,8 +70,7 @@ When no explicit `test_config` is provided on a property definition, values are 
 - Update: third and fourth members (or overlap if fewer than 4).
 
 #### Free-form string properties (no ValidValues)
-- **Optional:** Create = `"<attribute_name>_create"`, Update = `"<attribute_name>_update"`
-- **Required:** Create = Update = `"test_<attribute_name>"` (stable identifier; required attrs are not varied between the Create and Update buckets). The gate is `p.Required` only — naming/RnFormat membership is not checked.
+- Create = `"<attribute_name>_1"`, Update = `"<attribute_name>_2"` for both Required and Optional properties. Distinct buckets are the source of truth for downstream consumers: list-type child instance 0 takes Create and instance 1 takes Update (see §4.2), so this scheme keeps sibling instances on distinct APIC Dns without any per-instance value mangling. The (future) Update test step at the parent root chooses which bucket to apply for required vs optional properties; emitting both values here is safe in either case and explicit `test_config` overrides on either bucket continue to win.
 
 #### Default bucket auto-derivation
 - **Required properties:** ConfigInclude=true, ConfigValue and AssertValue copied from Create.
@@ -262,7 +261,9 @@ test_config:
 ### 4.2 Auto-Derivation
 
 - **Instance 0:** Uses child class's own `TestValues.Create` values.
-- **Instance 1** (list-type only): Uses child class's own `TestValues.Update` values (falls back to Create if Update is nil).
+- **Instance `i > 0`** (list-type only): Uses child class's own `TestValues.Update` values (falls back to Create if Update is nil so override-only Update buckets still behave).
+
+No per-instance disambiguation is applied. String-typed naming attributes (members of `IdentifiedBy`) auto-derive to distinct Create/Update values via §3 (`"<attr>_1"` and `"<attr>_2"`), so list-type children (`tagAnnotation`, `tagTag`, …) land on distinct APIC Dns naturally. Reference-typed identifiers are already disambiguated upstream (e.g. `aci_contract.test.name` vs `aci_contract.test_2.name`) and flow through verbatim. Explicit `test_config` overrides on either bucket take precedence.
 
 Recursive: Each child class's own `Children` are resolved the same way and attached as nested `TestChild` entries.
 
@@ -519,12 +520,11 @@ The data model in this document gathers test data per scenario; concrete step or
 - Multi-parent type compatibility scenario when a class has 2+ parent types (renders the second Parent class with a single `.test.id` instance and verifies the resource applies under it).
 - Explicit plan-shape assertion that a replace-trigger step shows destroy+create (currently only implicit via apply success).
 - RequiresReplace coverage strategy:
-  - Implicit coverage when a property's Create and Update values differ (Terraform auto-plans replace as part of the update step).
-  - **Gap to address:** RequiresReplace properties where Create == Update (e.g. required free-form strings auto-derived to `test_<attr>` for both buckets). Needs either smarter auto-derivation that detects `RequiresReplace=true` and forces a differing Update value, or an explicit replace-trigger scenario in the template.
+  - Implicit coverage when a property's Create and Update values differ (Terraform auto-plans replace as part of the update step). Free-form string properties always satisfy this because §3 auto-derives distinct `"<attr>_1"` / `"<attr>_2"` values.
+  - **Gap to address:** RequiresReplace properties whose `test_config` override pins Create == Update, or whose `ValidValues` only contain a single member. The (future) template Update step should detect these and either widen the value set or emit an explicit replace-trigger scenario.
 
 ### Generator code follow-ups (not template scope)
 
-- **`IsNaming` vs `Required` for stable test names:** `generateStringValues()` currently gives `test_<attr>` to every required free-form string. In ACI required ≈ naming most of the time, but the code does not enforce that. Decide whether to (a) tighten the gate to `p.metaDetails["isNaming"]` so non-naming required strings get `_create`/`_update` variance (better Update-bucket coverage), or (b) confirm "required → stable name" is intentional and update the in-code comment at `property.go:654` to match.
 - **Silent-skip diagnostics for dropped parents:** Both "3+ parents" (auto-resolver bails at `i >= 2`) and "parent with no resource and no `NoMetaFile` entry" (`getResourceNameForClass` returns empty) are dropped with only a Trace-level log. Consider emitting a Warning-level diagnostic in either case so coverage gaps are visible to whoever runs the generator.
 - **Multi-target only exercises the first two `Target`-role entries via `tDn` Create/Update.** For relations with 3+ concrete targets (e.g., `fvRsDomAtt`'s four domain types), the additional targets render in HCL but are never assigned to `tDn`. Decide whether to auto-emit additional scenarios per remaining target, or document/codify the override pattern that walks `tDn` through every target.
 
