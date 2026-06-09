@@ -1159,6 +1159,13 @@ func (c *Class) setPropertyTestValues(ds *DataStore) {
 	// Resolve placeholders in any explicitly-defined property TestValues.
 	c.resolvePlaceholdersInProperties()
 
+	// Derive Legacy test values from already-wired Create entries. Runs after
+	// parentDn/tDn wiring and placeholder resolution so cloned references are
+	// final. Iterated in PropertiesAll order for deterministic log output.
+	for _, propertyName := range c.PropertiesAll {
+		c.Properties[propertyName].setLegacyTestValues()
+	}
+
 	genLogger.Debugf("Successfully resolved property test values for class '%s'.", c.Name)
 }
 
