@@ -1532,25 +1532,24 @@ func (c *Class) buildTestChild(ds *DataStore, childClass *Class, childClassName 
 		Instances: make([]TestChildInstance, 0, instanceCount),
 	}
 
-	// Instance 0: uses child's TestValues.Create.
-	instance0 := buildChildInstance(childClass, true)
-	instance0.Children = c.buildTestChildren(ds, childClass.Children, visited)
-	testChild.Instances = append(testChild.Instances, instance0)
-
-	// Instance 1 (if list-type): uses child's TestValues.Update.
-	if instanceCount > 1 {
-		instance1 := buildChildInstance(childClass, false)
-		instance1.Children = c.buildTestChildren(ds, childClass.Children, visited)
-		testChild.Instances = append(testChild.Instances, instance1)
+	for i := 0; i < instanceCount; i++ {
+		instance := buildChildInstance(childClass, i)
+		instance.Children = c.buildTestChildren(ds, childClass.Children, visited)
+		testChild.Instances = append(testChild.Instances, instance)
 	}
 
 	genLogger.Tracef("Successfully built test child '%s' for class '%s'.", childClassName, c.Name)
 	return testChild
 }
 
-func buildChildInstance(childClass *Class, useCreate bool) TestChildInstance {
+func buildChildInstance(childClass *Class, instanceIndex int) TestChildInstance {
 	// Create a TestChildInstance from a child class's properties.
-	// If useCreate is true, uses Create values; otherwise uses Update values (falling back to Create).
+	// instanceIndex 0 takes the Create bucket value, instanceIndex > 0 takes the Update bucket
+	// value (falling back to Create when Update is nil so override-only Update buckets behave).
+	// Auto-derived string values are guaranteed distinct between Create (`<attr>_1`) and Update
+	// (`<attr>_2`) by generateStringValues, so list-type children with naming attributes resolve
+	// to distinct APIC Dns without further mangling. Reference-typed identifiers are already
+	// disambiguated upstream (e.g. aci_contract.test.name vs aci_contract.test_2.name).
 	instance := TestChildInstance{
 		Properties: make(map[string]TestValueEntry),
 	}
@@ -1560,16 +1559,17 @@ func buildChildInstance(childClass *Class, useCreate bool) TestChildInstance {
 			continue
 		}
 
-		if useCreate {
+		if instanceIndex == 0 {
 			if len(property.TestValues.Create) > 0 {
 				instance.Properties[property.AttributeName] = property.TestValues.Create[0]
 			}
 			continue
 		}
 
-		if len(property.TestValues.Update) > 0 {
+		switch {
+		case len(property.TestValues.Update) > 0:
 			instance.Properties[property.AttributeName] = property.TestValues.Update[0]
-		} else if len(property.TestValues.Create) > 0 {
+		case len(property.TestValues.Create) > 0:
 			instance.Properties[property.AttributeName] = property.TestValues.Create[0]
 		}
 	}
