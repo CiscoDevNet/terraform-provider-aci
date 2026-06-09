@@ -687,19 +687,16 @@ func (p *Property) generateSetValues() ([]TestValueEntry, []TestValueEntry) {
 
 func (p *Property) generateStringValues() ([]TestValueEntry, []TestValueEntry) {
 	// Generate test values for free-form string properties.
+	// Both Required and Optional properties get distinct Create/Update values so the two buckets
+	// are always usable as the source of truth for downstream consumers — in particular the
+	// per-instance derivation in buildChildInstance, which assigns Create to instance 0 and Update
+	// to instance 1 to disambiguate list-type child siblings. Required properties on the parent
+	// resource are not value-updated by the (template) Update step, so emitting distinct values
+	// here is safe; overrides on either bucket continue to win.
 	genLogger.Tracef("Generating string test values for property '%s'.", p.PropertyName)
 
-	// Required naming properties (part of RnFormat) get a stable test name.
-	if p.Required {
-		value := "test_" + p.AttributeName
-		create := []TestValueEntry{{ConfigValue: value, ConfigInclude: true, AssertValue: value, ValueType: StringValue}}
-		genLogger.Tracef("Successfully generated string test values for property '%s'.", p.PropertyName)
-		return create, create
-	}
-
-	// Optional/free-form string properties: use attribute name + scenario suffix.
-	createValue := p.AttributeName + "_create"
-	updateValue := p.AttributeName + "_update"
+	createValue := p.AttributeName + "_1"
+	updateValue := p.AttributeName + "_2"
 	create := []TestValueEntry{{ConfigValue: createValue, ConfigInclude: true, AssertValue: createValue, ValueType: StringValue}}
 	update := []TestValueEntry{{ConfigValue: updateValue, ConfigInclude: true, AssertValue: updateValue, ValueType: StringValue}}
 	genLogger.Tracef("Successfully generated string test values for property '%s'.", p.PropertyName)
