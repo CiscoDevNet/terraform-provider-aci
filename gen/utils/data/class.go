@@ -2011,6 +2011,7 @@ func buildStateUpgradeValue(property *Property, attributeUpgradeDefinition Attri
 		Optional:      property.Optional,
 		Computed:      property.Computed,
 		Type:          property.ValueType,
+		Status:        attributeUpgradeDefinition.LegacyStatus,
 	}
 	if attributeUpgradeDefinition.LegacyAttribute != "" {
 		stateUpgradeValue.AttributeName = attributeUpgradeDefinition.LegacyAttribute
