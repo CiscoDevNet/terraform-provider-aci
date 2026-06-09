@@ -1991,11 +1991,11 @@ func TestSetTestValues(t *testing.T) {
 				Optional:      true,
 			},
 			Expected: setTestValuesExpected{
-				CreateValues:   []string{"description_create"},
-				UpdateValues:   []string{"description_update"},
+				CreateValues:   []string{"description_1"},
+				UpdateValues:   []string{"description_2"},
 				DefaultInclude: []bool{false},
 				DefaultAssert:  []string{""},
-				ForceNewValues: []string{"description_create"},
+				ForceNewValues: []string{"description_1"},
 			},
 		},
 		{
@@ -2006,11 +2006,11 @@ func TestSetTestValues(t *testing.T) {
 				Required:      true,
 			},
 			Expected: setTestValuesExpected{
-				CreateValues:   []string{"test_name"},
-				UpdateValues:   []string{"test_name"},
+				CreateValues:   []string{"name_1"},
+				UpdateValues:   []string{"name_2"},
 				DefaultInclude: []bool{true},
-				DefaultAssert:  []string{"test_name"},
-				ForceNewValues: []string{"test_name"},
+				DefaultAssert:  []string{"name_1"},
+				ForceNewValues: []string{"name_1"},
 			},
 		},
 		{
@@ -2242,7 +2242,7 @@ func TestSetLegacyTestValues(t *testing.T) {
 				AttributeName:      "name",
 				IgnoreInTest:       true,
 				StateUpgradeValues: map[int]StateUpgradeValue{0: {AttributeName: "old_name", Type: String, Status: Functioning}},
-				ExistingTestValues: &TestValues{Create: []TestValueEntry{{ConfigValue: "test_name", ConfigInclude: true, AssertValue: "test_name", ValueType: StringValue}}},
+				ExistingTestValues: &TestValues{Create: []TestValueEntry{{ConfigValue: "name_1", ConfigInclude: true, AssertValue: "name_1", ValueType: StringValue}}},
 			},
 			Expected: setLegacyTestValuesExpected{LegacyNil: true},
 		},
@@ -2289,7 +2289,7 @@ func TestSetLegacyTestValues(t *testing.T) {
 				AttributeName:      "description",
 				ValueType:          String,
 				StateUpgradeValues: map[int]StateUpgradeValue{0: {AttributeName: "old_description", Type: String, Status: Functioning}},
-				ExistingTestValues: &TestValues{Create: []TestValueEntry{{ConfigValue: "description_create", ConfigInclude: true, AssertValue: "description_create", ValueType: StringValue}}},
+				ExistingTestValues: &TestValues{Create: []TestValueEntry{{ConfigValue: "description_1", ConfigInclude: true, AssertValue: "description_1", ValueType: StringValue}}},
 				PropertyDefinition: PropertyDefinition{
 					TestConfig: TestConfigDefinition{
 						Legacy: []TestValueEntryDefinition{
@@ -2310,7 +2310,7 @@ func TestSetLegacyTestValues(t *testing.T) {
 				PropertyName:       "name",
 				AttributeName:      "name",
 				ValueType:          String,
-				ExistingTestValues: &TestValues{Create: []TestValueEntry{{ConfigValue: "test_name", ConfigInclude: true, AssertValue: "test_name", ValueType: StringValue}}},
+				ExistingTestValues: &TestValues{Create: []TestValueEntry{{ConfigValue: "name_1", ConfigInclude: true, AssertValue: "name_1", ValueType: StringValue}}},
 			},
 			Expected: setLegacyTestValuesExpected{LegacyNil: true},
 		},
@@ -2323,7 +2323,7 @@ func TestSetLegacyTestValues(t *testing.T) {
 				StateUpgradeValues: map[int]StateUpgradeValue{
 					0: {AttributeName: "old_name", Type: String, Status: Removed},
 				},
-				ExistingTestValues: &TestValues{Create: []TestValueEntry{{ConfigValue: "test_name", ConfigInclude: true, AssertValue: "test_name", ValueType: StringValue}}},
+				ExistingTestValues: &TestValues{Create: []TestValueEntry{{ConfigValue: "name_1", ConfigInclude: true, AssertValue: "name_1", ValueType: StringValue}}},
 			},
 			Expected: setLegacyTestValuesExpected{LegacyNil: true},
 		},
@@ -2336,7 +2336,7 @@ func TestSetLegacyTestValues(t *testing.T) {
 				StateUpgradeValues: map[int]StateUpgradeValue{
 					0: {AttributeName: "name", Type: String, Status: Functioning},
 				},
-				ExistingTestValues: &TestValues{Create: []TestValueEntry{{ConfigValue: "test_name", ConfigInclude: true, AssertValue: "test_name", ValueType: StringValue}}},
+				ExistingTestValues: &TestValues{Create: []TestValueEntry{{ConfigValue: "name_1", ConfigInclude: true, AssertValue: "name_1", ValueType: StringValue}}},
 			},
 			Expected: setLegacyTestValuesExpected{LegacyNil: true},
 		},
@@ -2350,7 +2350,7 @@ func TestSetLegacyTestValues(t *testing.T) {
 					0: {AttributeName: "old_name", Type: String, Status: Removed},
 					1: {AttributeName: "name", Type: String, Status: Functioning},
 				},
-				ExistingTestValues: &TestValues{Create: []TestValueEntry{{ConfigValue: "test_name", ConfigInclude: true, AssertValue: "test_name", ValueType: StringValue}}},
+				ExistingTestValues: &TestValues{Create: []TestValueEntry{{ConfigValue: "name_1", ConfigInclude: true, AssertValue: "name_1", ValueType: StringValue}}},
 			},
 			Expected: setLegacyTestValuesExpected{LegacyNil: true},
 		},
@@ -2363,11 +2363,11 @@ func TestSetLegacyTestValues(t *testing.T) {
 				StateUpgradeValues: map[int]StateUpgradeValue{
 					0: {AttributeName: "old_name", Type: String, Status: Functioning},
 				},
-				ExistingTestValues: &TestValues{Create: []TestValueEntry{{ConfigValue: "test_name", ConfigInclude: true, AssertValue: "test_name", ValueType: StringValue}}},
+				ExistingTestValues: &TestValues{Create: []TestValueEntry{{ConfigValue: "name_1", ConfigInclude: true, AssertValue: "name_1", ValueType: StringValue}}},
 			},
 			Expected: setLegacyTestValuesExpected{
-				LegacyValues:   []string{"test_name"},
-				LegacyAsserts:  []string{"test_name"},
+				LegacyValues:   []string{"name_1"},
+				LegacyAsserts:  []string{"name_1"},
 				LegacyIncludes: []bool{true},
 				LegacyTypes:    []ValueRenderTypeEnum{StringValue},
 			},
@@ -2381,11 +2381,11 @@ func TestSetLegacyTestValues(t *testing.T) {
 				StateUpgradeValues: map[int]StateUpgradeValue{
 					0: {AttributeName: "old_description", Type: String, Status: Frozen},
 				},
-				ExistingTestValues: &TestValues{Create: []TestValueEntry{{ConfigValue: "description_create", ConfigInclude: true, AssertValue: "description_create", ValueType: StringValue}}},
+				ExistingTestValues: &TestValues{Create: []TestValueEntry{{ConfigValue: "description_1", ConfigInclude: true, AssertValue: "description_1", ValueType: StringValue}}},
 			},
 			Expected: setLegacyTestValuesExpected{
-				LegacyValues:   []string{"description_create"},
-				LegacyAsserts:  []string{"description_create"},
+				LegacyValues:   []string{"description_1"},
+				LegacyAsserts:  []string{"description_1"},
 				LegacyIncludes: []bool{true},
 				LegacyTypes:    []ValueRenderTypeEnum{StringValue},
 			},
@@ -2448,10 +2448,10 @@ func TestSetLegacyTestValues(t *testing.T) {
 					0: {AttributeName: "old_name", Type: Set, Status: Removed},
 					1: {AttributeName: "renamed_name", Type: String, Status: Functioning},
 				},
-				ExistingTestValues: &TestValues{Create: []TestValueEntry{{ConfigValue: "test_name", ConfigInclude: true, AssertValue: "test_name", ValueType: StringValue}}},
+				ExistingTestValues: &TestValues{Create: []TestValueEntry{{ConfigValue: "name_1", ConfigInclude: true, AssertValue: "name_1", ValueType: StringValue}}},
 			},
 			Expected: setLegacyTestValuesExpected{
-				LegacyValues:   []string{"test_name"},
+				LegacyValues:   []string{"name_1"},
 				LegacyIncludes: []bool{true},
 			},
 		},
