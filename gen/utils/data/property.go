@@ -515,6 +515,39 @@ func (p *Property) hasTestConfigDefinition() bool {
 	return len(testConfig.Create) > 0 || len(testConfig.Update) > 0 || len(testConfig.Default) > 0 || len(testConfig.ForceNew) > 0
 }
 
+// validateStandardBucketsComplete returns an error when test_config supplies
+// some but not all of create / update / default / force_new. Either zero
+// buckets (auto-derive path) or all four (full manual override) are valid;
+// any mix in between silently nils the missing slices and confuses
+// downstream consumers, so reject it at load time. legacy is independent
+// of the standard buckets and is not considered here.
+func (p *Property) validateStandardBucketsComplete() error {
+	testConfig := p.propertyDefinition.TestConfig
+	buckets := map[string]int{
+		"create":    len(testConfig.Create),
+		"update":    len(testConfig.Update),
+		"default":   len(testConfig.Default),
+		"force_new": len(testConfig.ForceNew),
+	}
+	var present, missing []string
+	for name, count := range buckets {
+		if count > 0 {
+			present = append(present, name)
+		} else {
+			missing = append(missing, name)
+		}
+	}
+	if len(present) == 0 || len(missing) == 0 {
+		return nil
+	}
+	slices.Sort(present)
+	slices.Sort(missing)
+	return fmt.Errorf(
+		"property %q test_config supplies %v but omits %v; all four standard buckets (create, update, default, force_new) must be supplied together",
+		p.PropertyName, present, missing,
+	)
+}
+
 func (p *Property) convertTestConfigDefinition() *TestValues {
 	// Convert the YAML-driven TestConfigDefinition entries into TestValues.
 	genLogger.Tracef("Converting test config definition for property '%s'.", p.PropertyName)
