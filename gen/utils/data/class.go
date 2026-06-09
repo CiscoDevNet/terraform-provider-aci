@@ -588,6 +588,18 @@ func (c *Class) setProperties(ds *DataStore) error {
 	slices.Sort(c.PropertiesReadOnly)
 	slices.Sort(c.PropertiesRequired)
 
+	// Reject partial test_config bucket definitions: supplying some but not
+	// all of create / update / default / force_new silently nils the missing
+	// buckets and confuses downstream consumers (auto-derivation in
+	// setLegacyTestValues, completeness validation in Loop 4, future
+	// renderers). Iterated in PropertiesAll order for deterministic diagnostic
+	// ordering across runs.
+	for _, propertyName := range c.PropertiesAll {
+		if err := c.Properties[propertyName].validateStandardBucketsComplete(); err != nil {
+			ds.ctx.Diagnostics.AddError("Class '%s': %s", c.Name, err.Error())
+		}
+	}
+
 	genLogger.Debugf("Successfully set properties for class '%s'.", c.Name)
 	return nil
 }
