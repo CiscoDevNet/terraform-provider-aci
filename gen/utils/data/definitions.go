@@ -138,7 +138,7 @@ type PropertyDefinition struct {
 	// A warning is logged when an entry is not present in the meta valid values.
 	RemoveValidValues []string `yaml:"remove_valid_values"`
 	// Overrides the value type derived from the meta `uitype`.
-	// Accepted values mirror the ValueTypeEnum vocabulary: "string", "set", "ip_address", "semantic_equality".
+	// Accepted values mirror the ValueTypeEnum vocabulary: "string", "set", "object", "ip_address", "semantic_equality".
 	// An error is returned by YAML decoding when set to an unrecognized value.
 	ValueType ValueTypeEnum `yaml:"value_type"`
 	// Per-property documentation overrides (description, notes, warnings).
@@ -283,7 +283,7 @@ type TestDependencyDefinition struct {
 	// The reference value: either a static DN string or a Terraform resource/datasource attribute path.
 	Reference string `yaml:"reference"`
 	// How to interpret the Reference field. Valid values: "static", "resource", "data_source".
-	// When omitted, defaults to ResourceReference.
+	// When omitted, defaults to ResourceReference (the iota zero of ReferenceTypeEnum).
 	ReferenceType ReferenceTypeEnum `yaml:"reference_type"`
 	// Role of this dependency. Valid values: "parent", "target". Required at top level, empty for nested.
 	Role TestDependencyRoleEnum `yaml:"role"`
