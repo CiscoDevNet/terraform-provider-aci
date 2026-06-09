@@ -29,9 +29,11 @@ type Property struct {
 	// The hidden APIC versions for the property.
 	// Driven by the meta `hiddenSince` value with an optional definition override.
 	HiddenVersions *Versions
-	// Migration specific information for the property.
-	// This is a map that contains the migration value details of the attribute for a specific schema version.
-	MigrationValues map[int]MigrationValue
+	// State upgrade specific information for the property.
+	// Maps prior schema version to the prior-schema representation of this attribute,
+	// populated externally by Class.setPropertyStateUpgradeValues() from the validated
+	// state_upgrades tree on the owning class.
+	StateUpgradeValues map[int]StateUpgradeValue
 	// Indicates if a property is optional in the resource and datasource schemas.
 	// Exposed as a separate bool because it directly maps to a Terraform schema construct, which makes templating easier.
 	Optional bool
@@ -78,16 +80,19 @@ type Property struct {
 	propertyDefinition PropertyDefinition
 }
 
-type MigrationValue struct {
-	// The name of the property in the legacy resource schema.
+// StateUpgradeValue is the prior-schema representation of a property for one
+// state-upgrade hop. Keyed by prior schema version inside
+// Property.StateUpgradeValues and populated by Class.setPropertyStateUpgradeValues().
+type StateUpgradeValue struct {
+	// The name of the attribute in the prior resource schema.
 	AttributeName string
-	// Indicates if a property is computed in the legacy resource schema.
+	// Indicates if the attribute is computed in the prior resource schema.
 	Computed bool
-	// Indicates if a property is optional in the legacy resource schema.
+	// Indicates if the attribute is optional in the prior resource schema.
 	Optional bool
-	// Indicates if a property is required in the legacy resource schema.
+	// Indicates if the attribute is required in the prior resource schema.
 	Required bool
-	// The type of the legacy attribute.
+	// The type of the attribute in the prior resource schema.
 	Type ValueTypeEnum
 }
 
@@ -240,9 +245,6 @@ func (p *Property) setPropertyData() error {
 		return err
 	}
 
-	// TODO: add function to set MigrationValues
-	p.setMigrationValues()
-
 	p.setRequired()
 
 	p.setRequiresReplace()
@@ -391,12 +393,6 @@ func (p *Property) setHiddenVersions() error {
 	return nil
 }
 
-func (p *Property) setMigrationValues() {
-	// Determine the migration values for the property.
-	genLogger.Debugf("Setting MigrationValues for property '%s'.", p.PropertyName)
-	genLogger.Debugf("Successfully set MigrationValues for property '%s'.", p.PropertyName)
-}
-
 func (p *Property) setOptional() {
 	// Determine if the property is optional.
 	// A property is optional when the definition restriction is "optional",
@@ -528,7 +524,8 @@ func convertTestValueEntries(testValueEntryDefinitions []TestValueEntryDefinitio
 	// This is done manually rather than via unmarshal because the conversion applies non-trivial defaults:
 	//   - ConfigInclude defaults to true (not Go's zero value false) when the definition's *bool is nil.
 	//   - AssertValue defaults to ConfigValue (a sibling field), not a static value.
-	//   - ValueType maps from a string ("reference") to a typed enum (ReferenceValue), with StringValue as default.
+	// ValueType needs no manual fixup: ValueRenderTypeEnum's iota zero IS StringValue,
+	// so omitted value_type in YAML naturally renders as a quoted string.
 	genLogger.Tracef("Converting %d test value entry definitions.", len(testValueEntryDefinitions))
 	if len(testValueEntryDefinitions) == 0 {
 		return nil
@@ -539,16 +536,13 @@ func convertTestValueEntries(testValueEntryDefinitions []TestValueEntryDefinitio
 			ConfigValue:   testValueEntryDefinition.ConfigValue,
 			ConfigInclude: true,
 			AssertValue:   testValueEntryDefinition.ConfigValue,
-			ValueType:     StringValue,
+			ValueType:     testValueEntryDefinition.ValueType,
 		}
 		if testValueEntryDefinition.ConfigInclude != nil {
 			testValueEntry.ConfigInclude = *testValueEntryDefinition.ConfigInclude
 		}
 		if testValueEntryDefinition.AssertValue != "" {
 			testValueEntry.AssertValue = testValueEntryDefinition.AssertValue
-		}
-		if testValueEntryDefinition.ValueType != 0 {
-			testValueEntry.ValueType = testValueEntryDefinition.ValueType
 		}
 		result = append(result, testValueEntry)
 	}
