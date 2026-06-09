@@ -2190,3 +2190,477 @@ func TestConvertTestValueEntries(t *testing.T) {
 		})
 	}
 }
+
+type setLegacyTestValuesInput struct {
+	PropertyName       string
+	AttributeName      string
+	ValueType          ValueTypeEnum
+	StateUpgradeValues map[int]StateUpgradeValue
+	ExistingTestValues *TestValues
+	PropertyDefinition PropertyDefinition
+	IgnoreInTest       bool
+	ReadOnly           bool
+}
+
+type setLegacyTestValuesExpected struct {
+	LegacyNil      bool
+	LegacyValues   []string
+	LegacyAsserts  []string
+	LegacyIncludes []bool
+	LegacyTypes    []ValueRenderTypeEnum
+	LegacyVersions []bool // true = Versions pointer preserved on that entry
+	Warning        string
+}
+
+// TestSetLegacyTestValues drives Property.setLegacyTestValues across every
+// branch: gating (nil TestValues, IgnoreInTest, ReadOnly), YAML override
+// precedence (even when type would have diverged), the no-alias and
+// all-removed skip paths, the same-name skip path, the divergent-type warn,
+// and the clone path with Versions preservation (which generateForceNew
+// currently drops).
+func TestSetLegacyTestValues(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	boolFalse := false
+	versionsAll, _ := NewVersions("1.0(1e)-")
+
+	testCases := []test.TestCase{
+		{
+			Name: "test_skip_when_test_values_nil",
+			Input: setLegacyTestValuesInput{
+				PropertyName:       "name",
+				AttributeName:      "name",
+				StateUpgradeValues: map[int]StateUpgradeValue{0: {AttributeName: "old_name", Type: String, Status: Functioning}},
+			},
+			Expected: setLegacyTestValuesExpected{LegacyNil: true},
+		},
+		{
+			Name: "test_skip_when_ignore_in_test",
+			Input: setLegacyTestValuesInput{
+				PropertyName:       "name",
+				AttributeName:      "name",
+				IgnoreInTest:       true,
+				StateUpgradeValues: map[int]StateUpgradeValue{0: {AttributeName: "old_name", Type: String, Status: Functioning}},
+				ExistingTestValues: &TestValues{Create: []TestValueEntry{{ConfigValue: "test_name", ConfigInclude: true, AssertValue: "test_name", ValueType: StringValue}}},
+			},
+			Expected: setLegacyTestValuesExpected{LegacyNil: true},
+		},
+		{
+			Name: "test_skip_when_read_only",
+			Input: setLegacyTestValuesInput{
+				PropertyName:       "pcTag",
+				AttributeName:      "pc_tag",
+				ReadOnly:           true,
+				StateUpgradeValues: map[int]StateUpgradeValue{0: {AttributeName: "old_pc_tag", Type: String, Status: Functioning}},
+				ExistingTestValues: &TestValues{Create: []TestValueEntry{{ConfigValue: "1", ConfigInclude: true, AssertValue: "1", ValueType: StringValue}}},
+			},
+			Expected: setLegacyTestValuesExpected{LegacyNil: true},
+		},
+		{
+			Name: "test_yaml_override_wins_even_when_type_diverges",
+			Input: setLegacyTestValuesInput{
+				PropertyName:  "tags",
+				AttributeName: "tags",
+				ValueType:     Set,
+				StateUpgradeValues: map[int]StateUpgradeValue{
+					0: {AttributeName: "tag_string", Type: String, Status: Functioning},
+				},
+				ExistingTestValues: &TestValues{Create: []TestValueEntry{{ConfigValue: "tag_a", ConfigInclude: true, AssertValue: "tag_a", ValueType: StringValue}}},
+				PropertyDefinition: PropertyDefinition{
+					TestConfig: TestConfigDefinition{
+						Legacy: []TestValueEntryDefinition{
+							{ConfigValue: "legacy_value", ConfigInclude: nil, AssertValue: "legacy_assert", ValueType: StringValue},
+						},
+					},
+				},
+			},
+			Expected: setLegacyTestValuesExpected{
+				LegacyValues:   []string{"legacy_value"},
+				LegacyAsserts:  []string{"legacy_assert"},
+				LegacyIncludes: []bool{true},
+				LegacyTypes:    []ValueRenderTypeEnum{StringValue},
+			},
+		},
+		{
+			Name: "test_yaml_override_with_explicit_config_include_false",
+			Input: setLegacyTestValuesInput{
+				PropertyName:       "descr",
+				AttributeName:      "description",
+				ValueType:          String,
+				StateUpgradeValues: map[int]StateUpgradeValue{0: {AttributeName: "old_description", Type: String, Status: Functioning}},
+				ExistingTestValues: &TestValues{Create: []TestValueEntry{{ConfigValue: "description_create", ConfigInclude: true, AssertValue: "description_create", ValueType: StringValue}}},
+				PropertyDefinition: PropertyDefinition{
+					TestConfig: TestConfigDefinition{
+						Legacy: []TestValueEntryDefinition{
+							{ConfigValue: "", ConfigInclude: &boolFalse, AssertValue: "server_default"},
+						},
+					},
+				},
+			},
+			Expected: setLegacyTestValuesExpected{
+				LegacyValues:   []string{""},
+				LegacyAsserts:  []string{"server_default"},
+				LegacyIncludes: []bool{false},
+			},
+		},
+		{
+			Name: "test_skip_when_no_state_upgrade_values",
+			Input: setLegacyTestValuesInput{
+				PropertyName:       "name",
+				AttributeName:      "name",
+				ValueType:          String,
+				ExistingTestValues: &TestValues{Create: []TestValueEntry{{ConfigValue: "test_name", ConfigInclude: true, AssertValue: "test_name", ValueType: StringValue}}},
+			},
+			Expected: setLegacyTestValuesExpected{LegacyNil: true},
+		},
+		{
+			Name: "test_skip_when_all_entries_removed",
+			Input: setLegacyTestValuesInput{
+				PropertyName:  "name",
+				AttributeName: "name",
+				ValueType:     String,
+				StateUpgradeValues: map[int]StateUpgradeValue{
+					0: {AttributeName: "old_name", Type: String, Status: Removed},
+				},
+				ExistingTestValues: &TestValues{Create: []TestValueEntry{{ConfigValue: "test_name", ConfigInclude: true, AssertValue: "test_name", ValueType: StringValue}}},
+			},
+			Expected: setLegacyTestValuesExpected{LegacyNil: true},
+		},
+		{
+			Name: "test_skip_when_only_same_name_entry",
+			Input: setLegacyTestValuesInput{
+				PropertyName:  "name",
+				AttributeName: "name",
+				ValueType:     String,
+				StateUpgradeValues: map[int]StateUpgradeValue{
+					0: {AttributeName: "name", Type: String, Status: Functioning},
+				},
+				ExistingTestValues: &TestValues{Create: []TestValueEntry{{ConfigValue: "test_name", ConfigInclude: true, AssertValue: "test_name", ValueType: StringValue}}},
+			},
+			Expected: setLegacyTestValuesExpected{LegacyNil: true},
+		},
+		{
+			Name: "test_skip_when_only_removed_distinct_name",
+			Input: setLegacyTestValuesInput{
+				PropertyName:  "name",
+				AttributeName: "name",
+				ValueType:     String,
+				StateUpgradeValues: map[int]StateUpgradeValue{
+					0: {AttributeName: "old_name", Type: String, Status: Removed},
+					1: {AttributeName: "name", Type: String, Status: Functioning},
+				},
+				ExistingTestValues: &TestValues{Create: []TestValueEntry{{ConfigValue: "test_name", ConfigInclude: true, AssertValue: "test_name", ValueType: StringValue}}},
+			},
+			Expected: setLegacyTestValuesExpected{LegacyNil: true},
+		},
+		{
+			Name: "test_clone_create_when_functioning_distinct_name_matching_type",
+			Input: setLegacyTestValuesInput{
+				PropertyName:  "name",
+				AttributeName: "name",
+				ValueType:     String,
+				StateUpgradeValues: map[int]StateUpgradeValue{
+					0: {AttributeName: "old_name", Type: String, Status: Functioning},
+				},
+				ExistingTestValues: &TestValues{Create: []TestValueEntry{{ConfigValue: "test_name", ConfigInclude: true, AssertValue: "test_name", ValueType: StringValue}}},
+			},
+			Expected: setLegacyTestValuesExpected{
+				LegacyValues:   []string{"test_name"},
+				LegacyAsserts:  []string{"test_name"},
+				LegacyIncludes: []bool{true},
+				LegacyTypes:    []ValueRenderTypeEnum{StringValue},
+			},
+		},
+		{
+			Name: "test_clone_create_when_frozen_distinct_name_matching_type",
+			Input: setLegacyTestValuesInput{
+				PropertyName:  "descr",
+				AttributeName: "description",
+				ValueType:     String,
+				StateUpgradeValues: map[int]StateUpgradeValue{
+					0: {AttributeName: "old_description", Type: String, Status: Frozen},
+				},
+				ExistingTestValues: &TestValues{Create: []TestValueEntry{{ConfigValue: "description_create", ConfigInclude: true, AssertValue: "description_create", ValueType: StringValue}}},
+			},
+			Expected: setLegacyTestValuesExpected{
+				LegacyValues:   []string{"description_create"},
+				LegacyAsserts:  []string{"description_create"},
+				LegacyIncludes: []bool{true},
+				LegacyTypes:    []ValueRenderTypeEnum{StringValue},
+			},
+		},
+		{
+			Name: "test_clone_preserves_reference_value_for_parent_dn",
+			Input: setLegacyTestValuesInput{
+				PropertyName:  "parentDn",
+				AttributeName: "parent_dn",
+				ValueType:     String,
+				StateUpgradeValues: map[int]StateUpgradeValue{
+					0: {AttributeName: "tenant_dn", Type: String, Status: Functioning},
+				},
+				ExistingTestValues: &TestValues{Create: []TestValueEntry{{ConfigValue: "aci_tenant.test.id", ConfigInclude: true, AssertValue: "aci_tenant.test.id", ValueType: ReferenceValue}}},
+			},
+			Expected: setLegacyTestValuesExpected{
+				LegacyValues: []string{"aci_tenant.test.id"},
+				LegacyTypes:  []ValueRenderTypeEnum{ReferenceValue},
+			},
+		},
+		{
+			Name: "test_clone_preserves_versions_pointer",
+			Input: setLegacyTestValuesInput{
+				PropertyName:  "vlanScope",
+				AttributeName: "vlan_scope",
+				ValueType:     String,
+				StateUpgradeValues: map[int]StateUpgradeValue{
+					0: {AttributeName: "old_vlan_scope", Type: String, Status: Functioning},
+				},
+				ExistingTestValues: &TestValues{Create: []TestValueEntry{{ConfigValue: "portlocal", ConfigInclude: true, AssertValue: "portlocal", ValueType: StringValue, Versions: versionsAll}}},
+			},
+			Expected: setLegacyTestValuesExpected{
+				LegacyValues:   []string{"portlocal"},
+				LegacyVersions: []bool{true},
+			},
+		},
+		{
+			Name: "test_warn_and_skip_when_type_diverges",
+			Input: setLegacyTestValuesInput{
+				PropertyName:  "tags",
+				AttributeName: "tags",
+				ValueType:     Set,
+				StateUpgradeValues: map[int]StateUpgradeValue{
+					0: {AttributeName: "tag_string", Type: String, Status: Functioning},
+				},
+				ExistingTestValues: &TestValues{Create: []TestValueEntry{{ConfigValue: "tag_a", ConfigInclude: true, AssertValue: "tag_a", ValueType: StringValue}}},
+			},
+			Expected: setLegacyTestValuesExpected{
+				LegacyNil: true,
+				Warning:   `Skipping Legacy test value auto-derivation for property "tags"`,
+			},
+		},
+		{
+			Name: "test_divergent_only_on_removed_entry_does_not_block",
+			Input: setLegacyTestValuesInput{
+				PropertyName:  "name",
+				AttributeName: "name",
+				ValueType:     String,
+				StateUpgradeValues: map[int]StateUpgradeValue{
+					0: {AttributeName: "old_name", Type: Set, Status: Removed},
+					1: {AttributeName: "renamed_name", Type: String, Status: Functioning},
+				},
+				ExistingTestValues: &TestValues{Create: []TestValueEntry{{ConfigValue: "test_name", ConfigInclude: true, AssertValue: "test_name", ValueType: StringValue}}},
+			},
+			Expected: setLegacyTestValuesExpected{
+				LegacyValues:   []string{"test_name"},
+				LegacyIncludes: []bool{true},
+			},
+		},
+	}
+
+	// Capture warnings via the package logger; restored after the test.
+	var logBuffer bytes.Buffer
+	genLogger.SetOutputForTesting(&logBuffer)
+	genLogger.SetLogLevel("WARN")
+	defer func() {
+		genLogger.SetOutputForTesting(os.Stdout)
+	}()
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			input := testCase.Input.(setLegacyTestValuesInput)
+			expected := testCase.Expected.(setLegacyTestValuesExpected)
+
+			logBuffer.Reset()
+
+			property := &Property{
+				PropertyName:       input.PropertyName,
+				AttributeName:      input.AttributeName,
+				ValueType:          input.ValueType,
+				StateUpgradeValues: input.StateUpgradeValues,
+				TestValues:         input.ExistingTestValues,
+				propertyDefinition: input.PropertyDefinition,
+				IgnoreInTest:       input.IgnoreInTest,
+				ReadOnly:           input.ReadOnly,
+			}
+
+			property.setLegacyTestValues()
+
+			logOutput := logBuffer.String()
+			if expected.Warning == "" {
+				assert.False(t, strings.Contains(logOutput, "WARN:"), "unexpected warning logged: %s", logOutput)
+			} else {
+				assert.Contains(t, logOutput, expected.Warning, test.MessageEqual(expected.Warning, logOutput, "warning log message"))
+			}
+
+			if expected.LegacyNil {
+				if property.TestValues != nil {
+					assert.Nil(t, property.TestValues.Legacy, testCase.Name+": Legacy should be nil")
+				}
+				return
+			}
+
+			assert.NotNil(t, property.TestValues, testCase.Name+": TestValues should not be nil")
+			assert.NotNil(t, property.TestValues.Legacy, testCase.Name+": Legacy should not be nil")
+
+			if expected.LegacyValues != nil {
+				assert.Len(t, property.TestValues.Legacy, len(expected.LegacyValues), testCase.Name+": Legacy length mismatch")
+				for i, v := range expected.LegacyValues {
+					assert.Equal(t, v, property.TestValues.Legacy[i].ConfigValue, test.MessageEqual(v, property.TestValues.Legacy[i].ConfigValue, testCase.Name))
+				}
+			}
+			if expected.LegacyAsserts != nil {
+				for i, v := range expected.LegacyAsserts {
+					assert.Equal(t, v, property.TestValues.Legacy[i].AssertValue, test.MessageEqual(v, property.TestValues.Legacy[i].AssertValue, testCase.Name))
+				}
+			}
+			if expected.LegacyIncludes != nil {
+				for i, inc := range expected.LegacyIncludes {
+					assert.Equal(t, inc, property.TestValues.Legacy[i].ConfigInclude, test.MessageEqual(inc, property.TestValues.Legacy[i].ConfigInclude, testCase.Name))
+				}
+			}
+			if expected.LegacyTypes != nil {
+				for i, vt := range expected.LegacyTypes {
+					assert.Equal(t, vt, property.TestValues.Legacy[i].ValueType, test.MessageEqual(vt, property.TestValues.Legacy[i].ValueType, testCase.Name))
+				}
+			}
+			if expected.LegacyVersions != nil {
+				for i, hasVersions := range expected.LegacyVersions {
+					if hasVersions {
+						assert.NotNil(t, property.TestValues.Legacy[i].Versions, testCase.Name+": Versions should be preserved")
+					} else {
+						assert.Nil(t, property.TestValues.Legacy[i].Versions, testCase.Name+": Versions should be nil")
+					}
+				}
+			}
+		})
+	}
+}
+
+type validateStandardBucketsCompleteInput struct {
+	PropertyName       string
+	PropertyDefinition PropertyDefinition
+}
+
+// TestValidateStandardBucketsComplete asserts the all-or-nothing rule on
+// test_config: zero buckets and all four buckets are both valid (auto-derive
+// and full manual override paths); any 1–3 buckets yields an error that
+// names both the present and missing buckets. legacy is independent and
+// supplying it alone is allowed.
+func TestValidateStandardBucketsComplete(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	entry := []TestValueEntryDefinition{{ConfigValue: "v"}}
+
+	testCases := []test.TestCase{
+		{
+			Name:  "test_no_buckets_ok",
+			Input: validateStandardBucketsCompleteInput{PropertyName: "name", PropertyDefinition: PropertyDefinition{TestConfig: TestConfigDefinition{}}},
+			Expected: struct {
+				Error           bool
+				ContainsPresent []string
+				ContainsMissing []string
+			}{Error: false},
+		},
+		{
+			Name: "test_all_four_buckets_ok",
+			Input: validateStandardBucketsCompleteInput{
+				PropertyName: "name",
+				PropertyDefinition: PropertyDefinition{TestConfig: TestConfigDefinition{
+					Create: entry, Update: entry, Default: entry, ForceNew: entry,
+				}},
+			},
+			Expected: struct {
+				Error           bool
+				ContainsPresent []string
+				ContainsMissing []string
+			}{Error: false},
+		},
+		{
+			Name: "test_legacy_only_ok",
+			Input: validateStandardBucketsCompleteInput{
+				PropertyName:       "name",
+				PropertyDefinition: PropertyDefinition{TestConfig: TestConfigDefinition{Legacy: entry}},
+			},
+			Expected: struct {
+				Error           bool
+				ContainsPresent []string
+				ContainsMissing []string
+			}{Error: false},
+		},
+		{
+			Name: "test_create_only_errors",
+			Input: validateStandardBucketsCompleteInput{
+				PropertyName:       "name",
+				PropertyDefinition: PropertyDefinition{TestConfig: TestConfigDefinition{Create: entry}},
+			},
+			Expected: struct {
+				Error           bool
+				ContainsPresent []string
+				ContainsMissing []string
+			}{Error: true, ContainsPresent: []string{"create"}, ContainsMissing: []string{"default", "force_new", "update"}},
+		},
+		{
+			Name: "test_three_buckets_missing_default_errors",
+			Input: validateStandardBucketsCompleteInput{
+				PropertyName: "name",
+				PropertyDefinition: PropertyDefinition{TestConfig: TestConfigDefinition{
+					Create: entry, Update: entry, ForceNew: entry,
+				}},
+			},
+			Expected: struct {
+				Error           bool
+				ContainsPresent []string
+				ContainsMissing []string
+			}{Error: true, ContainsPresent: []string{"create", "force_new", "update"}, ContainsMissing: []string{"default"}},
+		},
+		{
+			Name: "test_partial_with_legacy_still_errors_on_standard",
+			Input: validateStandardBucketsCompleteInput{
+				PropertyName: "name",
+				PropertyDefinition: PropertyDefinition{TestConfig: TestConfigDefinition{
+					Create: entry, Legacy: entry,
+				}},
+			},
+			Expected: struct {
+				Error           bool
+				ContainsPresent []string
+				ContainsMissing []string
+			}{Error: true, ContainsPresent: []string{"create"}, ContainsMissing: []string{"default", "force_new", "update"}},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.(validateStandardBucketsCompleteInput)
+			expected := testCase.Expected.(struct {
+				Error           bool
+				ContainsPresent []string
+				ContainsMissing []string
+			})
+
+			property := &Property{
+				PropertyName:       input.PropertyName,
+				propertyDefinition: input.PropertyDefinition,
+			}
+
+			err := property.validateStandardBucketsComplete()
+
+			if !expected.Error {
+				assert.NoError(t, err, test.MessageUnexpectedError(err))
+				return
+			}
+
+			if assert.Error(t, err, testCase.Name+": expected error") {
+				message := err.Error()
+				for _, p := range expected.ContainsPresent {
+					assert.Contains(t, message, p, test.MessageContains(message, p, testCase.Name))
+				}
+				for _, m := range expected.ContainsMissing {
+					assert.Contains(t, message, m, test.MessageContains(message, m, testCase.Name))
+				}
+			}
+		})
+	}
+}
