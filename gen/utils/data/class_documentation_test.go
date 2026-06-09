@@ -999,9 +999,13 @@ func TestSetMigrationWarning(t *testing.T) {
 		t.Run(testCase.Name, func(t *testing.T) {
 			t.Parallel()
 
+			migrationSource := UndefinedMigrationSource
+			if testCase.Input.(bool) {
+				migrationSource = FromSDKv2
+			}
 			class := Class{
-				Name:        testClassName("fvTenant"),
-				IsMigration: testCase.Input.(bool),
+				Name:            testClassName("fvTenant"),
+				MigrationSource: migrationSource,
 			}
 			class.Documentation.setMigrationWarning(&class)
 
