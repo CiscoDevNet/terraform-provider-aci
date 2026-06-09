@@ -776,6 +776,91 @@ func (p *Property) generateForceNew(create []TestValueEntry) []TestValueEntry {
 	return forceNew
 }
 
+// setLegacyTestValues populates TestValues.Legacy. Called at the end of
+// Class.setPropertyTestValues so any dependency-derived Create entries
+// (parent_dn, tDn) are already wired and can be cloned safely.
+//
+// Resolution order:
+//  1. Explicit YAML test_config.legacy always wins. This is the sole path
+//     when the legacy alias has a different Terraform type than the current
+//     attribute (auto-derive cannot guess a valid HCL shape).
+//  2. Skip entirely when the property is not testable (no TestValues,
+//     IgnoreInTest, or ReadOnly).
+//  3. Skip when no legacy alias is testable — see hasTestableLegacyAlias.
+//  4. Skip with a generator-log warning when any non-Removed alias has a
+//     different Type than the current property — cloning Create would
+//     produce HCL of the wrong shape.
+//  5. Clone Create into Legacy (inline, matching generateForceNew style;
+//     preserves Versions which generateForceNew currently drops).
+func (p *Property) setLegacyTestValues() {
+	if p.TestValues == nil || p.IgnoreInTest || p.ReadOnly {
+		return
+	}
+
+	if entries := p.propertyDefinition.TestConfig.Legacy; len(entries) > 0 {
+		p.TestValues.Legacy = convertTestValueEntries(entries)
+		genLogger.Tracef("Set Legacy test values for property '%s' from definition.", p.PropertyName)
+		return
+	}
+
+	if !p.hasTestableLegacyAlias() {
+		genLogger.Tracef("Skipping Legacy test value derivation for property '%s': no testable legacy alias.", p.PropertyName)
+		return
+	}
+	if p.hasDivergentLegacyType() {
+		genLogger.Warnf(
+			"Skipping Legacy test value auto-derivation for property %q: at least one Functioning/Frozen legacy alias has a type different from the current attribute type %v. Supply explicit test_config.legacy values in the property definition.",
+			p.PropertyName, p.ValueType,
+		)
+		return
+	}
+
+	p.TestValues.Legacy = make([]TestValueEntry, 0, len(p.TestValues.Create))
+	for _, c := range p.TestValues.Create {
+		p.TestValues.Legacy = append(p.TestValues.Legacy, TestValueEntry{
+			ConfigValue:   c.ConfigValue,
+			ConfigInclude: c.ConfigInclude,
+			AssertValue:   c.AssertValue,
+			ValueType:     c.ValueType,
+			Versions:      c.Versions,
+		})
+	}
+	genLogger.Tracef("Auto-derived Legacy test values for property '%s' from Create bucket.", p.PropertyName)
+}
+
+// hasTestableLegacyAlias returns true when at least one StateUpgradeValue
+// entry has Status Functioning or Frozen AND renames the attribute. Same-name
+// entries (type-only or restriction-only changes) are not testable as a
+// separate legacy attribute — they share the current attribute name, and
+// the standard Create bucket on that name already exercises them.
+func (p *Property) hasTestableLegacyAlias() bool {
+	for _, stateUpgradeValue := range p.StateUpgradeValues {
+		if stateUpgradeValue.Status == Removed {
+			continue
+		}
+		if stateUpgradeValue.AttributeName != p.AttributeName {
+			return true
+		}
+	}
+	return false
+}
+
+// hasDivergentLegacyType returns true when any non-Removed legacy alias uses
+// a different Type than the current property. Cloning Create into a slot of
+// the wrong shape (e.g. a List literal into a String attribute) would render
+// invalid HCL; we refuse to guess and require explicit YAML in this case.
+func (p *Property) hasDivergentLegacyType() bool {
+	for _, stateUpgradeValue := range p.StateUpgradeValues {
+		if stateUpgradeValue.Status == Removed {
+			continue
+		}
+		if stateUpgradeValue.Type != p.ValueType {
+			return true
+		}
+	}
+	return false
+}
+
 func (p *Property) setValidators() error {
 	// Determine the validators for the property.
 	// Driven by the meta `validators` array; the property definition replaces the meta entirely when non-empty.
