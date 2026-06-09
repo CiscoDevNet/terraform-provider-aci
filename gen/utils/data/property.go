@@ -144,6 +144,13 @@ type TestValues struct {
 	// parent_dn: uses second parent reference (triggers destroy+recreate).
 	// All other properties: same as Create (resource is recreated with same attribute values).
 	ForceNew []TestValueEntry
+	// Legacy is the per-step values for legacy alias attributes exposed via
+	// state_upgrades (Functioning / Frozen). Nil when the property has no
+	// testable legacy alias (no distinct renamed alias, or all legacy aliases
+	// have Status Removed). Auto-derived from Create when the legacy type
+	// matches the current attribute type; explicit YAML test_config.legacy
+	// always wins and is required when types diverge.
+	Legacy []TestValueEntry
 }
 
 type Validator struct {
