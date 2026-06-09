@@ -1787,8 +1787,9 @@ func (c *Class) resolvePlaceholdersInTestChildren(testChildren []*TestChild) {
 func (c *Class) validateTestCompleteness(ctx *Context) {
 	// Validate the resolved test data for unresolved placeholders and missing values.
 	// Runs after all resolution steps are complete so all errors are reported in a single pass.
-	// TODO: Add validation for missing test values, empty TestDependencies when parents exist,
-	// properties without any TestValues entries, and other completeness checks.
+	// TODO: Add further completeness checks: empty TestDependencies when
+	// parents exist; testable properties with nil TestValues (silently
+	// skipped today); other consistency checks.
 
 	// Check ConfigOverrides for unresolved placeholders.
 	// validateTestDependencyPlaceholders walks both top-level and nested deps using a
@@ -1805,6 +1806,34 @@ func (c *Class) validateTestCompleteness(ctx *Context) {
 		c.validateEntriesPlaceholders(ctx, property.AttributeName, "Update", property.TestValues.Update)
 		c.validateEntriesPlaceholders(ctx, property.AttributeName, "Default", property.TestValues.Default)
 		c.validateEntriesPlaceholders(ctx, property.AttributeName, "ForceNew", property.TestValues.ForceNew)
+		c.validateEntriesPlaceholders(ctx, property.AttributeName, "Legacy", property.TestValues.Legacy)
+	}
+
+	// Assert each testable property ended Loop 3 with all four standard
+	// buckets non-empty. Catches silent failures in auto-derivation (e.g. an
+	// enum with zero ValidValues), unwired parent_dn/tDn references, and
+	// post-load regressions in convertTestConfigDefinition. Legacy is opt-in
+	// and intentionally not checked. Iterated in PropertiesAll order so
+	// diagnostics are stable across runs.
+	for _, propertyName := range c.PropertiesAll {
+		property := c.Properties[propertyName]
+		if property.TestValues == nil || property.IgnoreInTest || property.ReadOnly {
+			continue
+		}
+		bucketChecks := []struct {
+			name    string
+			entries []TestValueEntry
+		}{
+			{"Create", property.TestValues.Create},
+			{"Update", property.TestValues.Update},
+			{"Default", property.TestValues.Default},
+			{"ForceNew", property.TestValues.ForceNew},
+		}
+		for _, bucket := range bucketChecks {
+			if len(bucket.entries) == 0 {
+				ctx.Diagnostics.AddError("Class '%s': property '%s' has empty %s bucket after test data resolution.", c.Name, property.AttributeName, bucket.name)
+			}
+		}
 	}
 
 	// Check child instance properties for unresolved placeholders.
