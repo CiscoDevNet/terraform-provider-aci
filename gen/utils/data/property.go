@@ -94,6 +94,10 @@ type StateUpgradeValue struct {
 	Required bool
 	// The type of the attribute in the prior resource schema.
 	Type ValueTypeEnum
+	// Status carries the legacy lifecycle (Functioning / Frozen / Removed) so
+	// consumers (Legacy test value derivation, plan-modifiers) can filter
+	// without re-walking the class StateUpgrades tree.
+	Status LegacyStatusEnum
 }
 
 type RegexStatement struct {
