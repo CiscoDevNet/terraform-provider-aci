@@ -175,6 +175,12 @@ type TestConfigDefinition struct {
 	Update []TestValueEntryDefinition `yaml:"update"`
 	// Values for the ForceNew step. Typically auto-derived (same as Create for non-parent_dn).
 	ForceNew []TestValueEntryDefinition `yaml:"force_new"`
+	// Values for the Legacy step, exercising state_upgrades legacy attribute
+	// aliases (Functioning / Frozen). Independent of the standard buckets:
+	// supplying legacy alone is permitted, and supplying legacy is required
+	// when the legacy alias has a different Terraform type than the current
+	// attribute (auto-derivation skips that case with a warning).
+	Legacy []TestValueEntryDefinition `yaml:"legacy"`
 	// When true, the property is excluded from generated tests entirely.
 	IgnoreInTest bool `yaml:"ignore_in_test"`
 }
