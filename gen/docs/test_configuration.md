@@ -39,6 +39,7 @@ type TestValues struct {
     Update   []TestValueEntry  // Data bucket: alternate values for scenarios that change attributes in place.
     Default  []TestValueEntry  // Data bucket: required-only scenarios. Required props carry Create values; optional props carry server-default assertions with ConfigInclude=false.
     ForceNew []TestValueEntry  // Data bucket: alternate values for scenarios that intentionally change a replace-triggering attribute (today: parent_dn second instance; non-parent props typically copy Create).
+    Legacy   []TestValueEntry  // Data bucket: per-step values for legacy alias attributes exposed via state_upgrades (Functioning / Frozen). See §2.4 "Legacy bucket auto-derivation".
 }
 ```
 
@@ -53,6 +54,7 @@ Each slice on `TestValues` is a **data bucket**, not a literal test step. A futu
 - `Update` — alternate values, used wherever a scenario needs the resource to change without destroy+recreate of the parent.
 - `Default` — per-attribute data for "required-only" scenarios: required props carry Create values; optional props carry server-default assertions with `ConfigInclude=false`.
 - `ForceNew` — alternate values for scenarios that intentionally change a replace-triggering attribute. Today only `parent_dn` (second instance) and `tDn` (single-target relations) are auto-populated differently from Create; other properties typically copy Create.
+- `Legacy` — alternate values for scenarios that exercise the property under its deprecated legacy alias instead of its current name. Auto-derived from `Create` when the legacy alias has the same Terraform type; explicit YAML required when types diverge. Nil when the property has no testable legacy alias. See §2.4 "Legacy bucket auto-derivation" and `state_upgrades.md` §11 for a worked example.
 
 ### 2.4 Auto-Derivation Rules
 
@@ -80,6 +82,18 @@ When no explicit `test_config` is provided on a property definition, values are 
 #### ForceNew bucket auto-derivation
 Non-parent properties copy their Create entry into ForceNew. Only `parent_dn` (and `tDn` for single-target relations) is explicitly populated with a second reference, drawn from the second auto-resolved Parent/Target dependency. Per-property `force_new` overrides exist in YAML but are rarely needed.
 
+#### Legacy bucket auto-derivation
+
+Driven by `state_upgrades` entries on the class definition (see `state_upgrades.md`). For each property:
+
+1. **Explicit YAML wins.** `test_config.legacy` always replaces auto-derivation. This is the sole path when the legacy alias has a different Terraform type than the current attribute (auto-derive cannot guess a valid HCL shape).
+2. **Skip when not testable.** If the property has no `TestValues`, has `IgnoreInTest=true`, or is `ReadOnly`, Legacy stays nil.
+3. **Skip when no testable legacy alias exists.** A legacy alias is testable when at least one `StateUpgradeValue` entry has `Status` `Functioning` or `Frozen` AND renames the attribute. Same-name entries (type-only or restriction-only changes) are not separately testable because they share the current attribute name. `Removed` entries are migration-only and never produce a Legacy bucket.
+4. **Skip with a generator warning when types diverge.** When any non-`Removed` legacy alias declares a `legacy_type` different from the current property's type, auto-derivation refuses to guess (cloning Create would produce HCL of the wrong shape). The generator logs a `Warn` and requires explicit `test_config.legacy` in the property definition. Templates can detect this case by observing `len(TestValues.Legacy) == 0` despite the property carrying a `Functioning`/`Frozen` `StateUpgradeValue` with a renamed alias.
+5. **Otherwise: clone Create.** Each entry in `Create` is copied into `Legacy` field-for-field (including `Versions`). The legacy alias re-uses the current attribute's values, just rendered under its prior name.
+
+Legacy runs at the end of Loop 3 (`setPropertyTestValues`), after `parent_dn` / `tDn` placeholder resolution, so any dependency-derived `Create` entries are already wired and safe to clone.
+
 ### 2.5 IgnoreInTest vs SupportedVersions
 
 - `IgnoreInTest`: Property is **never** testable regardless of version (e.g., broken API behavior). Set via `test_config.ignore_in_test: true` in YAML.
@@ -105,11 +119,22 @@ properties:
         - config_value: ""
           config_include: false
           assert_value: "default_from_server"
+      legacy:
+        - config_value: "my_description"   # required only when the legacy type diverges from the current attribute
 ```
 
 - `config_include`: pointer-based — `nil` defaults to `true`.
 - `assert_value`: empty string defaults to `config_value`.
 - `value_type`: `"string"` (default, quoted) or `"reference"` (unquoted HCL expression).
+- `legacy`: optional. Overrides Legacy bucket auto-derivation (see §2.4). Required when the legacy alias declares a `legacy_type` different from the current attribute's type, because auto-derive cannot guess the prior HCL shape.
+
+#### All-or-nothing for standard buckets
+
+`create`, `update`, `default`, and `force_new` form a single unit at load time. Either supply none of them (the property auto-derives all four) or supply all four (full manual override). Mixing — for example supplying only `create` — fails class validation with an error naming the present and missing buckets:
+
+> `property "<name>" test_config supplies [create] but omits [default force_new update]; all four standard buckets (create, update, default, force_new) must be supplied together`
+
+The rule exists because partial overrides silently nil the unspecified buckets, leaving downstream consumers with no data to render the corresponding scenarios. `legacy` is independent and is not part of this check; it can be supplied alone or omitted regardless of what the standard buckets look like.
 
 ---
 
@@ -320,6 +345,7 @@ Loop 4 must follow Loop 3 globally because `buildChildInstance` reads property `
 | Non-standard test values | `test_config` on PropertyDefinition (server normalization, special characters) |
 | Server default differs from empty string | `test_config.default` on PropertyDefinition with both `assert_value: "<expected>"` AND explicit `config_include: false`. Omitting `config_include` defaults to `true` and would force the value into HCL config, defeating the point. |
 | 3+ parent classes | `test_config.dependencies` will render the additional parent resource in HCL as a prerequisite, but `parent_dn` auto-wiring still only uses the first 2 Parent-role entries (Create/Update/Default use [0], ForceNew uses [1]). To actually switch between a 3rd parent type, also override the `parent_dn` property's `test_config` directly with a `{{<reference>}}` placeholder pointing at the desired entry. |
+| Legacy alias with divergent type | `test_config.legacy` on PropertyDefinition. Auto-derivation skips with a `Warn` log when any `Functioning`/`Frozen` `StateUpgradeValue` carries a `legacy_type` different from the current attribute's type — supply the prior-shape HCL values explicitly. See §2.4 "Legacy bucket auto-derivation". |
 
 ---
 
@@ -476,9 +502,13 @@ The minimum scenarios every generated `*_test.go` should render once templates e
 - Custom type import verification (import state matches normalized form)
 
 ### Legacy attribute gaps
-- Legacy attribute state assertions (currently only verifies config applies without error)
-- Legacy-to-new attribute migration in a single test (set via legacy → read via new attribute)
-- Conflicting legacy + new attribute error validation
+
+The `TestValues.Legacy` data bucket is now populated (auto-derived from `Create` when types match, or supplied via `test_config.legacy` when they diverge — see §2.4). The remaining gaps live in the template layer that consumes it:
+
+- Render a scenario that applies a config under the legacy alias and asserts the current-name state attribute receives the same value (Functioning aliases) or stays at the prior value with no device write (Frozen aliases).
+- Legacy-to-new attribute migration in a single test (set via legacy → read via new attribute).
+- Conflicting legacy + new attribute error validation (`ConflictsWith` enforcement on Functioning aliases).
+- Removed-alias migration coverage: state with the removed name upgrades cleanly to the current schema (driven by `state_upgrades`, no Legacy bucket involvement).
 
 ### Step rendering / template scope
 
