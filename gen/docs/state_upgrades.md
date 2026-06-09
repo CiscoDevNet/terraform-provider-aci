@@ -169,6 +169,7 @@ The converse is allowed: `migration_source` omitted with a `prior_schema_version
 
 - `Class.StateUpgrades` carries the full validated tree, used by the upgrader template that emits one `resource.StateUpgrader` per entry.
 - `Property.StateUpgradeValues` is a flattened convenience map of `prior_schema_version -> StateUpgradeValue`, populated by `Class.setPropertyStateUpgradeValues()` for each top-level attribute on the owning class. Templates that iterate properties can ask "what was my legacy name at v0?" without traversing the upgrade tree.
+- Each `StateUpgradeValue` carries the `legacy_status` lifecycle stage from §6 in its `Status` field. The generator uses this to populate `Property.TestValues.Legacy` for each property with a `Functioning` or `Frozen` renamed alias — see `test_configuration.md` §2.4 "Legacy bucket auto-derivation" for the full rules. `Removed` entries never produce a Legacy bucket because they describe migration-only attributes that no longer exist in the current schema.
 - Inner `children[X].attributes` entries are **not** distributed into child-class Property maps in this phase. Templates that need inner-child state-upgrade data walk `Class.StateUpgrades` directly.
 
 ---
@@ -178,3 +179,48 @@ The converse is allowed: `migration_source` omitted with a `prior_schema_version
 - Template wiring: how upgraders, prior schemas, and legacy alias rendering are emitted is a follow-up effort.
 - Bulk migration of existing `migration_blocks` / `migration_version` / `type_changes` keys from the older `gen/definitions/classes/*.yaml` files into the new model — those files are not loaded by the current generator.
 - Orphan-frozen edge case (legacy attribute with no current replacement, frozen alias only) — deferred until a real case appears.
+
+---
+
+## 11. Worked example: lifecycle in YAML
+
+A fictional `fvBD` definition exercising all three `legacy_status` values in a single `state_upgrades` entry. Illustrates how the same input drives both the `UpgradeResourceState` upgrader and the auto-derived `TestValues.Legacy` bucket described in `test_configuration.md` §2.4.
+
+```yaml
+# gen/definitions/fvBD.yaml (excerpt)
+migration_source: from_sdkv2
+
+state_upgrades:
+  - prior_schema_version: 0
+    attributes:
+      # 1. Functioning rename: both names exposed in the current schema.
+      #    APIC still accepts the value via the new attribute name.
+      arpFlood:
+        legacy_attribute: arp_flooding
+
+      # 2. Frozen rename: legacy name still accepted by Terraform configs but
+      #    no longer round-trips to the device. State-preserving alias only.
+      mac:
+        legacy_attribute: mac_address
+        legacy_status: frozen
+
+      # 3. Removed: prior schema had the attribute, current schema does not.
+      #    Migration-only; the legacy fields are required because there is
+      #    no current property to inherit them from. Bump the resource
+      #    SchemaVersion to 1 in lockstep with this change.
+      legacyUnicastRoute:
+        legacy_attribute: enable_unicast_routing
+        legacy_type: string_attribute
+        legacy_restriction: optional
+        legacy_status: removed
+```
+
+What the generator produces from this single entry:
+
+| Meta property | `Status` | Current schema | Auto-derived `TestValues.Legacy` |
+|---|---|---|---|
+| `arpFlood` | `Functioning` | Both `arp_flood` (current) and `arp_flooding` (deprecated alias) exposed; `ConflictsWith` enforced. | Clone of `arpFlood`'s `Create` bucket. Template renders one scenario configuring the resource under `arp_flooding` and asserts the value lands in state at the current name. |
+| `mac` | `Frozen` | Both names exposed; `mac_address` carries a state-preserving plan modifier so existing configs don't diff. | Clone of `mac`'s `Create` bucket. Template renders a scenario configuring the resource under `mac_address` and asserts no device write occurs. |
+| `legacyUnicastRoute` | `Removed` | Not exposed. Resource `SchemaVersion` bumped to 1. | Nil. Coverage comes from the `UpgradeResourceState` migration scenario, not from a current-schema scenario. |
+
+If the `mac` rename had also changed type (for example a `string_attribute` becoming a `set_attribute`), `hasDivergentLegacyType()` would skip auto-derivation, emit a generator `Warn`, and require an explicit `test_config.legacy` block on the `mac` property carrying the prior-shape HCL values.
