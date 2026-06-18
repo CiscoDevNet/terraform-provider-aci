@@ -88,10 +88,10 @@ func CheckDn(ctx context.Context, diags *diag.Diagnostics, client *client.Client
 
 func DoRestRequestEscapeHtml(ctx context.Context, diags *diag.Diagnostics, aciClient *client.Client, path, method string, payload *container.Container, escapeHtml bool) *container.Container {
 
-	// Ensure path starts with a slash to assure signature is created correctly
-	if !strings.HasPrefix("/", path) {
-		path = fmt.Sprintf("/%s", path)
-	}
+	// Ensure path starts with exactly one leading slash so the signed content
+	// matches the URL APIC receives (the vendor client also collapses leading
+	// slashes when building the request URL, but signs the path as given).
+	path = "/" + strings.TrimLeft(path, "/")
 	var restRequest *http.Request
 	var err error
 	if escapeHtml {
