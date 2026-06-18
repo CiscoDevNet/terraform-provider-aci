@@ -359,7 +359,7 @@ func (p *AciProvider) Functions(ctx context.Context) []func() function.Function 
 }
 
 func getVersionAPIC(ctx context.Context, diags *diag.Diagnostics, client *client.Client) string {
-	requestData := DoRestRequest(ctx, diags, client, "/api/node/class/topSystem.json?query-target-filter=eq(topSystem.role,\"controller\")", "GET", nil)
+	requestData := DoRestRequest(ctx, diags, client, "api/node/class/topSystem.json?query-target-filter=eq(topSystem.role,\"controller\")", "GET", nil)
 	if diags.HasError() {
 		return ""
 	}
