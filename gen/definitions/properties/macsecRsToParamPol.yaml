@@ -1,0 +1,6 @@
+targets:
+    - class_name: macsecParamPol
+      properties:
+        name: macsec_parameters_0
+      relation_resource_name: macsec_parameters
+      target_dn: uni/infra/macsecpcont/paramp-macsec_parameters_0

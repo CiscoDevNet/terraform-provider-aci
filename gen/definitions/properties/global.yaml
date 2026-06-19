@@ -77,6 +77,7 @@ resource_name_doc_overwrite:
     Lacp Enhanced Lag Policy: LACP Enhanced Lag Policy
     Lldp: LLDP
     Mac: MAC
+    Macsec: MACsec
     Mcp: MCP
     Mld: MLD
     Mtu: MTU
