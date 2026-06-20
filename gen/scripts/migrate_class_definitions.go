@@ -146,11 +146,11 @@ var knownLegacyKeys = map[string]keyInfo{
 	"multi_relationship_class": {sectionObsolete, false},
 
 	// S4 ADD - schema additions
-	"include":                            {sectionAdd, false}, // -> artifacts ([] when include: false)
-	"multi_parents":                      {sectionAdd, false}, // -> parent_dn_variants
-	"example_classes":                    {sectionAdd, false}, // -> documentation.example_parent_classes
-	"exclude_from_testing":               {sectionAdd, false}, // -> test_config.ignore_tests: [child]
-	"ignore_import_state_verify_in_test": {sectionAdd, false}, // -> test_config.ignore_import_state_verify
+	"include":                            {sectionAdd, true}, // -> artifacts ([] when include: false)
+	"multi_parents":                      {sectionAdd, true}, // -> parent_dn_variants
+	"example_classes":                    {sectionAdd, true}, // -> documentation.example_parent_classes
+	"exclude_from_testing":               {sectionAdd, true}, // -> test_config.ignore_tests: [child]
+	"ignore_import_state_verify_in_test": {sectionAdd, true}, // -> test_config.ignore_import_state_verify
 
 	// S5 REUSE
 	"max_one_class_allowed": {sectionReuse, false}, // -> is_single_nested_when_defined_as_child
@@ -325,7 +325,71 @@ func migrate(file string, legacy map[string]any, tally *keyTally) data.ClassDefi
 			out.Documentation.UiLocations = toStringSlice(val)
 		case "dn_formats":
 			out.Documentation.DnFormats = toStringSlice(val)
+		case "include":
+			// Legacy `include: true` forces a class with empty IdentifiedBy
+			// into the generator registry. The new resolver expresses the same
+			// opt-in via a non-nil artifacts override. fvFBRoute has
+			// IdentifiedBy non-empty so its include: true is redundant; the
+			// one-off cleanup removes it in a later commit.
+			if b, ok := val.(bool); ok {
+				if b {
+					out.Artifacts = []data.ArtifactEnum{data.ResourceArtifact, data.DatasourceArtifact}
+				} else {
+					out.Artifacts = []data.ArtifactEnum{}
+				}
+			}
+		case "example_classes":
+			out.Documentation.ExampleParentClasses = toStringSlice(val)
+		case "multi_parents":
+			out.ParentDnVariants = migrateMultiParents(val)
+		case "exclude_from_testing":
+			if b, ok := val.(bool); ok && b {
+				out.TestConfig.IgnoreTests = []data.IgnoreTestEnum{data.ChildIgnoreTest}
+			}
+		case "ignore_import_state_verify_in_test":
+			if b, ok := val.(bool); ok {
+				out.TestConfig.IgnoreImportStateVerify = b
+			}
 		}
+	}
+	return out
+}
+
+// migrateMultiParents converts the legacy multi_parents block into the
+// canonical ParentDnVariants slice. Field renames: legacy `contained_by`
+// -> canonical `parent_class`; legacy `test_type` (string) -> canonical
+// `test_platform`. `rn_prepend` and `wrapper_class` keep their names.
+func migrateMultiParents(val any) []data.ParentDnVariantDefinition {
+	raw, ok := val.([]any)
+	if !ok {
+		return nil
+	}
+	out := make([]data.ParentDnVariantDefinition, 0, len(raw))
+	for _, item := range raw {
+		m, ok := item.(map[any]any)
+		if !ok {
+			continue
+		}
+		variant := data.ParentDnVariantDefinition{}
+		if s, ok := m["contained_by"].(string); ok {
+			variant.ParentClass = s
+		}
+		if s, ok := m["rn_prepend"].(string); ok {
+			variant.RnPrepend = s
+		}
+		if s, ok := m["wrapper_class"].(string); ok {
+			variant.WrapperClass = s
+		}
+		if s, ok := m["test_type"].(string); ok {
+			// Reuse the canonical loader's strict text parser so an
+			// unrecognised legacy value (e.g. typo) surfaces here
+			// instead of producing silently bogus YAML.
+			var p data.PlatformTypeEnum
+			if err := p.UnmarshalText([]byte(s)); err == nil {
+				variant.TestPlatform = p
+			}
+		}
+		out = append(out, variant)
 	}
 	return out
 }
@@ -358,7 +422,13 @@ func hasMigratedData(c data.ClassDefinition) bool {
 	if len(c.ExcludeChildren) > 0 || len(c.IncludeChildren) > 0 {
 		return true
 	}
-	if c.Documentation.SubCategory != "" || len(c.Documentation.UiLocations) > 0 || len(c.Documentation.DnFormats) > 0 {
+	if c.Artifacts != nil || len(c.ParentDnVariants) > 0 {
+		return true
+	}
+	if len(c.TestConfig.IgnoreTests) > 0 || c.TestConfig.IgnoreImportStateVerify {
+		return true
+	}
+	if c.Documentation.SubCategory != "" || len(c.Documentation.UiLocations) > 0 || len(c.Documentation.DnFormats) > 0 || len(c.Documentation.ExampleParentClasses) > 0 {
 		return true
 	}
 	return false
@@ -387,11 +457,60 @@ func marshalView(c data.ClassDefinition) map[string]any {
 	if c.RequiredAsChild {
 		out["required_as_child"] = c.RequiredAsChild
 	}
+	if c.Artifacts != nil {
+		// Emit as []string so per-element UnmarshalText drives the strict
+		// round-trip in roundTripStrict; an empty slice (`artifacts: []`)
+		// is preserved verbatim because it has loader semantics distinct
+		// from omission (explicit opt-out vs auto-derive).
+		names := make([]string, len(c.Artifacts))
+		for i, a := range c.Artifacts {
+			names[i] = a.String()
+		}
+		out["artifacts"] = names
+	}
 	if len(c.ExcludeChildren) > 0 {
 		out["exclude_children"] = c.ExcludeChildren
 	}
 	if len(c.IncludeChildren) > 0 {
 		out["include_children"] = c.IncludeChildren
+	}
+	if len(c.ParentDnVariants) > 0 {
+		variants := make([]map[string]any, len(c.ParentDnVariants))
+		for i, v := range c.ParentDnVariants {
+			var entry = map[string]any{}
+			if v.ParentClass != "" {
+				entry["parent_class"] = v.ParentClass
+			}
+			if v.RnPrepend != "" {
+				entry["rn_prepend"] = v.RnPrepend
+			}
+			if v.WrapperClass != "" {
+				entry["wrapper_class"] = v.WrapperClass
+			}
+			// PlatformTypeEnum's iota zero is "apic", which the legacy
+			// `test_type: apic` would have been a no-op. Only emit when
+			// the value diverges from default to keep the migrated YAML
+			// minimal.
+			if v.TestPlatform != data.Apic {
+				entry["test_platform"] = v.TestPlatform.String()
+			}
+			variants[i] = entry
+		}
+		out["parent_dn_variants"] = variants
+	}
+	testCfg := map[string]any{}
+	if len(c.TestConfig.IgnoreTests) > 0 {
+		names := make([]string, len(c.TestConfig.IgnoreTests))
+		for i, e := range c.TestConfig.IgnoreTests {
+			names[i] = e.String()
+		}
+		testCfg["ignore_tests"] = names
+	}
+	if c.TestConfig.IgnoreImportStateVerify {
+		testCfg["ignore_import_state_verify"] = c.TestConfig.IgnoreImportStateVerify
+	}
+	if len(testCfg) > 0 {
+		out["test_config"] = testCfg
 	}
 	doc := map[string]any{}
 	if c.Documentation.SubCategory != "" {
@@ -402,6 +521,9 @@ func marshalView(c data.ClassDefinition) map[string]any {
 	}
 	if len(c.Documentation.DnFormats) > 0 {
 		doc["dn_formats"] = c.Documentation.DnFormats
+	}
+	if len(c.Documentation.ExampleParentClasses) > 0 {
+		doc["example_parent_classes"] = c.Documentation.ExampleParentClasses
 	}
 	if len(doc) > 0 {
 		out["documentation"] = doc
