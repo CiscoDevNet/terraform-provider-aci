@@ -27,6 +27,9 @@ no_meta_file:
   fvCtx: vrf
 documentation_label_overrides:
   Bgp: BGP
+property_documentation_overrides:
+  descr: The description of the %s object.
+  nameAlias: The name alias of the %s object.
 `)
 
 	parsedDefinition, err := parseGlobalMetaDefinition(yamlBytes)
@@ -37,6 +40,8 @@ documentation_label_overrides:
 	assert.Equal(t, []string{"childAction"}, parsedDefinition.ExcludeProperties)
 	assert.Equal(t, "vrf", parsedDefinition.NoMetaFile["fvCtx"])
 	assert.Equal(t, "BGP", parsedDefinition.DocumentationLabelOverrides["Bgp"])
+	assert.Equal(t, "The description of the %s object.", parsedDefinition.PropertyDocumentationOverrides["descr"])
+	assert.Equal(t, "The name alias of the %s object.", parsedDefinition.PropertyDocumentationOverrides["nameAlias"])
 }
 
 // TestParseGlobalMetaDefinition_UnknownField verifies UnmarshalStrict rejects
@@ -76,9 +81,23 @@ func TestParseClassDefinition_HappyPath(t *testing.T) {
 resource_name: tenant
 identified_by:
   - name
+artifacts:
+  - resource
+  - datasource
+parent_dn_variants:
+  - parent_class: fvTenant
+    rn_prepend: certstore
+    wrapper_class: cloudCertStore
+    test_platform: apic
+  - parent_class: pkiEp
+    rn_prepend: userext/pkiext
+    test_platform: cloud
 documentation:
   label: Tenant
   description: A tenant.
+  example_parent_classes:
+    - fvTenant
+    - fvAEPg
 relation_info:
   type: named
   to_classes:
@@ -98,6 +117,9 @@ properties:
           assert_value: updated
 test_config:
   replace_auto_resolved: true
+  ignore_tests:
+    - child
+  ignore_import_state_verify: true
   dependencies:
     - class_name: fvTenant
       reference: aci_tenant.test.id
@@ -109,7 +131,18 @@ test_config:
 	assert.NoError(t, err, test.MessageUnexpectedError(err))
 	assert.Equal(t, "tenant", parsedDefinition.ResourceName)
 	assert.Equal(t, []string{"name"}, parsedDefinition.IdentifiedBy)
+	assert.Equal(t, []ArtifactEnum{ResourceArtifact, DatasourceArtifact}, parsedDefinition.Artifacts)
+	assert.Len(t, parsedDefinition.ParentDnVariants, 2)
+	assert.Equal(t, "fvTenant", parsedDefinition.ParentDnVariants[0].ParentClass)
+	assert.Equal(t, "certstore", parsedDefinition.ParentDnVariants[0].RnPrepend)
+	assert.Equal(t, "cloudCertStore", parsedDefinition.ParentDnVariants[0].WrapperClass)
+	assert.Equal(t, Apic, parsedDefinition.ParentDnVariants[0].TestPlatform)
+	assert.Equal(t, "pkiEp", parsedDefinition.ParentDnVariants[1].ParentClass)
+	assert.Equal(t, "userext/pkiext", parsedDefinition.ParentDnVariants[1].RnPrepend)
+	assert.Equal(t, "", parsedDefinition.ParentDnVariants[1].WrapperClass)
+	assert.Equal(t, Cloud, parsedDefinition.ParentDnVariants[1].TestPlatform)
 	assert.Equal(t, "Tenant", parsedDefinition.Documentation.Label)
+	assert.Equal(t, []string{"fvTenant", "fvAEPg"}, parsedDefinition.Documentation.ExampleParentClasses)
 	assert.Equal(t, Named, parsedDefinition.RelationInfo.Type)
 	assert.Equal(t, []string{"vz:BrCP"}, parsedDefinition.RelationInfo.ToClasses)
 
@@ -128,6 +161,8 @@ test_config:
 	assert.Equal(t, "updated", descrProp.TestConfig.Update[0].AssertValue)
 
 	assert.True(t, parsedDefinition.TestConfig.ReplaceAutoResolved)
+	assert.Equal(t, []IgnoreTestEnum{ChildIgnoreTest}, parsedDefinition.TestConfig.IgnoreTests)
+	assert.True(t, parsedDefinition.TestConfig.IgnoreImportStateVerify)
 	assert.Len(t, parsedDefinition.TestConfig.Dependencies, 1)
 	assert.Equal(t, "fvTenant", parsedDefinition.TestConfig.Dependencies[0].ClassName)
 	assert.Equal(t, ResourceReference, parsedDefinition.TestConfig.Dependencies[0].ReferenceType)
@@ -263,6 +298,40 @@ properties:
     restriction: ""
 `,
 			Expected: "unknown restriction",
+		},
+		{
+			Name: "invalid_artifact",
+			Input: `
+artifacts:
+  - not_a_real_artifact
+`,
+			Expected: "unknown artifact",
+		},
+		{
+			Name: "empty_artifact_is_typo",
+			Input: `
+artifacts:
+  - ""
+`,
+			Expected: "unknown artifact",
+		},
+		{
+			Name: "invalid_ignore_test",
+			Input: `
+test_config:
+  ignore_tests:
+    - not_a_real_bucket
+`,
+			Expected: "unknown ignore_tests entry",
+		},
+		{
+			Name: "invalid_parent_dn_variant_test_platform",
+			Input: `
+parent_dn_variants:
+  - parent_class: fvTenant
+    test_platform: not_a_real_platform
+`,
+			Expected: "unknown platform_type",
 		},
 	}
 
