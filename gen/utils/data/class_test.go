@@ -779,6 +779,112 @@ func TestSetParentDnVariants(t *testing.T) {
 	}
 }
 
+type setTestConfigInput struct {
+	ClassDefinition ClassDefinition
+}
+
+type setTestConfigExpected struct {
+	IgnoreTests             []IgnoreTestEnum
+	IgnoreImportStateVerify bool
+}
+
+func TestSetTestConfig(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	testCases := []test.TestCase{
+		{
+			// Default zero-value loader: nothing suppressed.
+			Name:  "test_empty_definition_zero_value",
+			Input: setTestConfigInput{ClassDefinition: ClassDefinition{}},
+			Expected: setTestConfigExpected{
+				IgnoreTests:             nil,
+				IgnoreImportStateVerify: false,
+			},
+		},
+		{
+			// vmmRsDomMcastAddrNs-style nested-only relation: skips the parent's
+			// testvars iteration entry but still emits the class's own tests.
+			Name: "test_child_only_passthrough",
+			Input: setTestConfigInput{
+				ClassDefinition: ClassDefinition{
+					TestConfig: ClassTestConfigDefinition{
+						IgnoreTests: []IgnoreTestEnum{ChildIgnoreTest},
+					},
+				},
+			},
+			Expected: setTestConfigExpected{
+				IgnoreTests:             []IgnoreTestEnum{ChildIgnoreTest},
+				IgnoreImportStateVerify: false,
+			},
+		},
+		{
+			// Combination passthrough: both child-iteration and resource-test
+			// emission suppressed. Order is preserved verbatim from the loader.
+			Name: "test_multiple_buckets_preserve_order",
+			Input: setTestConfigInput{
+				ClassDefinition: ClassDefinition{
+					TestConfig: ClassTestConfigDefinition{
+						IgnoreTests: []IgnoreTestEnum{ChildIgnoreTest, ResourceIgnoreTest, DatasourceIgnoreTest},
+					},
+				},
+			},
+			Expected: setTestConfigExpected{
+				IgnoreTests:             []IgnoreTestEnum{ChildIgnoreTest, ResourceIgnoreTest, DatasourceIgnoreTest},
+				IgnoreImportStateVerify: false,
+			},
+		},
+		{
+			// Classes with non-roundtrip APIC state set just this flag while
+			// keeping the import smoke test itself active.
+			Name: "test_ignore_import_state_verify_only",
+			Input: setTestConfigInput{
+				ClassDefinition: ClassDefinition{
+					TestConfig: ClassTestConfigDefinition{
+						IgnoreImportStateVerify: true,
+					},
+				},
+			},
+			Expected: setTestConfigExpected{
+				IgnoreTests:             nil,
+				IgnoreImportStateVerify: true,
+			},
+		},
+		{
+			// Both gates set together — verify they remain independent.
+			Name: "test_both_gates_set",
+			Input: setTestConfigInput{
+				ClassDefinition: ClassDefinition{
+					TestConfig: ClassTestConfigDefinition{
+						IgnoreTests:             []IgnoreTestEnum{ResourceIgnoreTest},
+						IgnoreImportStateVerify: true,
+					},
+				},
+			},
+			Expected: setTestConfigExpected{
+				IgnoreTests:             []IgnoreTestEnum{ResourceIgnoreTest},
+				IgnoreImportStateVerify: true,
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.(setTestConfigInput)
+			expected := testCase.Expected.(setTestConfigExpected)
+
+			class := Class{Name: testClassName("fvTenant")}
+			class.ClassDefinition = input.ClassDefinition
+
+			class.setTestConfig()
+
+			assert.Equal(t, expected.IgnoreTests, class.TestConfig.IgnoreTests, test.MessageEqual(expected.IgnoreTests, class.TestConfig.IgnoreTests, testCase.Name))
+			assert.Equal(t, expected.IgnoreImportStateVerify, class.TestConfig.IgnoreImportStateVerify, test.MessageEqual(expected.IgnoreImportStateVerify, class.TestConfig.IgnoreImportStateVerify, testCase.Name))
+		})
+	}
+}
+
 type shouldIncludeChildInput struct {
 	RN                          string
 	ClassName                   string
