@@ -268,3 +268,41 @@ func TestMigrationSourceEnum(t *testing.T) {
 	assert.Error(t, test.UnmarshalTextErr[MigrationSourceEnum](""))
 	assert.Error(t, test.UnmarshalTextErr[MigrationSourceEnum]("garbage"))
 }
+
+func TestArtifactEnum(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	assert.Equal(t, "", UndefinedArtifact.String())
+	assert.Equal(t, "resource", ResourceArtifact.String())
+	assert.Equal(t, "datasource", DatasourceArtifact.String())
+
+	assert.Equal(t, ResourceArtifact, test.MustUnmarshalText[ArtifactEnum](t, "resource"))
+	assert.Equal(t, DatasourceArtifact, test.MustUnmarshalText[ArtifactEnum](t, "datasource"))
+
+	// Empty and unknown both error: the zero value (UndefinedArtifact) is reached by
+	// omitting the slice element entirely (field-level absence yields a nil slice),
+	// so a present-but-empty entry is treated as a typo.
+	assert.Error(t, test.UnmarshalTextErr[ArtifactEnum](""))
+	assert.Error(t, test.UnmarshalTextErr[ArtifactEnum]("garbage"))
+}
+
+func TestIgnoreTestEnum(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	assert.Equal(t, "", UndefinedIgnoreTest.String())
+	assert.Equal(t, "child", ChildIgnoreTest.String())
+	assert.Equal(t, "resource", ResourceIgnoreTest.String())
+	assert.Equal(t, "datasource", DatasourceIgnoreTest.String())
+
+	assert.Equal(t, ChildIgnoreTest, test.MustUnmarshalText[IgnoreTestEnum](t, "child"))
+	assert.Equal(t, ResourceIgnoreTest, test.MustUnmarshalText[IgnoreTestEnum](t, "resource"))
+	assert.Equal(t, DatasourceIgnoreTest, test.MustUnmarshalText[IgnoreTestEnum](t, "datasource"))
+
+	// Empty and unknown both error: the zero value (UndefinedIgnoreTest) is reached by
+	// omitting the slice element entirely (field-level absence yields a nil slice),
+	// so a present-but-empty entry is treated as a typo.
+	assert.Error(t, test.UnmarshalTextErr[IgnoreTestEnum](""))
+	assert.Error(t, test.UnmarshalTextErr[IgnoreTestEnum]("garbage"))
+}
