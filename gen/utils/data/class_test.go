@@ -586,6 +586,199 @@ func TestSetArtifacts(t *testing.T) {
 	}
 }
 
+type setParentDnVariantsInput struct {
+	ClassName       string
+	RnFormat        string
+	MetaFileContent map[string]any
+	ClassDefinition ClassDefinition
+}
+
+type setParentDnVariantsExpected struct {
+	Error            bool
+	ErrorMsg         string
+	VariantsLen      int
+	DefaultParentDn  string
+	DefaultParent    string
+	VariantParent    string
+	VariantRnPrepend string
+	VariantWrapper   string
+	VariantPlatform  PlatformTypeEnum
+}
+
+func TestSetParentDnVariants(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	testCases := []test.TestCase{
+		{
+			// Most classes have no YAML variants; the resolver leaves both
+			// fields nil and never reads meta.
+			Name: "test_no_yaml_variants_leaves_fields_nil",
+			Input: setParentDnVariantsInput{
+				ClassName:       "fvTenant",
+				RnFormat:        "tn-{name}",
+				MetaFileContent: map[string]any{},
+				ClassDefinition: ClassDefinition{},
+			},
+			Expected: setParentDnVariantsExpected{
+				VariantsLen: 0,
+			},
+		},
+		{
+			// pkiKeyRing shape: 2 meta dnFormats, 1 YAML variant. The default
+			// is the format that doesn't contain the YAML rn_prepend segment.
+			Name: "test_pki_key_ring_shape",
+			Input: setParentDnVariantsInput{
+				ClassName: "pkiKeyRing",
+				RnFormat:  "keyring-{name}",
+				MetaFileContent: map[string]any{
+					"dnFormats": []any{
+						"uni/tn-{name}/certstore/keyring-{name}",
+						"uni/userext/pkiext/keyring-{name}",
+					},
+					"containedBy": map[string]any{
+						"cloud:CertStore": "",
+						"pki:Ep":          "",
+					},
+				},
+				ClassDefinition: ClassDefinition{
+					ParentDnVariants: []ParentDnVariantDefinition{
+						{
+							ParentClass:  "fvTenant",
+							RnPrepend:    "certstore",
+							WrapperClass: "cloudCertStore",
+							TestPlatform: Cloud,
+						},
+					},
+				},
+			},
+			Expected: setParentDnVariantsExpected{
+				VariantsLen:      2,
+				DefaultParentDn:  "uni/userext/pkiext",
+				DefaultParent:    "pkiEp",
+				VariantParent:    "fvTenant",
+				VariantRnPrepend: "certstore",
+				VariantWrapper:   "cloudCertStore",
+				VariantPlatform:  Cloud,
+			},
+		},
+		{
+			// Meta has no dnFormats but YAML declares variants — the resolver
+			// can't synthesise the default and must error.
+			Name: "test_missing_meta_dn_formats_errors",
+			Input: setParentDnVariantsInput{
+				ClassName:       "pkiKeyRing",
+				RnFormat:        "keyring-{name}",
+				MetaFileContent: map[string]any{},
+				ClassDefinition: ClassDefinition{
+					ParentDnVariants: []ParentDnVariantDefinition{
+						{ParentClass: "fvTenant", RnPrepend: "certstore"},
+					},
+				},
+			},
+			Expected: setParentDnVariantsExpected{
+				Error:    true,
+				ErrorMsg: "meta has no dnFormats",
+			},
+		},
+		{
+			// Every meta containedBy entry is a YAML variant's wrapper class —
+			// no candidate remains for the synthesised default's parent.
+			Name: "test_every_meta_parent_is_a_variant_wrapper_errors",
+			Input: setParentDnVariantsInput{
+				ClassName: "pkiKeyRing",
+				RnFormat:  "keyring-{name}",
+				MetaFileContent: map[string]any{
+					"dnFormats": []any{
+						"uni/tn-{name}/certstore/keyring-{name}",
+						"uni/userext/pkiext/keyring-{name}",
+					},
+					"containedBy": map[string]any{
+						"cloud:CertStore": "",
+					},
+				},
+				ClassDefinition: ClassDefinition{
+					ParentDnVariants: []ParentDnVariantDefinition{
+						{ParentClass: "fvTenant", RnPrepend: "certstore", WrapperClass: "cloudCertStore"},
+					},
+				},
+			},
+			Expected: setParentDnVariantsExpected{
+				Error:    true,
+				ErrorMsg: "meta containedBy has no entry outside the YAML variants' wrapper classes",
+			},
+		},
+		{
+			// Every meta dnFormat is matched by a YAML variant — no candidate
+			// remains for the synthesised default.
+			Name: "test_every_meta_format_claimed_by_variant_errors",
+			Input: setParentDnVariantsInput{
+				ClassName: "pkiKeyRing",
+				RnFormat:  "keyring-{name}",
+				MetaFileContent: map[string]any{
+					"dnFormats": []any{
+						"uni/tn-{name}/certstore/keyring-{name}",
+					},
+					"containedBy": map[string]any{
+						"cloud:CertStore": "",
+					},
+				},
+				ClassDefinition: ClassDefinition{
+					ParentDnVariants: []ParentDnVariantDefinition{
+						{ParentClass: "fvTenant", RnPrepend: "certstore"},
+					},
+				},
+			},
+			Expected: setParentDnVariantsExpected{
+				Error:    true,
+				ErrorMsg: "no meta dnFormat is free of YAML rn_prepend segments",
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.(setParentDnVariantsInput)
+			expected := testCase.Expected.(setParentDnVariantsExpected)
+			class := Class{Name: testClassName(input.ClassName)}
+			class.RnFormat = input.RnFormat
+			class.MetaFileContent = input.MetaFileContent
+			class.ClassDefinition = input.ClassDefinition
+
+			err := class.setParentDnVariants()
+
+			if expected.Error {
+				assert.Error(t, err)
+				if expected.ErrorMsg != "" {
+					assert.ErrorContains(t, err, expected.ErrorMsg)
+				}
+				return
+			}
+
+			assert.NoError(t, err, test.MessageUnexpectedError(err))
+			assert.Len(t, class.ParentDnVariants, expected.VariantsLen)
+			if expected.VariantsLen == 0 {
+				assert.Nil(t, class.DefaultParentDn)
+				return
+			}
+			assert.NotNil(t, class.DefaultParentDn)
+			assert.Equal(t, expected.DefaultParentDn, class.DefaultParentDn.ParentDn)
+			assert.Equal(t, expected.DefaultParent, class.DefaultParentDn.ParentClass.String())
+			assert.Equal(t, expected.DefaultParent, class.ParentDnVariants[0].ParentClass.String())
+			assert.Equal(t, expected.VariantParent, class.ParentDnVariants[1].ParentClass.String())
+			assert.Equal(t, expected.VariantRnPrepend, class.ParentDnVariants[1].RnPrepend)
+			if expected.VariantWrapper == "" {
+				assert.Nil(t, class.ParentDnVariants[1].WrapperClass)
+			} else {
+				assert.NotNil(t, class.ParentDnVariants[1].WrapperClass)
+				assert.Equal(t, expected.VariantWrapper, class.ParentDnVariants[1].WrapperClass.String())
+			}
+			assert.Equal(t, expected.VariantPlatform, class.ParentDnVariants[1].TestPlatform)
+		})
+	}
+}
+
 type shouldIncludeChildInput struct {
 	RN                          string
 	ClassName                   string

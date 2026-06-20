@@ -33,6 +33,16 @@ type Class struct {
 	Children []*ClassName
 	// Custom class definition to override class meta properties
 	ClassDefinition ClassDefinition
+	// Default parent-DN placement synthesised from meta for classes that
+	// declare ClassDefinition.ParentDnVariants. nil for every class that
+	// has a single canonical parent placement (the common case). Always
+	// equal to ParentDnVariants[0] when non-nil.
+	DefaultParentDn *ParentDnVariant
+	// Resolved parent-DN variants for classes that have more than one valid
+	// placement. Element 0 is DefaultParentDn (synthesised from meta);
+	// elements 1.. are the YAML-declared variants in source order. nil for
+	// every class with a single canonical placement.
+	ParentDnVariants []ParentDnVariant
 	// Deprecated resources include a warning the resource and datasource schemas.
 	// Driven by the meta `isDeprecated` flag with an optional definition override (logical OR).
 	Deprecated bool
@@ -283,6 +293,11 @@ func (c *Class) setClassData(ds *DataStore) error {
 	}
 
 	err = c.setRnFormat()
+	if err != nil {
+		return err
+	}
+
+	err = c.setParentDnVariants()
 	if err != nil {
 		return err
 	}
@@ -809,6 +824,156 @@ func (c *Class) setRnFormat() error {
 	}
 
 	genLogger.Debugf("Successfully set RnFormat '%s' for class '%s'.", c.RnFormat, c.Name)
+	return nil
+}
+
+// ParentDnVariant is the resolved counterpart of ParentDnVariantDefinition. It
+// pins one valid (parent_class, parent_dn, rn_prepend, wrapper_class,
+// test_platform) tuple for a class with more than one valid placement that
+// reaches APIC via a distinct request path per placement.
+type ParentDnVariant struct {
+	// User-facing parent class for this variant (e.g. fvTenant for the
+	// tenant-scoped pkiKeyRing placement, pkiEp for the system-scoped one).
+	ParentClass *ClassName
+	// Resolved DN prefix users supply as parent_dn for this variant. Derived
+	// from the matching meta dnFormat minus the class's identifying RN segment
+	// (e.g. "uni/userext/pkiext" for the system-scoped pkiKeyRing placement).
+	// Empty for variants whose parent DN is supplied at runtime (the typical
+	// tenant-scoped case).
+	ParentDn string
+	// Intermediate RN segment that selects this variant. The generated
+	// resource matches the user's parent_dn against this segment to route the
+	// API call. Empty on the synthesised default variant.
+	RnPrepend string
+	// Implicit container the request nests the resource inside (e.g.
+	// cloudCertStore for a tenant-scoped pkiKeyRing). nil for variants that
+	// POST against a real, user-addressable parent.
+	WrapperClass *ClassName
+	// Platform profile that exercises this variant in tests.
+	TestPlatform PlatformTypeEnum
+}
+
+// setParentDnVariants resolves Class.ParentDnVariants from
+// ClassDefinition.ParentDnVariants. Classes with a single canonical placement
+// (the common case) leave both Class.ParentDnVariants and Class.DefaultParentDn
+// nil. When YAML variants are declared, the setter synthesises the default
+// placement from meta (the dnFormat that doesn't contain any YAML rn_prepend
+// segment) and prepends it to the resolved variant list so element 0 is
+// always the default. Must run after setRnFormat: the default ParentDn is
+// derived by stripping c.RnFormat (the identifying suffix) from the matching
+// meta dnFormat.
+func (c *Class) setParentDnVariants() error {
+	if len(c.ClassDefinition.ParentDnVariants) == 0 {
+		return nil
+	}
+
+	genLogger.Debugf("Setting ParentDnVariants for class '%s'.", c.Name)
+
+	rawFormats, _ := c.MetaFileContent["dnFormats"].([]any)
+	metaDnFormats := make([]string, 0, len(rawFormats))
+	for _, raw := range rawFormats {
+		if s, ok := raw.(string); ok {
+			metaDnFormats = append(metaDnFormats, s)
+		}
+	}
+	if len(metaDnFormats) == 0 {
+		return fmt.Errorf("failed to resolve ParentDnVariants for class '%s': meta has no dnFormats", c.Name)
+	}
+
+	// Identify the default dnFormat: the one not selected by any YAML
+	// rn_prepend segment.
+	isVariantFormat := func(dnFormat string) bool {
+		for _, v := range c.ClassDefinition.ParentDnVariants {
+			if v.RnPrepend != "" && strings.Contains(dnFormat, "/"+v.RnPrepend+"/") {
+				return true
+			}
+		}
+		return false
+	}
+	var defaultDnFormat string
+	for _, dnFormat := range metaDnFormats {
+		if !isVariantFormat(dnFormat) {
+			defaultDnFormat = dnFormat
+			break
+		}
+	}
+	if defaultDnFormat == "" {
+		return fmt.Errorf("failed to resolve default ParentDn for class '%s': no meta dnFormat is free of YAML rn_prepend segments (dnFormats: %v)", c.Name, metaDnFormats)
+	}
+
+	// Strip the identifying RN suffix to get the default parent_dn prefix.
+	defaultParentDn := strings.TrimSuffix(defaultDnFormat, "/"+c.RnFormat)
+
+	// Resolve the default's parent class from meta containedBy by excluding
+	// every meta parent that corresponds to a YAML variant's wrapper class.
+	// The YAML's `parent_class` is the *user-facing* parent (e.g. fvTenant)
+	// which typically does not appear in meta `containedBy`; the wrapper class
+	// (e.g. cloudCertStore) is the *direct* parent the request nests inside.
+	// Excluding wrapper classes leaves the meta entry that corresponds to the
+	// default placement (e.g. pkiEp for the system-scoped pkiKeyRing).
+	variantWrapperMetaNames := make(map[string]bool, len(c.ClassDefinition.ParentDnVariants))
+	for _, v := range c.ClassDefinition.ParentDnVariants {
+		if v.WrapperClass == "" {
+			continue
+		}
+		wrapper, err := NewClassName(v.WrapperClass)
+		if err != nil {
+			return fmt.Errorf("failed to parse parent_dn_variants wrapper_class '%s' for class '%s': %w", v.WrapperClass, c.Name, err)
+		}
+		variantWrapperMetaNames[wrapper.MetaStyle()] = true
+	}
+	var defaultParentMetaName string
+	if containedBy, ok := c.MetaFileContent["containedBy"].(map[string]any); ok {
+		candidates := make([]string, 0, len(containedBy))
+		for parentMeta := range containedBy {
+			if !variantWrapperMetaNames[parentMeta] {
+				candidates = append(candidates, parentMeta)
+			}
+		}
+		// Sort for determinism — meta containedBy is a Go map with random iteration order.
+		slices.Sort(candidates)
+		if len(candidates) > 0 {
+			defaultParentMetaName = candidates[0]
+		}
+	}
+	if defaultParentMetaName == "" {
+		return fmt.Errorf("failed to resolve default ParentDn parent_class for class '%s': meta containedBy has no entry outside the YAML variants' wrapper classes", c.Name)
+	}
+	defaultParentClass, err := NewClassName(defaultParentMetaName)
+	if err != nil {
+		return fmt.Errorf("failed to parse default ParentDn parent_class '%s' for class '%s': %w", defaultParentMetaName, c.Name, err)
+	}
+
+	resolved := make([]ParentDnVariant, 0, len(c.ClassDefinition.ParentDnVariants)+1)
+	resolved = append(resolved, ParentDnVariant{
+		ParentClass:  defaultParentClass,
+		ParentDn:     defaultParentDn,
+		TestPlatform: Apic,
+	})
+	for _, v := range c.ClassDefinition.ParentDnVariants {
+		parentClass, err := NewClassName(v.ParentClass)
+		if err != nil {
+			return fmt.Errorf("failed to parse parent_dn_variants parent_class '%s' for class '%s': %w", v.ParentClass, c.Name, err)
+		}
+		var wrapperClass *ClassName
+		if v.WrapperClass != "" {
+			wrapperClass, err = NewClassName(v.WrapperClass)
+			if err != nil {
+				return fmt.Errorf("failed to parse parent_dn_variants wrapper_class '%s' for class '%s': %w", v.WrapperClass, c.Name, err)
+			}
+		}
+		resolved = append(resolved, ParentDnVariant{
+			ParentClass:  parentClass,
+			RnPrepend:    v.RnPrepend,
+			WrapperClass: wrapperClass,
+			TestPlatform: v.TestPlatform,
+		})
+	}
+
+	c.ParentDnVariants = resolved
+	c.DefaultParentDn = &resolved[0]
+
+	genLogger.Debugf("Successfully set ParentDnVariants for class '%s'. Default parent_dn: '%s', total variants: %d", c.Name, defaultParentDn, len(c.ParentDnVariants))
 	return nil
 }
 
