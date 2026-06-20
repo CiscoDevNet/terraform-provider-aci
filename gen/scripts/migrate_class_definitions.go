@@ -198,8 +198,8 @@ var knownLegacyKeys = map[string]keyInfo{
 	"prop:targets":     {sectionSemantic, true}, // this commit (C21 - decision tree + polymorphic)
 
 	// S3 obsolete (later commit)
-	"prop:exclude_targets":             {sectionObsolete, false}, // C22 (verify polymorphic-same-type)
-	"prop:resource_name_doc_overwrite": {sectionReuse, false},    // C22 (drop - already in global)
+	"prop:exclude_targets":             {sectionObsolete, true}, // this commit (C22 - drop, polymorphic auto-detector covers)
+	"prop:resource_name_doc_overwrite": {sectionReuse, true},    // this commit (C22 - lived only on properties/global.yaml, already skipped)
 
 	// S6 DERIVE (verify-and-drop; meta auto-derives ip_address from validateAsIPv4OrIPv6)
 	"prop:static_custom_type": {sectionDerive, true},
@@ -1050,6 +1050,22 @@ func migrateProperties(file string, legacy map[string]any, tally *keyTally, out 
 
 		case "targets":
 			migrateTargets(file, val, out)
+
+		case "exclude_targets":
+			// S3 obsolete per MIGRATION_OVERVIEW section 3. The legacy
+			// generator's getExcludeTargets subtracted entries from a
+			// SetModelTestDependencies-driven auto-union of child-class
+			// `targets:` lists. The new pipeline removes both legs of
+			// that mechanism: (a) collectChildDrivenDependencies is
+			// value-driven so no auto-union exists to subtract from, and
+			// (b) the polymorphic-same-type auto-detector (section 8.6)
+			// derives parent-class -> target-class matching from
+			// Parents intersect ToClasses plus the rendering site. Drop
+			// the key with a single log line per file; full editorial
+			// verification (catching divergence from the polymorphic
+			// rule) is gated on meta JSON loading and lands with the
+			// auto-resolution prune commit.
+			fmt.Printf("DROP: %s: exclude_targets=%v (polymorphic-same-type auto-detector now handles same-class filtering)\n", file, val)
 		}
 	}
 }
@@ -1895,15 +1911,6 @@ func main() {
 	tally := newKeyTally()
 	for _, pf := range propFiles {
 		base := filepath.Base(pf)
-		// resource_name_overwrite.yaml is the entire-file S3 obsolete drop
-		// (section 3): its 7 relation-to-resource-name entries are now expressed
-		// as per-class `resource_name` on each relation class. Log a single
-		// skip line rather than tallying each entry as an UNKNOWN key.
-		// The file itself is deleted in the C22 cleanup commit.
-		if base == "resource_name_overwrite.yaml" {
-			fmt.Printf("Skipped (S3 obsolete file): %s\n", pf)
-			continue
-		}
 		// properties/global.yaml is the legacy carrier for what is now
 		// GlobalMetaDefinition (definitions/global.yaml) - same disposition
 		// as classes/global.yaml. Skip from the per-class merge so it does
