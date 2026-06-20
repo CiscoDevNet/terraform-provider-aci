@@ -116,6 +116,8 @@ func (c *Class) setDocumentation(ds *DataStore) error {
 
 	c.Documentation.setLabel(c, ds)
 
+	c.applyGlobalPropertyDocumentationOverrides(ds)
+
 	c.Documentation.setDescription(c)
 
 	c.Documentation.setDescriptionWhenDefinedAsChild(c, ds)
