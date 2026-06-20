@@ -370,7 +370,104 @@ func (m *MigrationSourceEnum) UnmarshalText(text []byte) error {
 	}
 	return nil
 }
+// ArtifactEnum identifies a generated artifact kind that the renderer can
+// produce for a class. Used inside `ClassDefinition.Artifacts` to control
+// which artifacts are emitted. A nil slice (the YAML field omitted entirely)
+// is the signal to auto-derive the default set from IdentifiedBy; an empty
+// slice (`artifacts: []`) excludes the class from both `provider.Resources()`
+// and `provider.DataSources()`.
+type ArtifactEnum int
 
+const (
+	// UndefinedArtifact is the zero value: no artifact kind assigned. Reaching
+	// this inside a slice element means the YAML carried a present-but-empty
+	// entry (treated as a typo). Field-level absence yields a nil slice instead.
+	UndefinedArtifact ArtifactEnum = iota
+	// ResourceArtifact identifies the Terraform resource artifact.
+	ResourceArtifact
+	// DatasourceArtifact identifies the Terraform datasource artifact.
+	DatasourceArtifact
+)
+
+func (a ArtifactEnum) String() string {
+	switch a {
+	case ResourceArtifact:
+		return "resource"
+	case DatasourceArtifact:
+		return "datasource"
+	default:
+		return ""
+	}
+}
+
+func (a *ArtifactEnum) UnmarshalText(text []byte) error {
+	// Empty/missing is intentionally not handled: the zero value (UndefinedArtifact)
+	// is reached only by omitting the slice element entirely. A present-but-empty
+	// entry is treated as a typo and errors out.
+	switch string(text) {
+	case "resource":
+		*a = ResourceArtifact
+	case "datasource":
+		*a = DatasourceArtifact
+	default:
+		return fmt.Errorf("unknown artifact %q (expected one of: resource, datasource)", string(text))
+	}
+	return nil
+}
+
+// IgnoreTestEnum identifies a test artifact kind that should be skipped by
+// the test renderer. Used inside `ClassTestConfigDefinition.IgnoreTests` to
+// suppress generation of specific test buckets. The legacy
+// `exclude_from_testing: true` flag migrates to `ignore_tests: [child]`; the
+// `resource` and `datasource` values have no legacy driver and exist as
+// future opt-ins for skipping resource / datasource acceptance tests.
+type IgnoreTestEnum int
+
+const (
+	// UndefinedIgnoreTest is the zero value: no ignore-test target assigned.
+	// Reaching this inside a slice element means the YAML carried a
+	// present-but-empty entry (treated as a typo). Field-level absence yields
+	// a nil slice instead.
+	UndefinedIgnoreTest IgnoreTestEnum = iota
+	// ChildIgnoreTest skips the child-as-part-of-parent test bucket
+	// (the bucket exercised when the class is rendered as a child block of
+	// another resource's HCL config).
+	ChildIgnoreTest
+	// ResourceIgnoreTest skips the resource acceptance test bucket.
+	ResourceIgnoreTest
+	// DatasourceIgnoreTest skips the datasource acceptance test bucket.
+	DatasourceIgnoreTest
+)
+
+func (i IgnoreTestEnum) String() string {
+	switch i {
+	case ChildIgnoreTest:
+		return "child"
+	case ResourceIgnoreTest:
+		return "resource"
+	case DatasourceIgnoreTest:
+		return "datasource"
+	default:
+		return ""
+	}
+}
+
+func (i *IgnoreTestEnum) UnmarshalText(text []byte) error {
+	// Empty/missing is intentionally not handled: the zero value (UndefinedIgnoreTest)
+	// is reached only by omitting the slice element entirely. A present-but-empty
+	// entry is treated as a typo and errors out.
+	switch string(text) {
+	case "child":
+		*i = ChildIgnoreTest
+	case "resource":
+		*i = ResourceIgnoreTest
+	case "datasource":
+		*i = DatasourceIgnoreTest
+	default:
+		return fmt.Errorf("unknown ignore_tests entry %q (expected one of: child, resource, datasource)", string(text))
+	}
+	return nil
+}
 // ════════════════════════════════════════════════════════════════════════════
 // Category 3: Default is a lookup, not a static value
 // ════════════════════════════════════════════════════════════════════════════
