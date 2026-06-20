@@ -26,6 +26,16 @@ type GlobalMetaDefinition struct {
 	// e.g., "Bgp" → "BGP", "External Network Instance Profile" → "External EPG".
 	// Multi-word keys are matched as substrings; single-word keys are only replaced on whole-word matches.
 	DocumentationLabelOverrides map[string]string `yaml:"documentation_label_overrides"`
+	// Per-meta-property documentation overrides applied as a global layer between
+	// any per-class PropertyDefinition.Documentation.Description and the meta
+	// `comment` / `label` fallbacks (consumed by setDescription).
+	// Keys are meta property names (e.g., "descr", "nameAlias"); values are the
+	// English sentence rendered as the property description. When the value
+	// contains `%s`, the renderer interpolates the class's humanised resource
+	// name (same substitution as GetResourceNameAsDescription).
+	// Normalises inconsistent meta `comment` wording across the ~180 classes
+	// without duplicating the same text into every per-class file.
+	PropertyDocumentationOverrides map[string]string `yaml:"property_documentation_overrides"`
 }
 
 func loadGlobalMetaDefinition() GlobalMetaDefinition {
@@ -64,6 +74,15 @@ type ClassDocumentationDefinition struct {
 	// Overrides the DN format strings sourced from the meta file. When set, these values are
 	// used verbatim. Sorting and the constMaxDnFormatsToDisplay cap still apply.
 	DnFormats []string `yaml:"dn_formats"`
+	// Curated subset of `containedBy` parent class names used to render example
+	// HCL snippets (one block per entry) in the resource/datasource docs,
+	// `resource_example.tf.tmpl`, `datasource_example.tf.tmpl`,
+	// `resource_example_all_attributes.tf.tmpl`, `resource.md.tmpl`, and
+	// `testvars.yaml.tmpl`. Used when meta `containedBy` is too large (e.g.
+	// relation/tag classes) to render every parent without producing dozens of
+	// near-identical snippets. Each entry must be a meta class name; the
+	// renderer resolves it to the generated resource name via `getResourceName`.
+	ExampleParentClasses []string `yaml:"example_parent_classes"`
 	// A list of child class names to exclude from the documentation children list.
 	ExcludeChildren []string `yaml:"exclude_children"`
 	// A list of child class names to force-include in the documentation children list.
@@ -225,6 +244,17 @@ type ClassDefinition struct {
 	// Overrides the default deletion behavior from meta file. Set to "never" to prevent deletion of the class.
 	// The value "never" is used to keep the input consistent with the meta data file.
 	AllowDelete string `yaml:"allow_delete"`
+	// Selects which generated artifacts the renderer emits for this class.
+	// A nil slice (the YAML field omitted entirely) signals the resolver to
+	// auto-derive: classes with non-empty `IdentifiedBy` get [resource, datasource],
+	// classes with empty `IdentifiedBy` get nothing (the legacy default).
+	// A non-nil but empty slice (`artifacts: []`) is an explicit opt-out and
+	// removes the class from both `provider.Resources()` and
+	// `provider.DataSources()`. A non-empty list overrides the auto-derivation:
+	// `[resource, datasource]` opts an empty-`IdentifiedBy` class in as both;
+	// `[datasource]` or `[resource]` selects a single artifact (e.g. `topSystem`
+	// renders as a datasource only).
+	Artifacts []ArtifactEnum `yaml:"artifacts"`
 	// Indicates that the resource and datasource are deprecated. A deprecation warning will be included in the schemas.
 	// When true, this overrides the meta `isDeprecated` flag with logical OR semantics: definition can flip true on top of meta but cannot force-off.
 	Deprecated bool `yaml:"deprecated"`
@@ -287,6 +317,15 @@ type ClassDefinition struct {
 	RnFormat string `yaml:"rn_format"`
 	// Prepends a path prefix to the resolved RN format (e.g., "infra" results in "infra/{rnFormat}").
 	RnPrepend string `yaml:"rn_prepend"`
+	// Alternate parent-DN placements for classes that legitimately resolve under
+	// more than one user-facing parent and reach APIC via different request paths
+	// per placement (e.g. pkiKeyRing as system-scoped vs tenant-scoped). The
+	// generated resource branches on the user's `parent_dn` and selects the
+	// matching variant's (api_endpoint, json_envelope) pair. Each entry pins one
+	// (parent_class, rn_prepend, wrapper_class, test_platform) tuple; not
+	// representable in meta `containedBy`, which lists direct parents without the
+	// implicit-wrapper or user-facing-parent annotations.
+	ParentDnVariants []ParentDnVariantDefinition `yaml:"parent_dn_variants"`
 	// Overrides the versions from the meta file. Format: "1.0(1e)-" or "4.2(7f)-4.2(7w),5.2(1g)-".
 	SupportedVersions string `yaml:"supported_versions"`
 	// Test configuration for the class. Controls dependency resolution and child test value overrides.
@@ -345,6 +384,17 @@ type ClassTestConfigDefinition struct {
 	// When an entry's `instances` is set, it fully replaces the auto-derived instances
 	// for that child class; unspecified child classes keep their auto-derived values.
 	Children map[string]ChildTestOverrideDefinition `yaml:"children"`
+	// Suppresses generation of specific test buckets. `child` skips the entry in
+	// every parent's testvars.yaml iteration (the class still emits its own
+	// resource / datasource tests). `resource` skips this class's own
+	// resource_aci_<x>_test.go. `datasource` skips this class's own
+	// data_source_aci_<x>_test.go. Combinations are valid (e.g. [child, resource]).
+	// A nil or empty slice means no skips.
+	IgnoreTests []IgnoreTestEnum `yaml:"ignore_tests"`
+	// Suppresses just the ImportStateVerify assertion inside the import test (the
+	// import smoke test still runs). Required for classes whose APIC response
+	// carries non-roundtrip state that would fail attribute-equality verification.
+	IgnoreImportStateVerify bool `yaml:"ignore_import_state_verify"`
 }
 
 // StateUpgradeDefinition describes a single prior-schema version's state upgrade.
@@ -455,6 +505,28 @@ func (n AttributeUpgradeDefinition) hasInnerLegacyAttribute() bool {
 		}
 	}
 	return false
+}
+
+// ParentDnVariantDefinition pins a single (parent_class, rn_prepend,
+// wrapper_class, test_platform) tuple for a ClassDefinition.ParentDnVariants
+// entry. Each variant describes one valid placement of the class under a
+// distinct user-facing parent that reaches APIC via its own request path.
+type ParentDnVariantDefinition struct {
+	// User-facing parent class for this variant (e.g. "fvTenant"). Distinguishes
+	// system-scoped placements from wrapped tenant-scoped placements that meta
+	// `containedBy` lists as a single direct parent.
+	ParentClass string `yaml:"parent_class"`
+	// Intermediate RN segment that selects this variant. The generated resource
+	// matches the user's `parent_dn` against this segment to route the API call.
+	RnPrepend string `yaml:"rn_prepend"`
+	// Implicit container the request nests the resource inside (e.g. "cloudCertStore"
+	// for a tenant-scoped pkiKeyRing). Empty for variants that POST against a real,
+	// user-addressable parent.
+	WrapperClass string `yaml:"wrapper_class"`
+	// Platform profile that exercises this variant in tests (apic / cloud / both).
+	// Lets testvars.yaml.tmpl gate variant-specific test cases without splitting the
+	// test file.
+	TestPlatform PlatformTypeEnum `yaml:"test_platform"`
 }
 
 func loadClassDefinition(className string) ClassDefinition {
