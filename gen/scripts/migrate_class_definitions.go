@@ -193,7 +193,7 @@ var knownLegacyKeys = map[string]keyInfo{
 	"prop:ignore_properties_in_test": {sectionSemantic, true},
 
 	// S2 semantic (later commits)
-	"prop:test_values": {sectionSemantic, false}, // C20 (bucket merge)
+	"prop:test_values": {sectionSemantic, true},  // this commit (C20 - bucket merge)
 	"prop:parents":     {sectionSemantic, false}, // C21 (decision tree + polymorphic)
 	"prop:targets":     {sectionSemantic, false}, // C21 (decision tree + polymorphic)
 
@@ -832,6 +832,14 @@ func asStringSlice(v any) []string {
 // coverage gap stays visible; unknown keys raise an L1 warning via the
 // tally just like the class loader does.
 func migrateProperties(file string, legacy map[string]any, tally *keyTally, out *data.ClassDefinition) {
+	// The test_values bucket sub-keys are snake_case new attribute names
+	// (post-overwrites), and the canonical struct keys PropertyDefinition
+	// entries by meta camelCase. Build the snake_new -> meta_camel inverter
+	// up front so every bucket entry can resolve its target property in O(1)
+	// regardless of map iteration order. Properties without an `overwrites`
+	// entry fall through to snakeToCamel, which auto-derives the meta name.
+	invertOverwrites := buildOverwritesInverter(legacy)
+
 	for key, val := range legacy {
 		info := tally.recordProperty(file, key)
 		if !info.implemented {
@@ -1033,8 +1041,187 @@ func migrateProperties(file string, legacy map[string]any, tally *keyTally, out 
 			// S8 POSTPONE: no slot in canonical struct yet; drop with a
 			// per-file warning so the loss is visible during migration.
 			fmt.Printf("POSTPONE: %s: %s dropped (no canonical slot; restore after section 8 lands)\n", file, key)
+
+		case "test_values":
+			migrateTestValues(file, val, invertOverwrites, out)
 		}
 	}
+}
+
+// buildOverwritesInverter returns a map<snake_case_new_attr_name, meta_camel_case>
+// derived from the legacy `overwrites` block. Used by migrateTestValues to
+// resolve a bucket entry's snake_case attribute key back to the canonical
+// PropertyDefinition meta key. Returns an empty map when overwrites is
+// absent or malformed; callers fall back to snakeToCamel for unmapped keys.
+func buildOverwritesInverter(legacy map[string]any) map[string]string {
+	out := map[string]string{}
+	raw, ok := legacy["overwrites"]
+	if !ok {
+		return out
+	}
+	ows, ok := raw.(map[any]any)
+	if !ok {
+		return out
+	}
+	for snakeKey, newNameVal := range ows {
+		oldSnake, _ := snakeKey.(string)
+		newName, _ := newNameVal.(string)
+		if oldSnake == "" || newName == "" {
+			continue
+		}
+		out[newName] = snakeToCamel(oldSnake)
+	}
+	return out
+}
+
+// legacyValueToHCL renders a yaml.v2-decoded test value as a single string
+// suitable for ConfigValue. Scalars stringify via fmt.Sprintf; lists render
+// as bracketed comma-separated literals so the renderer can copy them into
+// HCL verbatim. The single observed v2.19.0 list usage is commSsh's
+// kex_algorithms: [curve25519-sha256], which becomes ["curve25519-sha256"].
+// TODO once the test renderer lands: refine list element quoting to honour
+// the property's ValueType (e.g. drop quotes around numeric/boolean tokens).
+func legacyValueToHCL(v any) string {
+	switch x := v.(type) {
+	case nil:
+		return ""
+	case string:
+		return x
+	case bool:
+		if x {
+			return "true"
+		}
+		return "false"
+	case []any:
+		parts := make([]string, 0, len(x))
+		for _, e := range x {
+			parts = append(parts, fmt.Sprintf("%q", legacyValueToHCL(e)))
+		}
+		return "[" + strings.Join(parts, ", ") + "]"
+	default:
+		return fmt.Sprintf("%v", x)
+	}
+}
+
+// migrateTestValues translates one legacy `test_values:` block into per
+// property TestConfigDefinition entries on the outgoing ClassDefinition.
+//
+// Bucket mapping (per MIGRATION_OVERVIEW.md section 2 test_values row):
+//
+//	all      -> PropertyDefinition.TestConfig.Create
+//	default  -> PropertyDefinition.TestConfig.Default
+//	legacy   -> PropertyDefinition.TestConfig.Legacy
+//	update   -> PropertyDefinition.TestConfig.Update   (no v2.19.0 data)
+//	force_new -> PropertyDefinition.TestConfig.ForceNew (no v2.19.0 data)
+//
+// Nested keys (per the same row):
+//
+//	custom_type            -> obsolete (section 3); silently dropped.
+//	                          The 10 IpAddress files fold the IPv6 author
+//	                          choice into the standard buckets; the 1
+//	                          vmm_arp_learning ride-along is section 8.1.
+//	datasource_required    -> DERIVE (section 6); IdentifiedBy + Default
+//	                          bucket drive the datasource lookup config.
+//	datasource_non_existing -> DERIVE (section 6); type-aware non-matching
+//	                          transform of resource_required.
+//	child_*, ignore_in_*   -> class-level test_config.children / dependency
+//	                          overrides; v2.19.0 carries no data here.
+//
+// Bucket entries are keyed by snake_case new attribute name; resolveMetaName
+// consults invertOverwrites first, then falls back to snakeToCamel. The
+// resolved meta camelCase name becomes the PropertyDefinition map key.
+func migrateTestValues(file string, val any, invertOverwrites map[string]string, out *data.ClassDefinition) {
+	tv, ok := val.(map[any]any)
+	if !ok {
+		fmt.Printf("WARN: %s: test_values is not a map: %T\n", file, val)
+		return
+	}
+	// Sort bucket names so the per-file run order is deterministic and the
+	// per-property Create/Default/Legacy slices land in the same order on
+	// every invocation.
+	bucketNames := make([]string, 0, len(tv))
+	for k := range tv {
+		if s, ok := k.(string); ok {
+			bucketNames = append(bucketNames, s)
+		}
+	}
+	sort.Strings(bucketNames)
+
+	for _, bucket := range bucketNames {
+		entry := tv[bucket]
+		switch bucket {
+		case "all", "default", "legacy", "update", "force_new":
+			entries, ok := entry.(map[any]any)
+			if !ok {
+				fmt.Printf("WARN: %s: test_values.%s is not a map: %T\n", file, bucket, entry)
+				continue
+			}
+			// Sort the per-bucket property keys for stable output.
+			keys := make([]string, 0, len(entries))
+			for k := range entries {
+				if s, ok := k.(string); ok {
+					keys = append(keys, s)
+				}
+			}
+			sort.Strings(keys)
+			for _, snakeKey := range keys {
+				metaName := resolveMetaName(snakeKey, invertOverwrites)
+				if metaName == "" {
+					continue
+				}
+				tve := data.TestValueEntryDefinition{
+					ConfigValue: legacyValueToHCL(entries[snakeKey]),
+				}
+				prop := upsertProperty(out, metaName)
+				switch bucket {
+				case "all":
+					prop.TestConfig.Create = append(prop.TestConfig.Create, tve)
+				case "default":
+					prop.TestConfig.Default = append(prop.TestConfig.Default, tve)
+				case "legacy":
+					prop.TestConfig.Legacy = append(prop.TestConfig.Legacy, tve)
+				case "update":
+					prop.TestConfig.Update = append(prop.TestConfig.Update, tve)
+				case "force_new":
+					prop.TestConfig.ForceNew = append(prop.TestConfig.ForceNew, tve)
+				}
+				out.Properties[metaName] = prop
+			}
+
+		case "custom_type":
+			// Obsolete per section 3: the legacy `custom_type` bucket was
+			// only used to author IPv6 examples for the 10 IpAddress
+			// files; the standard create/default buckets cover the same
+			// data after migration. The vmm_arp_learning ride-along is
+			// section 8.1.
+			continue
+
+		case "datasource_required", "datasource_non_existing":
+			// DERIVE per section 6: IdentifiedBy + Default bucket drive
+			// the datasource lookup config and the non-existing branch;
+			// no migration of these nested keys today.
+			continue
+
+		default:
+			// child_*, ignore_in_*, and any future nested key. Today
+			// v2.19.0 carries no data here; log so the gap is visible if
+			// the corpus ever ships an entry.
+			if strings.HasPrefix(bucket, "child_") || strings.HasPrefix(bucket, "ignore_in_") {
+				continue
+			}
+			fmt.Printf("WARN: %s: test_values.%s ignored (unknown bucket)\n", file, bucket)
+		}
+	}
+}
+
+// resolveMetaName returns the meta camelCase property name for a bucket
+// entry's snake_case attribute name. invertOverwrites takes precedence;
+// any unmapped key falls back to snakeToCamel for auto-derived properties.
+func resolveMetaName(snakeKey string, invertOverwrites map[string]string) string {
+	if v, ok := invertOverwrites[snakeKey]; ok {
+		return v
+	}
+	return snakeToCamel(snakeKey)
 }
 
 // projectProperty emits a PropertyDefinition as a YAML-friendly map. Hand
@@ -1065,10 +1252,59 @@ func projectProperty(p data.PropertyDefinition) map[string]any {
 			"description": p.Documentation.Description,
 		}
 	}
-	if p.TestConfig.IgnoreInTest {
-		out["test_config"] = map[string]any{
-			"ignore_in_test": p.TestConfig.IgnoreInTest,
+	tc := projectTestConfig(p.TestConfig)
+	if len(tc) > 0 {
+		out["test_config"] = tc
+	}
+	return out
+}
+
+// projectTestConfig builds the YAML test_config block for a property,
+// omitting empty buckets. Each TestValueEntryDefinition becomes a single
+// `config_value: <string>` map (other entry fields are zero today; the
+// renderer fleshes them out when the higher-fidelity buckets are
+// implemented).
+func projectTestConfig(tc data.TestConfigDefinition) map[string]any {
+	out := map[string]any{}
+	if len(tc.Create) > 0 {
+		out["create"] = projectTestEntries(tc.Create)
+	}
+	if len(tc.Default) > 0 {
+		out["default"] = projectTestEntries(tc.Default)
+	}
+	if len(tc.Update) > 0 {
+		out["update"] = projectTestEntries(tc.Update)
+	}
+	if len(tc.ForceNew) > 0 {
+		out["force_new"] = projectTestEntries(tc.ForceNew)
+	}
+	if len(tc.Legacy) > 0 {
+		out["legacy"] = projectTestEntries(tc.Legacy)
+	}
+	if tc.IgnoreInTest {
+		out["ignore_in_test"] = tc.IgnoreInTest
+	}
+	return out
+}
+
+func projectTestEntries(entries []data.TestValueEntryDefinition) []map[string]any {
+	out := make([]map[string]any, len(entries))
+	for i, e := range entries {
+		m := map[string]any{}
+		if e.ConfigValue != "" {
+			m["config_value"] = e.ConfigValue
 		}
+		if e.ConfigInclude != nil {
+			m["config_include"] = *e.ConfigInclude
+		}
+		if e.AssertValue != "" {
+			m["assert_value"] = e.AssertValue
+		}
+		// StringValue is the iota zero / default; only emit when overridden.
+		if e.ValueType != data.StringValue {
+			m["value_type"] = e.ValueType.String()
+		}
+		out[i] = m
 	}
 	return out
 }
