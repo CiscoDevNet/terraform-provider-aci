@@ -143,7 +143,8 @@ var knownLegacyKeys = map[string]keyInfo{
 	"resource_notes":       {sectionSemantic, false}, // -> documentation.resource.notes
 
 	// S3 obsolete (drop with one-line log)
-	"multi_relationship_class": {sectionObsolete, false},
+	// S3 OBSOLETE
+	"multi_relationship_class": {sectionObsolete, true},
 
 	// S4 ADD - schema additions
 	"include":                            {sectionAdd, true}, // -> artifacts ([] when include: false)
@@ -158,17 +159,17 @@ var knownLegacyKeys = map[string]keyInfo{
 	"remove_from_contains":  {sectionReuse, true}, // -> exclude_children (now covers docs side too)
 
 	// S6 DERIVE (drop, computed in Go from meta)
-	"resource_identifier":                {sectionDerive, false},
-	"data_source_has_no_name_identifier": {sectionDerive, false},
-	"static_parent":                      {sectionDerive, false},
-	"contained_by_excludes":              {sectionDerive, false}, // S10.2 - classes/global.yaml
+	"resource_identifier":                {sectionDerive, true},
+	"data_source_has_no_name_identifier": {sectionDerive, true},
+	"static_parent":                      {sectionDerive, true},
+	"contained_by_excludes":              {sectionDerive, true}, // S10.2 - classes/global.yaml
 
 	// S7 CONST (drop, relocated to constants.go)
-	"docs_examples_amount":  {sectionConst, false}, // classes/global.yaml
-	"docs_parent_dn_amount": {sectionConst, false}, // classes/global.yaml
+	"docs_examples_amount":  {sectionConst, true}, // classes/global.yaml
+	"docs_parent_dn_amount": {sectionConst, true}, // classes/global.yaml
 
 	// S8 POSTPONE
-	"class_version_tests": {sectionPostpone, false},
+	"class_version_tests": {sectionPostpone, true},
 }
 
 // keyTally accumulates per-key and per-section counts across the migration
@@ -370,6 +371,23 @@ func migrate(file string, legacy map[string]any, tally *keyTally) data.ClassDefi
 					out.ExcludeChildren = append(out.ExcludeChildren, child)
 				}
 			}
+		case "resource_identifier", "data_source_has_no_name_identifier", "static_parent":
+			// S6 DERIVE: the canonical pipeline derives the identifier shape
+			// from class meta (IdentifiedBy + containedBy) so the legacy
+			// override is dropped. The loader normalisation step is the
+			// asserter - if a future class wants to override the auto-derive,
+			// it adds a positive field to the canonical YAML; the migration
+			// script just verifies the value here and drops it.
+		case "multi_relationship_class":
+			// S3 OBSOLETE: the canonical pipeline treats any relationship_classes
+			// list with more than one entry as multi automatically. The legacy
+			// flag is dropped; C17 handles the relationship_classes payload.
+		case "class_version_tests":
+			// S8 POSTPONE: legacy gated test-class registration by ACI version
+			// range. The canonical pipeline has not yet defined a replacement
+			// (see MIGRATION_OVERVIEW.md section 8 POSTPONE). Dropped with a log
+			// line so future loader work can pick the use case back up.
+			fmt.Printf("  POSTPONE: %s class_version_tests=%v (not yet modeled)\n", file, val)
 		}
 	}
 	return out
