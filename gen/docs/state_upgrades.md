@@ -10,7 +10,7 @@ This document describes the `state_upgrades` definition input used by the ACI pr
 
 `state_upgrades` is a per-class YAML list, declared inside a class definition file (e.g. `gen/definitions/fvAEPg.yaml`), that records every prior schema version a resource has ever had and exactly how each prior version differs from the current schema.
 
-It replaces the legacy `migration_blocks` / `migration_version` / `type_changes` keys that lived in older `gen/definitions/classes/*.yaml` files, along with the schema-git-commit JSON. Bulk conversion of those legacy keys is a separate follow-up effort; this design is the input contract for the new template wiring.
+It replaces the legacy `migration_blocks` / `migration_version` / `type_changes` keys that lived in older `gen/scripts/legacy_definitions/classes/*.yaml` files, along with the schema-git-commit JSON. Bulk conversion of those legacy keys is a separate follow-up effort; this design is the input contract for the new template wiring.
 
 Two pieces of information drive the renderer:
 
@@ -177,7 +177,7 @@ The converse is allowed: `migration_source` omitted with a `prior_schema_version
 ## 10. Out of scope (in this phase)
 
 - Template wiring: how upgraders, prior schemas, and legacy alias rendering are emitted is a follow-up effort.
-- Bulk migration of existing `migration_blocks` / `migration_version` / `type_changes` keys from the older `gen/definitions/classes/*.yaml` files into the new model — those files are not loaded by the current generator.
+- Bulk migration of existing `migration_blocks` / `migration_version` / `type_changes` keys from the older `gen/scripts/legacy_definitions/classes/*.yaml` files into the new model — those files are not loaded by the current generator.
 - Orphan-frozen edge case (legacy attribute with no current replacement, frozen alias only) — deferred until a real case appears.
 
 ---

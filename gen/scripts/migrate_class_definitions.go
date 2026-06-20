@@ -2,7 +2,7 @@
 // +build ignore
 
 /*
-This script migrates class definition YAML files from the old per-class format (gen/definitions/classes/)
+This script migrates class definition YAML files from the old per-class format (gen/scripts/legacy_definitions/classes/)
 to the new combined format (gen/definitions/). It will be extended over time as more fields are added
 and may become its own issue when the full migration is required. For now, it is used for testing
 during development only and is not intended as a final migration script.
@@ -12,7 +12,7 @@ during development only and is not intended as a final migration script.
 GENERATE NEW FORMAT DEFINTIONS: go run gen/scripts/migrate_class_definitions.go
 REMOVE NEW FORMAT DEFINTIONS:   go run gen/scripts/migrate_class_definitions.go clean
 
-### Old (gen/definitions/classes/fvTenant.yaml):
+### Old (gen/scripts/legacy_definitions/classes/fvTenant.yaml):
 
 ```
 allow_delete: false
@@ -71,7 +71,7 @@ type DocumentationBlock struct {
 }
 
 func main() {
-	classesDir := "gen/definitions/classes"
+	classesDir := "gen/scripts/legacy_definitions/classes"
 	outputDir := "gen/definitions"
 
 	// If "clean" argument is passed, remove all .yaml files except global.yaml from the definitions folder.
