@@ -133,14 +133,14 @@ var knownLegacyKeys = map[string]keyInfo{
 	"ui_locations": {sectionDirect, true},
 
 	// S2 semantic mapping (class-level)
-	"children":             {sectionSemantic, false}, // -> include_children (subtract meta containedBy first)
-	"contained_by":         {sectionSemantic, false}, // -> include_parents (subtract meta containedBy first)
-	"class_version":        {sectionSemantic, false}, // -> supported_versions
+	"children":             {sectionSemantic, true}, // -> include_children (subtract meta containedBy first)
+	"contained_by":         {sectionSemantic, true}, // -> include_parents (subtract meta containedBy first)
+	"class_version":        {sectionSemantic, true}, // -> supported_versions
 	"relationship_classes": {sectionSemantic, false}, // -> relation_info.to_classes
 	"migration_blocks":     {sectionSemantic, false}, // -> state_upgrades (two-source merge)
 	"migration_version":    {sectionSemantic, false}, // -> state_upgrades (drives migration_source)
 	"type_changes":         {sectionSemantic, false}, // -> state_upgrades.attributes
-	"resource_notes":       {sectionSemantic, false}, // -> documentation.resource.notes
+	"resource_notes":       {sectionSemantic, true}, // -> documentation.resource.notes
 
 	// S3 obsolete (drop with one-line log)
 	// S3 OBSOLETE
@@ -388,6 +388,36 @@ func migrate(file string, legacy map[string]any, tally *keyTally) data.ClassDefi
 			// (see MIGRATION_OVERVIEW.md section 8 POSTPONE). Dropped with a log
 			// line so future loader work can pick the use case back up.
 			fmt.Printf("  POSTPONE: %s class_version_tests=%v (not yet modeled)\n", file, val)
+		case "resource_notes":
+			// -> documentation.resource.notes (resource-only, NOT the shared
+			// documentation.notes). The legacy key always documented behaviour
+			// specific to the resource side; sharing it onto the datasource
+			// docs would render notes that don't apply.
+			notes := toStringSlice(val)
+			if len(notes) > 0 {
+				out.Documentation.Resource.Notes = append(out.Documentation.Resource.Notes, notes...)
+			}
+		case "children":
+			// -> include_children (union with anything already present).
+			// The loader merges meta `containedBy`/`rnMap` itself and dedupes
+			// via sortAndConvertToClassNames, so we do NOT subtract meta here.
+			for _, child := range toStringSlice(val) {
+				if !contains(out.IncludeChildren, child) {
+					out.IncludeChildren = append(out.IncludeChildren, child)
+				}
+			}
+		case "contained_by":
+			// -> include_parents (union with anything already present).
+			// Loader merges meta `containedBy` itself and dedupes.
+			for _, parent := range toStringSlice(val) {
+				if !contains(out.IncludeParents, parent) {
+					out.IncludeParents = append(out.IncludeParents, parent)
+				}
+			}
+		case "class_version":
+			if s, ok := val.(string); ok {
+				out.SupportedVersions = s
+			}
 		}
 	}
 	return out
@@ -466,7 +496,10 @@ func hasMigratedData(c data.ClassDefinition) bool {
 	if c.AllowDelete != "" || c.ResourceName != "" || c.RnPrepend != "" || c.RequiredAsChild || c.IsSingleNestedWhenDefinedAsChild {
 		return true
 	}
-	if len(c.ExcludeChildren) > 0 || len(c.IncludeChildren) > 0 {
+	if c.SupportedVersions != "" {
+		return true
+	}
+	if len(c.ExcludeChildren) > 0 || len(c.IncludeChildren) > 0 || len(c.IncludeParents) > 0 {
 		return true
 	}
 	if c.Artifacts != nil || len(c.ParentDnVariants) > 0 {
@@ -476,6 +509,9 @@ func hasMigratedData(c data.ClassDefinition) bool {
 		return true
 	}
 	if c.Documentation.SubCategory != "" || len(c.Documentation.UiLocations) > 0 || len(c.Documentation.DnFormats) > 0 || len(c.Documentation.ExampleParentClasses) > 0 {
+		return true
+	}
+	if len(c.Documentation.Resource.Notes) > 0 {
 		return true
 	}
 	return false
@@ -523,6 +559,12 @@ func marshalView(c data.ClassDefinition) map[string]any {
 	}
 	if len(c.IncludeChildren) > 0 {
 		out["include_children"] = c.IncludeChildren
+	}
+	if len(c.IncludeParents) > 0 {
+		out["include_parents"] = c.IncludeParents
+	}
+	if c.SupportedVersions != "" {
+		out["supported_versions"] = c.SupportedVersions
 	}
 	if len(c.ParentDnVariants) > 0 {
 		variants := make([]map[string]any, len(c.ParentDnVariants))
@@ -574,6 +616,11 @@ func marshalView(c data.ClassDefinition) map[string]any {
 	}
 	if len(c.Documentation.ExampleParentClasses) > 0 {
 		doc["example_parent_classes"] = c.Documentation.ExampleParentClasses
+	}
+	if len(c.Documentation.Resource.Notes) > 0 {
+		doc["resource"] = map[string]any{
+			"notes": c.Documentation.Resource.Notes,
+		}
 	}
 	if len(doc) > 0 {
 		out["documentation"] = doc
