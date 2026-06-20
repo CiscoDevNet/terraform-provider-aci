@@ -136,7 +136,7 @@ var knownLegacyKeys = map[string]keyInfo{
 	"children":             {sectionSemantic, true}, // -> include_children (subtract meta containedBy first)
 	"contained_by":         {sectionSemantic, true}, // -> include_parents (subtract meta containedBy first)
 	"class_version":        {sectionSemantic, true}, // -> supported_versions
-	"relationship_classes": {sectionSemantic, false}, // -> relation_info.to_classes
+	"relationship_classes": {sectionSemantic, true}, // -> relation_info.to_classes
 	"migration_blocks":     {sectionSemantic, false}, // -> state_upgrades (two-source merge)
 	"migration_version":    {sectionSemantic, false}, // -> state_upgrades (drives migration_source)
 	"type_changes":         {sectionSemantic, false}, // -> state_upgrades.attributes
@@ -418,6 +418,13 @@ func migrate(file string, legacy map[string]any, tally *keyTally) data.ClassDefi
 			if s, ok := val.(string); ok {
 				out.SupportedVersions = s
 			}
+		case "relationship_classes":
+			// -> relation_info.to_classes. The list is taken verbatim; the
+			// loader's NewClassName handles both bare ("fvAEPg") and meta-style
+			// ("fv:AEPg") forms. multi_relationship_class is dropped separately
+			// (C15) because the canonical pipeline derives the multi-class
+			// shape from len(to_classes) > 1 automatically.
+			out.RelationInfo.ToClasses = toStringSlice(val)
 		}
 	}
 	return out
@@ -499,6 +506,9 @@ func hasMigratedData(c data.ClassDefinition) bool {
 	if c.SupportedVersions != "" {
 		return true
 	}
+	if len(c.RelationInfo.ToClasses) > 0 || c.RelationInfo.FromClass != "" || c.RelationInfo.Disabled || c.RelationInfo.Type != data.UndefinedRelationshipType {
+		return true
+	}
 	if len(c.ExcludeChildren) > 0 || len(c.IncludeChildren) > 0 || len(c.IncludeParents) > 0 {
 		return true
 	}
@@ -565,6 +575,22 @@ func marshalView(c data.ClassDefinition) map[string]any {
 	}
 	if c.SupportedVersions != "" {
 		out["supported_versions"] = c.SupportedVersions
+	}
+	rel := map[string]any{}
+	if c.RelationInfo.Disabled {
+		rel["disabled"] = c.RelationInfo.Disabled
+	}
+	if c.RelationInfo.Type != data.UndefinedRelationshipType {
+		rel["type"] = c.RelationInfo.Type.String()
+	}
+	if c.RelationInfo.FromClass != "" {
+		rel["from_class"] = c.RelationInfo.FromClass
+	}
+	if len(c.RelationInfo.ToClasses) > 0 {
+		rel["to_classes"] = c.RelationInfo.ToClasses
+	}
+	if len(rel) > 0 {
+		out["relation_info"] = rel
 	}
 	if len(c.ParentDnVariants) > 0 {
 		variants := make([]map[string]any, len(c.ParentDnVariants))
