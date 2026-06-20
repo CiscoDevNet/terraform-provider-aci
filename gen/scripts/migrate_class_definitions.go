@@ -170,6 +170,45 @@ var knownLegacyKeys = map[string]keyInfo{
 
 	// S8 POSTPONE
 	"class_version_tests": {sectionPostpone, true},
+
+	// Property-level top-level keys (loaded from
+	// gen/scripts/legacy_definitions/properties/*.yaml). Tallied under the
+	// "prop:" prefix so they group separately from class-level keys with
+	// matching names (e.g. "documentation" exists on both sides). Same
+	// disposition codes apply; the per-key migration logic lives in
+	// migrateProperties.
+
+	// S1 direct
+	"prop:documentation": {sectionDirect, true},
+
+	// S2 semantic (this commit)
+	"prop:overwrites":                {sectionSemantic, true},
+	"prop:read_only_properties":      {sectionSemantic, true},
+	"prop:resource_required":         {sectionSemantic, true},
+	"prop:ignores":                   {sectionSemantic, true},
+	"prop:type_overwrites":           {sectionSemantic, true},
+	"prop:default_values":            {sectionSemantic, true},
+	"prop:remove_valid_values":       {sectionSemantic, true},
+	"prop:add_valid_values":          {sectionSemantic, true},
+	"prop:ignore_properties_in_test": {sectionSemantic, true},
+
+	// S2 semantic (later commits)
+	"prop:test_values": {sectionSemantic, false}, // C20 (bucket merge)
+	"prop:parents":     {sectionSemantic, false}, // C21 (decision tree + polymorphic)
+	"prop:targets":     {sectionSemantic, false}, // C21 (decision tree + polymorphic)
+
+	// S3 obsolete (later commit)
+	"prop:exclude_targets":             {sectionObsolete, false}, // C22 (verify polymorphic-same-type)
+	"prop:resource_name_doc_overwrite": {sectionReuse, false},    // C22 (drop - already in global)
+
+	// S6 DERIVE (verify-and-drop; meta auto-derives ip_address from validateAsIPv4OrIPv6)
+	"prop:static_custom_type": {sectionDerive, true},
+
+	// S8 POSTPONE - drop with per-file warning, no slot in canonical struct yet
+	"prop:ignore_custom_type_docs":     {sectionPostpone, true}, // section 8.3
+	"prop:example_value_overwrite":     {sectionPostpone, true}, // section 8.4
+	"prop:custom_test_dependency_name": {sectionPostpone, true}, // section 8.5
+	"prop:datasource_required":         {sectionPostpone, true}, // section 8.2 (topSystem top-level only)
 }
 
 // keyTally accumulates per-key and per-section counts across the migration
@@ -206,6 +245,13 @@ func (t *keyTally) record(file, key string) keyInfo {
 		t.implementedSeen[key] = true
 	}
 	return info
+}
+
+// recordProperty is the property-level companion to record. The "prop:" prefix
+// keeps property and class top-level keys in distinct rows of the L2 tally
+// even when they share a name (e.g. "documentation" or "overwrites").
+func (t *keyTally) recordProperty(file, key string) keyInfo {
+	return t.record(file, "prop:"+key)
 }
 
 func (t *keyTally) print() {
@@ -714,6 +760,319 @@ func projectAttributeUpgrade(a data.AttributeUpgradeDefinition) map[string]any {
 	return out
 }
 
+// parseValueType maps a legacy `type_overwrites` value (single token) to the
+// canonical ValueTypeEnum. Today every entry across the 3 affected files
+// uses "string" - the migration logs and bypasses any other value rather
+// than crashing the run.
+func parseValueType(file, propName, s string) data.ValueTypeEnum {
+	switch s {
+	case "string":
+		return data.String
+	case "set":
+		return data.Set
+	case "object":
+		return data.Object
+	case "ip_address":
+		return data.IpAddress
+	case "semantic_equality":
+		return data.SemanticEquality
+	default:
+		fmt.Printf("WARN: %s: unknown type_overwrites value %q for %s - left as UndefinedValueType\n", file, s, propName)
+		return data.UndefinedValueType
+	}
+}
+
+// upsertProperty fetches (or creates) the PropertyDefinition for the given
+// meta property name. Centralising the lookup keeps the per-key handlers in
+// migrateProperties terse and avoids subtle map-value-vs-pointer bugs.
+func upsertProperty(out *data.ClassDefinition, metaName string) data.PropertyDefinition {
+	if out.Properties == nil {
+		out.Properties = map[string]data.PropertyDefinition{}
+	}
+	return out.Properties[metaName]
+}
+
+// setRestriction writes the restriction onto the property; warns when the
+// caller would overwrite an already-set restriction with a different value
+// (e.g. a property listed in both `resource_required` and `ignores`, which
+// is a legacy-file authoring error worth surfacing).
+func setRestriction(file, metaName string, prop *data.PropertyDefinition, r data.RestrictionEnum, source string) {
+	if prop.Restriction != data.UndefinedRestriction && prop.Restriction != r {
+		fmt.Printf("WARN: %s: restriction conflict on %s: already %s, %s wants %s\n",
+			file, metaName, prop.Restriction, source, r)
+		return
+	}
+	prop.Restriction = r
+}
+
+// asStringSlice converts a yaml.v2 []any (or []string) to a []string and
+// silently drops non-string entries with a warning. The shape `[]any` is
+// what yaml.v2 produces for inline lists.
+func asStringSlice(v any) []string {
+	switch xs := v.(type) {
+	case []string:
+		return xs
+	case []any:
+		out := make([]string, 0, len(xs))
+		for _, e := range xs {
+			if s, ok := e.(string); ok {
+				out = append(out, s)
+			}
+		}
+		return out
+	}
+	return nil
+}
+
+// migrateProperties translates one legacy property YAML payload (parsed as
+// map[string]any) into per-property PropertyDefinition entries on the
+// outgoing ClassDefinition. The translation is narrow: only keys flagged
+// `implemented:true` in the "prop:" entries of knownLegacyKeys are written
+// into the canonical struct. Every other known key is tallied so the L2
+// coverage gap stays visible; unknown keys raise an L1 warning via the
+// tally just like the class loader does.
+func migrateProperties(file string, legacy map[string]any, tally *keyTally, out *data.ClassDefinition) {
+	for key, val := range legacy {
+		info := tally.recordProperty(file, key)
+		if !info.implemented {
+			continue
+		}
+		switch key {
+		case "documentation":
+			// Map<metaName, description-template-string> -> per-property
+			// PropertyDefinition.Documentation.Description.
+			docs, ok := val.(map[any]any)
+			if !ok {
+				fmt.Printf("WARN: %s: documentation is not a map: %T\n", file, val)
+				continue
+			}
+			for metaKey, descVal := range docs {
+				metaName, _ := metaKey.(string)
+				desc, _ := descVal.(string)
+				if metaName == "" {
+					continue
+				}
+				prop := upsertProperty(out, metaName)
+				prop.Documentation.Description = desc
+				out.Properties[metaName] = prop
+			}
+
+		case "overwrites":
+			// Map<snake_case_old_attr, snake_case_new_attr>. The new
+			// schema keys per-property overrides by meta camelCase name,
+			// so transform the legacy snake_case attribute name to the
+			// camelCase meta name via snakeToCamel (same rule used for
+			// state_upgrades). The value (new attribute name) lands in
+			// PropertyDefinition.AttributeName verbatim.
+			ows, ok := val.(map[any]any)
+			if !ok {
+				fmt.Printf("WARN: %s: overwrites is not a map: %T\n", file, val)
+				continue
+			}
+			for snakeKey, newNameVal := range ows {
+				oldSnake, _ := snakeKey.(string)
+				newName, _ := newNameVal.(string)
+				if oldSnake == "" || newName == "" {
+					continue
+				}
+				metaName := snakeToCamel(oldSnake)
+				prop := upsertProperty(out, metaName)
+				prop.AttributeName = newName
+				out.Properties[metaName] = prop
+			}
+
+		case "read_only_properties":
+			for _, metaName := range asStringSlice(val) {
+				prop := upsertProperty(out, metaName)
+				setRestriction(file, metaName, &prop, data.ReadOnly, "read_only_properties")
+				out.Properties[metaName] = prop
+			}
+
+		case "resource_required":
+			for _, metaName := range asStringSlice(val) {
+				prop := upsertProperty(out, metaName)
+				setRestriction(file, metaName, &prop, data.Required, "resource_required")
+				out.Properties[metaName] = prop
+			}
+
+		case "ignores":
+			// Legacy `ignores` is class-scoped (cross-class lives in
+			// properties/global.yaml as "ignores" and migrates to
+			// global.exclude_properties). Per-class entries map to
+			// PropertyDefinition.Restriction: exclude.
+			for _, metaName := range asStringSlice(val) {
+				prop := upsertProperty(out, metaName)
+				setRestriction(file, metaName, &prop, data.Exclude, "ignores")
+				out.Properties[metaName] = prop
+			}
+
+		case "type_overwrites":
+			tos, ok := val.(map[any]any)
+			if !ok {
+				fmt.Printf("WARN: %s: type_overwrites is not a map: %T\n", file, val)
+				continue
+			}
+			for metaKey, typeVal := range tos {
+				metaName, _ := metaKey.(string)
+				typeStr, _ := typeVal.(string)
+				if metaName == "" {
+					continue
+				}
+				vt := parseValueType(file, metaName, typeStr)
+				if vt == data.UndefinedValueType {
+					continue
+				}
+				prop := upsertProperty(out, metaName)
+				prop.ValueType = vt
+				out.Properties[metaName] = prop
+			}
+
+		case "default_values":
+			// Legacy: `metaPropName: value` (single value).
+			// Canonical: `metaPropName: { value: versionRange }`. Empty
+			// version string means "applies to all versions" - migrate
+			// every entry with empty version range so the meta-derived
+			// version-scoped semantics carry over unchanged.
+			dvs, ok := val.(map[any]any)
+			if !ok {
+				fmt.Printf("WARN: %s: default_values is not a map: %T\n", file, val)
+				continue
+			}
+			for metaKey, defVal := range dvs {
+				metaName, _ := metaKey.(string)
+				if metaName == "" {
+					continue
+				}
+				defStr := fmt.Sprintf("%v", defVal)
+				prop := upsertProperty(out, metaName)
+				if prop.DefaultValues == nil {
+					prop.DefaultValues = map[string]string{}
+				}
+				prop.DefaultValues[defStr] = ""
+				out.Properties[metaName] = prop
+			}
+
+		case "remove_valid_values":
+			rvs, ok := val.(map[any]any)
+			if !ok {
+				fmt.Printf("WARN: %s: remove_valid_values is not a map: %T\n", file, val)
+				continue
+			}
+			for metaKey, listVal := range rvs {
+				metaName, _ := metaKey.(string)
+				if metaName == "" {
+					continue
+				}
+				prop := upsertProperty(out, metaName)
+				prop.RemoveValidValues = append(prop.RemoveValidValues, asStringSlice(listVal)...)
+				out.Properties[metaName] = prop
+			}
+
+		case "add_valid_values":
+			avs, ok := val.(map[any]any)
+			if !ok {
+				fmt.Printf("WARN: %s: add_valid_values is not a map: %T\n", file, val)
+				continue
+			}
+			for metaKey, listVal := range avs {
+				metaName, _ := metaKey.(string)
+				if metaName == "" {
+					continue
+				}
+				prop := upsertProperty(out, metaName)
+				prop.AddValidValues = append(prop.AddValidValues, asStringSlice(listVal)...)
+				out.Properties[metaName] = prop
+			}
+
+		case "ignore_properties_in_test":
+			// Legacy shape is map<metaName, "no"> (the value is the
+			// historical "yes/no" string; "no" is the only observed
+			// value). New shape is a boolean test_config.ignore_in_test
+			// per property; flip true regardless of legacy value because
+			// the key's presence is what disables the test entry.
+			ips, ok := val.(map[any]any)
+			if !ok {
+				fmt.Printf("WARN: %s: ignore_properties_in_test is not a map: %T\n", file, val)
+				continue
+			}
+			for metaKey := range ips {
+				metaName, _ := metaKey.(string)
+				if metaName == "" {
+					continue
+				}
+				prop := upsertProperty(out, metaName)
+				prop.TestConfig.IgnoreInTest = true
+				out.Properties[metaName] = prop
+			}
+
+		case "static_custom_type":
+			// Legacy shape: map<metaName, custom-type-token>.
+			//   "ip_address"        -> auto-derived from meta validateAsIPv4OrIPv6
+			//                          (drop silently; covers 14 of 15 entries).
+			//   "vmm_arp_learning"  -> POSTPONE: log a warning, drop from output.
+			//                          Hand-restore once section 8.1 lands.
+			sct, ok := val.(map[any]any)
+			if !ok {
+				fmt.Printf("WARN: %s: static_custom_type is not a map: %T\n", file, val)
+				continue
+			}
+			for metaKey, typeVal := range sct {
+				metaName, _ := metaKey.(string)
+				typeStr, _ := typeVal.(string)
+				if typeStr == "ip_address" {
+					continue
+				}
+				fmt.Printf("POSTPONE: %s: static_custom_type[%s]=%s dropped (no slot in canonical struct yet; restore after section 8 lands)\n",
+					file, metaName, typeStr)
+			}
+
+		case "ignore_custom_type_docs",
+			"example_value_overwrite",
+			"custom_test_dependency_name",
+			"datasource_required":
+			// S8 POSTPONE: no slot in canonical struct yet; drop with a
+			// per-file warning so the loss is visible during migration.
+			fmt.Printf("POSTPONE: %s: %s dropped (no canonical slot; restore after section 8 lands)\n", file, key)
+		}
+	}
+}
+
+// projectProperty emits a PropertyDefinition as a YAML-friendly map. Hand
+// emits enums via String() (same yaml.v2-no-MarshalText pattern as the
+// Artifacts and StateUpgrades projections) and omits zero-value fields.
+func projectProperty(p data.PropertyDefinition) map[string]any {
+	out := map[string]any{}
+	if p.AttributeName != "" {
+		out["attribute_name"] = p.AttributeName
+	}
+	if p.Restriction != data.UndefinedRestriction {
+		out["restriction"] = p.Restriction.String()
+	}
+	if p.ValueType != data.UndefinedValueType {
+		out["value_type"] = p.ValueType.String()
+	}
+	if len(p.DefaultValues) > 0 {
+		out["default_values"] = p.DefaultValues
+	}
+	if len(p.AddValidValues) > 0 {
+		out["add_valid_values"] = p.AddValidValues
+	}
+	if len(p.RemoveValidValues) > 0 {
+		out["remove_valid_values"] = p.RemoveValidValues
+	}
+	if p.Documentation.Description != "" {
+		out["documentation"] = map[string]any{
+			"description": p.Documentation.Description,
+		}
+	}
+	if p.TestConfig.IgnoreInTest {
+		out["test_config"] = map[string]any{
+			"ignore_in_test": p.TestConfig.IgnoreInTest,
+		}
+	}
+	return out
+}
+
 // migrateMultiParents converts the legacy multi_parents block into the
 // canonical ParentDnVariants slice. Field renames: legacy `contained_by`
 // -> canonical `parent_class`; legacy `test_type` (string) -> canonical
@@ -800,6 +1159,9 @@ func hasMigratedData(c data.ClassDefinition) bool {
 		return true
 	}
 	if len(c.Documentation.Resource.Notes) > 0 {
+		return true
+	}
+	if len(c.Properties) > 0 {
 		return true
 	}
 	return false
@@ -939,6 +1301,13 @@ func marshalView(c data.ClassDefinition) map[string]any {
 	if len(doc) > 0 {
 		out["documentation"] = doc
 	}
+	if len(c.Properties) > 0 {
+		props := map[string]any{}
+		for name, p := range c.Properties {
+			props[name] = projectProperty(p)
+		}
+		out["properties"] = props
+	}
 	return out
 }
 
@@ -960,6 +1329,7 @@ func roundTripStrict(view map[string]any) ([]byte, error) {
 
 func main() {
 	classesDir := "gen/scripts/legacy_definitions/classes"
+	propertiesDir := "gen/scripts/legacy_definitions/properties"
 	outputDir := "gen/definitions"
 
 	if len(os.Args) > 1 && os.Args[1] == "clean" {
@@ -973,7 +1343,39 @@ func main() {
 		os.Exit(1)
 	}
 
+	// Pre-load all property YAML files, keyed by basename (e.g. "fvBD.yaml").
+	// Entries are removed as the class loop consumes them so the remaining
+	// map at the end of the class loop is exactly the orphan property files
+	// (classes with no legacy class YAML - 7 comm* files today).
+	propFiles, err := filepath.Glob(filepath.Join(propertiesDir, "*.yaml"))
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error reading properties dir: %v\n", err)
+		os.Exit(1)
+	}
+	propMap := map[string]string{} // basename -> full path
 	tally := newKeyTally()
+	for _, pf := range propFiles {
+		base := filepath.Base(pf)
+		// resource_name_overwrite.yaml is the entire-file S3 obsolete drop
+		// (section 3): its 7 relation-to-resource-name entries are now expressed
+		// as per-class `resource_name` on each relation class. Log a single
+		// skip line rather than tallying each entry as an UNKNOWN key.
+		// The file itself is deleted in the C22 cleanup commit.
+		if base == "resource_name_overwrite.yaml" {
+			fmt.Printf("Skipped (S3 obsolete file): %s\n", pf)
+			continue
+		}
+		// properties/global.yaml is the legacy carrier for what is now
+		// GlobalMetaDefinition (definitions/global.yaml) - same disposition
+		// as classes/global.yaml. Skip from the per-class merge so it does
+		// not overwrite the existing GlobalMetaDefinition file.
+		if base == "global.yaml" {
+			fmt.Printf("Skipped (properties/global.yaml - covered by GlobalMetaDefinition): %s\n", pf)
+			continue
+		}
+		propMap[base] = pf
+	}
+
 	migrated, skipped, failed := 0, 0, 0
 
 	for _, file := range files {
@@ -1002,6 +1404,20 @@ func main() {
 		}
 
 		canonical := migrate(file, legacy, tally)
+
+		// Merge the matching property YAML (if any) into the same
+		// ClassDefinition before deciding emit-or-skip and before
+		// projecting to view.
+		propBase := filepath.Base(file)
+		if propPath, ok := propMap[propBase]; ok {
+			if err := loadAndMigrateProperties(propPath, tally, &canonical); err != nil {
+				fmt.Fprintf(os.Stderr, "Error loading %s: %v\n", propPath, err)
+				failed++
+				continue
+			}
+			delete(propMap, propBase)
+		}
+
 		if !hasMigratedData(canonical) {
 			skipped++
 			continue
@@ -1027,6 +1443,45 @@ func main() {
 		migrated++
 	}
 
+	// Orphan property files: a property YAML whose class YAML never existed
+	// (the 7 comm* files today). Each emits a fresh ClassDefinition seeded
+	// only from the property loader. Use a sorted iteration order so the
+	// per-run "Migrated:" output stays stable.
+	orphanBases := make([]string, 0, len(propMap))
+	for base := range propMap {
+		orphanBases = append(orphanBases, base)
+	}
+	sort.Strings(orphanBases)
+	for _, base := range orphanBases {
+		propPath := propMap[base]
+		canonical := data.ClassDefinition{}
+		if err := loadAndMigrateProperties(propPath, tally, &canonical); err != nil {
+			fmt.Fprintf(os.Stderr, "Error loading orphan %s: %v\n", propPath, err)
+			failed++
+			continue
+		}
+		if !hasMigratedData(canonical) {
+			skipped++
+			continue
+		}
+		view := marshalView(canonical)
+		out, err := roundTripStrict(view)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error round-tripping orphan %s: %v\n", propPath, err)
+			failed++
+			continue
+		}
+		className := strings.TrimSuffix(base, ".yaml")
+		outputPath := filepath.Join(outputDir, className+".yaml")
+		if err := os.WriteFile(outputPath, out, 0644); err != nil {
+			fmt.Fprintf(os.Stderr, "Error writing %s: %v\n", outputPath, err)
+			failed++
+			continue
+		}
+		fmt.Printf("Migrated (orphan property): %s -> %s\n", propPath, outputPath)
+		migrated++
+	}
+
 	fmt.Printf("\nDone: %d migrated, %d skipped (no Phase-1 fields), %d failed\n",
 		migrated, skipped, failed)
 	tally.print()
@@ -1034,6 +1489,22 @@ func main() {
 	if failed > 0 {
 		os.Exit(1)
 	}
+}
+
+// loadAndMigrateProperties parses one legacy property YAML and merges the
+// translated values onto the supplied ClassDefinition. Returns an error
+// only on read or parse failure so callers can attribute it to the file.
+func loadAndMigrateProperties(file string, tally *keyTally, out *data.ClassDefinition) error {
+	payload, err := os.ReadFile(file)
+	if err != nil {
+		return err
+	}
+	var legacy map[string]any
+	if err := yaml.Unmarshal(payload, &legacy); err != nil {
+		return err
+	}
+	migrateProperties(file, legacy, tally, out)
+	return nil
 }
 
 // tallyOnly records the keys of a file we intentionally do not write
