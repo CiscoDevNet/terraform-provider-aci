@@ -122,10 +122,10 @@ type keyInfo struct {
 var knownLegacyKeys = map[string]keyInfo{
 	// S1 direct mapping (class-level)
 	"allow_delete":      {sectionSemantic, true}, // value remap "false" -> "never"
-	"rn_prepend":        {sectionDirect, false},
-	"required_as_child": {sectionDirect, false},
-	"resource_name":     {sectionDirect, false},
-	"dn_formats":        {sectionDirect, false}, // moves under documentation
+	"rn_prepend":        {sectionDirect, true},
+	"required_as_child": {sectionDirect, true},
+	"resource_name":     {sectionDirect, true},
+	"dn_formats":        {sectionDirect, true}, // moves under documentation
 	"exclude_children":  {sectionDirect, true},
 	"include_children":  {sectionDirect, true},
 	// S1 direct mapping under documentation block
@@ -311,10 +311,20 @@ func migrate(file string, legacy map[string]any, tally *keyTally) data.ClassDefi
 			out.ExcludeChildren = toStringSlice(val)
 		case "include_children":
 			out.IncludeChildren = toStringSlice(val)
+		case "resource_name":
+			out.ResourceName, _ = val.(string)
+		case "rn_prepend":
+			out.RnPrepend, _ = val.(string)
+		case "required_as_child":
+			if b, ok := val.(bool); ok {
+				out.RequiredAsChild = b
+			}
 		case "sub_category":
 			out.Documentation.SubCategory, _ = val.(string)
 		case "ui_locations":
 			out.Documentation.UiLocations = toStringSlice(val)
+		case "dn_formats":
+			out.Documentation.DnFormats = toStringSlice(val)
 		}
 	}
 	return out
@@ -342,13 +352,13 @@ func toStringSlice(v any) []string {
 // are TODO dispositions) are skipped to avoid emitting noisy empty .yaml
 // files at the migration target.
 func hasMigratedData(c data.ClassDefinition) bool {
-	if c.AllowDelete != "" {
+	if c.AllowDelete != "" || c.ResourceName != "" || c.RnPrepend != "" || c.RequiredAsChild {
 		return true
 	}
 	if len(c.ExcludeChildren) > 0 || len(c.IncludeChildren) > 0 {
 		return true
 	}
-	if c.Documentation.SubCategory != "" || len(c.Documentation.UiLocations) > 0 {
+	if c.Documentation.SubCategory != "" || len(c.Documentation.UiLocations) > 0 || len(c.Documentation.DnFormats) > 0 {
 		return true
 	}
 	return false
@@ -368,6 +378,15 @@ func marshalView(c data.ClassDefinition) map[string]any {
 	if c.AllowDelete != "" {
 		out["allow_delete"] = c.AllowDelete
 	}
+	if c.ResourceName != "" {
+		out["resource_name"] = c.ResourceName
+	}
+	if c.RnPrepend != "" {
+		out["rn_prepend"] = c.RnPrepend
+	}
+	if c.RequiredAsChild {
+		out["required_as_child"] = c.RequiredAsChild
+	}
 	if len(c.ExcludeChildren) > 0 {
 		out["exclude_children"] = c.ExcludeChildren
 	}
@@ -380,6 +399,9 @@ func marshalView(c data.ClassDefinition) map[string]any {
 	}
 	if len(c.Documentation.UiLocations) > 0 {
 		doc["ui_locations"] = c.Documentation.UiLocations
+	}
+	if len(c.Documentation.DnFormats) > 0 {
+		doc["dn_formats"] = c.Documentation.DnFormats
 	}
 	if len(doc) > 0 {
 		out["documentation"] = doc
