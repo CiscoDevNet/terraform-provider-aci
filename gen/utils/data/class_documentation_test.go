@@ -468,6 +468,7 @@ func TestSetWarnings(t *testing.T) {
 type setDocumentationChildrenInput struct {
 	RnMap                      map[string]any
 	ChildrenIncludedInResource []string
+	ExcludeChildren            []string
 	StoreClasses               map[string]Class
 }
 
@@ -555,6 +556,26 @@ func TestSetDocumentationChildren(t *testing.T) {
 				"[aci_valid](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/valid)",
 			}},
 		},
+		{
+			// fvRsPathAtt-shape case: ExcludeChildren on the class definition must
+			// also drop the entry from the docs Children link list (legacy key
+			// remove_from_contains is unified into ExcludeChildren by the migration).
+			Name: "test_exclude_children_dropped_from_docs",
+			Input: setDocumentationChildrenInput{
+				RnMap: map[string]any{
+					"port-sec-{name}": "l2:PortSecurityPol",
+					"keep-{name}":     "fv:Keep",
+				},
+				ExcludeChildren: []string{"l2PortSecurityPol"},
+				StoreClasses: map[string]Class{
+					"l2PortSecurityPol": {ResourceName: "port_security_policy"},
+					"fvKeep":            {ResourceName: "keep"},
+				},
+			},
+			Expected: setDocumentationChildrenExpected{Children: []string{
+				"[aci_keep](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/keep)",
+			}},
+		},
 	}
 
 	for _, testCase := range testCases {
@@ -572,6 +593,7 @@ func TestSetDocumentationChildren(t *testing.T) {
 				Name:     testClassName("fvTenant"),
 				Children: childrenIncludedInResource,
 			}
+			class.ClassDefinition.ExcludeChildren = input.ExcludeChildren
 			if input.RnMap != nil {
 				class.MetaFileContent = map[string]any{"rnMap": input.RnMap}
 			}
