@@ -511,6 +511,81 @@ func TestSetAllowDelete(t *testing.T) {
 	}
 }
 
+type setArtifactsInput struct {
+	IdentifiedBy    []string
+	ClassDefinition ClassDefinition
+}
+
+func TestSetArtifacts(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	testCases := []test.TestCase{
+		{
+			Name: "test_auto_derive_both_when_identified_by_non_empty",
+			Input: setArtifactsInput{
+				IdentifiedBy:    []string{"name"},
+				ClassDefinition: ClassDefinition{},
+			},
+			Expected: []ArtifactEnum{ResourceArtifact, DatasourceArtifact},
+		},
+		{
+			Name: "test_auto_derive_none_when_identified_by_empty",
+			Input: setArtifactsInput{
+				IdentifiedBy:    nil,
+				ClassDefinition: ClassDefinition{},
+			},
+			Expected: []ArtifactEnum{},
+		},
+		{
+			Name: "test_explicit_opt_out_empty_slice_overrides_auto_derive",
+			Input: setArtifactsInput{
+				IdentifiedBy:    []string{"name"},
+				ClassDefinition: ClassDefinition{Artifacts: []ArtifactEnum{}},
+			},
+			Expected: []ArtifactEnum{},
+		},
+		{
+			Name: "test_opt_in_overrides_empty_identified_by",
+			Input: setArtifactsInput{
+				IdentifiedBy:    nil,
+				ClassDefinition: ClassDefinition{Artifacts: []ArtifactEnum{ResourceArtifact, DatasourceArtifact}},
+			},
+			Expected: []ArtifactEnum{ResourceArtifact, DatasourceArtifact},
+		},
+		{
+			Name: "test_datasource_only_override",
+			Input: setArtifactsInput{
+				IdentifiedBy:    []string{"name"},
+				ClassDefinition: ClassDefinition{Artifacts: []ArtifactEnum{DatasourceArtifact}},
+			},
+			Expected: []ArtifactEnum{DatasourceArtifact},
+		},
+		{
+			Name: "test_resource_only_override",
+			Input: setArtifactsInput{
+				IdentifiedBy:    []string{"name"},
+				ClassDefinition: ClassDefinition{Artifacts: []ArtifactEnum{ResourceArtifact}},
+			},
+			Expected: []ArtifactEnum{ResourceArtifact},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.(setArtifactsInput)
+			class := Class{Name: testClassName("fvTenant")}
+			class.IdentifiedBy = input.IdentifiedBy
+			class.ClassDefinition = input.ClassDefinition
+
+			class.setArtifacts()
+
+			assert.Equal(t, testCase.Expected, class.Artifacts, test.MessageEqual(testCase.Expected, class.Artifacts, testCase.Name))
+		})
+	}
+}
+
 type shouldIncludeChildInput struct {
 	RN                          string
 	ClassName                   string
