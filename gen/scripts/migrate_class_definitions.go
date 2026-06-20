@@ -153,9 +153,9 @@ var knownLegacyKeys = map[string]keyInfo{
 	"ignore_import_state_verify_in_test": {sectionAdd, true}, // -> test_config.ignore_import_state_verify
 
 	// S5 REUSE
-	"max_one_class_allowed": {sectionReuse, false}, // -> is_single_nested_when_defined_as_child
-	"parent_example_dn":     {sectionReuse, false}, // dropped (covered by static dependency)
-	"remove_from_contains":  {sectionReuse, false}, // -> exclude_children (now covers docs side too)
+	"max_one_class_allowed": {sectionReuse, true}, // -> is_single_nested_when_defined_as_child
+	"parent_example_dn":     {sectionReuse, true}, // dropped (covered by static dependency)
+	"remove_from_contains":  {sectionReuse, true}, // -> exclude_children (now covers docs side too)
 
 	// S6 DERIVE (drop, computed in Go from meta)
 	"resource_identifier":                {sectionDerive, false},
@@ -350,9 +350,38 @@ func migrate(file string, legacy map[string]any, tally *keyTally) data.ClassDefi
 			if b, ok := val.(bool); ok {
 				out.TestConfig.IgnoreImportStateVerify = b
 			}
+		case "max_one_class_allowed":
+			if b, ok := val.(bool); ok {
+				out.IsSingleNestedWhenDefinedAsChild = b
+			}
+		case "parent_example_dn":
+			// Drop intentionally. The legacy value supplied a static parent
+			// DN for example/test rendering; the canonical pipeline now
+			// derives the same DN from class.TestConfig.Dependencies (and
+			// the static_parent meta flag), so no canonical field needs the
+			// value.
+		case "remove_from_contains":
+			// Legacy remove_from_contains entries unioned into the canonical
+			// exclude_children list - C10 extended the docs-side setChildren
+			// to honour ExcludeChildren so a single field now covers both
+			// nested generation and the docs Children link list.
+			for _, child := range toStringSlice(val) {
+				if !contains(out.ExcludeChildren, child) {
+					out.ExcludeChildren = append(out.ExcludeChildren, child)
+				}
+			}
 		}
 	}
 	return out
+}
+
+func contains(haystack []string, needle string) bool {
+	for _, s := range haystack {
+		if s == needle {
+			return true
+		}
+	}
+	return false
 }
 
 // migrateMultiParents converts the legacy multi_parents block into the
@@ -416,7 +445,7 @@ func toStringSlice(v any) []string {
 // are TODO dispositions) are skipped to avoid emitting noisy empty .yaml
 // files at the migration target.
 func hasMigratedData(c data.ClassDefinition) bool {
-	if c.AllowDelete != "" || c.ResourceName != "" || c.RnPrepend != "" || c.RequiredAsChild {
+	if c.AllowDelete != "" || c.ResourceName != "" || c.RnPrepend != "" || c.RequiredAsChild || c.IsSingleNestedWhenDefinedAsChild {
 		return true
 	}
 	if len(c.ExcludeChildren) > 0 || len(c.IncludeChildren) > 0 {
@@ -456,6 +485,9 @@ func marshalView(c data.ClassDefinition) map[string]any {
 	}
 	if c.RequiredAsChild {
 		out["required_as_child"] = c.RequiredAsChild
+	}
+	if c.IsSingleNestedWhenDefinedAsChild {
+		out["is_single_nested_when_defined_as_child"] = c.IsSingleNestedWhenDefinedAsChild
 	}
 	if c.Artifacts != nil {
 		// Emit as []string so per-element UnmarshalText drives the strict
