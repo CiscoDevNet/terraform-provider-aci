@@ -186,6 +186,14 @@ func (d *ClassDocumentation) setChildren(class *Class, ds *DataStore) {
 		if _, isIncluded := childrenIncludedInResource[childName]; isIncluded {
 			continue
 		}
+		// Honour the class's ExcludeChildren list (already used by the
+		// nested-children generator). Unifies the legacy
+		// remove_from_contains key into ExcludeChildren so a single field
+		// suppresses the entry from both nested generation and the docs
+		// children link list.
+		if slices.Contains(class.ClassDefinition.ExcludeChildren, childName) {
+			continue
+		}
 		childClass, ok := ds.Classes[childName]
 		if !ok || childClass.ResourceName == "" {
 			continue
