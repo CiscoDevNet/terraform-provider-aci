@@ -137,9 +137,9 @@ var knownLegacyKeys = map[string]keyInfo{
 	"contained_by":         {sectionSemantic, true}, // -> include_parents (subtract meta containedBy first)
 	"class_version":        {sectionSemantic, true}, // -> supported_versions
 	"relationship_classes": {sectionSemantic, true}, // -> relation_info.to_classes
-	"migration_blocks":     {sectionSemantic, false}, // -> state_upgrades (two-source merge)
-	"migration_version":    {sectionSemantic, false}, // -> state_upgrades (drives migration_source)
-	"type_changes":         {sectionSemantic, false}, // -> state_upgrades.attributes
+	"migration_blocks":     {sectionSemantic, true}, // -> state_upgrades (two-source merge)
+	"migration_version":    {sectionSemantic, true}, // -> state_upgrades (drives migration_source)
+	"type_changes":         {sectionSemantic, true}, // -> state_upgrades.attributes
 	"resource_notes":       {sectionSemantic, true}, // -> documentation.resource.notes
 
 	// S3 obsolete (drop with one-line log)
@@ -425,8 +425,14 @@ func migrate(file string, legacy map[string]any, tally *keyTally) data.ClassDefi
 			// (C15) because the canonical pipeline derives the multi-class
 			// shape from len(to_classes) > 1 automatically.
 			out.RelationInfo.ToClasses = toStringSlice(val)
+		case "migration_blocks", "migration_version", "type_changes":
+			// Handled in migrateStateUpgrades after the switch so all three
+			// keys can share the same versions map (the version index that
+			// migration_version pins also has to be referenced by
+			// migration_blocks attributes and type_changes entries).
 		}
 	}
+	migrateStateUpgrades(file, legacy, &out)
 	return out
 }
 
@@ -437,6 +443,275 @@ func contains(haystack []string, needle string) bool {
 		}
 	}
 	return false
+}
+
+// snakeToCamel converts "application_profile_dn" -> "applicationProfileDn".
+// The legacy `migration_blocks` value is the new attribute_name (snake_case);
+// the new state_upgrades schema keys by meta camelCase property name. Both
+// the auto-derived attribute_name (when no override) and the manual
+// attribute_name overrides round-trip to the meta camelCase via lowercase-first
+// segment + Title-case the rest. Synthetic names that are already camelCase
+// (parent_dn -> parentDn, tDn -> tDn, tnAaaDomainName -> tnAaaDomainName)
+// round-trip through this rule cleanly.
+func snakeToCamel(s string) string {
+	parts := strings.Split(s, "_")
+	if len(parts) == 0 {
+		return s
+	}
+	var b strings.Builder
+	b.WriteString(parts[0])
+	for _, p := range parts[1:] {
+		if len(p) == 0 {
+			continue
+		}
+		b.WriteString(strings.ToUpper(p[:1]))
+		if len(p) > 1 {
+			b.WriteString(p[1:])
+		}
+	}
+	return b.String()
+}
+
+// parseLegacyAttributeType translates the legacy type_changes string
+// ("SetNestedAttribute", "StringAttribute", ...) into the canonical
+// LegacyAttributeTypeEnum value. The legacy value is the Go identifier
+// from the prior SDKv2 framework; the canonical YAML uses the snake_case
+// string ("set_nested_attribute"). Returns UndefinedLegacyAttributeType
+// when the input does not match a known type so the caller can emit a
+// warning rather than crashing on a typo.
+func parseLegacyAttributeType(s string) data.LegacyAttributeTypeEnum {
+	switch s {
+	case "StringAttribute":
+		return data.StringAttribute
+	case "BoolAttribute":
+		return data.BoolAttribute
+	case "Int64Attribute":
+		return data.Int64Attribute
+	case "Float64Attribute":
+		return data.Float64Attribute
+	case "ListAttribute":
+		return data.ListAttribute
+	case "SetAttribute":
+		return data.SetAttribute
+	case "MapAttribute":
+		return data.MapAttribute
+	case "SingleNestedAttribute":
+		return data.SingleNestedAttribute
+	case "ListNestedAttribute":
+		return data.ListNestedAttribute
+	case "SetNestedAttribute":
+		return data.SetNestedAttribute
+	case "MapNestedAttribute":
+		return data.MapNestedAttribute
+	}
+	return data.UndefinedLegacyAttributeType
+}
+
+// migrateStateUpgrades reads the three SDKv2-migration keys
+// (migration_version, migration_blocks, type_changes) from the legacy YAML
+// and assembles a single state_upgrades:[] tree on `out`. Also sets
+// out.MigrationSource = FromSDKv2 when any of the three keys is present
+// (validates the cross-field rule in class.go validateStateUpgrades).
+//
+// The two-source merge with legacy_definitions/schema-git-commit-e21fb3e5.json
+// is NOT done here today - legacy_type and legacy_restriction default to
+// the zero value (interpreted as "inherit from current property"), which
+// covers the common case of a pure name rename. Authors needing a real
+// type or restriction diff write the explicit override into the migrated
+// YAML by hand; the script's only obligation is to capture the legacy
+// name pairs faithfully.
+//
+// Per MIGRATION_OVERVIEW.md section 2.1, the script:
+//   - Keys top-level migration_blocks entries (className == file) into
+//     attributes[<camelCase(newName)>]
+//   - Keys nested migration_blocks entries (className != file) into
+//     children[<className>].attributes[<camelCase(newName-suffix)>]
+//   - Splits dotted new names (rel.inner) so the inner suffix becomes
+//     the attribute name and the outer prefix is dropped (the className
+//     already carries the block identity)
+//   - Maps type_changes[i] to either attributes[<attribute>] (scalar
+//     legacy types) or children[<attribute>] (nested legacy types) on
+//     the entry matching version, creating a fresh entry when no
+//     migration_version landed at that version
+func migrateStateUpgrades(file string, legacy map[string]any, out *data.ClassDefinition) {
+	_, hasBlocks := legacy["migration_blocks"]
+	versionVal, hasVersion := legacy["migration_version"]
+	_, hasTypes := legacy["type_changes"]
+	if !hasBlocks && !hasVersion && !hasTypes {
+		return
+	}
+	selfClass := strings.TrimSuffix(filepath.Base(file), ".yaml")
+
+	// versions indexes state_upgrades by PriorSchemaVersion so all three
+	// keys can find/create the same entry.
+	versions := map[int]*data.StateUpgradeDefinition{}
+	ensure := func(v int) *data.StateUpgradeDefinition {
+		if entry, ok := versions[v]; ok {
+			return entry
+		}
+		entry := &data.StateUpgradeDefinition{
+			PriorSchemaVersion: v,
+			Attributes:         map[string]data.AttributeUpgradeDefinition{},
+			Children:           map[string]data.AttributeUpgradeDefinition{},
+		}
+		versions[v] = entry
+		return entry
+	}
+
+	primaryVersion := 0
+	if hasVersion {
+		switch v := versionVal.(type) {
+		case int:
+			primaryVersion = v
+		case int64:
+			primaryVersion = int(v)
+		}
+	}
+	if hasBlocks || hasVersion {
+		ensure(primaryVersion)
+	}
+
+	if hasBlocks {
+		blocks, _ := legacy["migration_blocks"].(map[any]any)
+		for classKey, attrMap := range blocks {
+			className, _ := classKey.(string)
+			attrs, _ := attrMap.(map[any]any)
+			entry := ensure(primaryVersion)
+			isSelf := className == selfClass
+			for oldKey, newVal := range attrs {
+				oldName, _ := oldKey.(string)
+				newName, _ := newVal.(string)
+				// Dotted form: outer prefix is the relation/block attribute
+				// (already implicit in className), suffix is the inner attr.
+				inner := newName
+				if idx := strings.Index(newName, "."); idx >= 0 {
+					inner = newName[idx+1:]
+				}
+				camelKey := snakeToCamel(inner)
+				upgrade := data.AttributeUpgradeDefinition{
+					LegacyAttribute: oldName,
+				}
+				if isSelf {
+					entry.Attributes[camelKey] = upgrade
+				} else {
+					child := entry.Children[className]
+					if child.Attributes == nil {
+						child.Attributes = map[string]data.AttributeUpgradeDefinition{}
+					}
+					child.Attributes[camelKey] = upgrade
+					entry.Children[className] = child
+				}
+			}
+		}
+	}
+
+	if hasTypes {
+		typesList, _ := legacy["type_changes"].([]any)
+		for _, item := range typesList {
+			entryMap, _ := item.(map[any]any)
+			if entryMap == nil {
+				continue
+			}
+			attrName, _ := entryMap["attribute"].(string)
+			oldType, _ := entryMap["old_type"].(string)
+			versionInt := 0
+			switch v := entryMap["version"].(type) {
+			case int:
+				versionInt = v
+			case int64:
+				versionInt = int(v)
+			}
+			parsed := parseLegacyAttributeType(oldType)
+			if parsed == data.UndefinedLegacyAttributeType {
+				fmt.Printf("  WARN: %s type_changes attribute=%s old_type=%q is not a recognised legacy type; entry kept with zero legacy_type\n", file, attrName, oldType)
+			}
+			entry := ensure(versionInt)
+			// Nested legacy types route to .children; scalar legacy types
+			// route to .attributes. The split mirrors the state_upgrades
+			// loader: children carries block-shaped entries, attributes
+			// carries scalar entries.
+			isNested := strings.Contains(oldType, "Nested")
+			upgrade := data.AttributeUpgradeDefinition{
+				LegacyType: parsed,
+			}
+			if isNested {
+				entry.Children[attrName] = upgrade
+			} else {
+				entry.Attributes[attrName] = upgrade
+			}
+		}
+	}
+
+	// Order entries by ascending PriorSchemaVersion so the emitted YAML
+	// is reproducible across runs (Go map iteration is randomised).
+	keys := make([]int, 0, len(versions))
+	for k := range versions {
+		keys = append(keys, k)
+	}
+	sort.Ints(keys)
+	for _, k := range keys {
+		out.StateUpgrades = append(out.StateUpgrades, *versions[k])
+	}
+
+	// MigrationSource is the cross-field that drives the docs migration
+	// warning and the validator that requires at least one state_upgrades
+	// entry. The legacy YAML implies SDKv2 lineage whenever any of the
+	// three keys is present, so the migration script sets the enum on
+	// every translated file.
+	out.MigrationSource = data.FromSDKv2
+}
+
+// projectStateUpgrade emits a StateUpgradeDefinition as a YAML-friendly map
+// with enums hand-encoded via String() (yaml.v2 has no MarshalText support)
+// and zero-value fields omitted. Mirrors the canonical loader's strict
+// expectation: the YAML keys are meta camelCase, and unset fields surface
+// as the loader zero value (interpreted as "inherit from current property").
+func projectStateUpgrade(su data.StateUpgradeDefinition) map[string]any {
+	entry := map[string]any{
+		"prior_schema_version": su.PriorSchemaVersion,
+	}
+	if len(su.Attributes) > 0 {
+		entry["attributes"] = projectAttributeMap(su.Attributes)
+	}
+	if len(su.Children) > 0 {
+		entry["children"] = projectAttributeMap(su.Children)
+	}
+	return entry
+}
+
+// projectAttributeMap walks AttributeUpgradeDefinition values recursively
+// (Attributes/Children at any depth) and hand-projects enums to strings.
+func projectAttributeMap(m map[string]data.AttributeUpgradeDefinition) map[string]any {
+	out := map[string]any{}
+	for k, v := range m {
+		out[k] = projectAttributeUpgrade(v)
+	}
+	return out
+}
+
+func projectAttributeUpgrade(a data.AttributeUpgradeDefinition) map[string]any {
+	out := map[string]any{}
+	if a.LegacyAttribute != "" {
+		out["legacy_attribute"] = a.LegacyAttribute
+	}
+	if a.LegacyType != data.UndefinedLegacyAttributeType {
+		out["legacy_type"] = a.LegacyType.String()
+	}
+	if a.LegacyRestriction != data.UndefinedRestriction {
+		out["legacy_restriction"] = a.LegacyRestriction.String()
+	}
+	// LegacyStatus's zero value (Functioning) is the documented default;
+	// emit only when non-zero so the migrated YAML stays minimal.
+	if a.LegacyStatus != data.Functioning {
+		out["legacy_status"] = a.LegacyStatus.String()
+	}
+	if len(a.Attributes) > 0 {
+		out["attributes"] = projectAttributeMap(a.Attributes)
+	}
+	if len(a.Children) > 0 {
+		out["children"] = projectAttributeMap(a.Children)
+	}
+	return out
 }
 
 // migrateMultiParents converts the legacy multi_parents block into the
@@ -504,6 +779,9 @@ func hasMigratedData(c data.ClassDefinition) bool {
 		return true
 	}
 	if c.SupportedVersions != "" {
+		return true
+	}
+	if c.MigrationSource != data.UndefinedMigrationSource || len(c.StateUpgrades) > 0 {
 		return true
 	}
 	if len(c.RelationInfo.ToClasses) > 0 || c.RelationInfo.FromClass != "" || c.RelationInfo.Disabled || c.RelationInfo.Type != data.UndefinedRelationshipType {
@@ -591,6 +869,16 @@ func marshalView(c data.ClassDefinition) map[string]any {
 	}
 	if len(rel) > 0 {
 		out["relation_info"] = rel
+	}
+	if c.MigrationSource != data.UndefinedMigrationSource {
+		out["migration_source"] = c.MigrationSource.String()
+	}
+	if len(c.StateUpgrades) > 0 {
+		entries := make([]map[string]any, len(c.StateUpgrades))
+		for i, su := range c.StateUpgrades {
+			entries[i] = projectStateUpgrade(su)
+		}
+		out["state_upgrades"] = entries
 	}
 	if len(c.ParentDnVariants) > 0 {
 		variants := make([]map[string]any, len(c.ParentDnVariants))
