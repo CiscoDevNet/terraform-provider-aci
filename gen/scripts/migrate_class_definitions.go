@@ -2,39 +2,54 @@
 // +build ignore
 
 /*
-This script migrates class definition YAML files from the old per-class format (gen/scripts/legacy_definitions/classes/)
-to the new combined format (gen/definitions/). It will be extended over time as more fields are added
-and may become its own issue when the full migration is required. For now, it is used for testing
-during development only and is not intended as a final migration script.
+Migration script for class definition YAML files. Reads the per-class legacy
+inputs under gen/scripts/legacy_definitions/classes/ and emits canonical
+ClassDefinition YAML under gen/definitions/, rebased on the canonical
+gen/utils/data structs so the loader contract is enforced at migration time.
 
-## Usage
+Disposition table is the v2.19.0 coverage audit in MIGRATION_OVERVIEW.md
+(sections 1-8 + the section-10 closing-gaps list). The knownLegacyKeys map
+mirrors that audit one-for-one; anything found in the legacy YAML that is
+not in the map surfaces as an L1 unknown-key warning so drift cannot slip
+past a fresh import.
 
-GENERATE NEW FORMAT DEFINTIONS: go run gen/scripts/migrate_class_definitions.go
-REMOVE NEW FORMAT DEFINTIONS:   go run gen/scripts/migrate_class_definitions.go clean
+Phase 1 (this commit) translates the keys the prior script already handled:
+  - allow_delete       (value remap "false" -> "never")
+  - exclude_children   (passthrough)
+  - include_children   (passthrough)
+  - sub_category       (moves under documentation)
+  - ui_locations       (moves under documentation)
 
-### Old (gen/scripts/legacy_definitions/classes/fvTenant.yaml):
+Every other known key is tallied as TODO so the per-run summary shows
+remaining coverage. Subsequent commits flesh out each section.
 
-```
-allow_delete: false
-exclude_children:
-  - cloudCertStore
-sub_category: Application Management
-ui_locations:
-  - Tenants
-```
+The four verification levels:
 
-### New (gen/definitions/fvTenant.yaml):
+  L1 - Allowlist. Every top-level legacy key is enumerated in knownLegacyKeys.
+       Unknown keys produce a warning so the moment a new legacy key sneaks
+       in we hear about it.
 
-```
-allow_delete: never
-documentation:
-  sub_category: Application Management
-  ui_locations:
-	- Tenants
+  L2 - Disposition tally. Per-key counters track how many files use each key
+       and what disposition was applied; printed in the run summary. Newly
+       added keys (or coverage regressions) jump out.
 
-exclude_children:
-  - cloudCertStore
-```
+  L3 - UnmarshalStrict round-trip. After projecting the migrated struct into
+       its yaml view, the script re-loads it via yaml.UnmarshalStrict against
+       data.ClassDefinition. Any output the canonical loader would reject
+       becomes a per-file failure at migration time, not on the next
+       go-generate run.
+
+  L4 - Derivation assertion hooks. Stub call sites where subsequent commits
+       cross-check legacy values against the resolver's auto-derivation
+       rules (e.g. confirm datasource_required is reproduced by the
+       IdentifiedBy + value-transform pipeline). Empty for the scaffold.
+
+USAGE
+
+  go run gen/scripts/migrate_class_definitions.go        emit canonical YAML
+  go run gen/scripts/migrate_class_definitions.go clean  remove all .yaml
+                                                          under gen/definitions
+                                                          except global.yaml
 */
 
 package main
@@ -43,57 +58,357 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils/data"
 	"gopkg.in/yaml.v2"
 )
 
-// Input struct matching the current top-level YAML keys in classes/ files.
-type OldClassDefinition struct {
-	AllowDelete     string   `yaml:"allow_delete"`
-	ExcludeChildren []string `yaml:"exclude_children"`
-	IncludeChildren []string `yaml:"include_children"`
-	SubCategory     string   `yaml:"sub_category"`
-	UiLocations     []string `yaml:"ui_locations"`
+// sectionEnum names the MIGRATION_OVERVIEW.md disposition section a legacy
+// key belongs to.
+type sectionEnum int
+
+const (
+	sectionUnknown sectionEnum = iota
+	sectionDirect              // S1 direct mapping (copy verbatim, same/sibling key)
+	sectionSemantic            // S2 semantic mapping (shape-changing transform)
+	sectionObsolete            // S3 already migrated or removed (drop with log)
+	sectionAdd                 // S4 ADD - new field, often with rename/value remap
+	sectionReuse               // S5 REUSE - remap onto an existing canonical field
+	sectionDerive              // S6 DERIVE - drop, computed in Go from meta
+	sectionConst               // S7 CONST - drop, relocated to constants.go
+	sectionPostpone            // S8 POSTPONE - preserve unchanged with TODO marker
+)
+
+func (s sectionEnum) String() string {
+	switch s {
+	case sectionDirect:
+		return "S1 direct"
+	case sectionSemantic:
+		return "S2 semantic"
+	case sectionObsolete:
+		return "S3 obsolete"
+	case sectionAdd:
+		return "S4 ADD"
+	case sectionReuse:
+		return "S5 REUSE"
+	case sectionDerive:
+		return "S6 DERIVE"
+	case sectionConst:
+		return "S7 CONST"
+	case sectionPostpone:
+		return "S8 POSTPONE"
+	default:
+		return "UNKNOWN"
+	}
 }
 
-// Output struct matching the new ClassDefinition format.
-type NewClassDefinition struct {
-	AllowDelete     string             `yaml:"allow_delete,omitempty"`
-	Documentation   DocumentationBlock `yaml:"documentation,omitempty"`
-	ExcludeChildren []string           `yaml:"exclude_children,omitempty"`
-	IncludeChildren []string           `yaml:"include_children,omitempty"`
+// keyInfo records the disposition of a single legacy top-level key and
+// whether the current script implements the translation. A nil entry (key
+// not in knownLegacyKeys) is reported as L1 unknown.
+type keyInfo struct {
+	section     sectionEnum
+	implemented bool
 }
 
-type DocumentationBlock struct {
-	SubCategory string   `yaml:"sub_category,omitempty"`
-	UiLocations []string `yaml:"ui_locations,omitempty"`
+// knownLegacyKeys is the exhaustive allowlist of every top-level YAML key
+// the migration script expects to encounter under
+// gen/scripts/legacy_definitions/classes/*.yaml. Source of truth:
+// MIGRATION_OVERVIEW.md section 10 v2.19.0 coverage audit + section 10.2
+// closing-gaps list. Keep this aligned with that audit; when a freshly
+// imported legacy file carries a new key, decide its disposition
+// (sections 1-8) before adding it here.
+var knownLegacyKeys = map[string]keyInfo{
+	// S1 direct mapping (class-level)
+	"allow_delete":      {sectionSemantic, true}, // value remap "false" -> "never"
+	"rn_prepend":        {sectionDirect, false},
+	"required_as_child": {sectionDirect, false},
+	"resource_name":     {sectionDirect, false},
+	"dn_formats":        {sectionDirect, false}, // moves under documentation
+	"exclude_children":  {sectionDirect, true},
+	"include_children":  {sectionDirect, true},
+	// S1 direct mapping under documentation block
+	"sub_category": {sectionDirect, true},
+	"ui_locations": {sectionDirect, true},
+
+	// S2 semantic mapping (class-level)
+	"children":             {sectionSemantic, false}, // -> include_children (subtract meta containedBy first)
+	"contained_by":         {sectionSemantic, false}, // -> include_parents (subtract meta containedBy first)
+	"class_version":        {sectionSemantic, false}, // -> supported_versions
+	"relationship_classes": {sectionSemantic, false}, // -> relation_info.to_classes
+	"migration_blocks":     {sectionSemantic, false}, // -> state_upgrades (two-source merge)
+	"migration_version":    {sectionSemantic, false}, // -> state_upgrades (drives migration_source)
+	"type_changes":         {sectionSemantic, false}, // -> state_upgrades.attributes
+	"resource_notes":       {sectionSemantic, false}, // -> documentation.resource.notes
+
+	// S3 obsolete (drop with one-line log)
+	"multi_relationship_class": {sectionObsolete, false},
+
+	// S4 ADD - schema additions
+	"include":                            {sectionAdd, false}, // -> artifacts ([] when include: false)
+	"multi_parents":                      {sectionAdd, false}, // -> parent_dn_variants
+	"example_classes":                    {sectionAdd, false}, // -> documentation.example_parent_classes
+	"exclude_from_testing":               {sectionAdd, false}, // -> test_config.ignore_tests: [child]
+	"ignore_import_state_verify_in_test": {sectionAdd, false}, // -> test_config.ignore_import_state_verify
+
+	// S5 REUSE
+	"max_one_class_allowed": {sectionReuse, false}, // -> is_single_nested_when_defined_as_child
+	"parent_example_dn":     {sectionReuse, false}, // dropped (covered by static dependency)
+	"remove_from_contains":  {sectionReuse, false}, // -> exclude_children (now covers docs side too)
+
+	// S6 DERIVE (drop, computed in Go from meta)
+	"resource_identifier":                {sectionDerive, false},
+	"data_source_has_no_name_identifier": {sectionDerive, false},
+	"static_parent":                      {sectionDerive, false},
+	"contained_by_excludes":              {sectionDerive, false}, // S10.2 - classes/global.yaml
+
+	// S7 CONST (drop, relocated to constants.go)
+	"docs_examples_amount":  {sectionConst, false}, // classes/global.yaml
+	"docs_parent_dn_amount": {sectionConst, false}, // classes/global.yaml
+
+	// S8 POSTPONE
+	"class_version_tests": {sectionPostpone, false},
+}
+
+// keyTally accumulates per-key and per-section counts across the migration
+// run for the L2 summary.
+type keyTally struct {
+	keyCounts       map[string]int
+	sectionCounts   map[sectionEnum]int
+	unknownKeyFiles map[string][]string
+	implementedSeen map[string]bool
+}
+
+func newKeyTally() *keyTally {
+	return &keyTally{
+		keyCounts:       map[string]int{},
+		sectionCounts:   map[sectionEnum]int{},
+		unknownKeyFiles: map[string][]string{},
+		implementedSeen: map[string]bool{},
+	}
+}
+
+// record increments the per-key counter and tracks unknown keys (L1) plus
+// per-section totals (L2). Returns the disposition so the caller can decide
+// whether to act on it.
+func (t *keyTally) record(file, key string) keyInfo {
+	t.keyCounts[key]++
+	info, ok := knownLegacyKeys[key]
+	if !ok {
+		t.sectionCounts[sectionUnknown]++
+		t.unknownKeyFiles[key] = append(t.unknownKeyFiles[key], file)
+		return keyInfo{section: sectionUnknown}
+	}
+	t.sectionCounts[info.section]++
+	if info.implemented {
+		t.implementedSeen[key] = true
+	}
+	return info
+}
+
+func (t *keyTally) print() {
+	fmt.Println()
+	fmt.Println("=== L2 disposition tally ===")
+	var keys []string
+	for k := range t.keyCounts {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	for _, k := range keys {
+		info, ok := knownLegacyKeys[k]
+		marker := "TODO"
+		switch {
+		case !ok:
+			marker = "!! UNKNOWN"
+		case info.implemented:
+			marker = "done"
+		}
+		section := info.section.String()
+		if !ok {
+			section = sectionUnknown.String()
+		}
+		fmt.Printf("  %4d  %-40s  %-14s  %s\n", t.keyCounts[k], k, section, marker)
+	}
+
+	fmt.Println()
+	fmt.Println("=== L2 per-section totals ===")
+	sections := []sectionEnum{
+		sectionDirect, sectionSemantic, sectionObsolete, sectionAdd,
+		sectionReuse, sectionDerive, sectionConst, sectionPostpone,
+		sectionUnknown,
+	}
+	for _, s := range sections {
+		if c := t.sectionCounts[s]; c > 0 {
+			fmt.Printf("  %5d  %s\n", c, s)
+		}
+	}
+
+	if len(t.unknownKeyFiles) > 0 {
+		fmt.Println()
+		fmt.Println("=== L1 unknown keys (NOT in knownLegacyKeys) ===")
+		var ukeys []string
+		for k := range t.unknownKeyFiles {
+			ukeys = append(ukeys, k)
+		}
+		sort.Strings(ukeys)
+		for _, k := range ukeys {
+			files := t.unknownKeyFiles[k]
+			fmt.Printf("  %s (%d files): %s\n", k, len(files), strings.Join(files, ", "))
+		}
+	}
+}
+
+// assertDerivable is an L4 hook reserved for cross-checks between a legacy
+// value and the canonical resolver's auto-derivation rules. Subsequent
+// commits (S6 DERIVE) wire up specific assertions here (for example,
+// confirm datasource_required matches the IdentifiedBy + value-transform
+// prediction). Empty for the scaffold so the call sites already exist when
+// the assertions land.
+func assertDerivable(file, key string, legacyValue any) {
+	_ = file
+	_ = key
+	_ = legacyValue
+}
+
+// migrate translates one legacy YAML payload (parsed as map[string]any)
+// into the canonical data.ClassDefinition. The translation is intentionally
+// narrow for Phase 1: only the keys flagged implemented in knownLegacyKeys
+// are written into the canonical struct. Every other known key is tallied
+// as TODO so the coverage gap is visible at every run; unknown keys raise
+// an L1 warning via the tally.
+func migrate(file string, legacy map[string]any, tally *keyTally) data.ClassDefinition {
+	var out data.ClassDefinition
+	for key, val := range legacy {
+		info := tally.record(file, key)
+		if info.section == sectionDerive {
+			assertDerivable(file, key, val)
+		}
+		if !info.implemented {
+			continue
+		}
+		switch key {
+		case "allow_delete":
+			// Legacy `allow_delete: false` (yaml-parsed as Go bool) is the
+			// only value that has a real translation - canonical "never".
+			// Legacy `allow_delete: true` is the loader default and is
+			// dropped during migration (see setAllowDelete in class.go).
+			// Any unexpected string is passed through so a strict round-trip
+			// surfaces it.
+			switch v := val.(type) {
+			case bool:
+				if !v {
+					out.AllowDelete = "never"
+				}
+			case string:
+				if v == "false" {
+					out.AllowDelete = "never"
+				} else if v != "true" {
+					out.AllowDelete = v
+				}
+			}
+		case "exclude_children":
+			out.ExcludeChildren = toStringSlice(val)
+		case "include_children":
+			out.IncludeChildren = toStringSlice(val)
+		case "sub_category":
+			out.Documentation.SubCategory, _ = val.(string)
+		case "ui_locations":
+			out.Documentation.UiLocations = toStringSlice(val)
+		}
+	}
+	return out
+}
+
+// toStringSlice converts a yaml.v2-decoded []any of strings into []string.
+// Non-string elements are dropped silently; per-element type errors would
+// already have surfaced when yaml.Unmarshal returned the parent map.
+func toStringSlice(v any) []string {
+	raw, ok := v.([]any)
+	if !ok {
+		return nil
+	}
+	out := make([]string, 0, len(raw))
+	for _, item := range raw {
+		if s, ok := item.(string); ok {
+			out = append(out, s)
+		}
+	}
+	return out
+}
+
+// hasMigratedData returns true when at least one Phase-1 field has been
+// populated. Phase-1-empty inputs (the 60+ legacy files whose only keys
+// are TODO dispositions) are skipped to avoid emitting noisy empty .yaml
+// files at the migration target.
+func hasMigratedData(c data.ClassDefinition) bool {
+	if c.AllowDelete != "" {
+		return true
+	}
+	if len(c.ExcludeChildren) > 0 || len(c.IncludeChildren) > 0 {
+		return true
+	}
+	if c.Documentation.SubCategory != "" || len(c.Documentation.UiLocations) > 0 {
+		return true
+	}
+	return false
+}
+
+// marshalView projects a populated data.ClassDefinition into a yaml.v2 map
+// that omits empty fields. The canonical struct intentionally omits
+// `omitempty` (loader-side semantics), so a direct yaml.Marshal would emit
+// noisy `allow_delete: ""` / `documentation: {}` entries on every file.
+// Hand-projecting keeps the migrated YAML clean and focuses the L3
+// round-trip on real content.
+//
+// Phase 1 covers the keys handled by migrate(); subsequent commits extend
+// this projection alongside their new translations.
+func marshalView(c data.ClassDefinition) map[string]any {
+	out := map[string]any{}
+	if c.AllowDelete != "" {
+		out["allow_delete"] = c.AllowDelete
+	}
+	if len(c.ExcludeChildren) > 0 {
+		out["exclude_children"] = c.ExcludeChildren
+	}
+	if len(c.IncludeChildren) > 0 {
+		out["include_children"] = c.IncludeChildren
+	}
+	doc := map[string]any{}
+	if c.Documentation.SubCategory != "" {
+		doc["sub_category"] = c.Documentation.SubCategory
+	}
+	if len(c.Documentation.UiLocations) > 0 {
+		doc["ui_locations"] = c.Documentation.UiLocations
+	}
+	if len(doc) > 0 {
+		out["documentation"] = doc
+	}
+	return out
+}
+
+// roundTripStrict marshals view, then re-reads the bytes via
+// yaml.UnmarshalStrict against data.ClassDefinition (L3). A failure here
+// means the migration would emit YAML the canonical loader rejects, which
+// must surface at migration time so it never produces unreadable output.
+func roundTripStrict(view map[string]any) ([]byte, error) {
+	out, err := yaml.Marshal(view)
+	if err != nil {
+		return nil, fmt.Errorf("marshal: %w", err)
+	}
+	var probe data.ClassDefinition
+	if err := yaml.UnmarshalStrict(out, &probe); err != nil {
+		return nil, fmt.Errorf("loader round-trip rejected output: %w", err)
+	}
+	return out, nil
 }
 
 func main() {
 	classesDir := "gen/scripts/legacy_definitions/classes"
 	outputDir := "gen/definitions"
 
-	// If "clean" argument is passed, remove all .yaml files except global.yaml from the definitions folder.
 	if len(os.Args) > 1 && os.Args[1] == "clean" {
-		cleanFiles, err := filepath.Glob(filepath.Join(outputDir, "*.yaml"))
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error reading definitions dir: %v\n", err)
-			os.Exit(1)
-		}
-		removed := 0
-		for _, f := range cleanFiles {
-			if filepath.Base(f) == "global.yaml" {
-				continue
-			}
-			if err := os.Remove(f); err != nil {
-				fmt.Fprintf(os.Stderr, "Error removing %s: %v\n", f, err)
-				continue
-			}
-			fmt.Printf("Removed: %s\n", f)
-			removed++
-		}
-		fmt.Printf("\nDone: %d files removed\n", removed)
+		runClean(outputDir)
 		return
 	}
 
@@ -103,55 +418,53 @@ func main() {
 		os.Exit(1)
 	}
 
-	migrated := 0
-	skipped := 0
+	tally := newKeyTally()
+	migrated, skipped, failed := 0, 0, 0
 
 	for _, file := range files {
-		data, err := os.ReadFile(file)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error reading %s: %v\n", file, err)
-			continue
-		}
-
-		var old OldClassDefinition
-		if err := yaml.Unmarshal(data, &old); err != nil {
-			fmt.Fprintf(os.Stderr, "Error parsing %s: %v\n", file, err)
-			continue
-		}
-
-		// Skip files that have no fields to migrate.
-		if old.AllowDelete == "" && old.SubCategory == "" && len(old.UiLocations) == 0 && len(old.ExcludeChildren) == 0 && len(old.IncludeChildren) == 0 {
+		// classes/global.yaml is the legacy carrier for what is now
+		// GlobalMetaDefinition (definitions/global.yaml). It must not be
+		// translated to a ClassDefinition - skip it but still tally its
+		// keys so the per-key coverage stays honest.
+		if filepath.Base(file) == "global.yaml" {
+			tallyOnly(file, tally)
 			skipped++
 			continue
 		}
 
-		// Map allow_delete: false to "never" to match the expected string format.
-		allowDelete := old.AllowDelete
-		if allowDelete == "false" {
-			allowDelete = "never"
-		}
-
-		newDef := NewClassDefinition{
-			AllowDelete:     allowDelete,
-			ExcludeChildren: old.ExcludeChildren,
-			IncludeChildren: old.IncludeChildren,
-			Documentation: DocumentationBlock{
-				SubCategory: old.SubCategory,
-				UiLocations: old.UiLocations,
-			},
-		}
-
-		out, err := yaml.Marshal(newDef)
+		payload, err := os.ReadFile(file)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error marshalling %s: %v\n", file, err)
+			fmt.Fprintf(os.Stderr, "Error reading %s: %v\n", file, err)
+			failed++
+			continue
+		}
+
+		var legacy map[string]any
+		if err := yaml.Unmarshal(payload, &legacy); err != nil {
+			fmt.Fprintf(os.Stderr, "Error parsing %s: %v\n", file, err)
+			failed++
+			continue
+		}
+
+		canonical := migrate(file, legacy, tally)
+		if !hasMigratedData(canonical) {
+			skipped++
+			continue
+		}
+
+		view := marshalView(canonical)
+		out, err := roundTripStrict(view)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error round-tripping %s: %v\n", file, err)
+			failed++
 			continue
 		}
 
 		className := strings.TrimSuffix(filepath.Base(file), ".yaml")
 		outputPath := filepath.Join(outputDir, className+".yaml")
-
 		if err := os.WriteFile(outputPath, out, 0644); err != nil {
 			fmt.Fprintf(os.Stderr, "Error writing %s: %v\n", outputPath, err)
+			failed++
 			continue
 		}
 
@@ -159,5 +472,49 @@ func main() {
 		migrated++
 	}
 
-	fmt.Printf("\nDone: %d migrated, %d skipped (no documentation fields)\n", migrated, skipped)
+	fmt.Printf("\nDone: %d migrated, %d skipped (no Phase-1 fields), %d failed\n",
+		migrated, skipped, failed)
+	tally.print()
+
+	if failed > 0 {
+		os.Exit(1)
+	}
+}
+
+// tallyOnly records the keys of a file we intentionally do not write
+// (e.g. classes/global.yaml). Lets the L2 summary stay complete even
+// for skipped inputs.
+func tallyOnly(file string, tally *keyTally) {
+	payload, err := os.ReadFile(file)
+	if err != nil {
+		return
+	}
+	var legacy map[string]any
+	if err := yaml.Unmarshal(payload, &legacy); err != nil {
+		return
+	}
+	for key := range legacy {
+		tally.record(file, key)
+	}
+}
+
+func runClean(outputDir string) {
+	cleanFiles, err := filepath.Glob(filepath.Join(outputDir, "*.yaml"))
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error reading definitions dir: %v\n", err)
+		os.Exit(1)
+	}
+	removed := 0
+	for _, f := range cleanFiles {
+		if filepath.Base(f) == "global.yaml" {
+			continue
+		}
+		if err := os.Remove(f); err != nil {
+			fmt.Fprintf(os.Stderr, "Error removing %s: %v\n", f, err)
+			continue
+		}
+		fmt.Printf("Removed: %s\n", f)
+		removed++
+	}
+	fmt.Printf("\nDone: %d files removed\n", removed)
 }
