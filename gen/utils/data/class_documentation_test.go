@@ -976,6 +976,137 @@ func TestSetDnFormats(t *testing.T) {
 	}
 }
 
+type setExampleParentClassesInput struct {
+	Override         []string
+	MetaContainedBy  map[string]any
+	NoMetaFileContent bool
+}
+
+type setExampleParentClassesExpected struct {
+	Error    bool
+	ErrorMsg string
+	Full     []string
+}
+
+func TestSetExampleParentClasses(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	testCases := []test.TestCase{
+		{
+			// No override and no meta containedBy — top-level classes legitimately
+			// have nothing to render here.
+			Name: "test_no_override_no_meta_returns_empty",
+			Input: setExampleParentClassesInput{
+				NoMetaFileContent: true,
+			},
+			Expected: setExampleParentClassesExpected{Full: nil},
+		},
+		{
+			Name: "test_meta_fallback_single_parent",
+			Input: setExampleParentClassesInput{
+				MetaContainedBy: map[string]any{"fv:Tenant": ""},
+			},
+			Expected: setExampleParentClassesExpected{Full: []string{"fvTenant"}},
+		},
+		{
+			// containedBy keys arrive in random map order — verify the resolver
+			// sorts before capping so output is deterministic across regenerations.
+			Name: "test_meta_fallback_sorted_and_capped_at_two",
+			Input: setExampleParentClassesInput{
+				MetaContainedBy: map[string]any{
+					"fv:ESg":      "",
+					"fv:AEPg":     "",
+					"l3ext:InstP": "",
+					"l2ext:InstP": "",
+					"mgmt:InstP":  "",
+				},
+			},
+			Expected: setExampleParentClassesExpected{Full: []string{"fvAEPg", "fvESg"}},
+		},
+		{
+			// Override replaces the meta fallback completely.
+			Name: "test_override_replaces_meta_fallback",
+			Input: setExampleParentClassesInput{
+				Override:        []string{"fvAEPg", "fvESg"},
+				MetaContainedBy: map[string]any{"l3ext:InstP": "", "mgmt:InstP": ""},
+			},
+			Expected: setExampleParentClassesExpected{Full: []string{"fvAEPg", "fvESg"}},
+		},
+		{
+			// Override entries past constMaxExamplesToDisplay are dropped; YAML
+			// order is preserved (no implicit sort on overrides).
+			Name: "test_override_capped_at_two_preserves_yaml_order",
+			Input: setExampleParentClassesInput{
+				Override: []string{"fvESg", "fvAEPg", "l3extInstP"},
+			},
+			Expected: setExampleParentClassesExpected{Full: []string{"fvESg", "fvAEPg"}},
+		},
+		{
+			Name: "test_override_invalid_classname_errors",
+			Input: setExampleParentClassesInput{
+				Override: []string{"BadClassName"},
+			},
+			Expected: setExampleParentClassesExpected{
+				Error:    true,
+				ErrorMsg: "failed to parse example_parent_classes entry 'BadClassName'",
+			},
+		},
+		{
+			Name: "test_meta_invalid_key_errors",
+			Input: setExampleParentClassesInput{
+				MetaContainedBy: map[string]any{"badkey": ""},
+			},
+			Expected: setExampleParentClassesExpected{
+				Error:    true,
+				ErrorMsg: "failed to parse meta containedBy entry 'badkey'",
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.(setExampleParentClassesInput)
+			expected := testCase.Expected.(setExampleParentClassesExpected)
+
+			class := Class{
+				Name: testClassName("fvRsCons"),
+				ClassDefinition: ClassDefinition{
+					Documentation: ClassDocumentationDefinition{ExampleParentClasses: input.Override},
+				},
+			}
+			if !input.NoMetaFileContent {
+				class.MetaFileContent = map[string]any{}
+				if input.MetaContainedBy != nil {
+					class.MetaFileContent["containedBy"] = input.MetaContainedBy
+				}
+			}
+
+			err := class.Documentation.setExampleParentClasses(&class)
+
+			if expected.Error {
+				assert.Error(t, err)
+				if expected.ErrorMsg != "" {
+					assert.ErrorContains(t, err, expected.ErrorMsg)
+				}
+				return
+			}
+
+			assert.NoError(t, err, test.MessageUnexpectedError(err))
+			actualFull := make([]string, 0, len(class.Documentation.ExampleParentClasses))
+			for _, cn := range class.Documentation.ExampleParentClasses {
+				actualFull = append(actualFull, cn.String())
+			}
+			if expected.Full == nil {
+				assert.Empty(t, actualFull, test.MessageEqual(expected.Full, actualFull, testCase.Name))
+			} else {
+				assert.Equal(t, expected.Full, actualFull, test.MessageEqual(expected.Full, actualFull, testCase.Name))
+			}
+		})
+	}
+}
+
 func TestSetMigrationWarning(t *testing.T) {
 	t.Parallel()
 	test.InitializeTest(t)

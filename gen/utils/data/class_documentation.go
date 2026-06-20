@@ -70,6 +70,13 @@ type ClassDocumentation struct {
 	DescriptionWhenDefinedAsChild string
 	// DN format strings from meta file (e.g., "uni/tn-{name}").
 	DnFormats []string
+	// Representative parent classes used to render the documentation examples
+	// (resource_example.tf, datasource_example.tf, resource.md import block, etc.).
+	// Resolved as ClassDocumentationDefinition.ExampleParentClasses when set; otherwise
+	// projected from meta containedBy keys sorted alphabetically. Capped at
+	// constMaxExamplesToDisplay so relation/tag classes with large containedBy sets
+	// (e.g., fvRsCons, tagAnnotation) do not produce dozens of example blocks.
+	ExampleParentClasses []*ClassName
 	// Parent DN references rendered in the documentation. Built from class.Parents.
 	// Resources (parent classes that have a Terraform resource) are listed first in
 	// alphabetical order, followed by parent classes without a resource under an
@@ -114,6 +121,10 @@ func (c *Class) setDocumentation(ds *DataStore) error {
 	c.Documentation.setDescriptionWhenDefinedAsChild(c, ds)
 
 	c.Documentation.setDnFormats(c)
+
+	if err := c.Documentation.setExampleParentClasses(c); err != nil {
+		return err
+	}
 
 	c.Documentation.setParentDns(c, ds)
 
@@ -340,6 +351,55 @@ func (d *ClassDocumentation) setDnFormats(class *Class) {
 	}
 
 	genLogger.Debugf("Successfully set Documentation DnFormats for class '%s'. DnFormats: %v", class.Name.full, d.DnFormats)
+}
+
+func (d *ClassDocumentation) setExampleParentClasses(class *Class) error {
+	genLogger.Debugf("Setting Documentation ExampleParentClasses for class '%s'.", class.Name.full)
+
+	overrides := class.ClassDefinition.Documentation.ExampleParentClasses
+	if len(overrides) > 0 {
+		resolved := make([]*ClassName, 0, len(overrides))
+		for _, raw := range overrides {
+			parsed, err := NewClassName(raw)
+			if err != nil {
+				return fmt.Errorf("class '%s': failed to parse example_parent_classes entry '%s': %w", class.Name.full, raw, err)
+			}
+			resolved = append(resolved, parsed)
+		}
+		if len(resolved) > constMaxExamplesToDisplay {
+			resolved = resolved[:constMaxExamplesToDisplay]
+		}
+		d.ExampleParentClasses = resolved
+		genLogger.Debugf("Successfully set Documentation ExampleParentClasses (override) for class '%s'. Count: %d", class.Name.full, len(d.ExampleParentClasses))
+		return nil
+	}
+
+	// Fallback projection: meta containedBy keys sorted alphabetically and capped.
+	containedBy, ok := class.MetaFileContent["containedBy"].(map[string]any)
+	if !ok || len(containedBy) == 0 {
+		genLogger.Debugf("No containedBy available for class '%s'; ExampleParentClasses left empty.", class.Name.full)
+		return nil
+	}
+	keys := make([]string, 0, len(containedBy))
+	for k := range containedBy {
+		keys = append(keys, k)
+	}
+	slices.Sort(keys)
+	resolved := make([]*ClassName, 0, min(len(keys), constMaxExamplesToDisplay))
+	for _, raw := range keys {
+		if len(resolved) >= constMaxExamplesToDisplay {
+			break
+		}
+		parsed, err := NewClassName(raw)
+		if err != nil {
+			return fmt.Errorf("class '%s': failed to parse meta containedBy entry '%s' for example parent classes: %w", class.Name.full, raw, err)
+		}
+		resolved = append(resolved, parsed)
+	}
+	d.ExampleParentClasses = resolved
+
+	genLogger.Debugf("Successfully set Documentation ExampleParentClasses (meta fallback) for class '%s'. Count: %d", class.Name.full, len(d.ExampleParentClasses))
+	return nil
 }
 
 func (d *ClassDocumentation) setMigrationWarning(class *Class) {
