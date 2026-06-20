@@ -94,6 +94,142 @@ func TestSetPropertyDescription(t *testing.T) {
 	}
 }
 
+type applyGlobalPropertyDocumentationOverridesInput struct {
+	GlobalOverrides       map[string]string
+	Properties            map[string]*Property
+	Label                 string
+}
+
+type applyGlobalPropertyDocumentationOverridesExpected struct {
+	Descriptions map[string]string
+}
+
+func TestApplyGlobalPropertyDocumentationOverrides(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	newProperty := func(name, perClassDescription, initialDescription string) *Property {
+		return &Property{
+			PropertyName: name,
+			Documentation: PropertyDocumentation{Description: initialDescription},
+			propertyDefinition: PropertyDefinition{
+				Documentation: ArtifactDocumentationDefinition{Description: perClassDescription},
+			},
+		}
+	}
+
+	testCases := []test.TestCase{
+		{
+			// No global overrides: every existing Description is left intact.
+			Name: "test_no_overrides_noop",
+			Input: applyGlobalPropertyDocumentationOverridesInput{
+				Label: "Application EPG",
+				Properties: map[string]*Property{
+					"name": newProperty("name", "", "Meta-derived description."),
+				},
+			},
+			Expected: applyGlobalPropertyDocumentationOverridesExpected{
+				Descriptions: map[string]string{"name": "Meta-derived description."},
+			},
+		},
+		{
+			// Override with %s gets interpolated against the class Label.
+			Name: "test_template_interpolates_label",
+			Input: applyGlobalPropertyDocumentationOverridesInput{
+				Label: "Application EPG",
+				GlobalOverrides: map[string]string{
+					"annotation": "The annotation of the %s object.",
+				},
+				Properties: map[string]*Property{
+					"annotation": newProperty("annotation", "", "Meta comment for annotation."),
+				},
+			},
+			Expected: applyGlobalPropertyDocumentationOverridesExpected{
+				Descriptions: map[string]string{"annotation": "The annotation of the Application EPG object."},
+			},
+		},
+		{
+			// Override without %s is used verbatim.
+			Name: "test_template_no_placeholder_verbatim",
+			Input: applyGlobalPropertyDocumentationOverridesInput{
+				Label: "Application EPG",
+				GlobalOverrides: map[string]string{
+					"nameAlias": "A name alias for this object.",
+				},
+				Properties: map[string]*Property{
+					"nameAlias": newProperty("nameAlias", "", "Meta-derived alias text."),
+				},
+			},
+			Expected: applyGlobalPropertyDocumentationOverridesExpected{
+				Descriptions: map[string]string{"nameAlias": "A name alias for this object."},
+			},
+		},
+		{
+			// Per-class override wins — the global lookup must NOT replace it.
+			Name: "test_per_class_override_wins",
+			Input: applyGlobalPropertyDocumentationOverridesInput{
+				Label: "Application EPG",
+				GlobalOverrides: map[string]string{
+					"annotation": "Global override for %s.",
+				},
+				Properties: map[string]*Property{
+					"annotation": newProperty("annotation", "Per-class override wins.", "Per-class override wins."),
+				},
+			},
+			Expected: applyGlobalPropertyDocumentationOverridesExpected{
+				Descriptions: map[string]string{"annotation": "Per-class override wins."},
+			},
+		},
+		{
+			// Mixed: one property has a global match, one does not.
+			Name: "test_mixed_match_and_no_match",
+			Input: applyGlobalPropertyDocumentationOverridesInput{
+				Label: "Application EPG",
+				GlobalOverrides: map[string]string{
+					"annotation": "The annotation of the %s object.",
+				},
+				Properties: map[string]*Property{
+					"annotation": newProperty("annotation", "", "Old annotation."),
+					"name":       newProperty("name", "", "Meta name comment."),
+				},
+			},
+			Expected: applyGlobalPropertyDocumentationOverridesExpected{
+				Descriptions: map[string]string{
+					"annotation": "The annotation of the Application EPG object.",
+					"name":       "Meta name comment.",
+				},
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.(applyGlobalPropertyDocumentationOverridesInput)
+			expected := testCase.Expected.(applyGlobalPropertyDocumentationOverridesExpected)
+
+			class := Class{
+				Name:       testClassName("fvAEPg"),
+				Properties: input.Properties,
+			}
+			class.Documentation.Label = input.Label
+
+			ds := &DataStore{
+				GlobalMetaDefinition: GlobalMetaDefinition{
+					PropertyDocumentationOverrides: input.GlobalOverrides,
+				},
+			}
+
+			class.applyGlobalPropertyDocumentationOverrides(ds)
+
+			for name, want := range expected.Descriptions {
+				got := class.Properties[name].Documentation.Description
+				assert.Equal(t, want, got, test.MessageEqual(want, got, testCase.Name+"/"+name))
+			}
+		})
+	}
+}
+
 func TestSetPropertyNotes(t *testing.T) {
 	t.Parallel()
 	test.InitializeTest(t)
