@@ -115,6 +115,27 @@ type Class struct {
 	// Test children resolved from child classes' TestValues with optional manual override.
 	// A slice is used instead of a map to preserve declaration order for deterministic HCL output.
 	TestChildren []*TestChild
+	// Resolved test-bucket suppression settings for the class. Populated by
+	// setTestConfig as a one-line passthrough from ClassDefinition.TestConfig.
+	TestConfig ClassTestConfig
+}
+
+// ClassTestConfig groups the resolved per-class test-render gates that the
+// renderer consults to decide which test artefacts to emit and which test
+// assertions to suppress.
+type ClassTestConfig struct {
+	// IgnoreTests lists the test buckets to skip for this class. `child` is
+	// consumed by the parent's testvars iteration (skips this class's entry in
+	// every parent's testvars.yaml); `resource` skips emission of this class's
+	// own resource_aci_<x>_test.go; `datasource` skips emission of this class's
+	// own data_source_aci_<x>_test.go. Distinct from Class.Artifacts (which
+	// controls runtime resource / datasource emission). nil/empty = no skips.
+	IgnoreTests []IgnoreTestEnum
+	// IgnoreImportStateVerify suppresses just the ImportStateVerify assertion
+	// inside the import smoke test (the import test itself still runs).
+	// Required for classes whose APIC response carries non-roundtrip state
+	// that would fail attribute-equality verification.
+	IgnoreImportStateVerify bool
 }
 
 type Relation struct {
@@ -302,6 +323,8 @@ func (c *Class) setClassData(ds *DataStore) error {
 		return err
 	}
 
+	c.setTestConfig()
+
 	err = c.setSupportedVersions()
 	if err != nil {
 		return err
@@ -484,6 +507,18 @@ func (c *Class) setArtifacts() {
 	}
 
 	genLogger.Debugf("Successfully set Artifacts for class '%s'. Artifacts: %v", c.Name, c.Artifacts)
+}
+
+// setTestConfig is a one-line passthrough that copies the two test-render gates
+// from ClassDefinition.TestConfig onto the resolved Class.TestConfig. Templates
+// read the resolved struct so they never reach into ClassDefinition directly.
+func (c *Class) setTestConfig() {
+	genLogger.Debugf("Setting TestConfig gates for class '%s'.", c.Name)
+
+	c.TestConfig.IgnoreTests = c.ClassDefinition.TestConfig.IgnoreTests
+	c.TestConfig.IgnoreImportStateVerify = c.ClassDefinition.TestConfig.IgnoreImportStateVerify
+
+	genLogger.Debugf("Successfully set TestConfig gates for class '%s'. IgnoreTests: %v, IgnoreImportStateVerify: %t", c.Name, c.TestConfig.IgnoreTests, c.TestConfig.IgnoreImportStateVerify)
 }
 
 func (c *Class) setParents(ds *DataStore) error {
