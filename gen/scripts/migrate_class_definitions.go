@@ -193,9 +193,9 @@ var knownLegacyKeys = map[string]keyInfo{
 	"prop:ignore_properties_in_test": {sectionSemantic, true},
 
 	// S2 semantic (later commits)
-	"prop:test_values": {sectionSemantic, true},  // this commit (C20 - bucket merge)
-	"prop:parents":     {sectionSemantic, false}, // C21 (decision tree + polymorphic)
-	"prop:targets":     {sectionSemantic, false}, // C21 (decision tree + polymorphic)
+	"prop:test_values": {sectionSemantic, true}, // C20 (bucket merge)
+	"prop:parents":     {sectionSemantic, true}, // this commit (C21 - decision tree + polymorphic)
+	"prop:targets":     {sectionSemantic, true}, // this commit (C21 - decision tree + polymorphic)
 
 	// S3 obsolete (later commit)
 	"prop:exclude_targets":             {sectionObsolete, false}, // C22 (verify polymorphic-same-type)
@@ -1044,6 +1044,12 @@ func migrateProperties(file string, legacy map[string]any, tally *keyTally, out 
 
 		case "test_values":
 			migrateTestValues(file, val, invertOverwrites, out)
+
+		case "parents":
+			migrateParents(file, val, out)
+
+		case "targets":
+			migrateTargets(file, val, out)
 		}
 	}
 }
@@ -1202,6 +1208,16 @@ func migrateTestValues(file string, val any, invertOverwrites map[string]string,
 			// no migration of these nested keys today.
 			continue
 
+		case "resource_required", "test_values_for_parent":
+			// DERIVE per section 6 (resource_required is the variant used
+			// when the property is required-vs-optional; test_values_for_
+			// parent is the values used when this class is rendered as a
+			// parent in another class's test). Both are reproducible from
+			// the standard Create/Default buckets plus the property's
+			// Restriction; drop them silently and let the loader/renderer
+			// rebuild them.
+			continue
+
 		default:
 			// child_*, ignore_in_*, and any future nested key. Today
 			// v2.19.0 carries no data here; log so the gap is visible if
@@ -1222,6 +1238,287 @@ func resolveMetaName(snakeKey string, invertOverwrites map[string]string) string
 		return v
 	}
 	return snakeToCamel(snakeKey)
+}
+
+// classifyReference picks a ReferenceTypeEnum for a parent_dn / target_dn
+// value: anything that starts with `aci_` or `data.aci_` is a Terraform
+// reference expression; everything else (uni/..., topology/..., empty) is
+// a static DN literal. The single observed `data.aci_*` usage today is in
+// migrated scenarios that pre-date the renderer; v2.19.0 only emits the
+// `aci_*` resource form.
+func classifyReference(ref string) data.ReferenceTypeEnum {
+	switch {
+	case strings.HasPrefix(ref, "data.aci_"):
+		return data.DataSourceReference
+	case strings.HasPrefix(ref, "aci_"):
+		return data.ResourceReference
+	default:
+		return data.StaticReference
+	}
+}
+
+// stringifyConfigOverrides converts a legacy `properties:` map (yaml.v2's
+// map[any]any of scalar values) to the canonical ConfigOverrides shape
+// map[string]string. Lists collapse to bracketed literals via
+// legacyValueToHCL so the renderer can copy them into HCL verbatim.
+func stringifyConfigOverrides(file, who string, raw any) map[string]string {
+	m, ok := raw.(map[any]any)
+	if !ok {
+		fmt.Printf("WARN: %s: %s properties is not a map: %T\n", file, who, raw)
+		return nil
+	}
+	if len(m) == 0 {
+		return nil
+	}
+	out := make(map[string]string, len(m))
+	for k, v := range m {
+		key, _ := k.(string)
+		if key == "" {
+			continue
+		}
+		out[key] = legacyValueToHCL(v)
+	}
+	return out
+}
+
+// migrateParents translates one legacy `parents:` block into class-level
+// TestDependencyDefinition entries with Role=Parent, plus polymorphic-
+// same-type detection (section 8.6).
+//
+// Sub-key mapping (per MIGRATION_OVERVIEW.md section 2.2 parents row):
+//
+//	class_name             -> ClassName.
+//	parent_dn              -> Reference + ReferenceType (aci_*/data.aci_*
+//	                          vs static DN).
+//	properties             -> ConfigOverrides.
+//	parent_dependency      -> recursive single-level Dependencies[] entry.
+//	parent_dependency_name -> the dep's Reference (rare, 1 file today).
+//	target_classes         -> READ for polymorphic-same-type detection;
+//	                          NOT emitted (the filter now lives on
+//	                          Relation.ToClasses + the polymorphic
+//	                          auto-detector).
+//	class_in_parent        -> dropped (covered by the recursive dependency
+//	                          shape; warn if data ever differs).
+//
+// Auto-resolution filtering (dropping entries already produced by
+// meta containedBy + resolveParentDependencies) is intentionally NOT
+// performed today — the migration script has no meta JSON loader yet.
+// All legacy entries are emitted verbatim with `replace_auto_resolved`
+// left at its default (false), trusting the loader's additive merge to
+// deduplicate. A follow-on commit can prune redundant entries once meta
+// loading lands; see MIGRATION_OVERVIEW section 2.2.
+func migrateParents(file string, val any, out *data.ClassDefinition) {
+	if val == nil {
+		return
+	}
+	list, ok := val.([]any)
+	if !ok {
+		fmt.Printf("WARN: %s: parents is not a list: %T\n", file, val)
+		return
+	}
+	// Track <entry.class_name, entry.target_classes> for polymorphic-same-
+	// type detection at the end. Only fvRsSecInherited matches today.
+	type parentSample struct {
+		ClassName     string
+		TargetClasses []string
+	}
+	samples := make([]parentSample, 0, len(list))
+
+	for _, raw := range list {
+		entry, ok := raw.(map[any]any)
+		if !ok {
+			fmt.Printf("WARN: %s: parents entry is not a map: %T\n", file, raw)
+			continue
+		}
+		className, _ := entry["class_name"].(string)
+		if className == "" {
+			// Legacy quirk: 4 v2.19.0 files specify only parent_dependency
+			// in their parents entry (no class_name), implicitly relying on
+			// the legacy generator's "first parent from containedBy" rule.
+			// The new pipeline's resolveParentDependencies covers the same
+			// behaviour from meta containedBy, so drop the entry silently;
+			// log just to keep the corpus check visible.
+			fmt.Printf("DROP: %s: parents entry without class_name (auto-resolution covers via meta containedBy)\n", file)
+			continue
+		}
+		dep := data.TestDependencyDefinition{
+			ClassName: className,
+			Role:      data.Parent,
+		}
+		if pd, ok := entry["parent_dn"].(string); ok && pd != "" {
+			dep.Reference = pd
+			dep.ReferenceType = classifyReference(pd)
+		}
+		if props, ok := entry["properties"]; ok {
+			dep.ConfigOverrides = stringifyConfigOverrides(file, "parents."+className, props)
+		}
+		if pdep, ok := entry["parent_dependency"].(string); ok && pdep != "" {
+			inner := data.TestDependencyDefinition{ClassName: pdep}
+			if pdepName, ok := entry["parent_dependency_name"].(string); ok && pdepName != "" {
+				inner.Reference = pdepName
+				inner.ReferenceType = classifyReference(pdepName)
+			}
+			dep.Dependencies = []data.TestDependencyDefinition{inner}
+		} else if pdepName, ok := entry["parent_dependency_name"].(string); ok && pdepName != "" {
+			fmt.Printf("WARN: %s: parents.%s has parent_dependency_name without parent_dependency; dropped\n", file, className)
+		}
+		if cip, ok := entry["class_in_parent"]; ok {
+			fmt.Printf("WARN: %s: parents.%s.class_in_parent=%v dropped (covered by recursive dependency shape)\n", file, className, cip)
+		}
+		out.TestConfig.Dependencies = append(out.TestConfig.Dependencies, dep)
+
+		// Collect target_classes for polymorphic detection. The slot is
+		// always a []string when present; missing slot is recorded as nil.
+		sample := parentSample{ClassName: className}
+		if tcRaw, ok := entry["target_classes"]; ok {
+			sample.TargetClasses = asStringSlice(tcRaw)
+		}
+		samples = append(samples, sample)
+	}
+
+	// Polymorphic-same-type detection (section 8.6): when every parents
+	// entry's target_classes list is exactly [class_name] (1:1 match), the
+	// resolved Relation.ToClasses must equal the distinct union of those
+	// class_names so the polymorphic auto-detector at render time can
+	// drive multi-scenario rendering without any further YAML hint. Only
+	// fvRsSecInherited triggers today, expanding ToClasses from
+	// [fvAEPg, fvESg] to [fvAEPg, fvESg, l3extInstP].
+	if len(samples) < 2 {
+		return
+	}
+	allOneToOne := true
+	for _, s := range samples {
+		if len(s.TargetClasses) != 1 || s.TargetClasses[0] != s.ClassName {
+			allOneToOne = false
+			break
+		}
+	}
+	if !allOneToOne {
+		return
+	}
+	seen := map[string]bool{}
+	for _, c := range out.RelationInfo.ToClasses {
+		seen[c] = true
+	}
+	for _, s := range samples {
+		if !seen[s.ClassName] {
+			out.RelationInfo.ToClasses = append(out.RelationInfo.ToClasses, s.ClassName)
+			seen[s.ClassName] = true
+		}
+	}
+}
+
+// migrateTargets translates one legacy `targets:` block into class-level
+// TestDependencyDefinition entries with Role=Target.
+//
+// Sub-key mapping (per MIGRATION_OVERVIEW.md section 2.2 targets row):
+//
+//	class_name              -> ClassName.
+//	target_dn / target_dn_ref -> Reference + ReferenceType. target_dn_ref
+//	                             wins when present (the 1 v2.19.0 file
+//	                             using it is the LookupTestValue dead-code
+//	                             entry, but the ref form is the canonical
+//	                             one). `static: true` forces StaticReference.
+//	properties              -> ConfigOverrides.
+//	parent_dependency       -> recursive single-level Dependencies[] entry.
+//	relation_resource_name  -> dropped (canonical struct derives the HCL
+//	                             resource name from class_name).
+//	overwrite_parent_dn_key -> dropped (canonical schema infers the
+//	                             parent_dn attribute name on the target).
+//	target_dn_overwrite_docs -> dropped (S3 obsolete, doc-only).
+//	shared_classes          -> dropped (no canonical slot; 3 files).
+//	parent_dependency_dn_ref -> dropped (canonical struct derives; 2 files).
+//
+// Same auto-resolution caveat as migrateParents: emits all legacy entries
+// verbatim; pruning the entries that single-target auto-resolution would
+// reproduce is a follow-on commit gated on meta JSON loading.
+func migrateTargets(file string, val any, out *data.ClassDefinition) {
+	if val == nil {
+		return
+	}
+	list, ok := val.([]any)
+	if !ok {
+		fmt.Printf("WARN: %s: targets is not a list: %T\n", file, val)
+		return
+	}
+	for _, raw := range list {
+		entry, ok := raw.(map[any]any)
+		if !ok {
+			fmt.Printf("WARN: %s: targets entry is not a map: %T\n", file, raw)
+			continue
+		}
+		className, _ := entry["class_name"].(string)
+		if className == "" {
+			fmt.Printf("WARN: %s: targets entry missing class_name\n", file)
+			continue
+		}
+		dep := data.TestDependencyDefinition{
+			ClassName: className,
+			Role:      data.Target,
+		}
+		// target_dn_ref wins when present; otherwise fall back to
+		// target_dn. The `static: true` flag forces StaticReference even
+		// for values that look like resource references.
+		if ref, ok := entry["target_dn_ref"].(string); ok && ref != "" {
+			dep.Reference = ref
+			dep.ReferenceType = classifyReference(ref)
+		} else if td, ok := entry["target_dn"].(string); ok && td != "" {
+			dep.Reference = td
+			dep.ReferenceType = classifyReference(td)
+		}
+		if isStatic, ok := entry["static"].(bool); ok && isStatic {
+			dep.ReferenceType = data.StaticReference
+		}
+		if props, ok := entry["properties"]; ok {
+			dep.ConfigOverrides = stringifyConfigOverrides(file, "targets."+className, props)
+		}
+		if pdep, ok := entry["parent_dependency"].(string); ok && pdep != "" {
+			dep.Dependencies = []data.TestDependencyDefinition{{ClassName: pdep}}
+		}
+		// The remaining sub-keys (relation_resource_name,
+		// overwrite_parent_dn_key, target_dn_overwrite_docs,
+		// shared_classes, parent_dependency_dn_ref) intentionally have no
+		// canonical slot — see the function doc for the rationale.
+		out.TestConfig.Dependencies = append(out.TestConfig.Dependencies, dep)
+	}
+}
+
+// projectTestDependency emits a TestDependencyDefinition as a YAML-friendly
+// map, omitting zero-value fields and recursing through Dependencies.
+// Enums are hand-emitted via String() (yaml.v2-no-MarshalText pattern).
+func projectTestDependency(d data.TestDependencyDefinition) map[string]any {
+	m := map[string]any{}
+	if d.ClassName != "" {
+		m["class_name"] = d.ClassName
+	}
+	if d.Reference != "" {
+		m["reference"] = d.Reference
+	}
+	if d.ReferenceType != data.ResourceReference {
+		m["reference_type"] = d.ReferenceType.String()
+	}
+	if d.Role != data.UndefinedRole {
+		m["role"] = d.Role.String()
+	}
+	if len(d.ConfigOverrides) > 0 {
+		m["config_overrides"] = d.ConfigOverrides
+	}
+	if len(d.Dependencies) > 0 {
+		nested := make([]map[string]any, len(d.Dependencies))
+		for i, dd := range d.Dependencies {
+			nested[i] = projectTestDependency(dd)
+		}
+		m["dependencies"] = nested
+	}
+	return m
+}
+
+func projectTestDependencies(deps []data.TestDependencyDefinition) []map[string]any {
+	out := make([]map[string]any, len(deps))
+	for i, d := range deps {
+		out[i] = projectTestDependency(d)
+	}
+	return out
 }
 
 // projectProperty emits a PropertyDefinition as a YAML-friendly map. Hand
@@ -1388,7 +1685,7 @@ func hasMigratedData(c data.ClassDefinition) bool {
 	if c.Artifacts != nil || len(c.ParentDnVariants) > 0 {
 		return true
 	}
-	if len(c.TestConfig.IgnoreTests) > 0 || c.TestConfig.IgnoreImportStateVerify {
+	if len(c.TestConfig.IgnoreTests) > 0 || c.TestConfig.IgnoreImportStateVerify || len(c.TestConfig.Dependencies) > 0 || c.TestConfig.ReplaceAutoResolved {
 		return true
 	}
 	if c.Documentation.SubCategory != "" || len(c.Documentation.UiLocations) > 0 || len(c.Documentation.DnFormats) > 0 || len(c.Documentation.ExampleParentClasses) > 0 {
@@ -1512,6 +1809,12 @@ func marshalView(c data.ClassDefinition) map[string]any {
 	}
 	if c.TestConfig.IgnoreImportStateVerify {
 		testCfg["ignore_import_state_verify"] = c.TestConfig.IgnoreImportStateVerify
+	}
+	if c.TestConfig.ReplaceAutoResolved {
+		testCfg["replace_auto_resolved"] = c.TestConfig.ReplaceAutoResolved
+	}
+	if len(c.TestConfig.Dependencies) > 0 {
+		testCfg["dependencies"] = projectTestDependencies(c.TestConfig.Dependencies)
 	}
 	if len(testCfg) > 0 {
 		out["test_config"] = testCfg
