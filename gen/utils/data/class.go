@@ -13,6 +13,21 @@ import (
 type Class struct {
 	// This is used to prevent the deletion of the class if it is not allowed on APIC.
 	AllowDelete bool
+	// Generated artifact kinds the renderer will emit for this class (resource
+	// and/or datasource). Resolved by setArtifacts from ClassDefinition.Artifacts
+	// with the following semantics:
+	//   - YAML field omitted entirely (nil slice in ClassDefinition): auto-derive
+	//     from IdentifiedBy. Classes with non-empty IdentifiedBy get both
+	//     ResourceArtifact and DatasourceArtifact; classes with empty IdentifiedBy
+	//     get nothing (the legacy provider.go.tmpl default).
+	//   - YAML field present but empty (`artifacts: []`): explicit opt-out;
+	//     Artifacts stays empty and the class is suppressed from both
+	//     provider.Resources() and provider.DataSources().
+	//   - YAML field present and non-empty: override; the listed artifacts are
+	//     the exact set emitted (e.g. `[datasource]` for topSystem).
+	// Iteration order is the YAML declaration order (when overridden) or
+	// [ResourceArtifact, DatasourceArtifact] (when auto-derived).
+	Artifacts []ArtifactEnum
 	// List of all child classes which are included inside the resource.
 	// When looping over maps in golang the order of the returned elements is random, thus list is used for order consistency.
 	Children []*ClassName
@@ -235,6 +250,8 @@ func (c *Class) setClassData(ds *DataStore) error {
 
 	c.setIdentifiedBy()
 
+	c.setArtifacts()
+
 	c.setIsSingleNestedWhenDefinedAsChild()
 
 	err = c.setParents(ds)
@@ -431,6 +448,27 @@ func (c *Class) setIsSingleNestedWhenDefinedAsChild() {
 	c.IsSingleNestedWhenDefinedAsChild = c.ClassDefinition.IsSingleNestedWhenDefinedAsChild || len(c.IdentifiedBy) == 0
 
 	genLogger.Debugf("Successfully set IsSingleNestedWhenDefinedAsChild for class '%s'. IsSingleNestedWhenDefinedAsChild: %t", c.Name, c.IsSingleNestedWhenDefinedAsChild)
+}
+
+// setArtifacts resolves Class.Artifacts from ClassDefinition.Artifacts with the
+// three-way nil/empty/non-empty semantics documented on the field. Must run
+// after setIdentifiedBy because the auto-derive branch reads IdentifiedBy.
+func (c *Class) setArtifacts() {
+	genLogger.Debugf("Setting Artifacts for class '%s'.", c.Name)
+
+	if c.ClassDefinition.Artifacts == nil {
+		// YAML field omitted: auto-derive from IdentifiedBy.
+		if len(c.IdentifiedBy) > 0 {
+			c.Artifacts = []ArtifactEnum{ResourceArtifact, DatasourceArtifact}
+		} else {
+			c.Artifacts = []ArtifactEnum{}
+		}
+	} else {
+		// YAML field present: caller chose (empty = opt-out, non-empty = override).
+		c.Artifacts = c.ClassDefinition.Artifacts
+	}
+
+	genLogger.Debugf("Successfully set Artifacts for class '%s'. Artifacts: %v", c.Name, c.Artifacts)
 }
 
 func (c *Class) setParents(ds *DataStore) error {
