@@ -1,4 +1,3 @@
-include: true
 max_one_class_allowed: true
 resource_name: vrf_fallback_route
 resource_notes:
