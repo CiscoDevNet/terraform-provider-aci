@@ -477,7 +477,11 @@ func (p *Property) setSensitive() {
 }
 
 func (p *Property) setTestValues() {
-	// Determine the test values for the property.
+	// Determine the test values for the property with per-bucket merge:
+	// auto-derive every bucket first, then overlay any explicit YAML buckets.
+	// Default and ForceNew are re-derived from the merged Create so they
+	// stay consistent when only Create is overridden, then the explicit
+	// Default / ForceNew (rare) overlays last.
 	genLogger.Debugf("Setting TestValues for property '%s'.", p.PropertyName)
 
 	// Check if the property should be ignored in tests.
@@ -487,22 +491,50 @@ func (p *Property) setTestValues() {
 		return
 	}
 
-	// If explicit test config is defined, convert it.
-	if p.hasTestConfigDefinition() {
-		p.TestValues = p.convertTestConfigDefinition()
-		genLogger.Debugf("Successfully set TestValues for property '%s' from definition.", p.PropertyName)
-		return
-	}
-
-	// Properties whose TestValues are references derived later by dependency resolution (autoWireParentDn, autoWireTargetDn).
-	// Skip auto-derivation — explicit TestConfig definitions are still honored above.
+	// Reference properties: explicit YAML wins; otherwise dependency
+	// resolution populates TestValues later (autoWireParentDn / autoWireTargetDn).
 	if p.PropertyName == "parentDn" || p.PropertyName == "tDn" {
+		if p.hasTestConfigDefinition() {
+			p.TestValues = p.convertTestConfigDefinition()
+		}
 		genLogger.Debugf("Skipping auto-derivation for reference property '%s'; values will be derived during dependency resolution.", p.PropertyName)
 		return
 	}
 
-	// Auto-derive test values based on property characteristics.
+	// 1. Auto-derive every bucket from meta. May return nil for read-only.
 	p.TestValues = p.generateTestValues()
+
+	// 2. Overlay explicit Create / Update from YAML.
+	explicit := p.convertTestConfigDefinition()
+	if p.TestValues == nil {
+		// Read-only with no explicit overrides stays nil to match the
+		// "no test config" sentinel downstream consumers expect.
+		if len(explicit.Create) == 0 && len(explicit.Update) == 0 &&
+			len(explicit.Default) == 0 && len(explicit.ForceNew) == 0 {
+			genLogger.Debugf("Property '%s' has no auto-derive and no explicit test config; TestValues left nil.", p.PropertyName)
+			return
+		}
+		p.TestValues = &TestValues{}
+	}
+	if len(explicit.Create) > 0 {
+		p.TestValues.Create = explicit.Create
+	}
+	if len(explicit.Update) > 0 {
+		p.TestValues.Update = explicit.Update
+	}
+
+	// 3. Re-derive Default / ForceNew from the MERGED Create so an explicit
+	//    Create override flows through to the dependent buckets.
+	p.TestValues.Default = p.generateDefault(p.TestValues.Create)
+	p.TestValues.ForceNew = p.generateForceNew(p.TestValues.Create)
+
+	// 4. Overlay explicit Default / ForceNew (rare manual overrides).
+	if len(explicit.Default) > 0 {
+		p.TestValues.Default = explicit.Default
+	}
+	if len(explicit.ForceNew) > 0 {
+		p.TestValues.ForceNew = explicit.ForceNew
+	}
 
 	genLogger.Debugf("Successfully set TestValues for property '%s'.", p.PropertyName)
 }
@@ -513,39 +545,6 @@ func (p *Property) hasTestConfigDefinition() bool {
 	genLogger.Tracef("Checking for explicit test config definition for property '%s'.", p.PropertyName)
 	testConfig := p.propertyDefinition.TestConfig
 	return len(testConfig.Create) > 0 || len(testConfig.Update) > 0 || len(testConfig.Default) > 0 || len(testConfig.ForceNew) > 0
-}
-
-// validateStandardBucketsComplete returns an error when test_config supplies
-// some but not all of create / update / default / force_new. Either zero
-// buckets (auto-derive path) or all four (full manual override) are valid;
-// any mix in between silently nils the missing slices and confuses
-// downstream consumers, so reject it at load time. legacy is independent
-// of the standard buckets and is not considered here.
-func (p *Property) validateStandardBucketsComplete() error {
-	testConfig := p.propertyDefinition.TestConfig
-	buckets := map[string]int{
-		"create":    len(testConfig.Create),
-		"update":    len(testConfig.Update),
-		"default":   len(testConfig.Default),
-		"force_new": len(testConfig.ForceNew),
-	}
-	var present, missing []string
-	for name, count := range buckets {
-		if count > 0 {
-			present = append(present, name)
-		} else {
-			missing = append(missing, name)
-		}
-	}
-	if len(present) == 0 || len(missing) == 0 {
-		return nil
-	}
-	slices.Sort(present)
-	slices.Sort(missing)
-	return fmt.Errorf(
-		"property %q test_config supplies %v but omits %v; all four standard buckets (create, update, default, force_new) must be supplied together",
-		p.PropertyName, present, missing,
-	)
 }
 
 func (p *Property) convertTestConfigDefinition() *TestValues {
