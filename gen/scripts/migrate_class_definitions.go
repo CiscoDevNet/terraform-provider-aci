@@ -1190,6 +1190,16 @@ func migrateProperties(file string, legacy map[string]any, tally *keyTally, out 
 			// version string means "applies to all versions" - migrate
 			// every entry with empty version range so the meta-derived
 			// version-scoped semantics carry over unchanged.
+			//
+			// The two `@aci_gen_default_value_overwrite_to_*!` sentinel
+			// values (string/list variants) were docs-only hints in the
+			// legacy resource.md.tmpl: they told the template to render
+			// `Default: ""` (or `Default: []`) instead of the literal
+			// sentinel. The canonical pipeline expresses the same intent
+			// directly via an empty-key default (DefaultValues{"": ""}),
+			// which the loader translates into a `DefaultValue{Value: ""}`
+			// docs entry. Translate the sentinel here so the canonical
+			// YAML never carries the legacy marker forward.
 			dvs, ok := val.(map[any]any)
 			if !ok {
 				fmt.Printf("WARN: %s: default_values is not a map: %T\n", file, val)
@@ -1201,6 +1211,11 @@ func migrateProperties(file string, legacy map[string]any, tally *keyTally, out 
 					continue
 				}
 				defStr := fmt.Sprintf("%v", defVal)
+				switch defStr {
+				case "@aci_gen_default_value_overwrite_to_empty_string!",
+					"@aci_gen_default_value_overwrite_to_empty_list!":
+					defStr = ""
+				}
 				prop := upsertProperty(out, metaName)
 				if prop.DefaultValues == nil {
 					prop.DefaultValues = map[string]string{}
@@ -1853,9 +1868,11 @@ func projectTestEntries(entries []data.TestValueEntryDefinition) []map[string]an
 	out := make([]map[string]any, len(entries))
 	for i, e := range entries {
 		m := map[string]any{}
-		if e.ConfigValue != "" {
-			m["config_value"] = e.ConfigValue
-		}
+		// Always emit config_value (even when empty) so an explicit
+		// legacy `bucket.attr: ""` keeps its empty-string semantics.
+		// Dropping it would silently turn an entry that asserts the
+		// empty-string roundtrip into an empty `{}` map.
+		m["config_value"] = e.ConfigValue
 		if e.ConfigInclude != nil {
 			m["config_include"] = *e.ConfigInclude
 		}
