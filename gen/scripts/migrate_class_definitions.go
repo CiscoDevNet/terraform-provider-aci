@@ -1196,6 +1196,20 @@ func migrateProperties(file string, legacy map[string]any, tally *keyTally, out 
 			// camelCase meta name via snakeToCamel (same rule used for
 			// state_upgrades). The value (new attribute name) lands in
 			// PropertyDefinition.AttributeName verbatim.
+			//
+			// Filter: drop the synthetic `relation_from_<x>_to_<y>` ->
+			// `relation_to_<y>` aliases. v2.19.0 used these to rename the
+			// parent-facing nested attribute that the legacy generator
+			// emitted under the full "relation_from_..._to_..." snake. The
+			// canonical pipeline computes the same name as Class.
+			// ResourceNameNested (`relation_to_<toClass>`, pluralised when
+			// IdentifiedBy is non-empty) from the relation's single target
+			// class, so the legacy rename target equals the auto-derived
+			// nested name. The synthesised property key (relationFromXToY)
+			// is not in any class's meta, so the loader's setProperties
+			// pass skips it - the entry is pure noise in the canonical
+			// YAML and confuses readers who expect every property key to
+			// be a real meta property.
 			ows, ok := val.(map[any]any)
 			if !ok {
 				fmt.Printf("WARN: %s: overwrites is not a map: %T\n", file, val)
@@ -1205,6 +1219,10 @@ func migrateProperties(file string, legacy map[string]any, tally *keyTally, out 
 				oldSnake, _ := snakeKey.(string)
 				newName, _ := newNameVal.(string)
 				if oldSnake == "" || newName == "" {
+					continue
+				}
+				if strings.HasPrefix(oldSnake, "relation_from_") && strings.HasPrefix(newName, "relation_to_") {
+					fmt.Printf("DROP: %s: overwrites[%s]=%s redundant (canonical Class.ResourceNameNested auto-derives the same name)\n", file, oldSnake, newName)
 					continue
 				}
 				metaName := snakeToCamel(oldSnake)
