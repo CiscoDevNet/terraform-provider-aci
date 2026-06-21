@@ -689,19 +689,33 @@ type metaRegistry struct {
 	// test_values.default value diverges from the APIC server default
 	// (lift-skip) or matches/has no meta entry (lift-eligible).
 	ClassMetaDefaults map[string]map[string]string
+	// ClassContainedBy: className -> sorted slice of meta `containedBy`
+	// keys (with the `fv:` -> `fv` separator stripped). Used by
+	// canParentEntryAutoResolve to decide whether a legacy parents-block
+	// entry exactly matches what resolveParentDependencies would auto-
+	// generate from meta and can therefore be dropped during migration.
+	ClassContainedBy map[string][]string
+	// ClassResourceName: className -> resource_name from
+	// legacy_definitions/classes/<class>.yaml. Pre-loaded so the parents
+	// prune can compare a legacy parent_dn / parent_dependency_name
+	// reference against the canonical `aci_<resource_name>.test.id` form
+	// the loader would emit.
+	ClassResourceName map[string]string
 }
 
 // newMetaRegistry pre-loads the three lookup tables. Errors during a single
 // file load (malformed JSON, missing top-level key) are logged and the
 // entry is skipped so the script remains usable when a meta file is being
 // edited.
-func newMetaRegistry(metaDir, globalDefPath, propertiesDir string) (*metaRegistry, error) {
+func newMetaRegistry(metaDir, classesDir, globalDefPath, propertiesDir string) (*metaRegistry, error) {
 	reg := &metaRegistry{
 		ClassMetaProperties:     map[string][]string{},
 		ClassIdentifiedBy:       map[string][]string{},
 		GlobalAttributeInverter: map[string]string{},
 		ClassOverwriteInverters: map[string]map[string]string{},
 		ClassMetaDefaults:       map[string]map[string]string{},
+		ClassContainedBy:        map[string][]string{},
+		ClassResourceName:       map[string]string{},
 	}
 
 	// Meta property names.
@@ -757,6 +771,38 @@ func newMetaRegistry(metaDir, globalDefPath, propertiesDir string) (*metaRegistr
 					}
 				}
 				reg.ClassIdentifiedBy[className] = ids
+			}
+			if cbRaw, ok := bodyMap["containedBy"].(map[string]any); ok {
+				cbs := make([]string, 0, len(cbRaw))
+				for pk := range cbRaw {
+					cbs = append(cbs, strings.Replace(pk, ":", "", 1))
+				}
+				sort.Strings(cbs)
+				reg.ClassContainedBy[className] = cbs
+			}
+		}
+	}
+
+	// resource_name from legacy_definitions/classes/*.yaml so the parents
+	// prune can resolve the canonical `aci_<resource_name>.test.id` form
+	// for arbitrary parent classes.
+	classFiles, err := filepath.Glob(filepath.Join(classesDir, "*.yaml"))
+	if err == nil {
+		for _, cf := range classFiles {
+			base := filepath.Base(cf)
+			if base == "global.yaml" {
+				continue
+			}
+			raw, err := os.ReadFile(cf)
+			if err != nil {
+				continue
+			}
+			var doc map[string]any
+			if err := yaml.Unmarshal(raw, &doc); err != nil {
+				continue
+			}
+			if rn, ok := doc["resource_name"].(string); ok && rn != "" {
+				reg.ClassResourceName[strings.TrimSuffix(base, ".yaml")] = rn
 			}
 		}
 	}
@@ -1511,7 +1557,7 @@ func migrateProperties(file, className string, legacy map[string]any, tally *key
 			migrateTestValues(file, className, val, out)
 
 		case "parents":
-			migrateParents(file, val, out)
+			migrateParents(file, className, val, out)
 
 		case "targets":
 			migrateTargets(file, val, out)
@@ -1808,6 +1854,86 @@ func stringifyConfigOverrides(file, who string, raw any) map[string]string {
 	return out
 }
 
+// canParentEntryAutoResolve returns true when a legacy `parents:` block
+// entry for selfClass exactly matches what the loader's
+// resolveParentDependencies + buildDependency synthesise from meta
+// containedBy. Such an entry can be dropped during migration; the loader
+// reproduces the same TestDependency tree (and adds the second-instance
+// test_2.id slot used for ForceNew tests).
+//
+// All of the following must hold:
+//
+//   - meta containedBy for selfClass has exactly one entry equal to
+//     entry.class_name. A single-entry containedBy is unambiguous; multi-
+//     parent classes keep their entries verbatim.
+//   - entry has no `properties` (would become non-empty ConfigOverrides),
+//     no `target_classes` (polymorphic-detector input), and no
+//     `class_in_parent`.
+//   - entry's `parent_dn`, if present, equals the canonical
+//     `aci_<resourceName>.test.id` form. The bare `<resourceName>.test.id`
+//     form (legacy quirk) is also accepted: the loader will replace it
+//     with the canonical reference, so the prune doubles as a fix-up for
+//     those legacy entries.
+//   - entry's `parent_dependency`, if present, equals the meta
+//     containedBy[0] of entry.class_name (the chain matches the meta
+//     walk), and `parent_dependency_name` (if present) matches the same
+//     canonical / bare reference shape.
+func canParentEntryAutoResolve(selfClass string, entry map[any]any) bool {
+	if metaReg == nil {
+		return false
+	}
+	className, _ := entry["class_name"].(string)
+	if className == "" {
+		return false
+	}
+	cb := metaReg.ClassContainedBy[selfClass]
+	if len(cb) != 1 || cb[0] != className {
+		return false
+	}
+	if props, ok := entry["properties"]; ok && props != nil {
+		if m, ok := props.(map[any]any); ok && len(m) > 0 {
+			return false
+		}
+	}
+	if _, ok := entry["target_classes"]; ok {
+		return false
+	}
+	if _, ok := entry["class_in_parent"]; ok {
+		return false
+	}
+	if pd, ok := entry["parent_dn"].(string); ok && pd != "" && !isCanonicalAutoRef(className, pd) {
+		return false
+	}
+	if pdep, ok := entry["parent_dependency"].(string); ok && pdep != "" {
+		parentCb := metaReg.ClassContainedBy[className]
+		if len(parentCb) != 1 || parentCb[0] != pdep {
+			return false
+		}
+		if pdepName, ok := entry["parent_dependency_name"].(string); ok && pdepName != "" && !isCanonicalAutoRef(pdep, pdepName) {
+			return false
+		}
+	} else if pdepName, ok := entry["parent_dependency_name"].(string); ok && pdepName != "" {
+		// parent_dependency_name without parent_dependency: migrateParents already
+		// drops it with a WARN; the entry itself stays so the test loses nothing.
+		return false
+	}
+	return true
+}
+
+// isCanonicalAutoRef returns true when ref is one of the two forms the
+// loader's resolveParentDependencies would emit (or accept as equivalent)
+// for className: the canonical `aci_<resourceName>.test.id` and the bare
+// `<resourceName>.test.id` legacy variant (which the loader will rewrite).
+// Returns false when the resource_name is unknown so the parent entry stays
+// verbatim.
+func isCanonicalAutoRef(className, ref string) bool {
+	res := metaReg.ClassResourceName[className]
+	if res == "" {
+		return false
+	}
+	return ref == "aci_"+res+".test.id" || ref == res+".test.id"
+}
+
 // migrateParents translates one legacy `parents:` block into class-level
 // TestDependencyDefinition entries with Role=Parent, plus polymorphic-
 // same-type detection (section 8.6).
@@ -1827,14 +1953,14 @@ func stringifyConfigOverrides(file, who string, raw any) map[string]string {
 //	class_in_parent        -> dropped (covered by the recursive dependency
 //	                          shape; warn if data ever differs).
 //
-// Auto-resolution filtering (dropping entries already produced by
-// meta containedBy + resolveParentDependencies) is intentionally NOT
-// performed today — the migration script has no meta JSON loader yet.
-// All legacy entries are emitted verbatim with `replace_auto_resolved`
-// left at its default (false), trusting the loader's additive merge to
-// deduplicate. A follow-on commit can prune redundant entries once meta
-// loading lands; see MIGRATION_OVERVIEW section 2.2.
-func migrateParents(file string, val any, out *data.ClassDefinition) {
+// Auto-resolution filtering: entries whose shape exactly matches what the
+// loader's resolveParentDependencies + buildDependency would synthesise
+// from meta `containedBy` are dropped here (see canParentEntryAutoResolve).
+// Reduces noise in gen/definitions/*.yaml and lets the loader auto-emit
+// the bonus second-instance test_2.id slot used for ForceNew tests.
+// Entries with ConfigOverrides, non-canonical references, polymorphic
+// inputs (target_classes), or off-meta-chain parents are kept verbatim.
+func migrateParents(file, selfClass string, val any, out *data.ClassDefinition) {
 	if val == nil {
 		return
 	}
@@ -1866,6 +1992,10 @@ func migrateParents(file string, val any, out *data.ClassDefinition) {
 			// behaviour from meta containedBy, so drop the entry silently;
 			// log just to keep the corpus check visible.
 			fmt.Printf("DROP: %s: parents entry without class_name (auto-resolution covers via meta containedBy)\n", file)
+			continue
+		}
+		if canParentEntryAutoResolve(selfClass, entry) {
+			fmt.Printf("DROP: %s: parents.%s redundant with meta containedBy auto-resolution\n", file, className)
 			continue
 		}
 		dep := data.TestDependencyDefinition{
@@ -2407,7 +2537,7 @@ func main() {
 		return
 	}
 
-	reg, err := newMetaRegistry(metaDir, globalDefPath, propertiesDir)
+	reg, err := newMetaRegistry(metaDir, classesDir, globalDefPath, propertiesDir)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error building meta registry: %v\n", err)
 		os.Exit(1)
