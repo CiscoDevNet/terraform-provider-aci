@@ -55,12 +55,14 @@ USAGE
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
 	"sort"
 	"strings"
 
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils"
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils/data"
 	"gopkg.in/yaml.v2"
 )
@@ -492,13 +494,9 @@ func contains(haystack []string, needle string) bool {
 }
 
 // snakeToCamel converts "application_profile_dn" -> "applicationProfileDn".
-// The legacy `migration_blocks` value is the new attribute_name (snake_case);
-// the new state_upgrades schema keys by meta camelCase property name. Both
-// the auto-derived attribute_name (when no override) and the manual
-// attribute_name overrides round-trip to the meta camelCase via lowercase-first
-// segment + Title-case the rest. Synthetic names that are already camelCase
-// (parent_dn -> parentDn, tDn -> tDn, tnAaaDomainName -> tnAaaDomainName)
-// round-trip through this rule cleanly.
+// Last-resort fallback only: prefer metaReg.resolveMetaName when a class
+// context is available so renamed properties resolve to their meta
+// camelCase rather than a snake-case round-trip that drops the rename.
 func snakeToCamel(s string) string {
 	parts := strings.Split(s, "_")
 	if len(parts) == 0 {
@@ -517,6 +515,214 @@ func snakeToCamel(s string) string {
 	}
 	return b.String()
 }
+
+// metaRegistry holds cross-file lookup tables used by state_upgrades
+// migration to resolve a v1 snake-case attribute name back to the meta
+// camelCase property name that keys ClassDefinition.StateUpgrades.
+//
+// Resolution order is documented on resolveMetaName; the registry pre-loads
+// all three sources up front in main() so migrateStateUpgrades stays a pure
+// data transform.
+type metaRegistry struct {
+	// ClassMetaProperties: className -> meta camelCase property names from
+	// gen/meta/<className>.json. Used by the reverse-Underscore lookup
+	// (default attribute_name = utils.Underscore(metaName)) and by the
+	// tn-property friendly-name fallback for named-relation classes.
+	ClassMetaProperties map[string][]string
+	// GlobalAttributeInverter: inverted from
+	// gen/definitions/global.yaml.attribute_name_overrides
+	// (the canonical store for cross-class renames the legacy generator
+	// produced via per-property attribute_name in properties/global.yaml).
+	// Maps attribute_name -> meta camelCase.
+	GlobalAttributeInverter map[string]string
+	// ClassOverwriteInverters: className -> {new_snake -> meta_camel} from
+	// each class's per-property overwrites block. Pre-built so child-class
+	// inverters are available cross-class (a fvAEPg state_upgrade entry
+	// references fvRsBd's overwrites).
+	ClassOverwriteInverters map[string]map[string]string
+}
+
+// newMetaRegistry pre-loads the three lookup tables. Errors during a single
+// file load (malformed JSON, missing top-level key) are logged and the
+// entry is skipped so the script remains usable when a meta file is being
+// edited.
+func newMetaRegistry(metaDir, globalDefPath, propertiesDir string) (*metaRegistry, error) {
+	reg := &metaRegistry{
+		ClassMetaProperties:     map[string][]string{},
+		GlobalAttributeInverter: map[string]string{},
+		ClassOverwriteInverters: map[string]map[string]string{},
+	}
+
+	// Meta property names.
+	metaFiles, err := filepath.Glob(filepath.Join(metaDir, "*.json"))
+	if err != nil {
+		return nil, fmt.Errorf("failed to glob meta dir %s: %w", metaDir, err)
+	}
+	for _, mf := range metaFiles {
+		raw, err := os.ReadFile(mf)
+		if err != nil {
+			fmt.Printf("  WARN: failed to read meta file %s: %v\n", mf, err)
+			continue
+		}
+		var top map[string]any
+		if err := json.Unmarshal(raw, &top); err != nil {
+			fmt.Printf("  WARN: failed to parse meta file %s: %v\n", mf, err)
+			continue
+		}
+		for metaKey, body := range top {
+			bodyMap, ok := body.(map[string]any)
+			if !ok {
+				continue
+			}
+			propsRaw, ok := bodyMap["properties"].(map[string]any)
+			if !ok {
+				continue
+			}
+			className := strings.Replace(metaKey, ":", "", 1)
+			names := make([]string, 0, len(propsRaw))
+			for name := range propsRaw {
+				names = append(names, name)
+			}
+			sort.Strings(names)
+			reg.ClassMetaProperties[className] = names
+		}
+	}
+
+	// Global attribute_name_overrides.
+	globalRaw, err := os.ReadFile(globalDefPath)
+	if err == nil {
+		var globalDoc map[string]any
+		if err := yaml.Unmarshal(globalRaw, &globalDoc); err == nil {
+			if overrides, ok := globalDoc["attribute_name_overrides"].(map[any]any); ok {
+				for metaKeyAny, attrAny := range overrides {
+					metaKey, _ := metaKeyAny.(string)
+					attr, _ := attrAny.(string)
+					if metaKey != "" && attr != "" {
+						reg.GlobalAttributeInverter[attr] = metaKey
+					}
+				}
+			}
+		}
+	} else {
+		fmt.Printf("  WARN: failed to read global definitions %s: %v\n", globalDefPath, err)
+	}
+
+	// Per-class overwrites inverters from properties YAMLs.
+	propFiles, err := filepath.Glob(filepath.Join(propertiesDir, "*.yaml"))
+	if err == nil {
+		for _, pf := range propFiles {
+			base := filepath.Base(pf)
+			if base == "global.yaml" {
+				continue
+			}
+			raw, err := os.ReadFile(pf)
+			if err != nil {
+				continue
+			}
+			var doc map[string]any
+			if err := yaml.Unmarshal(raw, &doc); err != nil {
+				continue
+			}
+			inv := buildOverwritesInverter(doc)
+			if len(inv) > 0 {
+				className := strings.TrimSuffix(base, ".yaml")
+				reg.ClassOverwriteInverters[className] = inv
+			}
+		}
+	}
+
+	return reg, nil
+}
+
+// resolveMetaName maps a v1 snake-case attribute name to the meta camelCase
+// property name used as the state_upgrades map key.
+//
+// The chain is documented in MIGRATION_OVERVIEW.md section 2.1 and applied
+// in this order:
+//
+//  1. Synthetic "parent_dn" -> "parentDn".
+//  2. Per-class overwrites inverter - explicit per-property attribute_name
+//     renames live here (e.g. fvAEPg.pc_enf_pref -> intra_epg_isolation
+//     inverts to intra_epg_isolation -> pcEnfPref).
+//  3. Global attribute_name_overrides inverter - cross-class renames
+//     authored once globally (e.g. tDn -> target_dn inverts to target_dn
+//     -> tDn).
+//  4. Reverse-Underscore against the class's meta property names. Most
+//     unrenamed properties land here (mode, ipLearning, ...).
+//  5. tn-property friendly-name fallback: named-relation classes
+//     (fvRsBd, fvRsAEPgMonPol, ...) expose exactly one tn<TargetCap>Name
+//     meta property and the legacy generator named the v1 attribute after
+//     the target's resource_name + "_name". When the class has exactly one
+//     tn<X>Name meta property, return it.
+//  6. Last-resort snakeToCamel + WARN log so editorial divergence surfaces.
+//
+// `ok` is false only when step 6 ran; callers may still use the returned
+// value (snakeToCamel form) but should treat the warning as a coverage
+// gap.
+func (r *metaRegistry) resolveMetaName(className, attrSnake string) (string, bool) {
+	if attrSnake == "parent_dn" {
+		return "parentDn", true
+	}
+	if classInv := r.ClassOverwriteInverters[className]; classInv != nil {
+		if meta, ok := classInv[attrSnake]; ok {
+			return meta, true
+		}
+	}
+	if meta, ok := r.GlobalAttributeInverter[attrSnake]; ok {
+		// Verify the global override actually applies to this class. The
+		// global table is keyed by attribute_name across all classes; the
+		// inverter can match an attribute name that the class does not
+		// expose (e.g. global "ctxName: vrf_name" inverts to "vrf_name ->
+		// ctxName" but fvRsCtx has no ctxName meta property).
+		if r.classHasMetaProperty(className, meta) {
+			return meta, true
+		}
+	}
+	for _, meta := range r.ClassMetaProperties[className] {
+		if utils.Underscore(meta) == attrSnake {
+			return meta, true
+		}
+	}
+	// Relation-class fallback: the legacy generator named the user-facing
+	// inner attribute `<relation_resource_name>_name` even when the meta
+	// has no friendly-name property (path-based relations expose tDn). Prefer
+	// the single tn<X>Name property when present; fall back to tDn for
+	// path-based relations that only carry tDn.
+	var tnProps []string
+	hasTDn := false
+	for _, meta := range r.ClassMetaProperties[className] {
+		if strings.HasPrefix(meta, "tn") && strings.HasSuffix(meta, "Name") {
+			tnProps = append(tnProps, meta)
+		}
+		if meta == "tDn" {
+			hasTDn = true
+		}
+	}
+	if len(tnProps) == 1 {
+		return tnProps[0], true
+	}
+	if len(tnProps) == 0 && hasTDn && strings.HasSuffix(attrSnake, "_name") {
+		return "tDn", true
+	}
+	return snakeToCamel(attrSnake), false
+}
+
+// classHasMetaProperty returns true iff className's meta JSON lists
+// metaName under .properties. Linear scan is fine here - meta property
+// lists are short (typically <= 30 entries) and resolveMetaName is called
+// O(state_upgrade entries) times per run.
+func (r *metaRegistry) classHasMetaProperty(className, metaName string) bool {
+	for _, p := range r.ClassMetaProperties[className] {
+		if p == metaName {
+			return true
+		}
+	}
+	return false
+}
+
+// metaReg is the package-level registry initialised once in main(). Migration
+// helpers consult it through resolveMetaName; tests can swap it for a fake.
+var metaReg *metaRegistry
 
 // parseLegacyAttributeType translates the legacy type_changes string
 // ("SetNestedAttribute", "StringAttribute", ...) into the canonical
@@ -627,26 +833,44 @@ func migrateStateUpgrades(file string, legacy map[string]any, out *data.ClassDef
 			for oldKey, newVal := range attrs {
 				oldName, _ := oldKey.(string)
 				newName, _ := newVal.(string)
-				// Dotted form: outer prefix is the relation/block attribute
-				// (already implicit in className), suffix is the inner attr.
-				inner := newName
-				if idx := strings.Index(newName, "."); idx >= 0 {
-					inner = newName[idx+1:]
-				}
-				camelKey := snakeToCamel(inner)
 				upgrade := data.AttributeUpgradeDefinition{
 					LegacyAttribute: oldName,
 				}
+				dotIdx := strings.Index(newName, ".")
 				if isSelf {
-					entry.Attributes[camelKey] = upgrade
-				} else {
-					child := entry.Children[className]
-					if child.Attributes == nil {
-						child.Attributes = map[string]data.AttributeUpgradeDefinition{}
+					// Self-class: newName is the new flat attribute name on
+					// the parent class itself. Resolve back to the meta
+					// PropertyName for use as the state_upgrades map key.
+					camelKey, ok := metaReg.resolveMetaName(selfClass, newName)
+					if !ok {
+						fmt.Printf("  WARN: %s migration_blocks self attr %q has no meta resolution; falling back to %q\n", file, newName, camelKey)
 					}
-					child.Attributes[camelKey] = upgrade
-					entry.Children[className] = child
+					entry.Attributes[camelKey] = upgrade
+					continue
 				}
+				// Non-self (child class) entry. Two shapes:
+				//   - Dotted "<block>.<inner>": inner property rename inside
+				//     the named child class. Key by meta property of the
+				//     child class; the block prefix is purely informational.
+				//   - Bare "<block>": block-level rename (the legacy flat
+				//     attribute became the renamed child block as a whole).
+				//     Set legacy_attribute on the child directly, no inner.
+				child := entry.Children[className]
+				if dotIdx < 0 {
+					child.LegacyAttribute = oldName
+					entry.Children[className] = child
+					continue
+				}
+				inner := newName[dotIdx+1:]
+				camelKey, ok := metaReg.resolveMetaName(className, inner)
+				if !ok {
+					fmt.Printf("  WARN: %s migration_blocks %s.%s has no meta resolution; falling back to %q\n", file, className, inner, camelKey)
+				}
+				if child.Attributes == nil {
+					child.Attributes = map[string]data.AttributeUpgradeDefinition{}
+				}
+				child.Attributes[camelKey] = upgrade
+				entry.Children[className] = child
 			}
 		}
 	}
@@ -1886,11 +2110,20 @@ func main() {
 	classesDir := "gen/scripts/legacy_definitions/classes"
 	propertiesDir := "gen/scripts/legacy_definitions/properties"
 	outputDir := "gen/definitions"
+	metaDir := "gen/meta"
+	globalDefPath := "gen/definitions/global.yaml"
 
 	if len(os.Args) > 1 && os.Args[1] == "clean" {
 		runClean(outputDir)
 		return
 	}
+
+	reg, err := newMetaRegistry(metaDir, globalDefPath, propertiesDir)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error building meta registry: %v\n", err)
+		os.Exit(1)
+	}
+	metaReg = reg
 
 	files, err := filepath.Glob(filepath.Join(classesDir, "*.yaml"))
 	if err != nil {
