@@ -492,79 +492,27 @@ func migrate(file string, legacy map[string]any, tally *keyTally) data.ClassDefi
 	return out
 }
 
-// dedupRedundantLegacyTestEntries drops a property's TestConfig.Legacy when
-// it is structurally identical to TestConfig.Create AND the property has a
-// renamed state_upgrade alias (non-Removed, with a different attribute name
-// than the current one). In that case the loader's setLegacyTestValues
-// auto-derives Legacy from Create at load time, so the explicit duplicate
-// adds nothing and just clutters the canonical YAML. Run as a post-pass
-// after migrateStateUpgrades so the rename information is available.
-func dedupRedundantLegacyTestEntries(file string, out *data.ClassDefinition) {
+// propagateRequiredCreateToUpdate copies TestConfig.Create into Update for
+// any Required property that has an explicit Create but no Update. Required
+// attributes don't change values across the template's Update step, so the
+// asserted Update value must equal Create. Without this copy the loader's
+// per-bucket auto-derive would synthesize a different Update value (e.g.
+// attr_2 / validValues[1]) that fails apply-time validation for format-
+// constrained types (IP, MAC) and silently produces inconsistent assertions
+// for required enums. Run as a post-pass after all bucket migrations so
+// every property's final Restriction and Create are visible.
+func propagateRequiredCreateToUpdate(file string, out *data.ClassDefinition) {
 	for propName, prop := range out.Properties {
-		if !testEntriesEqual(prop.TestConfig.Legacy, prop.TestConfig.Create) {
+		if prop.Restriction != data.Required {
 			continue
 		}
-		if !hasRenamedLegacyAlias(propName, prop, out.StateUpgrades) {
+		if len(prop.TestConfig.Create) == 0 || len(prop.TestConfig.Update) > 0 {
 			continue
 		}
-		fmt.Printf("DROP: %s: %s.test_config.legacy == create with renamed legacy alias (loader auto-derives)\n", file, propName)
-		prop.TestConfig.Legacy = nil
+		prop.TestConfig.Update = append(prop.TestConfig.Update, prop.TestConfig.Create...)
 		out.Properties[propName] = prop
+		fmt.Printf("COPY: %s: %s.test_config.update <- create (required attr, value unchanged across Update step)\n", file, propName)
 	}
-}
-
-// testEntriesEqual returns true when both slices are non-empty, the same
-// length, and every TestValueEntryDefinition matches field-for-field. An
-// empty slice is never equal to a non-empty one (so we never drop an
-// already-empty Legacy bucket or treat it as a duplicate).
-func testEntriesEqual(a, b []data.TestValueEntryDefinition) bool {
-	if len(a) == 0 || len(b) == 0 || len(a) != len(b) {
-		return false
-	}
-	for i := range a {
-		if a[i].ConfigValue != b[i].ConfigValue ||
-			a[i].AssertValue != b[i].AssertValue ||
-			a[i].ValueType != b[i].ValueType {
-			return false
-		}
-		// ConfigInclude is *bool - compare deref values, treating nil as nil.
-		switch {
-		case a[i].ConfigInclude == nil && b[i].ConfigInclude == nil:
-		case a[i].ConfigInclude == nil || b[i].ConfigInclude == nil:
-			return false
-		case *a[i].ConfigInclude != *b[i].ConfigInclude:
-			return false
-		}
-	}
-	return true
-}
-
-// hasRenamedLegacyAlias mirrors property.go hasTestableLegacyAlias: returns
-// true when the property has at least one state_upgrade entry whose
-// legacy_attribute differs from the property's effective attribute name and
-// whose legacy_status is not Removed. The effective attribute name is
-// p.AttributeName when set, otherwise utils.Underscore(propName) (the global
-// attribute_name_overrides forward map is not consulted; in the rare case it
-// applies, this function under-detects and keeps the explicit Legacy - the
-// safe direction).
-func hasRenamedLegacyAlias(propName string, p data.PropertyDefinition, sus []data.StateUpgradeDefinition) bool {
-	attrName := p.AttributeName
-	if attrName == "" {
-		attrName = utils.Underscore(propName)
-	}
-	for _, su := range sus {
-		entry, ok := su.Attributes[propName]
-		if !ok {
-			continue
-		}
-		if entry.LegacyStatus == data.Removed {
-			continue
-		}
-		if entry.LegacyAttribute != "" && entry.LegacyAttribute != attrName {
-			return true
-		}
-	}
-	return false
 }
 
 func contains(haystack []string, needle string) bool {
@@ -1681,7 +1629,23 @@ func migrateTestValues(file, className string, val any, out *data.ClassDefinitio
 	for _, bucket := range bucketNames {
 		entry := tv[bucket]
 		switch bucket {
-		case "all", "default", "legacy", "update", "force_new":
+		case "legacy":
+			// Legacy alias tests verify the schema-upgrade mapping; any
+			// valid value works. The loader's setLegacyTestValues clones
+			// Create into Legacy when the legacy alias has a non-divergent
+			// type. Drop the explicit migration entirely and let auto-derive
+			// handle every case; the loader emits a warning when divergent
+			// types prevent cloning so authors can hand-author overrides.
+			entries, ok := entry.(map[any]any)
+			if !ok {
+				continue
+			}
+			for k := range entries {
+				if s, ok := k.(string); ok {
+					fmt.Printf("DROP: %s: test_values.legacy[%s] dropped (loader auto-derives Legacy from Create)\n", file, s)
+				}
+			}
+		case "all", "default", "update", "force_new":
 			entries, ok := entry.(map[any]any)
 			if !ok {
 				fmt.Printf("WARN: %s: test_values.%s is not a map: %T\n", file, bucket, entry)
@@ -1709,8 +1673,6 @@ func migrateTestValues(file, className string, val any, out *data.ClassDefinitio
 					prop.TestConfig.Create = append(prop.TestConfig.Create, tve)
 				case "default":
 					prop.TestConfig.Default = append(prop.TestConfig.Default, tve)
-				case "legacy":
-					prop.TestConfig.Legacy = append(prop.TestConfig.Legacy, tve)
 				case "update":
 					prop.TestConfig.Update = append(prop.TestConfig.Update, tve)
 				case "force_new":
@@ -2479,7 +2441,7 @@ func main() {
 		// test_values (from the property YAML) live on different sources
 		// but interact - run dedup once both are loaded.
 		liftTestDefaultsToDefaultValues(file, className, &canonical)
-		dedupRedundantLegacyTestEntries(file, &canonical)
+		propagateRequiredCreateToUpdate(file, &canonical)
 
 		if !hasMigratedData(canonical) {
 			skipped++
@@ -2524,7 +2486,7 @@ func main() {
 			continue
 		}
 		liftTestDefaultsToDefaultValues(propPath, orphanClass, &canonical)
-		dedupRedundantLegacyTestEntries(propPath, &canonical)
+		propagateRequiredCreateToUpdate(propPath, &canonical)
 		if !hasMigratedData(canonical) {
 			skipped++
 			continue
