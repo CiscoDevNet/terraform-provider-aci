@@ -701,6 +701,24 @@ type metaRegistry struct {
 	// reference against the canonical `aci_<resource_name>.test.id` form
 	// the loader would emit.
 	ClassResourceName map[string]string
+	// ClassRelationToMo: className -> sanitised target class name from
+	// meta `relationInfo.toMo` (e.g. `fv:BD` -> `fvBD`). Populated only
+	// when toMo is a single class string. Used by canTargetEntryAutoResolve
+	// to decide whether a legacy targets-block entry exactly matches the
+	// single-target shape resolveTargetDependencies would synthesise.
+	ClassRelationToMo map[string]string
+	// ClassRnFormat: className -> meta `rnFormat` (e.g. `BD-{name}`).
+	// Used by isCanonicalAutoTargetRef to recognise the legacy static DN
+	// form `uni/tn-test_name/<rnPrefix><resourceName>_name_<N>` as
+	// equivalent to the canonical resource reference the loader would
+	// emit after the prune.
+	ClassRnFormat map[string]string
+	// NoMetaFile: className -> resource_name for classes without meta
+	// JSON, loaded from gen/definitions/global.yaml's no_meta_file. Lets
+	// the targets prune resolve canonical references for vzBrCP / vzCPIf
+	// / monEPGPol / ... whose source-side relation lives in a meta file
+	// but whose target class is registered only via no_meta_file.
+	NoMetaFile map[string]string
 }
 
 // newMetaRegistry pre-loads the three lookup tables. Errors during a single
@@ -716,6 +734,9 @@ func newMetaRegistry(metaDir, classesDir, globalDefPath, propertiesDir string) (
 		ClassMetaDefaults:       map[string]map[string]string{},
 		ClassContainedBy:        map[string][]string{},
 		ClassResourceName:       map[string]string{},
+		ClassRelationToMo:       map[string]string{},
+		ClassRnFormat:           map[string]string{},
+		NoMetaFile:              map[string]string{},
 	}
 
 	// Meta property names.
@@ -780,6 +801,14 @@ func newMetaRegistry(metaDir, classesDir, globalDefPath, propertiesDir string) (
 				sort.Strings(cbs)
 				reg.ClassContainedBy[className] = cbs
 			}
+			if rnFmt, ok := bodyMap["rnFormat"].(string); ok && rnFmt != "" {
+				reg.ClassRnFormat[className] = rnFmt
+			}
+			if riRaw, ok := bodyMap["relationInfo"].(map[string]any); ok {
+				if toMo, ok := riRaw["toMo"].(string); ok && toMo != "" {
+					reg.ClassRelationToMo[className] = strings.Replace(toMo, ":", "", 1)
+				}
+			}
 		}
 	}
 
@@ -818,6 +847,15 @@ func newMetaRegistry(metaDir, classesDir, globalDefPath, propertiesDir string) (
 					attr, _ := attrAny.(string)
 					if metaKey != "" && attr != "" {
 						reg.GlobalAttributeInverter[attr] = metaKey
+					}
+				}
+			}
+			if nmf, ok := globalDoc["no_meta_file"].(map[any]any); ok {
+				for cnAny, rnAny := range nmf {
+					cn, _ := cnAny.(string)
+					rn, _ := rnAny.(string)
+					if cn != "" && rn != "" {
+						reg.NoMetaFile[cn] = rn
 					}
 				}
 			}
@@ -1560,7 +1598,7 @@ func migrateProperties(file, className string, legacy map[string]any, tally *key
 			migrateParents(file, className, val, out)
 
 		case "targets":
-			migrateTargets(file, val, out)
+			migrateTargets(file, className, val, out)
 
 		case "exclude_targets":
 			// S3 obsolete per MIGRATION_OVERVIEW section 3. The legacy
@@ -1934,6 +1972,186 @@ func isCanonicalAutoRef(className, ref string) bool {
 	return ref == "aci_"+res+".test.id" || ref == res+".test.id"
 }
 
+// targetResourceName returns the resource_name for className from any of
+// the two registry sources the loader's getResourceNameForClass consults:
+// DataStore.Classes (legacy classes/<class>.yaml) and global no_meta_file.
+func targetResourceName(className string) string {
+	if res := metaReg.ClassResourceName[className]; res != "" {
+		return res
+	}
+	return metaReg.NoMetaFile[className]
+}
+
+// isCanonicalAutoTargetRef returns true when ref matches what
+// resolveTargetDependencies would emit for className, OR matches the
+// legacy static-DN form the prune is willing to replace with the
+// canonical reference.
+//
+// Accepted forms:
+//   - `aci_<resourceName>.test.id`     (canonical instance 1)
+//   - `aci_<resourceName>.test_2.id`   (canonical instance 2)
+//   - `<resourceName>.test.id`         (bare legacy variant)
+//   - `uni/tn-test_name/<rnPrefix><resourceName>_name_<N>` for N in 0..2,
+//     where rnPrefix is the meta rnFormat with `{name}` stripped (e.g.
+//     `BD-` for fvBD). This is the static-reference form that drives the
+//     "named relation target uses a static reference" generator
+//     diagnostic; we treat it as auto-resolvable because the loader's
+//     post-prune output replaces it with `aci_<resourceName>.test.id`.
+//   - `uni/tn-test_name/<anything><resourceName>_name_<N>` for N in 0..2
+//     when no meta rnFormat is registered (NoMetaFile targets such as
+//     vzBrCP / monEPGPol / fvEpRetPol). The legacy fixtures uniformly
+//     used the `<resourceName>_name_<N>` token as the rightmost DN
+//     segment; the `static: true` flag (already excluded above) covers
+//     the rare case where an author pinned a non-conventional instance.
+//
+// Returns false when the resource_name is unknown (target class not in
+// DataStore or NoMetaFile), so the entry stays verbatim.
+func isCanonicalAutoTargetRef(className, ref string) bool {
+	res := targetResourceName(className)
+	if res == "" {
+		return false
+	}
+	if ref == "aci_"+res+".test.id" || ref == "aci_"+res+".test_2.id" || ref == res+".test.id" {
+		return true
+	}
+	const tenantBase = "uni/tn-test_name/"
+	if !strings.HasPrefix(ref, tenantBase) {
+		return false
+	}
+	if rnFmt := metaReg.ClassRnFormat[className]; rnFmt != "" {
+		idx := strings.Index(rnFmt, "{name}")
+		if idx < 0 {
+			return false
+		}
+		expectedPrefix := tenantBase + rnFmt[:idx] + res + "_name_"
+		if !strings.HasPrefix(ref, expectedPrefix) {
+			return false
+		}
+		switch ref[len(expectedPrefix):] {
+		case "0", "1", "2":
+			return true
+		}
+		return false
+	}
+	// NoMetaFile fallback: require the rightmost DN segment to be the
+	// canonical `<resourceName>_name_<N>` token (the legacy generator
+	// uniformly used this form for relation targets).
+	last := ref[strings.LastIndex(ref, "/")+1:]
+	dash := strings.LastIndex(last, "-")
+	if dash < 0 {
+		return false
+	}
+	name := last[dash+1:]
+	expected := res + "_name_"
+	if !strings.HasPrefix(name, expected) {
+		return false
+	}
+	switch name[len(expected):] {
+	case "0", "1", "2":
+		return true
+	}
+	return false
+}
+
+// canTargetEntryAutoResolve returns true when a legacy `targets:` block
+// entry for selfClass exactly matches what the loader's
+// resolveTargetDependencies + buildDependency synthesise from meta
+// `relationInfo.toMo` + the target's `containedBy`. Such an entry can be
+// dropped during migration; the loader reproduces the same TestDependency
+// tree (canonical `aci_<resourceName>.test.id` / `aci_<resourceName>.test_2.id`
+// pair, parent chain walked via meta).
+//
+// All of the following must hold:
+//
+//   - singleTargetClass is true. The loader's single-target auto-resolve
+//     only fires for ToClasses length 1; multi-class target groups
+//     (polymorphic, e.g. fvRsSecInherited's fvAEPg/fvESg/l3extInstP) keep
+//     every entry verbatim so the polymorphic auto-detector still receives
+//     all hints. Same-class repeats (2 vzBrCP entries on fvRsCons) ARE
+//     prunable because the loader auto-emits exactly two instances.
+//   - selfClass has meta relationInfo.toMo equal to entry.class_name. The
+//     migration trusts the meta as the source of truth for the target
+//     class identity.
+//   - target class has a resource_name (DataStore or NoMetaFile). Without
+//     one, getResourceNameForClass returns empty and the loader emits the
+//     no-resource diagnostic instead.
+//   - entry has no `target_dn_ref` and no `static: true`. target_dn_ref
+//     wins over target_dn in migrateTargets, so its presence indicates an
+//     authored reference shape we should preserve. `static: true` forces
+//     the migrated dep to StaticReference, defeating the auto-resolution
+//     this prune relies on.
+//   - entry's `parent_dependency`, if present, matches the target's meta
+//     containedBy[0]. For NoMetaFile targets (no meta containedBy), any
+//     `parent_dependency` is accepted because the loader rebuilds the
+//     chain from the target class's own Parents and the legacy parent
+//     was redundant with the source class's own parent chain.
+//   - entry's `target_dn`, if present, satisfies isCanonicalAutoTargetRef.
+//   - entry's `properties`, if present, is either empty or contains only
+//     a single `name` override. Single-key name overrides match the
+//     legacy cosmetic pattern (`<resourceName>_name_<N>`) that the loader
+//     replaces with its `name_1` / `name_2` default; semantic overrides
+//     (certificate_chain, gateway_address, alloc_mode, polymorphic name
+//     disambiguators, ...) carry additional keys or non-name keys and
+//     pin the entry as verbatim.
+//
+// The legacy keys overwrite_parent_dn_key, shared_classes,
+// target_dn_overwrite_docs, parent_dependency_dn_ref, target_classes,
+// class_in_parent are NOT pinning signals: migrateTargets either ignores
+// them entirely or drops them with a per-file log, so their presence does
+// not affect the migrated output we're comparing against.
+func canTargetEntryAutoResolve(selfClass string, entry map[any]any, singleTargetClass bool) bool {
+	if metaReg == nil || !singleTargetClass {
+		return false
+	}
+	className, _ := entry["class_name"].(string)
+	if className == "" {
+		return false
+	}
+	if toMo := metaReg.ClassRelationToMo[selfClass]; toMo == "" || toMo != className {
+		return false
+	}
+	if targetResourceName(className) == "" {
+		return false
+	}
+	if ref, ok := entry["target_dn_ref"].(string); ok && ref != "" {
+		return false
+	}
+	if isStatic, ok := entry["static"].(bool); ok && isStatic {
+		return false
+	}
+	if pdep, ok := entry["parent_dependency"].(string); ok && pdep != "" {
+		cb := metaReg.ClassContainedBy[className]
+		switch {
+		case len(cb) == 0:
+			// NoMetaFile target: chain rebuilds from the target's own
+			// Parents; the legacy parent_dependency was redundant with
+			// the source's parent chain.
+		case len(cb) == 1 && cb[0] == pdep:
+			// chain matches meta containedBy walk
+		default:
+			return false
+		}
+	}
+	if td, ok := entry["target_dn"].(string); ok && td != "" && !isCanonicalAutoTargetRef(className, td) {
+		return false
+	}
+	if props, ok := entry["properties"]; ok && props != nil {
+		m, ok := props.(map[any]any)
+		if !ok {
+			return false
+		}
+		if len(m) > 1 {
+			return false
+		}
+		if len(m) == 1 {
+			if _, hasName := m["name"]; !hasName {
+				return false
+			}
+		}
+	}
+	return true
+}
+
 // migrateParents translates one legacy `parents:` block into class-level
 // TestDependencyDefinition entries with Role=Parent, plus polymorphic-
 // same-type detection (section 8.6).
@@ -2086,10 +2304,19 @@ func migrateParents(file, selfClass string, val any, out *data.ClassDefinition) 
 //	shared_classes          -> dropped (no canonical slot; 3 files).
 //	parent_dependency_dn_ref -> dropped (canonical struct derives; 2 files).
 //
-// Same auto-resolution caveat as migrateParents: emits all legacy entries
-// verbatim; pruning the entries that single-target auto-resolution would
-// reproduce is a follow-on commit gated on meta JSON loading.
-func migrateTargets(file string, val any, out *data.ClassDefinition) {
+// Auto-resolution filtering: entries whose shape exactly matches what the
+// loader's resolveTargetDependencies + buildDependency would synthesise
+// from meta `relationInfo.toMo` are dropped here (see
+// canTargetEntryAutoResolve). Only fires when the file holds a single
+// target entry, mirroring the loader's single-target auto-resolve path;
+// multi-target groups keep every entry verbatim so the polymorphic
+// renderer still receives all hints. Single-key `name` overrides match
+// the legacy cosmetic naming pattern (`<resourceName>_name_<N>`) and are
+// accepted as auto-resolvable; the loader replaces them with its
+// `name_1` / `name_2` default. Entries with semantic overrides
+// (certificate_chain, gateway_address, alloc_mode, polymorphic name
+// disambiguators) stay verbatim.
+func migrateTargets(file, selfClass string, val any, out *data.ClassDefinition) {
 	if val == nil {
 		return
 	}
@@ -2098,6 +2325,22 @@ func migrateTargets(file string, val any, out *data.ClassDefinition) {
 		fmt.Printf("WARN: %s: targets is not a list: %T\n", file, val)
 		return
 	}
+	// Single-target-class detection: count distinct class_name values across
+	// all entries. The prune only fires when the file describes one target
+	// class (loader's single-target auto-resolve emits exactly 2 instances)
+	// AND has at most 2 entries — preventing data loss for the rare polymorphic
+	// or 3+ same-class shapes.
+	distinctClasses := map[string]bool{}
+	for _, raw := range list {
+		entry, ok := raw.(map[any]any)
+		if !ok {
+			continue
+		}
+		if cn, _ := entry["class_name"].(string); cn != "" {
+			distinctClasses[cn] = true
+		}
+	}
+	singleTargetClass := len(distinctClasses) == 1 && len(list) <= 2
 	for _, raw := range list {
 		entry, ok := raw.(map[any]any)
 		if !ok {
@@ -2107,6 +2350,10 @@ func migrateTargets(file string, val any, out *data.ClassDefinition) {
 		className, _ := entry["class_name"].(string)
 		if className == "" {
 			fmt.Printf("WARN: %s: targets entry missing class_name\n", file)
+			continue
+		}
+		if canTargetEntryAutoResolve(selfClass, entry, singleTargetClass) {
+			fmt.Printf("DROP: %s: targets.%s redundant with meta relationInfo auto-resolution\n", file, className)
 			continue
 		}
 		dep := data.TestDependencyDefinition{
