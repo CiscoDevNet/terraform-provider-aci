@@ -1148,26 +1148,31 @@ func (c *Class) getTestDependenciesFromDefinitions(testDependencyDefinitions []T
 		// Dedup by reference: reuse existing node when the same reference appears more than once.
 		// At depth 0 we still validate the duplicate's Role to allow promoting an existing dep that
 		// was first introduced nested (Role=UndefinedRole) into a Parent/Target slot.
-		if existing, ok := testDependencies[testDependencyDefinition.Reference]; ok {
-			if depth == 0 {
-				newRole := testDependencyDefinition.Role
-				switch {
-				case existing.Role == UndefinedRole && newRole != UndefinedRole:
-					existing.Role = newRole
-				case existing.Role != UndefinedRole && newRole != UndefinedRole && existing.Role != newRole:
-					ds.ctx.Diagnostics.AddError("Class '%s': duplicate test dependency for '%s' declares conflicting roles ('%s' vs '%s'); first declaration wins.", c.Name, testDependencyDefinition.ClassName, existing.Role, newRole)
+		// An empty Reference is NOT a valid dedup key (it means "no reference declared yet"),
+		// so we skip the map lookup/registration for empty refs; otherwise a nested empty-ref
+		// entry would fold into its empty-ref parent and create a self-loop in Dependencies.
+		if testDependencyDefinition.Reference != "" {
+			if existing, ok := testDependencies[testDependencyDefinition.Reference]; ok {
+				if depth == 0 {
+					newRole := testDependencyDefinition.Role
+					switch {
+					case existing.Role == UndefinedRole && newRole != UndefinedRole:
+						existing.Role = newRole
+					case existing.Role != UndefinedRole && newRole != UndefinedRole && existing.Role != newRole:
+						ds.ctx.Diagnostics.AddError("Class '%s': duplicate test dependency for '%s' declares conflicting roles ('%s' vs '%s'); first declaration wins.", c.Name, testDependencyDefinition.ClassName, existing.Role, newRole)
+					}
+					if len(testDependencyDefinition.ConfigOverrides) > 0 {
+						ds.ctx.Diagnostics.AddError("Class '%s': duplicate test dependency for '%s' carries config_overrides; merge them into the first declaration.", c.Name, testDependencyDefinition.ClassName)
+					}
+					if len(testDependencyDefinition.Dependencies) > 0 {
+						ds.ctx.Diagnostics.AddError("Class '%s': duplicate test dependency for '%s' carries dependencies; merge them into the first declaration.", c.Name, testDependencyDefinition.ClassName)
+					}
+				} else {
+					genLogger.Tracef("Class '%s': nested duplicate reference '%s' reuses existing DAG node.", c.Name, testDependencyDefinition.Reference)
 				}
-				if len(testDependencyDefinition.ConfigOverrides) > 0 {
-					ds.ctx.Diagnostics.AddError("Class '%s': duplicate test dependency for '%s' carries config_overrides; merge them into the first declaration.", c.Name, testDependencyDefinition.ClassName)
-				}
-				if len(testDependencyDefinition.Dependencies) > 0 {
-					ds.ctx.Diagnostics.AddError("Class '%s': duplicate test dependency for '%s' carries dependencies; merge them into the first declaration.", c.Name, testDependencyDefinition.ClassName)
-				}
-			} else {
-				genLogger.Tracef("Class '%s': nested duplicate reference '%s' reuses existing DAG node.", c.Name, testDependencyDefinition.Reference)
+				result = append(result, existing)
+				continue
 			}
-			result = append(result, existing)
-			continue
 		}
 
 		className, err := NewClassName(testDependencyDefinition.ClassName)
@@ -1184,7 +1189,9 @@ func (c *Class) getTestDependenciesFromDefinitions(testDependencyDefinitions []T
 			ConfigOverrides: testDependencyDefinition.ConfigOverrides,
 		}
 
-		testDependencies[testDependencyDefinition.Reference] = testDependency
+		if testDependencyDefinition.Reference != "" {
+			testDependencies[testDependencyDefinition.Reference] = testDependency
+		}
 
 		// Recursively resolve nested dependencies.
 		if len(testDependencyDefinition.Dependencies) > 0 {
@@ -1675,11 +1682,21 @@ func parsePlaceholder(value string) (string, bool) {
 
 func (c *Class) findDependencyByRefRecursive(testDependencies []*TestDependency, reference string) *TestDependency {
 	// Search the entire DAG for a dependency with the given reference.
+	// A visited set guards against pathological self-loops or mutual-parent cycles
+	// in the DAG (callers must not rely on the slice being acyclic).
+	return c.findDependencyByRefRecursiveVisited(testDependencies, reference, map[*TestDependency]bool{})
+}
+
+func (c *Class) findDependencyByRefRecursiveVisited(testDependencies []*TestDependency, reference string, visited map[*TestDependency]bool) *TestDependency {
 	for _, testDependency := range testDependencies {
+		if visited[testDependency] {
+			continue
+		}
+		visited[testDependency] = true
 		if testDependency.Reference == reference {
 			return testDependency
 		}
-		if found := c.findDependencyByRefRecursive(testDependency.Dependencies, reference); found != nil {
+		if found := c.findDependencyByRefRecursiveVisited(testDependency.Dependencies, reference, visited); found != nil {
 			return found
 		}
 	}
