@@ -74,6 +74,11 @@ documentation_label_overrides:
   Useg: uSeg
   Vm: VM
   Vmm: VMM
+  Vpn: VPN
+  Vrf: VRF
+  Wan: WAN
+  Zr: ZR
+  Zrp: ZRP (ZR+)
 
 exclude_parents:
   - polUni
@@ -110,3 +115,31 @@ no_meta_file:
   vzBrCP: contract
   vzCPIf: imported_contract
   vzFilter: filter
+
+property_documentation_overrides:
+  adminSt: The administrative state of the %s object.
+  af: The type of address family for the %s.
+  annotation: The annotation of the %s object.
+  bdName: The bridge domain name of the %s object.
+  ctrl: The controls for the %s object.
+  ctxName: The VRF name of the %s object.
+  descr: The description of the %s object.
+  id: The identifier of the %s object.
+  instrImedcy: The deployment immediacy of the %s object. Specifies when the policy is pushed into the hardware policy content-addressable memory (CAM)
+  lastMbrIntvl: The last member interval (seconds) of the %s object. The group state is removed when no host responds before the timeout
+  mac: The MAC address of the %s object.
+  matchT: The provider label match criteria.
+  name: The name of the %s object.
+  nameAlias: The name alias of the %s object.
+  owner: The owner of the %s object.
+  pcTag: The classification tag used for policy enforcement and zoning.
+  prio: The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.
+  queryIntvl: The query interval (seconds) of the %s object.
+  resImedcy: The resolution immediacy of the %s object. Specifies if policies are resolved immmediately or when needed.
+  rspIntvl: The response interval (seconds) of the %s object.
+  seg: The segment ID (L2-VNI) of the %s object.
+  startQueryCnt: The start query count of the %s object.
+  startQueryIntvl: The query interval (seconds) of the %s object at start-up.
+  tnL3extOutName: The name of the L3 Outside object.
+  tnRtctrlProfileName: The name of the Route Control Profile object.
+  tnVzOOBBrCPName: The name of the Out Of Band Contract object.
