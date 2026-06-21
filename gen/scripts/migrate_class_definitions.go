@@ -57,6 +57,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"net"
 	"os"
 	"path/filepath"
 	"sort"
@@ -490,6 +491,22 @@ func migrate(file string, legacy map[string]any, tally *keyTally) data.ClassDefi
 	}
 	migrateStateUpgrades(file, legacy, &out)
 	return out
+}
+
+// looksLikeIPOrCIDR returns true when s parses as an IPv4 / IPv6 address or
+// a CIDR prefix (e.g. "10.0.0.1", "fe80::1", "2001:db8::/32"). Used to gate
+// custom_type bucket migration so only IP-shaped values land in Update; the
+// rare non-IP entries (parent_dn-shaped scope, custom-enum ride-alongs)
+// would otherwise pollute Update with literals that override dependency
+// wiring or duplicate Create harmlessly.
+func looksLikeIPOrCIDR(s string) bool {
+	if s == "" {
+		return false
+	}
+	if ip, _, err := net.ParseCIDR(s); err == nil && ip != nil {
+		return true
+	}
+	return net.ParseIP(s) != nil
 }
 
 // propagateRequiredCreateToUpdate copies TestConfig.Create into Update for
@@ -1682,12 +1699,45 @@ func migrateTestValues(file, className string, val any, out *data.ClassDefinitio
 			}
 
 		case "custom_type":
-			// Obsolete per section 3: the legacy `custom_type` bucket was
-			// only used to author IPv6 examples for the 10 IpAddress
-			// files; the standard create/default buckets cover the same
-			// data after migration. The vmm_arp_learning ride-along is
-			// section 8.1.
-			continue
+			// Reuse the legacy custom_type values (mostly IPv6 examples for
+			// the IpAddress custom-typed properties) as test_config.update
+			// overrides. The Update step then asserts the custom type's
+			// semantic equality across format variations (e.g. fe80::0001
+			// == fe80::1) and exercises the type plumbing in both Create
+			// and Update halves of the same test. Only entries whose value
+			// parses as an IP / CIDR are migrated; sibling ride-along values
+			// (e.g. fvTrackMember.scope literal DN, vmmDomP.arp_learning
+			// enum) are dropped because overlaying them on Update would
+			// either override dependency-wired references or duplicate the
+			// Create value harmlessly.
+			entries, ok := entry.(map[any]any)
+			if !ok {
+				fmt.Printf("WARN: %s: test_values.custom_type is not a map: %T\n", file, entry)
+				continue
+			}
+			keys := make([]string, 0, len(entries))
+			for k := range entries {
+				if s, ok := k.(string); ok {
+					keys = append(keys, s)
+				}
+			}
+			sort.Strings(keys)
+			for _, snakeKey := range keys {
+				value := legacyValueToHCL(entries[snakeKey])
+				if !looksLikeIPOrCIDR(value) {
+					fmt.Printf("DROP: %s: test_values.custom_type[%s]=%q is not IP/CIDR (ride-along, skipped)\n", file, snakeKey, value)
+					continue
+				}
+				metaName, _ := metaReg.resolveMetaName(className, snakeKey)
+				if metaName == "" {
+					continue
+				}
+				tve := data.TestValueEntryDefinition{ConfigValue: value}
+				prop := upsertProperty(out, metaName)
+				prop.TestConfig.Update = append(prop.TestConfig.Update, tve)
+				out.Properties[metaName] = prop
+				fmt.Printf("REUSE: %s: test_values.custom_type[%s]=%s -> test_config.update (exercise custom IpAddress type)\n", file, snakeKey, value)
+			}
 
 		case "datasource_required", "datasource_non_existing":
 			// DERIVE per section 6: IdentifiedBy + Default bucket drive
