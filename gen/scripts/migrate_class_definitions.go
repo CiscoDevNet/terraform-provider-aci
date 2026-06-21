@@ -666,6 +666,26 @@ func snakeToCamel(s string) string {
 	return b.String()
 }
 
+// reverseUnderscoreOrCamel returns the meta camelCase property name whose
+// Underscore form equals snake, by linear scan over metaProps. Falls back
+// to snakeToCamel(snake) when no meta property matches, which preserves
+// the auto-derived camelCase shape for keys that name properties not
+// listed in the supplied meta (e.g. classes whose meta JSON wasn't
+// loaded). Distinct from metaRegistry.resolveMetaName: this helper takes
+// the meta property list directly and runs no overwrite-inverter steps,
+// so it can be called during metaRegistry initialisation before the
+// package-level metaReg is assigned. Used by buildOverwritesInverter to
+// fix acronym round-trips like "mcast_arp_drop" -> "mcastARPDrop" that
+// snakeToCamel alone collapses to the lowercase "mcastArpDrop".
+func reverseUnderscoreOrCamel(snake string, metaProps []string) string {
+	for _, meta := range metaProps {
+		if utils.Underscore(meta) == snake {
+			return meta
+		}
+	}
+	return snakeToCamel(snake)
+}
+
 // metaRegistry holds cross-file lookup tables used by state_upgrades
 // migration to resolve a v1 snake-case attribute name back to the meta
 // camelCase property name that keys ClassDefinition.StateUpgrades.
@@ -811,7 +831,7 @@ func newMetaRegistry(metaDir, globalDefPath, propertiesDir string) (*metaRegistr
 			if err := yaml.Unmarshal(raw, &doc); err != nil {
 				continue
 			}
-			inv := buildOverwritesInverter(doc)
+			inv := buildOverwritesInverter(doc, reg.ClassMetaProperties[strings.TrimSuffix(base, ".yaml")])
 			if len(inv) > 0 {
 				className := strings.TrimSuffix(base, ".yaml")
 				reg.ClassOverwriteInverters[className] = inv
@@ -828,6 +848,10 @@ func newMetaRegistry(metaDir, globalDefPath, propertiesDir string) (*metaRegistr
 // The chain is documented in MIGRATION_OVERVIEW.md section 2.1 and applied
 // in this order:
 //
+//  0. Direct match against the class's meta property names. Callers that
+//     pass an already-camelCase key (e.g. default_values keys, which are
+//     authored camelCase in v2.19.0) land here without trips through the
+//     fallback warning chain.
 //  1. Synthetic "parent_dn" -> "parentDn".
 //  2. Per-class overwrites inverter - explicit per-property attribute_name
 //     renames live here (e.g. fvAEPg.pc_enf_pref -> intra_epg_isolation
@@ -848,6 +872,9 @@ func newMetaRegistry(metaDir, globalDefPath, propertiesDir string) (*metaRegistr
 // value (snakeToCamel form) but should treat the warning as a coverage
 // gap.
 func (r *metaRegistry) resolveMetaName(className, attrSnake string) (string, bool) {
+	if r.classHasMetaProperty(className, attrSnake) {
+		return attrSnake, true
+	}
 	if attrSnake == "parent_dn" {
 		return "parentDn", true
 	}
@@ -1254,15 +1281,15 @@ func asStringSlice(v any) []string {
 // into the canonical struct. Every other known key is tallied so the L2
 // coverage gap stays visible; unknown keys raise an L1 warning via the
 // tally just like the class loader does.
-func migrateProperties(file string, legacy map[string]any, tally *keyTally, out *data.ClassDefinition) {
-	// The test_values bucket sub-keys are snake_case new attribute names
-	// (post-overwrites), and the canonical struct keys PropertyDefinition
-	// entries by meta camelCase. Build the snake_new -> meta_camel inverter
-	// up front so every bucket entry can resolve its target property in O(1)
-	// regardless of map iteration order. Properties without an `overwrites`
-	// entry fall through to snakeToCamel, which auto-derives the meta name.
-	invertOverwrites := buildOverwritesInverter(legacy)
-
+//
+// className is the meta JSON class name (e.g. "fvBD") used by metaReg.
+// resolveMetaName to recover the meta camelCase property key from the
+// snake-case keys that legacy property YAMLs carry. Without it the
+// overwrites / resource_required / default_values / test_values handlers
+// would fall back to snakeToCamel and mint phantom property entries for
+// acronym-bearing names (mcastARPDrop -> phantom mcastArpDrop), renamed
+// properties (addr -> phantom gateway_address), and parent_dn synthetic.
+func migrateProperties(file, className string, legacy map[string]any, tally *keyTally, out *data.ClassDefinition) {
 	for key, val := range legacy {
 		info := tally.recordProperty(file, key)
 		if !info.implemented {
@@ -1291,10 +1318,11 @@ func migrateProperties(file string, legacy map[string]any, tally *keyTally, out 
 		case "overwrites":
 			// Map<snake_case_old_attr, snake_case_new_attr>. The new
 			// schema keys per-property overrides by meta camelCase name,
-			// so transform the legacy snake_case attribute name to the
-			// camelCase meta name via snakeToCamel (same rule used for
-			// state_upgrades). The value (new attribute name) lands in
-			// PropertyDefinition.AttributeName verbatim.
+			// so resolve the legacy OLD snake attribute name (which is the
+			// utils.Underscore form of the meta camelCase) back to the
+			// meta camelCase via metaReg.resolveMetaName. The value (new
+			// attribute name) lands in PropertyDefinition.AttributeName
+			// verbatim.
 			//
 			// Filter: drop the synthetic `relation_from_<x>_to_<y>` ->
 			// `relation_to_<y>` aliases. v2.19.0 used these to rename the
@@ -1324,7 +1352,7 @@ func migrateProperties(file string, legacy map[string]any, tally *keyTally, out 
 					fmt.Printf("DROP: %s: overwrites[%s]=%s redundant (canonical Class.ResourceNameNested auto-derives the same name)\n", file, oldSnake, newName)
 					continue
 				}
-				metaName := snakeToCamel(oldSnake)
+				metaName, _ := metaReg.resolveMetaName(className, oldSnake)
 				prop := upsertProperty(out, metaName)
 				prop.AttributeName = newName
 				out.Properties[metaName] = prop
@@ -1338,7 +1366,15 @@ func migrateProperties(file string, legacy map[string]any, tally *keyTally, out 
 			}
 
 		case "resource_required":
-			for _, metaName := range asStringSlice(val) {
+			// Values are NEW snake attribute names (post-overwrite),
+			// e.g. `gateway_address` for fvnsAddrInst.addr. Resolve via
+			// metaReg.resolveMetaName so the per-class overwrites inverter
+			// step recovers the meta camelCase (`addr`); without this the
+			// snake key was written into PropertyDefinition keys verbatim
+			// and minted a phantom restriction-only entry alongside the
+			// real property.
+			for _, snakeName := range asStringSlice(val) {
+				metaName, _ := metaReg.resolveMetaName(className, snakeName)
 				prop := upsertProperty(out, metaName)
 				setRestriction(file, metaName, &prop, data.Required, "resource_required")
 				out.Properties[metaName] = prop
@@ -1383,6 +1419,13 @@ func migrateProperties(file string, legacy map[string]any, tally *keyTally, out 
 			// every entry with empty version range so the meta-derived
 			// version-scoped semantics carry over unchanged.
 			//
+			// Keys are usually camelCase meta property names verbatim
+			// (`enableRogueExceptMac`) but a handful of legacy files use
+			// the synthetic `parent_dn` snake key. Route every key through
+			// metaReg.resolveMetaName so step 0 (already-camel match)
+			// preserves the common case and step 1 rewrites parent_dn ->
+			// parentDn instead of writing the literal snake form.
+			//
 			// The two `@aci_gen_default_value_overwrite_to_*!` sentinel
 			// values (string/list variants) were docs-only hints in the
 			// legacy resource.md.tmpl: they told the template to render
@@ -1398,10 +1441,11 @@ func migrateProperties(file string, legacy map[string]any, tally *keyTally, out 
 				continue
 			}
 			for metaKey, defVal := range dvs {
-				metaName, _ := metaKey.(string)
-				if metaName == "" {
+				rawKey, _ := metaKey.(string)
+				if rawKey == "" {
 					continue
 				}
+				metaName, _ := metaReg.resolveMetaName(className, rawKey)
 				defStr := fmt.Sprintf("%v", defVal)
 				switch defStr {
 				case "@aci_gen_default_value_overwrite_to_empty_string!",
@@ -1499,7 +1543,7 @@ func migrateProperties(file string, legacy map[string]any, tally *keyTally, out 
 			fmt.Printf("POSTPONE: %s: %s dropped (no canonical slot; restore after section 8 lands)\n", file, key)
 
 		case "test_values":
-			migrateTestValues(file, val, invertOverwrites, out)
+			migrateTestValues(file, className, val, out)
 
 		case "parents":
 			migrateParents(file, val, out)
@@ -1527,11 +1571,17 @@ func migrateProperties(file string, legacy map[string]any, tally *keyTally, out 
 }
 
 // buildOverwritesInverter returns a map<snake_case_new_attr_name, meta_camel_case>
-// derived from the legacy `overwrites` block. Used by migrateTestValues to
-// resolve a bucket entry's snake_case attribute key back to the canonical
-// PropertyDefinition meta key. Returns an empty map when overwrites is
-// absent or malformed; callers fall back to snakeToCamel for unmapped keys.
-func buildOverwritesInverter(legacy map[string]any) map[string]string {
+// derived from the legacy `overwrites` block. Used by metaRegistry init to
+// seed ClassOverwriteInverters; runtime handlers resolve attribute keys
+// via metaRegistry.resolveMetaName which consults the same table.
+// Returns an empty map when overwrites is absent or malformed.
+//
+// metaProps is the class's meta property list, used by
+// reverseUnderscoreOrCamel to recover the meta camelCase from the legacy
+// OLD snake key (e.g. "mcast_arp_drop" -> "mcastARPDrop"). When metaProps
+// is nil (e.g. class not in any meta JSON) the helper degrades to
+// snakeToCamel, matching the pre-fix behaviour.
+func buildOverwritesInverter(legacy map[string]any, metaProps []string) map[string]string {
 	out := map[string]string{}
 	raw, ok := legacy["overwrites"]
 	if !ok {
@@ -1547,7 +1597,7 @@ func buildOverwritesInverter(legacy map[string]any) map[string]string {
 		if oldSnake == "" || newName == "" {
 			continue
 		}
-		out[newName] = snakeToCamel(oldSnake)
+		out[newName] = reverseUnderscoreOrCamel(oldSnake, metaProps)
 	}
 	return out
 }
@@ -1605,10 +1655,13 @@ func legacyValueToHCL(v any) string {
 //	child_*, ignore_in_*   -> class-level test_config.children / dependency
 //	                          overrides; v2.19.0 carries no data here.
 //
-// Bucket entries are keyed by snake_case new attribute name; resolveMetaName
-// consults invertOverwrites first, then falls back to snakeToCamel. The
-// resolved meta camelCase name becomes the PropertyDefinition map key.
-func migrateTestValues(file string, val any, invertOverwrites map[string]string, out *data.ClassDefinition) {
+// Bucket entries are keyed by snake_case NEW attribute name (post-
+// overwrites). metaReg.resolveMetaName handles the resolution chain (step
+// 2 per-class overwrite inverter; step 4 reverse-Underscore against the
+// class meta; step 5 tn-property friendly-name fallback for relation
+// classes) so renamed and acronym-bearing properties land on their meta
+// camelCase key rather than minting phantom snakeToCamel entries.
+func migrateTestValues(file, className string, val any, out *data.ClassDefinition) {
 	tv, ok := val.(map[any]any)
 	if !ok {
 		fmt.Printf("WARN: %s: test_values is not a map: %T\n", file, val)
@@ -1643,7 +1696,7 @@ func migrateTestValues(file string, val any, invertOverwrites map[string]string,
 			}
 			sort.Strings(keys)
 			for _, snakeKey := range keys {
-				metaName := resolveMetaName(snakeKey, invertOverwrites)
+				metaName, _ := metaReg.resolveMetaName(className, snakeKey)
 				if metaName == "" {
 					continue
 				}
@@ -1700,16 +1753,6 @@ func migrateTestValues(file string, val any, invertOverwrites map[string]string,
 			fmt.Printf("WARN: %s: test_values.%s ignored (unknown bucket)\n", file, bucket)
 		}
 	}
-}
-
-// resolveMetaName returns the meta camelCase property name for a bucket
-// entry's snake_case attribute name. invertOverwrites takes precedence;
-// any unmapped key falls back to snakeToCamel for auto-derived properties.
-func resolveMetaName(snakeKey string, invertOverwrites map[string]string) string {
-	if v, ok := invertOverwrites[snakeKey]; ok {
-		return v
-	}
-	return snakeToCamel(snakeKey)
 }
 
 // classifyReference picks a ReferenceTypeEnum for a parent_dn / target_dn
@@ -2421,9 +2464,10 @@ func main() {
 		// Merge the matching property YAML (if any) into the same
 		// ClassDefinition before deciding emit-or-skip and before
 		// projecting to view.
+		className := strings.TrimSuffix(filepath.Base(file), ".yaml")
 		propBase := filepath.Base(file)
 		if propPath, ok := propMap[propBase]; ok {
-			if err := loadAndMigrateProperties(propPath, tally, &canonical); err != nil {
+			if err := loadAndMigrateProperties(propPath, className, tally, &canonical); err != nil {
 				fmt.Fprintf(os.Stderr, "Error loading %s: %v\n", propPath, err)
 				failed++
 				continue
@@ -2434,7 +2478,6 @@ func main() {
 		// Post-merge cleanup: state_upgrades (from the class YAML) and
 		// test_values (from the property YAML) live on different sources
 		// but interact - run dedup once both are loaded.
-		className := strings.TrimSuffix(filepath.Base(file), ".yaml")
 		liftTestDefaultsToDefaultValues(file, className, &canonical)
 		dedupRedundantLegacyTestEntries(file, &canonical)
 
@@ -2473,13 +2516,13 @@ func main() {
 	sort.Strings(orphanBases)
 	for _, base := range orphanBases {
 		propPath := propMap[base]
+		orphanClass := strings.TrimSuffix(base, ".yaml")
 		canonical := data.ClassDefinition{}
-		if err := loadAndMigrateProperties(propPath, tally, &canonical); err != nil {
+		if err := loadAndMigrateProperties(propPath, orphanClass, tally, &canonical); err != nil {
 			fmt.Fprintf(os.Stderr, "Error loading orphan %s: %v\n", propPath, err)
 			failed++
 			continue
 		}
-		orphanClass := strings.TrimSuffix(base, ".yaml")
 		liftTestDefaultsToDefaultValues(propPath, orphanClass, &canonical)
 		dedupRedundantLegacyTestEntries(propPath, &canonical)
 		if !hasMigratedData(canonical) {
@@ -2516,7 +2559,7 @@ func main() {
 // loadAndMigrateProperties parses one legacy property YAML and merges the
 // translated values onto the supplied ClassDefinition. Returns an error
 // only on read or parse failure so callers can attribute it to the file.
-func loadAndMigrateProperties(file string, tally *keyTally, out *data.ClassDefinition) error {
+func loadAndMigrateProperties(file, className string, tally *keyTally, out *data.ClassDefinition) error {
 	payload, err := os.ReadFile(file)
 	if err != nil {
 		return err
@@ -2525,7 +2568,7 @@ func loadAndMigrateProperties(file string, tally *keyTally, out *data.ClassDefin
 	if err := yaml.Unmarshal(payload, &legacy); err != nil {
 		return err
 	}
-	migrateProperties(file, legacy, tally, out)
+	migrateProperties(file, className, legacy, tally, out)
 	return nil
 }
 
