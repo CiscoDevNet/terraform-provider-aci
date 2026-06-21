@@ -576,6 +576,73 @@ func contains(haystack []string, needle string) bool {
 	return false
 }
 
+// liftTestDefaultsToDefaultValues rewrites the legacy `test_values.default`
+// semantic onto the canonical `default_values:` map where they coincide.
+// The legacy bucket meant "omit X from HCL config and assert APIC returns
+// Y", which the loader expresses through Documentation.DefaultValues:
+// generateDefault uses each DefaultValue.Value as the AssertValue and sets
+// ConfigInclude=false. The explicit `test_config.default` path instead
+// emits ConfigInclude=true (puts Y in the HCL config), which is the
+// opposite of the legacy intent.
+//
+// Per entry, the decision is:
+//   - ConfigValue is list-shaped (starts with '['): keep. DefaultValues is
+//     string-only and cannot encode list defaults; the explicit
+//     test_config.default is the only path for those.
+//   - DefaultValues already contains the ConfigValue as a key: drop the
+//     test entry as redundant. The auto-derive will assert the same value.
+//   - DefaultValues exists but does not contain the ConfigValue: keep both.
+//     The legacy author chose a test default value distinct from the
+//     declared schema default; preserve that override verbatim.
+//   - DefaultValues is empty:
+//     - Meta carries a default for this property AND it differs from the
+//       ConfigValue: keep. The legacy author intentionally asserted a
+//       value that diverges from the APIC server default; lifting would
+//       rewrite the "Default:" docs line to a value APIC does not use.
+//     - Meta has no default OR meta default equals ConfigValue: lift the
+//       ConfigValue into DefaultValues[cv]="" and drop the test entry.
+//
+// Run as a post-pass after migrateTestValues + the default_values handler
+// in loadAndMigrateProperties so both inputs are visible.
+func liftTestDefaultsToDefaultValues(file, className string, out *data.ClassDefinition) {
+	for propName, prop := range out.Properties {
+		if len(prop.TestConfig.Default) == 0 {
+			continue
+		}
+		kept := prop.TestConfig.Default[:0]
+		for _, entry := range prop.TestConfig.Default {
+			cv := entry.ConfigValue
+			if strings.HasPrefix(cv, "[") {
+				kept = append(kept, entry)
+				continue
+			}
+			if len(prop.DefaultValues) > 0 {
+				if _, exists := prop.DefaultValues[cv]; exists {
+					fmt.Printf("DROP: %s: %s.test_config.default[%q] already in default_values\n", file, propName, cv)
+					continue
+				}
+				kept = append(kept, entry)
+				continue
+			}
+			if metaDefault, ok := metaReg.metaDefaultFor(className, propName); ok && metaDefault != cv {
+				kept = append(kept, entry)
+				continue
+			}
+			if prop.DefaultValues == nil {
+				prop.DefaultValues = map[string]string{}
+			}
+			prop.DefaultValues[cv] = ""
+			fmt.Printf("LIFT: %s: %s.test_config.default[%q] -> default_values\n", file, propName, cv)
+		}
+		if len(kept) == 0 {
+			prop.TestConfig.Default = nil
+		} else {
+			prop.TestConfig.Default = kept
+		}
+		out.Properties[propName] = prop
+	}
+}
+
 // snakeToCamel converts "application_profile_dn" -> "applicationProfileDn".
 // Last-resort fallback only: prefer metaReg.resolveMetaName when a class
 // context is available so renamed properties resolve to their meta
@@ -630,6 +697,13 @@ type metaRegistry struct {
 	// inverters are available cross-class (a fvAEPg state_upgrade entry
 	// references fvRsBd's overwrites).
 	ClassOverwriteInverters map[string]map[string]string
+	// ClassMetaDefaults: className -> {metaName -> default-as-string}.
+	// Populated from each property's `default` JSON field; only present
+	// when the meta carries an explicit default. Used by
+	// liftTestDefaultsToDefaultValues to decide whether a legacy
+	// test_values.default value diverges from the APIC server default
+	// (lift-skip) or matches/has no meta entry (lift-eligible).
+	ClassMetaDefaults map[string]map[string]string
 }
 
 // newMetaRegistry pre-loads the three lookup tables. Errors during a single
@@ -642,6 +716,7 @@ func newMetaRegistry(metaDir, globalDefPath, propertiesDir string) (*metaRegistr
 		ClassIdentifiedBy:       map[string][]string{},
 		GlobalAttributeInverter: map[string]string{},
 		ClassOverwriteInverters: map[string]map[string]string{},
+		ClassMetaDefaults:       map[string]map[string]string{},
 	}
 
 	// Meta property names.
@@ -676,6 +751,19 @@ func newMetaRegistry(metaDir, globalDefPath, propertiesDir string) (*metaRegistr
 			}
 			sort.Strings(names)
 			reg.ClassMetaProperties[className] = names
+			defaults := map[string]string{}
+			for name, p := range propsRaw {
+				propMap, ok := p.(map[string]any)
+				if !ok {
+					continue
+				}
+				if raw, ok := propMap["default"]; ok && raw != nil {
+					defaults[name] = fmt.Sprintf("%v", raw)
+				}
+			}
+			if len(defaults) > 0 {
+				reg.ClassMetaDefaults[className] = defaults
+			}
 			if idRaw, ok := bodyMap["identifiedBy"].([]any); ok {
 				ids := make([]string, 0, len(idRaw))
 				for _, v := range idRaw {
@@ -818,6 +906,17 @@ func (r *metaRegistry) classHasMetaProperty(className, metaName string) bool {
 		}
 	}
 	return false
+}
+
+// metaDefaultFor returns the meta JSON `default` value for the given class
+// property as its raw string representation. `ok` is false when the meta
+// does not declare a default for this property (most properties).
+func (r *metaRegistry) metaDefaultFor(className, metaName string) (string, bool) {
+	if defaults, ok := r.ClassMetaDefaults[className]; ok {
+		v, found := defaults[metaName]
+		return v, found
+	}
+	return "", false
 }
 
 // metaReg is the package-level registry initialised once in main(). Migration
@@ -2335,6 +2434,8 @@ func main() {
 		// Post-merge cleanup: state_upgrades (from the class YAML) and
 		// test_values (from the property YAML) live on different sources
 		// but interact - run dedup once both are loaded.
+		className := strings.TrimSuffix(filepath.Base(file), ".yaml")
+		liftTestDefaultsToDefaultValues(file, className, &canonical)
 		dedupRedundantLegacyTestEntries(file, &canonical)
 
 		if !hasMigratedData(canonical) {
@@ -2350,7 +2451,6 @@ func main() {
 			continue
 		}
 
-		className := strings.TrimSuffix(filepath.Base(file), ".yaml")
 		outputPath := filepath.Join(outputDir, className+".yaml")
 		if err := os.WriteFile(outputPath, out, 0644); err != nil {
 			fmt.Fprintf(os.Stderr, "Error writing %s: %v\n", outputPath, err)
@@ -2379,6 +2479,8 @@ func main() {
 			failed++
 			continue
 		}
+		orphanClass := strings.TrimSuffix(base, ".yaml")
+		liftTestDefaultsToDefaultValues(propPath, orphanClass, &canonical)
 		dedupRedundantLegacyTestEntries(propPath, &canonical)
 		if !hasMigratedData(canonical) {
 			skipped++
