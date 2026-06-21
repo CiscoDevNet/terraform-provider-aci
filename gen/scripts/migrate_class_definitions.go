@@ -492,6 +492,81 @@ func migrate(file string, legacy map[string]any, tally *keyTally) data.ClassDefi
 	return out
 }
 
+// dedupRedundantLegacyTestEntries drops a property's TestConfig.Legacy when
+// it is structurally identical to TestConfig.Create AND the property has a
+// renamed state_upgrade alias (non-Removed, with a different attribute name
+// than the current one). In that case the loader's setLegacyTestValues
+// auto-derives Legacy from Create at load time, so the explicit duplicate
+// adds nothing and just clutters the canonical YAML. Run as a post-pass
+// after migrateStateUpgrades so the rename information is available.
+func dedupRedundantLegacyTestEntries(file string, out *data.ClassDefinition) {
+	for propName, prop := range out.Properties {
+		if !testEntriesEqual(prop.TestConfig.Legacy, prop.TestConfig.Create) {
+			continue
+		}
+		if !hasRenamedLegacyAlias(propName, prop, out.StateUpgrades) {
+			continue
+		}
+		fmt.Printf("DROP: %s: %s.test_config.legacy == create with renamed legacy alias (loader auto-derives)\n", file, propName)
+		prop.TestConfig.Legacy = nil
+		out.Properties[propName] = prop
+	}
+}
+
+// testEntriesEqual returns true when both slices are non-empty, the same
+// length, and every TestValueEntryDefinition matches field-for-field. An
+// empty slice is never equal to a non-empty one (so we never drop an
+// already-empty Legacy bucket or treat it as a duplicate).
+func testEntriesEqual(a, b []data.TestValueEntryDefinition) bool {
+	if len(a) == 0 || len(b) == 0 || len(a) != len(b) {
+		return false
+	}
+	for i := range a {
+		if a[i].ConfigValue != b[i].ConfigValue ||
+			a[i].AssertValue != b[i].AssertValue ||
+			a[i].ValueType != b[i].ValueType {
+			return false
+		}
+		// ConfigInclude is *bool - compare deref values, treating nil as nil.
+		switch {
+		case a[i].ConfigInclude == nil && b[i].ConfigInclude == nil:
+		case a[i].ConfigInclude == nil || b[i].ConfigInclude == nil:
+			return false
+		case *a[i].ConfigInclude != *b[i].ConfigInclude:
+			return false
+		}
+	}
+	return true
+}
+
+// hasRenamedLegacyAlias mirrors property.go hasTestableLegacyAlias: returns
+// true when the property has at least one state_upgrade entry whose
+// legacy_attribute differs from the property's effective attribute name and
+// whose legacy_status is not Removed. The effective attribute name is
+// p.AttributeName when set, otherwise utils.Underscore(propName) (the global
+// attribute_name_overrides forward map is not consulted; in the rare case it
+// applies, this function under-detects and keeps the explicit Legacy - the
+// safe direction).
+func hasRenamedLegacyAlias(propName string, p data.PropertyDefinition, sus []data.StateUpgradeDefinition) bool {
+	attrName := p.AttributeName
+	if attrName == "" {
+		attrName = utils.Underscore(propName)
+	}
+	for _, su := range sus {
+		entry, ok := su.Attributes[propName]
+		if !ok {
+			continue
+		}
+		if entry.LegacyStatus == data.Removed {
+			continue
+		}
+		if entry.LegacyAttribute != "" && entry.LegacyAttribute != attrName {
+			return true
+		}
+	}
+	return false
+}
+
 func contains(haystack []string, needle string) bool {
 	for _, s := range haystack {
 		if s == needle {
@@ -2239,6 +2314,11 @@ func main() {
 			delete(propMap, propBase)
 		}
 
+		// Post-merge cleanup: state_upgrades (from the class YAML) and
+		// test_values (from the property YAML) live on different sources
+		// but interact - run dedup once both are loaded.
+		dedupRedundantLegacyTestEntries(file, &canonical)
+
 		if !hasMigratedData(canonical) {
 			skipped++
 			continue
@@ -2281,6 +2361,7 @@ func main() {
 			failed++
 			continue
 		}
+		dedupRedundantLegacyTestEntries(propPath, &canonical)
 		if !hasMigratedData(canonical) {
 			skipped++
 			continue
