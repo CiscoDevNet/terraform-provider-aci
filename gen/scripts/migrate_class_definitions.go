@@ -376,12 +376,20 @@ func migrate(file string, legacy map[string]any, tally *keyTally) data.ClassDefi
 			out.Documentation.DnFormats = toStringSlice(val)
 		case "include":
 			// Legacy `include: true` forces a class with empty IdentifiedBy
-			// into the generator registry. The new resolver expresses the same
-			// opt-in via a non-nil artifacts override. fvFBRoute has
-			// IdentifiedBy non-empty so its include: true is redundant; the
-			// one-off cleanup removes it in a later commit.
+			// into the generator registry. The canonical pipeline auto-derives
+			// the same opt-in from a non-empty IdentifiedBy, so when the meta
+			// already carries one the legacy override is redundant - dropping
+			// it lets the auto-derive own Artifacts going forward. Otherwise
+			// (true with empty IdentifiedBy, or an explicit false) we record
+			// the Artifacts list explicitly. fvFBRoute hits the drop branch;
+			// fvCrtrn, vmmUplinkPCont, vzAny and fvSiteAssociated keep the
+			// explicit list because their IdentifiedBy is empty.
 			if b, ok := val.(bool); ok {
-				if b {
+				selfClass := strings.TrimSuffix(filepath.Base(file), ".yaml")
+				identifiedBy := metaReg.ClassIdentifiedBy[selfClass]
+				if b && len(identifiedBy) > 0 {
+					fmt.Printf("  DROP: %s include=true is redundant (meta identifiedBy=%v drives auto-derive)\n", file, identifiedBy)
+				} else if b {
 					out.Artifacts = []data.ArtifactEnum{data.ResourceArtifact, data.DatasourceArtifact}
 				} else {
 					out.Artifacts = []data.ArtifactEnum{}
@@ -529,6 +537,13 @@ type metaRegistry struct {
 	// (default attribute_name = utils.Underscore(metaName)) and by the
 	// tn-property friendly-name fallback for named-relation classes.
 	ClassMetaProperties map[string][]string
+	// ClassIdentifiedBy: className -> meta identifiedBy slice from
+	// gen/meta/<className>.json. Drives the legacy `include: true`
+	// redundancy check: a non-empty IdentifiedBy already satisfies the
+	// canonical artifact auto-derive, so the legacy override is dropped
+	// rather than emitted as a verbatim Artifacts list (which would mask
+	// the auto-derive going forward).
+	ClassIdentifiedBy map[string][]string
 	// GlobalAttributeInverter: inverted from
 	// gen/definitions/global.yaml.attribute_name_overrides
 	// (the canonical store for cross-class renames the legacy generator
@@ -549,6 +564,7 @@ type metaRegistry struct {
 func newMetaRegistry(metaDir, globalDefPath, propertiesDir string) (*metaRegistry, error) {
 	reg := &metaRegistry{
 		ClassMetaProperties:     map[string][]string{},
+		ClassIdentifiedBy:       map[string][]string{},
 		GlobalAttributeInverter: map[string]string{},
 		ClassOverwriteInverters: map[string]map[string]string{},
 	}
@@ -585,6 +601,15 @@ func newMetaRegistry(metaDir, globalDefPath, propertiesDir string) (*metaRegistr
 			}
 			sort.Strings(names)
 			reg.ClassMetaProperties[className] = names
+			if idRaw, ok := bodyMap["identifiedBy"].([]any); ok {
+				ids := make([]string, 0, len(idRaw))
+				for _, v := range idRaw {
+					if s, ok := v.(string); ok {
+						ids = append(ids, s)
+					}
+				}
+				reg.ClassIdentifiedBy[className] = ids
+			}
 		}
 	}
 
