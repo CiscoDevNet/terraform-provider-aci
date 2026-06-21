@@ -4999,8 +4999,9 @@ func TestResolveChildTestValues(t *testing.T) {
 // YAML conversion layer; this case guarantees explicit Create/Update overrides
 // (arbitrary literals such as MAC addresses, IP addresses, or custom strings)
 // land in instance 0 / instance 1 respectively without being overwritten by
-// auto-derivation. Required all-four-bucket completeness mirrors the runtime
-// validateStandardBucketsComplete rule.
+// auto-derivation. The fixture supplies all four standard buckets explicitly
+// so the per-bucket merge in setTestValues passes the overrides through
+// without re-deriving from meta.
 func TestResolveChildTestValuesYAMLOverridesPropagate(t *testing.T) {
 	t.Parallel()
 	test.InitializeTest(t)
