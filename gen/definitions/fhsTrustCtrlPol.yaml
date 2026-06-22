@@ -1,0 +1,35 @@
+documentation:
+  sub_category: Tenant Policies
+  ui_locations:
+  - Tenants -> Policies -> Protocol -> First Hop Security -> Trust Control Policies
+properties:
+  hasDhcpv4Server:
+    default_values:
+      "no": ""
+    documentation:
+      description: The %s object contains DHCPv4 servers.
+  hasDhcpv6Server:
+    default_values:
+      "no": ""
+    documentation:
+      description: The %s object contains DHCPv6 servers.
+  hasIpv6Router:
+    default_values:
+      "no": ""
+    documentation:
+      description: The %s object contains IPv6 routers.
+  trustArp:
+    default_values:
+      "no": ""
+    documentation:
+      description: The address resolution protocol (ARP) trust status of the %s object.
+  trustNd:
+    default_values:
+      "no": ""
+    documentation:
+      description: The neighbor discovery (ND) trust status of the %s object.
+  trustRa:
+    default_values:
+      "no": ""
+    documentation:
+      description: The router advertisement (RA) trust status of the %s object.

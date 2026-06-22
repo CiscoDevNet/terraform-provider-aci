@@ -1,0 +1,42 @@
+properties:
+  managedConfigCheck:
+    default_values:
+      "no": ""
+    documentation:
+      description: Perform a managed configuration check for the %s object.
+  managedConfigFlag:
+    default_values:
+      "no": ""
+    documentation:
+      description: The managed configuration flag setting for the %s object.
+  maxHopLimit:
+    default_values:
+      "0": ""
+    documentation:
+      description: The maximum hop limit for the %s object.
+    test_config:
+      create:
+      - config_value: "10"
+  maxRouterPref:
+    attribute_name: max_router_preference
+    documentation:
+      description: The allowed maximum router preference for the %s object.
+  minHopLimit:
+    default_values:
+      "0": ""
+    documentation:
+      description: The minimum hop limit for the %s object.
+    test_config:
+      create:
+      - config_value: "1"
+  otherConfigCheck:
+    default_values:
+      "no": ""
+    documentation:
+      description: Perform other configuration checks for the %s object.
+  otherConfigFlag:
+    default_values:
+      "no": ""
+    documentation:
+      description: The other configuration flag setting for the %s object.
+resource_name: route_advertisement_guard_policy

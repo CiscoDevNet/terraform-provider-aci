@@ -1,0 +1,9 @@
+documentation:
+  sub_category: Networking
+  ui_locations:
+  - Tenants -> Networking -> VRFs -> EPG|ESG Collection for VRF -> Contract Interfaces
+properties:
+  tnVzCPIfName:
+    documentation:
+      description: The name of the imported Contract object.
+resource_name: relation_from_any_to_contract_interface

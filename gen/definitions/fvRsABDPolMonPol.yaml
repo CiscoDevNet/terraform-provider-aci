@@ -1,0 +1,5 @@
+properties:
+  tnMonEPGPolName:
+    documentation:
+      description: The name of the Monitoring Policy object.
+resource_name: relation_from_bridge_domain_to_monitoring_policy

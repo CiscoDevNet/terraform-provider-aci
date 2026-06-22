@@ -1,0 +1,12 @@
+documentation:
+  sub_category: Networking
+  ui_locations:
+  - Tenants -> Networking -> VRFs -> Policy -> OSPF Context Per Address Family
+properties:
+  af:
+    test_config:
+      create:
+      - config_value: ipv4-ucast
+      default:
+      - config_value: ipv4-ucast
+resource_name: relation_from_vrf_to_address_family_ospf_timers

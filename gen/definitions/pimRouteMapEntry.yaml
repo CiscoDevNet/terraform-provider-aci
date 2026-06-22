@@ -1,0 +1,41 @@
+documentation:
+  sub_category: Tenant Policies
+  ui_locations:
+  - Tenants -> Policies -> Protocol -> Route Maps for Multicast -> Route Maps
+properties:
+  action:
+    documentation:
+      description: The route action of the %s object.
+  grp:
+    attribute_name: group_ip
+    default_values:
+      0.0.0.0: ""
+    documentation:
+      description: The group ip of the %s object.
+    test_config:
+      create:
+      - config_value: 0.0.0.0
+      update:
+      - config_value: ff0e::0101/128
+  rp:
+    attribute_name: rendezvous_point_ip
+    default_values:
+      0.0.0.0: ""
+    documentation:
+      description: The rendezvous point ip of the %s object.
+    test_config:
+      create:
+      - config_value: 0.0.0.0
+      update:
+      - config_value: 2001:0db8:ffff::1/128
+  src:
+    attribute_name: source_ip
+    default_values:
+      0.0.0.0: ""
+    documentation:
+      description: The source ip of the %s object.
+    test_config:
+      create:
+      - config_value: 1.1.1.1/30
+      update:
+      - config_value: 2001:0db8:100::10/128

@@ -1,0 +1,10 @@
+properties:
+  resolveAct:
+    attribute_name: resolve_action
+    documentation:
+      description: The action to take for resolving the Endpoint Retention Policy
+        object.
+  tnFvEpRetPolName:
+    documentation:
+      description: The name of the Endpoint Retention Policy object.
+resource_name: relation_from_bridge_domain_to_end_point_retention_policy

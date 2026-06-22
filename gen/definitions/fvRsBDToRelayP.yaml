@@ -1,0 +1,6 @@
+properties:
+  tnDhcpRelayPName:
+    documentation:
+      description: The name of the DHCP Relay Policy object.
+resource_name: relation_from_bridge_domain_to_dhcp_relay_policy
+supported_versions: 1.0(1e)-6.1(1e)

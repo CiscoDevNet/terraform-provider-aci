@@ -1,0 +1,20 @@
+documentation:
+  sub_category: Tenant Policies
+  ui_locations:
+  - Tenants -> Policies -> Protocol -> EIGRP -> EIGRP Address Family Context
+properties:
+  actIntvl:
+    attribute_name: active_interval
+  extDist:
+    attribute_name: external_distance
+  intDist:
+    attribute_name: internal_distance
+  maxPaths:
+    attribute_name: maximum_path_limit
+    documentation:
+      description: The maximum number of different equal cost paths to install in
+        the routing table.
+  metricStyle:
+    documentation:
+      description: The metric style used for metric calculations.
+resource_name: eigrp_address_family_context

@@ -1,0 +1,10 @@
+properties:
+  tnMonEPGPolName:
+    default_values:
+      uni/tn-common/monepg-default: ""
+    documentation:
+      description: The name of the monitoring policy.
+    test_config:
+      create:
+      - config_value: default
+resource_name: relation_from_tenant_to_monitoring_policy

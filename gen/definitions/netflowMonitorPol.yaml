@@ -1,0 +1,25 @@
+documentation:
+  sub_category: Tenant Policies
+  ui_locations:
+  - Tenants -> Policies -> NetFlow -> NetFlow Monitors
+  - Fabric -> Access Policies -> Policies -> Interface -> NetFlow -> NetFlow Monitors
+migration_source: from_sdkv2
+properties:
+  name:
+    default_values:
+      netfow_monitor_default: ""
+  parentDn:
+    default_values:
+      uni/infra: ""
+resource_name: netflow_monitor_policy
+state_upgrades:
+- children:
+    netflowRsMonitorToRecord:
+      legacy_type: set_nested_attribute
+  prior_schema_version: 0
+test_config:
+  dependencies:
+  - class_name: infraInfra
+    reference: uni/infra
+    reference_type: static
+    role: parent

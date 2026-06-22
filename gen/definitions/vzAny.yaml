@@ -1,0 +1,37 @@
+artifacts:
+- resource
+- datasource
+documentation:
+  sub_category: Networking
+  ui_locations:
+  - Tenants -> Networking -> VRFs -> EPG|ESG Collection for VRF
+migration_source: from_sdkv2
+properties:
+  prefGrMemb:
+    attribute_name: preferred_group_member
+    documentation:
+      description: Parameter used to determine whether the EPG is part of the preferred
+        group. Members of this group are allowed to communicate without contracts.
+resource_name: any
+state_upgrades:
+- attributes:
+    matchT:
+      legacy_attribute: match_t
+    parentDn:
+      legacy_attribute: vrf_dn
+    prefGrMemb:
+      legacy_attribute: pref_gr_memb
+  children:
+    vzRsAnyToCons:
+      attributes:
+        tnVzBrCPName:
+          legacy_attribute: relation_vz_rs_any_to_cons
+    vzRsAnyToConsIf:
+      attributes:
+        tnVzCPIfName:
+          legacy_attribute: relation_vz_rs_any_to_cons_if
+    vzRsAnyToProv:
+      attributes:
+        tnVzBrCPName:
+          legacy_attribute: relation_vz_rs_any_to_prov
+  prior_schema_version: 1

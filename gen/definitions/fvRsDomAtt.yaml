@@ -1,0 +1,148 @@
+documentation:
+  sub_category: Application Management
+  ui_locations:
+  - Tenants -> Application Profiles -> Application EPGs -> Domains (VMs and Bare-Metals)
+properties:
+  apiMode:
+    restriction: exclude
+  bindingType:
+    documentation:
+      description: The binding type of the %s object.
+  classPref:
+    documentation:
+      description: The class preference of the %s object. Set 'useg' to allow microsegmentation.
+  customEpgName:
+    documentation:
+      description: The display name of the user configured port-group.
+  delimiter:
+    default_values:
+      "": ""
+    documentation:
+      description: The delimiter of the %s object.
+    test_config:
+      create:
+      - config_value: '@'
+  encap:
+    default_values:
+      unknown: ""
+    documentation:
+      description: The encapsulation of the %s object. The encapsulation refers to
+        the EPG VLAN when class preference is set to 'encap', or to the Secondary
+        VLAN when class preference is set to 'useg'.
+    test_config:
+      create:
+      - config_value: vlan-100
+  encapMode:
+    documentation:
+      description: The encapsulation mode of the %s object.
+  epgCos:
+    documentation:
+      description: The class of service (CoS) of the %s object.
+  epgCosPref:
+    documentation:
+      description: The class of service (CoS) preference of the %s object.
+  ipamDhcpOverride:
+    documentation:
+      description: The IP address management (IPAM) DHCP override of the %s object.
+        Only applicable for Nutanix domains.
+    test_config:
+      ignore_in_test: true
+  ipamEnabled:
+    default_values:
+      "no": ""
+    documentation:
+      description: The IP address management (IPAM) enabled status of the %s object.
+        Only applicable for Nutanix domains.
+    test_config:
+      ignore_in_test: true
+  ipamGateway:
+    documentation:
+      description: The IP address management (IPAM) gateway of the %s object. Only
+        applicable for Nutanix domains.
+    test_config:
+      ignore_in_test: true
+  lagPolicyName:
+    documentation:
+      description: The link aggregation group (LAG) policy name of the %s object.
+  netflowDir:
+    documentation:
+      description: The NetFlow monitoring direction of the %s object.
+  netflowPref:
+    documentation:
+      description: The NetFlow enabled status for the %s object.
+  numPorts:
+    default_values:
+      "0": ""
+    documentation:
+      description: The number of ports of the %s object.
+    test_config:
+      create:
+      - config_value: "1"
+  primaryEncap:
+    default_values:
+      unknown: ""
+    documentation:
+      description: The primary encapsulation of the %s object. This is used when the
+        class preference is set to 'useg'.
+    test_config:
+      create:
+      - config_value: vlan-200
+  primaryEncapInner:
+    default_values:
+      unknown: ""
+    documentation:
+      description: The primary inner encapsulation of the %s object. This is used
+        for the portgroup at the VMWare Distributed Virtual Switch (DVS). This VLAN
+        is internal to the DVS and is used for communication between the other VMs
+        and the AVE VM at a host. Traffic is not forwarded to the fabric over the
+        VLAN. Only applicable for Cisco ACI Virtual Edge (AVE) domains.
+    test_config:
+      create:
+      - config_value: vlan-300
+  secondaryEncapInner:
+    default_values:
+      unknown: ""
+    documentation:
+      description: The secondary inner encapsulation of the %s object. This is used
+        for the portgroup at the VMWare Distributed Virtual Switch (DVS). This VLAN
+        is internal to the DVS and is used for communication between the other VMs
+        and the AVE VM at a host. Traffic is not forwarded to the fabric over the
+        VLAN. Only applicable for Cisco ACI Virtual Edge (AVE) domains.
+    test_config:
+      create:
+      - config_value: vlan-400
+  switchingMode:
+    documentation:
+      description: The switching mode of the %s object.
+  tDn:
+    documentation:
+      description: The distinguished name of the target Domain object.
+  untagged:
+    default_values:
+      "no": ""
+    documentation:
+      description: The untagged status of the %s object.
+  vnetOnly:
+    restriction: exclude
+relation_info:
+  to_classes:
+  - vmmDomP
+  - physDomP
+  - fcDomP
+  - l2extDomP
+resource_name: relation_to_domain
+test_config:
+  dependencies:
+  - class_name: fvAEPg
+    dependencies:
+    - class_name: fvAp
+    reference: aci_application_epg.test.id
+    role: parent
+  - class_name: vmmDomP
+    reference: uni/vmmp-VMware/dom-domain_1
+    reference_type: static
+    role: target
+  - class_name: vmmDomP
+    reference: uni/vmmp-VMware/dom-domain_2
+    reference_type: static
+    role: target

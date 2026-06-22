@@ -1,0 +1,27 @@
+documentation:
+  sub_category: Virtual Networking
+  ui_locations:
+  - Virtual Networking -> VMware -> Name of Uplinks
+properties:
+  id:
+    restriction: exclude
+  name:
+    restriction: exclude
+  uplinkId:
+    documentation:
+      description: The uplink identifier of the %s object.
+    restriction: required
+  uplinkName:
+    default_values:
+      uplink_name_1: ""
+    documentation:
+      description: The uplink name of the %s object.
+    restriction: required
+    test_config:
+      create:
+      - config_value: uplink_name_2
+      update:
+      - config_value: uplink_name_2
+  vmmUplinkPolicys:
+    attribute_name: uplink_policies
+resource_name: vmm_uplink_policy

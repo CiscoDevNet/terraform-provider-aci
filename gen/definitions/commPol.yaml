@@ -1,0 +1,17 @@
+documentation:
+  sub_category: Fabric Policies
+  ui_locations:
+  - Fabric -> Fabric Policies -> Policies -> Pod -> Management Access
+include_parents:
+- polUni
+properties:
+  strictSecurityOnApicOOBSubnet:
+    default_values:
+      "no": ""
+    documentation:
+      description: Removes implicit access permissions from any APIC out-of-band (OOB)
+        subnet IP address.
+    test_config:
+      ignore_in_test: true
+resource_name: management_access_policy
+rn_prepend: fabric

@@ -1,0 +1,11 @@
+documentation:
+  sub_category: Networking
+  ui_locations:
+  - Tenants -> Networking -> VRFs -> EPG|ESG Collection for VRF -> Provided Contracts
+properties:
+  intent:
+    restriction: exclude
+  tnVzBrCPName:
+    documentation:
+      description: The name of the Contract object.
+resource_name: relation_from_any_to_provider_contract

@@ -1,0 +1,10 @@
+documentation:
+  sub_category: Application Management
+  ui_locations:
+  - Tenants -> Application Profiles -> uSeg EPGs -> uSeg Attributes
+properties:
+  selector:
+    documentation:
+      description: The selector of the %s object. Represents the DN or expression
+        to select an identity group.
+resource_name: epg_useg_ad_group_attribute

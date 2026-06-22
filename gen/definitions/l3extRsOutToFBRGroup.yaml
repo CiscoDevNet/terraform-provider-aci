@@ -1,0 +1,24 @@
+documentation:
+  sub_category: L3Out
+  ui_locations:
+  - Tenants -> Networking -> L3Outs -> Policy -> Main -> Fallback Route Group
+properties:
+  tDn:
+    documentation:
+      description: The distinguished name of the VRF Fallback Route Group object.
+resource_name: relation_to_vrf_fallback_route_group
+test_config:
+  dependencies:
+  - class_name: l3extOut
+    dependencies:
+    - class_name: fvTenant
+    reference: aci_l3_outside.test.id
+    role: parent
+  - class_name: fvFBRGroup
+    config_overrides:
+      name: vrf_fallback_route_group_0
+    dependencies:
+    - class_name: fvCtx
+    reference: uni/tn-test_name/ctx-test_vrf/fbrg-vrf_fallback_route_group_0
+    reference_type: static
+    role: target

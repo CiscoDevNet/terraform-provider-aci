@@ -1,0 +1,11 @@
+documentation:
+  sub_category: Contract
+  ui_locations:
+  - Tenants -> Contracts -> Taboos
+migration_source: from_sdkv2
+resource_name: taboo_contract
+state_upgrades:
+- attributes:
+    parentDn:
+      legacy_attribute: tenant_dn
+  prior_schema_version: 1

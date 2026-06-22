@@ -1,0 +1,28 @@
+documentation:
+  sub_category: Access Policies
+  ui_locations:
+  - Fabric -> Access Policies -> Policies -> Interface -> Spanning Tree Interface
+include_parents:
+- polUni
+migration_source: from_sdkv2
+properties:
+  ctrl:
+    attribute_name: interface_controls
+    default_values:
+      "": ""
+    documentation:
+      description: The interface controls of the %s object.
+    remove_valid_values:
+    - unspecified
+    test_config:
+      create:
+      - config_value: '["bpdu-filter", "bpdu-guard"]'
+      default:
+      - config_value: '[]'
+resource_name: spanning_tree_interface_policy
+rn_prepend: infra
+state_upgrades:
+- attributes:
+    ctrl:
+      legacy_attribute: ctrl
+  prior_schema_version: 1

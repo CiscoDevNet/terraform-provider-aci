@@ -1,0 +1,199 @@
+documentation:
+  dn_formats:
+  - topology/pod-{id}/node-{id}/sys
+  sub_category: Fabric Inventory
+properties:
+  address:
+    restriction: read_only
+  bootstrapState:
+    restriction: read_only
+  clusterTimeDiff:
+    restriction: read_only
+  controlPlaneMTU:
+    restriction: read_only
+  currentTime:
+    restriction: read_only
+  enforceSubnetCheck:
+    restriction: read_only
+  etepAddr:
+    attribute_name: external_tep_address
+    documentation:
+      description: The external TEP IP address of this pod.
+    restriction: read_only
+  fabricDomain:
+    restriction: read_only
+  fabricId:
+    documentation:
+      description: The latest system health score.
+    restriction: read_only
+  fabricMAC:
+    documentation:
+      description: The MAC address of the fabric.
+    restriction: read_only
+  id:
+    attribute_name: system_id
+    documentation:
+      description: The identifier of the system object.
+  inbMgmtAddr:
+    attribute_name: inband_management_address
+    documentation:
+      description: The In-band management IPv4 address.
+    restriction: read_only
+  inbMgmtAddr6:
+    attribute_name: inband_management_address_ipv6
+    documentation:
+      description: The In-band management IPv6 address.
+    restriction: read_only
+  inbMgmtAddr6Mask:
+    attribute_name: inband_management_address_mask_ipv6
+    documentation:
+      description: The In-band management IPv6 address subnet mask.
+    restriction: read_only
+  inbMgmtAddrMask:
+    attribute_name: inband_management_address_mask
+    documentation:
+      description: The In-band management IPv4 address subnet mask.
+    restriction: read_only
+  inbMgmtGateway:
+    attribute_name: inband_management_gateway
+    documentation:
+      description: The In-band management IPv4 gateway address.
+    restriction: read_only
+  inbMgmtGateway6:
+    attribute_name: inband_management_gateway_ipv6
+    documentation:
+      description: The In-band management IPv6 gateway address.
+    restriction: read_only
+  lastRebootTime:
+    documentation:
+      description: The last reboot time for this system.
+    restriction: read_only
+  lastResetReason:
+    documentation:
+      description: The last reset reason for this system.
+    restriction: read_only
+  modTs:
+    restriction: read_only
+  mode:
+    restriction: read_only
+  monPolDn:
+    attribute_name: monitoring_policy_dn
+    restriction: read_only
+  name:
+    documentation:
+      description: The name of the system object.
+    restriction: read_only
+  nameAlias:
+    documentation:
+      description: The name alias of the system object.
+    restriction: read_only
+  nodeType:
+    documentation:
+      description: The role of this system.
+    restriction: read_only
+  oobMgmtAddr:
+    attribute_name: out_of_band_management_address
+    documentation:
+      description: The Out-of-band management IPv4 address.
+    restriction: read_only
+  oobMgmtAddr6:
+    attribute_name: out_of_band_management_address_ipv6
+    documentation:
+      description: The Out-of-band management IPv6 address.
+    restriction: read_only
+  oobMgmtAddr6Mask:
+    attribute_name: out_of_band_management_address_mask_ipv6
+    documentation:
+      description: The Out-of-band management IPv6 address subnet mask.
+    restriction: read_only
+  oobMgmtAddrMask:
+    attribute_name: out_of_band_management_address_mask
+    documentation:
+      description: The Out-of-band management IPv4 address subnet mask.
+    restriction: read_only
+  oobMgmtGateway:
+    attribute_name: out_of_band_management_gateway
+    documentation:
+      description: The Out-of-band management IPv4 gateway address.
+    restriction: read_only
+  oobMgmtGateway6:
+    attribute_name: out_of_band_management_gateway_ipv6
+    documentation:
+      description: The Out-of-band management IPv6 gateway address.
+    restriction: read_only
+  podId:
+    attribute_name: pod_id
+    documentation:
+      description: The pod identifier.
+  remoteNetworkId:
+    documentation:
+      description: The remote network ID.
+    restriction: read_only
+  remoteNode:
+    documentation:
+      description: The remote system.
+    restriction: read_only
+  rlAutoMode:
+    attribute_name: remote_leaf_auto_mode
+    documentation:
+      description: The remote leaf auto mode.
+    restriction: read_only
+  rlGroupId:
+    attribute_name: remote_leaf_group_id
+    documentation:
+      description: The remote leaf site identifier.
+    restriction: read_only
+  rlOperPodId:
+    attribute_name: remote_leaf_operational_pod_id
+    documentation:
+      description: The operational pod identifier for RL pod redundancy.
+    restriction: read_only
+  rlRoutableMode:
+    attribute_name: remote_leaf_routable_mode
+    documentation:
+      description: Indicates whether the remote leaf is using a routable TEP IP address.
+    restriction: read_only
+  rldirectMode:
+    attribute_name: remote_leaf_direct_mode
+    documentation:
+      description: The remote leaf direct mode.
+    restriction: read_only
+  role:
+    restriction: read_only
+  serial:
+    documentation:
+      description: The serial number of the system.
+    restriction: read_only
+  serverType:
+    documentation:
+      description: DHCP server type.
+    restriction: read_only
+  siteId:
+    documentation:
+      description: The site identifier.
+    restriction: read_only
+  state:
+    documentation:
+      description: The operational state of this system.
+    restriction: read_only
+  systemUpTime:
+    attribute_name: system_uptime
+    restriction: read_only
+  tepPool:
+    documentation:
+      description: The pool of TEP IP addresses allocated for this system.
+    restriction: read_only
+  unicastXrEpLearnDisable:
+    attribute_name: unicast_xr_endpoint_learn_disable
+    documentation:
+      description: Indicates whether the learning of unicast endpoints for external
+        routing is disabled.
+    restriction: read_only
+  version:
+    documentation:
+      description: The version for this system.
+    restriction: read_only
+  virtualMode:
+    documentation:
+      description: The virtual mode of this system.
+    restriction: read_only

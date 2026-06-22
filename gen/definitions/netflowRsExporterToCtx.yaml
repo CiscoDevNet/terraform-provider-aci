@@ -1,0 +1,14 @@
+documentation:
+  sub_category: Tenant Policies
+  ui_locations:
+  - Tenants -> Policies -> NetFlow -> NetFlow Exporters
+  - Fabric -> Access Policies -> Policies -> Interface -> NetFlow -> NetFlow Exporters
+resource_name: relation_from_netflow_exporter_to_vrf
+test_config:
+  dependencies:
+  - class_name: netflowExporterPol
+    role: parent
+  - class_name: fvCtx
+    reference: uni/tn-test_name/ctx-test_vrf
+    reference_type: static
+    role: target

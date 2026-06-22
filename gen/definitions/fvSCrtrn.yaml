@@ -1,0 +1,26 @@
+documentation:
+  resource:
+    notes:
+    - The `aci_epg_useg_sub_block_statement` is used to create nested sub-block statements
+      by referencing itself.
+  sub_category: Application Management
+  ui_locations:
+  - Tenants -> Application Profiles -> uSeg EPGs -> uSeg Attributes
+properties:
+  match:
+    default_values:
+      any: ""
+    documentation:
+      description: The Matching Rule Type of the %s object.
+    test_config:
+      create:
+      - config_value: all
+resource_name: epg_useg_sub_block_statement
+test_config:
+  dependencies:
+  - class_name: fvSCrtrn
+    dependencies:
+    - class_name: fvCrtrn
+    reference: epg_useg_sub_block_statement.test.id
+    reference_type: static
+    role: parent

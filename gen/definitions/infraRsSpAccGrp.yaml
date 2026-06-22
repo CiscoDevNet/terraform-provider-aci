@@ -1,0 +1,14 @@
+properties:
+  tDn:
+    test_config:
+      create:
+      - config_value: uni/infra/funcprof/spaccportgrp-spine_port_policy_group_1
+resource_name: relation_to_spine_port_policy_group
+test_config:
+  dependencies:
+  - class_name: infraSpAccPortGrp
+    config_overrides:
+      name: spine_port_policy_group_1
+    reference: uni/infra/funcprof/spaccportgrp-spine_port_policy_group_1
+    reference_type: static
+    role: target

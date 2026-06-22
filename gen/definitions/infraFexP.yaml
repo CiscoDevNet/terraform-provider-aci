@@ -1,0 +1,12 @@
+documentation:
+  sub_category: Access Policies
+  ui_locations:
+  - Fabric -> Access Policies -> Interfaces -> Leaf Interfaces -> Profiles -> Fex
+    Interfaces
+include_parents:
+- polUni
+migration_source: from_sdkv2
+resource_name: fex_profile
+rn_prepend: infra
+state_upgrades:
+- prior_schema_version: 1

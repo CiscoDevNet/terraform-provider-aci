@@ -1,0 +1,84 @@
+documentation:
+  sub_category: Tenant Policies
+  ui_locations:
+  - Tenants -> Policies -> Protocol -> Data Plane Policing
+properties:
+  adminSt:
+    attribute_name: admin_state
+    documentation:
+      description: The administrative state of the %s object.
+  be:
+    attribute_name: excessive_burst
+    documentation:
+      description: The excessive burst size of the %s object. Only applicable for
+        2R3C policer.
+  beUnit:
+    attribute_name: excessive_burst_unit
+    documentation:
+      description: The excessive burst size unit of the %s object. Only applicable
+        for 2R3C policer.
+  burst:
+    documentation:
+      description: The burst size of the %s object.
+  burstUnit:
+    documentation:
+      description: The burst size unit of the %s object.
+  conformAction:
+    documentation:
+      description: The conform action of the %s object.
+  conformMarkCos:
+    documentation:
+      description: The conform mark class of service (CoS) of the %s object.
+  conformMarkDscp:
+    documentation:
+      description: The conform mark differentiated services code point (DSCP) of the
+        %s object.
+  exceedAction:
+    documentation:
+      description: The exceed action of the %s object.
+  exceedMarkCos:
+    documentation:
+      description: The exceed mark class of service (CoS) of the %s object.
+  exceedMarkDscp:
+    documentation:
+      description: The exceed mark differentiated services code point (DSCP) of the
+        %s object.
+  parentDn:
+    default_values:
+      uni/infra: ""
+  pir:
+    attribute_name: peak_rate
+    default_values:
+      "0": ""
+    documentation:
+      description: The peak information rate (PIR) of the %s object. Only applicable
+        for 2R3C policer.
+  pirUnit:
+    attribute_name: peak_rate_unit
+    documentation:
+      description: The peak information rate (PIR) unit of the %s object. Only applicable
+        for 2R3C policer.
+  rate:
+    default_values:
+      "0": ""
+    documentation:
+      description: The rate of the %s object.
+  rateUnit:
+    documentation:
+      description: The rate unit of the %s object.
+  sharingMode:
+    documentation:
+      description: The sharing mode of the %s object.
+  type:
+    documentation:
+      description: The type of the %s object.
+  violateAction:
+    documentation:
+      description: The violate action of the %s object.
+  violateMarkCos:
+    documentation:
+      description: The violate mark class of service (CoS) of the %s object.
+  violateMarkDscp:
+    documentation:
+      description: The violate mark differentiated services code point (DSCP) of the
+        %s object.

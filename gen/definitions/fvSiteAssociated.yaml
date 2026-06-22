@@ -1,0 +1,39 @@
+artifacts:
+- resource
+- datasource
+documentation:
+  dn_formats:
+  - uni/tn-{name}/ap-{name}/epg-{name}/stAsc
+  - uni/tn-{name}/ctx-{name}/stAsc
+  - uni/tn-{name}/BD-{name}/stAsc
+  - uni/tn-{name}/out-{name}/instP-{name}/stAsc
+  - uni/tn-{name}/mscGraphXlateCont/epgDefXlate-[{epgDefDn}]/stAsc
+  resource:
+    notes:
+    - This resource should only be used to accomplish multi-site orchestration.
+  sub_category: Multi-Site
+  ui_locations:
+  - Not shown in UI
+include_children:
+- fvRemoteId
+properties:
+  siteId:
+    attribute_name: site_id
+    default_values:
+      "0": ""
+    documentation:
+      description: The primary/local site identifier associated with the object as
+        an integer.
+    test_config:
+      create:
+      - config_value: "0"
+  siteStretched:
+    restriction: exclude
+resource_name: associated_site
+test_config:
+  dependencies:
+  - class_name: fvBD
+    dependencies:
+    - class_name: fvTenant
+    reference: aci_bridge_domain.test.id
+    role: parent

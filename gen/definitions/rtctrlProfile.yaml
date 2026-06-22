@@ -1,0 +1,28 @@
+documentation:
+  sub_category: L3Out
+  ui_locations:
+  - Tenants -> Networking -> L3Outs -> Route map for import and export Route Control
+  - Tenants -> Policies -> Protocol -> Route Maps for Route Control
+migration_source: from_sdkv2
+properties:
+  autoContinue:
+    attribute_name: route_map_continue
+    default_values:
+      "no": ""
+    documentation:
+      description: The route_map_continue applies a continue statement for all user-configured
+        sequences (contexts) in a given BGP route profile so that switches will continue
+        to find matches with subsequent user-configured sequences in the route map.
+        Without the continue statement, after a route matches one of the sequences
+        in a route map, switches will not continue to check other sequences.
+  type:
+    attribute_name: route_control_profile_type
+    documentation:
+      description: The type of the %s object. Use combinable when pervasive subnets
+        (fvSubnet) and external subnets (l3extSubnet) should be combined with a route
+        profile and merged into a single route map or route map entry. Use global
+        when the route profile is the only source of information to generate a route
+        map, this will overwrite other policy attributes.
+resource_name: route_control_profile
+state_upgrades:
+- prior_schema_version: 1

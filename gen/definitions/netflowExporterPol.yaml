@@ -1,0 +1,71 @@
+documentation:
+  sub_category: Tenant Policies
+  ui_locations:
+  - Tenants -> Policies -> NetFlow -> NetFlow Exporters
+  - Fabric -> Access Policies -> Policies -> Interface -> NetFlow -> NetFlow Exporters
+properties:
+  dscp:
+    attribute_name: qos_dscp_value
+    documentation:
+      description: The DSCP value of the %s object.
+  dstAddr:
+    attribute_name: destination_ip_address
+    default_values:
+      2.2.2.1: ""
+    documentation:
+      description: The destination IP address of the remote node.
+    restriction: required
+    test_config:
+      create:
+      - config_value: 12.12.12.1
+      update:
+      - config_value: 2001:db8::2
+  dstPort:
+    attribute_name: destination_port
+    documentation:
+      description: The destination port of the remote node.
+    restriction: required
+    test_config:
+      create:
+      - config_value: ssh
+      default:
+      - config_value: https
+      update:
+      - config_value: ssh
+  name:
+    default_values:
+      netfow_exporter_default: ""
+    test_config:
+      create:
+      - config_value: netfow_exporter
+  parentDn:
+    default_values:
+      uni/infra: ""
+  sourceIpType:
+    documentation:
+      description: The type of the source IP address for the %s object.
+  srcAddr:
+    attribute_name: source_ip_address
+    default_values:
+      1.1.1.1/10: ""
+    documentation:
+      description: The source IP address.
+    test_config:
+      create:
+      - config_value: 11.11.11.1/11
+      update:
+      - config_value: 2001:db8::1/116
+  ver:
+    attribute_name: version
+    documentation:
+      description: The NetFlow Exporter Version of the %s object.
+    test_config:
+      create:
+      - config_value: v9
+resource_name: netflow_exporter_policy
+test_config:
+  dependencies:
+  - class_name: infraInfra
+    reference: uni/infra
+    reference_type: static
+    role: parent

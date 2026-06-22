@@ -1,0 +1,20 @@
+documentation:
+  resource:
+    notes:
+    - For more information about the Firewall Policy, refer to the [Cisco ACI Virtual
+      Edge Configuration Guide](https://www.cisco.com/c/en/us/td/docs/dcn/aci/aci-virtual-edge/3x/Configuration/cisco-aci-virtual-edge-configuration-guide-32x/Cisco-ACI-Virtual-Edge-Configuration-Guide-32x_chapter_distributed_firewall.html)
+  sub_category: Access Policies
+  ui_locations:
+  - Access Policies -> Policies -> Interface -> Firewall
+include_parents:
+- polUni
+properties:
+  mode:
+    documentation:
+      description: The mode of the %s object. Do not change the mode from 'disabled'
+        directly to 'enabled'. Doing so can lead to traffic loss. Instead, from 'disabled'
+        mode, change the mode to 'learning', wait 5 minutes, and then change the mode
+        to 'enabled'. Changing to 'learning' mode allows Cisco ACI Virtual Edge to
+        add flow table entries for existing flows.
+resource_name: firewall_policy
+rn_prepend: infra

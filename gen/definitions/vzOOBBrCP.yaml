@@ -1,0 +1,17 @@
+documentation:
+  dn_formats:
+  - uni/tn-mgmt/oobbrc-{name}
+  sub_category: Contract
+  ui_locations:
+  - Tenants (mgmt) -> Contracts -> Out-Of-Band Contracts
+include_parents:
+- polUni
+properties:
+  intent:
+    documentation:
+      description: The Install Rules or Estimate Number of Rules
+  targetDscp:
+    documentation:
+      description: The target DSCP value of the %s object.
+resource_name: out_of_band_contract
+rn_prepend: tn-mgmt

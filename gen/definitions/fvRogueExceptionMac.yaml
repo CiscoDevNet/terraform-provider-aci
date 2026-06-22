@@ -1,0 +1,13 @@
+documentation:
+  sub_category: Networking
+  ui_locations:
+  - Tenants -> Networking -> Bridge Domains -> Policy -> Advanced/Troubleshooting
+    -> Rogue/Coop Exception List
+properties:
+  mac:
+    default_values:
+      "00:00:00:00:00:01": ""
+    test_config:
+      create:
+      - config_value: "00:00:00:00:00:01"
+resource_name: rogue_coop_exception

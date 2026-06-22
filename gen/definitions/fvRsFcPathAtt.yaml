@@ -1,0 +1,32 @@
+documentation:
+  sub_category: Application Management
+  ui_locations:
+  - Tenants -> Application Profiles -> Application EPGs -> Fibre Channel (Paths)
+properties:
+  vsan:
+    default_values:
+      unknown: ""
+    documentation:
+      description: The virtual storage area network (VSAN) of the %s object.
+    test_config:
+      create:
+      - config_value: vsan-10
+  vsanMode:
+    documentation:
+      description: The virtual storage area network (VSAN) mode of the %s object.
+resource_name: relation_to_fibre_channel_path
+test_config:
+  dependencies:
+  - class_name: fvAEPg
+    dependencies:
+    - class_name: fvAp
+    reference: aci_application_epg.test.id
+    role: parent
+  - class_name: fabricPathEp
+    reference: topology/pod-1/paths-101/pathep-[eth1/1]
+    reference_type: static
+    role: target
+  - class_name: fabricPathEp
+    reference: topology/pod-1/paths-101/pathep-[eth1/2]
+    reference_type: static
+    role: target
