@@ -3997,6 +3997,35 @@ func TestResolvePropertyTestValues(t *testing.T) {
 			},
 		},
 		{
+			Name: "test_auto_wire_target_dn_static_reference_renders_as_string",
+			Input: resolvePropertyTestValuesInput{
+				Properties: map[string]*Property{
+					"tDn": {
+						PropertyName:  "tDn",
+						AttributeName: "target_dn",
+						Required:      true,
+					},
+				},
+				Relation: Relation{RelationalClass: true, Type: Explicit},
+				TestDependencies: []*TestDependency{
+					{Class: testClassName("vmmDomP"), Reference: "uni/vmmp-VMware/dom-domain_1", ReferenceType: StaticReference, Role: Target},
+					{Class: testClassName("vmmDomP"), Reference: "uni/vmmp-VMware/dom-domain_2", ReferenceType: StaticReference, Role: Target},
+				},
+			},
+			Expected: resolvePropertyTestValuesExpected{
+				PropertyChecks: map[string]expectedPropertyTestValues{
+					"tDn": {
+						CreateValue:   "uni/vmmp-VMware/dom-domain_1",
+						CreateType:    StringValue,
+						UpdateValue:   "uni/vmmp-VMware/dom-domain_2",
+						UpdateType:    StringValue,
+						ForceNewValue: "uni/vmmp-VMware/dom-domain_1",
+						ForceNewType:  StringValue,
+					},
+				},
+			},
+		},
+		{
 			Name: "test_placeholder_resolution",
 			Input: resolvePropertyTestValuesInput{
 				Properties: func() map[string]*Property {
@@ -4042,6 +4071,34 @@ func TestResolvePropertyTestValues(t *testing.T) {
 			Expected: resolvePropertyTestValuesExpected{
 				PropertyChecks: map[string]expectedPropertyTestValues{
 					"parentDn": {CreateValue: "aci_tenant.test.id", CreateType: ReferenceValue, UpdateValue: "aci_tenant.test.id", UpdateType: ReferenceValue, DefaultValue: "aci_tenant.test.id", DefaultInclude: true, ForceNewValue: "aci_tenant.test_2.id", ForceNewType: ReferenceValue},
+				},
+			},
+		},
+		{
+			Name: "test_auto_wire_parent_dn_static_reference_renders_as_string",
+			Input: resolvePropertyTestValuesInput{
+				Properties: map[string]*Property{
+					"parentDn": {
+						PropertyName:  "parentDn",
+						AttributeName: "parent_dn",
+						Required:      true,
+					},
+				},
+				TestDependencies: []*TestDependency{
+					{Class: testClassName("polUni"), Reference: "uni", ReferenceType: StaticReference, Role: Parent},
+				},
+			},
+			Expected: resolvePropertyTestValuesExpected{
+				PropertyChecks: map[string]expectedPropertyTestValues{
+					"parentDn": {
+						CreateValue:    "uni",
+						CreateType:     StringValue,
+						UpdateValue:    "uni",
+						UpdateType:     StringValue,
+						DefaultValue:   "uni",
+						DefaultInclude: true,
+						ForceNewNil:    true,
+					},
 				},
 			},
 		},
