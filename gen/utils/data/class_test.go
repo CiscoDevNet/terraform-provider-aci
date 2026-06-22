@@ -3945,6 +3945,7 @@ type resolvePropertyTestValuesInput struct {
 	Properties       map[string]*Property
 	TestDependencies []*TestDependency
 	Relation         Relation
+	LoadedClasses    map[string]Class
 }
 
 type resolvePropertyTestValuesExpected struct {
@@ -3954,6 +3955,7 @@ type resolvePropertyTestValuesExpected struct {
 
 type expectedPropertyTestValues struct {
 	Nil            bool
+	AttributeName  string
 	CreateValue    string
 	CreateType     ValueRenderTypeEnum
 	UpdateValue    string
@@ -4265,6 +4267,102 @@ func TestResolvePropertyTestValues(t *testing.T) {
 				DiagnosticContains: "unsupported relationship type",
 			},
 		},
+		{
+			Name: "test_named_relation_renames_attribute_name_from_target_resource_name",
+			Input: resolvePropertyTestValuesInput{
+				Properties: map[string]*Property{
+					"tnFvBDName": {PropertyName: "tnFvBDName", AttributeName: "tn_fv_bd_name", Required: true},
+				},
+				Relation: Relation{
+					RelationalClass: true,
+					Type:            Named,
+					ToClasses:       []*ClassName{testClassName("fvBD")},
+				},
+				TestDependencies: []*TestDependency{
+					{Class: testClassName("fvBD"), Reference: "aci_bridge_domain.test.id", ReferenceType: ResourceReference, Role: Target},
+				},
+				LoadedClasses: map[string]Class{
+					"fvBD": {Name: testClassName("fvBD"), ResourceName: "bridge_domain"},
+				},
+			},
+			Expected: resolvePropertyTestValuesExpected{
+				PropertyChecks: map[string]expectedPropertyTestValues{
+					"tnFvBDName": {
+						AttributeName: "bridge_domain_name",
+						CreateValue:   "aci_bridge_domain.test.name",
+						CreateType:    ReferenceValue,
+						UpdateValue:   "aci_bridge_domain.test.name",
+						UpdateType:    ReferenceValue,
+						ForceNewValue: "aci_bridge_domain.test.name",
+						ForceNewType:  ReferenceValue,
+					},
+				},
+			},
+		},
+		{
+			Name: "test_named_relation_attribute_name_unchanged_when_target_resource_name_unknown",
+			Input: resolvePropertyTestValuesInput{
+				Properties: map[string]*Property{
+					"tnFvBDName": {PropertyName: "tnFvBDName", AttributeName: "tn_fv_bd_name", Required: true},
+				},
+				Relation: Relation{
+					RelationalClass: true,
+					Type:            Named,
+					ToClasses:       []*ClassName{testClassName("fvBD")},
+				},
+				TestDependencies: []*TestDependency{
+					{Class: testClassName("fvBD"), Reference: "aci_bridge_domain.test.id", ReferenceType: ResourceReference, Role: Target},
+				},
+			},
+			Expected: resolvePropertyTestValuesExpected{
+				PropertyChecks: map[string]expectedPropertyTestValues{
+					"tnFvBDName": {
+						AttributeName: "tn_fv_bd_name",
+						CreateValue:   "aci_bridge_domain.test.name",
+						CreateType:    ReferenceValue,
+					},
+				},
+			},
+		},
+		{
+			Name: "test_named_relation_renames_attribute_name_even_with_test_config",
+			Input: resolvePropertyTestValuesInput{
+				Properties: func() map[string]*Property {
+					prop := &Property{
+						PropertyName:  "tnFvBDName",
+						AttributeName: "tn_fv_bd_name",
+						propertyDefinition: PropertyDefinition{
+							TestConfig: TestConfigDefinition{
+								Create: []TestValueEntryDefinition{
+									{ConfigValue: "explicit_name", ConfigInclude: &boolTrue},
+								},
+							},
+						},
+					}
+					prop.setTestValues()
+					return map[string]*Property{"tnFvBDName": prop}
+				}(),
+				Relation: Relation{
+					RelationalClass: true,
+					Type:            Named,
+					ToClasses:       []*ClassName{testClassName("fvBD")},
+				},
+				TestDependencies: []*TestDependency{
+					{Class: testClassName("fvBD"), Reference: "aci_bridge_domain.test.id", ReferenceType: ResourceReference, Role: Target},
+				},
+				LoadedClasses: map[string]Class{
+					"fvBD": {Name: testClassName("fvBD"), ResourceName: "bridge_domain"},
+				},
+			},
+			Expected: resolvePropertyTestValuesExpected{
+				PropertyChecks: map[string]expectedPropertyTestValues{
+					"tnFvBDName": {
+						AttributeName: "bridge_domain_name",
+						CreateValue:   "explicit_name",
+					},
+				},
+			},
+		},
 	}
 
 	for _, testCase := range testCases {
@@ -4279,7 +4377,10 @@ func TestResolvePropertyTestValues(t *testing.T) {
 				TestDependencies: input.TestDependencies,
 			}
 
-			ds := &DataStore{ctx: NewContext()}
+			ds := &DataStore{ctx: NewContext(), Classes: map[string]Class{}}
+			for name, loaded := range input.LoadedClasses {
+				ds.Classes[name] = loaded
+			}
 			class.setPropertyTestValues(ds)
 
 			if expected.DiagnosticContains != "" {
@@ -4292,6 +4393,9 @@ func TestResolvePropertyTestValues(t *testing.T) {
 
 			for propName, check := range expected.PropertyChecks {
 				prop := class.Properties[propName]
+				if check.AttributeName != "" {
+					assert.Equal(t, check.AttributeName, prop.AttributeName, test.MessageEqual(check.AttributeName, prop.AttributeName, testCase.Name))
+				}
 				if check.Nil {
 					assert.Nil(t, prop.TestValues, testCase.Name+": "+propName+" TestValues should be nil")
 					continue
