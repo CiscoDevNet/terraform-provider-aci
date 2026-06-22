@@ -1913,9 +1913,13 @@ func stringifyConfigOverrides(file, who string, raw any) map[string]string {
 //
 // All of the following must hold:
 //
-//   - meta containedBy for selfClass has exactly one entry equal to
-//     entry.class_name. A single-entry containedBy is unambiguous; multi-
-//     parent classes keep their entries verbatim.
+//   - entry.class_name equals the sorted-first containedBy entry for
+//     selfClass. ClassContainedBy is alphabetically sorted at meta load,
+//     mirroring the loader's setParents (which routes Parents[0] to the
+//     2-instance ForceNew slot). Any additional containedBy entries are
+//     auto-emitted by the loader regardless of whether the legacy block
+//     mentions them, so the prune is dep-count-neutral for multi-parent
+//     classes too.
 //   - entry has no `properties` (would become non-empty ConfigOverrides),
 //     no `target_classes` (polymorphic-detector input), and no
 //     `class_in_parent`.
@@ -1924,9 +1928,9 @@ func stringifyConfigOverrides(file, who string, raw any) map[string]string {
 //     form (legacy quirk) is also accepted: the loader will replace it
 //     with the canonical reference, so the prune doubles as a fix-up for
 //     those legacy entries.
-//   - entry's `parent_dependency`, if present, equals the meta
-//     containedBy[0] of entry.class_name (the chain matches the meta
-//     walk), and `parent_dependency_name` (if present) matches the same
+//   - entry's `parent_dependency`, if present, equals the sorted-first
+//     containedBy of entry.class_name (the chain matches the meta walk),
+//     and `parent_dependency_name` (if present) matches the same
 //     canonical / bare reference shape.
 func canParentEntryAutoResolve(selfClass string, entry map[any]any) bool {
 	if metaReg == nil {
@@ -1937,7 +1941,7 @@ func canParentEntryAutoResolve(selfClass string, entry map[any]any) bool {
 		return false
 	}
 	cb := metaReg.ClassContainedBy[selfClass]
-	if len(cb) != 1 || cb[0] != className {
+	if len(cb) == 0 || cb[0] != className {
 		return false
 	}
 	if props, ok := entry["properties"]; ok && props != nil {
@@ -1956,7 +1960,7 @@ func canParentEntryAutoResolve(selfClass string, entry map[any]any) bool {
 	}
 	if pdep, ok := entry["parent_dependency"].(string); ok && pdep != "" {
 		parentCb := metaReg.ClassContainedBy[className]
-		if len(parentCb) != 1 || parentCb[0] != pdep {
+		if len(parentCb) == 0 || parentCb[0] != pdep {
 			return false
 		}
 		if pdepName, ok := entry["parent_dependency_name"].(string); ok && pdepName != "" && !isCanonicalAutoRef(pdep, pdepName) {
