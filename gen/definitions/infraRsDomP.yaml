@@ -1,0 +1,30 @@
+documentation:
+  sub_category: Access Policies
+  ui_locations:
+  - Fabric -> Access Policies -> Policies -> Global -> Attachable Access Entity Profiles
+    -> Domains
+properties:
+  tDn:
+    documentation:
+      description: The distinguished name of the target Domain object.
+relation_info:
+  to_classes:
+  - vmmDomP
+  - physDomP
+  - fcDomP
+  - l2extDomP
+resource_name: relation_from_attachable_access_entity_profile_to_domain
+test_config:
+  dependencies:
+  - class_name: physDomP
+    config_overrides:
+      name: physical_domain_0
+    reference: uni/phys-physical_domain_0
+    reference_type: static
+    role: target
+  - class_name: physDomP
+    config_overrides:
+      name: physical_domain_1
+    reference: uni/phys-physical_domain_1
+    reference_type: static
+    role: target

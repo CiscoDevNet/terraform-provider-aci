@@ -1,0 +1,40 @@
+documentation:
+  dn_formats:
+  - uni/tn-{name}/out-{name}/conslbl-{name}/rslblToProfile-[{tDn}]-{direction}
+  resource:
+    notes:
+    - This resource should not be used in combination with the `l3out_consumer_label`
+      nested attributes of other resources for the same object. Doing so will result
+      in unexpected behaviour.
+  sub_category: L3Out
+  ui_locations:
+  - Tenants -> Networking -> L3Outs -> Policy -> Main -> Consumer Label
+properties:
+  direction:
+    default_values:
+      import: ""
+    documentation:
+      description: The direction on which to apply the Route Map associated with the
+        Route Control Profile.
+    test_config:
+      create:
+      - config_value: export
+  tDn:
+    documentation:
+      description: The distinguished name (DN) of the Route Control Profile object.
+resource_name: relation_from_l3out_consumer_label_to_route_control_profile
+test_config:
+  dependencies:
+  - class_name: l3extConsLbl
+    dependencies:
+    - class_name: l3extOut
+    reference: aci_l3out_consumer_label.test.id
+    role: parent
+  - class_name: rtctrlProfile
+    config_overrides:
+      name: rt_ctrl_profile_1
+    dependencies:
+    - class_name: fvTenant
+    reference: uni/tn-test_name/prof-rt_ctrl_profile_1
+    reference_type: static
+    role: target

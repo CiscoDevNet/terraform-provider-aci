@@ -1,0 +1,58 @@
+documentation:
+  sub_category: Tenant Policies
+  ui_locations:
+  - Tenants -> Policies -> Protocol -> IP SLA -> Track Lists
+properties:
+  percentageDown:
+    default_values:
+      "0": ""
+    documentation:
+      description: The down percentage assigned to the %s determines whether a route
+        is considered available or unavailable. This attribute is applicable only
+        when the track type is 'percentage'.
+    test_config:
+      create:
+      - config_value: "30"
+  percentageUp:
+    default_values:
+      "1": ""
+    documentation:
+      description: The up percentage assigned to the %s determines whether a route
+        is considered available or unavailable. The percentage up must be greater
+        than the percentage down. This attribute is applicable only when the track
+        type is 'percentage'.
+    test_config:
+      create:
+      - config_value: "40"
+  type:
+    default_values:
+      percentage: ""
+    documentation:
+      description: The type of the %s. Choose 'percentage' if you want the route availability
+        to be based on the percentage of track members that are up or down. Choose
+        'weight' if the route availability is based on a weight value that is assigned
+        to each track member.
+    test_config:
+      create:
+      - config_value: weight
+  weightDown:
+    default_values:
+      "0": ""
+    documentation:
+      description: The down weight assigned to the %s determines whether a route is
+        considered available or unavailable. This attribute is applicable only when
+        the track type is 'weight'.
+    test_config:
+      create:
+      - config_value: "10"
+  weightUp:
+    default_values:
+      "1": ""
+    documentation:
+      description: The up weight assigned to the %s determines whether a route is
+        considered available or unavailable. The up weight must be greater than the
+        down weight. This attribute is applicable only when the track type is 'weight'.
+    test_config:
+      create:
+      - config_value: "20"
+resource_name: ip_sla_track_list

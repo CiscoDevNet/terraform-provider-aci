@@ -1,0 +1,37 @@
+documentation:
+  sub_category: L3Out
+  ui_locations:
+  - Tenants -> Networking -> L3Outs -> External EPGs
+exclude_children:
+- fvSiteAssociated
+properties:
+  exceptionTag:
+    attribute_name: contract_exception_tag
+    documentation:
+      description: The contract exception tag of the %s object.
+  floodOnEncap:
+    attribute_name: flood_in_encapsulation
+    documentation:
+      description: Flood L2 Multicast/Broadcast and Link Local Layer based on encapsulation.
+  pcEnfPref:
+    attribute_name: intra_epg_isolation
+    documentation:
+      description: Parameter used to determine whether communication between endpoints
+        within the EPG is blocked.
+  pcTag:
+    restriction: read_only
+  prefGrMemb:
+    attribute_name: preferred_group_member
+    documentation:
+      description: Parameter used to determine whether the EPG is part of the preferred
+        group. Members of this group are allowed to communicate without contracts.
+  scope:
+    documentation:
+      description: The scope ID (L3-VNI) of the %s object.
+    restriction: read_only
+  shutdown:
+    attribute_name: admin_state
+  targetDscp:
+    documentation:
+      description: The target DSCP value of the %s object.
+resource_name: external_epg

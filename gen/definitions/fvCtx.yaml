@@ -1,0 +1,110 @@
+documentation:
+  sub_category: Networking
+  ui_locations:
+  - Tenants -> Networking -> VRFs
+exclude_children:
+- fvSiteAssociated
+- vzAny
+migration_source: from_sdkv2
+properties:
+  bdEnforcedEnable:
+    attribute_name: bd_enforcement
+    default_values:
+      "no": ""
+    documentation:
+      description: The Bridge Domain (BD) enforcement status of the %s. BD enforcement
+        will restrict a host from sending ping requests to subnets outside the Bridge
+        Domain (BD). The feature blocks ICMP, TCP and UDP traffic between BDs.
+  ipDataPlaneLearning:
+    documentation:
+      description: The IP data plane status of the %s object. The process known as
+        IP data plane learning involves acquiring the endpoint's IPv4 or IPv6 address
+        through data plane routing of traffic from the endpoint.
+  knwMcastAct:
+    restriction: exclude
+  pcEnfDir:
+    attribute_name: policy_control_enforcement_direction
+    documentation:
+      description: The policy control enforcement direction of the %s object. VRF
+        ingress policy enforcement involves ACL filtering on the leaf switch where
+        the endpoint is located, reducing the policy CAM usage on the border leaf
+        switch by confining the filtering to 'compute' leaf switches. VRF egress policy
+        enforcement extends ACL filtering to the border leaf switch, increasing its
+        policy CAM usage. The border leaf switch handles filtering for traffic from
+        L3Out to EPG after the endpoint is learned, unless the endpoint-to-destination
+        class mapping is unknown, in which case the compute leaf switch handles the
+        filtering.
+    remove_valid_values:
+    - mixed
+  pcEnfPref:
+    attribute_name: policy_control_enforcement_mode
+    documentation:
+      description: The policy control enforcement mode of the %s object. VRFs in unenforced
+        mode do not restrict traffic between EPGs that are member of the VRF. VRFs
+        in enforced mode restrict traffic not allowed by contracts between EPGs that
+        are member of the VRF. The policy control enforcement direction is used to
+        determine the preferred enforcement method.
+  pcTag:
+    remove_valid_values:
+    - any
+    restriction: read_only
+  scope:
+    documentation:
+      description: The scope ID (L3-VNI) of the %s object.
+    restriction: read_only
+  vrfIndex:
+    restriction: exclude
+resource_name: vrf
+state_upgrades:
+- attributes:
+    bdEnforcedEnable:
+      legacy_attribute: bd_enforced_enable
+    parentDn:
+      legacy_attribute: tenant_dn
+    pcEnfDir:
+      legacy_attribute: pc_enf_dir
+    pcEnfPref:
+      legacy_attribute: pc_enf_pref
+  children:
+    fvRsBgpCtxPol:
+      attributes:
+        tnBgpCtxPolName:
+          legacy_attribute: relation_fv_rs_bgp_ctx_pol
+    fvRsCtxMonPol:
+      attributes:
+        tnMonEPGPolName:
+          legacy_attribute: relation_fv_rs_ctx_mon_pol
+    fvRsCtxToBgpCtxAfPol:
+      attributes:
+        af:
+          legacy_attribute: af
+        tnBgpCtxAfPolName:
+          legacy_attribute: tn_bgp_ctx_af_pol_name
+      legacy_attribute: relation_fv_rs_ctx_to_bgp_ctx_af_pol
+    fvRsCtxToEigrpCtxAfPol:
+      attributes:
+        af:
+          legacy_attribute: af
+        tnEigrpCtxAfPolName:
+          legacy_attribute: tn_eigrp_ctx_af_pol_name
+      legacy_attribute: relation_fv_rs_ctx_to_eigrp_ctx_af_pol
+    fvRsCtxToEpRet:
+      attributes:
+        tnFvEpRetPolName:
+          legacy_attribute: relation_fv_rs_ctx_to_ep_ret
+    fvRsCtxToExtRouteTagPol:
+      attributes:
+        tnL3extRouteTagPolName:
+          legacy_attribute: relation_fv_rs_ctx_to_ext_route_tag_pol
+    fvRsCtxToOspfCtxPol:
+      attributes:
+        af:
+          legacy_attribute: af
+        tnOspfCtxPolName:
+          legacy_attribute: tn_ospf_ctx_pol_name
+      legacy_attribute: relation_fv_rs_ctx_to_ospf_ctx_pol
+    fvRsOspfCtxPol:
+      attributes:
+        tnOspfCtxPolName:
+          legacy_attribute: relation_fv_rs_ospf_ctx_pol
+  prior_schema_version: 1

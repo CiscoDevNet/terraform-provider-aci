@@ -1,0 +1,22 @@
+documentation:
+  sub_category: Tenant Policies
+  ui_locations:
+  - Tenants -> Policies -> Protocol -> Custom QoS -> DSCP to priority map
+properties:
+  from:
+    default_values:
+      AF11: ""
+    test_config:
+      create:
+      - config_value: CS1
+  target:
+    documentation:
+      description: The target of the %s object. This Fabric only supports DSCP mutation,
+        Dot1P mutation is not supported.
+  to:
+    default_values:
+      AF22: ""
+    test_config:
+      create:
+      - config_value: CS5
+resource_name: dscp_to_priority_map

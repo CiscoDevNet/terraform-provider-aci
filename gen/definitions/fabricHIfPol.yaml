@@ -1,0 +1,55 @@
+documentation:
+  sub_category: Access Policies
+  ui_locations:
+  - Fabric -> Access Policies -> Policies -> Interface -> Link Level
+include_parents:
+- polUni
+properties:
+  autoNeg:
+    attribute_name: auto_negotiation
+    documentation:
+      description: The auto-negotiation mode of the %s object. Auto-negotiation is
+        an optional function of the IEEE 802.3u Fast Ethernet standard that enables
+        devices to automatically exchange information over a link about speed and
+        duplex abilities.
+  dfeDelayMs:
+    attribute_name: port_delay
+    documentation:
+      description: The port delay (milliseconds) applied when the interface is coming
+        up for the the %s object. The value must be in the range 0 - 10000.
+    test_config:
+      create:
+      - config_value: "50"
+  emiRetrain:
+    documentation:
+      description: The Electromagnetic Interference (EMI) retrain state the %s object.
+    test_config:
+      create:
+      - config_value: enable
+  fecMode:
+    documentation:
+      description: The Forwarding Error Correction (FEC) mode of the %s object.
+  linkDebounce:
+    documentation:
+      description: The link debounce interval (milliseconds) of the %s object. Setting
+        a value greater than 0 enables the debounce timer on physical interface ports.
+        A value of 0 disables the debounce timer. The value must be in the range 0
+        - 5000.
+    test_config:
+      create:
+      - config_value: "2001"
+  portPhyMediaType:
+    attribute_name: physical_media_type
+    documentation:
+      description: The physical media type of the %s object.
+    test_config:
+      create:
+      - config_value: sfp-10g-tx
+  speed:
+    documentation:
+      description: The speed of the %s object. The data transfer rate for the port
+        should match the destination to which the port is linked.
+    remove_valid_values:
+    - unknown
+resource_name: link_level_interface_policy
+rn_prepend: infra

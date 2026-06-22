@@ -1,0 +1,34 @@
+documentation:
+  dn_formats:
+  - uni/tn-{name}/ap-{name}/epg-{name}/crtrn/ipattr-{name}
+  sub_category: Application Management
+  ui_locations:
+  - Tenants -> Application Profiles -> uSeg EPGs -> uSeg Attributes
+include_parents:
+- fvCrtrn
+properties:
+  ip:
+    default_values:
+      131.107.1.200: ""
+    documentation:
+      description: The device IP address of the %s object.
+    restriction: required
+    test_config:
+      create:
+      - config_value: 0.0.0.0
+      update:
+      - config_value: fe80::0002
+  name:
+    default_values:
+      "131": ""
+  usefvSubnet:
+    attribute_name: use_epg_subnet
+    default_values:
+      "no": ""
+    documentation:
+      description: Parameter used to determine whether a previously configured subnet
+        address should be used as the IP filter.
+    test_config:
+      create:
+      - config_value: "yes"
+resource_name: epg_useg_ip_attribute

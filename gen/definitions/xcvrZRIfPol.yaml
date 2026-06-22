@@ -1,0 +1,96 @@
+documentation:
+  sub_category: Access Policies
+  ui_locations:
+  - Fabric -> Access Policies -> Policies -> Interface -> Transceiver
+include_parents:
+- polUni
+properties:
+  adminSt:
+    attribute_name: admin_state
+    test_config:
+      create:
+      - config_value: enabled
+  cdMax:
+    attribute_name: maximum_chromatic_dispersion
+    documentation:
+      description: The maximum chromatic dispersion of the %s object. The difference
+        with 'minimum_chromatic_dispersion' must be greater than 1000, and the value
+        must be in the range -1399 - 2400.
+    test_config:
+      create:
+      - config_value: "-1390"
+  cdMin:
+    attribute_name: minimum_chromatic_dispersion
+    documentation:
+      description: The minimum chromatic dispersion of the %s object. The difference
+        with 'maximum_chromatic_dispersion' must be greater than 1000, and the value
+        must be in the range -2400 - 1399.
+    test_config:
+      create:
+      - config_value: "-2391"
+  dacRate:
+    documentation:
+      description: The Digital-to-Analog Converter (DAC) rate of the %s object.
+  dwdmCarrier:
+    attribute_name: dwdm_carrier_grid
+    documentation:
+      description: The Dense Wavelength Division Multiplexing (DWDM) carrier grid
+        selector of the %s object.
+    test_config:
+      create:
+      - config_value: 50GHzFrequency
+  fecMode:
+    documentation:
+      description: The Forward Error Correction (FEC) mode of the %s object.
+  frequency50GHz:
+    attribute_name: frequency_50_ghz
+    documentation:
+      description: The 50 gigahertz (GHz) frequency of the %s object. The value must
+        be in the range 19115 - 19610.
+    test_config:
+      create:
+      - config_value: "19415"
+  frequency100MHz:
+    attribute_name: frequency_100_mhz
+    default_values:
+      "1931000": ""
+    documentation:
+      description: The 100 megahertz (MHz) frequency of the %s object. The value must
+        be in the range 1911500 - 1961000.
+    test_config:
+      create:
+      - config_value: "1912504"
+  ituChannel50GHz:
+    attribute_name: itu_channel_50_ghz
+    documentation:
+      description: The 50 gigahertz (GHz) International Telecommunication Union (ITU)
+        channel of the %s object. The value must be in the range 1 - 100.
+    test_config:
+      create:
+      - config_value: "23"
+  modulation:
+    documentation:
+      description: The modulation of the %s object.
+  muxponder:
+    attribute_name: muxponder_mode
+    documentation:
+      description: The muxponder mode of the %s object.
+  transmitPower:
+    documentation:
+      description: The transmit power of the %s object. The value must be in the range
+        -190 - 50.
+    test_config:
+      create:
+      - config_value: "20"
+  wavelength50GHz:
+    attribute_name: wavelength_50_ghz
+    default_values:
+      "1552524": ""
+    documentation:
+      description: The 50 gigahertz (GHz) wavelength of the %s object. The value must
+        be in the range 1528773 - 1568362.
+    test_config:
+      create:
+      - config_value: "1563742"
+resource_name: zr_transceiver_interface_policy
+rn_prepend: infra

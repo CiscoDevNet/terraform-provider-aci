@@ -1,0 +1,10 @@
+documentation:
+  dn_formats:
+  - uni/tn-mgmt/extmgmt-default/instp-{name}
+  sub_category: Node Management
+  ui_locations:
+  - Tenants (mgmt) -> External Management Network Instance Profiles
+include_parents:
+- polUni
+resource_name: external_management_network_instance_profile
+rn_prepend: tn-mgmt/extmgmt-default

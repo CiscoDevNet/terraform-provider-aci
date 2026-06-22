@@ -1,0 +1,9 @@
+documentation:
+  sub_category: Application Management
+  ui_locations:
+  - Tenants -> Application Profiles -> uSeg EPGs -> uSeg Attributes
+properties:
+  filter:
+    documentation:
+      description: The domain name filter of the %s object.
+resource_name: epg_useg_dns_attribute

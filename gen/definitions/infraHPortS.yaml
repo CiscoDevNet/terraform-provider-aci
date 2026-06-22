@@ -1,0 +1,24 @@
+documentation:
+  sub_category: Access Policies
+  ui_locations:
+  - Fabric -> Access Policies -> Interfaces -> Leaf Interfaces -> Profiles -> Interface
+    Selectors
+migration_source: from_sdkv2
+properties:
+  type:
+    attribute_name: port_selector_type
+    documentation:
+      description: The port selector type of the %s object.
+resource_name: access_port_selector
+state_upgrades:
+- attributes:
+    parentDn:
+      legacy_attribute: leaf_interface_profile_dn
+    type:
+      legacy_attribute: access_port_selector_type
+  children:
+    infraRsAccBaseGrp:
+      attributes:
+        tDn:
+          legacy_attribute: relation_infra_rs_acc_base_grp
+  prior_schema_version: 1

@@ -1,0 +1,21 @@
+documentation:
+  sub_category: L4-L7
+  ui_locations:
+  - Tenants -> Services -> L4-L7 -> Imported Devices
+properties:
+  description:
+    documentation:
+      description: The description of the Imported Logical Device object.
+  ldev:
+    attribute_name: logical_device
+    default_values:
+      uni/tn-test_tenant_imported_device/lDevVip-test_imported_device: ""
+    documentation:
+      description: The distinguished name (DN) of the Logical Device to import (ACI
+        object [vnsLDevVip](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vnsLDevVip/overview).
+        The Logical Device can be configured using [aci_l4_l7_device](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l4_l7_devices)
+        resource)
+    test_config:
+      create:
+      - config_value: uni/tn-test_tenant_imported_device/lDevVip-test_imported_device
+resource_name: imported_logical_device

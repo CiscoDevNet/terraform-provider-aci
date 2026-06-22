@@ -1,0 +1,15 @@
+documentation:
+  sub_category: L3Out
+  ui_locations:
+  - Tenants -> Networking -> L3Outs -> Policy -> Main -> Route Profile for Redistribution
+properties:
+  src:
+    attribute_name: source
+    documentation:
+      description: The source of the %s object.
+    test_config:
+      create:
+      - config_value: direct
+      default:
+      - config_value: direct
+resource_name: l3out_redistribute_policy

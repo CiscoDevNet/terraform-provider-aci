@@ -1,0 +1,33 @@
+documentation:
+  sub_category: Tenant Policies
+  ui_locations:
+  - Tenants (mgmt) -> IP Address Pools
+include_children:
+- fvnsUcastAddrBlk
+include_parents:
+- polUni
+properties:
+  addr:
+    attribute_name: gateway_address
+    default_values:
+      10.0.0.1/24: ""
+    documentation:
+      description: The gateway address of the %s object.
+    restriction: required
+    test_config:
+      create:
+      - config_value: 10.0.0.1/24
+      update:
+      - config_value: 10.0.0.1/24
+  addrType:
+    attribute_name: address_type
+    documentation:
+      description: The gateway address type of the %s object.
+  skipGwVal:
+    attribute_name: skip_gateway_validation
+    default_values:
+      "no": ""
+    documentation:
+      description: Skip gateway validation for the %s object.
+resource_name: ip_address_pool
+rn_prepend: tn-mgmt

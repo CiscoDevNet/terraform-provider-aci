@@ -1,0 +1,60 @@
+documentation:
+  resource:
+    notes:
+    - Port Blocks are only applied and visible in UI when the `port_selector_type`
+      attribute on it's parent is set to `range`.
+  sub_category: Access Policies
+  ui_locations:
+  - Fabric -> Access Policies -> Interfaces -> Leaf/Spine Interfaces -> Profiles ->
+    Interface Selectors -> Port Blocks
+migration_source: from_sdkv2
+properties:
+  fromCard:
+    default_values:
+      "1": ""
+    documentation:
+      description: The start of the line card range for the %s object.
+    test_config:
+      create:
+      - config_value: "2"
+  fromPort:
+    default_values:
+      "1": ""
+    documentation:
+      description: The start of the port range for the %s object.
+    test_config:
+      create:
+      - config_value: "3"
+  toCard:
+    default_values:
+      "1": ""
+    documentation:
+      description: ' The end of the line card range for the %s object.'
+    test_config:
+      create:
+      - config_value: "4"
+  toPort:
+    default_values:
+      "1": ""
+    documentation:
+      description: The end of the port range for the %s object.
+    test_config:
+      create:
+      - config_value: "5"
+state_upgrades:
+- attributes:
+    parentDn:
+      legacy_attribute: access_port_selector_dn
+  children:
+    infraRsAccBndlSubgrp:
+      attributes:
+        tDn:
+          legacy_attribute: relation_infra_rs_acc_bndl_subgrp
+  prior_schema_version: 1
+test_config:
+  dependencies:
+  - class_name: infraZHPortS
+    dependencies:
+    - class_name: infraSpAccPortP
+    reference: aci_spine_access_port_selector.test.id
+    role: parent

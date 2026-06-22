@@ -1,0 +1,78 @@
+documentation:
+  sub_category: AAA
+  ui_locations:
+  - Admin -> AAA -> Security -> Key Rings
+  - Cloud Network Controller -> Administrative -> Security -> Key Rings
+parent_dn_variants:
+- parent_class: fvTenant
+  rn_prepend: certstore
+  test_platform: cloud
+  wrapper_class: cloudCertStore
+properties:
+  cert:
+    attribute_name: certificate
+    documentation:
+      description: A certificate contains a device's public key along with signed
+        information verifying the identity of the device.
+    test_config:
+      create:
+      - config_value: '-----BEGIN CERTIFICATE-----\\nMIIDUzCCAjugAwIBAgIUbIvQNyz27t/xrIW2dgMwlGWqJvowDQYJKoZIhvcNAQEL\\nBQAwODERMA8GA1UEAwwIVXNlciBBQkMxFjAUBgNVBAoMDUNpc2NvIFN5c3RlbXMx\\nCzAJBgNVBAYTAlVTMCAXDTI2MDMxNzEwMjY0MVoYDzIxMjYwMjIxMTAyNjQxWjA4\\nMREwDwYDVQQDDAhVc2VyIEFCQzEWMBQGA1UECgwNQ2lzY28gU3lzdGVtczELMAkG\\nA1UEBhMCVVMwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCeulLqFk1C\\nH6wKdn0/sNrpDOfkjxeIfsT388BV2FH9XWBYumk8iAIRLp2Tae0+dKOr50t0q9xX\\npCmC0dT4vF6h7NYQIihCNE//LpijuGbw+iG8YsavCr8wUAKdkuwzdA/3MiXRACzE\\nWY3CYuhReGnSsjXUVvuaSb02jm80eCGDWUxm/KqH1qO/vlrzSU7NORvNrqQpKPA7\\ne4ukjGD7k6jO8c5+DWWC6aOAgD6Orpb58yK7jUPSlQsYHtoKmJb245lpE5yMWg8e\\nZFfJIPh+cdP4gXcWVPSKJ/nMAj/vEhSp0WK6CJwu8+W/nhdvkemQR0oKb3XcJikV\\nZBj3OO0HK1HlAgMBAAGjUzBRMB0GA1UdDgQWBBT9EPk1GYfyISGUsTX/+7mREkPV\\ndjAfBgNVHSMEGDAWgBT9EPk1GYfyISGUsTX/+7mREkPVdjAPBgNVHRMBAf8EBTAD\\nAQH/MA0GCSqGSIb3DQEBCwUAA4IBAQAzIrT1/ih7/BP363+90gRA29q4nA8RBWF6\\nJC1TVExRbgVtJOEbEUywTcUxeW1Q3bSSwW836qEWJpRcwvu103yZgn0yIWubndtb\\npArujgGt5irDwQmwW9zVUPWrJkkUkNezEZzM9WrRh+fvepvlDQwq6Pqd75BpmiOr\\nZPfliCH5wX8Hjlg3cFeQviRLEMjkLtaDmmDfTFRQYCjKohTSgZdd9aauzgsYOq/2\\nS2sHwyJR8MTUyxawvCRJP8q5v3KGLVUzU6vRtEbZUx5FvjNkgxLgsSP4+buQi7FR\\naY0EpluqxPc3Wsl5AkIpFAf97vrRPGTPpSZig5LX9eS0Rmh4eJ10\\n-----END
+          CERTIFICATE-----'
+  eccCurve:
+    attribute_name: elliptic_curve
+    default_values:
+      none: ""
+    documentation:
+      description: The elliptic curve used by the provided key.
+    test_config:
+      create:
+      - config_value: none
+  key:
+    documentation:
+      description: The private key of the certificate. This sensitive value is excluded
+        from the resource's lifecycle configuration and is not tracked by Terraform.
+    test_config:
+      create:
+      - config_value: '-----BEGIN PRIVATE KEY-----\\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCeulLqFk1CH6wK\\ndn0/sNrpDOfkjxeIfsT388BV2FH9XWBYumk8iAIRLp2Tae0+dKOr50t0q9xXpCmC\\n0dT4vF6h7NYQIihCNE//LpijuGbw+iG8YsavCr8wUAKdkuwzdA/3MiXRACzEWY3C\\nYuhReGnSsjXUVvuaSb02jm80eCGDWUxm/KqH1qO/vlrzSU7NORvNrqQpKPA7e4uk\\njGD7k6jO8c5+DWWC6aOAgD6Orpb58yK7jUPSlQsYHtoKmJb245lpE5yMWg8eZFfJ\\nIPh+cdP4gXcWVPSKJ/nMAj/vEhSp0WK6CJwu8+W/nhdvkemQR0oKb3XcJikVZBj3\\nOO0HK1HlAgMBAAECggEAGRrupa2/Vy0RQK+7DF7ZpltvNhxXzt6reBhVRylUK9cg\\nDQihlScMmfvIhUS6IdMVrB6E4GrqX/D2y9qKbTPGDVBwudPdOujGml2cBjvStFyr\\nsf3hilVl0KtnA9X1hrHdxe29mNAGmfZxey8PqwsjmbqsKZipv56CzzqPZjogpYMz\\nQ0Vu9ek2Y8Piw4TCepixAkFHlYtzpfzxFJ1xapam8o+mOyi+5FwVbx2QnA31Y+6p\\ncjzXnXnWl3aRNTTfvhz6Z/cZmDJ+sd/ATpk4/jt8biR4mOaYNS4k0cZX0PpjKP3K\\nhoR9DPU5qRDmgoShF7TMkBRiM2oG2Nxd794unRZMJQKBgQDbfdx/ThXhLnCbl98B\\nhN2JfLLuGvgO0NvDjlViPwmwnjIotiOArn4MP79m6CS/nKgW6wzuXfIJQcxPUslC\\ncoloK9TDSya5nD1tqFkukhPukc3Q5Sb41pZzhksTjZgG3dohwqqRvcmnZPpxssa5\\nBqv64zhiPPHhLE9whLNJ0oPl2wKBgQC5IRaQcyLXLHFjd2JIn2KrWAf9T3StUeE1\\n03y/IgZtwC6Kt8MvLmy3LENbHQdISibY+4IKoe+oEI/jjvNwM9sBwbcqm3L20+mY\\ni6W5r6qYufc58+sVtn2PqL8DK47xrqsTYnYIO6XxgavVIxGFAlgm0WDS7/tyZFZ0\\noJ63uvuTPwKBgE8BgOr6Cnohozr+cbE0SCIDFs0KPBvpJhHAHA/fLPe8GcX5udHJ\\n/WkfUSATk5a9JuwI84ChpEucuZQb8oHOhJNQo6cgV/IbwSjFnkRbJH2NUg5NTbfo\\nVgODZWbGYuCl3qykS41mST3N5TAj79AODL2kKFmEInSw5G9V9Msv0XZdAoGAEzp7\\nlH9Q9BZ6pIEm5TIg1nkrQ0U4cjQZ9zRDNbr7/fRDIUda75Cb3B6t1E3cjsac6Faf\\nOCl/se4ec91KLbJFIhaTxsokk7yI+74tdW7ogjp2kj9igHvW6M/3HwYsL7AbtsS4\\nS7yeTMpSJa4hyLXooAeJTf99F3GShUSVl7HFJZMCgYBrBTmJrHDhIAwIuzLwZfpr\\nR5jCxJmzpnEYjS7EBZqslTnB/Abr79SSezRPaR3H7OE/Ig4kSym0ekyjGPQbDV0T\\n+gpPD7GMWzFZ1RWQ6aJZ5bgwQACemsfYbWuV7bf9jx5Phle/KAjOzP8NgnqwSD3B\\nHd067NWQRwOjTHgato7Yxg==\\n-----END
+          PRIVATE KEY-----'
+  keyType:
+    default_values:
+      RSA: ""
+    documentation:
+      description: The type used by the provided key.
+    test_config:
+      create:
+      - config_value: RSA
+  modulus:
+    test_config:
+      create:
+      - config_value: mod2048
+  parentDn:
+    default_values:
+      uni/userext/pkiext: ""
+  regen:
+    attribute_name: regenerate
+    default_values:
+      "no": ""
+    test_config:
+      create:
+      - config_value: "no"
+  tp:
+    attribute_name: certificate_authority
+    documentation:
+      description: The certificate of the Certificate Authority (CA) that issued the
+        certificate provided in the 'certificate' attribute. The CA can be a root
+        CA, an intermediate CA, or a trust anchor in a chain of trust leading to a
+        root CA.
+    test_config:
+      create:
+      - config_value: test_name
+resource_name: key_ring
+test_config:
+  dependencies:
+  - class_name: pkiTP
+    config_overrides:
+      certificate_chain: '-----BEGIN CERTIFICATE-----\\nMIIDUzCCAjugAwIBAgIUbIvQNyz27t/xrIW2dgMwlGWqJvowDQYJKoZIhvcNAQEL\\nBQAwODERMA8GA1UEAwwIVXNlciBBQkMxFjAUBgNVBAoMDUNpc2NvIFN5c3RlbXMx\\nCzAJBgNVBAYTAlVTMCAXDTI2MDMxNzEwMjY0MVoYDzIxMjYwMjIxMTAyNjQxWjA4\\nMREwDwYDVQQDDAhVc2VyIEFCQzEWMBQGA1UECgwNQ2lzY28gU3lzdGVtczELMAkG\\nA1UEBhMCVVMwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCeulLqFk1C\\nH6wKdn0/sNrpDOfkjxeIfsT388BV2FH9XWBYumk8iAIRLp2Tae0+dKOr50t0q9xX\\npCmC0dT4vF6h7NYQIihCNE//LpijuGbw+iG8YsavCr8wUAKdkuwzdA/3MiXRACzE\\nWY3CYuhReGnSsjXUVvuaSb02jm80eCGDWUxm/KqH1qO/vlrzSU7NORvNrqQpKPA7\\ne4ukjGD7k6jO8c5+DWWC6aOAgD6Orpb58yK7jUPSlQsYHtoKmJb245lpE5yMWg8e\\nZFfJIPh+cdP4gXcWVPSKJ/nMAj/vEhSp0WK6CJwu8+W/nhdvkemQR0oKb3XcJikV\\nZBj3OO0HK1HlAgMBAAGjUzBRMB0GA1UdDgQWBBT9EPk1GYfyISGUsTX/+7mREkPV\\ndjAfBgNVHSMEGDAWgBT9EPk1GYfyISGUsTX/+7mREkPVdjAPBgNVHRMBAf8EBTAD\\nAQH/MA0GCSqGSIb3DQEBCwUAA4IBAQAzIrT1/ih7/BP363+90gRA29q4nA8RBWF6\\nJC1TVExRbgVtJOEbEUywTcUxeW1Q3bSSwW836qEWJpRcwvu103yZgn0yIWubndtb\\npArujgGt5irDwQmwW9zVUPWrJkkUkNezEZzM9WrRh+fvepvlDQwq6Pqd75BpmiOr\\nZPfliCH5wX8Hjlg3cFeQviRLEMjkLtaDmmDfTFRQYCjKohTSgZdd9aauzgsYOq/2\\nS2sHwyJR8MTUyxawvCRJP8q5v3KGLVUzU6vRtEbZUx5FvjNkgxLgsSP4+buQi7FR\\naY0EpluqxPc3Wsl5AkIpFAf97vrRPGTPpSZig5LX9eS0Rmh4eJ10\\n-----END
+        CERTIFICATE-----'
+      name: test_name
+    role: target
