@@ -2354,6 +2354,57 @@ func migrateTargets(file, selfClass string, val any, out *data.ClassDefinition) 
 	if val == nil {
 		return
 	}
+	// SINGLETON EXCEPTION (fvRsBDToProfile): compound named relation
+	// whose DN encodes BOTH the rtctrlProfile name (toMo, drives
+	// tnRtctrlProfileName) AND the containing l3extOut name (drives
+	// tnL3extOutName). The legacy targets block hand-rolled four
+	// static-DN entries (fvCtx + 2 l3extOut + rtctrlProfile) because no
+	// canonical auto-resolution path could express two name properties
+	// off one toMo. The loader's named-relation auto-wirer rejects
+	// static target references (setTargetNameProperty: "needs a
+	// resource or data_source target") so the verbatim migration fails
+	// generation. Replace the entire targets block with a
+	// resource-driven test_config:
+	//   - One rtctrlProfile Role:Target with aci_route_control_profile.
+	//     test.id so setTargetNameProperty auto-wires
+	//     tnRtctrlProfileName from `.test.name`.
+	//   - Nested l3extOut prerequisite with aci_l3_outside.test.id so
+	//     the test DAG creates the parent resource (fvTenant +
+	//     fvCtx + l3extOut chain auto-resolves from there).
+	//   - Explicit tnL3extOutName property TestConfig.Create =
+	//     aci_l3_outside.test.name, because setTargetNameProperty
+	//     only auto-wires the toMo property, and tnL3extOutName has
+	//     no other source.
+	// This is the only class in the meta with this shape (the audit
+	// in autocon-takeaways notes only fvRsBDToProfile has non-subclass
+	// support entries in its targets block). Generalising the override
+	// would require teaching the loader about secondary name
+	// properties, which is out of scope for this migration.
+	if selfClass == "fvRsBDToProfile" {
+		fmt.Printf("OVERRIDE: %s: targets hand-emitted for compound named relation (toMo=rtctrlProfile plus tnL3extOutName; singleton exception, see migrateTargets doc)\n", file)
+		out.TestConfig.Dependencies = append(out.TestConfig.Dependencies, data.TestDependencyDefinition{
+			ClassName:     "rtctrlProfile",
+			Role:          data.Target,
+			Reference:     "aci_route_control_profile.test.id",
+			ReferenceType: data.ResourceReference,
+			Dependencies: []data.TestDependencyDefinition{{
+				ClassName:     "l3extOut",
+				Reference:     "aci_l3_outside.test.id",
+				ReferenceType: data.ResourceReference,
+			}},
+		})
+		if out.Properties == nil {
+			out.Properties = map[string]data.PropertyDefinition{}
+		}
+		prop := out.Properties["tnL3extOutName"]
+		prop.TestConfig.Create = []data.TestValueEntryDefinition{{
+			ConfigValue: "aci_l3_outside.test.name",
+			AssertValue: "aci_l3_outside.test.name",
+			ValueType:   data.ReferenceValue,
+		}}
+		out.Properties["tnL3extOutName"] = prop
+		return
+	}
 	list, ok := val.([]any)
 	if !ok {
 		fmt.Printf("WARN: %s: targets is not a list: %T\n", file, val)
