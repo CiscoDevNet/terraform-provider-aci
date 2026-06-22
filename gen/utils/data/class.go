@@ -1451,24 +1451,25 @@ func (c *Class) setParentDn() {
 	}
 
 	// Wire Create, Update, and Default from the first parent reference.
+	primaryType := referenceValueRenderType(parents[0].ReferenceType)
 	parentDn.TestValues = &TestValues{
 		Create: []TestValueEntry{{
 			ConfigValue:   parents[0].Reference,
 			ConfigInclude: true,
 			AssertValue:   parents[0].Reference,
-			ValueType:     ReferenceValue,
+			ValueType:     primaryType,
 		}},
 		Update: []TestValueEntry{{
 			ConfigValue:   parents[0].Reference,
 			ConfigInclude: true,
 			AssertValue:   parents[0].Reference,
-			ValueType:     ReferenceValue,
+			ValueType:     primaryType,
 		}},
 		Default: []TestValueEntry{{
 			ConfigValue:   parents[0].Reference,
 			ConfigInclude: true,
 			AssertValue:   parents[0].Reference,
-			ValueType:     ReferenceValue,
+			ValueType:     primaryType,
 		}},
 	}
 
@@ -1478,7 +1479,7 @@ func (c *Class) setParentDn() {
 			ConfigValue:   parents[1].Reference,
 			ConfigInclude: true,
 			AssertValue:   parents[1].Reference,
-			ValueType:     ReferenceValue,
+			ValueType:     referenceValueRenderType(parents[1].ReferenceType),
 		}}
 	}
 	genLogger.Tracef("Successfully set parentDn test values for class '%s'.", c.Name)
@@ -1527,25 +1528,25 @@ func (c *Class) setTargetDn() {
 			ConfigValue:   createTarget.Reference,
 			ConfigInclude: true,
 			AssertValue:   createTarget.Reference,
-			ValueType:     ReferenceValue,
+			ValueType:     referenceValueRenderType(createTarget.ReferenceType),
 		}},
 		Update: []TestValueEntry{{
 			ConfigValue:   updateTarget.Reference,
 			ConfigInclude: true,
 			AssertValue:   updateTarget.Reference,
-			ValueType:     ReferenceValue,
+			ValueType:     referenceValueRenderType(updateTarget.ReferenceType),
 		}},
 		Default: []TestValueEntry{{
 			ConfigValue:   createTarget.Reference,
 			ConfigInclude: true,
 			AssertValue:   createTarget.Reference,
-			ValueType:     ReferenceValue,
+			ValueType:     referenceValueRenderType(createTarget.ReferenceType),
 		}},
 		ForceNew: []TestValueEntry{{
 			ConfigValue:   createTarget.Reference,
 			ConfigInclude: true,
 			AssertValue:   createTarget.Reference,
-			ValueType:     ReferenceValue,
+			ValueType:     referenceValueRenderType(createTarget.ReferenceType),
 		}},
 	}
 	genLogger.Tracef("Successfully set targetDn test values for class '%s'.", c.Name)
@@ -1685,7 +1686,7 @@ func (c *Class) resolvePlaceholdersInEntries(entries []TestValueEntry) {
 		}
 		entry.ConfigValue = resolved.Reference
 		entry.AssertValue = resolved.Reference
-		entry.ValueType = ReferenceValue
+		entry.ValueType = referenceValueRenderType(resolved.ReferenceType)
 	}
 }
 
@@ -2046,7 +2047,7 @@ func (c *Class) resolvePlaceholdersInTestChildren(testChildren []*TestChild) {
 				}
 				entry.ConfigValue = resolved.Reference
 				entry.AssertValue = resolved.Reference
-				entry.ValueType = ReferenceValue
+				entry.ValueType = referenceValueRenderType(resolved.ReferenceType)
 				instance.Properties[key] = entry
 			}
 			// Recurse into grandchildren.

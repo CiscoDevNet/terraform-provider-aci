@@ -214,6 +214,16 @@ func (v *ValueRenderTypeEnum) UnmarshalText(text []byte) error {
 	return nil
 }
 
+// referenceValueRenderType maps a dependency's ReferenceType to the HCL render
+// type its value should use: StaticReference DNs are quoted strings, Terraform
+// resource and data-source paths are unquoted expressions.
+func referenceValueRenderType(referenceType ReferenceTypeEnum) ValueRenderTypeEnum {
+	if referenceType == StaticReference {
+		return StringValue
+	}
+	return ReferenceValue
+}
+
 // ════════════════════════════════════════════════════════════════════════════
 // Category 2: No default; absence is a real runtime state
 // ════════════════════════════════════════════════════════════════════════════
