@@ -1,0 +1,19 @@
+documentation:
+  sub_category: Tenant Policies
+  ui_locations:
+  - Tenants -> Policies -> NetFlow -> NetFlow Exporters
+  - Fabric -> Access Policies -> Policies -> Interface -> NetFlow -> NetFlow Exporters
+relation_info:
+  to_classes:
+  - fvAEPg
+  - l3extInstP
+  - l2extInstP
+resource_name: relation_from_netflow_exporter_to_epg
+test_config:
+  dependencies:
+  - class_name: netflowExporterPol
+    role: parent
+  - class_name: fvAEPg
+    reference: uni/tn-test_name/ap-test_name/epg-test_epg
+    reference_type: static
+    role: target

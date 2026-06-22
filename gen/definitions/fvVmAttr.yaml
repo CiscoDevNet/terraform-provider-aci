@@ -1,0 +1,54 @@
+documentation:
+  sub_category: Application Management
+  ui_locations:
+  - Tenants -> Application Profiles -> uSeg EPGs -> uSeg Attributes
+properties:
+  category:
+    documentation:
+      description: The category of the %s object.
+    test_config:
+      create:
+      - config_value: all_category
+  labelName:
+    attribute_name: label_name
+    documentation:
+      description: The label name of the %s object.
+    test_config:
+      create:
+      - config_value: label_name
+  operator:
+    default_values:
+      equals: ""
+    documentation:
+      description: The operator of the %s object.
+    test_config:
+      create:
+      - config_value: contains
+  type:
+    default_values:
+      vm-name: ""
+    documentation:
+      description: The type of the %s object.
+    test_config:
+      create:
+      - config_value: domain
+  value:
+    default_values:
+      default_value: ""
+    documentation:
+      description: The value of the %s object.
+    restriction: required
+    test_config:
+      create:
+      - config_value: all_value
+      update:
+      - config_value: all_value
+resource_name: epg_useg_vm_attribute
+test_config:
+  dependencies:
+  - class_name: fvSCrtrn
+    dependencies:
+    - class_name: fvCrtrn
+    reference: epg_useg_sub_block_statement.test.id
+    reference_type: static
+    role: parent

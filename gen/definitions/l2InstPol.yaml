@@ -1,0 +1,21 @@
+documentation:
+  sub_category: Fabric Policies
+  ui_locations:
+  - Fabric Policies -> Policies -> Global -> Fabric L2 MTU
+include_parents:
+- polUni
+properties:
+  fabricMtu:
+    documentation:
+      description: The MTU Size for Fabric Ports.
+    test_config:
+      create:
+      - config_value: "6000"
+  managementMtu:
+    documentation:
+      description: The MTU Size for Management Ports.
+    test_config:
+      create:
+      - config_value: "7000"
+resource_name: l2_mtu_policy
+rn_prepend: fabric

@@ -477,7 +477,11 @@ func (p *Property) setSensitive() {
 }
 
 func (p *Property) setTestValues() {
-	// Determine the test values for the property.
+	// Determine the test values for the property with per-bucket merge:
+	// auto-derive every bucket first, then overlay any explicit YAML buckets.
+	// Default and ForceNew are re-derived from the merged Create so they
+	// stay consistent when only Create is overridden, then the explicit
+	// Default / ForceNew (rare) overlays last.
 	genLogger.Debugf("Setting TestValues for property '%s'.", p.PropertyName)
 
 	// Check if the property should be ignored in tests.
@@ -487,22 +491,50 @@ func (p *Property) setTestValues() {
 		return
 	}
 
-	// If explicit test config is defined, convert it.
-	if p.hasTestConfigDefinition() {
-		p.TestValues = p.convertTestConfigDefinition()
-		genLogger.Debugf("Successfully set TestValues for property '%s' from definition.", p.PropertyName)
-		return
-	}
-
-	// Properties whose TestValues are references derived later by dependency resolution (autoWireParentDn, autoWireTargetDn).
-	// Skip auto-derivation — explicit TestConfig definitions are still honored above.
+	// Reference properties: explicit YAML wins; otherwise dependency
+	// resolution populates TestValues later (autoWireParentDn / autoWireTargetDn).
 	if p.PropertyName == "parentDn" || p.PropertyName == "tDn" {
+		if p.hasTestConfigDefinition() {
+			p.TestValues = p.convertTestConfigDefinition()
+		}
 		genLogger.Debugf("Skipping auto-derivation for reference property '%s'; values will be derived during dependency resolution.", p.PropertyName)
 		return
 	}
 
-	// Auto-derive test values based on property characteristics.
+	// 1. Auto-derive every bucket from meta. May return nil for read-only.
 	p.TestValues = p.generateTestValues()
+
+	// 2. Overlay explicit Create / Update from YAML.
+	explicit := p.convertTestConfigDefinition()
+	if p.TestValues == nil {
+		// Read-only with no explicit overrides stays nil to match the
+		// "no test config" sentinel downstream consumers expect.
+		if len(explicit.Create) == 0 && len(explicit.Update) == 0 &&
+			len(explicit.Default) == 0 && len(explicit.ForceNew) == 0 {
+			genLogger.Debugf("Property '%s' has no auto-derive and no explicit test config; TestValues left nil.", p.PropertyName)
+			return
+		}
+		p.TestValues = &TestValues{}
+	}
+	if len(explicit.Create) > 0 {
+		p.TestValues.Create = explicit.Create
+	}
+	if len(explicit.Update) > 0 {
+		p.TestValues.Update = explicit.Update
+	}
+
+	// 3. Re-derive Default / ForceNew from the MERGED Create so an explicit
+	//    Create override flows through to the dependent buckets.
+	p.TestValues.Default = p.generateDefault(p.TestValues.Create)
+	p.TestValues.ForceNew = p.generateForceNew(p.TestValues.Create)
+
+	// 4. Overlay explicit Default / ForceNew (rare manual overrides).
+	if len(explicit.Default) > 0 {
+		p.TestValues.Default = explicit.Default
+	}
+	if len(explicit.ForceNew) > 0 {
+		p.TestValues.ForceNew = explicit.ForceNew
+	}
 
 	genLogger.Debugf("Successfully set TestValues for property '%s'.", p.PropertyName)
 }
@@ -513,39 +545,6 @@ func (p *Property) hasTestConfigDefinition() bool {
 	genLogger.Tracef("Checking for explicit test config definition for property '%s'.", p.PropertyName)
 	testConfig := p.propertyDefinition.TestConfig
 	return len(testConfig.Create) > 0 || len(testConfig.Update) > 0 || len(testConfig.Default) > 0 || len(testConfig.ForceNew) > 0
-}
-
-// validateStandardBucketsComplete returns an error when test_config supplies
-// some but not all of create / update / default / force_new. Either zero
-// buckets (auto-derive path) or all four (full manual override) are valid;
-// any mix in between silently nils the missing slices and confuses
-// downstream consumers, so reject it at load time. legacy is independent
-// of the standard buckets and is not considered here.
-func (p *Property) validateStandardBucketsComplete() error {
-	testConfig := p.propertyDefinition.TestConfig
-	buckets := map[string]int{
-		"create":    len(testConfig.Create),
-		"update":    len(testConfig.Update),
-		"default":   len(testConfig.Default),
-		"force_new": len(testConfig.ForceNew),
-	}
-	var present, missing []string
-	for name, count := range buckets {
-		if count > 0 {
-			present = append(present, name)
-		} else {
-			missing = append(missing, name)
-		}
-	}
-	if len(present) == 0 || len(missing) == 0 {
-		return nil
-	}
-	slices.Sort(present)
-	slices.Sort(missing)
-	return fmt.Errorf(
-		"property %q test_config supplies %v but omits %v; all four standard buckets (create, update, default, force_new) must be supplied together",
-		p.PropertyName, present, missing,
-	)
 }
 
 func (p *Property) convertTestConfigDefinition() *TestValues {
@@ -823,6 +822,66 @@ func (p *Property) setLegacyTestValues() {
 		})
 	}
 	genLogger.Tracef("Auto-derived Legacy test values for property '%s' from Create bucket.", p.PropertyName)
+}
+
+// fillEmptyTestValueBuckets mirrors Create into any empty Update / Default /
+// ForceNew bucket. Runs as the final auto-derivation step in
+// Class.setPropertyTestValues so authored values and earlier wiring
+// (setParentDn, setTargetDn, setTargetNameProperty, setLegacyTestValues)
+// have already populated whatever they intend to.
+//
+// Why mirror Create:
+//   - Single-parent classes wire Create/Update/Default from parents[0] in
+//     setParentDn but only fill ForceNew when a second parent is available.
+//     The four-bucket validator requires ForceNew to be non-empty, so we
+//     reuse Create. Test step is well-formed; it does not exercise an
+//     actual destroy+recreate but does exercise the schema's ForceNew
+//     edge in the property graph.
+//   - Authored test_config blocks that supply only `create` (or
+//     `create` + `default`) leave the remaining buckets empty. Mirroring
+//     preserves the author's value while keeping the lifecycle steps
+//     consistent.
+//
+// Skips:
+//   - Non-testable properties (no TestValues, IgnoreInTest, ReadOnly):
+//     match the validator's gate; nothing to fill.
+//   - Properties whose Create bucket is also empty: indicates a real
+//     wiring gap. validateTestCompleteness will surface the missing
+//     Create bucket as a separate diagnostic.
+//   - Legacy bucket: derived independently by setLegacyTestValues and
+//     not subject to the four-bucket validator.
+func (p *Property) fillEmptyTestValueBuckets() {
+	if p.TestValues == nil || p.IgnoreInTest || p.ReadOnly {
+		return
+	}
+	if len(p.TestValues.Create) == 0 {
+		return
+	}
+	clone := func() []TestValueEntry {
+		out := make([]TestValueEntry, 0, len(p.TestValues.Create))
+		for _, c := range p.TestValues.Create {
+			out = append(out, TestValueEntry{
+				ConfigValue:   c.ConfigValue,
+				ConfigInclude: c.ConfigInclude,
+				AssertValue:   c.AssertValue,
+				ValueType:     c.ValueType,
+				Versions:      c.Versions,
+			})
+		}
+		return out
+	}
+	if len(p.TestValues.Update) == 0 {
+		p.TestValues.Update = clone()
+		genLogger.Tracef("Filled empty Update bucket for property '%s' from Create.", p.PropertyName)
+	}
+	if len(p.TestValues.Default) == 0 {
+		p.TestValues.Default = clone()
+		genLogger.Tracef("Filled empty Default bucket for property '%s' from Create.", p.PropertyName)
+	}
+	if len(p.TestValues.ForceNew) == 0 {
+		p.TestValues.ForceNew = clone()
+		genLogger.Tracef("Filled empty ForceNew bucket for property '%s' from Create.", p.PropertyName)
+	}
 }
 
 // hasTestableLegacyAlias returns true when at least one StateUpgradeValue

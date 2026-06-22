@@ -1,0 +1,54 @@
+documentation:
+  dn_formats:
+  - uni/tn-{name}/ap-{name}/epg-{name}/stAsc/site-{siteId}
+  - uni/tn-{name}/ctx-{name}/stAsc/site-{siteId}
+  - uni/tn-{name}/BD-{name}/stAsc/site-{siteId}
+  - uni/tn-{name}/out-{name}/instP-{name}/stAsc/site-{siteId}
+  - uni/tn-{name}/mscGraphXlateCont/epgDefXlate-[{epgDefDn}]/stAsc/site-{siteId}
+  resource:
+    notes:
+    - This resource should only be used to accomplish multi-site orchestration.
+  sub_category: Multi-Site
+  ui_locations:
+  - Not shown in UI
+properties:
+  remoteCtxPcTag:
+    attribute_name: remote_vrf_pc_tag
+    default_values:
+      any: ""
+    documentation:
+      description: The policy class tag (pcTag) of the remote VRF. This attribute
+        can only be present when the object for site association is a VRF.
+    remove_valid_values:
+    - any
+    test_config:
+      create:
+      - config_value: any
+  remotePcTag:
+    default_values:
+      "16387": ""
+    documentation:
+      description: The policy class tag (pcTag) of the remote object.
+    remove_valid_values:
+    - any
+    test_config:
+      create:
+      - config_value: "16386"
+  siteId:
+    attribute_name: site_id
+    default_values:
+      "0": ""
+    documentation:
+      description: The remote site identifier that is associated with the object of
+        the primary/local site as an integer.
+    test_config:
+      create:
+      - config_value: "1"
+resource_name: remote_site
+test_config:
+  dependencies:
+  - class_name: fvSiteAssociated
+    dependencies:
+    - class_name: fvBD
+    reference: aci_associated_site.test.id
+    role: parent

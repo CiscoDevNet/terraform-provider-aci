@@ -511,6 +511,380 @@ func TestSetAllowDelete(t *testing.T) {
 	}
 }
 
+type setArtifactsInput struct {
+	IdentifiedBy    []string
+	ClassDefinition ClassDefinition
+}
+
+func TestSetArtifacts(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	testCases := []test.TestCase{
+		{
+			Name: "test_auto_derive_both_when_identified_by_non_empty",
+			Input: setArtifactsInput{
+				IdentifiedBy:    []string{"name"},
+				ClassDefinition: ClassDefinition{},
+			},
+			Expected: []ArtifactEnum{ResourceArtifact, DatasourceArtifact},
+		},
+		{
+			Name: "test_auto_derive_none_when_identified_by_empty",
+			Input: setArtifactsInput{
+				IdentifiedBy:    nil,
+				ClassDefinition: ClassDefinition{},
+			},
+			Expected: []ArtifactEnum{},
+		},
+		{
+			Name: "test_explicit_opt_out_empty_slice_overrides_auto_derive",
+			Input: setArtifactsInput{
+				IdentifiedBy:    []string{"name"},
+				ClassDefinition: ClassDefinition{Artifacts: []ArtifactEnum{}},
+			},
+			Expected: []ArtifactEnum{},
+		},
+		{
+			Name: "test_opt_in_overrides_empty_identified_by",
+			Input: setArtifactsInput{
+				IdentifiedBy:    nil,
+				ClassDefinition: ClassDefinition{Artifacts: []ArtifactEnum{ResourceArtifact, DatasourceArtifact}},
+			},
+			Expected: []ArtifactEnum{ResourceArtifact, DatasourceArtifact},
+		},
+		{
+			Name: "test_datasource_only_override",
+			Input: setArtifactsInput{
+				IdentifiedBy:    []string{"name"},
+				ClassDefinition: ClassDefinition{Artifacts: []ArtifactEnum{DatasourceArtifact}},
+			},
+			Expected: []ArtifactEnum{DatasourceArtifact},
+		},
+		{
+			Name: "test_resource_only_override",
+			Input: setArtifactsInput{
+				IdentifiedBy:    []string{"name"},
+				ClassDefinition: ClassDefinition{Artifacts: []ArtifactEnum{ResourceArtifact}},
+			},
+			Expected: []ArtifactEnum{ResourceArtifact},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.(setArtifactsInput)
+			class := Class{Name: testClassName("fvTenant")}
+			class.IdentifiedBy = input.IdentifiedBy
+			class.ClassDefinition = input.ClassDefinition
+
+			class.setArtifacts()
+
+			assert.Equal(t, testCase.Expected, class.Artifacts, test.MessageEqual(testCase.Expected, class.Artifacts, testCase.Name))
+		})
+	}
+}
+
+type setParentDnVariantsInput struct {
+	ClassName       string
+	RnFormat        string
+	MetaFileContent map[string]any
+	ClassDefinition ClassDefinition
+}
+
+type setParentDnVariantsExpected struct {
+	Error            bool
+	ErrorMsg         string
+	VariantsLen      int
+	DefaultParentDn  string
+	DefaultParent    string
+	VariantParent    string
+	VariantRnPrepend string
+	VariantWrapper   string
+	VariantPlatform  PlatformTypeEnum
+}
+
+func TestSetParentDnVariants(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	testCases := []test.TestCase{
+		{
+			// Most classes have no YAML variants; the resolver leaves both
+			// fields nil and never reads meta.
+			Name: "test_no_yaml_variants_leaves_fields_nil",
+			Input: setParentDnVariantsInput{
+				ClassName:       "fvTenant",
+				RnFormat:        "tn-{name}",
+				MetaFileContent: map[string]any{},
+				ClassDefinition: ClassDefinition{},
+			},
+			Expected: setParentDnVariantsExpected{
+				VariantsLen: 0,
+			},
+		},
+		{
+			// pkiKeyRing shape: 2 meta dnFormats, 1 YAML variant. The default
+			// is the format that doesn't contain the YAML rn_prepend segment.
+			Name: "test_pki_key_ring_shape",
+			Input: setParentDnVariantsInput{
+				ClassName: "pkiKeyRing",
+				RnFormat:  "keyring-{name}",
+				MetaFileContent: map[string]any{
+					"dnFormats": []any{
+						"uni/tn-{name}/certstore/keyring-{name}",
+						"uni/userext/pkiext/keyring-{name}",
+					},
+					"containedBy": map[string]any{
+						"cloud:CertStore": "",
+						"pki:Ep":          "",
+					},
+				},
+				ClassDefinition: ClassDefinition{
+					ParentDnVariants: []ParentDnVariantDefinition{
+						{
+							ParentClass:  "fvTenant",
+							RnPrepend:    "certstore",
+							WrapperClass: "cloudCertStore",
+							TestPlatform: Cloud,
+						},
+					},
+				},
+			},
+			Expected: setParentDnVariantsExpected{
+				VariantsLen:      2,
+				DefaultParentDn:  "uni/userext/pkiext",
+				DefaultParent:    "pkiEp",
+				VariantParent:    "fvTenant",
+				VariantRnPrepend: "certstore",
+				VariantWrapper:   "cloudCertStore",
+				VariantPlatform:  Cloud,
+			},
+		},
+		{
+			// Meta has no dnFormats but YAML declares variants — the resolver
+			// can't synthesise the default and must error.
+			Name: "test_missing_meta_dn_formats_errors",
+			Input: setParentDnVariantsInput{
+				ClassName:       "pkiKeyRing",
+				RnFormat:        "keyring-{name}",
+				MetaFileContent: map[string]any{},
+				ClassDefinition: ClassDefinition{
+					ParentDnVariants: []ParentDnVariantDefinition{
+						{ParentClass: "fvTenant", RnPrepend: "certstore"},
+					},
+				},
+			},
+			Expected: setParentDnVariantsExpected{
+				Error:    true,
+				ErrorMsg: "meta has no dnFormats",
+			},
+		},
+		{
+			// Every meta containedBy entry is a YAML variant's wrapper class —
+			// no candidate remains for the synthesised default's parent.
+			Name: "test_every_meta_parent_is_a_variant_wrapper_errors",
+			Input: setParentDnVariantsInput{
+				ClassName: "pkiKeyRing",
+				RnFormat:  "keyring-{name}",
+				MetaFileContent: map[string]any{
+					"dnFormats": []any{
+						"uni/tn-{name}/certstore/keyring-{name}",
+						"uni/userext/pkiext/keyring-{name}",
+					},
+					"containedBy": map[string]any{
+						"cloud:CertStore": "",
+					},
+				},
+				ClassDefinition: ClassDefinition{
+					ParentDnVariants: []ParentDnVariantDefinition{
+						{ParentClass: "fvTenant", RnPrepend: "certstore", WrapperClass: "cloudCertStore"},
+					},
+				},
+			},
+			Expected: setParentDnVariantsExpected{
+				Error:    true,
+				ErrorMsg: "meta containedBy has no entry outside the YAML variants' wrapper classes",
+			},
+		},
+		{
+			// Every meta dnFormat is matched by a YAML variant — no candidate
+			// remains for the synthesised default.
+			Name: "test_every_meta_format_claimed_by_variant_errors",
+			Input: setParentDnVariantsInput{
+				ClassName: "pkiKeyRing",
+				RnFormat:  "keyring-{name}",
+				MetaFileContent: map[string]any{
+					"dnFormats": []any{
+						"uni/tn-{name}/certstore/keyring-{name}",
+					},
+					"containedBy": map[string]any{
+						"cloud:CertStore": "",
+					},
+				},
+				ClassDefinition: ClassDefinition{
+					ParentDnVariants: []ParentDnVariantDefinition{
+						{ParentClass: "fvTenant", RnPrepend: "certstore"},
+					},
+				},
+			},
+			Expected: setParentDnVariantsExpected{
+				Error:    true,
+				ErrorMsg: "no meta dnFormat is free of YAML rn_prepend segments",
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.(setParentDnVariantsInput)
+			expected := testCase.Expected.(setParentDnVariantsExpected)
+			class := Class{Name: testClassName(input.ClassName)}
+			class.RnFormat = input.RnFormat
+			class.MetaFileContent = input.MetaFileContent
+			class.ClassDefinition = input.ClassDefinition
+
+			err := class.setParentDnVariants()
+
+			if expected.Error {
+				assert.Error(t, err)
+				if expected.ErrorMsg != "" {
+					assert.ErrorContains(t, err, expected.ErrorMsg)
+				}
+				return
+			}
+
+			assert.NoError(t, err, test.MessageUnexpectedError(err))
+			assert.Len(t, class.ParentDnVariants, expected.VariantsLen)
+			if expected.VariantsLen == 0 {
+				assert.Nil(t, class.DefaultParentDn)
+				return
+			}
+			assert.NotNil(t, class.DefaultParentDn)
+			assert.Equal(t, expected.DefaultParentDn, class.DefaultParentDn.ParentDn)
+			assert.Equal(t, expected.DefaultParent, class.DefaultParentDn.ParentClass.String())
+			assert.Equal(t, expected.DefaultParent, class.ParentDnVariants[0].ParentClass.String())
+			assert.Equal(t, expected.VariantParent, class.ParentDnVariants[1].ParentClass.String())
+			assert.Equal(t, expected.VariantRnPrepend, class.ParentDnVariants[1].RnPrepend)
+			if expected.VariantWrapper == "" {
+				assert.Nil(t, class.ParentDnVariants[1].WrapperClass)
+			} else {
+				assert.NotNil(t, class.ParentDnVariants[1].WrapperClass)
+				assert.Equal(t, expected.VariantWrapper, class.ParentDnVariants[1].WrapperClass.String())
+			}
+			assert.Equal(t, expected.VariantPlatform, class.ParentDnVariants[1].TestPlatform)
+		})
+	}
+}
+
+type setTestConfigInput struct {
+	ClassDefinition ClassDefinition
+}
+
+type setTestConfigExpected struct {
+	IgnoreTests             []IgnoreTestEnum
+	IgnoreImportStateVerify bool
+}
+
+func TestSetTestConfig(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	testCases := []test.TestCase{
+		{
+			// Default zero-value loader: nothing suppressed.
+			Name:  "test_empty_definition_zero_value",
+			Input: setTestConfigInput{ClassDefinition: ClassDefinition{}},
+			Expected: setTestConfigExpected{
+				IgnoreTests:             nil,
+				IgnoreImportStateVerify: false,
+			},
+		},
+		{
+			// vmmRsDomMcastAddrNs-style nested-only relation: skips the parent's
+			// testvars iteration entry but still emits the class's own tests.
+			Name: "test_child_only_passthrough",
+			Input: setTestConfigInput{
+				ClassDefinition: ClassDefinition{
+					TestConfig: ClassTestConfigDefinition{
+						IgnoreTests: []IgnoreTestEnum{ChildIgnoreTest},
+					},
+				},
+			},
+			Expected: setTestConfigExpected{
+				IgnoreTests:             []IgnoreTestEnum{ChildIgnoreTest},
+				IgnoreImportStateVerify: false,
+			},
+		},
+		{
+			// Combination passthrough: both child-iteration and resource-test
+			// emission suppressed. Order is preserved verbatim from the loader.
+			Name: "test_multiple_buckets_preserve_order",
+			Input: setTestConfigInput{
+				ClassDefinition: ClassDefinition{
+					TestConfig: ClassTestConfigDefinition{
+						IgnoreTests: []IgnoreTestEnum{ChildIgnoreTest, ResourceIgnoreTest, DatasourceIgnoreTest},
+					},
+				},
+			},
+			Expected: setTestConfigExpected{
+				IgnoreTests:             []IgnoreTestEnum{ChildIgnoreTest, ResourceIgnoreTest, DatasourceIgnoreTest},
+				IgnoreImportStateVerify: false,
+			},
+		},
+		{
+			// Classes with non-roundtrip APIC state set just this flag while
+			// keeping the import smoke test itself active.
+			Name: "test_ignore_import_state_verify_only",
+			Input: setTestConfigInput{
+				ClassDefinition: ClassDefinition{
+					TestConfig: ClassTestConfigDefinition{
+						IgnoreImportStateVerify: true,
+					},
+				},
+			},
+			Expected: setTestConfigExpected{
+				IgnoreTests:             nil,
+				IgnoreImportStateVerify: true,
+			},
+		},
+		{
+			// Both gates set together — verify they remain independent.
+			Name: "test_both_gates_set",
+			Input: setTestConfigInput{
+				ClassDefinition: ClassDefinition{
+					TestConfig: ClassTestConfigDefinition{
+						IgnoreTests:             []IgnoreTestEnum{ResourceIgnoreTest},
+						IgnoreImportStateVerify: true,
+					},
+				},
+			},
+			Expected: setTestConfigExpected{
+				IgnoreTests:             []IgnoreTestEnum{ResourceIgnoreTest},
+				IgnoreImportStateVerify: true,
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.(setTestConfigInput)
+			expected := testCase.Expected.(setTestConfigExpected)
+
+			class := Class{Name: testClassName("fvTenant")}
+			class.ClassDefinition = input.ClassDefinition
+
+			class.setTestConfig()
+
+			assert.Equal(t, expected.IgnoreTests, class.TestConfig.IgnoreTests, test.MessageEqual(expected.IgnoreTests, class.TestConfig.IgnoreTests, testCase.Name))
+			assert.Equal(t, expected.IgnoreImportStateVerify, class.TestConfig.IgnoreImportStateVerify, test.MessageEqual(expected.IgnoreImportStateVerify, class.TestConfig.IgnoreImportStateVerify, testCase.Name))
+		})
+	}
+}
+
 type shouldIncludeChildInput struct {
 	RN                          string
 	ClassName                   string
@@ -3571,6 +3945,7 @@ type resolvePropertyTestValuesInput struct {
 	Properties       map[string]*Property
 	TestDependencies []*TestDependency
 	Relation         Relation
+	LoadedClasses    map[string]Class
 }
 
 type resolvePropertyTestValuesExpected struct {
@@ -3580,6 +3955,7 @@ type resolvePropertyTestValuesExpected struct {
 
 type expectedPropertyTestValues struct {
 	Nil            bool
+	AttributeName  string
 	CreateValue    string
 	CreateType     ValueRenderTypeEnum
 	UpdateValue    string
@@ -3617,6 +3993,35 @@ func TestResolvePropertyTestValues(t *testing.T) {
 			Expected: resolvePropertyTestValuesExpected{
 				PropertyChecks: map[string]expectedPropertyTestValues{
 					"tDn": {CreateValue: "aci_bridge_domain.test.id", CreateType: ReferenceValue, UpdateValue: "aci_bridge_domain.test_2.id", UpdateType: ReferenceValue, ForceNewValue: "aci_bridge_domain.test.id", ForceNewType: ReferenceValue},
+				},
+			},
+		},
+		{
+			Name: "test_auto_wire_target_dn_static_reference_renders_as_string",
+			Input: resolvePropertyTestValuesInput{
+				Properties: map[string]*Property{
+					"tDn": {
+						PropertyName:  "tDn",
+						AttributeName: "target_dn",
+						Required:      true,
+					},
+				},
+				Relation: Relation{RelationalClass: true, Type: Explicit},
+				TestDependencies: []*TestDependency{
+					{Class: testClassName("vmmDomP"), Reference: "uni/vmmp-VMware/dom-domain_1", ReferenceType: StaticReference, Role: Target},
+					{Class: testClassName("vmmDomP"), Reference: "uni/vmmp-VMware/dom-domain_2", ReferenceType: StaticReference, Role: Target},
+				},
+			},
+			Expected: resolvePropertyTestValuesExpected{
+				PropertyChecks: map[string]expectedPropertyTestValues{
+					"tDn": {
+						CreateValue:   "uni/vmmp-VMware/dom-domain_1",
+						CreateType:    StringValue,
+						UpdateValue:   "uni/vmmp-VMware/dom-domain_2",
+						UpdateType:    StringValue,
+						ForceNewValue: "uni/vmmp-VMware/dom-domain_1",
+						ForceNewType:  StringValue,
+					},
 				},
 			},
 		},
@@ -3666,6 +4071,34 @@ func TestResolvePropertyTestValues(t *testing.T) {
 			Expected: resolvePropertyTestValuesExpected{
 				PropertyChecks: map[string]expectedPropertyTestValues{
 					"parentDn": {CreateValue: "aci_tenant.test.id", CreateType: ReferenceValue, UpdateValue: "aci_tenant.test.id", UpdateType: ReferenceValue, DefaultValue: "aci_tenant.test.id", DefaultInclude: true, ForceNewValue: "aci_tenant.test_2.id", ForceNewType: ReferenceValue},
+				},
+			},
+		},
+		{
+			Name: "test_auto_wire_parent_dn_static_reference_renders_as_string",
+			Input: resolvePropertyTestValuesInput{
+				Properties: map[string]*Property{
+					"parentDn": {
+						PropertyName:  "parentDn",
+						AttributeName: "parent_dn",
+						Required:      true,
+					},
+				},
+				TestDependencies: []*TestDependency{
+					{Class: testClassName("polUni"), Reference: "uni", ReferenceType: StaticReference, Role: Parent},
+				},
+			},
+			Expected: resolvePropertyTestValuesExpected{
+				PropertyChecks: map[string]expectedPropertyTestValues{
+					"parentDn": {
+						CreateValue:    "uni",
+						CreateType:     StringValue,
+						UpdateValue:    "uni",
+						UpdateType:     StringValue,
+						DefaultValue:   "uni",
+						DefaultInclude: true,
+						ForceNewNil:    true,
+					},
 				},
 			},
 		},
@@ -3891,6 +4324,102 @@ func TestResolvePropertyTestValues(t *testing.T) {
 				DiagnosticContains: "unsupported relationship type",
 			},
 		},
+		{
+			Name: "test_named_relation_renames_attribute_name_from_target_resource_name",
+			Input: resolvePropertyTestValuesInput{
+				Properties: map[string]*Property{
+					"tnFvBDName": {PropertyName: "tnFvBDName", AttributeName: "tn_fv_bd_name", Required: true},
+				},
+				Relation: Relation{
+					RelationalClass: true,
+					Type:            Named,
+					ToClasses:       []*ClassName{testClassName("fvBD")},
+				},
+				TestDependencies: []*TestDependency{
+					{Class: testClassName("fvBD"), Reference: "aci_bridge_domain.test.id", ReferenceType: ResourceReference, Role: Target},
+				},
+				LoadedClasses: map[string]Class{
+					"fvBD": {Name: testClassName("fvBD"), ResourceName: "bridge_domain"},
+				},
+			},
+			Expected: resolvePropertyTestValuesExpected{
+				PropertyChecks: map[string]expectedPropertyTestValues{
+					"tnFvBDName": {
+						AttributeName: "bridge_domain_name",
+						CreateValue:   "aci_bridge_domain.test.name",
+						CreateType:    ReferenceValue,
+						UpdateValue:   "aci_bridge_domain.test.name",
+						UpdateType:    ReferenceValue,
+						ForceNewValue: "aci_bridge_domain.test.name",
+						ForceNewType:  ReferenceValue,
+					},
+				},
+			},
+		},
+		{
+			Name: "test_named_relation_attribute_name_unchanged_when_target_resource_name_unknown",
+			Input: resolvePropertyTestValuesInput{
+				Properties: map[string]*Property{
+					"tnFvBDName": {PropertyName: "tnFvBDName", AttributeName: "tn_fv_bd_name", Required: true},
+				},
+				Relation: Relation{
+					RelationalClass: true,
+					Type:            Named,
+					ToClasses:       []*ClassName{testClassName("fvBD")},
+				},
+				TestDependencies: []*TestDependency{
+					{Class: testClassName("fvBD"), Reference: "aci_bridge_domain.test.id", ReferenceType: ResourceReference, Role: Target},
+				},
+			},
+			Expected: resolvePropertyTestValuesExpected{
+				PropertyChecks: map[string]expectedPropertyTestValues{
+					"tnFvBDName": {
+						AttributeName: "tn_fv_bd_name",
+						CreateValue:   "aci_bridge_domain.test.name",
+						CreateType:    ReferenceValue,
+					},
+				},
+			},
+		},
+		{
+			Name: "test_named_relation_renames_attribute_name_even_with_test_config",
+			Input: resolvePropertyTestValuesInput{
+				Properties: func() map[string]*Property {
+					prop := &Property{
+						PropertyName:  "tnFvBDName",
+						AttributeName: "tn_fv_bd_name",
+						propertyDefinition: PropertyDefinition{
+							TestConfig: TestConfigDefinition{
+								Create: []TestValueEntryDefinition{
+									{ConfigValue: "explicit_name", ConfigInclude: &boolTrue},
+								},
+							},
+						},
+					}
+					prop.setTestValues()
+					return map[string]*Property{"tnFvBDName": prop}
+				}(),
+				Relation: Relation{
+					RelationalClass: true,
+					Type:            Named,
+					ToClasses:       []*ClassName{testClassName("fvBD")},
+				},
+				TestDependencies: []*TestDependency{
+					{Class: testClassName("fvBD"), Reference: "aci_bridge_domain.test.id", ReferenceType: ResourceReference, Role: Target},
+				},
+				LoadedClasses: map[string]Class{
+					"fvBD": {Name: testClassName("fvBD"), ResourceName: "bridge_domain"},
+				},
+			},
+			Expected: resolvePropertyTestValuesExpected{
+				PropertyChecks: map[string]expectedPropertyTestValues{
+					"tnFvBDName": {
+						AttributeName: "bridge_domain_name",
+						CreateValue:   "explicit_name",
+					},
+				},
+			},
+		},
 	}
 
 	for _, testCase := range testCases {
@@ -3905,7 +4434,10 @@ func TestResolvePropertyTestValues(t *testing.T) {
 				TestDependencies: input.TestDependencies,
 			}
 
-			ds := &DataStore{ctx: NewContext()}
+			ds := &DataStore{ctx: NewContext(), Classes: map[string]Class{}}
+			for name, loaded := range input.LoadedClasses {
+				ds.Classes[name] = loaded
+			}
 			class.setPropertyTestValues(ds)
 
 			if expected.DiagnosticContains != "" {
@@ -3918,6 +4450,9 @@ func TestResolvePropertyTestValues(t *testing.T) {
 
 			for propName, check := range expected.PropertyChecks {
 				prop := class.Properties[propName]
+				if check.AttributeName != "" {
+					assert.Equal(t, check.AttributeName, prop.AttributeName, test.MessageEqual(check.AttributeName, prop.AttributeName, testCase.Name))
+				}
 				if check.Nil {
 					assert.Nil(t, prop.TestValues, testCase.Name+": "+propName+" TestValues should be nil")
 					continue
@@ -4625,8 +5160,9 @@ func TestResolveChildTestValues(t *testing.T) {
 // YAML conversion layer; this case guarantees explicit Create/Update overrides
 // (arbitrary literals such as MAC addresses, IP addresses, or custom strings)
 // land in instance 0 / instance 1 respectively without being overwritten by
-// auto-derivation. Required all-four-bucket completeness mirrors the runtime
-// validateStandardBucketsComplete rule.
+// auto-derivation. The fixture supplies all four standard buckets explicitly
+// so the per-bucket merge in setTestValues passes the overrides through
+// without re-deriving from meta.
 func TestResolveChildTestValuesYAMLOverridesPropagate(t *testing.T) {
 	t.Parallel()
 	test.InitializeTest(t)

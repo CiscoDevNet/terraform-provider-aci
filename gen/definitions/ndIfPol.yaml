@@ -1,0 +1,113 @@
+documentation:
+  sub_category: Tenant Policies
+  ui_locations:
+  - Tenants -> Policies -> Protocol -> ND Interface
+properties:
+  ctrl:
+    attribute_name: controller_state
+    test_config:
+      create:
+      - config_value: '["managed-cfg"]'
+      default:
+      - config_value: '[]'
+  hopLimit:
+    default_values:
+      "64": ""
+    documentation:
+      description: The hop limit of the %s object.
+    test_config:
+      create:
+      - config_value: "40"
+  mtu:
+    default_values:
+      "9000": ""
+    documentation:
+      description: The maximum transmission unit (MTU) of the %s object.
+    test_config:
+      create:
+      - config_value: "8700"
+  nsIntvl:
+    attribute_name: neighbor_solicitation_interval
+    default_values:
+      "1000": ""
+    documentation:
+      description: The interval (milliseconds) for sending neighbor solicitation (NS)
+        messages.
+    test_config:
+      create:
+      - config_value: "1500"
+  nsRetries:
+    attribute_name: neighbor_solicitation_retries
+    default_values:
+      "3": ""
+    documentation:
+      description: The retransmission count for sending neighbor solicitation (NS)
+        messages.
+    test_config:
+      create:
+      - config_value: "6"
+  nudRetryBase:
+    default_values:
+      "1": ""
+    documentation:
+      description: The retransmission base value for neighbor unreachability detection
+        (NUD).
+    test_config:
+      create:
+      - config_value: "2"
+  nudRetryInterval:
+    default_values:
+      "1000": ""
+    documentation:
+      description: The retransmission interval (milliseconds) for neighbor unreachability
+        detection (NUD).
+    test_config:
+      create:
+      - config_value: "1300"
+  nudRetryMaxAttempts:
+    default_values:
+      "3": ""
+    documentation:
+      description: The maximum number of retransmission attempts for neighbor unreachability
+        detection (NUD).
+    test_config:
+      create:
+      - config_value: "5"
+  raIntvl:
+    attribute_name: router_advertisement_interval
+    default_values:
+      "600": ""
+    documentation:
+      description: The interval (seconds) for sending route advertisement messages.
+    test_config:
+      create:
+      - config_value: "500"
+  raLifetime:
+    attribute_name: router_advertisement_lifetime
+    default_values:
+      "1800": ""
+    documentation:
+      description: The default router lifetime (seconds).
+    test_config:
+      create:
+      - config_value: "1500"
+  reachableTime:
+    default_values:
+      "0": ""
+    documentation:
+      description: The time (milliseconds) for which a neighbor is considered reachable
+        after receiving reachability confirmation.
+    test_config:
+      create:
+      - config_value: "2"
+  retransTimer:
+    attribute_name: retransmit_timer
+    default_values:
+      "0": ""
+    documentation:
+      description: The retransmission time (milliseconds) for sending neighbor solicitation
+        messages.
+    test_config:
+      create:
+      - config_value: "2"
+resource_name: neighbor_discovery_interface_policy

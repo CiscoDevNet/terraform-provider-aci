@@ -1,0 +1,25 @@
+documentation:
+  sub_category: Tenant Policies
+  ui_locations:
+  - Tenants -> Policies -> Protocol -> Endpoint Tags -> Endpoint IP
+include_parents:
+- fvTenant
+properties:
+  id:
+    default_values:
+      "0": ""
+    test_config:
+      create:
+      - config_value: "1"
+  ip:
+    default_values:
+      10.0.0.1: ""
+    documentation:
+      description: The IP address of the %s object.
+    test_config:
+      create:
+      - config_value: 10.0.0.2
+      update:
+      - config_value: fe80::0001
+resource_name: endpoint_tag_ip
+rn_prepend: eptags

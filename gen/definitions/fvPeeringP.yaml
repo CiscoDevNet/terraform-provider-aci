@@ -1,0 +1,10 @@
+allow_delete: never
+properties:
+  bgpEvpnPeeringProfile:
+    attribute_name: peering_profile
+  password:
+    documentation:
+      description: The password used for establishing automatic BGP peering sessions.
+  type:
+    documentation:
+      description: The type of BGP EVPN Peering Profile object.

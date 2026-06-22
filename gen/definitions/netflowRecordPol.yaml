@@ -1,0 +1,36 @@
+documentation:
+  sub_category: Tenant Policies
+  ui_locations:
+  - Tenants -> Policies -> NetFlow -> NetFlow Records
+  - Fabric -> Access Policies -> Policies -> Interface -> NetFlow -> NetFlow Records
+properties:
+  collect:
+    attribute_name: collect_parameters
+    documentation:
+      description: Collect parameters of the %s object.
+    test_config:
+      create:
+      - config_value: '["count-bytes", "src-intf"]'
+      default:
+      - config_value: '["src-intf"]'
+  match:
+    attribute_name: match_parameters
+    documentation:
+      description: Match parameters of the %s object.
+    remove_valid_values:
+    - unspecified
+    test_config:
+      create:
+      - config_value: '["dst-ip", "src-ip"]'
+      default:
+      - config_value: '[]'
+  parentDn:
+    default_values:
+      uni/infra: ""
+resource_name: netflow_record_policy
+test_config:
+  dependencies:
+  - class_name: infraInfra
+    reference: uni/infra
+    reference_type: static
+    role: parent

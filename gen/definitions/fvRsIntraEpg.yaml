@@ -1,0 +1,32 @@
+documentation:
+  dn_formats:
+  - uni/tn-{name}/ap-{name}/epg-{name}/rsintraEpg-{tnVzBrCPName}
+  - uni/tn-{name}/ap-{name}/esg-{name}/rsintraEpg-{tnVzBrCPName}
+  - uni/tn-{name}/out-{name}/instP-{name}/rsintraEpg-{tnVzBrCPName}
+  - Too many DN formats to display, see model documentation for all possible parents
+    of [fvRsIntraEpg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsIntraEpg/overview).
+  example_parent_classes:
+  - fvAEPg
+  - fvESg
+  sub_category: Application Management
+  ui_locations:
+  - Tenants -> Application Profiles -> Application EPGs -> Contracts
+  - Tenants -> Application Profiles -> Endpoint Security Groups -> Contracts
+  - Tenants -> Networking -> L3Outs -> External EPGs -> Contracts
+properties:
+  intent:
+    restriction: exclude
+  tnVzBrCPName:
+    documentation:
+      description: The contract name
+resource_name: relation_to_intra_epg_contract
+test_config:
+  dependencies:
+  - class_name: fvESg
+    dependencies:
+    - class_name: fvAp
+    role: parent
+  - class_name: fvAEPg
+    dependencies:
+    - class_name: fvAp
+    role: parent

@@ -1,0 +1,18 @@
+documentation:
+  sub_category: Tenant Policies
+  ui_locations:
+  - Tenants -> Policies -> Protocol -> First Hop Security -> Feature Policies
+properties:
+  ipInspectAdminSt:
+    attribute_name: ip_inspection
+    documentation:
+      description: The Inspection Status for IPv4 and IPv6 traffic of the %s object.
+  raGuardAdminSt:
+    attribute_name: router_advertisement
+    documentation:
+      description: Enable Router Advertisement Guard for the %s object.
+  srcGuardAdminSt:
+    attribute_name: source_guard
+    documentation:
+      description: The Source Guard Status for IPv4 and IPv6 traffic of the %s object.
+resource_name: first_hop_security_policy

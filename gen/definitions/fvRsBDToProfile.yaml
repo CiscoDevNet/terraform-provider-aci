@@ -1,0 +1,26 @@
+properties:
+  tnL3extOutName:
+    test_config:
+      create:
+      - assert_value: aci_l3_outside.test.name
+        config_value: aci_l3_outside.test.name
+        value_type: reference
+      update:
+      - assert_value: aci_l3_outside.test_2.name
+        config_value: aci_l3_outside.test_2.name
+        value_type: reference
+resource_name: relation_from_bridge_domain_to_route_control_profile
+test_config:
+  dependencies:
+  - class_name: rtctrlProfile
+    dependencies:
+    - class_name: l3extOut
+      reference: aci_l3_outside.test.id
+    reference: aci_route_control_profile.test.id
+    role: target
+  - class_name: rtctrlProfile
+    dependencies:
+    - class_name: l3extOut
+      reference: aci_l3_outside.test_2.id
+    reference: aci_route_control_profile.test_2.id
+    role: target

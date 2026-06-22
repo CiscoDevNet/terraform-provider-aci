@@ -1,0 +1,44 @@
+documentation:
+  dn_formats:
+  - uni/tn-{name}/out-{name}/lnodep-{name}/rsnodeL3OutAtt-[{tDn}]/lbp-[{addr}]/nodesidp-{sidoffset}
+  sub_category: L3Out
+  ui_locations:
+  - Tenants -> Networking -> L3Outs -> Logical Node Profiles -> Policy -> Nodes ->
+    Policy -> Loopback Addresses
+include_parents:
+- l3extLoopBackIfP
+properties:
+  loopbackAddr:
+    attribute_name: loopback_address
+    default_values:
+      0.0.0.0: ""
+    documentation:
+      description: The loopback address of the %s object.
+    test_config:
+      create:
+      - config_value: 1.1.1.1
+      update:
+      - config_value: fe80::0002
+  name:
+    default_values:
+      "": ""
+    test_config:
+      create:
+      - config_value: node_sid_profile
+  sidoffset:
+    attribute_name: segment_id
+    default_values:
+      "1": ""
+    documentation:
+      description: The segment ID of the %s object.
+    test_config:
+      create:
+      - config_value: "1"
+resource_name: l3out_node_sid_profile
+test_config:
+  dependencies:
+  - class_name: l3extLoopBackIfP
+    dependencies:
+    - class_name: l3extRsNodeL3OutAtt
+    reference: aci_logical_node_to_fabric_node.test.id
+    role: parent

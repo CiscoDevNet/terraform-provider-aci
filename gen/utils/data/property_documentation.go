@@ -72,6 +72,45 @@ func (d *PropertyDocumentation) setDescription(p *Property) {
 	genLogger.Debugf("Successfully set Documentation Description for property '%s'. Description: %s", p.PropertyName, d.Description)
 }
 
+// applyGlobalPropertyDocumentationOverrides walks the class's resolved
+// Properties and replaces each Description with the matching entry from
+// ds.GlobalMetaDefinition.PropertyDocumentationOverrides when present.
+//
+// The override is keyed by APIC PropertyName (not the snake_case schema
+// AttributeName). Per the section 9.1 contract this branch sits between the
+// per-class override and the meta-comment fallback: a property carrying its
+// own ClassDefinition.Properties[name].Documentation.Description keeps that
+// value; otherwise the global template wins over whatever Property.setDescription
+// derived from meta comment / meta label.
+//
+// When the global template contains "%s" it is interpolated with the class's
+// humanised Label (e.g. "Application EPG"), matching the legacy generator's
+// GetResourceNameAsDescription substitution. Templates without "%s" are used
+// verbatim.
+//
+// Must run after ClassDocumentation.setLabel so the substitution target exists.
+func (c *Class) applyGlobalPropertyDocumentationOverrides(ds *DataStore) {
+	overrides := ds.GlobalMetaDefinition.PropertyDocumentationOverrides
+	if len(overrides) == 0 {
+		return
+	}
+	for name, property := range c.Properties {
+		template, ok := overrides[name]
+		if !ok {
+			continue
+		}
+		if property.propertyDefinition.Documentation.Description != "" {
+			continue
+		}
+		if strings.Contains(template, "%s") {
+			property.Documentation.Description = fmt.Sprintf(template, c.Documentation.Label)
+		} else {
+			property.Documentation.Description = template
+		}
+		genLogger.Debugf("Applied global PropertyDocumentationOverride for class '%s' property '%s'. Description: %s", c.Name.full, name, property.Documentation.Description)
+	}
+}
+
 func (d *PropertyDocumentation) setNotes(p *Property) {
 	genLogger.Debugf("Setting Documentation Notes for property '%s'.", p.PropertyName)
 
