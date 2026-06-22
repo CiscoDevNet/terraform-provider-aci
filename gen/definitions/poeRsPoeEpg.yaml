@@ -1,0 +1,32 @@
+properties:
+  tDn:
+    documentation:
+      description: The distinguished name (DN) of the EPG object.
+relation_info:
+  to_classes:
+  - fvAEPg
+resource_name: relation_to_application_epg
+test_config:
+  dependencies:
+  - class_name: fvTenant
+    config_overrides:
+      name: test_name
+    reference: uni/tn-tenant_0
+    reference_type: static
+    role: target
+  - class_name: fvAp
+    config_overrides:
+      name: test_name
+    dependencies:
+    - class_name: fvTenant
+    reference: uni/tn-test_name/ap-ap_1
+    reference_type: static
+    role: target
+  - class_name: fvAEPg
+    config_overrides:
+      name: epg_0
+    dependencies:
+    - class_name: fvAp
+    reference: uni/tn-test_name/ap-test_name/epg-epg_0
+    reference_type: static
+    role: target

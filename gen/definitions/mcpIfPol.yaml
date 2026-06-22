@@ -1,0 +1,78 @@
+documentation:
+  sub_category: Access Policies
+  ui_locations:
+  - Fabric -> Access Policies -> Policies -> Interface -> MCP Interface
+include_parents:
+- polUni
+properties:
+  adminSt:
+    attribute_name: admin_state
+    test_config:
+      create:
+      - config_value: enabled
+  gracePeriod:
+    attribute_name: grace_period_seconds
+    documentation:
+      description: The grace period in seconds for the %s object. This attribute is
+        only applicable when 'strict_mode' is 'on'. The value must be in the range
+        0 - 300.
+  gracePeriodMsec:
+    attribute_name: grace_period_milliseconds
+    documentation:
+      description: The grace period in milliseconds for the %s object. This attribute
+        is only applicable when 'strict_mode' is 'on'. The value must be in the range
+        0 - 999.
+    test_config:
+      create:
+      - config_value: "138"
+      - config_value: "100"
+  maxPduPerVlanLimit:
+    attribute_name: maximum_number_of_vlan
+    documentation:
+      description: The maximum amount of VLANs for the %s object. The value must be
+        in the range 1 - 2000 when 'strict_mode' is 'off', else the value must be
+        in range 1 - 256
+    test_config:
+      create:
+      - config_value: "129"
+  mcpMode:
+    attribute_name: strict_mode
+    documentation:
+      description: Enable strict mode for the %s object.
+    test_config:
+      create:
+      - config_value: "on"
+  mcpPduPerVlan:
+    documentation:
+      description: Send MCP PDU packets per VLAN for the %s object.
+  strictInitDelayTime:
+    attribute_name: initial_delay_time
+    documentation:
+      description: The initial delay time in seconds for the %s object. This allows
+        for MCP to wait before sending Bridge Protocol Data Units (BPDUs) which gives
+        Spanning Tree Protocol (STP) on the external network time to converge. This
+        attribute is only applicable when 'strict_mode' is 'on'. The value must be
+        in the range 0 - 1800.
+    test_config:
+      create:
+      - config_value: "1750"
+  strictTxFreq:
+    attribute_name: transmission_frequency_seconds
+    documentation:
+      description: The transmission frequency in seconds for the %s object. This attribute
+        is only applicable when 'strict_mode' is 'on'. The value must be in the range
+        0 - 300.
+    test_config:
+      create:
+      - config_value: "10"
+  strictTxFreqMsec:
+    attribute_name: transmission_frequency_milliseconds
+    documentation:
+      description: The transmission frequency in milliseconds for the %s object. This
+        attribute is only applicable when 'strict_mode' is 'on'. The value must be
+        in the range 0 - 999.
+    test_config:
+      create:
+      - config_value: "800"
+resource_name: mcp_interface_policy
+rn_prepend: infra

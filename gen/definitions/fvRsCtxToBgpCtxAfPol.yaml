@@ -1,0 +1,15 @@
+documentation:
+  sub_category: Networking
+  ui_locations:
+  - Tenants -> Networking -> VRFs -> Policy -> BGP Context Per Address Family
+properties:
+  af:
+    default_values:
+      ipv4-ucast: ""
+    test_config:
+      create:
+      - config_value: ipv4-ucast
+  tnBgpCtxAfPolName:
+    documentation:
+      description: The name of the BGP Address Family Context.
+resource_name: relation_from_vrf_to_bgp_address_family_context

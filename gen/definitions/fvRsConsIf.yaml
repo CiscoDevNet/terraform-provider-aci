@@ -1,0 +1,28 @@
+documentation:
+  dn_formats:
+  - uni/tn-{name}/ap-{name}/epg-{name}/rsconsIf-{tnVzCPIfName}
+  - uni/tn-{name}/ap-{name}/esg-{name}/rsconsIf-{tnVzCPIfName}
+  - uni/tn-{name}/out-{name}/instP-{name}/rsconsIf-{tnVzBrCPName}
+  - uni/tn-{name}/l2out-{name}/instP-{name}/rsconsIf-{tnVzBrCPName}
+  - Too many DN formats to display, see model documentation for all possible parents
+    of [fvRsConsIf](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsConsIf/overview).
+  example_parent_classes:
+  - fvAEPg
+  - fvESg
+  sub_category: Application Management
+  ui_locations:
+  - Tenants -> Application Profiles -> Application EPGs -> Contracts
+  - Tenants -> Application Profiles -> Endpoint Security Groups -> Contracts
+  - Tenants -> Networking -> L3Outs -> External EPGs -> Contracts
+  - Tenants -> Networking -> L2Outs -> External EPGs -> Contracts
+resource_name: relation_to_imported_contract
+test_config:
+  dependencies:
+  - class_name: fvESg
+    dependencies:
+    - class_name: fvAp
+    role: parent
+  - class_name: fvAEPg
+    dependencies:
+    - class_name: fvAp
+    role: parent

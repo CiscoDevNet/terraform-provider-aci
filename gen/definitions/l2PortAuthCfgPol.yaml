@@ -1,0 +1,61 @@
+properties:
+  macAuth:
+    attribute_name: authentication_mode
+    documentation:
+      description: The authentication mode of the 802.1x Port Authentication Interface
+        Policy.
+  maxReauthReq:
+    attribute_name: maximum_reauthentication_requests
+    documentation:
+      description: The maximum re-authentication requests for the 802.1x Port Authentication
+        Interface Policy. The value must be in the range 1 - 10.
+    test_config:
+      create:
+      - config_value: "5"
+  maxReq:
+    attribute_name: maximum_requests
+    documentation:
+      description: The maximum requests for the 802.1x Port Authentication Interface
+        Policy. The value must be in the range 2 - 10.
+    test_config:
+      create:
+      - config_value: "4"
+  reAuth:
+    attribute_name: reauthenticate
+    default_values:
+      "no": ""
+    documentation:
+      description: Enabling re-authentication for the 802.1x Port Authentication Interface
+        Policy.
+  reAuthPeriod:
+    attribute_name: reauthentication_period
+    documentation:
+      description: The re-authentication period (seconds) for the 802.1x Port Authentication
+        Interface Policy. The value must be in the range 1 - 2147483.
+    test_config:
+      create:
+      - config_value: "3000"
+  serverTimeout:
+    documentation:
+      description: The server timeout (seconds) for the 802.1x Port Authentication
+        Interface Policy. The value must be in the range 1 - 65535.
+    test_config:
+      create:
+      - config_value: "20"
+  suppTimeout:
+    attribute_name: supplicant_timeout
+    documentation:
+      description: The supplicant timeout (seconds) for the 802.1x Port Authentication
+        Interface Policy. The value must be in the range 1 - 65535.
+    test_config:
+      create:
+      - config_value: "25"
+  txPeriod:
+    attribute_name: transmit_period
+    documentation:
+      description: The transmit period (seconds) for the 802.1x Port Authentication
+        Interface Policy. The value must be in the range 1 - 65535.
+    test_config:
+      create:
+      - config_value: "35"
+resource_name: configuration

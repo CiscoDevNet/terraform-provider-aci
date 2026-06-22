@@ -1,0 +1,10 @@
+documentation:
+  sub_category: Networking
+  ui_locations:
+  - Tenants -> Networking -> VRFs -> Policy
+properties:
+  tnL3extRouteTagPolName:
+    documentation:
+      description: The name of the External Route Tag policy associated with this
+        context.
+resource_name: relation_from_vrf_to_l3out_route_tag_policy

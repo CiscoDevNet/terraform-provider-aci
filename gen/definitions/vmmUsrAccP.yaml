@@ -1,0 +1,25 @@
+documentation:
+  sub_category: Virtual Networking
+  ui_locations:
+  - Virtual Networking -> Provider -> Domain -> Credentials
+migration_source: from_sdkv2
+properties:
+  pwd:
+    attribute_name: password
+    documentation:
+      description: The password of the %s object. This sensitive value is excluded
+        from the resource's lifecycle configuration and is not tracked by Terraform.
+  usr:
+    attribute_name: username
+    documentation:
+      description: The username of the %s object.
+resource_name: vmm_credential
+state_upgrades:
+- attributes:
+    parentDn:
+      legacy_attribute: vmm_domain_dn
+    pwd:
+      legacy_attribute: pwd
+    usr:
+      legacy_attribute: usr
+  prior_schema_version: 1

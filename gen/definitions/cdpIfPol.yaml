@@ -1,0 +1,17 @@
+documentation:
+  sub_category: Access Policies
+  ui_locations:
+  - Access Policies -> Policies -> Interface -> CDP Interface
+include_parents:
+- polUni
+migration_source: from_sdkv2
+properties:
+  adminSt:
+    attribute_name: admin_state
+resource_name: cdp_interface_policy
+rn_prepend: infra
+state_upgrades:
+- attributes:
+    adminSt:
+      legacy_attribute: admin_st
+  prior_schema_version: 1

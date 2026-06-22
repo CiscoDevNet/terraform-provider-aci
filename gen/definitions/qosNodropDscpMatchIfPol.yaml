@@ -1,0 +1,13 @@
+documentation:
+  sub_category: Access Policies
+  ui_locations:
+  - Fabric -> Access Policies -> Policies -> Interface -> No-Drop-DSCP Match Policy
+include_parents:
+- polUni
+properties:
+  dscpMatchAdminSt:
+    attribute_name: admin_state
+    documentation:
+      description: The administrative state of the %s object.
+resource_name: no_drop_dscp_match_interface_policy
+rn_prepend: infra

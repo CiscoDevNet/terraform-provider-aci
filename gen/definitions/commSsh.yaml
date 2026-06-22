@@ -1,0 +1,39 @@
+properties:
+  adminSt:
+    attribute_name: admin_state
+  hostkeyAlgos:
+    attribute_name: host_key_algorithms
+    documentation:
+      description: The supported algorithms for the host key.
+    test_config:
+      ignore_in_test: true
+  kexAlgos:
+    attribute_name: kex_algorithms
+    documentation:
+      description: The supported algorithms for key exchange.
+    test_config:
+      create:
+      - config_value: '["curve25519-sha256"]'
+  passwordAuth:
+    attribute_name: password_authentication_state
+    documentation:
+      description: Determines the state of password-based authentication to control
+        administrator access to the management interfaces of the ACI fabric.
+  port:
+    documentation:
+      description: The port used by the SSH service.
+    test_config:
+      create:
+      - config_value: "22"
+  sshCiphers:
+    documentation:
+      description: The ciphers supported by the SSH service.
+    test_config:
+      create:
+      - config_value: '["aes192-ctr"]'
+  sshMacs:
+    documentation:
+      description: The message authentication codes (MACs) supported by the SSH service.
+    test_config:
+      create:
+      - config_value: '["hmac-sha1"]'

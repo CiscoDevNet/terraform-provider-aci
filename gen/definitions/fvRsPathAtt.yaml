@@ -1,0 +1,45 @@
+documentation:
+  sub_category: Application Management
+  ui_locations:
+  - Tenants -> Application Profiles -> Application EPGs -> Static Ports
+exclude_children:
+- l2PortSecurityPol
+properties:
+  encap:
+    default_values:
+      vlan-201: ""
+    documentation:
+      description: The VLAN encapsulation of the %s object.
+    restriction: required
+    test_config:
+      create:
+      - config_value: vlan-202
+      update:
+      - config_value: vlan-202
+  mode:
+    documentation:
+      description: The static association mode of the %s object.
+  primaryEncap:
+    default_values:
+      unknown: ""
+    documentation:
+      description: The primary VLAN encapsulation of the %s object.
+    test_config:
+      create:
+      - config_value: vlan-203
+resource_name: relation_to_static_path
+test_config:
+  dependencies:
+  - class_name: fvAEPg
+    dependencies:
+    - class_name: fvAp
+    reference: aci_application_epg.test.id
+    role: parent
+  - class_name: fabricPathEp
+    reference: topology/pod-1/paths-101/pathep-[eth1/1]
+    reference_type: static
+    role: target
+  - class_name: fabricPathEp
+    reference: topology/pod-1/paths-101/pathep-[eth1/2]
+    reference_type: static
+    role: target

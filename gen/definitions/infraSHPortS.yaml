@@ -1,0 +1,24 @@
+documentation:
+  sub_category: Access Policies
+  ui_locations:
+  - Fabric -> Access Policies -> Interfaces -> Spine Interfaces -> Profiles -> Interface
+    Selectors
+migration_source: from_sdkv2
+properties:
+  type:
+    attribute_name: port_selector_type
+    documentation:
+      description: The port selector type of the %s object.
+resource_name: spine_access_port_selector
+state_upgrades:
+- attributes:
+    parentDn:
+      legacy_attribute: spine_interface_profile_dn
+    type:
+      legacy_attribute: spine_access_port_selector_type
+  children:
+    infraRsSpAccGrp:
+      attributes:
+        tDn:
+          legacy_attribute: relation_infra_rs_sp_acc_grp
+  prior_schema_version: 1

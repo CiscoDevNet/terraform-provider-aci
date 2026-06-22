@@ -1,0 +1,11 @@
+documentation:
+  ui_locations:
+  - Virtual Networking -> Provider -> Domain -> Pool of Multicast Addresses
+properties:
+  tDn:
+    documentation:
+      description: The distinguished name of the target.
+resource_name: relation_to_multicast_pool
+test_config:
+  ignore_tests:
+  - child

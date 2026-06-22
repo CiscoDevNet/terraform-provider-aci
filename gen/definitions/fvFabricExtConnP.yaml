@@ -1,0 +1,35 @@
+documentation:
+  sub_category: Tenant Infra Policies
+  ui_locations:
+  - Tenant (infra) -> Policies -> Protocol -> Fabric Ext Connection Policy
+properties:
+  id:
+    attribute_name: fabric_id
+    documentation:
+      description: A unique identifier of the fabric, associated with the Fabric External
+        Connection Policy object
+  parentDn:
+    default_values:
+      uni/tn-infra: ""
+  rt:
+    attribute_name: community
+    default_values:
+      extended:as2-nn4:5:16: ""
+    documentation:
+      description: A global route target used to define communities for route leaking
+        or redistribution in multi-pod or multi-site deployments to manage routing
+        policies across fabrics.
+    restriction: required
+    test_config:
+      create:
+      - config_value: extended:as2-nn4:5:16
+      update:
+      - config_value: extended:as2-nn4:5:16
+  siteId:
+    documentation:
+      description: A unique identifier for the site associated with the Fabric External
+        Connection Policy object.
+    test_config:
+      create:
+      - config_value: "0"
+resource_name: fabric_external_connection_policy
