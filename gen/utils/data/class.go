@@ -1572,6 +1572,14 @@ func (c *Class) setTargetNameProperty(ds *DataStore) {
 		return
 	}
 
+	// Rename tn<TargetCap>Name to "<target_resource_name>_name" (e.g. contract_name)
+	// so the schema attribute matches the legacy overwriteProperty template convention.
+	// getRelationshipResourceName returns the raw class name as a fallback when the
+	// target's resource_name cannot be resolved; in that case leave AttributeName alone.
+	if targetResourceName := getRelationshipResourceName(ds, targetClass.String()); targetResourceName != "" && targetResourceName != targetClass.String() {
+		property.AttributeName = targetResourceName + "_name"
+	}
+
 	// Skip when an explicit TestConfig already drives the property.
 	if property.hasTestConfigDefinition() {
 		return
