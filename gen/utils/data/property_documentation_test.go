@@ -95,9 +95,9 @@ func TestSetPropertyDescription(t *testing.T) {
 }
 
 type applyGlobalPropertyDocumentationOverridesInput struct {
-	GlobalOverrides       map[string]string
-	Properties            map[string]*Property
-	Label                 string
+	GlobalOverrides map[string]string
+	Properties      map[string]*Property
+	Label           string
 }
 
 type applyGlobalPropertyDocumentationOverridesExpected struct {
@@ -110,7 +110,7 @@ func TestApplyGlobalPropertyDocumentationOverrides(t *testing.T) {
 
 	newProperty := func(name, perClassDescription, initialDescription string) *Property {
 		return &Property{
-			PropertyName: name,
+			PropertyName:  name,
 			Documentation: PropertyDocumentation{Description: initialDescription},
 			propertyDefinition: PropertyDefinition{
 				Documentation: ArtifactDocumentationDefinition{Description: perClassDescription},
