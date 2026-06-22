@@ -1,0 +1,17 @@
+allow_delete: never
+properties:
+  active:
+    attribute_name: active_uplinks
+    documentation:
+      description: The active uplink IDs of the %s object. When defined the value
+        cannot be set back to empty.
+    test_config:
+      create:
+      - config_value: 1,2
+  standby:
+    attribute_name: standby_uplinks
+    documentation:
+      description: The passive uplink IDs of the %s object.
+    test_config:
+      create:
+      - config_value: 3,4

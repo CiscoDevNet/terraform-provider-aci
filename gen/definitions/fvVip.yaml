@@ -1,0 +1,12 @@
+documentation:
+  sub_category: Application Management
+  ui_locations:
+  - Tenants -> Application Profiles -> Application EPGs -> L4-L7 Virtual IPs
+properties:
+  addr:
+    attribute_name: ip
+    documentation:
+      description: The L4-L7 Virtual IP Address for this object.
+    test_config:
+      update:
+      - config_value: 2001:0db8::01

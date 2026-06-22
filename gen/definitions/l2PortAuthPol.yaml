@@ -1,0 +1,14 @@
+documentation:
+  sub_category: Access Policies
+  ui_locations:
+  - Fabric -> Access Policies -> Policies -> Interface -> 802.1x Port Authentication
+include_parents:
+- polUni
+properties:
+  adminSt:
+    attribute_name: admin_state
+  hostMode:
+    documentation:
+      description: The host mode of the %s object.
+resource_name: dot1x_port_authentication_interface_policy
+rn_prepend: infra

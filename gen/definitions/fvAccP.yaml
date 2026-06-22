@@ -1,0 +1,13 @@
+properties:
+  encap:
+    default_values:
+      vlan-101: ""
+    documentation:
+      description: The VLAN or VXLAN encapsulation of the %s object.
+    restriction: required
+    test_config:
+      create:
+      - config_value: vlan-100
+      update:
+      - config_value: vlan-100
+resource_name: legacy_mode

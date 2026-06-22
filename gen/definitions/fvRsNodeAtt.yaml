@@ -1,0 +1,35 @@
+documentation:
+  sub_category: Application Management
+  ui_locations:
+  - Tenants -> Application Profiles -> Application EPGs -> Static Leafs
+properties:
+  encap:
+    default_values:
+      vlan-101: ""
+    documentation:
+      description: The VLAN encapsulation of the %s object.
+    restriction: required
+    test_config:
+      create:
+      - config_value: vlan-100
+      update:
+      - config_value: vlan-100
+  mode:
+    documentation:
+      description: The static association mode with the path of the %s object.
+resource_name: relation_to_static_leaf
+test_config:
+  dependencies:
+  - class_name: fvAEPg
+    dependencies:
+    - class_name: fvAp
+    reference: aci_application_epg.test.id
+    role: parent
+  - class_name: fabricNode
+    reference: topology/pod-1/node-101
+    reference_type: static
+    role: target
+  - class_name: fabricNode
+    reference: topology/pod-1/node-102
+    reference_type: static
+    role: target

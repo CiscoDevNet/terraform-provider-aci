@@ -1,0 +1,59 @@
+documentation:
+  sub_category: Access Policies
+  ui_locations:
+  - Fabric -> Access Policies -> Policies -> Interface -> PoE
+include_parents:
+- polUni
+properties:
+  adminSt:
+    attribute_name: admin_state
+  consumption:
+    restriction: exclude
+  max:
+    attribute_name: maximum_power
+    documentation:
+      description: The maximum power in milliwatts that is allowed for the %s object.
+        The value must be in the range 4000 - 60000.
+    remove_valid_values:
+    - "15400"
+    - "30000"
+    - "4000"
+    - "45000"
+    - "60000"
+    - "7000"
+    test_config:
+      create:
+      - config_value: "15400"
+  mode:
+    attribute_name: host_mode
+    documentation:
+      description: The host mode of the %s object.
+    test_config:
+      create:
+      - config_value: never
+  poeVoiceVlan:
+    attribute_name: poe_vlan
+    default_values:
+      unknown: ""
+    documentation:
+      description: The PoE VLAN of the %s object.
+    test_config:
+      create:
+      - config_value: vlan-200
+  policeAct:
+    attribute_name: policing_action
+    documentation:
+      description: The policing action of the %s object.
+    test_config:
+      create:
+      - config_value: log
+  prioHigh:
+    attribute_name: port_priority_high
+    default_values:
+      "no": ""
+    documentation:
+      description: Enable high port priority for the %s object.
+    test_config:
+      create:
+      - config_value: "yes"
+rn_prepend: infra

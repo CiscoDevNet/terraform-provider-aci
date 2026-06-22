@@ -1,0 +1,26 @@
+documentation:
+  sub_category: Virtual Networking
+  ui_locations:
+  - Virtual Networking -> VMware -> Domains -> VSwitch Policy -> Enhanced Lag Policy
+properties:
+  id:
+    restriction: exclude
+  lbmode:
+    attribute_name: load_balancing_mode
+    documentation:
+      description: The load balancing mode of the %s object.
+  mode:
+    documentation:
+      description: The LACP mode of the %s object.
+  numLinks:
+    attribute_name: number_of_links
+    documentation:
+      description: The number of links of the %s object.
+resource_name: lacp_enhanced_lag_policy
+test_config:
+  dependencies:
+  - class_name: vmmVSwitchPolicyCont
+    dependencies:
+    - class_name: vmmDomP
+    reference: aci_vswitch_policy.test.id
+    role: parent

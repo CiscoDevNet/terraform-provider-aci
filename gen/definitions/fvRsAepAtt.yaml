@@ -1,0 +1,33 @@
+documentation:
+  sub_category: Application Management
+  ui_locations:
+  - Tenants -> Application Profiles -> Application EPGs
+properties:
+  annotation:
+    restriction: exclude
+  encap:
+    default_values:
+      vlan-100: ""
+    documentation:
+      description: The encapsulation of the %s object.
+    restriction: required
+    test_config:
+      create:
+      - config_value: vlan-100
+      update:
+      - config_value: vlan-100
+  mode:
+    documentation:
+      description: The mode of the %s object.
+  primaryEncap:
+    default_values:
+      unknown: ""
+    documentation:
+      description: The primary encapsulation of the %s object.
+    test_config:
+      create:
+      - config_value: vlan-200
+  tnInfraAttEntityPName:
+    documentation:
+      description: The name of the Attachable Access Entity Profile object
+resource_name: relation_from_application_epg_to_attachable_access_entity_profile

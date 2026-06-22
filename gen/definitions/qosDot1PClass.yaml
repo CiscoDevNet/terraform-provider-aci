@@ -1,0 +1,26 @@
+documentation:
+  sub_category: Tenant Policies
+  ui_locations:
+  - Tenants -> Policies -> Protocol -> Custom QoS -> Dot1p Classifiers
+properties:
+  from:
+    test_config:
+      create:
+      - config_value: "4"
+      default:
+      - config_value: "1"
+  target:
+    documentation:
+      description: The target of the %s object. This Fabric only supports DSCP mutation,
+        Dot1P mutation is not supported.
+  targetCos:
+    documentation:
+      description: The target Class of Service (CoS) to be driven based on the range
+        of DSCP input values coming into the fabric.
+  to:
+    test_config:
+      create:
+      - config_value: "5"
+      default:
+      - config_value: "2"
+resource_name: dot1p_classifier

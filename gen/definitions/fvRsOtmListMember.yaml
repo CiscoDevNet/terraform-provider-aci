@@ -1,0 +1,30 @@
+documentation:
+  sub_category: Tenant Policies
+  ui_locations:
+  - Tenants -> Policies -> Protocol -> IP SLA -> Track Lists -> Track list to track
+    member relation
+properties:
+  tDn:
+    documentation:
+      description: The distinguished name (DN) of the IP SLA Track Member.
+  weight:
+    default_values:
+      "10": ""
+    documentation:
+      description: The weight associated with the IP SLA Track Member that contributes
+        to the total weight that is used to determines whether a route is considered
+        available or unavailable.
+    test_config:
+      create:
+      - config_value: "20"
+resource_name: relation_to_ip_sla_track_member
+test_config:
+  dependencies:
+  - class_name: fvTrackMember
+    config_overrides:
+      name: track_member_name_1
+    dependencies:
+    - class_name: fvTenant
+    reference: uni/tn-test_tenant/trackmember-track_member_name_1
+    reference_type: static
+    role: target

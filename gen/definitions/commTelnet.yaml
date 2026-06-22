@@ -1,0 +1,9 @@
+properties:
+  adminSt:
+    attribute_name: admin_state
+  port:
+    documentation:
+      description: The port used by the Telnet service.
+    test_config:
+      create:
+      - config_value: "23"

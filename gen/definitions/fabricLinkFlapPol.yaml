@@ -1,0 +1,26 @@
+documentation:
+  sub_category: Access Policies
+  ui_locations:
+  - Fabric -> Access Policies -> Policies -> Interface -> Link Flap
+include_parents:
+- polUni
+properties:
+  linkFlapErrorMax:
+    attribute_name: maximum_flaps
+    documentation:
+      description: The maximum amount of link flaps allowed before the port goes into
+        error disabled mode. The value must be in the range 2 - 30.
+    test_config:
+      create:
+      - config_value: "10"
+  linkFlapErrorSeconds:
+    attribute_name: allowed_time_for_flaps
+    documentation:
+      description: The duration in seconds to reach the maximum amount of link flaps
+        before the port goes into error disabled mode. The value must be in the range
+        5 - 420.
+    test_config:
+      create:
+      - config_value: "350"
+resource_name: link_flap_interface_policy
+rn_prepend: infra

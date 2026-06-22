@@ -1,0 +1,9 @@
+properties:
+  adminSt:
+    attribute_name: admin_state
+  tDn:
+    test_config:
+      create:
+      - config_value: uni/userext/pkiext/tp-test_name
+  tp:
+    attribute_name: certificate_authority

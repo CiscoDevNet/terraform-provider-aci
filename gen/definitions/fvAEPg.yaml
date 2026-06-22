@@ -1,0 +1,148 @@
+documentation:
+  sub_category: Application Management
+  ui_locations:
+  - Tenants -> Application Profiles -> Application EPGs
+exclude_children:
+- fvSiteAssociated
+migration_source: from_sdkv2
+properties:
+  exceptionTag:
+    attribute_name: contract_exception_tag
+    documentation:
+      description: The contract exception tag of the %s object.
+  floodOnEncap:
+    attribute_name: flood_in_encapsulation
+    documentation:
+      description: Flood L2 Multicast/Broadcast and Link Local Layer based on encapsulation.
+  fwdCtrl:
+    attribute_name: forwarding_control
+    default_values:
+      none: ""
+    documentation:
+      description: The forwarding control of the %s object.
+    test_config:
+      create:
+      - config_value: proxy-arp
+    value_type: string
+  hasMcastSource:
+    attribute_name: has_multicast_source
+    default_values:
+      "no": ""
+    documentation:
+      description: The %s object has a multicast source.
+  isAttrBasedEPg:
+    attribute_name: useg_epg
+    default_values:
+      "no": ""
+    documentation:
+      description: The %s object is microsegmented (uSeg).
+  pcEnfPref:
+    attribute_name: intra_epg_isolation
+    documentation:
+      description: Parameter used to determine whether communication between endpoints
+        within the EPG is blocked.
+  pcTag:
+    remove_valid_values:
+    - any
+    restriction: read_only
+  prefGrMemb:
+    attribute_name: preferred_group_member
+    documentation:
+      description: Parameter used to determine whether the EPG is part of the preferred
+        group. Members of this group are allowed to communicate without contracts.
+  scope:
+    documentation:
+      description: The scope ID (L3-VNI) of the %s object.
+    restriction: read_only
+  shutdown:
+    attribute_name: admin_state
+    default_values:
+      "no": ""
+resource_name: application_epg
+state_upgrades:
+- attributes:
+    exceptionTag:
+      legacy_attribute: exception_tag
+    floodOnEncap:
+      legacy_attribute: flood_on_encap
+    fwdCtrl:
+      legacy_attribute: fwd_ctrl
+    hasMcastSource:
+      legacy_attribute: has_mcast_source
+    isAttrBasedEPg:
+      legacy_attribute: is_attr_based_epg
+    matchT:
+      legacy_attribute: match_t
+    parentDn:
+      legacy_attribute: application_profile_dn
+    pcEnfPref:
+      legacy_attribute: pc_enf_pref
+    prefGrMemb:
+      legacy_attribute: pref_gr_memb
+    prio:
+      legacy_attribute: prio
+    shutdown:
+      legacy_attribute: shutdown
+  children:
+    fvRsAEPgMonPol:
+      attributes:
+        tnMonEPGPolName:
+          legacy_attribute: relation_fv_rs_aepg_mon_pol
+    fvRsBd:
+      attributes:
+        tnFvBDName:
+          legacy_attribute: relation_fv_rs_bd
+    fvRsCons:
+      attributes:
+        tnVzBrCPName:
+          legacy_attribute: relation_fv_rs_cons
+    fvRsConsIf:
+      attributes:
+        tnVzCPIfName:
+          legacy_attribute: relation_fv_rs_cons_if
+    fvRsCustQosPol:
+      attributes:
+        tnQosCustomPolName:
+          legacy_attribute: relation_fv_rs_cust_qos_pol
+    fvRsDppPol:
+      attributes:
+        tnQosDppPolName:
+          legacy_attribute: relation_fv_rs_dpp_pol
+    fvRsFcPathAtt:
+      attributes:
+        tDn:
+          legacy_attribute: relation_fv_rs_fc_path_att
+    fvRsIntraEpg:
+      attributes:
+        tnVzBrCPName:
+          legacy_attribute: relation_fv_rs_intra_epg
+    fvRsNodeAtt:
+      attributes:
+        descr:
+          legacy_attribute: description
+        encap:
+          legacy_attribute: encap
+        instrImedcy:
+          legacy_attribute: deployment_immediacy
+        mode:
+          legacy_attribute: mode
+        tDn:
+          legacy_attribute: node_dn
+      legacy_attribute: relation_fv_rs_node_att
+    fvRsProtBy:
+      attributes:
+        tnVzTabooName:
+          legacy_attribute: relation_fv_rs_prot_by
+    fvRsProv:
+      attributes:
+        tnVzBrCPName:
+          legacy_attribute: relation_fv_rs_prov
+    fvRsSecInherited:
+      attributes:
+        tDn:
+          legacy_attribute: relation_fv_rs_sec_inherited
+    fvRsTrustCtrl:
+      attributes:
+        tnFhsTrustCtrlPolName:
+          legacy_attribute: relation_fv_rs_trust_ctrl
+  prior_schema_version: 1

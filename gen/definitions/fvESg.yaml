@@ -1,0 +1,84 @@
+documentation:
+  sub_category: Application Management
+  ui_locations:
+  - Tenants -> Application Profiles -> Endpoint Security Groups
+exclude_children:
+- fvRsProtBy
+- fvRsCustQosPol
+migration_source: from_sdkv2
+properties:
+  floodOnEncap:
+    restriction: exclude
+  pcEnfPref:
+    attribute_name: intra_esg_isolation
+    documentation:
+      description: Parameter used to determine whether communication between endpoints
+        within the ESG is blocked.
+  pcTag:
+    remove_valid_values:
+    - any
+    restriction: read_only
+  prefGrMemb:
+    attribute_name: preferred_group_member
+    documentation:
+      description: Parameter used to determine whether the ESG is part of the preferred
+        group. Members of this group are allowed to communicate without contracts.
+  prio:
+    restriction: exclude
+  scope:
+    documentation:
+      description: The scope ID (L3-VNI) of the %s object.
+    restriction: read_only
+  shutdown:
+    attribute_name: admin_state
+    default_values:
+      "no": ""
+    documentation:
+      description: Withdraw the ESG configuration from all nodes in the fabric.
+state_upgrades:
+- attributes:
+    matchT:
+      legacy_attribute: match_t
+    parentDn:
+      legacy_attribute: application_profile_dn
+    pcEnfPref:
+      legacy_attribute: pc_enf_pref
+    prefGrMemb:
+      legacy_attribute: pref_gr_memb
+  children:
+    fvRsCons:
+      attributes:
+        prio:
+          legacy_attribute: prio
+        tnVzBrCPName:
+          legacy_attribute: target_dn
+      legacy_attribute: relation_fv_rs_cons
+    fvRsConsIf:
+      attributes:
+        prio:
+          legacy_attribute: prio
+        tnVzCPIfName:
+          legacy_attribute: target_dn
+      legacy_attribute: relation_fv_rs_cons_if
+    fvRsIntraEpg:
+      attributes:
+        tnVzBrCPName:
+          legacy_attribute: relation_fv_rs_intra_epg
+    fvRsProv:
+      attributes:
+        matchT:
+          legacy_attribute: match_t
+        prio:
+          legacy_attribute: prio
+        tnVzBrCPName:
+          legacy_attribute: target_dn
+      legacy_attribute: relation_fv_rs_prov
+    fvRsScope:
+      attributes:
+        tnFvCtxName:
+          legacy_attribute: relation_fv_rs_scope
+    fvRsSecInherited:
+      attributes:
+        tDn:
+          legacy_attribute: relation_fv_rs_sec_inherited
+  prior_schema_version: 1

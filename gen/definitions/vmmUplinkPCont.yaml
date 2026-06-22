@@ -1,0 +1,27 @@
+artifacts:
+- resource
+- datasource
+documentation:
+  sub_category: Virtual Networking
+  ui_locations:
+  - Virtual Networking -> VMware -> Create Uplinks
+include_children:
+- vmmUplinkP
+properties:
+  id:
+    restriction: exclude
+  name:
+    restriction: exclude
+  numOfUplinks:
+    attribute_name: number_of_uplinks
+    default_values:
+      "2": ""
+    documentation:
+      description: The number of uplinks in the %s object.
+    restriction: required
+    test_config:
+      create:
+      - config_value: "1"
+      update:
+      - config_value: "1"
+resource_name: vmm_uplink_container

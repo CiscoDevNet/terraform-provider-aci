@@ -1,0 +1,5 @@
+documentation:
+  sub_category: Networking
+  ui_locations:
+  - Tenants -> Networking -> VRFs -> Policy
+resource_name: relation_from_vrf_to_monitoring_policy

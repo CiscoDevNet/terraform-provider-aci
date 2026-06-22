@@ -1,0 +1,19 @@
+documentation:
+  sub_category: Networking
+  ui_locations:
+  - Tenants -> Networking -> Bridge Domains -> Policy -> Advanced/Troubleshooting
+    -> NetFlow Monitor Policies
+properties:
+  fltType:
+    attribute_name: filter_type
+    default_values:
+      ipv4: ""
+    documentation:
+      description: The filter type of the NetFlow Monitor Policy object.
+    test_config:
+      create:
+      - config_value: ce
+  tnNetflowMonitorPolName:
+    documentation:
+      description: The name of the NetFlow Monitor Policy object.
+resource_name: relation_from_bridge_domain_to_netflow_monitor_policy
