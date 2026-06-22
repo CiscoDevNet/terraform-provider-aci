@@ -73,15 +73,15 @@ import (
 type sectionEnum int
 
 const (
-	sectionUnknown sectionEnum = iota
-	sectionDirect              // S1 direct mapping (copy verbatim, same/sibling key)
-	sectionSemantic            // S2 semantic mapping (shape-changing transform)
-	sectionObsolete            // S3 already migrated or removed (drop with log)
-	sectionAdd                 // S4 ADD - new field, often with rename/value remap
-	sectionReuse               // S5 REUSE - remap onto an existing canonical field
-	sectionDerive              // S6 DERIVE - drop, computed in Go from meta
-	sectionConst               // S7 CONST - drop, relocated to constants.go
-	sectionPostpone            // S8 POSTPONE - preserve unchanged with TODO marker
+	sectionUnknown  sectionEnum = iota
+	sectionDirect               // S1 direct mapping (copy verbatim, same/sibling key)
+	sectionSemantic             // S2 semantic mapping (shape-changing transform)
+	sectionObsolete             // S3 already migrated or removed (drop with log)
+	sectionAdd                  // S4 ADD - new field, often with rename/value remap
+	sectionReuse                // S5 REUSE - remap onto an existing canonical field
+	sectionDerive               // S6 DERIVE - drop, computed in Go from meta
+	sectionConst                // S7 CONST - drop, relocated to constants.go
+	sectionPostpone             // S8 POSTPONE - preserve unchanged with TODO marker
 )
 
 func (s sectionEnum) String() string {
@@ -560,12 +560,12 @@ func contains(haystack []string, needle string) bool {
 //     The legacy author chose a test default value distinct from the
 //     declared schema default; preserve that override verbatim.
 //   - DefaultValues is empty:
-//     - Meta carries a default for this property AND it differs from the
-//       ConfigValue: keep. The legacy author intentionally asserted a
-//       value that diverges from the APIC server default; lifting would
-//       rewrite the "Default:" docs line to a value APIC does not use.
-//     - Meta has no default OR meta default equals ConfigValue: lift the
-//       ConfigValue into DefaultValues[cv]="" and drop the test entry.
+//   - Meta carries a default for this property AND it differs from the
+//     ConfigValue: keep. The legacy author intentionally asserted a
+//     value that diverges from the APIC server default; lifting would
+//     rewrite the "Default:" docs line to a value APIC does not use.
+//   - Meta has no default OR meta default equals ConfigValue: lift the
+//     ConfigValue into DefaultValues[cv]="" and drop the test entry.
 //
 // Run as a post-pass after migrateTestValues + the default_values handler
 // in loadAndMigrateProperties so both inputs are visible.

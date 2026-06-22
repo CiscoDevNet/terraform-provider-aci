@@ -380,6 +380,7 @@ func (m *MigrationSourceEnum) UnmarshalText(text []byte) error {
 	}
 	return nil
 }
+
 // ArtifactEnum identifies a generated artifact kind that the renderer can
 // produce for a class. Used inside `ClassDefinition.Artifacts` to control
 // which artifacts are emitted. A nil slice (the YAML field omitted entirely)
@@ -478,6 +479,7 @@ func (i *IgnoreTestEnum) UnmarshalText(text []byte) error {
 	}
 	return nil
 }
+
 // ════════════════════════════════════════════════════════════════════════════
 // Category 3: Default is a lookup, not a static value
 // ════════════════════════════════════════════════════════════════════════════
