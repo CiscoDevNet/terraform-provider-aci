@@ -999,8 +999,8 @@ func TestSetDnFormats(t *testing.T) {
 }
 
 type setExampleParentClassesInput struct {
-	Override         []string
-	MetaContainedBy  map[string]any
+	Override          []string
+	MetaContainedBy   map[string]any
 	NoMetaFileContent bool
 }
 
