@@ -2364,35 +2364,56 @@ func migrateTargets(file, selfClass string, val any, out *data.ClassDefinition) 
 	// static target references (setTargetNameProperty: "needs a
 	// resource or data_source target") so the verbatim migration fails
 	// generation. Replace the entire targets block with a
-	// resource-driven test_config:
-	//   - One rtctrlProfile Role:Target with aci_route_control_profile.
-	//     test.id so setTargetNameProperty auto-wires
-	//     tnRtctrlProfileName from `.test.name`.
-	//   - Nested l3extOut prerequisite with aci_l3_outside.test.id so
-	//     the test DAG creates the parent resource (fvTenant +
-	//     fvCtx + l3extOut chain auto-resolves from there).
-	//   - Explicit tnL3extOutName property TestConfig.Create =
-	//     aci_l3_outside.test.name, because setTargetNameProperty
-	//     only auto-wires the toMo property, and tnL3extOutName has
-	//     no other source.
-	// This is the only class in the meta with this shape (the audit
-	// in autocon-takeaways notes only fvRsBDToProfile has non-subclass
-	// support entries in its targets block). Generalising the override
-	// would require teaching the loader about secondary name
-	// properties, which is out of scope for this migration.
+	// resource-driven test_config that mirrors what
+	// resolveTargetDependencies would emit for a single-target
+	// relation (test + test_2 instances for Create/Update toggling),
+	// plus an explicit override for the secondary name property:
+	//   - Two rtctrlProfile Role:Target deps with
+	//     aci_route_control_profile.test.id and .test_2.id so
+	//     setTargetNameProperty auto-wires tnRtctrlProfileName as
+	//     Create=.test.name / Update=.test_2.name (toggle exercised).
+	//   - Each rtctrlProfile carries its own nested l3extOut
+	//     prerequisite (.test.id / .test_2.id) so the test DAG creates
+	//     two distinct l3extOut resources. The fvTenant + fvCtx +
+	//     l3extOut chain still auto-resolves from each l3extOut.
+	//   - Explicit tnL3extOutName property TestConfig with
+	//     Create=aci_l3_outside.test.name and
+	//     Update=aci_l3_outside.test_2.name, because
+	//     setTargetNameProperty only auto-wires the toMo property and
+	//     tnL3extOutName has no other source. fillEmptyTestValueBuckets
+	//     mirrors Create into Default / ForceNew.
+	// This is the only class in the meta with this shape (audit: of
+	// 22 named-relation classes with role:target entries,
+	// fvRsBDToProfile is the sole class whose support classes are not
+	// subclasses of the toMo). Generalising the override would require
+	// teaching the loader about secondary name properties, which is
+	// out of scope for this migration.
 	if selfClass == "fvRsBDToProfile" {
 		fmt.Printf("OVERRIDE: %s: targets hand-emitted for compound named relation (toMo=rtctrlProfile plus tnL3extOutName; singleton exception, see migrateTargets doc)\n", file)
-		out.TestConfig.Dependencies = append(out.TestConfig.Dependencies, data.TestDependencyDefinition{
-			ClassName:     "rtctrlProfile",
-			Role:          data.Target,
-			Reference:     "aci_route_control_profile.test.id",
-			ReferenceType: data.ResourceReference,
-			Dependencies: []data.TestDependencyDefinition{{
-				ClassName:     "l3extOut",
-				Reference:     "aci_l3_outside.test.id",
+		out.TestConfig.Dependencies = append(out.TestConfig.Dependencies,
+			data.TestDependencyDefinition{
+				ClassName:     "rtctrlProfile",
+				Role:          data.Target,
+				Reference:     "aci_route_control_profile.test.id",
 				ReferenceType: data.ResourceReference,
-			}},
-		})
+				Dependencies: []data.TestDependencyDefinition{{
+					ClassName:     "l3extOut",
+					Reference:     "aci_l3_outside.test.id",
+					ReferenceType: data.ResourceReference,
+				}},
+			},
+			data.TestDependencyDefinition{
+				ClassName:     "rtctrlProfile",
+				Role:          data.Target,
+				Reference:     "aci_route_control_profile.test_2.id",
+				ReferenceType: data.ResourceReference,
+				Dependencies: []data.TestDependencyDefinition{{
+					ClassName:     "l3extOut",
+					Reference:     "aci_l3_outside.test_2.id",
+					ReferenceType: data.ResourceReference,
+				}},
+			},
+		)
 		if out.Properties == nil {
 			out.Properties = map[string]data.PropertyDefinition{}
 		}
@@ -2400,6 +2421,11 @@ func migrateTargets(file, selfClass string, val any, out *data.ClassDefinition) 
 		prop.TestConfig.Create = []data.TestValueEntryDefinition{{
 			ConfigValue: "aci_l3_outside.test.name",
 			AssertValue: "aci_l3_outside.test.name",
+			ValueType:   data.ReferenceValue,
+		}}
+		prop.TestConfig.Update = []data.TestValueEntryDefinition{{
+			ConfigValue: "aci_l3_outside.test_2.name",
+			AssertValue: "aci_l3_outside.test_2.name",
 			ValueType:   data.ReferenceValue,
 		}}
 		out.Properties["tnL3extOutName"] = prop
