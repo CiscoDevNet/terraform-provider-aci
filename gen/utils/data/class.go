@@ -1399,6 +1399,21 @@ func (c *Class) setPropertyTestValues(ds *DataStore) {
 		c.Properties[propertyName].setLegacyTestValues()
 	}
 
+	// Fill empty Update/Default/ForceNew buckets from Create as a final
+	// safety net. Targets two shapes:
+	//   - parentDn/tDn auto-wiring left some buckets empty because only one
+	//     parent/target dependency was available (setParentDn only fills
+	//     ForceNew when len(parents) > 1).
+	//   - An author-supplied test_config provided Create only (or Create +
+	//     one of Default/Update), leaving the rest empty.
+	// In both cases mirroring Create keeps the test step well-formed: the
+	// renderer emits identical config across the lifecycle and the test
+	// exercises the schema. Authors can still override any bucket
+	// explicitly. Iterated in PropertiesAll order for stable logs.
+	for _, propertyName := range c.PropertiesAll {
+		c.Properties[propertyName].fillEmptyTestValueBuckets()
+	}
+
 	genLogger.Debugf("Successfully resolved property test values for class '%s'.", c.Name)
 }
 
