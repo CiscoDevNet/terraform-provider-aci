@@ -1816,6 +1816,11 @@ func buildChildInstance(childClass *Class, instanceIndex int) TestChildInstance 
 		if property.TestValues == nil || property.IgnoreInTest || property.ReadOnly {
 			continue
 		}
+		// parent_dn is implicit for nested child blocks (the enclosing resource is the parent),
+		// so skip the synthetic parentDn that setParentDn wires on the underlying class.
+		if property.PropertyName == "parentDn" {
+			continue
+		}
 
 		if instanceIndex == 0 {
 			if len(property.TestValues.Create) > 0 {
