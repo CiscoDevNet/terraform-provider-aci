@@ -824,6 +824,66 @@ func (p *Property) setLegacyTestValues() {
 	genLogger.Tracef("Auto-derived Legacy test values for property '%s' from Create bucket.", p.PropertyName)
 }
 
+// fillEmptyTestValueBuckets mirrors Create into any empty Update / Default /
+// ForceNew bucket. Runs as the final auto-derivation step in
+// Class.setPropertyTestValues so authored values and earlier wiring
+// (setParentDn, setTargetDn, setTargetNameProperty, setLegacyTestValues)
+// have already populated whatever they intend to.
+//
+// Why mirror Create:
+//   - Single-parent classes wire Create/Update/Default from parents[0] in
+//     setParentDn but only fill ForceNew when a second parent is available.
+//     The four-bucket validator requires ForceNew to be non-empty, so we
+//     reuse Create. Test step is well-formed; it does not exercise an
+//     actual destroy+recreate but does exercise the schema's ForceNew
+//     edge in the property graph.
+//   - Authored test_config blocks that supply only `create` (or
+//     `create` + `default`) leave the remaining buckets empty. Mirroring
+//     preserves the author's value while keeping the lifecycle steps
+//     consistent.
+//
+// Skips:
+//   - Non-testable properties (no TestValues, IgnoreInTest, ReadOnly):
+//     match the validator's gate; nothing to fill.
+//   - Properties whose Create bucket is also empty: indicates a real
+//     wiring gap. validateTestCompleteness will surface the missing
+//     Create bucket as a separate diagnostic.
+//   - Legacy bucket: derived independently by setLegacyTestValues and
+//     not subject to the four-bucket validator.
+func (p *Property) fillEmptyTestValueBuckets() {
+	if p.TestValues == nil || p.IgnoreInTest || p.ReadOnly {
+		return
+	}
+	if len(p.TestValues.Create) == 0 {
+		return
+	}
+	clone := func() []TestValueEntry {
+		out := make([]TestValueEntry, 0, len(p.TestValues.Create))
+		for _, c := range p.TestValues.Create {
+			out = append(out, TestValueEntry{
+				ConfigValue:   c.ConfigValue,
+				ConfigInclude: c.ConfigInclude,
+				AssertValue:   c.AssertValue,
+				ValueType:     c.ValueType,
+				Versions:      c.Versions,
+			})
+		}
+		return out
+	}
+	if len(p.TestValues.Update) == 0 {
+		p.TestValues.Update = clone()
+		genLogger.Tracef("Filled empty Update bucket for property '%s' from Create.", p.PropertyName)
+	}
+	if len(p.TestValues.Default) == 0 {
+		p.TestValues.Default = clone()
+		genLogger.Tracef("Filled empty Default bucket for property '%s' from Create.", p.PropertyName)
+	}
+	if len(p.TestValues.ForceNew) == 0 {
+		p.TestValues.ForceNew = clone()
+		genLogger.Tracef("Filled empty ForceNew bucket for property '%s' from Create.", p.PropertyName)
+	}
+}
+
 // hasTestableLegacyAlias returns true when at least one StateUpgradeValue
 // entry has Status Functioning or Frozen AND renames the attribute. Same-name
 // entries (type-only or restriction-only changes) are not testable as a
