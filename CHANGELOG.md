@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.20.0 (June 23, 2026)
+
+IMPROVEMENTS:
+
+- Add `aci_virtual_ip_address` resource and datasource.
+- Add `explicit-failover` as a valid mode value to `aci_lacp_policy` resource.
+
+BUG FIXES:
+
+- Fix migration type issue of `arp_learning` in `aci_vmm_domain` resource.
+- Fix API request path to ensure signature is created correctly for key-based authentication.
+
 ## 2.19.0 (April 17, 2026)
 
 This release includes resources and data sources that have been migrated from SDKv2 to the Terraform Provider Framework. Those resources and data sources will continue to accept legacy attributes but deprecation warnings will be displayed. See the [migration guide](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/guides/migration) for more details on the migration and how to upgrade the provider to this release and any subsequent v2.x release that will include migrated resources and data sources.
