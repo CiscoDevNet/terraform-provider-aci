@@ -1,0 +1,36 @@
+documentation:
+  sub_category: Access Policies
+  ui_locations:
+  - Fabric -> Access Policies -> Policies -> Interface -> CoPP Interface -> CoPP Policy
+    Protocol
+properties:
+  burst:
+    default_values:
+      "10": ""
+    documentation:
+      description: The burst size of the %s object.
+    test_config:
+      create:
+      - config_value: "15"
+  coppInterfaceProtocolPolicys:
+    attribute_name: protocol_policies
+  matchProto:
+    attribute_name: match_protocols
+    default_values:
+      "": ""
+    documentation:
+      description: The protocols to match in the %s object.
+    test_config:
+      create:
+      - config_value: '["arp", "bfd"]'
+      default:
+      - config_value: '[]'
+  rate:
+    default_values:
+      "10": ""
+    documentation:
+      description: The rate of the %s object.
+    test_config:
+      create:
+      - config_value: "15"
+resource_name: copp_interface_protocol_policy

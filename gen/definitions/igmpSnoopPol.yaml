@@ -1,0 +1,57 @@
+documentation:
+  sub_category: Tenant Policies
+  ui_locations:
+  - Tenants -> Policies -> Protocol -> IGMP Snoop
+properties:
+  adminSt:
+    attribute_name: admin_state
+  ctrl:
+    attribute_name: control
+    test_config:
+      create:
+      - config_value: '["fast-leave", "querier"]'
+      default:
+      - config_value: '[]'
+  lastMbrIntvl:
+    attribute_name: last_member_interval
+    default_values:
+      "1": ""
+    test_config:
+      create:
+      - config_value: "3"
+  queryIntvl:
+    attribute_name: query_interval
+    default_values:
+      "125": ""
+    test_config:
+      create:
+      - config_value: "140"
+  rspIntvl:
+    attribute_name: response_interval
+    default_values:
+      "10": ""
+    test_config:
+      create:
+      - config_value: "11"
+  startQueryCnt:
+    attribute_name: start_query_count
+    default_values:
+      "2": ""
+    test_config:
+      create:
+      - config_value: "9"
+  startQueryIntvl:
+    attribute_name: start_query_interval
+    default_values:
+      "31": ""
+    test_config:
+      create:
+      - config_value: "2"
+  ver:
+    attribute_name: querier_version
+    documentation:
+      description: The version of the IGMP querier.
+    test_config:
+      create:
+      - config_value: v2
+resource_name: igmp_snooping_policy

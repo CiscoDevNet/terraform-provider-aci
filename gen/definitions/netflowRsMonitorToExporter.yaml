@@ -1,0 +1,13 @@
+documentation:
+  sub_category: Tenant Policies
+  ui_locations:
+  - Tenants -> Policies -> NetFlow -> NetFlow Monitors
+  - Fabric -> Access Policies -> Policies -> Interface -> NetFlow -> NetFlow Monitors
+resource_name: relation_to_netflow_exporter
+test_config:
+  dependencies:
+  - class_name: netflowMonitorPol
+    dependencies:
+    - class_name: fvTenant
+    reference: aci_netlfow_monitor_policy.test.id
+    role: parent

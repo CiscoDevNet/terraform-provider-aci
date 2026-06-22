@@ -1,0 +1,111 @@
+documentation:
+  sub_category: Access Policies
+  ui_locations:
+  - Fabric -> Access Policies -> Policies -> Interface -> Synchronous Ethernet Interface
+include_parents:
+- polUni
+properties:
+  adminSt:
+    attribute_name: admin_state
+    test_config:
+      create:
+      - config_value: enabled
+  qloptype:
+    attribute_name: quality_level_options
+    documentation:
+      description: The quality level options of the %s object. This attribute is only
+        applicable when 'synchronization_status_message' is 'yes'.
+    test_config:
+      create:
+      - config_value: op2g2
+  qlrcvexactval:
+    attribute_name: quality_receive_exact_value
+    documentation:
+      description: The exact quality receive value for the %s object. This attribute
+        is only applicable when 'synchronization_status_message' is 'yes', and valid
+        input value depends on the choice of 'quality_level_options'.
+    test_config:
+      create:
+      - config_value: fsync-ql-o2-g2-eec2
+  qlrcvhval:
+    attribute_name: quality_receive_highest_value
+    documentation:
+      description: The highest quality receive value for the %s object. This attribute
+        is only applicable when 'synchronization_status_message' is 'yes', and valid
+        input value depends on the choice of 'quality_level_options'.
+    test_config:
+      create:
+      - config_value: fsync-ql-common-none
+  qlrcvlval:
+    attribute_name: quality_receive_lowest_value
+    documentation:
+      description: The lowest quality receive value for the %s object. This attribute
+        is only applicable when 'synchronization_status_message' is 'yes', and valid
+        input value depends on the choice of 'quality_level_options'.
+    test_config:
+      create:
+      - config_value: fsync-ql-common-none
+  qltxexactval:
+    attribute_name: quality_transmit_exact_value
+    documentation:
+      description: The exact quality transmit value of the %s object. This attribute
+        is only applicable when 'synchronization_status_message' is 'yes', and valid
+        input value depends on the choice of 'quality_level_options'.
+    test_config:
+      create:
+      - config_value: fsync-ql-o2-g2-eec2
+  qltxhval:
+    attribute_name: quality_transmit_highest_value
+    documentation:
+      description: The highest quality transmit value of the %s object. This attribute
+        is only applicable when 'synchronization_status_message' is 'yes', and valid
+        input value depends on the choice of 'quality_level_options'.
+    test_config:
+      create:
+      - config_value: fsync-ql-common-none
+  qltxlval:
+    attribute_name: quality_transmit_lowest_value
+    documentation:
+      description: The lowest quality transmit value of the %s object. This attribute
+        is only applicable when 'synchronization_status_message' is 'yes', and valid
+        input value depends on the choice of 'quality_level_options'.
+    test_config:
+      create:
+      - config_value: fsync-ql-common-none
+  selinput:
+    attribute_name: selection_input
+    default_values:
+      "no": ""
+    documentation:
+      description: Enable selection input for the %s object.
+    test_config:
+      create:
+      - config_value: "yes"
+  srcpriority:
+    attribute_name: source_priority
+    documentation:
+      description: The source priority of the %s object. This attribute is only applicable
+        when 'selection_input' is 'yes'. The value must be in the range 1 - 254.
+    test_config:
+      create:
+      - config_value: "10"
+  ssm:
+    attribute_name: synchronization_status_message
+    default_values:
+      "yes": ""
+    documentation:
+      description: Enable a synchronization status message for the %s object.
+    test_config:
+      create:
+      - config_value: "yes"
+  wtr:
+    attribute_name: wait_to_restore_time
+    documentation:
+      description: The wait-to-restore time (minutes) for the %s object. This attribute
+        is only applicable when 'selection_input' is 'yes'. The value must be in the
+        range 0 - 12.
+    test_config:
+      create:
+      - config_value: "8"
+resource_name: synce_interface_policy
+rn_prepend: infra

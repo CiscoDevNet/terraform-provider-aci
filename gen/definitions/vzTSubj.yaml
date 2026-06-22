@@ -1,0 +1,5 @@
+documentation:
+  sub_category: Contract
+  ui_locations:
+  - Tenants -> Contracts -> Taboos -> Subjects
+resource_name: taboo_contract_subject

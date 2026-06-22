@@ -1,0 +1,23 @@
+documentation:
+  sub_category: Access Policies
+  ui_locations:
+  - Fabric -> Access Policies -> Policies -> Interface -> Link Level Flow Control
+include_parents:
+- polUni
+properties:
+  llfcRcvAdminSt:
+    attribute_name: receive_state
+    documentation:
+      description: The receive state of the %s object.
+    test_config:
+      create:
+      - config_value: "on"
+  llfcSendAdminSt:
+    attribute_name: send_state
+    documentation:
+      description: The send state of the %s object.
+    test_config:
+      create:
+      - config_value: "on"
+resource_name: link_level_flow_control_interface_policy
+rn_prepend: infra

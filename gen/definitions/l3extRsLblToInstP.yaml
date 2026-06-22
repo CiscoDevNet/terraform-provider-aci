@@ -1,0 +1,31 @@
+documentation:
+  dn_formats:
+  - uni/tn-{name}/out-{name}/conslbl-{name}/rslblToInstP-[{tDn}]
+  resource:
+    notes:
+    - This resource should not be used in combination with the `l3out_consumer_label`
+      nested attributes of other resources for the same object. Doing so will result
+      in unexpected behaviour.
+  sub_category: L3Out
+  ui_locations:
+  - Tenants -> Networking -> L3Outs -> Policy -> Main -> Consumer Label
+properties:
+  tDn:
+    documentation:
+      description: The distinguished name (DN) of the External EPG object.
+resource_name: relation_from_l3out_consumer_label_to_external_epg
+test_config:
+  dependencies:
+  - class_name: l3extConsLbl
+    dependencies:
+    - class_name: l3extOut
+    reference: aci_l3out_consumer_label.test.id
+    role: parent
+  - class_name: l3extInstP
+    config_overrides:
+      name: inst_profile_1
+    dependencies:
+    - class_name: l3extOut
+    reference: uni/tn-test_name/out-test_l3_outside/instP-inst_profile_1
+    reference_type: static
+    role: target

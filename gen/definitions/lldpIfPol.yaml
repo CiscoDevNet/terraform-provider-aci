@@ -1,0 +1,33 @@
+documentation:
+  dn_formats:
+  - uni/infra/lldpIfP-{name}
+  sub_category: Access Policies
+  ui_locations:
+  - Access Policies -> Policies -> Interface -> LLDP Interface
+include_parents:
+- polUni
+migration_source: from_sdkv2
+properties:
+  adminRxSt:
+    attribute_name: receive_state
+    documentation:
+      description: The receive (rx) state of the %s object
+  adminTxSt:
+    attribute_name: transmit_state
+    documentation:
+      description: The transmit (tx) state of the %s object
+  portDCBXPVer:
+    attribute_name: dcbxp_version
+    documentation:
+      description: The Data Center Bridging Exchange Protocol (DCBXP) version of the
+        %s object. Changing the DCBX version may prevent the port parameters from
+        converging. The link may need to be reset for the change to take effect.
+resource_name: lldp_interface_policy
+rn_prepend: infra
+state_upgrades:
+- attributes:
+    adminRxSt:
+      legacy_attribute: admin_rx_st
+    adminTxSt:
+      legacy_attribute: admin_tx_st
+  prior_schema_version: 1

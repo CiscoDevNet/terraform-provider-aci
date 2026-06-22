@@ -1,0 +1,23 @@
+documentation:
+  sub_category: Contract
+  ui_locations:
+  - Tenants -> Contracts -> Taboos -> Subjects -> Filters
+properties:
+  directives:
+    documentation:
+      description: The directives of the %s object. Use the 'no_stats' option for
+        Policy Compression, which allows for the utilization of fewer TCAM resources.
+        Use the 'log' option to log packets and provide information about traffic
+        that is hitting the rule of interest. See the [contract configuration options](https://www.cisco.com/c/en/us/solutions/collateral/data-center-virtualization/application-centric-infrastructure/white-paper-c11-743951.html#Contractconfigurationoptions)
+        in the Cisco ACI Contract Guide White Paper for more information.
+    remove_valid_values:
+    - none
+    test_config:
+      create:
+      - config_value: '["log", "no_stats"]'
+      default:
+      - config_value: '[]'
+  tnVzFilterName:
+    documentation:
+      description: The name of the filter object.
+resource_name: relation_from_taboo_contract_subject_to_filter

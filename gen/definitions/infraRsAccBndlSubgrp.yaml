@@ -1,0 +1,8 @@
+properties:
+  tDn:
+    documentation:
+      description: The distinguished name (DN) of the target PC VPC Override Policy.
+    test_config:
+      create:
+      - config_value: ""
+resource_name: relation_to_pc_vpc_override_policy

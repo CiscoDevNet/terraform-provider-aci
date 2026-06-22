@@ -1,0 +1,41 @@
+documentation:
+  sub_category: Access Policies
+  ui_locations:
+  - Fabric -> Access Policies -> Policies -> Interface -> Fibre Channel Interface
+include_parents:
+- polUni
+properties:
+  automaxspeed:
+    attribute_name: auto_max_speed
+    documentation:
+      description: The maximum speed for the %s object when set to auto negotiation.
+  fillPattern:
+    documentation:
+      description: The fill pattern for the %s object. This attribute is only applicable
+        for native fibre channel ports.
+  portMode:
+    documentation:
+      description: The port mode for the %s object.
+  rxBBCredit:
+    attribute_name: receive_buffer_credit
+    documentation:
+      description: The receive buffer credit amount for the %s object. This attribute
+        is only applicable for native fibre channel ports. The value must be in the
+        range 16 - 64.
+    test_config:
+      create:
+      - config_value: "16"
+  speed:
+    documentation:
+      description: The speed for the %s object. This attribute is only applicable
+        for native fibre channel ports.
+    remove_valid_values:
+    - unknown
+  trunkMode:
+    documentation:
+      description: The trunk mode for the %s object. This attribute is only applicable
+        for native fibre channel ports.
+    remove_valid_values:
+    - un-init
+resource_name: fibre_channel_interface_policy
+rn_prepend: infra

@@ -1,0 +1,23 @@
+documentation:
+  sub_category: Tenant Policies
+  ui_locations:
+  - Tenants -> Policies -> Protocol -> IP SLA -> Track Members
+properties:
+  relationToIpSlaMonitoringPolicy:
+    attribute_name: relation_to_monitoring_policy
+  tDn:
+    documentation:
+      description: The distinguished name (DN) of the IP SLA Monitoring Policy.
+    restriction: required
+required_as_child: true
+resource_name: relation_to_ip_sla_monitoring_policy
+test_config:
+  dependencies:
+  - class_name: fvIPSLAMonitoringPol
+    config_overrides:
+      name: monitoring_policy_name_1
+    dependencies:
+    - class_name: fvTenant
+    reference: uni/tn-test_tenant/ipslaMonitoringPol-monitoring_policy_name_1
+    reference_type: static
+    role: target

@@ -1,0 +1,27 @@
+documentation:
+  sub_category: L3Out
+  ui_locations:
+  - Tenants (infra) -> Networking -> L3Outs -> Policy -> Main -> Provider Label
+properties:
+  name:
+    default_values:
+      default_prov_label: ""
+    test_config:
+      create:
+      - config_value: prov_label
+  tag:
+    default_values:
+      yellow-green: ""
+    test_config:
+      create:
+      - config_value: alice-blue
+resource_name: l3out_provider_label
+test_config:
+  dependencies:
+  - class_name: l3extOut
+    dependencies:
+    - class_name: fvTenant
+      reference: infra
+      reference_type: static
+    reference: aci_l3_outside.test.id
+    role: parent

@@ -1,0 +1,14 @@
+documentation:
+  sub_category: Access Policies
+  ui_locations:
+  - Fabric -> Access Policies -> Interfaces -> Leaf Interfaces -> Overrides
+  - Fabric -> Access Policies -> Interfaces -> Spine Interfaces -> Overrides
+resource_name: relation_to_access_interface_policy_group
+test_config:
+  dependencies:
+  - class_name: infraHPathS
+    role: parent
+  - class_name: infraAccPortGrp
+    reference: uni/infra/funcprof/accportgrp-access_interface_policy_group
+    reference_type: static
+    role: target

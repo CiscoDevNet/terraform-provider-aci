@@ -1,0 +1,7 @@
+documentation:
+  ui_locations:
+  - Virtual Networking -> Provider -> Domain -> Enhanced Lag Policy
+resource_name: relation_to_lacp_enhanced_lag_policy
+test_config:
+  ignore_tests:
+  - child

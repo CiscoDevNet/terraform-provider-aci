@@ -1,0 +1,20 @@
+documentation:
+  sub_category: Tenant Policies
+  ui_locations:
+  - Tenants -> Policies -> Protocol -> Endpoint Tags -> Endpoint MAC
+include_parents:
+- fvTenant
+properties:
+  ctxName:
+    restriction: exclude
+  id:
+    default_values:
+      "0": ""
+    test_config:
+      create:
+      - config_value: "1"
+  mac:
+    default_values:
+      "00:00:00:00:00:00": ""
+resource_name: endpoint_tag_mac
+rn_prepend: eptags

@@ -1,0 +1,5 @@
+properties:
+  tnMonEPGPolName:
+    documentation:
+      description: The name of the monitoring policy.
+resource_name: relation_from_application_epg_to_monitoring_policy
