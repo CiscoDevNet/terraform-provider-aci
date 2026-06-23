@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.20.1 (June 23, 2026)
+
 ## 2.20.0 (June 23, 2026)
 
 IMPROVEMENTS:
