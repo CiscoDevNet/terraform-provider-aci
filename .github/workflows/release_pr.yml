@@ -1,16 +1,18 @@
 name: release_pr
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 jobs:
   release-pr:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+        with:
+          ref: develop
       - name: Unshallow
         run: git fetch --prune --unshallow
 
@@ -82,7 +84,7 @@ jobs:
         run: git checkout -b release_pr && git push --set-upstream origin release_pr --force && git clean -f -d
 
       # Create or update release PR
-      - run: gh pr create --base main --head release_pr --title "Pre-Release PR (${{ steps.vars.outputs.version }})" --body ""
+      - run: gh pr create --base develop --head release_pr --title "Pre-Release PR (${{ steps.vars.outputs.version }})" --body ""
         id: pr
         continue-on-error: true
         env:
