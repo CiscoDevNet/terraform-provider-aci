@@ -34,10 +34,15 @@ import (
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &FvESgResource{}
+var _ resource.ResourceWithIdentity = &FvESgResource{}
 var _ resource.ResourceWithImportState = &FvESgResource{}
 
 func NewFvESgResource() resource.Resource {
 	return &FvESgResource{}
+}
+
+func (r FvESgResource) IdentitySchema(_ context.Context, _ resource.IdentitySchemaRequest, resp *resource.IdentitySchemaResponse) {
+	resp.IdentitySchema = getIdentitySchema()
 }
 
 // FvESgResource defines the resource implementation.
@@ -2971,6 +2976,7 @@ func (r *FvESgResource) Create(ctx context.Context, req resource.CreateRequest, 
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_endpoint_security_group with id '%s'", data.Id.ValueString()))
 }
 
@@ -2995,6 +3001,7 @@ func (r *FvESgResource) Read(ctx context.Context, req resource.ReadRequest, resp
 		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
 	} else {
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+		resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_endpoint_security_group with id '%s'", data.Id.ValueString()))
@@ -3061,6 +3068,7 @@ func (r *FvESgResource) Update(ctx context.Context, req resource.UpdateRequest, 
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_endpoint_security_group with id '%s'", data.Id.ValueString()))
 }
 
@@ -3089,10 +3097,11 @@ func (r *FvESgResource) Delete(ctx context.Context, req resource.DeleteRequest, 
 
 func (r *FvESgResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_endpoint_security_group")
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	resource.ImportStatePassthroughWithIdentity(ctx, path.Root("id"), path.Root("id"), req, resp)
 
 	var stateData *FvESgResourceModel
 	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: stateData.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_endpoint_security_group with id '%s'", stateData.Id.ValueString()))
 
 	tflog.Debug(ctx, "End import of state resource: aci_endpoint_security_group")
@@ -3102,11 +3111,17 @@ func getAndSetFvESgAttributes(ctx context.Context, diags *diag.Diagnostics, clie
 	childClasses := getChildClassesForGetRequest([]string{"fvRsCons", "fvRsConsIf", "fvRsIntraEpg", "fvRsProv", "fvRsScope", "fvRsSecInherited", "tagAnnotation", "tagTag"})
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), strings.Join(childClasses, ",")), "GET", nil)
 
-	readData := getEmptyFvESgResourceModel()
-
 	if diags.HasError() {
 		return
 	}
+
+	setFvESgAttributes(ctx, diags, data, requestData)
+}
+
+func setFvESgAttributes(ctx context.Context, diags *diag.Diagnostics, data *FvESgResourceModel, requestData *container.Container) {
+
+	readData := getEmptyFvESgResourceModel()
+
 	if requestData.Search("imdata").Search("fvESg").Data() != nil {
 		classReadInfo := requestData.Search("imdata").Search("fvESg").Data().([]interface{})
 		if len(classReadInfo) == 1 {

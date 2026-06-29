@@ -30,10 +30,15 @@ import (
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &L3extRsLblToProfileResource{}
+var _ resource.ResourceWithIdentity = &L3extRsLblToProfileResource{}
 var _ resource.ResourceWithImportState = &L3extRsLblToProfileResource{}
 
 func NewL3extRsLblToProfileResource() resource.Resource {
 	return &L3extRsLblToProfileResource{}
+}
+
+func (r L3extRsLblToProfileResource) IdentitySchema(_ context.Context, _ resource.IdentitySchemaRequest, resp *resource.IdentitySchemaResponse) {
+	resp.IdentitySchema = getIdentitySchema()
 }
 
 // L3extRsLblToProfileResource defines the resource implementation.
@@ -336,6 +341,7 @@ func (r *L3extRsLblToProfileResource) Create(ctx context.Context, req resource.C
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_relation_from_l3out_consumer_label_to_route_control_profile with id '%s'", data.Id.ValueString()))
 }
 
@@ -360,6 +366,7 @@ func (r *L3extRsLblToProfileResource) Read(ctx context.Context, req resource.Rea
 		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
 	} else {
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+		resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_relation_from_l3out_consumer_label_to_route_control_profile with id '%s'", data.Id.ValueString()))
@@ -402,6 +409,7 @@ func (r *L3extRsLblToProfileResource) Update(ctx context.Context, req resource.U
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_relation_from_l3out_consumer_label_to_route_control_profile with id '%s'", data.Id.ValueString()))
 }
 
@@ -430,10 +438,11 @@ func (r *L3extRsLblToProfileResource) Delete(ctx context.Context, req resource.D
 
 func (r *L3extRsLblToProfileResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_relation_from_l3out_consumer_label_to_route_control_profile")
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	resource.ImportStatePassthroughWithIdentity(ctx, path.Root("id"), path.Root("id"), req, resp)
 
 	var stateData *L3extRsLblToProfileResourceModel
 	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: stateData.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_relation_from_l3out_consumer_label_to_route_control_profile with id '%s'", stateData.Id.ValueString()))
 
 	tflog.Debug(ctx, "End import of state resource: aci_relation_from_l3out_consumer_label_to_route_control_profile")
@@ -443,11 +452,17 @@ func getAndSetL3extRsLblToProfileAttributes(ctx context.Context, diags *diag.Dia
 	childClasses := getChildClassesForGetRequest([]string{"tagAnnotation", "tagTag"})
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), strings.Join(childClasses, ",")), "GET", nil)
 
-	readData := getEmptyL3extRsLblToProfileResourceModel()
-
 	if diags.HasError() {
 		return
 	}
+
+	setL3extRsLblToProfileAttributes(ctx, diags, data, requestData)
+}
+
+func setL3extRsLblToProfileAttributes(ctx context.Context, diags *diag.Diagnostics, data *L3extRsLblToProfileResourceModel, requestData *container.Container) {
+
+	readData := getEmptyL3extRsLblToProfileResourceModel()
+
 	if requestData.Search("imdata").Search("l3extRsLblToProfile").Data() != nil {
 		classReadInfo := requestData.Search("imdata").Search("l3extRsLblToProfile").Data().([]interface{})
 		if len(classReadInfo) == 1 {

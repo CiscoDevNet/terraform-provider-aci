@@ -30,10 +30,15 @@ import (
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &FvRsCtxToBgpCtxAfPolResource{}
+var _ resource.ResourceWithIdentity = &FvRsCtxToBgpCtxAfPolResource{}
 var _ resource.ResourceWithImportState = &FvRsCtxToBgpCtxAfPolResource{}
 
 func NewFvRsCtxToBgpCtxAfPolResource() resource.Resource {
 	return &FvRsCtxToBgpCtxAfPolResource{}
+}
+
+func (r FvRsCtxToBgpCtxAfPolResource) IdentitySchema(_ context.Context, _ resource.IdentitySchemaRequest, resp *resource.IdentitySchemaResponse) {
+	resp.IdentitySchema = getIdentitySchema()
 }
 
 // FvRsCtxToBgpCtxAfPolResource defines the resource implementation.
@@ -336,6 +341,7 @@ func (r *FvRsCtxToBgpCtxAfPolResource) Create(ctx context.Context, req resource.
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_relation_from_vrf_to_bgp_address_family_context with id '%s'", data.Id.ValueString()))
 }
 
@@ -360,6 +366,7 @@ func (r *FvRsCtxToBgpCtxAfPolResource) Read(ctx context.Context, req resource.Re
 		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
 	} else {
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+		resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_relation_from_vrf_to_bgp_address_family_context with id '%s'", data.Id.ValueString()))
@@ -402,6 +409,7 @@ func (r *FvRsCtxToBgpCtxAfPolResource) Update(ctx context.Context, req resource.
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_relation_from_vrf_to_bgp_address_family_context with id '%s'", data.Id.ValueString()))
 }
 
@@ -430,10 +438,11 @@ func (r *FvRsCtxToBgpCtxAfPolResource) Delete(ctx context.Context, req resource.
 
 func (r *FvRsCtxToBgpCtxAfPolResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_relation_from_vrf_to_bgp_address_family_context")
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	resource.ImportStatePassthroughWithIdentity(ctx, path.Root("id"), path.Root("id"), req, resp)
 
 	var stateData *FvRsCtxToBgpCtxAfPolResourceModel
 	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: stateData.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_relation_from_vrf_to_bgp_address_family_context with id '%s'", stateData.Id.ValueString()))
 
 	tflog.Debug(ctx, "End import of state resource: aci_relation_from_vrf_to_bgp_address_family_context")
@@ -443,11 +452,17 @@ func getAndSetFvRsCtxToBgpCtxAfPolAttributes(ctx context.Context, diags *diag.Di
 	childClasses := getChildClassesForGetRequest([]string{"tagAnnotation", "tagTag"})
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), strings.Join(childClasses, ",")), "GET", nil)
 
-	readData := getEmptyFvRsCtxToBgpCtxAfPolResourceModel()
-
 	if diags.HasError() {
 		return
 	}
+
+	setFvRsCtxToBgpCtxAfPolAttributes(ctx, diags, data, requestData)
+}
+
+func setFvRsCtxToBgpCtxAfPolAttributes(ctx context.Context, diags *diag.Diagnostics, data *FvRsCtxToBgpCtxAfPolResourceModel, requestData *container.Container) {
+
+	readData := getEmptyFvRsCtxToBgpCtxAfPolResourceModel()
+
 	if requestData.Search("imdata").Search("fvRsCtxToBgpCtxAfPol").Data() != nil {
 		classReadInfo := requestData.Search("imdata").Search("fvRsCtxToBgpCtxAfPol").Data().([]interface{})
 		if len(classReadInfo) == 1 {
