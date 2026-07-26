@@ -21,4 +21,4 @@ jobs:
           fetch-depth: 0
 
       - name: Fast-forward main to develop
-        run: git push origin refs/heads/develop:refs/heads/main
+        run: git push origin refs/remotes/origin/develop:refs/heads/main
