@@ -176,6 +176,11 @@ func (ds *DataStore) loadClasses() error {
 		return fmt.Errorf("failed to load classes: %s", failedToLoadClasses)
 	}
 
+	// Class rnMap metadata can reference APIC classes for which this repository
+	// has no meta file. Keep the raw rnMap available on MetaFileContent, but only
+	// expose loaded classes as generated children.
+	ds.filterClassChildren()
+
 	// Set documentation for classes after all class data is loaded.
 	// This ensures that all child class information from the DataStore is available.
 	for classNameStr, class := range ds.Classes {
@@ -193,6 +198,19 @@ func (ds *DataStore) loadClasses() error {
 
 	genLogger.Debugf("Successfully loaded classes from: %s.", constMetaPath)
 	return nil
+}
+
+func (ds *DataStore) filterClassChildren() {
+	for className, class := range ds.Classes {
+		children := make([]*ClassName, 0, len(class.Children))
+		for _, child := range class.Children {
+			if _, ok := ds.Classes[child.String()]; ok {
+				children = append(children, child)
+			}
+		}
+		class.Children = children
+		ds.Classes[className] = class
+	}
 }
 
 func (ds *DataStore) loadClass(classNameStr string) error {

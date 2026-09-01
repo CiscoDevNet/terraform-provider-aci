@@ -10,6 +10,27 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestPropertyModelFieldName(t *testing.T) {
+	t.Parallel()
+
+	className := testClassName("fvEpIpTag")
+	testCases := map[string]string{
+		"id":     "FvEpIpTagID",
+		"siteId": "SiteId",
+		"tDn":    "TDn",
+	}
+
+	for propertyName, expected := range testCases {
+		propertyName := propertyName
+		expected := expected
+		t.Run(propertyName, func(t *testing.T) {
+			t.Parallel()
+			property := Property{PropertyName: propertyName}
+			assert.Equal(t, expected, property.ModelFieldName(className))
+		})
+	}
+}
+
 type setAttributeNameInput struct {
 	PropertyName       string
 	PropertyDefinition PropertyDefinition
