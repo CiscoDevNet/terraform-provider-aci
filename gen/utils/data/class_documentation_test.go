@@ -466,10 +466,12 @@ func TestSetWarnings(t *testing.T) {
 }
 
 type setDocumentationChildrenInput struct {
-	RnMap                      map[string]any
-	ChildrenIncludedInResource []string
-	ExcludeChildren            []string
-	StoreClasses               map[string]Class
+	RnMap                        map[string]any
+	ChildrenIncludedInResource   []string
+	ExcludeChildren              []string
+	DocumentationExcludeChildren []string
+	DocumentationIncludeChildren []string
+	StoreClasses                 map[string]Class
 }
 
 type setDocumentationChildrenExpected struct {
@@ -576,6 +578,53 @@ func TestSetDocumentationChildren(t *testing.T) {
 				"[aci_keep](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/keep)",
 			}},
 		},
+		{
+			Name: "test_documentation_exclude_children_dropped_from_docs",
+			Input: setDocumentationChildrenInput{
+				RnMap: map[string]any{
+					"exclude-{name}": "l2:Exclude",
+					"keep-{name}":    "fv:Keep",
+				},
+				DocumentationExcludeChildren: []string{"l2Exclude"},
+				StoreClasses: map[string]Class{
+					"l2Exclude": {ResourceName: "exclude"},
+					"fvKeep":    {ResourceName: "keep"},
+				},
+			},
+			Expected: setDocumentationChildrenExpected{Children: []string{
+				"[aci_keep](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/keep)",
+			}},
+		},
+		{
+			Name: "test_documentation_include_children_without_rnmap",
+			Input: setDocumentationChildrenInput{
+				DocumentationIncludeChildren: []string{"l2:Included"},
+				StoreClasses: map[string]Class{
+					"l2Included": {ResourceName: "included"},
+				},
+			},
+			Expected: setDocumentationChildrenExpected{Children: []string{
+				"[aci_included](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/included)",
+			}},
+		},
+		{
+			Name: "test_documentation_include_overrides_exclusions",
+			Input: setDocumentationChildrenInput{
+				RnMap: map[string]any{
+					"included-{name}": "l2:Included",
+				},
+				ChildrenIncludedInResource:   []string{"l2Included"},
+				ExcludeChildren:              []string{"l2Included"},
+				DocumentationExcludeChildren: []string{"l2Included"},
+				DocumentationIncludeChildren: []string{"l2Included"},
+				StoreClasses: map[string]Class{
+					"l2Included": {ResourceName: "included"},
+				},
+			},
+			Expected: setDocumentationChildrenExpected{Children: []string{
+				"[aci_included](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/included)",
+			}},
+		},
 	}
 
 	for _, testCase := range testCases {
@@ -594,6 +643,8 @@ func TestSetDocumentationChildren(t *testing.T) {
 				Children: childrenIncludedInResource,
 			}
 			class.ClassDefinition.ExcludeChildren = input.ExcludeChildren
+			class.ClassDefinition.Documentation.ExcludeChildren = input.DocumentationExcludeChildren
+			class.ClassDefinition.Documentation.IncludeChildren = input.DocumentationIncludeChildren
 			if input.RnMap != nil {
 				class.MetaFileContent = map[string]any{"rnMap": input.RnMap}
 			}
@@ -605,6 +656,82 @@ func TestSetDocumentationChildren(t *testing.T) {
 			assert.Equal(t, expected.Children, class.Documentation.Children, test.MessageEqual(expected.Children, class.Documentation.Children, testCase.Name))
 		})
 	}
+}
+
+func TestDocumentationChildLink(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	class := Class{
+		ClassDefinition: ClassDefinition{
+			ExcludeChildren: []string{"classExcluded"},
+		},
+	}
+	ds := &DataStore{Classes: map[string]Class{
+		"validChild":    {ResourceName: "valid_child"},
+		"excludedChild": {ResourceName: "excluded_child"},
+		"embeddedChild": {ResourceName: "embedded_child"},
+		"classExcluded": {ResourceName: "class_excluded"},
+	}}
+	documentationExcludes := map[string]struct{}{"excludedChild": {}}
+	childrenIncludedInResource := map[string]struct{}{"embeddedChild": {}}
+
+	testCases := []struct {
+		name         string
+		childName    string
+		forceInclude bool
+		expectedLink string
+		expectedOK   bool
+	}{
+		{
+			name:         "valid child",
+			childName:    "validChild",
+			expectedLink: "[aci_valid_child](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/valid_child)",
+			expectedOK:   true,
+		},
+		{name: "documentation excluded child", childName: "excludedChild"},
+		{name: "embedded child", childName: "embeddedChild"},
+		{name: "class excluded child", childName: "classExcluded"},
+		{
+			name:         "forced child bypasses exclusions",
+			childName:    "excludedChild",
+			forceInclude: true,
+			expectedLink: "[aci_excluded_child](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/excluded_child)",
+			expectedOK:   true,
+		},
+		{name: "unknown child"},
+		{name: "child without resource", childName: "noResourceChild"},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
+			link, ok := documentationChildLink(testCase.childName, testCase.forceInclude, &class, ds, documentationExcludes, childrenIncludedInResource)
+
+			assert.Equal(t, testCase.expectedLink, link)
+			assert.Equal(t, testCase.expectedOK, ok)
+		})
+	}
+}
+
+func TestDocumentationLinks(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	assert.Equal(t,
+		"[aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tenant)",
+		getResourceDocumentationLink("tenant"),
+	)
+	assert.Equal(t,
+		"[aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/tenant)",
+		getDatasourceDocumentationLink("tenant"),
+	)
+	assert.Equal(t, "", getTerraformRegistryDocumentationLink("tenant", ArtifactEnum(99)))
+	assert.Equal(t,
+		"[fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview)",
+		getDevnetObjectDocumentationLink("fvTenant"),
+	)
 }
 
 type setDeprecationWarningInput struct {

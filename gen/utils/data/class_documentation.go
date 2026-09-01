@@ -155,19 +155,39 @@ func (c *Class) setDocumentation(ds *DataStore) error {
 func (d *ClassDocumentation) setClassName(class *Class) {
 	genLogger.Debugf("Setting Documentation ClassName for class '%s'.", class.Name.full)
 
-	d.ClassName = fmt.Sprintf("[%s](https://%s/app/index.html#/objects/%s/overview)", class.Name.full, constPubhubDevnetHost, class.Name.full)
+	d.ClassName = getDevnetObjectDocumentationLink(class.Name.full)
 
 	genLogger.Debugf("Successfully set Documentation ClassName for class '%s'. ClassName: %s", class.Name.full, d.ClassName)
 }
 
+func getDevnetObjectDocumentationLink(className string) string {
+	return fmt.Sprintf("[%s](https://%s/app/index.html#/objects/%s/overview)", className, constPubhubDevnetHost, className)
+}
+
+func getTerraformRegistryDocumentationLink(resourceName string, artifact ArtifactEnum) string {
+	var baseURL string
+	switch artifact {
+	case ResourceArtifact:
+		baseURL = constRegistryResourceBaseUrl
+	case DatasourceArtifact:
+		baseURL = constRegistryDatasourceBaseUrl
+	default:
+		return ""
+	}
+
+	return fmt.Sprintf("[%s_%s](%s/%s)", constProviderName, resourceName, baseURL, resourceName)
+}
+
+func getResourceDocumentationLink(resourceName string) string {
+	return getTerraformRegistryDocumentationLink(resourceName, ResourceArtifact)
+}
+
+func getDatasourceDocumentationLink(resourceName string) string {
+	return getTerraformRegistryDocumentationLink(resourceName, DatasourceArtifact)
+}
+
 func (d *ClassDocumentation) setChildren(class *Class, ds *DataStore) {
 	genLogger.Debugf("Setting Documentation Children for class '%s'.", class.Name.full)
-
-	rnMap, ok := class.MetaFileContent["rnMap"].(map[string]any)
-	if !ok {
-		genLogger.Debugf("No rnMap available for class '%s'; skipping documentation children.", class.Name.full)
-		return
-	}
 
 	// Build a set of children already embedded as nested attributes in this resource
 	// so they can be excluded from the documentation children list.
@@ -176,35 +196,95 @@ func (d *ClassDocumentation) setChildren(class *Class, ds *DataStore) {
 		childrenIncludedInResource[child.full] = struct{}{}
 	}
 
-	links := make([]string, 0)
-	for _, classNameInterface := range rnMap {
-		childName, err := sanitizeClassName(classNameInterface.(string))
+	documentationIncludes := make(map[string]struct{}, len(class.ClassDefinition.Documentation.IncludeChildren))
+	for _, childName := range class.ClassDefinition.Documentation.IncludeChildren {
+		normalizedChildName, err := sanitizeClassName(childName)
 		if err != nil {
-			genLogger.Warnf("Skipping invalid child class name in rnMap for class '%s': %s", class.Name.full, err)
+			genLogger.Warnf("Skipping invalid documentation include child class name '%s' for class '%s': %s", childName, class.Name.full, err)
 			continue
 		}
-		if _, isIncluded := childrenIncludedInResource[childName]; isIncluded {
+		documentationIncludes[normalizedChildName] = struct{}{}
+	}
+
+	documentationExcludes := make(map[string]struct{}, len(class.ClassDefinition.Documentation.ExcludeChildren))
+	for _, childName := range class.ClassDefinition.Documentation.ExcludeChildren {
+		normalizedChildName, err := sanitizeClassName(childName)
+		if err != nil {
+			genLogger.Warnf("Skipping invalid documentation exclude child class name '%s' for class '%s': %s", childName, class.Name.full, err)
 			continue
 		}
-		// Honour the class's ExcludeChildren list (already used by the
-		// nested-children generator). Unifies the legacy
-		// remove_from_contains key into ExcludeChildren so a single field
-		// suppresses the entry from both nested generation and the docs
-		// children link list.
-		if slices.Contains(class.ClassDefinition.ExcludeChildren, childName) {
-			continue
+		documentationExcludes[normalizedChildName] = struct{}{}
+	}
+
+	linksByChild := make(map[string]string)
+	rnMap, hasRnMap := class.MetaFileContent["rnMap"].(map[string]any)
+	if hasRnMap {
+		for _, classNameInterface := range rnMap {
+			className, ok := classNameInterface.(string)
+			if !ok {
+				genLogger.Warnf("Skipping non-string child class name in rnMap for class '%s'", class.Name.full)
+				continue
+			}
+			childName, err := sanitizeClassName(className)
+			if err != nil {
+				genLogger.Warnf("Skipping invalid child class name in rnMap for class '%s': %s", class.Name.full, err)
+				continue
+			}
+			_, forceInclude := documentationIncludes[childName]
+			if link, ok := documentationChildLink(childName, forceInclude, class, ds, documentationExcludes, childrenIncludedInResource); ok {
+				linksByChild[childName] = link
+			}
 		}
-		childClass, ok := ds.Classes[childName]
-		if !ok || childClass.ResourceName == "" {
-			continue
+	} else {
+		genLogger.Debugf("No rnMap available for class '%s'; checking documentation include children.", class.Name.full)
+	}
+
+	for childName := range documentationIncludes {
+		if link, ok := documentationChildLink(childName, true, class, ds, documentationExcludes, childrenIncludedInResource); ok {
+			linksByChild[childName] = link
 		}
-		links = append(links, fmt.Sprintf("[%s_%s](%s/%s)", constProviderName, childClass.ResourceName, constRegistryResourceBaseUrl, childClass.ResourceName))
+	}
+
+	var links []string
+	if hasRnMap || len(documentationIncludes) > 0 {
+		links = make([]string, 0, len(linksByChild))
+	}
+	for _, link := range linksByChild {
+		links = append(links, link)
 	}
 
 	slices.Sort(links)
 	d.Children = slices.Compact(links)
 
 	genLogger.Debugf("Successfully set Documentation Children for class '%s'. Children: %v", class.Name.full, d.Children)
+}
+
+func documentationChildLink(
+	childName string,
+	forceInclude bool,
+	class *Class,
+	ds *DataStore,
+	documentationExcludes map[string]struct{},
+	childrenIncludedInResource map[string]struct{},
+) (string, bool) {
+	if !forceInclude {
+		if _, excluded := documentationExcludes[childName]; excluded {
+			return "", false
+		}
+		if slices.Contains(class.ClassDefinition.ExcludeChildren, childName) {
+			return "", false
+		}
+		if _, embedded := childrenIncludedInResource[childName]; embedded {
+			return "", false
+		}
+	}
+
+	childClass, ok := ds.Classes[childName]
+	if !ok || childClass.ResourceName == "" {
+		return "", false
+	}
+
+	return getResourceDocumentationLink(childClass.ResourceName), true
 }
 
 func (d *ClassDocumentation) setDeprecationWarning(class *Class) {
@@ -301,7 +381,7 @@ func (d *ClassDocumentation) setDescriptionWhenDefinedAsChild(class *Class, ds *
 		resourceParts := make([]string, 0, len(class.Relation.ToClasses))
 		for _, toClassName := range class.Relation.ToClasses {
 			toClassFull := toClassName.String()
-			toClassLink := fmt.Sprintf("[%s](https://%s/app/index.html#/objects/%s/overview)", toClassFull, constPubhubDevnetHost, toClassFull)
+			toClassLink := getDevnetObjectDocumentationLink(toClassFull)
 			toClass, ok := ds.Classes[toClassFull]
 			toLabel := toClassFull
 			if ok && toClass.Documentation.Label != "" {
@@ -309,7 +389,7 @@ func (d *ClassDocumentation) setDescriptionWhenDefinedAsChild(class *Class, ds *
 			}
 			targetParts = append(targetParts, fmt.Sprintf("%s (%s)", toLabel, toClassLink))
 			if ok && toClass.ResourceName != "" {
-				resourceParts = append(resourceParts, fmt.Sprintf("[%s_%s](%s/%s)", constProviderName, toClass.ResourceName, constRegistryResourceBaseUrl, toClass.ResourceName))
+				resourceParts = append(resourceParts, getResourceDocumentationLink(toClass.ResourceName))
 			}
 		}
 		targets := strings.Join(targetParts, ", ")
@@ -329,7 +409,7 @@ func (d *ClassDocumentation) setDescriptionWhenDefinedAsChild(class *Class, ds *
 		// standalone resource clause is omitted to avoid suggesting a separate resource.
 		sentence = fmt.Sprintf("A %s of %s.", nestingType, d.Label)
 	} else {
-		sentence = fmt.Sprintf("A %s of %s which can also be configured using a separate [%s_%s](%s/%s) resource.", nestingType, d.Label, constProviderName, class.ResourceName, constRegistryResourceBaseUrl, class.ResourceName)
+		sentence = fmt.Sprintf("A %s of %s which can also be configured using a separate %s resource.", nestingType, d.Label, getResourceDocumentationLink(class.ResourceName))
 	}
 
 	d.DescriptionWhenDefinedAsChild = header + " " + sentence
@@ -427,10 +507,10 @@ func (d *ClassDocumentation) setParentDns(class *Class, ds *DataStore) {
 
 	var resourceEntries, classOnlyEntries []string
 	for _, parent := range class.Parents {
-		parentLink := fmt.Sprintf("[%s](https://%s/app/index.html#/objects/%s/overview)", parent.full, constPubhubDevnetHost, parent.full)
+		parentLink := getDevnetObjectDocumentationLink(parent.full)
 		parentClass, knownInStore := ds.Classes[parent.full]
 		if knownInStore && parentClass.ResourceName != "" {
-			resourceEntries = append(resourceEntries, fmt.Sprintf("[%s_%s](%s/%s) (%s)", constProviderName, parentClass.ResourceName, constRegistryResourceBaseUrl, parentClass.ResourceName, parentLink))
+			resourceEntries = append(resourceEntries, fmt.Sprintf("%s (%s)", getResourceDocumentationLink(parentClass.ResourceName), parentLink))
 		} else {
 			classOnlyEntries = append(classOnlyEntries, parentLink)
 		}
