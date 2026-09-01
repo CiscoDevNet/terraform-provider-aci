@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -80,6 +82,13 @@ func NewQosCustomPolModelNull() QosCustomPolModel {
 			},
 		),
 	}
+}
+
+func (m *QosCustomPolModel) BuildRN() string {
+	rn := "qoscustom-{name}"
+	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
+
+	return rn
 }
 
 type QosCustomPolResourceModel struct {

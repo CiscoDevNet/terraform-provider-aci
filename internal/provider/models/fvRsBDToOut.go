@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -46,6 +48,13 @@ func NewFvRsBDToOutModelNull() FvRsBDToOutModel {
 			},
 		),
 	}
+}
+
+func (m *FvRsBDToOutModel) BuildRN() string {
+	rn := "rsBDToOut-{tnL3extOutName}"
+	rn = strings.ReplaceAll(rn, "{tnL3extOutName}", m.TnL3extOutName.ValueString())
+
+	return rn
 }
 
 type FvRsBDToOutResourceModel struct {

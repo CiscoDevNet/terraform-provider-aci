@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -49,6 +51,14 @@ func NewL3extRsLblToProfileModelNull() L3extRsLblToProfileModel {
 			},
 		),
 	}
+}
+
+func (m *L3extRsLblToProfileModel) BuildRN() string {
+	rn := "rslblToProfile-[{tDn}]-{direction}"
+	rn = strings.ReplaceAll(rn, "{direction}", m.Direction.ValueString())
+	rn = strings.ReplaceAll(rn, "{tDn}", m.TDn.ValueString())
+
+	return rn
 }
 
 type L3extRsLblToProfileResourceModel struct {

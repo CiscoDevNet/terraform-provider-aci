@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -49,6 +51,14 @@ func NewFvRsCtxToBgpCtxAfPolModelNull() FvRsCtxToBgpCtxAfPolModel {
 			},
 		),
 	}
+}
+
+func (m *FvRsCtxToBgpCtxAfPolModel) BuildRN() string {
+	rn := "rsctxToBgpCtxAfPol-[{tnBgpCtxAfPolName}]-{af}"
+	rn = strings.ReplaceAll(rn, "{af}", m.Af.ValueString())
+	rn = strings.ReplaceAll(rn, "{tnBgpCtxAfPolName}", m.TnBgpCtxAfPolName.ValueString())
+
+	return rn
 }
 
 type FvRsCtxToBgpCtxAfPolResourceModel struct {

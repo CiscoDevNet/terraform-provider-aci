@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -46,6 +48,13 @@ func NewFvRsProtByModelNull() FvRsProtByModel {
 			},
 		),
 	}
+}
+
+func (m *FvRsProtByModel) BuildRN() string {
+	rn := "rsprotBy-{tnVzTabooName}"
+	rn = strings.ReplaceAll(rn, "{tnVzTabooName}", m.TnVzTabooName.ValueString())
+
+	return rn
 }
 
 type FvRsProtByResourceModel struct {

@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -64,6 +66,13 @@ func NewFabricLinkFlapPolModelNull() FabricLinkFlapPolModel {
 			},
 		),
 	}
+}
+
+func (m *FabricLinkFlapPolModel) BuildRN() string {
+	rn := "infra/linkflappol-{name}"
+	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
+
+	return rn
 }
 
 type FabricLinkFlapPolResourceModel struct {

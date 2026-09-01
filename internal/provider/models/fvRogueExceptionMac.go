@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -55,6 +57,13 @@ func NewFvRogueExceptionMacModelNull() FvRogueExceptionMacModel {
 			},
 		),
 	}
+}
+
+func (m *FvRogueExceptionMacModel) BuildRN() string {
+	rn := "rgexpmac-{mac}"
+	rn = strings.ReplaceAll(rn, "{mac}", m.Mac.ValueString())
+
+	return rn
 }
 
 type FvRogueExceptionMacResourceModel struct {

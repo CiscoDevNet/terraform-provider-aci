@@ -47,3 +47,7 @@ func NewFvRsTrustCtrlModelNull() FvRsTrustCtrlModel {
 		),
 	}
 }
+
+func (m *FvRsTrustCtrlModel) BuildRN() string {
+	return "rstrustCtrl"
+}

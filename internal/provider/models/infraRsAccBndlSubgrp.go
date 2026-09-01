@@ -47,3 +47,7 @@ func NewInfraRsAccBndlSubgrpModelNull() InfraRsAccBndlSubgrpModel {
 		),
 	}
 }
+
+func (m *InfraRsAccBndlSubgrpModel) BuildRN() string {
+	return "rsaccBndlSubgrp"
+}

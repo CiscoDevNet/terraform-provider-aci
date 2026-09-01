@@ -47,3 +47,7 @@ func NewFvRsBDToNdPModelNull() FvRsBDToNdPModel {
 		),
 	}
 }
+
+func (m *FvRsBDToNdPModel) BuildRN() string {
+	return "rsBDToNdP"
+}

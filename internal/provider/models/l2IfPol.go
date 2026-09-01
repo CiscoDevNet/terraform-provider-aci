@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -67,6 +69,13 @@ func NewL2IfPolModelNull() L2IfPolModel {
 			},
 		),
 	}
+}
+
+func (m *L2IfPolModel) BuildRN() string {
+	rn := "infra/l2IfP-{name}"
+	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
+
+	return rn
 }
 
 type L2IfPolResourceModel struct {

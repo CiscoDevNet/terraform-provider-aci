@@ -47,3 +47,7 @@ func NewVmmRsDomMcastAddrNsModelNull() VmmRsDomMcastAddrNsModel {
 		),
 	}
 }
+
+func (m *VmmRsDomMcastAddrNsModel) BuildRN() string {
+	return "rsdomMcastAddrNs"
+}

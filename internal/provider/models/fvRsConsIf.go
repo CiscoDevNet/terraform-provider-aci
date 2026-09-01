@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -50,6 +52,13 @@ func NewFvRsConsIfModelNull() FvRsConsIfModel {
 			},
 		),
 	}
+}
+
+func (m *FvRsConsIfModel) BuildRN() string {
+	rn := "rsconsIf-{tnVzCPIfName}"
+	rn = strings.ReplaceAll(rn, "{tnVzCPIfName}", m.TnVzCPIfName.ValueString())
+
+	return rn
 }
 
 type FvRsConsIfResourceModel struct {

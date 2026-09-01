@@ -74,3 +74,7 @@ func NewCommSshModelNull() CommSshModel {
 		),
 	}
 }
+
+func (m *CommSshModel) BuildRN() string {
+	return "ssh"
+}

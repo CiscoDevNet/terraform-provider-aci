@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -58,6 +60,13 @@ func NewLacpEnhancedLagPolModelNull() LacpEnhancedLagPolModel {
 			},
 		),
 	}
+}
+
+func (m *LacpEnhancedLagPolModel) BuildRN() string {
+	rn := "enlacplagp-{name}"
+	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
+
+	return rn
 }
 
 type LacpEnhancedLagPolResourceModel struct {

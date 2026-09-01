@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -68,6 +70,13 @@ func NewFvFBRGroupModelNull() FvFBRGroupModel {
 			},
 		),
 	}
+}
+
+func (m *FvFBRGroupModel) BuildRN() string {
+	rn := "fbrg-{name}"
+	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
+
+	return rn
 }
 
 type FvFBRGroupResourceModel struct {

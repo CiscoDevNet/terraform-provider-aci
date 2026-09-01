@@ -50,3 +50,7 @@ func NewFvRsBDToProfileModelNull() FvRsBDToProfileModel {
 		),
 	}
 }
+
+func (m *FvRsBDToProfileModel) BuildRN() string {
+	return "rsBDToProfile"
+}

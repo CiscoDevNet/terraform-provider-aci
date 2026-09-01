@@ -65,3 +65,7 @@ func NewFvUplinkOrderContModelNull() FvUplinkOrderContModel {
 		),
 	}
 }
+
+func (m *FvUplinkOrderContModel) BuildRN() string {
+	return "uplinkorder"
+}
