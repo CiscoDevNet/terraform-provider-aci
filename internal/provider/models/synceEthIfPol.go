@@ -105,32 +105,40 @@ func (m *SynceEthIfPolModel) BuildRN() string {
 	return rn
 }
 
+func (m *SynceEthIfPolModel) BuildDN() string {
+	return "uni/" + m.BuildRN()
+}
+
 type SynceEthIfPolResourceModel struct {
 	SynceEthIfPolModel
 
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ID types.String `tfsdk:"id"`
 }
 
 func NewSynceEthIfPolResourceModelNull() SynceEthIfPolResourceModel {
 	return SynceEthIfPolResourceModel{
 		SynceEthIfPolModel: NewSynceEthIfPolModelNull(),
 		ID:                 types.StringNull(),
-		ParentDn:           types.StringNull(),
 	}
+}
+
+func (m *SynceEthIfPolResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }
 
 type SynceEthIfPolDataSourceModel struct {
 	SynceEthIfPolModel
 
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ID types.String `tfsdk:"id"`
 }
 
 func NewSynceEthIfPolDataSourceModelNull() SynceEthIfPolDataSourceModel {
 	return SynceEthIfPolDataSourceModel{
 		SynceEthIfPolModel: NewSynceEthIfPolModelNull(),
 		ID:                 types.StringNull(),
-		ParentDn:           types.StringNull(),
 	}
+}
+
+func (m *SynceEthIfPolDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

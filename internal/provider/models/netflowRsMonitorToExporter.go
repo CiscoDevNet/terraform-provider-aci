@@ -57,6 +57,10 @@ func (m *NetflowRsMonitorToExporterModel) BuildRN() string {
 	return rn
 }
 
+func (m *NetflowRsMonitorToExporterModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}
+
 type NetflowRsMonitorToExporterResourceModel struct {
 	NetflowRsMonitorToExporterModel
 
@@ -72,6 +76,10 @@ func NewNetflowRsMonitorToExporterResourceModelNull() NetflowRsMonitorToExporter
 	}
 }
 
+func (m *NetflowRsMonitorToExporterResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
+}
+
 type NetflowRsMonitorToExporterDataSourceModel struct {
 	NetflowRsMonitorToExporterModel
 
@@ -85,4 +93,8 @@ func NewNetflowRsMonitorToExporterDataSourceModelNull() NetflowRsMonitorToExport
 		ID:                              types.StringNull(),
 		ParentDn:                        types.StringNull(),
 	}
+}
+
+func (m *NetflowRsMonitorToExporterDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

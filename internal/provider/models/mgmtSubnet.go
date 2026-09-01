@@ -67,6 +67,10 @@ func (m *MgmtSubnetModel) BuildRN() string {
 	return rn
 }
 
+func (m *MgmtSubnetModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}
+
 type MgmtSubnetResourceModel struct {
 	MgmtSubnetModel
 
@@ -82,6 +86,10 @@ func NewMgmtSubnetResourceModelNull() MgmtSubnetResourceModel {
 	}
 }
 
+func (m *MgmtSubnetResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
+}
+
 type MgmtSubnetDataSourceModel struct {
 	MgmtSubnetModel
 
@@ -95,4 +103,8 @@ func NewMgmtSubnetDataSourceModelNull() MgmtSubnetDataSourceModel {
 		ID:              types.StringNull(),
 		ParentDn:        types.StringNull(),
 	}
+}
+
+func (m *MgmtSubnetDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

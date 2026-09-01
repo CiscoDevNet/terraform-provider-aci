@@ -56,3 +56,7 @@ func (m *InfraRsHPathAttModel) BuildRN() string {
 
 	return rn
 }
+
+func (m *InfraRsHPathAttModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}

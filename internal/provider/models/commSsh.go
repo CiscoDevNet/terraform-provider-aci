@@ -78,3 +78,7 @@ func NewCommSshModelNull() CommSshModel {
 func (m *CommSshModel) BuildRN() string {
 	return "ssh"
 }
+
+func (m *CommSshModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}

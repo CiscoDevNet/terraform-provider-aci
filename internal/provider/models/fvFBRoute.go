@@ -67,6 +67,10 @@ func (m *FvFBRouteModel) BuildRN() string {
 	return rn
 }
 
+func (m *FvFBRouteModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}
+
 type FvFBRouteResourceModel struct {
 	FvFBRouteModel
 
@@ -82,6 +86,10 @@ func NewFvFBRouteResourceModelNull() FvFBRouteResourceModel {
 	}
 }
 
+func (m *FvFBRouteResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
+}
+
 type FvFBRouteDataSourceModel struct {
 	FvFBRouteModel
 
@@ -95,4 +103,8 @@ func NewFvFBRouteDataSourceModelNull() FvFBRouteDataSourceModel {
 		ID:             types.StringNull(),
 		ParentDn:       types.StringNull(),
 	}
+}
+
+func (m *FvFBRouteDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

@@ -3,11 +3,16 @@
 package models
 
 import (
+	"regexp"
 	"strings"
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
+
+var pkiTPParentDnVariant1Patterns = []*regexp.Regexp{
+	regexp.MustCompile("^uni/tn-[^/]+$"),
+}
 
 type PkiTPModel struct {
 	Annotation    types.String `tfsdk:"annotation"`
@@ -75,6 +80,17 @@ func (m *PkiTPModel) BuildRN() string {
 	return rn
 }
 
+func (m *PkiTPModel) BuildDN(parentDN string) string {
+	rn := m.BuildRN()
+	for _, pattern := range pkiTPParentDnVariant1Patterns {
+		if pattern.MatchString(parentDN) {
+			return parentDN + "/certstore/" + rn
+		}
+	}
+
+	return parentDN + "/" + rn
+}
+
 type PkiTPResourceModel struct {
 	PkiTPModel
 
@@ -90,6 +106,10 @@ func NewPkiTPResourceModelNull() PkiTPResourceModel {
 	}
 }
 
+func (m *PkiTPResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
+}
+
 type PkiTPDataSourceModel struct {
 	PkiTPModel
 
@@ -103,4 +123,8 @@ func NewPkiTPDataSourceModelNull() PkiTPDataSourceModel {
 		ID:         types.StringNull(),
 		ParentDn:   types.StringNull(),
 	}
+}
+
+func (m *PkiTPDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

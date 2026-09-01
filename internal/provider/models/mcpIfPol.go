@@ -96,32 +96,40 @@ func (m *McpIfPolModel) BuildRN() string {
 	return rn
 }
 
+func (m *McpIfPolModel) BuildDN() string {
+	return "uni/" + m.BuildRN()
+}
+
 type McpIfPolResourceModel struct {
 	McpIfPolModel
 
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ID types.String `tfsdk:"id"`
 }
 
 func NewMcpIfPolResourceModelNull() McpIfPolResourceModel {
 	return McpIfPolResourceModel{
 		McpIfPolModel: NewMcpIfPolModelNull(),
 		ID:            types.StringNull(),
-		ParentDn:      types.StringNull(),
 	}
+}
+
+func (m *McpIfPolResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }
 
 type McpIfPolDataSourceModel struct {
 	McpIfPolModel
 
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ID types.String `tfsdk:"id"`
 }
 
 func NewMcpIfPolDataSourceModelNull() McpIfPolDataSourceModel {
 	return McpIfPolDataSourceModel{
 		McpIfPolModel: NewMcpIfPolModelNull(),
 		ID:            types.StringNull(),
-		ParentDn:      types.StringNull(),
 	}
+}
+
+func (m *McpIfPolDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

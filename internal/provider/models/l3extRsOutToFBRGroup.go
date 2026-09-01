@@ -57,6 +57,10 @@ func (m *L3extRsOutToFBRGroupModel) BuildRN() string {
 	return rn
 }
 
+func (m *L3extRsOutToFBRGroupModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}
+
 type L3extRsOutToFBRGroupResourceModel struct {
 	L3extRsOutToFBRGroupModel
 
@@ -72,6 +76,10 @@ func NewL3extRsOutToFBRGroupResourceModelNull() L3extRsOutToFBRGroupResourceMode
 	}
 }
 
+func (m *L3extRsOutToFBRGroupResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
+}
+
 type L3extRsOutToFBRGroupDataSourceModel struct {
 	L3extRsOutToFBRGroupModel
 
@@ -85,4 +93,8 @@ func NewL3extRsOutToFBRGroupDataSourceModelNull() L3extRsOutToFBRGroupDataSource
 		ID:                        types.StringNull(),
 		ParentDn:                  types.StringNull(),
 	}
+}
+
+func (m *L3extRsOutToFBRGroupDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

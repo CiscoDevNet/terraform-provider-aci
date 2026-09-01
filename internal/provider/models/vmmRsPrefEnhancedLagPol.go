@@ -51,3 +51,7 @@ func NewVmmRsPrefEnhancedLagPolModelNull() VmmRsPrefEnhancedLagPolModel {
 func (m *VmmRsPrefEnhancedLagPolModel) BuildRN() string {
 	return "rsprefEnhancedLagPol"
 }
+
+func (m *VmmRsPrefEnhancedLagPolModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}

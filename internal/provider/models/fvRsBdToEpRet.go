@@ -54,3 +54,7 @@ func NewFvRsBdToEpRetModelNull() FvRsBdToEpRetModel {
 func (m *FvRsBdToEpRetModel) BuildRN() string {
 	return "rsbdToEpRet"
 }
+
+func (m *FvRsBdToEpRetModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}

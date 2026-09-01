@@ -75,6 +75,10 @@ func (m *RtctrlProfileModel) BuildRN() string {
 	return rn
 }
 
+func (m *RtctrlProfileModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}
+
 type RtctrlProfileResourceModel struct {
 	RtctrlProfileModel
 
@@ -90,6 +94,10 @@ func NewRtctrlProfileResourceModelNull() RtctrlProfileResourceModel {
 	}
 }
 
+func (m *RtctrlProfileResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
+}
+
 type RtctrlProfileDataSourceModel struct {
 	RtctrlProfileModel
 
@@ -103,4 +111,8 @@ func NewRtctrlProfileDataSourceModelNull() RtctrlProfileDataSourceModel {
 		ID:                 types.StringNull(),
 		ParentDn:           types.StringNull(),
 	}
+}
+
+func (m *RtctrlProfileDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

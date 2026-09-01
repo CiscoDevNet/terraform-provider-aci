@@ -61,6 +61,10 @@ func (m *L3extRsInstPToProfileModel) BuildRN() string {
 	return rn
 }
 
+func (m *L3extRsInstPToProfileModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}
+
 type L3extRsInstPToProfileResourceModel struct {
 	L3extRsInstPToProfileModel
 
@@ -76,6 +80,10 @@ func NewL3extRsInstPToProfileResourceModelNull() L3extRsInstPToProfileResourceMo
 	}
 }
 
+func (m *L3extRsInstPToProfileResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
+}
+
 type L3extRsInstPToProfileDataSourceModel struct {
 	L3extRsInstPToProfileModel
 
@@ -89,4 +97,8 @@ func NewL3extRsInstPToProfileDataSourceModelNull() L3extRsInstPToProfileDataSour
 		ID:                         types.StringNull(),
 		ParentDn:                   types.StringNull(),
 	}
+}
+
+func (m *L3extRsInstPToProfileDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

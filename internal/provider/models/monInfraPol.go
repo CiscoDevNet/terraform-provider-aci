@@ -69,32 +69,40 @@ func (m *MonInfraPolModel) BuildRN() string {
 	return rn
 }
 
+func (m *MonInfraPolModel) BuildDN() string {
+	return "uni/" + m.BuildRN()
+}
+
 type MonInfraPolResourceModel struct {
 	MonInfraPolModel
 
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ID types.String `tfsdk:"id"`
 }
 
 func NewMonInfraPolResourceModelNull() MonInfraPolResourceModel {
 	return MonInfraPolResourceModel{
 		MonInfraPolModel: NewMonInfraPolModelNull(),
 		ID:               types.StringNull(),
-		ParentDn:         types.StringNull(),
 	}
+}
+
+func (m *MonInfraPolResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }
 
 type MonInfraPolDataSourceModel struct {
 	MonInfraPolModel
 
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ID types.String `tfsdk:"id"`
 }
 
 func NewMonInfraPolDataSourceModelNull() MonInfraPolDataSourceModel {
 	return MonInfraPolDataSourceModel{
 		MonInfraPolModel: NewMonInfraPolModelNull(),
 		ID:               types.StringNull(),
-		ParentDn:         types.StringNull(),
 	}
+}
+
+func (m *MonInfraPolDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

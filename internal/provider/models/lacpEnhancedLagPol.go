@@ -69,6 +69,10 @@ func (m *LacpEnhancedLagPolModel) BuildRN() string {
 	return rn
 }
 
+func (m *LacpEnhancedLagPolModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}
+
 type LacpEnhancedLagPolResourceModel struct {
 	LacpEnhancedLagPolModel
 
@@ -84,6 +88,10 @@ func NewLacpEnhancedLagPolResourceModelNull() LacpEnhancedLagPolResourceModel {
 	}
 }
 
+func (m *LacpEnhancedLagPolResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
+}
+
 type LacpEnhancedLagPolDataSourceModel struct {
 	LacpEnhancedLagPolModel
 
@@ -97,4 +105,8 @@ func NewLacpEnhancedLagPolDataSourceModelNull() LacpEnhancedLagPolDataSourceMode
 		ID:                      types.StringNull(),
 		ParentDn:                types.StringNull(),
 	}
+}
+
+func (m *LacpEnhancedLagPolDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

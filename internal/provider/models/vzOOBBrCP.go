@@ -82,32 +82,40 @@ func (m *VzOOBBrCPModel) BuildRN() string {
 	return rn
 }
 
+func (m *VzOOBBrCPModel) BuildDN() string {
+	return "uni/" + m.BuildRN()
+}
+
 type VzOOBBrCPResourceModel struct {
 	VzOOBBrCPModel
 
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ID types.String `tfsdk:"id"`
 }
 
 func NewVzOOBBrCPResourceModelNull() VzOOBBrCPResourceModel {
 	return VzOOBBrCPResourceModel{
 		VzOOBBrCPModel: NewVzOOBBrCPModelNull(),
 		ID:             types.StringNull(),
-		ParentDn:       types.StringNull(),
 	}
+}
+
+func (m *VzOOBBrCPResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }
 
 type VzOOBBrCPDataSourceModel struct {
 	VzOOBBrCPModel
 
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ID types.String `tfsdk:"id"`
 }
 
 func NewVzOOBBrCPDataSourceModelNull() VzOOBBrCPDataSourceModel {
 	return VzOOBBrCPDataSourceModel{
 		VzOOBBrCPModel: NewVzOOBBrCPModelNull(),
 		ID:             types.StringNull(),
-		ParentDn:       types.StringNull(),
 	}
+}
+
+func (m *VzOOBBrCPDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

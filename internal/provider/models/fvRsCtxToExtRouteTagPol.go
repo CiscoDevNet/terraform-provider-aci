@@ -51,3 +51,7 @@ func NewFvRsCtxToExtRouteTagPolModelNull() FvRsCtxToExtRouteTagPolModel {
 func (m *FvRsCtxToExtRouteTagPolModel) BuildRN() string {
 	return "rsctxToExtRouteTagPol"
 }
+
+func (m *FvRsCtxToExtRouteTagPolModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}

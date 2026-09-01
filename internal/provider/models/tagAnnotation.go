@@ -35,6 +35,10 @@ func (m *TagAnnotationModel) BuildRN() string {
 	return rn
 }
 
+func (m *TagAnnotationModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}
+
 type TagAnnotationResourceModel struct {
 	TagAnnotationModel
 
@@ -50,6 +54,10 @@ func NewTagAnnotationResourceModelNull() TagAnnotationResourceModel {
 	}
 }
 
+func (m *TagAnnotationResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
+}
+
 type TagAnnotationDataSourceModel struct {
 	TagAnnotationModel
 
@@ -63,4 +71,8 @@ func NewTagAnnotationDataSourceModelNull() TagAnnotationDataSourceModel {
 		ID:                 types.StringNull(),
 		ParentDn:           types.StringNull(),
 	}
+}
+
+func (m *TagAnnotationDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

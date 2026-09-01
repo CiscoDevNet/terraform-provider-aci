@@ -51,3 +51,7 @@ func NewInfraRsVlanNsModelNull() InfraRsVlanNsModel {
 func (m *InfraRsVlanNsModel) BuildRN() string {
 	return "rsvlanNs"
 }
+
+func (m *InfraRsVlanNsModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}
