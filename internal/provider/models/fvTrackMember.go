@@ -2,18 +2,102 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type FvTrackMemberModel struct{}
+type FvTrackMemberModel struct {
+	Annotation      types.String                     `tfsdk:"annotation"`
+	Descr           types.String                     `tfsdk:"description"`
+	DstIpAddr       customTypes.IPAddressStringValue `tfsdk:"destination_ip_address"`
+	Name            types.String                     `tfsdk:"name"`
+	NameAlias       types.String                     `tfsdk:"name_alias"`
+	OwnerKey        types.String                     `tfsdk:"owner_key"`
+	OwnerTag        types.String                     `tfsdk:"owner_tag"`
+	ScopeDn         types.String                     `tfsdk:"scope"`
+	FvRsIpslaMonPol types.Object                     `tfsdk:"relation_to_monitoring_policy"`
+	TagAnnotation   types.Set                        `tfsdk:"annotations"`
+	TagTag          types.Set                        `tfsdk:"tags"`
+}
+
+func FvTrackMemberModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":             types.StringType,
+		"description":            types.StringType,
+		"destination_ip_address": customTypes.IPAddressStringType{},
+		"name":                   types.StringType,
+		"name_alias":             types.StringType,
+		"owner_key":              types.StringType,
+		"owner_tag":              types.StringType,
+		"scope":                  types.StringType,
+		"relation_to_monitoring_policy": types.ObjectType{
+			AttrTypes: FvRsIpslaMonPolModelAttributeTypes(),
+		},
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewFvTrackMemberModelNull() FvTrackMemberModel {
+	return FvTrackMemberModel{
+		Annotation:      types.StringNull(),
+		Descr:           types.StringNull(),
+		DstIpAddr:       customTypes.NewIPAddressStringNull(),
+		Name:            types.StringNull(),
+		NameAlias:       types.StringNull(),
+		OwnerKey:        types.StringNull(),
+		OwnerTag:        types.StringNull(),
+		ScopeDn:         types.StringNull(),
+		FvRsIpslaMonPol: types.ObjectNull(FvRsIpslaMonPolModelAttributeTypes()),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type FvTrackMemberResourceModel struct {
 	FvTrackMemberModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFvTrackMemberResourceModelNull() FvTrackMemberResourceModel {
+	return FvTrackMemberResourceModel{
+		FvTrackMemberModel: NewFvTrackMemberModelNull(),
+		ID:                 types.StringNull(),
+		ParentDn:           types.StringNull(),
+	}
 }
 
 type FvTrackMemberDataSourceModel struct {
 	FvTrackMemberModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFvTrackMemberDataSourceModelNull() FvTrackMemberDataSourceModel {
+	return FvTrackMemberDataSourceModel{
+		FvTrackMemberModel: NewFvTrackMemberModelNull(),
+		ID:                 types.StringNull(),
+		ParentDn:           types.StringNull(),
+	}
 }

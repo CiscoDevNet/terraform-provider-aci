@@ -2,4 +2,48 @@
 
 package models
 
-type FvRsBDToNdPModel struct{}
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
+
+type FvRsBDToNdPModel struct {
+	Annotation    types.String `tfsdk:"annotation"`
+	TnNdIfPolName types.String `tfsdk:"neighbor_discovery_interface_policy_name"`
+	TagAnnotation types.Set    `tfsdk:"annotations"`
+	TagTag        types.Set    `tfsdk:"tags"`
+}
+
+func FvRsBDToNdPModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation": types.StringType,
+		"neighbor_discovery_interface_policy_name": types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewFvRsBDToNdPModelNull() FvRsBDToNdPModel {
+	return FvRsBDToNdPModel{
+		Annotation:    types.StringNull(),
+		TnNdIfPolName: types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}

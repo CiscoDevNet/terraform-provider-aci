@@ -2,18 +2,167 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type VmmDomPModel struct{}
+type VmmDomPModel struct {
+	AccessMode              types.String                          `tfsdk:"access_mode"`
+	Annotation              types.String                          `tfsdk:"annotation"`
+	ArpLearning             customTypes.VMMArpLearningStringValue `tfsdk:"arp_learning"`
+	AveTimeOut              types.String                          `tfsdk:"ave_time_out"`
+	ConfigInfraPg           types.String                          `tfsdk:"configure_infra_port_groups"`
+	CtrlKnob                types.String                          `tfsdk:"endpoint_data_path_verification"`
+	CustomSwitchName        types.String                          `tfsdk:"custom_switch_name"`
+	Delimiter               types.String                          `tfsdk:"delimiter"`
+	EnableAVE               types.String                          `tfsdk:"enable_ave_mode"`
+	EnableTag               types.String                          `tfsdk:"enable_tag_collection"`
+	EnableVmFolder          types.String                          `tfsdk:"enable_vm_folder_data_retrieval"`
+	EncapMode               types.String                          `tfsdk:"encapsulation_mode"`
+	EnfPref                 types.String                          `tfsdk:"switching_enforcement_preference"`
+	EpInventoryType         types.String                          `tfsdk:"endpoint_inventory_type"`
+	EpRetTime               types.String                          `tfsdk:"endpoint_retention_time"`
+	HvAvailMonitor          types.String                          `tfsdk:"host_availability_assurance"`
+	McastAddr               types.String                          `tfsdk:"multicast_address"`
+	Mode                    types.String                          `tfsdk:"switch_type"`
+	Name                    types.String                          `tfsdk:"name"`
+	NameAlias               types.String                          `tfsdk:"name_alias"`
+	OwnerKey                types.String                          `tfsdk:"owner_key"`
+	OwnerTag                types.String                          `tfsdk:"owner_tag"`
+	PrefEncapMode           types.String                          `tfsdk:"default_encapsulation_mode"`
+	InfraRsVipAddrNs        types.Object                          `tfsdk:"relation_to_ip_address_pool"`
+	InfraRsVlanNs           types.Object                          `tfsdk:"relation_to_vlan_pool"`
+	TagAnnotation           types.Set                             `tfsdk:"annotations"`
+	TagTag                  types.Set                             `tfsdk:"tags"`
+	VmmRsDomMcastAddrNs     types.Object                          `tfsdk:"relation_to_multicast_pool"`
+	VmmRsPrefEnhancedLagPol types.Object                          `tfsdk:"relation_to_lacp_enhanced_lag_policy"`
+	VmmUplinkPCont          types.Object                          `tfsdk:"vmm_uplink_container"`
+}
+
+func VmmDomPModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"access_mode":                      types.StringType,
+		"annotation":                       types.StringType,
+		"arp_learning":                     customTypes.VMMArpLearningStringType{},
+		"ave_time_out":                     types.StringType,
+		"configure_infra_port_groups":      types.StringType,
+		"endpoint_data_path_verification":  types.StringType,
+		"custom_switch_name":               types.StringType,
+		"delimiter":                        types.StringType,
+		"enable_ave_mode":                  types.StringType,
+		"enable_tag_collection":            types.StringType,
+		"enable_vm_folder_data_retrieval":  types.StringType,
+		"encapsulation_mode":               types.StringType,
+		"switching_enforcement_preference": types.StringType,
+		"endpoint_inventory_type":          types.StringType,
+		"endpoint_retention_time":          types.StringType,
+		"host_availability_assurance":      types.StringType,
+		"multicast_address":                types.StringType,
+		"switch_type":                      types.StringType,
+		"name":                             types.StringType,
+		"name_alias":                       types.StringType,
+		"owner_key":                        types.StringType,
+		"owner_tag":                        types.StringType,
+		"default_encapsulation_mode":       types.StringType,
+		"relation_to_ip_address_pool": types.ObjectType{
+			AttrTypes: InfraRsVipAddrNsModelAttributeTypes(),
+		},
+		"relation_to_vlan_pool": types.ObjectType{
+			AttrTypes: InfraRsVlanNsModelAttributeTypes(),
+		},
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+		"relation_to_multicast_pool": types.ObjectType{
+			AttrTypes: VmmRsDomMcastAddrNsModelAttributeTypes(),
+		},
+		"relation_to_lacp_enhanced_lag_policy": types.ObjectType{
+			AttrTypes: VmmRsPrefEnhancedLagPolModelAttributeTypes(),
+		},
+		"vmm_uplink_container": types.ObjectType{
+			AttrTypes: VmmUplinkPContModelAttributeTypes(),
+		},
+	}
+}
+
+func NewVmmDomPModelNull() VmmDomPModel {
+	return VmmDomPModel{
+		AccessMode:       types.StringNull(),
+		Annotation:       types.StringNull(),
+		ArpLearning:      customTypes.NewVMMArpLearningStringNull(),
+		AveTimeOut:       types.StringNull(),
+		ConfigInfraPg:    types.StringNull(),
+		CtrlKnob:         types.StringNull(),
+		CustomSwitchName: types.StringNull(),
+		Delimiter:        types.StringNull(),
+		EnableAVE:        types.StringNull(),
+		EnableTag:        types.StringNull(),
+		EnableVmFolder:   types.StringNull(),
+		EncapMode:        types.StringNull(),
+		EnfPref:          types.StringNull(),
+		EpInventoryType:  types.StringNull(),
+		EpRetTime:        types.StringNull(),
+		HvAvailMonitor:   types.StringNull(),
+		McastAddr:        types.StringNull(),
+		Mode:             types.StringNull(),
+		Name:             types.StringNull(),
+		NameAlias:        types.StringNull(),
+		OwnerKey:         types.StringNull(),
+		OwnerTag:         types.StringNull(),
+		PrefEncapMode:    types.StringNull(),
+		InfraRsVipAddrNs: types.ObjectNull(InfraRsVipAddrNsModelAttributeTypes()),
+		InfraRsVlanNs:    types.ObjectNull(InfraRsVlanNsModelAttributeTypes()),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+		VmmRsDomMcastAddrNs:     types.ObjectNull(VmmRsDomMcastAddrNsModelAttributeTypes()),
+		VmmRsPrefEnhancedLagPol: types.ObjectNull(VmmRsPrefEnhancedLagPolModelAttributeTypes()),
+		VmmUplinkPCont:          types.ObjectNull(VmmUplinkPContModelAttributeTypes()),
+	}
+}
 
 type VmmDomPResourceModel struct {
 	VmmDomPModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewVmmDomPResourceModelNull() VmmDomPResourceModel {
+	return VmmDomPResourceModel{
+		VmmDomPModel: NewVmmDomPModelNull(),
+		ID:           types.StringNull(),
+		ParentDn:     types.StringNull(),
+	}
 }
 
 type VmmDomPDataSourceModel struct {
 	VmmDomPModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewVmmDomPDataSourceModelNull() VmmDomPDataSourceModel {
+	return VmmDomPDataSourceModel{
+		VmmDomPModel: NewVmmDomPModelNull(),
+		ID:           types.StringNull(),
+		ParentDn:     types.StringNull(),
+	}
 }

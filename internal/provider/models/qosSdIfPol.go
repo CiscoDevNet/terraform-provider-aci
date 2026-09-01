@@ -2,18 +2,102 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type QosSdIfPolModel struct{}
+type QosSdIfPolModel struct {
+	Annotation      types.String `tfsdk:"annotation"`
+	CongClearAction types.String `tfsdk:"congestion_clear_action"`
+	CongDetectMult  types.String `tfsdk:"congestion_detect_multiplier"`
+	Descr           types.String `tfsdk:"description"`
+	FlushAdminSt    types.String `tfsdk:"flush_admin_state"`
+	FlushIntvl      types.String `tfsdk:"flush_timeout"`
+	Name            types.String `tfsdk:"name"`
+	NameAlias       types.String `tfsdk:"name_alias"`
+	OwnerKey        types.String `tfsdk:"owner_key"`
+	OwnerTag        types.String `tfsdk:"owner_tag"`
+	TagAnnotation   types.Set    `tfsdk:"annotations"`
+	TagTag          types.Set    `tfsdk:"tags"`
+}
+
+func QosSdIfPolModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":                   types.StringType,
+		"congestion_clear_action":      types.StringType,
+		"congestion_detect_multiplier": types.StringType,
+		"description":                  types.StringType,
+		"flush_admin_state":            types.StringType,
+		"flush_timeout":                types.StringType,
+		"name":                         types.StringType,
+		"name_alias":                   types.StringType,
+		"owner_key":                    types.StringType,
+		"owner_tag":                    types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewQosSdIfPolModelNull() QosSdIfPolModel {
+	return QosSdIfPolModel{
+		Annotation:      types.StringNull(),
+		CongClearAction: types.StringNull(),
+		CongDetectMult:  types.StringNull(),
+		Descr:           types.StringNull(),
+		FlushAdminSt:    types.StringNull(),
+		FlushIntvl:      types.StringNull(),
+		Name:            types.StringNull(),
+		NameAlias:       types.StringNull(),
+		OwnerKey:        types.StringNull(),
+		OwnerTag:        types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type QosSdIfPolResourceModel struct {
 	QosSdIfPolModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewQosSdIfPolResourceModelNull() QosSdIfPolResourceModel {
+	return QosSdIfPolResourceModel{
+		QosSdIfPolModel: NewQosSdIfPolModelNull(),
+		ID:              types.StringNull(),
+		ParentDn:        types.StringNull(),
+	}
 }
 
 type QosSdIfPolDataSourceModel struct {
 	QosSdIfPolModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewQosSdIfPolDataSourceModelNull() QosSdIfPolDataSourceModel {
+	return QosSdIfPolDataSourceModel{
+		QosSdIfPolModel: NewQosSdIfPolModelNull(),
+		ID:              types.StringNull(),
+		ParentDn:        types.StringNull(),
+	}
 }

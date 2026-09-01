@@ -2,18 +2,82 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type VzRsAnyToConsIfModel struct{}
+type VzRsAnyToConsIfModel struct {
+	Annotation    types.String                               `tfsdk:"annotation"`
+	Prio          customTypes.VzRsAnyToConsIfPrioStringValue `tfsdk:"priority"`
+	TnVzCPIfName  types.String                               `tfsdk:"imported_contract_name"`
+	TagAnnotation types.Set                                  `tfsdk:"annotations"`
+	TagTag        types.Set                                  `tfsdk:"tags"`
+}
+
+func VzRsAnyToConsIfModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":             types.StringType,
+		"priority":               customTypes.VzRsAnyToConsIfPrioStringType{},
+		"imported_contract_name": types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewVzRsAnyToConsIfModelNull() VzRsAnyToConsIfModel {
+	return VzRsAnyToConsIfModel{
+		Annotation:   types.StringNull(),
+		Prio:         customTypes.NewVzRsAnyToConsIfPrioStringNull(),
+		TnVzCPIfName: types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type VzRsAnyToConsIfResourceModel struct {
 	VzRsAnyToConsIfModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewVzRsAnyToConsIfResourceModelNull() VzRsAnyToConsIfResourceModel {
+	return VzRsAnyToConsIfResourceModel{
+		VzRsAnyToConsIfModel: NewVzRsAnyToConsIfModelNull(),
+		ID:                   types.StringNull(),
+		ParentDn:             types.StringNull(),
+	}
 }
 
 type VzRsAnyToConsIfDataSourceModel struct {
 	VzRsAnyToConsIfModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewVzRsAnyToConsIfDataSourceModelNull() VzRsAnyToConsIfDataSourceModel {
+	return VzRsAnyToConsIfDataSourceModel{
+		VzRsAnyToConsIfModel: NewVzRsAnyToConsIfModelNull(),
+		ID:                   types.StringNull(),
+		ParentDn:             types.StringNull(),
+	}
 }

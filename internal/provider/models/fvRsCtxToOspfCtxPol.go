@@ -2,18 +2,81 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type FvRsCtxToOspfCtxPolModel struct{}
+type FvRsCtxToOspfCtxPolModel struct {
+	Af               types.String `tfsdk:"address_family"`
+	Annotation       types.String `tfsdk:"annotation"`
+	TnOspfCtxPolName types.String `tfsdk:"ospf_timers_name"`
+	TagAnnotation    types.Set    `tfsdk:"annotations"`
+	TagTag           types.Set    `tfsdk:"tags"`
+}
+
+func FvRsCtxToOspfCtxPolModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"address_family":   types.StringType,
+		"annotation":       types.StringType,
+		"ospf_timers_name": types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewFvRsCtxToOspfCtxPolModelNull() FvRsCtxToOspfCtxPolModel {
+	return FvRsCtxToOspfCtxPolModel{
+		Af:               types.StringNull(),
+		Annotation:       types.StringNull(),
+		TnOspfCtxPolName: types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type FvRsCtxToOspfCtxPolResourceModel struct {
 	FvRsCtxToOspfCtxPolModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFvRsCtxToOspfCtxPolResourceModelNull() FvRsCtxToOspfCtxPolResourceModel {
+	return FvRsCtxToOspfCtxPolResourceModel{
+		FvRsCtxToOspfCtxPolModel: NewFvRsCtxToOspfCtxPolModelNull(),
+		ID:                       types.StringNull(),
+		ParentDn:                 types.StringNull(),
+	}
 }
 
 type FvRsCtxToOspfCtxPolDataSourceModel struct {
 	FvRsCtxToOspfCtxPolModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFvRsCtxToOspfCtxPolDataSourceModelNull() FvRsCtxToOspfCtxPolDataSourceModel {
+	return FvRsCtxToOspfCtxPolDataSourceModel{
+		FvRsCtxToOspfCtxPolModel: NewFvRsCtxToOspfCtxPolModelNull(),
+		ID:                       types.StringNull(),
+		ParentDn:                 types.StringNull(),
+	}
 }

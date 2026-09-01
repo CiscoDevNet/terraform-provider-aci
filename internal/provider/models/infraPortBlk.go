@@ -2,18 +2,101 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type InfraPortBlkModel struct{}
+type InfraPortBlkModel struct {
+	Annotation           types.String `tfsdk:"annotation"`
+	Descr                types.String `tfsdk:"description"`
+	FromCard             types.String `tfsdk:"from_card"`
+	FromPort             types.String `tfsdk:"from_port"`
+	Name                 types.String `tfsdk:"name"`
+	NameAlias            types.String `tfsdk:"name_alias"`
+	ToCard               types.String `tfsdk:"to_card"`
+	ToPort               types.String `tfsdk:"to_port"`
+	InfraRsAccBndlSubgrp types.Object `tfsdk:"relation_to_pc_vpc_override_policy"`
+	TagAnnotation        types.Set    `tfsdk:"annotations"`
+	TagTag               types.Set    `tfsdk:"tags"`
+}
+
+func InfraPortBlkModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":  types.StringType,
+		"description": types.StringType,
+		"from_card":   types.StringType,
+		"from_port":   types.StringType,
+		"name":        types.StringType,
+		"name_alias":  types.StringType,
+		"to_card":     types.StringType,
+		"to_port":     types.StringType,
+		"relation_to_pc_vpc_override_policy": types.ObjectType{
+			AttrTypes: InfraRsAccBndlSubgrpModelAttributeTypes(),
+		},
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewInfraPortBlkModelNull() InfraPortBlkModel {
+	return InfraPortBlkModel{
+		Annotation:           types.StringNull(),
+		Descr:                types.StringNull(),
+		FromCard:             types.StringNull(),
+		FromPort:             types.StringNull(),
+		Name:                 types.StringNull(),
+		NameAlias:            types.StringNull(),
+		ToCard:               types.StringNull(),
+		ToPort:               types.StringNull(),
+		InfraRsAccBndlSubgrp: types.ObjectNull(InfraRsAccBndlSubgrpModelAttributeTypes()),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type InfraPortBlkResourceModel struct {
 	InfraPortBlkModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewInfraPortBlkResourceModelNull() InfraPortBlkResourceModel {
+	return InfraPortBlkResourceModel{
+		InfraPortBlkModel: NewInfraPortBlkModelNull(),
+		ID:                types.StringNull(),
+		ParentDn:          types.StringNull(),
+	}
 }
 
 type InfraPortBlkDataSourceModel struct {
 	InfraPortBlkModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewInfraPortBlkDataSourceModelNull() InfraPortBlkDataSourceModel {
+	return InfraPortBlkDataSourceModel{
+		InfraPortBlkModel: NewInfraPortBlkModelNull(),
+		ID:                types.StringNull(),
+		ParentDn:          types.StringNull(),
+	}
 }

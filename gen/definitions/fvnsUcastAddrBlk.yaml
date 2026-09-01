@@ -14,10 +14,12 @@ properties:
     test_config:
       create:
       - config_value: 10.0.0.6
+    value_type: string
   to:
     default_values:
       10.0.0.5: ""
     test_config:
       create:
       - config_value: 10.0.0.13
+    value_type: string
 resource_name: ip_address_block

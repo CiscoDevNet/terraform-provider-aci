@@ -2,18 +2,87 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type VnsLDevIfModel struct{}
+type VnsLDevIfModel struct {
+	Annotation    types.String `tfsdk:"annotation"`
+	Description   types.String `tfsdk:"description"`
+	Ldev          types.String `tfsdk:"logical_device"`
+	Name          types.String `tfsdk:"name"`
+	NameAlias     types.String `tfsdk:"name_alias"`
+	TagAnnotation types.Set    `tfsdk:"annotations"`
+	TagTag        types.Set    `tfsdk:"tags"`
+}
+
+func VnsLDevIfModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":     types.StringType,
+		"description":    types.StringType,
+		"logical_device": types.StringType,
+		"name":           types.StringType,
+		"name_alias":     types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewVnsLDevIfModelNull() VnsLDevIfModel {
+	return VnsLDevIfModel{
+		Annotation:  types.StringNull(),
+		Description: types.StringNull(),
+		Ldev:        types.StringNull(),
+		Name:        types.StringNull(),
+		NameAlias:   types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type VnsLDevIfResourceModel struct {
 	VnsLDevIfModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewVnsLDevIfResourceModelNull() VnsLDevIfResourceModel {
+	return VnsLDevIfResourceModel{
+		VnsLDevIfModel: NewVnsLDevIfModelNull(),
+		ID:             types.StringNull(),
+		ParentDn:       types.StringNull(),
+	}
 }
 
 type VnsLDevIfDataSourceModel struct {
 	VnsLDevIfModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewVnsLDevIfDataSourceModelNull() VnsLDevIfDataSourceModel {
+	return VnsLDevIfDataSourceModel{
+		VnsLDevIfModel: NewVnsLDevIfModelNull(),
+		ID:             types.StringNull(),
+		ParentDn:       types.StringNull(),
+	}
 }

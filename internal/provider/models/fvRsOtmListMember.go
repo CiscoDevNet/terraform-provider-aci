@@ -2,18 +2,81 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type FvRsOtmListMemberModel struct{}
+type FvRsOtmListMemberModel struct {
+	Annotation    types.String `tfsdk:"annotation"`
+	TDn           types.String `tfsdk:"target_dn"`
+	Weight        types.String `tfsdk:"weight"`
+	TagAnnotation types.Set    `tfsdk:"annotations"`
+	TagTag        types.Set    `tfsdk:"tags"`
+}
+
+func FvRsOtmListMemberModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation": types.StringType,
+		"target_dn":  types.StringType,
+		"weight":     types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewFvRsOtmListMemberModelNull() FvRsOtmListMemberModel {
+	return FvRsOtmListMemberModel{
+		Annotation: types.StringNull(),
+		TDn:        types.StringNull(),
+		Weight:     types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type FvRsOtmListMemberResourceModel struct {
 	FvRsOtmListMemberModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFvRsOtmListMemberResourceModelNull() FvRsOtmListMemberResourceModel {
+	return FvRsOtmListMemberResourceModel{
+		FvRsOtmListMemberModel: NewFvRsOtmListMemberModelNull(),
+		ID:                     types.StringNull(),
+		ParentDn:               types.StringNull(),
+	}
 }
 
 type FvRsOtmListMemberDataSourceModel struct {
 	FvRsOtmListMemberModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFvRsOtmListMemberDataSourceModelNull() FvRsOtmListMemberDataSourceModel {
+	return FvRsOtmListMemberDataSourceModel{
+		FvRsOtmListMemberModel: NewFvRsOtmListMemberModelNull(),
+		ID:                     types.StringNull(),
+		ParentDn:               types.StringNull(),
+	}
 }

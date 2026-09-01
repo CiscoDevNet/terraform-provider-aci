@@ -2,18 +2,165 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type FvESgModel struct{}
+type FvESgModel struct {
+	Annotation       types.String `tfsdk:"annotation"`
+	Descr            types.String `tfsdk:"description"`
+	ExceptionTag     types.String `tfsdk:"exception_tag"`
+	MatchT           types.String `tfsdk:"match_criteria"`
+	Name             types.String `tfsdk:"name"`
+	NameAlias        types.String `tfsdk:"name_alias"`
+	PcEnfPref        types.String `tfsdk:"intra_esg_isolation"`
+	PcTag            types.String `tfsdk:"pc_tag"`
+	PrefGrMemb       types.String `tfsdk:"preferred_group_member"`
+	Scope            types.String `tfsdk:"scope"`
+	Shutdown         types.String `tfsdk:"admin_state"`
+	FvRsCons         types.Set    `tfsdk:"relation_to_consumed_contracts"`
+	FvRsConsIf       types.Set    `tfsdk:"relation_to_imported_contracts"`
+	FvRsIntraEpg     types.Set    `tfsdk:"relation_to_intra_epg_contracts"`
+	FvRsProv         types.Set    `tfsdk:"relation_to_provided_contracts"`
+	FvRsScope        types.Object `tfsdk:"relation_to_vrf"`
+	FvRsSecInherited types.Set    `tfsdk:"relation_to_contract_masters"`
+	TagAnnotation    types.Set    `tfsdk:"annotations"`
+	TagTag           types.Set    `tfsdk:"tags"`
+}
+
+func FvESgModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":             types.StringType,
+		"description":            types.StringType,
+		"exception_tag":          types.StringType,
+		"match_criteria":         types.StringType,
+		"name":                   types.StringType,
+		"name_alias":             types.StringType,
+		"intra_esg_isolation":    types.StringType,
+		"pc_tag":                 types.StringType,
+		"preferred_group_member": types.StringType,
+		"scope":                  types.StringType,
+		"admin_state":            types.StringType,
+		"relation_to_consumed_contracts": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: FvRsConsModelAttributeTypes(),
+			},
+		},
+		"relation_to_imported_contracts": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: FvRsConsIfModelAttributeTypes(),
+			},
+		},
+		"relation_to_intra_epg_contracts": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: FvRsIntraEpgModelAttributeTypes(),
+			},
+		},
+		"relation_to_provided_contracts": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: FvRsProvModelAttributeTypes(),
+			},
+		},
+		"relation_to_vrf": types.ObjectType{
+			AttrTypes: FvRsScopeModelAttributeTypes(),
+		},
+		"relation_to_contract_masters": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: FvRsSecInheritedModelAttributeTypes(),
+			},
+		},
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewFvESgModelNull() FvESgModel {
+	return FvESgModel{
+		Annotation:   types.StringNull(),
+		Descr:        types.StringNull(),
+		ExceptionTag: types.StringNull(),
+		MatchT:       types.StringNull(),
+		Name:         types.StringNull(),
+		NameAlias:    types.StringNull(),
+		PcEnfPref:    types.StringNull(),
+		PcTag:        types.StringNull(),
+		PrefGrMemb:   types.StringNull(),
+		Scope:        types.StringNull(),
+		Shutdown:     types.StringNull(),
+		FvRsCons: types.SetNull(
+			types.ObjectType{
+				AttrTypes: FvRsConsModelAttributeTypes(),
+			},
+		),
+		FvRsConsIf: types.SetNull(
+			types.ObjectType{
+				AttrTypes: FvRsConsIfModelAttributeTypes(),
+			},
+		),
+		FvRsIntraEpg: types.SetNull(
+			types.ObjectType{
+				AttrTypes: FvRsIntraEpgModelAttributeTypes(),
+			},
+		),
+		FvRsProv: types.SetNull(
+			types.ObjectType{
+				AttrTypes: FvRsProvModelAttributeTypes(),
+			},
+		),
+		FvRsScope: types.ObjectNull(FvRsScopeModelAttributeTypes()),
+		FvRsSecInherited: types.SetNull(
+			types.ObjectType{
+				AttrTypes: FvRsSecInheritedModelAttributeTypes(),
+			},
+		),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type FvESgResourceModel struct {
 	FvESgModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFvESgResourceModelNull() FvESgResourceModel {
+	return FvESgResourceModel{
+		FvESgModel: NewFvESgModelNull(),
+		ID:         types.StringNull(),
+		ParentDn:   types.StringNull(),
+	}
 }
 
 type FvESgDataSourceModel struct {
 	FvESgModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFvESgDataSourceModelNull() FvESgDataSourceModel {
+	return FvESgDataSourceModel{
+		FvESgModel: NewFvESgModelNull(),
+		ID:         types.StringNull(),
+		ParentDn:   types.StringNull(),
+	}
 }

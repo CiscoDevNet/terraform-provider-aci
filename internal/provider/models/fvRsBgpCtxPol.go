@@ -2,4 +2,48 @@
 
 package models
 
-type FvRsBgpCtxPolModel struct{}
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
+
+type FvRsBgpCtxPolModel struct {
+	Annotation      types.String `tfsdk:"annotation"`
+	TnBgpCtxPolName types.String `tfsdk:"bgp_timers_name"`
+	TagAnnotation   types.Set    `tfsdk:"annotations"`
+	TagTag          types.Set    `tfsdk:"tags"`
+}
+
+func FvRsBgpCtxPolModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":      types.StringType,
+		"bgp_timers_name": types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewFvRsBgpCtxPolModelNull() FvRsBgpCtxPolModel {
+	return FvRsBgpCtxPolModel{
+		Annotation:      types.StringNull(),
+		TnBgpCtxPolName: types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}

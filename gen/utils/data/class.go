@@ -517,6 +517,46 @@ func (c *Class) HasDatasourceArtifact() bool {
 	return slices.Contains(c.Artifacts, DatasourceArtifact)
 }
 
+// ModelProperties returns the ordered schema-backed APIC properties owned by
+// the reusable class model. parentDn belongs to top-level wrappers and is not
+// an APIC payload property.
+func (c Class) ModelProperties() []*Property {
+	properties := make([]*Property, 0, len(c.PropertiesAll))
+	for _, propertyName := range c.PropertiesAll {
+		if propertyName == "parentDn" {
+			continue
+		}
+		properties = append(properties, c.Properties[propertyName])
+	}
+	return properties
+}
+
+// ParentDnProperty returns the synthetic top-level parent_dn property when
+// the class has one.
+func (c Class) ParentDnProperty() *Property {
+	return c.Properties["parentDn"]
+}
+
+// HasCustomModelTypes reports whether this class's own properties require the
+// custom_types package in its generated model file.
+func (c Class) HasCustomModelTypes() bool {
+	for _, property := range c.ModelProperties() {
+		if property.UsesCustomModelType() {
+			return true
+		}
+	}
+	return false
+}
+
+// NestedModelValueType returns the Terraform value type used when this class
+// is embedded in a parent model.
+func (c Class) NestedModelValueType() string {
+	if c.IsSingleNestedWhenDefinedAsChild {
+		return "types.Object"
+	}
+	return "types.Set"
+}
+
 // setTestConfig is a one-line passthrough that copies the two test-render gates
 // from ClassDefinition.TestConfig onto the resolved Class.TestConfig. Templates
 // read the resolved struct so they never reach into ClassDefinition directly.

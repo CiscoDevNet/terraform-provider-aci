@@ -2,4 +2,48 @@
 
 package models
 
-type FvRsMldsnModel struct{}
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
+
+type FvRsMldsnModel struct {
+	Annotation        types.String `tfsdk:"annotation"`
+	TnMldSnoopPolName types.String `tfsdk:"mld_snooping_policy_name"`
+	TagAnnotation     types.Set    `tfsdk:"annotations"`
+	TagTag            types.Set    `tfsdk:"tags"`
+}
+
+func FvRsMldsnModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":               types.StringType,
+		"mld_snooping_policy_name": types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewFvRsMldsnModelNull() FvRsMldsnModel {
+	return FvRsMldsnModel{
+		Annotation:        types.StringNull(),
+		TnMldSnoopPolName: types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}

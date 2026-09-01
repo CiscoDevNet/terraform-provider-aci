@@ -2,18 +2,194 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type L3extInstPModel struct{}
+type L3extInstPModel struct {
+	Annotation            types.String                                `tfsdk:"annotation"`
+	Descr                 types.String                                `tfsdk:"description"`
+	ExceptionTag          types.String                                `tfsdk:"contract_exception_tag"`
+	FloodOnEncap          types.String                                `tfsdk:"flood_in_encapsulation"`
+	MatchT                types.String                                `tfsdk:"match_criteria"`
+	Name                  types.String                                `tfsdk:"name"`
+	NameAlias             types.String                                `tfsdk:"name_alias"`
+	PcEnfPref             types.String                                `tfsdk:"intra_epg_isolation"`
+	PcTag                 types.String                                `tfsdk:"pc_tag"`
+	PrefGrMemb            types.String                                `tfsdk:"preferred_group_member"`
+	Prio                  customTypes.L3extInstPPrioStringValue       `tfsdk:"priority"`
+	Scope                 types.String                                `tfsdk:"scope"`
+	TargetDscp            customTypes.L3extInstPTargetDscpStringValue `tfsdk:"target_dscp"`
+	FvRsCons              types.Set                                   `tfsdk:"relation_to_consumed_contracts"`
+	FvRsConsIf            types.Set                                   `tfsdk:"relation_to_imported_contracts"`
+	FvRsCustQosPol        types.Object                                `tfsdk:"relation_to_custom_qos_policy"`
+	FvRsIntraEpg          types.Set                                   `tfsdk:"relation_to_intra_epg_contracts"`
+	FvRsProtBy            types.Set                                   `tfsdk:"relation_to_taboo_contracts"`
+	FvRsProv              types.Set                                   `tfsdk:"relation_to_provided_contracts"`
+	FvRsSecInherited      types.Set                                   `tfsdk:"relation_to_contract_masters"`
+	L3extRsInstPToProfile types.Set                                   `tfsdk:"relation_to_route_control_profiles"`
+	TagAnnotation         types.Set                                   `tfsdk:"annotations"`
+	TagTag                types.Set                                   `tfsdk:"tags"`
+}
+
+func L3extInstPModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":             types.StringType,
+		"description":            types.StringType,
+		"contract_exception_tag": types.StringType,
+		"flood_in_encapsulation": types.StringType,
+		"match_criteria":         types.StringType,
+		"name":                   types.StringType,
+		"name_alias":             types.StringType,
+		"intra_epg_isolation":    types.StringType,
+		"pc_tag":                 types.StringType,
+		"preferred_group_member": types.StringType,
+		"priority":               customTypes.L3extInstPPrioStringType{},
+		"scope":                  types.StringType,
+		"target_dscp":            customTypes.L3extInstPTargetDscpStringType{},
+		"relation_to_consumed_contracts": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: FvRsConsModelAttributeTypes(),
+			},
+		},
+		"relation_to_imported_contracts": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: FvRsConsIfModelAttributeTypes(),
+			},
+		},
+		"relation_to_custom_qos_policy": types.ObjectType{
+			AttrTypes: FvRsCustQosPolModelAttributeTypes(),
+		},
+		"relation_to_intra_epg_contracts": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: FvRsIntraEpgModelAttributeTypes(),
+			},
+		},
+		"relation_to_taboo_contracts": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: FvRsProtByModelAttributeTypes(),
+			},
+		},
+		"relation_to_provided_contracts": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: FvRsProvModelAttributeTypes(),
+			},
+		},
+		"relation_to_contract_masters": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: FvRsSecInheritedModelAttributeTypes(),
+			},
+		},
+		"relation_to_route_control_profiles": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: L3extRsInstPToProfileModelAttributeTypes(),
+			},
+		},
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewL3extInstPModelNull() L3extInstPModel {
+	return L3extInstPModel{
+		Annotation:   types.StringNull(),
+		Descr:        types.StringNull(),
+		ExceptionTag: types.StringNull(),
+		FloodOnEncap: types.StringNull(),
+		MatchT:       types.StringNull(),
+		Name:         types.StringNull(),
+		NameAlias:    types.StringNull(),
+		PcEnfPref:    types.StringNull(),
+		PcTag:        types.StringNull(),
+		PrefGrMemb:   types.StringNull(),
+		Prio:         customTypes.NewL3extInstPPrioStringNull(),
+		Scope:        types.StringNull(),
+		TargetDscp:   customTypes.NewL3extInstPTargetDscpStringNull(),
+		FvRsCons: types.SetNull(
+			types.ObjectType{
+				AttrTypes: FvRsConsModelAttributeTypes(),
+			},
+		),
+		FvRsConsIf: types.SetNull(
+			types.ObjectType{
+				AttrTypes: FvRsConsIfModelAttributeTypes(),
+			},
+		),
+		FvRsCustQosPol: types.ObjectNull(FvRsCustQosPolModelAttributeTypes()),
+		FvRsIntraEpg: types.SetNull(
+			types.ObjectType{
+				AttrTypes: FvRsIntraEpgModelAttributeTypes(),
+			},
+		),
+		FvRsProtBy: types.SetNull(
+			types.ObjectType{
+				AttrTypes: FvRsProtByModelAttributeTypes(),
+			},
+		),
+		FvRsProv: types.SetNull(
+			types.ObjectType{
+				AttrTypes: FvRsProvModelAttributeTypes(),
+			},
+		),
+		FvRsSecInherited: types.SetNull(
+			types.ObjectType{
+				AttrTypes: FvRsSecInheritedModelAttributeTypes(),
+			},
+		),
+		L3extRsInstPToProfile: types.SetNull(
+			types.ObjectType{
+				AttrTypes: L3extRsInstPToProfileModelAttributeTypes(),
+			},
+		),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type L3extInstPResourceModel struct {
 	L3extInstPModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewL3extInstPResourceModelNull() L3extInstPResourceModel {
+	return L3extInstPResourceModel{
+		L3extInstPModel: NewL3extInstPModelNull(),
+		ID:              types.StringNull(),
+		ParentDn:        types.StringNull(),
+	}
 }
 
 type L3extInstPDataSourceModel struct {
 	L3extInstPModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewL3extInstPDataSourceModelNull() L3extInstPDataSourceModel {
+	return L3extInstPDataSourceModel{
+		L3extInstPModel: NewL3extInstPModelNull(),
+		ID:              types.StringNull(),
+		ParentDn:        types.StringNull(),
+	}
 }

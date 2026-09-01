@@ -2,18 +2,96 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type NetflowRecordPolModel struct{}
+type NetflowRecordPolModel struct {
+	Annotation    types.String `tfsdk:"annotation"`
+	Collect       types.Set    `tfsdk:"collect_parameters"`
+	Descr         types.String `tfsdk:"description"`
+	Match         types.Set    `tfsdk:"match_parameters"`
+	Name          types.String `tfsdk:"name"`
+	NameAlias     types.String `tfsdk:"name_alias"`
+	OwnerKey      types.String `tfsdk:"owner_key"`
+	OwnerTag      types.String `tfsdk:"owner_tag"`
+	TagAnnotation types.Set    `tfsdk:"annotations"`
+	TagTag        types.Set    `tfsdk:"tags"`
+}
+
+func NetflowRecordPolModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":         types.StringType,
+		"collect_parameters": types.SetType{ElemType: types.StringType},
+		"description":        types.StringType,
+		"match_parameters":   types.SetType{ElemType: types.StringType},
+		"name":               types.StringType,
+		"name_alias":         types.StringType,
+		"owner_key":          types.StringType,
+		"owner_tag":          types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewNetflowRecordPolModelNull() NetflowRecordPolModel {
+	return NetflowRecordPolModel{
+		Annotation: types.StringNull(),
+		Collect:    types.SetNull(types.StringType),
+		Descr:      types.StringNull(),
+		Match:      types.SetNull(types.StringType),
+		Name:       types.StringNull(),
+		NameAlias:  types.StringNull(),
+		OwnerKey:   types.StringNull(),
+		OwnerTag:   types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type NetflowRecordPolResourceModel struct {
 	NetflowRecordPolModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewNetflowRecordPolResourceModelNull() NetflowRecordPolResourceModel {
+	return NetflowRecordPolResourceModel{
+		NetflowRecordPolModel: NewNetflowRecordPolModelNull(),
+		ID:                    types.StringNull(),
+		ParentDn:              types.StringNull(),
+	}
 }
 
 type NetflowRecordPolDataSourceModel struct {
 	NetflowRecordPolModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewNetflowRecordPolDataSourceModelNull() NetflowRecordPolDataSourceModel {
+	return NetflowRecordPolDataSourceModel{
+		NetflowRecordPolModel: NewNetflowRecordPolModelNull(),
+		ID:                    types.StringNull(),
+		ParentDn:              types.StringNull(),
+	}
 }

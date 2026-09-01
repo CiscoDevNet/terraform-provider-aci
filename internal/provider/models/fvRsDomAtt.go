@@ -2,18 +2,152 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type FvRsDomAttModel struct{}
+type FvRsDomAttModel struct {
+	Annotation          types.String `tfsdk:"annotation"`
+	BindingType         types.String `tfsdk:"binding_type"`
+	ClassPref           types.String `tfsdk:"class_preference"`
+	CustomEpgName       types.String `tfsdk:"custom_epg_name"`
+	Delimiter           types.String `tfsdk:"delimiter"`
+	Encap               types.String `tfsdk:"encapsulation"`
+	EncapMode           types.String `tfsdk:"encapsulation_mode"`
+	EpgCos              types.String `tfsdk:"epg_cos"`
+	EpgCosPref          types.String `tfsdk:"epg_cos_pref"`
+	InstrImedcy         types.String `tfsdk:"deployment_immediacy"`
+	IpamDhcpOverride    types.String `tfsdk:"ipam_dhcp_override"`
+	IpamEnabled         types.String `tfsdk:"ipam_enabled"`
+	IpamGateway         types.String `tfsdk:"ipam_gateway"`
+	LagPolicyName       types.String `tfsdk:"lag_policy_name"`
+	NetflowDir          types.String `tfsdk:"netflow_direction"`
+	NetflowPref         types.String `tfsdk:"enable_netflow"`
+	NumPorts            types.String `tfsdk:"number_of_ports"`
+	PortAllocation      types.String `tfsdk:"port_allocation"`
+	PrimaryEncap        types.String `tfsdk:"primary_encapsulation"`
+	PrimaryEncapInner   types.String `tfsdk:"primary_encapsulation_inner"`
+	ResImedcy           types.String `tfsdk:"resolution_immediacy"`
+	SecondaryEncapInner types.String `tfsdk:"secondary_encapsulation_inner"`
+	SwitchingMode       types.String `tfsdk:"switching_mode"`
+	TDn                 types.String `tfsdk:"target_dn"`
+	Untagged            types.String `tfsdk:"untagged"`
+	FvUplinkOrderCont   types.Object `tfsdk:"uplink_order_container"`
+	TagAnnotation       types.Set    `tfsdk:"annotations"`
+	TagTag              types.Set    `tfsdk:"tags"`
+}
+
+func FvRsDomAttModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":                    types.StringType,
+		"binding_type":                  types.StringType,
+		"class_preference":              types.StringType,
+		"custom_epg_name":               types.StringType,
+		"delimiter":                     types.StringType,
+		"encapsulation":                 types.StringType,
+		"encapsulation_mode":            types.StringType,
+		"epg_cos":                       types.StringType,
+		"epg_cos_pref":                  types.StringType,
+		"deployment_immediacy":          types.StringType,
+		"ipam_dhcp_override":            types.StringType,
+		"ipam_enabled":                  types.StringType,
+		"ipam_gateway":                  types.StringType,
+		"lag_policy_name":               types.StringType,
+		"netflow_direction":             types.StringType,
+		"enable_netflow":                types.StringType,
+		"number_of_ports":               types.StringType,
+		"port_allocation":               types.StringType,
+		"primary_encapsulation":         types.StringType,
+		"primary_encapsulation_inner":   types.StringType,
+		"resolution_immediacy":          types.StringType,
+		"secondary_encapsulation_inner": types.StringType,
+		"switching_mode":                types.StringType,
+		"target_dn":                     types.StringType,
+		"untagged":                      types.StringType,
+		"uplink_order_container": types.ObjectType{
+			AttrTypes: FvUplinkOrderContModelAttributeTypes(),
+		},
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewFvRsDomAttModelNull() FvRsDomAttModel {
+	return FvRsDomAttModel{
+		Annotation:          types.StringNull(),
+		BindingType:         types.StringNull(),
+		ClassPref:           types.StringNull(),
+		CustomEpgName:       types.StringNull(),
+		Delimiter:           types.StringNull(),
+		Encap:               types.StringNull(),
+		EncapMode:           types.StringNull(),
+		EpgCos:              types.StringNull(),
+		EpgCosPref:          types.StringNull(),
+		InstrImedcy:         types.StringNull(),
+		IpamDhcpOverride:    types.StringNull(),
+		IpamEnabled:         types.StringNull(),
+		IpamGateway:         types.StringNull(),
+		LagPolicyName:       types.StringNull(),
+		NetflowDir:          types.StringNull(),
+		NetflowPref:         types.StringNull(),
+		NumPorts:            types.StringNull(),
+		PortAllocation:      types.StringNull(),
+		PrimaryEncap:        types.StringNull(),
+		PrimaryEncapInner:   types.StringNull(),
+		ResImedcy:           types.StringNull(),
+		SecondaryEncapInner: types.StringNull(),
+		SwitchingMode:       types.StringNull(),
+		TDn:                 types.StringNull(),
+		Untagged:            types.StringNull(),
+		FvUplinkOrderCont:   types.ObjectNull(FvUplinkOrderContModelAttributeTypes()),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type FvRsDomAttResourceModel struct {
 	FvRsDomAttModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFvRsDomAttResourceModelNull() FvRsDomAttResourceModel {
+	return FvRsDomAttResourceModel{
+		FvRsDomAttModel: NewFvRsDomAttModelNull(),
+		ID:              types.StringNull(),
+		ParentDn:        types.StringNull(),
+	}
 }
 
 type FvRsDomAttDataSourceModel struct {
 	FvRsDomAttModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFvRsDomAttDataSourceModelNull() FvRsDomAttDataSourceModel {
+	return FvRsDomAttDataSourceModel{
+		FvRsDomAttModel: NewFvRsDomAttModelNull(),
+		ID:              types.StringNull(),
+		ParentDn:        types.StringNull(),
+	}
 }

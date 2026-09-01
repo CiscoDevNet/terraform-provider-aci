@@ -2,18 +2,91 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type FvEpIpTagModel struct{}
+type FvEpIpTagModel struct {
+	Annotation    types.String                     `tfsdk:"annotation"`
+	CtxName       types.String                     `tfsdk:"vrf_name"`
+	FvEpIpTagID   types.String                     `tfsdk:"id_attribute"`
+	Ip            customTypes.IPAddressStringValue `tfsdk:"ip"`
+	Name          types.String                     `tfsdk:"name"`
+	NameAlias     types.String                     `tfsdk:"name_alias"`
+	TagAnnotation types.Set                        `tfsdk:"annotations"`
+	TagTag        types.Set                        `tfsdk:"tags"`
+}
+
+func FvEpIpTagModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":   types.StringType,
+		"vrf_name":     types.StringType,
+		"id_attribute": types.StringType,
+		"ip":           customTypes.IPAddressStringType{},
+		"name":         types.StringType,
+		"name_alias":   types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewFvEpIpTagModelNull() FvEpIpTagModel {
+	return FvEpIpTagModel{
+		Annotation:  types.StringNull(),
+		CtxName:     types.StringNull(),
+		FvEpIpTagID: types.StringNull(),
+		Ip:          customTypes.NewIPAddressStringNull(),
+		Name:        types.StringNull(),
+		NameAlias:   types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type FvEpIpTagResourceModel struct {
 	FvEpIpTagModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFvEpIpTagResourceModelNull() FvEpIpTagResourceModel {
+	return FvEpIpTagResourceModel{
+		FvEpIpTagModel: NewFvEpIpTagModelNull(),
+		ID:             types.StringNull(),
+		ParentDn:       types.StringNull(),
+	}
 }
 
 type FvEpIpTagDataSourceModel struct {
 	FvEpIpTagModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFvEpIpTagDataSourceModelNull() FvEpIpTagDataSourceModel {
+	return FvEpIpTagDataSourceModel{
+		FvEpIpTagModel: NewFvEpIpTagModelNull(),
+		ID:             types.StringNull(),
+		ParentDn:       types.StringNull(),
+	}
 }
