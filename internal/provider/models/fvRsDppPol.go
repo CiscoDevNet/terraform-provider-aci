@@ -47,3 +47,7 @@ func NewFvRsDppPolModelNull() FvRsDppPolModel {
 		),
 	}
 }
+
+func (m *FvRsDppPolModel) BuildRN() string {
+	return "rsdppPol"
+}

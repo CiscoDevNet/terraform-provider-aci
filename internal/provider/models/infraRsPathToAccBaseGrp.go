@@ -47,3 +47,7 @@ func NewInfraRsPathToAccBaseGrpModelNull() InfraRsPathToAccBaseGrpModel {
 		),
 	}
 }
+
+func (m *InfraRsPathToAccBaseGrpModel) BuildRN() string {
+	return "rspathToAccBaseGrp"
+}

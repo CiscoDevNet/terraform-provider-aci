@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -61,6 +63,13 @@ func NewQosNodropDscpMatchIfPolModelNull() QosNodropDscpMatchIfPolModel {
 			},
 		),
 	}
+}
+
+func (m *QosNodropDscpMatchIfPolModel) BuildRN() string {
+	rn := "infra/nodropDscpMatch-{name}"
+	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
+
+	return rn
 }
 
 type QosNodropDscpMatchIfPolResourceModel struct {

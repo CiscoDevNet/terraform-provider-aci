@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -46,4 +48,11 @@ func NewInfraRsHPathAttModelNull() InfraRsHPathAttModel {
 			},
 		),
 	}
+}
+
+func (m *InfraRsHPathAttModel) BuildRN() string {
+	rn := "rsHPathAtt-[{tDn}]"
+	rn = strings.ReplaceAll(rn, "{tDn}", m.TDn.ValueString())
+
+	return rn
 }

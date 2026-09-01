@@ -59,3 +59,7 @@ func NewCommTelnetModelNull() CommTelnetModel {
 		),
 	}
 }
+
+func (m *CommTelnetModel) BuildRN() string {
+	return "telnet"
+}

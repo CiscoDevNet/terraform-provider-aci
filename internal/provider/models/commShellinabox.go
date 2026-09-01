@@ -56,3 +56,7 @@ func NewCommShellinaboxModelNull() CommShellinaboxModel {
 		),
 	}
 }
+
+func (m *CommShellinaboxModel) BuildRN() string {
+	return "shellinabox"
+}

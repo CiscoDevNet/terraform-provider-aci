@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -49,6 +51,13 @@ func NewFvRsOtmListMemberModelNull() FvRsOtmListMemberModel {
 			},
 		),
 	}
+}
+
+func (m *FvRsOtmListMemberModel) BuildRN() string {
+	rn := "rsotmListMember-[{tDn}]"
+	rn = strings.ReplaceAll(rn, "{tDn}", m.TDn.ValueString())
+
+	return rn
 }
 
 type FvRsOtmListMemberResourceModel struct {

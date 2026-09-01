@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -53,6 +55,13 @@ func NewVzRsAnyToProvModelNull() VzRsAnyToProvModel {
 			},
 		),
 	}
+}
+
+func (m *VzRsAnyToProvModel) BuildRN() string {
+	rn := "rsanyToProv-{tnVzBrCPName}"
+	rn = strings.ReplaceAll(rn, "{tnVzBrCPName}", m.TnVzBrCPName.ValueString())
+
+	return rn
 }
 
 type VzRsAnyToProvResourceModel struct {

@@ -47,3 +47,7 @@ func NewCommRsClientCertCAModelNull() CommRsClientCertCAModel {
 		),
 	}
 }
+
+func (m *CommRsClientCertCAModel) BuildRN() string {
+	return "rsclientCertCA"
+}

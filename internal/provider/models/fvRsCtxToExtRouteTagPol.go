@@ -47,3 +47,7 @@ func NewFvRsCtxToExtRouteTagPolModelNull() FvRsCtxToExtRouteTagPolModel {
 		),
 	}
 }
+
+func (m *FvRsCtxToExtRouteTagPolModel) BuildRN() string {
+	return "rsctxToExtRouteTagPol"
+}

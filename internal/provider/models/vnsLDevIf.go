@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -55,6 +57,13 @@ func NewVnsLDevIfModelNull() VnsLDevIfModel {
 			},
 		),
 	}
+}
+
+func (m *VnsLDevIfModel) BuildRN() string {
+	rn := "lDevIf-[{ldev}]"
+	rn = strings.ReplaceAll(rn, "{ldev}", m.Ldev.ValueString())
+
+	return rn
 }
 
 type VnsLDevIfResourceModel struct {

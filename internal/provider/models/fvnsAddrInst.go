@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -78,6 +80,13 @@ func NewFvnsAddrInstModelNull() FvnsAddrInstModel {
 			},
 		),
 	}
+}
+
+func (m *FvnsAddrInstModel) BuildRN() string {
+	rn := "tn-mgmt/addrinst-{name}"
+	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
+
+	return rn
 }
 
 type FvnsAddrInstResourceModel struct {

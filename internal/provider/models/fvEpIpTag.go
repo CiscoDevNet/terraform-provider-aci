@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -59,6 +61,14 @@ func NewFvEpIpTagModelNull() FvEpIpTagModel {
 			},
 		),
 	}
+}
+
+func (m *FvEpIpTagModel) BuildRN() string {
+	rn := "eptags/epiptag-[{ip}]-{ctxName}"
+	rn = strings.ReplaceAll(rn, "{ctxName}", m.CtxName.ValueString())
+	rn = strings.ReplaceAll(rn, "{ip}", m.Ip.NamedValueString())
+
+	return rn
 }
 
 type FvEpIpTagResourceModel struct {

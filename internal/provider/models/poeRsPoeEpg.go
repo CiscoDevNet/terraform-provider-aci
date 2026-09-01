@@ -47,3 +47,7 @@ func NewPoeRsPoeEpgModelNull() PoeRsPoeEpgModel {
 		),
 	}
 }
+
+func (m *PoeRsPoeEpgModel) BuildRN() string {
+	return "rspoeEpg"
+}

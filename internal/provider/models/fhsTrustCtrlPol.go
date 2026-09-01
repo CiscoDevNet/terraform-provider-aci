@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -76,6 +78,13 @@ func NewFhsTrustCtrlPolModelNull() FhsTrustCtrlPolModel {
 			},
 		),
 	}
+}
+
+func (m *FhsTrustCtrlPolModel) BuildRN() string {
+	rn := "trustctrlpol-{name}"
+	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
+
+	return rn
 }
 
 type FhsTrustCtrlPolResourceModel struct {

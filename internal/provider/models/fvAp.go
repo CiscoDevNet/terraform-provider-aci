@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -67,6 +69,13 @@ func NewFvApModelNull() FvApModel {
 			},
 		),
 	}
+}
+
+func (m *FvApModel) BuildRN() string {
+	rn := "ap-{name}"
+	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
+
+	return rn
 }
 
 type FvApResourceModel struct {

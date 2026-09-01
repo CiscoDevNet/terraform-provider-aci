@@ -47,3 +47,7 @@ func NewNetflowRsMonitorToRecordModelNull() NetflowRsMonitorToRecordModel {
 		),
 	}
 }
+
+func (m *NetflowRsMonitorToRecordModel) BuildRN() string {
+	return "rsmonitorToRecord"
+}

@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -59,6 +61,13 @@ func NewMplsNodeSidPModelNull() MplsNodeSidPModel {
 			},
 		),
 	}
+}
+
+func (m *MplsNodeSidPModel) BuildRN() string {
+	rn := "nodesidp-{sidoffset}"
+	rn = strings.ReplaceAll(rn, "{sidoffset}", m.Sidoffset.ValueString())
+
+	return rn
 }
 
 type MplsNodeSidPResourceModel struct {

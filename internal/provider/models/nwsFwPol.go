@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -61,6 +63,13 @@ func NewNwsFwPolModelNull() NwsFwPolModel {
 			},
 		),
 	}
+}
+
+func (m *NwsFwPolModel) BuildRN() string {
+	rn := "infra/fwP-{name}"
+	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
+
+	return rn
 }
 
 type NwsFwPolResourceModel struct {

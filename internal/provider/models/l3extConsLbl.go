@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -86,6 +88,13 @@ func NewL3extConsLblModelNull() L3extConsLblModel {
 			},
 		),
 	}
+}
+
+func (m *L3extConsLblModel) BuildRN() string {
+	rn := "conslbl-{name}"
+	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
+
+	return rn
 }
 
 type L3extConsLblResourceModel struct {

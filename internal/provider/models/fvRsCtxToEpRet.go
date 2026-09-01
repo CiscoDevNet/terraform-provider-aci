@@ -47,3 +47,7 @@ func NewFvRsCtxToEpRetModelNull() FvRsCtxToEpRetModel {
 		),
 	}
 }
+
+func (m *FvRsCtxToEpRetModel) BuildRN() string {
+	return "rsctxToEpRet"
+}

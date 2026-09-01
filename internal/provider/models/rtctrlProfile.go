@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -64,6 +66,13 @@ func NewRtctrlProfileModelNull() RtctrlProfileModel {
 			},
 		),
 	}
+}
+
+func (m *RtctrlProfileModel) BuildRN() string {
+	rn := "prof-{name}"
+	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
+
+	return rn
 }
 
 type RtctrlProfileResourceModel struct {

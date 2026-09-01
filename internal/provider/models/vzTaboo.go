@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -58,6 +60,13 @@ func NewVzTabooModelNull() VzTabooModel {
 			},
 		),
 	}
+}
+
+func (m *VzTabooModel) BuildRN() string {
+	rn := "taboo-{name}"
+	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
+
+	return rn
 }
 
 type VzTabooResourceModel struct {

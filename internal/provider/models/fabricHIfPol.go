@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -79,6 +81,13 @@ func NewFabricHIfPolModelNull() FabricHIfPolModel {
 			},
 		),
 	}
+}
+
+func (m *FabricHIfPolModel) BuildRN() string {
+	rn := "infra/hintfpol-{name}"
+	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
+
+	return rn
 }
 
 type FabricHIfPolResourceModel struct {

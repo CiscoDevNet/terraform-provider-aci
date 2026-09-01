@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -67,6 +69,13 @@ func NewL2PortSecurityPolModelNull() L2PortSecurityPolModel {
 			},
 		),
 	}
+}
+
+func (m *L2PortSecurityPolModel) BuildRN() string {
+	rn := "infra/portsecurityP-{name}"
+	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
+
+	return rn
 }
 
 type L2PortSecurityPolResourceModel struct {

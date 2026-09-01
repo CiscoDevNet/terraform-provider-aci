@@ -10,7 +10,11 @@ import (
 	"testing"
 	texttemplate "text/template"
 
+	"github.com/hashicorp/terraform-plugin-framework/types"
+
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils/data"
+	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models"
 )
 
 const (
@@ -198,6 +202,66 @@ func TestModelTemplateArtifacts(t *testing.T) {
 			dataSourceType := "type FvTenantDataSourceModel struct"
 			if actual := strings.Contains(contents, dataSourceType); actual != testCase.dataSourceModel {
 				t.Fatalf("data source model presence %t, expected %t", actual, testCase.dataSourceModel)
+			}
+		})
+	}
+}
+
+func TestGeneratedModelBuildRN(t *testing.T) {
+	t.Parallel()
+
+	testCases := []struct {
+		name       string
+		build      func() string
+		expectedRN string
+	}{
+		{
+			name: "static RN",
+			build: func() string {
+				model := models.FvAccPModel{}
+				return model.BuildRN()
+			},
+			expectedRN: "accp",
+		},
+		{
+			name: "single identifier",
+			build: func() string {
+				model := models.FvTenantModel{Name: types.StringValue("example")}
+				return model.BuildRN()
+			},
+			expectedRN: "tn-example",
+		},
+		{
+			name: "multi identifier placeholder order",
+			build: func() string {
+				model := models.FvRsBDToNetflowMonitorPolModel{
+					FltType:                 types.StringValue("ipv4"),
+					TnNetflowMonitorPolName: types.StringValue("monitor"),
+				}
+				return model.BuildRN()
+			},
+			expectedRN: "rsBDToNetflowMonitorPol-[monitor]-ipv4",
+		},
+		{
+			name: "custom identifier normalization and fixed path",
+			build: func() string {
+				model := models.FvEpIpTagModel{
+					CtxName: types.StringValue("vrf"),
+					Ip:      customTypes.NewIPAddressStringValue("2001:0db8::1"),
+				}
+				return model.BuildRN()
+			},
+			expectedRN: "eptags/epiptag-[2001:db8::1]-vrf",
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
+			rn := testCase.build()
+			if rn != testCase.expectedRN {
+				t.Fatalf("RN %q, expected %q", rn, testCase.expectedRN)
 			}
 		})
 	}

@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -72,6 +74,13 @@ func NewFhsBDPolModelNull() FhsBDPolModel {
 			},
 		),
 	}
+}
+
+func (m *FhsBDPolModel) BuildRN() string {
+	rn := "bdpol-{name}"
+	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
+
+	return rn
 }
 
 type FhsBDPolResourceModel struct {

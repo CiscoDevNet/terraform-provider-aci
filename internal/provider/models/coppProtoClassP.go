@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -67,6 +69,13 @@ func NewCoppProtoClassPModelNull() CoppProtoClassPModel {
 			},
 		),
 	}
+}
+
+func (m *CoppProtoClassPModel) BuildRN() string {
+	rn := "protoclassp-{name}"
+	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
+
+	return rn
 }
 
 type CoppProtoClassPResourceModel struct {

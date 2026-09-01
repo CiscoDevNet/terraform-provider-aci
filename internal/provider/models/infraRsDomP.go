@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -46,6 +48,13 @@ func NewInfraRsDomPModelNull() InfraRsDomPModel {
 			},
 		),
 	}
+}
+
+func (m *InfraRsDomPModel) BuildRN() string {
+	rn := "rsdomP-[{tDn}]"
+	rn = strings.ReplaceAll(rn, "{tDn}", m.TDn.ValueString())
+
+	return rn
 }
 
 type InfraRsDomPResourceModel struct {

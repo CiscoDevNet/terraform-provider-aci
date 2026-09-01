@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -72,6 +74,13 @@ func NewFvFabricExtConnPModelNull() FvFabricExtConnPModel {
 			},
 		),
 	}
+}
+
+func (m *FvFabricExtConnPModel) BuildRN() string {
+	rn := "fabricExtConnP-{id}"
+	rn = strings.ReplaceAll(rn, "{id}", m.FvFabricExtConnPID.ValueString())
+
+	return rn
 }
 
 type FvFabricExtConnPResourceModel struct {

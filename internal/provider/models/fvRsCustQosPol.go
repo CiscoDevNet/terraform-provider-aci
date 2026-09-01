@@ -47,3 +47,7 @@ func NewFvRsCustQosPolModelNull() FvRsCustQosPolModel {
 		),
 	}
 }
+
+func (m *FvRsCustQosPolModel) BuildRN() string {
+	return "rscustQosPol"
+}

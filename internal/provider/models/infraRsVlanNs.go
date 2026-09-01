@@ -47,3 +47,7 @@ func NewInfraRsVlanNsModelNull() InfraRsVlanNsModel {
 		),
 	}
 }
+
+func (m *InfraRsVlanNsModel) BuildRN() string {
+	return "rsvlanNs"
+}

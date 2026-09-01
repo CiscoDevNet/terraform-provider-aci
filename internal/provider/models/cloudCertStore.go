@@ -50,3 +50,7 @@ func NewCloudCertStoreModelNull() CloudCertStoreModel {
 		),
 	}
 }
+
+func (m *CloudCertStoreModel) BuildRN() string {
+	return "certstore"
+}

@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -68,6 +70,13 @@ func NewInfraHPathSModelNull() InfraHPathSModel {
 			},
 		),
 	}
+}
+
+func (m *InfraHPathSModel) BuildRN() string {
+	rn := "hpaths-{name}"
+	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
+
+	return rn
 }
 
 type InfraHPathSResourceModel struct {

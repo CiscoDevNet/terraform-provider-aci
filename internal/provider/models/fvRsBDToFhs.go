@@ -47,3 +47,7 @@ func NewFvRsBDToFhsModelNull() FvRsBDToFhsModel {
 		),
 	}
 }
+
+func (m *FvRsBDToFhsModel) BuildRN() string {
+	return "rsBDToFhs"
+}

@@ -47,3 +47,7 @@ func NewFvRsABDPolMonPolModelNull() FvRsABDPolMonPolModel {
 		),
 	}
 }
+
+func (m *FvRsABDPolMonPolModel) BuildRN() string {
+	return "rsABDPolMonPol"
+}

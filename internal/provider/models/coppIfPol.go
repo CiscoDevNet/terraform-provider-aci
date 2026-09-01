@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -69,6 +71,13 @@ func NewCoppIfPolModelNull() CoppIfPolModel {
 			},
 		),
 	}
+}
+
+func (m *CoppIfPolModel) BuildRN() string {
+	rn := "infra/coppifpol-{name}"
+	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
+
+	return rn
 }
 
 type CoppIfPolResourceModel struct {

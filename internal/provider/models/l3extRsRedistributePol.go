@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -49,6 +51,14 @@ func NewL3extRsRedistributePolModelNull() L3extRsRedistributePolModel {
 			},
 		),
 	}
+}
+
+func (m *L3extRsRedistributePolModel) BuildRN() string {
+	rn := "rsredistributePol-[{tnRtctrlProfileName}]-{src}"
+	rn = strings.ReplaceAll(rn, "{src}", m.Src.ValueString())
+	rn = strings.ReplaceAll(rn, "{tnRtctrlProfileName}", m.TnRtctrlProfileName.ValueString())
+
+	return rn
 }
 
 type L3extRsRedistributePolResourceModel struct {

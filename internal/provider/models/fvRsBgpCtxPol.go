@@ -47,3 +47,7 @@ func NewFvRsBgpCtxPolModelNull() FvRsBgpCtxPolModel {
 		),
 	}
 }
+
+func (m *FvRsBgpCtxPolModel) BuildRN() string {
+	return "rsbgpCtxPol"
+}

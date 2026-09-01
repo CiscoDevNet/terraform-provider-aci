@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -56,6 +58,13 @@ func NewFvFBRMemberModelNull() FvFBRMemberModel {
 			},
 		),
 	}
+}
+
+func (m *FvFBRMemberModel) BuildRN() string {
+	rn := "nexthop-[{rnhAddr}]"
+	rn = strings.ReplaceAll(rn, "{rnhAddr}", m.RnhAddr.NamedValueString())
+
+	return rn
 }
 
 type FvFBRMemberResourceModel struct {

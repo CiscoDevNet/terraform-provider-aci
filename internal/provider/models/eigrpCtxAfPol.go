@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -73,6 +75,13 @@ func NewEigrpCtxAfPolModelNull() EigrpCtxAfPolModel {
 			},
 		),
 	}
+}
+
+func (m *EigrpCtxAfPolModel) BuildRN() string {
+	rn := "eigrpCtxAfP-{name}"
+	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
+
+	return rn
 }
 
 type EigrpCtxAfPolResourceModel struct {

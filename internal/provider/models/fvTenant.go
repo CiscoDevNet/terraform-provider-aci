@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -63,6 +65,13 @@ func NewFvTenantModelNull() FvTenantModel {
 			},
 		),
 	}
+}
+
+func (m *FvTenantModel) BuildRN() string {
+	rn := "tn-{name}"
+	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
+
+	return rn
 }
 
 type FvTenantResourceModel struct {

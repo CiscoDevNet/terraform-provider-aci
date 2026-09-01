@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -82,6 +84,13 @@ func NewPkiKeyRingModelNull() PkiKeyRingModel {
 			},
 		),
 	}
+}
+
+func (m *PkiKeyRingModel) BuildRN() string {
+	rn := "keyring-{name}"
+	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
+
+	return rn
 }
 
 type PkiKeyRingResourceModel struct {

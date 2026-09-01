@@ -47,3 +47,7 @@ func NewCommRsKeyRingModelNull() CommRsKeyRingModel {
 		),
 	}
 }
+
+func (m *CommRsKeyRingModel) BuildRN() string {
+	return "rsKeyRing"
+}

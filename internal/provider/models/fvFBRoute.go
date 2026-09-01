@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -56,6 +58,13 @@ func NewFvFBRouteModelNull() FvFBRouteModel {
 			},
 		),
 	}
+}
+
+func (m *FvFBRouteModel) BuildRN() string {
+	rn := "pfx-[{fbrPrefix}]"
+	rn = strings.ReplaceAll(rn, "{fbrPrefix}", m.FbrPrefix.NamedValueString())
+
+	return rn
 }
 
 type FvFBRouteResourceModel struct {

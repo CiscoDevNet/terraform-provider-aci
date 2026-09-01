@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -66,6 +68,14 @@ func NewInfraHPortSModelNull() InfraHPortSModel {
 			},
 		),
 	}
+}
+
+func (m *InfraHPortSModel) BuildRN() string {
+	rn := "hports-{name}-typ-{type}"
+	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
+	rn = strings.ReplaceAll(rn, "{type}", m.Type.ValueString())
+
+	return rn
 }
 
 type InfraHPortSResourceModel struct {

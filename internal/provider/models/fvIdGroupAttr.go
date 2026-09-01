@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -61,6 +63,13 @@ func NewFvIdGroupAttrModelNull() FvIdGroupAttrModel {
 			},
 		),
 	}
+}
+
+func (m *FvIdGroupAttrModel) BuildRN() string {
+	rn := "idgattr-[{selector}]"
+	rn = strings.ReplaceAll(rn, "{selector}", m.Selector.ValueString())
+
+	return rn
 }
 
 type FvIdGroupAttrResourceModel struct {

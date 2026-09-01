@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -135,6 +137,13 @@ func NewVmmDomPModelNull() VmmDomPModel {
 		VmmRsPrefEnhancedLagPol: types.ObjectNull(VmmRsPrefEnhancedLagPolModelAttributeTypes()),
 		VmmUplinkPCont:          types.ObjectNull(VmmUplinkPContModelAttributeTypes()),
 	}
+}
+
+func (m *VmmDomPModel) BuildRN() string {
+	rn := "dom-{name}"
+	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
+
+	return rn
 }
 
 type VmmDomPResourceModel struct {

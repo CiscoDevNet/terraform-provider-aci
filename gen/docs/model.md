@@ -195,9 +195,7 @@ RN, DN, and ID are derived from model values and are exposed as generated
 methods. The reusable model does not store them as fields:
 
 ```go
-func (m *FvTenantModel) BuildRN(
-	ctx context.Context,
-) (string, diag.Diagnostics)
+func (m *FvTenantModel) BuildRN() string
 func (m *FvTenantModel) BuildDN(
 	ctx context.Context,
 	parentDN string,
@@ -250,8 +248,9 @@ data-source `SetFromResponse` methods assign those identity values to their
 top-level Terraform fields. `FvTenantModelFromObject` is the nested-child
 decoder and operates directly on an APIC child object.
 
-Methods that construct identity must explicitly handle null and unknown
-identity fields. They must not silently construct an invalid RN or DN.
+Identifying attributes are required by the resource, data-source, and nested
+child schemas. `BuildRN` therefore operates on an already resolved model and
+does not repeat schema validation for null or unknown identifying values.
 
 ## 5. Identity, RN, DN, and ID
 
@@ -262,8 +261,13 @@ It must:
 
 - support named and non-named classes;
 - handle bracketed identity values correctly;
-- reject missing or unknown identity values;
 - use normalized APIC class metadata rather than class-name-specific branches.
+
+RN placeholders are replaced by name rather than by their position in
+`IdentifiedBy`. `IdentifiedBy` is normalized as a deterministic set and its
+order does not define the order of placeholders in `RnFormat`. Plain string
+identifiers use their Terraform string value; custom identifiers use their
+normalized named value so the RN matches the APIC representation.
 
 ### DN
 

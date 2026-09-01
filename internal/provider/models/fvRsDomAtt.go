@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -120,6 +122,13 @@ func NewFvRsDomAttModelNull() FvRsDomAttModel {
 			},
 		),
 	}
+}
+
+func (m *FvRsDomAttModel) BuildRN() string {
+	rn := "rsdomAtt-[{tDn}]"
+	rn = strings.ReplaceAll(rn, "{tDn}", m.TDn.ValueString())
+
+	return rn
 }
 
 type FvRsDomAttResourceModel struct {

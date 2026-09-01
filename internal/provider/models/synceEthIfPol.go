@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -94,6 +96,13 @@ func NewSynceEthIfPolModelNull() SynceEthIfPolModel {
 			},
 		),
 	}
+}
+
+func (m *SynceEthIfPolModel) BuildRN() string {
+	rn := "infra/synceEthIfP-{name}"
+	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
+
+	return rn
 }
 
 type SynceEthIfPolResourceModel struct {
