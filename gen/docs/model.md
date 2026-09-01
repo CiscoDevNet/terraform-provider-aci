@@ -1,0 +1,469 @@
+# Generated ACI class model contract
+
+This document defines the contract for the generated model of an ACI class.
+Every supported class generates one concrete Terraform-facing model. The
+model is used both when reading Terraform plan/state and when constructing or
+decoding APIC objects.
+
+The model is not a second, plain-Go APIC representation. Terraform framework
+values remain part of the generated model so null, unknown, empty, and
+populated values are preserved throughout the resource lifecycle.
+
+## 1. Model boundaries
+
+The generated pipeline has one canonical class model and two external value
+boundaries:
+
+```text
+DataStore metadata
+    -> generated resource/data-source schemas and class model
+    -> Terraform plan/state decoding
+    -> generated class operations
+    -> APIC request/response
+    -> generated class model
+    -> Terraform state encoding
+```
+
+The generated class model owns:
+
+- schema-backed Terraform attributes;
+- Terraform null, unknown, empty, and populated values;
+- APIC property and attribute mapping;
+- RN construction;
+- DN construction and parsing;
+- APIC payload construction;
+- response decoding;
+- child object composition;
+- child response decoding;
+- model identity and child identity.
+
+Terraform resource behavior that is not part of the class value remains in the
+resource adapter:
+
+- validators and plan modifiers;
+- deprecated Terraform aliases;
+- state upgrades;
+- provider registration;
+- import-state orchestration;
+- REST transport and API error handling.
+
+The generated resource adapter obtains the plan or state through the
+Terraform Plugin Framework. It does not manually map a generic property map
+into the model.
+
+## 2. Concrete generated model
+
+Every supported ACI class generates one concrete model type. No runtime model
+interface is required.
+
+Only schema-backed attributes belong in the struct. Each field has a matching
+`tfsdk` tag and a Terraform framework type:
+
+```go
+type FvTenantModel struct {
+	Name             types.String `tfsdk:"name"`
+	Description      types.String `tfsdk:"description"`
+	MonitoringPolicy types.Object `tfsdk:"monitoring_policy"`
+	Annotations      types.Set    `tfsdk:"annotations"`
+}
+```
+
+The generated model and the resource/data-source schemas are produced from
+the same normalized DataStore metadata, but schema ownership remains with the
+resource or data source. Terraform decodes a nested value into
+`FvTenantModel` and decodes a top-level value into a context-specific embedded
+wrapper:
+
+```go
+type FvTenantResourceModel struct {
+	FvTenantModel
+	ID       types.String `tfsdk:"id"`
+	ParentDN types.String `tfsdk:"parent_dn"`
+}
+
+type FvTenantDataSourceModel struct {
+	FvTenantModel
+	ID       types.String `tfsdk:"id"`
+	ParentDN types.String `tfsdk:"parent_dn"`
+}
+
+var plan FvTenantResourceModel
+
+resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
+```
+
+The embedded value model is reused by resources, data sources, and nested
+children. The resource and data-source wrappers may add different
+context-specific fields without duplicating class fields or APIC behavior.
+Value embedding also promotes the generated class methods to each wrapper.
+Embedded models must use value embedding, not pointer embedding, and must not
+introduce duplicate `tfsdk` tags.
+
+The framework matches the `tfsdk` tags to schema attributes. RN, DN, and
+derived IDs remain generated methods. `id` and `parent_dn` are top-level
+Terraform fields represented by the resource/data-source wrappers.
+
+The resource and data-source schemas are generated independently:
+
+```go
+func FvTenantResourceSchema() schema.Schema
+func FvTenantDataSourceSchema() schema.Schema
+```
+
+Neither `FvTenantModel` nor either wrapper owns a `Schema()` method. The
+resource and data-source implementations call their respective generated
+schema functions and define their own required/optional/computed behavior,
+validators, defaults, plan modifiers, deprecated fields, and filters.
+
+## 3. Terraform value and child rules
+
+Property types are generated from the Terraform schema:
+
+- string property -> `types.String`;
+- integer property -> `types.Int64`;
+- boolean property -> `types.Bool`;
+- repeated nested child -> `types.Set` or `types.List`, matching the schema;
+- singleton nested child -> `types.Object`.
+
+`types.Set` is the default for repeated children whose order has no APIC
+meaning. `types.List` is used only where order is semantically significant or
+is required by the existing Terraform contract.
+
+The canonical model does not use `[]*ChildModel` or `*ChildModel` fields for
+nested Terraform values. Concrete child models are materialized temporarily
+when operations need to inspect or process the Terraform collection.
+
+For a singleton child:
+
+```go
+var child FvRsTenantMonPolModel
+
+if !plan.MonitoringPolicy.IsNull() && !plan.MonitoringPolicy.IsUnknown() {
+	if err := plan.MonitoringPolicy.As(
+		ctx,
+		&child,
+		basetypes.ObjectAsOptions{},
+	); err != nil {
+		resp.Diagnostics.AddError("Child conversion failed", err.Error())
+		return
+	}
+	child.BuildPayload(ctx)
+}
+```
+
+For a repeated child:
+
+```go
+var annotations []TagAnnotationModel
+
+resp.Diagnostics.Append(
+	plan.Annotations.ElementsAs(ctx, &annotations, false)...,
+)
+
+for _, annotation := range annotations {
+	annotation.BuildPayload(ctx)
+}
+```
+
+The value state has defined meanings:
+
+- null -> absent or omitted;
+- unknown -> not resolved during planning;
+- empty -> explicitly resolved as empty;
+- populated -> one or more resolved values.
+
+APIC responses do not produce unknown values. A response value is known or
+null, depending on whether the API returned the corresponding attribute or
+child.
+
+## 4. Class operations
+
+RN, DN, and ID are derived from model values and are exposed as generated
+methods. The reusable model does not store them as fields:
+
+```go
+func (m *FvTenantModel) BuildRN(
+	ctx context.Context,
+) (string, diag.Diagnostics)
+func (m *FvTenantModel) BuildDN(
+	ctx context.Context,
+	parentDN string,
+) (string, diag.Diagnostics)
+
+func (m *FvTenantModel) BuildPayload(
+	ctx context.Context,
+	priorState *FvTenantModel,
+) (*container.Container, diag.Diagnostics)
+
+func (m *FvTenantModel) BuildDeletePayload(
+	ctx context.Context,
+) (*container.Container, diag.Diagnostics)
+
+func FvTenantModelFromResponse(
+	ctx context.Context,
+	response *container.Container,
+) (FvTenantModel, string, string, diag.Diagnostics)
+
+func FvTenantModelFromObject(
+	ctx context.Context,
+	object *container.Container,
+	parentDN string,
+) (FvTenantModel, diag.Diagnostics)
+
+func (m *FvTenantResourceModel) SetFromResponse(
+	ctx context.Context,
+	response *container.Container,
+) diag.Diagnostics
+
+func (m *FvTenantDataSourceModel) SetFromResponse(
+	ctx context.Context,
+	response *container.Container,
+) diag.Diagnostics
+
+func (m *FvTenantResourceModel) SetIDFromDN(
+	ctx context.Context,
+	dn string,
+) diag.Diagnostics
+
+func (m *FvTenantDataSourceModel) SetIDFromDN(
+	ctx context.Context,
+	dn string,
+) diag.Diagnostics
+```
+
+`FvTenantModelFromResponse` decodes the response envelope and returns the
+class model together with the returned DN and parent DN. The resource and
+data-source `SetFromResponse` methods assign those identity values to their
+top-level Terraform fields. `FvTenantModelFromObject` is the nested-child
+decoder and operates directly on an APIC child object.
+
+Methods that construct identity must explicitly handle null and unknown
+identity fields. They must not silently construct an invalid RN or DN.
+
+## 5. Identity, RN, DN, and ID
+
+### RN
+
+`BuildRN` resolves the class RN format using the model's identity properties.
+It must:
+
+- support named and non-named classes;
+- handle bracketed identity values correctly;
+- reject missing or unknown identity values;
+- use normalized APIC class metadata rather than class-name-specific branches.
+
+### DN
+
+`BuildDN` combines the parent DN and generated RN. It must support:
+
+- root classes;
+- ordinary parented classes;
+- relation classes;
+- nested children;
+- multiple valid parent types.
+
+Response decoding derives the returned RN and parent DN from the returned DN.
+DN parsing must treat bracketed RN values as one segment, as required by
+relation classes such as `fvRsDomAtt`.
+
+### ID
+
+The resource ID is the APIC DN. It is computed through `BuildDN` before a
+request and assigned through the top-level wrapper's `SetIDFromDN` method. It
+is not a class model field. It is represented by the top-level resource or
+data-source wrapper when the corresponding schema exposes an `id` attribute.
+
+An independently supplied ID must not be allowed to disagree with the
+model's computed DN.
+
+Child models expose the same identity methods. Parents use child identity,
+usually the child RN, when constructing nested DNs and comparing desired
+children with prior state.
+
+If `parent_dn` is exposed by a top-level schema, it is used as input to
+`BuildDN` and the resulting ID but is not an APIC payload attribute. If it is returned
+by APIC, the wrapper is populated from the response DN.
+
+## 6. Payload construction
+
+The existing REST helper accepts `*container.Container`, so that remains the
+request boundary for the generated model.
+
+The generated payload must:
+
+- use the APIC class name as the object key;
+- map Terraform model fields to APIC attribute names;
+- omit Terraform-only fields such as `id` and `parent_dn`;
+- omit model-only identity values unless required by the operation;
+- omit null and unresolved values according to normalized property rules;
+- serialize custom property types consistently;
+- append child payloads in deterministic order;
+- recursively include nested children.
+
+`BuildPayload` always emits the full desired object and desired children. The
+optional `priorState` model is used only to detect children that existed in
+the prior Terraform state but are absent from the desired model. Those
+children receive explicit APIC deletion entries because omission from a full
+payload does not itself necessarily delete an APIC child.
+
+On create, `priorState` is nil unless the existing create behavior has first
+read an APIC object to use as a reconciliation baseline. On update,
+`priorState` is the model decoded from `req.State.Get`.
+
+Set/list equality alone is insufficient for deletion matching. The generated
+code compares children by their APIC identity, not by slice position. A child
+whose identity remains the same but whose properties changed is part of the
+desired payload, not a remove-and-add operation.
+
+`BuildDeletePayload` emits the class DN and APIC delete status. Reads do not
+construct payloads.
+
+## 7. Nested child composition
+
+Parents contain Terraform values whose element or object shape is represented
+by a generated concrete child model:
+
+```go
+type FvTenantModel struct {
+	MonitoringPolicy types.Object `tfsdk:"monitoring_policy"`
+	Annotations      types.Set    `tfsdk:"annotations"`
+}
+```
+
+The parent materializes child values using `Object.As` or `Set.ElementsAs`,
+then calls the child's generated methods. No runtime interface or
+reflection-based dispatch is needed.
+
+Child cardinality comes from normalized class metadata:
+
+- singleton child -> `types.Object`;
+- repeated unordered child -> `types.Set`;
+- repeated ordered child -> `types.List`.
+
+Missing singleton children are represented by a null object value. Missing
+repeated children are represented as null or empty according to the existing
+Terraform schema contract. Unknown values remain unknown during planning and
+are not used to construct APIC identity or payload fragments prematurely.
+
+For nested DN construction, the parent passes its resolved DN to the child:
+
+```go
+childDN, err := child.BuildDN(ctx, parentDN)
+```
+
+The same rule applies recursively to grandchildren.
+
+Every generated model also has an explicit null initializer:
+
+```go
+func NewFvTenantModelNull() FvTenantModel
+func NewFvTenantResourceModelNull() FvTenantResourceModel
+func NewFvTenantDataSourceModelNull() FvTenantDataSourceModel
+```
+
+The top-level initializers set wrapper fields such as `id` and `parent_dn` to
+Terraform null values and initialize the embedded class model using
+`NewFvTenantModelNull`. Nested object and collection values include their
+generated element type information. Response decoding starts from these null
+models and overwrites only attributes and children returned by APIC.
+
+## 8. Response decoding
+
+The APIC response is decoded into the same Terraform-facing class model; it
+is not cast directly from generic JSON. `container.Container` wraps generic
+JSON data, so each class receives generated decoding functions. The response
+decoder does not know whether its caller is a resource or a data source.
+
+For a top-level response, the decoder:
+
+1. locates the expected class below `imdata`;
+2. verifies the expected result count;
+3. reads APIC attributes into Terraform framework values;
+4. derives RN, DN, and parent DN from the response DN;
+5. decodes known child classes recursively;
+6. converts decoded child models to `types.Object`, `types.Set`, or
+   `types.List` values.
+
+Conceptually, a top-level resource response is handled as follows:
+
+```go
+func (m *FvTenantResourceModel) SetFromResponse(
+	ctx context.Context,
+	response *container.Container,
+) diag.Diagnostics {
+	model, dn, parentDN, diags := FvTenantModelFromResponse(ctx, response)
+	if diags.HasError() {
+		return diags
+	}
+
+	m.FvTenantModel = model
+	m.ID = types.StringValue(dn)
+	m.ParentDN = types.StringValue(parentDN)
+
+	return diags
+}
+```
+
+The data-source wrapper uses the same sequence, assigning the result to
+`FvTenantDataSourceModel`. Nested decoding operates on the child object rather
+than the response envelope. Each class therefore has generated paths for both
+response envelopes and nested objects.
+
+The decoder must return explicit errors for:
+
+- a missing expected object when one is required;
+- multiple objects when a singleton is expected;
+- malformed attributes;
+- invalid DN/class combinations;
+- duplicate singleton children.
+
+An empty `imdata` result is a not-found result and must be distinguishable
+from a malformed response. API transport and API error handling remain owned
+by the existing REST helper.
+
+## 9. Terraform resource boundary
+
+The generated resource and data source implementations use their respective
+schemas and wrappers. Nested children are decoded into `FvTenantModel`:
+
+```text
+Terraform plan/state
+    -> req.Plan.Get / req.State.Get
+    -> FvTenantResourceModel or FvTenantDataSourceModel
+    -> embedded FvTenantModel
+    -> BuildRN / BuildDN / BuildPayload
+    -> DoRestRequest
+```
+
+After a GET response, the resource implementation performs the reverse:
+
+```text
+DoRestRequest
+    -> ClassModelFromResponse
+    -> FvTenantModel
+    -> top-level wrapper with ID set from DN
+    -> resp.State.Set
+```
+
+Terraform-only behavior such as legacy aliases, state upgrades,
+plan modifiers, and computed/default state values stays in the resource
+adapter, data source adapter, or schema definition. It must not require a
+second APIC behavior model or a runtime model interface.
+
+## 10. Standardization rule
+
+Every class must be representable by the same model contract. Variations are
+encoded as normalized metadata:
+
+- root versus parented;
+- named versus non-named RN;
+- singleton versus repeated child;
+- ordered versus unordered repeated child;
+- relation target attributes;
+- custom property conversion;
+- multiple parent types.
+
+Class-name-specific branches are not permitted in the templates or generated
+runtime helpers. If a class cannot be represented by the standard contract,
+generation must produce a diagnostic identifying the unsupported metadata
+shape so the normalization logic or source definition can be corrected.
