@@ -214,6 +214,27 @@ var knownLegacyKeys = map[string]keyInfo{
 	"prop:datasource_required":         {sectionPostpone, true}, // section 8.2 (topSystem top-level only)
 }
 
+// legacyNestedResourceNameOverwrites identifies legacy overwrite
+// keys that named a generated child attribute rather than an APIC property.
+// The overwrite value is migrated to resource_name_nested. Other unresolved
+// overwrite keys retain their existing property-migration behavior.
+var legacyNestedResourceNameOverwrites = map[string]string{
+	"commRsClientCertCA": "tp",
+	"commShellinabox":    "shellinabox_service",
+	"coppProtoClassP":    "copp_interface_protocol_policys",
+	"fvPeeringP":         "bgp_evpn_peering_profile",
+	"fvRsIpslaMonPol":    "relation_to_ip_sla_monitoring_policy",
+	"vmmUplinkP":         "vmm_uplink_policys",
+}
+
+// legacyIgnoredPropertyOverwrites records inherited pseudo-properties that
+// are absent from both APIC metadata and the current provider child models.
+// They must not be guessed onto an unrelated real property during migration.
+var legacyIgnoredPropertyOverwrites = map[string]string{
+	"commRsClientCertCA": "admin_st",
+	"commRsKeyRing":      "admin_st",
+}
+
 // keyTally accumulates per-key and per-section counts across the migration
 // run for the L2 summary.
 type keyTally struct {
@@ -321,6 +342,15 @@ func assertDerivable(file, key string, legacyValue any) {
 	_ = legacyValue
 }
 
+func sortedStringMapKeys(values map[string]any) []string {
+	keys := make([]string, 0, len(values))
+	for key := range values {
+		keys = append(keys, key)
+	}
+	sort.Strings(keys)
+	return keys
+}
+
 // migrate translates one legacy YAML payload (parsed as map[string]any)
 // into the canonical data.ClassDefinition. The translation is intentionally
 // narrow for Phase 1: only the keys flagged implemented in knownLegacyKeys
@@ -329,7 +359,8 @@ func assertDerivable(file, key string, legacyValue any) {
 // an L1 warning via the tally.
 func migrate(file string, legacy map[string]any, tally *keyTally) data.ClassDefinition {
 	var out data.ClassDefinition
-	for key, val := range legacy {
+	for _, key := range sortedStringMapKeys(legacy) {
+		val := legacy[key]
 		info := tally.record(file, key)
 		if info.section == sectionDerive {
 			assertDerivable(file, key, val)
@@ -1351,7 +1382,8 @@ func asStringSlice(v any) []string {
 // acronym-bearing names (mcastARPDrop -> phantom mcastArpDrop), renamed
 // properties (addr -> phantom gateway_address), and parent_dn synthetic.
 func migrateProperties(file, className string, legacy map[string]any, tally *keyTally, out *data.ClassDefinition) {
-	for key, val := range legacy {
+	for _, key := range sortedStringMapKeys(legacy) {
+		val := legacy[key]
 		info := tally.recordProperty(file, key)
 		if !info.implemented {
 			continue
@@ -1385,15 +1417,20 @@ func migrateProperties(file, className string, legacy map[string]any, tally *key
 			// attribute name) lands in PropertyDefinition.AttributeName
 			// verbatim.
 			//
+			// Verified synthetic overwrite keys named the parent-facing
+			// child attribute in the legacy generator. They map to
+			// ClassDefinition.ResourceNameNested instead of creating phantom
+			// PropertyDefinition entries.
+			//
 			// Filter: drop the synthetic `relation_from_<x>_to_<y>` ->
 			// `relation_to_<y>` aliases. v2.19.0 used these to rename the
 			// parent-facing nested attribute that the legacy generator
 			// emitted under the full "relation_from_..._to_..." snake. The
-			// canonical pipeline computes the same name as Class.
-			// ResourceNameNested (`relation_to_<toClass>`, pluralised when
-			// IdentifiedBy is non-empty) from the relation's single target
-			// class, so the legacy rename target equals the auto-derived
-			// nested name. The synthesised property key (relationFromXToY)
+			// canonical pipeline computes the same name by normalizing the
+			// explicit `resource_name` to `relation_to_<target>` and pluralising
+			// it for a repeated child, so the legacy rename target equals the
+			// auto-derived nested name. The synthesised property key
+			// (relationFromXToY)
 			// is not in any class's meta, so the loader's setProperties
 			// pass skips it - the entry is pure noise in the canonical
 			// YAML and confuses readers who expect every property key to
@@ -1409,8 +1446,17 @@ func migrateProperties(file, className string, legacy map[string]any, tally *key
 				if oldSnake == "" || newName == "" {
 					continue
 				}
+				if ignoredOverwrite, ok := legacyIgnoredPropertyOverwrites[className]; ok && oldSnake == ignoredOverwrite {
+					fmt.Printf("DROP: %s: overwrites[%s]=%s does not represent an APIC property or current child attribute\n", file, oldSnake, newName)
+					continue
+				}
 				if strings.HasPrefix(oldSnake, "relation_from_") && strings.HasPrefix(newName, "relation_to_") {
 					fmt.Printf("DROP: %s: overwrites[%s]=%s redundant (canonical Class.ResourceNameNested auto-derives the same name)\n", file, oldSnake, newName)
+					continue
+				}
+				if nestedOverwrite, ok := legacyNestedResourceNameOverwrites[className]; ok && oldSnake == nestedOverwrite {
+					out.ResourceNameNested = newName
+					fmt.Printf("MIGRATE: %s: overwrites[%s]=%s -> resource_name_nested\n", file, oldSnake, newName)
 					continue
 				}
 				metaName, _ := metaReg.resolveMetaName(className, oldSnake)
@@ -1628,6 +1674,33 @@ func migrateProperties(file, className string, legacy map[string]any, tally *key
 			// auto-resolution prune commit.
 			fmt.Printf("DROP: %s: exclude_targets=%v (polymorphic-same-type auto-detector now handles same-class filtering)\n", file, val)
 		}
+	}
+}
+
+// applyCanonicalDefinitionCorrections records decisions that cannot be
+// reconstructed faithfully from the legacy definition vocabulary. Keeping
+// them here ensures every migration run reproduces the canonical definitions.
+func applyCanonicalDefinitionCorrections(className string, out *data.ClassDefinition) {
+	switch className {
+	case "commHttps":
+		// APIC metadata provides globalThrottleUnit with both validValues and a
+		// regex validator, so generic normalization infers semantic_equality.
+		// Its accepted values (r/s and r/m) are already the literal APIC wire
+		// values; there is no alias representation requiring semantic comparison.
+		// Preserve the current provider's plain string schema explicitly.
+		property := upsertProperty(out, "globalThrottleUnit")
+		property.ValueType = data.String
+		out.Properties["globalThrottleUnit"] = property
+	case "infraRsHPathAtt":
+		// The legacy provider exposes infraRsHPathAtt only as relation_to_host_path
+		// nested beneath infraHPathS. Its tDn identifier would otherwise make the
+		// canonical artifact default infer unsupported top-level wrappers.
+		out.Artifacts = []data.ArtifactEnum{}
+	case "commRsKeyRing":
+		// The legacy child name came directly from the class label ("Key Ring"),
+		// while generic relation naming would infer relation_to_key_ring. Keep the
+		// current provider schema name explicit until a deliberate breaking change.
+		out.ResourceNameNested = "key_ring"
 	}
 }
 
@@ -2668,7 +2741,7 @@ func toStringSlice(v any) []string {
 // are TODO dispositions) are skipped to avoid emitting noisy empty .yaml
 // files at the migration target.
 func hasMigratedData(c data.ClassDefinition) bool {
-	if c.AllowDelete != "" || c.ResourceName != "" || c.RnPrepend != "" || c.RequiredAsChild || c.IsSingleNestedWhenDefinedAsChild {
+	if c.AllowDelete != "" || c.ResourceName != "" || c.ResourceNameNested != "" || c.RnPrepend != "" || c.RequiredAsChild || c.IsSingleNestedWhenDefinedAsChild {
 		return true
 	}
 	if c.SupportedVersions != "" {
@@ -2717,6 +2790,9 @@ func marshalView(c data.ClassDefinition) map[string]any {
 	}
 	if c.ResourceName != "" {
 		out["resource_name"] = c.ResourceName
+	}
+	if c.ResourceNameNested != "" {
+		out["resource_name_nested"] = c.ResourceNameNested
 	}
 	if c.RnPrepend != "" {
 		out["rn_prepend"] = c.RnPrepend
@@ -2964,6 +3040,7 @@ func main() {
 		// but interact - run dedup once both are loaded.
 		liftTestDefaultsToDefaultValues(file, className, &canonical)
 		propagateRequiredCreateToUpdate(file, &canonical)
+		applyCanonicalDefinitionCorrections(className, &canonical)
 
 		if !hasMigratedData(canonical) {
 			skipped++
@@ -3009,6 +3086,7 @@ func main() {
 		}
 		liftTestDefaultsToDefaultValues(propPath, orphanClass, &canonical)
 		propagateRequiredCreateToUpdate(propPath, &canonical)
+		applyCanonicalDefinitionCorrections(orphanClass, &canonical)
 		if !hasMigratedData(canonical) {
 			skipped++
 			continue
