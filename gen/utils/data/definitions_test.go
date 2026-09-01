@@ -79,6 +79,7 @@ func TestParseClassDefinition_HappyPath(t *testing.T) {
 
 	yamlBytes := []byte(`
 resource_name: tenant
+resource_name_nested: tenants
 identified_by:
   - name
 artifacts:
@@ -130,6 +131,7 @@ test_config:
 	parsedDefinition, err := parseClassDefinition(yamlBytes)
 	assert.NoError(t, err, test.MessageUnexpectedError(err))
 	assert.Equal(t, "tenant", parsedDefinition.ResourceName)
+	assert.Equal(t, "tenants", parsedDefinition.ResourceNameNested)
 	assert.Equal(t, []string{"name"}, parsedDefinition.IdentifiedBy)
 	assert.Equal(t, []ArtifactEnum{ResourceArtifact, DatasourceArtifact}, parsedDefinition.Artifacts)
 	assert.Len(t, parsedDefinition.ParentDnVariants, 2)

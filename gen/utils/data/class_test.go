@@ -127,6 +127,52 @@ func TestSetResourceNameFromToRelation(t *testing.T) {
 	assert.Equal(t, "relation_to_vrf", class.ResourceNameNested, test.MessageEqual("relation_to_vrf", class.ResourceNameNested, t.Name()))
 }
 
+func TestSetResourceNamePreservesExplicitRelationName(t *testing.T) {
+	t.Parallel()
+	ds := initializeDataStoreTest(t)
+	class := Class{Name: testClassName("fvRsPathAtt"), IdentifiedBy: []string{"tDn"}}
+	class.MetaFileContent = map[string]any{
+		"label": "Static Path",
+		"relationInfo": map[string]any{
+			"type":   "explicit",
+			"fromMo": "fv:AEPg",
+			"toMo":   "fabric:PathEp",
+		},
+	}
+	class.ClassDefinition = ClassDefinition{ResourceName: "relation_to_static_path"}
+
+	err := class.setRelation()
+	assert.NoError(t, err, test.MessageUnexpectedError(err))
+
+	err = class.setResourceName(ds)
+	assert.NoError(t, err, test.MessageUnexpectedError(err))
+	assert.Equal(t, "relation_to_static_path", class.ResourceName)
+	assert.Equal(t, "relation_to_static_paths", class.ResourceNameNested)
+}
+
+func TestSetResourceNameNormalizesExplicitRelationFromNestedName(t *testing.T) {
+	t.Parallel()
+	ds := initializeDataStoreTest(t)
+	class := Class{Name: testClassName("fvRsABDPolMonPol")}
+	class.MetaFileContent = map[string]any{
+		"label": "Monitoring Policy",
+		"relationInfo": map[string]any{
+			"type":   "named",
+			"fromMo": "fv:ABDPol",
+			"toMo":   "mon:EPGPol",
+		},
+	}
+	class.ClassDefinition = ClassDefinition{ResourceName: "relation_from_bridge_domain_to_monitoring_policy"}
+
+	err := class.setRelation()
+	assert.NoError(t, err, test.MessageUnexpectedError(err))
+
+	err = class.setResourceName(ds)
+	assert.NoError(t, err, test.MessageUnexpectedError(err))
+	assert.Equal(t, "relation_from_bridge_domain_to_monitoring_policy", class.ResourceName)
+	assert.Equal(t, "relation_to_monitoring_policy", class.ResourceNameNested)
+}
+
 func TestSetResourceNameFromEmptyLabelError(t *testing.T) {
 	t.Parallel()
 	ds := initializeDataStoreTest(t)
@@ -193,6 +239,43 @@ func TestSetResourceNameFromDefinitionOverrideWithoutLabel(t *testing.T) {
 	assert.NoError(t, err, test.MessageUnexpectedError(err))
 	assert.Equal(t, "vrf", class.ResourceName, test.MessageEqual("vrf", class.ResourceName, t.Name()))
 	assert.Equal(t, "vrf", class.ResourceNameNested, test.MessageEqual("vrf", class.ResourceNameNested, t.Name()))
+}
+
+func TestSetResourceNameUsesSingletonCardinality(t *testing.T) {
+	t.Parallel()
+	ds := initializeDataStoreTest(t)
+	class := Class{
+		Name:                             testClassName("infraRsHPathAtt"),
+		IdentifiedBy:                     []string{"tDn"},
+		IsSingleNestedWhenDefinedAsChild: true,
+		ClassDefinition: ClassDefinition{
+			ResourceName: "relation_to_host_path",
+		},
+	}
+
+	err := class.setResourceName(ds)
+
+	assert.NoError(t, err, test.MessageUnexpectedError(err))
+	assert.Equal(t, "relation_to_host_path", class.ResourceNameNested)
+}
+
+func TestSetResourceNameUsesNestedDefinitionOverride(t *testing.T) {
+	t.Parallel()
+	ds := initializeDataStoreTest(t)
+	class := Class{
+		Name:         testClassName("coppProtoClassP"),
+		IdentifiedBy: []string{"name"},
+		ClassDefinition: ClassDefinition{
+			ResourceName:       "copp_interface_protocol_policy",
+			ResourceNameNested: "protocol_policies",
+		},
+	}
+
+	err := class.setResourceName(ds)
+
+	assert.NoError(t, err, test.MessageUnexpectedError(err))
+	assert.Equal(t, "copp_interface_protocol_policy", class.ResourceName)
+	assert.Equal(t, "protocol_policies", class.ResourceNameNested)
 }
 
 type setRelationInput struct {

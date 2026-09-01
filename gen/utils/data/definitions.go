@@ -313,6 +313,10 @@ type ClassDefinition struct {
 	RequiredAsChild bool `yaml:"required_as_child"`
 	// Overrides the resource name derived from the meta file label (e.g., "vrf" instead of "context").
 	ResourceName string `yaml:"resource_name"`
+	// Overrides the Terraform attribute name used when this class is embedded in a parent model.
+	// When empty, the nested name is derived from ResourceName and child cardinality. Explicit
+	// `relation_from_<source>_to_<target>` names are normalized to `relation_to_<target>`.
+	ResourceNameNested string `yaml:"resource_name_nested"`
 	// Overrides the rnFormat from the meta file. The full RN format string (e.g., "custom-{name}").
 	RnFormat string `yaml:"rn_format"`
 	// Prepends a path prefix to the resolved RN format (e.g., "infra" results in "infra/{rnFormat}").

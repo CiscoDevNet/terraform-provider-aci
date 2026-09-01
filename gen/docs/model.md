@@ -99,6 +99,11 @@ Value embedding also promotes the generated class methods to each wrapper.
 Embedded models must use value embedding, not pointer embedding, and must not
 introduce duplicate `tfsdk` tags.
 
+When an APIC class itself exposes a property named `id`, its generated Go field
+is class-prefixed (for example, `FvEpIpTagID`). Its normalized Terraform tag
+remains `id_attribute` or the class-specific override such as `fabric_id`.
+This keeps the APIC property distinct from the wrapper's Terraform `ID` field.
+
 The framework matches the `tfsdk` tags to schema attributes. RN, DN, and
 derived IDs remain generated methods. `id` is represented by every generated
 resource/data-source wrapper. A class-specific top-level field such as
