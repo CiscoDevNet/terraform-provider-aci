@@ -2059,9 +2059,6 @@ func (c *Class) resolvePlaceholdersInTestChildren(testChildren []*TestChild) {
 func (c *Class) validateTestCompleteness(ctx *Context) {
 	// Validate the resolved test data for unresolved placeholders and missing values.
 	// Runs after all resolution steps are complete so all errors are reported in a single pass.
-	// TODO: Add further completeness checks: empty TestDependencies when
-	// parents exist; testable properties with nil TestValues (silently
-	// skipped today); other consistency checks.
 
 	// Check ConfigOverrides for unresolved placeholders.
 	// validateTestDependencyPlaceholders walks both top-level and nested deps using a
@@ -2089,7 +2086,20 @@ func (c *Class) validateTestCompleteness(ctx *Context) {
 	// diagnostics are stable across runs.
 	for _, propertyName := range c.PropertiesAll {
 		property := c.Properties[propertyName]
-		if property.TestValues == nil || property.IgnoreInTest || property.ReadOnly {
+		if property.IgnoreInTest || property.ReadOnly {
+			continue
+		}
+		if property.TestValues == nil {
+			// parentDn is synthetic for every class with a parent, including classes
+			// whose parents do not have a generated resource and therefore cannot
+			// provide a Parent test dependency. Validate it when dependency wiring
+			// was possible, but do not flag the intentionally unwireable case.
+			if property.PropertyName == "parentDn" && len(c.Parents) > 0 && !slices.ContainsFunc(c.TestDependencies, func(testDependency *TestDependency) bool {
+				return testDependency != nil && testDependency.Role == Parent
+			}) {
+				continue
+			}
+			ctx.Diagnostics.AddError("Class '%s': property '%s' has no test values after test data resolution.", c.Name, property.AttributeName)
 			continue
 		}
 		bucketChecks := []struct {

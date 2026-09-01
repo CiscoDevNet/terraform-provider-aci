@@ -695,7 +695,8 @@ func legacyTypeToValueType(t LegacyAttributeTypeEnum) ValueTypeEnum {
 	// scalar (and the zero value) collapses to String. The renderer reads
 	// LegacyAttributeType directly from the StateUpgrades tree when it needs
 	// framework-level fidelity (e.g. SingleNestedAttribute vs MapAttribute).
-	// TODO: extend the switch with explicit cases for IpAddress, SemanticEquality
+	// IpAddress and SemanticEquality are current ValueTypeEnum values, not valid
+	// LegacyAttributeTypeEnum values, so they are intentionally not handled here.
 	switch t {
 	case ListAttribute, ListNestedAttribute, SetAttribute, SetNestedAttribute:
 		return Set

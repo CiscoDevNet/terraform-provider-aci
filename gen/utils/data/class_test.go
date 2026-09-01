@@ -5341,6 +5341,8 @@ func TestResolveChildTestValuesGrandchildPlaceholder(t *testing.T) {
 type validateTestCompletenessInput struct {
 	TestDependencies []*TestDependency
 	Properties       map[string]*Property
+	PropertiesAll    []string
+	Parents          []*ClassName
 	TestChildren     []*TestChild
 }
 
@@ -5419,6 +5421,50 @@ func TestValidateTestCompleteness(t *testing.T) {
 			Expected: 1,
 		},
 		{
+			Name: "test_missing_test_values_for_testable_property",
+			Input: validateTestCompletenessInput{
+				Properties: map[string]*Property{
+					"name": {AttributeName: "name"},
+				},
+				PropertiesAll: []string{"name"},
+			},
+			Expected: 1,
+		},
+		{
+			Name: "test_missing_test_values_allowed_for_ignored_and_read_only_properties",
+			Input: validateTestCompletenessInput{
+				Properties: map[string]*Property{
+					"ignored":  {AttributeName: "ignored", IgnoreInTest: true},
+					"readOnly": {AttributeName: "read_only", ReadOnly: true},
+				},
+				PropertiesAll: []string{"ignored", "readOnly"},
+			},
+			Expected: 0,
+		},
+		{
+			Name: "test_unwireable_synthetic_parent_dn_is_allowed",
+			Input: validateTestCompletenessInput{
+				Properties: map[string]*Property{
+					"parentDn": {PropertyName: "parentDn", AttributeName: "parent_dn"},
+				},
+				PropertiesAll: []string{"parentDn"},
+				Parents:       []*ClassName{testClassName("polUni")},
+			},
+			Expected: 0,
+		},
+		{
+			Name: "test_parent_dn_missing_values_with_dependency_is_reported",
+			Input: validateTestCompletenessInput{
+				Properties: map[string]*Property{
+					"parentDn": {PropertyName: "parentDn", AttributeName: "parent_dn"},
+				},
+				PropertiesAll:    []string{"parentDn"},
+				Parents:          []*ClassName{testClassName("fvTenant")},
+				TestDependencies: []*TestDependency{{Role: Parent}},
+			},
+			Expected: 1,
+		},
+		{
 			Name: "test_multiple_errors_accumulated",
 			Input: validateTestCompletenessInput{
 				TestDependencies: []*TestDependency{
@@ -5457,6 +5503,8 @@ func TestValidateTestCompleteness(t *testing.T) {
 				Name:             testClassName("testClass"),
 				TestDependencies: input.TestDependencies,
 				Properties:       input.Properties,
+				PropertiesAll:    input.PropertiesAll,
+				Parents:          input.Parents,
 				TestChildren:     input.TestChildren,
 			}
 
