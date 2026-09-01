@@ -12,8 +12,6 @@ properties:
     test_config:
       create:
       - config_value: "15"
-  coppInterfaceProtocolPolicys:
-    attribute_name: protocol_policies
   matchProto:
     attribute_name: match_protocols
     default_values:
@@ -34,3 +32,4 @@ properties:
       create:
       - config_value: "15"
 resource_name: copp_interface_protocol_policy
+resource_name_nested: protocol_policies

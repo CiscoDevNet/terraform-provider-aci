@@ -1,5 +1,4 @@
 properties:
   adminSt:
     attribute_name: admin_state
-  shellinaboxService:
-    attribute_name: ssh_access_via_web
+resource_name_nested: ssh_access_via_web
