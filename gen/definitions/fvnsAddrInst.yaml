@@ -2,10 +2,10 @@ documentation:
   sub_category: Tenant Policies
   ui_locations:
   - Tenants (mgmt) -> IP Address Pools
+exclude_parents:
+- fvTenant
 include_children:
 - fvnsUcastAddrBlk
-include_parents:
-- polUni
 properties:
   addr:
     attribute_name: gateway_address

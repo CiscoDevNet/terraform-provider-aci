@@ -69,6 +69,10 @@ func (m *VzTabooModel) BuildRN() string {
 	return rn
 }
 
+func (m *VzTabooModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}
+
 type VzTabooResourceModel struct {
 	VzTabooModel
 
@@ -84,6 +88,10 @@ func NewVzTabooResourceModelNull() VzTabooResourceModel {
 	}
 }
 
+func (m *VzTabooResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
+}
+
 type VzTabooDataSourceModel struct {
 	VzTabooModel
 
@@ -97,4 +105,8 @@ func NewVzTabooDataSourceModelNull() VzTabooDataSourceModel {
 		ID:           types.StringNull(),
 		ParentDn:     types.StringNull(),
 	}
+}
+
+func (m *VzTabooDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

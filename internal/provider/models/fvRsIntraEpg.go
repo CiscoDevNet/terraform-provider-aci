@@ -57,6 +57,10 @@ func (m *FvRsIntraEpgModel) BuildRN() string {
 	return rn
 }
 
+func (m *FvRsIntraEpgModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}
+
 type FvRsIntraEpgResourceModel struct {
 	FvRsIntraEpgModel
 
@@ -72,6 +76,10 @@ func NewFvRsIntraEpgResourceModelNull() FvRsIntraEpgResourceModel {
 	}
 }
 
+func (m *FvRsIntraEpgResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
+}
+
 type FvRsIntraEpgDataSourceModel struct {
 	FvRsIntraEpgModel
 
@@ -85,4 +93,8 @@ func NewFvRsIntraEpgDataSourceModelNull() FvRsIntraEpgDataSourceModel {
 		ID:                types.StringNull(),
 		ParentDn:          types.StringNull(),
 	}
+}
+
+func (m *FvRsIntraEpgDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

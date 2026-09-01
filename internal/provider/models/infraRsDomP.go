@@ -57,6 +57,10 @@ func (m *InfraRsDomPModel) BuildRN() string {
 	return rn
 }
 
+func (m *InfraRsDomPModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}
+
 type InfraRsDomPResourceModel struct {
 	InfraRsDomPModel
 
@@ -72,6 +76,10 @@ func NewInfraRsDomPResourceModelNull() InfraRsDomPResourceModel {
 	}
 }
 
+func (m *InfraRsDomPResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
+}
+
 type InfraRsDomPDataSourceModel struct {
 	InfraRsDomPModel
 
@@ -85,4 +93,8 @@ func NewInfraRsDomPDataSourceModelNull() InfraRsDomPDataSourceModel {
 		ID:               types.StringNull(),
 		ParentDn:         types.StringNull(),
 	}
+}
+
+func (m *InfraRsDomPDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

@@ -57,6 +57,10 @@ func (m *FvRsBDToOutModel) BuildRN() string {
 	return rn
 }
 
+func (m *FvRsBDToOutModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}
+
 type FvRsBDToOutResourceModel struct {
 	FvRsBDToOutModel
 
@@ -72,6 +76,10 @@ func NewFvRsBDToOutResourceModelNull() FvRsBDToOutResourceModel {
 	}
 }
 
+func (m *FvRsBDToOutResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
+}
+
 type FvRsBDToOutDataSourceModel struct {
 	FvRsBDToOutModel
 
@@ -85,4 +93,8 @@ func NewFvRsBDToOutDataSourceModelNull() FvRsBDToOutDataSourceModel {
 		ID:               types.StringNull(),
 		ParentDn:         types.StringNull(),
 	}
+}
+
+func (m *FvRsBDToOutDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

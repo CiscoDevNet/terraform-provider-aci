@@ -51,3 +51,7 @@ func NewInfraRsAccBndlSubgrpModelNull() InfraRsAccBndlSubgrpModel {
 func (m *InfraRsAccBndlSubgrpModel) BuildRN() string {
 	return "rsaccBndlSubgrp"
 }
+
+func (m *InfraRsAccBndlSubgrpModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}

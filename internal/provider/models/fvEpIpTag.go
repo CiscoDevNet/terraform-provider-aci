@@ -71,6 +71,10 @@ func (m *FvEpIpTagModel) BuildRN() string {
 	return rn
 }
 
+func (m *FvEpIpTagModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}
+
 type FvEpIpTagResourceModel struct {
 	FvEpIpTagModel
 
@@ -86,6 +90,10 @@ func NewFvEpIpTagResourceModelNull() FvEpIpTagResourceModel {
 	}
 }
 
+func (m *FvEpIpTagResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
+}
+
 type FvEpIpTagDataSourceModel struct {
 	FvEpIpTagModel
 
@@ -99,4 +107,8 @@ func NewFvEpIpTagDataSourceModelNull() FvEpIpTagDataSourceModel {
 		ID:             types.StringNull(),
 		ParentDn:       types.StringNull(),
 	}
+}
+
+func (m *FvEpIpTagDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

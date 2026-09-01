@@ -60,3 +60,7 @@ func NewCommShellinaboxModelNull() CommShellinaboxModel {
 func (m *CommShellinaboxModel) BuildRN() string {
 	return "shellinabox"
 }
+
+func (m *CommShellinaboxModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}

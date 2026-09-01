@@ -97,32 +97,40 @@ func (m *CommPolModel) BuildRN() string {
 	return rn
 }
 
+func (m *CommPolModel) BuildDN() string {
+	return "uni/" + m.BuildRN()
+}
+
 type CommPolResourceModel struct {
 	CommPolModel
 
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ID types.String `tfsdk:"id"`
 }
 
 func NewCommPolResourceModelNull() CommPolResourceModel {
 	return CommPolResourceModel{
 		CommPolModel: NewCommPolModelNull(),
 		ID:           types.StringNull(),
-		ParentDn:     types.StringNull(),
 	}
+}
+
+func (m *CommPolResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }
 
 type CommPolDataSourceModel struct {
 	CommPolModel
 
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ID types.String `tfsdk:"id"`
 }
 
 func NewCommPolDataSourceModelNull() CommPolDataSourceModel {
 	return CommPolDataSourceModel{
 		CommPolModel: NewCommPolModelNull(),
 		ID:           types.StringNull(),
-		ParentDn:     types.StringNull(),
 	}
+}
+
+func (m *CommPolDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

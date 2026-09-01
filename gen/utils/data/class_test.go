@@ -734,6 +734,57 @@ func TestClassModelMetadata(t *testing.T) {
 	assert.True(t, class.HasCustomModelTypes())
 }
 
+func TestClassDnFormatPatterns(t *testing.T) {
+	t.Parallel()
+
+	class := Class{MetaFileContent: map[string]any{
+		"dnFormats": []any{
+			"uni/tn-{name}",
+			"uni/tn-{name}/brc-{name}/rscons-[{tnVzBrCPName}]",
+			42,
+		},
+	}}
+
+	assert.Equal(t, []string{
+		`^uni/tn-[^/]+$`,
+		`^uni/tn-[^/]+/brc-[^/]+/rscons-\[[^]]+\]$`,
+	}, class.DnFormatPatterns())
+}
+
+func TestClassFixedParentDn(t *testing.T) {
+	t.Parallel()
+
+	testCases := []struct {
+		name     string
+		dnFormat string
+		parentDn string
+	}{
+		{
+			name:     "direct polUni child",
+			dnFormat: "uni/tn-{name}",
+			parentDn: "uni",
+		},
+		{
+			name:     "fixed infra path included in RN",
+			dnFormat: "uni/infra/l2IfP-{name}",
+			parentDn: "uni",
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
+			class := Class{
+				MetaFileContent: map[string]any{
+					"dnFormats": []any{testCase.dnFormat},
+				},
+			}
+			assert.Equal(t, testCase.parentDn, class.FixedParentDn())
+		})
+	}
+}
+
 func TestClassNestedModelValueType(t *testing.T) {
 	t.Parallel()
 

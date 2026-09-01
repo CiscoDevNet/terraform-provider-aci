@@ -61,6 +61,10 @@ func (m *L3extRsRedistributePolModel) BuildRN() string {
 	return rn
 }
 
+func (m *L3extRsRedistributePolModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}
+
 type L3extRsRedistributePolResourceModel struct {
 	L3extRsRedistributePolModel
 
@@ -76,6 +80,10 @@ func NewL3extRsRedistributePolResourceModelNull() L3extRsRedistributePolResource
 	}
 }
 
+func (m *L3extRsRedistributePolResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
+}
+
 type L3extRsRedistributePolDataSourceModel struct {
 	L3extRsRedistributePolModel
 
@@ -89,4 +97,8 @@ func NewL3extRsRedistributePolDataSourceModelNull() L3extRsRedistributePolDataSo
 		ID:                          types.StringNull(),
 		ParentDn:                    types.StringNull(),
 	}
+}
+
+func (m *L3extRsRedistributePolDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

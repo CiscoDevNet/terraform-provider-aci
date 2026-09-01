@@ -4,7 +4,7 @@ documentation:
   sub_category: Node Management
   ui_locations:
   - Tenants (mgmt) -> External Management Network Instance Profiles
-include_parents:
-- polUni
+exclude_parents:
+- mgmtExtMgmtEntity
 resource_name: external_management_network_instance_profile
 rn_prepend: tn-mgmt/extmgmt-default

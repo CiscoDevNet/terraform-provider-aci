@@ -51,3 +51,7 @@ func NewVmmRsDomMcastAddrNsModelNull() VmmRsDomMcastAddrNsModel {
 func (m *VmmRsDomMcastAddrNsModel) BuildRN() string {
 	return "rsdomMcastAddrNs"
 }
+
+func (m *VmmRsDomMcastAddrNsModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}

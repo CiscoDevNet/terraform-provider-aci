@@ -61,6 +61,10 @@ func (m *VzRsAnyToConsIfModel) BuildRN() string {
 	return rn
 }
 
+func (m *VzRsAnyToConsIfModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}
+
 type VzRsAnyToConsIfResourceModel struct {
 	VzRsAnyToConsIfModel
 
@@ -76,6 +80,10 @@ func NewVzRsAnyToConsIfResourceModelNull() VzRsAnyToConsIfResourceModel {
 	}
 }
 
+func (m *VzRsAnyToConsIfResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
+}
+
 type VzRsAnyToConsIfDataSourceModel struct {
 	VzRsAnyToConsIfModel
 
@@ -89,4 +97,8 @@ func NewVzRsAnyToConsIfDataSourceModelNull() VzRsAnyToConsIfDataSourceModel {
 		ID:                   types.StringNull(),
 		ParentDn:             types.StringNull(),
 	}
+}
+
+func (m *VzRsAnyToConsIfDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }
