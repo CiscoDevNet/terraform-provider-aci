@@ -586,6 +586,52 @@ func TestSetArtifacts(t *testing.T) {
 	}
 }
 
+func TestHasArtifact(t *testing.T) {
+	t.Parallel()
+
+	testCases := []struct {
+		name          string
+		artifacts     []ArtifactEnum
+		hasResource   bool
+		hasDataSource bool
+	}{
+		{
+			name:          "no artifacts",
+			artifacts:     nil,
+			hasResource:   false,
+			hasDataSource: false,
+		},
+		{
+			name:          "resource only",
+			artifacts:     []ArtifactEnum{ResourceArtifact},
+			hasResource:   true,
+			hasDataSource: false,
+		},
+		{
+			name:          "datasource only",
+			artifacts:     []ArtifactEnum{DatasourceArtifact},
+			hasResource:   false,
+			hasDataSource: true,
+		},
+		{
+			name:          "resource and datasource",
+			artifacts:     []ArtifactEnum{ResourceArtifact, DatasourceArtifact},
+			hasResource:   true,
+			hasDataSource: true,
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+			class := Class{Artifacts: testCase.artifacts}
+
+			assert.Equal(t, testCase.hasResource, class.HasResourceArtifact())
+			assert.Equal(t, testCase.hasDataSource, class.HasDatasourceArtifact())
+		})
+	}
+}
+
 type setParentDnVariantsInput struct {
 	ClassName       string
 	RnFormat        string

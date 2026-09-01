@@ -509,6 +509,14 @@ func (c *Class) setArtifacts() {
 	genLogger.Debugf("Successfully set Artifacts for class '%s'. Artifacts: %v", c.Name, c.Artifacts)
 }
 
+func (c *Class) HasResourceArtifact() bool {
+	return slices.Contains(c.Artifacts, ResourceArtifact)
+}
+
+func (c *Class) HasDatasourceArtifact() bool {
+	return slices.Contains(c.Artifacts, DatasourceArtifact)
+}
+
 // setTestConfig is a one-line passthrough that copies the two test-render gates
 // from ClassDefinition.TestConfig onto the resolved Class.TestConfig. Templates
 // read the resolved struct so they never reach into ClassDefinition directly.
