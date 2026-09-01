@@ -31,6 +31,84 @@ func TestPropertyModelFieldName(t *testing.T) {
 	}
 }
 
+func TestPropertyModelRendering(t *testing.T) {
+	t.Parallel()
+
+	className := testClassName("fvAp")
+	testCases := []struct {
+		name          string
+		valueType     ValueTypeEnum
+		propertyName  string
+		value         string
+		attributeType string
+		nullValue     string
+		custom        bool
+	}{
+		{
+			name:          "string",
+			valueType:     String,
+			propertyName:  "name",
+			value:         "types.String",
+			attributeType: "types.StringType",
+			nullValue:     "types.StringNull()",
+		},
+		{
+			name:          "set",
+			valueType:     Set,
+			propertyName:  "tags",
+			value:         "types.Set",
+			attributeType: "types.SetType{ElemType: types.StringType}",
+			nullValue:     "types.SetNull(types.StringType)",
+		},
+		{
+			name:          "object",
+			valueType:     Object,
+			propertyName:  "settings",
+			value:         "types.Object",
+			attributeType: "types.ObjectType{AttrTypes: map[string]attr.Type{}}",
+			nullValue:     "types.ObjectNull(map[string]attr.Type{})",
+		},
+		{
+			name:          "ip address",
+			valueType:     IpAddress,
+			propertyName:  "address",
+			value:         "customTypes.IPAddressStringValue",
+			attributeType: "customTypes.IPAddressStringType{}",
+			nullValue:     "customTypes.NewIPAddressStringNull()",
+			custom:        true,
+		},
+		{
+			name:          "semantic equality",
+			valueType:     SemanticEquality,
+			propertyName:  "prio",
+			value:         "customTypes.FvApPrioStringValue",
+			attributeType: "customTypes.FvApPrioStringType{}",
+			nullValue:     "customTypes.NewFvApPrioStringNull()",
+			custom:        true,
+		},
+		{
+			name:          "VMM ARP learning",
+			valueType:     VMMArpLearning,
+			propertyName:  "arpLearning",
+			value:         "customTypes.VMMArpLearningStringValue",
+			attributeType: "customTypes.VMMArpLearningStringType{}",
+			nullValue:     "customTypes.NewVMMArpLearningStringNull()",
+			custom:        true,
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+			property := Property{PropertyName: testCase.propertyName, ValueType: testCase.valueType}
+			assert.Equal(t, testCase.value, property.ModelValueType(className))
+			assert.Equal(t, testCase.attributeType, property.ModelAttributeType(className))
+			assert.Equal(t, testCase.nullValue, property.ModelNullValue(className))
+			assert.Equal(t, testCase.custom, property.UsesCustomModelType())
+		})
+	}
+}
+
 type setAttributeNameInput struct {
 	PropertyName       string
 	PropertyDefinition PropertyDefinition

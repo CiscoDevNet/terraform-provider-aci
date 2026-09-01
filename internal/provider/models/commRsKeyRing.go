@@ -2,4 +2,48 @@
 
 package models
 
-type CommRsKeyRingModel struct{}
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
+
+type CommRsKeyRingModel struct {
+	Annotation       types.String `tfsdk:"annotation"`
+	TnPkiKeyRingName types.String `tfsdk:"key_ring_name"`
+	TagAnnotation    types.Set    `tfsdk:"annotations"`
+	TagTag           types.Set    `tfsdk:"tags"`
+}
+
+func CommRsKeyRingModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":    types.StringType,
+		"key_ring_name": types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewCommRsKeyRingModelNull() CommRsKeyRingModel {
+	return CommRsKeyRingModel{
+		Annotation:       types.StringNull(),
+		TnPkiKeyRingName: types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}

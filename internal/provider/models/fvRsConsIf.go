@@ -2,18 +2,82 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type FvRsConsIfModel struct{}
+type FvRsConsIfModel struct {
+	Annotation    types.String                          `tfsdk:"annotation"`
+	Prio          customTypes.FvRsConsIfPrioStringValue `tfsdk:"priority"`
+	TnVzCPIfName  types.String                          `tfsdk:"imported_contract_name"`
+	TagAnnotation types.Set                             `tfsdk:"annotations"`
+	TagTag        types.Set                             `tfsdk:"tags"`
+}
+
+func FvRsConsIfModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":             types.StringType,
+		"priority":               customTypes.FvRsConsIfPrioStringType{},
+		"imported_contract_name": types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewFvRsConsIfModelNull() FvRsConsIfModel {
+	return FvRsConsIfModel{
+		Annotation:   types.StringNull(),
+		Prio:         customTypes.NewFvRsConsIfPrioStringNull(),
+		TnVzCPIfName: types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type FvRsConsIfResourceModel struct {
 	FvRsConsIfModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFvRsConsIfResourceModelNull() FvRsConsIfResourceModel {
+	return FvRsConsIfResourceModel{
+		FvRsConsIfModel: NewFvRsConsIfModelNull(),
+		ID:              types.StringNull(),
+		ParentDn:        types.StringNull(),
+	}
 }
 
 type FvRsConsIfDataSourceModel struct {
 	FvRsConsIfModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFvRsConsIfDataSourceModelNull() FvRsConsIfDataSourceModel {
+	return FvRsConsIfDataSourceModel{
+		FvRsConsIfModel: NewFvRsConsIfModelNull(),
+		ID:              types.StringNull(),
+		ParentDn:        types.StringNull(),
+	}
 }

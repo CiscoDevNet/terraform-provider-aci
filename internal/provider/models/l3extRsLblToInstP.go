@@ -2,18 +2,78 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type L3extRsLblToInstPModel struct{}
+type L3extRsLblToInstPModel struct {
+	Annotation    types.String `tfsdk:"annotation"`
+	TDn           types.String `tfsdk:"target_dn"`
+	TagAnnotation types.Set    `tfsdk:"annotations"`
+	TagTag        types.Set    `tfsdk:"tags"`
+}
+
+func L3extRsLblToInstPModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation": types.StringType,
+		"target_dn":  types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewL3extRsLblToInstPModelNull() L3extRsLblToInstPModel {
+	return L3extRsLblToInstPModel{
+		Annotation: types.StringNull(),
+		TDn:        types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type L3extRsLblToInstPResourceModel struct {
 	L3extRsLblToInstPModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewL3extRsLblToInstPResourceModelNull() L3extRsLblToInstPResourceModel {
+	return L3extRsLblToInstPResourceModel{
+		L3extRsLblToInstPModel: NewL3extRsLblToInstPModelNull(),
+		ID:                     types.StringNull(),
+		ParentDn:               types.StringNull(),
+	}
 }
 
 type L3extRsLblToInstPDataSourceModel struct {
 	L3extRsLblToInstPModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewL3extRsLblToInstPDataSourceModelNull() L3extRsLblToInstPDataSourceModel {
+	return L3extRsLblToInstPDataSourceModel{
+		L3extRsLblToInstPModel: NewL3extRsLblToInstPModelNull(),
+		ID:                     types.StringNull(),
+		ParentDn:               types.StringNull(),
+	}
 }

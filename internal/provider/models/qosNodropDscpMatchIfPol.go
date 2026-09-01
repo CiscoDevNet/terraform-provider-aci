@@ -2,18 +2,93 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type QosNodropDscpMatchIfPolModel struct{}
+type QosNodropDscpMatchIfPolModel struct {
+	Annotation       types.String `tfsdk:"annotation"`
+	Descr            types.String `tfsdk:"description"`
+	DscpMatchAdminSt types.String `tfsdk:"admin_state"`
+	Name             types.String `tfsdk:"name"`
+	NameAlias        types.String `tfsdk:"name_alias"`
+	OwnerKey         types.String `tfsdk:"owner_key"`
+	OwnerTag         types.String `tfsdk:"owner_tag"`
+	TagAnnotation    types.Set    `tfsdk:"annotations"`
+	TagTag           types.Set    `tfsdk:"tags"`
+}
+
+func QosNodropDscpMatchIfPolModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":  types.StringType,
+		"description": types.StringType,
+		"admin_state": types.StringType,
+		"name":        types.StringType,
+		"name_alias":  types.StringType,
+		"owner_key":   types.StringType,
+		"owner_tag":   types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewQosNodropDscpMatchIfPolModelNull() QosNodropDscpMatchIfPolModel {
+	return QosNodropDscpMatchIfPolModel{
+		Annotation:       types.StringNull(),
+		Descr:            types.StringNull(),
+		DscpMatchAdminSt: types.StringNull(),
+		Name:             types.StringNull(),
+		NameAlias:        types.StringNull(),
+		OwnerKey:         types.StringNull(),
+		OwnerTag:         types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type QosNodropDscpMatchIfPolResourceModel struct {
 	QosNodropDscpMatchIfPolModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewQosNodropDscpMatchIfPolResourceModelNull() QosNodropDscpMatchIfPolResourceModel {
+	return QosNodropDscpMatchIfPolResourceModel{
+		QosNodropDscpMatchIfPolModel: NewQosNodropDscpMatchIfPolModelNull(),
+		ID:                           types.StringNull(),
+		ParentDn:                     types.StringNull(),
+	}
 }
 
 type QosNodropDscpMatchIfPolDataSourceModel struct {
 	QosNodropDscpMatchIfPolModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewQosNodropDscpMatchIfPolDataSourceModelNull() QosNodropDscpMatchIfPolDataSourceModel {
+	return QosNodropDscpMatchIfPolDataSourceModel{
+		QosNodropDscpMatchIfPolModel: NewQosNodropDscpMatchIfPolModelNull(),
+		ID:                           types.StringNull(),
+		ParentDn:                     types.StringNull(),
+	}
 }

@@ -2,18 +2,91 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type MplsNodeSidPModel struct{}
+type MplsNodeSidPModel struct {
+	Annotation    types.String                     `tfsdk:"annotation"`
+	Descr         types.String                     `tfsdk:"description"`
+	LoopbackAddr  customTypes.IPAddressStringValue `tfsdk:"loopback_address"`
+	Name          types.String                     `tfsdk:"name"`
+	NameAlias     types.String                     `tfsdk:"name_alias"`
+	Sidoffset     types.String                     `tfsdk:"segment_id"`
+	TagAnnotation types.Set                        `tfsdk:"annotations"`
+	TagTag        types.Set                        `tfsdk:"tags"`
+}
+
+func MplsNodeSidPModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":       types.StringType,
+		"description":      types.StringType,
+		"loopback_address": customTypes.IPAddressStringType{},
+		"name":             types.StringType,
+		"name_alias":       types.StringType,
+		"segment_id":       types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewMplsNodeSidPModelNull() MplsNodeSidPModel {
+	return MplsNodeSidPModel{
+		Annotation:   types.StringNull(),
+		Descr:        types.StringNull(),
+		LoopbackAddr: customTypes.NewIPAddressStringNull(),
+		Name:         types.StringNull(),
+		NameAlias:    types.StringNull(),
+		Sidoffset:    types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type MplsNodeSidPResourceModel struct {
 	MplsNodeSidPModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewMplsNodeSidPResourceModelNull() MplsNodeSidPResourceModel {
+	return MplsNodeSidPResourceModel{
+		MplsNodeSidPModel: NewMplsNodeSidPModelNull(),
+		ID:                types.StringNull(),
+		ParentDn:          types.StringNull(),
+	}
 }
 
 type MplsNodeSidPDataSourceModel struct {
 	MplsNodeSidPModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewMplsNodeSidPDataSourceModelNull() MplsNodeSidPDataSourceModel {
+	return MplsNodeSidPDataSourceModel{
+		MplsNodeSidPModel: NewMplsNodeSidPModelNull(),
+		ID:                types.StringNull(),
+		ParentDn:          types.StringNull(),
+	}
 }

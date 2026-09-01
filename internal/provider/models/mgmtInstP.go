@@ -2,18 +2,99 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type MgmtInstPModel struct{}
+type MgmtInstPModel struct {
+	Annotation    types.String                         `tfsdk:"annotation"`
+	Descr         types.String                         `tfsdk:"description"`
+	Name          types.String                         `tfsdk:"name"`
+	NameAlias     types.String                         `tfsdk:"name_alias"`
+	Prio          customTypes.MgmtInstPPrioStringValue `tfsdk:"priority"`
+	MgmtRsOoBCons types.Set                            `tfsdk:"relation_to_consumed_out_of_band_contracts"`
+	TagAnnotation types.Set                            `tfsdk:"annotations"`
+	TagTag        types.Set                            `tfsdk:"tags"`
+}
+
+func MgmtInstPModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":  types.StringType,
+		"description": types.StringType,
+		"name":        types.StringType,
+		"name_alias":  types.StringType,
+		"priority":    customTypes.MgmtInstPPrioStringType{},
+		"relation_to_consumed_out_of_band_contracts": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: MgmtRsOoBConsModelAttributeTypes(),
+			},
+		},
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewMgmtInstPModelNull() MgmtInstPModel {
+	return MgmtInstPModel{
+		Annotation: types.StringNull(),
+		Descr:      types.StringNull(),
+		Name:       types.StringNull(),
+		NameAlias:  types.StringNull(),
+		Prio:       customTypes.NewMgmtInstPPrioStringNull(),
+		MgmtRsOoBCons: types.SetNull(
+			types.ObjectType{
+				AttrTypes: MgmtRsOoBConsModelAttributeTypes(),
+			},
+		),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type MgmtInstPResourceModel struct {
 	MgmtInstPModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewMgmtInstPResourceModelNull() MgmtInstPResourceModel {
+	return MgmtInstPResourceModel{
+		MgmtInstPModel: NewMgmtInstPModelNull(),
+		ID:             types.StringNull(),
+		ParentDn:       types.StringNull(),
+	}
 }
 
 type MgmtInstPDataSourceModel struct {
 	MgmtInstPModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewMgmtInstPDataSourceModelNull() MgmtInstPDataSourceModel {
+	return MgmtInstPDataSourceModel{
+		MgmtInstPModel: NewMgmtInstPModelNull(),
+		ID:             types.StringNull(),
+		ParentDn:       types.StringNull(),
+	}
 }

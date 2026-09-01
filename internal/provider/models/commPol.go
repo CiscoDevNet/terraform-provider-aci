@@ -2,18 +2,118 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type CommPolModel struct{}
+type CommPolModel struct {
+	Annotation                    types.String `tfsdk:"annotation"`
+	Descr                         types.String `tfsdk:"description"`
+	Name                          types.String `tfsdk:"name"`
+	NameAlias                     types.String `tfsdk:"name_alias"`
+	OwnerKey                      types.String `tfsdk:"owner_key"`
+	OwnerTag                      types.String `tfsdk:"owner_tag"`
+	StrictSecurityOnApicOOBSubnet types.String `tfsdk:"strict_security_on_apic_oob_subnet"`
+	CommHttp                      types.Object `tfsdk:"http_service"`
+	CommHttps                     types.Object `tfsdk:"http_ssl_configuration"`
+	CommShellinabox               types.Object `tfsdk:"ssh_access_via_web"`
+	CommSsh                       types.Object `tfsdk:"ssh_service"`
+	CommTelnet                    types.Object `tfsdk:"telnet_service"`
+	TagAnnotation                 types.Set    `tfsdk:"annotations"`
+	TagTag                        types.Set    `tfsdk:"tags"`
+}
+
+func CommPolModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":                         types.StringType,
+		"description":                        types.StringType,
+		"name":                               types.StringType,
+		"name_alias":                         types.StringType,
+		"owner_key":                          types.StringType,
+		"owner_tag":                          types.StringType,
+		"strict_security_on_apic_oob_subnet": types.StringType,
+		"http_service": types.ObjectType{
+			AttrTypes: CommHttpModelAttributeTypes(),
+		},
+		"http_ssl_configuration": types.ObjectType{
+			AttrTypes: CommHttpsModelAttributeTypes(),
+		},
+		"ssh_access_via_web": types.ObjectType{
+			AttrTypes: CommShellinaboxModelAttributeTypes(),
+		},
+		"ssh_service": types.ObjectType{
+			AttrTypes: CommSshModelAttributeTypes(),
+		},
+		"telnet_service": types.ObjectType{
+			AttrTypes: CommTelnetModelAttributeTypes(),
+		},
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewCommPolModelNull() CommPolModel {
+	return CommPolModel{
+		Annotation:                    types.StringNull(),
+		Descr:                         types.StringNull(),
+		Name:                          types.StringNull(),
+		NameAlias:                     types.StringNull(),
+		OwnerKey:                      types.StringNull(),
+		OwnerTag:                      types.StringNull(),
+		StrictSecurityOnApicOOBSubnet: types.StringNull(),
+		CommHttp:                      types.ObjectNull(CommHttpModelAttributeTypes()),
+		CommHttps:                     types.ObjectNull(CommHttpsModelAttributeTypes()),
+		CommShellinabox:               types.ObjectNull(CommShellinaboxModelAttributeTypes()),
+		CommSsh:                       types.ObjectNull(CommSshModelAttributeTypes()),
+		CommTelnet:                    types.ObjectNull(CommTelnetModelAttributeTypes()),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type CommPolResourceModel struct {
 	CommPolModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewCommPolResourceModelNull() CommPolResourceModel {
+	return CommPolResourceModel{
+		CommPolModel: NewCommPolModelNull(),
+		ID:           types.StringNull(),
+		ParentDn:     types.StringNull(),
+	}
 }
 
 type CommPolDataSourceModel struct {
 	CommPolModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewCommPolDataSourceModelNull() CommPolDataSourceModel {
+	return CommPolDataSourceModel{
+		CommPolModel: NewCommPolModelNull(),
+		ID:           types.StringNull(),
+		ParentDn:     types.StringNull(),
+	}
 }

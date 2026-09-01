@@ -2,18 +2,154 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type QosDppPolModel struct{}
+type QosDppPolModel struct {
+	AdminSt         types.String                                    `tfsdk:"admin_state"`
+	Annotation      types.String                                    `tfsdk:"annotation"`
+	Be              customTypes.QosDppPolBeStringValue              `tfsdk:"excessive_burst"`
+	BeUnit          types.String                                    `tfsdk:"excessive_burst_unit"`
+	Burst           customTypes.QosDppPolBurstStringValue           `tfsdk:"burst"`
+	BurstUnit       types.String                                    `tfsdk:"burst_unit"`
+	ConformAction   types.String                                    `tfsdk:"conform_action"`
+	ConformMarkCos  customTypes.QosDppPolConformMarkCosStringValue  `tfsdk:"conform_mark_cos"`
+	ConformMarkDscp customTypes.QosDppPolConformMarkDscpStringValue `tfsdk:"conform_mark_dscp"`
+	Descr           types.String                                    `tfsdk:"description"`
+	ExceedAction    types.String                                    `tfsdk:"exceed_action"`
+	ExceedMarkCos   customTypes.QosDppPolExceedMarkCosStringValue   `tfsdk:"exceed_mark_cos"`
+	ExceedMarkDscp  customTypes.QosDppPolExceedMarkDscpStringValue  `tfsdk:"exceed_mark_dscp"`
+	Mode            types.String                                    `tfsdk:"mode"`
+	Name            types.String                                    `tfsdk:"name"`
+	NameAlias       types.String                                    `tfsdk:"name_alias"`
+	OwnerKey        types.String                                    `tfsdk:"owner_key"`
+	OwnerTag        types.String                                    `tfsdk:"owner_tag"`
+	Pir             types.String                                    `tfsdk:"peak_rate"`
+	PirUnit         types.String                                    `tfsdk:"peak_rate_unit"`
+	Rate            types.String                                    `tfsdk:"rate"`
+	RateUnit        types.String                                    `tfsdk:"rate_unit"`
+	SharingMode     types.String                                    `tfsdk:"sharing_mode"`
+	Type            types.String                                    `tfsdk:"type"`
+	ViolateAction   types.String                                    `tfsdk:"violate_action"`
+	ViolateMarkCos  customTypes.QosDppPolViolateMarkCosStringValue  `tfsdk:"violate_mark_cos"`
+	ViolateMarkDscp customTypes.QosDppPolViolateMarkDscpStringValue `tfsdk:"violate_mark_dscp"`
+	TagAnnotation   types.Set                                       `tfsdk:"annotations"`
+	TagTag          types.Set                                       `tfsdk:"tags"`
+}
+
+func QosDppPolModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"admin_state":          types.StringType,
+		"annotation":           types.StringType,
+		"excessive_burst":      customTypes.QosDppPolBeStringType{},
+		"excessive_burst_unit": types.StringType,
+		"burst":                customTypes.QosDppPolBurstStringType{},
+		"burst_unit":           types.StringType,
+		"conform_action":       types.StringType,
+		"conform_mark_cos":     customTypes.QosDppPolConformMarkCosStringType{},
+		"conform_mark_dscp":    customTypes.QosDppPolConformMarkDscpStringType{},
+		"description":          types.StringType,
+		"exceed_action":        types.StringType,
+		"exceed_mark_cos":      customTypes.QosDppPolExceedMarkCosStringType{},
+		"exceed_mark_dscp":     customTypes.QosDppPolExceedMarkDscpStringType{},
+		"mode":                 types.StringType,
+		"name":                 types.StringType,
+		"name_alias":           types.StringType,
+		"owner_key":            types.StringType,
+		"owner_tag":            types.StringType,
+		"peak_rate":            types.StringType,
+		"peak_rate_unit":       types.StringType,
+		"rate":                 types.StringType,
+		"rate_unit":            types.StringType,
+		"sharing_mode":         types.StringType,
+		"type":                 types.StringType,
+		"violate_action":       types.StringType,
+		"violate_mark_cos":     customTypes.QosDppPolViolateMarkCosStringType{},
+		"violate_mark_dscp":    customTypes.QosDppPolViolateMarkDscpStringType{},
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewQosDppPolModelNull() QosDppPolModel {
+	return QosDppPolModel{
+		AdminSt:         types.StringNull(),
+		Annotation:      types.StringNull(),
+		Be:              customTypes.NewQosDppPolBeStringNull(),
+		BeUnit:          types.StringNull(),
+		Burst:           customTypes.NewQosDppPolBurstStringNull(),
+		BurstUnit:       types.StringNull(),
+		ConformAction:   types.StringNull(),
+		ConformMarkCos:  customTypes.NewQosDppPolConformMarkCosStringNull(),
+		ConformMarkDscp: customTypes.NewQosDppPolConformMarkDscpStringNull(),
+		Descr:           types.StringNull(),
+		ExceedAction:    types.StringNull(),
+		ExceedMarkCos:   customTypes.NewQosDppPolExceedMarkCosStringNull(),
+		ExceedMarkDscp:  customTypes.NewQosDppPolExceedMarkDscpStringNull(),
+		Mode:            types.StringNull(),
+		Name:            types.StringNull(),
+		NameAlias:       types.StringNull(),
+		OwnerKey:        types.StringNull(),
+		OwnerTag:        types.StringNull(),
+		Pir:             types.StringNull(),
+		PirUnit:         types.StringNull(),
+		Rate:            types.StringNull(),
+		RateUnit:        types.StringNull(),
+		SharingMode:     types.StringNull(),
+		Type:            types.StringNull(),
+		ViolateAction:   types.StringNull(),
+		ViolateMarkCos:  customTypes.NewQosDppPolViolateMarkCosStringNull(),
+		ViolateMarkDscp: customTypes.NewQosDppPolViolateMarkDscpStringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type QosDppPolResourceModel struct {
 	QosDppPolModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewQosDppPolResourceModelNull() QosDppPolResourceModel {
+	return QosDppPolResourceModel{
+		QosDppPolModel: NewQosDppPolModelNull(),
+		ID:             types.StringNull(),
+		ParentDn:       types.StringNull(),
+	}
 }
 
 type QosDppPolDataSourceModel struct {
 	QosDppPolModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewQosDppPolDataSourceModelNull() QosDppPolDataSourceModel {
+	return QosDppPolDataSourceModel{
+		QosDppPolModel: NewQosDppPolModelNull(),
+		ID:             types.StringNull(),
+		ParentDn:       types.StringNull(),
+	}
 }

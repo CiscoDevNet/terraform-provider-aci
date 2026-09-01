@@ -2,18 +2,96 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type QosLlfcIfPolModel struct{}
+type QosLlfcIfPolModel struct {
+	Annotation      types.String `tfsdk:"annotation"`
+	Descr           types.String `tfsdk:"description"`
+	LlfcRcvAdminSt  types.String `tfsdk:"receive_state"`
+	LlfcSendAdminSt types.String `tfsdk:"send_state"`
+	Name            types.String `tfsdk:"name"`
+	NameAlias       types.String `tfsdk:"name_alias"`
+	OwnerKey        types.String `tfsdk:"owner_key"`
+	OwnerTag        types.String `tfsdk:"owner_tag"`
+	TagAnnotation   types.Set    `tfsdk:"annotations"`
+	TagTag          types.Set    `tfsdk:"tags"`
+}
+
+func QosLlfcIfPolModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":    types.StringType,
+		"description":   types.StringType,
+		"receive_state": types.StringType,
+		"send_state":    types.StringType,
+		"name":          types.StringType,
+		"name_alias":    types.StringType,
+		"owner_key":     types.StringType,
+		"owner_tag":     types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewQosLlfcIfPolModelNull() QosLlfcIfPolModel {
+	return QosLlfcIfPolModel{
+		Annotation:      types.StringNull(),
+		Descr:           types.StringNull(),
+		LlfcRcvAdminSt:  types.StringNull(),
+		LlfcSendAdminSt: types.StringNull(),
+		Name:            types.StringNull(),
+		NameAlias:       types.StringNull(),
+		OwnerKey:        types.StringNull(),
+		OwnerTag:        types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type QosLlfcIfPolResourceModel struct {
 	QosLlfcIfPolModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewQosLlfcIfPolResourceModelNull() QosLlfcIfPolResourceModel {
+	return QosLlfcIfPolResourceModel{
+		QosLlfcIfPolModel: NewQosLlfcIfPolModelNull(),
+		ID:                types.StringNull(),
+		ParentDn:          types.StringNull(),
+	}
 }
 
 type QosLlfcIfPolDataSourceModel struct {
 	QosLlfcIfPolModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewQosLlfcIfPolDataSourceModelNull() QosLlfcIfPolDataSourceModel {
+	return QosLlfcIfPolDataSourceModel{
+		QosLlfcIfPolModel: NewQosLlfcIfPolModelNull(),
+		ID:                types.StringNull(),
+		ParentDn:          types.StringNull(),
+	}
 }

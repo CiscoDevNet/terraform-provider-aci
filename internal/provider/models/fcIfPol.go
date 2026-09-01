@@ -2,18 +2,108 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type FcIfPolModel struct{}
+type FcIfPolModel struct {
+	Annotation    types.String `tfsdk:"annotation"`
+	Automaxspeed  types.String `tfsdk:"auto_max_speed"`
+	Descr         types.String `tfsdk:"description"`
+	FillPattern   types.String `tfsdk:"fill_pattern"`
+	Name          types.String `tfsdk:"name"`
+	NameAlias     types.String `tfsdk:"name_alias"`
+	OwnerKey      types.String `tfsdk:"owner_key"`
+	OwnerTag      types.String `tfsdk:"owner_tag"`
+	PortMode      types.String `tfsdk:"port_mode"`
+	RxBBCredit    types.String `tfsdk:"receive_buffer_credit"`
+	Speed         types.String `tfsdk:"speed"`
+	TrunkMode     types.String `tfsdk:"trunk_mode"`
+	TagAnnotation types.Set    `tfsdk:"annotations"`
+	TagTag        types.Set    `tfsdk:"tags"`
+}
+
+func FcIfPolModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":            types.StringType,
+		"auto_max_speed":        types.StringType,
+		"description":           types.StringType,
+		"fill_pattern":          types.StringType,
+		"name":                  types.StringType,
+		"name_alias":            types.StringType,
+		"owner_key":             types.StringType,
+		"owner_tag":             types.StringType,
+		"port_mode":             types.StringType,
+		"receive_buffer_credit": types.StringType,
+		"speed":                 types.StringType,
+		"trunk_mode":            types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewFcIfPolModelNull() FcIfPolModel {
+	return FcIfPolModel{
+		Annotation:   types.StringNull(),
+		Automaxspeed: types.StringNull(),
+		Descr:        types.StringNull(),
+		FillPattern:  types.StringNull(),
+		Name:         types.StringNull(),
+		NameAlias:    types.StringNull(),
+		OwnerKey:     types.StringNull(),
+		OwnerTag:     types.StringNull(),
+		PortMode:     types.StringNull(),
+		RxBBCredit:   types.StringNull(),
+		Speed:        types.StringNull(),
+		TrunkMode:    types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type FcIfPolResourceModel struct {
 	FcIfPolModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFcIfPolResourceModelNull() FcIfPolResourceModel {
+	return FcIfPolResourceModel{
+		FcIfPolModel: NewFcIfPolModelNull(),
+		ID:           types.StringNull(),
+		ParentDn:     types.StringNull(),
+	}
 }
 
 type FcIfPolDataSourceModel struct {
 	FcIfPolModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFcIfPolDataSourceModelNull() FcIfPolDataSourceModel {
+	return FcIfPolDataSourceModel{
+		FcIfPolModel: NewFcIfPolModelNull(),
+		ID:           types.StringNull(),
+		ParentDn:     types.StringNull(),
+	}
 }

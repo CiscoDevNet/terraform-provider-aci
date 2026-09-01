@@ -2,18 +2,99 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type L2IfPolModel struct{}
+type L2IfPolModel struct {
+	Annotation    types.String `tfsdk:"annotation"`
+	Descr         types.String `tfsdk:"description"`
+	Name          types.String `tfsdk:"name"`
+	NameAlias     types.String `tfsdk:"name_alias"`
+	OwnerKey      types.String `tfsdk:"owner_key"`
+	OwnerTag      types.String `tfsdk:"owner_tag"`
+	Qinq          types.String `tfsdk:"q_in_q"`
+	Vepa          types.String `tfsdk:"reflective_relay"`
+	VlanScope     types.String `tfsdk:"vlan_scope"`
+	TagAnnotation types.Set    `tfsdk:"annotations"`
+	TagTag        types.Set    `tfsdk:"tags"`
+}
+
+func L2IfPolModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":       types.StringType,
+		"description":      types.StringType,
+		"name":             types.StringType,
+		"name_alias":       types.StringType,
+		"owner_key":        types.StringType,
+		"owner_tag":        types.StringType,
+		"q_in_q":           types.StringType,
+		"reflective_relay": types.StringType,
+		"vlan_scope":       types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewL2IfPolModelNull() L2IfPolModel {
+	return L2IfPolModel{
+		Annotation: types.StringNull(),
+		Descr:      types.StringNull(),
+		Name:       types.StringNull(),
+		NameAlias:  types.StringNull(),
+		OwnerKey:   types.StringNull(),
+		OwnerTag:   types.StringNull(),
+		Qinq:       types.StringNull(),
+		Vepa:       types.StringNull(),
+		VlanScope:  types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type L2IfPolResourceModel struct {
 	L2IfPolModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewL2IfPolResourceModelNull() L2IfPolResourceModel {
+	return L2IfPolResourceModel{
+		L2IfPolModel: NewL2IfPolModelNull(),
+		ID:           types.StringNull(),
+		ParentDn:     types.StringNull(),
+	}
 }
 
 type L2IfPolDataSourceModel struct {
 	L2IfPolModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewL2IfPolDataSourceModelNull() L2IfPolDataSourceModel {
+	return L2IfPolDataSourceModel{
+		L2IfPolModel: NewL2IfPolModelNull(),
+		ID:           types.StringNull(),
+		ParentDn:     types.StringNull(),
+	}
 }

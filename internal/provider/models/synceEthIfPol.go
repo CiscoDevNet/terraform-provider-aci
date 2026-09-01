@@ -2,18 +2,126 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type SynceEthIfPolModel struct{}
+type SynceEthIfPolModel struct {
+	AdminSt       types.String `tfsdk:"admin_state"`
+	Annotation    types.String `tfsdk:"annotation"`
+	Descr         types.String `tfsdk:"description"`
+	Name          types.String `tfsdk:"name"`
+	NameAlias     types.String `tfsdk:"name_alias"`
+	OwnerKey      types.String `tfsdk:"owner_key"`
+	OwnerTag      types.String `tfsdk:"owner_tag"`
+	Qloptype      types.String `tfsdk:"quality_level_options"`
+	Qlrcvexactval types.String `tfsdk:"quality_receive_exact_value"`
+	Qlrcvhval     types.String `tfsdk:"quality_receive_highest_value"`
+	Qlrcvlval     types.String `tfsdk:"quality_receive_lowest_value"`
+	Qltxexactval  types.String `tfsdk:"quality_transmit_exact_value"`
+	Qltxhval      types.String `tfsdk:"quality_transmit_highest_value"`
+	Qltxlval      types.String `tfsdk:"quality_transmit_lowest_value"`
+	Selinput      types.String `tfsdk:"selection_input"`
+	Srcpriority   types.String `tfsdk:"source_priority"`
+	Ssm           types.String `tfsdk:"synchronization_status_message"`
+	Wtr           types.String `tfsdk:"wait_to_restore_time"`
+	TagAnnotation types.Set    `tfsdk:"annotations"`
+	TagTag        types.Set    `tfsdk:"tags"`
+}
+
+func SynceEthIfPolModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"admin_state":                    types.StringType,
+		"annotation":                     types.StringType,
+		"description":                    types.StringType,
+		"name":                           types.StringType,
+		"name_alias":                     types.StringType,
+		"owner_key":                      types.StringType,
+		"owner_tag":                      types.StringType,
+		"quality_level_options":          types.StringType,
+		"quality_receive_exact_value":    types.StringType,
+		"quality_receive_highest_value":  types.StringType,
+		"quality_receive_lowest_value":   types.StringType,
+		"quality_transmit_exact_value":   types.StringType,
+		"quality_transmit_highest_value": types.StringType,
+		"quality_transmit_lowest_value":  types.StringType,
+		"selection_input":                types.StringType,
+		"source_priority":                types.StringType,
+		"synchronization_status_message": types.StringType,
+		"wait_to_restore_time":           types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewSynceEthIfPolModelNull() SynceEthIfPolModel {
+	return SynceEthIfPolModel{
+		AdminSt:       types.StringNull(),
+		Annotation:    types.StringNull(),
+		Descr:         types.StringNull(),
+		Name:          types.StringNull(),
+		NameAlias:     types.StringNull(),
+		OwnerKey:      types.StringNull(),
+		OwnerTag:      types.StringNull(),
+		Qloptype:      types.StringNull(),
+		Qlrcvexactval: types.StringNull(),
+		Qlrcvhval:     types.StringNull(),
+		Qlrcvlval:     types.StringNull(),
+		Qltxexactval:  types.StringNull(),
+		Qltxhval:      types.StringNull(),
+		Qltxlval:      types.StringNull(),
+		Selinput:      types.StringNull(),
+		Srcpriority:   types.StringNull(),
+		Ssm:           types.StringNull(),
+		Wtr:           types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type SynceEthIfPolResourceModel struct {
 	SynceEthIfPolModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewSynceEthIfPolResourceModelNull() SynceEthIfPolResourceModel {
+	return SynceEthIfPolResourceModel{
+		SynceEthIfPolModel: NewSynceEthIfPolModelNull(),
+		ID:                 types.StringNull(),
+		ParentDn:           types.StringNull(),
+	}
 }
 
 type SynceEthIfPolDataSourceModel struct {
 	SynceEthIfPolModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewSynceEthIfPolDataSourceModelNull() SynceEthIfPolDataSourceModel {
+	return SynceEthIfPolDataSourceModel{
+		SynceEthIfPolModel: NewSynceEthIfPolModelNull(),
+		ID:                 types.StringNull(),
+		ParentDn:           types.StringNull(),
+	}
 }

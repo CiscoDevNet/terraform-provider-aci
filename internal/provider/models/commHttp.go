@@ -2,4 +2,99 @@
 
 package models
 
-type CommHttpModel struct{}
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
+
+type CommHttpModel struct {
+	AccessControlAllowCredential types.String `tfsdk:"allow_credentials"`
+	AccessControlAllowOrigins    types.String `tfsdk:"allow_origins"`
+	AdminSt                      types.String `tfsdk:"admin_state"`
+	Annotation                   types.String `tfsdk:"annotation"`
+	CliOnlyMode                  types.String `tfsdk:"cli_only_mode"`
+	Descr                        types.String `tfsdk:"description"`
+	GlobalThrottleRate           types.String `tfsdk:"global_throttle_rate"`
+	GlobalThrottleSt             types.String `tfsdk:"global_throttle_state"`
+	GlobalThrottleUnit           types.String `tfsdk:"global_throttle_unit"`
+	MaxRequestStatusCount        types.String `tfsdk:"max_request_status_count"`
+	Name                         types.String `tfsdk:"name"`
+	NameAlias                    types.String `tfsdk:"name_alias"`
+	NodeExporter                 types.String `tfsdk:"node_exporter"`
+	Port                         types.String `tfsdk:"port"`
+	RedirectSt                   types.String `tfsdk:"redirect_state"`
+	ServerHeader                 types.String `tfsdk:"server_header"`
+	ThrottleRate                 types.String `tfsdk:"login_throttle_rate"`
+	ThrottleSt                   types.String `tfsdk:"login_throttle_state"`
+	VisoreAccess                 types.String `tfsdk:"visore_access"`
+	TagAnnotation                types.Set    `tfsdk:"annotations"`
+	TagTag                       types.Set    `tfsdk:"tags"`
+}
+
+func CommHttpModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"allow_credentials":        types.StringType,
+		"allow_origins":            types.StringType,
+		"admin_state":              types.StringType,
+		"annotation":               types.StringType,
+		"cli_only_mode":            types.StringType,
+		"description":              types.StringType,
+		"global_throttle_rate":     types.StringType,
+		"global_throttle_state":    types.StringType,
+		"global_throttle_unit":     types.StringType,
+		"max_request_status_count": types.StringType,
+		"name":                     types.StringType,
+		"name_alias":               types.StringType,
+		"node_exporter":            types.StringType,
+		"port":                     types.StringType,
+		"redirect_state":           types.StringType,
+		"server_header":            types.StringType,
+		"login_throttle_rate":      types.StringType,
+		"login_throttle_state":     types.StringType,
+		"visore_access":            types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewCommHttpModelNull() CommHttpModel {
+	return CommHttpModel{
+		AccessControlAllowCredential: types.StringNull(),
+		AccessControlAllowOrigins:    types.StringNull(),
+		AdminSt:                      types.StringNull(),
+		Annotation:                   types.StringNull(),
+		CliOnlyMode:                  types.StringNull(),
+		Descr:                        types.StringNull(),
+		GlobalThrottleRate:           types.StringNull(),
+		GlobalThrottleSt:             types.StringNull(),
+		GlobalThrottleUnit:           types.StringNull(),
+		MaxRequestStatusCount:        types.StringNull(),
+		Name:                         types.StringNull(),
+		NameAlias:                    types.StringNull(),
+		NodeExporter:                 types.StringNull(),
+		Port:                         types.StringNull(),
+		RedirectSt:                   types.StringNull(),
+		ServerHeader:                 types.StringNull(),
+		ThrottleRate:                 types.StringNull(),
+		ThrottleSt:                   types.StringNull(),
+		VisoreAccess:                 types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}

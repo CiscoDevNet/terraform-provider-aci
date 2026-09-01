@@ -2,18 +2,81 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type FvRsCtxToEigrpCtxAfPolModel struct{}
+type FvRsCtxToEigrpCtxAfPolModel struct {
+	Af                  types.String `tfsdk:"address_family"`
+	Annotation          types.String `tfsdk:"annotation"`
+	TnEigrpCtxAfPolName types.String `tfsdk:"eigrp_address_family_context_name"`
+	TagAnnotation       types.Set    `tfsdk:"annotations"`
+	TagTag              types.Set    `tfsdk:"tags"`
+}
+
+func FvRsCtxToEigrpCtxAfPolModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"address_family":                    types.StringType,
+		"annotation":                        types.StringType,
+		"eigrp_address_family_context_name": types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewFvRsCtxToEigrpCtxAfPolModelNull() FvRsCtxToEigrpCtxAfPolModel {
+	return FvRsCtxToEigrpCtxAfPolModel{
+		Af:                  types.StringNull(),
+		Annotation:          types.StringNull(),
+		TnEigrpCtxAfPolName: types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type FvRsCtxToEigrpCtxAfPolResourceModel struct {
 	FvRsCtxToEigrpCtxAfPolModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFvRsCtxToEigrpCtxAfPolResourceModelNull() FvRsCtxToEigrpCtxAfPolResourceModel {
+	return FvRsCtxToEigrpCtxAfPolResourceModel{
+		FvRsCtxToEigrpCtxAfPolModel: NewFvRsCtxToEigrpCtxAfPolModelNull(),
+		ID:                          types.StringNull(),
+		ParentDn:                    types.StringNull(),
+	}
 }
 
 type FvRsCtxToEigrpCtxAfPolDataSourceModel struct {
 	FvRsCtxToEigrpCtxAfPolModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFvRsCtxToEigrpCtxAfPolDataSourceModelNull() FvRsCtxToEigrpCtxAfPolDataSourceModel {
+	return FvRsCtxToEigrpCtxAfPolDataSourceModel{
+		FvRsCtxToEigrpCtxAfPolModel: NewFvRsCtxToEigrpCtxAfPolModelNull(),
+		ID:                          types.StringNull(),
+		ParentDn:                    types.StringNull(),
+	}
 }

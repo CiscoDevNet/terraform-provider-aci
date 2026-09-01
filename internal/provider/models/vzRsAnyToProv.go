@@ -2,18 +2,85 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type VzRsAnyToProvModel struct{}
+type VzRsAnyToProvModel struct {
+	Annotation    types.String                             `tfsdk:"annotation"`
+	MatchT        types.String                             `tfsdk:"match_criteria"`
+	Prio          customTypes.VzRsAnyToProvPrioStringValue `tfsdk:"priority"`
+	TnVzBrCPName  types.String                             `tfsdk:"contract_name"`
+	TagAnnotation types.Set                                `tfsdk:"annotations"`
+	TagTag        types.Set                                `tfsdk:"tags"`
+}
+
+func VzRsAnyToProvModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":     types.StringType,
+		"match_criteria": types.StringType,
+		"priority":       customTypes.VzRsAnyToProvPrioStringType{},
+		"contract_name":  types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewVzRsAnyToProvModelNull() VzRsAnyToProvModel {
+	return VzRsAnyToProvModel{
+		Annotation:   types.StringNull(),
+		MatchT:       types.StringNull(),
+		Prio:         customTypes.NewVzRsAnyToProvPrioStringNull(),
+		TnVzBrCPName: types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type VzRsAnyToProvResourceModel struct {
 	VzRsAnyToProvModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewVzRsAnyToProvResourceModelNull() VzRsAnyToProvResourceModel {
+	return VzRsAnyToProvResourceModel{
+		VzRsAnyToProvModel: NewVzRsAnyToProvModelNull(),
+		ID:                 types.StringNull(),
+		ParentDn:           types.StringNull(),
+	}
 }
 
 type VzRsAnyToProvDataSourceModel struct {
 	VzRsAnyToProvModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewVzRsAnyToProvDataSourceModelNull() VzRsAnyToProvDataSourceModel {
+	return VzRsAnyToProvDataSourceModel{
+		VzRsAnyToProvModel: NewVzRsAnyToProvModelNull(),
+		ID:                 types.StringNull(),
+		ParentDn:           types.StringNull(),
+	}
 }

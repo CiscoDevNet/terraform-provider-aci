@@ -2,18 +2,96 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type PkiTPModel struct{}
+type PkiTPModel struct {
+	Annotation    types.String `tfsdk:"annotation"`
+	CertChain     types.String `tfsdk:"certificate_chain"`
+	CertUsage     types.Set    `tfsdk:"certificate_usage"`
+	Descr         types.String `tfsdk:"description"`
+	Name          types.String `tfsdk:"name"`
+	NameAlias     types.String `tfsdk:"name_alias"`
+	OwnerKey      types.String `tfsdk:"owner_key"`
+	OwnerTag      types.String `tfsdk:"owner_tag"`
+	TagAnnotation types.Set    `tfsdk:"annotations"`
+	TagTag        types.Set    `tfsdk:"tags"`
+}
+
+func PkiTPModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":        types.StringType,
+		"certificate_chain": types.StringType,
+		"certificate_usage": types.SetType{ElemType: types.StringType},
+		"description":       types.StringType,
+		"name":              types.StringType,
+		"name_alias":        types.StringType,
+		"owner_key":         types.StringType,
+		"owner_tag":         types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewPkiTPModelNull() PkiTPModel {
+	return PkiTPModel{
+		Annotation: types.StringNull(),
+		CertChain:  types.StringNull(),
+		CertUsage:  types.SetNull(types.StringType),
+		Descr:      types.StringNull(),
+		Name:       types.StringNull(),
+		NameAlias:  types.StringNull(),
+		OwnerKey:   types.StringNull(),
+		OwnerTag:   types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type PkiTPResourceModel struct {
 	PkiTPModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewPkiTPResourceModelNull() PkiTPResourceModel {
+	return PkiTPResourceModel{
+		PkiTPModel: NewPkiTPModelNull(),
+		ID:         types.StringNull(),
+		ParentDn:   types.StringNull(),
+	}
 }
 
 type PkiTPDataSourceModel struct {
 	PkiTPModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewPkiTPDataSourceModelNull() PkiTPDataSourceModel {
+	return PkiTPDataSourceModel{
+		PkiTPModel: NewPkiTPModelNull(),
+		ID:         types.StringNull(),
+		ParentDn:   types.StringNull(),
+	}
 }

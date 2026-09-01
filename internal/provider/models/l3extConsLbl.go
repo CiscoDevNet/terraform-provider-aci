@@ -2,18 +2,118 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type L3extConsLblModel struct{}
+type L3extConsLblModel struct {
+	Annotation          types.String `tfsdk:"annotation"`
+	Descr               types.String `tfsdk:"description"`
+	Name                types.String `tfsdk:"name"`
+	NameAlias           types.String `tfsdk:"name_alias"`
+	Owner               types.String `tfsdk:"owner"`
+	OwnerKey            types.String `tfsdk:"owner_key"`
+	OwnerTag            types.String `tfsdk:"owner_tag"`
+	Tag                 types.String `tfsdk:"tag"`
+	L3extRsLblToInstP   types.Set    `tfsdk:"relation_to_external_epgs"`
+	L3extRsLblToProfile types.Set    `tfsdk:"relation_to_route_control_profiles"`
+	TagAnnotation       types.Set    `tfsdk:"annotations"`
+	TagTag              types.Set    `tfsdk:"tags"`
+}
+
+func L3extConsLblModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":  types.StringType,
+		"description": types.StringType,
+		"name":        types.StringType,
+		"name_alias":  types.StringType,
+		"owner":       types.StringType,
+		"owner_key":   types.StringType,
+		"owner_tag":   types.StringType,
+		"tag":         types.StringType,
+		"relation_to_external_epgs": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: L3extRsLblToInstPModelAttributeTypes(),
+			},
+		},
+		"relation_to_route_control_profiles": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: L3extRsLblToProfileModelAttributeTypes(),
+			},
+		},
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewL3extConsLblModelNull() L3extConsLblModel {
+	return L3extConsLblModel{
+		Annotation: types.StringNull(),
+		Descr:      types.StringNull(),
+		Name:       types.StringNull(),
+		NameAlias:  types.StringNull(),
+		Owner:      types.StringNull(),
+		OwnerKey:   types.StringNull(),
+		OwnerTag:   types.StringNull(),
+		Tag:        types.StringNull(),
+		L3extRsLblToInstP: types.SetNull(
+			types.ObjectType{
+				AttrTypes: L3extRsLblToInstPModelAttributeTypes(),
+			},
+		),
+		L3extRsLblToProfile: types.SetNull(
+			types.ObjectType{
+				AttrTypes: L3extRsLblToProfileModelAttributeTypes(),
+			},
+		),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type L3extConsLblResourceModel struct {
 	L3extConsLblModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewL3extConsLblResourceModelNull() L3extConsLblResourceModel {
+	return L3extConsLblResourceModel{
+		L3extConsLblModel: NewL3extConsLblModelNull(),
+		ID:                types.StringNull(),
+		ParentDn:          types.StringNull(),
+	}
 }
 
 type L3extConsLblDataSourceModel struct {
 	L3extConsLblModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewL3extConsLblDataSourceModelNull() L3extConsLblDataSourceModel {
+	return L3extConsLblDataSourceModel{
+		L3extConsLblModel: NewL3extConsLblModelNull(),
+		ID:                types.StringNull(),
+		ParentDn:          types.StringNull(),
+	}
 }

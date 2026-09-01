@@ -2,18 +2,126 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type NdIfPolModel struct{}
+type NdIfPolModel struct {
+	Annotation          types.String `tfsdk:"annotation"`
+	Ctrl                types.Set    `tfsdk:"controller_state"`
+	Descr               types.String `tfsdk:"description"`
+	HopLimit            types.String `tfsdk:"hop_limit"`
+	Mtu                 types.String `tfsdk:"mtu"`
+	Name                types.String `tfsdk:"name"`
+	NameAlias           types.String `tfsdk:"name_alias"`
+	NsIntvl             types.String `tfsdk:"neighbor_solicitation_interval"`
+	NsRetries           types.String `tfsdk:"neighbor_solicitation_retries"`
+	NudRetryBase        types.String `tfsdk:"nud_retry_base"`
+	NudRetryInterval    types.String `tfsdk:"nud_retry_interval"`
+	NudRetryMaxAttempts types.String `tfsdk:"nud_retry_max_attempts"`
+	OwnerKey            types.String `tfsdk:"owner_key"`
+	OwnerTag            types.String `tfsdk:"owner_tag"`
+	RaIntvl             types.String `tfsdk:"router_advertisement_interval"`
+	RaLifetime          types.String `tfsdk:"router_advertisement_lifetime"`
+	ReachableTime       types.String `tfsdk:"reachable_time"`
+	RetransTimer        types.String `tfsdk:"retransmit_timer"`
+	TagAnnotation       types.Set    `tfsdk:"annotations"`
+	TagTag              types.Set    `tfsdk:"tags"`
+}
+
+func NdIfPolModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":                     types.StringType,
+		"controller_state":               types.SetType{ElemType: types.StringType},
+		"description":                    types.StringType,
+		"hop_limit":                      types.StringType,
+		"mtu":                            types.StringType,
+		"name":                           types.StringType,
+		"name_alias":                     types.StringType,
+		"neighbor_solicitation_interval": types.StringType,
+		"neighbor_solicitation_retries":  types.StringType,
+		"nud_retry_base":                 types.StringType,
+		"nud_retry_interval":             types.StringType,
+		"nud_retry_max_attempts":         types.StringType,
+		"owner_key":                      types.StringType,
+		"owner_tag":                      types.StringType,
+		"router_advertisement_interval":  types.StringType,
+		"router_advertisement_lifetime":  types.StringType,
+		"reachable_time":                 types.StringType,
+		"retransmit_timer":               types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewNdIfPolModelNull() NdIfPolModel {
+	return NdIfPolModel{
+		Annotation:          types.StringNull(),
+		Ctrl:                types.SetNull(types.StringType),
+		Descr:               types.StringNull(),
+		HopLimit:            types.StringNull(),
+		Mtu:                 types.StringNull(),
+		Name:                types.StringNull(),
+		NameAlias:           types.StringNull(),
+		NsIntvl:             types.StringNull(),
+		NsRetries:           types.StringNull(),
+		NudRetryBase:        types.StringNull(),
+		NudRetryInterval:    types.StringNull(),
+		NudRetryMaxAttempts: types.StringNull(),
+		OwnerKey:            types.StringNull(),
+		OwnerTag:            types.StringNull(),
+		RaIntvl:             types.StringNull(),
+		RaLifetime:          types.StringNull(),
+		ReachableTime:       types.StringNull(),
+		RetransTimer:        types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type NdIfPolResourceModel struct {
 	NdIfPolModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewNdIfPolResourceModelNull() NdIfPolResourceModel {
+	return NdIfPolResourceModel{
+		NdIfPolModel: NewNdIfPolModelNull(),
+		ID:           types.StringNull(),
+		ParentDn:     types.StringNull(),
+	}
 }
 
 type NdIfPolDataSourceModel struct {
 	NdIfPolModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewNdIfPolDataSourceModelNull() NdIfPolDataSourceModel {
+	return NdIfPolDataSourceModel{
+		NdIfPolModel: NewNdIfPolModelNull(),
+		ID:           types.StringNull(),
+		ParentDn:     types.StringNull(),
+	}
 }

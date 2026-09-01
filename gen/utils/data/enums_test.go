@@ -126,12 +126,14 @@ func TestValueTypeEnum(t *testing.T) {
 	assert.Equal(t, "set", Set.String())
 	assert.Equal(t, "ip_address", IpAddress.String())
 	assert.Equal(t, "semantic_equality", SemanticEquality.String())
+	assert.Equal(t, "vmm_arp_learning", VMMArpLearning.String())
 	assert.Equal(t, "object", Object.String())
 
 	assert.Equal(t, String, test.MustUnmarshalText[ValueTypeEnum](t, "string"))
 	assert.Equal(t, Set, test.MustUnmarshalText[ValueTypeEnum](t, "set"))
 	assert.Equal(t, IpAddress, test.MustUnmarshalText[ValueTypeEnum](t, "ip_address"))
 	assert.Equal(t, SemanticEquality, test.MustUnmarshalText[ValueTypeEnum](t, "semantic_equality"))
+	assert.Equal(t, VMMArpLearning, test.MustUnmarshalText[ValueTypeEnum](t, "vmm_arp_learning"))
 	assert.Equal(t, Object, test.MustUnmarshalText[ValueTypeEnum](t, "object"))
 
 	// Empty and unknown both error: the zero value (UndefinedValueType) is reached by

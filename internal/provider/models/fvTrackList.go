@@ -2,18 +2,116 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type FvTrackListModel struct{}
+type FvTrackListModel struct {
+	Annotation        types.String `tfsdk:"annotation"`
+	Descr             types.String `tfsdk:"description"`
+	Name              types.String `tfsdk:"name"`
+	NameAlias         types.String `tfsdk:"name_alias"`
+	OwnerKey          types.String `tfsdk:"owner_key"`
+	OwnerTag          types.String `tfsdk:"owner_tag"`
+	PercentageDown    types.String `tfsdk:"percentage_down"`
+	PercentageUp      types.String `tfsdk:"percentage_up"`
+	Type              types.String `tfsdk:"type"`
+	WeightDown        types.String `tfsdk:"weight_down"`
+	WeightUp          types.String `tfsdk:"weight_up"`
+	FvRsOtmListMember types.Set    `tfsdk:"relation_to_ip_sla_track_members"`
+	TagAnnotation     types.Set    `tfsdk:"annotations"`
+	TagTag            types.Set    `tfsdk:"tags"`
+}
+
+func FvTrackListModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":      types.StringType,
+		"description":     types.StringType,
+		"name":            types.StringType,
+		"name_alias":      types.StringType,
+		"owner_key":       types.StringType,
+		"owner_tag":       types.StringType,
+		"percentage_down": types.StringType,
+		"percentage_up":   types.StringType,
+		"type":            types.StringType,
+		"weight_down":     types.StringType,
+		"weight_up":       types.StringType,
+		"relation_to_ip_sla_track_members": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: FvRsOtmListMemberModelAttributeTypes(),
+			},
+		},
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewFvTrackListModelNull() FvTrackListModel {
+	return FvTrackListModel{
+		Annotation:     types.StringNull(),
+		Descr:          types.StringNull(),
+		Name:           types.StringNull(),
+		NameAlias:      types.StringNull(),
+		OwnerKey:       types.StringNull(),
+		OwnerTag:       types.StringNull(),
+		PercentageDown: types.StringNull(),
+		PercentageUp:   types.StringNull(),
+		Type:           types.StringNull(),
+		WeightDown:     types.StringNull(),
+		WeightUp:       types.StringNull(),
+		FvRsOtmListMember: types.SetNull(
+			types.ObjectType{
+				AttrTypes: FvRsOtmListMemberModelAttributeTypes(),
+			},
+		),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type FvTrackListResourceModel struct {
 	FvTrackListModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFvTrackListResourceModelNull() FvTrackListResourceModel {
+	return FvTrackListResourceModel{
+		FvTrackListModel: NewFvTrackListModelNull(),
+		ID:               types.StringNull(),
+		ParentDn:         types.StringNull(),
+	}
 }
 
 type FvTrackListDataSourceModel struct {
 	FvTrackListModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFvTrackListDataSourceModelNull() FvTrackListDataSourceModel {
+	return FvTrackListDataSourceModel{
+		FvTrackListModel: NewFvTrackListModelNull(),
+		ID:               types.StringNull(),
+		ParentDn:         types.StringNull(),
+	}
 }

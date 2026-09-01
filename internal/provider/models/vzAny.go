@@ -2,18 +2,123 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type VzAnyModel struct{}
+type VzAnyModel struct {
+	Annotation      types.String `tfsdk:"annotation"`
+	Descr           types.String `tfsdk:"description"`
+	MatchT          types.String `tfsdk:"match_criteria"`
+	Name            types.String `tfsdk:"name"`
+	NameAlias       types.String `tfsdk:"name_alias"`
+	PrefGrMemb      types.String `tfsdk:"preferred_group_member"`
+	TagAnnotation   types.Set    `tfsdk:"annotations"`
+	TagTag          types.Set    `tfsdk:"tags"`
+	VzRsAnyToCons   types.Set    `tfsdk:"relation_to_consumer_contracts"`
+	VzRsAnyToConsIf types.Set    `tfsdk:"relation_to_contract_interfaces"`
+	VzRsAnyToProv   types.Set    `tfsdk:"relation_to_provider_contracts"`
+}
+
+func VzAnyModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":             types.StringType,
+		"description":            types.StringType,
+		"match_criteria":         types.StringType,
+		"name":                   types.StringType,
+		"name_alias":             types.StringType,
+		"preferred_group_member": types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+		"relation_to_consumer_contracts": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: VzRsAnyToConsModelAttributeTypes(),
+			},
+		},
+		"relation_to_contract_interfaces": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: VzRsAnyToConsIfModelAttributeTypes(),
+			},
+		},
+		"relation_to_provider_contracts": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: VzRsAnyToProvModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewVzAnyModelNull() VzAnyModel {
+	return VzAnyModel{
+		Annotation: types.StringNull(),
+		Descr:      types.StringNull(),
+		MatchT:     types.StringNull(),
+		Name:       types.StringNull(),
+		NameAlias:  types.StringNull(),
+		PrefGrMemb: types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+		VzRsAnyToCons: types.SetNull(
+			types.ObjectType{
+				AttrTypes: VzRsAnyToConsModelAttributeTypes(),
+			},
+		),
+		VzRsAnyToConsIf: types.SetNull(
+			types.ObjectType{
+				AttrTypes: VzRsAnyToConsIfModelAttributeTypes(),
+			},
+		),
+		VzRsAnyToProv: types.SetNull(
+			types.ObjectType{
+				AttrTypes: VzRsAnyToProvModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type VzAnyResourceModel struct {
 	VzAnyModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewVzAnyResourceModelNull() VzAnyResourceModel {
+	return VzAnyResourceModel{
+		VzAnyModel: NewVzAnyModelNull(),
+		ID:         types.StringNull(),
+		ParentDn:   types.StringNull(),
+	}
 }
 
 type VzAnyDataSourceModel struct {
 	VzAnyModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewVzAnyDataSourceModelNull() VzAnyDataSourceModel {
+	return VzAnyDataSourceModel{
+		VzAnyModel: NewVzAnyModelNull(),
+		ID:         types.StringNull(),
+		ParentDn:   types.StringNull(),
+	}
 }

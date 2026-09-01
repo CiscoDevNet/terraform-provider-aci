@@ -2,18 +2,93 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type StpIfPolModel struct{}
+type StpIfPolModel struct {
+	Annotation    types.String `tfsdk:"annotation"`
+	Ctrl          types.Set    `tfsdk:"interface_controls"`
+	Descr         types.String `tfsdk:"description"`
+	Name          types.String `tfsdk:"name"`
+	NameAlias     types.String `tfsdk:"name_alias"`
+	OwnerKey      types.String `tfsdk:"owner_key"`
+	OwnerTag      types.String `tfsdk:"owner_tag"`
+	TagAnnotation types.Set    `tfsdk:"annotations"`
+	TagTag        types.Set    `tfsdk:"tags"`
+}
+
+func StpIfPolModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":         types.StringType,
+		"interface_controls": types.SetType{ElemType: types.StringType},
+		"description":        types.StringType,
+		"name":               types.StringType,
+		"name_alias":         types.StringType,
+		"owner_key":          types.StringType,
+		"owner_tag":          types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewStpIfPolModelNull() StpIfPolModel {
+	return StpIfPolModel{
+		Annotation: types.StringNull(),
+		Ctrl:       types.SetNull(types.StringType),
+		Descr:      types.StringNull(),
+		Name:       types.StringNull(),
+		NameAlias:  types.StringNull(),
+		OwnerKey:   types.StringNull(),
+		OwnerTag:   types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type StpIfPolResourceModel struct {
 	StpIfPolModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewStpIfPolResourceModelNull() StpIfPolResourceModel {
+	return StpIfPolResourceModel{
+		StpIfPolModel: NewStpIfPolModelNull(),
+		ID:            types.StringNull(),
+		ParentDn:      types.StringNull(),
+	}
 }
 
 type StpIfPolDataSourceModel struct {
 	StpIfPolModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewStpIfPolDataSourceModelNull() StpIfPolDataSourceModel {
+	return StpIfPolDataSourceModel{
+		StpIfPolModel: NewStpIfPolModelNull(),
+		ID:            types.StringNull(),
+		ParentDn:      types.StringNull(),
+	}
 }

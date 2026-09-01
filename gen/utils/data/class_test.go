@@ -715,6 +715,55 @@ func TestHasArtifact(t *testing.T) {
 	}
 }
 
+func TestClassModelMetadata(t *testing.T) {
+	t.Parallel()
+
+	name := &Property{PropertyName: "name", AttributeName: "name", ValueType: String}
+	parentDn := &Property{PropertyName: "parentDn", AttributeName: "parent_dn", ValueType: String}
+	custom := &Property{PropertyName: "address", AttributeName: "address", ValueType: IpAddress}
+	class := Class{
+		Name:          testClassName("fvTenant"),
+		Artifacts:     []ArtifactEnum{ResourceArtifact},
+		Children:      []*ClassName{testClassName("tagAnnotation")},
+		Properties:    map[string]*Property{"address": custom, "name": name, "parentDn": parentDn},
+		PropertiesAll: []string{"address", "name", "parentDn"},
+	}
+
+	assert.Equal(t, []*Property{custom, name}, class.ModelProperties())
+	assert.Same(t, parentDn, class.ParentDnProperty())
+	assert.True(t, class.HasCustomModelTypes())
+}
+
+func TestClassNestedModelValueType(t *testing.T) {
+	t.Parallel()
+
+	testCases := []struct {
+		name   string
+		single bool
+		value  string
+	}{
+		{
+			name:  "repeated child",
+			value: "types.Set",
+		},
+		{
+			name:   "singleton child",
+			single: true,
+			value:  "types.Object",
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+			class := Class{
+				IsSingleNestedWhenDefinedAsChild: testCase.single,
+			}
+			assert.Equal(t, testCase.value, class.NestedModelValueType())
+		})
+	}
+}
+
 type setParentDnVariantsInput struct {
 	ClassName       string
 	RnFormat        string

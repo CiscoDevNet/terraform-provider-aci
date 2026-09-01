@@ -2,18 +2,110 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type FvnsAddrInstModel struct{}
+type FvnsAddrInstModel struct {
+	Addr             types.String `tfsdk:"gateway_address"`
+	AddrType         types.String `tfsdk:"address_type"`
+	Annotation       types.String `tfsdk:"annotation"`
+	Descr            types.String `tfsdk:"description"`
+	Name             types.String `tfsdk:"name"`
+	NameAlias        types.String `tfsdk:"name_alias"`
+	OwnerKey         types.String `tfsdk:"owner_key"`
+	OwnerTag         types.String `tfsdk:"owner_tag"`
+	SkipGwVal        types.String `tfsdk:"skip_gateway_validation"`
+	FvnsUcastAddrBlk types.Set    `tfsdk:"ip_address_blocks"`
+	TagAnnotation    types.Set    `tfsdk:"annotations"`
+	TagTag           types.Set    `tfsdk:"tags"`
+}
+
+func FvnsAddrInstModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"gateway_address":         types.StringType,
+		"address_type":            types.StringType,
+		"annotation":              types.StringType,
+		"description":             types.StringType,
+		"name":                    types.StringType,
+		"name_alias":              types.StringType,
+		"owner_key":               types.StringType,
+		"owner_tag":               types.StringType,
+		"skip_gateway_validation": types.StringType,
+		"ip_address_blocks": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: FvnsUcastAddrBlkModelAttributeTypes(),
+			},
+		},
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewFvnsAddrInstModelNull() FvnsAddrInstModel {
+	return FvnsAddrInstModel{
+		Addr:       types.StringNull(),
+		AddrType:   types.StringNull(),
+		Annotation: types.StringNull(),
+		Descr:      types.StringNull(),
+		Name:       types.StringNull(),
+		NameAlias:  types.StringNull(),
+		OwnerKey:   types.StringNull(),
+		OwnerTag:   types.StringNull(),
+		SkipGwVal:  types.StringNull(),
+		FvnsUcastAddrBlk: types.SetNull(
+			types.ObjectType{
+				AttrTypes: FvnsUcastAddrBlkModelAttributeTypes(),
+			},
+		),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type FvnsAddrInstResourceModel struct {
 	FvnsAddrInstModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFvnsAddrInstResourceModelNull() FvnsAddrInstResourceModel {
+	return FvnsAddrInstResourceModel{
+		FvnsAddrInstModel: NewFvnsAddrInstModelNull(),
+		ID:                types.StringNull(),
+		ParentDn:          types.StringNull(),
+	}
 }
 
 type FvnsAddrInstDataSourceModel struct {
 	FvnsAddrInstModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFvnsAddrInstDataSourceModelNull() FvnsAddrInstDataSourceModel {
+	return FvnsAddrInstDataSourceModel{
+		FvnsAddrInstModel: NewFvnsAddrInstModelNull(),
+		ID:                types.StringNull(),
+		ParentDn:          types.StringNull(),
+	}
 }

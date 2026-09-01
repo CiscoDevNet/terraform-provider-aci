@@ -2,18 +2,100 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type QosDot1PClassModel struct{}
+type QosDot1PClassModel struct {
+	Annotation    types.String                                  `tfsdk:"annotation"`
+	Descr         types.String                                  `tfsdk:"description"`
+	From          customTypes.QosDot1PClassFromStringValue      `tfsdk:"from"`
+	Name          types.String                                  `tfsdk:"name"`
+	NameAlias     types.String                                  `tfsdk:"name_alias"`
+	Prio          customTypes.QosDot1PClassPrioStringValue      `tfsdk:"priority"`
+	Target        customTypes.QosDot1PClassTargetStringValue    `tfsdk:"target"`
+	TargetCos     customTypes.QosDot1PClassTargetCosStringValue `tfsdk:"target_cos"`
+	To            customTypes.QosDot1PClassToStringValue        `tfsdk:"to"`
+	TagAnnotation types.Set                                     `tfsdk:"annotations"`
+	TagTag        types.Set                                     `tfsdk:"tags"`
+}
+
+func QosDot1PClassModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":  types.StringType,
+		"description": types.StringType,
+		"from":        customTypes.QosDot1PClassFromStringType{},
+		"name":        types.StringType,
+		"name_alias":  types.StringType,
+		"priority":    customTypes.QosDot1PClassPrioStringType{},
+		"target":      customTypes.QosDot1PClassTargetStringType{},
+		"target_cos":  customTypes.QosDot1PClassTargetCosStringType{},
+		"to":          customTypes.QosDot1PClassToStringType{},
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewQosDot1PClassModelNull() QosDot1PClassModel {
+	return QosDot1PClassModel{
+		Annotation: types.StringNull(),
+		Descr:      types.StringNull(),
+		From:       customTypes.NewQosDot1PClassFromStringNull(),
+		Name:       types.StringNull(),
+		NameAlias:  types.StringNull(),
+		Prio:       customTypes.NewQosDot1PClassPrioStringNull(),
+		Target:     customTypes.NewQosDot1PClassTargetStringNull(),
+		TargetCos:  customTypes.NewQosDot1PClassTargetCosStringNull(),
+		To:         customTypes.NewQosDot1PClassToStringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type QosDot1PClassResourceModel struct {
 	QosDot1PClassModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewQosDot1PClassResourceModelNull() QosDot1PClassResourceModel {
+	return QosDot1PClassResourceModel{
+		QosDot1PClassModel: NewQosDot1PClassModelNull(),
+		ID:                 types.StringNull(),
+		ParentDn:           types.StringNull(),
+	}
 }
 
 type QosDot1PClassDataSourceModel struct {
 	QosDot1PClassModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewQosDot1PClassDataSourceModelNull() QosDot1PClassDataSourceModel {
+	return QosDot1PClassDataSourceModel{
+		QosDot1PClassModel: NewQosDot1PClassModelNull(),
+		ID:                 types.StringNull(),
+		ParentDn:           types.StringNull(),
+	}
 }

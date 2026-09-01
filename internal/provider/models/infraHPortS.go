@@ -2,18 +2,98 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type InfraHPortSModel struct{}
+type InfraHPortSModel struct {
+	Annotation        types.String `tfsdk:"annotation"`
+	Descr             types.String `tfsdk:"description"`
+	Name              types.String `tfsdk:"name"`
+	NameAlias         types.String `tfsdk:"name_alias"`
+	OwnerKey          types.String `tfsdk:"owner_key"`
+	OwnerTag          types.String `tfsdk:"owner_tag"`
+	Type              types.String `tfsdk:"port_selector_type"`
+	InfraRsAccBaseGrp types.Object `tfsdk:"relation_to_leaf_access_port_policy_group"`
+	TagAnnotation     types.Set    `tfsdk:"annotations"`
+	TagTag            types.Set    `tfsdk:"tags"`
+}
+
+func InfraHPortSModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":         types.StringType,
+		"description":        types.StringType,
+		"name":               types.StringType,
+		"name_alias":         types.StringType,
+		"owner_key":          types.StringType,
+		"owner_tag":          types.StringType,
+		"port_selector_type": types.StringType,
+		"relation_to_leaf_access_port_policy_group": types.ObjectType{
+			AttrTypes: InfraRsAccBaseGrpModelAttributeTypes(),
+		},
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewInfraHPortSModelNull() InfraHPortSModel {
+	return InfraHPortSModel{
+		Annotation:        types.StringNull(),
+		Descr:             types.StringNull(),
+		Name:              types.StringNull(),
+		NameAlias:         types.StringNull(),
+		OwnerKey:          types.StringNull(),
+		OwnerTag:          types.StringNull(),
+		Type:              types.StringNull(),
+		InfraRsAccBaseGrp: types.ObjectNull(InfraRsAccBaseGrpModelAttributeTypes()),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type InfraHPortSResourceModel struct {
 	InfraHPortSModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewInfraHPortSResourceModelNull() InfraHPortSResourceModel {
+	return InfraHPortSResourceModel{
+		InfraHPortSModel: NewInfraHPortSModelNull(),
+		ID:               types.StringNull(),
+		ParentDn:         types.StringNull(),
+	}
 }
 
 type InfraHPortSDataSourceModel struct {
 	InfraHPortSModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewInfraHPortSDataSourceModelNull() InfraHPortSDataSourceModel {
+	return InfraHPortSDataSourceModel{
+		InfraHPortSModel: NewInfraHPortSModelNull(),
+		ID:               types.StringNull(),
+		ParentDn:         types.StringNull(),
+	}
 }

@@ -514,6 +514,9 @@ const (
 	// meaning the wire form (e.g. "22") and the human form (e.g. "ssh") must compare equal.
 	// Templates render this with the semantic-equality custom type.
 	SemanticEquality
+	// VMMArpLearning preserves the provider's VMM-specific semantic equality:
+	// an omitted APIC value and the literal value "disabled" represent the same state.
+	VMMArpLearning
 )
 
 func (v ValueTypeEnum) String() string {
@@ -528,6 +531,8 @@ func (v ValueTypeEnum) String() string {
 		return "ip_address"
 	case SemanticEquality:
 		return "semantic_equality"
+	case VMMArpLearning:
+		return "vmm_arp_learning"
 	default:
 		return ""
 	}
@@ -548,8 +553,10 @@ func (v *ValueTypeEnum) UnmarshalText(text []byte) error {
 		*v = IpAddress
 	case "semantic_equality":
 		*v = SemanticEquality
+	case "vmm_arp_learning":
+		*v = VMMArpLearning
 	default:
-		return fmt.Errorf("unknown value_type %q (expected one of: string, set, ip_address, semantic_equality, object)", string(text))
+		return fmt.Errorf("unknown value_type %q (expected one of: string, set, ip_address, semantic_equality, vmm_arp_learning, object)", string(text))
 	}
 	return nil
 }

@@ -2,18 +2,78 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type FvRsProtByModel struct{}
+type FvRsProtByModel struct {
+	Annotation    types.String `tfsdk:"annotation"`
+	TnVzTabooName types.String `tfsdk:"taboo_contract_name"`
+	TagAnnotation types.Set    `tfsdk:"annotations"`
+	TagTag        types.Set    `tfsdk:"tags"`
+}
+
+func FvRsProtByModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":          types.StringType,
+		"taboo_contract_name": types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewFvRsProtByModelNull() FvRsProtByModel {
+	return FvRsProtByModel{
+		Annotation:    types.StringNull(),
+		TnVzTabooName: types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type FvRsProtByResourceModel struct {
 	FvRsProtByModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFvRsProtByResourceModelNull() FvRsProtByResourceModel {
+	return FvRsProtByResourceModel{
+		FvRsProtByModel: NewFvRsProtByModelNull(),
+		ID:              types.StringNull(),
+		ParentDn:        types.StringNull(),
+	}
 }
 
 type FvRsProtByDataSourceModel struct {
 	FvRsProtByModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFvRsProtByDataSourceModelNull() FvRsProtByDataSourceModel {
+	return FvRsProtByDataSourceModel{
+		FvRsProtByModel: NewFvRsProtByModelNull(),
+		ID:              types.StringNull(),
+		ParentDn:        types.StringNull(),
+	}
 }

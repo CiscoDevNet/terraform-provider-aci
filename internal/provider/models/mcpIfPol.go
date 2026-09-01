@@ -2,18 +2,117 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type McpIfPolModel struct{}
+type McpIfPolModel struct {
+	AdminSt             types.String `tfsdk:"admin_state"`
+	Annotation          types.String `tfsdk:"annotation"`
+	Descr               types.String `tfsdk:"description"`
+	GracePeriod         types.String `tfsdk:"grace_period_seconds"`
+	GracePeriodMsec     types.String `tfsdk:"grace_period_milliseconds"`
+	MaxPduPerVlanLimit  types.String `tfsdk:"maximum_number_of_vlan"`
+	McpMode             types.String `tfsdk:"strict_mode"`
+	McpPduPerVlan       types.String `tfsdk:"mcp_pdu_per_vlan"`
+	Name                types.String `tfsdk:"name"`
+	NameAlias           types.String `tfsdk:"name_alias"`
+	OwnerKey            types.String `tfsdk:"owner_key"`
+	OwnerTag            types.String `tfsdk:"owner_tag"`
+	StrictInitDelayTime types.String `tfsdk:"initial_delay_time"`
+	StrictTxFreq        types.String `tfsdk:"transmission_frequency_seconds"`
+	StrictTxFreqMsec    types.String `tfsdk:"transmission_frequency_milliseconds"`
+	TagAnnotation       types.Set    `tfsdk:"annotations"`
+	TagTag              types.Set    `tfsdk:"tags"`
+}
+
+func McpIfPolModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"admin_state":                         types.StringType,
+		"annotation":                          types.StringType,
+		"description":                         types.StringType,
+		"grace_period_seconds":                types.StringType,
+		"grace_period_milliseconds":           types.StringType,
+		"maximum_number_of_vlan":              types.StringType,
+		"strict_mode":                         types.StringType,
+		"mcp_pdu_per_vlan":                    types.StringType,
+		"name":                                types.StringType,
+		"name_alias":                          types.StringType,
+		"owner_key":                           types.StringType,
+		"owner_tag":                           types.StringType,
+		"initial_delay_time":                  types.StringType,
+		"transmission_frequency_seconds":      types.StringType,
+		"transmission_frequency_milliseconds": types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewMcpIfPolModelNull() McpIfPolModel {
+	return McpIfPolModel{
+		AdminSt:             types.StringNull(),
+		Annotation:          types.StringNull(),
+		Descr:               types.StringNull(),
+		GracePeriod:         types.StringNull(),
+		GracePeriodMsec:     types.StringNull(),
+		MaxPduPerVlanLimit:  types.StringNull(),
+		McpMode:             types.StringNull(),
+		McpPduPerVlan:       types.StringNull(),
+		Name:                types.StringNull(),
+		NameAlias:           types.StringNull(),
+		OwnerKey:            types.StringNull(),
+		OwnerTag:            types.StringNull(),
+		StrictInitDelayTime: types.StringNull(),
+		StrictTxFreq:        types.StringNull(),
+		StrictTxFreqMsec:    types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type McpIfPolResourceModel struct {
 	McpIfPolModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewMcpIfPolResourceModelNull() McpIfPolResourceModel {
+	return McpIfPolResourceModel{
+		McpIfPolModel: NewMcpIfPolModelNull(),
+		ID:            types.StringNull(),
+		ParentDn:      types.StringNull(),
+	}
 }
 
 type McpIfPolDataSourceModel struct {
 	McpIfPolModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewMcpIfPolDataSourceModelNull() McpIfPolDataSourceModel {
+	return McpIfPolDataSourceModel{
+		McpIfPolModel: NewMcpIfPolModelNull(),
+		ID:            types.StringNull(),
+		ParentDn:      types.StringNull(),
+	}
 }

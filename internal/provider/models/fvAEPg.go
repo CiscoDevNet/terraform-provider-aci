@@ -2,18 +2,272 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type FvAEPgModel struct{}
+type FvAEPgModel struct {
+	Annotation       types.String                      `tfsdk:"annotation"`
+	Descr            types.String                      `tfsdk:"description"`
+	ExceptionTag     types.String                      `tfsdk:"contract_exception_tag"`
+	FloodOnEncap     types.String                      `tfsdk:"flood_in_encapsulation"`
+	FwdCtrl          types.String                      `tfsdk:"forwarding_control"`
+	HasMcastSource   types.String                      `tfsdk:"has_multicast_source"`
+	IsAttrBasedEPg   types.String                      `tfsdk:"useg_epg"`
+	MatchT           types.String                      `tfsdk:"match_criteria"`
+	Name             types.String                      `tfsdk:"name"`
+	NameAlias        types.String                      `tfsdk:"name_alias"`
+	PcEnfPref        types.String                      `tfsdk:"intra_epg_isolation"`
+	PcTag            types.String                      `tfsdk:"pc_tag"`
+	PrefGrMemb       types.String                      `tfsdk:"preferred_group_member"`
+	Prio             customTypes.FvAEPgPrioStringValue `tfsdk:"priority"`
+	Scope            types.String                      `tfsdk:"scope"`
+	Shutdown         types.String                      `tfsdk:"admin_state"`
+	FvCrtrn          types.Object                      `tfsdk:"epg_useg_block_statement"`
+	FvRsAEPgMonPol   types.Object                      `tfsdk:"relation_to_monitoring_policy"`
+	FvRsAepAtt       types.Set                         `tfsdk:"relation_to_attachable_access_entity_profiles"`
+	FvRsBd           types.Object                      `tfsdk:"relation_to_bridge_domain"`
+	FvRsCons         types.Set                         `tfsdk:"relation_to_consumed_contracts"`
+	FvRsConsIf       types.Set                         `tfsdk:"relation_to_imported_contracts"`
+	FvRsCustQosPol   types.Object                      `tfsdk:"relation_to_custom_qos_policy"`
+	FvRsDomAtt       types.Set                         `tfsdk:"relation_to_domains"`
+	FvRsDppPol       types.Object                      `tfsdk:"relation_to_data_plane_policing_policy"`
+	FvRsFcPathAtt    types.Set                         `tfsdk:"relation_to_fibre_channel_paths"`
+	FvRsIntraEpg     types.Set                         `tfsdk:"relation_to_intra_epg_contracts"`
+	FvRsNodeAtt      types.Set                         `tfsdk:"relation_to_static_leafs"`
+	FvRsPathAtt      types.Set                         `tfsdk:"relation_to_static_paths"`
+	FvRsProtBy       types.Set                         `tfsdk:"relation_to_taboo_contracts"`
+	FvRsProv         types.Set                         `tfsdk:"relation_to_provided_contracts"`
+	FvRsSecInherited types.Set                         `tfsdk:"relation_to_contract_masters"`
+	FvRsTrustCtrl    types.Object                      `tfsdk:"relation_to_trust_control_policy"`
+	TagAnnotation    types.Set                         `tfsdk:"annotations"`
+	TagTag           types.Set                         `tfsdk:"tags"`
+}
+
+func FvAEPgModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":             types.StringType,
+		"description":            types.StringType,
+		"contract_exception_tag": types.StringType,
+		"flood_in_encapsulation": types.StringType,
+		"forwarding_control":     types.StringType,
+		"has_multicast_source":   types.StringType,
+		"useg_epg":               types.StringType,
+		"match_criteria":         types.StringType,
+		"name":                   types.StringType,
+		"name_alias":             types.StringType,
+		"intra_epg_isolation":    types.StringType,
+		"pc_tag":                 types.StringType,
+		"preferred_group_member": types.StringType,
+		"priority":               customTypes.FvAEPgPrioStringType{},
+		"scope":                  types.StringType,
+		"admin_state":            types.StringType,
+		"epg_useg_block_statement": types.ObjectType{
+			AttrTypes: FvCrtrnModelAttributeTypes(),
+		},
+		"relation_to_monitoring_policy": types.ObjectType{
+			AttrTypes: FvRsAEPgMonPolModelAttributeTypes(),
+		},
+		"relation_to_attachable_access_entity_profiles": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: FvRsAepAttModelAttributeTypes(),
+			},
+		},
+		"relation_to_bridge_domain": types.ObjectType{
+			AttrTypes: FvRsBdModelAttributeTypes(),
+		},
+		"relation_to_consumed_contracts": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: FvRsConsModelAttributeTypes(),
+			},
+		},
+		"relation_to_imported_contracts": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: FvRsConsIfModelAttributeTypes(),
+			},
+		},
+		"relation_to_custom_qos_policy": types.ObjectType{
+			AttrTypes: FvRsCustQosPolModelAttributeTypes(),
+		},
+		"relation_to_domains": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: FvRsDomAttModelAttributeTypes(),
+			},
+		},
+		"relation_to_data_plane_policing_policy": types.ObjectType{
+			AttrTypes: FvRsDppPolModelAttributeTypes(),
+		},
+		"relation_to_fibre_channel_paths": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: FvRsFcPathAttModelAttributeTypes(),
+			},
+		},
+		"relation_to_intra_epg_contracts": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: FvRsIntraEpgModelAttributeTypes(),
+			},
+		},
+		"relation_to_static_leafs": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: FvRsNodeAttModelAttributeTypes(),
+			},
+		},
+		"relation_to_static_paths": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: FvRsPathAttModelAttributeTypes(),
+			},
+		},
+		"relation_to_taboo_contracts": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: FvRsProtByModelAttributeTypes(),
+			},
+		},
+		"relation_to_provided_contracts": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: FvRsProvModelAttributeTypes(),
+			},
+		},
+		"relation_to_contract_masters": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: FvRsSecInheritedModelAttributeTypes(),
+			},
+		},
+		"relation_to_trust_control_policy": types.ObjectType{
+			AttrTypes: FvRsTrustCtrlModelAttributeTypes(),
+		},
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewFvAEPgModelNull() FvAEPgModel {
+	return FvAEPgModel{
+		Annotation:     types.StringNull(),
+		Descr:          types.StringNull(),
+		ExceptionTag:   types.StringNull(),
+		FloodOnEncap:   types.StringNull(),
+		FwdCtrl:        types.StringNull(),
+		HasMcastSource: types.StringNull(),
+		IsAttrBasedEPg: types.StringNull(),
+		MatchT:         types.StringNull(),
+		Name:           types.StringNull(),
+		NameAlias:      types.StringNull(),
+		PcEnfPref:      types.StringNull(),
+		PcTag:          types.StringNull(),
+		PrefGrMemb:     types.StringNull(),
+		Prio:           customTypes.NewFvAEPgPrioStringNull(),
+		Scope:          types.StringNull(),
+		Shutdown:       types.StringNull(),
+		FvCrtrn:        types.ObjectNull(FvCrtrnModelAttributeTypes()),
+		FvRsAEPgMonPol: types.ObjectNull(FvRsAEPgMonPolModelAttributeTypes()),
+		FvRsAepAtt: types.SetNull(
+			types.ObjectType{
+				AttrTypes: FvRsAepAttModelAttributeTypes(),
+			},
+		),
+		FvRsBd: types.ObjectNull(FvRsBdModelAttributeTypes()),
+		FvRsCons: types.SetNull(
+			types.ObjectType{
+				AttrTypes: FvRsConsModelAttributeTypes(),
+			},
+		),
+		FvRsConsIf: types.SetNull(
+			types.ObjectType{
+				AttrTypes: FvRsConsIfModelAttributeTypes(),
+			},
+		),
+		FvRsCustQosPol: types.ObjectNull(FvRsCustQosPolModelAttributeTypes()),
+		FvRsDomAtt: types.SetNull(
+			types.ObjectType{
+				AttrTypes: FvRsDomAttModelAttributeTypes(),
+			},
+		),
+		FvRsDppPol: types.ObjectNull(FvRsDppPolModelAttributeTypes()),
+		FvRsFcPathAtt: types.SetNull(
+			types.ObjectType{
+				AttrTypes: FvRsFcPathAttModelAttributeTypes(),
+			},
+		),
+		FvRsIntraEpg: types.SetNull(
+			types.ObjectType{
+				AttrTypes: FvRsIntraEpgModelAttributeTypes(),
+			},
+		),
+		FvRsNodeAtt: types.SetNull(
+			types.ObjectType{
+				AttrTypes: FvRsNodeAttModelAttributeTypes(),
+			},
+		),
+		FvRsPathAtt: types.SetNull(
+			types.ObjectType{
+				AttrTypes: FvRsPathAttModelAttributeTypes(),
+			},
+		),
+		FvRsProtBy: types.SetNull(
+			types.ObjectType{
+				AttrTypes: FvRsProtByModelAttributeTypes(),
+			},
+		),
+		FvRsProv: types.SetNull(
+			types.ObjectType{
+				AttrTypes: FvRsProvModelAttributeTypes(),
+			},
+		),
+		FvRsSecInherited: types.SetNull(
+			types.ObjectType{
+				AttrTypes: FvRsSecInheritedModelAttributeTypes(),
+			},
+		),
+		FvRsTrustCtrl: types.ObjectNull(FvRsTrustCtrlModelAttributeTypes()),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type FvAEPgResourceModel struct {
 	FvAEPgModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFvAEPgResourceModelNull() FvAEPgResourceModel {
+	return FvAEPgResourceModel{
+		FvAEPgModel: NewFvAEPgModelNull(),
+		ID:          types.StringNull(),
+		ParentDn:    types.StringNull(),
+	}
 }
 
 type FvAEPgDataSourceModel struct {
 	FvAEPgModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFvAEPgDataSourceModelNull() FvAEPgDataSourceModel {
+	return FvAEPgDataSourceModel{
+		FvAEPgModel: NewFvAEPgModelNull(),
+		ID:          types.StringNull(),
+		ParentDn:    types.StringNull(),
+	}
 }

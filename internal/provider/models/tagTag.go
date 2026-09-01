@@ -2,18 +2,56 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type TagTagModel struct{}
+type TagTagModel struct {
+	Key   types.String `tfsdk:"key"`
+	Value types.String `tfsdk:"value"`
+}
+
+func TagTagModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"key":   types.StringType,
+		"value": types.StringType,
+	}
+}
+
+func NewTagTagModelNull() TagTagModel {
+	return TagTagModel{
+		Key:   types.StringNull(),
+		Value: types.StringNull(),
+	}
+}
 
 type TagTagResourceModel struct {
 	TagTagModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewTagTagResourceModelNull() TagTagResourceModel {
+	return TagTagResourceModel{
+		TagTagModel: NewTagTagModelNull(),
+		ID:          types.StringNull(),
+		ParentDn:    types.StringNull(),
+	}
 }
 
 type TagTagDataSourceModel struct {
 	TagTagModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewTagTagDataSourceModelNull() TagTagDataSourceModel {
+	return TagTagDataSourceModel{
+		TagTagModel: NewTagTagModelNull(),
+		ID:          types.StringNull(),
+		ParentDn:    types.StringNull(),
+	}
 }

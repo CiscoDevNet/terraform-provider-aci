@@ -2,18 +2,87 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type FvRsAepAttModel struct{}
+type FvRsAepAttModel struct {
+	Encap                 types.String `tfsdk:"encapsulation"`
+	InstrImedcy           types.String `tfsdk:"deployment_immediacy"`
+	Mode                  types.String `tfsdk:"mode"`
+	PrimaryEncap          types.String `tfsdk:"primary_encapsulation"`
+	TnInfraAttEntityPName types.String `tfsdk:"attachable_access_entity_profile_name"`
+	TagAnnotation         types.Set    `tfsdk:"annotations"`
+	TagTag                types.Set    `tfsdk:"tags"`
+}
+
+func FvRsAepAttModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"encapsulation":                         types.StringType,
+		"deployment_immediacy":                  types.StringType,
+		"mode":                                  types.StringType,
+		"primary_encapsulation":                 types.StringType,
+		"attachable_access_entity_profile_name": types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewFvRsAepAttModelNull() FvRsAepAttModel {
+	return FvRsAepAttModel{
+		Encap:                 types.StringNull(),
+		InstrImedcy:           types.StringNull(),
+		Mode:                  types.StringNull(),
+		PrimaryEncap:          types.StringNull(),
+		TnInfraAttEntityPName: types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type FvRsAepAttResourceModel struct {
 	FvRsAepAttModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFvRsAepAttResourceModelNull() FvRsAepAttResourceModel {
+	return FvRsAepAttResourceModel{
+		FvRsAepAttModel: NewFvRsAepAttModelNull(),
+		ID:              types.StringNull(),
+		ParentDn:        types.StringNull(),
+	}
 }
 
 type FvRsAepAttDataSourceModel struct {
 	FvRsAepAttModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFvRsAepAttDataSourceModelNull() FvRsAepAttDataSourceModel {
+	return FvRsAepAttDataSourceModel{
+		FvRsAepAttModel: NewFvRsAepAttModelNull(),
+		ID:              types.StringNull(),
+		ParentDn:        types.StringNull(),
+	}
 }

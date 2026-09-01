@@ -2,18 +2,90 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type FvEpMacTagModel struct{}
+type FvEpMacTagModel struct {
+	Annotation    types.String `tfsdk:"annotation"`
+	BdName        types.String `tfsdk:"bd_name"`
+	FvEpMacTagID  types.String `tfsdk:"id_attribute"`
+	Mac           types.String `tfsdk:"mac"`
+	Name          types.String `tfsdk:"name"`
+	NameAlias     types.String `tfsdk:"name_alias"`
+	TagAnnotation types.Set    `tfsdk:"annotations"`
+	TagTag        types.Set    `tfsdk:"tags"`
+}
+
+func FvEpMacTagModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":   types.StringType,
+		"bd_name":      types.StringType,
+		"id_attribute": types.StringType,
+		"mac":          types.StringType,
+		"name":         types.StringType,
+		"name_alias":   types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewFvEpMacTagModelNull() FvEpMacTagModel {
+	return FvEpMacTagModel{
+		Annotation:   types.StringNull(),
+		BdName:       types.StringNull(),
+		FvEpMacTagID: types.StringNull(),
+		Mac:          types.StringNull(),
+		Name:         types.StringNull(),
+		NameAlias:    types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type FvEpMacTagResourceModel struct {
 	FvEpMacTagModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFvEpMacTagResourceModelNull() FvEpMacTagResourceModel {
+	return FvEpMacTagResourceModel{
+		FvEpMacTagModel: NewFvEpMacTagModelNull(),
+		ID:              types.StringNull(),
+		ParentDn:        types.StringNull(),
+	}
 }
 
 type FvEpMacTagDataSourceModel struct {
 	FvEpMacTagModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFvEpMacTagDataSourceModelNull() FvEpMacTagDataSourceModel {
+	return FvEpMacTagDataSourceModel{
+		FvEpMacTagModel: NewFvEpMacTagModelNull(),
+		ID:              types.StringNull(),
+		ParentDn:        types.StringNull(),
+	}
 }

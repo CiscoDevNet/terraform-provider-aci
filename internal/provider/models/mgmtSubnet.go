@@ -2,18 +2,88 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type MgmtSubnetModel struct{}
+type MgmtSubnetModel struct {
+	Annotation    types.String                     `tfsdk:"annotation"`
+	Descr         types.String                     `tfsdk:"description"`
+	Ip            customTypes.IPAddressStringValue `tfsdk:"ip"`
+	Name          types.String                     `tfsdk:"name"`
+	NameAlias     types.String                     `tfsdk:"name_alias"`
+	TagAnnotation types.Set                        `tfsdk:"annotations"`
+	TagTag        types.Set                        `tfsdk:"tags"`
+}
+
+func MgmtSubnetModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":  types.StringType,
+		"description": types.StringType,
+		"ip":          customTypes.IPAddressStringType{},
+		"name":        types.StringType,
+		"name_alias":  types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewMgmtSubnetModelNull() MgmtSubnetModel {
+	return MgmtSubnetModel{
+		Annotation: types.StringNull(),
+		Descr:      types.StringNull(),
+		Ip:         customTypes.NewIPAddressStringNull(),
+		Name:       types.StringNull(),
+		NameAlias:  types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type MgmtSubnetResourceModel struct {
 	MgmtSubnetModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewMgmtSubnetResourceModelNull() MgmtSubnetResourceModel {
+	return MgmtSubnetResourceModel{
+		MgmtSubnetModel: NewMgmtSubnetModelNull(),
+		ID:              types.StringNull(),
+		ParentDn:        types.StringNull(),
+	}
 }
 
 type MgmtSubnetDataSourceModel struct {
 	MgmtSubnetModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewMgmtSubnetDataSourceModelNull() MgmtSubnetDataSourceModel {
+	return MgmtSubnetDataSourceModel{
+		MgmtSubnetModel: NewMgmtSubnetModelNull(),
+		ID:              types.StringNull(),
+		ParentDn:        types.StringNull(),
+	}
 }

@@ -2,18 +2,106 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type NetflowMonitorPolModel struct{}
+type NetflowMonitorPolModel struct {
+	Annotation                 types.String `tfsdk:"annotation"`
+	Descr                      types.String `tfsdk:"description"`
+	Name                       types.String `tfsdk:"name"`
+	NameAlias                  types.String `tfsdk:"name_alias"`
+	OwnerKey                   types.String `tfsdk:"owner_key"`
+	OwnerTag                   types.String `tfsdk:"owner_tag"`
+	NetflowRsMonitorToExporter types.Set    `tfsdk:"relation_to_netflow_exporters"`
+	NetflowRsMonitorToRecord   types.Object `tfsdk:"relation_to_netflow_record"`
+	TagAnnotation              types.Set    `tfsdk:"annotations"`
+	TagTag                     types.Set    `tfsdk:"tags"`
+}
+
+func NetflowMonitorPolModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":  types.StringType,
+		"description": types.StringType,
+		"name":        types.StringType,
+		"name_alias":  types.StringType,
+		"owner_key":   types.StringType,
+		"owner_tag":   types.StringType,
+		"relation_to_netflow_exporters": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: NetflowRsMonitorToExporterModelAttributeTypes(),
+			},
+		},
+		"relation_to_netflow_record": types.ObjectType{
+			AttrTypes: NetflowRsMonitorToRecordModelAttributeTypes(),
+		},
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewNetflowMonitorPolModelNull() NetflowMonitorPolModel {
+	return NetflowMonitorPolModel{
+		Annotation: types.StringNull(),
+		Descr:      types.StringNull(),
+		Name:       types.StringNull(),
+		NameAlias:  types.StringNull(),
+		OwnerKey:   types.StringNull(),
+		OwnerTag:   types.StringNull(),
+		NetflowRsMonitorToExporter: types.SetNull(
+			types.ObjectType{
+				AttrTypes: NetflowRsMonitorToExporterModelAttributeTypes(),
+			},
+		),
+		NetflowRsMonitorToRecord: types.ObjectNull(NetflowRsMonitorToRecordModelAttributeTypes()),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type NetflowMonitorPolResourceModel struct {
 	NetflowMonitorPolModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewNetflowMonitorPolResourceModelNull() NetflowMonitorPolResourceModel {
+	return NetflowMonitorPolResourceModel{
+		NetflowMonitorPolModel: NewNetflowMonitorPolModelNull(),
+		ID:                     types.StringNull(),
+		ParentDn:               types.StringNull(),
+	}
 }
 
 type NetflowMonitorPolDataSourceModel struct {
 	NetflowMonitorPolModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewNetflowMonitorPolDataSourceModelNull() NetflowMonitorPolDataSourceModel {
+	return NetflowMonitorPolDataSourceModel{
+		NetflowMonitorPolModel: NewNetflowMonitorPolModelNull(),
+		ID:                     types.StringNull(),
+		ParentDn:               types.StringNull(),
+	}
 }

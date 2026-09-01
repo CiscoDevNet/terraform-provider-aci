@@ -2,18 +2,78 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type FvRsBDToOutModel struct{}
+type FvRsBDToOutModel struct {
+	Annotation     types.String `tfsdk:"annotation"`
+	TnL3extOutName types.String `tfsdk:"l3_outside_name"`
+	TagAnnotation  types.Set    `tfsdk:"annotations"`
+	TagTag         types.Set    `tfsdk:"tags"`
+}
+
+func FvRsBDToOutModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":      types.StringType,
+		"l3_outside_name": types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewFvRsBDToOutModelNull() FvRsBDToOutModel {
+	return FvRsBDToOutModel{
+		Annotation:     types.StringNull(),
+		TnL3extOutName: types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type FvRsBDToOutResourceModel struct {
 	FvRsBDToOutModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFvRsBDToOutResourceModelNull() FvRsBDToOutResourceModel {
+	return FvRsBDToOutResourceModel{
+		FvRsBDToOutModel: NewFvRsBDToOutModelNull(),
+		ID:               types.StringNull(),
+		ParentDn:         types.StringNull(),
+	}
 }
 
 type FvRsBDToOutDataSourceModel struct {
 	FvRsBDToOutModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFvRsBDToOutDataSourceModelNull() FvRsBDToOutDataSourceModel {
+	return FvRsBDToOutDataSourceModel{
+		FvRsBDToOutModel: NewFvRsBDToOutModelNull(),
+		ID:               types.StringNull(),
+		ParentDn:         types.StringNull(),
+	}
 }

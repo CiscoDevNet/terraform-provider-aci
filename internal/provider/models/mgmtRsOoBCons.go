@@ -2,18 +2,82 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type MgmtRsOoBConsModel struct{}
+type MgmtRsOoBConsModel struct {
+	Annotation      types.String                             `tfsdk:"annotation"`
+	Prio            customTypes.MgmtRsOoBConsPrioStringValue `tfsdk:"priority"`
+	TnVzOOBBrCPName types.String                             `tfsdk:"out_of_band_contract_name"`
+	TagAnnotation   types.Set                                `tfsdk:"annotations"`
+	TagTag          types.Set                                `tfsdk:"tags"`
+}
+
+func MgmtRsOoBConsModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":                types.StringType,
+		"priority":                  customTypes.MgmtRsOoBConsPrioStringType{},
+		"out_of_band_contract_name": types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewMgmtRsOoBConsModelNull() MgmtRsOoBConsModel {
+	return MgmtRsOoBConsModel{
+		Annotation:      types.StringNull(),
+		Prio:            customTypes.NewMgmtRsOoBConsPrioStringNull(),
+		TnVzOOBBrCPName: types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type MgmtRsOoBConsResourceModel struct {
 	MgmtRsOoBConsModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewMgmtRsOoBConsResourceModelNull() MgmtRsOoBConsResourceModel {
+	return MgmtRsOoBConsResourceModel{
+		MgmtRsOoBConsModel: NewMgmtRsOoBConsModelNull(),
+		ID:                 types.StringNull(),
+		ParentDn:           types.StringNull(),
+	}
 }
 
 type MgmtRsOoBConsDataSourceModel struct {
 	MgmtRsOoBConsModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewMgmtRsOoBConsDataSourceModelNull() MgmtRsOoBConsDataSourceModel {
+	return MgmtRsOoBConsDataSourceModel{
+		MgmtRsOoBConsModel: NewMgmtRsOoBConsModelNull(),
+		ID:                 types.StringNull(),
+		ParentDn:           types.StringNull(),
+	}
 }

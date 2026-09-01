@@ -2,18 +2,114 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type PkiKeyRingModel struct{}
+type PkiKeyRingModel struct {
+	AdminState    types.String `tfsdk:"admin_state"`
+	Annotation    types.String `tfsdk:"annotation"`
+	Cert          types.String `tfsdk:"certificate"`
+	Descr         types.String `tfsdk:"description"`
+	EccCurve      types.String `tfsdk:"elliptic_curve"`
+	Key           types.String `tfsdk:"key"`
+	KeyType       types.String `tfsdk:"key_type"`
+	Modulus       types.String `tfsdk:"modulus"`
+	Name          types.String `tfsdk:"name"`
+	NameAlias     types.String `tfsdk:"name_alias"`
+	OwnerKey      types.String `tfsdk:"owner_key"`
+	OwnerTag      types.String `tfsdk:"owner_tag"`
+	Regen         types.String `tfsdk:"regenerate"`
+	Tp            types.String `tfsdk:"certificate_authority"`
+	TagAnnotation types.Set    `tfsdk:"annotations"`
+	TagTag        types.Set    `tfsdk:"tags"`
+}
+
+func PkiKeyRingModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"admin_state":           types.StringType,
+		"annotation":            types.StringType,
+		"certificate":           types.StringType,
+		"description":           types.StringType,
+		"elliptic_curve":        types.StringType,
+		"key":                   types.StringType,
+		"key_type":              types.StringType,
+		"modulus":               types.StringType,
+		"name":                  types.StringType,
+		"name_alias":            types.StringType,
+		"owner_key":             types.StringType,
+		"owner_tag":             types.StringType,
+		"regenerate":            types.StringType,
+		"certificate_authority": types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewPkiKeyRingModelNull() PkiKeyRingModel {
+	return PkiKeyRingModel{
+		AdminState: types.StringNull(),
+		Annotation: types.StringNull(),
+		Cert:       types.StringNull(),
+		Descr:      types.StringNull(),
+		EccCurve:   types.StringNull(),
+		Key:        types.StringNull(),
+		KeyType:    types.StringNull(),
+		Modulus:    types.StringNull(),
+		Name:       types.StringNull(),
+		NameAlias:  types.StringNull(),
+		OwnerKey:   types.StringNull(),
+		OwnerTag:   types.StringNull(),
+		Regen:      types.StringNull(),
+		Tp:         types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type PkiKeyRingResourceModel struct {
 	PkiKeyRingModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewPkiKeyRingResourceModelNull() PkiKeyRingResourceModel {
+	return PkiKeyRingResourceModel{
+		PkiKeyRingModel: NewPkiKeyRingModelNull(),
+		ID:              types.StringNull(),
+		ParentDn:        types.StringNull(),
+	}
 }
 
 type PkiKeyRingDataSourceModel struct {
 	PkiKeyRingModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewPkiKeyRingDataSourceModelNull() PkiKeyRingDataSourceModel {
+	return PkiKeyRingDataSourceModel{
+		PkiKeyRingModel: NewPkiKeyRingModelNull(),
+		ID:              types.StringNull(),
+		ParentDn:        types.StringNull(),
+	}
 }

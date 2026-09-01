@@ -2,4 +2,66 @@
 
 package models
 
-type FvUplinkOrderContModel struct{}
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
+
+type FvUplinkOrderContModel struct {
+	Active        types.String `tfsdk:"active_uplinks"`
+	Annotation    types.String `tfsdk:"annotation"`
+	Descr         types.String `tfsdk:"description"`
+	Name          types.String `tfsdk:"name"`
+	NameAlias     types.String `tfsdk:"name_alias"`
+	OwnerKey      types.String `tfsdk:"owner_key"`
+	OwnerTag      types.String `tfsdk:"owner_tag"`
+	Standby       types.String `tfsdk:"standby_uplinks"`
+	TagAnnotation types.Set    `tfsdk:"annotations"`
+	TagTag        types.Set    `tfsdk:"tags"`
+}
+
+func FvUplinkOrderContModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"active_uplinks":  types.StringType,
+		"annotation":      types.StringType,
+		"description":     types.StringType,
+		"name":            types.StringType,
+		"name_alias":      types.StringType,
+		"owner_key":       types.StringType,
+		"owner_tag":       types.StringType,
+		"standby_uplinks": types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewFvUplinkOrderContModelNull() FvUplinkOrderContModel {
+	return FvUplinkOrderContModel{
+		Active:     types.StringNull(),
+		Annotation: types.StringNull(),
+		Descr:      types.StringNull(),
+		Name:       types.StringNull(),
+		NameAlias:  types.StringNull(),
+		OwnerKey:   types.StringNull(),
+		OwnerTag:   types.StringNull(),
+		Standby:    types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}

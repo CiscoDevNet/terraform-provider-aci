@@ -2,18 +2,99 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type CoppProtoClassPModel struct{}
+type CoppProtoClassPModel struct {
+	Annotation    types.String `tfsdk:"annotation"`
+	Burst         types.String `tfsdk:"burst"`
+	Descr         types.String `tfsdk:"description"`
+	MatchProto    types.Set    `tfsdk:"match_protocols"`
+	Name          types.String `tfsdk:"name"`
+	NameAlias     types.String `tfsdk:"name_alias"`
+	OwnerKey      types.String `tfsdk:"owner_key"`
+	OwnerTag      types.String `tfsdk:"owner_tag"`
+	Rate          types.String `tfsdk:"rate"`
+	TagAnnotation types.Set    `tfsdk:"annotations"`
+	TagTag        types.Set    `tfsdk:"tags"`
+}
+
+func CoppProtoClassPModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":      types.StringType,
+		"burst":           types.StringType,
+		"description":     types.StringType,
+		"match_protocols": types.SetType{ElemType: types.StringType},
+		"name":            types.StringType,
+		"name_alias":      types.StringType,
+		"owner_key":       types.StringType,
+		"owner_tag":       types.StringType,
+		"rate":            types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewCoppProtoClassPModelNull() CoppProtoClassPModel {
+	return CoppProtoClassPModel{
+		Annotation: types.StringNull(),
+		Burst:      types.StringNull(),
+		Descr:      types.StringNull(),
+		MatchProto: types.SetNull(types.StringType),
+		Name:       types.StringNull(),
+		NameAlias:  types.StringNull(),
+		OwnerKey:   types.StringNull(),
+		OwnerTag:   types.StringNull(),
+		Rate:       types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type CoppProtoClassPResourceModel struct {
 	CoppProtoClassPModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewCoppProtoClassPResourceModelNull() CoppProtoClassPResourceModel {
+	return CoppProtoClassPResourceModel{
+		CoppProtoClassPModel: NewCoppProtoClassPModelNull(),
+		ID:                   types.StringNull(),
+		ParentDn:             types.StringNull(),
+	}
 }
 
 type CoppProtoClassPDataSourceModel struct {
 	CoppProtoClassPModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewCoppProtoClassPDataSourceModelNull() CoppProtoClassPDataSourceModel {
+	return CoppProtoClassPDataSourceModel{
+		CoppProtoClassPModel: NewCoppProtoClassPModelNull(),
+		ID:                   types.StringNull(),
+		ParentDn:             types.StringNull(),
+	}
 }

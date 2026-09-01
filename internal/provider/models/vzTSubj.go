@@ -2,18 +2,95 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type VzTSubjModel struct{}
+type VzTSubjModel struct {
+	Annotation    types.String `tfsdk:"annotation"`
+	Descr         types.String `tfsdk:"description"`
+	Name          types.String `tfsdk:"name"`
+	NameAlias     types.String `tfsdk:"name_alias"`
+	TagAnnotation types.Set    `tfsdk:"annotations"`
+	TagTag        types.Set    `tfsdk:"tags"`
+	VzRsDenyRule  types.Set    `tfsdk:"relation_to_filters"`
+}
+
+func VzTSubjModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":  types.StringType,
+		"description": types.StringType,
+		"name":        types.StringType,
+		"name_alias":  types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+		"relation_to_filters": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: VzRsDenyRuleModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewVzTSubjModelNull() VzTSubjModel {
+	return VzTSubjModel{
+		Annotation: types.StringNull(),
+		Descr:      types.StringNull(),
+		Name:       types.StringNull(),
+		NameAlias:  types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+		VzRsDenyRule: types.SetNull(
+			types.ObjectType{
+				AttrTypes: VzRsDenyRuleModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type VzTSubjResourceModel struct {
 	VzTSubjModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewVzTSubjResourceModelNull() VzTSubjResourceModel {
+	return VzTSubjResourceModel{
+		VzTSubjModel: NewVzTSubjModelNull(),
+		ID:           types.StringNull(),
+		ParentDn:     types.StringNull(),
+	}
 }
 
 type VzTSubjDataSourceModel struct {
 	VzTSubjModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewVzTSubjDataSourceModelNull() VzTSubjDataSourceModel {
+	return VzTSubjDataSourceModel{
+		VzTSubjModel: NewVzTSubjModelNull(),
+		ID:           types.StringNull(),
+		ParentDn:     types.StringNull(),
+	}
 }

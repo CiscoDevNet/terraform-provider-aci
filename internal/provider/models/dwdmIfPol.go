@@ -2,18 +2,94 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type DwdmIfPolModel struct{}
+type DwdmIfPolModel struct {
+	Annotation        types.String                                      `tfsdk:"annotation"`
+	Descr             types.String                                      `tfsdk:"description"`
+	FcotChannelNumber customTypes.DwdmIfPolFcotChannelNumberStringValue `tfsdk:"channel_nummber"`
+	Name              types.String                                      `tfsdk:"name"`
+	NameAlias         types.String                                      `tfsdk:"name_alias"`
+	OwnerKey          types.String                                      `tfsdk:"owner_key"`
+	OwnerTag          types.String                                      `tfsdk:"owner_tag"`
+	TagAnnotation     types.Set                                         `tfsdk:"annotations"`
+	TagTag            types.Set                                         `tfsdk:"tags"`
+}
+
+func DwdmIfPolModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":      types.StringType,
+		"description":     types.StringType,
+		"channel_nummber": customTypes.DwdmIfPolFcotChannelNumberStringType{},
+		"name":            types.StringType,
+		"name_alias":      types.StringType,
+		"owner_key":       types.StringType,
+		"owner_tag":       types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewDwdmIfPolModelNull() DwdmIfPolModel {
+	return DwdmIfPolModel{
+		Annotation:        types.StringNull(),
+		Descr:             types.StringNull(),
+		FcotChannelNumber: customTypes.NewDwdmIfPolFcotChannelNumberStringNull(),
+		Name:              types.StringNull(),
+		NameAlias:         types.StringNull(),
+		OwnerKey:          types.StringNull(),
+		OwnerTag:          types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type DwdmIfPolResourceModel struct {
 	DwdmIfPolModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewDwdmIfPolResourceModelNull() DwdmIfPolResourceModel {
+	return DwdmIfPolResourceModel{
+		DwdmIfPolModel: NewDwdmIfPolModelNull(),
+		ID:             types.StringNull(),
+		ParentDn:       types.StringNull(),
+	}
 }
 
 type DwdmIfPolDataSourceModel struct {
 	DwdmIfPolModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewDwdmIfPolDataSourceModelNull() DwdmIfPolDataSourceModel {
+	return DwdmIfPolDataSourceModel{
+		DwdmIfPolModel: NewDwdmIfPolModelNull(),
+		ID:             types.StringNull(),
+		ParentDn:       types.StringNull(),
+	}
 }

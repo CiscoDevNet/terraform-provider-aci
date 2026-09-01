@@ -2,9 +2,68 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type FvTenantModel struct{}
+type FvTenantModel struct {
+	Annotation       types.String `tfsdk:"annotation"`
+	Descr            types.String `tfsdk:"description"`
+	Name             types.String `tfsdk:"name"`
+	NameAlias        types.String `tfsdk:"name_alias"`
+	OwnerKey         types.String `tfsdk:"owner_key"`
+	OwnerTag         types.String `tfsdk:"owner_tag"`
+	FvRsTenantMonPol types.Object `tfsdk:"relation_to_monitoring_policy"`
+	TagAnnotation    types.Set    `tfsdk:"annotations"`
+	TagTag           types.Set    `tfsdk:"tags"`
+}
+
+func FvTenantModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":  types.StringType,
+		"description": types.StringType,
+		"name":        types.StringType,
+		"name_alias":  types.StringType,
+		"owner_key":   types.StringType,
+		"owner_tag":   types.StringType,
+		"relation_to_monitoring_policy": types.ObjectType{
+			AttrTypes: FvRsTenantMonPolModelAttributeTypes(),
+		},
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewFvTenantModelNull() FvTenantModel {
+	return FvTenantModel{
+		Annotation:       types.StringNull(),
+		Descr:            types.StringNull(),
+		Name:             types.StringNull(),
+		NameAlias:        types.StringNull(),
+		OwnerKey:         types.StringNull(),
+		OwnerTag:         types.StringNull(),
+		FvRsTenantMonPol: types.ObjectNull(FvRsTenantMonPolModelAttributeTypes()),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type FvTenantResourceModel struct {
 	FvTenantModel
@@ -12,8 +71,22 @@ type FvTenantResourceModel struct {
 	ID types.String `tfsdk:"id"`
 }
 
+func NewFvTenantResourceModelNull() FvTenantResourceModel {
+	return FvTenantResourceModel{
+		FvTenantModel: NewFvTenantModelNull(),
+		ID:            types.StringNull(),
+	}
+}
+
 type FvTenantDataSourceModel struct {
 	FvTenantModel
 
 	ID types.String `tfsdk:"id"`
+}
+
+func NewFvTenantDataSourceModelNull() FvTenantDataSourceModel {
+	return FvTenantDataSourceModel{
+		FvTenantModel: NewFvTenantModelNull(),
+		ID:            types.StringNull(),
+	}
 }

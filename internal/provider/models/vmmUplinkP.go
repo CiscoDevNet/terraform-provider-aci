@@ -2,18 +2,84 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type VmmUplinkPModel struct{}
+type VmmUplinkPModel struct {
+	Annotation    types.String `tfsdk:"annotation"`
+	NameAlias     types.String `tfsdk:"name_alias"`
+	UplinkId      types.String `tfsdk:"uplink_id"`
+	UplinkName    types.String `tfsdk:"uplink_name"`
+	TagAnnotation types.Set    `tfsdk:"annotations"`
+	TagTag        types.Set    `tfsdk:"tags"`
+}
+
+func VmmUplinkPModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":  types.StringType,
+		"name_alias":  types.StringType,
+		"uplink_id":   types.StringType,
+		"uplink_name": types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewVmmUplinkPModelNull() VmmUplinkPModel {
+	return VmmUplinkPModel{
+		Annotation: types.StringNull(),
+		NameAlias:  types.StringNull(),
+		UplinkId:   types.StringNull(),
+		UplinkName: types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type VmmUplinkPResourceModel struct {
 	VmmUplinkPModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewVmmUplinkPResourceModelNull() VmmUplinkPResourceModel {
+	return VmmUplinkPResourceModel{
+		VmmUplinkPModel: NewVmmUplinkPModelNull(),
+		ID:              types.StringNull(),
+		ParentDn:        types.StringNull(),
+	}
 }
 
 type VmmUplinkPDataSourceModel struct {
 	VmmUplinkPModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewVmmUplinkPDataSourceModelNull() VmmUplinkPDataSourceModel {
+	return VmmUplinkPDataSourceModel{
+		VmmUplinkPModel: NewVmmUplinkPModelNull(),
+		ID:              types.StringNull(),
+		ParentDn:        types.StringNull(),
+	}
 }

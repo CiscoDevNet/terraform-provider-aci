@@ -157,7 +157,7 @@ type PropertyDefinition struct {
 	// A warning is logged when an entry is not present in the meta valid values.
 	RemoveValidValues []string `yaml:"remove_valid_values"`
 	// Overrides the value type derived from the meta `uitype`.
-	// Accepted values mirror the ValueTypeEnum vocabulary: "string", "set", "object", "ip_address", "semantic_equality".
+	// Accepted values mirror the ValueTypeEnum vocabulary: "string", "set", "object", "ip_address", "semantic_equality", "vmm_arp_learning".
 	// An error is returned by YAML decoding when set to an unrecognized value.
 	ValueType ValueTypeEnum `yaml:"value_type"`
 	// Per-property documentation overrides (description, notes, warnings).
