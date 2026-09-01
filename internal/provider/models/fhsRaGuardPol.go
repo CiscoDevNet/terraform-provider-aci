@@ -80,3 +80,7 @@ func NewFhsRaGuardPolModelNull() FhsRaGuardPolModel {
 		),
 	}
 }
+
+func (m *FhsRaGuardPolModel) BuildRN() string {
+	return "raguardpol"
+}

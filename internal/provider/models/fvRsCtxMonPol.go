@@ -47,3 +47,7 @@ func NewFvRsCtxMonPolModelNull() FvRsCtxMonPolModel {
 		),
 	}
 }
+
+func (m *FvRsCtxMonPolModel) BuildRN() string {
+	return "rsCtxMonPol"
+}

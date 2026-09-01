@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -49,6 +51,13 @@ func NewVzRsDenyRuleModelNull() VzRsDenyRuleModel {
 			},
 		),
 	}
+}
+
+func (m *VzRsDenyRuleModel) BuildRN() string {
+	rn := "rsdenyRule-{tnVzFilterName}"
+	rn = strings.ReplaceAll(rn, "{tnVzFilterName}", m.TnVzFilterName.ValueString())
+
+	return rn
 }
 
 type VzRsDenyRuleResourceModel struct {

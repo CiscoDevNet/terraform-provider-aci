@@ -47,3 +47,7 @@ func NewFvRsCtxToSDWanVpnModelNull() FvRsCtxToSDWanVpnModel {
 		),
 	}
 }
+
+func (m *FvRsCtxToSDWanVpnModel) BuildRN() string {
+	return "rsctxToSDWanVpn"
+}

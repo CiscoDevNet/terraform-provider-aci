@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -46,6 +48,13 @@ func NewNetflowRsMonitorToExporterModelNull() NetflowRsMonitorToExporterModel {
 			},
 		),
 	}
+}
+
+func (m *NetflowRsMonitorToExporterModel) BuildRN() string {
+	rn := "rsmonitorToExporter-{tnNetflowExporterPolName}"
+	rn = strings.ReplaceAll(rn, "{tnNetflowExporterPolName}", m.TnNetflowExporterPolName.ValueString())
+
+	return rn
 }
 
 type NetflowRsMonitorToExporterResourceModel struct {

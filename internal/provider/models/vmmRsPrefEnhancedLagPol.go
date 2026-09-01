@@ -47,3 +47,7 @@ func NewVmmRsPrefEnhancedLagPolModelNull() VmmRsPrefEnhancedLagPolModel {
 		),
 	}
 }
+
+func (m *VmmRsPrefEnhancedLagPolModel) BuildRN() string {
+	return "rsprefEnhancedLagPol"
+}

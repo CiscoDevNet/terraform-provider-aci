@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -24,6 +26,13 @@ func NewTagAnnotationModelNull() TagAnnotationModel {
 		Key:   types.StringNull(),
 		Value: types.StringNull(),
 	}
+}
+
+func (m *TagAnnotationModel) BuildRN() string {
+	rn := "annotationKey-[{key}]"
+	rn = strings.ReplaceAll(rn, "{key}", m.Key.ValueString())
+
+	return rn
 }
 
 type TagAnnotationResourceModel struct {

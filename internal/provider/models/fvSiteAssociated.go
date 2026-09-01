@@ -74,6 +74,10 @@ func NewFvSiteAssociatedModelNull() FvSiteAssociatedModel {
 	}
 }
 
+func (m *FvSiteAssociatedModel) BuildRN() string {
+	return "stAsc"
+}
+
 type FvSiteAssociatedResourceModel struct {
 	FvSiteAssociatedModel
 

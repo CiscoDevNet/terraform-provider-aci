@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -61,6 +63,13 @@ func NewFvRsPathAttModelNull() FvRsPathAttModel {
 			},
 		),
 	}
+}
+
+func (m *FvRsPathAttModel) BuildRN() string {
+	rn := "rspathAtt-[{tDn}]"
+	rn = strings.ReplaceAll(rn, "{tDn}", m.TDn.ValueString())
+
+	return rn
 }
 
 type FvRsPathAttResourceModel struct {

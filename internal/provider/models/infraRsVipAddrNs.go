@@ -47,3 +47,7 @@ func NewInfraRsVipAddrNsModelNull() InfraRsVipAddrNsModel {
 		),
 	}
 }
+
+func (m *InfraRsVipAddrNsModel) BuildRN() string {
+	return "rsvipAddrNs"
+}

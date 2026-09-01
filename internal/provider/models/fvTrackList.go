@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -84,6 +86,13 @@ func NewFvTrackListModelNull() FvTrackListModel {
 			},
 		),
 	}
+}
+
+func (m *FvTrackListModel) BuildRN() string {
+	rn := "tracklist-{name}"
+	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
+
+	return rn
 }
 
 type FvTrackListResourceModel struct {

@@ -50,3 +50,7 @@ func NewFvRsBdToEpRetModelNull() FvRsBdToEpRetModel {
 		),
 	}
 }
+
+func (m *FvRsBdToEpRetModel) BuildRN() string {
+	return "rsbdToEpRet"
+}

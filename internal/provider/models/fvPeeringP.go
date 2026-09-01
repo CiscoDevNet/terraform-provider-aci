@@ -65,3 +65,7 @@ func NewFvPeeringPModelNull() FvPeeringPModel {
 		),
 	}
 }
+
+func (m *FvPeeringPModel) BuildRN() string {
+	return "peeringP"
+}

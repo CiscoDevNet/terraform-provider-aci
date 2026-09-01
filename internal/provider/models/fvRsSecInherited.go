@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -46,6 +48,13 @@ func NewFvRsSecInheritedModelNull() FvRsSecInheritedModel {
 			},
 		),
 	}
+}
+
+func (m *FvRsSecInheritedModel) BuildRN() string {
+	rn := "rssecInherited-[{tDn}]"
+	rn = strings.ReplaceAll(rn, "{tDn}", m.TDn.ValueString())
+
+	return rn
 }
 
 type FvRsSecInheritedResourceModel struct {

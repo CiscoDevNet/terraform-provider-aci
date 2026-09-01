@@ -47,3 +47,7 @@ func NewFvRsBdModelNull() FvRsBdModel {
 		),
 	}
 }
+
+func (m *FvRsBdModel) BuildRN() string {
+	return "rsbd"
+}

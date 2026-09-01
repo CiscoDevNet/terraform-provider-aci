@@ -69,6 +69,10 @@ func NewFvCrtrnModelNull() FvCrtrnModel {
 	}
 }
 
+func (m *FvCrtrnModel) BuildRN() string {
+	return "crtrn"
+}
+
 type FvCrtrnResourceModel struct {
 	FvCrtrnModel
 

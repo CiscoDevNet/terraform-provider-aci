@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -68,6 +70,14 @@ func NewQosDscpClassModelNull() QosDscpClassModel {
 			},
 		),
 	}
+}
+
+func (m *QosDscpClassModel) BuildRN() string {
+	rn := "dcsp-{from}-{to}"
+	rn = strings.ReplaceAll(rn, "{from}", m.From.NamedValueString())
+	rn = strings.ReplaceAll(rn, "{to}", m.To.NamedValueString())
+
+	return rn
 }
 
 type QosDscpClassResourceModel struct {

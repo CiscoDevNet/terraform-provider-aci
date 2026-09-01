@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -76,6 +78,13 @@ func NewFcIfPolModelNull() FcIfPolModel {
 			},
 		),
 	}
+}
+
+func (m *FcIfPolModel) BuildRN() string {
+	rn := "infra/fcIfPol-{name}"
+	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
+
+	return rn
 }
 
 type FcIfPolResourceModel struct {

@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -85,6 +87,13 @@ func NewMcpIfPolModelNull() McpIfPolModel {
 			},
 		),
 	}
+}
+
+func (m *McpIfPolModel) BuildRN() string {
+	rn := "infra/mcpIfP-{name}"
+	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
+
+	return rn
 }
 
 type McpIfPolResourceModel struct {

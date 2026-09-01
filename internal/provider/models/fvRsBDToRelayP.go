@@ -47,3 +47,7 @@ func NewFvRsBDToRelayPModelNull() FvRsBDToRelayPModel {
 		),
 	}
 }
+
+func (m *FvRsBDToRelayPModel) BuildRN() string {
+	return "rsBDToRelayP"
+}

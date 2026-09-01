@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -70,6 +72,13 @@ func NewFvTrackMemberModelNull() FvTrackMemberModel {
 			},
 		),
 	}
+}
+
+func (m *FvTrackMemberModel) BuildRN() string {
+	rn := "trackmember-{name}"
+	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
+
+	return rn
 }
 
 type FvTrackMemberResourceModel struct {

@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -52,6 +54,13 @@ func NewVmmUplinkPModelNull() VmmUplinkPModel {
 			},
 		),
 	}
+}
+
+func (m *VmmUplinkPModel) BuildRN() string {
+	rn := "uplinkp-{uplinkId}"
+	rn = strings.ReplaceAll(rn, "{uplinkId}", m.UplinkId.ValueString())
+
+	return rn
 }
 
 type VmmUplinkPResourceModel struct {
