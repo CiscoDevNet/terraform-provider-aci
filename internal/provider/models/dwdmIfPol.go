@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -62,6 +64,13 @@ func NewDwdmIfPolModelNull() DwdmIfPolModel {
 			},
 		),
 	}
+}
+
+func (m *DwdmIfPolModel) BuildRN() string {
+	rn := "infra/dwdmifpol-{name}"
+	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
+
+	return rn
 }
 
 type DwdmIfPolResourceModel struct {

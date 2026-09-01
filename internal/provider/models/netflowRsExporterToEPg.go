@@ -47,3 +47,7 @@ func NewNetflowRsExporterToEPgModelNull() NetflowRsExporterToEPgModel {
 		),
 	}
 }
+
+func (m *NetflowRsExporterToEPgModel) BuildRN() string {
+	return "rsexporterToEPg"
+}

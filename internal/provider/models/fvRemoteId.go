@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -67,6 +69,13 @@ func NewFvRemoteIdModelNull() FvRemoteIdModel {
 			},
 		),
 	}
+}
+
+func (m *FvRemoteIdModel) BuildRN() string {
+	rn := "site-{siteId}"
+	rn = strings.ReplaceAll(rn, "{siteId}", m.SiteId.ValueString())
+
+	return rn
 }
 
 type FvRemoteIdResourceModel struct {

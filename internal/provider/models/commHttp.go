@@ -98,3 +98,7 @@ func NewCommHttpModelNull() CommHttpModel {
 		),
 	}
 }
+
+func (m *CommHttpModel) BuildRN() string {
+	return "http"
+}

@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -46,6 +48,13 @@ func NewL3extRsLblToInstPModelNull() L3extRsLblToInstPModel {
 			},
 		),
 	}
+}
+
+func (m *L3extRsLblToInstPModel) BuildRN() string {
+	rn := "rslblToInstP-[{tDn}]"
+	rn = strings.ReplaceAll(rn, "{tDn}", m.TDn.ValueString())
+
+	return rn
 }
 
 type L3extRsLblToInstPResourceModel struct {

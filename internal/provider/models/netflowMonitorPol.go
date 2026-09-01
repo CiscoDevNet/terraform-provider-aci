@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -74,6 +76,13 @@ func NewNetflowMonitorPolModelNull() NetflowMonitorPolModel {
 			},
 		),
 	}
+}
+
+func (m *NetflowMonitorPolModel) BuildRN() string {
+	rn := "monitorpol-{name}"
+	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
+
+	return rn
 }
 
 type NetflowMonitorPolResourceModel struct {

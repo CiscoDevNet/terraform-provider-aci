@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -69,6 +71,13 @@ func NewInfraAttEntityPModelNull() InfraAttEntityPModel {
 			},
 		),
 	}
+}
+
+func (m *InfraAttEntityPModel) BuildRN() string {
+	rn := "infra/attentp-{name}"
+	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
+
+	return rn
 }
 
 type InfraAttEntityPResourceModel struct {

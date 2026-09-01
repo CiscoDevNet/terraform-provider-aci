@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -86,6 +88,13 @@ func NewCommPolModelNull() CommPolModel {
 			},
 		),
 	}
+}
+
+func (m *CommPolModel) BuildRN() string {
+	rn := "fabric/comm-{name}"
+	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
+
+	return rn
 }
 
 type CommPolResourceModel struct {

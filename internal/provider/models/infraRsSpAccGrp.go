@@ -47,3 +47,7 @@ func NewInfraRsSpAccGrpModelNull() InfraRsSpAccGrpModel {
 		),
 	}
 }
+
+func (m *InfraRsSpAccGrpModel) BuildRN() string {
+	return "rsspAccGrp"
+}

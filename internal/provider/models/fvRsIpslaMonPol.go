@@ -47,3 +47,7 @@ func NewFvRsIpslaMonPolModelNull() FvRsIpslaMonPolModel {
 		),
 	}
 }
+
+func (m *FvRsIpslaMonPolModel) BuildRN() string {
+	return "rsIpslaMonPol"
+}

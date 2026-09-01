@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -81,6 +83,13 @@ func NewPoeIfPolModelNull() PoeIfPolModel {
 			},
 		),
 	}
+}
+
+func (m *PoeIfPolModel) BuildRN() string {
+	rn := "infra/poeIfP-{name}"
+	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
+
+	return rn
 }
 
 type PoeIfPolResourceModel struct {

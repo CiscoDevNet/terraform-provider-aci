@@ -62,6 +62,10 @@ func NewVmmUplinkPContModelNull() VmmUplinkPContModel {
 	}
 }
 
+func (m *VmmUplinkPContModel) BuildRN() string {
+	return "uplinkpcont"
+}
+
 type VmmUplinkPContResourceModel struct {
 	VmmUplinkPContModel
 

@@ -3,7 +3,11 @@
 package models
 
 import (
-	{{- if .Class.HasCustomModelTypes }}
+	{{- if .Class.IdentifiedBy }}
+	"strings"
+	{{- end }}
+
+	{{ if .Class.HasCustomModelTypes }}
 	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	{{- end }}
 	"github.com/hashicorp/terraform-plugin-framework/attr"
@@ -60,6 +64,20 @@ func New{{ .Class.Name.Capitalized }}ModelNull() {{ .Class.Name.Capitalized }}Mo
 			{{- end }}
 		{{- end }}
 	}
+}
+
+func (m *{{ .Class.Name.Capitalized }}Model) BuildRN() string {
+	{{- if .Class.IdentifiedBy }}
+	rn := {{ printf "%q" .Class.RnFormat }}
+	{{- range $identifier := .Class.IdentifiedBy }}
+		{{- $property := index $.Class.Properties $identifier }}
+	rn = strings.ReplaceAll(rn, {{ printf "%q" (printf "{%s}" $identifier) }}, m.{{ $property.ModelFieldName $.Class.Name }}.{{ if $property.UsesCustomModelType }}NamedValueString(){{ else }}ValueString(){{ end }})
+	{{- end }}
+
+	return rn
+	{{- else }}
+	return {{ printf "%q" .Class.RnFormat }}
+	{{- end }}
 }
 {{ if .Class.HasResourceArtifact }}
 type {{ .Class.Name.Capitalized }}ResourceModel struct {

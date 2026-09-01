@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -24,6 +26,13 @@ func NewTagTagModelNull() TagTagModel {
 		Key:   types.StringNull(),
 		Value: types.StringNull(),
 	}
+}
+
+func (m *TagTagModel) BuildRN() string {
+	rn := "tagKey-{key}"
+	rn = strings.ReplaceAll(rn, "{key}", m.Key.ValueString())
+
+	return rn
 }
 
 type TagTagResourceModel struct {

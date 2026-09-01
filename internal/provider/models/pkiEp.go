@@ -59,3 +59,7 @@ func NewPkiEpModelNull() PkiEpModel {
 		),
 	}
 }
+
+func (m *PkiEpModel) BuildRN() string {
+	return "pkiext"
+}

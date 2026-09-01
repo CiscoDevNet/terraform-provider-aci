@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -55,6 +57,13 @@ func NewFvRsAepAttModelNull() FvRsAepAttModel {
 			},
 		),
 	}
+}
+
+func (m *FvRsAepAttModel) BuildRN() string {
+	rn := "rsaepAtt-{tnInfraAttEntityPName}"
+	rn = strings.ReplaceAll(rn, "{tnInfraAttEntityPName}", m.TnInfraAttEntityPName.ValueString())
+
+	return rn
 }
 
 type FvRsAepAttResourceModel struct {

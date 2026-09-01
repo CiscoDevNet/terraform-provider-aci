@@ -47,3 +47,7 @@ func NewFvRsApMonPolModelNull() FvRsApMonPolModel {
 		),
 	}
 }
+
+func (m *FvRsApMonPolModel) BuildRN() string {
+	return "rsApMonPol"
+}

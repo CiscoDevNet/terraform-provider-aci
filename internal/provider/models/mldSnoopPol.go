@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -82,6 +84,13 @@ func NewMldSnoopPolModelNull() MldSnoopPolModel {
 			},
 		),
 	}
+}
+
+func (m *MldSnoopPolModel) BuildRN() string {
+	rn := "mldsnoopPol-{name}"
+	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
+
+	return rn
 }
 
 type MldSnoopPolResourceModel struct {

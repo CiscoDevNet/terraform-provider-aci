@@ -47,3 +47,7 @@ func NewFvRsTenantMonPolModelNull() FvRsTenantMonPolModel {
 		),
 	}
 }
+
+func (m *FvRsTenantMonPolModel) BuildRN() string {
+	return "rsTenantMonPol"
+}

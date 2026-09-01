@@ -47,3 +47,7 @@ func NewFvRsIgmpsnModelNull() FvRsIgmpsnModel {
 		),
 	}
 }
+
+func (m *FvRsIgmpsnModel) BuildRN() string {
+	return "rsigmpsn"
+}

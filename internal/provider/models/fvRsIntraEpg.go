@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -46,6 +48,13 @@ func NewFvRsIntraEpgModelNull() FvRsIntraEpgModel {
 			},
 		),
 	}
+}
+
+func (m *FvRsIntraEpgModel) BuildRN() string {
+	rn := "rsintraEpg-{tnVzBrCPName}"
+	rn = strings.ReplaceAll(rn, "{tnVzBrCPName}", m.TnVzBrCPName.ValueString())
+
+	return rn
 }
 
 type FvRsIntraEpgResourceModel struct {

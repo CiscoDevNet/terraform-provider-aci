@@ -47,3 +47,7 @@ func NewFvRsAEPgMonPolModelNull() FvRsAEPgMonPolModel {
 		),
 	}
 }
+
+func (m *FvRsAEPgMonPolModel) BuildRN() string {
+	return "rsAEPgMonPol"
+}

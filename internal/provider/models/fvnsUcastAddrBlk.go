@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -58,6 +60,14 @@ func NewFvnsUcastAddrBlkModelNull() FvnsUcastAddrBlkModel {
 			},
 		),
 	}
+}
+
+func (m *FvnsUcastAddrBlkModel) BuildRN() string {
+	rn := "fromaddr-[{from}]-toaddr-[{to}]"
+	rn = strings.ReplaceAll(rn, "{from}", m.From.ValueString())
+	rn = strings.ReplaceAll(rn, "{to}", m.To.ValueString())
+
+	return rn
 }
 
 type FvnsUcastAddrBlkResourceModel struct {

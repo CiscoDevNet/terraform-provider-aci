@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -46,6 +48,13 @@ func NewL3extRsOutToFBRGroupModelNull() L3extRsOutToFBRGroupModel {
 			},
 		),
 	}
+}
+
+func (m *L3extRsOutToFBRGroupModel) BuildRN() string {
+	rn := "rsoutToFBRGroup-[{tDn}]"
+	rn = strings.ReplaceAll(rn, "{tDn}", m.TDn.ValueString())
+
+	return rn
 }
 
 type L3extRsOutToFBRGroupResourceModel struct {

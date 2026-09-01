@@ -93,6 +93,10 @@ func NewVzAnyModelNull() VzAnyModel {
 	}
 }
 
+func (m *VzAnyModel) BuildRN() string {
+	return "any"
+}
+
 type VzAnyResourceModel struct {
 	VzAnyModel
 

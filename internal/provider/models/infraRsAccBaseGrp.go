@@ -50,3 +50,7 @@ func NewInfraRsAccBaseGrpModelNull() InfraRsAccBaseGrpModel {
 		),
 	}
 }
+
+func (m *InfraRsAccBaseGrpModel) BuildRN() string {
+	return "rsaccBaseGrp"
+}

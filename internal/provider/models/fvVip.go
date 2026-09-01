@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -62,6 +64,13 @@ func NewFvVipModelNull() FvVipModel {
 			},
 		),
 	}
+}
+
+func (m *FvVipModel) BuildRN() string {
+	rn := "vip-[{addr}]"
+	rn = strings.ReplaceAll(rn, "{addr}", m.Addr.NamedValueString())
+
+	return rn
 }
 
 type FvVipResourceModel struct {

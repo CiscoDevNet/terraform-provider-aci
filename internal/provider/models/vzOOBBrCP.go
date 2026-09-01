@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -71,6 +73,13 @@ func NewVzOOBBrCPModelNull() VzOOBBrCPModel {
 			},
 		),
 	}
+}
+
+func (m *VzOOBBrCPModel) BuildRN() string {
+	rn := "tn-mgmt/oobbrc-{name}"
+	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
+
+	return rn
 }
 
 type VzOOBBrCPResourceModel struct {

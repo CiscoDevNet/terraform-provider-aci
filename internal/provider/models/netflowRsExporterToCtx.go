@@ -47,3 +47,7 @@ func NewNetflowRsExporterToCtxModelNull() NetflowRsExporterToCtxModel {
 		),
 	}
 }
+
+func (m *NetflowRsExporterToCtxModel) BuildRN() string {
+	return "rsexporterToCtx"
+}

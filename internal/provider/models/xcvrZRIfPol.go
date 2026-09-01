@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -97,6 +99,13 @@ func NewXcvrZRIfPolModelNull() XcvrZRIfPolModel {
 			},
 		),
 	}
+}
+
+func (m *XcvrZRIfPolModel) BuildRN() string {
+	rn := "infra/zr-{name}"
+	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
+
+	return rn
 }
 
 type XcvrZRIfPolResourceModel struct {

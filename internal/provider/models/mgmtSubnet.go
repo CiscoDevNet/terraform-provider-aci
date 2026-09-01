@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -56,6 +58,13 @@ func NewMgmtSubnetModelNull() MgmtSubnetModel {
 			},
 		),
 	}
+}
+
+func (m *MgmtSubnetModel) BuildRN() string {
+	rn := "subnet-[{ip}]"
+	rn = strings.ReplaceAll(rn, "{ip}", m.Ip.NamedValueString())
+
+	return rn
 }
 
 type MgmtSubnetResourceModel struct {

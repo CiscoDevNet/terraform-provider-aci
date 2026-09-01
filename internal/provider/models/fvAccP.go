@@ -62,3 +62,7 @@ func NewFvAccPModelNull() FvAccPModel {
 		),
 	}
 }
+
+func (m *FvAccPModel) BuildRN() string {
+	return "accp"
+}

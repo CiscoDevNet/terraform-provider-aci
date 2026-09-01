@@ -47,3 +47,7 @@ func NewFvRsCtxModelNull() FvRsCtxModel {
 		),
 	}
 }
+
+func (m *FvRsCtxModel) BuildRN() string {
+	return "rsctx"
+}

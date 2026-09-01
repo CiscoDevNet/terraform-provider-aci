@@ -47,3 +47,7 @@ func NewFvRsScopeModelNull() FvRsScopeModel {
 		),
 	}
 }
+
+func (m *FvRsScopeModel) BuildRN() string {
+	return "rsscope"
+}

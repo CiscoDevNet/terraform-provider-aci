@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -49,6 +51,14 @@ func NewFvRsBDToNetflowMonitorPolModelNull() FvRsBDToNetflowMonitorPolModel {
 			},
 		),
 	}
+}
+
+func (m *FvRsBDToNetflowMonitorPolModel) BuildRN() string {
+	rn := "rsBDToNetflowMonitorPol-[{tnNetflowMonitorPolName}]-{fltType}"
+	rn = strings.ReplaceAll(rn, "{fltType}", m.FltType.ValueString())
+	rn = strings.ReplaceAll(rn, "{tnNetflowMonitorPolName}", m.TnNetflowMonitorPolName.ValueString())
+
+	return rn
 }
 
 type FvRsBDToNetflowMonitorPolResourceModel struct {

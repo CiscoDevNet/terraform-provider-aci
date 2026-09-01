@@ -117,3 +117,7 @@ func NewCommHttpsModelNull() CommHttpsModel {
 		),
 	}
 }
+
+func (m *CommHttpsModel) BuildRN() string {
+	return "https"
+}

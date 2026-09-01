@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -58,6 +60,14 @@ func NewFvEpMacTagModelNull() FvEpMacTagModel {
 			},
 		),
 	}
+}
+
+func (m *FvEpMacTagModel) BuildRN() string {
+	rn := "eptags/epmactag-{mac}-[{bdName}]"
+	rn = strings.ReplaceAll(rn, "{bdName}", m.BdName.ValueString())
+	rn = strings.ReplaceAll(rn, "{mac}", m.Mac.ValueString())
+
+	return rn
 }
 
 type FvEpMacTagResourceModel struct {

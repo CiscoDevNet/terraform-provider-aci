@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -139,6 +141,13 @@ func NewFvCtxModelNull() FvCtxModel {
 			},
 		),
 	}
+}
+
+func (m *FvCtxModel) BuildRN() string {
+	rn := "ctx-{name}"
+	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
+
+	return rn
 }
 
 type FvCtxResourceModel struct {

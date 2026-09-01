@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -49,6 +51,14 @@ func NewL3extRsInstPToProfileModelNull() L3extRsInstPToProfileModel {
 			},
 		),
 	}
+}
+
+func (m *L3extRsInstPToProfileModel) BuildRN() string {
+	rn := "rsinstPToProfile-[{tnRtctrlProfileName}]-{direction}"
+	rn = strings.ReplaceAll(rn, "{direction}", m.Direction.ValueString())
+	rn = strings.ReplaceAll(rn, "{tnRtctrlProfileName}", m.TnRtctrlProfileName.ValueString())
+
+	return rn
 }
 
 type L3extRsInstPToProfileResourceModel struct {

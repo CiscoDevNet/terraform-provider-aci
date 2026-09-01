@@ -3,6 +3,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -70,6 +72,13 @@ func NewQosSdIfPolModelNull() QosSdIfPolModel {
 			},
 		),
 	}
+}
+
+func (m *QosSdIfPolModel) BuildRN() string {
+	rn := "infra/qossdpol-{name}"
+	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
+
+	return rn
 }
 
 type QosSdIfPolResourceModel struct {
