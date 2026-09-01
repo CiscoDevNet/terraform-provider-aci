@@ -79,6 +79,10 @@ func (m *InfraHPathSModel) BuildRN() string {
 	return rn
 }
 
+func (m *InfraHPathSModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}
+
 type InfraHPathSResourceModel struct {
 	InfraHPathSModel
 
@@ -94,6 +98,10 @@ func NewInfraHPathSResourceModelNull() InfraHPathSResourceModel {
 	}
 }
 
+func (m *InfraHPathSResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
+}
+
 type InfraHPathSDataSourceModel struct {
 	InfraHPathSModel
 
@@ -107,4 +115,8 @@ func NewInfraHPathSDataSourceModelNull() InfraHPathSDataSourceModel {
 		ID:               types.StringNull(),
 		ParentDn:         types.StringNull(),
 	}
+}
+
+func (m *InfraHPathSDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

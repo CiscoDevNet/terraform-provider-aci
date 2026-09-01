@@ -2,8 +2,8 @@ documentation:
   sub_category: Access Policies
   ui_locations:
   - Fabric -> Access Policies -> Policies -> Global -> Attachable Access Entity Profiles
-include_parents:
-- polUni
+exclude_parents:
+- infraInfra
 migration_source: from_sdkv2
 rn_prepend: infra
 state_upgrades:

@@ -83,6 +83,10 @@ func (m *FhsBDPolModel) BuildRN() string {
 	return rn
 }
 
+func (m *FhsBDPolModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}
+
 type FhsBDPolResourceModel struct {
 	FhsBDPolModel
 
@@ -98,6 +102,10 @@ func NewFhsBDPolResourceModelNull() FhsBDPolResourceModel {
 	}
 }
 
+func (m *FhsBDPolResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
+}
+
 type FhsBDPolDataSourceModel struct {
 	FhsBDPolModel
 
@@ -111,4 +119,8 @@ func NewFhsBDPolDataSourceModelNull() FhsBDPolDataSourceModel {
 		ID:            types.StringNull(),
 		ParentDn:      types.StringNull(),
 	}
+}
+
+func (m *FhsBDPolDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

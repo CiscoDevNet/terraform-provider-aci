@@ -78,6 +78,10 @@ func (m *CoppProtoClassPModel) BuildRN() string {
 	return rn
 }
 
+func (m *CoppProtoClassPModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}
+
 type CoppProtoClassPResourceModel struct {
 	CoppProtoClassPModel
 
@@ -93,6 +97,10 @@ func NewCoppProtoClassPResourceModelNull() CoppProtoClassPResourceModel {
 	}
 }
 
+func (m *CoppProtoClassPResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
+}
+
 type CoppProtoClassPDataSourceModel struct {
 	CoppProtoClassPModel
 
@@ -106,4 +114,8 @@ func NewCoppProtoClassPDataSourceModelNull() CoppProtoClassPDataSourceModel {
 		ID:                   types.StringNull(),
 		ParentDn:             types.StringNull(),
 	}
+}
+
+func (m *CoppProtoClassPDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

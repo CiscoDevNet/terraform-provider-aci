@@ -81,32 +81,40 @@ func (m *QosSdIfPolModel) BuildRN() string {
 	return rn
 }
 
+func (m *QosSdIfPolModel) BuildDN() string {
+	return "uni/" + m.BuildRN()
+}
+
 type QosSdIfPolResourceModel struct {
 	QosSdIfPolModel
 
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ID types.String `tfsdk:"id"`
 }
 
 func NewQosSdIfPolResourceModelNull() QosSdIfPolResourceModel {
 	return QosSdIfPolResourceModel{
 		QosSdIfPolModel: NewQosSdIfPolModelNull(),
 		ID:              types.StringNull(),
-		ParentDn:        types.StringNull(),
 	}
+}
+
+func (m *QosSdIfPolResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }
 
 type QosSdIfPolDataSourceModel struct {
 	QosSdIfPolModel
 
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ID types.String `tfsdk:"id"`
 }
 
 func NewQosSdIfPolDataSourceModelNull() QosSdIfPolDataSourceModel {
 	return QosSdIfPolDataSourceModel{
 		QosSdIfPolModel: NewQosSdIfPolModelNull(),
 		ID:              types.StringNull(),
-		ParentDn:        types.StringNull(),
 	}
+}
+
+func (m *QosSdIfPolDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

@@ -66,6 +66,10 @@ func (m *FvRogueExceptionMacModel) BuildRN() string {
 	return rn
 }
 
+func (m *FvRogueExceptionMacModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}
+
 type FvRogueExceptionMacResourceModel struct {
 	FvRogueExceptionMacModel
 
@@ -81,6 +85,10 @@ func NewFvRogueExceptionMacResourceModelNull() FvRogueExceptionMacResourceModel 
 	}
 }
 
+func (m *FvRogueExceptionMacResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
+}
+
 type FvRogueExceptionMacDataSourceModel struct {
 	FvRogueExceptionMacModel
 
@@ -94,4 +102,8 @@ func NewFvRogueExceptionMacDataSourceModelNull() FvRogueExceptionMacDataSourceMo
 		ID:                       types.StringNull(),
 		ParentDn:                 types.StringNull(),
 	}
+}
+
+func (m *FvRogueExceptionMacDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

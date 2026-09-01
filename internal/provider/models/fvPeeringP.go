@@ -69,3 +69,7 @@ func NewFvPeeringPModelNull() FvPeeringPModel {
 func (m *FvPeeringPModel) BuildRN() string {
 	return "peeringP"
 }
+
+func (m *FvPeeringPModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}

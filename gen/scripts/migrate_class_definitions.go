@@ -495,13 +495,11 @@ func migrate(file string, legacy map[string]any, tally *keyTally) data.ClassDefi
 				}
 			}
 		case "contained_by":
-			// -> include_parents (union with anything already present).
-			// Loader merges meta `containedBy` itself and dedupes.
-			for _, parent := range toStringSlice(val) {
-				if !contains(out.IncludeParents, parent) {
-					out.IncludeParents = append(out.IncludeParents, parent)
-				}
-			}
+			// Legacy contained_by replaced meta containedBy; it was not an
+			// additive include. Reproduce that resolved parent set with the
+			// canonical include/exclude fields while omitting globally excluded
+			// singleton parents such as polUni and fabricInst.
+			migrateContainedBy(file, val, &out)
 		case "class_version":
 			if s, ok := val.(string); ok {
 				out.SupportedVersions = s
@@ -570,6 +568,39 @@ func contains(haystack []string, needle string) bool {
 		}
 	}
 	return false
+}
+
+// migrateContainedBy translates the legacy replacement semantics onto the
+// canonical additive include/exclude representation. A desired parent that is
+// already supplied by meta needs no include; a meta parent absent from the
+// desired set is explicitly excluded. Global singleton exclusions are omitted
+// from both sides because the canonical loader already removes them.
+func migrateContainedBy(file string, value any, out *data.ClassDefinition) {
+	className := strings.TrimSuffix(filepath.Base(file), ".yaml")
+	desiredParents := toStringSlice(value)
+	desired := make(map[string]bool, len(desiredParents))
+	for _, parent := range desiredParents {
+		if metaReg.GlobalExcludeParents[parent] {
+			continue
+		}
+		desired[parent] = true
+	}
+
+	metaParents := metaReg.ClassContainedBy[className]
+	for parent := range desired {
+		if !contains(metaParents, parent) {
+			out.IncludeParents = append(out.IncludeParents, parent)
+		}
+	}
+	for _, parent := range metaParents {
+		if metaReg.GlobalExcludeParents[parent] || desired[parent] {
+			continue
+		}
+		out.ExcludeParents = append(out.ExcludeParents, parent)
+	}
+
+	sort.Strings(out.IncludeParents)
+	sort.Strings(out.ExcludeParents)
 }
 
 // liftTestDefaultsToDefaultValues rewrites the legacy `test_values.default`
@@ -726,6 +757,11 @@ type metaRegistry struct {
 	// entry exactly matches what resolveParentDependencies would auto-
 	// generate from meta and can therefore be dropped during migration.
 	ClassContainedBy map[string][]string
+	// GlobalExcludeParents contains root-level singleton classes from
+	// definitions/global.yaml. Legacy contained_by filtering applied these
+	// after replacing meta containedBy, so migration needs the same set to
+	// preserve whether Terraform exposes parent_dn.
+	GlobalExcludeParents map[string]bool
 	// ClassResourceName: className -> resource_name from
 	// legacy_definitions/classes/<class>.yaml. Pre-loaded so the parents
 	// prune can compare a legacy parent_dn / parent_dependency_name
@@ -772,6 +808,7 @@ func newMetaRegistry(metaDir, classesDir, globalDefPath, propertiesDir string) (
 		ClassOverwriteInverters: map[string]map[string]string{},
 		ClassMetaDefaults:       map[string]map[string]string{},
 		ClassContainedBy:        map[string][]string{},
+		GlobalExcludeParents:    map[string]bool{},
 		ClassResourceName:       map[string]string{},
 		ClassRelationToMo:       map[string]string{},
 		ClassRnFormat:           map[string]string{},
@@ -899,6 +936,13 @@ func newMetaRegistry(metaDir, classesDir, globalDefPath, propertiesDir string) (
 					rn, _ := rnAny.(string)
 					if cn != "" && rn != "" {
 						reg.NoMetaFile[cn] = rn
+					}
+				}
+			}
+			if excluded, ok := globalDoc["exclude_parents"].([]any); ok {
+				for _, raw := range excluded {
+					if parent, ok := raw.(string); ok && parent != "" {
+						reg.GlobalExcludeParents[parent] = true
 					}
 				}
 			}
@@ -2782,7 +2826,7 @@ func hasMigratedData(c data.ClassDefinition) bool {
 	if len(c.RelationInfo.ToClasses) > 0 || c.RelationInfo.FromClass != "" || c.RelationInfo.Disabled || c.RelationInfo.Type != data.UndefinedRelationshipType {
 		return true
 	}
-	if len(c.ExcludeChildren) > 0 || len(c.IncludeChildren) > 0 || len(c.IncludeParents) > 0 {
+	if len(c.ExcludeChildren) > 0 || len(c.ExcludeParents) > 0 || len(c.IncludeChildren) > 0 || len(c.IncludeParents) > 0 {
 		return true
 	}
 	if c.Artifacts != nil || len(c.ParentDnVariants) > 0 {
@@ -2845,6 +2889,9 @@ func marshalView(c data.ClassDefinition) map[string]any {
 	}
 	if len(c.ExcludeChildren) > 0 {
 		out["exclude_children"] = c.ExcludeChildren
+	}
+	if len(c.ExcludeParents) > 0 {
+		out["exclude_parents"] = c.ExcludeParents
 	}
 	if len(c.IncludeChildren) > 0 {
 		out["include_children"] = c.IncludeChildren

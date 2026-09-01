@@ -72,6 +72,10 @@ func (m *FvSCrtrnModel) BuildRN() string {
 	return rn
 }
 
+func (m *FvSCrtrnModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}
+
 type FvSCrtrnResourceModel struct {
 	FvSCrtrnModel
 
@@ -87,6 +91,10 @@ func NewFvSCrtrnResourceModelNull() FvSCrtrnResourceModel {
 	}
 }
 
+func (m *FvSCrtrnResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
+}
+
 type FvSCrtrnDataSourceModel struct {
 	FvSCrtrnModel
 
@@ -100,4 +108,8 @@ func NewFvSCrtrnDataSourceModelNull() FvSCrtrnDataSourceModel {
 		ID:            types.StringNull(),
 		ParentDn:      types.StringNull(),
 	}
+}
+
+func (m *FvSCrtrnDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

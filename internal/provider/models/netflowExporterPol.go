@@ -98,6 +98,10 @@ func (m *NetflowExporterPolModel) BuildRN() string {
 	return rn
 }
 
+func (m *NetflowExporterPolModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}
+
 type NetflowExporterPolResourceModel struct {
 	NetflowExporterPolModel
 
@@ -113,6 +117,10 @@ func NewNetflowExporterPolResourceModelNull() NetflowExporterPolResourceModel {
 	}
 }
 
+func (m *NetflowExporterPolResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
+}
+
 type NetflowExporterPolDataSourceModel struct {
 	NetflowExporterPolModel
 
@@ -126,4 +134,8 @@ func NewNetflowExporterPolDataSourceModelNull() NetflowExporterPolDataSourceMode
 		ID:                      types.StringNull(),
 		ParentDn:                types.StringNull(),
 	}
+}
+
+func (m *NetflowExporterPolDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

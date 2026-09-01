@@ -251,6 +251,10 @@ func (m *FvAEPgModel) BuildRN() string {
 	return rn
 }
 
+func (m *FvAEPgModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}
+
 type FvAEPgResourceModel struct {
 	FvAEPgModel
 
@@ -266,6 +270,10 @@ func NewFvAEPgResourceModelNull() FvAEPgResourceModel {
 	}
 }
 
+func (m *FvAEPgResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
+}
+
 type FvAEPgDataSourceModel struct {
 	FvAEPgModel
 
@@ -279,4 +287,8 @@ func NewFvAEPgDataSourceModelNull() FvAEPgDataSourceModel {
 		ID:          types.StringNull(),
 		ParentDn:    types.StringNull(),
 	}
+}
+
+func (m *FvAEPgDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

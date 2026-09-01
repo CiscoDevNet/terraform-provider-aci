@@ -75,6 +75,10 @@ func (m *NetflowRecordPolModel) BuildRN() string {
 	return rn
 }
 
+func (m *NetflowRecordPolModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}
+
 type NetflowRecordPolResourceModel struct {
 	NetflowRecordPolModel
 
@@ -90,6 +94,10 @@ func NewNetflowRecordPolResourceModelNull() NetflowRecordPolResourceModel {
 	}
 }
 
+func (m *NetflowRecordPolResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
+}
+
 type NetflowRecordPolDataSourceModel struct {
 	NetflowRecordPolModel
 
@@ -103,4 +111,8 @@ func NewNetflowRecordPolDataSourceModelNull() NetflowRecordPolDataSourceModel {
 		ID:                    types.StringNull(),
 		ParentDn:              types.StringNull(),
 	}
+}
+
+func (m *NetflowRecordPolDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

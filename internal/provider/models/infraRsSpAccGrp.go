@@ -51,3 +51,7 @@ func NewInfraRsSpAccGrpModelNull() InfraRsSpAccGrpModel {
 func (m *InfraRsSpAccGrpModel) BuildRN() string {
 	return "rsspAccGrp"
 }
+
+func (m *InfraRsSpAccGrpModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}

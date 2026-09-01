@@ -74,6 +74,10 @@ func (m *VzTSubjModel) BuildRN() string {
 	return rn
 }
 
+func (m *VzTSubjModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}
+
 type VzTSubjResourceModel struct {
 	VzTSubjModel
 
@@ -89,6 +93,10 @@ func NewVzTSubjResourceModelNull() VzTSubjResourceModel {
 	}
 }
 
+func (m *VzTSubjResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
+}
+
 type VzTSubjDataSourceModel struct {
 	VzTSubjModel
 
@@ -102,4 +110,8 @@ func NewVzTSubjDataSourceModelNull() VzTSubjDataSourceModel {
 		ID:           types.StringNull(),
 		ParentDn:     types.StringNull(),
 	}
+}
+
+func (m *VzTSubjDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

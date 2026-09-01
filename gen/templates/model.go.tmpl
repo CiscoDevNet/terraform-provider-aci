@@ -3,6 +3,9 @@
 package models
 
 import (
+	{{- if .Class.ParentDnVariants }}
+	"regexp"
+	{{- end }}
 	{{- if .Class.IdentifiedBy }}
 	"strings"
 	{{- end }}
@@ -13,6 +16,18 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
+
+{{ range $index, $variant := .Class.ParentDnVariants -}}
+	{{- if $index -}}
+		{{- $parentClass := index $.DataStore.Classes $variant.ParentClass.String }}
+var {{ $.Class.Name.String }}ParentDnVariant{{ $index }}Patterns = []*regexp.Regexp{
+	{{- range $pattern := $parentClass.DnFormatPatterns }}
+	regexp.MustCompile({{ printf "%q" $pattern }}),
+	{{- end }}
+}
+
+	{{- end }}
+{{- end }}
 
 type {{ .Class.Name.Capitalized }}Model struct {
 	{{- range $property := .Class.ModelProperties }}
@@ -79,6 +94,34 @@ func (m *{{ .Class.Name.Capitalized }}Model) BuildRN() string {
 	return {{ printf "%q" .Class.RnFormat }}
 	{{- end }}
 }
+{{ if .Class.ParentDnProperty }}
+func (m *{{ .Class.Name.Capitalized }}Model) BuildDN(parentDN string) string {
+	{{- if .Class.ParentDnVariants }}
+	rn := m.BuildRN()
+	{{- range $index, $variant := .Class.ParentDnVariants }}
+		{{- if $index }}
+	for _, pattern := range {{ $.Class.Name.String }}ParentDnVariant{{ $index }}Patterns {
+		if pattern.MatchString(parentDN) {
+			{{- if $variant.RnPrepend }}
+			return parentDN + {{ printf "%q" (printf "/%s/" $variant.RnPrepend) }} + rn
+			{{- else }}
+			return parentDN + "/" + rn
+			{{- end }}
+		}
+	}
+		{{- end }}
+	{{- end }}
+
+	return parentDN + "/" + rn
+	{{- else }}
+	return parentDN + "/" + m.BuildRN()
+	{{- end }}
+}
+{{- else }}
+func (m *{{ .Class.Name.Capitalized }}Model) BuildDN() string {
+	return {{ printf "%q" (printf "%s/" .Class.FixedParentDn) }} + m.BuildRN()
+}
+{{- end }}
 {{ if .Class.HasResourceArtifact }}
 type {{ .Class.Name.Capitalized }}ResourceModel struct {
 	{{ .Class.Name.Capitalized }}Model
@@ -97,6 +140,10 @@ func New{{ .Class.Name.Capitalized }}ResourceModelNull() {{ .Class.Name.Capitali
 		{{ .ModelFieldName $.Class.Name }}: types.StringNull(),
 		{{- end }}
 	}
+}
+
+func (m *{{ .Class.Name.Capitalized }}ResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }
 {{ end }}
 {{ if .Class.HasDatasourceArtifact }}
@@ -117,5 +164,9 @@ func New{{ .Class.Name.Capitalized }}DataSourceModelNull() {{ .Class.Name.Capita
 		{{ .ModelFieldName $.Class.Name }}: types.StringNull(),
 		{{- end }}
 	}
+}
+
+func (m *{{ .Class.Name.Capitalized }}DataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }
 {{ end }}

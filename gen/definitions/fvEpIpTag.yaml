@@ -2,6 +2,8 @@ documentation:
   sub_category: Tenant Policies
   ui_locations:
   - Tenants -> Policies -> Protocol -> Endpoint Tags -> Endpoint IP
+exclude_parents:
+- fvEpTags
 include_parents:
 - fvTenant
 properties:

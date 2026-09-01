@@ -78,6 +78,10 @@ func (m *FvSiteAssociatedModel) BuildRN() string {
 	return "stAsc"
 }
 
+func (m *FvSiteAssociatedModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}
+
 type FvSiteAssociatedResourceModel struct {
 	FvSiteAssociatedModel
 
@@ -93,6 +97,10 @@ func NewFvSiteAssociatedResourceModelNull() FvSiteAssociatedResourceModel {
 	}
 }
 
+func (m *FvSiteAssociatedResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
+}
+
 type FvSiteAssociatedDataSourceModel struct {
 	FvSiteAssociatedModel
 
@@ -106,4 +114,8 @@ func NewFvSiteAssociatedDataSourceModelNull() FvSiteAssociatedDataSourceModel {
 		ID:                    types.StringNull(),
 		ParentDn:              types.StringNull(),
 	}
+}
+
+func (m *FvSiteAssociatedDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

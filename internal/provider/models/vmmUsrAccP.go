@@ -75,6 +75,10 @@ func (m *VmmUsrAccPModel) BuildRN() string {
 	return rn
 }
 
+func (m *VmmUsrAccPModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}
+
 type VmmUsrAccPResourceModel struct {
 	VmmUsrAccPModel
 
@@ -90,6 +94,10 @@ func NewVmmUsrAccPResourceModelNull() VmmUsrAccPResourceModel {
 	}
 }
 
+func (m *VmmUsrAccPResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
+}
+
 type VmmUsrAccPDataSourceModel struct {
 	VmmUsrAccPModel
 
@@ -103,4 +111,8 @@ func NewVmmUsrAccPDataSourceModelNull() VmmUsrAccPDataSourceModel {
 		ID:              types.StringNull(),
 		ParentDn:        types.StringNull(),
 	}
+}
+
+func (m *VmmUsrAccPDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

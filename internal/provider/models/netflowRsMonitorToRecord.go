@@ -51,3 +51,7 @@ func NewNetflowRsMonitorToRecordModelNull() NetflowRsMonitorToRecordModel {
 func (m *NetflowRsMonitorToRecordModel) BuildRN() string {
 	return "rsmonitorToRecord"
 }
+
+func (m *NetflowRsMonitorToRecordModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}

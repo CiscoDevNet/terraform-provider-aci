@@ -97,6 +97,10 @@ func (m *VzAnyModel) BuildRN() string {
 	return "any"
 }
 
+func (m *VzAnyModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}
+
 type VzAnyResourceModel struct {
 	VzAnyModel
 
@@ -112,6 +116,10 @@ func NewVzAnyResourceModelNull() VzAnyResourceModel {
 	}
 }
 
+func (m *VzAnyResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
+}
+
 type VzAnyDataSourceModel struct {
 	VzAnyModel
 
@@ -125,4 +133,8 @@ func NewVzAnyDataSourceModelNull() VzAnyDataSourceModel {
 		ID:         types.StringNull(),
 		ParentDn:   types.StringNull(),
 	}
+}
+
+func (m *VzAnyDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

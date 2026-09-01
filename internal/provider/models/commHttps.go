@@ -121,3 +121,7 @@ func NewCommHttpsModelNull() CommHttpsModel {
 func (m *CommHttpsModel) BuildRN() string {
 	return "https"
 }
+
+func (m *CommHttpsModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}

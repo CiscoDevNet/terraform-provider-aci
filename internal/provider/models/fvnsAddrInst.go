@@ -89,32 +89,40 @@ func (m *FvnsAddrInstModel) BuildRN() string {
 	return rn
 }
 
+func (m *FvnsAddrInstModel) BuildDN() string {
+	return "uni/" + m.BuildRN()
+}
+
 type FvnsAddrInstResourceModel struct {
 	FvnsAddrInstModel
 
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ID types.String `tfsdk:"id"`
 }
 
 func NewFvnsAddrInstResourceModelNull() FvnsAddrInstResourceModel {
 	return FvnsAddrInstResourceModel{
 		FvnsAddrInstModel: NewFvnsAddrInstModelNull(),
 		ID:                types.StringNull(),
-		ParentDn:          types.StringNull(),
 	}
+}
+
+func (m *FvnsAddrInstResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }
 
 type FvnsAddrInstDataSourceModel struct {
 	FvnsAddrInstModel
 
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ID types.String `tfsdk:"id"`
 }
 
 func NewFvnsAddrInstDataSourceModelNull() FvnsAddrInstDataSourceModel {
 	return FvnsAddrInstDataSourceModel{
 		FvnsAddrInstModel: NewFvnsAddrInstModelNull(),
 		ID:                types.StringNull(),
-		ParentDn:          types.StringNull(),
 	}
+}
+
+func (m *FvnsAddrInstDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

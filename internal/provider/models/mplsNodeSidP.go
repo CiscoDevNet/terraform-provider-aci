@@ -70,6 +70,10 @@ func (m *MplsNodeSidPModel) BuildRN() string {
 	return rn
 }
 
+func (m *MplsNodeSidPModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}
+
 type MplsNodeSidPResourceModel struct {
 	MplsNodeSidPModel
 
@@ -85,6 +89,10 @@ func NewMplsNodeSidPResourceModelNull() MplsNodeSidPResourceModel {
 	}
 }
 
+func (m *MplsNodeSidPResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
+}
+
 type MplsNodeSidPDataSourceModel struct {
 	MplsNodeSidPModel
 
@@ -98,4 +106,8 @@ func NewMplsNodeSidPDataSourceModelNull() MplsNodeSidPDataSourceModel {
 		ID:                types.StringNull(),
 		ParentDn:          types.StringNull(),
 	}
+}
+
+func (m *MplsNodeSidPDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

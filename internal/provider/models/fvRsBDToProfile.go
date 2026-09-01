@@ -54,3 +54,7 @@ func NewFvRsBDToProfileModelNull() FvRsBDToProfileModel {
 func (m *FvRsBDToProfileModel) BuildRN() string {
 	return "rsBDToProfile"
 }
+
+func (m *FvRsBDToProfileModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}

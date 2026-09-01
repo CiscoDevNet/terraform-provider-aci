@@ -4,8 +4,8 @@ documentation:
   sub_category: Application Management
   ui_locations:
   - Tenants -> Application Profiles -> uSeg EPGs -> uSeg Attributes
-include_parents:
-- fvCrtrn
+exclude_parents:
+- fvSCrtrn
 properties:
   ip:
     default_values:

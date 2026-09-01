@@ -92,32 +92,40 @@ func (m *PoeIfPolModel) BuildRN() string {
 	return rn
 }
 
+func (m *PoeIfPolModel) BuildDN() string {
+	return "uni/" + m.BuildRN()
+}
+
 type PoeIfPolResourceModel struct {
 	PoeIfPolModel
 
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ID types.String `tfsdk:"id"`
 }
 
 func NewPoeIfPolResourceModelNull() PoeIfPolResourceModel {
 	return PoeIfPolResourceModel{
 		PoeIfPolModel: NewPoeIfPolModelNull(),
 		ID:            types.StringNull(),
-		ParentDn:      types.StringNull(),
 	}
+}
+
+func (m *PoeIfPolResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }
 
 type PoeIfPolDataSourceModel struct {
 	PoeIfPolModel
 
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ID types.String `tfsdk:"id"`
 }
 
 func NewPoeIfPolDataSourceModelNull() PoeIfPolDataSourceModel {
 	return PoeIfPolDataSourceModel{
 		PoeIfPolModel: NewPoeIfPolModelNull(),
 		ID:            types.StringNull(),
-		ParentDn:      types.StringNull(),
 	}
+}
+
+func (m *PoeIfPolDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

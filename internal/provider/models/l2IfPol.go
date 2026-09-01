@@ -78,32 +78,40 @@ func (m *L2IfPolModel) BuildRN() string {
 	return rn
 }
 
+func (m *L2IfPolModel) BuildDN() string {
+	return "uni/" + m.BuildRN()
+}
+
 type L2IfPolResourceModel struct {
 	L2IfPolModel
 
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ID types.String `tfsdk:"id"`
 }
 
 func NewL2IfPolResourceModelNull() L2IfPolResourceModel {
 	return L2IfPolResourceModel{
 		L2IfPolModel: NewL2IfPolModelNull(),
 		ID:           types.StringNull(),
-		ParentDn:     types.StringNull(),
 	}
+}
+
+func (m *L2IfPolResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }
 
 type L2IfPolDataSourceModel struct {
 	L2IfPolModel
 
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ID types.String `tfsdk:"id"`
 }
 
 func NewL2IfPolDataSourceModelNull() L2IfPolDataSourceModel {
 	return L2IfPolDataSourceModel{
 		L2IfPolModel: NewL2IfPolModelNull(),
 		ID:           types.StringNull(),
-		ParentDn:     types.StringNull(),
 	}
+}
+
+func (m *L2IfPolDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

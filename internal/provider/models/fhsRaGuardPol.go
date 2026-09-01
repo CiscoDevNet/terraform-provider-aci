@@ -84,3 +84,7 @@ func NewFhsRaGuardPolModelNull() FhsRaGuardPolModel {
 func (m *FhsRaGuardPolModel) BuildRN() string {
 	return "raguardpol"
 }
+
+func (m *FhsRaGuardPolModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}

@@ -66,3 +66,7 @@ func NewFvAccPModelNull() FvAccPModel {
 func (m *FvAccPModel) BuildRN() string {
 	return "accp"
 }
+
+func (m *FvAccPModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}

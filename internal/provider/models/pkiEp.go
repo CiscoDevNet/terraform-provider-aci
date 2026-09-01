@@ -63,3 +63,7 @@ func NewPkiEpModelNull() PkiEpModel {
 func (m *PkiEpModel) BuildRN() string {
 	return "pkiext"
 }
+
+func (m *PkiEpModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}

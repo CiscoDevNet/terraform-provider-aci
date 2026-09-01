@@ -3,11 +3,16 @@
 package models
 
 import (
+	"regexp"
 	"strings"
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
+
+var pkiKeyRingParentDnVariant1Patterns = []*regexp.Regexp{
+	regexp.MustCompile("^uni/tn-[^/]+$"),
+}
 
 type PkiKeyRingModel struct {
 	AdminState    types.String `tfsdk:"admin_state"`
@@ -93,6 +98,17 @@ func (m *PkiKeyRingModel) BuildRN() string {
 	return rn
 }
 
+func (m *PkiKeyRingModel) BuildDN(parentDN string) string {
+	rn := m.BuildRN()
+	for _, pattern := range pkiKeyRingParentDnVariant1Patterns {
+		if pattern.MatchString(parentDN) {
+			return parentDN + "/certstore/" + rn
+		}
+	}
+
+	return parentDN + "/" + rn
+}
+
 type PkiKeyRingResourceModel struct {
 	PkiKeyRingModel
 
@@ -108,6 +124,10 @@ func NewPkiKeyRingResourceModelNull() PkiKeyRingResourceModel {
 	}
 }
 
+func (m *PkiKeyRingResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
+}
+
 type PkiKeyRingDataSourceModel struct {
 	PkiKeyRingModel
 
@@ -121,4 +141,8 @@ func NewPkiKeyRingDataSourceModelNull() PkiKeyRingDataSourceModel {
 		ID:              types.StringNull(),
 		ParentDn:        types.StringNull(),
 	}
+}
+
+func (m *PkiKeyRingDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

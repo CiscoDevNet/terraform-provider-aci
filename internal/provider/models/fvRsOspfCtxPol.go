@@ -51,3 +51,7 @@ func NewFvRsOspfCtxPolModelNull() FvRsOspfCtxPolModel {
 func (m *FvRsOspfCtxPolModel) BuildRN() string {
 	return "rsospfCtxPol"
 }
+
+func (m *FvRsOspfCtxPolModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}

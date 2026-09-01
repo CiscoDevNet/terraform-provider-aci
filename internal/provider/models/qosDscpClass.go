@@ -80,6 +80,10 @@ func (m *QosDscpClassModel) BuildRN() string {
 	return rn
 }
 
+func (m *QosDscpClassModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}
+
 type QosDscpClassResourceModel struct {
 	QosDscpClassModel
 
@@ -95,6 +99,10 @@ func NewQosDscpClassResourceModelNull() QosDscpClassResourceModel {
 	}
 }
 
+func (m *QosDscpClassResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
+}
+
 type QosDscpClassDataSourceModel struct {
 	QosDscpClassModel
 
@@ -108,4 +116,8 @@ func NewQosDscpClassDataSourceModelNull() QosDscpClassDataSourceModel {
 		ID:                types.StringNull(),
 		ParentDn:          types.StringNull(),
 	}
+}
+
+func (m *QosDscpClassDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

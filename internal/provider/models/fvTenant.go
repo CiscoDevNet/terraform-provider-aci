@@ -74,6 +74,10 @@ func (m *FvTenantModel) BuildRN() string {
 	return rn
 }
 
+func (m *FvTenantModel) BuildDN() string {
+	return "uni/" + m.BuildRN()
+}
+
 type FvTenantResourceModel struct {
 	FvTenantModel
 
@@ -87,6 +91,10 @@ func NewFvTenantResourceModelNull() FvTenantResourceModel {
 	}
 }
 
+func (m *FvTenantResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
+}
+
 type FvTenantDataSourceModel struct {
 	FvTenantModel
 
@@ -98,4 +106,8 @@ func NewFvTenantDataSourceModelNull() FvTenantDataSourceModel {
 		FvTenantModel: NewFvTenantModelNull(),
 		ID:            types.StringNull(),
 	}
+}
+
+func (m *FvTenantDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

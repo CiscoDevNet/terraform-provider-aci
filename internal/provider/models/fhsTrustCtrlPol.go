@@ -87,6 +87,10 @@ func (m *FhsTrustCtrlPolModel) BuildRN() string {
 	return rn
 }
 
+func (m *FhsTrustCtrlPolModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}
+
 type FhsTrustCtrlPolResourceModel struct {
 	FhsTrustCtrlPolModel
 
@@ -102,6 +106,10 @@ func NewFhsTrustCtrlPolResourceModelNull() FhsTrustCtrlPolResourceModel {
 	}
 }
 
+func (m *FhsTrustCtrlPolResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
+}
+
 type FhsTrustCtrlPolDataSourceModel struct {
 	FhsTrustCtrlPolModel
 
@@ -115,4 +123,8 @@ func NewFhsTrustCtrlPolDataSourceModelNull() FhsTrustCtrlPolDataSourceModel {
 		ID:                   types.StringNull(),
 		ParentDn:             types.StringNull(),
 	}
+}
+
+func (m *FhsTrustCtrlPolDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

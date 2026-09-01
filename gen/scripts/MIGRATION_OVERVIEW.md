@@ -56,7 +56,7 @@ Value or shape needs transformation. Notes describe what each transform does.
 | `datasource_notes` | 0 v2.19.0 files | `class.documentation.datasource.notes` | Same shape; read at [v2.19.0:2070](https://github.com/CiscoDevNet/terraform-provider-aci/blob/v2.19.0/gen/generator.go#L2070); 0 files use it. Same disposition as `resource_warnings`. |
 | `datasource_warnings` | 0 v2.19.0 files | `class.documentation.datasource.warnings` | Same shape; read at [v2.19.0:2075](https://github.com/CiscoDevNet/terraform-provider-aci/blob/v2.19.0/gen/generator.go#L2075); 0 files use it. Same disposition as `resource_warnings`. |
 | `children` | 7 | `class.include_children` | Rename only (`children` is the older alias). |
-| `contained_by` | 37 | `class.include_parents` | Old key supplied the full `containedBy` list; new key only adds entries on top of meta. Drop entries already present in meta. |
+| `contained_by` | 37 | `class.include_parents` / `class.exclude_parents` | The old key replaced meta `containedBy`; the canonical fields are additive/subtractive. Remove globally excluded parents, include desired parents absent from meta, and exclude meta parents absent from the desired set. This preserves whether the generated schema exposes `parent_dn`. |
 | `class_version` | 1 (`fvRsBDToRelayP`) | `class.supported_versions` | Rename only. |
 | `relationship_classes` | 5 | `class.relation_info.to_classes` | Move into nested block; combined with `multi_relationship_class` (size > 1 → drop the flag). For polymorphic-same-type relations (§8.6), union the legacy `parents[].target_classes` values into `to_classes` so the resolved set captures every parent-class scenario (only `fvRsSecInherited` is affected today — `[fvAEPg, fvESg]` becomes `[fvAEPg, fvESg, l3extInstP]`). |
 | `migration_version` | 23 | `class.state_upgrades[].prior_schema_version` (+ `class.migration_source: from_sdkv2`) | One `state_upgrades` entry per declared version. See §2.1 for the two-source merge with [schema-git-commit-e21fb3e5.json](legacy_definitions/schema-git-commit-e21fb3e5.json). |
@@ -133,7 +133,7 @@ The legacy `parents:` / `targets:` blocks on each `properties/<class>.yaml` were
 
 | Slot | Auto-resolver | Inputs |
 |---|---|---|
-| `Class.Parents` (the parent class set) | [setParents](../utils/data/class.go) (class.go:524) | meta `containedBy` ∪ `class.include_parents`, minus `class.exclude_parents` ∪ `global.exclude_parents`. |
+| `Class.Parents` (the parent class set) | [setParents](../utils/data/class.go) (class.go:524) | `class.include_parents` ∪ (meta `containedBy` minus `class.exclude_parents` ∪ `global.exclude_parents`). Explicit includes take precedence over excludes. |
 | Top-level `TestDependency{Role: Parent}` (first **2** parent classes) | [resolveParentDependencies](../utils/data/class.go) (class.go:1233) | First parent → `aci_<resource>.test.id` + `aci_<resource>.test_2.id` (two instances for ForceNew testing). Second parent → `aci_<resource>.test.id`. Additional parents are skipped — provide them explicitly if needed. |
 | Top-level `TestDependency{Role: Target}` (single-target only) | [resolveTargetDependencies](../utils/data/class.go) (class.go:1268) | `Relation.ToClasses[0]` → `aci_<resource>.test.id` + `aci_<resource>.test_2.id`. **Multi-target relations (`len(Relation.ToClasses) > 1`) raise a diagnostic** unless an explicit `role: target` dependency is declared. |
 | Recursive `TestDependency.Dependencies` (the parent's own parents) | [buildDependency](../utils/data/class.go) (class.go:1300) | For each auto-built dep, recurses through `depClass.Parents` and emits `aci_<resource>.test.id` for each. The `ReferenceTypeEnum` passed here (`ResourceReference` / `DataSourceReference` / `StaticReference`) is honored downstream by `setParentDn` / `setTargetDn` / the placeholder resolvers so static-DN deps render as `StringValue` and Terraform references render as `ReferenceValue`. |
@@ -243,14 +243,14 @@ Members and their purpose:
 
 | Member | Purpose |
 |---|---|
-| `parent_class` | User-facing parent the variant exposes (e.g., `fvTenant`). Listed in meta `containedBy`, but `containedBy` does not distinguish a system-scoped placement from a wrapped tenant-scoped placement. |
-| `rn_prepend` | Intermediate RN segment that selects this variant. The generated resource matches it against the user’s `parent_dn` to route the API call. |
+| `parent_class` | User-facing parent the variant exposes (e.g., `fvTenant`). It can differ from the direct parent in meta `containedBy` when APIC inserts an implicit wrapper. Its class metadata supplies the valid runtime parent-DN formats. |
+| `rn_prepend` | Intermediate RN segment inserted between the selected parent DN and the class RN. |
 | `wrapper_class` | Implicit container the request nests the resource inside. Empty for variants that POST against a real, user-addressable parent. |
 | `test_platform` | Which platform profile (`apic` / `cloud`) exercises this variant in tests. Lets `testvars.yaml.tmpl` gate variant-specific test cases without splitting the test file. |
 
 Not REUSE on `include_parents`: that field is a flat `[]string`; flattening loses every `rn_prepend` / `wrapper_class` / `test_platform` association.
 
-Not DERIVE: the wrapper-container relationship (`fvTenant` → implicit `cloudCertStore` → `pkiKeyRing`) is not modeled in meta JSON — `containedBy` only lists `cloud:CertStore` and `pki:Ep` as direct parents and gives no signal that one of them is auto-created or that `fvTenant` is the user-facing entry point. It is a generator-side convention captured nowhere else.
+Not DERIVE in full: the wrapper-container relationship (`fvTenant` → implicit `cloudCertStore` → `pkiKeyRing`) is not modeled in meta JSON — `containedBy` only lists `cloud:CertStore` and `pki:Ep` as direct parents and gives no signal that one of them is auto-created or that `fvTenant` is the user-facing entry point. The variant must therefore name `parent_class`, `rn_prepend`, and `wrapper_class`. Once `parent_class` is known, its valid parent-DN formats are derived from that class through the DataStore rather than duplicated in YAML.
 
 Deprecation path: only viable if the meta file ever exposes per-parent runtime hints (auto-create flags, user-facing-parent indicators). Today’s meta has neither.
 
@@ -344,7 +344,7 @@ Keys decided as DERIVE: value is a function of data the generator already resolv
 | `datasource_required` (nested under `test_values`) | 38 | The datasource test’s lookup config = the renamed `IdentifiedBy` set (snake-case via global `attribute_name_overrides` + per-property `attribute_name`); the values = the `Default` bucket (already populated from `resource_required`). Per-file audit (38 files): 36 carry only renamed-`IdentifiedBy` keys with values identical to `resource_required`; the 2 outliers are `fvCrtrn` (empty `IdentifiedBy`, covered by `artifacts: [resource, datasource]` in §4.1) and `vmmDomP` (`parent_dn` against the static parent, covered by `parent_example_dn` in §5 / `static_parent` below). Migration script: drop the nested block, with a per-file safety check warning when a key is not in the renamed `IdentifiedBy` or its value diverges from `resource_required`. |
 | `datasource_non_existing` (nested under `test_values`) | 42 | Sibling of `datasource_required`: same renamed-`IdentifiedBy` key set, but values are a **type-aware non-matching transform** of `resource_required` so the generated datasource test verifies the "no result" branch. Two derivation branches across the 42 files: (a) string-typed naming properties append `_non_existing` (e.g. `criterion` → `criterion_non_existing`, `"131"` → `131_non_existing`); (b) IpAddress-typed properties pick a non-matching IP that still passes the validator (e.g. `10.0.0.2` → `10.0.1.2`, `2.2.2.3` → `2.2.2.4` — typically the next octet). Migration script: drop the nested block, with a per-file safety check warning when a key is not in the renamed `IdentifiedBy` set or the value is not a non-matching transform of `resource_required` for the property's `ValueType`. Exact value equality with the auto-derived candidate is **not** required — the assertion is "non-matching and validator-valid", since the IP increment choice is editorial. The new datasource test renderer applies the same transform at codegen time. |
 | `static_parent` | 1 (`vmmDomP`) | True iff the resolved `class.test_config.dependencies[]` for the parent role contains a `reference_type: static` entry. Templates branch on the dependency shape instead of a separate flag. |
-| `resource_identifier` | 1 (`fvTenant`, value `tn`) | Equal to the RN-prefix segment of `meta.fvTenant.rnFormat` (`tn-{name}` → `tn`). Legacy `GetOverwriteResourceIdentifier` ([v2.19.0:3133](https://github.com/CiscoDevNet/terraform-provider-aci/blob/v2.19.0/gen/generator.go#L3133)) is consulted by `GetMultiParentFormats` ([v2.19.0:3096](https://github.com/CiscoDevNet/terraform-provider-aci/blob/v2.19.0/gen/generator.go#L3096)) as a fallback when the hardcoded `resourceIdentifier` table miss. The new `ParentDnVariants` setter (§9.1.1) derives every variant’s `ParentDn` directly from meta `dnFormats` + `rnFormat`, so the YAML override and the hardcoded table both retire together. Drop the key; the setter computes `tn-` from meta. |
+| `resource_identifier` | 1 (`fvTenant`, value `tn`) | Equal to the RN-prefix segment of `meta.fvTenant.rnFormat` (`tn-{name}` → `tn`). Legacy `GetOverwriteResourceIdentifier` ([v2.19.0:3133](https://github.com/CiscoDevNet/terraform-provider-aci/blob/v2.19.0/gen/generator.go#L3133)) is consulted by `GetMultiParentFormats` ([v2.19.0:3096](https://github.com/CiscoDevNet/terraform-provider-aci/blob/v2.19.0/gen/generator.go#L3096)) as a fallback when the hardcoded `resourceIdentifier` table misses. The model renderer now identifies a variant from the referenced `ParentClass`'s meta `dnFormats`, so neither the YAML override nor the hardcoded identifier table is needed. |
 
 ---
 
@@ -588,7 +588,7 @@ The script writes YAML; consuming it requires three groups of upstream changes. 
 | New loader field | Resolved runtime field | Setter behaviour | Consumer site |
 |---|---|---|---|
 | `ClassDefinition.Artifacts` | `Class.Artifacts []ArtifactEnum` (same enum on both sides). | Empty YAML → auto-derive: `[resource, datasource]` when `len(IdentifiedBy) > 0`; `[]` otherwise (class is still loaded so it can be referenced as a child/parent/relation target, but not registered as a top-level artifact). Non-empty YAML → copy verbatim, overriding the auto-derivation. | `provider.go.tmpl` registry filter switches from `or (and .IdentifiedBy (not (and .MaxOneClassAllowed (hasPrefix .RnFormat "rs")))) .Include` to a `has .Artifacts "resource"` / `has .Artifacts "datasource"` lookup (one template helper, used in both branches). The four §4.2 opt-in classes carry `[resource, datasource]`; `topSystem` carries `[datasource]`; nested-only relation classes resolve to `[]`. |
-| `ClassDefinition.ParentDnVariants` | `Class.ParentDnVariants []*ParentDnVariant` plus a synthesised `Class.DefaultParentDn *ParentDnVariant` for the meta-derived placement. Each `ParentDnVariant` carries the loader fields plus a resolved `ParentClass *ClassName` (so templates can call `getResourceName`) and a resolved `WrapperClass *ClassName` (so the renderer can validate it exists in meta). | See §9.1.1 for the full derivation and emission rules. | Three template sites: `parent_dn` schema attribute (default + validator), Create / Update API routing in `resource_aci_<x>.go.tmpl`, and `testvars.yaml.tmpl` platform gating. Replaces the hand-coded `wrapperClassMap` in [resource_aci_key_ring.go](../../internal/provider/resource_aci_key_ring.go) and the matching block in `resource_aci_certificate_authority.go`. |
+| `ClassDefinition.ParentDnVariants` | `Class.ParentDnVariants []ParentDnVariant` plus a synthesised `Class.DefaultParentDn *ParentDnVariant` for the meta-derived placement. Each `ParentDnVariant` carries the loader fields plus resolved `ParentClass` and optional `WrapperClass` names. | See §9.1.1 for the full derivation and emission rules. | `model.go.tmpl` derives parent-DN match patterns through `ParentClass` and generates `BuildDN`; later resource/schema/test templates can consume the same resolved variants for API routing, schema behavior, and platform gating. Replaces the hand-coded `wrapperClassMap` in [resource_aci_key_ring.go](../../internal/provider/resource_aci_key_ring.go) and the matching block in `resource_aci_certificate_authority.go`. |
 | `ClassDocumentationDefinition.ExampleParentClasses` | `ClassDocumentation.ExampleParentClasses []*ClassName` | Resolve each YAML string into a `*ClassName`. When the override is empty, fall back to the existing meta-`containedBy` projection. | The parent-example projection in [class_documentation.go](../utils/data/class_documentation.go) and the `DocumentationExamples` iteration sites in `resource.md.tmpl` / `*_example.tf.tmpl` / `testvars.yaml.tmpl` read the override when populated. |
 | `ClassTestConfigDefinition.IgnoreTests` | `Class.TestConfig.IgnoreTests []IgnoreTestEnum` (same enum on both sides). | One-line passthrough from the loader. Empty list = nothing suppressed. | Three render-site gates keyed by enum membership: `child` is consumed by [testvars.yaml.tmpl:270](../templates/legacy_templates/testvars.yaml.tmpl) `{{- range $key, $value := .Children}}{{if not (has .TestConfig.IgnoreTests "child")}}…` (replaces the legacy `.ExcludeFromTesting` lookup); `resource` skips emission of `resource_aci_<x>_test.go` in `resource_test.go.tmpl`; `datasource` skips emission of `data_source_aci_<x>_test.go` in `datasource_test.go.tmpl`. The runtime resource / datasource, schema, docs, and examples are unaffected — use `Artifacts` to drop those too. |
 | `ClassTestConfigDefinition.IgnoreImportStateVerify` | `Class.TestConfig.IgnoreImportStateVerify bool` | One-line passthrough from the loader. | Resource-test template branch that emits or skips `ImportStateVerify: true`. Distinct from `IgnoreTests: [resource]` — the test still runs; only the one assertion is suppressed. |
@@ -626,69 +626,32 @@ parent_dn_variants:
 
 **Setter (`setParentDnVariants` on `Class`)**
 
-1. **Derive the default placement from meta.** Walk `meta.dnFormats`; the entry that doesn't start with any YAML `rn_prepend` is the default (for `pkiKeyRing`: `uni/userext/pkiext/keyring-{name}`). Strip the trailing identifying RN segment via `class.RnFormat` to get the default `parent_dn` prefix (`uni/userext/pkiext`). Resolve `meta.containedBy` for that DN to a `*ClassName` (`pki:Ep`) and store as `Class.DefaultParentDn = &ParentDnVariant{ParentClass: pkiEp, ParentDn: "uni/userext/pkiext", RnPrepend: "", WrapperClass: nil, TestPlatform: apic}`.
-2. **Resolve each YAML variant.** For each `parent_dn_variants[]` entry:
-   - Resolve `parent_class` and `wrapper_class` (when set) into `*ClassName` instances via the existing `loadClasses` cache; if either is unknown emit a generator error (typo catch).
-   - Cross-check: `parent_class` must be present in meta `containedBy` for at least one of the meta `dnFormats`; warn otherwise.
-   - Cross-check: `rn_prepend` must appear as a literal segment in at least one meta `dnFormat`; warn otherwise.
-   - Compute the variant's `ParentDn` from the matching `dnFormat` (everything before `{name}`), e.g. `""` for the tenant-scoped `keyring` placement — the user-facing `parent_dn` is the tenant's DN, supplied at runtime, and `rn_prepend` is the only fixed suffix added between the tenant DN and the RN.
-3. **Assemble** `Class.ParentDnVariants` = `[DefaultParentDn] ++ resolved variants`. Single ordered list keeps the renderer trivial.
+1. **Derive the default placement from meta.** Walk `meta.dnFormats`; the entry that does not contain any YAML `rn_prepend` segment is the default (for `pkiKeyRing`: `uni/userext/pkiext/keyring-{name}`). Strip the trailing `class.RnFormat` to get the default parent-DN prefix (`uni/userext/pkiext`). Resolve the default parent class from meta `containedBy` after removing the YAML variants' wrapper classes, and store it as `Class.DefaultParentDn`.
+2. **Resolve each YAML variant.** Convert `parent_class` and optional `wrapper_class` into `ClassName` values and copy `rn_prepend` and `test_platform`. The variant intentionally does not store a second parent-DN format: its user-facing parent DN is supplied at runtime.
+3. **Assemble** `Class.ParentDnVariants` as `[DefaultParentDn] ++ resolved variants`. The default remains first and YAML variants retain source order.
 
-**Renderer (one template helper, three emission sites)**
+**Model renderer (implemented)**
 
-A. **`parent_dn` schema default + validator** in `resource_aci_<x>.go.tmpl`. Today hand-coded as `stringdefault.StaticString("uni/userext/pkiext")` at [resource_aci_key_ring.go:191](../../internal/provider/resource_aci_key_ring.go). Generated as:
+For every non-default variant, `model.go.tmpl` looks up the referenced
+`ParentClass` in the complete DataStore and converts that class's meta
+`dnFormats` into anchored match patterns. `BuildDN` checks the exact default
+parent DN first, then the derived patterns. A matching non-default variant
+inserts its `rn_prepend`; an unmatched value falls back to direct
+`parentDN/RN` construction, preserving the existing provider behavior.
 
-```go
-"parent_dn": schema.StringAttribute{
-    Optional: true,
-    Computed: true,
-    Default:  stringdefault.StaticString({{ .DefaultParentDn.ParentDn | quote }}),
-    Validators: []validator.String{
-        stringvalidator.RegexMatches(
-            regexp.MustCompile(`^(?:{{ range $i, $v := .ParentDnVariants }}{{ if $i }}|{{ end }}{{ $v.ParentDn }}{{ if $v.RnPrepend }}/[^/]+/{{ $v.RnPrepend }}{{ end }}{{ end }})`),
-            "parent_dn must reference one of the supported parent placements",
-        ),
-    },
-},
-```
+For `pkiKeyRing` and `pkiTP`, the `fvTenant` metadata therefore produces a
+pattern for `uni/tn-{name}` without adding another YAML property. Runtime
+tests cover the default APIC placement, the tenant/cloud placement, and the
+fallback for both generated model shapes.
 
-B. **Create / Update API routing.** Replaces the hand-coded `wrapperClassMap` literal:
+**Downstream consumers**
 
-```go
-// generated from .ParentDnVariants
-parentDnRouting := []struct{ Marker, Wrapper string }{
-{{- range .ParentDnVariants }}
-    { Marker: {{ if .RnPrepend }}{{ .RnPrepend | quote }}{{ else }}{{ .ParentDn | quote }}{{ end }}, Wrapper: {{ .WrapperClass.PkgName | quote }} },
-{{- end }}
-}
-for _, route := range parentDnRouting {
-    if !strings.Contains(data.Id.ValueString(), route.Marker) { continue }
-    if route.Wrapper != "" {
-        DoRestRequest(ctx, &resp.Diagnostics, r.client,
-            fmt.Sprintf("api/mo/%s%s.json", strings.Split(data.Id.ValueString(), route.Marker)[0], route.Marker),
-            "POST", jsonPayload)
-    } else {
-        DoRestRequest(ctx, &resp.Diagnostics, r.client,
-            fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()),
-            "POST", jsonPayload)
-    }
-    break
-}
-```
-
-The order matters: variants with a non-empty `rn_prepend` (the more specific marker, e.g. `certstore`) must be tested before the default (the meta DN prefix, e.g. `uni/userext/pkiext`), otherwise the default would match first for the wrapped placement too. The setter already returns the slice in default-then-variants order, so the template iterates in reverse (`{{ range $i := slice .ParentDnVariants ... }}`) or the setter swaps the order — trivial either way, but the test must cover both placements for both classes to lock the contract.
-
-C. **Test platform gating** in `testvars.yaml.tmpl`. The setter already exposes `TestPlatform` per variant; the template emits the variant's test block only when the current render's platform matches:
-
-```
-{{- range .ParentDnVariants }}
-{{- if or (eq .TestPlatform $.RenderPlatform) (eq .TestPlatform "") }}
-# variant block for {{ .ParentClass.PkgName }} on platform {{ .TestPlatform }}
-{{- end }}
-{{- end }}
-```
-
-For `pkiKeyRing`/`pkiTP` the YAML variant carries `test_platform: cloud`, so its block only appears in cloud-platform testvars; the default (apic) variant always appears.
+The later schema template can use `DefaultParentDn` for its default and use
+the same parent-class formats for validation. Resource request routing uses
+`WrapperClass` to select the implicit APIC envelope, while test templates use
+`TestPlatform` to gate placement-specific scenarios. Those consumers should
+reuse this resolved variant data rather than reconstructing the legacy
+substring map.
 
 **Deprecation path**
 
@@ -699,7 +662,7 @@ Everything in [resource_aci_key_ring.go](../../internal/provider/resource_aci_ke
 All ten steps below are implemented in [migrate_class_definitions.go](migrate_class_definitions.go); the descriptions document the contract each step honours so a future re-run or extension stays anchored to the disposition catalog. Refinements still in flight are called out inline.
 
 1. **§1 direct mapping** — extend the loader to also copy `rn_prepend`, `required_as_child`, `resource_name`, and `dn_formats` (under `documentation:`), plus the per-property `documentation` map (121 files).
-2. **§2 semantic mapping, class-level** — implement the shape-changing transforms: `resource_notes` (+ `resource_warnings` / `datasource_notes` / `datasource_warnings` sibling slots, no v2.19.0 data), `children` → `include_children`, `contained_by` → `include_parents` (subtract meta `containedBy` first), `class_version` → `supported_versions`, `relationship_classes` (+ drop `multi_relationship_class`) → `relation_info.to_classes`, and `migration_version` + `migration_blocks` + `type_changes` → `state_upgrades` (two-source merge with [schema-git-commit-e21fb3e5.json](legacy_definitions/schema-git-commit-e21fb3e5.json), see §2.1; sets `migration_source: from_sdkv2` and omits `legacy_type` / `legacy_restriction` when they match the current property).
+2. **§2 semantic mapping, class-level** — implement the shape-changing transforms: `resource_notes` (+ `resource_warnings` / `datasource_notes` / `datasource_warnings` sibling slots, no v2.19.0 data), `children` → `include_children`, legacy replacement-style `contained_by` → the minimal `include_parents` / `exclude_parents` delta against meta, `class_version` → `supported_versions`, `relationship_classes` (+ drop `multi_relationship_class`) → `relation_info.to_classes`, and `migration_version` + `migration_blocks` + `type_changes` → `state_upgrades` (two-source merge with [schema-git-commit-e21fb3e5.json](legacy_definitions/schema-git-commit-e21fb3e5.json), see §2.1; sets `migration_source: from_sdkv2` and omits `legacy_type` / `legacy_restriction` when they match the current property).
 3. **§2 semantic mapping, property-level** — add a second pass that ingests `properties/<class>.yaml` and folds the entries into `NewClassDefinition.Properties` keyed by meta camelCase name. Covers the 12 property-level transforms (~125 files), the per-class `parents` / `targets` aggregation into class-level `test_config.dependencies[]` (apply the §2.2 decision tree — drop entries that auto-resolve from meta `containedBy` / `Relation.ToClasses[0]`; emit only the irreducible overrides; promote unknown parent classes into `class.include_parents` then auto-resolution covers them), and the `test_values` bucket merge. Also detect the polymorphic-same-type pattern (§8.6) — when every `parents[].target_classes` entry matches its own `class_name` 1:1, union the distinct target-class values into the class's `relation_info.to_classes` so future auto-detection has the data it needs.
 4. **§3 obsolete** — drop the 4 global keys, `multi_relationship_class`, the entire `legacy_definitions/properties/resource_name_overwrite.yaml` file, and `exclude_targets` (4 files) with a per-file log line. For each `exclude_targets` file, verify that the exclusion list matches the polymorphic-same-type auto-detector's prediction (§8.6) — i.e. each EPG class excludes exactly its peer same-domain classes, and `fvRsSecInherited` excludes exactly the classes in its own `targets:` list that are not in `relation_info.to_classes`. Warn on any divergence (catches editorial choices that diverge from the rule).
 5. **§4 ADD** — emit the six migrated fields into the output YAML. Verbatim values; one value remap (legacy `exclude_from_testing: true` → `ignore_tests: [child]`) plus the YAML key renames listed in the §4.1 table (e.g. `documentation` in `properties/global.yaml` → `property_documentation_overrides` in `global.yaml`). The `resource` and `datasource` enum values of `ignore_tests` have no legacy driver and so are not written by the script — they exist in the schema as future opt-ins and the loader accepts them when present.

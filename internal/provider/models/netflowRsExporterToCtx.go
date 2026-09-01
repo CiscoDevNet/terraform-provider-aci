@@ -51,3 +51,7 @@ func NewNetflowRsExporterToCtxModelNull() NetflowRsExporterToCtxModel {
 func (m *NetflowRsExporterToCtxModel) BuildRN() string {
 	return "rsexporterToCtx"
 }
+
+func (m *NetflowRsExporterToCtxModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}

@@ -75,32 +75,40 @@ func (m *FabricLinkFlapPolModel) BuildRN() string {
 	return rn
 }
 
+func (m *FabricLinkFlapPolModel) BuildDN() string {
+	return "uni/" + m.BuildRN()
+}
+
 type FabricLinkFlapPolResourceModel struct {
 	FabricLinkFlapPolModel
 
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ID types.String `tfsdk:"id"`
 }
 
 func NewFabricLinkFlapPolResourceModelNull() FabricLinkFlapPolResourceModel {
 	return FabricLinkFlapPolResourceModel{
 		FabricLinkFlapPolModel: NewFabricLinkFlapPolModelNull(),
 		ID:                     types.StringNull(),
-		ParentDn:               types.StringNull(),
 	}
+}
+
+func (m *FabricLinkFlapPolResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }
 
 type FabricLinkFlapPolDataSourceModel struct {
 	FabricLinkFlapPolModel
 
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ID types.String `tfsdk:"id"`
 }
 
 func NewFabricLinkFlapPolDataSourceModelNull() FabricLinkFlapPolDataSourceModel {
 	return FabricLinkFlapPolDataSourceModel{
 		FabricLinkFlapPolModel: NewFabricLinkFlapPolModelNull(),
 		ID:                     types.StringNull(),
-		ParentDn:               types.StringNull(),
 	}
+}
+
+func (m *FabricLinkFlapPolDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

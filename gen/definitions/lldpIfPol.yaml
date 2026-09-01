@@ -4,8 +4,8 @@ documentation:
   sub_category: Access Policies
   ui_locations:
   - Access Policies -> Policies -> Interface -> LLDP Interface
-include_parents:
-- polUni
+exclude_parents:
+- infraInfra
 migration_source: from_sdkv2
 properties:
   adminRxSt:

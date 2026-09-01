@@ -51,3 +51,7 @@ func NewFvRsBDToRelayPModelNull() FvRsBDToRelayPModel {
 func (m *FvRsBDToRelayPModel) BuildRN() string {
 	return "rsBDToRelayP"
 }
+
+func (m *FvRsBDToRelayPModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}

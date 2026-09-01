@@ -93,6 +93,10 @@ func (m *IgmpSnoopPolModel) BuildRN() string {
 	return rn
 }
 
+func (m *IgmpSnoopPolModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}
+
 type IgmpSnoopPolResourceModel struct {
 	IgmpSnoopPolModel
 
@@ -108,6 +112,10 @@ func NewIgmpSnoopPolResourceModelNull() IgmpSnoopPolResourceModel {
 	}
 }
 
+func (m *IgmpSnoopPolResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
+}
+
 type IgmpSnoopPolDataSourceModel struct {
 	IgmpSnoopPolModel
 
@@ -121,4 +129,8 @@ func NewIgmpSnoopPolDataSourceModelNull() IgmpSnoopPolDataSourceModel {
 		ID:                types.StringNull(),
 		ParentDn:          types.StringNull(),
 	}
+}
+
+func (m *IgmpSnoopPolDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

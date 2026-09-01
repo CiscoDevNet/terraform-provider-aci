@@ -51,3 +51,7 @@ func NewFvRsBDToFhsModelNull() FvRsBDToFhsModel {
 func (m *FvRsBDToFhsModel) BuildRN() string {
 	return "rsBDToFhs"
 }
+
+func (m *FvRsBDToFhsModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}

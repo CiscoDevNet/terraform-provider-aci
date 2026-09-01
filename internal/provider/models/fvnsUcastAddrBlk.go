@@ -70,6 +70,10 @@ func (m *FvnsUcastAddrBlkModel) BuildRN() string {
 	return rn
 }
 
+func (m *FvnsUcastAddrBlkModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}
+
 type FvnsUcastAddrBlkResourceModel struct {
 	FvnsUcastAddrBlkModel
 
@@ -85,6 +89,10 @@ func NewFvnsUcastAddrBlkResourceModelNull() FvnsUcastAddrBlkResourceModel {
 	}
 }
 
+func (m *FvnsUcastAddrBlkResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
+}
+
 type FvnsUcastAddrBlkDataSourceModel struct {
 	FvnsUcastAddrBlkModel
 
@@ -98,4 +106,8 @@ func NewFvnsUcastAddrBlkDataSourceModelNull() FvnsUcastAddrBlkDataSourceModel {
 		ID:                    types.StringNull(),
 		ParentDn:              types.StringNull(),
 	}
+}
+
+func (m *FvnsUcastAddrBlkDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

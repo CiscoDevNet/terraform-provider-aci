@@ -63,6 +63,10 @@ func (m *VmmUplinkPModel) BuildRN() string {
 	return rn
 }
 
+func (m *VmmUplinkPModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}
+
 type VmmUplinkPResourceModel struct {
 	VmmUplinkPModel
 
@@ -78,6 +82,10 @@ func NewVmmUplinkPResourceModelNull() VmmUplinkPResourceModel {
 	}
 }
 
+func (m *VmmUplinkPResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
+}
+
 type VmmUplinkPDataSourceModel struct {
 	VmmUplinkPModel
 
@@ -91,4 +99,8 @@ func NewVmmUplinkPDataSourceModelNull() VmmUplinkPDataSourceModel {
 		ID:              types.StringNull(),
 		ParentDn:        types.StringNull(),
 	}
+}
+
+func (m *VmmUplinkPDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

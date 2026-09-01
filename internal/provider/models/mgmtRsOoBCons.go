@@ -61,6 +61,10 @@ func (m *MgmtRsOoBConsModel) BuildRN() string {
 	return rn
 }
 
+func (m *MgmtRsOoBConsModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}
+
 type MgmtRsOoBConsResourceModel struct {
 	MgmtRsOoBConsModel
 
@@ -76,6 +80,10 @@ func NewMgmtRsOoBConsResourceModelNull() MgmtRsOoBConsResourceModel {
 	}
 }
 
+func (m *MgmtRsOoBConsResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
+}
+
 type MgmtRsOoBConsDataSourceModel struct {
 	MgmtRsOoBConsModel
 
@@ -89,4 +97,8 @@ func NewMgmtRsOoBConsDataSourceModelNull() MgmtRsOoBConsDataSourceModel {
 		ID:                 types.StringNull(),
 		ParentDn:           types.StringNull(),
 	}
+}
+
+func (m *MgmtRsOoBConsDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

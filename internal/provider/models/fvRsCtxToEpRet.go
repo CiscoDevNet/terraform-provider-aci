@@ -51,3 +51,7 @@ func NewFvRsCtxToEpRetModelNull() FvRsCtxToEpRetModel {
 func (m *FvRsCtxToEpRetModel) BuildRN() string {
 	return "rsctxToEpRet"
 }
+
+func (m *FvRsCtxToEpRetModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}

@@ -193,15 +193,26 @@ func TestModelTemplateArtifacts(t *testing.T) {
 			if !strings.Contains(contents, "type FvTenantModel struct") {
 				t.Fatal("shared model was not rendered")
 			}
+			if !strings.Contains(contents, "func (m *FvTenantModel) BuildDN() string") {
+				t.Fatal("shared model DN builder was not rendered")
+			}
 
 			resourceType := "type FvTenantResourceModel struct"
 			if actual := strings.Contains(contents, resourceType); actual != testCase.resourceModel {
 				t.Fatalf("resource model presence %t, expected %t", actual, testCase.resourceModel)
 			}
+			resourceIDSetter := "func (m *FvTenantResourceModel) SetIDFromDN(dn string)"
+			if actual := strings.Contains(contents, resourceIDSetter); actual != testCase.resourceModel {
+				t.Fatalf("resource ID setter presence %t, expected %t", actual, testCase.resourceModel)
+			}
 
 			dataSourceType := "type FvTenantDataSourceModel struct"
 			if actual := strings.Contains(contents, dataSourceType); actual != testCase.dataSourceModel {
 				t.Fatalf("data source model presence %t, expected %t", actual, testCase.dataSourceModel)
+			}
+			dataSourceIDSetter := "func (m *FvTenantDataSourceModel) SetIDFromDN(dn string)"
+			if actual := strings.Contains(contents, dataSourceIDSetter); actual != testCase.dataSourceModel {
+				t.Fatalf("data source ID setter presence %t, expected %t", actual, testCase.dataSourceModel)
 			}
 		})
 	}
@@ -264,6 +275,117 @@ func TestGeneratedModelBuildRN(t *testing.T) {
 				t.Fatalf("RN %q, expected %q", rn, testCase.expectedRN)
 			}
 		})
+	}
+}
+
+func TestGeneratedModelBuildDN(t *testing.T) {
+	t.Parallel()
+
+	testCases := []struct {
+		name       string
+		build      func() string
+		expectedDN string
+	}{
+		{
+			name: "root class",
+			build: func() string {
+				model := models.FvTenantModel{Name: types.StringValue("example")}
+				return model.BuildDN()
+			},
+			expectedDN: "uni/tn-example",
+		},
+		{
+			name: "fixed infra path class",
+			build: func() string {
+				model := models.L2IfPolModel{Name: types.StringValue("example")}
+				return model.BuildDN()
+			},
+			expectedDN: "uni/infra/l2IfP-example",
+		},
+		{
+			name: "runtime parent class",
+			build: func() string {
+				model := models.FvBDModel{Name: types.StringValue("example")}
+				return model.BuildDN("uni/tn-tenant")
+			},
+			expectedDN: "uni/tn-tenant/BD-example",
+		},
+		{
+			name: "default parent DN uses direct-placement fallback",
+			build: func() string {
+				model := models.PkiKeyRingModel{Name: types.StringValue("example")}
+				return model.BuildDN("uni/userext/pkiext")
+			},
+			expectedDN: "uni/userext/pkiext/keyring-example",
+		},
+		{
+			name: "metadata-derived parent DN variant",
+			build: func() string {
+				model := models.PkiKeyRingModel{Name: types.StringValue("example")}
+				return model.BuildDN("uni/tn-tenant")
+			},
+			expectedDN: "uni/tn-tenant/certstore/keyring-example",
+		},
+		{
+			name: "unmatched parent DN falls back to direct placement",
+			build: func() string {
+				model := models.PkiKeyRingModel{Name: types.StringValue("example")}
+				return model.BuildDN("uni/infra")
+			},
+			expectedDN: "uni/infra/keyring-example",
+		},
+		{
+			name: "second variant class uses the same parent metadata",
+			build: func() string {
+				model := models.PkiTPModel{Name: types.StringValue("example")}
+				return model.BuildDN("uni/tn-tenant")
+			},
+			expectedDN: "uni/tn-tenant/certstore/tp-example",
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
+			dn := testCase.build()
+			if dn != testCase.expectedDN {
+				t.Fatalf("DN %q, expected %q", dn, testCase.expectedDN)
+			}
+		})
+	}
+}
+
+func TestGeneratedTopLevelModelSetIDFromDN(t *testing.T) {
+	t.Parallel()
+
+	resourceModel := models.FvTenantResourceModel{}
+	resourceModel.SetIDFromDN("uni/tn-resource")
+	if actual := resourceModel.ID.ValueString(); actual != "uni/tn-resource" {
+		t.Fatalf("resource ID %q, expected %q", actual, "uni/tn-resource")
+	}
+
+	dataSourceModel := models.FvTenantDataSourceModel{}
+	dataSourceModel.SetIDFromDN("uni/tn-datasource")
+	if actual := dataSourceModel.ID.ValueString(); actual != "uni/tn-datasource" {
+		t.Fatalf("data source ID %q, expected %q", actual, "uni/tn-datasource")
+	}
+}
+
+func TestGeneratedTopLevelModelParentDnShape(t *testing.T) {
+	t.Parallel()
+
+	if _, ok := reflect.TypeOf(models.L2IfPolResourceModel{}).FieldByName("ParentDn"); ok {
+		t.Fatal("fixed-path l2IfPol resource model unexpectedly exposes ParentDn")
+	}
+	if _, ok := reflect.TypeOf(models.L2IfPolDataSourceModel{}).FieldByName("ParentDn"); ok {
+		t.Fatal("fixed-path l2IfPol data source model unexpectedly exposes ParentDn")
+	}
+	if _, ok := reflect.TypeOf(models.FvBDResourceModel{}).FieldByName("ParentDn"); !ok {
+		t.Fatal("runtime-parent fvBD resource model does not expose ParentDn")
+	}
+	if _, ok := reflect.TypeOf(models.FvEpIpTagResourceModel{}).FieldByName("ParentDn"); !ok {
+		t.Fatal("replacement-parent fvEpIpTag resource model does not expose ParentDn")
 	}
 }
 

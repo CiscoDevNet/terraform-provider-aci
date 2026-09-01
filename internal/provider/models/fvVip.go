@@ -73,6 +73,10 @@ func (m *FvVipModel) BuildRN() string {
 	return rn
 }
 
+func (m *FvVipModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}
+
 type FvVipResourceModel struct {
 	FvVipModel
 
@@ -88,6 +92,10 @@ func NewFvVipResourceModelNull() FvVipResourceModel {
 	}
 }
 
+func (m *FvVipResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
+}
+
 type FvVipDataSourceModel struct {
 	FvVipModel
 
@@ -101,4 +109,8 @@ func NewFvVipDataSourceModelNull() FvVipDataSourceModel {
 		ID:         types.StringNull(),
 		ParentDn:   types.StringNull(),
 	}
+}
+
+func (m *FvVipDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

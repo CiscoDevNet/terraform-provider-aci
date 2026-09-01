@@ -4,8 +4,8 @@ documentation:
   sub_category: Contract
   ui_locations:
   - Tenants (mgmt) -> Contracts -> Out-Of-Band Contracts
-include_parents:
-- polUni
+exclude_parents:
+- fvTenant
 properties:
   intent:
     documentation:

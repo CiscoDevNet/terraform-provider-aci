@@ -108,32 +108,40 @@ func (m *XcvrZRPIfPolModel) BuildRN() string {
 	return rn
 }
 
+func (m *XcvrZRPIfPolModel) BuildDN() string {
+	return "uni/" + m.BuildRN()
+}
+
 type XcvrZRPIfPolResourceModel struct {
 	XcvrZRPIfPolModel
 
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ID types.String `tfsdk:"id"`
 }
 
 func NewXcvrZRPIfPolResourceModelNull() XcvrZRPIfPolResourceModel {
 	return XcvrZRPIfPolResourceModel{
 		XcvrZRPIfPolModel: NewXcvrZRPIfPolModelNull(),
 		ID:                types.StringNull(),
-		ParentDn:          types.StringNull(),
 	}
+}
+
+func (m *XcvrZRPIfPolResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }
 
 type XcvrZRPIfPolDataSourceModel struct {
 	XcvrZRPIfPolModel
 
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ID types.String `tfsdk:"id"`
 }
 
 func NewXcvrZRPIfPolDataSourceModelNull() XcvrZRPIfPolDataSourceModel {
 	return XcvrZRPIfPolDataSourceModel{
 		XcvrZRPIfPolModel: NewXcvrZRPIfPolModelNull(),
 		ID:                types.StringNull(),
-		ParentDn:          types.StringNull(),
 	}
+}
+
+func (m *XcvrZRPIfPolDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

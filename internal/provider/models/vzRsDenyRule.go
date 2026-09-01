@@ -60,6 +60,10 @@ func (m *VzRsDenyRuleModel) BuildRN() string {
 	return rn
 }
 
+func (m *VzRsDenyRuleModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}
+
 type VzRsDenyRuleResourceModel struct {
 	VzRsDenyRuleModel
 
@@ -75,6 +79,10 @@ func NewVzRsDenyRuleResourceModelNull() VzRsDenyRuleResourceModel {
 	}
 }
 
+func (m *VzRsDenyRuleResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
+}
+
 type VzRsDenyRuleDataSourceModel struct {
 	VzRsDenyRuleModel
 
@@ -88,4 +96,8 @@ func NewVzRsDenyRuleDataSourceModelNull() VzRsDenyRuleDataSourceModel {
 		ID:                types.StringNull(),
 		ParentDn:          types.StringNull(),
 	}
+}
+
+func (m *VzRsDenyRuleDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

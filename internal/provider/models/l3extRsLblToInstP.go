@@ -57,6 +57,10 @@ func (m *L3extRsLblToInstPModel) BuildRN() string {
 	return rn
 }
 
+func (m *L3extRsLblToInstPModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}
+
 type L3extRsLblToInstPResourceModel struct {
 	L3extRsLblToInstPModel
 
@@ -72,6 +76,10 @@ func NewL3extRsLblToInstPResourceModelNull() L3extRsLblToInstPResourceModel {
 	}
 }
 
+func (m *L3extRsLblToInstPResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
+}
+
 type L3extRsLblToInstPDataSourceModel struct {
 	L3extRsLblToInstPModel
 
@@ -85,4 +93,8 @@ func NewL3extRsLblToInstPDataSourceModelNull() L3extRsLblToInstPDataSourceModel 
 		ID:                     types.StringNull(),
 		ParentDn:               types.StringNull(),
 	}
+}
+
+func (m *L3extRsLblToInstPDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

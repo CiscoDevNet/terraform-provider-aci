@@ -102,3 +102,7 @@ func NewCommHttpModelNull() CommHttpModel {
 func (m *CommHttpModel) BuildRN() string {
 	return "http"
 }
+
+func (m *CommHttpModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}

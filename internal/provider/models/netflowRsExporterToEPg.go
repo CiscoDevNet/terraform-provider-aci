@@ -51,3 +51,7 @@ func NewNetflowRsExporterToEPgModelNull() NetflowRsExporterToEPgModel {
 func (m *NetflowRsExporterToEPgModel) BuildRN() string {
 	return "rsexporterToEPg"
 }
+
+func (m *NetflowRsExporterToEPgModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}

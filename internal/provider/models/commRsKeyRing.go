@@ -51,3 +51,7 @@ func NewCommRsKeyRingModelNull() CommRsKeyRingModel {
 func (m *CommRsKeyRingModel) BuildRN() string {
 	return "rsKeyRing"
 }
+
+func (m *CommRsKeyRingModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}

@@ -196,10 +196,7 @@ methods. The reusable model does not store them as fields:
 
 ```go
 func (m *FvTenantModel) BuildRN() string
-func (m *FvTenantModel) BuildDN(
-	ctx context.Context,
-	parentDN string,
-) (string, diag.Diagnostics)
+func (m *FvTenantModel) BuildDN() string
 
 func (m *FvTenantModel) BuildPayload(
 	ctx context.Context,
@@ -231,15 +228,9 @@ func (m *FvTenantDataSourceModel) SetFromResponse(
 	response *container.Container,
 ) diag.Diagnostics
 
-func (m *FvTenantResourceModel) SetIDFromDN(
-	ctx context.Context,
-	dn string,
-) diag.Diagnostics
+func (m *FvTenantResourceModel) SetIDFromDN(dn string)
 
-func (m *FvTenantDataSourceModel) SetIDFromDN(
-	ctx context.Context,
-	dn string,
-) diag.Diagnostics
+func (m *FvTenantDataSourceModel) SetIDFromDN(dn string)
 ```
 
 `FvTenantModelFromResponse` decodes the response envelope and returns the
@@ -271,13 +262,51 @@ normalized named value so the RN matches the APIC representation.
 
 ### DN
 
-`BuildDN` combines the parent DN and generated RN. It must support:
+`BuildDN` combines the class placement and generated RN. It must support:
 
 - root classes;
 - ordinary parented classes;
 - relation classes;
 - nested children;
 - multiple valid parent types.
+
+Classes with a runtime parent accept that parent DN:
+
+```go
+func (m *FvBDModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}
+```
+
+Classes without `parent_dn` expose a zero-argument method. Their fixed parent
+DN is derived from the first segment of the metadata DN format during
+generation. Fixed paths added through `rn_prepend` remain part of the
+normalized `RnFormat`:
+
+```go
+func (m *FvTenantModel) BuildDN() string {
+	return "uni/" + m.BuildRN()
+}
+
+func (m *L2IfPolModel) BuildDN() string {
+	return "uni/" + m.BuildRN()
+}
+```
+
+For `l2IfPol`, `BuildRN` returns `infra/l2IfP-{name}`, producing the complete
+DN `uni/infra/l2IfP-{name}` without requiring callers to supply a fixed value.
+
+Classes with `ParentDnVariants` select each non-default variant using anchored
+patterns generated from the referenced `ParentClass`'s meta `dnFormats`; the
+variant's `rn_prepend` is then inserted between the parent DN and class RN.
+This derives the parent shape through the DataStore and does not duplicate a
+parent-DN format in the class definition. The final direct-placement return
+handles both the canonical default parent and an unmatched parent, matching
+the existing provider fallback.
+
+`BuildDN` does not repeat schema validation or return diagnostics. Top-level
+schemas require the placement inputs needed by the class, and nested callers
+pass an already resolved parent DN.
 
 Response decoding derives the returned RN and parent DN from the returned DN.
 DN parsing must treat bracketed RN values as one segment, as required by
@@ -298,8 +327,8 @@ usually the child RN, when constructing nested DNs and comparing desired
 children with prior state.
 
 If `parent_dn` is exposed by a top-level schema, it is used as input to
-`BuildDN` and the resulting ID but is not an APIC payload attribute. If it is returned
-by APIC, the wrapper is populated from the response DN.
+`BuildDN` and the resulting ID but is not an APIC payload attribute. If it is
+returned by APIC, the wrapper is populated from the response DN.
 
 ## 6. Payload construction
 
@@ -365,7 +394,7 @@ are not used to construct APIC identity or payload fragments prematurely.
 For nested DN construction, the parent passes its resolved DN to the child:
 
 ```go
-childDN, err := child.BuildDN(ctx, parentDN)
+childDN := child.BuildDN(parentDN)
 ```
 
 The same rule applies recursively to grandchildren.

@@ -66,6 +66,10 @@ func (m *VnsLDevIfModel) BuildRN() string {
 	return rn
 }
 
+func (m *VnsLDevIfModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}
+
 type VnsLDevIfResourceModel struct {
 	VnsLDevIfModel
 
@@ -81,6 +85,10 @@ func NewVnsLDevIfResourceModelNull() VnsLDevIfResourceModel {
 	}
 }
 
+func (m *VnsLDevIfResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
+}
+
 type VnsLDevIfDataSourceModel struct {
 	VnsLDevIfModel
 
@@ -94,4 +102,8 @@ func NewVnsLDevIfDataSourceModelNull() VnsLDevIfDataSourceModel {
 		ID:             types.StringNull(),
 		ParentDn:       types.StringNull(),
 	}
+}
+
+func (m *VnsLDevIfDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

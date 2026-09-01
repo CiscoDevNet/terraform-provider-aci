@@ -51,3 +51,7 @@ func NewFvRsABDPolMonPolModelNull() FvRsABDPolMonPolModel {
 func (m *FvRsABDPolMonPolModel) BuildRN() string {
 	return "rsABDPolMonPol"
 }
+
+func (m *FvRsABDPolMonPolModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}

@@ -57,6 +57,10 @@ func (m *FvRsSecInheritedModel) BuildRN() string {
 	return rn
 }
 
+func (m *FvRsSecInheritedModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}
+
 type FvRsSecInheritedResourceModel struct {
 	FvRsSecInheritedModel
 
@@ -72,6 +76,10 @@ func NewFvRsSecInheritedResourceModelNull() FvRsSecInheritedResourceModel {
 	}
 }
 
+func (m *FvRsSecInheritedResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
+}
+
 type FvRsSecInheritedDataSourceModel struct {
 	FvRsSecInheritedModel
 
@@ -85,4 +93,8 @@ func NewFvRsSecInheritedDataSourceModelNull() FvRsSecInheritedDataSourceModel {
 		ID:                    types.StringNull(),
 		ParentDn:              types.StringNull(),
 	}
+}
+
+func (m *FvRsSecInheritedDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

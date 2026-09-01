@@ -61,6 +61,10 @@ func (m *FvRsCtxToEigrpCtxAfPolModel) BuildRN() string {
 	return rn
 }
 
+func (m *FvRsCtxToEigrpCtxAfPolModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}
+
 type FvRsCtxToEigrpCtxAfPolResourceModel struct {
 	FvRsCtxToEigrpCtxAfPolModel
 
@@ -76,6 +80,10 @@ func NewFvRsCtxToEigrpCtxAfPolResourceModelNull() FvRsCtxToEigrpCtxAfPolResource
 	}
 }
 
+func (m *FvRsCtxToEigrpCtxAfPolResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
+}
+
 type FvRsCtxToEigrpCtxAfPolDataSourceModel struct {
 	FvRsCtxToEigrpCtxAfPolModel
 
@@ -89,4 +97,8 @@ func NewFvRsCtxToEigrpCtxAfPolDataSourceModelNull() FvRsCtxToEigrpCtxAfPolDataSo
 		ID:                          types.StringNull(),
 		ParentDn:                    types.StringNull(),
 	}
+}
+
+func (m *FvRsCtxToEigrpCtxAfPolDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

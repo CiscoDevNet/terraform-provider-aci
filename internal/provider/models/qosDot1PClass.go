@@ -80,6 +80,10 @@ func (m *QosDot1PClassModel) BuildRN() string {
 	return rn
 }
 
+func (m *QosDot1PClassModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}
+
 type QosDot1PClassResourceModel struct {
 	QosDot1PClassModel
 
@@ -95,6 +99,10 @@ func NewQosDot1PClassResourceModelNull() QosDot1PClassResourceModel {
 	}
 }
 
+func (m *QosDot1PClassResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
+}
+
 type QosDot1PClassDataSourceModel struct {
 	QosDot1PClassModel
 
@@ -108,4 +116,8 @@ func NewQosDot1PClassDataSourceModelNull() QosDot1PClassDataSourceModel {
 		ID:                 types.StringNull(),
 		ParentDn:           types.StringNull(),
 	}
+}
+
+func (m *QosDot1PClassDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

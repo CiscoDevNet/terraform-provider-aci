@@ -66,6 +66,10 @@ func (m *FvRsFcPathAttModel) BuildRN() string {
 	return rn
 }
 
+func (m *FvRsFcPathAttModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}
+
 type FvRsFcPathAttResourceModel struct {
 	FvRsFcPathAttModel
 
@@ -81,6 +85,10 @@ func NewFvRsFcPathAttResourceModelNull() FvRsFcPathAttResourceModel {
 	}
 }
 
+func (m *FvRsFcPathAttResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
+}
+
 type FvRsFcPathAttDataSourceModel struct {
 	FvRsFcPathAttModel
 
@@ -94,4 +102,8 @@ func NewFvRsFcPathAttDataSourceModelNull() FvRsFcPathAttDataSourceModel {
 		ID:                 types.StringNull(),
 		ParentDn:           types.StringNull(),
 	}
+}
+
+func (m *FvRsFcPathAttDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }
