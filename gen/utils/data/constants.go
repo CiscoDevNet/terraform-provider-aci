@@ -23,6 +23,8 @@ const (
 	constProviderName = "aci"
 	// The base URL for the Terraform Registry resource documentation pages for this provider.
 	constRegistryResourceBaseUrl = "https://registry.terraform.io/providers/CiscoDevNet/" + constProviderName + "/latest/docs/resources"
+	// The base URL for the Terraform Registry datasource documentation pages for this provider.
+	constRegistryDatasourceBaseUrl = "https://registry.terraform.io/providers/CiscoDevNet/" + constProviderName + "/latest/docs/data-sources"
 	// The path to the meta data files.
 	constMetaPath = "./gen/meta"
 	// The maximum number of DN formats rendered in the documentation. When the source
