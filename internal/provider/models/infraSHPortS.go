@@ -78,6 +78,10 @@ func (m *InfraSHPortSModel) BuildRN() string {
 	return rn
 }
 
+func (m *InfraSHPortSModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}
+
 type InfraSHPortSResourceModel struct {
 	InfraSHPortSModel
 
@@ -93,6 +97,10 @@ func NewInfraSHPortSResourceModelNull() InfraSHPortSResourceModel {
 	}
 }
 
+func (m *InfraSHPortSResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
+}
+
 type InfraSHPortSDataSourceModel struct {
 	InfraSHPortSModel
 
@@ -106,4 +114,8 @@ func NewInfraSHPortSDataSourceModelNull() InfraSHPortSDataSourceModel {
 		ID:                types.StringNull(),
 		ParentDn:          types.StringNull(),
 	}
+}
+
+func (m *InfraSHPortSDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

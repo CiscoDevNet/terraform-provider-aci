@@ -105,6 +105,10 @@ func (m *NdIfPolModel) BuildRN() string {
 	return rn
 }
 
+func (m *NdIfPolModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}
+
 type NdIfPolResourceModel struct {
 	NdIfPolModel
 
@@ -120,6 +124,10 @@ func NewNdIfPolResourceModelNull() NdIfPolResourceModel {
 	}
 }
 
+func (m *NdIfPolResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
+}
+
 type NdIfPolDataSourceModel struct {
 	NdIfPolModel
 
@@ -133,4 +141,8 @@ func NewNdIfPolDataSourceModelNull() NdIfPolDataSourceModel {
 		ID:           types.StringNull(),
 		ParentDn:     types.StringNull(),
 	}
+}
+
+func (m *NdIfPolDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

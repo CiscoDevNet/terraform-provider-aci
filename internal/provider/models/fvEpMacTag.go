@@ -70,6 +70,10 @@ func (m *FvEpMacTagModel) BuildRN() string {
 	return rn
 }
 
+func (m *FvEpMacTagModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}
+
 type FvEpMacTagResourceModel struct {
 	FvEpMacTagModel
 
@@ -85,6 +89,10 @@ func NewFvEpMacTagResourceModelNull() FvEpMacTagResourceModel {
 	}
 }
 
+func (m *FvEpMacTagResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
+}
+
 type FvEpMacTagDataSourceModel struct {
 	FvEpMacTagModel
 
@@ -98,4 +106,8 @@ func NewFvEpMacTagDataSourceModelNull() FvEpMacTagDataSourceModel {
 		ID:              types.StringNull(),
 		ParentDn:        types.StringNull(),
 	}
+}
+
+func (m *FvEpMacTagDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

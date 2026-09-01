@@ -69,32 +69,40 @@ func (m *InfraFexPModel) BuildRN() string {
 	return rn
 }
 
+func (m *InfraFexPModel) BuildDN() string {
+	return "uni/" + m.BuildRN()
+}
+
 type InfraFexPResourceModel struct {
 	InfraFexPModel
 
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ID types.String `tfsdk:"id"`
 }
 
 func NewInfraFexPResourceModelNull() InfraFexPResourceModel {
 	return InfraFexPResourceModel{
 		InfraFexPModel: NewInfraFexPModelNull(),
 		ID:             types.StringNull(),
-		ParentDn:       types.StringNull(),
 	}
+}
+
+func (m *InfraFexPResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }
 
 type InfraFexPDataSourceModel struct {
 	InfraFexPModel
 
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ID types.String `tfsdk:"id"`
 }
 
 func NewInfraFexPDataSourceModelNull() InfraFexPDataSourceModel {
 	return InfraFexPDataSourceModel{
 		InfraFexPModel: NewInfraFexPModelNull(),
 		ID:             types.StringNull(),
-		ParentDn:       types.StringNull(),
 	}
+}
+
+func (m *InfraFexPDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

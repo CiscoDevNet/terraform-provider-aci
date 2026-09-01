@@ -63,3 +63,7 @@ func NewCommTelnetModelNull() CommTelnetModel {
 func (m *CommTelnetModel) BuildRN() string {
 	return "telnet"
 }
+
+func (m *CommTelnetModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}

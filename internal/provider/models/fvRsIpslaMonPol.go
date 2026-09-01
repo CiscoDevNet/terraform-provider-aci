@@ -51,3 +51,7 @@ func NewFvRsIpslaMonPolModelNull() FvRsIpslaMonPolModel {
 func (m *FvRsIpslaMonPolModel) BuildRN() string {
 	return "rsIpslaMonPol"
 }
+
+func (m *FvRsIpslaMonPolModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}

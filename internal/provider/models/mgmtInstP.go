@@ -78,32 +78,40 @@ func (m *MgmtInstPModel) BuildRN() string {
 	return rn
 }
 
+func (m *MgmtInstPModel) BuildDN() string {
+	return "uni/" + m.BuildRN()
+}
+
 type MgmtInstPResourceModel struct {
 	MgmtInstPModel
 
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ID types.String `tfsdk:"id"`
 }
 
 func NewMgmtInstPResourceModelNull() MgmtInstPResourceModel {
 	return MgmtInstPResourceModel{
 		MgmtInstPModel: NewMgmtInstPModelNull(),
 		ID:             types.StringNull(),
-		ParentDn:       types.StringNull(),
 	}
+}
+
+func (m *MgmtInstPResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }
 
 type MgmtInstPDataSourceModel struct {
 	MgmtInstPModel
 
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ID types.String `tfsdk:"id"`
 }
 
 func NewMgmtInstPDataSourceModelNull() MgmtInstPDataSourceModel {
 	return MgmtInstPDataSourceModel{
 		MgmtInstPModel: NewMgmtInstPModelNull(),
 		ID:             types.StringNull(),
-		ParentDn:       types.StringNull(),
 	}
+}
+
+func (m *MgmtInstPDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

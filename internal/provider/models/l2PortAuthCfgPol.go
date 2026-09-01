@@ -72,3 +72,7 @@ func NewL2PortAuthCfgPolModelNull() L2PortAuthCfgPolModel {
 func (m *L2PortAuthCfgPolModel) BuildRN() string {
 	return "portauthcfgpol"
 }
+
+func (m *L2PortAuthCfgPolModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}

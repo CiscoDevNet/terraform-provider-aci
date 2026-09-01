@@ -5,8 +5,8 @@ documentation:
   ui_locations:
   - Tenants -> Networking -> L3Outs -> Logical Node Profiles -> Policy -> Nodes ->
     Policy -> Loopback Addresses
-include_parents:
-- l3extLoopBackIfP
+exclude_parents:
+- l3extRsNodeL3OutAtt
 properties:
   loopbackAddr:
     attribute_name: loopback_address

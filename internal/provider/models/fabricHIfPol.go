@@ -90,32 +90,40 @@ func (m *FabricHIfPolModel) BuildRN() string {
 	return rn
 }
 
+func (m *FabricHIfPolModel) BuildDN() string {
+	return "uni/" + m.BuildRN()
+}
+
 type FabricHIfPolResourceModel struct {
 	FabricHIfPolModel
 
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ID types.String `tfsdk:"id"`
 }
 
 func NewFabricHIfPolResourceModelNull() FabricHIfPolResourceModel {
 	return FabricHIfPolResourceModel{
 		FabricHIfPolModel: NewFabricHIfPolModelNull(),
 		ID:                types.StringNull(),
-		ParentDn:          types.StringNull(),
 	}
+}
+
+func (m *FabricHIfPolResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }
 
 type FabricHIfPolDataSourceModel struct {
 	FabricHIfPolModel
 
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ID types.String `tfsdk:"id"`
 }
 
 func NewFabricHIfPolDataSourceModelNull() FabricHIfPolDataSourceModel {
 	return FabricHIfPolDataSourceModel{
 		FabricHIfPolModel: NewFabricHIfPolModelNull(),
 		ID:                types.StringNull(),
-		ParentDn:          types.StringNull(),
 	}
+}
+
+func (m *FabricHIfPolDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

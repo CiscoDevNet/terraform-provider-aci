@@ -80,32 +80,40 @@ func (m *CoppIfPolModel) BuildRN() string {
 	return rn
 }
 
+func (m *CoppIfPolModel) BuildDN() string {
+	return "uni/" + m.BuildRN()
+}
+
 type CoppIfPolResourceModel struct {
 	CoppIfPolModel
 
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ID types.String `tfsdk:"id"`
 }
 
 func NewCoppIfPolResourceModelNull() CoppIfPolResourceModel {
 	return CoppIfPolResourceModel{
 		CoppIfPolModel: NewCoppIfPolModelNull(),
 		ID:             types.StringNull(),
-		ParentDn:       types.StringNull(),
 	}
+}
+
+func (m *CoppIfPolResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }
 
 type CoppIfPolDataSourceModel struct {
 	CoppIfPolModel
 
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ID types.String `tfsdk:"id"`
 }
 
 func NewCoppIfPolDataSourceModelNull() CoppIfPolDataSourceModel {
 	return CoppIfPolDataSourceModel{
 		CoppIfPolModel: NewCoppIfPolModelNull(),
 		ID:             types.StringNull(),
-		ParentDn:       types.StringNull(),
 	}
+}
+
+func (m *CoppIfPolDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

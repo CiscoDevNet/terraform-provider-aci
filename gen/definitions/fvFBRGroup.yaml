@@ -5,8 +5,6 @@ documentation:
 include_children:
 - fvFBRMember
 - fvFBRoute
-include_parents:
-- fvCtx
 properties:
   name:
     default_values:

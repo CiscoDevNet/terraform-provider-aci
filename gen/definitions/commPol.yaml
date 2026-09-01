@@ -2,8 +2,6 @@ documentation:
   sub_category: Fabric Policies
   ui_locations:
   - Fabric -> Fabric Policies -> Policies -> Pod -> Management Access
-include_parents:
-- polUni
 properties:
   strictSecurityOnApicOOBSubnet:
     default_values:

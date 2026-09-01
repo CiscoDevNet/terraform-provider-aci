@@ -72,6 +72,10 @@ func (m *FvMacAttrModel) BuildRN() string {
 	return rn
 }
 
+func (m *FvMacAttrModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}
+
 type FvMacAttrResourceModel struct {
 	FvMacAttrModel
 
@@ -87,6 +91,10 @@ func NewFvMacAttrResourceModelNull() FvMacAttrResourceModel {
 	}
 }
 
+func (m *FvMacAttrResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
+}
+
 type FvMacAttrDataSourceModel struct {
 	FvMacAttrModel
 
@@ -100,4 +108,8 @@ func NewFvMacAttrDataSourceModelNull() FvMacAttrDataSourceModel {
 		ID:             types.StringNull(),
 		ParentDn:       types.StringNull(),
 	}
+}
+
+func (m *FvMacAttrDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

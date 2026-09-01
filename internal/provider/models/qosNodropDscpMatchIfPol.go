@@ -72,32 +72,40 @@ func (m *QosNodropDscpMatchIfPolModel) BuildRN() string {
 	return rn
 }
 
+func (m *QosNodropDscpMatchIfPolModel) BuildDN() string {
+	return "uni/" + m.BuildRN()
+}
+
 type QosNodropDscpMatchIfPolResourceModel struct {
 	QosNodropDscpMatchIfPolModel
 
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ID types.String `tfsdk:"id"`
 }
 
 func NewQosNodropDscpMatchIfPolResourceModelNull() QosNodropDscpMatchIfPolResourceModel {
 	return QosNodropDscpMatchIfPolResourceModel{
 		QosNodropDscpMatchIfPolModel: NewQosNodropDscpMatchIfPolModelNull(),
 		ID:                           types.StringNull(),
-		ParentDn:                     types.StringNull(),
 	}
+}
+
+func (m *QosNodropDscpMatchIfPolResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }
 
 type QosNodropDscpMatchIfPolDataSourceModel struct {
 	QosNodropDscpMatchIfPolModel
 
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ID types.String `tfsdk:"id"`
 }
 
 func NewQosNodropDscpMatchIfPolDataSourceModelNull() QosNodropDscpMatchIfPolDataSourceModel {
 	return QosNodropDscpMatchIfPolDataSourceModel{
 		QosNodropDscpMatchIfPolModel: NewQosNodropDscpMatchIfPolModelNull(),
 		ID:                           types.StringNull(),
-		ParentDn:                     types.StringNull(),
 	}
+}
+
+func (m *QosNodropDscpMatchIfPolDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

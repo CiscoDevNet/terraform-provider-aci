@@ -72,6 +72,10 @@ func (m *FvDnsAttrModel) BuildRN() string {
 	return rn
 }
 
+func (m *FvDnsAttrModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}
+
 type FvDnsAttrResourceModel struct {
 	FvDnsAttrModel
 
@@ -87,6 +91,10 @@ func NewFvDnsAttrResourceModelNull() FvDnsAttrResourceModel {
 	}
 }
 
+func (m *FvDnsAttrResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
+}
+
 type FvDnsAttrDataSourceModel struct {
 	FvDnsAttrModel
 
@@ -100,4 +108,8 @@ func NewFvDnsAttrDataSourceModelNull() FvDnsAttrDataSourceModel {
 		ID:             types.StringNull(),
 		ParentDn:       types.StringNull(),
 	}
+}
+
+func (m *FvDnsAttrDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

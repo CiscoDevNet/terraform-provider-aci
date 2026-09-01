@@ -51,3 +51,7 @@ func NewFvRsIgmpsnModelNull() FvRsIgmpsnModel {
 func (m *FvRsIgmpsnModel) BuildRN() string {
 	return "rsigmpsn"
 }
+
+func (m *FvRsIgmpsnModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}

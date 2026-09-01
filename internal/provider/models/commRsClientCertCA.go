@@ -51,3 +51,7 @@ func NewCommRsClientCertCAModelNull() CommRsClientCertCAModel {
 func (m *CommRsClientCertCAModel) BuildRN() string {
 	return "rsclientCertCA"
 }
+
+func (m *CommRsClientCertCAModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}

@@ -54,3 +54,7 @@ func NewCloudCertStoreModelNull() CloudCertStoreModel {
 func (m *CloudCertStoreModel) BuildRN() string {
 	return "certstore"
 }
+
+func (m *CloudCertStoreModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}

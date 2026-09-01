@@ -144,6 +144,10 @@ func (m *FvESgModel) BuildRN() string {
 	return rn
 }
 
+func (m *FvESgModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}
+
 type FvESgResourceModel struct {
 	FvESgModel
 
@@ -159,6 +163,10 @@ func NewFvESgResourceModelNull() FvESgResourceModel {
 	}
 }
 
+func (m *FvESgResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
+}
+
 type FvESgDataSourceModel struct {
 	FvESgModel
 
@@ -172,4 +180,8 @@ func NewFvESgDataSourceModelNull() FvESgDataSourceModel {
 		ID:         types.StringNull(),
 		ParentDn:   types.StringNull(),
 	}
+}
+
+func (m *FvESgDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

@@ -78,6 +78,10 @@ func (m *FvRemoteIdModel) BuildRN() string {
 	return rn
 }
 
+func (m *FvRemoteIdModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}
+
 type FvRemoteIdResourceModel struct {
 	FvRemoteIdModel
 
@@ -93,6 +97,10 @@ func NewFvRemoteIdResourceModelNull() FvRemoteIdResourceModel {
 	}
 }
 
+func (m *FvRemoteIdResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
+}
+
 type FvRemoteIdDataSourceModel struct {
 	FvRemoteIdModel
 
@@ -106,4 +114,8 @@ func NewFvRemoteIdDataSourceModelNull() FvRemoteIdDataSourceModel {
 		ID:              types.StringNull(),
 		ParentDn:        types.StringNull(),
 	}
+}
+
+func (m *FvRemoteIdDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

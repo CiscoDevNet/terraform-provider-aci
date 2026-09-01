@@ -51,3 +51,7 @@ func NewPoeRsPoeEpgModelNull() PoeRsPoeEpgModel {
 func (m *PoeRsPoeEpgModel) BuildRN() string {
 	return "rspoeEpg"
 }
+
+func (m *PoeRsPoeEpgModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}

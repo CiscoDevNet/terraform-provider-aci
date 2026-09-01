@@ -35,6 +35,10 @@ func (m *TagTagModel) BuildRN() string {
 	return rn
 }
 
+func (m *TagTagModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}
+
 type TagTagResourceModel struct {
 	TagTagModel
 
@@ -50,6 +54,10 @@ func NewTagTagResourceModelNull() TagTagResourceModel {
 	}
 }
 
+func (m *TagTagResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
+}
+
 type TagTagDataSourceModel struct {
 	TagTagModel
 
@@ -63,4 +71,8 @@ func NewTagTagDataSourceModelNull() TagTagDataSourceModel {
 		ID:          types.StringNull(),
 		ParentDn:    types.StringNull(),
 	}
+}
+
+func (m *TagTagDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

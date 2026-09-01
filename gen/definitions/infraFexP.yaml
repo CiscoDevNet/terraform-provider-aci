@@ -3,8 +3,8 @@ documentation:
   ui_locations:
   - Fabric -> Access Policies -> Interfaces -> Leaf Interfaces -> Profiles -> Fex
     Interfaces
-include_parents:
-- polUni
+exclude_parents:
+- infraInfra
 migration_source: from_sdkv2
 resource_name: fex_profile
 rn_prepend: infra

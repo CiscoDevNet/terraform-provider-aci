@@ -67,6 +67,10 @@ func (m *FvFBRMemberModel) BuildRN() string {
 	return rn
 }
 
+func (m *FvFBRMemberModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}
+
 type FvFBRMemberResourceModel struct {
 	FvFBRMemberModel
 
@@ -82,6 +86,10 @@ func NewFvFBRMemberResourceModelNull() FvFBRMemberResourceModel {
 	}
 }
 
+func (m *FvFBRMemberResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
+}
+
 type FvFBRMemberDataSourceModel struct {
 	FvFBRMemberModel
 
@@ -95,4 +103,8 @@ func NewFvFBRMemberDataSourceModelNull() FvFBRMemberDataSourceModel {
 		ID:               types.StringNull(),
 		ParentDn:         types.StringNull(),
 	}
+}
+
+func (m *FvFBRMemberDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

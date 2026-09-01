@@ -133,6 +133,10 @@ func (m *QosDppPolModel) BuildRN() string {
 	return rn
 }
 
+func (m *QosDppPolModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}
+
 type QosDppPolResourceModel struct {
 	QosDppPolModel
 
@@ -148,6 +152,10 @@ func NewQosDppPolResourceModelNull() QosDppPolResourceModel {
 	}
 }
 
+func (m *QosDppPolResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
+}
+
 type QosDppPolDataSourceModel struct {
 	QosDppPolModel
 
@@ -161,4 +169,8 @@ func NewQosDppPolDataSourceModelNull() QosDppPolDataSourceModel {
 		ID:             types.StringNull(),
 		ParentDn:       types.StringNull(),
 	}
+}
+
+func (m *QosDppPolDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

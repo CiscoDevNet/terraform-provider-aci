@@ -51,3 +51,7 @@ func NewFvRsCustQosPolModelNull() FvRsCustQosPolModel {
 func (m *FvRsCustQosPolModel) BuildRN() string {
 	return "rscustQosPol"
 }
+
+func (m *FvRsCustQosPolModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}

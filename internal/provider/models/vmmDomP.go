@@ -146,6 +146,10 @@ func (m *VmmDomPModel) BuildRN() string {
 	return rn
 }
 
+func (m *VmmDomPModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}
+
 type VmmDomPResourceModel struct {
 	VmmDomPModel
 
@@ -161,6 +165,10 @@ func NewVmmDomPResourceModelNull() VmmDomPResourceModel {
 	}
 }
 
+func (m *VmmDomPResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
+}
+
 type VmmDomPDataSourceModel struct {
 	VmmDomPModel
 
@@ -174,4 +182,8 @@ func NewVmmDomPDataSourceModelNull() VmmDomPDataSourceModel {
 		ID:           types.StringNull(),
 		ParentDn:     types.StringNull(),
 	}
+}
+
+func (m *VmmDomPDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

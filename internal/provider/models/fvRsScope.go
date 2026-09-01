@@ -51,3 +51,7 @@ func NewFvRsScopeModelNull() FvRsScopeModel {
 func (m *FvRsScopeModel) BuildRN() string {
 	return "rsscope"
 }
+
+func (m *FvRsScopeModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}

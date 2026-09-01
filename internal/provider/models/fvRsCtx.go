@@ -51,3 +51,7 @@ func NewFvRsCtxModelNull() FvRsCtxModel {
 func (m *FvRsCtxModel) BuildRN() string {
 	return "rsctx"
 }
+
+func (m *FvRsCtxModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}

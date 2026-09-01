@@ -2,9 +2,9 @@ documentation:
   sub_category: Access Policies
   ui_locations:
   - Fabric -> Access Policies -> Policies -> Interface -> CoPP Interface
+exclude_parents:
+- infraInfra
 include_children:
 - coppProtoClassP
-include_parents:
-- polUni
 resource_name: copp_interface_policy
 rn_prepend: infra

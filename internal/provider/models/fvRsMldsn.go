@@ -51,3 +51,7 @@ func NewFvRsMldsnModelNull() FvRsMldsnModel {
 func (m *FvRsMldsnModel) BuildRN() string {
 	return "rsmldsn"
 }
+
+func (m *FvRsMldsnModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}

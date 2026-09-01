@@ -150,6 +150,10 @@ func (m *FvCtxModel) BuildRN() string {
 	return rn
 }
 
+func (m *FvCtxModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}
+
 type FvCtxResourceModel struct {
 	FvCtxModel
 
@@ -165,6 +169,10 @@ func NewFvCtxResourceModelNull() FvCtxResourceModel {
 	}
 }
 
+func (m *FvCtxResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
+}
+
 type FvCtxDataSourceModel struct {
 	FvCtxModel
 
@@ -178,4 +186,8 @@ func NewFvCtxDataSourceModelNull() FvCtxDataSourceModel {
 		ID:         types.StringNull(),
 		ParentDn:   types.StringNull(),
 	}
+}
+
+func (m *FvCtxDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

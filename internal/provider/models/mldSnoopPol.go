@@ -93,6 +93,10 @@ func (m *MldSnoopPolModel) BuildRN() string {
 	return rn
 }
 
+func (m *MldSnoopPolModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}
+
 type MldSnoopPolResourceModel struct {
 	MldSnoopPolModel
 
@@ -108,6 +112,10 @@ func NewMldSnoopPolResourceModelNull() MldSnoopPolResourceModel {
 	}
 }
 
+func (m *MldSnoopPolResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
+}
+
 type MldSnoopPolDataSourceModel struct {
 	MldSnoopPolModel
 
@@ -121,4 +129,8 @@ func NewMldSnoopPolDataSourceModelNull() MldSnoopPolDataSourceModel {
 		ID:               types.StringNull(),
 		ParentDn:         types.StringNull(),
 	}
+}
+
+func (m *MldSnoopPolDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

@@ -83,6 +83,10 @@ func (m *FvFabricExtConnPModel) BuildRN() string {
 	return rn
 }
 
+func (m *FvFabricExtConnPModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}
+
 type FvFabricExtConnPResourceModel struct {
 	FvFabricExtConnPModel
 
@@ -98,6 +102,10 @@ func NewFvFabricExtConnPResourceModelNull() FvFabricExtConnPResourceModel {
 	}
 }
 
+func (m *FvFabricExtConnPResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
+}
+
 type FvFabricExtConnPDataSourceModel struct {
 	FvFabricExtConnPModel
 
@@ -111,4 +119,8 @@ func NewFvFabricExtConnPDataSourceModelNull() FvFabricExtConnPDataSourceModel {
 		ID:                    types.StringNull(),
 		ParentDn:              types.StringNull(),
 	}
+}
+
+func (m *FvFabricExtConnPDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

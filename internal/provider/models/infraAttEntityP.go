@@ -80,32 +80,40 @@ func (m *InfraAttEntityPModel) BuildRN() string {
 	return rn
 }
 
+func (m *InfraAttEntityPModel) BuildDN() string {
+	return "uni/" + m.BuildRN()
+}
+
 type InfraAttEntityPResourceModel struct {
 	InfraAttEntityPModel
 
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ID types.String `tfsdk:"id"`
 }
 
 func NewInfraAttEntityPResourceModelNull() InfraAttEntityPResourceModel {
 	return InfraAttEntityPResourceModel{
 		InfraAttEntityPModel: NewInfraAttEntityPModelNull(),
 		ID:                   types.StringNull(),
-		ParentDn:             types.StringNull(),
 	}
+}
+
+func (m *InfraAttEntityPResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }
 
 type InfraAttEntityPDataSourceModel struct {
 	InfraAttEntityPModel
 
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ID types.String `tfsdk:"id"`
 }
 
 func NewInfraAttEntityPDataSourceModelNull() InfraAttEntityPDataSourceModel {
 	return InfraAttEntityPDataSourceModel{
 		InfraAttEntityPModel: NewInfraAttEntityPModelNull(),
 		ID:                   types.StringNull(),
-		ParentDn:             types.StringNull(),
 	}
+}
+
+func (m *InfraAttEntityPDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

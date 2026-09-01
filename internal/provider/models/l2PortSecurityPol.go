@@ -78,32 +78,40 @@ func (m *L2PortSecurityPolModel) BuildRN() string {
 	return rn
 }
 
+func (m *L2PortSecurityPolModel) BuildDN() string {
+	return "uni/" + m.BuildRN()
+}
+
 type L2PortSecurityPolResourceModel struct {
 	L2PortSecurityPolModel
 
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ID types.String `tfsdk:"id"`
 }
 
 func NewL2PortSecurityPolResourceModelNull() L2PortSecurityPolResourceModel {
 	return L2PortSecurityPolResourceModel{
 		L2PortSecurityPolModel: NewL2PortSecurityPolModelNull(),
 		ID:                     types.StringNull(),
-		ParentDn:               types.StringNull(),
 	}
+}
+
+func (m *L2PortSecurityPolResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }
 
 type L2PortSecurityPolDataSourceModel struct {
 	L2PortSecurityPolModel
 
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ID types.String `tfsdk:"id"`
 }
 
 func NewL2PortSecurityPolDataSourceModelNull() L2PortSecurityPolDataSourceModel {
 	return L2PortSecurityPolDataSourceModel{
 		L2PortSecurityPolModel: NewL2PortSecurityPolModelNull(),
 		ID:                     types.StringNull(),
-		ParentDn:               types.StringNull(),
 	}
+}
+
+func (m *L2PortSecurityPolDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

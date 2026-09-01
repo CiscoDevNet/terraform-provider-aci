@@ -69,32 +69,40 @@ func (m *InfraSpAccPortPModel) BuildRN() string {
 	return rn
 }
 
+func (m *InfraSpAccPortPModel) BuildDN() string {
+	return "uni/" + m.BuildRN()
+}
+
 type InfraSpAccPortPResourceModel struct {
 	InfraSpAccPortPModel
 
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ID types.String `tfsdk:"id"`
 }
 
 func NewInfraSpAccPortPResourceModelNull() InfraSpAccPortPResourceModel {
 	return InfraSpAccPortPResourceModel{
 		InfraSpAccPortPModel: NewInfraSpAccPortPModelNull(),
 		ID:                   types.StringNull(),
-		ParentDn:             types.StringNull(),
 	}
+}
+
+func (m *InfraSpAccPortPResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }
 
 type InfraSpAccPortPDataSourceModel struct {
 	InfraSpAccPortPModel
 
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ID types.String `tfsdk:"id"`
 }
 
 func NewInfraSpAccPortPDataSourceModelNull() InfraSpAccPortPDataSourceModel {
 	return InfraSpAccPortPDataSourceModel{
 		InfraSpAccPortPModel: NewInfraSpAccPortPModelNull(),
 		ID:                   types.StringNull(),
-		ParentDn:             types.StringNull(),
 	}
+}
+
+func (m *InfraSpAccPortPDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"regexp"
 	"slices"
 	"strings"
 
@@ -535,6 +536,90 @@ func (c Class) ModelProperties() []*Property {
 // the class has one.
 func (c Class) ParentDnProperty() *Property {
 	return c.Properties["parentDn"]
+}
+
+// FixedParentDn returns the static root DN for a class that does not expose
+// parent_dn. RnFormat already contains any remaining fixed path added through
+// rn_prepend, so both direct polUni children and policies below containers such
+// as uni/infra only need the first segment of their metadata DN format.
+func (c Class) FixedParentDn() string {
+	rawFormats, _ := c.MetaFileContent["dnFormats"].([]any)
+	for _, rawFormat := range rawFormats {
+		dnFormat, ok := rawFormat.(string)
+		if !ok {
+			continue
+		}
+		if parentDn, _, found := strings.Cut(dnFormat, "/"); found {
+			return parentDn
+		}
+		return dnFormat
+	}
+	return ""
+}
+
+// DnFormatPatterns converts the class's meta dnFormats into anchored regular
+// expressions. An ordinary identifier matches one DN path segment; a
+// bracketed identifier can contain slashes up to its closing bracket. Model
+// generation uses the parent class's patterns to identify dynamic parent-DN
+// variants without duplicating DN formats in class definitions.
+func (c Class) DnFormatPatterns() []string {
+	rawFormats, _ := c.MetaFileContent["dnFormats"].([]any)
+	patterns := make([]string, 0, len(rawFormats))
+	for _, rawFormat := range rawFormats {
+		dnFormat, ok := rawFormat.(string)
+		if !ok {
+			continue
+		}
+		patterns = append(patterns, dnFormatPattern(dnFormat))
+	}
+	return patterns
+}
+
+func dnFormatPattern(dnFormat string) string {
+	var pattern strings.Builder
+	pattern.WriteByte('^')
+
+	for len(dnFormat) > 0 {
+		placeholderStart := strings.IndexByte(dnFormat, '{')
+		if placeholderStart == -1 {
+			pattern.WriteString(regexp.QuoteMeta(dnFormat))
+			break
+		}
+
+		literalPrefix := dnFormat[:placeholderStart]
+		pattern.WriteString(regexp.QuoteMeta(literalPrefix))
+		placeholderEnd := strings.IndexByte(dnFormat[placeholderStart:], '}')
+		if placeholderEnd == -1 {
+			pattern.WriteString(regexp.QuoteMeta(dnFormat[placeholderStart:]))
+			break
+		}
+
+		remainingFormat := dnFormat[placeholderStart+placeholderEnd+1:]
+		if isBracketedDnPlaceholder(literalPrefix, remainingFormat) {
+			pattern.WriteString(`[^]]+`)
+		} else {
+			pattern.WriteString(`[^/]+`)
+		}
+		dnFormat = remainingFormat
+	}
+
+	pattern.WriteByte('$')
+	return pattern.String()
+}
+
+func isBracketedDnPlaceholder(literalPrefix, remainingFormat string) bool {
+	segmentStart := strings.LastIndexByte(literalPrefix, '/') + 1
+	segmentPrefix := literalPrefix[segmentStart:]
+	if strings.LastIndexByte(segmentPrefix, '[') <= strings.LastIndexByte(segmentPrefix, ']') {
+		return false
+	}
+
+	closingBracket := strings.IndexByte(remainingFormat, ']')
+	if closingBracket == -1 {
+		return false
+	}
+	nextSegment := strings.IndexByte(remainingFormat, '/')
+	return nextSegment == -1 || closingBracket < nextSegment
 }
 
 // HasCustomModelTypes reports whether this class's own properties require the

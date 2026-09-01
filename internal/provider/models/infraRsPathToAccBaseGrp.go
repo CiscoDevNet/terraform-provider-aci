@@ -51,3 +51,7 @@ func NewInfraRsPathToAccBaseGrpModelNull() InfraRsPathToAccBaseGrpModel {
 func (m *InfraRsPathToAccBaseGrpModel) BuildRN() string {
 	return "rspathToAccBaseGrp"
 }
+
+func (m *InfraRsPathToAccBaseGrpModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}

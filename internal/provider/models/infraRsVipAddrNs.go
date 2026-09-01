@@ -51,3 +51,7 @@ func NewInfraRsVipAddrNsModelNull() InfraRsVipAddrNsModel {
 func (m *InfraRsVipAddrNsModel) BuildRN() string {
 	return "rsvipAddrNs"
 }
+
+func (m *InfraRsVipAddrNsModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}

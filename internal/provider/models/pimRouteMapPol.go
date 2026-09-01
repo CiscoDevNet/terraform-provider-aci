@@ -69,6 +69,10 @@ func (m *PimRouteMapPolModel) BuildRN() string {
 	return rn
 }
 
+func (m *PimRouteMapPolModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}
+
 type PimRouteMapPolResourceModel struct {
 	PimRouteMapPolModel
 
@@ -84,6 +88,10 @@ func NewPimRouteMapPolResourceModelNull() PimRouteMapPolResourceModel {
 	}
 }
 
+func (m *PimRouteMapPolResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
+}
+
 type PimRouteMapPolDataSourceModel struct {
 	PimRouteMapPolModel
 
@@ -97,4 +105,8 @@ func NewPimRouteMapPolDataSourceModelNull() PimRouteMapPolDataSourceModel {
 		ID:                  types.StringNull(),
 		ParentDn:            types.StringNull(),
 	}
+}
+
+func (m *PimRouteMapPolDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

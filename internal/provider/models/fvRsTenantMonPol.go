@@ -51,3 +51,7 @@ func NewFvRsTenantMonPolModelNull() FvRsTenantMonPolModel {
 func (m *FvRsTenantMonPolModel) BuildRN() string {
 	return "rsTenantMonPol"
 }
+
+func (m *FvRsTenantMonPolModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}

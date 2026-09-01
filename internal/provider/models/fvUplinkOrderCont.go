@@ -69,3 +69,7 @@ func NewFvUplinkOrderContModelNull() FvUplinkOrderContModel {
 func (m *FvUplinkOrderContModel) BuildRN() string {
 	return "uplinkorder"
 }
+
+func (m *FvUplinkOrderContModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}

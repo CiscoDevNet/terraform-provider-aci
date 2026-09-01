@@ -2,8 +2,8 @@ documentation:
   sub_category: Access Policies
   ui_locations:
   - Fabric -> Access Policies -> Interfaces -> Spine Interfaces -> Profiles
-include_parents:
-- polUni
+exclude_parents:
+- infraInfra
 migration_source: from_sdkv2
 resource_name: spine_interface_profile
 rn_prepend: infra

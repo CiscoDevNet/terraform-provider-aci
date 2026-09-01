@@ -95,6 +95,10 @@ func (m *FvTrackListModel) BuildRN() string {
 	return rn
 }
 
+func (m *FvTrackListModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}
+
 type FvTrackListResourceModel struct {
 	FvTrackListModel
 
@@ -110,6 +114,10 @@ func NewFvTrackListResourceModelNull() FvTrackListResourceModel {
 	}
 }
 
+func (m *FvTrackListResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
+}
+
 type FvTrackListDataSourceModel struct {
 	FvTrackListModel
 
@@ -123,4 +131,8 @@ func NewFvTrackListDataSourceModelNull() FvTrackListDataSourceModel {
 		ID:               types.StringNull(),
 		ParentDn:         types.StringNull(),
 	}
+}
+
+func (m *FvTrackListDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

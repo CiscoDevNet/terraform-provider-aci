@@ -61,6 +61,10 @@ func (m *VzRsAnyToConsModel) BuildRN() string {
 	return rn
 }
 
+func (m *VzRsAnyToConsModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}
+
 type VzRsAnyToConsResourceModel struct {
 	VzRsAnyToConsModel
 
@@ -76,6 +80,10 @@ func NewVzRsAnyToConsResourceModelNull() VzRsAnyToConsResourceModel {
 	}
 }
 
+func (m *VzRsAnyToConsResourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
+}
+
 type VzRsAnyToConsDataSourceModel struct {
 	VzRsAnyToConsModel
 
@@ -89,4 +97,8 @@ func NewVzRsAnyToConsDataSourceModelNull() VzRsAnyToConsDataSourceModel {
 		ID:                 types.StringNull(),
 		ParentDn:           types.StringNull(),
 	}
+}
+
+func (m *VzRsAnyToConsDataSourceModel) SetIDFromDN(dn string) {
+	m.ID = types.StringValue(dn)
 }

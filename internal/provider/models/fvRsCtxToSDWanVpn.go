@@ -51,3 +51,7 @@ func NewFvRsCtxToSDWanVpnModelNull() FvRsCtxToSDWanVpnModel {
 func (m *FvRsCtxToSDWanVpnModel) BuildRN() string {
 	return "rsctxToSDWanVpn"
 }
+
+func (m *FvRsCtxToSDWanVpnModel) BuildDN(parentDN string) string {
+	return parentDN + "/" + m.BuildRN()
+}
