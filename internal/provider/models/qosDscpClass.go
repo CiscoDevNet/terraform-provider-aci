@@ -2,18 +2,100 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type QosDscpClassModel struct{}
+type QosDscpClassModel struct {
+	Annotation    types.String                                 `tfsdk:"annotation"`
+	Descr         types.String                                 `tfsdk:"description"`
+	From          customTypes.QosDscpClassFromStringValue      `tfsdk:"from"`
+	Name          types.String                                 `tfsdk:"name"`
+	NameAlias     types.String                                 `tfsdk:"name_alias"`
+	Prio          customTypes.QosDscpClassPrioStringValue      `tfsdk:"priority"`
+	Target        customTypes.QosDscpClassTargetStringValue    `tfsdk:"target"`
+	TargetCos     customTypes.QosDscpClassTargetCosStringValue `tfsdk:"target_cos"`
+	To            customTypes.QosDscpClassToStringValue        `tfsdk:"to"`
+	TagAnnotation types.Set                                    `tfsdk:"annotations"`
+	TagTag        types.Set                                    `tfsdk:"tags"`
+}
+
+func QosDscpClassModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":  types.StringType,
+		"description": types.StringType,
+		"from":        customTypes.QosDscpClassFromStringType{},
+		"name":        types.StringType,
+		"name_alias":  types.StringType,
+		"priority":    customTypes.QosDscpClassPrioStringType{},
+		"target":      customTypes.QosDscpClassTargetStringType{},
+		"target_cos":  customTypes.QosDscpClassTargetCosStringType{},
+		"to":          customTypes.QosDscpClassToStringType{},
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewQosDscpClassModelNull() QosDscpClassModel {
+	return QosDscpClassModel{
+		Annotation: types.StringNull(),
+		Descr:      types.StringNull(),
+		From:       customTypes.NewQosDscpClassFromStringNull(),
+		Name:       types.StringNull(),
+		NameAlias:  types.StringNull(),
+		Prio:       customTypes.NewQosDscpClassPrioStringNull(),
+		Target:     customTypes.NewQosDscpClassTargetStringNull(),
+		TargetCos:  customTypes.NewQosDscpClassTargetCosStringNull(),
+		To:         customTypes.NewQosDscpClassToStringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type QosDscpClassResourceModel struct {
 	QosDscpClassModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewQosDscpClassResourceModelNull() QosDscpClassResourceModel {
+	return QosDscpClassResourceModel{
+		QosDscpClassModel: NewQosDscpClassModelNull(),
+		ID:                types.StringNull(),
+		ParentDn:          types.StringNull(),
+	}
 }
 
 type QosDscpClassDataSourceModel struct {
 	QosDscpClassModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewQosDscpClassDataSourceModelNull() QosDscpClassDataSourceModel {
+	return QosDscpClassDataSourceModel{
+		QosDscpClassModel: NewQosDscpClassModelNull(),
+		ID:                types.StringNull(),
+		ParentDn:          types.StringNull(),
+	}
 }

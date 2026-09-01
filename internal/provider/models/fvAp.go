@@ -2,18 +2,99 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type FvApModel struct{}
+type FvApModel struct {
+	Annotation    types.String                    `tfsdk:"annotation"`
+	Descr         types.String                    `tfsdk:"description"`
+	Name          types.String                    `tfsdk:"name"`
+	NameAlias     types.String                    `tfsdk:"name_alias"`
+	OwnerKey      types.String                    `tfsdk:"owner_key"`
+	OwnerTag      types.String                    `tfsdk:"owner_tag"`
+	Prio          customTypes.FvApPrioStringValue `tfsdk:"priority"`
+	FvRsApMonPol  types.Object                    `tfsdk:"relation_to_monitoring_policy"`
+	TagAnnotation types.Set                       `tfsdk:"annotations"`
+	TagTag        types.Set                       `tfsdk:"tags"`
+}
+
+func FvApModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":  types.StringType,
+		"description": types.StringType,
+		"name":        types.StringType,
+		"name_alias":  types.StringType,
+		"owner_key":   types.StringType,
+		"owner_tag":   types.StringType,
+		"priority":    customTypes.FvApPrioStringType{},
+		"relation_to_monitoring_policy": types.ObjectType{
+			AttrTypes: FvRsApMonPolModelAttributeTypes(),
+		},
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewFvApModelNull() FvApModel {
+	return FvApModel{
+		Annotation:   types.StringNull(),
+		Descr:        types.StringNull(),
+		Name:         types.StringNull(),
+		NameAlias:    types.StringNull(),
+		OwnerKey:     types.StringNull(),
+		OwnerTag:     types.StringNull(),
+		Prio:         customTypes.NewFvApPrioStringNull(),
+		FvRsApMonPol: types.ObjectNull(FvRsApMonPolModelAttributeTypes()),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type FvApResourceModel struct {
 	FvApModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFvApResourceModelNull() FvApResourceModel {
+	return FvApResourceModel{
+		FvApModel: NewFvApModelNull(),
+		ID:        types.StringNull(),
+		ParentDn:  types.StringNull(),
+	}
 }
 
 type FvApDataSourceModel struct {
 	FvApModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFvApDataSourceModelNull() FvApDataSourceModel {
+	return FvApDataSourceModel{
+		FvApModel: NewFvApModelNull(),
+		ID:        types.StringNull(),
+		ParentDn:  types.StringNull(),
+	}
 }

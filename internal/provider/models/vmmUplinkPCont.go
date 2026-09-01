@@ -2,18 +2,92 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type VmmUplinkPContModel struct{}
+type VmmUplinkPContModel struct {
+	Annotation    types.String `tfsdk:"annotation"`
+	NameAlias     types.String `tfsdk:"name_alias"`
+	NumOfUplinks  types.String `tfsdk:"number_of_uplinks"`
+	TagAnnotation types.Set    `tfsdk:"annotations"`
+	TagTag        types.Set    `tfsdk:"tags"`
+	VmmUplinkP    types.Set    `tfsdk:"uplink_policies"`
+}
+
+func VmmUplinkPContModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":        types.StringType,
+		"name_alias":        types.StringType,
+		"number_of_uplinks": types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+		"uplink_policies": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: VmmUplinkPModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewVmmUplinkPContModelNull() VmmUplinkPContModel {
+	return VmmUplinkPContModel{
+		Annotation:   types.StringNull(),
+		NameAlias:    types.StringNull(),
+		NumOfUplinks: types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+		VmmUplinkP: types.SetNull(
+			types.ObjectType{
+				AttrTypes: VmmUplinkPModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type VmmUplinkPContResourceModel struct {
 	VmmUplinkPContModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewVmmUplinkPContResourceModelNull() VmmUplinkPContResourceModel {
+	return VmmUplinkPContResourceModel{
+		VmmUplinkPContModel: NewVmmUplinkPContModelNull(),
+		ID:                  types.StringNull(),
+		ParentDn:            types.StringNull(),
+	}
 }
 
 type VmmUplinkPContDataSourceModel struct {
 	VmmUplinkPContModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewVmmUplinkPContDataSourceModelNull() VmmUplinkPContDataSourceModel {
+	return VmmUplinkPContDataSourceModel{
+		VmmUplinkPContModel: NewVmmUplinkPContModelNull(),
+		ID:                  types.StringNull(),
+		ParentDn:            types.StringNull(),
+	}
 }

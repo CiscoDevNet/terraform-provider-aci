@@ -2,18 +2,78 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type FvRsIntraEpgModel struct{}
+type FvRsIntraEpgModel struct {
+	Annotation    types.String `tfsdk:"annotation"`
+	TnVzBrCPName  types.String `tfsdk:"contract_name"`
+	TagAnnotation types.Set    `tfsdk:"annotations"`
+	TagTag        types.Set    `tfsdk:"tags"`
+}
+
+func FvRsIntraEpgModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":    types.StringType,
+		"contract_name": types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewFvRsIntraEpgModelNull() FvRsIntraEpgModel {
+	return FvRsIntraEpgModel{
+		Annotation:   types.StringNull(),
+		TnVzBrCPName: types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type FvRsIntraEpgResourceModel struct {
 	FvRsIntraEpgModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFvRsIntraEpgResourceModelNull() FvRsIntraEpgResourceModel {
+	return FvRsIntraEpgResourceModel{
+		FvRsIntraEpgModel: NewFvRsIntraEpgModelNull(),
+		ID:                types.StringNull(),
+		ParentDn:          types.StringNull(),
+	}
 }
 
 type FvRsIntraEpgDataSourceModel struct {
 	FvRsIntraEpgModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFvRsIntraEpgDataSourceModelNull() FvRsIntraEpgDataSourceModel {
+	return FvRsIntraEpgDataSourceModel{
+		FvRsIntraEpgModel: NewFvRsIntraEpgModelNull(),
+		ID:                types.StringNull(),
+		ParentDn:          types.StringNull(),
+	}
 }

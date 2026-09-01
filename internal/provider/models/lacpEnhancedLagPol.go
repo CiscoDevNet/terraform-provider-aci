@@ -2,18 +2,90 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type LacpEnhancedLagPolModel struct{}
+type LacpEnhancedLagPolModel struct {
+	Annotation    types.String `tfsdk:"annotation"`
+	Lbmode        types.String `tfsdk:"load_balancing_mode"`
+	Mode          types.String `tfsdk:"mode"`
+	Name          types.String `tfsdk:"name"`
+	NameAlias     types.String `tfsdk:"name_alias"`
+	NumLinks      types.String `tfsdk:"number_of_links"`
+	TagAnnotation types.Set    `tfsdk:"annotations"`
+	TagTag        types.Set    `tfsdk:"tags"`
+}
+
+func LacpEnhancedLagPolModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":          types.StringType,
+		"load_balancing_mode": types.StringType,
+		"mode":                types.StringType,
+		"name":                types.StringType,
+		"name_alias":          types.StringType,
+		"number_of_links":     types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewLacpEnhancedLagPolModelNull() LacpEnhancedLagPolModel {
+	return LacpEnhancedLagPolModel{
+		Annotation: types.StringNull(),
+		Lbmode:     types.StringNull(),
+		Mode:       types.StringNull(),
+		Name:       types.StringNull(),
+		NameAlias:  types.StringNull(),
+		NumLinks:   types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type LacpEnhancedLagPolResourceModel struct {
 	LacpEnhancedLagPolModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewLacpEnhancedLagPolResourceModelNull() LacpEnhancedLagPolResourceModel {
+	return LacpEnhancedLagPolResourceModel{
+		LacpEnhancedLagPolModel: NewLacpEnhancedLagPolModelNull(),
+		ID:                      types.StringNull(),
+		ParentDn:                types.StringNull(),
+	}
 }
 
 type LacpEnhancedLagPolDataSourceModel struct {
 	LacpEnhancedLagPolModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewLacpEnhancedLagPolDataSourceModelNull() LacpEnhancedLagPolDataSourceModel {
+	return LacpEnhancedLagPolDataSourceModel{
+		LacpEnhancedLagPolModel: NewLacpEnhancedLagPolModelNull(),
+		ID:                      types.StringNull(),
+		ParentDn:                types.StringNull(),
+	}
 }

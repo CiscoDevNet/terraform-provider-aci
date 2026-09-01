@@ -2,18 +2,104 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type FhsBDPolModel struct{}
+type FhsBDPolModel struct {
+	Annotation       types.String `tfsdk:"annotation"`
+	Descr            types.String `tfsdk:"description"`
+	IpInspectAdminSt types.String `tfsdk:"ip_inspection"`
+	Name             types.String `tfsdk:"name"`
+	NameAlias        types.String `tfsdk:"name_alias"`
+	OwnerKey         types.String `tfsdk:"owner_key"`
+	OwnerTag         types.String `tfsdk:"owner_tag"`
+	RaGuardAdminSt   types.String `tfsdk:"router_advertisement"`
+	SrcGuardAdminSt  types.String `tfsdk:"source_guard"`
+	FhsRaGuardPol    types.Object `tfsdk:"route_advertisement_guard_policy"`
+	TagAnnotation    types.Set    `tfsdk:"annotations"`
+	TagTag           types.Set    `tfsdk:"tags"`
+}
+
+func FhsBDPolModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":           types.StringType,
+		"description":          types.StringType,
+		"ip_inspection":        types.StringType,
+		"name":                 types.StringType,
+		"name_alias":           types.StringType,
+		"owner_key":            types.StringType,
+		"owner_tag":            types.StringType,
+		"router_advertisement": types.StringType,
+		"source_guard":         types.StringType,
+		"route_advertisement_guard_policy": types.ObjectType{
+			AttrTypes: FhsRaGuardPolModelAttributeTypes(),
+		},
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewFhsBDPolModelNull() FhsBDPolModel {
+	return FhsBDPolModel{
+		Annotation:       types.StringNull(),
+		Descr:            types.StringNull(),
+		IpInspectAdminSt: types.StringNull(),
+		Name:             types.StringNull(),
+		NameAlias:        types.StringNull(),
+		OwnerKey:         types.StringNull(),
+		OwnerTag:         types.StringNull(),
+		RaGuardAdminSt:   types.StringNull(),
+		SrcGuardAdminSt:  types.StringNull(),
+		FhsRaGuardPol:    types.ObjectNull(FhsRaGuardPolModelAttributeTypes()),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type FhsBDPolResourceModel struct {
 	FhsBDPolModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFhsBDPolResourceModelNull() FhsBDPolResourceModel {
+	return FhsBDPolResourceModel{
+		FhsBDPolModel: NewFhsBDPolModelNull(),
+		ID:            types.StringNull(),
+		ParentDn:      types.StringNull(),
+	}
 }
 
 type FhsBDPolDataSourceModel struct {
 	FhsBDPolModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFhsBDPolDataSourceModelNull() FhsBDPolDataSourceModel {
+	return FhsBDPolDataSourceModel{
+		FhsBDPolModel: NewFhsBDPolModelNull(),
+		ID:            types.StringNull(),
+		ParentDn:      types.StringNull(),
+	}
 }

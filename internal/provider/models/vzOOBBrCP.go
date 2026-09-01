@@ -2,18 +2,103 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type VzOOBBrCPModel struct{}
+type VzOOBBrCPModel struct {
+	Annotation    types.String                               `tfsdk:"annotation"`
+	Descr         types.String                               `tfsdk:"description"`
+	Intent        types.String                               `tfsdk:"intent"`
+	Name          types.String                               `tfsdk:"name"`
+	NameAlias     types.String                               `tfsdk:"name_alias"`
+	OwnerKey      types.String                               `tfsdk:"owner_key"`
+	OwnerTag      types.String                               `tfsdk:"owner_tag"`
+	Prio          customTypes.VzOOBBrCPPrioStringValue       `tfsdk:"priority"`
+	Scope         types.String                               `tfsdk:"scope"`
+	TargetDscp    customTypes.VzOOBBrCPTargetDscpStringValue `tfsdk:"target_dscp"`
+	TagAnnotation types.Set                                  `tfsdk:"annotations"`
+	TagTag        types.Set                                  `tfsdk:"tags"`
+}
+
+func VzOOBBrCPModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":  types.StringType,
+		"description": types.StringType,
+		"intent":      types.StringType,
+		"name":        types.StringType,
+		"name_alias":  types.StringType,
+		"owner_key":   types.StringType,
+		"owner_tag":   types.StringType,
+		"priority":    customTypes.VzOOBBrCPPrioStringType{},
+		"scope":       types.StringType,
+		"target_dscp": customTypes.VzOOBBrCPTargetDscpStringType{},
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewVzOOBBrCPModelNull() VzOOBBrCPModel {
+	return VzOOBBrCPModel{
+		Annotation: types.StringNull(),
+		Descr:      types.StringNull(),
+		Intent:     types.StringNull(),
+		Name:       types.StringNull(),
+		NameAlias:  types.StringNull(),
+		OwnerKey:   types.StringNull(),
+		OwnerTag:   types.StringNull(),
+		Prio:       customTypes.NewVzOOBBrCPPrioStringNull(),
+		Scope:      types.StringNull(),
+		TargetDscp: customTypes.NewVzOOBBrCPTargetDscpStringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type VzOOBBrCPResourceModel struct {
 	VzOOBBrCPModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewVzOOBBrCPResourceModelNull() VzOOBBrCPResourceModel {
+	return VzOOBBrCPResourceModel{
+		VzOOBBrCPModel: NewVzOOBBrCPModelNull(),
+		ID:             types.StringNull(),
+		ParentDn:       types.StringNull(),
+	}
 }
 
 type VzOOBBrCPDataSourceModel struct {
 	VzOOBBrCPModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewVzOOBBrCPDataSourceModelNull() VzOOBBrCPDataSourceModel {
+	return VzOOBBrCPDataSourceModel{
+		VzOOBBrCPModel: NewVzOOBBrCPModelNull(),
+		ID:             types.StringNull(),
+		ParentDn:       types.StringNull(),
+	}
 }

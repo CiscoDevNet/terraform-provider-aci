@@ -2,4 +2,48 @@
 
 package models
 
-type FvRsIgmpsnModel struct{}
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
+
+type FvRsIgmpsnModel struct {
+	Annotation         types.String `tfsdk:"annotation"`
+	TnIgmpSnoopPolName types.String `tfsdk:"igmp_snooping_policy_name"`
+	TagAnnotation      types.Set    `tfsdk:"annotations"`
+	TagTag             types.Set    `tfsdk:"tags"`
+}
+
+func FvRsIgmpsnModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":                types.StringType,
+		"igmp_snooping_policy_name": types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewFvRsIgmpsnModelNull() FvRsIgmpsnModel {
+	return FvRsIgmpsnModel{
+		Annotation:         types.StringNull(),
+		TnIgmpSnoopPolName: types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}

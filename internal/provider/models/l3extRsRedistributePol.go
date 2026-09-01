@@ -2,18 +2,81 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type L3extRsRedistributePolModel struct{}
+type L3extRsRedistributePolModel struct {
+	Annotation          types.String `tfsdk:"annotation"`
+	Src                 types.String `tfsdk:"source"`
+	TnRtctrlProfileName types.String `tfsdk:"route_control_profile_name"`
+	TagAnnotation       types.Set    `tfsdk:"annotations"`
+	TagTag              types.Set    `tfsdk:"tags"`
+}
+
+func L3extRsRedistributePolModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":                 types.StringType,
+		"source":                     types.StringType,
+		"route_control_profile_name": types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewL3extRsRedistributePolModelNull() L3extRsRedistributePolModel {
+	return L3extRsRedistributePolModel{
+		Annotation:          types.StringNull(),
+		Src:                 types.StringNull(),
+		TnRtctrlProfileName: types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type L3extRsRedistributePolResourceModel struct {
 	L3extRsRedistributePolModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewL3extRsRedistributePolResourceModelNull() L3extRsRedistributePolResourceModel {
+	return L3extRsRedistributePolResourceModel{
+		L3extRsRedistributePolModel: NewL3extRsRedistributePolModelNull(),
+		ID:                          types.StringNull(),
+		ParentDn:                    types.StringNull(),
+	}
 }
 
 type L3extRsRedistributePolDataSourceModel struct {
 	L3extRsRedistributePolModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewL3extRsRedistributePolDataSourceModelNull() L3extRsRedistributePolDataSourceModel {
+	return L3extRsRedistributePolDataSourceModel{
+		L3extRsRedistributePolModel: NewL3extRsRedistributePolModelNull(),
+		ID:                          types.StringNull(),
+		ParentDn:                    types.StringNull(),
+	}
 }

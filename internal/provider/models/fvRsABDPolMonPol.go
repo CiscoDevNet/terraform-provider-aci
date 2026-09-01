@@ -2,4 +2,48 @@
 
 package models
 
-type FvRsABDPolMonPolModel struct{}
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
+
+type FvRsABDPolMonPolModel struct {
+	Annotation      types.String `tfsdk:"annotation"`
+	TnMonEPGPolName types.String `tfsdk:"monitoring_policy_name"`
+	TagAnnotation   types.Set    `tfsdk:"annotations"`
+	TagTag          types.Set    `tfsdk:"tags"`
+}
+
+func FvRsABDPolMonPolModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":             types.StringType,
+		"monitoring_policy_name": types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewFvRsABDPolMonPolModelNull() FvRsABDPolMonPolModel {
+	return FvRsABDPolMonPolModel{
+		Annotation:      types.StringNull(),
+		TnMonEPGPolName: types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}

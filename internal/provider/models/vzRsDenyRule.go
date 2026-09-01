@@ -2,18 +2,81 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type VzRsDenyRuleModel struct{}
+type VzRsDenyRuleModel struct {
+	Annotation     types.String `tfsdk:"annotation"`
+	Directives     types.Set    `tfsdk:"directives"`
+	TnVzFilterName types.String `tfsdk:"filter_name"`
+	TagAnnotation  types.Set    `tfsdk:"annotations"`
+	TagTag         types.Set    `tfsdk:"tags"`
+}
+
+func VzRsDenyRuleModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":  types.StringType,
+		"directives":  types.SetType{ElemType: types.StringType},
+		"filter_name": types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewVzRsDenyRuleModelNull() VzRsDenyRuleModel {
+	return VzRsDenyRuleModel{
+		Annotation:     types.StringNull(),
+		Directives:     types.SetNull(types.StringType),
+		TnVzFilterName: types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type VzRsDenyRuleResourceModel struct {
 	VzRsDenyRuleModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewVzRsDenyRuleResourceModelNull() VzRsDenyRuleResourceModel {
+	return VzRsDenyRuleResourceModel{
+		VzRsDenyRuleModel: NewVzRsDenyRuleModelNull(),
+		ID:                types.StringNull(),
+		ParentDn:          types.StringNull(),
+	}
 }
 
 type VzRsDenyRuleDataSourceModel struct {
 	VzRsDenyRuleModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewVzRsDenyRuleDataSourceModelNull() VzRsDenyRuleDataSourceModel {
+	return VzRsDenyRuleDataSourceModel{
+		VzRsDenyRuleModel: NewVzRsDenyRuleModelNull(),
+		ID:                types.StringNull(),
+		ParentDn:          types.StringNull(),
+	}
 }

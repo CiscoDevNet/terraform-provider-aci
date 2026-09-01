@@ -2,4 +2,69 @@
 
 package models
 
-type L2PortAuthCfgPolModel struct{}
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
+
+type L2PortAuthCfgPolModel struct {
+	Annotation    types.String `tfsdk:"annotation"`
+	MacAuth       types.String `tfsdk:"authentication_mode"`
+	MaxReauthReq  types.String `tfsdk:"maximum_reauthentication_requests"`
+	MaxReq        types.String `tfsdk:"maximum_requests"`
+	ReAuth        types.String `tfsdk:"reauthenticate"`
+	ReAuthPeriod  types.String `tfsdk:"reauthentication_period"`
+	ServerTimeout types.String `tfsdk:"server_timeout"`
+	SuppTimeout   types.String `tfsdk:"supplicant_timeout"`
+	TxPeriod      types.String `tfsdk:"transmit_period"`
+	TagAnnotation types.Set    `tfsdk:"annotations"`
+	TagTag        types.Set    `tfsdk:"tags"`
+}
+
+func L2PortAuthCfgPolModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":                        types.StringType,
+		"authentication_mode":               types.StringType,
+		"maximum_reauthentication_requests": types.StringType,
+		"maximum_requests":                  types.StringType,
+		"reauthenticate":                    types.StringType,
+		"reauthentication_period":           types.StringType,
+		"server_timeout":                    types.StringType,
+		"supplicant_timeout":                types.StringType,
+		"transmit_period":                   types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewL2PortAuthCfgPolModelNull() L2PortAuthCfgPolModel {
+	return L2PortAuthCfgPolModel{
+		Annotation:    types.StringNull(),
+		MacAuth:       types.StringNull(),
+		MaxReauthReq:  types.StringNull(),
+		MaxReq:        types.StringNull(),
+		ReAuth:        types.StringNull(),
+		ReAuthPeriod:  types.StringNull(),
+		ServerTimeout: types.StringNull(),
+		SuppTimeout:   types.StringNull(),
+		TxPeriod:      types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}

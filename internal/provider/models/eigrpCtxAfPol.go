@@ -2,18 +2,105 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type EigrpCtxAfPolModel struct{}
+type EigrpCtxAfPolModel struct {
+	ActIntvl      types.String `tfsdk:"active_interval"`
+	Annotation    types.String `tfsdk:"annotation"`
+	Descr         types.String `tfsdk:"description"`
+	ExtDist       types.String `tfsdk:"external_distance"`
+	IntDist       types.String `tfsdk:"internal_distance"`
+	MaxPaths      types.String `tfsdk:"maximum_path_limit"`
+	MetricStyle   types.String `tfsdk:"metric_style"`
+	Name          types.String `tfsdk:"name"`
+	NameAlias     types.String `tfsdk:"name_alias"`
+	OwnerKey      types.String `tfsdk:"owner_key"`
+	OwnerTag      types.String `tfsdk:"owner_tag"`
+	TagAnnotation types.Set    `tfsdk:"annotations"`
+	TagTag        types.Set    `tfsdk:"tags"`
+}
+
+func EigrpCtxAfPolModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"active_interval":    types.StringType,
+		"annotation":         types.StringType,
+		"description":        types.StringType,
+		"external_distance":  types.StringType,
+		"internal_distance":  types.StringType,
+		"maximum_path_limit": types.StringType,
+		"metric_style":       types.StringType,
+		"name":               types.StringType,
+		"name_alias":         types.StringType,
+		"owner_key":          types.StringType,
+		"owner_tag":          types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewEigrpCtxAfPolModelNull() EigrpCtxAfPolModel {
+	return EigrpCtxAfPolModel{
+		ActIntvl:    types.StringNull(),
+		Annotation:  types.StringNull(),
+		Descr:       types.StringNull(),
+		ExtDist:     types.StringNull(),
+		IntDist:     types.StringNull(),
+		MaxPaths:    types.StringNull(),
+		MetricStyle: types.StringNull(),
+		Name:        types.StringNull(),
+		NameAlias:   types.StringNull(),
+		OwnerKey:    types.StringNull(),
+		OwnerTag:    types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type EigrpCtxAfPolResourceModel struct {
 	EigrpCtxAfPolModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewEigrpCtxAfPolResourceModelNull() EigrpCtxAfPolResourceModel {
+	return EigrpCtxAfPolResourceModel{
+		EigrpCtxAfPolModel: NewEigrpCtxAfPolModelNull(),
+		ID:                 types.StringNull(),
+		ParentDn:           types.StringNull(),
+	}
 }
 
 type EigrpCtxAfPolDataSourceModel struct {
 	EigrpCtxAfPolModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewEigrpCtxAfPolDataSourceModelNull() EigrpCtxAfPolDataSourceModel {
+	return EigrpCtxAfPolDataSourceModel{
+		EigrpCtxAfPolModel: NewEigrpCtxAfPolModelNull(),
+		ID:                 types.StringNull(),
+		ParentDn:           types.StringNull(),
+	}
 }

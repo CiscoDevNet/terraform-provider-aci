@@ -2,18 +2,88 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type FvFBRMemberModel struct{}
+type FvFBRMemberModel struct {
+	Annotation    types.String                     `tfsdk:"annotation"`
+	Descr         types.String                     `tfsdk:"description"`
+	Name          types.String                     `tfsdk:"name"`
+	NameAlias     types.String                     `tfsdk:"name_alias"`
+	RnhAddr       customTypes.IPAddressStringValue `tfsdk:"fallback_member"`
+	TagAnnotation types.Set                        `tfsdk:"annotations"`
+	TagTag        types.Set                        `tfsdk:"tags"`
+}
+
+func FvFBRMemberModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":      types.StringType,
+		"description":     types.StringType,
+		"name":            types.StringType,
+		"name_alias":      types.StringType,
+		"fallback_member": customTypes.IPAddressStringType{},
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewFvFBRMemberModelNull() FvFBRMemberModel {
+	return FvFBRMemberModel{
+		Annotation: types.StringNull(),
+		Descr:      types.StringNull(),
+		Name:       types.StringNull(),
+		NameAlias:  types.StringNull(),
+		RnhAddr:    customTypes.NewIPAddressStringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type FvFBRMemberResourceModel struct {
 	FvFBRMemberModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFvFBRMemberResourceModelNull() FvFBRMemberResourceModel {
+	return FvFBRMemberResourceModel{
+		FvFBRMemberModel: NewFvFBRMemberModelNull(),
+		ID:               types.StringNull(),
+		ParentDn:         types.StringNull(),
+	}
 }
 
 type FvFBRMemberDataSourceModel struct {
 	FvFBRMemberModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFvFBRMemberDataSourceModelNull() FvFBRMemberDataSourceModel {
+	return FvFBRMemberDataSourceModel{
+		FvFBRMemberModel: NewFvFBRMemberModelNull(),
+		ID:               types.StringNull(),
+		ParentDn:         types.StringNull(),
+	}
 }

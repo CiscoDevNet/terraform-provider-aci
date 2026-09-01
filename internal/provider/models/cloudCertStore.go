@@ -2,4 +2,51 @@
 
 package models
 
-type CloudCertStoreModel struct{}
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
+
+type CloudCertStoreModel struct {
+	Annotation    types.String `tfsdk:"annotation"`
+	Name          types.String `tfsdk:"name"`
+	NameAlias     types.String `tfsdk:"name_alias"`
+	TagAnnotation types.Set    `tfsdk:"annotations"`
+	TagTag        types.Set    `tfsdk:"tags"`
+}
+
+func CloudCertStoreModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation": types.StringType,
+		"name":       types.StringType,
+		"name_alias": types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewCloudCertStoreModelNull() CloudCertStoreModel {
+	return CloudCertStoreModel{
+		Annotation: types.StringNull(),
+		Name:       types.StringNull(),
+		NameAlias:  types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}

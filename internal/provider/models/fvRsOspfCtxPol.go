@@ -2,4 +2,48 @@
 
 package models
 
-type FvRsOspfCtxPolModel struct{}
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
+
+type FvRsOspfCtxPolModel struct {
+	Annotation       types.String `tfsdk:"annotation"`
+	TnOspfCtxPolName types.String `tfsdk:"ospf_timers_name"`
+	TagAnnotation    types.Set    `tfsdk:"annotations"`
+	TagTag           types.Set    `tfsdk:"tags"`
+}
+
+func FvRsOspfCtxPolModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":       types.StringType,
+		"ospf_timers_name": types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewFvRsOspfCtxPolModelNull() FvRsOspfCtxPolModel {
+	return FvRsOspfCtxPolModel{
+		Annotation:       types.StringNull(),
+		TnOspfCtxPolName: types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}

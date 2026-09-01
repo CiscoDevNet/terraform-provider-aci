@@ -2,18 +2,87 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type FvRsFcPathAttModel struct{}
+type FvRsFcPathAttModel struct {
+	Annotation    types.String `tfsdk:"annotation"`
+	Descr         types.String `tfsdk:"description"`
+	TDn           types.String `tfsdk:"target_dn"`
+	Vsan          types.String `tfsdk:"vsan"`
+	VsanMode      types.String `tfsdk:"vsan_mode"`
+	TagAnnotation types.Set    `tfsdk:"annotations"`
+	TagTag        types.Set    `tfsdk:"tags"`
+}
+
+func FvRsFcPathAttModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":  types.StringType,
+		"description": types.StringType,
+		"target_dn":   types.StringType,
+		"vsan":        types.StringType,
+		"vsan_mode":   types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewFvRsFcPathAttModelNull() FvRsFcPathAttModel {
+	return FvRsFcPathAttModel{
+		Annotation: types.StringNull(),
+		Descr:      types.StringNull(),
+		TDn:        types.StringNull(),
+		Vsan:       types.StringNull(),
+		VsanMode:   types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type FvRsFcPathAttResourceModel struct {
 	FvRsFcPathAttModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFvRsFcPathAttResourceModelNull() FvRsFcPathAttResourceModel {
+	return FvRsFcPathAttResourceModel{
+		FvRsFcPathAttModel: NewFvRsFcPathAttModelNull(),
+		ID:                 types.StringNull(),
+		ParentDn:           types.StringNull(),
+	}
 }
 
 type FvRsFcPathAttDataSourceModel struct {
 	FvRsFcPathAttModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFvRsFcPathAttDataSourceModelNull() FvRsFcPathAttDataSourceModel {
+	return FvRsFcPathAttDataSourceModel{
+		FvRsFcPathAttModel: NewFvRsFcPathAttModelNull(),
+		ID:                 types.StringNull(),
+		ParentDn:           types.StringNull(),
+	}
 }
