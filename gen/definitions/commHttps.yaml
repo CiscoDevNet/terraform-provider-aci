@@ -60,6 +60,7 @@ properties:
     test_config:
       create:
       - config_value: r/s
+    value_type: string
   maxRequestStatusCount:
     test_config:
       create:

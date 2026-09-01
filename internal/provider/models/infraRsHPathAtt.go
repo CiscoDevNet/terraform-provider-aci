@@ -2,18 +2,4 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
-
 type InfraRsHPathAttModel struct{}
-
-type InfraRsHPathAttResourceModel struct {
-	InfraRsHPathAttModel
-
-	ID types.String `tfsdk:"id"`
-}
-
-type InfraRsHPathAttDataSourceModel struct {
-	InfraRsHPathAttModel
-
-	ID types.String `tfsdk:"id"`
-}
