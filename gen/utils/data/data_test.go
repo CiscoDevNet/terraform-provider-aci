@@ -18,6 +18,25 @@ func initializeDataStoreTest(t *testing.T) *DataStore {
 	return &DataStore{}
 }
 
+func TestFilterClassChildren(t *testing.T) {
+	t.Parallel()
+
+	ds := &DataStore{Classes: map[string]Class{
+		"fvTenant": {
+			Name: testClassName("fvTenant"),
+			Children: []*ClassName{
+				testClassName("fvAp"),
+				testClassName("unsupportedChild"),
+			},
+		},
+		"fvAp": {Name: testClassName("fvAp")},
+	}}
+
+	ds.filterClassChildren()
+
+	assert.Equal(t, []string{"fvAp"}, classNamesToStrings(ds.Classes["fvTenant"].Children))
+}
+
 func TestSetHostDefault(t *testing.T) {
 	t.Parallel()
 	ds := initializeDataStoreTest(t)
