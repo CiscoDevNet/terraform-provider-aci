@@ -53,8 +53,10 @@ into the model.
 
 ## 2. Concrete generated model
 
-Every supported ACI class generates one concrete model type. No runtime model
-interface is required.
+Every supported ACI class generates one concrete model file at
+`internal/provider/models/<className>.go`, matching the class names used by
+`gen/meta` and `gen/definitions`. Generated model files use package `models`.
+No runtime model interface is required.
 
 Only schema-backed attributes belong in the struct. Each field has a matching
 `tfsdk` tag and a Terraform framework type:
@@ -77,14 +79,12 @@ wrapper:
 ```go
 type FvTenantResourceModel struct {
 	FvTenantModel
-	ID       types.String `tfsdk:"id"`
-	ParentDN types.String `tfsdk:"parent_dn"`
+	ID types.String `tfsdk:"id"`
 }
 
 type FvTenantDataSourceModel struct {
 	FvTenantModel
-	ID       types.String `tfsdk:"id"`
-	ParentDN types.String `tfsdk:"parent_dn"`
+	ID types.String `tfsdk:"id"`
 }
 
 var plan FvTenantResourceModel
@@ -100,8 +100,15 @@ Embedded models must use value embedding, not pointer embedding, and must not
 introduce duplicate `tfsdk` tags.
 
 The framework matches the `tfsdk` tags to schema attributes. RN, DN, and
-derived IDs remain generated methods. `id` and `parent_dn` are top-level
-Terraform fields represented by the resource/data-source wrappers.
+derived IDs remain generated methods. `id` is represented by every generated
+resource/data-source wrapper. A class-specific top-level field such as
+`parent_dn` is added later only when the corresponding resource or data-source
+schema exposes it.
+
+Every loaded class receives its shared model. Resource and data-source
+wrappers are emitted only when the corresponding values are present in
+`Class.Artifacts`; a child-only class therefore receives only its shared
+model.
 
 The resource and data-source schemas are generated independently:
 
@@ -361,11 +368,11 @@ func NewFvTenantResourceModelNull() FvTenantResourceModel
 func NewFvTenantDataSourceModelNull() FvTenantDataSourceModel
 ```
 
-The top-level initializers set wrapper fields such as `id` and `parent_dn` to
-Terraform null values and initialize the embedded class model using
-`NewFvTenantModelNull`. Nested object and collection values include their
-generated element type information. Response decoding starts from these null
-models and overwrites only attributes and children returned by APIC.
+The top-level initializers set `id` and any class-specific wrapper fields such
+as `parent_dn` to Terraform null values and initialize the embedded class
+model using `NewFvTenantModelNull`. Nested object and collection values include
+their generated element type information. Response decoding starts from these
+null models and overwrites only attributes and children returned by APIC.
 
 ## 8. Response decoding
 
@@ -391,22 +398,22 @@ func (m *FvTenantResourceModel) SetFromResponse(
 	ctx context.Context,
 	response *container.Container,
 ) diag.Diagnostics {
-	model, dn, parentDN, diags := FvTenantModelFromResponse(ctx, response)
+	model, dn, _, diags := FvTenantModelFromResponse(ctx, response)
 	if diags.HasError() {
 		return diags
 	}
 
 	m.FvTenantModel = model
 	m.ID = types.StringValue(dn)
-	m.ParentDN = types.StringValue(parentDN)
 
 	return diags
 }
 ```
 
 The data-source wrapper uses the same sequence, assigning the result to
-`FvTenantDataSourceModel`. Nested decoding operates on the child object rather
-than the response envelope. Each class therefore has generated paths for both
+`FvTenantDataSourceModel`. A wrapper that exposes `parent_dn` also assigns the
+decoded parent DN. Nested decoding operates on the child object rather than
+the response envelope. Each class therefore has generated paths for both
 response envelopes and nested objects.
 
 The decoder must return explicit errors for:
