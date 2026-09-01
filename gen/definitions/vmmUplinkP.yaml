@@ -22,6 +22,5 @@ properties:
       - config_value: uplink_name_2
       update:
       - config_value: uplink_name_2
-  vmmUplinkPolicys:
-    attribute_name: uplink_policies
 resource_name: vmm_uplink_policy
+resource_name_nested: uplink_policies

@@ -1,6 +1,6 @@
 properties:
   tnPkiKeyRingName:
-    attribute_name: admin_state
     test_config:
       create:
       - config_value: default
+resource_name_nested: key_ring
