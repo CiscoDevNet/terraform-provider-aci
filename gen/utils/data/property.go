@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"slices"
+	"strings"
 
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils"
 )
@@ -78,6 +79,16 @@ type Property struct {
 	metaDetails map[string]any
 	// The property definition overrides from the class definition file. Unexported because it is only used internally by setter methods.
 	propertyDefinition PropertyDefinition
+}
+
+// ModelFieldName returns the Go field name used for this property in a
+// generated class model. An APIC property named id is class-prefixed so it
+// remains distinct from the top-level resource or data-source ID field.
+func (p *Property) ModelFieldName(className *ClassName) string {
+	if p.PropertyName == "id" {
+		return className.Capitalized() + "ID"
+	}
+	return strings.ToUpper(p.PropertyName[:1]) + p.PropertyName[1:]
 }
 
 // StateUpgradeValue is the prior-schema representation of a property for one

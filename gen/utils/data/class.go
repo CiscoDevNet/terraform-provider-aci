@@ -800,7 +800,9 @@ func (c *Class) setResourceName(ds *DataStore) error {
 	}
 	c.ResourceNameNested = c.ResourceName
 
-	// Determine if the class is relational and set the ResourceName and ResourceNameNested based on the relation.
+	// Determine if the class is relational and set the resource names based on
+	// the relation. An explicit resource_name remains authoritative; otherwise
+	// derive the top-level and nested names from the relation target.
 	if c.Relation.RelationalClass {
 		// When the relation has more than one target class, the meta `toMo` is abstract or
 		// has been overridden with a list of concrete targets via `relation_info.to_classes`.
@@ -810,8 +812,7 @@ func (c *Class) setResourceName(ds *DataStore) error {
 			if c.ClassDefinition.ResourceName == "" {
 				return fmt.Errorf("failed to set resource name for class '%s': resource_name is required when relation_info.to_classes has more than one entry", c.Name)
 			}
-			// Keep the definition-provided ResourceName and ResourceNameNested as-is.
-		} else {
+		} else if c.ClassDefinition.ResourceName == "" {
 			// Single-target relation: auto-generate `relation_to_<x>` (or
 			// `relation_from_<from>_to_<x>`) from the only target class.
 			toClass := getRelationshipResourceName(ds, c.Relation.ToClasses[0].String())
@@ -822,11 +823,26 @@ func (c *Class) setResourceName(ds *DataStore) error {
 			}
 			c.ResourceNameNested = fmt.Sprintf("relation_to_%s", toClass)
 		}
+
+		// A top-level relation can include its source to remain unique while
+		// the same class, when embedded in that source, only needs the target.
+		// Normalize the explicit historical form without replacing its target
+		// wording with the target class's resource name.
+		if strings.HasPrefix(c.ResourceNameNested, "relation_from_") {
+			if _, target, found := strings.Cut(strings.TrimPrefix(c.ResourceNameNested, "relation_from_"), "_to_"); found {
+				c.ResourceNameNested = "relation_to_" + target
+			}
+		}
 	}
 
-	// Set the plural form for the nested resource name when the class has identifiers.
-	if len(c.IdentifiedBy) != 0 {
+	// Repeated children use a plural nested attribute name. A definition can
+	// force an identified class to remain singleton when embedded.
+	if len(c.IdentifiedBy) != 0 && !c.IsSingleNestedWhenDefinedAsChild {
 		c.ResourceNameNested = utils.Plural(c.ResourceNameNested)
+	}
+
+	if c.ClassDefinition.ResourceNameNested != "" {
+		c.ResourceNameNested = c.ClassDefinition.ResourceNameNested
 	}
 
 	genLogger.Debugf("Successfully set resource name '%s' for class '%s'.", c.ResourceName, c.Name)
