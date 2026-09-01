@@ -2,4 +2,48 @@
 
 package models
 
-type NetflowRsMonitorToRecordModel struct{}
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
+
+type NetflowRsMonitorToRecordModel struct {
+	Annotation             types.String `tfsdk:"annotation"`
+	TnNetflowRecordPolName types.String `tfsdk:"netflow_record_policy_name"`
+	TagAnnotation          types.Set    `tfsdk:"annotations"`
+	TagTag                 types.Set    `tfsdk:"tags"`
+}
+
+func NetflowRsMonitorToRecordModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":                 types.StringType,
+		"netflow_record_policy_name": types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewNetflowRsMonitorToRecordModelNull() NetflowRsMonitorToRecordModel {
+	return NetflowRsMonitorToRecordModel{
+		Annotation:             types.StringNull(),
+		TnNetflowRecordPolName: types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}

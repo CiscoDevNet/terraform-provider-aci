@@ -47,6 +47,7 @@ properties:
         Only applicable for Nutanix domains.
     test_config:
       ignore_in_test: true
+    value_type: string
   ipamEnabled:
     default_values:
       "no": ""
@@ -61,6 +62,7 @@ properties:
         applicable for Nutanix domains.
     test_config:
       ignore_in_test: true
+    value_type: string
   lagPolicyName:
     documentation:
       description: The link aggregation group (LAG) policy name of the %s object.

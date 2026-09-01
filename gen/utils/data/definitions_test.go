@@ -116,6 +116,8 @@ properties:
       update:
         - config_value: updated
           assert_value: updated
+  arpLearning:
+    value_type: vmm_arp_learning
 test_config:
   replace_auto_resolved: true
   ignore_tests:
@@ -161,6 +163,10 @@ test_config:
 	assert.True(t, descrProp.TestConfig.IgnoreInTest)
 	assert.Len(t, descrProp.TestConfig.Update, 1)
 	assert.Equal(t, "updated", descrProp.TestConfig.Update[0].AssertValue)
+
+	arpLearningProp, ok := parsedDefinition.Properties["arpLearning"]
+	assert.True(t, ok)
+	assert.Equal(t, VMMArpLearning, arpLearningProp.ValueType)
 
 	assert.True(t, parsedDefinition.TestConfig.ReplaceAutoResolved)
 	assert.Equal(t, []IgnoreTestEnum{ChildIgnoreTest}, parsedDefinition.TestConfig.IgnoreTests)

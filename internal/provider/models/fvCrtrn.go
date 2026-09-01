@@ -2,18 +2,99 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type FvCrtrnModel struct{}
+type FvCrtrnModel struct {
+	Annotation    types.String `tfsdk:"annotation"`
+	Descr         types.String `tfsdk:"description"`
+	Match         types.String `tfsdk:"match"`
+	Name          types.String `tfsdk:"name"`
+	NameAlias     types.String `tfsdk:"name_alias"`
+	OwnerKey      types.String `tfsdk:"owner_key"`
+	OwnerTag      types.String `tfsdk:"owner_tag"`
+	Prec          types.String `tfsdk:"precedence"`
+	Scope         types.String `tfsdk:"scope"`
+	TagAnnotation types.Set    `tfsdk:"annotations"`
+	TagTag        types.Set    `tfsdk:"tags"`
+}
+
+func FvCrtrnModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":  types.StringType,
+		"description": types.StringType,
+		"match":       types.StringType,
+		"name":        types.StringType,
+		"name_alias":  types.StringType,
+		"owner_key":   types.StringType,
+		"owner_tag":   types.StringType,
+		"precedence":  types.StringType,
+		"scope":       types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewFvCrtrnModelNull() FvCrtrnModel {
+	return FvCrtrnModel{
+		Annotation: types.StringNull(),
+		Descr:      types.StringNull(),
+		Match:      types.StringNull(),
+		Name:       types.StringNull(),
+		NameAlias:  types.StringNull(),
+		OwnerKey:   types.StringNull(),
+		OwnerTag:   types.StringNull(),
+		Prec:       types.StringNull(),
+		Scope:      types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type FvCrtrnResourceModel struct {
 	FvCrtrnModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFvCrtrnResourceModelNull() FvCrtrnResourceModel {
+	return FvCrtrnResourceModel{
+		FvCrtrnModel: NewFvCrtrnModelNull(),
+		ID:           types.StringNull(),
+		ParentDn:     types.StringNull(),
+	}
 }
 
 type FvCrtrnDataSourceModel struct {
 	FvCrtrnModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFvCrtrnDataSourceModelNull() FvCrtrnDataSourceModel {
+	return FvCrtrnDataSourceModel{
+		FvCrtrnModel: NewFvCrtrnModelNull(),
+		ID:           types.StringNull(),
+		ParentDn:     types.StringNull(),
+	}
 }

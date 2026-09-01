@@ -2,18 +2,129 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type XcvrZRIfPolModel struct{}
+type XcvrZRIfPolModel struct {
+	AdminSt         types.String `tfsdk:"admin_state"`
+	Annotation      types.String `tfsdk:"annotation"`
+	CdMax           types.String `tfsdk:"maximum_chromatic_dispersion"`
+	CdMin           types.String `tfsdk:"minimum_chromatic_dispersion"`
+	DacRate         types.String `tfsdk:"dac_rate"`
+	Descr           types.String `tfsdk:"description"`
+	DwdmCarrier     types.String `tfsdk:"dwdm_carrier_grid"`
+	FecMode         types.String `tfsdk:"fec_mode"`
+	Frequency100MHz types.String `tfsdk:"frequency_100_mhz"`
+	Frequency50GHz  types.String `tfsdk:"frequency_50_ghz"`
+	ItuChannel50GHz types.String `tfsdk:"itu_channel_50_ghz"`
+	Modulation      types.String `tfsdk:"modulation"`
+	Muxponder       types.String `tfsdk:"muxponder_mode"`
+	Name            types.String `tfsdk:"name"`
+	NameAlias       types.String `tfsdk:"name_alias"`
+	OwnerKey        types.String `tfsdk:"owner_key"`
+	OwnerTag        types.String `tfsdk:"owner_tag"`
+	TransmitPower   types.String `tfsdk:"transmit_power"`
+	Wavelength50GHz types.String `tfsdk:"wavelength_50_ghz"`
+	TagAnnotation   types.Set    `tfsdk:"annotations"`
+	TagTag          types.Set    `tfsdk:"tags"`
+}
+
+func XcvrZRIfPolModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"admin_state":                  types.StringType,
+		"annotation":                   types.StringType,
+		"maximum_chromatic_dispersion": types.StringType,
+		"minimum_chromatic_dispersion": types.StringType,
+		"dac_rate":                     types.StringType,
+		"description":                  types.StringType,
+		"dwdm_carrier_grid":            types.StringType,
+		"fec_mode":                     types.StringType,
+		"frequency_100_mhz":            types.StringType,
+		"frequency_50_ghz":             types.StringType,
+		"itu_channel_50_ghz":           types.StringType,
+		"modulation":                   types.StringType,
+		"muxponder_mode":               types.StringType,
+		"name":                         types.StringType,
+		"name_alias":                   types.StringType,
+		"owner_key":                    types.StringType,
+		"owner_tag":                    types.StringType,
+		"transmit_power":               types.StringType,
+		"wavelength_50_ghz":            types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewXcvrZRIfPolModelNull() XcvrZRIfPolModel {
+	return XcvrZRIfPolModel{
+		AdminSt:         types.StringNull(),
+		Annotation:      types.StringNull(),
+		CdMax:           types.StringNull(),
+		CdMin:           types.StringNull(),
+		DacRate:         types.StringNull(),
+		Descr:           types.StringNull(),
+		DwdmCarrier:     types.StringNull(),
+		FecMode:         types.StringNull(),
+		Frequency100MHz: types.StringNull(),
+		Frequency50GHz:  types.StringNull(),
+		ItuChannel50GHz: types.StringNull(),
+		Modulation:      types.StringNull(),
+		Muxponder:       types.StringNull(),
+		Name:            types.StringNull(),
+		NameAlias:       types.StringNull(),
+		OwnerKey:        types.StringNull(),
+		OwnerTag:        types.StringNull(),
+		TransmitPower:   types.StringNull(),
+		Wavelength50GHz: types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type XcvrZRIfPolResourceModel struct {
 	XcvrZRIfPolModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewXcvrZRIfPolResourceModelNull() XcvrZRIfPolResourceModel {
+	return XcvrZRIfPolResourceModel{
+		XcvrZRIfPolModel: NewXcvrZRIfPolModelNull(),
+		ID:               types.StringNull(),
+		ParentDn:         types.StringNull(),
+	}
 }
 
 type XcvrZRIfPolDataSourceModel struct {
 	XcvrZRIfPolModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewXcvrZRIfPolDataSourceModelNull() XcvrZRIfPolDataSourceModel {
+	return XcvrZRIfPolDataSourceModel{
+		XcvrZRIfPolModel: NewXcvrZRIfPolModelNull(),
+		ID:               types.StringNull(),
+		ParentDn:         types.StringNull(),
+	}
 }

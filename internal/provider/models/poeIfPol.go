@@ -2,18 +2,113 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type PoeIfPolModel struct{}
+type PoeIfPolModel struct {
+	AdminSt       types.String `tfsdk:"admin_state"`
+	Annotation    types.String `tfsdk:"annotation"`
+	Descr         types.String `tfsdk:"description"`
+	Max           types.String `tfsdk:"maximum_power"`
+	Mode          types.String `tfsdk:"host_mode"`
+	Name          types.String `tfsdk:"name"`
+	NameAlias     types.String `tfsdk:"name_alias"`
+	OwnerKey      types.String `tfsdk:"owner_key"`
+	OwnerTag      types.String `tfsdk:"owner_tag"`
+	PoeVoiceVlan  types.String `tfsdk:"poe_vlan"`
+	PoliceAct     types.String `tfsdk:"policing_action"`
+	PrioHigh      types.String `tfsdk:"port_priority_high"`
+	PoeRsPoeEpg   types.Object `tfsdk:"relation_to_application_epg"`
+	TagAnnotation types.Set    `tfsdk:"annotations"`
+	TagTag        types.Set    `tfsdk:"tags"`
+}
+
+func PoeIfPolModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"admin_state":        types.StringType,
+		"annotation":         types.StringType,
+		"description":        types.StringType,
+		"maximum_power":      types.StringType,
+		"host_mode":          types.StringType,
+		"name":               types.StringType,
+		"name_alias":         types.StringType,
+		"owner_key":          types.StringType,
+		"owner_tag":          types.StringType,
+		"poe_vlan":           types.StringType,
+		"policing_action":    types.StringType,
+		"port_priority_high": types.StringType,
+		"relation_to_application_epg": types.ObjectType{
+			AttrTypes: PoeRsPoeEpgModelAttributeTypes(),
+		},
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewPoeIfPolModelNull() PoeIfPolModel {
+	return PoeIfPolModel{
+		AdminSt:      types.StringNull(),
+		Annotation:   types.StringNull(),
+		Descr:        types.StringNull(),
+		Max:          types.StringNull(),
+		Mode:         types.StringNull(),
+		Name:         types.StringNull(),
+		NameAlias:    types.StringNull(),
+		OwnerKey:     types.StringNull(),
+		OwnerTag:     types.StringNull(),
+		PoeVoiceVlan: types.StringNull(),
+		PoliceAct:    types.StringNull(),
+		PrioHigh:     types.StringNull(),
+		PoeRsPoeEpg:  types.ObjectNull(PoeRsPoeEpgModelAttributeTypes()),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type PoeIfPolResourceModel struct {
 	PoeIfPolModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewPoeIfPolResourceModelNull() PoeIfPolResourceModel {
+	return PoeIfPolResourceModel{
+		PoeIfPolModel: NewPoeIfPolModelNull(),
+		ID:            types.StringNull(),
+		ParentDn:      types.StringNull(),
+	}
 }
 
 type PoeIfPolDataSourceModel struct {
 	PoeIfPolModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewPoeIfPolDataSourceModelNull() PoeIfPolDataSourceModel {
+	return PoeIfPolDataSourceModel{
+		PoeIfPolModel: NewPoeIfPolModelNull(),
+		ID:            types.StringNull(),
+		ParentDn:      types.StringNull(),
+	}
 }

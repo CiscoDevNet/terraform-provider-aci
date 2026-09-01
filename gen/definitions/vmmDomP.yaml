@@ -16,7 +16,7 @@ properties:
     test_config:
       create:
       - config_value: disabled
-    value_type: string
+    value_type: vmm_arp_learning
   aveTimeOut:
     documentation:
       description: The timeout in seconds that the Cisco ACI Virtual Edge (AVE), the
@@ -107,6 +107,7 @@ properties:
     test_config:
       create:
       - config_value: 224.0.1.0
+    value_type: string
   mode:
     attribute_name: switch_type
     documentation:

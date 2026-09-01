@@ -2,18 +2,105 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type FvVmAttrModel struct{}
+type FvVmAttrModel struct {
+	Annotation    types.String `tfsdk:"annotation"`
+	Category      types.String `tfsdk:"category"`
+	Descr         types.String `tfsdk:"description"`
+	LabelName     types.String `tfsdk:"label_name"`
+	Name          types.String `tfsdk:"name"`
+	NameAlias     types.String `tfsdk:"name_alias"`
+	Operator      types.String `tfsdk:"operator"`
+	OwnerKey      types.String `tfsdk:"owner_key"`
+	OwnerTag      types.String `tfsdk:"owner_tag"`
+	Type          types.String `tfsdk:"type"`
+	Value         types.String `tfsdk:"value"`
+	TagAnnotation types.Set    `tfsdk:"annotations"`
+	TagTag        types.Set    `tfsdk:"tags"`
+}
+
+func FvVmAttrModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":  types.StringType,
+		"category":    types.StringType,
+		"description": types.StringType,
+		"label_name":  types.StringType,
+		"name":        types.StringType,
+		"name_alias":  types.StringType,
+		"operator":    types.StringType,
+		"owner_key":   types.StringType,
+		"owner_tag":   types.StringType,
+		"type":        types.StringType,
+		"value":       types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewFvVmAttrModelNull() FvVmAttrModel {
+	return FvVmAttrModel{
+		Annotation: types.StringNull(),
+		Category:   types.StringNull(),
+		Descr:      types.StringNull(),
+		LabelName:  types.StringNull(),
+		Name:       types.StringNull(),
+		NameAlias:  types.StringNull(),
+		Operator:   types.StringNull(),
+		OwnerKey:   types.StringNull(),
+		OwnerTag:   types.StringNull(),
+		Type:       types.StringNull(),
+		Value:      types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type FvVmAttrResourceModel struct {
 	FvVmAttrModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFvVmAttrResourceModelNull() FvVmAttrResourceModel {
+	return FvVmAttrResourceModel{
+		FvVmAttrModel: NewFvVmAttrModelNull(),
+		ID:            types.StringNull(),
+		ParentDn:      types.StringNull(),
+	}
 }
 
 type FvVmAttrDataSourceModel struct {
 	FvVmAttrModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFvVmAttrDataSourceModelNull() FvVmAttrDataSourceModel {
+	return FvVmAttrDataSourceModel{
+		FvVmAttrModel: NewFvVmAttrModelNull(),
+		ID:            types.StringNull(),
+		ParentDn:      types.StringNull(),
+	}
 }

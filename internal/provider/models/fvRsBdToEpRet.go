@@ -2,4 +2,51 @@
 
 package models
 
-type FvRsBdToEpRetModel struct{}
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
+
+type FvRsBdToEpRetModel struct {
+	Annotation       types.String `tfsdk:"annotation"`
+	ResolveAct       types.String `tfsdk:"resolve_action"`
+	TnFvEpRetPolName types.String `tfsdk:"endpoint_retention_policy_name"`
+	TagAnnotation    types.Set    `tfsdk:"annotations"`
+	TagTag           types.Set    `tfsdk:"tags"`
+}
+
+func FvRsBdToEpRetModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":                     types.StringType,
+		"resolve_action":                 types.StringType,
+		"endpoint_retention_policy_name": types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewFvRsBdToEpRetModelNull() FvRsBdToEpRetModel {
+	return FvRsBdToEpRetModel{
+		Annotation:       types.StringNull(),
+		ResolveAct:       types.StringNull(),
+		TnFvEpRetPolName: types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}

@@ -2,18 +2,100 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type PimRouteMapEntryModel struct{}
+type PimRouteMapEntryModel struct {
+	Action        types.String                     `tfsdk:"action"`
+	Annotation    types.String                     `tfsdk:"annotation"`
+	Descr         types.String                     `tfsdk:"description"`
+	Grp           customTypes.IPAddressStringValue `tfsdk:"group_ip"`
+	Name          types.String                     `tfsdk:"name"`
+	NameAlias     types.String                     `tfsdk:"name_alias"`
+	Order         types.String                     `tfsdk:"order"`
+	Rp            customTypes.IPAddressStringValue `tfsdk:"rendezvous_point_ip"`
+	Src           customTypes.IPAddressStringValue `tfsdk:"source_ip"`
+	TagAnnotation types.Set                        `tfsdk:"annotations"`
+	TagTag        types.Set                        `tfsdk:"tags"`
+}
+
+func PimRouteMapEntryModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"action":              types.StringType,
+		"annotation":          types.StringType,
+		"description":         types.StringType,
+		"group_ip":            customTypes.IPAddressStringType{},
+		"name":                types.StringType,
+		"name_alias":          types.StringType,
+		"order":               types.StringType,
+		"rendezvous_point_ip": customTypes.IPAddressStringType{},
+		"source_ip":           customTypes.IPAddressStringType{},
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewPimRouteMapEntryModelNull() PimRouteMapEntryModel {
+	return PimRouteMapEntryModel{
+		Action:     types.StringNull(),
+		Annotation: types.StringNull(),
+		Descr:      types.StringNull(),
+		Grp:        customTypes.NewIPAddressStringNull(),
+		Name:       types.StringNull(),
+		NameAlias:  types.StringNull(),
+		Order:      types.StringNull(),
+		Rp:         customTypes.NewIPAddressStringNull(),
+		Src:        customTypes.NewIPAddressStringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type PimRouteMapEntryResourceModel struct {
 	PimRouteMapEntryModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewPimRouteMapEntryResourceModelNull() PimRouteMapEntryResourceModel {
+	return PimRouteMapEntryResourceModel{
+		PimRouteMapEntryModel: NewPimRouteMapEntryModelNull(),
+		ID:                    types.StringNull(),
+		ParentDn:              types.StringNull(),
+	}
 }
 
 type PimRouteMapEntryDataSourceModel struct {
 	PimRouteMapEntryModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewPimRouteMapEntryDataSourceModelNull() PimRouteMapEntryDataSourceModel {
+	return PimRouteMapEntryDataSourceModel{
+		PimRouteMapEntryModel: NewPimRouteMapEntryModelNull(),
+		ID:                    types.StringNull(),
+		ParentDn:              types.StringNull(),
+	}
 }

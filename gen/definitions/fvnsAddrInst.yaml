@@ -19,6 +19,7 @@ properties:
       - config_value: 10.0.0.1/24
       update:
       - config_value: 10.0.0.1/24
+    value_type: string
   addrType:
     attribute_name: address_type
     documentation:

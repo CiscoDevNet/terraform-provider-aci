@@ -2,18 +2,93 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type CdpIfPolModel struct{}
+type CdpIfPolModel struct {
+	AdminSt       types.String `tfsdk:"admin_state"`
+	Annotation    types.String `tfsdk:"annotation"`
+	Descr         types.String `tfsdk:"description"`
+	Name          types.String `tfsdk:"name"`
+	NameAlias     types.String `tfsdk:"name_alias"`
+	OwnerKey      types.String `tfsdk:"owner_key"`
+	OwnerTag      types.String `tfsdk:"owner_tag"`
+	TagAnnotation types.Set    `tfsdk:"annotations"`
+	TagTag        types.Set    `tfsdk:"tags"`
+}
+
+func CdpIfPolModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"admin_state": types.StringType,
+		"annotation":  types.StringType,
+		"description": types.StringType,
+		"name":        types.StringType,
+		"name_alias":  types.StringType,
+		"owner_key":   types.StringType,
+		"owner_tag":   types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewCdpIfPolModelNull() CdpIfPolModel {
+	return CdpIfPolModel{
+		AdminSt:    types.StringNull(),
+		Annotation: types.StringNull(),
+		Descr:      types.StringNull(),
+		Name:       types.StringNull(),
+		NameAlias:  types.StringNull(),
+		OwnerKey:   types.StringNull(),
+		OwnerTag:   types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type CdpIfPolResourceModel struct {
 	CdpIfPolModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewCdpIfPolResourceModelNull() CdpIfPolResourceModel {
+	return CdpIfPolResourceModel{
+		CdpIfPolModel: NewCdpIfPolModelNull(),
+		ID:            types.StringNull(),
+		ParentDn:      types.StringNull(),
+	}
 }
 
 type CdpIfPolDataSourceModel struct {
 	CdpIfPolModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewCdpIfPolDataSourceModelNull() CdpIfPolDataSourceModel {
+	return CdpIfPolDataSourceModel{
+		CdpIfPolModel: NewCdpIfPolModelNull(),
+		ID:            types.StringNull(),
+		ParentDn:      types.StringNull(),
+	}
 }

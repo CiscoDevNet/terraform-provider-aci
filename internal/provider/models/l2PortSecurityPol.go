@@ -2,18 +2,99 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type L2PortSecurityPolModel struct{}
+type L2PortSecurityPolModel struct {
+	Annotation    types.String `tfsdk:"annotation"`
+	Descr         types.String `tfsdk:"description"`
+	Maximum       types.String `tfsdk:"maximum_endpoints"`
+	Name          types.String `tfsdk:"name"`
+	NameAlias     types.String `tfsdk:"name_alias"`
+	OwnerKey      types.String `tfsdk:"owner_key"`
+	OwnerTag      types.String `tfsdk:"owner_tag"`
+	Timeout       types.String `tfsdk:"timeout"`
+	Violation     types.String `tfsdk:"violation_action"`
+	TagAnnotation types.Set    `tfsdk:"annotations"`
+	TagTag        types.Set    `tfsdk:"tags"`
+}
+
+func L2PortSecurityPolModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":        types.StringType,
+		"description":       types.StringType,
+		"maximum_endpoints": types.StringType,
+		"name":              types.StringType,
+		"name_alias":        types.StringType,
+		"owner_key":         types.StringType,
+		"owner_tag":         types.StringType,
+		"timeout":           types.StringType,
+		"violation_action":  types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewL2PortSecurityPolModelNull() L2PortSecurityPolModel {
+	return L2PortSecurityPolModel{
+		Annotation: types.StringNull(),
+		Descr:      types.StringNull(),
+		Maximum:    types.StringNull(),
+		Name:       types.StringNull(),
+		NameAlias:  types.StringNull(),
+		OwnerKey:   types.StringNull(),
+		OwnerTag:   types.StringNull(),
+		Timeout:    types.StringNull(),
+		Violation:  types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type L2PortSecurityPolResourceModel struct {
 	L2PortSecurityPolModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewL2PortSecurityPolResourceModelNull() L2PortSecurityPolResourceModel {
+	return L2PortSecurityPolResourceModel{
+		L2PortSecurityPolModel: NewL2PortSecurityPolModelNull(),
+		ID:                     types.StringNull(),
+		ParentDn:               types.StringNull(),
+	}
 }
 
 type L2PortSecurityPolDataSourceModel struct {
 	L2PortSecurityPolModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewL2PortSecurityPolDataSourceModelNull() L2PortSecurityPolDataSourceModel {
+	return L2PortSecurityPolDataSourceModel{
+		L2PortSecurityPolModel: NewL2PortSecurityPolModelNull(),
+		ID:                     types.StringNull(),
+		ParentDn:               types.StringNull(),
+	}
 }

@@ -2,4 +2,48 @@
 
 package models
 
-type FvRsBDToFhsModel struct{}
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
+
+type FvRsBDToFhsModel struct {
+	Annotation     types.String `tfsdk:"annotation"`
+	TnFhsBDPolName types.String `tfsdk:"first_hop_security_policy_name"`
+	TagAnnotation  types.Set    `tfsdk:"annotations"`
+	TagTag         types.Set    `tfsdk:"tags"`
+}
+
+func FvRsBDToFhsModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":                     types.StringType,
+		"first_hop_security_policy_name": types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewFvRsBDToFhsModelNull() FvRsBDToFhsModel {
+	return FvRsBDToFhsModel{
+		Annotation:     types.StringNull(),
+		TnFhsBDPolName: types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}

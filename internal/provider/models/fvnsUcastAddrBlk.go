@@ -2,18 +2,90 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type FvnsUcastAddrBlkModel struct{}
+type FvnsUcastAddrBlkModel struct {
+	Annotation    types.String `tfsdk:"annotation"`
+	Descr         types.String `tfsdk:"description"`
+	From          types.String `tfsdk:"from"`
+	Name          types.String `tfsdk:"name"`
+	NameAlias     types.String `tfsdk:"name_alias"`
+	To            types.String `tfsdk:"to"`
+	TagAnnotation types.Set    `tfsdk:"annotations"`
+	TagTag        types.Set    `tfsdk:"tags"`
+}
+
+func FvnsUcastAddrBlkModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":  types.StringType,
+		"description": types.StringType,
+		"from":        types.StringType,
+		"name":        types.StringType,
+		"name_alias":  types.StringType,
+		"to":          types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewFvnsUcastAddrBlkModelNull() FvnsUcastAddrBlkModel {
+	return FvnsUcastAddrBlkModel{
+		Annotation: types.StringNull(),
+		Descr:      types.StringNull(),
+		From:       types.StringNull(),
+		Name:       types.StringNull(),
+		NameAlias:  types.StringNull(),
+		To:         types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type FvnsUcastAddrBlkResourceModel struct {
 	FvnsUcastAddrBlkModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFvnsUcastAddrBlkResourceModelNull() FvnsUcastAddrBlkResourceModel {
+	return FvnsUcastAddrBlkResourceModel{
+		FvnsUcastAddrBlkModel: NewFvnsUcastAddrBlkModelNull(),
+		ID:                    types.StringNull(),
+		ParentDn:              types.StringNull(),
+	}
 }
 
 type FvnsUcastAddrBlkDataSourceModel struct {
 	FvnsUcastAddrBlkModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFvnsUcastAddrBlkDataSourceModelNull() FvnsUcastAddrBlkDataSourceModel {
+	return FvnsUcastAddrBlkDataSourceModel{
+		FvnsUcastAddrBlkModel: NewFvnsUcastAddrBlkModelNull(),
+		ID:                    types.StringNull(),
+		ParentDn:              types.StringNull(),
+	}
 }

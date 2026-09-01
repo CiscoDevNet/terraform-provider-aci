@@ -91,6 +91,81 @@ func (p *Property) ModelFieldName(className *ClassName) string {
 	return strings.ToUpper(p.PropertyName[:1]) + p.PropertyName[1:]
 }
 
+// ModelValueType returns the Terraform framework value type used by the
+// generated model field.
+func (p *Property) ModelValueType(className *ClassName) string {
+	if customTypeName := p.modelCustomTypeName(className); customTypeName != "" {
+		return fmt.Sprintf("customTypes.%sStringValue", customTypeName)
+	}
+
+	switch p.ValueType {
+	case Set:
+		return "types.Set"
+	case Object:
+		return "types.Object"
+	default:
+		return "types.String"
+	}
+}
+
+// ModelAttributeType returns the attr.Type expression for a generated model
+// field. It is reused by parent models when constructing nested object types.
+func (p *Property) ModelAttributeType(className *ClassName) string {
+	if customTypeName := p.modelCustomTypeName(className); customTypeName != "" {
+		return fmt.Sprintf("customTypes.%sStringType{}", customTypeName)
+	}
+
+	switch p.ValueType {
+	case Set:
+		return "types.SetType{ElemType: types.StringType}"
+	case Object:
+		return "types.ObjectType{AttrTypes: map[string]attr.Type{}}"
+	default:
+		return "types.StringType"
+	}
+}
+
+// ModelNullValue returns the constructor expression used to initialize a
+// generated model field with an explicit Terraform null value.
+func (p *Property) ModelNullValue(className *ClassName) string {
+	if customTypeName := p.modelCustomTypeName(className); customTypeName != "" {
+		return fmt.Sprintf("customTypes.New%sStringNull()", customTypeName)
+	}
+
+	switch p.ValueType {
+	case Set:
+		return "types.SetNull(types.StringType)"
+	case Object:
+		return "types.ObjectNull(map[string]attr.Type{})"
+	default:
+		return "types.StringNull()"
+	}
+}
+
+// UsesCustomModelType reports whether the generated model field requires the
+// custom_types package.
+func (p *Property) UsesCustomModelType() bool {
+	switch p.ValueType {
+	case IpAddress, SemanticEquality, VMMArpLearning:
+		return true
+	default:
+		return false
+	}
+}
+
+func (p *Property) modelCustomTypeName(className *ClassName) string {
+	switch p.ValueType {
+	case IpAddress:
+		return "IPAddress"
+	case SemanticEquality:
+		return className.Capitalized() + p.ModelFieldName(className)
+	case VMMArpLearning:
+		return "VMMArpLearning"
+	default:
+		return ""
+	}
+}
+
 // StateUpgradeValue is the prior-schema representation of a property for one
 // state-upgrade hop. Keyed by prior schema version inside
 // Property.StateUpgradeValues and populated by Class.setPropertyStateUpgradeValues().

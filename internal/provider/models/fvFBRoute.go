@@ -2,18 +2,88 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type FvFBRouteModel struct{}
+type FvFBRouteModel struct {
+	Annotation    types.String                     `tfsdk:"annotation"`
+	Descr         types.String                     `tfsdk:"description"`
+	FbrPrefix     customTypes.IPAddressStringValue `tfsdk:"prefix_address"`
+	Name          types.String                     `tfsdk:"name"`
+	NameAlias     types.String                     `tfsdk:"name_alias"`
+	TagAnnotation types.Set                        `tfsdk:"annotations"`
+	TagTag        types.Set                        `tfsdk:"tags"`
+}
+
+func FvFBRouteModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":     types.StringType,
+		"description":    types.StringType,
+		"prefix_address": customTypes.IPAddressStringType{},
+		"name":           types.StringType,
+		"name_alias":     types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewFvFBRouteModelNull() FvFBRouteModel {
+	return FvFBRouteModel{
+		Annotation: types.StringNull(),
+		Descr:      types.StringNull(),
+		FbrPrefix:  customTypes.NewIPAddressStringNull(),
+		Name:       types.StringNull(),
+		NameAlias:  types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type FvFBRouteResourceModel struct {
 	FvFBRouteModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFvFBRouteResourceModelNull() FvFBRouteResourceModel {
+	return FvFBRouteResourceModel{
+		FvFBRouteModel: NewFvFBRouteModelNull(),
+		ID:             types.StringNull(),
+		ParentDn:       types.StringNull(),
+	}
 }
 
 type FvFBRouteDataSourceModel struct {
 	FvFBRouteModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFvFBRouteDataSourceModelNull() FvFBRouteDataSourceModel {
+	return FvFBRouteDataSourceModel{
+		FvFBRouteModel: NewFvFBRouteModelNull(),
+		ID:             types.StringNull(),
+		ParentDn:       types.StringNull(),
+	}
 }

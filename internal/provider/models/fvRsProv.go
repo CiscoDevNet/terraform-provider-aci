@@ -2,18 +2,85 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type FvRsProvModel struct{}
+type FvRsProvModel struct {
+	Annotation    types.String                        `tfsdk:"annotation"`
+	MatchT        types.String                        `tfsdk:"match_criteria"`
+	Prio          customTypes.FvRsProvPrioStringValue `tfsdk:"priority"`
+	TnVzBrCPName  types.String                        `tfsdk:"contract_name"`
+	TagAnnotation types.Set                           `tfsdk:"annotations"`
+	TagTag        types.Set                           `tfsdk:"tags"`
+}
+
+func FvRsProvModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":     types.StringType,
+		"match_criteria": types.StringType,
+		"priority":       customTypes.FvRsProvPrioStringType{},
+		"contract_name":  types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewFvRsProvModelNull() FvRsProvModel {
+	return FvRsProvModel{
+		Annotation:   types.StringNull(),
+		MatchT:       types.StringNull(),
+		Prio:         customTypes.NewFvRsProvPrioStringNull(),
+		TnVzBrCPName: types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type FvRsProvResourceModel struct {
 	FvRsProvModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFvRsProvResourceModelNull() FvRsProvResourceModel {
+	return FvRsProvResourceModel{
+		FvRsProvModel: NewFvRsProvModelNull(),
+		ID:            types.StringNull(),
+		ParentDn:      types.StringNull(),
+	}
 }
 
 type FvRsProvDataSourceModel struct {
 	FvRsProvModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFvRsProvDataSourceModelNull() FvRsProvDataSourceModel {
+	return FvRsProvDataSourceModel{
+		FvRsProvModel: NewFvRsProvModelNull(),
+		ID:            types.StringNull(),
+		ParentDn:      types.StringNull(),
+	}
 }

@@ -106,9 +106,10 @@ This keeps the APIC property distinct from the wrapper's Terraform `ID` field.
 
 The framework matches the `tfsdk` tags to schema attributes. RN, DN, and
 derived IDs remain generated methods. `id` is represented by every generated
-resource/data-source wrapper. A class-specific top-level field such as
-`parent_dn` is added later only when the corresponding resource or data-source
-schema exposes it.
+resource/data-source wrapper. When the normalized class contains the synthetic
+`parentDn` property, both top-level wrappers expose it as `ParentDn` with the
+normalized Terraform attribute name. It remains outside the reusable class
+model because it is placement input rather than an APIC payload property.
 
 Every loaded class receives its shared model. Resource and data-source
 wrappers are emitted only when the corresponding values are present in
@@ -378,6 +379,11 @@ as `parent_dn` to Terraform null values and initialize the embedded class
 model using `NewFvTenantModelNull`. Nested object and collection values include
 their generated element type information. Response decoding starts from these
 null models and overwrites only attributes and children returned by APIC.
+
+Each reusable model also exposes `<Class>ModelAttributeTypes()`. Parent models
+use this generated attribute map when constructing null singleton objects and
+repeated child sets, so nested Terraform values always retain the concrete
+child model shape.
 
 ## 8. Response decoding
 

@@ -2,18 +2,99 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type LldpIfPolModel struct{}
+type LldpIfPolModel struct {
+	AdminRxSt     types.String `tfsdk:"receive_state"`
+	AdminTxSt     types.String `tfsdk:"transmit_state"`
+	Annotation    types.String `tfsdk:"annotation"`
+	Descr         types.String `tfsdk:"description"`
+	Name          types.String `tfsdk:"name"`
+	NameAlias     types.String `tfsdk:"name_alias"`
+	OwnerKey      types.String `tfsdk:"owner_key"`
+	OwnerTag      types.String `tfsdk:"owner_tag"`
+	PortDCBXPVer  types.String `tfsdk:"dcbxp_version"`
+	TagAnnotation types.Set    `tfsdk:"annotations"`
+	TagTag        types.Set    `tfsdk:"tags"`
+}
+
+func LldpIfPolModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"receive_state":  types.StringType,
+		"transmit_state": types.StringType,
+		"annotation":     types.StringType,
+		"description":    types.StringType,
+		"name":           types.StringType,
+		"name_alias":     types.StringType,
+		"owner_key":      types.StringType,
+		"owner_tag":      types.StringType,
+		"dcbxp_version":  types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewLldpIfPolModelNull() LldpIfPolModel {
+	return LldpIfPolModel{
+		AdminRxSt:    types.StringNull(),
+		AdminTxSt:    types.StringNull(),
+		Annotation:   types.StringNull(),
+		Descr:        types.StringNull(),
+		Name:         types.StringNull(),
+		NameAlias:    types.StringNull(),
+		OwnerKey:     types.StringNull(),
+		OwnerTag:     types.StringNull(),
+		PortDCBXPVer: types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type LldpIfPolResourceModel struct {
 	LldpIfPolModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewLldpIfPolResourceModelNull() LldpIfPolResourceModel {
+	return LldpIfPolResourceModel{
+		LldpIfPolModel: NewLldpIfPolModelNull(),
+		ID:             types.StringNull(),
+		ParentDn:       types.StringNull(),
+	}
 }
 
 type LldpIfPolDataSourceModel struct {
 	LldpIfPolModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewLldpIfPolDataSourceModelNull() LldpIfPolDataSourceModel {
+	return LldpIfPolDataSourceModel{
+		LldpIfPolModel: NewLldpIfPolModelNull(),
+		ID:             types.StringNull(),
+		ParentDn:       types.StringNull(),
+	}
 }

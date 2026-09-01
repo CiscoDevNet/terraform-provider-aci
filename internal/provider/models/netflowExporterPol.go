@@ -2,18 +2,119 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type NetflowExporterPolModel struct{}
+type NetflowExporterPolModel struct {
+	Annotation             types.String                                     `tfsdk:"annotation"`
+	Descr                  types.String                                     `tfsdk:"description"`
+	Dscp                   customTypes.NetflowExporterPolDscpStringValue    `tfsdk:"qos_dscp_value"`
+	DstAddr                customTypes.IPAddressStringValue                 `tfsdk:"destination_ip_address"`
+	DstPort                customTypes.NetflowExporterPolDstPortStringValue `tfsdk:"destination_port"`
+	Name                   types.String                                     `tfsdk:"name"`
+	NameAlias              types.String                                     `tfsdk:"name_alias"`
+	OwnerKey               types.String                                     `tfsdk:"owner_key"`
+	OwnerTag               types.String                                     `tfsdk:"owner_tag"`
+	SourceIpType           types.String                                     `tfsdk:"source_ip_type"`
+	SrcAddr                customTypes.IPAddressStringValue                 `tfsdk:"source_ip_address"`
+	Ver                    types.String                                     `tfsdk:"version"`
+	NetflowRsExporterToCtx types.Object                                     `tfsdk:"relation_to_vrf"`
+	NetflowRsExporterToEPg types.Object                                     `tfsdk:"relation_to_epg"`
+	TagAnnotation          types.Set                                        `tfsdk:"annotations"`
+	TagTag                 types.Set                                        `tfsdk:"tags"`
+}
+
+func NetflowExporterPolModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":             types.StringType,
+		"description":            types.StringType,
+		"qos_dscp_value":         customTypes.NetflowExporterPolDscpStringType{},
+		"destination_ip_address": customTypes.IPAddressStringType{},
+		"destination_port":       customTypes.NetflowExporterPolDstPortStringType{},
+		"name":                   types.StringType,
+		"name_alias":             types.StringType,
+		"owner_key":              types.StringType,
+		"owner_tag":              types.StringType,
+		"source_ip_type":         types.StringType,
+		"source_ip_address":      customTypes.IPAddressStringType{},
+		"version":                types.StringType,
+		"relation_to_vrf": types.ObjectType{
+			AttrTypes: NetflowRsExporterToCtxModelAttributeTypes(),
+		},
+		"relation_to_epg": types.ObjectType{
+			AttrTypes: NetflowRsExporterToEPgModelAttributeTypes(),
+		},
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewNetflowExporterPolModelNull() NetflowExporterPolModel {
+	return NetflowExporterPolModel{
+		Annotation:             types.StringNull(),
+		Descr:                  types.StringNull(),
+		Dscp:                   customTypes.NewNetflowExporterPolDscpStringNull(),
+		DstAddr:                customTypes.NewIPAddressStringNull(),
+		DstPort:                customTypes.NewNetflowExporterPolDstPortStringNull(),
+		Name:                   types.StringNull(),
+		NameAlias:              types.StringNull(),
+		OwnerKey:               types.StringNull(),
+		OwnerTag:               types.StringNull(),
+		SourceIpType:           types.StringNull(),
+		SrcAddr:                customTypes.NewIPAddressStringNull(),
+		Ver:                    types.StringNull(),
+		NetflowRsExporterToCtx: types.ObjectNull(NetflowRsExporterToCtxModelAttributeTypes()),
+		NetflowRsExporterToEPg: types.ObjectNull(NetflowRsExporterToEPgModelAttributeTypes()),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type NetflowExporterPolResourceModel struct {
 	NetflowExporterPolModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewNetflowExporterPolResourceModelNull() NetflowExporterPolResourceModel {
+	return NetflowExporterPolResourceModel{
+		NetflowExporterPolModel: NewNetflowExporterPolModelNull(),
+		ID:                      types.StringNull(),
+		ParentDn:                types.StringNull(),
+	}
 }
 
 type NetflowExporterPolDataSourceModel struct {
 	NetflowExporterPolModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewNetflowExporterPolDataSourceModelNull() NetflowExporterPolDataSourceModel {
+	return NetflowExporterPolDataSourceModel{
+		NetflowExporterPolModel: NewNetflowExporterPolModelNull(),
+		ID:                      types.StringNull(),
+		ParentDn:                types.StringNull(),
+	}
 }

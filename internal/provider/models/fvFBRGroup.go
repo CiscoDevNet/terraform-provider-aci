@@ -2,18 +2,100 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type FvFBRGroupModel struct{}
+type FvFBRGroupModel struct {
+	Annotation    types.String `tfsdk:"annotation"`
+	Descr         types.String `tfsdk:"description"`
+	Name          types.String `tfsdk:"name"`
+	NameAlias     types.String `tfsdk:"name_alias"`
+	FvFBRMember   types.Set    `tfsdk:"vrf_fallback_route_group_members"`
+	FvFBRoute     types.Object `tfsdk:"vrf_fallback_route"`
+	TagAnnotation types.Set    `tfsdk:"annotations"`
+	TagTag        types.Set    `tfsdk:"tags"`
+}
+
+func FvFBRGroupModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":  types.StringType,
+		"description": types.StringType,
+		"name":        types.StringType,
+		"name_alias":  types.StringType,
+		"vrf_fallback_route_group_members": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: FvFBRMemberModelAttributeTypes(),
+			},
+		},
+		"vrf_fallback_route": types.ObjectType{
+			AttrTypes: FvFBRouteModelAttributeTypes(),
+		},
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewFvFBRGroupModelNull() FvFBRGroupModel {
+	return FvFBRGroupModel{
+		Annotation: types.StringNull(),
+		Descr:      types.StringNull(),
+		Name:       types.StringNull(),
+		NameAlias:  types.StringNull(),
+		FvFBRMember: types.SetNull(
+			types.ObjectType{
+				AttrTypes: FvFBRMemberModelAttributeTypes(),
+			},
+		),
+		FvFBRoute: types.ObjectNull(FvFBRouteModelAttributeTypes()),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type FvFBRGroupResourceModel struct {
 	FvFBRGroupModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFvFBRGroupResourceModelNull() FvFBRGroupResourceModel {
+	return FvFBRGroupResourceModel{
+		FvFBRGroupModel: NewFvFBRGroupModelNull(),
+		ID:              types.StringNull(),
+		ParentDn:        types.StringNull(),
+	}
 }
 
 type FvFBRGroupDataSourceModel struct {
 	FvFBRGroupModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFvFBRGroupDataSourceModelNull() FvFBRGroupDataSourceModel {
+	return FvFBRGroupDataSourceModel{
+		FvFBRGroupModel: NewFvFBRGroupModelNull(),
+		ID:              types.StringNull(),
+		ParentDn:        types.StringNull(),
+	}
 }

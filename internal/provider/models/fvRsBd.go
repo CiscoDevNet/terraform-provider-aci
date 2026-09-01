@@ -2,4 +2,48 @@
 
 package models
 
-type FvRsBdModel struct{}
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
+
+type FvRsBdModel struct {
+	Annotation    types.String `tfsdk:"annotation"`
+	TnFvBDName    types.String `tfsdk:"bridge_domain_name"`
+	TagAnnotation types.Set    `tfsdk:"annotations"`
+	TagTag        types.Set    `tfsdk:"tags"`
+}
+
+func FvRsBdModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":         types.StringType,
+		"bridge_domain_name": types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewFvRsBdModelNull() FvRsBdModel {
+	return FvRsBdModel{
+		Annotation: types.StringNull(),
+		TnFvBDName: types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}

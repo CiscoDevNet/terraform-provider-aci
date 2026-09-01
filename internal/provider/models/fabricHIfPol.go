@@ -2,18 +2,111 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type FabricHIfPolModel struct{}
+type FabricHIfPolModel struct {
+	Annotation       types.String `tfsdk:"annotation"`
+	AutoNeg          types.String `tfsdk:"auto_negotiation"`
+	Descr            types.String `tfsdk:"description"`
+	DfeDelayMs       types.String `tfsdk:"port_delay"`
+	EmiRetrain       types.String `tfsdk:"emi_retrain"`
+	FecMode          types.String `tfsdk:"fec_mode"`
+	LinkDebounce     types.String `tfsdk:"link_debounce"`
+	Name             types.String `tfsdk:"name"`
+	NameAlias        types.String `tfsdk:"name_alias"`
+	OwnerKey         types.String `tfsdk:"owner_key"`
+	OwnerTag         types.String `tfsdk:"owner_tag"`
+	PortPhyMediaType types.String `tfsdk:"physical_media_type"`
+	Speed            types.String `tfsdk:"speed"`
+	TagAnnotation    types.Set    `tfsdk:"annotations"`
+	TagTag           types.Set    `tfsdk:"tags"`
+}
+
+func FabricHIfPolModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":          types.StringType,
+		"auto_negotiation":    types.StringType,
+		"description":         types.StringType,
+		"port_delay":          types.StringType,
+		"emi_retrain":         types.StringType,
+		"fec_mode":            types.StringType,
+		"link_debounce":       types.StringType,
+		"name":                types.StringType,
+		"name_alias":          types.StringType,
+		"owner_key":           types.StringType,
+		"owner_tag":           types.StringType,
+		"physical_media_type": types.StringType,
+		"speed":               types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewFabricHIfPolModelNull() FabricHIfPolModel {
+	return FabricHIfPolModel{
+		Annotation:       types.StringNull(),
+		AutoNeg:          types.StringNull(),
+		Descr:            types.StringNull(),
+		DfeDelayMs:       types.StringNull(),
+		EmiRetrain:       types.StringNull(),
+		FecMode:          types.StringNull(),
+		LinkDebounce:     types.StringNull(),
+		Name:             types.StringNull(),
+		NameAlias:        types.StringNull(),
+		OwnerKey:         types.StringNull(),
+		OwnerTag:         types.StringNull(),
+		PortPhyMediaType: types.StringNull(),
+		Speed:            types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type FabricHIfPolResourceModel struct {
 	FabricHIfPolModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFabricHIfPolResourceModelNull() FabricHIfPolResourceModel {
+	return FabricHIfPolResourceModel{
+		FabricHIfPolModel: NewFabricHIfPolModelNull(),
+		ID:                types.StringNull(),
+		ParentDn:          types.StringNull(),
+	}
 }
 
 type FabricHIfPolDataSourceModel struct {
 	FabricHIfPolModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFabricHIfPolDataSourceModelNull() FabricHIfPolDataSourceModel {
+	return FabricHIfPolDataSourceModel{
+		FabricHIfPolModel: NewFabricHIfPolModelNull(),
+		ID:                types.StringNull(),
+		ParentDn:          types.StringNull(),
+	}
 }

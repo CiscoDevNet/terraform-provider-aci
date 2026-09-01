@@ -2,18 +2,114 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type MldSnoopPolModel struct{}
+type MldSnoopPolModel struct {
+	AdminSt         types.String `tfsdk:"admin_state"`
+	Annotation      types.String `tfsdk:"annotation"`
+	Ctrl            types.Set    `tfsdk:"control"`
+	Descr           types.String `tfsdk:"description"`
+	LastMbrIntvl    types.String `tfsdk:"last_member_interval"`
+	Name            types.String `tfsdk:"name"`
+	NameAlias       types.String `tfsdk:"name_alias"`
+	OwnerKey        types.String `tfsdk:"owner_key"`
+	OwnerTag        types.String `tfsdk:"owner_tag"`
+	QueryIntvl      types.String `tfsdk:"query_interval"`
+	RspIntvl        types.String `tfsdk:"response_interval"`
+	StartQueryCnt   types.String `tfsdk:"start_query_count"`
+	StartQueryIntvl types.String `tfsdk:"start_query_interval"`
+	Ver             types.String `tfsdk:"version"`
+	TagAnnotation   types.Set    `tfsdk:"annotations"`
+	TagTag          types.Set    `tfsdk:"tags"`
+}
+
+func MldSnoopPolModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"admin_state":          types.StringType,
+		"annotation":           types.StringType,
+		"control":              types.SetType{ElemType: types.StringType},
+		"description":          types.StringType,
+		"last_member_interval": types.StringType,
+		"name":                 types.StringType,
+		"name_alias":           types.StringType,
+		"owner_key":            types.StringType,
+		"owner_tag":            types.StringType,
+		"query_interval":       types.StringType,
+		"response_interval":    types.StringType,
+		"start_query_count":    types.StringType,
+		"start_query_interval": types.StringType,
+		"version":              types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewMldSnoopPolModelNull() MldSnoopPolModel {
+	return MldSnoopPolModel{
+		AdminSt:         types.StringNull(),
+		Annotation:      types.StringNull(),
+		Ctrl:            types.SetNull(types.StringType),
+		Descr:           types.StringNull(),
+		LastMbrIntvl:    types.StringNull(),
+		Name:            types.StringNull(),
+		NameAlias:       types.StringNull(),
+		OwnerKey:        types.StringNull(),
+		OwnerTag:        types.StringNull(),
+		QueryIntvl:      types.StringNull(),
+		RspIntvl:        types.StringNull(),
+		StartQueryCnt:   types.StringNull(),
+		StartQueryIntvl: types.StringNull(),
+		Ver:             types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type MldSnoopPolResourceModel struct {
 	MldSnoopPolModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewMldSnoopPolResourceModelNull() MldSnoopPolResourceModel {
+	return MldSnoopPolResourceModel{
+		MldSnoopPolModel: NewMldSnoopPolModelNull(),
+		ID:               types.StringNull(),
+		ParentDn:         types.StringNull(),
+	}
 }
 
 type MldSnoopPolDataSourceModel struct {
 	MldSnoopPolModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewMldSnoopPolDataSourceModelNull() MldSnoopPolDataSourceModel {
+	return MldSnoopPolDataSourceModel{
+		MldSnoopPolModel: NewMldSnoopPolModelNull(),
+		ID:               types.StringNull(),
+		ParentDn:         types.StringNull(),
+	}
 }

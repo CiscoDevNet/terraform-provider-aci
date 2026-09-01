@@ -2,18 +2,97 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type FvIpAttrModel struct{}
+type FvIpAttrModel struct {
+	Annotation    types.String                     `tfsdk:"annotation"`
+	Descr         types.String                     `tfsdk:"description"`
+	Ip            customTypes.IPAddressStringValue `tfsdk:"ip"`
+	Name          types.String                     `tfsdk:"name"`
+	NameAlias     types.String                     `tfsdk:"name_alias"`
+	OwnerKey      types.String                     `tfsdk:"owner_key"`
+	OwnerTag      types.String                     `tfsdk:"owner_tag"`
+	UsefvSubnet   types.String                     `tfsdk:"use_epg_subnet"`
+	TagAnnotation types.Set                        `tfsdk:"annotations"`
+	TagTag        types.Set                        `tfsdk:"tags"`
+}
+
+func FvIpAttrModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":     types.StringType,
+		"description":    types.StringType,
+		"ip":             customTypes.IPAddressStringType{},
+		"name":           types.StringType,
+		"name_alias":     types.StringType,
+		"owner_key":      types.StringType,
+		"owner_tag":      types.StringType,
+		"use_epg_subnet": types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewFvIpAttrModelNull() FvIpAttrModel {
+	return FvIpAttrModel{
+		Annotation:  types.StringNull(),
+		Descr:       types.StringNull(),
+		Ip:          customTypes.NewIPAddressStringNull(),
+		Name:        types.StringNull(),
+		NameAlias:   types.StringNull(),
+		OwnerKey:    types.StringNull(),
+		OwnerTag:    types.StringNull(),
+		UsefvSubnet: types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type FvIpAttrResourceModel struct {
 	FvIpAttrModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFvIpAttrResourceModelNull() FvIpAttrResourceModel {
+	return FvIpAttrResourceModel{
+		FvIpAttrModel: NewFvIpAttrModelNull(),
+		ID:            types.StringNull(),
+		ParentDn:      types.StringNull(),
+	}
 }
 
 type FvIpAttrDataSourceModel struct {
 	FvIpAttrModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFvIpAttrDataSourceModelNull() FvIpAttrDataSourceModel {
+	return FvIpAttrDataSourceModel{
+		FvIpAttrModel: NewFvIpAttrModelNull(),
+		ID:            types.StringNull(),
+		ParentDn:      types.StringNull(),
+	}
 }

@@ -2,18 +2,108 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type FhsTrustCtrlPolModel struct{}
+type FhsTrustCtrlPolModel struct {
+	Annotation      types.String `tfsdk:"annotation"`
+	Descr           types.String `tfsdk:"description"`
+	HasDhcpv4Server types.String `tfsdk:"has_dhcpv4_server"`
+	HasDhcpv6Server types.String `tfsdk:"has_dhcpv6_server"`
+	HasIpv6Router   types.String `tfsdk:"has_ipv6_router"`
+	Name            types.String `tfsdk:"name"`
+	NameAlias       types.String `tfsdk:"name_alias"`
+	OwnerKey        types.String `tfsdk:"owner_key"`
+	OwnerTag        types.String `tfsdk:"owner_tag"`
+	TrustArp        types.String `tfsdk:"trust_arp"`
+	TrustNd         types.String `tfsdk:"trust_nd"`
+	TrustRa         types.String `tfsdk:"trust_ra"`
+	TagAnnotation   types.Set    `tfsdk:"annotations"`
+	TagTag          types.Set    `tfsdk:"tags"`
+}
+
+func FhsTrustCtrlPolModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":        types.StringType,
+		"description":       types.StringType,
+		"has_dhcpv4_server": types.StringType,
+		"has_dhcpv6_server": types.StringType,
+		"has_ipv6_router":   types.StringType,
+		"name":              types.StringType,
+		"name_alias":        types.StringType,
+		"owner_key":         types.StringType,
+		"owner_tag":         types.StringType,
+		"trust_arp":         types.StringType,
+		"trust_nd":          types.StringType,
+		"trust_ra":          types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewFhsTrustCtrlPolModelNull() FhsTrustCtrlPolModel {
+	return FhsTrustCtrlPolModel{
+		Annotation:      types.StringNull(),
+		Descr:           types.StringNull(),
+		HasDhcpv4Server: types.StringNull(),
+		HasDhcpv6Server: types.StringNull(),
+		HasIpv6Router:   types.StringNull(),
+		Name:            types.StringNull(),
+		NameAlias:       types.StringNull(),
+		OwnerKey:        types.StringNull(),
+		OwnerTag:        types.StringNull(),
+		TrustArp:        types.StringNull(),
+		TrustNd:         types.StringNull(),
+		TrustRa:         types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type FhsTrustCtrlPolResourceModel struct {
 	FhsTrustCtrlPolModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFhsTrustCtrlPolResourceModelNull() FhsTrustCtrlPolResourceModel {
+	return FhsTrustCtrlPolResourceModel{
+		FhsTrustCtrlPolModel: NewFhsTrustCtrlPolModelNull(),
+		ID:                   types.StringNull(),
+		ParentDn:             types.StringNull(),
+	}
 }
 
 type FhsTrustCtrlPolDataSourceModel struct {
 	FhsTrustCtrlPolModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFhsTrustCtrlPolDataSourceModelNull() FhsTrustCtrlPolDataSourceModel {
+	return FhsTrustCtrlPolDataSourceModel{
+		FhsTrustCtrlPolModel: NewFhsTrustCtrlPolModelNull(),
+		ID:                   types.StringNull(),
+		ParentDn:             types.StringNull(),
+	}
 }

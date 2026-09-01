@@ -2,18 +2,96 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type RtctrlProfileModel struct{}
+type RtctrlProfileModel struct {
+	Annotation    types.String `tfsdk:"annotation"`
+	AutoContinue  types.String `tfsdk:"route_map_continue"`
+	Descr         types.String `tfsdk:"description"`
+	Name          types.String `tfsdk:"name"`
+	NameAlias     types.String `tfsdk:"name_alias"`
+	OwnerKey      types.String `tfsdk:"owner_key"`
+	OwnerTag      types.String `tfsdk:"owner_tag"`
+	Type          types.String `tfsdk:"route_control_profile_type"`
+	TagAnnotation types.Set    `tfsdk:"annotations"`
+	TagTag        types.Set    `tfsdk:"tags"`
+}
+
+func RtctrlProfileModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":                 types.StringType,
+		"route_map_continue":         types.StringType,
+		"description":                types.StringType,
+		"name":                       types.StringType,
+		"name_alias":                 types.StringType,
+		"owner_key":                  types.StringType,
+		"owner_tag":                  types.StringType,
+		"route_control_profile_type": types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewRtctrlProfileModelNull() RtctrlProfileModel {
+	return RtctrlProfileModel{
+		Annotation:   types.StringNull(),
+		AutoContinue: types.StringNull(),
+		Descr:        types.StringNull(),
+		Name:         types.StringNull(),
+		NameAlias:    types.StringNull(),
+		OwnerKey:     types.StringNull(),
+		OwnerTag:     types.StringNull(),
+		Type:         types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type RtctrlProfileResourceModel struct {
 	RtctrlProfileModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewRtctrlProfileResourceModelNull() RtctrlProfileResourceModel {
+	return RtctrlProfileResourceModel{
+		RtctrlProfileModel: NewRtctrlProfileModelNull(),
+		ID:                 types.StringNull(),
+		ParentDn:           types.StringNull(),
+	}
 }
 
 type RtctrlProfileDataSourceModel struct {
 	RtctrlProfileModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewRtctrlProfileDataSourceModelNull() RtctrlProfileDataSourceModel {
+	return RtctrlProfileDataSourceModel{
+		RtctrlProfileModel: NewRtctrlProfileModelNull(),
+		ID:                 types.StringNull(),
+		ParentDn:           types.StringNull(),
+	}
 }

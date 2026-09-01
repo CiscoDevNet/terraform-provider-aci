@@ -2,18 +2,112 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type QosCustomPolModel struct{}
+type QosCustomPolModel struct {
+	Annotation    types.String `tfsdk:"annotation"`
+	Descr         types.String `tfsdk:"description"`
+	Name          types.String `tfsdk:"name"`
+	NameAlias     types.String `tfsdk:"name_alias"`
+	OwnerKey      types.String `tfsdk:"owner_key"`
+	OwnerTag      types.String `tfsdk:"owner_tag"`
+	QosDot1PClass types.Set    `tfsdk:"dot1p_classifiers"`
+	QosDscpClass  types.Set    `tfsdk:"dscp_to_priority_maps"`
+	TagAnnotation types.Set    `tfsdk:"annotations"`
+	TagTag        types.Set    `tfsdk:"tags"`
+}
+
+func QosCustomPolModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":  types.StringType,
+		"description": types.StringType,
+		"name":        types.StringType,
+		"name_alias":  types.StringType,
+		"owner_key":   types.StringType,
+		"owner_tag":   types.StringType,
+		"dot1p_classifiers": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: QosDot1PClassModelAttributeTypes(),
+			},
+		},
+		"dscp_to_priority_maps": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: QosDscpClassModelAttributeTypes(),
+			},
+		},
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewQosCustomPolModelNull() QosCustomPolModel {
+	return QosCustomPolModel{
+		Annotation: types.StringNull(),
+		Descr:      types.StringNull(),
+		Name:       types.StringNull(),
+		NameAlias:  types.StringNull(),
+		OwnerKey:   types.StringNull(),
+		OwnerTag:   types.StringNull(),
+		QosDot1PClass: types.SetNull(
+			types.ObjectType{
+				AttrTypes: QosDot1PClassModelAttributeTypes(),
+			},
+		),
+		QosDscpClass: types.SetNull(
+			types.ObjectType{
+				AttrTypes: QosDscpClassModelAttributeTypes(),
+			},
+		),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type QosCustomPolResourceModel struct {
 	QosCustomPolModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewQosCustomPolResourceModelNull() QosCustomPolResourceModel {
+	return QosCustomPolResourceModel{
+		QosCustomPolModel: NewQosCustomPolModelNull(),
+		ID:                types.StringNull(),
+		ParentDn:          types.StringNull(),
+	}
 }
 
 type QosCustomPolDataSourceModel struct {
 	QosCustomPolModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewQosCustomPolDataSourceModelNull() QosCustomPolDataSourceModel {
+	return QosCustomPolDataSourceModel{
+		QosCustomPolModel: NewQosCustomPolModelNull(),
+		ID:                types.StringNull(),
+		ParentDn:          types.StringNull(),
+	}
 }

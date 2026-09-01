@@ -2,18 +2,81 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type L3extRsInstPToProfileModel struct{}
+type L3extRsInstPToProfileModel struct {
+	Annotation          types.String `tfsdk:"annotation"`
+	Direction           types.String `tfsdk:"direction"`
+	TnRtctrlProfileName types.String `tfsdk:"route_control_profile_name"`
+	TagAnnotation       types.Set    `tfsdk:"annotations"`
+	TagTag              types.Set    `tfsdk:"tags"`
+}
+
+func L3extRsInstPToProfileModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":                 types.StringType,
+		"direction":                  types.StringType,
+		"route_control_profile_name": types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewL3extRsInstPToProfileModelNull() L3extRsInstPToProfileModel {
+	return L3extRsInstPToProfileModel{
+		Annotation:          types.StringNull(),
+		Direction:           types.StringNull(),
+		TnRtctrlProfileName: types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type L3extRsInstPToProfileResourceModel struct {
 	L3extRsInstPToProfileModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewL3extRsInstPToProfileResourceModelNull() L3extRsInstPToProfileResourceModel {
+	return L3extRsInstPToProfileResourceModel{
+		L3extRsInstPToProfileModel: NewL3extRsInstPToProfileModelNull(),
+		ID:                         types.StringNull(),
+		ParentDn:                   types.StringNull(),
+	}
 }
 
 type L3extRsInstPToProfileDataSourceModel struct {
 	L3extRsInstPToProfileModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewL3extRsInstPToProfileDataSourceModelNull() L3extRsInstPToProfileDataSourceModel {
+	return L3extRsInstPToProfileDataSourceModel{
+		L3extRsInstPToProfileModel: NewL3extRsInstPToProfileModelNull(),
+		ID:                         types.StringNull(),
+		ParentDn:                   types.StringNull(),
+	}
 }

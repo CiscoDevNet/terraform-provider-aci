@@ -2,18 +2,93 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type L3extProvLblModel struct{}
+type L3extProvLblModel struct {
+	Annotation    types.String `tfsdk:"annotation"`
+	Descr         types.String `tfsdk:"description"`
+	Name          types.String `tfsdk:"name"`
+	NameAlias     types.String `tfsdk:"name_alias"`
+	OwnerKey      types.String `tfsdk:"owner_key"`
+	OwnerTag      types.String `tfsdk:"owner_tag"`
+	Tag           types.String `tfsdk:"tag"`
+	TagAnnotation types.Set    `tfsdk:"annotations"`
+	TagTag        types.Set    `tfsdk:"tags"`
+}
+
+func L3extProvLblModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":  types.StringType,
+		"description": types.StringType,
+		"name":        types.StringType,
+		"name_alias":  types.StringType,
+		"owner_key":   types.StringType,
+		"owner_tag":   types.StringType,
+		"tag":         types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewL3extProvLblModelNull() L3extProvLblModel {
+	return L3extProvLblModel{
+		Annotation: types.StringNull(),
+		Descr:      types.StringNull(),
+		Name:       types.StringNull(),
+		NameAlias:  types.StringNull(),
+		OwnerKey:   types.StringNull(),
+		OwnerTag:   types.StringNull(),
+		Tag:        types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type L3extProvLblResourceModel struct {
 	L3extProvLblModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewL3extProvLblResourceModelNull() L3extProvLblResourceModel {
+	return L3extProvLblResourceModel{
+		L3extProvLblModel: NewL3extProvLblModelNull(),
+		ID:                types.StringNull(),
+		ParentDn:          types.StringNull(),
+	}
 }
 
 type L3extProvLblDataSourceModel struct {
 	L3extProvLblModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewL3extProvLblDataSourceModelNull() L3extProvLblDataSourceModel {
+	return L3extProvLblDataSourceModel{
+		L3extProvLblModel: NewL3extProvLblModelNull(),
+		ID:                types.StringNull(),
+		ParentDn:          types.StringNull(),
+	}
 }

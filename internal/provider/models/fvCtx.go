@@ -2,18 +2,171 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type FvCtxModel struct{}
+type FvCtxModel struct {
+	Annotation              types.String `tfsdk:"annotation"`
+	BdEnforcedEnable        types.String `tfsdk:"bd_enforcement"`
+	Descr                   types.String `tfsdk:"description"`
+	IpDataPlaneLearning     types.String `tfsdk:"ip_data_plane_learning"`
+	Name                    types.String `tfsdk:"name"`
+	NameAlias               types.String `tfsdk:"name_alias"`
+	OwnerKey                types.String `tfsdk:"owner_key"`
+	OwnerTag                types.String `tfsdk:"owner_tag"`
+	PcEnfDir                types.String `tfsdk:"policy_control_enforcement_direction"`
+	PcEnfPref               types.String `tfsdk:"policy_control_enforcement_mode"`
+	PcTag                   types.String `tfsdk:"pc_tag"`
+	Scope                   types.String `tfsdk:"scope"`
+	FvRsBgpCtxPol           types.Object `tfsdk:"relation_to_bgp_timers"`
+	FvRsCtxMonPol           types.Object `tfsdk:"relation_to_monitoring_policy"`
+	FvRsCtxToBgpCtxAfPol    types.Set    `tfsdk:"relation_to_bgp_address_family_contexts"`
+	FvRsCtxToEigrpCtxAfPol  types.Set    `tfsdk:"relation_to_eigrp_address_family_contexts"`
+	FvRsCtxToEpRet          types.Object `tfsdk:"relation_to_end_point_retention_policy"`
+	FvRsCtxToExtRouteTagPol types.Object `tfsdk:"relation_to_l3out_route_tag_policy"`
+	FvRsCtxToOspfCtxPol     types.Set    `tfsdk:"relation_to_address_family_ospf_timers"`
+	FvRsCtxToSDWanVpn       types.Object `tfsdk:"relation_to_wan_vpn"`
+	FvRsOspfCtxPol          types.Object `tfsdk:"relation_to_ospf_timers"`
+	TagAnnotation           types.Set    `tfsdk:"annotations"`
+	TagTag                  types.Set    `tfsdk:"tags"`
+}
+
+func FvCtxModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":                           types.StringType,
+		"bd_enforcement":                       types.StringType,
+		"description":                          types.StringType,
+		"ip_data_plane_learning":               types.StringType,
+		"name":                                 types.StringType,
+		"name_alias":                           types.StringType,
+		"owner_key":                            types.StringType,
+		"owner_tag":                            types.StringType,
+		"policy_control_enforcement_direction": types.StringType,
+		"policy_control_enforcement_mode":      types.StringType,
+		"pc_tag":                               types.StringType,
+		"scope":                                types.StringType,
+		"relation_to_bgp_timers": types.ObjectType{
+			AttrTypes: FvRsBgpCtxPolModelAttributeTypes(),
+		},
+		"relation_to_monitoring_policy": types.ObjectType{
+			AttrTypes: FvRsCtxMonPolModelAttributeTypes(),
+		},
+		"relation_to_bgp_address_family_contexts": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: FvRsCtxToBgpCtxAfPolModelAttributeTypes(),
+			},
+		},
+		"relation_to_eigrp_address_family_contexts": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: FvRsCtxToEigrpCtxAfPolModelAttributeTypes(),
+			},
+		},
+		"relation_to_end_point_retention_policy": types.ObjectType{
+			AttrTypes: FvRsCtxToEpRetModelAttributeTypes(),
+		},
+		"relation_to_l3out_route_tag_policy": types.ObjectType{
+			AttrTypes: FvRsCtxToExtRouteTagPolModelAttributeTypes(),
+		},
+		"relation_to_address_family_ospf_timers": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: FvRsCtxToOspfCtxPolModelAttributeTypes(),
+			},
+		},
+		"relation_to_wan_vpn": types.ObjectType{
+			AttrTypes: FvRsCtxToSDWanVpnModelAttributeTypes(),
+		},
+		"relation_to_ospf_timers": types.ObjectType{
+			AttrTypes: FvRsOspfCtxPolModelAttributeTypes(),
+		},
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewFvCtxModelNull() FvCtxModel {
+	return FvCtxModel{
+		Annotation:          types.StringNull(),
+		BdEnforcedEnable:    types.StringNull(),
+		Descr:               types.StringNull(),
+		IpDataPlaneLearning: types.StringNull(),
+		Name:                types.StringNull(),
+		NameAlias:           types.StringNull(),
+		OwnerKey:            types.StringNull(),
+		OwnerTag:            types.StringNull(),
+		PcEnfDir:            types.StringNull(),
+		PcEnfPref:           types.StringNull(),
+		PcTag:               types.StringNull(),
+		Scope:               types.StringNull(),
+		FvRsBgpCtxPol:       types.ObjectNull(FvRsBgpCtxPolModelAttributeTypes()),
+		FvRsCtxMonPol:       types.ObjectNull(FvRsCtxMonPolModelAttributeTypes()),
+		FvRsCtxToBgpCtxAfPol: types.SetNull(
+			types.ObjectType{
+				AttrTypes: FvRsCtxToBgpCtxAfPolModelAttributeTypes(),
+			},
+		),
+		FvRsCtxToEigrpCtxAfPol: types.SetNull(
+			types.ObjectType{
+				AttrTypes: FvRsCtxToEigrpCtxAfPolModelAttributeTypes(),
+			},
+		),
+		FvRsCtxToEpRet:          types.ObjectNull(FvRsCtxToEpRetModelAttributeTypes()),
+		FvRsCtxToExtRouteTagPol: types.ObjectNull(FvRsCtxToExtRouteTagPolModelAttributeTypes()),
+		FvRsCtxToOspfCtxPol: types.SetNull(
+			types.ObjectType{
+				AttrTypes: FvRsCtxToOspfCtxPolModelAttributeTypes(),
+			},
+		),
+		FvRsCtxToSDWanVpn: types.ObjectNull(FvRsCtxToSDWanVpnModelAttributeTypes()),
+		FvRsOspfCtxPol:    types.ObjectNull(FvRsOspfCtxPolModelAttributeTypes()),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type FvCtxResourceModel struct {
 	FvCtxModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFvCtxResourceModelNull() FvCtxResourceModel {
+	return FvCtxResourceModel{
+		FvCtxModel: NewFvCtxModelNull(),
+		ID:         types.StringNull(),
+		ParentDn:   types.StringNull(),
+	}
 }
 
 type FvCtxDataSourceModel struct {
 	FvCtxModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFvCtxDataSourceModelNull() FvCtxDataSourceModel {
+	return FvCtxDataSourceModel{
+		FvCtxModel: NewFvCtxModelNull(),
+		ID:         types.StringNull(),
+		ParentDn:   types.StringNull(),
+	}
 }

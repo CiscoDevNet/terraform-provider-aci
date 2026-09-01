@@ -1318,6 +1318,8 @@ func parseValueType(file, propName, s string) data.ValueTypeEnum {
 		return data.IpAddress
 	case "semantic_equality":
 		return data.SemanticEquality
+	case "vmm_arp_learning":
+		return data.VMMArpLearning
 	default:
 		fmt.Printf("WARN: %s: unknown type_overwrites value %q for %s - left as UndefinedValueType\n", file, s, propName)
 		return data.UndefinedValueType
@@ -1382,6 +1384,7 @@ func asStringSlice(v any) []string {
 // acronym-bearing names (mcastARPDrop -> phantom mcastArpDrop), renamed
 // properties (addr -> phantom gateway_address), and parent_dn synthetic.
 func migrateProperties(file, className string, legacy map[string]any, tally *keyTally, out *data.ClassDefinition) {
+	namedCustomTypes := map[string]data.ValueTypeEnum{}
 	for _, key := range sortedStringMapKeys(legacy) {
 		val := legacy[key]
 		info := tally.recordProperty(file, key)
@@ -1623,9 +1626,10 @@ func migrateProperties(file, className string, legacy map[string]any, tally *key
 		case "static_custom_type":
 			// Legacy shape: map<metaName, custom-type-token>.
 			//   "ip_address"        -> auto-derived from meta validateAsIPv4OrIPv6
-			//                          (drop silently; covers 14 of 15 entries).
-			//   "vmm_arp_learning"  -> POSTPONE: log a warning, drop from output.
-			//                          Hand-restore once section 8.1 lands.
+			//                          and therefore dropped silently.
+			//   "vmm_arp_learning"  -> explicit named ValueTypeEnum override.
+			// Named custom types are applied after every legacy key so they take
+			// precedence over the accompanying primitive type_overwrites entry.
 			sct, ok := val.(map[any]any)
 			if !ok {
 				fmt.Printf("WARN: %s: static_custom_type is not a map: %T\n", file, val)
@@ -1637,8 +1641,11 @@ func migrateProperties(file, className string, legacy map[string]any, tally *key
 				if typeStr == "ip_address" {
 					continue
 				}
-				fmt.Printf("POSTPONE: %s: static_custom_type[%s]=%s dropped (no slot in canonical struct yet; restore after section 8 lands)\n",
-					file, metaName, typeStr)
+				if typeStr == "vmm_arp_learning" {
+					namedCustomTypes[metaName] = data.VMMArpLearning
+					continue
+				}
+				fmt.Printf("WARN: %s: unknown static_custom_type[%s]=%s dropped\n", file, metaName, typeStr)
 			}
 
 		case "ignore_custom_type_docs",
@@ -1675,12 +1682,34 @@ func migrateProperties(file, className string, legacy map[string]any, tally *key
 			fmt.Printf("DROP: %s: exclude_targets=%v (polymorphic-same-type auto-detector now handles same-class filtering)\n", file, val)
 		}
 	}
+
+	for propertyName, valueType := range namedCustomTypes {
+		property := upsertProperty(out, propertyName)
+		property.ValueType = valueType
+		out.Properties[propertyName] = property
+	}
 }
 
 // applyCanonicalDefinitionCorrections records decisions that cannot be
 // reconstructed faithfully from the legacy definition vocabulary. Keeping
 // them here ensures every migration run reproduces the canonical definitions.
 func applyCanonicalDefinitionCorrections(className string, out *data.ClassDefinition) {
+	// These APIC properties carry validateAsIPv4OrIPv6 metadata, but the current
+	// provider intentionally exposes plain Terraform strings rather than the IP
+	// semantic-equality custom type. Preserve that public model until a schema
+	// migration deliberately changes it.
+	plainStringIPProperties := map[string][]string{
+		"fvRsDomAtt":       {"ipamDhcpOverride", "ipamGateway"},
+		"fvnsAddrInst":     {"addr"},
+		"fvnsUcastAddrBlk": {"from", "to"},
+		"vmmDomP":          {"mcastAddr"},
+	}
+	for _, propertyName := range plainStringIPProperties[className] {
+		property := upsertProperty(out, propertyName)
+		property.ValueType = data.String
+		out.Properties[propertyName] = property
+	}
+
 	switch className {
 	case "commHttps":
 		// APIC metadata provides globalThrottleUnit with both validValues and a

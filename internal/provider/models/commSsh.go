@@ -2,4 +2,75 @@
 
 package models
 
-type CommSshModel struct{}
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
+
+type CommSshModel struct {
+	AdminSt       types.String `tfsdk:"admin_state"`
+	Annotation    types.String `tfsdk:"annotation"`
+	Descr         types.String `tfsdk:"description"`
+	HostkeyAlgos  types.Set    `tfsdk:"host_key_algorithms"`
+	KexAlgos      types.Set    `tfsdk:"kex_algorithms"`
+	Name          types.String `tfsdk:"name"`
+	NameAlias     types.String `tfsdk:"name_alias"`
+	PasswordAuth  types.String `tfsdk:"password_authentication_state"`
+	Port          types.String `tfsdk:"port"`
+	SshCiphers    types.Set    `tfsdk:"ssh_ciphers"`
+	SshMacs       types.Set    `tfsdk:"ssh_macs"`
+	TagAnnotation types.Set    `tfsdk:"annotations"`
+	TagTag        types.Set    `tfsdk:"tags"`
+}
+
+func CommSshModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"admin_state":                   types.StringType,
+		"annotation":                    types.StringType,
+		"description":                   types.StringType,
+		"host_key_algorithms":           types.SetType{ElemType: types.StringType},
+		"kex_algorithms":                types.SetType{ElemType: types.StringType},
+		"name":                          types.StringType,
+		"name_alias":                    types.StringType,
+		"password_authentication_state": types.StringType,
+		"port":                          types.StringType,
+		"ssh_ciphers":                   types.SetType{ElemType: types.StringType},
+		"ssh_macs":                      types.SetType{ElemType: types.StringType},
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewCommSshModelNull() CommSshModel {
+	return CommSshModel{
+		AdminSt:      types.StringNull(),
+		Annotation:   types.StringNull(),
+		Descr:        types.StringNull(),
+		HostkeyAlgos: types.SetNull(types.StringType),
+		KexAlgos:     types.SetNull(types.StringType),
+		Name:         types.StringNull(),
+		NameAlias:    types.StringNull(),
+		PasswordAuth: types.StringNull(),
+		Port:         types.StringNull(),
+		SshCiphers:   types.SetNull(types.StringType),
+		SshMacs:      types.SetNull(types.StringType),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}

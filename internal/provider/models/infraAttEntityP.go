@@ -2,18 +2,101 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type InfraAttEntityPModel struct{}
+type InfraAttEntityPModel struct {
+	Annotation    types.String `tfsdk:"annotation"`
+	Descr         types.String `tfsdk:"description"`
+	Name          types.String `tfsdk:"name"`
+	NameAlias     types.String `tfsdk:"name_alias"`
+	OwnerKey      types.String `tfsdk:"owner_key"`
+	OwnerTag      types.String `tfsdk:"owner_tag"`
+	InfraRsDomP   types.Set    `tfsdk:"relation_to_domains"`
+	TagAnnotation types.Set    `tfsdk:"annotations"`
+	TagTag        types.Set    `tfsdk:"tags"`
+}
+
+func InfraAttEntityPModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":  types.StringType,
+		"description": types.StringType,
+		"name":        types.StringType,
+		"name_alias":  types.StringType,
+		"owner_key":   types.StringType,
+		"owner_tag":   types.StringType,
+		"relation_to_domains": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: InfraRsDomPModelAttributeTypes(),
+			},
+		},
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewInfraAttEntityPModelNull() InfraAttEntityPModel {
+	return InfraAttEntityPModel{
+		Annotation: types.StringNull(),
+		Descr:      types.StringNull(),
+		Name:       types.StringNull(),
+		NameAlias:  types.StringNull(),
+		OwnerKey:   types.StringNull(),
+		OwnerTag:   types.StringNull(),
+		InfraRsDomP: types.SetNull(
+			types.ObjectType{
+				AttrTypes: InfraRsDomPModelAttributeTypes(),
+			},
+		),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type InfraAttEntityPResourceModel struct {
 	InfraAttEntityPModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewInfraAttEntityPResourceModelNull() InfraAttEntityPResourceModel {
+	return InfraAttEntityPResourceModel{
+		InfraAttEntityPModel: NewInfraAttEntityPModelNull(),
+		ID:                   types.StringNull(),
+		ParentDn:             types.StringNull(),
+	}
 }
 
 type InfraAttEntityPDataSourceModel struct {
 	InfraAttEntityPModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewInfraAttEntityPDataSourceModelNull() InfraAttEntityPDataSourceModel {
+	return InfraAttEntityPDataSourceModel{
+		InfraAttEntityPModel: NewInfraAttEntityPModelNull(),
+		ID:                   types.StringNull(),
+		ParentDn:             types.StringNull(),
+	}
 }

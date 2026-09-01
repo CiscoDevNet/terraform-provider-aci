@@ -2,4 +2,48 @@
 
 package models
 
-type InfraRsVipAddrNsModel struct{}
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
+
+type InfraRsVipAddrNsModel struct {
+	Annotation    types.String `tfsdk:"annotation"`
+	TDn           types.String `tfsdk:"target_dn"`
+	TagAnnotation types.Set    `tfsdk:"annotations"`
+	TagTag        types.Set    `tfsdk:"tags"`
+}
+
+func InfraRsVipAddrNsModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation": types.StringType,
+		"target_dn":  types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewInfraRsVipAddrNsModelNull() InfraRsVipAddrNsModel {
+	return InfraRsVipAddrNsModel{
+		Annotation: types.StringNull(),
+		TDn:        types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}

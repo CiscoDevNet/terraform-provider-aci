@@ -2,4 +2,118 @@
 
 package models
 
-type CommHttpsModel struct{}
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
+
+type CommHttpsModel struct {
+	AccessControlAllowCredential types.String `tfsdk:"allow_credentials"`
+	AccessControlAllowOrigins    types.String `tfsdk:"allow_origins"`
+	AdminSt                      types.String `tfsdk:"admin_state"`
+	Annotation                   types.String `tfsdk:"annotation"`
+	CliOnlyMode                  types.String `tfsdk:"cli_only_mode"`
+	ClientCertAuthState          types.String `tfsdk:"client_certificate_authentication_state"`
+	Descr                        types.String `tfsdk:"description"`
+	DhParam                      types.String `tfsdk:"dh_parameter"`
+	GlobalThrottleRate           types.String `tfsdk:"global_throttle_rate"`
+	GlobalThrottleSt             types.String `tfsdk:"global_throttle_state"`
+	GlobalThrottleUnit           types.String `tfsdk:"global_throttle_unit"`
+	MaxRequestStatusCount        types.String `tfsdk:"max_request_status_count"`
+	Name                         types.String `tfsdk:"name"`
+	NameAlias                    types.String `tfsdk:"name_alias"`
+	NodeExporter                 types.String `tfsdk:"node_exporter"`
+	Port                         types.String `tfsdk:"port"`
+	Referer                      types.String `tfsdk:"referer"`
+	ServerHeader                 types.String `tfsdk:"server_header"`
+	SslProtocols                 types.Set    `tfsdk:"ssl_protocols"`
+	ThrottleRate                 types.String `tfsdk:"login_throttle_rate"`
+	ThrottleSt                   types.String `tfsdk:"login_throttle_state"`
+	VisoreAccess                 types.String `tfsdk:"visore_access"`
+	CommRsClientCertCA           types.Object `tfsdk:"certificate_authority"`
+	CommRsKeyRing                types.Object `tfsdk:"key_ring"`
+	TagAnnotation                types.Set    `tfsdk:"annotations"`
+	TagTag                       types.Set    `tfsdk:"tags"`
+}
+
+func CommHttpsModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"allow_credentials": types.StringType,
+		"allow_origins":     types.StringType,
+		"admin_state":       types.StringType,
+		"annotation":        types.StringType,
+		"cli_only_mode":     types.StringType,
+		"client_certificate_authentication_state": types.StringType,
+		"description":              types.StringType,
+		"dh_parameter":             types.StringType,
+		"global_throttle_rate":     types.StringType,
+		"global_throttle_state":    types.StringType,
+		"global_throttle_unit":     types.StringType,
+		"max_request_status_count": types.StringType,
+		"name":                     types.StringType,
+		"name_alias":               types.StringType,
+		"node_exporter":            types.StringType,
+		"port":                     types.StringType,
+		"referer":                  types.StringType,
+		"server_header":            types.StringType,
+		"ssl_protocols":            types.SetType{ElemType: types.StringType},
+		"login_throttle_rate":      types.StringType,
+		"login_throttle_state":     types.StringType,
+		"visore_access":            types.StringType,
+		"certificate_authority": types.ObjectType{
+			AttrTypes: CommRsClientCertCAModelAttributeTypes(),
+		},
+		"key_ring": types.ObjectType{
+			AttrTypes: CommRsKeyRingModelAttributeTypes(),
+		},
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewCommHttpsModelNull() CommHttpsModel {
+	return CommHttpsModel{
+		AccessControlAllowCredential: types.StringNull(),
+		AccessControlAllowOrigins:    types.StringNull(),
+		AdminSt:                      types.StringNull(),
+		Annotation:                   types.StringNull(),
+		CliOnlyMode:                  types.StringNull(),
+		ClientCertAuthState:          types.StringNull(),
+		Descr:                        types.StringNull(),
+		DhParam:                      types.StringNull(),
+		GlobalThrottleRate:           types.StringNull(),
+		GlobalThrottleSt:             types.StringNull(),
+		GlobalThrottleUnit:           types.StringNull(),
+		MaxRequestStatusCount:        types.StringNull(),
+		Name:                         types.StringNull(),
+		NameAlias:                    types.StringNull(),
+		NodeExporter:                 types.StringNull(),
+		Port:                         types.StringNull(),
+		Referer:                      types.StringNull(),
+		ServerHeader:                 types.StringNull(),
+		SslProtocols:                 types.SetNull(types.StringType),
+		ThrottleRate:                 types.StringNull(),
+		ThrottleSt:                   types.StringNull(),
+		VisoreAccess:                 types.StringNull(),
+		CommRsClientCertCA:           types.ObjectNull(CommRsClientCertCAModelAttributeTypes()),
+		CommRsKeyRing:                types.ObjectNull(CommRsKeyRingModelAttributeTypes()),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}

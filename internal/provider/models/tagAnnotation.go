@@ -2,18 +2,56 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type TagAnnotationModel struct{}
+type TagAnnotationModel struct {
+	Key   types.String `tfsdk:"key"`
+	Value types.String `tfsdk:"value"`
+}
+
+func TagAnnotationModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"key":   types.StringType,
+		"value": types.StringType,
+	}
+}
+
+func NewTagAnnotationModelNull() TagAnnotationModel {
+	return TagAnnotationModel{
+		Key:   types.StringNull(),
+		Value: types.StringNull(),
+	}
+}
 
 type TagAnnotationResourceModel struct {
 	TagAnnotationModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewTagAnnotationResourceModelNull() TagAnnotationResourceModel {
+	return TagAnnotationResourceModel{
+		TagAnnotationModel: NewTagAnnotationModelNull(),
+		ID:                 types.StringNull(),
+		ParentDn:           types.StringNull(),
+	}
 }
 
 type TagAnnotationDataSourceModel struct {
 	TagAnnotationModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewTagAnnotationDataSourceModelNull() TagAnnotationDataSourceModel {
+	return TagAnnotationDataSourceModel{
+		TagAnnotationModel: NewTagAnnotationModelNull(),
+		ID:                 types.StringNull(),
+		ParentDn:           types.StringNull(),
+	}
 }

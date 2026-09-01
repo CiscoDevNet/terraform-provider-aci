@@ -2,18 +2,101 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type L2PortAuthPolModel struct{}
+type L2PortAuthPolModel struct {
+	AdminSt          types.String `tfsdk:"admin_state"`
+	Annotation       types.String `tfsdk:"annotation"`
+	Descr            types.String `tfsdk:"description"`
+	HostMode         types.String `tfsdk:"host_mode"`
+	Name             types.String `tfsdk:"name"`
+	NameAlias        types.String `tfsdk:"name_alias"`
+	OwnerKey         types.String `tfsdk:"owner_key"`
+	OwnerTag         types.String `tfsdk:"owner_tag"`
+	L2PortAuthCfgPol types.Object `tfsdk:"configuration"`
+	TagAnnotation    types.Set    `tfsdk:"annotations"`
+	TagTag           types.Set    `tfsdk:"tags"`
+}
+
+func L2PortAuthPolModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"admin_state": types.StringType,
+		"annotation":  types.StringType,
+		"description": types.StringType,
+		"host_mode":   types.StringType,
+		"name":        types.StringType,
+		"name_alias":  types.StringType,
+		"owner_key":   types.StringType,
+		"owner_tag":   types.StringType,
+		"configuration": types.ObjectType{
+			AttrTypes: L2PortAuthCfgPolModelAttributeTypes(),
+		},
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewL2PortAuthPolModelNull() L2PortAuthPolModel {
+	return L2PortAuthPolModel{
+		AdminSt:          types.StringNull(),
+		Annotation:       types.StringNull(),
+		Descr:            types.StringNull(),
+		HostMode:         types.StringNull(),
+		Name:             types.StringNull(),
+		NameAlias:        types.StringNull(),
+		OwnerKey:         types.StringNull(),
+		OwnerTag:         types.StringNull(),
+		L2PortAuthCfgPol: types.ObjectNull(L2PortAuthCfgPolModelAttributeTypes()),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type L2PortAuthPolResourceModel struct {
 	L2PortAuthPolModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewL2PortAuthPolResourceModelNull() L2PortAuthPolResourceModel {
+	return L2PortAuthPolResourceModel{
+		L2PortAuthPolModel: NewL2PortAuthPolModelNull(),
+		ID:                 types.StringNull(),
+		ParentDn:           types.StringNull(),
+	}
 }
 
 type L2PortAuthPolDataSourceModel struct {
 	L2PortAuthPolModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewL2PortAuthPolDataSourceModelNull() L2PortAuthPolDataSourceModel {
+	return L2PortAuthPolDataSourceModel{
+		L2PortAuthPolModel: NewL2PortAuthPolModelNull(),
+		ID:                 types.StringNull(),
+		ParentDn:           types.StringNull(),
+	}
 }

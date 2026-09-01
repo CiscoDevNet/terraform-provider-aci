@@ -2,18 +2,78 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type NetflowRsMonitorToExporterModel struct{}
+type NetflowRsMonitorToExporterModel struct {
+	Annotation               types.String `tfsdk:"annotation"`
+	TnNetflowExporterPolName types.String `tfsdk:"netflow_exporter_policy_name"`
+	TagAnnotation            types.Set    `tfsdk:"annotations"`
+	TagTag                   types.Set    `tfsdk:"tags"`
+}
+
+func NetflowRsMonitorToExporterModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":                   types.StringType,
+		"netflow_exporter_policy_name": types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewNetflowRsMonitorToExporterModelNull() NetflowRsMonitorToExporterModel {
+	return NetflowRsMonitorToExporterModel{
+		Annotation:               types.StringNull(),
+		TnNetflowExporterPolName: types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type NetflowRsMonitorToExporterResourceModel struct {
 	NetflowRsMonitorToExporterModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewNetflowRsMonitorToExporterResourceModelNull() NetflowRsMonitorToExporterResourceModel {
+	return NetflowRsMonitorToExporterResourceModel{
+		NetflowRsMonitorToExporterModel: NewNetflowRsMonitorToExporterModelNull(),
+		ID:                              types.StringNull(),
+		ParentDn:                        types.StringNull(),
+	}
 }
 
 type NetflowRsMonitorToExporterDataSourceModel struct {
 	NetflowRsMonitorToExporterModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewNetflowRsMonitorToExporterDataSourceModelNull() NetflowRsMonitorToExporterDataSourceModel {
+	return NetflowRsMonitorToExporterDataSourceModel{
+		NetflowRsMonitorToExporterModel: NewNetflowRsMonitorToExporterModelNull(),
+		ID:                              types.StringNull(),
+		ParentDn:                        types.StringNull(),
+	}
 }

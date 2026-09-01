@@ -2,18 +2,252 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type FvBDModel struct{}
+type FvBDModel struct {
+	OptimizeWanBandwidth      types.String                     `tfsdk:"optimize_wan_bandwidth"`
+	Annotation                types.String                     `tfsdk:"annotation"`
+	ArpFlood                  types.String                     `tfsdk:"arp_flooding"`
+	Descr                     types.String                     `tfsdk:"description"`
+	EnableRogueExceptMac      types.String                     `tfsdk:"enable_rogue_exception_mac"`
+	EpClear                   types.String                     `tfsdk:"clear_remote_mac_entries"`
+	EpMoveDetectMode          types.String                     `tfsdk:"endpoint_move_detection_mode"`
+	HostBasedRouting          types.String                     `tfsdk:"advertise_host_routes"`
+	IntersiteBumTrafficAllow  types.String                     `tfsdk:"enable_intersite_bum_traffic"`
+	IntersiteL2Stretch        types.String                     `tfsdk:"intersite_l2_stretch"`
+	IpLearning                types.String                     `tfsdk:"ip_learning"`
+	Ipv6McastAllow            types.String                     `tfsdk:"pim_ipv6"`
+	LimitIpLearnToSubnets     types.String                     `tfsdk:"limit_ip_learn_to_subnets"`
+	LlAddr                    customTypes.IPAddressStringValue `tfsdk:"link_local_ipv6_address"`
+	Mac                       types.String                     `tfsdk:"custom_mac_address"`
+	McastARPDrop              types.String                     `tfsdk:"drop_arp_with_multicast_smac"`
+	McastAllow                types.String                     `tfsdk:"pim"`
+	MultiDstPktAct            types.String                     `tfsdk:"multi_destination_flooding"`
+	Name                      types.String                     `tfsdk:"name"`
+	NameAlias                 types.String                     `tfsdk:"name_alias"`
+	OwnerKey                  types.String                     `tfsdk:"owner_key"`
+	OwnerTag                  types.String                     `tfsdk:"owner_tag"`
+	PcTag                     types.String                     `tfsdk:"pc_tag"`
+	Scope                     types.String                     `tfsdk:"scope"`
+	Seg                       types.String                     `tfsdk:"segment"`
+	ServiceBdRoutingDisable   types.String                     `tfsdk:"service_bd_routing_disable"`
+	Type                      types.String                     `tfsdk:"bridge_domain_type"`
+	UnicastRoute              types.String                     `tfsdk:"unicast_routing"`
+	UnkMacUcastAct            types.String                     `tfsdk:"l2_unknown_unicast_flooding"`
+	UnkMcastAct               types.String                     `tfsdk:"l3_unknown_multicast_flooding"`
+	V6unkMcastAct             types.String                     `tfsdk:"ipv6_l3_unknown_multicast_flooding"`
+	Vmac                      types.String                     `tfsdk:"virtual_mac_address"`
+	FvAccP                    types.Object                     `tfsdk:"legacy_mode"`
+	FvRogueExceptionMac       types.Set                        `tfsdk:"rogue_coop_exceptions"`
+	FvRsABDPolMonPol          types.Object                     `tfsdk:"relation_to_monitoring_policy"`
+	FvRsBDToFhs               types.Object                     `tfsdk:"relation_to_first_hop_security_policy"`
+	FvRsBDToNdP               types.Object                     `tfsdk:"relation_to_neighbor_discovery_interface_policy"`
+	FvRsBDToNetflowMonitorPol types.Set                        `tfsdk:"relation_to_netflow_monitor_policies"`
+	FvRsBDToOut               types.Set                        `tfsdk:"relation_to_l3_outsides"`
+	FvRsBDToProfile           types.Object                     `tfsdk:"relation_to_route_control_profile"`
+	FvRsBDToRelayP            types.Object                     `tfsdk:"relation_to_dhcp_relay_policy"`
+	FvRsBdToEpRet             types.Object                     `tfsdk:"relation_to_end_point_retention_policy"`
+	FvRsCtx                   types.Object                     `tfsdk:"relation_to_vrf"`
+	FvRsIgmpsn                types.Object                     `tfsdk:"relation_to_igmp_snooping_policy"`
+	FvRsMldsn                 types.Object                     `tfsdk:"relation_to_mld_snooping_policy"`
+	TagAnnotation             types.Set                        `tfsdk:"annotations"`
+	TagTag                    types.Set                        `tfsdk:"tags"`
+}
+
+func FvBDModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"optimize_wan_bandwidth":             types.StringType,
+		"annotation":                         types.StringType,
+		"arp_flooding":                       types.StringType,
+		"description":                        types.StringType,
+		"enable_rogue_exception_mac":         types.StringType,
+		"clear_remote_mac_entries":           types.StringType,
+		"endpoint_move_detection_mode":       types.StringType,
+		"advertise_host_routes":              types.StringType,
+		"enable_intersite_bum_traffic":       types.StringType,
+		"intersite_l2_stretch":               types.StringType,
+		"ip_learning":                        types.StringType,
+		"pim_ipv6":                           types.StringType,
+		"limit_ip_learn_to_subnets":          types.StringType,
+		"link_local_ipv6_address":            customTypes.IPAddressStringType{},
+		"custom_mac_address":                 types.StringType,
+		"drop_arp_with_multicast_smac":       types.StringType,
+		"pim":                                types.StringType,
+		"multi_destination_flooding":         types.StringType,
+		"name":                               types.StringType,
+		"name_alias":                         types.StringType,
+		"owner_key":                          types.StringType,
+		"owner_tag":                          types.StringType,
+		"pc_tag":                             types.StringType,
+		"scope":                              types.StringType,
+		"segment":                            types.StringType,
+		"service_bd_routing_disable":         types.StringType,
+		"bridge_domain_type":                 types.StringType,
+		"unicast_routing":                    types.StringType,
+		"l2_unknown_unicast_flooding":        types.StringType,
+		"l3_unknown_multicast_flooding":      types.StringType,
+		"ipv6_l3_unknown_multicast_flooding": types.StringType,
+		"virtual_mac_address":                types.StringType,
+		"legacy_mode": types.ObjectType{
+			AttrTypes: FvAccPModelAttributeTypes(),
+		},
+		"rogue_coop_exceptions": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: FvRogueExceptionMacModelAttributeTypes(),
+			},
+		},
+		"relation_to_monitoring_policy": types.ObjectType{
+			AttrTypes: FvRsABDPolMonPolModelAttributeTypes(),
+		},
+		"relation_to_first_hop_security_policy": types.ObjectType{
+			AttrTypes: FvRsBDToFhsModelAttributeTypes(),
+		},
+		"relation_to_neighbor_discovery_interface_policy": types.ObjectType{
+			AttrTypes: FvRsBDToNdPModelAttributeTypes(),
+		},
+		"relation_to_netflow_monitor_policies": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: FvRsBDToNetflowMonitorPolModelAttributeTypes(),
+			},
+		},
+		"relation_to_l3_outsides": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: FvRsBDToOutModelAttributeTypes(),
+			},
+		},
+		"relation_to_route_control_profile": types.ObjectType{
+			AttrTypes: FvRsBDToProfileModelAttributeTypes(),
+		},
+		"relation_to_dhcp_relay_policy": types.ObjectType{
+			AttrTypes: FvRsBDToRelayPModelAttributeTypes(),
+		},
+		"relation_to_end_point_retention_policy": types.ObjectType{
+			AttrTypes: FvRsBdToEpRetModelAttributeTypes(),
+		},
+		"relation_to_vrf": types.ObjectType{
+			AttrTypes: FvRsCtxModelAttributeTypes(),
+		},
+		"relation_to_igmp_snooping_policy": types.ObjectType{
+			AttrTypes: FvRsIgmpsnModelAttributeTypes(),
+		},
+		"relation_to_mld_snooping_policy": types.ObjectType{
+			AttrTypes: FvRsMldsnModelAttributeTypes(),
+		},
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewFvBDModelNull() FvBDModel {
+	return FvBDModel{
+		OptimizeWanBandwidth:     types.StringNull(),
+		Annotation:               types.StringNull(),
+		ArpFlood:                 types.StringNull(),
+		Descr:                    types.StringNull(),
+		EnableRogueExceptMac:     types.StringNull(),
+		EpClear:                  types.StringNull(),
+		EpMoveDetectMode:         types.StringNull(),
+		HostBasedRouting:         types.StringNull(),
+		IntersiteBumTrafficAllow: types.StringNull(),
+		IntersiteL2Stretch:       types.StringNull(),
+		IpLearning:               types.StringNull(),
+		Ipv6McastAllow:           types.StringNull(),
+		LimitIpLearnToSubnets:    types.StringNull(),
+		LlAddr:                   customTypes.NewIPAddressStringNull(),
+		Mac:                      types.StringNull(),
+		McastARPDrop:             types.StringNull(),
+		McastAllow:               types.StringNull(),
+		MultiDstPktAct:           types.StringNull(),
+		Name:                     types.StringNull(),
+		NameAlias:                types.StringNull(),
+		OwnerKey:                 types.StringNull(),
+		OwnerTag:                 types.StringNull(),
+		PcTag:                    types.StringNull(),
+		Scope:                    types.StringNull(),
+		Seg:                      types.StringNull(),
+		ServiceBdRoutingDisable:  types.StringNull(),
+		Type:                     types.StringNull(),
+		UnicastRoute:             types.StringNull(),
+		UnkMacUcastAct:           types.StringNull(),
+		UnkMcastAct:              types.StringNull(),
+		V6unkMcastAct:            types.StringNull(),
+		Vmac:                     types.StringNull(),
+		FvAccP:                   types.ObjectNull(FvAccPModelAttributeTypes()),
+		FvRogueExceptionMac: types.SetNull(
+			types.ObjectType{
+				AttrTypes: FvRogueExceptionMacModelAttributeTypes(),
+			},
+		),
+		FvRsABDPolMonPol: types.ObjectNull(FvRsABDPolMonPolModelAttributeTypes()),
+		FvRsBDToFhs:      types.ObjectNull(FvRsBDToFhsModelAttributeTypes()),
+		FvRsBDToNdP:      types.ObjectNull(FvRsBDToNdPModelAttributeTypes()),
+		FvRsBDToNetflowMonitorPol: types.SetNull(
+			types.ObjectType{
+				AttrTypes: FvRsBDToNetflowMonitorPolModelAttributeTypes(),
+			},
+		),
+		FvRsBDToOut: types.SetNull(
+			types.ObjectType{
+				AttrTypes: FvRsBDToOutModelAttributeTypes(),
+			},
+		),
+		FvRsBDToProfile: types.ObjectNull(FvRsBDToProfileModelAttributeTypes()),
+		FvRsBDToRelayP:  types.ObjectNull(FvRsBDToRelayPModelAttributeTypes()),
+		FvRsBdToEpRet:   types.ObjectNull(FvRsBdToEpRetModelAttributeTypes()),
+		FvRsCtx:         types.ObjectNull(FvRsCtxModelAttributeTypes()),
+		FvRsIgmpsn:      types.ObjectNull(FvRsIgmpsnModelAttributeTypes()),
+		FvRsMldsn:       types.ObjectNull(FvRsMldsnModelAttributeTypes()),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type FvBDResourceModel struct {
 	FvBDModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFvBDResourceModelNull() FvBDResourceModel {
+	return FvBDResourceModel{
+		FvBDModel: NewFvBDModelNull(),
+		ID:        types.StringNull(),
+		ParentDn:  types.StringNull(),
+	}
 }
 
 type FvBDDataSourceModel struct {
 	FvBDModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFvBDDataSourceModelNull() FvBDDataSourceModel {
+	return FvBDDataSourceModel{
+		FvBDModel: NewFvBDModelNull(),
+		ID:        types.StringNull(),
+		ParentDn:  types.StringNull(),
+	}
 }

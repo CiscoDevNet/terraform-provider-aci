@@ -2,18 +2,81 @@
 
 package models
 
-import "github.com/hashicorp/terraform-plugin-framework/types"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+)
 
-type FvRsBDToNetflowMonitorPolModel struct{}
+type FvRsBDToNetflowMonitorPolModel struct {
+	Annotation              types.String `tfsdk:"annotation"`
+	FltType                 types.String `tfsdk:"filter_type"`
+	TnNetflowMonitorPolName types.String `tfsdk:"netflow_monitor_policy_name"`
+	TagAnnotation           types.Set    `tfsdk:"annotations"`
+	TagTag                  types.Set    `tfsdk:"tags"`
+}
+
+func FvRsBDToNetflowMonitorPolModelAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"annotation":                  types.StringType,
+		"filter_type":                 types.StringType,
+		"netflow_monitor_policy_name": types.StringType,
+		"annotations": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		},
+		"tags": types.SetType{
+			ElemType: types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		},
+	}
+}
+
+func NewFvRsBDToNetflowMonitorPolModelNull() FvRsBDToNetflowMonitorPolModel {
+	return FvRsBDToNetflowMonitorPolModel{
+		Annotation:              types.StringNull(),
+		FltType:                 types.StringNull(),
+		TnNetflowMonitorPolName: types.StringNull(),
+		TagAnnotation: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagAnnotationModelAttributeTypes(),
+			},
+		),
+		TagTag: types.SetNull(
+			types.ObjectType{
+				AttrTypes: TagTagModelAttributeTypes(),
+			},
+		),
+	}
+}
 
 type FvRsBDToNetflowMonitorPolResourceModel struct {
 	FvRsBDToNetflowMonitorPolModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFvRsBDToNetflowMonitorPolResourceModelNull() FvRsBDToNetflowMonitorPolResourceModel {
+	return FvRsBDToNetflowMonitorPolResourceModel{
+		FvRsBDToNetflowMonitorPolModel: NewFvRsBDToNetflowMonitorPolModelNull(),
+		ID:                             types.StringNull(),
+		ParentDn:                       types.StringNull(),
+	}
 }
 
 type FvRsBDToNetflowMonitorPolDataSourceModel struct {
 	FvRsBDToNetflowMonitorPolModel
 
-	ID types.String `tfsdk:"id"`
+	ID       types.String `tfsdk:"id"`
+	ParentDn types.String `tfsdk:"parent_dn"`
+}
+
+func NewFvRsBDToNetflowMonitorPolDataSourceModelNull() FvRsBDToNetflowMonitorPolDataSourceModel {
+	return FvRsBDToNetflowMonitorPolDataSourceModel{
+		FvRsBDToNetflowMonitorPolModel: NewFvRsBDToNetflowMonitorPolModelNull(),
+		ID:                             types.StringNull(),
+		ParentDn:                       types.StringNull(),
+	}
 }
