@@ -3,7 +3,10 @@
 package models
 
 import (
+	"context"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
@@ -54,4 +57,127 @@ func (m *NetflowRsMonitorToRecordModel) BuildRN() string {
 
 func (m *NetflowRsMonitorToRecordModel) BuildDN(parentDN string) string {
 	return parentDN + "/" + m.BuildRN()
+}
+
+func (m *NetflowRsMonitorToRecordModel) BuildPayloadObject(
+	ctx context.Context,
+	priorState *NetflowRsMonitorToRecordModel,
+	nested bool,
+	defaultAnnotation string,
+) (map[string]any, diag.Diagnostics) {
+	var diagnostics diag.Diagnostics
+	attributes := map[string]any{}
+	children := make([]map[string]any, 0)
+	if !m.Annotation.IsNull() && !m.Annotation.IsUnknown() {
+		attributes["annotation"] = m.Annotation.ValueString()
+	} else if nested {
+		attributes["annotation"] = defaultAnnotation
+	}
+	if !m.TnNetflowRecordPolName.IsNull() && !m.TnNetflowRecordPolName.IsUnknown() {
+		attributes["tnNetflowRecordPolName"] = m.TnNetflowRecordPolName.ValueString()
+	}
+	if !m.TagAnnotation.IsNull() && !m.TagAnnotation.IsUnknown() {
+		var desiredChildren []TagAnnotationModel
+		diagnostics.Append(m.TagAnnotation.ElementsAs(ctx, &desiredChildren, false)...)
+		if diagnostics.HasError() {
+			return nil, diagnostics
+		}
+
+		var priorChildren []TagAnnotationModel
+		if priorState != nil &&
+			!priorState.TagAnnotation.IsNull() &&
+			!priorState.TagAnnotation.IsUnknown() {
+			diagnostics.Append(priorState.TagAnnotation.ElementsAs(ctx, &priorChildren, false)...)
+			if diagnostics.HasError() {
+				return nil, diagnostics
+			}
+		}
+
+		for desiredIndex := range desiredChildren {
+			desiredChild := &desiredChildren[desiredIndex]
+			var priorChild *TagAnnotationModel
+			for priorIndex := range priorChildren {
+				if priorChildren[priorIndex].BuildRN() == desiredChild.BuildRN() {
+					priorChild = &priorChildren[priorIndex]
+					break
+				}
+			}
+
+			childObject, childDiagnostics := desiredChild.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
+			diagnostics.Append(childDiagnostics...)
+			if diagnostics.HasError() {
+				return nil, diagnostics
+			}
+			children = append(children, map[string]any{"tagAnnotation": childObject})
+		}
+
+		for priorIndex := range priorChildren {
+			priorChild := &priorChildren[priorIndex]
+			found := false
+			for desiredIndex := range desiredChildren {
+				if desiredChildren[desiredIndex].BuildRN() == priorChild.BuildRN() {
+					found = true
+					break
+				}
+			}
+			if found {
+				continue
+			}
+			children = append(children, map[string]any{"tagAnnotation": priorChild.BuildNestedDeletePayloadObject()})
+		}
+	}
+	if !m.TagTag.IsNull() && !m.TagTag.IsUnknown() {
+		var desiredChildren []TagTagModel
+		diagnostics.Append(m.TagTag.ElementsAs(ctx, &desiredChildren, false)...)
+		if diagnostics.HasError() {
+			return nil, diagnostics
+		}
+
+		var priorChildren []TagTagModel
+		if priorState != nil &&
+			!priorState.TagTag.IsNull() &&
+			!priorState.TagTag.IsUnknown() {
+			diagnostics.Append(priorState.TagTag.ElementsAs(ctx, &priorChildren, false)...)
+			if diagnostics.HasError() {
+				return nil, diagnostics
+			}
+		}
+
+		for desiredIndex := range desiredChildren {
+			desiredChild := &desiredChildren[desiredIndex]
+			var priorChild *TagTagModel
+			for priorIndex := range priorChildren {
+				if priorChildren[priorIndex].BuildRN() == desiredChild.BuildRN() {
+					priorChild = &priorChildren[priorIndex]
+					break
+				}
+			}
+
+			childObject, childDiagnostics := desiredChild.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
+			diagnostics.Append(childDiagnostics...)
+			if diagnostics.HasError() {
+				return nil, diagnostics
+			}
+			children = append(children, map[string]any{"tagTag": childObject})
+		}
+
+		for priorIndex := range priorChildren {
+			priorChild := &priorChildren[priorIndex]
+			found := false
+			for desiredIndex := range desiredChildren {
+				if desiredChildren[desiredIndex].BuildRN() == priorChild.BuildRN() {
+					found = true
+					break
+				}
+			}
+			if found {
+				continue
+			}
+			children = append(children, map[string]any{"tagTag": priorChild.BuildNestedDeletePayloadObject()})
+		}
+	}
+
+	payloadObject := map[string]any{"attributes": attributes}
+	payloadObject["children"] = children
+	return payloadObject, diagnostics
 }

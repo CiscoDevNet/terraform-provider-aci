@@ -532,6 +532,42 @@ func (c Class) ModelProperties() []*Property {
 	return properties
 }
 
+// PayloadProperties returns the ordered APIC properties that can be written
+// through create and update payloads.
+func (c Class) PayloadProperties() []*Property {
+	properties := make([]*Property, 0, len(c.PropertiesAll))
+	for _, property := range c.ModelProperties() {
+		if property.ReadOnly {
+			continue
+		}
+		properties = append(properties, property)
+	}
+	return properties
+}
+
+// HasSetPayloadProperties reports whether payload construction needs to
+// serialize one of this class's properties from a Terraform set.
+func (c Class) HasSetPayloadProperties() bool {
+	for _, property := range c.PayloadProperties() {
+		if property.ValueType == Set {
+			return true
+		}
+	}
+	return false
+}
+
+// HasSingleNestedChildren reports whether this class contains at least one
+// child represented by a Terraform object rather than a set.
+func (c Class) HasSingleNestedChildren(ds *DataStore) bool {
+	for _, childName := range c.Children {
+		child, ok := ds.Classes[childName.String()]
+		if ok && child.IsSingleNestedWhenDefinedAsChild {
+			return true
+		}
+	}
+	return false
+}
+
 // ParentDnProperty returns the synthetic top-level parent_dn property when
 // the class has one.
 func (c Class) ParentDnProperty() *Property {

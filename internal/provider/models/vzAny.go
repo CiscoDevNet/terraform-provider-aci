@@ -3,7 +3,13 @@
 package models
 
 import (
+	"context"
+	"encoding/json"
+
+	"github.com/ciscoecosystem/aci-go-client/v2/container"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
@@ -101,6 +107,291 @@ func (m *VzAnyModel) BuildDN(parentDN string) string {
 	return parentDN + "/" + m.BuildRN()
 }
 
+func (m *VzAnyModel) BuildPayloadObject(
+	ctx context.Context,
+	priorState *VzAnyModel,
+	nested bool,
+	defaultAnnotation string,
+) (map[string]any, diag.Diagnostics) {
+	var diagnostics diag.Diagnostics
+	attributes := map[string]any{}
+	children := make([]map[string]any, 0)
+	if !m.Annotation.IsNull() && !m.Annotation.IsUnknown() {
+		attributes["annotation"] = m.Annotation.ValueString()
+	} else if nested {
+		attributes["annotation"] = defaultAnnotation
+	}
+	if !m.Descr.IsNull() && !m.Descr.IsUnknown() {
+		attributes["descr"] = m.Descr.ValueString()
+	}
+	if !m.MatchT.IsNull() && !m.MatchT.IsUnknown() {
+		attributes["matchT"] = m.MatchT.ValueString()
+	}
+	if !m.Name.IsNull() && !m.Name.IsUnknown() {
+		attributes["name"] = m.Name.ValueString()
+	}
+	if !m.NameAlias.IsNull() && !m.NameAlias.IsUnknown() {
+		attributes["nameAlias"] = m.NameAlias.ValueString()
+	}
+	if !m.PrefGrMemb.IsNull() && !m.PrefGrMemb.IsUnknown() {
+		attributes["prefGrMemb"] = m.PrefGrMemb.ValueString()
+	}
+	if !m.TagAnnotation.IsNull() && !m.TagAnnotation.IsUnknown() {
+		var desiredChildren []TagAnnotationModel
+		diagnostics.Append(m.TagAnnotation.ElementsAs(ctx, &desiredChildren, false)...)
+		if diagnostics.HasError() {
+			return nil, diagnostics
+		}
+
+		var priorChildren []TagAnnotationModel
+		if priorState != nil &&
+			!priorState.TagAnnotation.IsNull() &&
+			!priorState.TagAnnotation.IsUnknown() {
+			diagnostics.Append(priorState.TagAnnotation.ElementsAs(ctx, &priorChildren, false)...)
+			if diagnostics.HasError() {
+				return nil, diagnostics
+			}
+		}
+
+		for desiredIndex := range desiredChildren {
+			desiredChild := &desiredChildren[desiredIndex]
+			var priorChild *TagAnnotationModel
+			for priorIndex := range priorChildren {
+				if priorChildren[priorIndex].BuildRN() == desiredChild.BuildRN() {
+					priorChild = &priorChildren[priorIndex]
+					break
+				}
+			}
+
+			childObject, childDiagnostics := desiredChild.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
+			diagnostics.Append(childDiagnostics...)
+			if diagnostics.HasError() {
+				return nil, diagnostics
+			}
+			children = append(children, map[string]any{"tagAnnotation": childObject})
+		}
+
+		for priorIndex := range priorChildren {
+			priorChild := &priorChildren[priorIndex]
+			found := false
+			for desiredIndex := range desiredChildren {
+				if desiredChildren[desiredIndex].BuildRN() == priorChild.BuildRN() {
+					found = true
+					break
+				}
+			}
+			if found {
+				continue
+			}
+			children = append(children, map[string]any{"tagAnnotation": priorChild.BuildNestedDeletePayloadObject()})
+		}
+	}
+	if !m.TagTag.IsNull() && !m.TagTag.IsUnknown() {
+		var desiredChildren []TagTagModel
+		diagnostics.Append(m.TagTag.ElementsAs(ctx, &desiredChildren, false)...)
+		if diagnostics.HasError() {
+			return nil, diagnostics
+		}
+
+		var priorChildren []TagTagModel
+		if priorState != nil &&
+			!priorState.TagTag.IsNull() &&
+			!priorState.TagTag.IsUnknown() {
+			diagnostics.Append(priorState.TagTag.ElementsAs(ctx, &priorChildren, false)...)
+			if diagnostics.HasError() {
+				return nil, diagnostics
+			}
+		}
+
+		for desiredIndex := range desiredChildren {
+			desiredChild := &desiredChildren[desiredIndex]
+			var priorChild *TagTagModel
+			for priorIndex := range priorChildren {
+				if priorChildren[priorIndex].BuildRN() == desiredChild.BuildRN() {
+					priorChild = &priorChildren[priorIndex]
+					break
+				}
+			}
+
+			childObject, childDiagnostics := desiredChild.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
+			diagnostics.Append(childDiagnostics...)
+			if diagnostics.HasError() {
+				return nil, diagnostics
+			}
+			children = append(children, map[string]any{"tagTag": childObject})
+		}
+
+		for priorIndex := range priorChildren {
+			priorChild := &priorChildren[priorIndex]
+			found := false
+			for desiredIndex := range desiredChildren {
+				if desiredChildren[desiredIndex].BuildRN() == priorChild.BuildRN() {
+					found = true
+					break
+				}
+			}
+			if found {
+				continue
+			}
+			children = append(children, map[string]any{"tagTag": priorChild.BuildNestedDeletePayloadObject()})
+		}
+	}
+	if !m.VzRsAnyToCons.IsNull() && !m.VzRsAnyToCons.IsUnknown() {
+		var desiredChildren []VzRsAnyToConsModel
+		diagnostics.Append(m.VzRsAnyToCons.ElementsAs(ctx, &desiredChildren, false)...)
+		if diagnostics.HasError() {
+			return nil, diagnostics
+		}
+
+		var priorChildren []VzRsAnyToConsModel
+		if priorState != nil &&
+			!priorState.VzRsAnyToCons.IsNull() &&
+			!priorState.VzRsAnyToCons.IsUnknown() {
+			diagnostics.Append(priorState.VzRsAnyToCons.ElementsAs(ctx, &priorChildren, false)...)
+			if diagnostics.HasError() {
+				return nil, diagnostics
+			}
+		}
+
+		for desiredIndex := range desiredChildren {
+			desiredChild := &desiredChildren[desiredIndex]
+			var priorChild *VzRsAnyToConsModel
+			for priorIndex := range priorChildren {
+				if priorChildren[priorIndex].BuildRN() == desiredChild.BuildRN() {
+					priorChild = &priorChildren[priorIndex]
+					break
+				}
+			}
+
+			childObject, childDiagnostics := desiredChild.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
+			diagnostics.Append(childDiagnostics...)
+			if diagnostics.HasError() {
+				return nil, diagnostics
+			}
+			children = append(children, map[string]any{"vzRsAnyToCons": childObject})
+		}
+
+		for priorIndex := range priorChildren {
+			priorChild := &priorChildren[priorIndex]
+			found := false
+			for desiredIndex := range desiredChildren {
+				if desiredChildren[desiredIndex].BuildRN() == priorChild.BuildRN() {
+					found = true
+					break
+				}
+			}
+			if found {
+				continue
+			}
+			children = append(children, map[string]any{"vzRsAnyToCons": priorChild.BuildNestedDeletePayloadObject()})
+		}
+	}
+	if !m.VzRsAnyToConsIf.IsNull() && !m.VzRsAnyToConsIf.IsUnknown() {
+		var desiredChildren []VzRsAnyToConsIfModel
+		diagnostics.Append(m.VzRsAnyToConsIf.ElementsAs(ctx, &desiredChildren, false)...)
+		if diagnostics.HasError() {
+			return nil, diagnostics
+		}
+
+		var priorChildren []VzRsAnyToConsIfModel
+		if priorState != nil &&
+			!priorState.VzRsAnyToConsIf.IsNull() &&
+			!priorState.VzRsAnyToConsIf.IsUnknown() {
+			diagnostics.Append(priorState.VzRsAnyToConsIf.ElementsAs(ctx, &priorChildren, false)...)
+			if diagnostics.HasError() {
+				return nil, diagnostics
+			}
+		}
+
+		for desiredIndex := range desiredChildren {
+			desiredChild := &desiredChildren[desiredIndex]
+			var priorChild *VzRsAnyToConsIfModel
+			for priorIndex := range priorChildren {
+				if priorChildren[priorIndex].BuildRN() == desiredChild.BuildRN() {
+					priorChild = &priorChildren[priorIndex]
+					break
+				}
+			}
+
+			childObject, childDiagnostics := desiredChild.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
+			diagnostics.Append(childDiagnostics...)
+			if diagnostics.HasError() {
+				return nil, diagnostics
+			}
+			children = append(children, map[string]any{"vzRsAnyToConsIf": childObject})
+		}
+
+		for priorIndex := range priorChildren {
+			priorChild := &priorChildren[priorIndex]
+			found := false
+			for desiredIndex := range desiredChildren {
+				if desiredChildren[desiredIndex].BuildRN() == priorChild.BuildRN() {
+					found = true
+					break
+				}
+			}
+			if found {
+				continue
+			}
+			children = append(children, map[string]any{"vzRsAnyToConsIf": priorChild.BuildNestedDeletePayloadObject()})
+		}
+	}
+	if !m.VzRsAnyToProv.IsNull() && !m.VzRsAnyToProv.IsUnknown() {
+		var desiredChildren []VzRsAnyToProvModel
+		diagnostics.Append(m.VzRsAnyToProv.ElementsAs(ctx, &desiredChildren, false)...)
+		if diagnostics.HasError() {
+			return nil, diagnostics
+		}
+
+		var priorChildren []VzRsAnyToProvModel
+		if priorState != nil &&
+			!priorState.VzRsAnyToProv.IsNull() &&
+			!priorState.VzRsAnyToProv.IsUnknown() {
+			diagnostics.Append(priorState.VzRsAnyToProv.ElementsAs(ctx, &priorChildren, false)...)
+			if diagnostics.HasError() {
+				return nil, diagnostics
+			}
+		}
+
+		for desiredIndex := range desiredChildren {
+			desiredChild := &desiredChildren[desiredIndex]
+			var priorChild *VzRsAnyToProvModel
+			for priorIndex := range priorChildren {
+				if priorChildren[priorIndex].BuildRN() == desiredChild.BuildRN() {
+					priorChild = &priorChildren[priorIndex]
+					break
+				}
+			}
+
+			childObject, childDiagnostics := desiredChild.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
+			diagnostics.Append(childDiagnostics...)
+			if diagnostics.HasError() {
+				return nil, diagnostics
+			}
+			children = append(children, map[string]any{"vzRsAnyToProv": childObject})
+		}
+
+		for priorIndex := range priorChildren {
+			priorChild := &priorChildren[priorIndex]
+			found := false
+			for desiredIndex := range desiredChildren {
+				if desiredChildren[desiredIndex].BuildRN() == priorChild.BuildRN() {
+					found = true
+					break
+				}
+			}
+			if found {
+				continue
+			}
+			children = append(children, map[string]any{"vzRsAnyToProv": priorChild.BuildNestedDeletePayloadObject()})
+		}
+	}
+
+	payloadObject := map[string]any{"attributes": attributes}
+	payloadObject["children"] = children
+	return payloadObject, diagnostics
+}
+
 type VzAnyResourceModel struct {
 	VzAnyModel
 
@@ -118,6 +409,41 @@ func NewVzAnyResourceModelNull() VzAnyResourceModel {
 
 func (m *VzAnyResourceModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
+}
+
+func (m *VzAnyResourceModel) BuildPayload(
+	ctx context.Context,
+	priorState *VzAnyModel,
+	create bool,
+	markCreated bool,
+	defaultAnnotation string,
+) (*container.Container, diag.Diagnostics) {
+	payloadObject, diagnostics := m.BuildPayloadObject(ctx, priorState, false, defaultAnnotation)
+	if diagnostics.HasError() {
+		return nil, diagnostics
+	}
+	if markCreated {
+		payloadObject["attributes"].(map[string]any)["status"] = "created"
+	}
+	payloadEnvelope := map[string]any{"vzAny": payloadObject}
+	payload, err := json.Marshal(payloadEnvelope)
+	if err != nil {
+		diagnostics.AddError(
+			"Marshalling of JSON payload failed",
+			err.Error()+". Please report this issue to the provider developers.",
+		)
+		return nil, diagnostics
+	}
+
+	jsonPayload, err := container.ParseJSON(payload)
+	if err != nil {
+		diagnostics.AddError(
+			"Construction of JSON payload failed",
+			err.Error()+". Please report this issue to the provider developers.",
+		)
+		return nil, diagnostics
+	}
+	return jsonPayload, diagnostics
 }
 
 type VzAnyDataSourceModel struct {

@@ -2,6 +2,8 @@ package template
 
 import (
 	"bytes"
+	"context"
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -10,6 +12,7 @@ import (
 	"testing"
 	texttemplate "text/template"
 
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils/data"
@@ -175,6 +178,7 @@ func TestModelTemplateArtifacts(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
 			class := testClass(t, "fvTenant", testCase.artifacts...)
+			class.AllowDelete = true
 
 			var rendered bytes.Buffer
 			if err := modelTemplate.Execute(&rendered, TemplateContext{
@@ -195,6 +199,12 @@ func TestModelTemplateArtifacts(t *testing.T) {
 			}
 			if !strings.Contains(contents, "func (m *FvTenantModel) BuildDN() string") {
 				t.Fatal("shared model DN builder was not rendered")
+			}
+			if !strings.Contains(contents, "func (m *FvTenantModel) BuildPayloadObject(") {
+				t.Fatal("shared model payload object builder was not rendered")
+			}
+			if !strings.Contains(contents, "func (m *FvTenantModel) BuildNestedDeletePayloadObject()") {
+				t.Fatal("shared model nested delete payload object builder was not rendered")
 			}
 
 			resourceType := "type FvTenantResourceModel struct"
@@ -372,6 +382,375 @@ func TestGeneratedTopLevelModelSetIDFromDN(t *testing.T) {
 	}
 }
 
+func TestGeneratedModelBuildPayload(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+	model := models.NewFvTenantResourceModelNull()
+	model.Name = types.StringValue("example")
+
+	payload, diagnostics := model.BuildPayload(ctx, nil, true, true, "orchestrator:terraform")
+	if diagnostics.HasError() {
+		t.Fatalf("build payload: %v", diagnostics)
+	}
+	assertJSONEqual(t, payload.String(), `{
+		"fvTenant": {
+			"attributes": {
+				"name": "example",
+				"status": "created"
+			},
+			"children": []
+		}
+	}`)
+
+	payload, diagnostics = model.BuildPayload(ctx, nil, true, false, "orchestrator:terraform")
+	if diagnostics.HasError() {
+		t.Fatalf("build upsert payload: %v", diagnostics)
+	}
+	assertJSONEqual(t, payload.String(), `{
+		"fvTenant": {
+			"attributes": {"name": "example"},
+			"children": []
+		}
+	}`)
+}
+
+func TestGeneratedModelBuildDeletePayload(t *testing.T) {
+	t.Parallel()
+
+	model := models.NewFvTenantResourceModelNull()
+	model.ID = types.StringValue("uni/tn-example")
+	payload, diagnostics := model.BuildDeletePayload()
+	if diagnostics.HasError() {
+		t.Fatalf("build delete payload: %v", diagnostics)
+	}
+	assertJSONEqual(t, payload.String(), `{
+		"fvTenant": {
+			"attributes": {
+				"dn": "uni/tn-example",
+				"status": "deleted"
+			}
+		}
+	}`)
+
+	if _, exists := reflect.TypeOf(&models.VzAnyResourceModel{}).MethodByName("BuildDeletePayload"); exists {
+		t.Fatal("non-deletable vzAny resource model exposes BuildDeletePayload")
+	}
+}
+
+func TestGeneratedModelBuildPayloadReconcilesRepeatedChildren(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+	priorAnnotation := models.NewTagAnnotationModelNull()
+	priorAnnotation.Key = types.StringValue("stale")
+	priorAnnotation.Value = types.StringValue("value")
+
+	priorState := models.NewFvTenantModelNull()
+	priorState.TagAnnotation = mustModelSet(
+		t,
+		ctx,
+		models.TagAnnotationModelAttributeTypes(),
+		[]models.TagAnnotationModel{priorAnnotation},
+	)
+
+	model := models.NewFvTenantResourceModelNull()
+	model.Name = types.StringValue("example")
+	model.TagAnnotation = mustModelSet(
+		t,
+		ctx,
+		models.TagAnnotationModelAttributeTypes(),
+		[]models.TagAnnotationModel{},
+	)
+
+	payload, diagnostics := model.BuildPayload(ctx, &priorState, false, false, "orchestrator:terraform")
+	if diagnostics.HasError() {
+		t.Fatalf("build payload: %v", diagnostics)
+	}
+	assertJSONEqual(t, payload.String(), `{
+		"fvTenant": {
+			"attributes": {"name": "example"},
+			"children": [
+				{
+					"tagAnnotation": {
+						"attributes": {
+							"key": "stale",
+							"status": "deleted"
+						},
+						"children": []
+					}
+				}
+			]
+		}
+	}`)
+
+	model.TagAnnotation = types.SetNull(types.ObjectType{
+		AttrTypes: models.TagAnnotationModelAttributeTypes(),
+	})
+	payload, diagnostics = model.BuildPayload(ctx, &priorState, false, false, "orchestrator:terraform")
+	if diagnostics.HasError() {
+		t.Fatalf("build unmanaged-child payload: %v", diagnostics)
+	}
+	assertJSONEqual(t, payload.String(), `{
+		"fvTenant": {
+			"attributes": {"name": "example"},
+			"children": []
+		}
+	}`)
+}
+
+func TestGeneratedModelBuildPayloadHandlesSingletonChildren(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+	monitoringPolicy := models.NewFvRsTenantMonPolModelNull()
+	monitoringPolicy.TnMonEPGPolName = types.StringValue("monitoring")
+
+	model := models.NewFvTenantResourceModelNull()
+	model.Name = types.StringValue("example")
+	model.FvRsTenantMonPol = mustModelObject(
+		t,
+		ctx,
+		models.FvRsTenantMonPolModelAttributeTypes(),
+		monitoringPolicy,
+	)
+
+	payload, diagnostics := model.BuildPayload(ctx, nil, false, false, "orchestrator:terraform")
+	if diagnostics.HasError() {
+		t.Fatalf("build payload: %v", diagnostics)
+	}
+	assertJSONEqual(t, payload.String(), `{
+		"fvTenant": {
+			"attributes": {"name": "example"},
+			"children": [
+				{
+					"fvRsTenantMonPol": {
+						"attributes": {
+							"annotation": "orchestrator:terraform",
+							"tnMonEPGPolName": "monitoring"
+						},
+						"children": []
+					}
+				}
+			]
+		}
+	}`)
+
+	priorState := models.NewFvTenantModelNull()
+	priorState.FvRsTenantMonPol = model.FvRsTenantMonPol
+	model.FvRsTenantMonPol = mustModelObject(
+		t,
+		ctx,
+		models.FvRsTenantMonPolModelAttributeTypes(),
+		models.NewFvRsTenantMonPolModelNull(),
+	)
+
+	payload, diagnostics = model.BuildPayload(ctx, &priorState, false, false, "orchestrator:terraform")
+	if payload != nil {
+		t.Fatal("payload was returned for a non-deletable child removal")
+	}
+	if !diagnostics.HasError() {
+		t.Fatal("non-deletable child removal did not return diagnostics")
+	}
+}
+
+func TestGeneratedModelBuildPayloadDeletesSingletonChild(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+	priorChild := models.NewFhsRaGuardPolModelNull()
+	priorChild.Name = types.StringValue("existing")
+
+	priorState := models.NewFhsBDPolModelNull()
+	priorState.FhsRaGuardPol = mustModelObject(
+		t,
+		ctx,
+		models.FhsRaGuardPolModelAttributeTypes(),
+		priorChild,
+	)
+
+	model := models.NewFhsBDPolResourceModelNull()
+	model.FhsRaGuardPol = mustModelObject(
+		t,
+		ctx,
+		models.FhsRaGuardPolModelAttributeTypes(),
+		models.NewFhsRaGuardPolModelNull(),
+	)
+
+	payload, diagnostics := model.BuildPayload(ctx, &priorState, false, false, "orchestrator:terraform")
+	if diagnostics.HasError() {
+		t.Fatalf("build payload: %v", diagnostics)
+	}
+	assertJSONEqual(t, payload.String(), `{
+		"fhsBDPol": {
+			"attributes": {},
+			"children": [
+				{
+					"fhsRaGuardPol": {
+						"attributes": {"status": "deleted"},
+						"children": []
+					}
+				}
+			]
+		}
+	}`)
+}
+
+func TestGeneratedModelBuildPayloadRejectsIpslaRelationshipDeletion(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+	priorChild := models.NewFvRsIpslaMonPolModelNull()
+	priorChild.TDn = types.StringValue("uni/tn-example/ipslaMonitoringPol-monitoring")
+
+	priorState := models.NewFvTrackMemberModelNull()
+	priorState.FvRsIpslaMonPol = mustModelObject(
+		t,
+		ctx,
+		models.FvRsIpslaMonPolModelAttributeTypes(),
+		priorChild,
+	)
+
+	model := models.NewFvTrackMemberResourceModelNull()
+	model.FvRsIpslaMonPol = mustModelObject(
+		t,
+		ctx,
+		models.FvRsIpslaMonPolModelAttributeTypes(),
+		models.NewFvRsIpslaMonPolModelNull(),
+	)
+
+	payload, diagnostics := model.BuildPayload(ctx, &priorState, false, false, "orchestrator:terraform")
+	if payload != nil {
+		t.Fatal("payload was returned for IP SLA relationship removal")
+	}
+	if !diagnostics.HasError() {
+		t.Fatal("IP SLA relationship removal did not return diagnostics")
+	}
+}
+
+func TestGeneratedModelBuildPayloadSerializesBitmask(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+	model := models.NewNdIfPolResourceModelNull()
+	model.Name = types.StringValue("example")
+	model.Ctrl = types.SetValueMust(types.StringType, []attr.Value{
+		types.StringValue("router-advertisement"),
+	})
+
+	payload, diagnostics := model.BuildPayload(ctx, nil, false, false, "orchestrator:terraform")
+	if diagnostics.HasError() {
+		t.Fatalf("build payload: %v", diagnostics)
+	}
+	assertJSONEqual(t, payload.String(), `{
+		"ndIfPol": {
+			"attributes": {
+				"ctrl": "router-advertisement",
+				"name": "example"
+			},
+			"children": []
+		}
+	}`)
+}
+
+func TestGeneratedModelBuildPayloadWrapsParentDnVariantOnCreate(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+	model := models.NewPkiKeyRingResourceModelNull()
+	model.Name = types.StringValue("example")
+	model.ParentDn = types.StringValue("uni/tn-tenant")
+
+	payload, diagnostics := model.BuildPayload(ctx, nil, true, true, "orchestrator:terraform")
+	if diagnostics.HasError() {
+		t.Fatalf("build create payload: %v", diagnostics)
+	}
+	assertJSONEqual(t, payload.String(), `{
+		"cloudCertStore": {
+			"attributes": {},
+			"children": [
+				{
+					"pkiKeyRing": {
+						"attributes": {
+							"name": "example",
+							"status": "created"
+						},
+						"children": []
+					}
+				}
+			]
+		}
+	}`)
+
+	payload, diagnostics = model.BuildPayload(ctx, nil, false, false, "orchestrator:terraform")
+	if diagnostics.HasError() {
+		t.Fatalf("build update payload: %v", diagnostics)
+	}
+	assertJSONEqual(t, payload.String(), `{
+		"pkiKeyRing": {
+			"attributes": {"name": "example"},
+			"children": []
+		}
+	}`)
+}
+
+func TestGeneratedModelBuildPayloadRecursesThroughNestedChildren(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+	keyRing := models.NewCommRsKeyRingModelNull()
+	keyRing.TnPkiKeyRingName = types.StringValue("key-ring")
+
+	https := models.NewCommHttpsModelNull()
+	https.AdminSt = types.StringValue("enabled")
+	https.CommRsKeyRing = mustModelObject(
+		t,
+		ctx,
+		models.CommRsKeyRingModelAttributeTypes(),
+		keyRing,
+	)
+
+	model := models.NewCommPolResourceModelNull()
+	model.Name = types.StringValue("default")
+	model.CommHttps = mustModelObject(
+		t,
+		ctx,
+		models.CommHttpsModelAttributeTypes(),
+		https,
+	)
+
+	payload, diagnostics := model.BuildPayload(ctx, nil, false, false, "orchestrator:terraform")
+	if diagnostics.HasError() {
+		t.Fatalf("build payload: %v", diagnostics)
+	}
+	assertJSONEqual(t, payload.String(), `{
+		"commPol": {
+			"attributes": {"name": "default"},
+			"children": [
+				{
+					"commHttps": {
+						"attributes": {
+							"adminSt": "enabled",
+							"annotation": "orchestrator:terraform"
+						},
+						"children": [
+							{
+								"commRsKeyRing": {
+									"attributes": {
+										"annotation": "orchestrator:terraform",
+										"tnPkiKeyRingName": "key-ring"
+									},
+									"children": []
+								}
+							}
+						]
+					}
+				}
+			]
+		}
+	}`)
+}
+
 func TestGeneratedTopLevelModelParentDnShape(t *testing.T) {
 	t.Parallel()
 
@@ -386,6 +765,41 @@ func TestGeneratedTopLevelModelParentDnShape(t *testing.T) {
 	}
 	if _, ok := reflect.TypeOf(models.FvEpIpTagResourceModel{}).FieldByName("ParentDn"); !ok {
 		t.Fatal("replacement-parent fvEpIpTag resource model does not expose ParentDn")
+	}
+}
+
+func mustModelObject[T any](t *testing.T, ctx context.Context, attributeTypes map[string]attr.Type, model T) types.Object {
+	t.Helper()
+
+	value, diagnostics := types.ObjectValueFrom(ctx, attributeTypes, model)
+	if diagnostics.HasError() {
+		t.Fatalf("construct model object: %v", diagnostics)
+	}
+	return value
+}
+
+func mustModelSet[T any](t *testing.T, ctx context.Context, attributeTypes map[string]attr.Type, models []T) types.Set {
+	t.Helper()
+
+	value, diagnostics := types.SetValueFrom(ctx, types.ObjectType{AttrTypes: attributeTypes}, models)
+	if diagnostics.HasError() {
+		t.Fatalf("construct model set: %v", diagnostics)
+	}
+	return value
+}
+
+func assertJSONEqual(t *testing.T, actualJSON, expectedJSON string) {
+	t.Helper()
+
+	var actual, expected any
+	if err := json.Unmarshal([]byte(actualJSON), &actual); err != nil {
+		t.Fatalf("unmarshal actual JSON: %v", err)
+	}
+	if err := json.Unmarshal([]byte(expectedJSON), &expected); err != nil {
+		t.Fatalf("unmarshal expected JSON: %v", err)
+	}
+	if !reflect.DeepEqual(actual, expected) {
+		t.Fatalf("JSON payload\n%s\nexpected\n%s", actualJSON, expectedJSON)
 	}
 }
 
