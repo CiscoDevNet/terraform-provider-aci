@@ -59,7 +59,7 @@ func TestSetHostFromEnvironmentVariable(t *testing.T) {
 
 func TestRefreshUnsupportedAnnotationClassesNotRequested(t *testing.T) {
 	ds := &DataStore{}
-	if err := ds.refreshUnsupportedAnnotationClassesIfRequested(); err != nil {
+	if err := ds.refreshUnsupportedAnnotationClasses(); err != nil {
 		t.Fatalf("skip unsupported annotation refresh: %v", err)
 	}
 	assert.Nil(t, ds.UnsupportedAnnotationClasses)
@@ -92,7 +92,7 @@ func TestRefreshUnsupportedAnnotationClasses(t *testing.T) {
 		client:   client,
 		metaHost: "metadata.example.com",
 	}
-	if err := ds.refreshUnsupportedAnnotationClassesIfRequested(); err != nil {
+	if err := ds.refreshUnsupportedAnnotationClasses(); err != nil {
 		t.Fatalf("refresh unsupported annotation classes: %v", err)
 	}
 	assert.Equal(t, []string{"aaaConfig", "nullAnnotation"}, ds.UnsupportedAnnotationClasses)
