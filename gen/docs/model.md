@@ -37,12 +37,12 @@ The generated class model owns:
 - child response decoding;
 - model identity and child identity.
 
-Terraform resource behavior that is not part of the class value remains in the
-resource adapter:
+Terraform behavior that is not part of the class value remains at the provider
+boundary, split between generated schemas and resource/data-source adapters:
 
-- validators and plan modifiers;
-- deprecated Terraform aliases;
-- state upgrades;
+- generated schemas own validators, defaults, plan modifiers, and deprecated
+  Terraform aliases;
+- adapters own state upgrades and lifecycle orchestration;
 - provider registration;
 - import-state orchestration;
 - REST transport and API error handling.
@@ -71,20 +71,26 @@ type FvTenantModel struct {
 ```
 
 The generated model and the resource/data-source schemas are produced from
-the same normalized DataStore metadata, but schema ownership remains with the
-resource or data source. Terraform decodes a nested value into
-`FvTenantModel` and decodes a top-level value into a context-specific embedded
-wrapper:
+the same normalized DataStore metadata. Model files remain schema-independent;
+schema construction is generated as package-level functions in the
+`internal/provider` package, where the existing provider defaults, validators,
+and plan modifiers are available without introducing an import cycle.
+Terraform decodes a nested value into `FvTenantModel` and decodes a top-level
+value into a context-specific embedded wrapper:
 
 ```go
 type FvTenantResourceModel struct {
 	FvTenantModel
-	ID types.String `tfsdk:"id"`
+	ID                              types.String `tfsdk:"id"`
+	DeprecatedMonitoringPolicy      types.String `tfsdk:"relation_fv_rs_tenant_mon_pol"`
+	IgnoredTenantDenyRuleRelation   types.Set    `tfsdk:"relation_fv_rs_tn_deny_rule"`
 }
 
 type FvTenantDataSourceModel struct {
 	FvTenantModel
-	ID types.String `tfsdk:"id"`
+	ID                              types.String `tfsdk:"id"`
+	DeprecatedMonitoringPolicy      types.String `tfsdk:"relation_fv_rs_tenant_mon_pol"`
+	IgnoredTenantDenyRuleRelation   types.Set    `tfsdk:"relation_fv_rs_tn_deny_rule"`
 }
 
 var plan FvTenantResourceModel
@@ -98,6 +104,15 @@ context-specific fields without duplicating class fields or APIC behavior.
 Value embedding also promotes the generated class methods to each wrapper.
 Embedded models must use value embedding, not pointer embedding, and must not
 introduce duplicate `tfsdk` tags.
+
+Terraform Framework struct conversion requires an exact one-to-one match
+between the schema attributes and the target struct's `tfsdk` tags. Each
+top-level wrapper must therefore contain every current-schema attribute that
+is not part of the reusable APIC class model. In addition to `id` and
+`parent_dn`, this includes still-exposed legacy aliases, intentionally retained
+unsupported attributes, and any resource- or data-source-only selector. Null
+constructors initialize these fields explicitly. Class operations ignore them;
+the generated schema and adapter own their compatibility or lookup behavior.
 
 When an APIC class itself exposes a property named `id`, its generated Go field
 is class-prefixed (for example, `FvEpIpTagID`). Its normalized Terraform tag
@@ -114,33 +129,52 @@ model because it is placement input rather than an APIC payload property.
 Every loaded class receives its shared model. Resource and data-source
 wrappers are emitted only when the corresponding values are present in
 `Class.Artifacts`; a child-only class therefore receives only its shared
-model.
+model. Schema generation nevertheless emits reusable nested resource and
+data-source attribute functions for every class, including child-only
+classes, because the class can be embedded by a parent artifact.
 
-The resource and data-source schemas are generated independently:
+Resource and data-source schemas use different Terraform Framework concrete
+types and are therefore generated independently in the `provider` package:
 
 ```go
-func FvTenantResourceSchema() schema.Schema
-func FvTenantDataSourceSchema() schema.Schema
+func FvTenantResourceSchema() resourceschema.Schema
+func FvTenantDataSourceSchema() datasourceschema.Schema
+
+func TagAnnotationNestedResourceAttributes() map[string]resourceschema.Attribute
+func TagAnnotationNestedDataSourceAttributes() map[string]datasourceschema.Attribute
 ```
 
-Neither `FvTenantModel` nor either wrapper owns a `Schema()` method. The
-resource and data-source implementations call their respective generated
-schema functions and define their own required/optional/computed behavior,
-validators, defaults, plan modifiers, deprecated fields, and filters.
+Top-level schema functions are emitted only for the corresponding artifact.
+Nested attribute functions are emitted once per class and recursively call
+the nested functions of their children; a parent must not render another
+class's property schema inline. The outer parent attribute still owns whether
+the child is single or repeated and required, optional, or computed.
+
+Neither `FvTenantModel` nor either wrapper owns a `Schema()` method. Resource
+and data-source implementations call their respective generated top-level
+schema functions. Those functions add wrapper-only fields such as `id`,
+`parent_dn`, deprecated attributes, data-source filters, and resource schema
+version metadata around the reusable class attributes. Resource and
+data-source variants retain their own required/optional/computed behavior,
+validators, defaults, and plan modifiers. State-upgrade implementations remain
+on the resource adapter. Every current-schema attribute added here must have a
+matching field on the corresponding wrapper.
 
 ## 3. Terraform value and child rules
 
-Property types are generated from the Terraform schema:
+Property types are generated from normalized DataStore metadata:
 
-- string property -> `types.String`;
-- integer property -> `types.Int64`;
-- boolean property -> `types.Bool`;
-- repeated nested child -> `types.Set` or `types.List`, matching the schema;
-- singleton nested child -> `types.Object`.
+- scalar APIC property -> `types.String` or its generated custom string type;
+- bitmask APIC property -> `types.Set` with `types.String` elements;
+- repeated nested child -> `types.Set` with generated model objects;
+- singleton nested child -> `types.Object` with generated model attributes.
 
-`types.Set` is the default for repeated children whose order has no APIC
-meaning. `types.List` is used only where order is semantically significant or
-is required by the existing Terraform contract.
+APIC scalar properties remain string-backed even when their values represent
+numbers or booleans, matching both the APIC wire format and the current
+Terraform contract. The current model has no ordered child shape: repeated
+children are APIC objects identified by RN and are represented by `types.Set`.
+If an ordered collection is introduced later, it requires explicit normalized
+metadata and corresponding model, payload, response, and schema support.
 
 The canonical model does not use `[]*ChildModel` or `*ChildModel` fields for
 nested Terraform values. Concrete child models are materialized temporarily
@@ -372,9 +406,10 @@ data-source wrapper when the corresponding schema exposes an `id` attribute.
 An independently supplied ID must not be allowed to disagree with the
 model's computed DN.
 
-Child models expose the same identity methods. Parents use child identity,
-usually the child RN, when constructing nested DNs and comparing desired
-children with prior state.
+Child models expose the same identity methods. Parent payload reconciliation
+uses the child RN to compare desired children with prior state. A caller that
+needs a child's complete DN can pass the already resolved parent DN to the
+child's `BuildDN` method.
 
 If `parent_dn` is exposed by a top-level schema, it is used as input to
 `BuildDN` and the resulting ID but is not an APIC payload attribute. If it is
@@ -414,7 +449,7 @@ On create, `priorState` is nil unless the existing create behavior has first
 read an APIC object to use as a reconciliation baseline. On update,
 `priorState` is the model decoded from `req.State.Get`.
 
-Set/list equality alone is insufficient for deletion matching. The generated
+Set equality alone is insufficient for deletion matching. The generated
 code compares children by their APIC identity, not by slice position. A child
 whose identity remains the same but whose properties changed is part of the
 desired payload, not a remove-and-add operation.
@@ -458,15 +493,16 @@ reflection-based dispatch is needed.
 Child cardinality comes from normalized class metadata:
 
 - singleton child -> `types.Object`;
-- repeated unordered child -> `types.Set`;
-- repeated ordered child -> `types.List`.
+- repeated child -> `types.Set`.
 
 During planning, missing or unresolved child values retain their Terraform
 null or unknown state. During response decoding, a missing singleton child is
 a known object whose fields are all null, and a missing repeated child is a
 known empty set. APIC responses never produce unknown values.
 
-For nested DN construction, the parent passes its resolved DN to the child:
+Nested payload construction does not need to calculate child DNs. When a
+caller does need a nested child's DN, it passes the resolved parent DN to the
+child:
 
 ```go
 childDN := child.BuildDN(parentDN)
@@ -584,10 +620,11 @@ DoRestRequest
     -> resp.State.Set
 ```
 
-Terraform-only behavior such as legacy aliases, state upgrades,
-plan modifiers, and computed/default state values stays in the resource
-adapter, data source adapter, or schema definition. It must not require a
-second APIC behavior model or a runtime model interface.
+Terraform-only behavior such as legacy-alias mapping, state upgrades, plan
+modifiers, and computed/default state values stays in the resource adapter,
+data source adapter, or schema definition. The wrappers store any values needed
+at that boundary, but those values do not become APIC class behavior. This must
+not require a second APIC behavior model or a runtime model interface.
 
 ## 10. Standardization rule
 
@@ -597,7 +634,6 @@ encoded as normalized metadata:
 - root versus parented;
 - named versus non-named RN;
 - singleton versus repeated child;
-- ordered versus unordered repeated child;
 - relation target attributes;
 - custom property conversion;
 - multiple parent types.
