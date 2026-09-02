@@ -22,6 +22,10 @@ func NewRtctrlProfileDataSource() datasource.DataSource {
 	return &RtctrlProfileDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_route_control_profile", NewRtctrlProfileDataSource)
+}
+
 // RtctrlProfileDataSource defines the data source implementation.
 type RtctrlProfileDataSource struct {
 	client *client.Client

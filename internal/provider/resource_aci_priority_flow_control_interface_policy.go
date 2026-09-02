@@ -36,6 +36,10 @@ func NewQosPfcIfPolResource() resource.Resource {
 	return &QosPfcIfPolResource{}
 }
 
+func init() {
+	registerResource("aci_priority_flow_control_interface_policy", NewQosPfcIfPolResource)
+}
+
 // QosPfcIfPolResource defines the resource implementation.
 type QosPfcIfPolResource struct {
 	client *client.Client

@@ -34,6 +34,10 @@ func NewVmmUplinkPContResource() resource.Resource {
 	return &VmmUplinkPContResource{}
 }
 
+func init() {
+	registerResource("aci_vmm_uplink_container", NewVmmUplinkPContResource)
+}
+
 // VmmUplinkPContResource defines the resource implementation.
 type VmmUplinkPContResource struct {
 	client *client.Client

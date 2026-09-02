@@ -39,6 +39,10 @@ func NewFvBDResource() resource.Resource {
 	return &FvBDResource{}
 }
 
+func init() {
+	registerResource("aci_bridge_domain", NewFvBDResource)
+}
+
 // FvBDResource defines the resource implementation.
 type FvBDResource struct {
 	client *client.Client

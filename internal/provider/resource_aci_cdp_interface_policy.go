@@ -36,6 +36,10 @@ func NewCdpIfPolResource() resource.Resource {
 	return &CdpIfPolResource{}
 }
 
+func init() {
+	registerResource("aci_cdp_interface_policy", NewCdpIfPolResource)
+}
+
 // CdpIfPolResource defines the resource implementation.
 type CdpIfPolResource struct {
 	client *client.Client

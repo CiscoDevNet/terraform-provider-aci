@@ -39,6 +39,10 @@ func NewStpIfPolResource() resource.Resource {
 	return &StpIfPolResource{}
 }
 
+func init() {
+	registerResource("aci_spanning_tree_interface_policy", NewStpIfPolResource)
+}
+
 // StpIfPolResource defines the resource implementation.
 type StpIfPolResource struct {
 	client *client.Client

@@ -24,6 +24,10 @@ func NewPkiTPDataSource() datasource.DataSource {
 	return &PkiTPDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_certificate_authority", NewPkiTPDataSource)
+}
+
 // PkiTPDataSource defines the data source implementation.
 type PkiTPDataSource struct {
 	client *client.Client

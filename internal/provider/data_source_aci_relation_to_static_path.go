@@ -22,6 +22,10 @@ func NewFvRsPathAttDataSource() datasource.DataSource {
 	return &FvRsPathAttDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_relation_to_static_path", NewFvRsPathAttDataSource)
+}
+
 // FvRsPathAttDataSource defines the data source implementation.
 type FvRsPathAttDataSource struct {
 	client *client.Client

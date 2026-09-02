@@ -22,6 +22,10 @@ func NewInfraRsDomPDataSource() datasource.DataSource {
 	return &InfraRsDomPDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_relation_from_attachable_access_entity_profile_to_domain", NewInfraRsDomPDataSource)
+}
+
 // InfraRsDomPDataSource defines the data source implementation.
 type InfraRsDomPDataSource struct {
 	client *client.Client

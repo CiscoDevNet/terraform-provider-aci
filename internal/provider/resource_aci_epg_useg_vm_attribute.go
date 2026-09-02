@@ -36,6 +36,10 @@ func NewFvVmAttrResource() resource.Resource {
 	return &FvVmAttrResource{}
 }
 
+func init() {
+	registerResource("aci_epg_useg_vm_attribute", NewFvVmAttrResource)
+}
+
 // FvVmAttrResource defines the resource implementation.
 type FvVmAttrResource struct {
 	client *client.Client

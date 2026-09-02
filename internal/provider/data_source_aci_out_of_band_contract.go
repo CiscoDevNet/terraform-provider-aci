@@ -23,6 +23,10 @@ func NewVzOOBBrCPDataSource() datasource.DataSource {
 	return &VzOOBBrCPDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_out_of_band_contract", NewVzOOBBrCPDataSource)
+}
+
 // VzOOBBrCPDataSource defines the data source implementation.
 type VzOOBBrCPDataSource struct {
 	client *client.Client

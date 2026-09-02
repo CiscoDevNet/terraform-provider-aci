@@ -37,6 +37,10 @@ func NewInfraPortBlkResource() resource.Resource {
 	return &InfraPortBlkResource{}
 }
 
+func init() {
+	registerResource("aci_access_port_block", NewInfraPortBlkResource)
+}
+
 // InfraPortBlkResource defines the resource implementation.
 type InfraPortBlkResource struct {
 	client *client.Client

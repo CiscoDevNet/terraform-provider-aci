@@ -34,6 +34,10 @@ func NewFvnsUcastAddrBlkResource() resource.Resource {
 	return &FvnsUcastAddrBlkResource{}
 }
 
+func init() {
+	registerResource("aci_ip_address_block", NewFvnsUcastAddrBlkResource)
+}
+
 // FvnsUcastAddrBlkResource defines the resource implementation.
 type FvnsUcastAddrBlkResource struct {
 	client *client.Client

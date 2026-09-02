@@ -38,6 +38,10 @@ func NewVmmDomPResource() resource.Resource {
 	return &VmmDomPResource{}
 }
 
+func init() {
+	registerResource("aci_vmm_domain", NewVmmDomPResource)
+}
+
 // VmmDomPResource defines the resource implementation.
 type VmmDomPResource struct {
 	client *client.Client

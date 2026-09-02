@@ -22,6 +22,10 @@ func NewInfraAccPortPDataSource() datasource.DataSource {
 	return &InfraAccPortPDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_leaf_interface_profile", NewInfraAccPortPDataSource)
+}
+
 // InfraAccPortPDataSource defines the data source implementation.
 type InfraAccPortPDataSource struct {
 	client *client.Client

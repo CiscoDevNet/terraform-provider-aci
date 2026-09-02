@@ -24,6 +24,10 @@ func NewFvRsBDToNetflowMonitorPolDataSource() datasource.DataSource {
 	return &FvRsBDToNetflowMonitorPolDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_relation_from_bridge_domain_to_netflow_monitor_policy", NewFvRsBDToNetflowMonitorPolDataSource)
+}
+
 // FvRsBDToNetflowMonitorPolDataSource defines the data source implementation.
 type FvRsBDToNetflowMonitorPolDataSource struct {
 	client *client.Client

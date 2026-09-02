@@ -23,6 +23,10 @@ func NewInfraAttEntityPDataSource() datasource.DataSource {
 	return &InfraAttEntityPDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_attachable_access_entity_profile", NewInfraAttEntityPDataSource)
+}
+
 // InfraAttEntityPDataSource defines the data source implementation.
 type InfraAttEntityPDataSource struct {
 	client *client.Client

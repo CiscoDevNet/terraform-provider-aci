@@ -36,6 +36,10 @@ func NewQosNodropDscpMatchIfPolResource() resource.Resource {
 	return &QosNodropDscpMatchIfPolResource{}
 }
 
+func init() {
+	registerResource("aci_no_drop_dscp_match_interface_policy", NewQosNodropDscpMatchIfPolResource)
+}
+
 // QosNodropDscpMatchIfPolResource defines the resource implementation.
 type QosNodropDscpMatchIfPolResource struct {
 	client *client.Client

@@ -38,6 +38,10 @@ func NewVzOOBBrCPResource() resource.Resource {
 	return &VzOOBBrCPResource{}
 }
 
+func init() {
+	registerResource("aci_out_of_band_contract", NewVzOOBBrCPResource)
+}
+
 // VzOOBBrCPResource defines the resource implementation.
 type VzOOBBrCPResource struct {
 	client *client.Client

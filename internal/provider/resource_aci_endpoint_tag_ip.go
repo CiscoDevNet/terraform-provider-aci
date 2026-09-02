@@ -35,6 +35,10 @@ func NewFvEpIpTagResource() resource.Resource {
 	return &FvEpIpTagResource{}
 }
 
+func init() {
+	registerResource("aci_endpoint_tag_ip", NewFvEpIpTagResource)
+}
+
 // FvEpIpTagResource defines the resource implementation.
 type FvEpIpTagResource struct {
 	client *client.Client

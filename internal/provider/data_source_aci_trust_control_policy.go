@@ -22,6 +22,10 @@ func NewFhsTrustCtrlPolDataSource() datasource.DataSource {
 	return &FhsTrustCtrlPolDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_trust_control_policy", NewFhsTrustCtrlPolDataSource)
+}
+
 // FhsTrustCtrlPolDataSource defines the data source implementation.
 type FhsTrustCtrlPolDataSource struct {
 	client *client.Client

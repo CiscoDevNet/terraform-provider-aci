@@ -38,6 +38,10 @@ func NewQosDppPolResource() resource.Resource {
 	return &QosDppPolResource{}
 }
 
+func init() {
+	registerResource("aci_data_plane_policing_policy", NewQosDppPolResource)
+}
+
 // QosDppPolResource defines the resource implementation.
 type QosDppPolResource struct {
 	client *client.Client

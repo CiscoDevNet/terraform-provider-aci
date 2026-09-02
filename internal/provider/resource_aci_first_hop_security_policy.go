@@ -37,6 +37,10 @@ func NewFhsBDPolResource() resource.Resource {
 	return &FhsBDPolResource{}
 }
 
+func init() {
+	registerResource("aci_first_hop_security_policy", NewFhsBDPolResource)
+}
+
 // FhsBDPolResource defines the resource implementation.
 type FhsBDPolResource struct {
 	client *client.Client

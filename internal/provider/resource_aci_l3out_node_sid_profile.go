@@ -35,6 +35,10 @@ func NewMplsNodeSidPResource() resource.Resource {
 	return &MplsNodeSidPResource{}
 }
 
+func init() {
+	registerResource("aci_l3out_node_sid_profile", NewMplsNodeSidPResource)
+}
+
 // MplsNodeSidPResource defines the resource implementation.
 type MplsNodeSidPResource struct {
 	client *client.Client

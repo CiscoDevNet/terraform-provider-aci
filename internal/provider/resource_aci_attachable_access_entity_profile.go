@@ -36,6 +36,10 @@ func NewInfraAttEntityPResource() resource.Resource {
 	return &InfraAttEntityPResource{}
 }
 
+func init() {
+	registerResource("aci_attachable_access_entity_profile", NewInfraAttEntityPResource)
+}
+
 // InfraAttEntityPResource defines the resource implementation.
 type InfraAttEntityPResource struct {
 	client *client.Client

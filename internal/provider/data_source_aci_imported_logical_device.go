@@ -22,6 +22,10 @@ func NewVnsLDevIfDataSource() datasource.DataSource {
 	return &VnsLDevIfDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_imported_logical_device", NewVnsLDevIfDataSource)
+}
+
 // VnsLDevIfDataSource defines the data source implementation.
 type VnsLDevIfDataSource struct {
 	client *client.Client

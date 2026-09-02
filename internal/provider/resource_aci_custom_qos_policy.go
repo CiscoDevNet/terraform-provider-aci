@@ -38,6 +38,10 @@ func NewQosCustomPolResource() resource.Resource {
 	return &QosCustomPolResource{}
 }
 
+func init() {
+	registerResource("aci_custom_qos_policy", NewQosCustomPolResource)
+}
+
 // QosCustomPolResource defines the resource implementation.
 type QosCustomPolResource struct {
 	client *client.Client

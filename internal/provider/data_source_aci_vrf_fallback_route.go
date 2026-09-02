@@ -23,6 +23,10 @@ func NewFvFBRouteDataSource() datasource.DataSource {
 	return &FvFBRouteDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_vrf_fallback_route", NewFvFBRouteDataSource)
+}
+
 // FvFBRouteDataSource defines the data source implementation.
 type FvFBRouteDataSource struct {
 	client *client.Client

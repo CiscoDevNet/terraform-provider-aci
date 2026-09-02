@@ -22,6 +22,10 @@ func NewFvRsIntraEpgDataSource() datasource.DataSource {
 	return &FvRsIntraEpgDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_relation_to_intra_epg_contract", NewFvRsIntraEpgDataSource)
+}
+
 // FvRsIntraEpgDataSource defines the data source implementation.
 type FvRsIntraEpgDataSource struct {
 	client *client.Client

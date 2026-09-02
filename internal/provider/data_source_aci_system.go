@@ -27,6 +27,10 @@ func NewTopSystemDataSource() datasource.DataSource {
 	return &TopSystemDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_system", NewTopSystemDataSource)
+}
+
 // TopSystemDataSource defines the data source implementation.
 type TopSystemDataSource struct {
 	client *client.Client

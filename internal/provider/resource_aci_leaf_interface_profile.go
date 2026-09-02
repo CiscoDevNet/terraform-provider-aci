@@ -34,6 +34,10 @@ func NewInfraAccPortPResource() resource.Resource {
 	return &InfraAccPortPResource{}
 }
 
+func init() {
+	registerResource("aci_leaf_interface_profile", NewInfraAccPortPResource)
+}
+
 // InfraAccPortPResource defines the resource implementation.
 type InfraAccPortPResource struct {
 	client *client.Client

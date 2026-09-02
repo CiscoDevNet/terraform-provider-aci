@@ -22,6 +22,10 @@ func NewInfraFexPDataSource() datasource.DataSource {
 	return &InfraFexPDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_fex_profile", NewInfraFexPDataSource)
+}
+
 // InfraFexPDataSource defines the data source implementation.
 type InfraFexPDataSource struct {
 	client *client.Client

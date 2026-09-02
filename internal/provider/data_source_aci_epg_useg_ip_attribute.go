@@ -23,6 +23,10 @@ func NewFvIpAttrDataSource() datasource.DataSource {
 	return &FvIpAttrDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_epg_useg_ip_attribute", NewFvIpAttrDataSource)
+}
+
 // FvIpAttrDataSource defines the data source implementation.
 type FvIpAttrDataSource struct {
 	client *client.Client

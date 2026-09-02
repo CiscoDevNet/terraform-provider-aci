@@ -34,6 +34,10 @@ func NewFvRsBDToOutResource() resource.Resource {
 	return &FvRsBDToOutResource{}
 }
 
+func init() {
+	registerResource("aci_relation_from_bridge_domain_to_l3_outside", NewFvRsBDToOutResource)
+}
+
 // FvRsBDToOutResource defines the resource implementation.
 type FvRsBDToOutResource struct {
 	client *client.Client

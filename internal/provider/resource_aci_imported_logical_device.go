@@ -34,6 +34,10 @@ func NewVnsLDevIfResource() resource.Resource {
 	return &VnsLDevIfResource{}
 }
 
+func init() {
+	registerResource("aci_imported_logical_device", NewVnsLDevIfResource)
+}
+
 // VnsLDevIfResource defines the resource implementation.
 type VnsLDevIfResource struct {
 	client *client.Client

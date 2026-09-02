@@ -30,6 +30,10 @@ func NewTagAnnotationResource() resource.Resource {
 	return &TagAnnotationResource{}
 }
 
+func init() {
+	registerResource("aci_annotation", NewTagAnnotationResource)
+}
+
 // TagAnnotationResource defines the resource implementation.
 type TagAnnotationResource struct {
 	client *client.Client

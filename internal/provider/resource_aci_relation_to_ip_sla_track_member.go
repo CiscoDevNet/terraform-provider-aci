@@ -34,6 +34,10 @@ func NewFvRsOtmListMemberResource() resource.Resource {
 	return &FvRsOtmListMemberResource{}
 }
 
+func init() {
+	registerResource("aci_relation_to_ip_sla_track_member", NewFvRsOtmListMemberResource)
+}
+
 // FvRsOtmListMemberResource defines the resource implementation.
 type FvRsOtmListMemberResource struct {
 	client *client.Client

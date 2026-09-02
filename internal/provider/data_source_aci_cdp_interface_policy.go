@@ -22,6 +22,10 @@ func NewCdpIfPolDataSource() datasource.DataSource {
 	return &CdpIfPolDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_cdp_interface_policy", NewCdpIfPolDataSource)
+}
+
 // CdpIfPolDataSource defines the data source implementation.
 type CdpIfPolDataSource struct {
 	client *client.Client

@@ -22,6 +22,10 @@ func NewFvRsAepAttDataSource() datasource.DataSource {
 	return &FvRsAepAttDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_relation_from_application_epg_to_attachable_access_entity_profile", NewFvRsAepAttDataSource)
+}
+
 // FvRsAepAttDataSource defines the data source implementation.
 type FvRsAepAttDataSource struct {
 	client *client.Client

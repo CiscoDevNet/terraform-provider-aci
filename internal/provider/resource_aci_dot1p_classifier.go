@@ -38,6 +38,10 @@ func NewQosDot1PClassResource() resource.Resource {
 	return &QosDot1PClassResource{}
 }
 
+func init() {
+	registerResource("aci_dot1p_classifier", NewQosDot1PClassResource)
+}
+
 // QosDot1PClassResource defines the resource implementation.
 type QosDot1PClassResource struct {
 	client *client.Client

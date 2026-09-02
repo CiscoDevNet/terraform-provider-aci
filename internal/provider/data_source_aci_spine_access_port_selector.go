@@ -24,6 +24,10 @@ func NewInfraSHPortSDataSource() datasource.DataSource {
 	return &InfraSHPortSDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_spine_access_port_selector", NewInfraSHPortSDataSource)
+}
+
 // InfraSHPortSDataSource defines the data source implementation.
 type InfraSHPortSDataSource struct {
 	client *client.Client
