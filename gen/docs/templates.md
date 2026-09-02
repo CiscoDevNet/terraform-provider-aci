@@ -1,8 +1,8 @@
 # Generated output ownership
 
 The generator is intended to produce the complete generated output set in a
-single run. It must remove the previous generated output set before writing
-the current set, while preserving handwritten and explicitly excluded files.
+single run. Before writing the current set, it removes the files owned by the
+previous manifest. Files outside that manifest are not inspected or removed.
 
 ## Current inventory
 
@@ -11,45 +11,49 @@ associated with, `gen/generator.go`:
 
 | Output area | Current inventory | Cleanup status |
 | --- | ---: | --- |
-| `internal/provider/` | 505 files | Managed output with explicit preserved paths |
+| `internal/provider/` | 505 files | Mixed static and legacy output; active ownership is limited to manifest entries |
 | `internal/provider/models/` | 176 files | Managed by the active generator manifest |
-| `internal/custom_types/` | 36 files | Managed output with explicit preserved paths |
-| `docs/` | 255 files | Managed output with explicit preserved paths |
-| `gen/testvars/` | 125 files | Managed output |
+| `internal/custom_types/` | 36 files | Legacy output outside the active generator manifest |
+| `docs/` | 255 files | Static and legacy output outside the active generator manifest |
+| `gen/testvars/` | 125 files | Legacy output outside the active generator manifest |
 | `legacy-docs/` | 4 generated-marked files | Not managed by the active generator |
 
-The generated marker is not, by itself, an ownership declaration. Some legacy
-files with the marker are intentionally preserved, while some handwritten
-files have no marker. Ownership is determined by the manifest and the
-preserved-path policy.
+The generated marker is not an ownership declaration. Some legacy files still
+have the marker, while some handwritten files do not. Active ownership is
+determined only by the manifest.
 
-## Preserved legacy paths
+## Files outside the active manifest
 
-The following paths are outside the active generator manifest and must not be
-removed during cleanup:
+The following known static or legacy paths are outside the active generator
+manifest. Normal generator cleanup does not inspect or remove them:
 
 ```text
+internal/provider/provider.go
 internal/provider/provider_test.go
+internal/provider/provider_registry.go
+internal/provider/provider_registry_test.go
 internal/provider/utils.go
 internal/provider/test_constants.go
 internal/provider/resource_aci_rest_managed.go
 internal/provider/resource_aci_rest_managed_test.go
 internal/provider/data_source_aci_rest_managed.go
 internal/provider/data_source_aci_rest_managed_test.go
-internal/provider/annotation_unsupported.go
 internal/provider/data_source_aci_system.go
 internal/provider/data_source_aci_system_test.go
 internal/provider/function_compare_versions.go
 internal/provider/function_compare_versions_test.go
 internal/custom_types/ipAddress.go
 internal/custom_types/arpLearning.go
+docs/index.md
 docs/data-sources/system.md
 examples/provider/provider.tf
 examples/data-sources/aci_system/*
 ```
 
-The list includes files that contain the legacy generated marker. They remain
-preserved until their ownership is explicitly migrated to an active template.
+`provider.go`, the provider registry files, `docs/index.md`, and
+`examples/provider/provider.tf` are intentionally static. The remaining
+entries are currently unmanaged and can either remain static or be migrated
+to an active template later.
 
 ## Cleanup contract
 
@@ -83,14 +87,13 @@ and written in deterministic sorted order. The manifest is generator
 bookkeeping, not provider output, and is never included in its own deletion
 list.
 
-The manifest must not contain preserved legacy paths. A one-time migration or
-recovery path may use the legacy preserve list and generated markers to
-bootstrap or repair the manifest, but normal generation uses the manifest
-directly.
+Only outputs represented by active render jobs belong in the manifest. There
+is no separate preserved-path list and normal generation does not scan output
+directories for generated markers.
 
-`gen/managed_files.json` and the preserved-path policy are temporary migration
-controls. They may be removed or simplified after all legacy artifacts have
-been migrated and generated output is isolated into dedicated directories.
+`gen/managed_files.json` is a temporary migration control. It may be removed
+or simplified after all legacy artifacts have been migrated and generated
+output is isolated into dedicated directories.
 
 Render jobs are validated before managed files are deleted. Validation checks
 that every referenced template is loaded and output paths are unique.
@@ -124,7 +127,18 @@ rendered by its template.
 
 The former templates are stored in `gen/templates/legacy_templates/` for
 comparison and migration reference. The active templates will be stored in
-`gen/templates/`.
+`gen/templates/`. Legacy templates remain unchanged even when their former
+outputs become static.
+
+`annotation_unsupported.go.tmpl` is an active global template. Its datastore
+input is loaded from `gen/meta/annotation_unsupported/classes.json`, allowing
+ordinary generation to remain deterministic and offline. Setting
+`GEN_ANNOTATION_UNSUPPORTED=1` refreshes that snapshot from the complete ACI
+metadata before all active outputs are rendered.
+
+Active resource and data-source templates must register their generated
+factory with the provider registry from an `init` function in the generated
+artifact.
 
 Each active template declares its output location centrally, so the generator
 can account for every expected file. Each active template must also emit a
@@ -142,8 +156,8 @@ template. Template-specific front matter must be tested to ensure the marker
 does not invalidate the document format.
 
 Every template executes with an internally constructed standard context
-containing references to the current resolved class and the canonical
-DataStore:
+containing the canonical DataStore and, for class-scoped artifacts, the
+current resolved class:
 
 ```go
 type TemplateContext struct {
@@ -153,5 +167,5 @@ type TemplateContext struct {
 ```
 
 This context does not duplicate or reshape datastore fields. Class-specific
-information is read from `Class`; genuinely global or cross-class information
-remains available from `DataStore`.
+information is read from `Class`; global templates leave `Class` nil and read
+their global or cross-class information from `DataStore`.
