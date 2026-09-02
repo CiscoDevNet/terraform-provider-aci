@@ -3,8 +3,13 @@
 package models
 
 import (
+	"context"
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 )
 
 type CommHttpsModel struct {
@@ -124,4 +129,266 @@ func (m *CommHttpsModel) BuildRN() string {
 
 func (m *CommHttpsModel) BuildDN(parentDN string) string {
 	return parentDN + "/" + m.BuildRN()
+}
+
+func commHttpsObjectIsEmpty(value types.Object) bool {
+	for _, attribute := range value.Attributes() {
+		if !attribute.IsNull() {
+			return false
+		}
+	}
+	return true
+}
+
+func (m *CommHttpsModel) BuildPayloadObject(
+	ctx context.Context,
+	priorState *CommHttpsModel,
+	nested bool,
+	defaultAnnotation string,
+) (map[string]any, diag.Diagnostics) {
+	var diagnostics diag.Diagnostics
+	attributes := map[string]any{}
+	children := make([]map[string]any, 0)
+	if !m.AccessControlAllowCredential.IsNull() && !m.AccessControlAllowCredential.IsUnknown() {
+		attributes["accessControlAllowCredential"] = m.AccessControlAllowCredential.ValueString()
+	}
+	if !m.AccessControlAllowOrigins.IsNull() && !m.AccessControlAllowOrigins.IsUnknown() {
+		attributes["accessControlAllowOrigins"] = m.AccessControlAllowOrigins.ValueString()
+	}
+	if !m.AdminSt.IsNull() && !m.AdminSt.IsUnknown() {
+		attributes["adminSt"] = m.AdminSt.ValueString()
+	}
+	if !m.Annotation.IsNull() && !m.Annotation.IsUnknown() {
+		attributes["annotation"] = m.Annotation.ValueString()
+	} else if nested {
+		attributes["annotation"] = defaultAnnotation
+	}
+	if !m.CliOnlyMode.IsNull() && !m.CliOnlyMode.IsUnknown() {
+		attributes["cliOnlyMode"] = m.CliOnlyMode.ValueString()
+	}
+	if !m.ClientCertAuthState.IsNull() && !m.ClientCertAuthState.IsUnknown() {
+		attributes["clientCertAuthState"] = m.ClientCertAuthState.ValueString()
+	}
+	if !m.Descr.IsNull() && !m.Descr.IsUnknown() {
+		attributes["descr"] = m.Descr.ValueString()
+	}
+	if !m.DhParam.IsNull() && !m.DhParam.IsUnknown() {
+		attributes["dhParam"] = m.DhParam.ValueString()
+	}
+	if !m.GlobalThrottleRate.IsNull() && !m.GlobalThrottleRate.IsUnknown() {
+		attributes["globalThrottleRate"] = m.GlobalThrottleRate.ValueString()
+	}
+	if !m.GlobalThrottleSt.IsNull() && !m.GlobalThrottleSt.IsUnknown() {
+		attributes["globalThrottleSt"] = m.GlobalThrottleSt.ValueString()
+	}
+	if !m.GlobalThrottleUnit.IsNull() && !m.GlobalThrottleUnit.IsUnknown() {
+		attributes["globalThrottleUnit"] = m.GlobalThrottleUnit.ValueString()
+	}
+	if !m.MaxRequestStatusCount.IsNull() && !m.MaxRequestStatusCount.IsUnknown() {
+		attributes["maxRequestStatusCount"] = m.MaxRequestStatusCount.ValueString()
+	}
+	if !m.Name.IsNull() && !m.Name.IsUnknown() {
+		attributes["name"] = m.Name.ValueString()
+	}
+	if !m.NameAlias.IsNull() && !m.NameAlias.IsUnknown() {
+		attributes["nameAlias"] = m.NameAlias.ValueString()
+	}
+	if !m.NodeExporter.IsNull() && !m.NodeExporter.IsUnknown() {
+		attributes["nodeExporter"] = m.NodeExporter.ValueString()
+	}
+	if !m.Port.IsNull() && !m.Port.IsUnknown() {
+		attributes["port"] = m.Port.ValueString()
+	}
+	if !m.Referer.IsNull() && !m.Referer.IsUnknown() {
+		attributes["referer"] = m.Referer.ValueString()
+	}
+	if !m.ServerHeader.IsNull() && !m.ServerHeader.IsUnknown() {
+		attributes["serverHeader"] = m.ServerHeader.ValueString()
+	}
+	if !m.SslProtocols.IsNull() && !m.SslProtocols.IsUnknown() {
+		var values []string
+		diagnostics.Append(m.SslProtocols.ElementsAs(ctx, &values, false)...)
+		if diagnostics.HasError() {
+			return nil, diagnostics
+		}
+		attributes["sslProtocols"] = strings.Join(values, ",")
+	}
+	if !m.ThrottleRate.IsNull() && !m.ThrottleRate.IsUnknown() {
+		attributes["throttleRate"] = m.ThrottleRate.ValueString()
+	}
+	if !m.ThrottleSt.IsNull() && !m.ThrottleSt.IsUnknown() {
+		attributes["throttleSt"] = m.ThrottleSt.ValueString()
+	}
+	if !m.VisoreAccess.IsNull() && !m.VisoreAccess.IsUnknown() {
+		attributes["visoreAccess"] = m.VisoreAccess.ValueString()
+	}
+	if !m.CommRsClientCertCA.IsNull() && !m.CommRsClientCertCA.IsUnknown() {
+		var priorChild *CommRsClientCertCAModel
+		if priorState != nil &&
+			!priorState.CommRsClientCertCA.IsNull() &&
+			!priorState.CommRsClientCertCA.IsUnknown() &&
+			!commHttpsObjectIsEmpty(priorState.CommRsClientCertCA) {
+			priorChildValue := CommRsClientCertCAModel{}
+			diagnostics.Append(priorState.CommRsClientCertCA.As(ctx, &priorChildValue, basetypes.ObjectAsOptions{})...)
+			if diagnostics.HasError() {
+				return nil, diagnostics
+			}
+			priorChild = &priorChildValue
+		}
+
+		if !commHttpsObjectIsEmpty(m.CommRsClientCertCA) {
+			child := CommRsClientCertCAModel{}
+			diagnostics.Append(m.CommRsClientCertCA.As(ctx, &child, basetypes.ObjectAsOptions{})...)
+			if diagnostics.HasError() {
+				return nil, diagnostics
+			}
+
+			childObject, childDiagnostics := child.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
+			diagnostics.Append(childDiagnostics...)
+			if diagnostics.HasError() {
+				return nil, diagnostics
+			}
+			children = append(children, map[string]any{"commRsClientCertCA": childObject})
+		} else if priorChild != nil {
+			children = append(children, map[string]any{"commRsClientCertCA": priorChild.BuildNestedDeletePayloadObject()})
+		}
+	}
+	if !m.CommRsKeyRing.IsNull() && !m.CommRsKeyRing.IsUnknown() {
+		var priorChild *CommRsKeyRingModel
+		if priorState != nil &&
+			!priorState.CommRsKeyRing.IsNull() &&
+			!priorState.CommRsKeyRing.IsUnknown() &&
+			!commHttpsObjectIsEmpty(priorState.CommRsKeyRing) {
+			priorChildValue := CommRsKeyRingModel{}
+			diagnostics.Append(priorState.CommRsKeyRing.As(ctx, &priorChildValue, basetypes.ObjectAsOptions{})...)
+			if diagnostics.HasError() {
+				return nil, diagnostics
+			}
+			priorChild = &priorChildValue
+		}
+
+		if !commHttpsObjectIsEmpty(m.CommRsKeyRing) {
+			child := CommRsKeyRingModel{}
+			diagnostics.Append(m.CommRsKeyRing.As(ctx, &child, basetypes.ObjectAsOptions{})...)
+			if diagnostics.HasError() {
+				return nil, diagnostics
+			}
+
+			childObject, childDiagnostics := child.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
+			diagnostics.Append(childDiagnostics...)
+			if diagnostics.HasError() {
+				return nil, diagnostics
+			}
+			children = append(children, map[string]any{"commRsKeyRing": childObject})
+		} else if priorChild != nil {
+			diagnostics.AddError(
+				"CommRsKeyRing object defined by key_ring cannot be deleted",
+				"deletion of child is only possible upon deletion of the parent",
+			)
+		}
+	}
+	if !m.TagAnnotation.IsNull() && !m.TagAnnotation.IsUnknown() {
+		var desiredChildren []TagAnnotationModel
+		diagnostics.Append(m.TagAnnotation.ElementsAs(ctx, &desiredChildren, false)...)
+		if diagnostics.HasError() {
+			return nil, diagnostics
+		}
+
+		var priorChildren []TagAnnotationModel
+		if priorState != nil &&
+			!priorState.TagAnnotation.IsNull() &&
+			!priorState.TagAnnotation.IsUnknown() {
+			diagnostics.Append(priorState.TagAnnotation.ElementsAs(ctx, &priorChildren, false)...)
+			if diagnostics.HasError() {
+				return nil, diagnostics
+			}
+		}
+
+		for desiredIndex := range desiredChildren {
+			desiredChild := &desiredChildren[desiredIndex]
+			var priorChild *TagAnnotationModel
+			for priorIndex := range priorChildren {
+				if priorChildren[priorIndex].BuildRN() == desiredChild.BuildRN() {
+					priorChild = &priorChildren[priorIndex]
+					break
+				}
+			}
+
+			childObject, childDiagnostics := desiredChild.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
+			diagnostics.Append(childDiagnostics...)
+			if diagnostics.HasError() {
+				return nil, diagnostics
+			}
+			children = append(children, map[string]any{"tagAnnotation": childObject})
+		}
+
+		for priorIndex := range priorChildren {
+			priorChild := &priorChildren[priorIndex]
+			found := false
+			for desiredIndex := range desiredChildren {
+				if desiredChildren[desiredIndex].BuildRN() == priorChild.BuildRN() {
+					found = true
+					break
+				}
+			}
+			if found {
+				continue
+			}
+			children = append(children, map[string]any{"tagAnnotation": priorChild.BuildNestedDeletePayloadObject()})
+		}
+	}
+	if !m.TagTag.IsNull() && !m.TagTag.IsUnknown() {
+		var desiredChildren []TagTagModel
+		diagnostics.Append(m.TagTag.ElementsAs(ctx, &desiredChildren, false)...)
+		if diagnostics.HasError() {
+			return nil, diagnostics
+		}
+
+		var priorChildren []TagTagModel
+		if priorState != nil &&
+			!priorState.TagTag.IsNull() &&
+			!priorState.TagTag.IsUnknown() {
+			diagnostics.Append(priorState.TagTag.ElementsAs(ctx, &priorChildren, false)...)
+			if diagnostics.HasError() {
+				return nil, diagnostics
+			}
+		}
+
+		for desiredIndex := range desiredChildren {
+			desiredChild := &desiredChildren[desiredIndex]
+			var priorChild *TagTagModel
+			for priorIndex := range priorChildren {
+				if priorChildren[priorIndex].BuildRN() == desiredChild.BuildRN() {
+					priorChild = &priorChildren[priorIndex]
+					break
+				}
+			}
+
+			childObject, childDiagnostics := desiredChild.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
+			diagnostics.Append(childDiagnostics...)
+			if diagnostics.HasError() {
+				return nil, diagnostics
+			}
+			children = append(children, map[string]any{"tagTag": childObject})
+		}
+
+		for priorIndex := range priorChildren {
+			priorChild := &priorChildren[priorIndex]
+			found := false
+			for desiredIndex := range desiredChildren {
+				if desiredChildren[desiredIndex].BuildRN() == priorChild.BuildRN() {
+					found = true
+					break
+				}
+			}
+			if found {
+				continue
+			}
+			children = append(children, map[string]any{"tagTag": priorChild.BuildNestedDeletePayloadObject()})
+		}
+	}
+
+	payloadObject := map[string]any{"attributes": attributes}
+	payloadObject["children"] = children
+	return payloadObject, diagnostics
 }

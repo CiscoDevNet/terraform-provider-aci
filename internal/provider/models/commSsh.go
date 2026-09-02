@@ -3,7 +3,11 @@
 package models
 
 import (
+	"context"
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
@@ -81,4 +85,174 @@ func (m *CommSshModel) BuildRN() string {
 
 func (m *CommSshModel) BuildDN(parentDN string) string {
 	return parentDN + "/" + m.BuildRN()
+}
+
+func (m *CommSshModel) BuildPayloadObject(
+	ctx context.Context,
+	priorState *CommSshModel,
+	nested bool,
+	defaultAnnotation string,
+) (map[string]any, diag.Diagnostics) {
+	var diagnostics diag.Diagnostics
+	attributes := map[string]any{}
+	children := make([]map[string]any, 0)
+	if !m.AdminSt.IsNull() && !m.AdminSt.IsUnknown() {
+		attributes["adminSt"] = m.AdminSt.ValueString()
+	}
+	if !m.Annotation.IsNull() && !m.Annotation.IsUnknown() {
+		attributes["annotation"] = m.Annotation.ValueString()
+	} else if nested {
+		attributes["annotation"] = defaultAnnotation
+	}
+	if !m.Descr.IsNull() && !m.Descr.IsUnknown() {
+		attributes["descr"] = m.Descr.ValueString()
+	}
+	if !m.HostkeyAlgos.IsNull() && !m.HostkeyAlgos.IsUnknown() {
+		var values []string
+		diagnostics.Append(m.HostkeyAlgos.ElementsAs(ctx, &values, false)...)
+		if diagnostics.HasError() {
+			return nil, diagnostics
+		}
+		attributes["hostkeyAlgos"] = strings.Join(values, ",")
+	}
+	if !m.KexAlgos.IsNull() && !m.KexAlgos.IsUnknown() {
+		var values []string
+		diagnostics.Append(m.KexAlgos.ElementsAs(ctx, &values, false)...)
+		if diagnostics.HasError() {
+			return nil, diagnostics
+		}
+		attributes["kexAlgos"] = strings.Join(values, ",")
+	}
+	if !m.Name.IsNull() && !m.Name.IsUnknown() {
+		attributes["name"] = m.Name.ValueString()
+	}
+	if !m.NameAlias.IsNull() && !m.NameAlias.IsUnknown() {
+		attributes["nameAlias"] = m.NameAlias.ValueString()
+	}
+	if !m.PasswordAuth.IsNull() && !m.PasswordAuth.IsUnknown() {
+		attributes["passwordAuth"] = m.PasswordAuth.ValueString()
+	}
+	if !m.Port.IsNull() && !m.Port.IsUnknown() {
+		attributes["port"] = m.Port.ValueString()
+	}
+	if !m.SshCiphers.IsNull() && !m.SshCiphers.IsUnknown() {
+		var values []string
+		diagnostics.Append(m.SshCiphers.ElementsAs(ctx, &values, false)...)
+		if diagnostics.HasError() {
+			return nil, diagnostics
+		}
+		attributes["sshCiphers"] = strings.Join(values, ",")
+	}
+	if !m.SshMacs.IsNull() && !m.SshMacs.IsUnknown() {
+		var values []string
+		diagnostics.Append(m.SshMacs.ElementsAs(ctx, &values, false)...)
+		if diagnostics.HasError() {
+			return nil, diagnostics
+		}
+		attributes["sshMacs"] = strings.Join(values, ",")
+	}
+	if !m.TagAnnotation.IsNull() && !m.TagAnnotation.IsUnknown() {
+		var desiredChildren []TagAnnotationModel
+		diagnostics.Append(m.TagAnnotation.ElementsAs(ctx, &desiredChildren, false)...)
+		if diagnostics.HasError() {
+			return nil, diagnostics
+		}
+
+		var priorChildren []TagAnnotationModel
+		if priorState != nil &&
+			!priorState.TagAnnotation.IsNull() &&
+			!priorState.TagAnnotation.IsUnknown() {
+			diagnostics.Append(priorState.TagAnnotation.ElementsAs(ctx, &priorChildren, false)...)
+			if diagnostics.HasError() {
+				return nil, diagnostics
+			}
+		}
+
+		for desiredIndex := range desiredChildren {
+			desiredChild := &desiredChildren[desiredIndex]
+			var priorChild *TagAnnotationModel
+			for priorIndex := range priorChildren {
+				if priorChildren[priorIndex].BuildRN() == desiredChild.BuildRN() {
+					priorChild = &priorChildren[priorIndex]
+					break
+				}
+			}
+
+			childObject, childDiagnostics := desiredChild.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
+			diagnostics.Append(childDiagnostics...)
+			if diagnostics.HasError() {
+				return nil, diagnostics
+			}
+			children = append(children, map[string]any{"tagAnnotation": childObject})
+		}
+
+		for priorIndex := range priorChildren {
+			priorChild := &priorChildren[priorIndex]
+			found := false
+			for desiredIndex := range desiredChildren {
+				if desiredChildren[desiredIndex].BuildRN() == priorChild.BuildRN() {
+					found = true
+					break
+				}
+			}
+			if found {
+				continue
+			}
+			children = append(children, map[string]any{"tagAnnotation": priorChild.BuildNestedDeletePayloadObject()})
+		}
+	}
+	if !m.TagTag.IsNull() && !m.TagTag.IsUnknown() {
+		var desiredChildren []TagTagModel
+		diagnostics.Append(m.TagTag.ElementsAs(ctx, &desiredChildren, false)...)
+		if diagnostics.HasError() {
+			return nil, diagnostics
+		}
+
+		var priorChildren []TagTagModel
+		if priorState != nil &&
+			!priorState.TagTag.IsNull() &&
+			!priorState.TagTag.IsUnknown() {
+			diagnostics.Append(priorState.TagTag.ElementsAs(ctx, &priorChildren, false)...)
+			if diagnostics.HasError() {
+				return nil, diagnostics
+			}
+		}
+
+		for desiredIndex := range desiredChildren {
+			desiredChild := &desiredChildren[desiredIndex]
+			var priorChild *TagTagModel
+			for priorIndex := range priorChildren {
+				if priorChildren[priorIndex].BuildRN() == desiredChild.BuildRN() {
+					priorChild = &priorChildren[priorIndex]
+					break
+				}
+			}
+
+			childObject, childDiagnostics := desiredChild.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
+			diagnostics.Append(childDiagnostics...)
+			if diagnostics.HasError() {
+				return nil, diagnostics
+			}
+			children = append(children, map[string]any{"tagTag": childObject})
+		}
+
+		for priorIndex := range priorChildren {
+			priorChild := &priorChildren[priorIndex]
+			found := false
+			for desiredIndex := range desiredChildren {
+				if desiredChildren[desiredIndex].BuildRN() == priorChild.BuildRN() {
+					found = true
+					break
+				}
+			}
+			if found {
+				continue
+			}
+			children = append(children, map[string]any{"tagTag": priorChild.BuildNestedDeletePayloadObject()})
+		}
+	}
+
+	payloadObject := map[string]any{"attributes": attributes}
+	payloadObject["children"] = children
+	return payloadObject, diagnostics
 }
