@@ -36,6 +36,10 @@ func NewFvRsCtxToOspfCtxPolResource() resource.Resource {
 	return &FvRsCtxToOspfCtxPolResource{}
 }
 
+func init() {
+	registerResource("aci_relation_from_vrf_to_address_family_ospf_timers", NewFvRsCtxToOspfCtxPolResource)
+}
+
 // FvRsCtxToOspfCtxPolResource defines the resource implementation.
 type FvRsCtxToOspfCtxPolResource struct {
 	client *client.Client

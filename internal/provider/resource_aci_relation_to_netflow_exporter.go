@@ -34,6 +34,10 @@ func NewNetflowRsMonitorToExporterResource() resource.Resource {
 	return &NetflowRsMonitorToExporterResource{}
 }
 
+func init() {
+	registerResource("aci_relation_to_netflow_exporter", NewNetflowRsMonitorToExporterResource)
+}
+
 // NetflowRsMonitorToExporterResource defines the resource implementation.
 type NetflowRsMonitorToExporterResource struct {
 	client *client.Client

@@ -37,6 +37,10 @@ func NewVzTSubjResource() resource.Resource {
 	return &VzTSubjResource{}
 }
 
+func init() {
+	registerResource("aci_taboo_contract_subject", NewVzTSubjResource)
+}
+
 // VzTSubjResource defines the resource implementation.
 type VzTSubjResource struct {
 	client *client.Client

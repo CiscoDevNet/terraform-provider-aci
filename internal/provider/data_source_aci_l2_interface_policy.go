@@ -22,6 +22,10 @@ func NewL2IfPolDataSource() datasource.DataSource {
 	return &L2IfPolDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_l2_interface_policy", NewL2IfPolDataSource)
+}
+
 // L2IfPolDataSource defines the data source implementation.
 type L2IfPolDataSource struct {
 	client *client.Client

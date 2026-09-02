@@ -22,6 +22,10 @@ func NewNetflowRsMonitorToExporterDataSource() datasource.DataSource {
 	return &NetflowRsMonitorToExporterDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_relation_to_netflow_exporter", NewNetflowRsMonitorToExporterDataSource)
+}
+
 // NetflowRsMonitorToExporterDataSource defines the data source implementation.
 type NetflowRsMonitorToExporterDataSource struct {
 	client *client.Client

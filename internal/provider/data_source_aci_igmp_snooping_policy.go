@@ -23,6 +23,10 @@ func NewIgmpSnoopPolDataSource() datasource.DataSource {
 	return &IgmpSnoopPolDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_igmp_snooping_policy", NewIgmpSnoopPolDataSource)
+}
+
 // IgmpSnoopPolDataSource defines the data source implementation.
 type IgmpSnoopPolDataSource struct {
 	client *client.Client

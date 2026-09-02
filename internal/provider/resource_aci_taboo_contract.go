@@ -36,6 +36,10 @@ func NewVzTabooResource() resource.Resource {
 	return &VzTabooResource{}
 }
 
+func init() {
+	registerResource("aci_taboo_contract", NewVzTabooResource)
+}
+
 // VzTabooResource defines the resource implementation.
 type VzTabooResource struct {
 	client *client.Client

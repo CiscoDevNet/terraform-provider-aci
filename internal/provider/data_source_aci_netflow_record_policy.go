@@ -24,6 +24,10 @@ func NewNetflowRecordPolDataSource() datasource.DataSource {
 	return &NetflowRecordPolDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_netflow_record_policy", NewNetflowRecordPolDataSource)
+}
+
 // NetflowRecordPolDataSource defines the data source implementation.
 type NetflowRecordPolDataSource struct {
 	client *client.Client

@@ -24,6 +24,10 @@ func NewFvESgDataSource() datasource.DataSource {
 	return &FvESgDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_endpoint_security_group", NewFvESgDataSource)
+}
+
 // FvESgDataSource defines the data source implementation.
 type FvESgDataSource struct {
 	client *client.Client

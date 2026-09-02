@@ -37,6 +37,10 @@ func NewFvTenantResource() resource.Resource {
 	return &FvTenantResource{}
 }
 
+func init() {
+	registerResource("aci_tenant", NewFvTenantResource)
+}
+
 // FvTenantResource defines the resource implementation.
 type FvTenantResource struct {
 	client *client.Client

@@ -23,6 +23,10 @@ func NewCoppProtoClassPDataSource() datasource.DataSource {
 	return &CoppProtoClassPDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_copp_interface_protocol_policy", NewCoppProtoClassPDataSource)
+}
+
 // CoppProtoClassPDataSource defines the data source implementation.
 type CoppProtoClassPDataSource struct {
 	client *client.Client

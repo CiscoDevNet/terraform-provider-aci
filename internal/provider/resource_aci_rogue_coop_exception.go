@@ -34,6 +34,10 @@ func NewFvRogueExceptionMacResource() resource.Resource {
 	return &FvRogueExceptionMacResource{}
 }
 
+func init() {
+	registerResource("aci_rogue_coop_exception", NewFvRogueExceptionMacResource)
+}
+
 // FvRogueExceptionMacResource defines the resource implementation.
 type FvRogueExceptionMacResource struct {
 	client *client.Client

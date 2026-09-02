@@ -36,6 +36,10 @@ func NewFvRsCtxToBgpCtxAfPolResource() resource.Resource {
 	return &FvRsCtxToBgpCtxAfPolResource{}
 }
 
+func init() {
+	registerResource("aci_relation_from_vrf_to_bgp_address_family_context", NewFvRsCtxToBgpCtxAfPolResource)
+}
+
 // FvRsCtxToBgpCtxAfPolResource defines the resource implementation.
 type FvRsCtxToBgpCtxAfPolResource struct {
 	client *client.Client

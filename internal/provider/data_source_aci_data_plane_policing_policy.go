@@ -24,6 +24,10 @@ func NewQosDppPolDataSource() datasource.DataSource {
 	return &QosDppPolDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_data_plane_policing_policy", NewQosDppPolDataSource)
+}
+
 // QosDppPolDataSource defines the data source implementation.
 type QosDppPolDataSource struct {
 	client *client.Client

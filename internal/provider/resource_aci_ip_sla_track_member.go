@@ -36,6 +36,10 @@ func NewFvTrackMemberResource() resource.Resource {
 	return &FvTrackMemberResource{}
 }
 
+func init() {
+	registerResource("aci_ip_sla_track_member", NewFvTrackMemberResource)
+}
+
 // FvTrackMemberResource defines the resource implementation.
 type FvTrackMemberResource struct {
 	client *client.Client

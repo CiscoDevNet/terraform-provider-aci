@@ -37,6 +37,10 @@ func NewFvRsDomAttResource() resource.Resource {
 	return &FvRsDomAttResource{}
 }
 
+func init() {
+	registerResource("aci_relation_to_domain", NewFvRsDomAttResource)
+}
+
 // FvRsDomAttResource defines the resource implementation.
 type FvRsDomAttResource struct {
 	client *client.Client

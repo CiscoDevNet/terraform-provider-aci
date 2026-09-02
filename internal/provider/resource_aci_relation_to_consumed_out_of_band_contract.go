@@ -38,6 +38,10 @@ func NewMgmtRsOoBConsResource() resource.Resource {
 	return &MgmtRsOoBConsResource{}
 }
 
+func init() {
+	registerResource("aci_relation_to_consumed_out_of_band_contract", NewMgmtRsOoBConsResource)
+}
+
 // MgmtRsOoBConsResource defines the resource implementation.
 type MgmtRsOoBConsResource struct {
 	client *client.Client

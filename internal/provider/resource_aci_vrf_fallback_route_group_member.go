@@ -35,6 +35,10 @@ func NewFvFBRMemberResource() resource.Resource {
 	return &FvFBRMemberResource{}
 }
 
+func init() {
+	registerResource("aci_vrf_fallback_route_group_member", NewFvFBRMemberResource)
+}
+
 // FvFBRMemberResource defines the resource implementation.
 type FvFBRMemberResource struct {
 	client *client.Client

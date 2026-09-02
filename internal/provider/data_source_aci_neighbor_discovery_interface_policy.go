@@ -23,6 +23,10 @@ func NewNdIfPolDataSource() datasource.DataSource {
 	return &NdIfPolDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_neighbor_discovery_interface_policy", NewNdIfPolDataSource)
+}
+
 // NdIfPolDataSource defines the data source implementation.
 type NdIfPolDataSource struct {
 	client *client.Client

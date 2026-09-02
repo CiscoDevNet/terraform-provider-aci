@@ -22,6 +22,10 @@ func NewFvRsProtByDataSource() datasource.DataSource {
 	return &FvRsProtByDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_relation_to_taboo_contract", NewFvRsProtByDataSource)
+}
+
 // FvRsProtByDataSource defines the data source implementation.
 type FvRsProtByDataSource struct {
 	client *client.Client

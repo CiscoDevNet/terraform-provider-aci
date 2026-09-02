@@ -36,6 +36,10 @@ func NewFvTrackListResource() resource.Resource {
 	return &FvTrackListResource{}
 }
 
+func init() {
+	registerResource("aci_ip_sla_track_list", NewFvTrackListResource)
+}
+
 // FvTrackListResource defines the resource implementation.
 type FvTrackListResource struct {
 	client *client.Client

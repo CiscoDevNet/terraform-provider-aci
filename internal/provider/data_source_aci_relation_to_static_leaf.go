@@ -22,6 +22,10 @@ func NewFvRsNodeAttDataSource() datasource.DataSource {
 	return &FvRsNodeAttDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_relation_to_static_leaf", NewFvRsNodeAttDataSource)
+}
+
 // FvRsNodeAttDataSource defines the data source implementation.
 type FvRsNodeAttDataSource struct {
 	client *client.Client

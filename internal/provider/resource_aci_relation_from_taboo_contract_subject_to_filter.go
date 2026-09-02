@@ -37,6 +37,10 @@ func NewVzRsDenyRuleResource() resource.Resource {
 	return &VzRsDenyRuleResource{}
 }
 
+func init() {
+	registerResource("aci_relation_from_taboo_contract_subject_to_filter", NewVzRsDenyRuleResource)
+}
+
 // VzRsDenyRuleResource defines the resource implementation.
 type VzRsDenyRuleResource struct {
 	client *client.Client

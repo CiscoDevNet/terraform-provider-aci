@@ -22,6 +22,10 @@ func NewXcvrZRIfPolDataSource() datasource.DataSource {
 	return &XcvrZRIfPolDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_zr_transceiver_interface_policy", NewXcvrZRIfPolDataSource)
+}
+
 // XcvrZRIfPolDataSource defines the data source implementation.
 type XcvrZRIfPolDataSource struct {
 	client *client.Client

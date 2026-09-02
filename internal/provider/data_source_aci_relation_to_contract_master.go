@@ -22,6 +22,10 @@ func NewFvRsSecInheritedDataSource() datasource.DataSource {
 	return &FvRsSecInheritedDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_relation_to_contract_master", NewFvRsSecInheritedDataSource)
+}
+
 // FvRsSecInheritedDataSource defines the data source implementation.
 type FvRsSecInheritedDataSource struct {
 	client *client.Client

@@ -22,6 +22,10 @@ func NewFvMacAttrDataSource() datasource.DataSource {
 	return &FvMacAttrDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_epg_useg_mac_attribute", NewFvMacAttrDataSource)
+}
+
 // FvMacAttrDataSource defines the data source implementation.
 type FvMacAttrDataSource struct {
 	client *client.Client

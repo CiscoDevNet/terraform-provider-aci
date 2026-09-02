@@ -23,6 +23,10 @@ func NewL3extInstPDataSource() datasource.DataSource {
 	return &L3extInstPDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_external_epg", NewL3extInstPDataSource)
+}
+
 // L3extInstPDataSource defines the data source implementation.
 type L3extInstPDataSource struct {
 	client *client.Client

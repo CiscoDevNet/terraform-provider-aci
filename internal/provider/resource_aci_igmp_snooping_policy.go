@@ -37,6 +37,10 @@ func NewIgmpSnoopPolResource() resource.Resource {
 	return &IgmpSnoopPolResource{}
 }
 
+func init() {
+	registerResource("aci_igmp_snooping_policy", NewIgmpSnoopPolResource)
+}
+
 // IgmpSnoopPolResource defines the resource implementation.
 type IgmpSnoopPolResource struct {
 	client *client.Client

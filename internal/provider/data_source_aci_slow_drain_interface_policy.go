@@ -22,6 +22,10 @@ func NewQosSdIfPolDataSource() datasource.DataSource {
 	return &QosSdIfPolDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_slow_drain_interface_policy", NewQosSdIfPolDataSource)
+}
+
 // QosSdIfPolDataSource defines the data source implementation.
 type QosSdIfPolDataSource struct {
 	client *client.Client

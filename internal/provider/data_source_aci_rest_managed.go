@@ -22,6 +22,10 @@ func NewAciRestManagedDataSource() datasource.DataSource {
 	return &AciRestManagedDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_rest_managed", NewAciRestManagedDataSource)
+}
+
 // AciRestManagedDataSource defines the data source implementation.
 type AciRestManagedDataSource struct {
 	client *client.Client

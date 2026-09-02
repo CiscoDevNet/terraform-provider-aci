@@ -38,6 +38,10 @@ func NewDwdmIfPolResource() resource.Resource {
 	return &DwdmIfPolResource{}
 }
 
+func init() {
+	registerResource("aci_dwdm_interface_policy", NewDwdmIfPolResource)
+}
+
 // DwdmIfPolResource defines the resource implementation.
 type DwdmIfPolResource struct {
 	client *client.Client

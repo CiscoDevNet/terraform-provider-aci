@@ -23,6 +23,10 @@ func NewQosCustomPolDataSource() datasource.DataSource {
 	return &QosCustomPolDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_custom_qos_policy", NewQosCustomPolDataSource)
+}
+
 // QosCustomPolDataSource defines the data source implementation.
 type QosCustomPolDataSource struct {
 	client *client.Client

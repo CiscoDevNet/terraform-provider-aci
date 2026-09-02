@@ -37,6 +37,10 @@ func NewInfraSHPortSResource() resource.Resource {
 	return &InfraSHPortSResource{}
 }
 
+func init() {
+	registerResource("aci_spine_access_port_selector", NewInfraSHPortSResource)
+}
+
 // InfraSHPortSResource defines the resource implementation.
 type InfraSHPortSResource struct {
 	client *client.Client

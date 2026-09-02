@@ -38,6 +38,10 @@ func NewCommPolResource() resource.Resource {
 	return &CommPolResource{}
 }
 
+func init() {
+	registerResource("aci_management_access_policy", NewCommPolResource)
+}
+
 // CommPolResource defines the resource implementation.
 type CommPolResource struct {
 	client *client.Client

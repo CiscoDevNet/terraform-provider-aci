@@ -37,6 +37,10 @@ func NewNdIfPolResource() resource.Resource {
 	return &NdIfPolResource{}
 }
 
+func init() {
+	registerResource("aci_neighbor_discovery_interface_policy", NewNdIfPolResource)
+}
+
 // NdIfPolResource defines the resource implementation.
 type NdIfPolResource struct {
 	client *client.Client

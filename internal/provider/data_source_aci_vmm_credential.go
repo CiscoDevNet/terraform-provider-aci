@@ -22,6 +22,10 @@ func NewVmmUsrAccPDataSource() datasource.DataSource {
 	return &VmmUsrAccPDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_vmm_credential", NewVmmUsrAccPDataSource)
+}
+
 // VmmUsrAccPDataSource defines the data source implementation.
 type VmmUsrAccPDataSource struct {
 	client *client.Client

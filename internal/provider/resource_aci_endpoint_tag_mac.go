@@ -34,6 +34,10 @@ func NewFvEpMacTagResource() resource.Resource {
 	return &FvEpMacTagResource{}
 }
 
+func init() {
+	registerResource("aci_endpoint_tag_mac", NewFvEpMacTagResource)
+}
+
 // FvEpMacTagResource defines the resource implementation.
 type FvEpMacTagResource struct {
 	client *client.Client

@@ -23,6 +23,10 @@ func NewFvApDataSource() datasource.DataSource {
 	return &FvApDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_application_profile", NewFvApDataSource)
+}
+
 // FvApDataSource defines the data source implementation.
 type FvApDataSource struct {
 	client *client.Client

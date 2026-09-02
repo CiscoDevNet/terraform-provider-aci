@@ -36,6 +36,10 @@ func NewRtctrlProfileResource() resource.Resource {
 	return &RtctrlProfileResource{}
 }
 
+func init() {
+	registerResource("aci_route_control_profile", NewRtctrlProfileResource)
+}
+
 // RtctrlProfileResource defines the resource implementation.
 type RtctrlProfileResource struct {
 	client *client.Client

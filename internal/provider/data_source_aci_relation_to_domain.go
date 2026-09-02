@@ -22,6 +22,10 @@ func NewFvRsDomAttDataSource() datasource.DataSource {
 	return &FvRsDomAttDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_relation_to_domain", NewFvRsDomAttDataSource)
+}
+
 // FvRsDomAttDataSource defines the data source implementation.
 type FvRsDomAttDataSource struct {
 	client *client.Client

@@ -23,6 +23,10 @@ func NewInfraHPathSDataSource() datasource.DataSource {
 	return &InfraHPathSDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_access_interface_override", NewInfraHPathSDataSource)
+}
+
 // InfraHPathSDataSource defines the data source implementation.
 type InfraHPathSDataSource struct {
 	client *client.Client

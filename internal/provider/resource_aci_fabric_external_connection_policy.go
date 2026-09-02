@@ -37,6 +37,10 @@ func NewFvFabricExtConnPResource() resource.Resource {
 	return &FvFabricExtConnPResource{}
 }
 
+func init() {
+	registerResource("aci_fabric_external_connection_policy", NewFvFabricExtConnPResource)
+}
+
 // FvFabricExtConnPResource defines the resource implementation.
 type FvFabricExtConnPResource struct {
 	client *client.Client

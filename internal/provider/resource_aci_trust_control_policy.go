@@ -36,6 +36,10 @@ func NewFhsTrustCtrlPolResource() resource.Resource {
 	return &FhsTrustCtrlPolResource{}
 }
 
+func init() {
+	registerResource("aci_trust_control_policy", NewFhsTrustCtrlPolResource)
+}
+
 // FhsTrustCtrlPolResource defines the resource implementation.
 type FhsTrustCtrlPolResource struct {
 	client *client.Client

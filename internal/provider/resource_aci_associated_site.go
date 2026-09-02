@@ -34,6 +34,10 @@ func NewFvSiteAssociatedResource() resource.Resource {
 	return &FvSiteAssociatedResource{}
 }
 
+func init() {
+	registerResource("aci_associated_site", NewFvSiteAssociatedResource)
+}
+
 // FvSiteAssociatedResource defines the resource implementation.
 type FvSiteAssociatedResource struct {
 	client *client.Client

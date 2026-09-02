@@ -24,6 +24,10 @@ func NewNetflowExporterPolDataSource() datasource.DataSource {
 	return &NetflowExporterPolDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_netflow_exporter_policy", NewNetflowExporterPolDataSource)
+}
+
 // NetflowExporterPolDataSource defines the data source implementation.
 type NetflowExporterPolDataSource struct {
 	client *client.Client

@@ -36,6 +36,10 @@ func NewL3extRsLblToProfileResource() resource.Resource {
 	return &L3extRsLblToProfileResource{}
 }
 
+func init() {
+	registerResource("aci_relation_from_l3out_consumer_label_to_route_control_profile", NewL3extRsLblToProfileResource)
+}
+
 // L3extRsLblToProfileResource defines the resource implementation.
 type L3extRsLblToProfileResource struct {
 	client *client.Client

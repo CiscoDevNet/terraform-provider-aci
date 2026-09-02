@@ -22,6 +22,10 @@ func NewQosNodropDscpMatchIfPolDataSource() datasource.DataSource {
 	return &QosNodropDscpMatchIfPolDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_no_drop_dscp_match_interface_policy", NewQosNodropDscpMatchIfPolDataSource)
+}
+
 // QosNodropDscpMatchIfPolDataSource defines the data source implementation.
 type QosNodropDscpMatchIfPolDataSource struct {
 	client *client.Client

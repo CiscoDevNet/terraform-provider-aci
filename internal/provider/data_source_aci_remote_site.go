@@ -22,6 +22,10 @@ func NewFvRemoteIdDataSource() datasource.DataSource {
 	return &FvRemoteIdDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_remote_site", NewFvRemoteIdDataSource)
+}
+
 // FvRemoteIdDataSource defines the data source implementation.
 type FvRemoteIdDataSource struct {
 	client *client.Client

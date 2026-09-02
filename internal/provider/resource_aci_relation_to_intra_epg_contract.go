@@ -34,6 +34,10 @@ func NewFvRsIntraEpgResource() resource.Resource {
 	return &FvRsIntraEpgResource{}
 }
 
+func init() {
+	registerResource("aci_relation_to_intra_epg_contract", NewFvRsIntraEpgResource)
+}
+
 // FvRsIntraEpgResource defines the resource implementation.
 type FvRsIntraEpgResource struct {
 	client *client.Client

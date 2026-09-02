@@ -23,6 +23,10 @@ func NewVzRsDenyRuleDataSource() datasource.DataSource {
 	return &VzRsDenyRuleDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_relation_from_taboo_contract_subject_to_filter", NewVzRsDenyRuleDataSource)
+}
+
 // VzRsDenyRuleDataSource defines the data source implementation.
 type VzRsDenyRuleDataSource struct {
 	client *client.Client

@@ -34,6 +34,10 @@ func NewFvIdGroupAttrResource() resource.Resource {
 	return &FvIdGroupAttrResource{}
 }
 
+func init() {
+	registerResource("aci_epg_useg_ad_group_attribute", NewFvIdGroupAttrResource)
+}
+
 // FvIdGroupAttrResource defines the resource implementation.
 type FvIdGroupAttrResource struct {
 	client *client.Client

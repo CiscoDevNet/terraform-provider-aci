@@ -36,6 +36,10 @@ func NewPkiKeyRingResource() resource.Resource {
 	return &PkiKeyRingResource{}
 }
 
+func init() {
+	registerResource("aci_key_ring", NewPkiKeyRingResource)
+}
+
 // PkiKeyRingResource defines the resource implementation.
 type PkiKeyRingResource struct {
 	client *client.Client

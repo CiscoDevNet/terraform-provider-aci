@@ -22,6 +22,10 @@ func NewFhsBDPolDataSource() datasource.DataSource {
 	return &FhsBDPolDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_first_hop_security_policy", NewFhsBDPolDataSource)
+}
+
 // FhsBDPolDataSource defines the data source implementation.
 type FhsBDPolDataSource struct {
 	client *client.Client

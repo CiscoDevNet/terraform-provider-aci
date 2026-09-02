@@ -22,6 +22,10 @@ func NewLldpIfPolDataSource() datasource.DataSource {
 	return &LldpIfPolDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_lldp_interface_policy", NewLldpIfPolDataSource)
+}
+
 // LldpIfPolDataSource defines the data source implementation.
 type LldpIfPolDataSource struct {
 	client *client.Client

@@ -34,6 +34,10 @@ func NewFabricLinkFlapPolResource() resource.Resource {
 	return &FabricLinkFlapPolResource{}
 }
 
+func init() {
+	registerResource("aci_link_flap_interface_policy", NewFabricLinkFlapPolResource)
+}
+
 // FabricLinkFlapPolResource defines the resource implementation.
 type FabricLinkFlapPolResource struct {
 	client *client.Client

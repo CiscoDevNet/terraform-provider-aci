@@ -23,6 +23,10 @@ func NewVzRsAnyToConsIfDataSource() datasource.DataSource {
 	return &VzRsAnyToConsIfDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_relation_from_any_to_contract_interface", NewVzRsAnyToConsIfDataSource)
+}
+
 // VzRsAnyToConsIfDataSource defines the data source implementation.
 type VzRsAnyToConsIfDataSource struct {
 	client *client.Client

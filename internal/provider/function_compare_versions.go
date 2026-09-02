@@ -18,6 +18,10 @@ func NewCompareVersionsFunction() function.Function {
 	return &CompareVersionsFunction{}
 }
 
+func init() {
+	registerFunction("compare_versions", NewCompareVersionsFunction)
+}
+
 type CompareVersionsFunction struct{}
 
 func (f CompareVersionsFunction) Metadata(ctx context.Context, req function.MetadataRequest, resp *function.MetadataResponse) {

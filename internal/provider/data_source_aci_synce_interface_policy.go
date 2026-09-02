@@ -22,6 +22,10 @@ func NewSynceEthIfPolDataSource() datasource.DataSource {
 	return &SynceEthIfPolDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_synce_interface_policy", NewSynceEthIfPolDataSource)
+}
+
 // SynceEthIfPolDataSource defines the data source implementation.
 type SynceEthIfPolDataSource struct {
 	client *client.Client

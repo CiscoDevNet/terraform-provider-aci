@@ -22,6 +22,10 @@ func NewLacpEnhancedLagPolDataSource() datasource.DataSource {
 	return &LacpEnhancedLagPolDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_lacp_enhanced_lag_policy", NewLacpEnhancedLagPolDataSource)
+}
+
 // LacpEnhancedLagPolDataSource defines the data source implementation.
 type LacpEnhancedLagPolDataSource struct {
 	client *client.Client

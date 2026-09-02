@@ -36,6 +36,10 @@ func NewL2IfPolResource() resource.Resource {
 	return &L2IfPolResource{}
 }
 
+func init() {
+	registerResource("aci_l2_interface_policy", NewL2IfPolResource)
+}
+
 // L2IfPolResource defines the resource implementation.
 type L2IfPolResource struct {
 	client *client.Client

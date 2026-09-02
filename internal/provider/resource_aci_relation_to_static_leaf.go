@@ -36,6 +36,10 @@ func NewFvRsNodeAttResource() resource.Resource {
 	return &FvRsNodeAttResource{}
 }
 
+func init() {
+	registerResource("aci_relation_to_static_leaf", NewFvRsNodeAttResource)
+}
+
 // FvRsNodeAttResource defines the resource implementation.
 type FvRsNodeAttResource struct {
 	client *client.Client

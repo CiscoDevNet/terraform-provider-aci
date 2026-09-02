@@ -22,6 +22,10 @@ func NewFcIfPolDataSource() datasource.DataSource {
 	return &FcIfPolDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_fibre_channel_interface_policy", NewFcIfPolDataSource)
+}
+
 // FcIfPolDataSource defines the data source implementation.
 type FcIfPolDataSource struct {
 	client *client.Client

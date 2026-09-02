@@ -22,6 +22,10 @@ func NewFvRsOtmListMemberDataSource() datasource.DataSource {
 	return &FvRsOtmListMemberDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_relation_to_ip_sla_track_member", NewFvRsOtmListMemberDataSource)
+}
+
 // FvRsOtmListMemberDataSource defines the data source implementation.
 type FvRsOtmListMemberDataSource struct {
 	client *client.Client

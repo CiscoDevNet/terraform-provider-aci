@@ -38,6 +38,10 @@ func NewFvRsProvResource() resource.Resource {
 	return &FvRsProvResource{}
 }
 
+func init() {
+	registerResource("aci_relation_to_provided_contract", NewFvRsProvResource)
+}
+
 // FvRsProvResource defines the resource implementation.
 type FvRsProvResource struct {
 	client *client.Client

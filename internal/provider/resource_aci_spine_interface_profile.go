@@ -34,6 +34,10 @@ func NewInfraSpAccPortPResource() resource.Resource {
 	return &InfraSpAccPortPResource{}
 }
 
+func init() {
+	registerResource("aci_spine_interface_profile", NewInfraSpAccPortPResource)
+}
+
 // InfraSpAccPortPResource defines the resource implementation.
 type InfraSpAccPortPResource struct {
 	client *client.Client

@@ -22,6 +22,10 @@ func NewEigrpCtxAfPolDataSource() datasource.DataSource {
 	return &EigrpCtxAfPolDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_eigrp_address_family_context", NewEigrpCtxAfPolDataSource)
+}
+
 // EigrpCtxAfPolDataSource defines the data source implementation.
 type EigrpCtxAfPolDataSource struct {
 	client *client.Client

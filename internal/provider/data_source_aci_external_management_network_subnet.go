@@ -23,6 +23,10 @@ func NewMgmtSubnetDataSource() datasource.DataSource {
 	return &MgmtSubnetDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_external_management_network_subnet", NewMgmtSubnetDataSource)
+}
+
 // MgmtSubnetDataSource defines the data source implementation.
 type MgmtSubnetDataSource struct {
 	client *client.Client

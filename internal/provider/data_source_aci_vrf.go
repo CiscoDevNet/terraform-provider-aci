@@ -23,6 +23,10 @@ func NewFvCtxDataSource() datasource.DataSource {
 	return &FvCtxDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_vrf", NewFvCtxDataSource)
+}
+
 // FvCtxDataSource defines the data source implementation.
 type FvCtxDataSource struct {
 	client *client.Client

@@ -22,6 +22,10 @@ func NewFvSiteAssociatedDataSource() datasource.DataSource {
 	return &FvSiteAssociatedDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_associated_site", NewFvSiteAssociatedDataSource)
+}
+
 // FvSiteAssociatedDataSource defines the data source implementation.
 type FvSiteAssociatedDataSource struct {
 	client *client.Client

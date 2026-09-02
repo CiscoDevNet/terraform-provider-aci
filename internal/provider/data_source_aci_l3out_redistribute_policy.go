@@ -24,6 +24,10 @@ func NewL3extRsRedistributePolDataSource() datasource.DataSource {
 	return &L3extRsRedistributePolDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_l3out_redistribute_policy", NewL3extRsRedistributePolDataSource)
+}
+
 // L3extRsRedistributePolDataSource defines the data source implementation.
 type L3extRsRedistributePolDataSource struct {
 	client *client.Client

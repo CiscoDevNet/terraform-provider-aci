@@ -36,6 +36,10 @@ func NewL3extConsLblResource() resource.Resource {
 	return &L3extConsLblResource{}
 }
 
+func init() {
+	registerResource("aci_l3out_consumer_label", NewL3extConsLblResource)
+}
+
 // L3extConsLblResource defines the resource implementation.
 type L3extConsLblResource struct {
 	client *client.Client

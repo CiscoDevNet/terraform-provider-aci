@@ -22,6 +22,10 @@ func NewFvRsFcPathAttDataSource() datasource.DataSource {
 	return &FvRsFcPathAttDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_relation_to_fibre_channel_path", NewFvRsFcPathAttDataSource)
+}
+
 // FvRsFcPathAttDataSource defines the data source implementation.
 type FvRsFcPathAttDataSource struct {
 	client *client.Client

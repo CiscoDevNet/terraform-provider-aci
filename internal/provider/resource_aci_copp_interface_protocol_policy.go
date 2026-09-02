@@ -37,6 +37,10 @@ func NewCoppProtoClassPResource() resource.Resource {
 	return &CoppProtoClassPResource{}
 }
 
+func init() {
+	registerResource("aci_copp_interface_protocol_policy", NewCoppProtoClassPResource)
+}
+
 // CoppProtoClassPResource defines the resource implementation.
 type CoppProtoClassPResource struct {
 	client *client.Client

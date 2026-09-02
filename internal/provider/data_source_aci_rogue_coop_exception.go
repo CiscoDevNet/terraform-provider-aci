@@ -22,6 +22,10 @@ func NewFvRogueExceptionMacDataSource() datasource.DataSource {
 	return &FvRogueExceptionMacDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_rogue_coop_exception", NewFvRogueExceptionMacDataSource)
+}
+
 // FvRogueExceptionMacDataSource defines the data source implementation.
 type FvRogueExceptionMacDataSource struct {
 	client *client.Client

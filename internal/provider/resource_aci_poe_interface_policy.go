@@ -37,6 +37,10 @@ func NewPoeIfPolResource() resource.Resource {
 	return &PoeIfPolResource{}
 }
 
+func init() {
+	registerResource("aci_poe_interface_policy", NewPoeIfPolResource)
+}
+
 // PoeIfPolResource defines the resource implementation.
 type PoeIfPolResource struct {
 	client *client.Client

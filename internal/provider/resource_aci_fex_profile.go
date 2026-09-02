@@ -34,6 +34,10 @@ func NewInfraFexPResource() resource.Resource {
 	return &InfraFexPResource{}
 }
 
+func init() {
+	registerResource("aci_fex_profile", NewInfraFexPResource)
+}
+
 // InfraFexPResource defines the resource implementation.
 type InfraFexPResource struct {
 	client *client.Client

@@ -23,6 +23,10 @@ func NewFvRsConsDataSource() datasource.DataSource {
 	return &FvRsConsDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_relation_to_consumed_contract", NewFvRsConsDataSource)
+}
+
 // FvRsConsDataSource defines the data source implementation.
 type FvRsConsDataSource struct {
 	client *client.Client

@@ -22,6 +22,10 @@ func NewFvEpMacTagDataSource() datasource.DataSource {
 	return &FvEpMacTagDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_endpoint_tag_mac", NewFvEpMacTagDataSource)
+}
+
 // FvEpMacTagDataSource defines the data source implementation.
 type FvEpMacTagDataSource struct {
 	client *client.Client

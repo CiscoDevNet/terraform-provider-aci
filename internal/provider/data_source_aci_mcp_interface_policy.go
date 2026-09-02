@@ -22,6 +22,10 @@ func NewMcpIfPolDataSource() datasource.DataSource {
 	return &McpIfPolDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_mcp_interface_policy", NewMcpIfPolDataSource)
+}
+
 // McpIfPolDataSource defines the data source implementation.
 type McpIfPolDataSource struct {
 	client *client.Client

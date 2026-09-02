@@ -23,6 +23,10 @@ func NewStpIfPolDataSource() datasource.DataSource {
 	return &StpIfPolDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_spanning_tree_interface_policy", NewStpIfPolDataSource)
+}
+
 // StpIfPolDataSource defines the data source implementation.
 type StpIfPolDataSource struct {
 	client *client.Client

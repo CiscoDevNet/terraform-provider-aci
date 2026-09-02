@@ -36,6 +36,10 @@ func NewFabricHIfPolResource() resource.Resource {
 	return &FabricHIfPolResource{}
 }
 
+func init() {
+	registerResource("aci_link_level_interface_policy", NewFabricHIfPolResource)
+}
+
 // FabricHIfPolResource defines the resource implementation.
 type FabricHIfPolResource struct {
 	client *client.Client

@@ -35,6 +35,10 @@ func NewFvVipResource() resource.Resource {
 	return &FvVipResource{}
 }
 
+func init() {
+	registerResource("aci_virtual_ip_address", NewFvVipResource)
+}
+
 // FvVipResource defines the resource implementation.
 type FvVipResource struct {
 	client *client.Client
