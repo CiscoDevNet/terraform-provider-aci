@@ -4,8 +4,6 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
-	"os"
-	"path/filepath"
 	"strings"
 	"testing"
 
@@ -59,25 +57,16 @@ func TestSetHostFromEnvironmentVariable(t *testing.T) {
 	assert.Equal(t, metaHost, ds.metaHost, test.MessageEqual(metaHost, ds.metaHost, t.Name()))
 }
 
-func TestLoadUnsupportedAnnotationClasses(t *testing.T) {
-	t.Chdir(t.TempDir())
-	path := filepath.FromSlash(constAnnotationUnsupportedPath)
-	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
-		t.Fatalf("create annotation metadata directory: %v", err)
-	}
-	if err := os.WriteFile(path, []byte(`{"classes":["fvTenant","aaaConfig"]}`), 0o600); err != nil {
-		t.Fatalf("write annotation metadata: %v", err)
-	}
-
+func TestRefreshUnsupportedAnnotationClassesNotRequested(t *testing.T) {
 	ds := &DataStore{}
-	if err := ds.loadUnsupportedAnnotationClasses(); err != nil {
-		t.Fatalf("load unsupported annotation classes: %v", err)
+	if err := ds.refreshUnsupportedAnnotationClassesIfRequested(); err != nil {
+		t.Fatalf("skip unsupported annotation refresh: %v", err)
 	}
-	assert.Equal(t, []string{"aaaConfig", "fvTenant"}, ds.UnsupportedAnnotationClasses)
+	assert.Nil(t, ds.UnsupportedAnnotationClasses)
 }
 
 func TestRefreshUnsupportedAnnotationClasses(t *testing.T) {
-	t.Chdir(t.TempDir())
+	t.Setenv(constEnvAnnotationUnsupported, "true")
 	client := &http.Client{Transport: test.RoundTripFunc(func(request *http.Request) (*http.Response, error) {
 		if request.URL.Path != "/doc/jsonmeta/aci-meta.json" {
 			t.Errorf("unexpected metadata path %q", request.URL.Path)
@@ -103,18 +92,10 @@ func TestRefreshUnsupportedAnnotationClasses(t *testing.T) {
 		client:   client,
 		metaHost: "metadata.example.com",
 	}
-	if err := ds.refreshUnsupportedAnnotationClasses(); err != nil {
+	if err := ds.refreshUnsupportedAnnotationClassesIfRequested(); err != nil {
 		t.Fatalf("refresh unsupported annotation classes: %v", err)
 	}
 	assert.Equal(t, []string{"aaaConfig", "nullAnnotation"}, ds.UnsupportedAnnotationClasses)
-
-	contents, err := os.ReadFile(filepath.FromSlash(constAnnotationUnsupportedPath))
-	if err != nil {
-		t.Fatalf("read refreshed annotation metadata: %v", err)
-	}
-	if !strings.Contains(string(contents), `"aaaConfig"`) || strings.Contains(string(contents), `"fvTenant"`) {
-		t.Fatalf("unexpected annotation metadata snapshot: %s", contents)
-	}
 }
 
 type loadClassExpected struct {

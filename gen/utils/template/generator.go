@@ -50,6 +50,8 @@ type renderJob struct {
 	TemplateName string
 	OutputPath   string
 	Context      TemplateContext
+	// Refresh-only outputs are rendered normally but are not owned by the managed-files manifest.
+	RefreshOnly bool
 }
 
 func NewGenerator(dataStore *data.DataStore) (*Generator, error) {
@@ -163,10 +165,11 @@ func (g *Generator) Generate() error {
 }
 
 func (g *Generator) buildRenderJobs() []renderJob {
-	return append(
-		g.buildModelRenderJobs(),
-		g.buildAnnotationUnsupportedRenderJob(),
-	)
+	jobs := g.buildModelRenderJobs()
+	if g.dataStore.UnsupportedAnnotationClasses != nil {
+		jobs = append(jobs, g.buildAnnotationUnsupportedRenderJob())
+	}
+	return jobs
 }
 
 func (g *Generator) buildAnnotationUnsupportedRenderJob() renderJob {
@@ -174,6 +177,7 @@ func (g *Generator) buildAnnotationUnsupportedRenderJob() renderJob {
 		TemplateName: annotationUnsupportedTemplateName,
 		OutputPath:   annotationUnsupportedOutputPath,
 		Context:      TemplateContext{DataStore: g.dataStore},
+		RefreshOnly:  true,
 	}
 }
 
@@ -202,7 +206,7 @@ func (g *Generator) buildModelRenderJobs() []renderJob {
 }
 
 func (g *Generator) validateRenderJobs(jobs []renderJob) ([]string, error) {
-	outputPaths := make([]string, 0, len(jobs))
+	managedOutputPaths := make([]string, 0, len(jobs))
 	seenOutputPaths := make(map[string]struct{}, len(jobs))
 	for _, job := range jobs {
 		if _, exists := g.templates[job.TemplateName]; !exists {
@@ -216,10 +220,12 @@ func (g *Generator) validateRenderJobs(jobs []renderJob) ([]string, error) {
 			return nil, fmt.Errorf("duplicate output path %q", job.OutputPath)
 		}
 		seenOutputPaths[job.OutputPath] = struct{}{}
-		outputPaths = append(outputPaths, job.OutputPath)
+		if !job.RefreshOnly {
+			managedOutputPaths = append(managedOutputPaths, job.OutputPath)
+		}
 	}
-	sort.Strings(outputPaths)
-	return outputPaths, nil
+	sort.Strings(managedOutputPaths)
+	return managedOutputPaths, nil
 }
 
 func (g *Generator) renderTemplates(jobs []renderJob) error {
