@@ -1,3 +1,4 @@
+allow_delete: never
 documentation:
   sub_category: Tenant Policies
   ui_locations:
