@@ -153,7 +153,7 @@ func (p *AciProvider) Configure(ctx context.Context, req provider.ConfigureReque
 	proxyUrl := getStringAttribute(data.ProxyUrl, "ACI_PROXY_URL")
 	proxyCreds := getStringAttribute(data.ProxyCreds, "ACI_PROXY_CREDS")
 	isInsecure := stringToBool(resp, "insecure", getStringAttribute(data.IsInsecure, "ACI_INSECURE"), true)
-	validateRelationDn := stringToBool(resp, "insecure", getStringAttribute(data.ValidateRelationDn, "ACI_VAL_REL_DN"), true)
+	validateRelationDn := stringToBool(resp, "validate_relation_dn", getStringAttribute(data.ValidateRelationDn, "ACI_VAL_REL_DN"), true)
 	maxRetries := stringToInt(resp, "retries", getStringAttribute(data.MaxRetries, "ACI_RETRIES"), 2)
 	setGlobalAnnotation(data.Annotation, "ACI_ANNOTATION")
 	setGlobalAllowExistingOnCreate(resp, data.AllowExistingOnCreate, "ACI_ALLOW_EXISTING_ON_CREATE")
