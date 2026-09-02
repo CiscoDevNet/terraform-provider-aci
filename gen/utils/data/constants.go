@@ -19,6 +19,10 @@ const (
 	constEnvMetaClasses   = "GEN_ACI_TF_META_CLASSES"
 	constPubhubDevnetHost = "pubhub.devnetcloud.com/media/model-doc-latest/docs"
 	constMetaFileUrl      = "https://%s/doc/jsonmeta/%s/%s.json"
+	// Refresh the cached list of configurable APIC classes that do not expose annotation.
+	constEnvAnnotationUnsupported      = "GEN_ANNOTATION_UNSUPPORTED"
+	constAnnotationUnsupportedPath     = "./gen/meta/annotation_unsupported/classes.json"
+	constAnnotationUnsupportedMetaFile = "https://%s/doc/jsonmeta/aci-meta.json"
 	// The Terraform provider name used in documentation links and resource name prefixes (e.g., "aci_tenant").
 	constProviderName = "aci"
 	// The base URL for the Terraform Registry resource documentation pages for this provider.

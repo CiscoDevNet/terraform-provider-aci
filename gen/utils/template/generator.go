@@ -29,6 +29,9 @@ const (
 
 	modelTemplateName    = "model.go.tmpl"
 	modelOutputDirectory = "internal/provider/models"
+
+	annotationUnsupportedTemplateName = "annotation_unsupported.go.tmpl"
+	annotationUnsupportedOutputPath   = "internal/provider/annotation_unsupported.go"
 )
 
 var genLogger = logger.InitializeLogger()
@@ -160,7 +163,18 @@ func (g *Generator) Generate() error {
 }
 
 func (g *Generator) buildRenderJobs() []renderJob {
-	return g.buildModelRenderJobs()
+	return append(
+		g.buildModelRenderJobs(),
+		g.buildAnnotationUnsupportedRenderJob(),
+	)
+}
+
+func (g *Generator) buildAnnotationUnsupportedRenderJob() renderJob {
+	return renderJob{
+		TemplateName: annotationUnsupportedTemplateName,
+		OutputPath:   annotationUnsupportedOutputPath,
+		Context:      TemplateContext{DataStore: g.dataStore},
+	}
 }
 
 func (g *Generator) buildModelRenderJobs() []renderJob {
@@ -193,9 +207,9 @@ func (g *Generator) validateRenderJobs(jobs []renderJob) ([]string, error) {
 	for _, job := range jobs {
 		if _, exists := g.templates[job.TemplateName]; !exists {
 			return nil, fmt.Errorf(
-				"render template %q for class %q: template is not loaded",
+				"render template %q to %q: template is not loaded",
 				job.TemplateName,
-				job.Context.Class.Name,
+				job.OutputPath,
 			)
 		}
 		if _, exists := seenOutputPaths[job.OutputPath]; exists {
@@ -226,7 +240,7 @@ func (g *Generator) renderTemplates(jobs []renderJob) error {
 			defer workers.Done()
 			for job := range jobChannel {
 				if err := g.renderTemplate(job.TemplateName, filepath.FromSlash(job.OutputPath), job.Context); err != nil {
-					errorChannel <- fmt.Errorf("render template %q for class %q: %w", job.TemplateName, job.Context.Class.Name, err)
+					errorChannel <- fmt.Errorf("render template %q to %q: %w", job.TemplateName, job.OutputPath, err)
 				}
 			}
 		}()
@@ -251,7 +265,33 @@ func (g *Generator) renderTemplates(jobs []renderJob) error {
 	}
 
 	genLogger.Infof("Successfully rendered %d template files.", len(jobs))
+	for _, summary := range formatTemplateRenderSummaries(jobs) {
+		genLogger.Infof("%s", summary)
+	}
 	return nil
+}
+
+func formatTemplateRenderSummaries(jobs []renderJob) []string {
+	counts := make(map[string]int)
+	for _, job := range jobs {
+		counts[job.TemplateName]++
+	}
+
+	templateNames := make([]string, 0, len(counts))
+	for templateName := range counts {
+		templateNames = append(templateNames, templateName)
+	}
+	sort.Strings(templateNames)
+
+	summaries := make([]string, 0, len(templateNames))
+	for _, templateName := range templateNames {
+		fileLabel := "files"
+		if counts[templateName] == 1 {
+			fileLabel = "file"
+		}
+		summaries = append(summaries, fmt.Sprintf("Rendered %d %s using template %s.", counts[templateName], fileLabel, templateName))
+	}
+	return summaries
 }
 
 func (g *Generator) renderTemplate(templateName, outputPath string, context TemplateContext) error {
