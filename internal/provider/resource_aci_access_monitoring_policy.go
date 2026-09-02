@@ -34,6 +34,10 @@ func NewMonInfraPolResource() resource.Resource {
 	return &MonInfraPolResource{}
 }
 
+func init() {
+	registerResource("aci_access_monitoring_policy", NewMonInfraPolResource)
+}
+
 // MonInfraPolResource defines the resource implementation.
 type MonInfraPolResource struct {
 	client *client.Client

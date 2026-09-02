@@ -22,6 +22,10 @@ func NewPimRouteMapPolDataSource() datasource.DataSource {
 	return &PimRouteMapPolDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_pim_route_map_policy", NewPimRouteMapPolDataSource)
+}
+
 // PimRouteMapPolDataSource defines the data source implementation.
 type PimRouteMapPolDataSource struct {
 	client *client.Client

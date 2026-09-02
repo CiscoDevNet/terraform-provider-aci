@@ -36,6 +36,10 @@ func NewSynceEthIfPolResource() resource.Resource {
 	return &SynceEthIfPolResource{}
 }
 
+func init() {
+	registerResource("aci_synce_interface_policy", NewSynceEthIfPolResource)
+}
+
 // SynceEthIfPolResource defines the resource implementation.
 type SynceEthIfPolResource struct {
 	client *client.Client

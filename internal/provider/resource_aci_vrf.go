@@ -37,6 +37,10 @@ func NewFvCtxResource() resource.Resource {
 	return &FvCtxResource{}
 }
 
+func init() {
+	registerResource("aci_vrf", NewFvCtxResource)
+}
+
 // FvCtxResource defines the resource implementation.
 type FvCtxResource struct {
 	client *client.Client

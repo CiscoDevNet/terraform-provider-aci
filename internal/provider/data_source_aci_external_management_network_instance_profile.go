@@ -23,6 +23,10 @@ func NewMgmtInstPDataSource() datasource.DataSource {
 	return &MgmtInstPDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_external_management_network_instance_profile", NewMgmtInstPDataSource)
+}
+
 // MgmtInstPDataSource defines the data source implementation.
 type MgmtInstPDataSource struct {
 	client *client.Client

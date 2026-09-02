@@ -38,6 +38,10 @@ func NewQosDscpClassResource() resource.Resource {
 	return &QosDscpClassResource{}
 }
 
+func init() {
+	registerResource("aci_dscp_to_priority_map", NewQosDscpClassResource)
+}
+
 // QosDscpClassResource defines the resource implementation.
 type QosDscpClassResource struct {
 	client *client.Client

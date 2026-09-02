@@ -36,6 +36,10 @@ func NewFvRsBDToNetflowMonitorPolResource() resource.Resource {
 	return &FvRsBDToNetflowMonitorPolResource{}
 }
 
+func init() {
+	registerResource("aci_relation_from_bridge_domain_to_netflow_monitor_policy", NewFvRsBDToNetflowMonitorPolResource)
+}
+
 // FvRsBDToNetflowMonitorPolResource defines the resource implementation.
 type FvRsBDToNetflowMonitorPolResource struct {
 	client *client.Client

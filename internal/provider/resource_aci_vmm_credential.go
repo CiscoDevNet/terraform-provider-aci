@@ -36,6 +36,10 @@ func NewVmmUsrAccPResource() resource.Resource {
 	return &VmmUsrAccPResource{}
 }
 
+func init() {
+	registerResource("aci_vmm_credential", NewVmmUsrAccPResource)
+}
+
 // VmmUsrAccPResource defines the resource implementation.
 type VmmUsrAccPResource struct {
 	client *client.Client

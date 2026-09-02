@@ -36,6 +36,10 @@ func NewFvSCrtrnResource() resource.Resource {
 	return &FvSCrtrnResource{}
 }
 
+func init() {
+	registerResource("aci_epg_useg_sub_block_statement", NewFvSCrtrnResource)
+}
+
 // FvSCrtrnResource defines the resource implementation.
 type FvSCrtrnResource struct {
 	client *client.Client

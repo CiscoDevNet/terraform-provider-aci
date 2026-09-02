@@ -38,6 +38,10 @@ func NewVzRsAnyToConsResource() resource.Resource {
 	return &VzRsAnyToConsResource{}
 }
 
+func init() {
+	registerResource("aci_relation_from_any_to_consumer_contract", NewVzRsAnyToConsResource)
+}
+
 // VzRsAnyToConsResource defines the resource implementation.
 type VzRsAnyToConsResource struct {
 	client *client.Client

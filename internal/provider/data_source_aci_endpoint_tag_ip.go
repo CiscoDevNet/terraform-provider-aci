@@ -23,6 +23,10 @@ func NewFvEpIpTagDataSource() datasource.DataSource {
 	return &FvEpIpTagDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_endpoint_tag_ip", NewFvEpIpTagDataSource)
+}
+
 // FvEpIpTagDataSource defines the data source implementation.
 type FvEpIpTagDataSource struct {
 	client *client.Client

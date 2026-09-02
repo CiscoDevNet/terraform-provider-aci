@@ -23,6 +23,10 @@ func NewFvTrackMemberDataSource() datasource.DataSource {
 	return &FvTrackMemberDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_ip_sla_track_member", NewFvTrackMemberDataSource)
+}
+
 // FvTrackMemberDataSource defines the data source implementation.
 type FvTrackMemberDataSource struct {
 	client *client.Client

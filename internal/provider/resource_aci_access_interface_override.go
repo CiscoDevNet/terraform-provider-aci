@@ -36,6 +36,10 @@ func NewInfraHPathSResource() resource.Resource {
 	return &InfraHPathSResource{}
 }
 
+func init() {
+	registerResource("aci_access_interface_override", NewInfraHPathSResource)
+}
+
 // InfraHPathSResource defines the resource implementation.
 type InfraHPathSResource struct {
 	client *client.Client

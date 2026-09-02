@@ -23,6 +23,10 @@ func NewCoppIfPolDataSource() datasource.DataSource {
 	return &CoppIfPolDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_copp_interface_policy", NewCoppIfPolDataSource)
+}
+
 // CoppIfPolDataSource defines the data source implementation.
 type CoppIfPolDataSource struct {
 	client *client.Client

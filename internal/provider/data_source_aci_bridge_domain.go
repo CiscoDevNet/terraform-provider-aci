@@ -24,6 +24,10 @@ func NewFvBDDataSource() datasource.DataSource {
 	return &FvBDDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_bridge_domain", NewFvBDDataSource)
+}
+
 // FvBDDataSource defines the data source implementation.
 type FvBDDataSource struct {
 	client *client.Client

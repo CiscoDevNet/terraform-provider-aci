@@ -22,6 +22,10 @@ func NewPoeIfPolDataSource() datasource.DataSource {
 	return &PoeIfPolDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_poe_interface_policy", NewPoeIfPolDataSource)
+}
+
 // PoeIfPolDataSource defines the data source implementation.
 type PoeIfPolDataSource struct {
 	client *client.Client

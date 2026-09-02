@@ -22,6 +22,10 @@ func NewInfraSpAccPortPDataSource() datasource.DataSource {
 	return &InfraSpAccPortPDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_spine_interface_profile", NewInfraSpAccPortPDataSource)
+}
+
 // InfraSpAccPortPDataSource defines the data source implementation.
 type InfraSpAccPortPDataSource struct {
 	client *client.Client

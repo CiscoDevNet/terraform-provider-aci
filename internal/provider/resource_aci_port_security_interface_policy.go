@@ -36,6 +36,10 @@ func NewL2PortSecurityPolResource() resource.Resource {
 	return &L2PortSecurityPolResource{}
 }
 
+func init() {
+	registerResource("aci_port_security_interface_policy", NewL2PortSecurityPolResource)
+}
+
 // L2PortSecurityPolResource defines the resource implementation.
 type L2PortSecurityPolResource struct {
 	client *client.Client

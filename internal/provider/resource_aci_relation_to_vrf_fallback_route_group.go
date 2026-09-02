@@ -34,6 +34,10 @@ func NewL3extRsOutToFBRGroupResource() resource.Resource {
 	return &L3extRsOutToFBRGroupResource{}
 }
 
+func init() {
+	registerResource("aci_relation_to_vrf_fallback_route_group", NewL3extRsOutToFBRGroupResource)
+}
+
 // L3extRsOutToFBRGroupResource defines the resource implementation.
 type L3extRsOutToFBRGroupResource struct {
 	client *client.Client

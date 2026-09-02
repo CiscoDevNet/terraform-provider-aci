@@ -34,6 +34,10 @@ func NewFvMacAttrResource() resource.Resource {
 	return &FvMacAttrResource{}
 }
 
+func init() {
+	registerResource("aci_epg_useg_mac_attribute", NewFvMacAttrResource)
+}
+
 // FvMacAttrResource defines the resource implementation.
 type FvMacAttrResource struct {
 	client *client.Client

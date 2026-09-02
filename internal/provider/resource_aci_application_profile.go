@@ -39,6 +39,10 @@ func NewFvApResource() resource.Resource {
 	return &FvApResource{}
 }
 
+func init() {
+	registerResource("aci_application_profile", NewFvApResource)
+}
+
 // FvApResource defines the resource implementation.
 type FvApResource struct {
 	client *client.Client

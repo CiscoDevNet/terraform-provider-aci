@@ -34,6 +34,10 @@ func NewFvDnsAttrResource() resource.Resource {
 	return &FvDnsAttrResource{}
 }
 
+func init() {
+	registerResource("aci_epg_useg_dns_attribute", NewFvDnsAttrResource)
+}
+
 // FvDnsAttrResource defines the resource implementation.
 type FvDnsAttrResource struct {
 	client *client.Client

@@ -22,6 +22,10 @@ func NewFvVmAttrDataSource() datasource.DataSource {
 	return &FvVmAttrDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_epg_useg_vm_attribute", NewFvVmAttrDataSource)
+}
+
 // FvVmAttrDataSource defines the data source implementation.
 type FvVmAttrDataSource struct {
 	client *client.Client

@@ -37,6 +37,10 @@ func NewCoppIfPolResource() resource.Resource {
 	return &CoppIfPolResource{}
 }
 
+func init() {
+	registerResource("aci_copp_interface_policy", NewCoppIfPolResource)
+}
+
 // CoppIfPolResource defines the resource implementation.
 type CoppIfPolResource struct {
 	client *client.Client

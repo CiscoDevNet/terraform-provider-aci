@@ -22,6 +22,10 @@ func NewFvRsBDToOutDataSource() datasource.DataSource {
 	return &FvRsBDToOutDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_relation_from_bridge_domain_to_l3_outside", NewFvRsBDToOutDataSource)
+}
+
 // FvRsBDToOutDataSource defines the data source implementation.
 type FvRsBDToOutDataSource struct {
 	client *client.Client

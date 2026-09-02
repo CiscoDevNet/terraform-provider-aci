@@ -34,6 +34,10 @@ func NewFvRsSecInheritedResource() resource.Resource {
 	return &FvRsSecInheritedResource{}
 }
 
+func init() {
+	registerResource("aci_relation_to_contract_master", NewFvRsSecInheritedResource)
+}
+
 // FvRsSecInheritedResource defines the resource implementation.
 type FvRsSecInheritedResource struct {
 	client *client.Client

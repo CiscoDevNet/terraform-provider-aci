@@ -34,6 +34,10 @@ func NewL2InstPolResource() resource.Resource {
 	return &L2InstPolResource{}
 }
 
+func init() {
+	registerResource("aci_l2_mtu_policy", NewL2InstPolResource)
+}
+
 // L2InstPolResource defines the resource implementation.
 type L2InstPolResource struct {
 	client *client.Client

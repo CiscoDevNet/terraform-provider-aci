@@ -22,6 +22,10 @@ func NewInfraPortBlkDataSource() datasource.DataSource {
 	return &InfraPortBlkDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_access_port_block", NewInfraPortBlkDataSource)
+}
+
 // InfraPortBlkDataSource defines the data source implementation.
 type InfraPortBlkDataSource struct {
 	client *client.Client

@@ -23,6 +23,10 @@ func NewCommPolDataSource() datasource.DataSource {
 	return &CommPolDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_management_access_policy", NewCommPolDataSource)
+}
+
 // CommPolDataSource defines the data source implementation.
 type CommPolDataSource struct {
 	client *client.Client

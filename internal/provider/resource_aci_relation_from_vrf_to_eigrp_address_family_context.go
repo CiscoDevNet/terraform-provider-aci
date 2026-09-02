@@ -36,6 +36,10 @@ func NewFvRsCtxToEigrpCtxAfPolResource() resource.Resource {
 	return &FvRsCtxToEigrpCtxAfPolResource{}
 }
 
+func init() {
+	registerResource("aci_relation_from_vrf_to_eigrp_address_family_context", NewFvRsCtxToEigrpCtxAfPolResource)
+}
+
 // FvRsCtxToEigrpCtxAfPolResource defines the resource implementation.
 type FvRsCtxToEigrpCtxAfPolResource struct {
 	client *client.Client

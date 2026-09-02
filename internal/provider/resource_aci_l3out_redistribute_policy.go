@@ -36,6 +36,10 @@ func NewL3extRsRedistributePolResource() resource.Resource {
 	return &L3extRsRedistributePolResource{}
 }
 
+func init() {
+	registerResource("aci_l3out_redistribute_policy", NewL3extRsRedistributePolResource)
+}
+
 // L3extRsRedistributePolResource defines the resource implementation.
 type L3extRsRedistributePolResource struct {
 	client *client.Client

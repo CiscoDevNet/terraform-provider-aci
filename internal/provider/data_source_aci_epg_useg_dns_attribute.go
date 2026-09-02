@@ -22,6 +22,10 @@ func NewFvDnsAttrDataSource() datasource.DataSource {
 	return &FvDnsAttrDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_epg_useg_dns_attribute", NewFvDnsAttrDataSource)
+}
+
 // FvDnsAttrDataSource defines the data source implementation.
 type FvDnsAttrDataSource struct {
 	client *client.Client

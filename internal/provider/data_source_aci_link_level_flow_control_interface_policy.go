@@ -22,6 +22,10 @@ func NewQosLlfcIfPolDataSource() datasource.DataSource {
 	return &QosLlfcIfPolDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_link_level_flow_control_interface_policy", NewQosLlfcIfPolDataSource)
+}
+
 // QosLlfcIfPolDataSource defines the data source implementation.
 type QosLlfcIfPolDataSource struct {
 	client *client.Client

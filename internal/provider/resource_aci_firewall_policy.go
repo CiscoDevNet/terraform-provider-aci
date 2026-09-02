@@ -36,6 +36,10 @@ func NewNwsFwPolResource() resource.Resource {
 	return &NwsFwPolResource{}
 }
 
+func init() {
+	registerResource("aci_firewall_policy", NewNwsFwPolResource)
+}
+
 // NwsFwPolResource defines the resource implementation.
 type NwsFwPolResource struct {
 	client *client.Client

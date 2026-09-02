@@ -25,6 +25,10 @@ func NewQosDscpClassDataSource() datasource.DataSource {
 	return &QosDscpClassDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_dscp_to_priority_map", NewQosDscpClassDataSource)
+}
+
 // QosDscpClassDataSource defines the data source implementation.
 type QosDscpClassDataSource struct {
 	client *client.Client
