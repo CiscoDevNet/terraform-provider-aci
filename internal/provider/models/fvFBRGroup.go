@@ -4,15 +4,14 @@ package models
 
 import (
 	"context"
-	"encoding/json"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
-
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
+
+	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
 
 type FvFBRGroupModel struct {
@@ -89,13 +88,93 @@ func (m *FvFBRGroupModel) BuildDN(parentDN string) string {
 	return parentDN + "/" + m.BuildRN()
 }
 
-func fvFBRGroupObjectIsEmpty(value types.Object) bool {
-	for _, attribute := range value.Attributes() {
-		if !attribute.IsNull() {
-			return false
-		}
+func (m *FvFBRGroupModel) ParentDNFromDN(dn string) string {
+	rn := m.BuildRN()
+
+	parentDN, _ := strings.CutSuffix(dn, "/"+rn)
+	return parentDN
+}
+
+func FvFBRGroupModelFromObject(
+	ctx context.Context,
+	object *container.Container,
+	fallbackModel *FvFBRGroupModel,
+) (FvFBRGroupModel, diag.Diagnostics) {
+	model := NewFvFBRGroupModelNull()
+	var diagnostics diag.Diagnostics
+
+	attributes, ok := modelHelpers.AttributesFromObject(ctx, &diagnostics, object, "fvFBRGroup")
+	if !ok {
+		return model, diagnostics
 	}
-	return true
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "descr", &model.Descr)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "name", &model.Name)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "nameAlias", &model.NameAlias)
+	childObjects := modelHelpers.ChildObjectsByClass(
+		ctx,
+		&diagnostics,
+		object,
+		"fvFBRGroup",
+		[]string{
+			"fvFBRMember",
+			"fvFBRoute",
+			"tagAnnotation",
+			"tagTag",
+		},
+	)
+	modelHelpers.DecodeRepeatedChildren(
+		ctx,
+		&diagnostics,
+		childObjects["fvFBRMember"],
+		FvFBRMemberModelAttributeTypes(),
+		FvFBRMemberModelFromObject,
+		&model.FvFBRMember,
+	)
+	var fallbackFvFBRoute *types.Object
+	if fallbackModel != nil {
+		fallbackFvFBRoute = &fallbackModel.FvFBRoute
+	}
+	modelHelpers.DecodeSingletonChild(
+		ctx,
+		&diagnostics,
+		childObjects["fvFBRoute"],
+		fallbackFvFBRoute,
+		FvFBRouteModelAttributeTypes(),
+		"fvFBRGroup",
+		"fvFBRoute",
+		NewFvFBRouteModelNull,
+		FvFBRouteModelFromObject,
+		&model.FvFBRoute,
+	)
+	modelHelpers.DecodeRepeatedChildren(
+		ctx,
+		&diagnostics,
+		childObjects["tagAnnotation"],
+		TagAnnotationModelAttributeTypes(),
+		TagAnnotationModelFromObject,
+		&model.TagAnnotation,
+	)
+	modelHelpers.DecodeRepeatedChildren(
+		ctx,
+		&diagnostics,
+		childObjects["tagTag"],
+		TagTagModelAttributeTypes(),
+		TagTagModelFromObject,
+		&model.TagTag,
+	)
+
+	return model, diagnostics
+}
+
+func FvFBRGroupModelFromResponse(
+	ctx context.Context,
+	response *container.Container,
+	fallbackModel *FvFBRGroupModel,
+) (*FvFBRGroupModel, string, diag.Diagnostics) {
+	var diagnostics diag.Diagnostics
+	model, dn := modelHelpers.ModelFromResponse(ctx, &diagnostics, response, "fvFBRGroup", fallbackModel, FvFBRGroupModelFromObject)
+	return model, dn, diagnostics
 }
 
 func (m *FvFBRGroupModel) BuildPayloadObject(
@@ -107,214 +186,108 @@ func (m *FvFBRGroupModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
-	if !m.Annotation.IsNull() && !m.Annotation.IsUnknown() {
-		attributes["annotation"] = m.Annotation.ValueString()
-	} else if nested {
+	if !modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "annotation", m.Annotation) && nested {
 		attributes["annotation"] = defaultAnnotation
 	}
-	if !m.Descr.IsNull() && !m.Descr.IsUnknown() {
-		attributes["descr"] = m.Descr.ValueString()
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "descr", m.Descr)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "name", m.Name)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "nameAlias", m.NameAlias)
+	var priorFvFBRMember *types.Set
+	if priorState != nil {
+		priorFvFBRMember = &priorState.FvFBRMember
 	}
-	if !m.Name.IsNull() && !m.Name.IsUnknown() {
-		attributes["name"] = m.Name.ValueString()
+	fvFBRMemberPayloads, ok := modelHelpers.BuildRepeatedChildPayloads(
+		ctx,
+		&diagnostics,
+		m.FvFBRMember,
+		priorFvFBRMember,
+		"fvFBRMember",
+		"FvFBRMember object defined by vrf_fallback_route_group_members cannot be deleted",
+		defaultAnnotation,
+		(*FvFBRMemberModel).BuildRN,
+		(*FvFBRMemberModel).BuildPayloadObject,
+		(*FvFBRMemberModel).BuildNestedDeletePayloadObject,
+	)
+	if !ok {
+		return nil, diagnostics
 	}
-	if !m.NameAlias.IsNull() && !m.NameAlias.IsUnknown() {
-		attributes["nameAlias"] = m.NameAlias.ValueString()
+	children = append(children, fvFBRMemberPayloads...)
+	var priorFvFBRoute *types.Object
+	if priorState != nil {
+		priorFvFBRoute = &priorState.FvFBRoute
 	}
-	if !m.FvFBRMember.IsNull() && !m.FvFBRMember.IsUnknown() {
-		var desiredChildren []FvFBRMemberModel
-		diagnostics.Append(m.FvFBRMember.ElementsAs(ctx, &desiredChildren, false)...)
-		if diagnostics.HasError() {
-			return nil, diagnostics
-		}
-
-		var priorChildren []FvFBRMemberModel
-		if priorState != nil &&
-			!priorState.FvFBRMember.IsNull() &&
-			!priorState.FvFBRMember.IsUnknown() {
-			diagnostics.Append(priorState.FvFBRMember.ElementsAs(ctx, &priorChildren, false)...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-		}
-
-		for desiredIndex := range desiredChildren {
-			desiredChild := &desiredChildren[desiredIndex]
-			var priorChild *FvFBRMemberModel
-			for priorIndex := range priorChildren {
-				if priorChildren[priorIndex].BuildRN() == desiredChild.BuildRN() {
-					priorChild = &priorChildren[priorIndex]
-					break
-				}
-			}
-
-			childObject, childDiagnostics := desiredChild.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
-			diagnostics.Append(childDiagnostics...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			children = append(children, map[string]any{"fvFBRMember": childObject})
-		}
-
-		for priorIndex := range priorChildren {
-			priorChild := &priorChildren[priorIndex]
-			found := false
-			for desiredIndex := range desiredChildren {
-				if desiredChildren[desiredIndex].BuildRN() == priorChild.BuildRN() {
-					found = true
-					break
-				}
-			}
-			if found {
-				continue
-			}
-			children = append(children, map[string]any{"fvFBRMember": priorChild.BuildNestedDeletePayloadObject()})
-		}
+	fvFBRoutePayloads, ok := modelHelpers.BuildSingletonChildPayload(
+		ctx,
+		&diagnostics,
+		m.FvFBRoute,
+		priorFvFBRoute,
+		"fvFBRoute",
+		"FvFBRoute object defined by vrf_fallback_route cannot be deleted",
+		defaultAnnotation,
+		(*FvFBRouteModel).BuildPayloadObject,
+		(*FvFBRouteModel).BuildNestedDeletePayloadObject,
+	)
+	if !ok {
+		return nil, diagnostics
 	}
-	if !m.FvFBRoute.IsNull() && !m.FvFBRoute.IsUnknown() {
-		var priorChild *FvFBRouteModel
-		if priorState != nil &&
-			!priorState.FvFBRoute.IsNull() &&
-			!priorState.FvFBRoute.IsUnknown() &&
-			!fvFBRGroupObjectIsEmpty(priorState.FvFBRoute) {
-			priorChildValue := FvFBRouteModel{}
-			diagnostics.Append(priorState.FvFBRoute.As(ctx, &priorChildValue, basetypes.ObjectAsOptions{})...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			priorChild = &priorChildValue
-		}
-
-		if !fvFBRGroupObjectIsEmpty(m.FvFBRoute) {
-			child := FvFBRouteModel{}
-			diagnostics.Append(m.FvFBRoute.As(ctx, &child, basetypes.ObjectAsOptions{})...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-
-			childObject, childDiagnostics := child.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
-			diagnostics.Append(childDiagnostics...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			children = append(children, map[string]any{"fvFBRoute": childObject})
-		} else if priorChild != nil {
-			children = append(children, map[string]any{"fvFBRoute": priorChild.BuildNestedDeletePayloadObject()})
-		}
+	children = append(children, fvFBRoutePayloads...)
+	var priorTagAnnotation *types.Set
+	if priorState != nil {
+		priorTagAnnotation = &priorState.TagAnnotation
 	}
-	if !m.TagAnnotation.IsNull() && !m.TagAnnotation.IsUnknown() {
-		var desiredChildren []TagAnnotationModel
-		diagnostics.Append(m.TagAnnotation.ElementsAs(ctx, &desiredChildren, false)...)
-		if diagnostics.HasError() {
-			return nil, diagnostics
-		}
-
-		var priorChildren []TagAnnotationModel
-		if priorState != nil &&
-			!priorState.TagAnnotation.IsNull() &&
-			!priorState.TagAnnotation.IsUnknown() {
-			diagnostics.Append(priorState.TagAnnotation.ElementsAs(ctx, &priorChildren, false)...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-		}
-
-		for desiredIndex := range desiredChildren {
-			desiredChild := &desiredChildren[desiredIndex]
-			var priorChild *TagAnnotationModel
-			for priorIndex := range priorChildren {
-				if priorChildren[priorIndex].BuildRN() == desiredChild.BuildRN() {
-					priorChild = &priorChildren[priorIndex]
-					break
-				}
-			}
-
-			childObject, childDiagnostics := desiredChild.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
-			diagnostics.Append(childDiagnostics...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			children = append(children, map[string]any{"tagAnnotation": childObject})
-		}
-
-		for priorIndex := range priorChildren {
-			priorChild := &priorChildren[priorIndex]
-			found := false
-			for desiredIndex := range desiredChildren {
-				if desiredChildren[desiredIndex].BuildRN() == priorChild.BuildRN() {
-					found = true
-					break
-				}
-			}
-			if found {
-				continue
-			}
-			children = append(children, map[string]any{"tagAnnotation": priorChild.BuildNestedDeletePayloadObject()})
-		}
+	tagAnnotationPayloads, ok := modelHelpers.BuildRepeatedChildPayloads(
+		ctx,
+		&diagnostics,
+		m.TagAnnotation,
+		priorTagAnnotation,
+		"tagAnnotation",
+		"TagAnnotation object defined by annotations cannot be deleted",
+		defaultAnnotation,
+		(*TagAnnotationModel).BuildRN,
+		(*TagAnnotationModel).BuildPayloadObject,
+		(*TagAnnotationModel).BuildNestedDeletePayloadObject,
+	)
+	if !ok {
+		return nil, diagnostics
 	}
-	if !m.TagTag.IsNull() && !m.TagTag.IsUnknown() {
-		var desiredChildren []TagTagModel
-		diagnostics.Append(m.TagTag.ElementsAs(ctx, &desiredChildren, false)...)
-		if diagnostics.HasError() {
-			return nil, diagnostics
-		}
-
-		var priorChildren []TagTagModel
-		if priorState != nil &&
-			!priorState.TagTag.IsNull() &&
-			!priorState.TagTag.IsUnknown() {
-			diagnostics.Append(priorState.TagTag.ElementsAs(ctx, &priorChildren, false)...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-		}
-
-		for desiredIndex := range desiredChildren {
-			desiredChild := &desiredChildren[desiredIndex]
-			var priorChild *TagTagModel
-			for priorIndex := range priorChildren {
-				if priorChildren[priorIndex].BuildRN() == desiredChild.BuildRN() {
-					priorChild = &priorChildren[priorIndex]
-					break
-				}
-			}
-
-			childObject, childDiagnostics := desiredChild.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
-			diagnostics.Append(childDiagnostics...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			children = append(children, map[string]any{"tagTag": childObject})
-		}
-
-		for priorIndex := range priorChildren {
-			priorChild := &priorChildren[priorIndex]
-			found := false
-			for desiredIndex := range desiredChildren {
-				if desiredChildren[desiredIndex].BuildRN() == priorChild.BuildRN() {
-					found = true
-					break
-				}
-			}
-			if found {
-				continue
-			}
-			children = append(children, map[string]any{"tagTag": priorChild.BuildNestedDeletePayloadObject()})
-		}
+	children = append(children, tagAnnotationPayloads...)
+	var priorTagTag *types.Set
+	if priorState != nil {
+		priorTagTag = &priorState.TagTag
 	}
+	tagTagPayloads, ok := modelHelpers.BuildRepeatedChildPayloads(
+		ctx,
+		&diagnostics,
+		m.TagTag,
+		priorTagTag,
+		"tagTag",
+		"TagTag object defined by tags cannot be deleted",
+		defaultAnnotation,
+		(*TagTagModel).BuildRN,
+		(*TagTagModel).BuildPayloadObject,
+		(*TagTagModel).BuildNestedDeletePayloadObject,
+	)
+	if !ok {
+		return nil, diagnostics
+	}
+	children = append(children, tagTagPayloads...)
 
-	payloadObject := map[string]any{"attributes": attributes}
-	payloadObject["children"] = children
-	return payloadObject, diagnostics
+	return modelHelpers.NewPayloadObject(
+		ctx,
+		&diagnostics,
+		attributes,
+		children,
+		true,
+	), diagnostics
 }
 
-func (m *FvFBRGroupModel) BuildNestedDeletePayloadObject() map[string]any {
-	attributes := map[string]any{"status": "deleted"}
+func (m *FvFBRGroupModel) BuildNestedDeletePayloadObject(
+	ctx context.Context,
+	diagnostics *diag.Diagnostics,
+) map[string]any {
+	attributes := map[string]any{}
 	attributes["name"] = m.Name.ValueString()
-	return map[string]any{
-		"attributes": attributes,
-		"children":   []map[string]any{},
-	}
+	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, attributes)
 }
 
 type FvFBRGroupResourceModel struct {
@@ -336,6 +309,23 @@ func (m *FvFBRGroupResourceModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
 
+func (m *FvFBRGroupResourceModel) SetFromResponse(
+	ctx context.Context,
+	response *container.Container,
+) (bool, diag.Diagnostics) {
+	fallbackModel := m.FvFBRGroupModel
+	model, dn, diagnostics := FvFBRGroupModelFromResponse(ctx, response, &fallbackModel)
+	found := model != nil
+	if diagnostics.HasError() || !found {
+		return found, diagnostics
+	}
+
+	m.FvFBRGroupModel = *model
+	m.ID = types.StringValue(dn)
+	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
+	return true, diagnostics
+}
+
 func (m *FvFBRGroupResourceModel) BuildPayload(
 	ctx context.Context,
 	priorState *FvFBRGroupModel,
@@ -351,53 +341,14 @@ func (m *FvFBRGroupResourceModel) BuildPayload(
 		payloadObject["attributes"].(map[string]any)["status"] = "created"
 	}
 	payloadEnvelope := map[string]any{"fvFBRGroup": payloadObject}
-	payload, err := json.Marshal(payloadEnvelope)
-	if err != nil {
-		diagnostics.AddError(
-			"Marshalling of JSON payload failed",
-			err.Error()+". Please report this issue to the provider developers.",
-		)
-		return nil, diagnostics
-	}
-
-	jsonPayload, err := container.ParseJSON(payload)
-	if err != nil {
-		diagnostics.AddError(
-			"Construction of JSON payload failed",
-			err.Error()+". Please report this issue to the provider developers.",
-		)
-		return nil, diagnostics
-	}
+	jsonPayload := modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload")
 	return jsonPayload, diagnostics
 }
 
-func (m *FvFBRGroupResourceModel) BuildDeletePayload() (*container.Container, diag.Diagnostics) {
+func (m *FvFBRGroupResourceModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
-	payload, err := json.Marshal(map[string]any{
-		"fvFBRGroup": map[string]any{
-			"attributes": map[string]any{
-				"dn":     m.ID.ValueString(),
-				"status": "deleted",
-			},
-		},
-	})
-	if err != nil {
-		diagnostics.AddError(
-			"Marshalling of JSON delete payload failed",
-			err.Error()+". Please report this issue to the provider developers.",
-		)
-		return nil, diagnostics
-	}
-
-	jsonPayload, err := container.ParseJSON(payload)
-	if err != nil {
-		diagnostics.AddError(
-			"Construction of JSON delete payload failed",
-			err.Error()+". Please report this issue to the provider developers.",
-		)
-		return nil, diagnostics
-	}
-	return jsonPayload, diagnostics
+	payload := modelHelpers.NewDeletePayload(ctx, &diagnostics, "fvFBRGroup", m.ID.ValueString())
+	return payload, diagnostics
 }
 
 type FvFBRGroupDataSourceModel struct {
@@ -417,4 +368,21 @@ func NewFvFBRGroupDataSourceModelNull() FvFBRGroupDataSourceModel {
 
 func (m *FvFBRGroupDataSourceModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
+}
+
+func (m *FvFBRGroupDataSourceModel) SetFromResponse(
+	ctx context.Context,
+	response *container.Container,
+) (bool, diag.Diagnostics) {
+	fallbackModel := m.FvFBRGroupModel
+	model, dn, diagnostics := FvFBRGroupModelFromResponse(ctx, response, &fallbackModel)
+	found := model != nil
+	if diagnostics.HasError() || !found {
+		return found, diagnostics
+	}
+
+	m.FvFBRGroupModel = *model
+	m.ID = types.StringValue(dn)
+	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
+	return true, diagnostics
 }

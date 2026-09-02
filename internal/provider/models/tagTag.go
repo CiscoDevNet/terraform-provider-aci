@@ -4,14 +4,14 @@ package models
 
 import (
 	"context"
-	"encoding/json"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
-
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+
+	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
 
 type TagTagModel struct {
@@ -44,6 +44,41 @@ func (m *TagTagModel) BuildDN(parentDN string) string {
 	return parentDN + "/" + m.BuildRN()
 }
 
+func (m *TagTagModel) ParentDNFromDN(dn string) string {
+	rn := m.BuildRN()
+
+	parentDN, _ := strings.CutSuffix(dn, "/"+rn)
+	return parentDN
+}
+
+func TagTagModelFromObject(
+	ctx context.Context,
+	object *container.Container,
+	fallbackModel *TagTagModel,
+) (TagTagModel, diag.Diagnostics) {
+	model := NewTagTagModelNull()
+	var diagnostics diag.Diagnostics
+
+	attributes, ok := modelHelpers.AttributesFromObject(ctx, &diagnostics, object, "tagTag")
+	if !ok {
+		return model, diagnostics
+	}
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "key", &model.Key)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "value", &model.Value)
+
+	return model, diagnostics
+}
+
+func TagTagModelFromResponse(
+	ctx context.Context,
+	response *container.Container,
+	fallbackModel *TagTagModel,
+) (*TagTagModel, string, diag.Diagnostics) {
+	var diagnostics diag.Diagnostics
+	model, dn := modelHelpers.ModelFromResponse(ctx, &diagnostics, response, "tagTag", fallbackModel, TagTagModelFromObject)
+	return model, dn, diagnostics
+}
+
 func (m *TagTagModel) BuildPayloadObject(
 	ctx context.Context,
 	priorState *TagTagModel,
@@ -53,27 +88,25 @@ func (m *TagTagModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
-	if !m.Key.IsNull() && !m.Key.IsUnknown() {
-		attributes["key"] = m.Key.ValueString()
-	}
-	if !m.Value.IsNull() && !m.Value.IsUnknown() {
-		attributes["value"] = m.Value.ValueString()
-	}
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "key", m.Key)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "value", m.Value)
 
-	payloadObject := map[string]any{"attributes": attributes}
-	if nested {
-		payloadObject["children"] = children
-	}
-	return payloadObject, diagnostics
+	return modelHelpers.NewPayloadObject(
+		ctx,
+		&diagnostics,
+		attributes,
+		children,
+		nested,
+	), diagnostics
 }
 
-func (m *TagTagModel) BuildNestedDeletePayloadObject() map[string]any {
-	attributes := map[string]any{"status": "deleted"}
+func (m *TagTagModel) BuildNestedDeletePayloadObject(
+	ctx context.Context,
+	diagnostics *diag.Diagnostics,
+) map[string]any {
+	attributes := map[string]any{}
 	attributes["key"] = m.Key.ValueString()
-	return map[string]any{
-		"attributes": attributes,
-		"children":   []map[string]any{},
-	}
+	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, attributes)
 }
 
 type TagTagResourceModel struct {
@@ -95,6 +128,23 @@ func (m *TagTagResourceModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
 
+func (m *TagTagResourceModel) SetFromResponse(
+	ctx context.Context,
+	response *container.Container,
+) (bool, diag.Diagnostics) {
+	fallbackModel := m.TagTagModel
+	model, dn, diagnostics := TagTagModelFromResponse(ctx, response, &fallbackModel)
+	found := model != nil
+	if diagnostics.HasError() || !found {
+		return found, diagnostics
+	}
+
+	m.TagTagModel = *model
+	m.ID = types.StringValue(dn)
+	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
+	return true, diagnostics
+}
+
 func (m *TagTagResourceModel) BuildPayload(
 	ctx context.Context,
 	priorState *TagTagModel,
@@ -110,53 +160,14 @@ func (m *TagTagResourceModel) BuildPayload(
 		payloadObject["attributes"].(map[string]any)["status"] = "created"
 	}
 	payloadEnvelope := map[string]any{"tagTag": payloadObject}
-	payload, err := json.Marshal(payloadEnvelope)
-	if err != nil {
-		diagnostics.AddError(
-			"Marshalling of JSON payload failed",
-			err.Error()+". Please report this issue to the provider developers.",
-		)
-		return nil, diagnostics
-	}
-
-	jsonPayload, err := container.ParseJSON(payload)
-	if err != nil {
-		diagnostics.AddError(
-			"Construction of JSON payload failed",
-			err.Error()+". Please report this issue to the provider developers.",
-		)
-		return nil, diagnostics
-	}
+	jsonPayload := modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload")
 	return jsonPayload, diagnostics
 }
 
-func (m *TagTagResourceModel) BuildDeletePayload() (*container.Container, diag.Diagnostics) {
+func (m *TagTagResourceModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
-	payload, err := json.Marshal(map[string]any{
-		"tagTag": map[string]any{
-			"attributes": map[string]any{
-				"dn":     m.ID.ValueString(),
-				"status": "deleted",
-			},
-		},
-	})
-	if err != nil {
-		diagnostics.AddError(
-			"Marshalling of JSON delete payload failed",
-			err.Error()+". Please report this issue to the provider developers.",
-		)
-		return nil, diagnostics
-	}
-
-	jsonPayload, err := container.ParseJSON(payload)
-	if err != nil {
-		diagnostics.AddError(
-			"Construction of JSON delete payload failed",
-			err.Error()+". Please report this issue to the provider developers.",
-		)
-		return nil, diagnostics
-	}
-	return jsonPayload, diagnostics
+	payload := modelHelpers.NewDeletePayload(ctx, &diagnostics, "tagTag", m.ID.ValueString())
+	return payload, diagnostics
 }
 
 type TagTagDataSourceModel struct {
@@ -176,4 +187,21 @@ func NewTagTagDataSourceModelNull() TagTagDataSourceModel {
 
 func (m *TagTagDataSourceModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
+}
+
+func (m *TagTagDataSourceModel) SetFromResponse(
+	ctx context.Context,
+	response *container.Container,
+) (bool, diag.Diagnostics) {
+	fallbackModel := m.TagTagModel
+	model, dn, diagnostics := TagTagModelFromResponse(ctx, response, &fallbackModel)
+	found := model != nil
+	if diagnostics.HasError() || !found {
+		return found, diagnostics
+	}
+
+	m.TagTagModel = *model
+	m.ID = types.StringValue(dn)
+	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
+	return true, diagnostics
 }

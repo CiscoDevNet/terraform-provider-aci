@@ -4,16 +4,15 @@ package models
 
 import (
 	"context"
-	"encoding/json"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
-
-	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
+
+	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
 
 type NetflowExporterPolModel struct {
@@ -108,13 +107,109 @@ func (m *NetflowExporterPolModel) BuildDN(parentDN string) string {
 	return parentDN + "/" + m.BuildRN()
 }
 
-func netflowExporterPolObjectIsEmpty(value types.Object) bool {
-	for _, attribute := range value.Attributes() {
-		if !attribute.IsNull() {
-			return false
-		}
+func (m *NetflowExporterPolModel) ParentDNFromDN(dn string) string {
+	rn := m.BuildRN()
+
+	parentDN, _ := strings.CutSuffix(dn, "/"+rn)
+	return parentDN
+}
+
+func NetflowExporterPolModelFromObject(
+	ctx context.Context,
+	object *container.Container,
+	fallbackModel *NetflowExporterPolModel,
+) (NetflowExporterPolModel, diag.Diagnostics) {
+	model := NewNetflowExporterPolModelNull()
+	var diagnostics diag.Diagnostics
+
+	attributes, ok := modelHelpers.AttributesFromObject(ctx, &diagnostics, object, "netflowExporterPol")
+	if !ok {
+		return model, diagnostics
 	}
-	return true
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "descr", &model.Descr)
+	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "dscp", &model.Dscp, customTypes.NewNetflowExporterPolDscpStringValue)
+	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "dstAddr", &model.DstAddr, customTypes.NewIPAddressStringValue)
+	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "dstPort", &model.DstPort, customTypes.NewNetflowExporterPolDstPortStringValue)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "name", &model.Name)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "nameAlias", &model.NameAlias)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ownerKey", &model.OwnerKey)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ownerTag", &model.OwnerTag)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "sourceIpType", &model.SourceIpType)
+	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "srcAddr", &model.SrcAddr, customTypes.NewIPAddressStringValue)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ver", &model.Ver)
+	childObjects := modelHelpers.ChildObjectsByClass(
+		ctx,
+		&diagnostics,
+		object,
+		"netflowExporterPol",
+		[]string{
+			"netflowRsExporterToCtx",
+			"netflowRsExporterToEPg",
+			"tagAnnotation",
+			"tagTag",
+		},
+	)
+	var fallbackNetflowRsExporterToCtx *types.Object
+	if fallbackModel != nil {
+		fallbackNetflowRsExporterToCtx = &fallbackModel.NetflowRsExporterToCtx
+	}
+	modelHelpers.DecodeSingletonChild(
+		ctx,
+		&diagnostics,
+		childObjects["netflowRsExporterToCtx"],
+		fallbackNetflowRsExporterToCtx,
+		NetflowRsExporterToCtxModelAttributeTypes(),
+		"netflowExporterPol",
+		"netflowRsExporterToCtx",
+		NewNetflowRsExporterToCtxModelNull,
+		NetflowRsExporterToCtxModelFromObject,
+		&model.NetflowRsExporterToCtx,
+	)
+	var fallbackNetflowRsExporterToEPg *types.Object
+	if fallbackModel != nil {
+		fallbackNetflowRsExporterToEPg = &fallbackModel.NetflowRsExporterToEPg
+	}
+	modelHelpers.DecodeSingletonChild(
+		ctx,
+		&diagnostics,
+		childObjects["netflowRsExporterToEPg"],
+		fallbackNetflowRsExporterToEPg,
+		NetflowRsExporterToEPgModelAttributeTypes(),
+		"netflowExporterPol",
+		"netflowRsExporterToEPg",
+		NewNetflowRsExporterToEPgModelNull,
+		NetflowRsExporterToEPgModelFromObject,
+		&model.NetflowRsExporterToEPg,
+	)
+	modelHelpers.DecodeRepeatedChildren(
+		ctx,
+		&diagnostics,
+		childObjects["tagAnnotation"],
+		TagAnnotationModelAttributeTypes(),
+		TagAnnotationModelFromObject,
+		&model.TagAnnotation,
+	)
+	modelHelpers.DecodeRepeatedChildren(
+		ctx,
+		&diagnostics,
+		childObjects["tagTag"],
+		TagTagModelAttributeTypes(),
+		TagTagModelFromObject,
+		&model.TagTag,
+	)
+
+	return model, diagnostics
+}
+
+func NetflowExporterPolModelFromResponse(
+	ctx context.Context,
+	response *container.Container,
+	fallbackModel *NetflowExporterPolModel,
+) (*NetflowExporterPolModel, string, diag.Diagnostics) {
+	var diagnostics diag.Diagnostics
+	model, dn := modelHelpers.ModelFromResponse(ctx, &diagnostics, response, "netflowExporterPol", fallbackModel, NetflowExporterPolModelFromObject)
+	return model, dn, diagnostics
 }
 
 func (m *NetflowExporterPolModel) BuildPayloadObject(
@@ -126,219 +221,115 @@ func (m *NetflowExporterPolModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
-	if !m.Annotation.IsNull() && !m.Annotation.IsUnknown() {
-		attributes["annotation"] = m.Annotation.ValueString()
-	} else if nested {
+	if !modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "annotation", m.Annotation) && nested {
 		attributes["annotation"] = defaultAnnotation
 	}
-	if !m.Descr.IsNull() && !m.Descr.IsUnknown() {
-		attributes["descr"] = m.Descr.ValueString()
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "descr", m.Descr)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "dscp", m.Dscp)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "dstAddr", m.DstAddr)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "dstPort", m.DstPort)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "name", m.Name)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "nameAlias", m.NameAlias)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "ownerKey", m.OwnerKey)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "ownerTag", m.OwnerTag)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "sourceIpType", m.SourceIpType)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "srcAddr", m.SrcAddr)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "ver", m.Ver)
+	var priorNetflowRsExporterToCtx *types.Object
+	if priorState != nil {
+		priorNetflowRsExporterToCtx = &priorState.NetflowRsExporterToCtx
 	}
-	if !m.Dscp.IsNull() && !m.Dscp.IsUnknown() {
-		attributes["dscp"] = m.Dscp.ValueString()
+	netflowRsExporterToCtxPayloads, ok := modelHelpers.BuildSingletonChildPayload(
+		ctx,
+		&diagnostics,
+		m.NetflowRsExporterToCtx,
+		priorNetflowRsExporterToCtx,
+		"netflowRsExporterToCtx",
+		"NetflowRsExporterToCtx object defined by relation_to_vrf cannot be deleted",
+		defaultAnnotation,
+		(*NetflowRsExporterToCtxModel).BuildPayloadObject,
+		(*NetflowRsExporterToCtxModel).BuildNestedDeletePayloadObject,
+	)
+	if !ok {
+		return nil, diagnostics
 	}
-	if !m.DstAddr.IsNull() && !m.DstAddr.IsUnknown() {
-		attributes["dstAddr"] = m.DstAddr.ValueString()
+	children = append(children, netflowRsExporterToCtxPayloads...)
+	var priorNetflowRsExporterToEPg *types.Object
+	if priorState != nil {
+		priorNetflowRsExporterToEPg = &priorState.NetflowRsExporterToEPg
 	}
-	if !m.DstPort.IsNull() && !m.DstPort.IsUnknown() {
-		attributes["dstPort"] = m.DstPort.ValueString()
+	netflowRsExporterToEPgPayloads, ok := modelHelpers.BuildSingletonChildPayload(
+		ctx,
+		&diagnostics,
+		m.NetflowRsExporterToEPg,
+		priorNetflowRsExporterToEPg,
+		"netflowRsExporterToEPg",
+		"NetflowRsExporterToEPg object defined by relation_to_epg cannot be deleted",
+		defaultAnnotation,
+		(*NetflowRsExporterToEPgModel).BuildPayloadObject,
+		(*NetflowRsExporterToEPgModel).BuildNestedDeletePayloadObject,
+	)
+	if !ok {
+		return nil, diagnostics
 	}
-	if !m.Name.IsNull() && !m.Name.IsUnknown() {
-		attributes["name"] = m.Name.ValueString()
+	children = append(children, netflowRsExporterToEPgPayloads...)
+	var priorTagAnnotation *types.Set
+	if priorState != nil {
+		priorTagAnnotation = &priorState.TagAnnotation
 	}
-	if !m.NameAlias.IsNull() && !m.NameAlias.IsUnknown() {
-		attributes["nameAlias"] = m.NameAlias.ValueString()
+	tagAnnotationPayloads, ok := modelHelpers.BuildRepeatedChildPayloads(
+		ctx,
+		&diagnostics,
+		m.TagAnnotation,
+		priorTagAnnotation,
+		"tagAnnotation",
+		"TagAnnotation object defined by annotations cannot be deleted",
+		defaultAnnotation,
+		(*TagAnnotationModel).BuildRN,
+		(*TagAnnotationModel).BuildPayloadObject,
+		(*TagAnnotationModel).BuildNestedDeletePayloadObject,
+	)
+	if !ok {
+		return nil, diagnostics
 	}
-	if !m.OwnerKey.IsNull() && !m.OwnerKey.IsUnknown() {
-		attributes["ownerKey"] = m.OwnerKey.ValueString()
+	children = append(children, tagAnnotationPayloads...)
+	var priorTagTag *types.Set
+	if priorState != nil {
+		priorTagTag = &priorState.TagTag
 	}
-	if !m.OwnerTag.IsNull() && !m.OwnerTag.IsUnknown() {
-		attributes["ownerTag"] = m.OwnerTag.ValueString()
+	tagTagPayloads, ok := modelHelpers.BuildRepeatedChildPayloads(
+		ctx,
+		&diagnostics,
+		m.TagTag,
+		priorTagTag,
+		"tagTag",
+		"TagTag object defined by tags cannot be deleted",
+		defaultAnnotation,
+		(*TagTagModel).BuildRN,
+		(*TagTagModel).BuildPayloadObject,
+		(*TagTagModel).BuildNestedDeletePayloadObject,
+	)
+	if !ok {
+		return nil, diagnostics
 	}
-	if !m.SourceIpType.IsNull() && !m.SourceIpType.IsUnknown() {
-		attributes["sourceIpType"] = m.SourceIpType.ValueString()
-	}
-	if !m.SrcAddr.IsNull() && !m.SrcAddr.IsUnknown() {
-		attributes["srcAddr"] = m.SrcAddr.ValueString()
-	}
-	if !m.Ver.IsNull() && !m.Ver.IsUnknown() {
-		attributes["ver"] = m.Ver.ValueString()
-	}
-	if !m.NetflowRsExporterToCtx.IsNull() && !m.NetflowRsExporterToCtx.IsUnknown() {
-		var priorChild *NetflowRsExporterToCtxModel
-		if priorState != nil &&
-			!priorState.NetflowRsExporterToCtx.IsNull() &&
-			!priorState.NetflowRsExporterToCtx.IsUnknown() &&
-			!netflowExporterPolObjectIsEmpty(priorState.NetflowRsExporterToCtx) {
-			priorChildValue := NetflowRsExporterToCtxModel{}
-			diagnostics.Append(priorState.NetflowRsExporterToCtx.As(ctx, &priorChildValue, basetypes.ObjectAsOptions{})...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			priorChild = &priorChildValue
-		}
+	children = append(children, tagTagPayloads...)
 
-		if !netflowExporterPolObjectIsEmpty(m.NetflowRsExporterToCtx) {
-			child := NetflowRsExporterToCtxModel{}
-			diagnostics.Append(m.NetflowRsExporterToCtx.As(ctx, &child, basetypes.ObjectAsOptions{})...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-
-			childObject, childDiagnostics := child.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
-			diagnostics.Append(childDiagnostics...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			children = append(children, map[string]any{"netflowRsExporterToCtx": childObject})
-		} else if priorChild != nil {
-			children = append(children, map[string]any{"netflowRsExporterToCtx": priorChild.BuildNestedDeletePayloadObject()})
-		}
-	}
-	if !m.NetflowRsExporterToEPg.IsNull() && !m.NetflowRsExporterToEPg.IsUnknown() {
-		var priorChild *NetflowRsExporterToEPgModel
-		if priorState != nil &&
-			!priorState.NetflowRsExporterToEPg.IsNull() &&
-			!priorState.NetflowRsExporterToEPg.IsUnknown() &&
-			!netflowExporterPolObjectIsEmpty(priorState.NetflowRsExporterToEPg) {
-			priorChildValue := NetflowRsExporterToEPgModel{}
-			diagnostics.Append(priorState.NetflowRsExporterToEPg.As(ctx, &priorChildValue, basetypes.ObjectAsOptions{})...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			priorChild = &priorChildValue
-		}
-
-		if !netflowExporterPolObjectIsEmpty(m.NetflowRsExporterToEPg) {
-			child := NetflowRsExporterToEPgModel{}
-			diagnostics.Append(m.NetflowRsExporterToEPg.As(ctx, &child, basetypes.ObjectAsOptions{})...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-
-			childObject, childDiagnostics := child.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
-			diagnostics.Append(childDiagnostics...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			children = append(children, map[string]any{"netflowRsExporterToEPg": childObject})
-		} else if priorChild != nil {
-			children = append(children, map[string]any{"netflowRsExporterToEPg": priorChild.BuildNestedDeletePayloadObject()})
-		}
-	}
-	if !m.TagAnnotation.IsNull() && !m.TagAnnotation.IsUnknown() {
-		var desiredChildren []TagAnnotationModel
-		diagnostics.Append(m.TagAnnotation.ElementsAs(ctx, &desiredChildren, false)...)
-		if diagnostics.HasError() {
-			return nil, diagnostics
-		}
-
-		var priorChildren []TagAnnotationModel
-		if priorState != nil &&
-			!priorState.TagAnnotation.IsNull() &&
-			!priorState.TagAnnotation.IsUnknown() {
-			diagnostics.Append(priorState.TagAnnotation.ElementsAs(ctx, &priorChildren, false)...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-		}
-
-		for desiredIndex := range desiredChildren {
-			desiredChild := &desiredChildren[desiredIndex]
-			var priorChild *TagAnnotationModel
-			for priorIndex := range priorChildren {
-				if priorChildren[priorIndex].BuildRN() == desiredChild.BuildRN() {
-					priorChild = &priorChildren[priorIndex]
-					break
-				}
-			}
-
-			childObject, childDiagnostics := desiredChild.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
-			diagnostics.Append(childDiagnostics...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			children = append(children, map[string]any{"tagAnnotation": childObject})
-		}
-
-		for priorIndex := range priorChildren {
-			priorChild := &priorChildren[priorIndex]
-			found := false
-			for desiredIndex := range desiredChildren {
-				if desiredChildren[desiredIndex].BuildRN() == priorChild.BuildRN() {
-					found = true
-					break
-				}
-			}
-			if found {
-				continue
-			}
-			children = append(children, map[string]any{"tagAnnotation": priorChild.BuildNestedDeletePayloadObject()})
-		}
-	}
-	if !m.TagTag.IsNull() && !m.TagTag.IsUnknown() {
-		var desiredChildren []TagTagModel
-		diagnostics.Append(m.TagTag.ElementsAs(ctx, &desiredChildren, false)...)
-		if diagnostics.HasError() {
-			return nil, diagnostics
-		}
-
-		var priorChildren []TagTagModel
-		if priorState != nil &&
-			!priorState.TagTag.IsNull() &&
-			!priorState.TagTag.IsUnknown() {
-			diagnostics.Append(priorState.TagTag.ElementsAs(ctx, &priorChildren, false)...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-		}
-
-		for desiredIndex := range desiredChildren {
-			desiredChild := &desiredChildren[desiredIndex]
-			var priorChild *TagTagModel
-			for priorIndex := range priorChildren {
-				if priorChildren[priorIndex].BuildRN() == desiredChild.BuildRN() {
-					priorChild = &priorChildren[priorIndex]
-					break
-				}
-			}
-
-			childObject, childDiagnostics := desiredChild.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
-			diagnostics.Append(childDiagnostics...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			children = append(children, map[string]any{"tagTag": childObject})
-		}
-
-		for priorIndex := range priorChildren {
-			priorChild := &priorChildren[priorIndex]
-			found := false
-			for desiredIndex := range desiredChildren {
-				if desiredChildren[desiredIndex].BuildRN() == priorChild.BuildRN() {
-					found = true
-					break
-				}
-			}
-			if found {
-				continue
-			}
-			children = append(children, map[string]any{"tagTag": priorChild.BuildNestedDeletePayloadObject()})
-		}
-	}
-
-	payloadObject := map[string]any{"attributes": attributes}
-	payloadObject["children"] = children
-	return payloadObject, diagnostics
+	return modelHelpers.NewPayloadObject(
+		ctx,
+		&diagnostics,
+		attributes,
+		children,
+		true,
+	), diagnostics
 }
 
-func (m *NetflowExporterPolModel) BuildNestedDeletePayloadObject() map[string]any {
-	attributes := map[string]any{"status": "deleted"}
+func (m *NetflowExporterPolModel) BuildNestedDeletePayloadObject(
+	ctx context.Context,
+	diagnostics *diag.Diagnostics,
+) map[string]any {
+	attributes := map[string]any{}
 	attributes["name"] = m.Name.ValueString()
-	return map[string]any{
-		"attributes": attributes,
-		"children":   []map[string]any{},
-	}
+	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, attributes)
 }
 
 type NetflowExporterPolResourceModel struct {
@@ -360,6 +351,23 @@ func (m *NetflowExporterPolResourceModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
 
+func (m *NetflowExporterPolResourceModel) SetFromResponse(
+	ctx context.Context,
+	response *container.Container,
+) (bool, diag.Diagnostics) {
+	fallbackModel := m.NetflowExporterPolModel
+	model, dn, diagnostics := NetflowExporterPolModelFromResponse(ctx, response, &fallbackModel)
+	found := model != nil
+	if diagnostics.HasError() || !found {
+		return found, diagnostics
+	}
+
+	m.NetflowExporterPolModel = *model
+	m.ID = types.StringValue(dn)
+	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
+	return true, diagnostics
+}
+
 func (m *NetflowExporterPolResourceModel) BuildPayload(
 	ctx context.Context,
 	priorState *NetflowExporterPolModel,
@@ -375,53 +383,14 @@ func (m *NetflowExporterPolResourceModel) BuildPayload(
 		payloadObject["attributes"].(map[string]any)["status"] = "created"
 	}
 	payloadEnvelope := map[string]any{"netflowExporterPol": payloadObject}
-	payload, err := json.Marshal(payloadEnvelope)
-	if err != nil {
-		diagnostics.AddError(
-			"Marshalling of JSON payload failed",
-			err.Error()+". Please report this issue to the provider developers.",
-		)
-		return nil, diagnostics
-	}
-
-	jsonPayload, err := container.ParseJSON(payload)
-	if err != nil {
-		diagnostics.AddError(
-			"Construction of JSON payload failed",
-			err.Error()+". Please report this issue to the provider developers.",
-		)
-		return nil, diagnostics
-	}
+	jsonPayload := modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload")
 	return jsonPayload, diagnostics
 }
 
-func (m *NetflowExporterPolResourceModel) BuildDeletePayload() (*container.Container, diag.Diagnostics) {
+func (m *NetflowExporterPolResourceModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
-	payload, err := json.Marshal(map[string]any{
-		"netflowExporterPol": map[string]any{
-			"attributes": map[string]any{
-				"dn":     m.ID.ValueString(),
-				"status": "deleted",
-			},
-		},
-	})
-	if err != nil {
-		diagnostics.AddError(
-			"Marshalling of JSON delete payload failed",
-			err.Error()+". Please report this issue to the provider developers.",
-		)
-		return nil, diagnostics
-	}
-
-	jsonPayload, err := container.ParseJSON(payload)
-	if err != nil {
-		diagnostics.AddError(
-			"Construction of JSON delete payload failed",
-			err.Error()+". Please report this issue to the provider developers.",
-		)
-		return nil, diagnostics
-	}
-	return jsonPayload, diagnostics
+	payload := modelHelpers.NewDeletePayload(ctx, &diagnostics, "netflowExporterPol", m.ID.ValueString())
+	return payload, diagnostics
 }
 
 type NetflowExporterPolDataSourceModel struct {
@@ -441,4 +410,21 @@ func NewNetflowExporterPolDataSourceModelNull() NetflowExporterPolDataSourceMode
 
 func (m *NetflowExporterPolDataSourceModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
+}
+
+func (m *NetflowExporterPolDataSourceModel) SetFromResponse(
+	ctx context.Context,
+	response *container.Container,
+) (bool, diag.Diagnostics) {
+	fallbackModel := m.NetflowExporterPolModel
+	model, dn, diagnostics := NetflowExporterPolModelFromResponse(ctx, response, &fallbackModel)
+	found := model != nil
+	if diagnostics.HasError() || !found {
+		return found, diagnostics
+	}
+
+	m.NetflowExporterPolModel = *model
+	m.ID = types.StringValue(dn)
+	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
+	return true, diagnostics
 }

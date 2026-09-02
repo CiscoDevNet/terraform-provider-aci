@@ -197,6 +197,7 @@ methods. The reusable model does not store them as fields:
 ```go
 func (m *FvTenantModel) BuildRN() string
 func (m *FvTenantModel) BuildDN() string
+func (m *FvBDModel) ParentDNFromDN(dn string) string
 
 func (m *FvTenantModel) BuildPayloadObject(
 	ctx context.Context,
@@ -205,7 +206,10 @@ func (m *FvTenantModel) BuildPayloadObject(
 	defaultAnnotation string,
 ) (map[string]any, diag.Diagnostics)
 
-func (m *FvTenantModel) BuildNestedDeletePayloadObject() map[string]any
+func (m *FvTenantModel) BuildNestedDeletePayloadObject(
+	ctx context.Context,
+	diagnostics *diag.Diagnostics,
+) map[string]any
 
 func (m *FvTenantResourceModel) BuildPayload(
 	ctx context.Context,
@@ -215,28 +219,31 @@ func (m *FvTenantResourceModel) BuildPayload(
 	defaultAnnotation string,
 ) (*container.Container, diag.Diagnostics)
 
-func (m *FvTenantResourceModel) BuildDeletePayload() (*container.Container, diag.Diagnostics)
+func (m *FvTenantResourceModel) BuildDeletePayload(
+	ctx context.Context,
+) (*container.Container, diag.Diagnostics)
 
 func FvTenantModelFromResponse(
 	ctx context.Context,
 	response *container.Container,
-) (FvTenantModel, string, string, diag.Diagnostics)
+	fallbackModel *FvTenantModel,
+) (*FvTenantModel, string, diag.Diagnostics)
 
 func FvTenantModelFromObject(
 	ctx context.Context,
 	object *container.Container,
-	parentDN string,
+	fallbackModel *FvTenantModel,
 ) (FvTenantModel, diag.Diagnostics)
 
 func (m *FvTenantResourceModel) SetFromResponse(
 	ctx context.Context,
 	response *container.Container,
-) diag.Diagnostics
+) (bool, diag.Diagnostics)
 
 func (m *FvTenantDataSourceModel) SetFromResponse(
 	ctx context.Context,
 	response *container.Container,
-) diag.Diagnostics
+) (bool, diag.Diagnostics)
 
 func (m *FvTenantResourceModel) SetIDFromDN(dn string)
 
@@ -244,10 +251,41 @@ func (m *FvTenantDataSourceModel) SetIDFromDN(dn string)
 ```
 
 `FvTenantModelFromResponse` decodes the response envelope and returns the
-class model together with the returned DN and parent DN. The resource and
-data-source `SetFromResponse` methods assign those identity values to their
-top-level Terraform fields. `FvTenantModelFromObject` is the nested-child
-decoder and operates directly on an APIC child object.
+class model together with the exact DN returned by APIC. A nil model with no
+error diagnostics means that the expected class was not found. The resource
+and data-source `SetFromResponse` methods return that result as `found` and
+assign identity to their top-level Terraform fields only when decoding
+succeeds. `FvTenantModelFromObject` is the recursive nested-child decoder and
+operates directly on an APIC class object.
+
+The public class operations remain generated because they define each
+class's property and child mapping. Class-independent mechanics live in the
+hand-written `internal/provider/models/helpers` package:
+
+- `values.go` converts APIC strings and Terraform values;
+- `response.go` validates response containers, resolves cardinality, and
+  materializes nested models;
+- `payload.go` reconciles children and constructs request containers.
+
+Generated methods import this package and call its functions with concrete
+constructors and method expressions. The functions are exported only because
+a Go subdirectory is a separate package; the repository's `internal`
+boundary still keeps them provider-internal. This removes repeated runtime
+logic without adding reflection or a common model interface. These three
+files are not generated outputs and are therefore not listed in the
+generated-file manifest.
+
+Exported operational helpers consistently receive `context.Context` and a
+pointer to the diagnostics owned by the generated method. Helpers append
+diagnostics directly and only replace destination values after successful
+conversion. This keeps generated call sites stable when helper-level logging
+or diagnostics are added later, while the generated public method remains the
+boundary that returns diagnostics to its caller.
+
+The optional fallback model is the current plan or state embedded in the
+wrapper. It is consulted only for sensitive attributes omitted by APIC,
+including sensitive attributes below singleton children. Returned APIC values
+always take precedence, and ordinary absent attributes remain null.
 
 Identifying attributes are required by the resource, data-source, and nested
 child schemas. `BuildRN` therefore operates on an already resolved model and
@@ -318,9 +356,11 @@ the existing provider fallback.
 schemas require the placement inputs needed by the class, and nested callers
 pass an already resolved parent DN.
 
-Response decoding derives the returned RN and parent DN from the returned DN.
-DN parsing must treat bracketed RN values as one segment, as required by
-relation classes such as `fvRsDomAtt`.
+Response decoding preserves the exact returned DN as the wrapper ID. A model
+with a runtime parent also exposes `ParentDNFromDN`. It removes the suffix
+constructed from the decoded model's `BuildRN`; parent-DN variants test their
+non-default, metadata-derived suffixes before the direct placement. This
+avoids splitting bracketed RNs whose identifying values can contain `/`.
 
 ### ID
 
@@ -421,10 +461,10 @@ Child cardinality comes from normalized class metadata:
 - repeated unordered child -> `types.Set`;
 - repeated ordered child -> `types.List`.
 
-Missing singleton children are represented by a null object value. Missing
-repeated children are represented as null or empty according to the existing
-Terraform schema contract. Unknown values remain unknown during planning and
-are not used to construct APIC identity or payload fragments prematurely.
+During planning, missing or unresolved child values retain their Terraform
+null or unknown state. During response decoding, a missing singleton child is
+a known object whose fields are all null, and a missing repeated child is a
+known empty set. APIC responses never produce unknown values.
 
 For nested DN construction, the parent passes its resolved DN to the child:
 
@@ -457,18 +497,19 @@ child model shape.
 
 The APIC response is decoded into the same Terraform-facing class model; it
 is not cast directly from generic JSON. `container.Container` wraps generic
-JSON data, so each class receives generated decoding functions. The response
-decoder does not know whether its caller is a resource or a data source.
+JSON data, so every class receives a generated object decoder. Classes with a
+resource or data-source artifact additionally receive the response-envelope
+decoder. Neither decoder depends on whether the eventual caller is a resource
+or a data source.
 
 For a top-level response, the decoder:
 
 1. locates the expected class below `imdata`;
 2. verifies the expected result count;
 3. reads APIC attributes into Terraform framework values;
-4. derives RN, DN, and parent DN from the response DN;
+4. preserves the exact response DN as top-level identity;
 5. decodes known child classes recursively;
-6. converts decoded child models to `types.Object`, `types.Set`, or
-   `types.List` values.
+6. converts decoded child models to `types.Object` or `types.Set` values.
 
 Conceptually, a top-level resource response is handled as follows:
 
@@ -476,36 +517,48 @@ Conceptually, a top-level resource response is handled as follows:
 func (m *FvTenantResourceModel) SetFromResponse(
 	ctx context.Context,
 	response *container.Container,
-) diag.Diagnostics {
-	model, dn, _, diags := FvTenantModelFromResponse(ctx, response)
-	if diags.HasError() {
-		return diags
+) (bool, diag.Diagnostics) {
+	fallbackModel := m.FvTenantModel
+	model, dn, diags := FvTenantModelFromResponse(ctx, response, &fallbackModel)
+	if diags.HasError() || model == nil {
+		return model != nil, diags
 	}
 
-	m.FvTenantModel = model
+	m.FvTenantModel = *model
 	m.ID = types.StringValue(dn)
 
-	return diags
+	return true, diags
 }
 ```
 
 The data-source wrapper uses the same sequence, assigning the result to
 `FvTenantDataSourceModel`. A wrapper that exposes `parent_dn` also assigns the
 decoded parent DN. Nested decoding operates on the child object rather than
-the response envelope. Each class therefore has generated paths for both
-response envelopes and nested objects.
+the response envelope. Child-only classes therefore need only the object
+decoder.
 
-The decoder must return explicit errors for:
+An empty `imdata`, or an `imdata` containing only unrelated classes, is a
+not-found result and must be distinguishable from a malformed response. More
+than one top-level object of the expected class is an error. Unknown APIC
+attributes and unknown child classes are ignored, while malformed known
+attributes and children produce diagnostics without panicking.
 
-- a missing expected object when one is required;
-- multiple objects when a singleton is expected;
-- malformed attributes;
-- invalid DN/class combinations;
-- duplicate singleton children.
+Children are inspected only at the current object's direct `children` level;
+each child decoder recursively owns its descendants. A missing singleton is
+decoded as a known empty object. If APIC violates the singleton invariant by
+returning multiple objects, decoding continues with the first object and adds
+both a warning log and warning diagnostic. Repeated children are decoded into
+a known set, including an empty set when no matching objects are returned.
 
-An empty `imdata` result is a not-found result and must be distinguishable
-from a malformed response. API transport and API error handling remain owned
-by the existing REST helper.
+Plain scalar attributes are decoded as strings. Set-valued APIC attributes
+are split on commas; an explicitly returned empty string becomes a known empty
+set. Existing custom string constructors remain responsible for their
+property semantics. To preserve current provider behavior, an explicitly
+returned empty string is decoded as `"none"` only when the property's valid
+values expose `none` as a local name. An absent attribute remains null.
+
+API transport, API error handling, and the resource/data-source-specific
+not-found response remain owned by the existing adapters.
 
 ## 9. Terraform resource boundary
 

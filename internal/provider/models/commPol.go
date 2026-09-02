@@ -4,15 +4,14 @@ package models
 
 import (
 	"context"
-	"encoding/json"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
-
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
+
+	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
 
 type CommPolModel struct {
@@ -107,13 +106,148 @@ func (m *CommPolModel) BuildDN() string {
 	return "uni/" + m.BuildRN()
 }
 
-func commPolObjectIsEmpty(value types.Object) bool {
-	for _, attribute := range value.Attributes() {
-		if !attribute.IsNull() {
-			return false
-		}
+func CommPolModelFromObject(
+	ctx context.Context,
+	object *container.Container,
+	fallbackModel *CommPolModel,
+) (CommPolModel, diag.Diagnostics) {
+	model := NewCommPolModelNull()
+	var diagnostics diag.Diagnostics
+
+	attributes, ok := modelHelpers.AttributesFromObject(ctx, &diagnostics, object, "commPol")
+	if !ok {
+		return model, diagnostics
 	}
-	return true
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "descr", &model.Descr)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "name", &model.Name)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "nameAlias", &model.NameAlias)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ownerKey", &model.OwnerKey)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ownerTag", &model.OwnerTag)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "strictSecurityOnApicOOBSubnet", &model.StrictSecurityOnApicOOBSubnet)
+	childObjects := modelHelpers.ChildObjectsByClass(
+		ctx,
+		&diagnostics,
+		object,
+		"commPol",
+		[]string{
+			"commHttp",
+			"commHttps",
+			"commShellinabox",
+			"commSsh",
+			"commTelnet",
+			"tagAnnotation",
+			"tagTag",
+		},
+	)
+	var fallbackCommHttp *types.Object
+	if fallbackModel != nil {
+		fallbackCommHttp = &fallbackModel.CommHttp
+	}
+	modelHelpers.DecodeSingletonChild(
+		ctx,
+		&diagnostics,
+		childObjects["commHttp"],
+		fallbackCommHttp,
+		CommHttpModelAttributeTypes(),
+		"commPol",
+		"commHttp",
+		NewCommHttpModelNull,
+		CommHttpModelFromObject,
+		&model.CommHttp,
+	)
+	var fallbackCommHttps *types.Object
+	if fallbackModel != nil {
+		fallbackCommHttps = &fallbackModel.CommHttps
+	}
+	modelHelpers.DecodeSingletonChild(
+		ctx,
+		&diagnostics,
+		childObjects["commHttps"],
+		fallbackCommHttps,
+		CommHttpsModelAttributeTypes(),
+		"commPol",
+		"commHttps",
+		NewCommHttpsModelNull,
+		CommHttpsModelFromObject,
+		&model.CommHttps,
+	)
+	var fallbackCommShellinabox *types.Object
+	if fallbackModel != nil {
+		fallbackCommShellinabox = &fallbackModel.CommShellinabox
+	}
+	modelHelpers.DecodeSingletonChild(
+		ctx,
+		&diagnostics,
+		childObjects["commShellinabox"],
+		fallbackCommShellinabox,
+		CommShellinaboxModelAttributeTypes(),
+		"commPol",
+		"commShellinabox",
+		NewCommShellinaboxModelNull,
+		CommShellinaboxModelFromObject,
+		&model.CommShellinabox,
+	)
+	var fallbackCommSsh *types.Object
+	if fallbackModel != nil {
+		fallbackCommSsh = &fallbackModel.CommSsh
+	}
+	modelHelpers.DecodeSingletonChild(
+		ctx,
+		&diagnostics,
+		childObjects["commSsh"],
+		fallbackCommSsh,
+		CommSshModelAttributeTypes(),
+		"commPol",
+		"commSsh",
+		NewCommSshModelNull,
+		CommSshModelFromObject,
+		&model.CommSsh,
+	)
+	var fallbackCommTelnet *types.Object
+	if fallbackModel != nil {
+		fallbackCommTelnet = &fallbackModel.CommTelnet
+	}
+	modelHelpers.DecodeSingletonChild(
+		ctx,
+		&diagnostics,
+		childObjects["commTelnet"],
+		fallbackCommTelnet,
+		CommTelnetModelAttributeTypes(),
+		"commPol",
+		"commTelnet",
+		NewCommTelnetModelNull,
+		CommTelnetModelFromObject,
+		&model.CommTelnet,
+	)
+	modelHelpers.DecodeRepeatedChildren(
+		ctx,
+		&diagnostics,
+		childObjects["tagAnnotation"],
+		TagAnnotationModelAttributeTypes(),
+		TagAnnotationModelFromObject,
+		&model.TagAnnotation,
+	)
+	modelHelpers.DecodeRepeatedChildren(
+		ctx,
+		&diagnostics,
+		childObjects["tagTag"],
+		TagTagModelAttributeTypes(),
+		TagTagModelFromObject,
+		&model.TagTag,
+	)
+
+	return model, diagnostics
+}
+
+func CommPolModelFromResponse(
+	ctx context.Context,
+	response *container.Container,
+	fallbackModel *CommPolModel,
+) (*CommPolModel, string, diag.Diagnostics) {
+	var diagnostics diag.Diagnostics
+	model, dn := modelHelpers.ModelFromResponse(ctx, &diagnostics, response, "commPol", fallbackModel, CommPolModelFromObject)
+	return model, dn, diagnostics
 }
 
 func (m *CommPolModel) BuildPayloadObject(
@@ -125,312 +259,167 @@ func (m *CommPolModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
-	if !m.Annotation.IsNull() && !m.Annotation.IsUnknown() {
-		attributes["annotation"] = m.Annotation.ValueString()
-	} else if nested {
+	if !modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "annotation", m.Annotation) && nested {
 		attributes["annotation"] = defaultAnnotation
 	}
-	if !m.Descr.IsNull() && !m.Descr.IsUnknown() {
-		attributes["descr"] = m.Descr.ValueString()
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "descr", m.Descr)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "name", m.Name)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "nameAlias", m.NameAlias)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "ownerKey", m.OwnerKey)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "ownerTag", m.OwnerTag)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "strictSecurityOnApicOOBSubnet", m.StrictSecurityOnApicOOBSubnet)
+	var priorCommHttp *types.Object
+	if priorState != nil {
+		priorCommHttp = &priorState.CommHttp
 	}
-	if !m.Name.IsNull() && !m.Name.IsUnknown() {
-		attributes["name"] = m.Name.ValueString()
+	commHttpPayloads, ok := modelHelpers.BuildSingletonChildPayload(
+		ctx,
+		&diagnostics,
+		m.CommHttp,
+		priorCommHttp,
+		"commHttp",
+		"CommHttp object defined by http_service cannot be deleted",
+		defaultAnnotation,
+		(*CommHttpModel).BuildPayloadObject,
+		nil,
+	)
+	if !ok {
+		return nil, diagnostics
 	}
-	if !m.NameAlias.IsNull() && !m.NameAlias.IsUnknown() {
-		attributes["nameAlias"] = m.NameAlias.ValueString()
+	children = append(children, commHttpPayloads...)
+	var priorCommHttps *types.Object
+	if priorState != nil {
+		priorCommHttps = &priorState.CommHttps
 	}
-	if !m.OwnerKey.IsNull() && !m.OwnerKey.IsUnknown() {
-		attributes["ownerKey"] = m.OwnerKey.ValueString()
+	commHttpsPayloads, ok := modelHelpers.BuildSingletonChildPayload(
+		ctx,
+		&diagnostics,
+		m.CommHttps,
+		priorCommHttps,
+		"commHttps",
+		"CommHttps object defined by http_ssl_configuration cannot be deleted",
+		defaultAnnotation,
+		(*CommHttpsModel).BuildPayloadObject,
+		nil,
+	)
+	if !ok {
+		return nil, diagnostics
 	}
-	if !m.OwnerTag.IsNull() && !m.OwnerTag.IsUnknown() {
-		attributes["ownerTag"] = m.OwnerTag.ValueString()
+	children = append(children, commHttpsPayloads...)
+	var priorCommShellinabox *types.Object
+	if priorState != nil {
+		priorCommShellinabox = &priorState.CommShellinabox
 	}
-	if !m.StrictSecurityOnApicOOBSubnet.IsNull() && !m.StrictSecurityOnApicOOBSubnet.IsUnknown() {
-		attributes["strictSecurityOnApicOOBSubnet"] = m.StrictSecurityOnApicOOBSubnet.ValueString()
+	commShellinaboxPayloads, ok := modelHelpers.BuildSingletonChildPayload(
+		ctx,
+		&diagnostics,
+		m.CommShellinabox,
+		priorCommShellinabox,
+		"commShellinabox",
+		"CommShellinabox object defined by ssh_access_via_web cannot be deleted",
+		defaultAnnotation,
+		(*CommShellinaboxModel).BuildPayloadObject,
+		nil,
+	)
+	if !ok {
+		return nil, diagnostics
 	}
-	if !m.CommHttp.IsNull() && !m.CommHttp.IsUnknown() {
-		var priorChild *CommHttpModel
-		if priorState != nil &&
-			!priorState.CommHttp.IsNull() &&
-			!priorState.CommHttp.IsUnknown() &&
-			!commPolObjectIsEmpty(priorState.CommHttp) {
-			priorChildValue := CommHttpModel{}
-			diagnostics.Append(priorState.CommHttp.As(ctx, &priorChildValue, basetypes.ObjectAsOptions{})...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			priorChild = &priorChildValue
-		}
-
-		if !commPolObjectIsEmpty(m.CommHttp) {
-			child := CommHttpModel{}
-			diagnostics.Append(m.CommHttp.As(ctx, &child, basetypes.ObjectAsOptions{})...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-
-			childObject, childDiagnostics := child.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
-			diagnostics.Append(childDiagnostics...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			children = append(children, map[string]any{"commHttp": childObject})
-		} else if priorChild != nil {
-			diagnostics.AddError(
-				"CommHttp object defined by http_service cannot be deleted",
-				"deletion of child is only possible upon deletion of the parent",
-			)
-		}
+	children = append(children, commShellinaboxPayloads...)
+	var priorCommSsh *types.Object
+	if priorState != nil {
+		priorCommSsh = &priorState.CommSsh
 	}
-	if !m.CommHttps.IsNull() && !m.CommHttps.IsUnknown() {
-		var priorChild *CommHttpsModel
-		if priorState != nil &&
-			!priorState.CommHttps.IsNull() &&
-			!priorState.CommHttps.IsUnknown() &&
-			!commPolObjectIsEmpty(priorState.CommHttps) {
-			priorChildValue := CommHttpsModel{}
-			diagnostics.Append(priorState.CommHttps.As(ctx, &priorChildValue, basetypes.ObjectAsOptions{})...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			priorChild = &priorChildValue
-		}
-
-		if !commPolObjectIsEmpty(m.CommHttps) {
-			child := CommHttpsModel{}
-			diagnostics.Append(m.CommHttps.As(ctx, &child, basetypes.ObjectAsOptions{})...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-
-			childObject, childDiagnostics := child.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
-			diagnostics.Append(childDiagnostics...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			children = append(children, map[string]any{"commHttps": childObject})
-		} else if priorChild != nil {
-			diagnostics.AddError(
-				"CommHttps object defined by http_ssl_configuration cannot be deleted",
-				"deletion of child is only possible upon deletion of the parent",
-			)
-		}
+	commSshPayloads, ok := modelHelpers.BuildSingletonChildPayload(
+		ctx,
+		&diagnostics,
+		m.CommSsh,
+		priorCommSsh,
+		"commSsh",
+		"CommSsh object defined by ssh_service cannot be deleted",
+		defaultAnnotation,
+		(*CommSshModel).BuildPayloadObject,
+		nil,
+	)
+	if !ok {
+		return nil, diagnostics
 	}
-	if !m.CommShellinabox.IsNull() && !m.CommShellinabox.IsUnknown() {
-		var priorChild *CommShellinaboxModel
-		if priorState != nil &&
-			!priorState.CommShellinabox.IsNull() &&
-			!priorState.CommShellinabox.IsUnknown() &&
-			!commPolObjectIsEmpty(priorState.CommShellinabox) {
-			priorChildValue := CommShellinaboxModel{}
-			diagnostics.Append(priorState.CommShellinabox.As(ctx, &priorChildValue, basetypes.ObjectAsOptions{})...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			priorChild = &priorChildValue
-		}
-
-		if !commPolObjectIsEmpty(m.CommShellinabox) {
-			child := CommShellinaboxModel{}
-			diagnostics.Append(m.CommShellinabox.As(ctx, &child, basetypes.ObjectAsOptions{})...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-
-			childObject, childDiagnostics := child.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
-			diagnostics.Append(childDiagnostics...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			children = append(children, map[string]any{"commShellinabox": childObject})
-		} else if priorChild != nil {
-			diagnostics.AddError(
-				"CommShellinabox object defined by ssh_access_via_web cannot be deleted",
-				"deletion of child is only possible upon deletion of the parent",
-			)
-		}
+	children = append(children, commSshPayloads...)
+	var priorCommTelnet *types.Object
+	if priorState != nil {
+		priorCommTelnet = &priorState.CommTelnet
 	}
-	if !m.CommSsh.IsNull() && !m.CommSsh.IsUnknown() {
-		var priorChild *CommSshModel
-		if priorState != nil &&
-			!priorState.CommSsh.IsNull() &&
-			!priorState.CommSsh.IsUnknown() &&
-			!commPolObjectIsEmpty(priorState.CommSsh) {
-			priorChildValue := CommSshModel{}
-			diagnostics.Append(priorState.CommSsh.As(ctx, &priorChildValue, basetypes.ObjectAsOptions{})...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			priorChild = &priorChildValue
-		}
-
-		if !commPolObjectIsEmpty(m.CommSsh) {
-			child := CommSshModel{}
-			diagnostics.Append(m.CommSsh.As(ctx, &child, basetypes.ObjectAsOptions{})...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-
-			childObject, childDiagnostics := child.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
-			diagnostics.Append(childDiagnostics...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			children = append(children, map[string]any{"commSsh": childObject})
-		} else if priorChild != nil {
-			diagnostics.AddError(
-				"CommSsh object defined by ssh_service cannot be deleted",
-				"deletion of child is only possible upon deletion of the parent",
-			)
-		}
+	commTelnetPayloads, ok := modelHelpers.BuildSingletonChildPayload(
+		ctx,
+		&diagnostics,
+		m.CommTelnet,
+		priorCommTelnet,
+		"commTelnet",
+		"CommTelnet object defined by telnet_service cannot be deleted",
+		defaultAnnotation,
+		(*CommTelnetModel).BuildPayloadObject,
+		nil,
+	)
+	if !ok {
+		return nil, diagnostics
 	}
-	if !m.CommTelnet.IsNull() && !m.CommTelnet.IsUnknown() {
-		var priorChild *CommTelnetModel
-		if priorState != nil &&
-			!priorState.CommTelnet.IsNull() &&
-			!priorState.CommTelnet.IsUnknown() &&
-			!commPolObjectIsEmpty(priorState.CommTelnet) {
-			priorChildValue := CommTelnetModel{}
-			diagnostics.Append(priorState.CommTelnet.As(ctx, &priorChildValue, basetypes.ObjectAsOptions{})...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			priorChild = &priorChildValue
-		}
-
-		if !commPolObjectIsEmpty(m.CommTelnet) {
-			child := CommTelnetModel{}
-			diagnostics.Append(m.CommTelnet.As(ctx, &child, basetypes.ObjectAsOptions{})...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-
-			childObject, childDiagnostics := child.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
-			diagnostics.Append(childDiagnostics...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			children = append(children, map[string]any{"commTelnet": childObject})
-		} else if priorChild != nil {
-			diagnostics.AddError(
-				"CommTelnet object defined by telnet_service cannot be deleted",
-				"deletion of child is only possible upon deletion of the parent",
-			)
-		}
+	children = append(children, commTelnetPayloads...)
+	var priorTagAnnotation *types.Set
+	if priorState != nil {
+		priorTagAnnotation = &priorState.TagAnnotation
 	}
-	if !m.TagAnnotation.IsNull() && !m.TagAnnotation.IsUnknown() {
-		var desiredChildren []TagAnnotationModel
-		diagnostics.Append(m.TagAnnotation.ElementsAs(ctx, &desiredChildren, false)...)
-		if diagnostics.HasError() {
-			return nil, diagnostics
-		}
-
-		var priorChildren []TagAnnotationModel
-		if priorState != nil &&
-			!priorState.TagAnnotation.IsNull() &&
-			!priorState.TagAnnotation.IsUnknown() {
-			diagnostics.Append(priorState.TagAnnotation.ElementsAs(ctx, &priorChildren, false)...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-		}
-
-		for desiredIndex := range desiredChildren {
-			desiredChild := &desiredChildren[desiredIndex]
-			var priorChild *TagAnnotationModel
-			for priorIndex := range priorChildren {
-				if priorChildren[priorIndex].BuildRN() == desiredChild.BuildRN() {
-					priorChild = &priorChildren[priorIndex]
-					break
-				}
-			}
-
-			childObject, childDiagnostics := desiredChild.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
-			diagnostics.Append(childDiagnostics...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			children = append(children, map[string]any{"tagAnnotation": childObject})
-		}
-
-		for priorIndex := range priorChildren {
-			priorChild := &priorChildren[priorIndex]
-			found := false
-			for desiredIndex := range desiredChildren {
-				if desiredChildren[desiredIndex].BuildRN() == priorChild.BuildRN() {
-					found = true
-					break
-				}
-			}
-			if found {
-				continue
-			}
-			children = append(children, map[string]any{"tagAnnotation": priorChild.BuildNestedDeletePayloadObject()})
-		}
+	tagAnnotationPayloads, ok := modelHelpers.BuildRepeatedChildPayloads(
+		ctx,
+		&diagnostics,
+		m.TagAnnotation,
+		priorTagAnnotation,
+		"tagAnnotation",
+		"TagAnnotation object defined by annotations cannot be deleted",
+		defaultAnnotation,
+		(*TagAnnotationModel).BuildRN,
+		(*TagAnnotationModel).BuildPayloadObject,
+		(*TagAnnotationModel).BuildNestedDeletePayloadObject,
+	)
+	if !ok {
+		return nil, diagnostics
 	}
-	if !m.TagTag.IsNull() && !m.TagTag.IsUnknown() {
-		var desiredChildren []TagTagModel
-		diagnostics.Append(m.TagTag.ElementsAs(ctx, &desiredChildren, false)...)
-		if diagnostics.HasError() {
-			return nil, diagnostics
-		}
-
-		var priorChildren []TagTagModel
-		if priorState != nil &&
-			!priorState.TagTag.IsNull() &&
-			!priorState.TagTag.IsUnknown() {
-			diagnostics.Append(priorState.TagTag.ElementsAs(ctx, &priorChildren, false)...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-		}
-
-		for desiredIndex := range desiredChildren {
-			desiredChild := &desiredChildren[desiredIndex]
-			var priorChild *TagTagModel
-			for priorIndex := range priorChildren {
-				if priorChildren[priorIndex].BuildRN() == desiredChild.BuildRN() {
-					priorChild = &priorChildren[priorIndex]
-					break
-				}
-			}
-
-			childObject, childDiagnostics := desiredChild.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
-			diagnostics.Append(childDiagnostics...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			children = append(children, map[string]any{"tagTag": childObject})
-		}
-
-		for priorIndex := range priorChildren {
-			priorChild := &priorChildren[priorIndex]
-			found := false
-			for desiredIndex := range desiredChildren {
-				if desiredChildren[desiredIndex].BuildRN() == priorChild.BuildRN() {
-					found = true
-					break
-				}
-			}
-			if found {
-				continue
-			}
-			children = append(children, map[string]any{"tagTag": priorChild.BuildNestedDeletePayloadObject()})
-		}
+	children = append(children, tagAnnotationPayloads...)
+	var priorTagTag *types.Set
+	if priorState != nil {
+		priorTagTag = &priorState.TagTag
 	}
+	tagTagPayloads, ok := modelHelpers.BuildRepeatedChildPayloads(
+		ctx,
+		&diagnostics,
+		m.TagTag,
+		priorTagTag,
+		"tagTag",
+		"TagTag object defined by tags cannot be deleted",
+		defaultAnnotation,
+		(*TagTagModel).BuildRN,
+		(*TagTagModel).BuildPayloadObject,
+		(*TagTagModel).BuildNestedDeletePayloadObject,
+	)
+	if !ok {
+		return nil, diagnostics
+	}
+	children = append(children, tagTagPayloads...)
 
-	payloadObject := map[string]any{"attributes": attributes}
-	payloadObject["children"] = children
-	return payloadObject, diagnostics
+	return modelHelpers.NewPayloadObject(
+		ctx,
+		&diagnostics,
+		attributes,
+		children,
+		true,
+	), diagnostics
 }
 
-func (m *CommPolModel) BuildNestedDeletePayloadObject() map[string]any {
-	attributes := map[string]any{"status": "deleted"}
+func (m *CommPolModel) BuildNestedDeletePayloadObject(
+	ctx context.Context,
+	diagnostics *diag.Diagnostics,
+) map[string]any {
+	attributes := map[string]any{}
 	attributes["name"] = m.Name.ValueString()
-	return map[string]any{
-		"attributes": attributes,
-		"children":   []map[string]any{},
-	}
+	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, attributes)
 }
 
 type CommPolResourceModel struct {
@@ -450,6 +439,22 @@ func (m *CommPolResourceModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
 
+func (m *CommPolResourceModel) SetFromResponse(
+	ctx context.Context,
+	response *container.Container,
+) (bool, diag.Diagnostics) {
+	fallbackModel := m.CommPolModel
+	model, dn, diagnostics := CommPolModelFromResponse(ctx, response, &fallbackModel)
+	found := model != nil
+	if diagnostics.HasError() || !found {
+		return found, diagnostics
+	}
+
+	m.CommPolModel = *model
+	m.ID = types.StringValue(dn)
+	return true, diagnostics
+}
+
 func (m *CommPolResourceModel) BuildPayload(
 	ctx context.Context,
 	priorState *CommPolModel,
@@ -465,53 +470,14 @@ func (m *CommPolResourceModel) BuildPayload(
 		payloadObject["attributes"].(map[string]any)["status"] = "created"
 	}
 	payloadEnvelope := map[string]any{"commPol": payloadObject}
-	payload, err := json.Marshal(payloadEnvelope)
-	if err != nil {
-		diagnostics.AddError(
-			"Marshalling of JSON payload failed",
-			err.Error()+". Please report this issue to the provider developers.",
-		)
-		return nil, diagnostics
-	}
-
-	jsonPayload, err := container.ParseJSON(payload)
-	if err != nil {
-		diagnostics.AddError(
-			"Construction of JSON payload failed",
-			err.Error()+". Please report this issue to the provider developers.",
-		)
-		return nil, diagnostics
-	}
+	jsonPayload := modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload")
 	return jsonPayload, diagnostics
 }
 
-func (m *CommPolResourceModel) BuildDeletePayload() (*container.Container, diag.Diagnostics) {
+func (m *CommPolResourceModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
-	payload, err := json.Marshal(map[string]any{
-		"commPol": map[string]any{
-			"attributes": map[string]any{
-				"dn":     m.ID.ValueString(),
-				"status": "deleted",
-			},
-		},
-	})
-	if err != nil {
-		diagnostics.AddError(
-			"Marshalling of JSON delete payload failed",
-			err.Error()+". Please report this issue to the provider developers.",
-		)
-		return nil, diagnostics
-	}
-
-	jsonPayload, err := container.ParseJSON(payload)
-	if err != nil {
-		diagnostics.AddError(
-			"Construction of JSON delete payload failed",
-			err.Error()+". Please report this issue to the provider developers.",
-		)
-		return nil, diagnostics
-	}
-	return jsonPayload, diagnostics
+	payload := modelHelpers.NewDeletePayload(ctx, &diagnostics, "commPol", m.ID.ValueString())
+	return payload, diagnostics
 }
 
 type CommPolDataSourceModel struct {
@@ -529,4 +495,20 @@ func NewCommPolDataSourceModelNull() CommPolDataSourceModel {
 
 func (m *CommPolDataSourceModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
+}
+
+func (m *CommPolDataSourceModel) SetFromResponse(
+	ctx context.Context,
+	response *container.Container,
+) (bool, diag.Diagnostics) {
+	fallbackModel := m.CommPolModel
+	model, dn, diagnostics := CommPolModelFromResponse(ctx, response, &fallbackModel)
+	found := model != nil
+	if diagnostics.HasError() || !found {
+		return found, diagnostics
+	}
+
+	m.CommPolModel = *model
+	m.ID = types.StringValue(dn)
+	return true, diagnostics
 }

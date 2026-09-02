@@ -12,8 +12,10 @@ import (
 	"testing"
 	texttemplate "text/template"
 
+	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils/data"
 	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
@@ -203,8 +205,15 @@ func TestModelTemplateArtifacts(t *testing.T) {
 			if !strings.Contains(contents, "func (m *FvTenantModel) BuildPayloadObject(") {
 				t.Fatal("shared model payload object builder was not rendered")
 			}
-			if !strings.Contains(contents, "func (m *FvTenantModel) BuildNestedDeletePayloadObject()") {
+			if !strings.Contains(contents, "func (m *FvTenantModel) BuildNestedDeletePayloadObject(") {
 				t.Fatal("shared model nested delete payload object builder was not rendered")
+			}
+			if !strings.Contains(contents, "func FvTenantModelFromObject(") {
+				t.Fatal("shared model object decoder was not rendered")
+			}
+			responseDecoder := "func FvTenantModelFromResponse("
+			if actual := strings.Contains(contents, responseDecoder); actual != (testCase.resourceModel || testCase.dataSourceModel) {
+				t.Fatalf("response decoder presence %t, expected %t", actual, testCase.resourceModel || testCase.dataSourceModel)
 			}
 
 			resourceType := "type FvTenantResourceModel struct"
@@ -215,6 +224,10 @@ func TestModelTemplateArtifacts(t *testing.T) {
 			if actual := strings.Contains(contents, resourceIDSetter); actual != testCase.resourceModel {
 				t.Fatalf("resource ID setter presence %t, expected %t", actual, testCase.resourceModel)
 			}
+			resourceResponseSetter := "func (m *FvTenantResourceModel) SetFromResponse("
+			if actual := strings.Contains(contents, resourceResponseSetter); actual != testCase.resourceModel {
+				t.Fatalf("resource response setter presence %t, expected %t", actual, testCase.resourceModel)
+			}
 
 			dataSourceType := "type FvTenantDataSourceModel struct"
 			if actual := strings.Contains(contents, dataSourceType); actual != testCase.dataSourceModel {
@@ -223,6 +236,10 @@ func TestModelTemplateArtifacts(t *testing.T) {
 			dataSourceIDSetter := "func (m *FvTenantDataSourceModel) SetIDFromDN(dn string)"
 			if actual := strings.Contains(contents, dataSourceIDSetter); actual != testCase.dataSourceModel {
 				t.Fatalf("data source ID setter presence %t, expected %t", actual, testCase.dataSourceModel)
+			}
+			dataSourceResponseSetter := "func (m *FvTenantDataSourceModel) SetFromResponse("
+			if actual := strings.Contains(contents, dataSourceResponseSetter); actual != testCase.dataSourceModel {
+				t.Fatalf("data source response setter presence %t, expected %t", actual, testCase.dataSourceModel)
 			}
 		})
 	}
@@ -420,7 +437,7 @@ func TestGeneratedModelBuildDeletePayload(t *testing.T) {
 
 	model := models.NewFvTenantResourceModelNull()
 	model.ID = types.StringValue("uni/tn-example")
-	payload, diagnostics := model.BuildDeletePayload()
+	payload, diagnostics := model.BuildDeletePayload(context.Background())
 	if diagnostics.HasError() {
 		t.Fatalf("build delete payload: %v", diagnostics)
 	}
@@ -768,6 +785,429 @@ func TestGeneratedTopLevelModelParentDnShape(t *testing.T) {
 	}
 }
 
+func TestGeneratedModelFromResponseTopLevelContract(t *testing.T) {
+	t.Parallel()
+
+	testCases := []struct {
+		name         string
+		response     string
+		nilResponse  bool
+		expectsModel bool
+		expectsError bool
+		expectedDN   string
+	}{
+		{
+			name:         "nil response",
+			nilResponse:  true,
+			expectsError: true,
+		},
+		{
+			name:         "missing imdata",
+			response:     `{}`,
+			expectsError: true,
+		},
+		{
+			name:         "malformed imdata",
+			response:     `{"imdata": {}}`,
+			expectsError: true,
+		},
+		{
+			name:     "empty imdata is not found",
+			response: `{"imdata": []}`,
+		},
+		{
+			name:     "unrelated class is ignored",
+			response: `{"imdata": [{"fvBD": {"attributes": {"dn": "uni/tn-example/BD-example"}}}]}`,
+		},
+		{
+			name:         "malformed object envelope",
+			response:     `{"imdata": [42]}`,
+			expectsError: true,
+		},
+		{
+			name:         "single expected object",
+			response:     `{"imdata": [{"fvTenant": {"attributes": {"dn": "uni/tn-example", "name": "example"}}}]}`,
+			expectsModel: true,
+			expectedDN:   "uni/tn-example",
+		},
+		{
+			name: "duplicate expected object",
+			response: `{"imdata": [
+				{"fvTenant": {"attributes": {"dn": "uni/tn-one", "name": "one"}}},
+				{"fvTenant": {"attributes": {"dn": "uni/tn-two", "name": "two"}}}
+			]}`,
+			expectsError: true,
+		},
+		{
+			name:         "missing dn",
+			response:     `{"imdata": [{"fvTenant": {"attributes": {"name": "example"}}}]}`,
+			expectsError: true,
+		},
+		{
+			name:         "non-string dn",
+			response:     `{"imdata": [{"fvTenant": {"attributes": {"dn": 42, "name": "example"}}}]}`,
+			expectsError: true,
+		},
+		{
+			name:         "malformed known attribute returns partial model",
+			response:     `{"imdata": [{"fvTenant": {"attributes": {"dn": "uni/tn-example", "name": 42}}}]}`,
+			expectsModel: true,
+			expectsError: true,
+			expectedDN:   "uni/tn-example",
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
+			var response *container.Container
+			if !testCase.nilResponse {
+				response = mustAPICContainer(t, testCase.response)
+			}
+			model, dn, diagnostics := models.FvTenantModelFromResponse(context.Background(), response, nil)
+			if actual := model != nil; actual != testCase.expectsModel {
+				t.Fatalf("model presence %t, expected %t; diagnostics: %v", actual, testCase.expectsModel, diagnostics)
+			}
+			if actual := diagnostics.HasError(); actual != testCase.expectsError {
+				t.Fatalf("error diagnostics presence %t, expected %t; diagnostics: %v", actual, testCase.expectsError, diagnostics)
+			}
+			if dn != testCase.expectedDN {
+				t.Fatalf("DN %q, expected %q", dn, testCase.expectedDN)
+			}
+		})
+	}
+}
+
+func TestGeneratedModelSetFromResponseDecodesChildren(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+	response := mustAPICContainer(t, `{
+		"imdata": [{
+			"fvTenant": {
+				"attributes": {
+					"dn": "uni/tn-example",
+					"name": "example",
+					"unknownProperty": "ignored"
+				},
+				"children": [
+					{"fvRsTenantMonPol": {"attributes": {"tnMonEPGPolName": "monitoring"}}},
+					{"tagAnnotation": {"attributes": {"key": "owner", "value": "terraform"}}},
+					{"unknownChild": {"attributes": {"name": "ignored"}}}
+				]
+			}
+		}]
+	}`)
+
+	resourceModel := models.NewFvTenantResourceModelNull()
+	found, diagnostics := resourceModel.SetFromResponse(ctx, response)
+	if diagnostics.HasError() {
+		t.Fatalf("decode tenant response: %v", diagnostics)
+	}
+	if !found {
+		t.Fatal("tenant was not reported as found")
+	}
+	if actual := resourceModel.ID.ValueString(); actual != "uni/tn-example" {
+		t.Fatalf("resource ID %q, expected %q", actual, "uni/tn-example")
+	}
+	if actual := resourceModel.Name.ValueString(); actual != "example" {
+		t.Fatalf("tenant name %q, expected %q", actual, "example")
+	}
+
+	monitoringPolicy := models.NewFvRsTenantMonPolModelNull()
+	childDiagnostics := resourceModel.FvRsTenantMonPol.As(ctx, &monitoringPolicy, basetypes.ObjectAsOptions{})
+	if childDiagnostics.HasError() {
+		t.Fatalf("decode singleton child: %v", childDiagnostics)
+	}
+	if actual := monitoringPolicy.TnMonEPGPolName.ValueString(); actual != "monitoring" {
+		t.Fatalf("monitoring policy %q, expected %q", actual, "monitoring")
+	}
+
+	var annotations []models.TagAnnotationModel
+	childDiagnostics = resourceModel.TagAnnotation.ElementsAs(ctx, &annotations, false)
+	if childDiagnostics.HasError() {
+		t.Fatalf("decode repeated children: %v", childDiagnostics)
+	}
+	if len(annotations) != 1 || annotations[0].Key.ValueString() != "owner" || annotations[0].Value.ValueString() != "terraform" {
+		t.Fatalf("unexpected annotations: %#v", annotations)
+	}
+	if resourceModel.TagTag.IsNull() || resourceModel.TagTag.IsUnknown() || len(resourceModel.TagTag.Elements()) != 0 {
+		t.Fatalf("missing repeated child was not decoded as a known empty set: %s", resourceModel.TagTag.String())
+	}
+
+	notFoundResponse := mustAPICContainer(t, `{"imdata": []}`)
+	found, diagnostics = resourceModel.SetFromResponse(ctx, notFoundResponse)
+	if diagnostics.HasError() || found {
+		t.Fatalf("empty response returned found=%t, diagnostics=%v", found, diagnostics)
+	}
+	if actual := resourceModel.Name.ValueString(); actual != "example" {
+		t.Fatalf("not-found response changed the existing model name to %q", actual)
+	}
+}
+
+func TestGeneratedTopLevelModelSetFromResponseSetsIdentity(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+	dn := "uni/tn-tenant/eptags/epiptag-[2001:db8::1]-vrf"
+	response := mustAPICContainer(t, `{
+		"imdata": [{
+			"fvEpIpTag": {
+				"attributes": {
+					"dn": "uni/tn-tenant/eptags/epiptag-[2001:db8::1]-vrf",
+					"ctxName": "vrf",
+					"ip": "2001:db8::1"
+				}
+			}
+		}]
+	}`)
+
+	resourceModel := models.NewFvEpIpTagResourceModelNull()
+	found, diagnostics := resourceModel.SetFromResponse(ctx, response)
+	if diagnostics.HasError() || !found {
+		t.Fatalf("set resource response returned found=%t, diagnostics=%v", found, diagnostics)
+	}
+	if resourceModel.ID.ValueString() != dn || resourceModel.ParentDn.ValueString() != "uni/tn-tenant" {
+		t.Fatalf("resource identity ID=%q parent_dn=%q", resourceModel.ID.ValueString(), resourceModel.ParentDn.ValueString())
+	}
+
+	dataSourceModel := models.NewFvEpIpTagDataSourceModelNull()
+	found, diagnostics = dataSourceModel.SetFromResponse(ctx, response)
+	if diagnostics.HasError() || !found {
+		t.Fatalf("set data source response returned found=%t, diagnostics=%v", found, diagnostics)
+	}
+	if dataSourceModel.ID.ValueString() != dn || dataSourceModel.ParentDn.ValueString() != "uni/tn-tenant" {
+		t.Fatalf("data source identity ID=%q parent_dn=%q", dataSourceModel.ID.ValueString(), dataSourceModel.ParentDn.ValueString())
+	}
+}
+
+func TestGeneratedModelFromObjectHandlesChildCardinality(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+	missingChildrenModel, diagnostics := models.FvTenantModelFromObject(
+		ctx,
+		mustAPICContainer(t, `{"attributes": {"name": "example"}}`),
+		nil,
+	)
+	if diagnostics.HasError() || missingChildrenModel.FvRsTenantMonPol.IsNull() || missingChildrenModel.FvRsTenantMonPol.IsUnknown() {
+		t.Fatalf("missing singleton child was not decoded as a known object: %s; diagnostics=%v", missingChildrenModel.FvRsTenantMonPol.String(), diagnostics)
+	}
+	for attributeName, attribute := range missingChildrenModel.FvRsTenantMonPol.Attributes() {
+		if !attribute.IsNull() {
+			t.Fatalf("missing singleton attribute %q is not null: %s", attributeName, attribute.String())
+		}
+	}
+
+	object := mustAPICContainer(t, `{
+		"attributes": {"name": "example"},
+		"children": [
+			{"fvRsTenantMonPol": {"attributes": {"tnMonEPGPolName": "first"}}},
+			{"fvRsTenantMonPol": {"attributes": {"tnMonEPGPolName": "second"}}}
+		]
+	}`)
+	model, diagnostics := models.FvTenantModelFromObject(ctx, object, nil)
+	if diagnostics.HasError() {
+		t.Fatalf("duplicate singleton child produced an error: %v", diagnostics)
+	}
+	if diagnostics.WarningsCount() != 1 || diagnostics.Warnings()[0].Summary() != "APIC model invariant violation" {
+		t.Fatalf("unexpected singleton diagnostics: %v", diagnostics)
+	}
+	child := models.NewFvRsTenantMonPolModelNull()
+	childDiagnostics := model.FvRsTenantMonPol.As(ctx, &child, basetypes.ObjectAsOptions{})
+	if childDiagnostics.HasError() {
+		t.Fatalf("decode selected singleton child: %v", childDiagnostics)
+	}
+	if actual := child.TnMonEPGPolName.ValueString(); actual != "first" {
+		t.Fatalf("decoded singleton child %q, expected first object", actual)
+	}
+
+	malformedChild := mustAPICContainer(t, `{
+		"attributes": {"name": "example"},
+		"children": [{"fvRsTenantMonPol": {"attributes": "invalid"}}]
+	}`)
+	_, diagnostics = models.FvTenantModelFromObject(ctx, malformedChild, nil)
+	if !diagnostics.HasError() {
+		t.Fatal("malformed known child did not produce an error diagnostic")
+	}
+}
+
+func TestGeneratedModelFromObjectDecodesPropertyTypes(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+	setModel, diagnostics := models.NdIfPolModelFromObject(
+		ctx,
+		mustAPICContainer(t, `{"attributes": {"name": "example", "ctrl": "router-advertisement,redirect"}}`),
+		nil,
+	)
+	if diagnostics.HasError() {
+		t.Fatalf("decode set property: %v", diagnostics)
+	}
+	actualSet := map[string]bool{}
+	for _, element := range setModel.Ctrl.Elements() {
+		actualSet[element.(types.String).ValueString()] = true
+	}
+	if !reflect.DeepEqual(actualSet, map[string]bool{"router-advertisement": true, "redirect": true}) {
+		t.Fatalf("decoded bitmask %#v", actualSet)
+	}
+
+	emptySetModel, diagnostics := models.NdIfPolModelFromObject(
+		ctx,
+		mustAPICContainer(t, `{"attributes": {"ctrl": ""}}`),
+		nil,
+	)
+	if diagnostics.HasError() || emptySetModel.Ctrl.IsNull() || len(emptySetModel.Ctrl.Elements()) != 0 {
+		t.Fatalf("explicit empty bitmask was not a known empty set: %s; diagnostics=%v", emptySetModel.Ctrl.String(), diagnostics)
+	}
+	absentSetModel, diagnostics := models.NdIfPolModelFromObject(
+		ctx,
+		mustAPICContainer(t, `{"attributes": {}}`),
+		nil,
+	)
+	if diagnostics.HasError() || !absentSetModel.Ctrl.IsNull() {
+		t.Fatalf("absent bitmask was not null: %s; diagnostics=%v", absentSetModel.Ctrl.String(), diagnostics)
+	}
+
+	semanticModel, diagnostics := models.FvAEPgModelFromObject(
+		ctx,
+		mustAPICContainer(t, `{"attributes": {"name": "example", "fwdCtrl": "", "prio": "3"}}`),
+		nil,
+	)
+	if diagnostics.HasError() {
+		t.Fatalf("decode semantic properties: %v", diagnostics)
+	}
+	if actual := semanticModel.FwdCtrl.ValueString(); actual != "none" {
+		t.Fatalf("empty fwdCtrl decoded as %q, expected none", actual)
+	}
+	if actual := semanticModel.Prio.ValueString(); actual != "3" {
+		t.Fatalf("semantic property raw value %q, expected 3", actual)
+	}
+	if actual := semanticModel.Prio.NamedValueString(); actual != "level1" {
+		t.Fatalf("semantic property named value %q, expected level1", actual)
+	}
+
+	ipModel, diagnostics := models.FvEpIpTagModelFromObject(
+		ctx,
+		mustAPICContainer(t, `{"attributes": {"ctxName": "vrf", "ip": "2001:0db8::1"}}`),
+		nil,
+	)
+	if diagnostics.HasError() {
+		t.Fatalf("decode IP property: %v", diagnostics)
+	}
+	if actual := ipModel.Ip.NamedValueString(); actual != "2001:db8::1" {
+		t.Fatalf("normalized IP %q, expected %q", actual, "2001:db8::1")
+	}
+}
+
+func TestGeneratedModelFromObjectPreservesNestedSensitiveFallback(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+	fallbackChild := models.NewFvPeeringPModelNull()
+	fallbackChild.Password = types.StringValue("secret")
+	fallbackModel := models.NewFvFabricExtConnPModelNull()
+	fallbackModel.FvPeeringP = mustModelObject(
+		t,
+		ctx,
+		models.FvPeeringPModelAttributeTypes(),
+		fallbackChild,
+	)
+
+	model, diagnostics := models.FvFabricExtConnPModelFromObject(
+		ctx,
+		mustAPICContainer(t, `{
+			"attributes": {"id": "101"},
+			"children": [{"fvPeeringP": {"attributes": {"type": "automatic"}}}]
+		}`),
+		&fallbackModel,
+	)
+	if diagnostics.HasError() {
+		t.Fatalf("decode nested sensitive fallback: %v", diagnostics)
+	}
+	child := models.NewFvPeeringPModelNull()
+	childDiagnostics := model.FvPeeringP.As(ctx, &child, basetypes.ObjectAsOptions{})
+	if childDiagnostics.HasError() {
+		t.Fatalf("materialize peering profile: %v", childDiagnostics)
+	}
+	if actual := child.Password.ValueString(); actual != "secret" {
+		t.Fatalf("nested sensitive fallback %q, expected secret", actual)
+	}
+
+	returnedSensitive, diagnostics := models.FvPeeringPModelFromObject(
+		ctx,
+		mustAPICContainer(t, `{"attributes": {"password": "returned"}}`),
+		&fallbackChild,
+	)
+	if diagnostics.HasError() || returnedSensitive.Password.ValueString() != "returned" {
+		t.Fatalf("returned sensitive value did not override fallback: %q; diagnostics=%v", returnedSensitive.Password.ValueString(), diagnostics)
+	}
+}
+
+func TestGeneratedModelParentDNFromDN(t *testing.T) {
+	t.Parallel()
+
+	testCases := []struct {
+		name     string
+		parentDN func() string
+		expected string
+	}{
+		{
+			name: "ordinary runtime parent",
+			parentDN: func() string {
+				model := models.FvBDModel{Name: types.StringValue("example")}
+				return model.ParentDNFromDN("uni/tn-tenant/BD-example")
+			},
+			expected: "uni/tn-tenant",
+		},
+		{
+			name: "RN containing a fixed path",
+			parentDN: func() string {
+				model := models.FvEpIpTagModel{
+					CtxName: types.StringValue("vrf"),
+					Ip:      customTypes.NewIPAddressStringValue("2001:db8::1"),
+				}
+				return model.ParentDNFromDN("uni/tn-tenant/eptags/epiptag-[2001:db8::1]-vrf")
+			},
+			expected: "uni/tn-tenant",
+		},
+		{
+			name: "bracketed RN value containing slashes",
+			parentDN: func() string {
+				model := models.FvRsDomAttModel{TDn: types.StringValue("uni/vmmp-VMware/dom-example")}
+				return model.ParentDNFromDN("uni/tn-tenant/ap-app/epg-epg/rsdomAtt-[uni/vmmp-VMware/dom-example]")
+			},
+			expected: "uni/tn-tenant/ap-app/epg-epg",
+		},
+		{
+			name: "default PKI parent",
+			parentDN: func() string {
+				model := models.PkiKeyRingModel{Name: types.StringValue("example")}
+				return model.ParentDNFromDN("uni/userext/pkiext/keyring-example")
+			},
+			expected: "uni/userext/pkiext",
+		},
+		{
+			name: "metadata-derived PKI parent variant",
+			parentDN: func() string {
+				model := models.PkiKeyRingModel{Name: types.StringValue("example")}
+				return model.ParentDNFromDN("uni/tn-tenant/certstore/keyring-example")
+			},
+			expected: "uni/tn-tenant",
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+			if actual := testCase.parentDN(); actual != testCase.expected {
+				t.Fatalf("parent DN %q, expected %q", actual, testCase.expected)
+			}
+		})
+	}
+}
+
 func mustModelObject[T any](t *testing.T, ctx context.Context, attributeTypes map[string]attr.Type, model T) types.Object {
 	t.Helper()
 
@@ -776,6 +1216,16 @@ func mustModelObject[T any](t *testing.T, ctx context.Context, attributeTypes ma
 		t.Fatalf("construct model object: %v", diagnostics)
 	}
 	return value
+}
+
+func mustAPICContainer(t *testing.T, value string) *container.Container {
+	t.Helper()
+
+	result, err := container.ParseJSON([]byte(value))
+	if err != nil {
+		t.Fatalf("parse APIC JSON: %v", err)
+	}
+	return result
 }
 
 func mustModelSet[T any](t *testing.T, ctx context.Context, attributeTypes map[string]attr.Type, models []T) types.Set {

@@ -4,15 +4,15 @@ package models
 
 import (
 	"context"
-	"encoding/json"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
-
-	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+
+	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
 
 type QosDppPolModel struct {
@@ -142,6 +142,92 @@ func (m *QosDppPolModel) BuildDN(parentDN string) string {
 	return parentDN + "/" + m.BuildRN()
 }
 
+func (m *QosDppPolModel) ParentDNFromDN(dn string) string {
+	rn := m.BuildRN()
+
+	parentDN, _ := strings.CutSuffix(dn, "/"+rn)
+	return parentDN
+}
+
+func QosDppPolModelFromObject(
+	ctx context.Context,
+	object *container.Container,
+	fallbackModel *QosDppPolModel,
+) (QosDppPolModel, diag.Diagnostics) {
+	model := NewQosDppPolModelNull()
+	var diagnostics diag.Diagnostics
+
+	attributes, ok := modelHelpers.AttributesFromObject(ctx, &diagnostics, object, "qosDppPol")
+	if !ok {
+		return model, diagnostics
+	}
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "adminSt", &model.AdminSt)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
+	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "be", &model.Be, customTypes.NewQosDppPolBeStringValue)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "beUnit", &model.BeUnit)
+	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "burst", &model.Burst, customTypes.NewQosDppPolBurstStringValue)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "burstUnit", &model.BurstUnit)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "conformAction", &model.ConformAction)
+	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "conformMarkCos", &model.ConformMarkCos, customTypes.NewQosDppPolConformMarkCosStringValue)
+	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "conformMarkDscp", &model.ConformMarkDscp, customTypes.NewQosDppPolConformMarkDscpStringValue)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "descr", &model.Descr)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "exceedAction", &model.ExceedAction)
+	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "exceedMarkCos", &model.ExceedMarkCos, customTypes.NewQosDppPolExceedMarkCosStringValue)
+	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "exceedMarkDscp", &model.ExceedMarkDscp, customTypes.NewQosDppPolExceedMarkDscpStringValue)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "mode", &model.Mode)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "name", &model.Name)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "nameAlias", &model.NameAlias)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ownerKey", &model.OwnerKey)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ownerTag", &model.OwnerTag)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "pir", &model.Pir)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "pirUnit", &model.PirUnit)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "rate", &model.Rate)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "rateUnit", &model.RateUnit)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "sharingMode", &model.SharingMode)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "type", &model.Type)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "violateAction", &model.ViolateAction)
+	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "violateMarkCos", &model.ViolateMarkCos, customTypes.NewQosDppPolViolateMarkCosStringValue)
+	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "violateMarkDscp", &model.ViolateMarkDscp, customTypes.NewQosDppPolViolateMarkDscpStringValue)
+	childObjects := modelHelpers.ChildObjectsByClass(
+		ctx,
+		&diagnostics,
+		object,
+		"qosDppPol",
+		[]string{
+			"tagAnnotation",
+			"tagTag",
+		},
+	)
+	modelHelpers.DecodeRepeatedChildren(
+		ctx,
+		&diagnostics,
+		childObjects["tagAnnotation"],
+		TagAnnotationModelAttributeTypes(),
+		TagAnnotationModelFromObject,
+		&model.TagAnnotation,
+	)
+	modelHelpers.DecodeRepeatedChildren(
+		ctx,
+		&diagnostics,
+		childObjects["tagTag"],
+		TagTagModelAttributeTypes(),
+		TagTagModelFromObject,
+		&model.TagTag,
+	)
+
+	return model, diagnostics
+}
+
+func QosDppPolModelFromResponse(
+	ctx context.Context,
+	response *container.Container,
+	fallbackModel *QosDppPolModel,
+) (*QosDppPolModel, string, diag.Diagnostics) {
+	var diagnostics diag.Diagnostics
+	model, dn := modelHelpers.ModelFromResponse(ctx, &diagnostics, response, "qosDppPol", fallbackModel, QosDppPolModelFromObject)
+	return model, dn, diagnostics
+}
+
 func (m *QosDppPolModel) BuildPayloadObject(
 	ctx context.Context,
 	priorState *QosDppPolModel,
@@ -151,202 +237,92 @@ func (m *QosDppPolModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
-	if !m.AdminSt.IsNull() && !m.AdminSt.IsUnknown() {
-		attributes["adminSt"] = m.AdminSt.ValueString()
-	}
-	if !m.Annotation.IsNull() && !m.Annotation.IsUnknown() {
-		attributes["annotation"] = m.Annotation.ValueString()
-	} else if nested {
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "adminSt", m.AdminSt)
+	if !modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "annotation", m.Annotation) && nested {
 		attributes["annotation"] = defaultAnnotation
 	}
-	if !m.Be.IsNull() && !m.Be.IsUnknown() {
-		attributes["be"] = m.Be.ValueString()
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "be", m.Be)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "beUnit", m.BeUnit)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "burst", m.Burst)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "burstUnit", m.BurstUnit)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "conformAction", m.ConformAction)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "conformMarkCos", m.ConformMarkCos)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "conformMarkDscp", m.ConformMarkDscp)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "descr", m.Descr)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "exceedAction", m.ExceedAction)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "exceedMarkCos", m.ExceedMarkCos)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "exceedMarkDscp", m.ExceedMarkDscp)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "mode", m.Mode)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "name", m.Name)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "nameAlias", m.NameAlias)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "ownerKey", m.OwnerKey)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "ownerTag", m.OwnerTag)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "pir", m.Pir)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "pirUnit", m.PirUnit)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "rate", m.Rate)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "rateUnit", m.RateUnit)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "sharingMode", m.SharingMode)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "type", m.Type)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "violateAction", m.ViolateAction)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "violateMarkCos", m.ViolateMarkCos)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "violateMarkDscp", m.ViolateMarkDscp)
+	var priorTagAnnotation *types.Set
+	if priorState != nil {
+		priorTagAnnotation = &priorState.TagAnnotation
 	}
-	if !m.BeUnit.IsNull() && !m.BeUnit.IsUnknown() {
-		attributes["beUnit"] = m.BeUnit.ValueString()
+	tagAnnotationPayloads, ok := modelHelpers.BuildRepeatedChildPayloads(
+		ctx,
+		&diagnostics,
+		m.TagAnnotation,
+		priorTagAnnotation,
+		"tagAnnotation",
+		"TagAnnotation object defined by annotations cannot be deleted",
+		defaultAnnotation,
+		(*TagAnnotationModel).BuildRN,
+		(*TagAnnotationModel).BuildPayloadObject,
+		(*TagAnnotationModel).BuildNestedDeletePayloadObject,
+	)
+	if !ok {
+		return nil, diagnostics
 	}
-	if !m.Burst.IsNull() && !m.Burst.IsUnknown() {
-		attributes["burst"] = m.Burst.ValueString()
+	children = append(children, tagAnnotationPayloads...)
+	var priorTagTag *types.Set
+	if priorState != nil {
+		priorTagTag = &priorState.TagTag
 	}
-	if !m.BurstUnit.IsNull() && !m.BurstUnit.IsUnknown() {
-		attributes["burstUnit"] = m.BurstUnit.ValueString()
+	tagTagPayloads, ok := modelHelpers.BuildRepeatedChildPayloads(
+		ctx,
+		&diagnostics,
+		m.TagTag,
+		priorTagTag,
+		"tagTag",
+		"TagTag object defined by tags cannot be deleted",
+		defaultAnnotation,
+		(*TagTagModel).BuildRN,
+		(*TagTagModel).BuildPayloadObject,
+		(*TagTagModel).BuildNestedDeletePayloadObject,
+	)
+	if !ok {
+		return nil, diagnostics
 	}
-	if !m.ConformAction.IsNull() && !m.ConformAction.IsUnknown() {
-		attributes["conformAction"] = m.ConformAction.ValueString()
-	}
-	if !m.ConformMarkCos.IsNull() && !m.ConformMarkCos.IsUnknown() {
-		attributes["conformMarkCos"] = m.ConformMarkCos.ValueString()
-	}
-	if !m.ConformMarkDscp.IsNull() && !m.ConformMarkDscp.IsUnknown() {
-		attributes["conformMarkDscp"] = m.ConformMarkDscp.ValueString()
-	}
-	if !m.Descr.IsNull() && !m.Descr.IsUnknown() {
-		attributes["descr"] = m.Descr.ValueString()
-	}
-	if !m.ExceedAction.IsNull() && !m.ExceedAction.IsUnknown() {
-		attributes["exceedAction"] = m.ExceedAction.ValueString()
-	}
-	if !m.ExceedMarkCos.IsNull() && !m.ExceedMarkCos.IsUnknown() {
-		attributes["exceedMarkCos"] = m.ExceedMarkCos.ValueString()
-	}
-	if !m.ExceedMarkDscp.IsNull() && !m.ExceedMarkDscp.IsUnknown() {
-		attributes["exceedMarkDscp"] = m.ExceedMarkDscp.ValueString()
-	}
-	if !m.Mode.IsNull() && !m.Mode.IsUnknown() {
-		attributes["mode"] = m.Mode.ValueString()
-	}
-	if !m.Name.IsNull() && !m.Name.IsUnknown() {
-		attributes["name"] = m.Name.ValueString()
-	}
-	if !m.NameAlias.IsNull() && !m.NameAlias.IsUnknown() {
-		attributes["nameAlias"] = m.NameAlias.ValueString()
-	}
-	if !m.OwnerKey.IsNull() && !m.OwnerKey.IsUnknown() {
-		attributes["ownerKey"] = m.OwnerKey.ValueString()
-	}
-	if !m.OwnerTag.IsNull() && !m.OwnerTag.IsUnknown() {
-		attributes["ownerTag"] = m.OwnerTag.ValueString()
-	}
-	if !m.Pir.IsNull() && !m.Pir.IsUnknown() {
-		attributes["pir"] = m.Pir.ValueString()
-	}
-	if !m.PirUnit.IsNull() && !m.PirUnit.IsUnknown() {
-		attributes["pirUnit"] = m.PirUnit.ValueString()
-	}
-	if !m.Rate.IsNull() && !m.Rate.IsUnknown() {
-		attributes["rate"] = m.Rate.ValueString()
-	}
-	if !m.RateUnit.IsNull() && !m.RateUnit.IsUnknown() {
-		attributes["rateUnit"] = m.RateUnit.ValueString()
-	}
-	if !m.SharingMode.IsNull() && !m.SharingMode.IsUnknown() {
-		attributes["sharingMode"] = m.SharingMode.ValueString()
-	}
-	if !m.Type.IsNull() && !m.Type.IsUnknown() {
-		attributes["type"] = m.Type.ValueString()
-	}
-	if !m.ViolateAction.IsNull() && !m.ViolateAction.IsUnknown() {
-		attributes["violateAction"] = m.ViolateAction.ValueString()
-	}
-	if !m.ViolateMarkCos.IsNull() && !m.ViolateMarkCos.IsUnknown() {
-		attributes["violateMarkCos"] = m.ViolateMarkCos.ValueString()
-	}
-	if !m.ViolateMarkDscp.IsNull() && !m.ViolateMarkDscp.IsUnknown() {
-		attributes["violateMarkDscp"] = m.ViolateMarkDscp.ValueString()
-	}
-	if !m.TagAnnotation.IsNull() && !m.TagAnnotation.IsUnknown() {
-		var desiredChildren []TagAnnotationModel
-		diagnostics.Append(m.TagAnnotation.ElementsAs(ctx, &desiredChildren, false)...)
-		if diagnostics.HasError() {
-			return nil, diagnostics
-		}
+	children = append(children, tagTagPayloads...)
 
-		var priorChildren []TagAnnotationModel
-		if priorState != nil &&
-			!priorState.TagAnnotation.IsNull() &&
-			!priorState.TagAnnotation.IsUnknown() {
-			diagnostics.Append(priorState.TagAnnotation.ElementsAs(ctx, &priorChildren, false)...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-		}
-
-		for desiredIndex := range desiredChildren {
-			desiredChild := &desiredChildren[desiredIndex]
-			var priorChild *TagAnnotationModel
-			for priorIndex := range priorChildren {
-				if priorChildren[priorIndex].BuildRN() == desiredChild.BuildRN() {
-					priorChild = &priorChildren[priorIndex]
-					break
-				}
-			}
-
-			childObject, childDiagnostics := desiredChild.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
-			diagnostics.Append(childDiagnostics...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			children = append(children, map[string]any{"tagAnnotation": childObject})
-		}
-
-		for priorIndex := range priorChildren {
-			priorChild := &priorChildren[priorIndex]
-			found := false
-			for desiredIndex := range desiredChildren {
-				if desiredChildren[desiredIndex].BuildRN() == priorChild.BuildRN() {
-					found = true
-					break
-				}
-			}
-			if found {
-				continue
-			}
-			children = append(children, map[string]any{"tagAnnotation": priorChild.BuildNestedDeletePayloadObject()})
-		}
-	}
-	if !m.TagTag.IsNull() && !m.TagTag.IsUnknown() {
-		var desiredChildren []TagTagModel
-		diagnostics.Append(m.TagTag.ElementsAs(ctx, &desiredChildren, false)...)
-		if diagnostics.HasError() {
-			return nil, diagnostics
-		}
-
-		var priorChildren []TagTagModel
-		if priorState != nil &&
-			!priorState.TagTag.IsNull() &&
-			!priorState.TagTag.IsUnknown() {
-			diagnostics.Append(priorState.TagTag.ElementsAs(ctx, &priorChildren, false)...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-		}
-
-		for desiredIndex := range desiredChildren {
-			desiredChild := &desiredChildren[desiredIndex]
-			var priorChild *TagTagModel
-			for priorIndex := range priorChildren {
-				if priorChildren[priorIndex].BuildRN() == desiredChild.BuildRN() {
-					priorChild = &priorChildren[priorIndex]
-					break
-				}
-			}
-
-			childObject, childDiagnostics := desiredChild.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
-			diagnostics.Append(childDiagnostics...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			children = append(children, map[string]any{"tagTag": childObject})
-		}
-
-		for priorIndex := range priorChildren {
-			priorChild := &priorChildren[priorIndex]
-			found := false
-			for desiredIndex := range desiredChildren {
-				if desiredChildren[desiredIndex].BuildRN() == priorChild.BuildRN() {
-					found = true
-					break
-				}
-			}
-			if found {
-				continue
-			}
-			children = append(children, map[string]any{"tagTag": priorChild.BuildNestedDeletePayloadObject()})
-		}
-	}
-
-	payloadObject := map[string]any{"attributes": attributes}
-	payloadObject["children"] = children
-	return payloadObject, diagnostics
+	return modelHelpers.NewPayloadObject(
+		ctx,
+		&diagnostics,
+		attributes,
+		children,
+		true,
+	), diagnostics
 }
 
-func (m *QosDppPolModel) BuildNestedDeletePayloadObject() map[string]any {
-	attributes := map[string]any{"status": "deleted"}
+func (m *QosDppPolModel) BuildNestedDeletePayloadObject(
+	ctx context.Context,
+	diagnostics *diag.Diagnostics,
+) map[string]any {
+	attributes := map[string]any{}
 	attributes["name"] = m.Name.ValueString()
-	return map[string]any{
-		"attributes": attributes,
-		"children":   []map[string]any{},
-	}
+	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, attributes)
 }
 
 type QosDppPolResourceModel struct {
@@ -368,6 +344,23 @@ func (m *QosDppPolResourceModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
 
+func (m *QosDppPolResourceModel) SetFromResponse(
+	ctx context.Context,
+	response *container.Container,
+) (bool, diag.Diagnostics) {
+	fallbackModel := m.QosDppPolModel
+	model, dn, diagnostics := QosDppPolModelFromResponse(ctx, response, &fallbackModel)
+	found := model != nil
+	if diagnostics.HasError() || !found {
+		return found, diagnostics
+	}
+
+	m.QosDppPolModel = *model
+	m.ID = types.StringValue(dn)
+	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
+	return true, diagnostics
+}
+
 func (m *QosDppPolResourceModel) BuildPayload(
 	ctx context.Context,
 	priorState *QosDppPolModel,
@@ -383,53 +376,14 @@ func (m *QosDppPolResourceModel) BuildPayload(
 		payloadObject["attributes"].(map[string]any)["status"] = "created"
 	}
 	payloadEnvelope := map[string]any{"qosDppPol": payloadObject}
-	payload, err := json.Marshal(payloadEnvelope)
-	if err != nil {
-		diagnostics.AddError(
-			"Marshalling of JSON payload failed",
-			err.Error()+". Please report this issue to the provider developers.",
-		)
-		return nil, diagnostics
-	}
-
-	jsonPayload, err := container.ParseJSON(payload)
-	if err != nil {
-		diagnostics.AddError(
-			"Construction of JSON payload failed",
-			err.Error()+". Please report this issue to the provider developers.",
-		)
-		return nil, diagnostics
-	}
+	jsonPayload := modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload")
 	return jsonPayload, diagnostics
 }
 
-func (m *QosDppPolResourceModel) BuildDeletePayload() (*container.Container, diag.Diagnostics) {
+func (m *QosDppPolResourceModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
-	payload, err := json.Marshal(map[string]any{
-		"qosDppPol": map[string]any{
-			"attributes": map[string]any{
-				"dn":     m.ID.ValueString(),
-				"status": "deleted",
-			},
-		},
-	})
-	if err != nil {
-		diagnostics.AddError(
-			"Marshalling of JSON delete payload failed",
-			err.Error()+". Please report this issue to the provider developers.",
-		)
-		return nil, diagnostics
-	}
-
-	jsonPayload, err := container.ParseJSON(payload)
-	if err != nil {
-		diagnostics.AddError(
-			"Construction of JSON delete payload failed",
-			err.Error()+". Please report this issue to the provider developers.",
-		)
-		return nil, diagnostics
-	}
-	return jsonPayload, diagnostics
+	payload := modelHelpers.NewDeletePayload(ctx, &diagnostics, "qosDppPol", m.ID.ValueString())
+	return payload, diagnostics
 }
 
 type QosDppPolDataSourceModel struct {
@@ -449,4 +403,21 @@ func NewQosDppPolDataSourceModelNull() QosDppPolDataSourceModel {
 
 func (m *QosDppPolDataSourceModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
+}
+
+func (m *QosDppPolDataSourceModel) SetFromResponse(
+	ctx context.Context,
+	response *container.Container,
+) (bool, diag.Diagnostics) {
+	fallbackModel := m.QosDppPolModel
+	model, dn, diagnostics := QosDppPolModelFromResponse(ctx, response, &fallbackModel)
+	found := model != nil
+	if diagnostics.HasError() || !found {
+		return found, diagnostics
+	}
+
+	m.QosDppPolModel = *model
+	m.ID = types.StringValue(dn)
+	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
+	return true, diagnostics
 }
