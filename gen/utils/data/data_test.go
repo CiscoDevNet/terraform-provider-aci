@@ -1,8 +1,12 @@
 package data
 
 import (
+	"io"
 	"net/http"
 	"net/http/httptest"
+	"os"
+	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils/test"
@@ -53,6 +57,64 @@ func TestSetHostFromEnvironmentVariable(t *testing.T) {
 	ds.setMetaHost()
 
 	assert.Equal(t, metaHost, ds.metaHost, test.MessageEqual(metaHost, ds.metaHost, t.Name()))
+}
+
+func TestLoadUnsupportedAnnotationClasses(t *testing.T) {
+	t.Chdir(t.TempDir())
+	path := filepath.FromSlash(constAnnotationUnsupportedPath)
+	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+		t.Fatalf("create annotation metadata directory: %v", err)
+	}
+	if err := os.WriteFile(path, []byte(`{"classes":["fvTenant","aaaConfig"]}`), 0o600); err != nil {
+		t.Fatalf("write annotation metadata: %v", err)
+	}
+
+	ds := &DataStore{}
+	if err := ds.loadUnsupportedAnnotationClasses(); err != nil {
+		t.Fatalf("load unsupported annotation classes: %v", err)
+	}
+	assert.Equal(t, []string{"aaaConfig", "fvTenant"}, ds.UnsupportedAnnotationClasses)
+}
+
+func TestRefreshUnsupportedAnnotationClasses(t *testing.T) {
+	t.Chdir(t.TempDir())
+	client := &http.Client{Transport: test.RoundTripFunc(func(request *http.Request) (*http.Response, error) {
+		if request.URL.Path != "/doc/jsonmeta/aci-meta.json" {
+			t.Errorf("unexpected metadata path %q", request.URL.Path)
+		}
+		body := `{
+			"classes": {
+				"aaaConfig": {"isConfigurable": true, "properties": {}},
+				"fvTenant": {"isConfigurable": true, "properties": {"annotation": {}}},
+				"nullAnnotation": {"isConfigurable": true, "properties": {"annotation": null}},
+				"readOnly": {"isConfigurable": false, "properties": {}}
+			}
+		}`
+		return &http.Response{
+			StatusCode: http.StatusOK,
+			Status:     "200 OK",
+			Body:       io.NopCloser(strings.NewReader(body)),
+			Header:     make(http.Header),
+			Request:    request,
+		}, nil
+	})}
+
+	ds := &DataStore{
+		client:   client,
+		metaHost: "metadata.example.com",
+	}
+	if err := ds.refreshUnsupportedAnnotationClasses(); err != nil {
+		t.Fatalf("refresh unsupported annotation classes: %v", err)
+	}
+	assert.Equal(t, []string{"aaaConfig", "nullAnnotation"}, ds.UnsupportedAnnotationClasses)
+
+	contents, err := os.ReadFile(filepath.FromSlash(constAnnotationUnsupportedPath))
+	if err != nil {
+		t.Fatalf("read refreshed annotation metadata: %v", err)
+	}
+	if !strings.Contains(string(contents), `"aaaConfig"`) || strings.Contains(string(contents), `"fvTenant"`) {
+		t.Fatalf("unexpected annotation metadata snapshot: %s", contents)
+	}
 }
 
 type loadClassExpected struct {

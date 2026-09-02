@@ -51,10 +51,12 @@ func TestParseTemplateSupportsOutputFormats(t *testing.T) {
 	}
 }
 
-func TestGeneratorLoadsActiveModelTemplate(t *testing.T) {
+func TestGeneratorLoadsActiveTemplates(t *testing.T) {
 	generator := loadActiveGenerator(t, &data.DataStore{})
-	if _, ok := generator.templates[modelTemplateName]; !ok {
-		t.Fatalf("required template %q was not loaded", modelTemplateName)
+	for _, templateName := range []string{modelTemplateName, annotationUnsupportedTemplateName} {
+		if _, ok := generator.templates[templateName]; !ok {
+			t.Fatalf("required template %q was not loaded", templateName)
+		}
 	}
 }
 
@@ -141,6 +143,54 @@ func TestBuildModelRenderJobs(t *testing.T) {
 		}
 		if job.Context.Class == nil || job.Context.DataStore != dataStore {
 			t.Fatalf("incomplete template context: %#v", job.Context)
+		}
+	}
+}
+
+func TestBuildAnnotationUnsupportedRenderJob(t *testing.T) {
+	dataStore := &data.DataStore{}
+	generator := &Generator{dataStore: dataStore}
+
+	job := generator.buildAnnotationUnsupportedRenderJob()
+	if job.TemplateName != annotationUnsupportedTemplateName || job.OutputPath != annotationUnsupportedOutputPath {
+		t.Fatalf("unexpected annotation render job: %#v", job)
+	}
+	if job.Context.Class != nil || job.Context.DataStore != dataStore {
+		t.Fatalf("unexpected annotation template context: %#v", job.Context)
+	}
+}
+
+func TestFormatTemplateRenderSummaries(t *testing.T) {
+	jobs := []renderJob{
+		{TemplateName: modelTemplateName},
+		{TemplateName: annotationUnsupportedTemplateName},
+		{TemplateName: modelTemplateName},
+	}
+	expected := []string{
+		"Rendered 1 file using template annotation_unsupported.go.tmpl.",
+		"Rendered 2 files using template model.go.tmpl.",
+	}
+	if actual := formatTemplateRenderSummaries(jobs); !reflect.DeepEqual(actual, expected) {
+		t.Fatalf("formatted template summaries %#v, expected %#v", actual, expected)
+	}
+}
+
+func TestAnnotationUnsupportedTemplate(t *testing.T) {
+	dataStore := &data.DataStore{UnsupportedAnnotationClasses: []string{"aaaConfig", "fvTenant"}}
+	generator := loadActiveGenerator(t, dataStore)
+
+	var rendered bytes.Buffer
+	if err := generator.templates[annotationUnsupportedTemplateName].Execute(&rendered, TemplateContext{DataStore: dataStore}); err != nil {
+		t.Fatalf("execute unsupported annotation template: %v", err)
+	}
+	formatted, err := formatRenderedTemplate(annotationUnsupportedOutputPath, rendered.Bytes())
+	if err != nil {
+		t.Fatalf("format unsupported annotation template: %v", err)
+	}
+	contents := string(formatted)
+	for _, className := range dataStore.UnsupportedAnnotationClasses {
+		if !strings.Contains(contents, `"`+className+`"`) {
+			t.Fatalf("rendered annotation output does not contain class %q", className)
 		}
 	}
 }
@@ -1426,13 +1476,21 @@ package models
 type {{ .Class.Name.Capitalized }}Model struct{}
 {{ end -}}
 `))
+	annotationTemplate := texttemplate.Must(texttemplate.New(annotationUnsupportedTemplateName).Parse(testCodeMarker + `
+package provider
+
+func UnsupportedAnnotationClasses() []string { return nil }
+`))
 	classes := map[string]data.Class{
 		"fvBroken": testClass(t, "fvBroken"),
 		"fvTenant": testClass(t, "fvTenant"),
 	}
 	generator := &Generator{
 		dataStore: &data.DataStore{Classes: classes},
-		templates: map[string]*texttemplate.Template{modelTemplateName: failedTemplate},
+		templates: map[string]*texttemplate.Template{
+			modelTemplateName:                 failedTemplate,
+			annotationUnsupportedTemplateName: annotationTemplate,
+		},
 	}
 
 	err := generator.Generate()

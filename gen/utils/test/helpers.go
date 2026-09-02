@@ -3,10 +3,18 @@ package test
 import (
 	"encoding"
 	"fmt"
+	"net/http"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
+
+// RoundTripFunc adapts a function to the http.RoundTripper interface.
+type RoundTripFunc func(*http.Request) (*http.Response, error)
+
+func (function RoundTripFunc) RoundTrip(request *http.Request) (*http.Response, error) {
+	return function(request)
+}
 
 // MustUnmarshalText returns the value of T decoded from s via encoding.TextUnmarshaler.
 // Fails the test if UnmarshalText returns an error.
