@@ -7,7 +7,6 @@ import (
 	"io"
 	"net/http"
 	"os"
-	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
@@ -24,6 +23,7 @@ type DataStore struct {
 	// A map containing all the information about the classes required to render the templates.
 	Classes map[string]Class
 	// Configurable APIC classes that do not expose an annotation property.
+	// This is populated only when an annotation refresh is requested.
 	UnsupportedAnnotationClasses []string
 	// The client used to retrieve the meta data from the remote location.
 	client *http.Client
@@ -48,7 +48,7 @@ func NewDataStore(ctx *Context) (*DataStore, error) {
 	}
 	// Set the meta data host for retrieval of meta files.
 	dataStore.setMetaHost()
-	if err := dataStore.loadUnsupportedAnnotationClasses(); err != nil {
+	if err := dataStore.refreshUnsupportedAnnotationClassesIfRequested(); err != nil {
 		return nil, err
 	}
 	// Check if classes are set in the environment variable 'GEN_ACI_TF_META_CLASSES' and retrieve the meta files for those classes.
@@ -82,10 +82,6 @@ func (ds *DataStore) setMetaHost() {
 	genLogger.Infof("Meta data host set to: %s.", host)
 }
 
-type annotationUnsupportedSnapshot struct {
-	Classes []string `json:"classes"`
-}
-
 type annotationMetadata struct {
 	Classes map[string]struct {
 		IsConfigurable bool `json:"isConfigurable"`
@@ -95,30 +91,22 @@ type annotationMetadata struct {
 	} `json:"classes"`
 }
 
-func (ds *DataStore) loadUnsupportedAnnotationClasses() error {
+func (ds *DataStore) refreshUnsupportedAnnotationClassesIfRequested() error {
 	refreshValue := os.Getenv(constEnvAnnotationUnsupported)
-	if refreshValue != "" {
-		refresh, err := strconv.ParseBool(refreshValue)
-		if err != nil {
-			genLogger.Warnf("Refreshing unsupported annotation classes is skipped due to error: %s.", err)
-		} else if refresh {
-			return ds.refreshUnsupportedAnnotationClasses()
-		}
+	if refreshValue == "" {
+		return nil
 	}
 
-	contents, err := os.ReadFile(constAnnotationUnsupportedPath)
+	refresh, err := strconv.ParseBool(refreshValue)
 	if err != nil {
-		return fmt.Errorf("read unsupported annotation classes %q: %w", constAnnotationUnsupportedPath, err)
+		genLogger.Warnf("Refreshing unsupported annotation classes is skipped due to error: %s.", err)
+		return nil
+	}
+	if !refresh {
+		return nil
 	}
 
-	var classesSnapshot annotationUnsupportedSnapshot
-	if err := json.Unmarshal(contents, &classesSnapshot); err != nil {
-		return fmt.Errorf("decode unsupported annotation classes %q: %w", constAnnotationUnsupportedPath, err)
-	}
-
-	ds.UnsupportedAnnotationClasses = append([]string(nil), classesSnapshot.Classes...)
-	sort.Strings(ds.UnsupportedAnnotationClasses)
-	return nil
+	return ds.refreshUnsupportedAnnotationClasses()
 }
 
 func (ds *DataStore) refreshUnsupportedAnnotationClasses() error {
@@ -148,23 +136,8 @@ func (ds *DataStore) refreshUnsupportedAnnotationClasses() error {
 	}
 	sort.Strings(classes)
 
-	classesSnapshot := annotationUnsupportedSnapshot{Classes: classes}
-	snapshotContents, err := json.MarshalIndent(classesSnapshot, "", "  ")
-	if err != nil {
-		return fmt.Errorf("encode unsupported annotation classes: %w", err)
-	}
-	// json.MarshalIndent does not add the conventional trailing newline.
-	snapshotContents = append(snapshotContents, '\n')
-
-	if err := os.MkdirAll(filepath.Dir(constAnnotationUnsupportedPath), 0o755); err != nil {
-		return fmt.Errorf("create unsupported annotation metadata directory: %w", err)
-	}
-	if err := os.WriteFile(constAnnotationUnsupportedPath, snapshotContents, 0o644); err != nil {
-		return fmt.Errorf("write unsupported annotation classes %q: %w", constAnnotationUnsupportedPath, err)
-	}
-
 	ds.UnsupportedAnnotationClasses = classes
-	genLogger.Debugf("Successfully wrote %d unsupported annotation classes to: %s.", len(classes), constAnnotationUnsupportedPath)
+	genLogger.Debugf("Successfully refreshed %d unsupported annotation classes.", len(classes))
 	return nil
 }
 
