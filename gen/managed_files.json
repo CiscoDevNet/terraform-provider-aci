@@ -1,8 +1,5 @@
 {
   "directories": {
-    "internal/provider": [
-      "annotation_unsupported.go"
-    ],
     "internal/provider/models": [
       "cdpIfPol.go",
       "cloudCertStore.go",

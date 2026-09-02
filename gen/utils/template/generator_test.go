@@ -152,11 +152,28 @@ func TestBuildAnnotationUnsupportedRenderJob(t *testing.T) {
 	generator := &Generator{dataStore: dataStore}
 
 	job := generator.buildAnnotationUnsupportedRenderJob()
-	if job.TemplateName != annotationUnsupportedTemplateName || job.OutputPath != annotationUnsupportedOutputPath {
+	if job.TemplateName != annotationUnsupportedTemplateName || job.OutputPath != annotationUnsupportedOutputPath || !job.RefreshOnly {
 		t.Fatalf("unexpected annotation render job: %#v", job)
 	}
 	if job.Context.Class != nil || job.Context.DataStore != dataStore {
 		t.Fatalf("unexpected annotation template context: %#v", job.Context)
+	}
+}
+
+func TestBuildRenderJobsIncludesAnnotationOnlyAfterRefresh(t *testing.T) {
+	class := testClass(t, "fvTenant")
+	dataStore := &data.DataStore{Classes: map[string]data.Class{"fvTenant": class}}
+	generator := &Generator{dataStore: dataStore}
+
+	jobs := generator.buildRenderJobs()
+	if len(jobs) != 1 || jobs[0].TemplateName != modelTemplateName {
+		t.Fatalf("unexpected ordinary render jobs: %#v", jobs)
+	}
+
+	dataStore.UnsupportedAnnotationClasses = []string{}
+	jobs = generator.buildRenderJobs()
+	if len(jobs) != 2 || jobs[1].TemplateName != annotationUnsupportedTemplateName || !jobs[1].RefreshOnly {
+		t.Fatalf("unexpected refresh render jobs: %#v", jobs)
 	}
 }
 
@@ -192,6 +209,101 @@ func TestAnnotationUnsupportedTemplate(t *testing.T) {
 		if !strings.Contains(contents, `"`+className+`"`) {
 			t.Fatalf("rendered annotation output does not contain class %q", className)
 		}
+	}
+}
+
+func TestGenerateAnnotationUnsupportedOnlyAfterRefresh(t *testing.T) {
+	testCases := []struct {
+		name                         string
+		unsupportedAnnotationClasses []string
+		expectExistingOutput         bool
+	}{
+		{
+			name:                 "ordinary generation preserves existing output",
+			expectExistingOutput: true,
+		},
+		{
+			name:                         "refresh generation renders output",
+			unsupportedAnnotationClasses: []string{"aaaConfig", "fvTenant"},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			repositoryRoot := t.TempDir()
+			t.Chdir(repositoryRoot)
+
+			if err := os.MkdirAll(filepath.Dir(annotationUnsupportedOutputPath), 0o755); err != nil {
+				t.Fatalf("create annotation output directory: %v", err)
+			}
+			existingContents := []byte("existing annotation output\n")
+			if err := os.WriteFile(annotationUnsupportedOutputPath, existingContents, 0o600); err != nil {
+				t.Fatalf("write existing annotation output: %v", err)
+			}
+			if err := os.MkdirAll("gen", 0o755); err != nil {
+				t.Fatalf("create manifest directory: %v", err)
+			}
+			if err := os.WriteFile("gen/managed_files.json", []byte("{\n  \"directories\": {}\n}\n"), 0o600); err != nil {
+				t.Fatalf("write managed-files manifest: %v", err)
+			}
+
+			modelTemplate := texttemplate.Must(texttemplate.New(modelTemplateName).Parse(testCodeMarker + `
+package models
+
+type {{ .Class.Name.Capitalized }}Model struct{}
+`))
+			annotationTemplate := texttemplate.Must(texttemplate.New(annotationUnsupportedTemplateName).Parse(testCodeMarker + `
+package provider
+
+func UnsupportedAnnotationClasses() []string {
+	return []string{
+		{{- range .DataStore.UnsupportedAnnotationClasses }}
+		{{ printf "%q" . }},
+		{{- end }}
+	}
+}
+`))
+			class := testClass(t, "fvTenant")
+			dataStore := &data.DataStore{
+				Classes:                      map[string]data.Class{"fvTenant": class},
+				UnsupportedAnnotationClasses: testCase.unsupportedAnnotationClasses,
+			}
+			generator := &Generator{
+				dataStore: dataStore,
+				templates: map[string]*texttemplate.Template{
+					modelTemplateName:                 modelTemplate,
+					annotationUnsupportedTemplateName: annotationTemplate,
+				},
+			}
+
+			if err := generator.Generate(); err != nil {
+				t.Fatalf("generate templates: %v", err)
+			}
+
+			contents, err := os.ReadFile(annotationUnsupportedOutputPath)
+			if err != nil {
+				t.Fatalf("read annotation output: %v", err)
+			}
+			if testCase.expectExistingOutput {
+				if !reflect.DeepEqual(contents, existingContents) {
+					t.Fatalf("annotation output changed from %q to %q", existingContents, contents)
+				}
+			} else {
+				for _, className := range testCase.unsupportedAnnotationClasses {
+					if !strings.Contains(string(contents), `"`+className+`"`) {
+						t.Fatalf("rendered annotation output does not contain class %q", className)
+					}
+				}
+			}
+
+			manifestContents, err := os.ReadFile("gen/managed_files.json")
+			if err != nil {
+				t.Fatalf("read managed-files manifest: %v", err)
+			}
+			if strings.Contains(string(manifestContents), "annotation_unsupported.go") {
+				t.Fatalf("refresh-only annotation output was added to managed-files manifest: %s", manifestContents)
+			}
+		})
 	}
 }
 
@@ -1476,11 +1588,6 @@ package models
 type {{ .Class.Name.Capitalized }}Model struct{}
 {{ end -}}
 `))
-	annotationTemplate := texttemplate.Must(texttemplate.New(annotationUnsupportedTemplateName).Parse(testCodeMarker + `
-package provider
-
-func UnsupportedAnnotationClasses() []string { return nil }
-`))
 	classes := map[string]data.Class{
 		"fvBroken": testClass(t, "fvBroken"),
 		"fvTenant": testClass(t, "fvTenant"),
@@ -1488,8 +1595,7 @@ func UnsupportedAnnotationClasses() []string { return nil }
 	generator := &Generator{
 		dataStore: &data.DataStore{Classes: classes},
 		templates: map[string]*texttemplate.Template{
-			modelTemplateName:                 failedTemplate,
-			annotationUnsupportedTemplateName: annotationTemplate,
+			modelTemplateName: failedTemplate,
 		},
 	}
 
