@@ -545,29 +545,6 @@ func (c Class) PayloadProperties() []*Property {
 	return properties
 }
 
-// HasSetPayloadProperties reports whether payload construction needs to
-// serialize one of this class's properties from a Terraform set.
-func (c Class) HasSetPayloadProperties() bool {
-	for _, property := range c.PayloadProperties() {
-		if property.ValueType == Set {
-			return true
-		}
-	}
-	return false
-}
-
-// HasSingleNestedChildren reports whether this class contains at least one
-// child represented by a Terraform object rather than a set.
-func (c Class) HasSingleNestedChildren(ds *DataStore) bool {
-	for _, childName := range c.Children {
-		child, ok := ds.Classes[childName.String()]
-		if ok && child.IsSingleNestedWhenDefinedAsChild {
-			return true
-		}
-	}
-	return false
-}
-
 // ParentDnProperty returns the synthetic top-level parent_dn property when
 // the class has one.
 func (c Class) ParentDnProperty() *Property {

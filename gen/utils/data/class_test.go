@@ -741,21 +741,6 @@ func TestClassModelMetadata(t *testing.T) {
 	assert.Equal(t, []*Property{custom, set, name}, class.PayloadProperties())
 	assert.Same(t, parentDn, class.ParentDnProperty())
 	assert.True(t, class.HasCustomModelTypes())
-	assert.True(t, class.HasSetPayloadProperties())
-}
-
-func TestClassHasSingleNestedChildren(t *testing.T) {
-	t.Parallel()
-
-	repeatedName := testClassName("tagAnnotation")
-	singleName := testClassName("fvRsTenantMonPol")
-	dataStore := &DataStore{Classes: map[string]Class{
-		repeatedName.String(): {},
-		singleName.String():   {IsSingleNestedWhenDefinedAsChild: true},
-	}}
-
-	assert.False(t, (Class{Children: []*ClassName{repeatedName}}).HasSingleNestedChildren(dataStore))
-	assert.True(t, (Class{Children: []*ClassName{repeatedName, singleName}}).HasSingleNestedChildren(dataStore))
 }
 
 func TestClassDnFormatPatterns(t *testing.T) {
