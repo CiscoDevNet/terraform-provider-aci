@@ -22,6 +22,10 @@ func NewNwsFwPolDataSource() datasource.DataSource {
 	return &NwsFwPolDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_firewall_policy", NewNwsFwPolDataSource)
+}
+
 // NwsFwPolDataSource defines the data source implementation.
 type NwsFwPolDataSource struct {
 	client *client.Client

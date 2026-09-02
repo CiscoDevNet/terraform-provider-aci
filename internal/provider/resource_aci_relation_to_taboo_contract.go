@@ -34,6 +34,10 @@ func NewFvRsProtByResource() resource.Resource {
 	return &FvRsProtByResource{}
 }
 
+func init() {
+	registerResource("aci_relation_to_taboo_contract", NewFvRsProtByResource)
+}
+
 // FvRsProtByResource defines the resource implementation.
 type FvRsProtByResource struct {
 	client *client.Client

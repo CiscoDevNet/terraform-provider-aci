@@ -22,6 +22,10 @@ func NewFvSCrtrnDataSource() datasource.DataSource {
 	return &FvSCrtrnDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_epg_useg_sub_block_statement", NewFvSCrtrnDataSource)
+}
+
 // FvSCrtrnDataSource defines the data source implementation.
 type FvSCrtrnDataSource struct {
 	client *client.Client

@@ -38,6 +38,10 @@ func NewVzRsAnyToProvResource() resource.Resource {
 	return &VzRsAnyToProvResource{}
 }
 
+func init() {
+	registerResource("aci_relation_from_any_to_provider_contract", NewVzRsAnyToProvResource)
+}
+
 // VzRsAnyToProvResource defines the resource implementation.
 type VzRsAnyToProvResource struct {
 	client *client.Client

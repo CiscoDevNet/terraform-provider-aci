@@ -24,6 +24,10 @@ func NewFvRsCtxToBgpCtxAfPolDataSource() datasource.DataSource {
 	return &FvRsCtxToBgpCtxAfPolDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_relation_from_vrf_to_bgp_address_family_context", NewFvRsCtxToBgpCtxAfPolDataSource)
+}
+
 // FvRsCtxToBgpCtxAfPolDataSource defines the data source implementation.
 type FvRsCtxToBgpCtxAfPolDataSource struct {
 	client *client.Client

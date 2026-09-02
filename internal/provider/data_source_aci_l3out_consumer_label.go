@@ -22,6 +22,10 @@ func NewL3extConsLblDataSource() datasource.DataSource {
 	return &L3extConsLblDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_l3out_consumer_label", NewL3extConsLblDataSource)
+}
+
 // L3extConsLblDataSource defines the data source implementation.
 type L3extConsLblDataSource struct {
 	client *client.Client

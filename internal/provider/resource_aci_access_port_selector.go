@@ -37,6 +37,10 @@ func NewInfraHPortSResource() resource.Resource {
 	return &InfraHPortSResource{}
 }
 
+func init() {
+	registerResource("aci_access_port_selector", NewInfraHPortSResource)
+}
+
 // InfraHPortSResource defines the resource implementation.
 type InfraHPortSResource struct {
 	client *client.Client

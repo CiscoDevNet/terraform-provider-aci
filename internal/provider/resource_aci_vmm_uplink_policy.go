@@ -34,6 +34,10 @@ func NewVmmUplinkPResource() resource.Resource {
 	return &VmmUplinkPResource{}
 }
 
+func init() {
+	registerResource("aci_vmm_uplink_policy", NewVmmUplinkPResource)
+}
+
 // VmmUplinkPResource defines the resource implementation.
 type VmmUplinkPResource struct {
 	client *client.Client

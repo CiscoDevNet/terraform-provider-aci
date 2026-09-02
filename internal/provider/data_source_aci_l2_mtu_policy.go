@@ -22,6 +22,10 @@ func NewL2InstPolDataSource() datasource.DataSource {
 	return &L2InstPolDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_l2_mtu_policy", NewL2InstPolDataSource)
+}
+
 // L2InstPolDataSource defines the data source implementation.
 type L2InstPolDataSource struct {
 	client *client.Client

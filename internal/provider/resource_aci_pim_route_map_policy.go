@@ -34,6 +34,10 @@ func NewPimRouteMapPolResource() resource.Resource {
 	return &PimRouteMapPolResource{}
 }
 
+func init() {
+	registerResource("aci_pim_route_map_policy", NewPimRouteMapPolResource)
+}
+
 // PimRouteMapPolResource defines the resource implementation.
 type PimRouteMapPolResource struct {
 	client *client.Client

@@ -37,6 +37,10 @@ func NewPkiTPResource() resource.Resource {
 	return &PkiTPResource{}
 }
 
+func init() {
+	registerResource("aci_certificate_authority", NewPkiTPResource)
+}
+
 // PkiTPResource defines the resource implementation.
 type PkiTPResource struct {
 	client *client.Client

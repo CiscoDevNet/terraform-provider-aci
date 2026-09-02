@@ -36,6 +36,10 @@ func NewFcIfPolResource() resource.Resource {
 	return &FcIfPolResource{}
 }
 
+func init() {
+	registerResource("aci_fibre_channel_interface_policy", NewFcIfPolResource)
+}
+
 // FcIfPolResource defines the resource implementation.
 type FcIfPolResource struct {
 	client *client.Client

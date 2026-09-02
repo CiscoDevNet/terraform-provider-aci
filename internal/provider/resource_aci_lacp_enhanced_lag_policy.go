@@ -36,6 +36,10 @@ func NewLacpEnhancedLagPolResource() resource.Resource {
 	return &LacpEnhancedLagPolResource{}
 }
 
+func init() {
+	registerResource("aci_lacp_enhanced_lag_policy", NewLacpEnhancedLagPolResource)
+}
+
 // LacpEnhancedLagPolResource defines the resource implementation.
 type LacpEnhancedLagPolResource struct {
 	client *client.Client

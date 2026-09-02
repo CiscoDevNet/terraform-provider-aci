@@ -37,6 +37,10 @@ func NewMldSnoopPolResource() resource.Resource {
 	return &MldSnoopPolResource{}
 }
 
+func init() {
+	registerResource("aci_mld_snooping_policy", NewMldSnoopPolResource)
+}
+
 // MldSnoopPolResource defines the resource implementation.
 type MldSnoopPolResource struct {
 	client *client.Client

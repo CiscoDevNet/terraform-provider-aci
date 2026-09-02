@@ -35,6 +35,10 @@ func NewMgmtSubnetResource() resource.Resource {
 	return &MgmtSubnetResource{}
 }
 
+func init() {
+	registerResource("aci_external_management_network_subnet", NewMgmtSubnetResource)
+}
+
 // MgmtSubnetResource defines the resource implementation.
 type MgmtSubnetResource struct {
 	client *client.Client

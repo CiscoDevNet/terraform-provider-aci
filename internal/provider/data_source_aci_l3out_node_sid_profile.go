@@ -23,6 +23,10 @@ func NewMplsNodeSidPDataSource() datasource.DataSource {
 	return &MplsNodeSidPDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_l3out_node_sid_profile", NewMplsNodeSidPDataSource)
+}
+
 // MplsNodeSidPDataSource defines the data source implementation.
 type MplsNodeSidPDataSource struct {
 	client *client.Client

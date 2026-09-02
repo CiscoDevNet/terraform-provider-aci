@@ -38,6 +38,10 @@ func NewVzRsAnyToConsIfResource() resource.Resource {
 	return &VzRsAnyToConsIfResource{}
 }
 
+func init() {
+	registerResource("aci_relation_from_any_to_contract_interface", NewVzRsAnyToConsIfResource)
+}
+
 // VzRsAnyToConsIfResource defines the resource implementation.
 type VzRsAnyToConsIfResource struct {
 	client *client.Client

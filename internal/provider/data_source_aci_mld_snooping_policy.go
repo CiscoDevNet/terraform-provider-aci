@@ -23,6 +23,10 @@ func NewMldSnoopPolDataSource() datasource.DataSource {
 	return &MldSnoopPolDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_mld_snooping_policy", NewMldSnoopPolDataSource)
+}
+
 // MldSnoopPolDataSource defines the data source implementation.
 type MldSnoopPolDataSource struct {
 	client *client.Client

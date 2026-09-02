@@ -22,6 +22,10 @@ func NewL2PortSecurityPolDataSource() datasource.DataSource {
 	return &L2PortSecurityPolDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_port_security_interface_policy", NewL2PortSecurityPolDataSource)
+}
+
 // L2PortSecurityPolDataSource defines the data source implementation.
 type L2PortSecurityPolDataSource struct {
 	client *client.Client

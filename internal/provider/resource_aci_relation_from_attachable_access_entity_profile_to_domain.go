@@ -34,6 +34,10 @@ func NewInfraRsDomPResource() resource.Resource {
 	return &InfraRsDomPResource{}
 }
 
+func init() {
+	registerResource("aci_relation_from_attachable_access_entity_profile_to_domain", NewInfraRsDomPResource)
+}
+
 // InfraRsDomPResource defines the resource implementation.
 type InfraRsDomPResource struct {
 	client *client.Client

@@ -22,6 +22,10 @@ func NewVmmUplinkPDataSource() datasource.DataSource {
 	return &VmmUplinkPDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_vmm_uplink_policy", NewVmmUplinkPDataSource)
+}
+
 // VmmUplinkPDataSource defines the data source implementation.
 type VmmUplinkPDataSource struct {
 	client *client.Client

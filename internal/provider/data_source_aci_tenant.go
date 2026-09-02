@@ -23,6 +23,10 @@ func NewFvTenantDataSource() datasource.DataSource {
 	return &FvTenantDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_tenant", NewFvTenantDataSource)
+}
+
 // FvTenantDataSource defines the data source implementation.
 type FvTenantDataSource struct {
 	client *client.Client

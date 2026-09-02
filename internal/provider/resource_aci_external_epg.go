@@ -39,6 +39,10 @@ func NewL3extInstPResource() resource.Resource {
 	return &L3extInstPResource{}
 }
 
+func init() {
+	registerResource("aci_external_epg", NewL3extInstPResource)
+}
+
 // L3extInstPResource defines the resource implementation.
 type L3extInstPResource struct {
 	client *client.Client

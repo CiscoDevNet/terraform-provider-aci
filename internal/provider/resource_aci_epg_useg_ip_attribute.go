@@ -37,6 +37,10 @@ func NewFvIpAttrResource() resource.Resource {
 	return &FvIpAttrResource{}
 }
 
+func init() {
+	registerResource("aci_epg_useg_ip_attribute", NewFvIpAttrResource)
+}
+
 // FvIpAttrResource defines the resource implementation.
 type FvIpAttrResource struct {
 	client *client.Client

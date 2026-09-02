@@ -24,6 +24,10 @@ func NewVzAnyDataSource() datasource.DataSource {
 	return &VzAnyDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_any", NewVzAnyDataSource)
+}
+
 // VzAnyDataSource defines the data source implementation.
 type VzAnyDataSource struct {
 	client *client.Client

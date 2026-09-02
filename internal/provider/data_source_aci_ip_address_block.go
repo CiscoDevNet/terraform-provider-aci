@@ -22,6 +22,10 @@ func NewFvnsUcastAddrBlkDataSource() datasource.DataSource {
 	return &FvnsUcastAddrBlkDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_ip_address_block", NewFvnsUcastAddrBlkDataSource)
+}
+
 // FvnsUcastAddrBlkDataSource defines the data source implementation.
 type FvnsUcastAddrBlkDataSource struct {
 	client *client.Client

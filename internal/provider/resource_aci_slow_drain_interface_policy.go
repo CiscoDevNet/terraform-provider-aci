@@ -36,6 +36,10 @@ func NewQosSdIfPolResource() resource.Resource {
 	return &QosSdIfPolResource{}
 }
 
+func init() {
+	registerResource("aci_slow_drain_interface_policy", NewQosSdIfPolResource)
+}
+
 // QosSdIfPolResource defines the resource implementation.
 type QosSdIfPolResource struct {
 	client *client.Client

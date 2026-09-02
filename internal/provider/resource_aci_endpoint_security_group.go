@@ -40,6 +40,10 @@ func NewFvESgResource() resource.Resource {
 	return &FvESgResource{}
 }
 
+func init() {
+	registerResource("aci_endpoint_security_group", NewFvESgResource)
+}
+
 // FvESgResource defines the resource implementation.
 type FvESgResource struct {
 	client *client.Client

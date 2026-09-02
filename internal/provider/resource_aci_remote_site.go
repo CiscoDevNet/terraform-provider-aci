@@ -34,6 +34,10 @@ func NewFvRemoteIdResource() resource.Resource {
 	return &FvRemoteIdResource{}
 }
 
+func init() {
+	registerResource("aci_remote_site", NewFvRemoteIdResource)
+}
+
 // FvRemoteIdResource defines the resource implementation.
 type FvRemoteIdResource struct {
 	client *client.Client

@@ -23,6 +23,10 @@ func NewFvFabricExtConnPDataSource() datasource.DataSource {
 	return &FvFabricExtConnPDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_fabric_external_connection_policy", NewFvFabricExtConnPDataSource)
+}
+
 // FvFabricExtConnPDataSource defines the data source implementation.
 type FvFabricExtConnPDataSource struct {
 	client *client.Client

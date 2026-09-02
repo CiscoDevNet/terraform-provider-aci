@@ -23,6 +23,10 @@ func NewDwdmIfPolDataSource() datasource.DataSource {
 	return &DwdmIfPolDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_dwdm_interface_policy", NewDwdmIfPolDataSource)
+}
+
 // DwdmIfPolDataSource defines the data source implementation.
 type DwdmIfPolDataSource struct {
 	client *client.Client

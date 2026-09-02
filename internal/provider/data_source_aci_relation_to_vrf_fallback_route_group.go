@@ -22,6 +22,10 @@ func NewL3extRsOutToFBRGroupDataSource() datasource.DataSource {
 	return &L3extRsOutToFBRGroupDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_relation_to_vrf_fallback_route_group", NewL3extRsOutToFBRGroupDataSource)
+}
+
 // L3extRsOutToFBRGroupDataSource defines the data source implementation.
 type L3extRsOutToFBRGroupDataSource struct {
 	client *client.Client

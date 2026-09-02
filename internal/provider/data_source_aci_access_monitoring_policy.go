@@ -22,6 +22,10 @@ func NewMonInfraPolDataSource() datasource.DataSource {
 	return &MonInfraPolDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_access_monitoring_policy", NewMonInfraPolDataSource)
+}
+
 // MonInfraPolDataSource defines the data source implementation.
 type MonInfraPolDataSource struct {
 	client *client.Client

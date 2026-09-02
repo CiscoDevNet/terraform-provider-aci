@@ -24,6 +24,10 @@ func NewFvRsCtxToOspfCtxPolDataSource() datasource.DataSource {
 	return &FvRsCtxToOspfCtxPolDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_relation_from_vrf_to_address_family_ospf_timers", NewFvRsCtxToOspfCtxPolDataSource)
+}
+
 // FvRsCtxToOspfCtxPolDataSource defines the data source implementation.
 type FvRsCtxToOspfCtxPolDataSource struct {
 	client *client.Client

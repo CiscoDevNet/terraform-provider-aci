@@ -37,6 +37,10 @@ func NewL2PortAuthPolResource() resource.Resource {
 	return &L2PortAuthPolResource{}
 }
 
+func init() {
+	registerResource("aci_dot1x_port_authentication_interface_policy", NewL2PortAuthPolResource)
+}
+
 // L2PortAuthPolResource defines the resource implementation.
 type L2PortAuthPolResource struct {
 	client *client.Client

@@ -36,6 +36,10 @@ func NewQosLlfcIfPolResource() resource.Resource {
 	return &QosLlfcIfPolResource{}
 }
 
+func init() {
+	registerResource("aci_link_level_flow_control_interface_policy", NewQosLlfcIfPolResource)
+}
+
 // QosLlfcIfPolResource defines the resource implementation.
 type QosLlfcIfPolResource struct {
 	client *client.Client

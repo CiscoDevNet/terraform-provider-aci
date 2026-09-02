@@ -22,6 +22,10 @@ func NewFabricLinkFlapPolDataSource() datasource.DataSource {
 	return &FabricLinkFlapPolDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_link_flap_interface_policy", NewFabricLinkFlapPolDataSource)
+}
+
 // FabricLinkFlapPolDataSource defines the data source implementation.
 type FabricLinkFlapPolDataSource struct {
 	client *client.Client

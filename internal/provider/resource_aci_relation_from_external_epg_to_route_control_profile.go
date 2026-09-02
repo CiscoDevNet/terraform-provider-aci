@@ -36,6 +36,10 @@ func NewL3extRsInstPToProfileResource() resource.Resource {
 	return &L3extRsInstPToProfileResource{}
 }
 
+func init() {
+	registerResource("aci_relation_from_external_epg_to_route_control_profile", NewL3extRsInstPToProfileResource)
+}
+
 // L3extRsInstPToProfileResource defines the resource implementation.
 type L3extRsInstPToProfileResource struct {
 	client *client.Client

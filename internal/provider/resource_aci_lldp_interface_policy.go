@@ -36,6 +36,10 @@ func NewLldpIfPolResource() resource.Resource {
 	return &LldpIfPolResource{}
 }
 
+func init() {
+	registerResource("aci_lldp_interface_policy", NewLldpIfPolResource)
+}
+
 // LldpIfPolResource defines the resource implementation.
 type LldpIfPolResource struct {
 	client *client.Client

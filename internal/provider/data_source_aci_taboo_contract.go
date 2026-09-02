@@ -22,6 +22,10 @@ func NewVzTabooDataSource() datasource.DataSource {
 	return &VzTabooDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_taboo_contract", NewVzTabooDataSource)
+}
+
 // VzTabooDataSource defines the data source implementation.
 type VzTabooDataSource struct {
 	client *client.Client

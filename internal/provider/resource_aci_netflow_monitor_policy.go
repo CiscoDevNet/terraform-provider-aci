@@ -35,6 +35,10 @@ func NewNetflowMonitorPolResource() resource.Resource {
 	return &NetflowMonitorPolResource{}
 }
 
+func init() {
+	registerResource("aci_netflow_monitor_policy", NewNetflowMonitorPolResource)
+}
+
 // NetflowMonitorPolResource defines the resource implementation.
 type NetflowMonitorPolResource struct {
 	client *client.Client

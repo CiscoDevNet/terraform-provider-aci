@@ -22,6 +22,10 @@ func NewFabricHIfPolDataSource() datasource.DataSource {
 	return &FabricHIfPolDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_link_level_interface_policy", NewFabricHIfPolDataSource)
+}
+
 // FabricHIfPolDataSource defines the data source implementation.
 type FabricHIfPolDataSource struct {
 	client *client.Client

@@ -36,6 +36,10 @@ func NewXcvrZRIfPolResource() resource.Resource {
 	return &XcvrZRIfPolResource{}
 }
 
+func init() {
+	registerResource("aci_zr_transceiver_interface_policy", NewXcvrZRIfPolResource)
+}
+
 // XcvrZRIfPolResource defines the resource implementation.
 type XcvrZRIfPolResource struct {
 	client *client.Client

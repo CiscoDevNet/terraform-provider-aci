@@ -36,6 +36,10 @@ func NewFvRsFcPathAttResource() resource.Resource {
 	return &FvRsFcPathAttResource{}
 }
 
+func init() {
+	registerResource("aci_relation_to_fibre_channel_path", NewFvRsFcPathAttResource)
+}
+
 // FvRsFcPathAttResource defines the resource implementation.
 type FvRsFcPathAttResource struct {
 	client *client.Client

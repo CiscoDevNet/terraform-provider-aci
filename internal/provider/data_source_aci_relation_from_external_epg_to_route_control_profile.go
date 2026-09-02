@@ -24,6 +24,10 @@ func NewL3extRsInstPToProfileDataSource() datasource.DataSource {
 	return &L3extRsInstPToProfileDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_relation_from_external_epg_to_route_control_profile", NewL3extRsInstPToProfileDataSource)
+}
+
 // L3extRsInstPToProfileDataSource defines the data source implementation.
 type L3extRsInstPToProfileDataSource struct {
 	client *client.Client

@@ -25,6 +25,10 @@ func NewVmmDomPDataSource() datasource.DataSource {
 	return &VmmDomPDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_vmm_domain", NewVmmDomPDataSource)
+}
+
 // VmmDomPDataSource defines the data source implementation.
 type VmmDomPDataSource struct {
 	client *client.Client

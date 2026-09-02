@@ -36,6 +36,10 @@ func NewMcpIfPolResource() resource.Resource {
 	return &McpIfPolResource{}
 }
 
+func init() {
+	registerResource("aci_mcp_interface_policy", NewMcpIfPolResource)
+}
+
 // McpIfPolResource defines the resource implementation.
 type McpIfPolResource struct {
 	client *client.Client

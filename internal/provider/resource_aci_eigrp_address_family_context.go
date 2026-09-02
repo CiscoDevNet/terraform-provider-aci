@@ -36,6 +36,10 @@ func NewEigrpCtxAfPolResource() resource.Resource {
 	return &EigrpCtxAfPolResource{}
 }
 
+func init() {
+	registerResource("aci_eigrp_address_family_context", NewEigrpCtxAfPolResource)
+}
+
 // EigrpCtxAfPolResource defines the resource implementation.
 type EigrpCtxAfPolResource struct {
 	client *client.Client

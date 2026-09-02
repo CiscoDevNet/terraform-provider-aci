@@ -23,6 +23,10 @@ func NewFvVipDataSource() datasource.DataSource {
 	return &FvVipDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_virtual_ip_address", NewFvVipDataSource)
+}
+
 // FvVipDataSource defines the data source implementation.
 type FvVipDataSource struct {
 	client *client.Client

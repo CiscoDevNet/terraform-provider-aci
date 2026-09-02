@@ -37,6 +37,10 @@ func NewFvFBRGroupResource() resource.Resource {
 	return &FvFBRGroupResource{}
 }
 
+func init() {
+	registerResource("aci_vrf_fallback_route_group", NewFvFBRGroupResource)
+}
+
 // FvFBRGroupResource defines the resource implementation.
 type FvFBRGroupResource struct {
 	client *client.Client

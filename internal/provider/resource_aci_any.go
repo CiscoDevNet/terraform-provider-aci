@@ -39,6 +39,10 @@ func NewVzAnyResource() resource.Resource {
 	return &VzAnyResource{}
 }
 
+func init() {
+	registerResource("aci_any", NewVzAnyResource)
+}
+
 // VzAnyResource defines the resource implementation.
 type VzAnyResource struct {
 	client *client.Client

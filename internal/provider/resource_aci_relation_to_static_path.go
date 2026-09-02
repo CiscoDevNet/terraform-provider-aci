@@ -36,6 +36,10 @@ func NewFvRsPathAttResource() resource.Resource {
 	return &FvRsPathAttResource{}
 }
 
+func init() {
+	registerResource("aci_relation_to_static_path", NewFvRsPathAttResource)
+}
+
 // FvRsPathAttResource defines the resource implementation.
 type FvRsPathAttResource struct {
 	client *client.Client

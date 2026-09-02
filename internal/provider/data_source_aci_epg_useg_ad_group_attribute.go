@@ -22,6 +22,10 @@ func NewFvIdGroupAttrDataSource() datasource.DataSource {
 	return &FvIdGroupAttrDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_epg_useg_ad_group_attribute", NewFvIdGroupAttrDataSource)
+}
+
 // FvIdGroupAttrDataSource defines the data source implementation.
 type FvIdGroupAttrDataSource struct {
 	client *client.Client

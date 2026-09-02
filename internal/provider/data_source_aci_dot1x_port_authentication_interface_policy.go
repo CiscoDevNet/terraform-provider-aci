@@ -22,6 +22,10 @@ func NewL2PortAuthPolDataSource() datasource.DataSource {
 	return &L2PortAuthPolDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_dot1x_port_authentication_interface_policy", NewL2PortAuthPolDataSource)
+}
+
 // L2PortAuthPolDataSource defines the data source implementation.
 type L2PortAuthPolDataSource struct {
 	client *client.Client

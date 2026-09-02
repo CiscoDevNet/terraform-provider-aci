@@ -24,6 +24,10 @@ func NewInfraHPortSDataSource() datasource.DataSource {
 	return &InfraHPortSDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_access_port_selector", NewInfraHPortSDataSource)
+}
+
 // InfraHPortSDataSource defines the data source implementation.
 type InfraHPortSDataSource struct {
 	client *client.Client

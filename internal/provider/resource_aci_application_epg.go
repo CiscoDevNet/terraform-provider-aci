@@ -40,6 +40,10 @@ func NewFvAEPgResource() resource.Resource {
 	return &FvAEPgResource{}
 }
 
+func init() {
+	registerResource("aci_application_epg", NewFvAEPgResource)
+}
+
 // FvAEPgResource defines the resource implementation.
 type FvAEPgResource struct {
 	client *client.Client

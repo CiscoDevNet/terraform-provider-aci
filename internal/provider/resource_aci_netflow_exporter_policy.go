@@ -39,6 +39,10 @@ func NewNetflowExporterPolResource() resource.Resource {
 	return &NetflowExporterPolResource{}
 }
 
+func init() {
+	registerResource("aci_netflow_exporter_policy", NewNetflowExporterPolResource)
+}
+
 // NetflowExporterPolResource defines the resource implementation.
 type NetflowExporterPolResource struct {
 	client *client.Client

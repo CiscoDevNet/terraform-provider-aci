@@ -24,6 +24,10 @@ func NewL3extRsLblToProfileDataSource() datasource.DataSource {
 	return &L3extRsLblToProfileDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_relation_from_l3out_consumer_label_to_route_control_profile", NewL3extRsLblToProfileDataSource)
+}
+
 // L3extRsLblToProfileDataSource defines the data source implementation.
 type L3extRsLblToProfileDataSource struct {
 	client *client.Client

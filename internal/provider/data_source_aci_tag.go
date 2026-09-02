@@ -22,6 +22,10 @@ func NewTagTagDataSource() datasource.DataSource {
 	return &TagTagDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_tag", NewTagTagDataSource)
+}
+
 // TagTagDataSource defines the data source implementation.
 type TagTagDataSource struct {
 	client *client.Client

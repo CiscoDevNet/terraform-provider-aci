@@ -35,6 +35,10 @@ func NewFvRsAepAttResource() resource.Resource {
 	return &FvRsAepAttResource{}
 }
 
+func init() {
+	registerResource("aci_relation_from_application_epg_to_attachable_access_entity_profile", NewFvRsAepAttResource)
+}
+
 // FvRsAepAttResource defines the resource implementation.
 type FvRsAepAttResource struct {
 	client *client.Client

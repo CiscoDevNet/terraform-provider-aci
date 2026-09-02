@@ -23,6 +23,10 @@ func NewVzTSubjDataSource() datasource.DataSource {
 	return &VzTSubjDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_taboo_contract_subject", NewVzTSubjDataSource)
+}
+
 // VzTSubjDataSource defines the data source implementation.
 type VzTSubjDataSource struct {
 	client *client.Client

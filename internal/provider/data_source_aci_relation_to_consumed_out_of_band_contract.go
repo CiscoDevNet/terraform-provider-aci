@@ -23,6 +23,10 @@ func NewMgmtRsOoBConsDataSource() datasource.DataSource {
 	return &MgmtRsOoBConsDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_relation_to_consumed_out_of_band_contract", NewMgmtRsOoBConsDataSource)
+}
+
 // MgmtRsOoBConsDataSource defines the data source implementation.
 type MgmtRsOoBConsDataSource struct {
 	client *client.Client

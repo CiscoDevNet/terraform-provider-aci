@@ -33,6 +33,10 @@ func NewAciRestManagedResource() resource.Resource {
 	return &AciRestManagedResource{}
 }
 
+func init() {
+	registerResource("aci_rest_managed", NewAciRestManagedResource)
+}
+
 // AciRestManagedResource defines the resource implementation.
 type AciRestManagedResource struct {
 	client *client.Client

@@ -25,6 +25,10 @@ func NewQosDot1PClassDataSource() datasource.DataSource {
 	return &QosDot1PClassDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_dot1p_classifier", NewQosDot1PClassDataSource)
+}
+
 // QosDot1PClassDataSource defines the data source implementation.
 type QosDot1PClassDataSource struct {
 	client *client.Client

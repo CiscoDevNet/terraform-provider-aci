@@ -38,6 +38,10 @@ func NewMgmtInstPResource() resource.Resource {
 	return &MgmtInstPResource{}
 }
 
+func init() {
+	registerResource("aci_external_management_network_instance_profile", NewMgmtInstPResource)
+}
+
 // MgmtInstPResource defines the resource implementation.
 type MgmtInstPResource struct {
 	client *client.Client

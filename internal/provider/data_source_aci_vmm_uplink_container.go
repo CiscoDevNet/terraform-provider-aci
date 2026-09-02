@@ -22,6 +22,10 @@ func NewVmmUplinkPContDataSource() datasource.DataSource {
 	return &VmmUplinkPContDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_vmm_uplink_container", NewVmmUplinkPContDataSource)
+}
+
 // VmmUplinkPContDataSource defines the data source implementation.
 type VmmUplinkPContDataSource struct {
 	client *client.Client

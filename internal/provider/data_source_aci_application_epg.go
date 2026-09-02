@@ -24,6 +24,10 @@ func NewFvAEPgDataSource() datasource.DataSource {
 	return &FvAEPgDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_application_epg", NewFvAEPgDataSource)
+}
+
 // FvAEPgDataSource defines the data source implementation.
 type FvAEPgDataSource struct {
 	client *client.Client

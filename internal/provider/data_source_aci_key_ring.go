@@ -23,6 +23,10 @@ func NewPkiKeyRingDataSource() datasource.DataSource {
 	return &PkiKeyRingDataSource{}
 }
 
+func init() {
+	registerDataSource("aci_key_ring", NewPkiKeyRingDataSource)
+}
+
 // PkiKeyRingDataSource defines the data source implementation.
 type PkiKeyRingDataSource struct {
 	client *client.Client
