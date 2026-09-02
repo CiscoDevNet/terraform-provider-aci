@@ -4,10 +4,14 @@ package models
 
 import (
 	"context"
+	"strings"
 
+	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+
+	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
 
 type L2PortAuthCfgPolModel struct {
@@ -80,6 +84,64 @@ func (m *L2PortAuthCfgPolModel) BuildDN(parentDN string) string {
 	return parentDN + "/" + m.BuildRN()
 }
 
+func (m *L2PortAuthCfgPolModel) ParentDNFromDN(dn string) string {
+	rn := m.BuildRN()
+
+	parentDN, _ := strings.CutSuffix(dn, "/"+rn)
+	return parentDN
+}
+
+func L2PortAuthCfgPolModelFromObject(
+	ctx context.Context,
+	object *container.Container,
+	fallbackModel *L2PortAuthCfgPolModel,
+) (L2PortAuthCfgPolModel, diag.Diagnostics) {
+	model := NewL2PortAuthCfgPolModelNull()
+	var diagnostics diag.Diagnostics
+
+	attributes, ok := modelHelpers.AttributesFromObject(ctx, &diagnostics, object, "l2PortAuthCfgPol")
+	if !ok {
+		return model, diagnostics
+	}
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "macAuth", &model.MacAuth)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "maxReauthReq", &model.MaxReauthReq)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "maxReq", &model.MaxReq)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "reAuth", &model.ReAuth)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "reAuthPeriod", &model.ReAuthPeriod)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "serverTimeout", &model.ServerTimeout)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "suppTimeout", &model.SuppTimeout)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "txPeriod", &model.TxPeriod)
+	childObjects := modelHelpers.ChildObjectsByClass(
+		ctx,
+		&diagnostics,
+		object,
+		"l2PortAuthCfgPol",
+		[]string{
+			"tagAnnotation",
+			"tagTag",
+		},
+	)
+	modelHelpers.DecodeRepeatedChildren(
+		ctx,
+		&diagnostics,
+		childObjects["tagAnnotation"],
+		TagAnnotationModelAttributeTypes(),
+		TagAnnotationModelFromObject,
+		&model.TagAnnotation,
+	)
+	modelHelpers.DecodeRepeatedChildren(
+		ctx,
+		&diagnostics,
+		childObjects["tagTag"],
+		TagTagModelAttributeTypes(),
+		TagTagModelFromObject,
+		&model.TagTag,
+	)
+
+	return model, diagnostics
+}
+
 func (m *L2PortAuthCfgPolModel) BuildPayloadObject(
 	ctx context.Context,
 	priorState *L2PortAuthCfgPolModel,
@@ -89,145 +151,71 @@ func (m *L2PortAuthCfgPolModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
-	if !m.Annotation.IsNull() && !m.Annotation.IsUnknown() {
-		attributes["annotation"] = m.Annotation.ValueString()
-	} else if nested {
+	if !modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "annotation", m.Annotation) && nested {
 		attributes["annotation"] = defaultAnnotation
 	}
-	if !m.MacAuth.IsNull() && !m.MacAuth.IsUnknown() {
-		attributes["macAuth"] = m.MacAuth.ValueString()
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "macAuth", m.MacAuth)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "maxReauthReq", m.MaxReauthReq)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "maxReq", m.MaxReq)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "reAuth", m.ReAuth)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "reAuthPeriod", m.ReAuthPeriod)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "serverTimeout", m.ServerTimeout)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "suppTimeout", m.SuppTimeout)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "txPeriod", m.TxPeriod)
+	var priorTagAnnotation *types.Set
+	if priorState != nil {
+		priorTagAnnotation = &priorState.TagAnnotation
 	}
-	if !m.MaxReauthReq.IsNull() && !m.MaxReauthReq.IsUnknown() {
-		attributes["maxReauthReq"] = m.MaxReauthReq.ValueString()
+	tagAnnotationPayloads, ok := modelHelpers.BuildRepeatedChildPayloads(
+		ctx,
+		&diagnostics,
+		m.TagAnnotation,
+		priorTagAnnotation,
+		"tagAnnotation",
+		"TagAnnotation object defined by annotations cannot be deleted",
+		defaultAnnotation,
+		(*TagAnnotationModel).BuildRN,
+		(*TagAnnotationModel).BuildPayloadObject,
+		(*TagAnnotationModel).BuildNestedDeletePayloadObject,
+	)
+	if !ok {
+		return nil, diagnostics
 	}
-	if !m.MaxReq.IsNull() && !m.MaxReq.IsUnknown() {
-		attributes["maxReq"] = m.MaxReq.ValueString()
+	children = append(children, tagAnnotationPayloads...)
+	var priorTagTag *types.Set
+	if priorState != nil {
+		priorTagTag = &priorState.TagTag
 	}
-	if !m.ReAuth.IsNull() && !m.ReAuth.IsUnknown() {
-		attributes["reAuth"] = m.ReAuth.ValueString()
+	tagTagPayloads, ok := modelHelpers.BuildRepeatedChildPayloads(
+		ctx,
+		&diagnostics,
+		m.TagTag,
+		priorTagTag,
+		"tagTag",
+		"TagTag object defined by tags cannot be deleted",
+		defaultAnnotation,
+		(*TagTagModel).BuildRN,
+		(*TagTagModel).BuildPayloadObject,
+		(*TagTagModel).BuildNestedDeletePayloadObject,
+	)
+	if !ok {
+		return nil, diagnostics
 	}
-	if !m.ReAuthPeriod.IsNull() && !m.ReAuthPeriod.IsUnknown() {
-		attributes["reAuthPeriod"] = m.ReAuthPeriod.ValueString()
-	}
-	if !m.ServerTimeout.IsNull() && !m.ServerTimeout.IsUnknown() {
-		attributes["serverTimeout"] = m.ServerTimeout.ValueString()
-	}
-	if !m.SuppTimeout.IsNull() && !m.SuppTimeout.IsUnknown() {
-		attributes["suppTimeout"] = m.SuppTimeout.ValueString()
-	}
-	if !m.TxPeriod.IsNull() && !m.TxPeriod.IsUnknown() {
-		attributes["txPeriod"] = m.TxPeriod.ValueString()
-	}
-	if !m.TagAnnotation.IsNull() && !m.TagAnnotation.IsUnknown() {
-		var desiredChildren []TagAnnotationModel
-		diagnostics.Append(m.TagAnnotation.ElementsAs(ctx, &desiredChildren, false)...)
-		if diagnostics.HasError() {
-			return nil, diagnostics
-		}
+	children = append(children, tagTagPayloads...)
 
-		var priorChildren []TagAnnotationModel
-		if priorState != nil &&
-			!priorState.TagAnnotation.IsNull() &&
-			!priorState.TagAnnotation.IsUnknown() {
-			diagnostics.Append(priorState.TagAnnotation.ElementsAs(ctx, &priorChildren, false)...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-		}
-
-		for desiredIndex := range desiredChildren {
-			desiredChild := &desiredChildren[desiredIndex]
-			var priorChild *TagAnnotationModel
-			for priorIndex := range priorChildren {
-				if priorChildren[priorIndex].BuildRN() == desiredChild.BuildRN() {
-					priorChild = &priorChildren[priorIndex]
-					break
-				}
-			}
-
-			childObject, childDiagnostics := desiredChild.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
-			diagnostics.Append(childDiagnostics...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			children = append(children, map[string]any{"tagAnnotation": childObject})
-		}
-
-		for priorIndex := range priorChildren {
-			priorChild := &priorChildren[priorIndex]
-			found := false
-			for desiredIndex := range desiredChildren {
-				if desiredChildren[desiredIndex].BuildRN() == priorChild.BuildRN() {
-					found = true
-					break
-				}
-			}
-			if found {
-				continue
-			}
-			children = append(children, map[string]any{"tagAnnotation": priorChild.BuildNestedDeletePayloadObject()})
-		}
-	}
-	if !m.TagTag.IsNull() && !m.TagTag.IsUnknown() {
-		var desiredChildren []TagTagModel
-		diagnostics.Append(m.TagTag.ElementsAs(ctx, &desiredChildren, false)...)
-		if diagnostics.HasError() {
-			return nil, diagnostics
-		}
-
-		var priorChildren []TagTagModel
-		if priorState != nil &&
-			!priorState.TagTag.IsNull() &&
-			!priorState.TagTag.IsUnknown() {
-			diagnostics.Append(priorState.TagTag.ElementsAs(ctx, &priorChildren, false)...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-		}
-
-		for desiredIndex := range desiredChildren {
-			desiredChild := &desiredChildren[desiredIndex]
-			var priorChild *TagTagModel
-			for priorIndex := range priorChildren {
-				if priorChildren[priorIndex].BuildRN() == desiredChild.BuildRN() {
-					priorChild = &priorChildren[priorIndex]
-					break
-				}
-			}
-
-			childObject, childDiagnostics := desiredChild.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
-			diagnostics.Append(childDiagnostics...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			children = append(children, map[string]any{"tagTag": childObject})
-		}
-
-		for priorIndex := range priorChildren {
-			priorChild := &priorChildren[priorIndex]
-			found := false
-			for desiredIndex := range desiredChildren {
-				if desiredChildren[desiredIndex].BuildRN() == priorChild.BuildRN() {
-					found = true
-					break
-				}
-			}
-			if found {
-				continue
-			}
-			children = append(children, map[string]any{"tagTag": priorChild.BuildNestedDeletePayloadObject()})
-		}
-	}
-
-	payloadObject := map[string]any{"attributes": attributes}
-	payloadObject["children"] = children
-	return payloadObject, diagnostics
+	return modelHelpers.NewPayloadObject(
+		ctx,
+		&diagnostics,
+		attributes,
+		children,
+		true,
+	), diagnostics
 }
 
-func (m *L2PortAuthCfgPolModel) BuildNestedDeletePayloadObject() map[string]any {
-	attributes := map[string]any{"status": "deleted"}
-	return map[string]any{
-		"attributes": attributes,
-		"children":   []map[string]any{},
-	}
+func (m *L2PortAuthCfgPolModel) BuildNestedDeletePayloadObject(
+	ctx context.Context,
+	diagnostics *diag.Diagnostics,
+) map[string]any {
+	attributes := map[string]any{}
+	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, attributes)
 }

@@ -42,6 +42,7 @@ func TestPropertyModelRendering(t *testing.T) {
 		value         string
 		attributeType string
 		nullValue     string
+		constructor   string
 		custom        bool
 	}{
 		{
@@ -51,6 +52,7 @@ func TestPropertyModelRendering(t *testing.T) {
 			value:         "types.String",
 			attributeType: "types.StringType",
 			nullValue:     "types.StringNull()",
+			constructor:   "types.StringValue",
 		},
 		{
 			name:          "set",
@@ -59,6 +61,7 @@ func TestPropertyModelRendering(t *testing.T) {
 			value:         "types.Set",
 			attributeType: "types.SetType{ElemType: types.StringType}",
 			nullValue:     "types.SetNull(types.StringType)",
+			constructor:   "types.StringValue",
 		},
 		{
 			name:          "object",
@@ -67,6 +70,7 @@ func TestPropertyModelRendering(t *testing.T) {
 			value:         "types.Object",
 			attributeType: "types.ObjectType{AttrTypes: map[string]attr.Type{}}",
 			nullValue:     "types.ObjectNull(map[string]attr.Type{})",
+			constructor:   "types.StringValue",
 		},
 		{
 			name:          "ip address",
@@ -75,6 +79,7 @@ func TestPropertyModelRendering(t *testing.T) {
 			value:         "customTypes.IPAddressStringValue",
 			attributeType: "customTypes.IPAddressStringType{}",
 			nullValue:     "customTypes.NewIPAddressStringNull()",
+			constructor:   "customTypes.NewIPAddressStringValue",
 			custom:        true,
 		},
 		{
@@ -84,6 +89,7 @@ func TestPropertyModelRendering(t *testing.T) {
 			value:         "customTypes.FvApPrioStringValue",
 			attributeType: "customTypes.FvApPrioStringType{}",
 			nullValue:     "customTypes.NewFvApPrioStringNull()",
+			constructor:   "customTypes.NewFvApPrioStringValue",
 			custom:        true,
 		},
 		{
@@ -93,6 +99,7 @@ func TestPropertyModelRendering(t *testing.T) {
 			value:         "customTypes.VMMArpLearningStringValue",
 			attributeType: "customTypes.VMMArpLearningStringType{}",
 			nullValue:     "customTypes.NewVMMArpLearningStringNull()",
+			constructor:   "customTypes.NewVMMArpLearningStringValue",
 			custom:        true,
 		},
 	}
@@ -104,6 +111,7 @@ func TestPropertyModelRendering(t *testing.T) {
 			assert.Equal(t, testCase.value, property.ModelValueType(className))
 			assert.Equal(t, testCase.attributeType, property.ModelAttributeType(className))
 			assert.Equal(t, testCase.nullValue, property.ModelNullValue(className))
+			assert.Equal(t, testCase.constructor, property.ModelStringValueConstructor(className))
 			assert.Equal(t, testCase.custom, property.UsesCustomModelType())
 		})
 	}
@@ -1736,11 +1744,14 @@ func TestValidValuesMethods(t *testing.T) {
 	assert.Equal(t, []string{"level1", "level2", "level3"}, vv.LocalNamesList())
 	assert.Equal(t, []string{"1", "2", "3"}, vv.ValuesList())
 	assert.Equal(t, map[string]string{"1": "level1", "2": "level2", "3": "level3"}, vv.ValueLocalNameMap())
+	assert.True(t, vv.HasLocalName("level2"))
+	assert.False(t, vv.HasLocalName("missing"))
 
 	empty := ValidValues{}
 	assert.Equal(t, []string{}, empty.LocalNamesList())
 	assert.Equal(t, []string{}, empty.ValuesList())
 	assert.Equal(t, map[string]string{}, empty.ValueLocalNameMap())
+	assert.False(t, empty.HasLocalName("none"))
 }
 
 type setValueTypeInput struct {

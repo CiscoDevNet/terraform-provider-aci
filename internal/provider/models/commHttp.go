@@ -4,10 +4,14 @@ package models
 
 import (
 	"context"
+	"strings"
 
+	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+
+	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
 
 type CommHttpModel struct {
@@ -110,6 +114,74 @@ func (m *CommHttpModel) BuildDN(parentDN string) string {
 	return parentDN + "/" + m.BuildRN()
 }
 
+func (m *CommHttpModel) ParentDNFromDN(dn string) string {
+	rn := m.BuildRN()
+
+	parentDN, _ := strings.CutSuffix(dn, "/"+rn)
+	return parentDN
+}
+
+func CommHttpModelFromObject(
+	ctx context.Context,
+	object *container.Container,
+	fallbackModel *CommHttpModel,
+) (CommHttpModel, diag.Diagnostics) {
+	model := NewCommHttpModelNull()
+	var diagnostics diag.Diagnostics
+
+	attributes, ok := modelHelpers.AttributesFromObject(ctx, &diagnostics, object, "commHttp")
+	if !ok {
+		return model, diagnostics
+	}
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "accessControlAllowCredential", &model.AccessControlAllowCredential)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "accessControlAllowOrigins", &model.AccessControlAllowOrigins)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "adminSt", &model.AdminSt)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "cliOnlyMode", &model.CliOnlyMode)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "descr", &model.Descr)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "globalThrottleRate", &model.GlobalThrottleRate)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "globalThrottleSt", &model.GlobalThrottleSt)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "globalThrottleUnit", &model.GlobalThrottleUnit)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "maxRequestStatusCount", &model.MaxRequestStatusCount)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "name", &model.Name)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "nameAlias", &model.NameAlias)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "nodeExporter", &model.NodeExporter)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "port", &model.Port)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "redirectSt", &model.RedirectSt)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "serverHeader", &model.ServerHeader)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "throttleRate", &model.ThrottleRate)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "throttleSt", &model.ThrottleSt)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "visoreAccess", &model.VisoreAccess)
+	childObjects := modelHelpers.ChildObjectsByClass(
+		ctx,
+		&diagnostics,
+		object,
+		"commHttp",
+		[]string{
+			"tagAnnotation",
+			"tagTag",
+		},
+	)
+	modelHelpers.DecodeRepeatedChildren(
+		ctx,
+		&diagnostics,
+		childObjects["tagAnnotation"],
+		TagAnnotationModelAttributeTypes(),
+		TagAnnotationModelFromObject,
+		&model.TagAnnotation,
+	)
+	modelHelpers.DecodeRepeatedChildren(
+		ctx,
+		&diagnostics,
+		childObjects["tagTag"],
+		TagTagModelAttributeTypes(),
+		TagTagModelFromObject,
+		&model.TagTag,
+	)
+
+	return model, diagnostics
+}
+
 func (m *CommHttpModel) BuildPayloadObject(
 	ctx context.Context,
 	priorState *CommHttpModel,
@@ -119,167 +191,73 @@ func (m *CommHttpModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
-	if !m.AccessControlAllowCredential.IsNull() && !m.AccessControlAllowCredential.IsUnknown() {
-		attributes["accessControlAllowCredential"] = m.AccessControlAllowCredential.ValueString()
-	}
-	if !m.AccessControlAllowOrigins.IsNull() && !m.AccessControlAllowOrigins.IsUnknown() {
-		attributes["accessControlAllowOrigins"] = m.AccessControlAllowOrigins.ValueString()
-	}
-	if !m.AdminSt.IsNull() && !m.AdminSt.IsUnknown() {
-		attributes["adminSt"] = m.AdminSt.ValueString()
-	}
-	if !m.Annotation.IsNull() && !m.Annotation.IsUnknown() {
-		attributes["annotation"] = m.Annotation.ValueString()
-	} else if nested {
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "accessControlAllowCredential", m.AccessControlAllowCredential)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "accessControlAllowOrigins", m.AccessControlAllowOrigins)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "adminSt", m.AdminSt)
+	if !modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "annotation", m.Annotation) && nested {
 		attributes["annotation"] = defaultAnnotation
 	}
-	if !m.CliOnlyMode.IsNull() && !m.CliOnlyMode.IsUnknown() {
-		attributes["cliOnlyMode"] = m.CliOnlyMode.ValueString()
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "cliOnlyMode", m.CliOnlyMode)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "descr", m.Descr)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "globalThrottleRate", m.GlobalThrottleRate)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "globalThrottleSt", m.GlobalThrottleSt)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "globalThrottleUnit", m.GlobalThrottleUnit)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "maxRequestStatusCount", m.MaxRequestStatusCount)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "name", m.Name)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "nameAlias", m.NameAlias)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "nodeExporter", m.NodeExporter)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "port", m.Port)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "redirectSt", m.RedirectSt)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "serverHeader", m.ServerHeader)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "throttleRate", m.ThrottleRate)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "throttleSt", m.ThrottleSt)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "visoreAccess", m.VisoreAccess)
+	var priorTagAnnotation *types.Set
+	if priorState != nil {
+		priorTagAnnotation = &priorState.TagAnnotation
 	}
-	if !m.Descr.IsNull() && !m.Descr.IsUnknown() {
-		attributes["descr"] = m.Descr.ValueString()
+	tagAnnotationPayloads, ok := modelHelpers.BuildRepeatedChildPayloads(
+		ctx,
+		&diagnostics,
+		m.TagAnnotation,
+		priorTagAnnotation,
+		"tagAnnotation",
+		"TagAnnotation object defined by annotations cannot be deleted",
+		defaultAnnotation,
+		(*TagAnnotationModel).BuildRN,
+		(*TagAnnotationModel).BuildPayloadObject,
+		(*TagAnnotationModel).BuildNestedDeletePayloadObject,
+	)
+	if !ok {
+		return nil, diagnostics
 	}
-	if !m.GlobalThrottleRate.IsNull() && !m.GlobalThrottleRate.IsUnknown() {
-		attributes["globalThrottleRate"] = m.GlobalThrottleRate.ValueString()
+	children = append(children, tagAnnotationPayloads...)
+	var priorTagTag *types.Set
+	if priorState != nil {
+		priorTagTag = &priorState.TagTag
 	}
-	if !m.GlobalThrottleSt.IsNull() && !m.GlobalThrottleSt.IsUnknown() {
-		attributes["globalThrottleSt"] = m.GlobalThrottleSt.ValueString()
+	tagTagPayloads, ok := modelHelpers.BuildRepeatedChildPayloads(
+		ctx,
+		&diagnostics,
+		m.TagTag,
+		priorTagTag,
+		"tagTag",
+		"TagTag object defined by tags cannot be deleted",
+		defaultAnnotation,
+		(*TagTagModel).BuildRN,
+		(*TagTagModel).BuildPayloadObject,
+		(*TagTagModel).BuildNestedDeletePayloadObject,
+	)
+	if !ok {
+		return nil, diagnostics
 	}
-	if !m.GlobalThrottleUnit.IsNull() && !m.GlobalThrottleUnit.IsUnknown() {
-		attributes["globalThrottleUnit"] = m.GlobalThrottleUnit.ValueString()
-	}
-	if !m.MaxRequestStatusCount.IsNull() && !m.MaxRequestStatusCount.IsUnknown() {
-		attributes["maxRequestStatusCount"] = m.MaxRequestStatusCount.ValueString()
-	}
-	if !m.Name.IsNull() && !m.Name.IsUnknown() {
-		attributes["name"] = m.Name.ValueString()
-	}
-	if !m.NameAlias.IsNull() && !m.NameAlias.IsUnknown() {
-		attributes["nameAlias"] = m.NameAlias.ValueString()
-	}
-	if !m.NodeExporter.IsNull() && !m.NodeExporter.IsUnknown() {
-		attributes["nodeExporter"] = m.NodeExporter.ValueString()
-	}
-	if !m.Port.IsNull() && !m.Port.IsUnknown() {
-		attributes["port"] = m.Port.ValueString()
-	}
-	if !m.RedirectSt.IsNull() && !m.RedirectSt.IsUnknown() {
-		attributes["redirectSt"] = m.RedirectSt.ValueString()
-	}
-	if !m.ServerHeader.IsNull() && !m.ServerHeader.IsUnknown() {
-		attributes["serverHeader"] = m.ServerHeader.ValueString()
-	}
-	if !m.ThrottleRate.IsNull() && !m.ThrottleRate.IsUnknown() {
-		attributes["throttleRate"] = m.ThrottleRate.ValueString()
-	}
-	if !m.ThrottleSt.IsNull() && !m.ThrottleSt.IsUnknown() {
-		attributes["throttleSt"] = m.ThrottleSt.ValueString()
-	}
-	if !m.VisoreAccess.IsNull() && !m.VisoreAccess.IsUnknown() {
-		attributes["visoreAccess"] = m.VisoreAccess.ValueString()
-	}
-	if !m.TagAnnotation.IsNull() && !m.TagAnnotation.IsUnknown() {
-		var desiredChildren []TagAnnotationModel
-		diagnostics.Append(m.TagAnnotation.ElementsAs(ctx, &desiredChildren, false)...)
-		if diagnostics.HasError() {
-			return nil, diagnostics
-		}
+	children = append(children, tagTagPayloads...)
 
-		var priorChildren []TagAnnotationModel
-		if priorState != nil &&
-			!priorState.TagAnnotation.IsNull() &&
-			!priorState.TagAnnotation.IsUnknown() {
-			diagnostics.Append(priorState.TagAnnotation.ElementsAs(ctx, &priorChildren, false)...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-		}
-
-		for desiredIndex := range desiredChildren {
-			desiredChild := &desiredChildren[desiredIndex]
-			var priorChild *TagAnnotationModel
-			for priorIndex := range priorChildren {
-				if priorChildren[priorIndex].BuildRN() == desiredChild.BuildRN() {
-					priorChild = &priorChildren[priorIndex]
-					break
-				}
-			}
-
-			childObject, childDiagnostics := desiredChild.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
-			diagnostics.Append(childDiagnostics...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			children = append(children, map[string]any{"tagAnnotation": childObject})
-		}
-
-		for priorIndex := range priorChildren {
-			priorChild := &priorChildren[priorIndex]
-			found := false
-			for desiredIndex := range desiredChildren {
-				if desiredChildren[desiredIndex].BuildRN() == priorChild.BuildRN() {
-					found = true
-					break
-				}
-			}
-			if found {
-				continue
-			}
-			children = append(children, map[string]any{"tagAnnotation": priorChild.BuildNestedDeletePayloadObject()})
-		}
-	}
-	if !m.TagTag.IsNull() && !m.TagTag.IsUnknown() {
-		var desiredChildren []TagTagModel
-		diagnostics.Append(m.TagTag.ElementsAs(ctx, &desiredChildren, false)...)
-		if diagnostics.HasError() {
-			return nil, diagnostics
-		}
-
-		var priorChildren []TagTagModel
-		if priorState != nil &&
-			!priorState.TagTag.IsNull() &&
-			!priorState.TagTag.IsUnknown() {
-			diagnostics.Append(priorState.TagTag.ElementsAs(ctx, &priorChildren, false)...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-		}
-
-		for desiredIndex := range desiredChildren {
-			desiredChild := &desiredChildren[desiredIndex]
-			var priorChild *TagTagModel
-			for priorIndex := range priorChildren {
-				if priorChildren[priorIndex].BuildRN() == desiredChild.BuildRN() {
-					priorChild = &priorChildren[priorIndex]
-					break
-				}
-			}
-
-			childObject, childDiagnostics := desiredChild.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
-			diagnostics.Append(childDiagnostics...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			children = append(children, map[string]any{"tagTag": childObject})
-		}
-
-		for priorIndex := range priorChildren {
-			priorChild := &priorChildren[priorIndex]
-			found := false
-			for desiredIndex := range desiredChildren {
-				if desiredChildren[desiredIndex].BuildRN() == priorChild.BuildRN() {
-					found = true
-					break
-				}
-			}
-			if found {
-				continue
-			}
-			children = append(children, map[string]any{"tagTag": priorChild.BuildNestedDeletePayloadObject()})
-		}
-	}
-
-	payloadObject := map[string]any{"attributes": attributes}
-	payloadObject["children"] = children
-	return payloadObject, diagnostics
+	return modelHelpers.NewPayloadObject(
+		ctx,
+		&diagnostics,
+		attributes,
+		children,
+		true,
+	), diagnostics
 }

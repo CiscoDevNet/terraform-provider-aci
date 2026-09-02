@@ -142,6 +142,16 @@ func (p *Property) ModelNullValue(className *ClassName) string {
 	}
 }
 
+// ModelStringValueConstructor returns the Terraform string value constructor
+// used when decoding this property from an APIC response.
+func (p *Property) ModelStringValueConstructor(className *ClassName) string {
+	if customTypeName := p.modelCustomTypeName(className); customTypeName != "" {
+		return fmt.Sprintf("customTypes.New%sStringValue", customTypeName)
+	}
+
+	return "types.StringValue"
+}
+
 // UsesCustomModelType reports whether the generated model field requires the
 // custom_types package.
 func (p *Property) UsesCustomModelType() bool {
@@ -270,6 +280,17 @@ func (vv ValidValues) LocalNamesList() []string {
 	}
 	slices.Sort(localNames)
 	return localNames
+}
+
+// HasLocalName reports whether any valid value exposes the supplied local
+// name. APIC responses use these local names as Terraform-facing values.
+func (vv ValidValues) HasLocalName(localName string) bool {
+	for _, entry := range vv {
+		if entry.LocalName == localName {
+			return true
+		}
+	}
+	return false
 }
 
 // ValuesList returns the wire values of all valid values, sorted alphabetically.
