@@ -4,16 +4,15 @@ package models
 
 import (
 	"context"
-	"encoding/json"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
-
-	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
+
+	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
 
 type VmmDomPModel struct {
@@ -156,13 +155,171 @@ func (m *VmmDomPModel) BuildDN(parentDN string) string {
 	return parentDN + "/" + m.BuildRN()
 }
 
-func vmmDomPObjectIsEmpty(value types.Object) bool {
-	for _, attribute := range value.Attributes() {
-		if !attribute.IsNull() {
-			return false
-		}
+func (m *VmmDomPModel) ParentDNFromDN(dn string) string {
+	rn := m.BuildRN()
+
+	parentDN, _ := strings.CutSuffix(dn, "/"+rn)
+	return parentDN
+}
+
+func VmmDomPModelFromObject(
+	ctx context.Context,
+	object *container.Container,
+	fallbackModel *VmmDomPModel,
+) (VmmDomPModel, diag.Diagnostics) {
+	model := NewVmmDomPModelNull()
+	var diagnostics diag.Diagnostics
+
+	attributes, ok := modelHelpers.AttributesFromObject(ctx, &diagnostics, object, "vmmDomP")
+	if !ok {
+		return model, diagnostics
 	}
-	return true
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "accessMode", &model.AccessMode)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
+	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "arpLearning", &model.ArpLearning, customTypes.NewVMMArpLearningStringValue)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "aveTimeOut", &model.AveTimeOut)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "configInfraPg", &model.ConfigInfraPg)
+	modelHelpers.DecodeStringAttributeWithEmptyValue(ctx, &diagnostics, attributes, "ctrlKnob", "none", &model.CtrlKnob)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "customSwitchName", &model.CustomSwitchName)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "delimiter", &model.Delimiter)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "enableAVE", &model.EnableAVE)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "enableTag", &model.EnableTag)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "enableVmFolder", &model.EnableVmFolder)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "encapMode", &model.EncapMode)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "enfPref", &model.EnfPref)
+	modelHelpers.DecodeStringAttributeWithEmptyValue(ctx, &diagnostics, attributes, "epInventoryType", "none", &model.EpInventoryType)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "epRetTime", &model.EpRetTime)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "hvAvailMonitor", &model.HvAvailMonitor)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "mcastAddr", &model.McastAddr)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "mode", &model.Mode)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "name", &model.Name)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "nameAlias", &model.NameAlias)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ownerKey", &model.OwnerKey)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ownerTag", &model.OwnerTag)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "prefEncapMode", &model.PrefEncapMode)
+	childObjects := modelHelpers.ChildObjectsByClass(
+		ctx,
+		&diagnostics,
+		object,
+		"vmmDomP",
+		[]string{
+			"infraRsVipAddrNs",
+			"infraRsVlanNs",
+			"tagAnnotation",
+			"tagTag",
+			"vmmRsDomMcastAddrNs",
+			"vmmRsPrefEnhancedLagPol",
+			"vmmUplinkPCont",
+		},
+	)
+	var fallbackInfraRsVipAddrNs *types.Object
+	if fallbackModel != nil {
+		fallbackInfraRsVipAddrNs = &fallbackModel.InfraRsVipAddrNs
+	}
+	modelHelpers.DecodeSingletonChild(
+		ctx,
+		&diagnostics,
+		childObjects["infraRsVipAddrNs"],
+		fallbackInfraRsVipAddrNs,
+		InfraRsVipAddrNsModelAttributeTypes(),
+		"vmmDomP",
+		"infraRsVipAddrNs",
+		NewInfraRsVipAddrNsModelNull,
+		InfraRsVipAddrNsModelFromObject,
+		&model.InfraRsVipAddrNs,
+	)
+	var fallbackInfraRsVlanNs *types.Object
+	if fallbackModel != nil {
+		fallbackInfraRsVlanNs = &fallbackModel.InfraRsVlanNs
+	}
+	modelHelpers.DecodeSingletonChild(
+		ctx,
+		&diagnostics,
+		childObjects["infraRsVlanNs"],
+		fallbackInfraRsVlanNs,
+		InfraRsVlanNsModelAttributeTypes(),
+		"vmmDomP",
+		"infraRsVlanNs",
+		NewInfraRsVlanNsModelNull,
+		InfraRsVlanNsModelFromObject,
+		&model.InfraRsVlanNs,
+	)
+	modelHelpers.DecodeRepeatedChildren(
+		ctx,
+		&diagnostics,
+		childObjects["tagAnnotation"],
+		TagAnnotationModelAttributeTypes(),
+		TagAnnotationModelFromObject,
+		&model.TagAnnotation,
+	)
+	modelHelpers.DecodeRepeatedChildren(
+		ctx,
+		&diagnostics,
+		childObjects["tagTag"],
+		TagTagModelAttributeTypes(),
+		TagTagModelFromObject,
+		&model.TagTag,
+	)
+	var fallbackVmmRsDomMcastAddrNs *types.Object
+	if fallbackModel != nil {
+		fallbackVmmRsDomMcastAddrNs = &fallbackModel.VmmRsDomMcastAddrNs
+	}
+	modelHelpers.DecodeSingletonChild(
+		ctx,
+		&diagnostics,
+		childObjects["vmmRsDomMcastAddrNs"],
+		fallbackVmmRsDomMcastAddrNs,
+		VmmRsDomMcastAddrNsModelAttributeTypes(),
+		"vmmDomP",
+		"vmmRsDomMcastAddrNs",
+		NewVmmRsDomMcastAddrNsModelNull,
+		VmmRsDomMcastAddrNsModelFromObject,
+		&model.VmmRsDomMcastAddrNs,
+	)
+	var fallbackVmmRsPrefEnhancedLagPol *types.Object
+	if fallbackModel != nil {
+		fallbackVmmRsPrefEnhancedLagPol = &fallbackModel.VmmRsPrefEnhancedLagPol
+	}
+	modelHelpers.DecodeSingletonChild(
+		ctx,
+		&diagnostics,
+		childObjects["vmmRsPrefEnhancedLagPol"],
+		fallbackVmmRsPrefEnhancedLagPol,
+		VmmRsPrefEnhancedLagPolModelAttributeTypes(),
+		"vmmDomP",
+		"vmmRsPrefEnhancedLagPol",
+		NewVmmRsPrefEnhancedLagPolModelNull,
+		VmmRsPrefEnhancedLagPolModelFromObject,
+		&model.VmmRsPrefEnhancedLagPol,
+	)
+	var fallbackVmmUplinkPCont *types.Object
+	if fallbackModel != nil {
+		fallbackVmmUplinkPCont = &fallbackModel.VmmUplinkPCont
+	}
+	modelHelpers.DecodeSingletonChild(
+		ctx,
+		&diagnostics,
+		childObjects["vmmUplinkPCont"],
+		fallbackVmmUplinkPCont,
+		VmmUplinkPContModelAttributeTypes(),
+		"vmmDomP",
+		"vmmUplinkPCont",
+		NewVmmUplinkPContModelNull,
+		VmmUplinkPContModelFromObject,
+		&model.VmmUplinkPCont,
+	)
+
+	return model, diagnostics
+}
+
+func VmmDomPModelFromResponse(
+	ctx context.Context,
+	response *container.Container,
+	fallbackModel *VmmDomPModel,
+) (*VmmDomPModel, string, diag.Diagnostics) {
+	var diagnostics diag.Diagnostics
+	model, dn := modelHelpers.ModelFromResponse(ctx, &diagnostics, response, "vmmDomP", fallbackModel, VmmDomPModelFromObject)
+	return model, dn, diagnostics
 }
 
 func (m *VmmDomPModel) BuildPayloadObject(
@@ -174,345 +331,183 @@ func (m *VmmDomPModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
-	if !m.AccessMode.IsNull() && !m.AccessMode.IsUnknown() {
-		attributes["accessMode"] = m.AccessMode.ValueString()
-	}
-	if !m.Annotation.IsNull() && !m.Annotation.IsUnknown() {
-		attributes["annotation"] = m.Annotation.ValueString()
-	} else if nested {
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "accessMode", m.AccessMode)
+	if !modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "annotation", m.Annotation) && nested {
 		attributes["annotation"] = defaultAnnotation
 	}
-	if !m.ArpLearning.IsNull() && !m.ArpLearning.IsUnknown() {
-		attributes["arpLearning"] = m.ArpLearning.ValueString()
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "arpLearning", m.ArpLearning)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "aveTimeOut", m.AveTimeOut)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "configInfraPg", m.ConfigInfraPg)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "ctrlKnob", m.CtrlKnob)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "customSwitchName", m.CustomSwitchName)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "delimiter", m.Delimiter)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "enableAVE", m.EnableAVE)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "enableTag", m.EnableTag)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "enableVmFolder", m.EnableVmFolder)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "encapMode", m.EncapMode)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "enfPref", m.EnfPref)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "epInventoryType", m.EpInventoryType)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "epRetTime", m.EpRetTime)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "hvAvailMonitor", m.HvAvailMonitor)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "mcastAddr", m.McastAddr)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "mode", m.Mode)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "name", m.Name)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "nameAlias", m.NameAlias)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "ownerKey", m.OwnerKey)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "ownerTag", m.OwnerTag)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "prefEncapMode", m.PrefEncapMode)
+	var priorInfraRsVipAddrNs *types.Object
+	if priorState != nil {
+		priorInfraRsVipAddrNs = &priorState.InfraRsVipAddrNs
 	}
-	if !m.AveTimeOut.IsNull() && !m.AveTimeOut.IsUnknown() {
-		attributes["aveTimeOut"] = m.AveTimeOut.ValueString()
+	infraRsVipAddrNsPayloads, ok := modelHelpers.BuildSingletonChildPayload(
+		ctx,
+		&diagnostics,
+		m.InfraRsVipAddrNs,
+		priorInfraRsVipAddrNs,
+		"infraRsVipAddrNs",
+		"InfraRsVipAddrNs object defined by relation_to_ip_address_pool cannot be deleted",
+		defaultAnnotation,
+		(*InfraRsVipAddrNsModel).BuildPayloadObject,
+		(*InfraRsVipAddrNsModel).BuildNestedDeletePayloadObject,
+	)
+	if !ok {
+		return nil, diagnostics
 	}
-	if !m.ConfigInfraPg.IsNull() && !m.ConfigInfraPg.IsUnknown() {
-		attributes["configInfraPg"] = m.ConfigInfraPg.ValueString()
+	children = append(children, infraRsVipAddrNsPayloads...)
+	var priorInfraRsVlanNs *types.Object
+	if priorState != nil {
+		priorInfraRsVlanNs = &priorState.InfraRsVlanNs
 	}
-	if !m.CtrlKnob.IsNull() && !m.CtrlKnob.IsUnknown() {
-		attributes["ctrlKnob"] = m.CtrlKnob.ValueString()
+	infraRsVlanNsPayloads, ok := modelHelpers.BuildSingletonChildPayload(
+		ctx,
+		&diagnostics,
+		m.InfraRsVlanNs,
+		priorInfraRsVlanNs,
+		"infraRsVlanNs",
+		"InfraRsVlanNs object defined by relation_to_vlan_pool cannot be deleted",
+		defaultAnnotation,
+		(*InfraRsVlanNsModel).BuildPayloadObject,
+		(*InfraRsVlanNsModel).BuildNestedDeletePayloadObject,
+	)
+	if !ok {
+		return nil, diagnostics
 	}
-	if !m.CustomSwitchName.IsNull() && !m.CustomSwitchName.IsUnknown() {
-		attributes["customSwitchName"] = m.CustomSwitchName.ValueString()
+	children = append(children, infraRsVlanNsPayloads...)
+	var priorTagAnnotation *types.Set
+	if priorState != nil {
+		priorTagAnnotation = &priorState.TagAnnotation
 	}
-	if !m.Delimiter.IsNull() && !m.Delimiter.IsUnknown() {
-		attributes["delimiter"] = m.Delimiter.ValueString()
+	tagAnnotationPayloads, ok := modelHelpers.BuildRepeatedChildPayloads(
+		ctx,
+		&diagnostics,
+		m.TagAnnotation,
+		priorTagAnnotation,
+		"tagAnnotation",
+		"TagAnnotation object defined by annotations cannot be deleted",
+		defaultAnnotation,
+		(*TagAnnotationModel).BuildRN,
+		(*TagAnnotationModel).BuildPayloadObject,
+		(*TagAnnotationModel).BuildNestedDeletePayloadObject,
+	)
+	if !ok {
+		return nil, diagnostics
 	}
-	if !m.EnableAVE.IsNull() && !m.EnableAVE.IsUnknown() {
-		attributes["enableAVE"] = m.EnableAVE.ValueString()
+	children = append(children, tagAnnotationPayloads...)
+	var priorTagTag *types.Set
+	if priorState != nil {
+		priorTagTag = &priorState.TagTag
 	}
-	if !m.EnableTag.IsNull() && !m.EnableTag.IsUnknown() {
-		attributes["enableTag"] = m.EnableTag.ValueString()
+	tagTagPayloads, ok := modelHelpers.BuildRepeatedChildPayloads(
+		ctx,
+		&diagnostics,
+		m.TagTag,
+		priorTagTag,
+		"tagTag",
+		"TagTag object defined by tags cannot be deleted",
+		defaultAnnotation,
+		(*TagTagModel).BuildRN,
+		(*TagTagModel).BuildPayloadObject,
+		(*TagTagModel).BuildNestedDeletePayloadObject,
+	)
+	if !ok {
+		return nil, diagnostics
 	}
-	if !m.EnableVmFolder.IsNull() && !m.EnableVmFolder.IsUnknown() {
-		attributes["enableVmFolder"] = m.EnableVmFolder.ValueString()
+	children = append(children, tagTagPayloads...)
+	var priorVmmRsDomMcastAddrNs *types.Object
+	if priorState != nil {
+		priorVmmRsDomMcastAddrNs = &priorState.VmmRsDomMcastAddrNs
 	}
-	if !m.EncapMode.IsNull() && !m.EncapMode.IsUnknown() {
-		attributes["encapMode"] = m.EncapMode.ValueString()
+	vmmRsDomMcastAddrNsPayloads, ok := modelHelpers.BuildSingletonChildPayload(
+		ctx,
+		&diagnostics,
+		m.VmmRsDomMcastAddrNs,
+		priorVmmRsDomMcastAddrNs,
+		"vmmRsDomMcastAddrNs",
+		"VmmRsDomMcastAddrNs object defined by relation_to_multicast_pool cannot be deleted",
+		defaultAnnotation,
+		(*VmmRsDomMcastAddrNsModel).BuildPayloadObject,
+		(*VmmRsDomMcastAddrNsModel).BuildNestedDeletePayloadObject,
+	)
+	if !ok {
+		return nil, diagnostics
 	}
-	if !m.EnfPref.IsNull() && !m.EnfPref.IsUnknown() {
-		attributes["enfPref"] = m.EnfPref.ValueString()
+	children = append(children, vmmRsDomMcastAddrNsPayloads...)
+	var priorVmmRsPrefEnhancedLagPol *types.Object
+	if priorState != nil {
+		priorVmmRsPrefEnhancedLagPol = &priorState.VmmRsPrefEnhancedLagPol
 	}
-	if !m.EpInventoryType.IsNull() && !m.EpInventoryType.IsUnknown() {
-		attributes["epInventoryType"] = m.EpInventoryType.ValueString()
+	vmmRsPrefEnhancedLagPolPayloads, ok := modelHelpers.BuildSingletonChildPayload(
+		ctx,
+		&diagnostics,
+		m.VmmRsPrefEnhancedLagPol,
+		priorVmmRsPrefEnhancedLagPol,
+		"vmmRsPrefEnhancedLagPol",
+		"VmmRsPrefEnhancedLagPol object defined by relation_to_lacp_enhanced_lag_policy cannot be deleted",
+		defaultAnnotation,
+		(*VmmRsPrefEnhancedLagPolModel).BuildPayloadObject,
+		(*VmmRsPrefEnhancedLagPolModel).BuildNestedDeletePayloadObject,
+	)
+	if !ok {
+		return nil, diagnostics
 	}
-	if !m.EpRetTime.IsNull() && !m.EpRetTime.IsUnknown() {
-		attributes["epRetTime"] = m.EpRetTime.ValueString()
+	children = append(children, vmmRsPrefEnhancedLagPolPayloads...)
+	var priorVmmUplinkPCont *types.Object
+	if priorState != nil {
+		priorVmmUplinkPCont = &priorState.VmmUplinkPCont
 	}
-	if !m.HvAvailMonitor.IsNull() && !m.HvAvailMonitor.IsUnknown() {
-		attributes["hvAvailMonitor"] = m.HvAvailMonitor.ValueString()
+	vmmUplinkPContPayloads, ok := modelHelpers.BuildSingletonChildPayload(
+		ctx,
+		&diagnostics,
+		m.VmmUplinkPCont,
+		priorVmmUplinkPCont,
+		"vmmUplinkPCont",
+		"VmmUplinkPCont object defined by vmm_uplink_container cannot be deleted",
+		defaultAnnotation,
+		(*VmmUplinkPContModel).BuildPayloadObject,
+		(*VmmUplinkPContModel).BuildNestedDeletePayloadObject,
+	)
+	if !ok {
+		return nil, diagnostics
 	}
-	if !m.McastAddr.IsNull() && !m.McastAddr.IsUnknown() {
-		attributes["mcastAddr"] = m.McastAddr.ValueString()
-	}
-	if !m.Mode.IsNull() && !m.Mode.IsUnknown() {
-		attributes["mode"] = m.Mode.ValueString()
-	}
-	if !m.Name.IsNull() && !m.Name.IsUnknown() {
-		attributes["name"] = m.Name.ValueString()
-	}
-	if !m.NameAlias.IsNull() && !m.NameAlias.IsUnknown() {
-		attributes["nameAlias"] = m.NameAlias.ValueString()
-	}
-	if !m.OwnerKey.IsNull() && !m.OwnerKey.IsUnknown() {
-		attributes["ownerKey"] = m.OwnerKey.ValueString()
-	}
-	if !m.OwnerTag.IsNull() && !m.OwnerTag.IsUnknown() {
-		attributes["ownerTag"] = m.OwnerTag.ValueString()
-	}
-	if !m.PrefEncapMode.IsNull() && !m.PrefEncapMode.IsUnknown() {
-		attributes["prefEncapMode"] = m.PrefEncapMode.ValueString()
-	}
-	if !m.InfraRsVipAddrNs.IsNull() && !m.InfraRsVipAddrNs.IsUnknown() {
-		var priorChild *InfraRsVipAddrNsModel
-		if priorState != nil &&
-			!priorState.InfraRsVipAddrNs.IsNull() &&
-			!priorState.InfraRsVipAddrNs.IsUnknown() &&
-			!vmmDomPObjectIsEmpty(priorState.InfraRsVipAddrNs) {
-			priorChildValue := InfraRsVipAddrNsModel{}
-			diagnostics.Append(priorState.InfraRsVipAddrNs.As(ctx, &priorChildValue, basetypes.ObjectAsOptions{})...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			priorChild = &priorChildValue
-		}
+	children = append(children, vmmUplinkPContPayloads...)
 
-		if !vmmDomPObjectIsEmpty(m.InfraRsVipAddrNs) {
-			child := InfraRsVipAddrNsModel{}
-			diagnostics.Append(m.InfraRsVipAddrNs.As(ctx, &child, basetypes.ObjectAsOptions{})...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-
-			childObject, childDiagnostics := child.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
-			diagnostics.Append(childDiagnostics...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			children = append(children, map[string]any{"infraRsVipAddrNs": childObject})
-		} else if priorChild != nil {
-			children = append(children, map[string]any{"infraRsVipAddrNs": priorChild.BuildNestedDeletePayloadObject()})
-		}
-	}
-	if !m.InfraRsVlanNs.IsNull() && !m.InfraRsVlanNs.IsUnknown() {
-		var priorChild *InfraRsVlanNsModel
-		if priorState != nil &&
-			!priorState.InfraRsVlanNs.IsNull() &&
-			!priorState.InfraRsVlanNs.IsUnknown() &&
-			!vmmDomPObjectIsEmpty(priorState.InfraRsVlanNs) {
-			priorChildValue := InfraRsVlanNsModel{}
-			diagnostics.Append(priorState.InfraRsVlanNs.As(ctx, &priorChildValue, basetypes.ObjectAsOptions{})...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			priorChild = &priorChildValue
-		}
-
-		if !vmmDomPObjectIsEmpty(m.InfraRsVlanNs) {
-			child := InfraRsVlanNsModel{}
-			diagnostics.Append(m.InfraRsVlanNs.As(ctx, &child, basetypes.ObjectAsOptions{})...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-
-			childObject, childDiagnostics := child.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
-			diagnostics.Append(childDiagnostics...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			children = append(children, map[string]any{"infraRsVlanNs": childObject})
-		} else if priorChild != nil {
-			children = append(children, map[string]any{"infraRsVlanNs": priorChild.BuildNestedDeletePayloadObject()})
-		}
-	}
-	if !m.TagAnnotation.IsNull() && !m.TagAnnotation.IsUnknown() {
-		var desiredChildren []TagAnnotationModel
-		diagnostics.Append(m.TagAnnotation.ElementsAs(ctx, &desiredChildren, false)...)
-		if diagnostics.HasError() {
-			return nil, diagnostics
-		}
-
-		var priorChildren []TagAnnotationModel
-		if priorState != nil &&
-			!priorState.TagAnnotation.IsNull() &&
-			!priorState.TagAnnotation.IsUnknown() {
-			diagnostics.Append(priorState.TagAnnotation.ElementsAs(ctx, &priorChildren, false)...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-		}
-
-		for desiredIndex := range desiredChildren {
-			desiredChild := &desiredChildren[desiredIndex]
-			var priorChild *TagAnnotationModel
-			for priorIndex := range priorChildren {
-				if priorChildren[priorIndex].BuildRN() == desiredChild.BuildRN() {
-					priorChild = &priorChildren[priorIndex]
-					break
-				}
-			}
-
-			childObject, childDiagnostics := desiredChild.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
-			diagnostics.Append(childDiagnostics...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			children = append(children, map[string]any{"tagAnnotation": childObject})
-		}
-
-		for priorIndex := range priorChildren {
-			priorChild := &priorChildren[priorIndex]
-			found := false
-			for desiredIndex := range desiredChildren {
-				if desiredChildren[desiredIndex].BuildRN() == priorChild.BuildRN() {
-					found = true
-					break
-				}
-			}
-			if found {
-				continue
-			}
-			children = append(children, map[string]any{"tagAnnotation": priorChild.BuildNestedDeletePayloadObject()})
-		}
-	}
-	if !m.TagTag.IsNull() && !m.TagTag.IsUnknown() {
-		var desiredChildren []TagTagModel
-		diagnostics.Append(m.TagTag.ElementsAs(ctx, &desiredChildren, false)...)
-		if diagnostics.HasError() {
-			return nil, diagnostics
-		}
-
-		var priorChildren []TagTagModel
-		if priorState != nil &&
-			!priorState.TagTag.IsNull() &&
-			!priorState.TagTag.IsUnknown() {
-			diagnostics.Append(priorState.TagTag.ElementsAs(ctx, &priorChildren, false)...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-		}
-
-		for desiredIndex := range desiredChildren {
-			desiredChild := &desiredChildren[desiredIndex]
-			var priorChild *TagTagModel
-			for priorIndex := range priorChildren {
-				if priorChildren[priorIndex].BuildRN() == desiredChild.BuildRN() {
-					priorChild = &priorChildren[priorIndex]
-					break
-				}
-			}
-
-			childObject, childDiagnostics := desiredChild.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
-			diagnostics.Append(childDiagnostics...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			children = append(children, map[string]any{"tagTag": childObject})
-		}
-
-		for priorIndex := range priorChildren {
-			priorChild := &priorChildren[priorIndex]
-			found := false
-			for desiredIndex := range desiredChildren {
-				if desiredChildren[desiredIndex].BuildRN() == priorChild.BuildRN() {
-					found = true
-					break
-				}
-			}
-			if found {
-				continue
-			}
-			children = append(children, map[string]any{"tagTag": priorChild.BuildNestedDeletePayloadObject()})
-		}
-	}
-	if !m.VmmRsDomMcastAddrNs.IsNull() && !m.VmmRsDomMcastAddrNs.IsUnknown() {
-		var priorChild *VmmRsDomMcastAddrNsModel
-		if priorState != nil &&
-			!priorState.VmmRsDomMcastAddrNs.IsNull() &&
-			!priorState.VmmRsDomMcastAddrNs.IsUnknown() &&
-			!vmmDomPObjectIsEmpty(priorState.VmmRsDomMcastAddrNs) {
-			priorChildValue := VmmRsDomMcastAddrNsModel{}
-			diagnostics.Append(priorState.VmmRsDomMcastAddrNs.As(ctx, &priorChildValue, basetypes.ObjectAsOptions{})...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			priorChild = &priorChildValue
-		}
-
-		if !vmmDomPObjectIsEmpty(m.VmmRsDomMcastAddrNs) {
-			child := VmmRsDomMcastAddrNsModel{}
-			diagnostics.Append(m.VmmRsDomMcastAddrNs.As(ctx, &child, basetypes.ObjectAsOptions{})...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-
-			childObject, childDiagnostics := child.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
-			diagnostics.Append(childDiagnostics...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			children = append(children, map[string]any{"vmmRsDomMcastAddrNs": childObject})
-		} else if priorChild != nil {
-			children = append(children, map[string]any{"vmmRsDomMcastAddrNs": priorChild.BuildNestedDeletePayloadObject()})
-		}
-	}
-	if !m.VmmRsPrefEnhancedLagPol.IsNull() && !m.VmmRsPrefEnhancedLagPol.IsUnknown() {
-		var priorChild *VmmRsPrefEnhancedLagPolModel
-		if priorState != nil &&
-			!priorState.VmmRsPrefEnhancedLagPol.IsNull() &&
-			!priorState.VmmRsPrefEnhancedLagPol.IsUnknown() &&
-			!vmmDomPObjectIsEmpty(priorState.VmmRsPrefEnhancedLagPol) {
-			priorChildValue := VmmRsPrefEnhancedLagPolModel{}
-			diagnostics.Append(priorState.VmmRsPrefEnhancedLagPol.As(ctx, &priorChildValue, basetypes.ObjectAsOptions{})...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			priorChild = &priorChildValue
-		}
-
-		if !vmmDomPObjectIsEmpty(m.VmmRsPrefEnhancedLagPol) {
-			child := VmmRsPrefEnhancedLagPolModel{}
-			diagnostics.Append(m.VmmRsPrefEnhancedLagPol.As(ctx, &child, basetypes.ObjectAsOptions{})...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-
-			childObject, childDiagnostics := child.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
-			diagnostics.Append(childDiagnostics...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			children = append(children, map[string]any{"vmmRsPrefEnhancedLagPol": childObject})
-		} else if priorChild != nil {
-			children = append(children, map[string]any{"vmmRsPrefEnhancedLagPol": priorChild.BuildNestedDeletePayloadObject()})
-		}
-	}
-	if !m.VmmUplinkPCont.IsNull() && !m.VmmUplinkPCont.IsUnknown() {
-		var priorChild *VmmUplinkPContModel
-		if priorState != nil &&
-			!priorState.VmmUplinkPCont.IsNull() &&
-			!priorState.VmmUplinkPCont.IsUnknown() &&
-			!vmmDomPObjectIsEmpty(priorState.VmmUplinkPCont) {
-			priorChildValue := VmmUplinkPContModel{}
-			diagnostics.Append(priorState.VmmUplinkPCont.As(ctx, &priorChildValue, basetypes.ObjectAsOptions{})...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			priorChild = &priorChildValue
-		}
-
-		if !vmmDomPObjectIsEmpty(m.VmmUplinkPCont) {
-			child := VmmUplinkPContModel{}
-			diagnostics.Append(m.VmmUplinkPCont.As(ctx, &child, basetypes.ObjectAsOptions{})...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-
-			childObject, childDiagnostics := child.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
-			diagnostics.Append(childDiagnostics...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			children = append(children, map[string]any{"vmmUplinkPCont": childObject})
-		} else if priorChild != nil {
-			children = append(children, map[string]any{"vmmUplinkPCont": priorChild.BuildNestedDeletePayloadObject()})
-		}
-	}
-
-	payloadObject := map[string]any{"attributes": attributes}
-	payloadObject["children"] = children
-	return payloadObject, diagnostics
+	return modelHelpers.NewPayloadObject(
+		ctx,
+		&diagnostics,
+		attributes,
+		children,
+		true,
+	), diagnostics
 }
 
-func (m *VmmDomPModel) BuildNestedDeletePayloadObject() map[string]any {
-	attributes := map[string]any{"status": "deleted"}
+func (m *VmmDomPModel) BuildNestedDeletePayloadObject(
+	ctx context.Context,
+	diagnostics *diag.Diagnostics,
+) map[string]any {
+	attributes := map[string]any{}
 	attributes["name"] = m.Name.ValueString()
-	return map[string]any{
-		"attributes": attributes,
-		"children":   []map[string]any{},
-	}
+	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, attributes)
 }
 
 type VmmDomPResourceModel struct {
@@ -534,6 +529,23 @@ func (m *VmmDomPResourceModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
 
+func (m *VmmDomPResourceModel) SetFromResponse(
+	ctx context.Context,
+	response *container.Container,
+) (bool, diag.Diagnostics) {
+	fallbackModel := m.VmmDomPModel
+	model, dn, diagnostics := VmmDomPModelFromResponse(ctx, response, &fallbackModel)
+	found := model != nil
+	if diagnostics.HasError() || !found {
+		return found, diagnostics
+	}
+
+	m.VmmDomPModel = *model
+	m.ID = types.StringValue(dn)
+	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
+	return true, diagnostics
+}
+
 func (m *VmmDomPResourceModel) BuildPayload(
 	ctx context.Context,
 	priorState *VmmDomPModel,
@@ -549,53 +561,14 @@ func (m *VmmDomPResourceModel) BuildPayload(
 		payloadObject["attributes"].(map[string]any)["status"] = "created"
 	}
 	payloadEnvelope := map[string]any{"vmmDomP": payloadObject}
-	payload, err := json.Marshal(payloadEnvelope)
-	if err != nil {
-		diagnostics.AddError(
-			"Marshalling of JSON payload failed",
-			err.Error()+". Please report this issue to the provider developers.",
-		)
-		return nil, diagnostics
-	}
-
-	jsonPayload, err := container.ParseJSON(payload)
-	if err != nil {
-		diagnostics.AddError(
-			"Construction of JSON payload failed",
-			err.Error()+". Please report this issue to the provider developers.",
-		)
-		return nil, diagnostics
-	}
+	jsonPayload := modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload")
 	return jsonPayload, diagnostics
 }
 
-func (m *VmmDomPResourceModel) BuildDeletePayload() (*container.Container, diag.Diagnostics) {
+func (m *VmmDomPResourceModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
-	payload, err := json.Marshal(map[string]any{
-		"vmmDomP": map[string]any{
-			"attributes": map[string]any{
-				"dn":     m.ID.ValueString(),
-				"status": "deleted",
-			},
-		},
-	})
-	if err != nil {
-		diagnostics.AddError(
-			"Marshalling of JSON delete payload failed",
-			err.Error()+". Please report this issue to the provider developers.",
-		)
-		return nil, diagnostics
-	}
-
-	jsonPayload, err := container.ParseJSON(payload)
-	if err != nil {
-		diagnostics.AddError(
-			"Construction of JSON delete payload failed",
-			err.Error()+". Please report this issue to the provider developers.",
-		)
-		return nil, diagnostics
-	}
-	return jsonPayload, diagnostics
+	payload := modelHelpers.NewDeletePayload(ctx, &diagnostics, "vmmDomP", m.ID.ValueString())
+	return payload, diagnostics
 }
 
 type VmmDomPDataSourceModel struct {
@@ -615,4 +588,21 @@ func NewVmmDomPDataSourceModelNull() VmmDomPDataSourceModel {
 
 func (m *VmmDomPDataSourceModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
+}
+
+func (m *VmmDomPDataSourceModel) SetFromResponse(
+	ctx context.Context,
+	response *container.Container,
+) (bool, diag.Diagnostics) {
+	fallbackModel := m.VmmDomPModel
+	model, dn, diagnostics := VmmDomPModelFromResponse(ctx, response, &fallbackModel)
+	found := model != nil
+	if diagnostics.HasError() || !found {
+		return found, diagnostics
+	}
+
+	m.VmmDomPModel = *model
+	m.ID = types.StringValue(dn)
+	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
+	return true, diagnostics
 }

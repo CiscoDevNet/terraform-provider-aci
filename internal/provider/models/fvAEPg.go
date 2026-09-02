@@ -4,16 +4,15 @@ package models
 
 import (
 	"context"
-	"encoding/json"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
-
-	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
+
+	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
 
 type FvAEPgModel struct {
@@ -261,13 +260,280 @@ func (m *FvAEPgModel) BuildDN(parentDN string) string {
 	return parentDN + "/" + m.BuildRN()
 }
 
-func fvAEPgObjectIsEmpty(value types.Object) bool {
-	for _, attribute := range value.Attributes() {
-		if !attribute.IsNull() {
-			return false
-		}
+func (m *FvAEPgModel) ParentDNFromDN(dn string) string {
+	rn := m.BuildRN()
+
+	parentDN, _ := strings.CutSuffix(dn, "/"+rn)
+	return parentDN
+}
+
+func FvAEPgModelFromObject(
+	ctx context.Context,
+	object *container.Container,
+	fallbackModel *FvAEPgModel,
+) (FvAEPgModel, diag.Diagnostics) {
+	model := NewFvAEPgModelNull()
+	var diagnostics diag.Diagnostics
+
+	attributes, ok := modelHelpers.AttributesFromObject(ctx, &diagnostics, object, "fvAEPg")
+	if !ok {
+		return model, diagnostics
 	}
-	return true
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "descr", &model.Descr)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "exceptionTag", &model.ExceptionTag)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "floodOnEncap", &model.FloodOnEncap)
+	modelHelpers.DecodeStringAttributeWithEmptyValue(ctx, &diagnostics, attributes, "fwdCtrl", "none", &model.FwdCtrl)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "hasMcastSource", &model.HasMcastSource)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "isAttrBasedEPg", &model.IsAttrBasedEPg)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "matchT", &model.MatchT)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "name", &model.Name)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "nameAlias", &model.NameAlias)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "pcEnfPref", &model.PcEnfPref)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "pcTag", &model.PcTag)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "prefGrMemb", &model.PrefGrMemb)
+	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "prio", &model.Prio, customTypes.NewFvAEPgPrioStringValue)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "scope", &model.Scope)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "shutdown", &model.Shutdown)
+	childObjects := modelHelpers.ChildObjectsByClass(
+		ctx,
+		&diagnostics,
+		object,
+		"fvAEPg",
+		[]string{
+			"fvCrtrn",
+			"fvRsAEPgMonPol",
+			"fvRsAepAtt",
+			"fvRsBd",
+			"fvRsCons",
+			"fvRsConsIf",
+			"fvRsCustQosPol",
+			"fvRsDomAtt",
+			"fvRsDppPol",
+			"fvRsFcPathAtt",
+			"fvRsIntraEpg",
+			"fvRsNodeAtt",
+			"fvRsPathAtt",
+			"fvRsProtBy",
+			"fvRsProv",
+			"fvRsSecInherited",
+			"fvRsTrustCtrl",
+			"tagAnnotation",
+			"tagTag",
+		},
+	)
+	var fallbackFvCrtrn *types.Object
+	if fallbackModel != nil {
+		fallbackFvCrtrn = &fallbackModel.FvCrtrn
+	}
+	modelHelpers.DecodeSingletonChild(
+		ctx,
+		&diagnostics,
+		childObjects["fvCrtrn"],
+		fallbackFvCrtrn,
+		FvCrtrnModelAttributeTypes(),
+		"fvAEPg",
+		"fvCrtrn",
+		NewFvCrtrnModelNull,
+		FvCrtrnModelFromObject,
+		&model.FvCrtrn,
+	)
+	var fallbackFvRsAEPgMonPol *types.Object
+	if fallbackModel != nil {
+		fallbackFvRsAEPgMonPol = &fallbackModel.FvRsAEPgMonPol
+	}
+	modelHelpers.DecodeSingletonChild(
+		ctx,
+		&diagnostics,
+		childObjects["fvRsAEPgMonPol"],
+		fallbackFvRsAEPgMonPol,
+		FvRsAEPgMonPolModelAttributeTypes(),
+		"fvAEPg",
+		"fvRsAEPgMonPol",
+		NewFvRsAEPgMonPolModelNull,
+		FvRsAEPgMonPolModelFromObject,
+		&model.FvRsAEPgMonPol,
+	)
+	modelHelpers.DecodeRepeatedChildren(
+		ctx,
+		&diagnostics,
+		childObjects["fvRsAepAtt"],
+		FvRsAepAttModelAttributeTypes(),
+		FvRsAepAttModelFromObject,
+		&model.FvRsAepAtt,
+	)
+	var fallbackFvRsBd *types.Object
+	if fallbackModel != nil {
+		fallbackFvRsBd = &fallbackModel.FvRsBd
+	}
+	modelHelpers.DecodeSingletonChild(
+		ctx,
+		&diagnostics,
+		childObjects["fvRsBd"],
+		fallbackFvRsBd,
+		FvRsBdModelAttributeTypes(),
+		"fvAEPg",
+		"fvRsBd",
+		NewFvRsBdModelNull,
+		FvRsBdModelFromObject,
+		&model.FvRsBd,
+	)
+	modelHelpers.DecodeRepeatedChildren(
+		ctx,
+		&diagnostics,
+		childObjects["fvRsCons"],
+		FvRsConsModelAttributeTypes(),
+		FvRsConsModelFromObject,
+		&model.FvRsCons,
+	)
+	modelHelpers.DecodeRepeatedChildren(
+		ctx,
+		&diagnostics,
+		childObjects["fvRsConsIf"],
+		FvRsConsIfModelAttributeTypes(),
+		FvRsConsIfModelFromObject,
+		&model.FvRsConsIf,
+	)
+	var fallbackFvRsCustQosPol *types.Object
+	if fallbackModel != nil {
+		fallbackFvRsCustQosPol = &fallbackModel.FvRsCustQosPol
+	}
+	modelHelpers.DecodeSingletonChild(
+		ctx,
+		&diagnostics,
+		childObjects["fvRsCustQosPol"],
+		fallbackFvRsCustQosPol,
+		FvRsCustQosPolModelAttributeTypes(),
+		"fvAEPg",
+		"fvRsCustQosPol",
+		NewFvRsCustQosPolModelNull,
+		FvRsCustQosPolModelFromObject,
+		&model.FvRsCustQosPol,
+	)
+	modelHelpers.DecodeRepeatedChildren(
+		ctx,
+		&diagnostics,
+		childObjects["fvRsDomAtt"],
+		FvRsDomAttModelAttributeTypes(),
+		FvRsDomAttModelFromObject,
+		&model.FvRsDomAtt,
+	)
+	var fallbackFvRsDppPol *types.Object
+	if fallbackModel != nil {
+		fallbackFvRsDppPol = &fallbackModel.FvRsDppPol
+	}
+	modelHelpers.DecodeSingletonChild(
+		ctx,
+		&diagnostics,
+		childObjects["fvRsDppPol"],
+		fallbackFvRsDppPol,
+		FvRsDppPolModelAttributeTypes(),
+		"fvAEPg",
+		"fvRsDppPol",
+		NewFvRsDppPolModelNull,
+		FvRsDppPolModelFromObject,
+		&model.FvRsDppPol,
+	)
+	modelHelpers.DecodeRepeatedChildren(
+		ctx,
+		&diagnostics,
+		childObjects["fvRsFcPathAtt"],
+		FvRsFcPathAttModelAttributeTypes(),
+		FvRsFcPathAttModelFromObject,
+		&model.FvRsFcPathAtt,
+	)
+	modelHelpers.DecodeRepeatedChildren(
+		ctx,
+		&diagnostics,
+		childObjects["fvRsIntraEpg"],
+		FvRsIntraEpgModelAttributeTypes(),
+		FvRsIntraEpgModelFromObject,
+		&model.FvRsIntraEpg,
+	)
+	modelHelpers.DecodeRepeatedChildren(
+		ctx,
+		&diagnostics,
+		childObjects["fvRsNodeAtt"],
+		FvRsNodeAttModelAttributeTypes(),
+		FvRsNodeAttModelFromObject,
+		&model.FvRsNodeAtt,
+	)
+	modelHelpers.DecodeRepeatedChildren(
+		ctx,
+		&diagnostics,
+		childObjects["fvRsPathAtt"],
+		FvRsPathAttModelAttributeTypes(),
+		FvRsPathAttModelFromObject,
+		&model.FvRsPathAtt,
+	)
+	modelHelpers.DecodeRepeatedChildren(
+		ctx,
+		&diagnostics,
+		childObjects["fvRsProtBy"],
+		FvRsProtByModelAttributeTypes(),
+		FvRsProtByModelFromObject,
+		&model.FvRsProtBy,
+	)
+	modelHelpers.DecodeRepeatedChildren(
+		ctx,
+		&diagnostics,
+		childObjects["fvRsProv"],
+		FvRsProvModelAttributeTypes(),
+		FvRsProvModelFromObject,
+		&model.FvRsProv,
+	)
+	modelHelpers.DecodeRepeatedChildren(
+		ctx,
+		&diagnostics,
+		childObjects["fvRsSecInherited"],
+		FvRsSecInheritedModelAttributeTypes(),
+		FvRsSecInheritedModelFromObject,
+		&model.FvRsSecInherited,
+	)
+	var fallbackFvRsTrustCtrl *types.Object
+	if fallbackModel != nil {
+		fallbackFvRsTrustCtrl = &fallbackModel.FvRsTrustCtrl
+	}
+	modelHelpers.DecodeSingletonChild(
+		ctx,
+		&diagnostics,
+		childObjects["fvRsTrustCtrl"],
+		fallbackFvRsTrustCtrl,
+		FvRsTrustCtrlModelAttributeTypes(),
+		"fvAEPg",
+		"fvRsTrustCtrl",
+		NewFvRsTrustCtrlModelNull,
+		FvRsTrustCtrlModelFromObject,
+		&model.FvRsTrustCtrl,
+	)
+	modelHelpers.DecodeRepeatedChildren(
+		ctx,
+		&diagnostics,
+		childObjects["tagAnnotation"],
+		TagAnnotationModelAttributeTypes(),
+		TagAnnotationModelFromObject,
+		&model.TagAnnotation,
+	)
+	modelHelpers.DecodeRepeatedChildren(
+		ctx,
+		&diagnostics,
+		childObjects["tagTag"],
+		TagTagModelAttributeTypes(),
+		TagTagModelFromObject,
+		&model.TagTag,
+	)
+
+	return model, diagnostics
+}
+
+func FvAEPgModelFromResponse(
+	ctx context.Context,
+	response *container.Container,
+	fallbackModel *FvAEPgModel,
+) (*FvAEPgModel, string, diag.Diagnostics) {
+	var diagnostics diag.Diagnostics
+	model, dn := modelHelpers.ModelFromResponse(ctx, &diagnostics, response, "fvAEPg", fallbackModel, FvAEPgModelFromObject)
+	return model, dn, diagnostics
 }
 
 func (m *FvAEPgModel) BuildPayloadObject(
@@ -279,905 +545,413 @@ func (m *FvAEPgModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
-	if !m.Annotation.IsNull() && !m.Annotation.IsUnknown() {
-		attributes["annotation"] = m.Annotation.ValueString()
-	} else if nested {
+	if !modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "annotation", m.Annotation) && nested {
 		attributes["annotation"] = defaultAnnotation
 	}
-	if !m.Descr.IsNull() && !m.Descr.IsUnknown() {
-		attributes["descr"] = m.Descr.ValueString()
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "descr", m.Descr)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "exceptionTag", m.ExceptionTag)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "floodOnEncap", m.FloodOnEncap)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "fwdCtrl", m.FwdCtrl)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "hasMcastSource", m.HasMcastSource)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "isAttrBasedEPg", m.IsAttrBasedEPg)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "matchT", m.MatchT)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "name", m.Name)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "nameAlias", m.NameAlias)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "pcEnfPref", m.PcEnfPref)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "prefGrMemb", m.PrefGrMemb)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "prio", m.Prio)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "shutdown", m.Shutdown)
+	var priorFvCrtrn *types.Object
+	if priorState != nil {
+		priorFvCrtrn = &priorState.FvCrtrn
 	}
-	if !m.ExceptionTag.IsNull() && !m.ExceptionTag.IsUnknown() {
-		attributes["exceptionTag"] = m.ExceptionTag.ValueString()
+	fvCrtrnPayloads, ok := modelHelpers.BuildSingletonChildPayload(
+		ctx,
+		&diagnostics,
+		m.FvCrtrn,
+		priorFvCrtrn,
+		"fvCrtrn",
+		"FvCrtrn object defined by epg_useg_block_statement cannot be deleted",
+		defaultAnnotation,
+		(*FvCrtrnModel).BuildPayloadObject,
+		(*FvCrtrnModel).BuildNestedDeletePayloadObject,
+	)
+	if !ok {
+		return nil, diagnostics
 	}
-	if !m.FloodOnEncap.IsNull() && !m.FloodOnEncap.IsUnknown() {
-		attributes["floodOnEncap"] = m.FloodOnEncap.ValueString()
+	children = append(children, fvCrtrnPayloads...)
+	var priorFvRsAEPgMonPol *types.Object
+	if priorState != nil {
+		priorFvRsAEPgMonPol = &priorState.FvRsAEPgMonPol
 	}
-	if !m.FwdCtrl.IsNull() && !m.FwdCtrl.IsUnknown() {
-		attributes["fwdCtrl"] = m.FwdCtrl.ValueString()
+	fvRsAEPgMonPolPayloads, ok := modelHelpers.BuildSingletonChildPayload(
+		ctx,
+		&diagnostics,
+		m.FvRsAEPgMonPol,
+		priorFvRsAEPgMonPol,
+		"fvRsAEPgMonPol",
+		"FvRsAEPgMonPol object defined by relation_to_monitoring_policy cannot be deleted",
+		defaultAnnotation,
+		(*FvRsAEPgMonPolModel).BuildPayloadObject,
+		(*FvRsAEPgMonPolModel).BuildNestedDeletePayloadObject,
+	)
+	if !ok {
+		return nil, diagnostics
 	}
-	if !m.HasMcastSource.IsNull() && !m.HasMcastSource.IsUnknown() {
-		attributes["hasMcastSource"] = m.HasMcastSource.ValueString()
+	children = append(children, fvRsAEPgMonPolPayloads...)
+	var priorFvRsAepAtt *types.Set
+	if priorState != nil {
+		priorFvRsAepAtt = &priorState.FvRsAepAtt
 	}
-	if !m.IsAttrBasedEPg.IsNull() && !m.IsAttrBasedEPg.IsUnknown() {
-		attributes["isAttrBasedEPg"] = m.IsAttrBasedEPg.ValueString()
+	fvRsAepAttPayloads, ok := modelHelpers.BuildRepeatedChildPayloads(
+		ctx,
+		&diagnostics,
+		m.FvRsAepAtt,
+		priorFvRsAepAtt,
+		"fvRsAepAtt",
+		"FvRsAepAtt object defined by relation_to_attachable_access_entity_profiles cannot be deleted",
+		defaultAnnotation,
+		(*FvRsAepAttModel).BuildRN,
+		(*FvRsAepAttModel).BuildPayloadObject,
+		(*FvRsAepAttModel).BuildNestedDeletePayloadObject,
+	)
+	if !ok {
+		return nil, diagnostics
 	}
-	if !m.MatchT.IsNull() && !m.MatchT.IsUnknown() {
-		attributes["matchT"] = m.MatchT.ValueString()
+	children = append(children, fvRsAepAttPayloads...)
+	var priorFvRsBd *types.Object
+	if priorState != nil {
+		priorFvRsBd = &priorState.FvRsBd
 	}
-	if !m.Name.IsNull() && !m.Name.IsUnknown() {
-		attributes["name"] = m.Name.ValueString()
+	fvRsBdPayloads, ok := modelHelpers.BuildSingletonChildPayload(
+		ctx,
+		&diagnostics,
+		m.FvRsBd,
+		priorFvRsBd,
+		"fvRsBd",
+		"FvRsBd object defined by relation_to_bridge_domain cannot be deleted",
+		defaultAnnotation,
+		(*FvRsBdModel).BuildPayloadObject,
+		nil,
+	)
+	if !ok {
+		return nil, diagnostics
 	}
-	if !m.NameAlias.IsNull() && !m.NameAlias.IsUnknown() {
-		attributes["nameAlias"] = m.NameAlias.ValueString()
+	children = append(children, fvRsBdPayloads...)
+	var priorFvRsCons *types.Set
+	if priorState != nil {
+		priorFvRsCons = &priorState.FvRsCons
 	}
-	if !m.PcEnfPref.IsNull() && !m.PcEnfPref.IsUnknown() {
-		attributes["pcEnfPref"] = m.PcEnfPref.ValueString()
+	fvRsConsPayloads, ok := modelHelpers.BuildRepeatedChildPayloads(
+		ctx,
+		&diagnostics,
+		m.FvRsCons,
+		priorFvRsCons,
+		"fvRsCons",
+		"FvRsCons object defined by relation_to_consumed_contracts cannot be deleted",
+		defaultAnnotation,
+		(*FvRsConsModel).BuildRN,
+		(*FvRsConsModel).BuildPayloadObject,
+		(*FvRsConsModel).BuildNestedDeletePayloadObject,
+	)
+	if !ok {
+		return nil, diagnostics
 	}
-	if !m.PrefGrMemb.IsNull() && !m.PrefGrMemb.IsUnknown() {
-		attributes["prefGrMemb"] = m.PrefGrMemb.ValueString()
+	children = append(children, fvRsConsPayloads...)
+	var priorFvRsConsIf *types.Set
+	if priorState != nil {
+		priorFvRsConsIf = &priorState.FvRsConsIf
 	}
-	if !m.Prio.IsNull() && !m.Prio.IsUnknown() {
-		attributes["prio"] = m.Prio.ValueString()
+	fvRsConsIfPayloads, ok := modelHelpers.BuildRepeatedChildPayloads(
+		ctx,
+		&diagnostics,
+		m.FvRsConsIf,
+		priorFvRsConsIf,
+		"fvRsConsIf",
+		"FvRsConsIf object defined by relation_to_imported_contracts cannot be deleted",
+		defaultAnnotation,
+		(*FvRsConsIfModel).BuildRN,
+		(*FvRsConsIfModel).BuildPayloadObject,
+		(*FvRsConsIfModel).BuildNestedDeletePayloadObject,
+	)
+	if !ok {
+		return nil, diagnostics
 	}
-	if !m.Shutdown.IsNull() && !m.Shutdown.IsUnknown() {
-		attributes["shutdown"] = m.Shutdown.ValueString()
+	children = append(children, fvRsConsIfPayloads...)
+	var priorFvRsCustQosPol *types.Object
+	if priorState != nil {
+		priorFvRsCustQosPol = &priorState.FvRsCustQosPol
 	}
-	if !m.FvCrtrn.IsNull() && !m.FvCrtrn.IsUnknown() {
-		var priorChild *FvCrtrnModel
-		if priorState != nil &&
-			!priorState.FvCrtrn.IsNull() &&
-			!priorState.FvCrtrn.IsUnknown() &&
-			!fvAEPgObjectIsEmpty(priorState.FvCrtrn) {
-			priorChildValue := FvCrtrnModel{}
-			diagnostics.Append(priorState.FvCrtrn.As(ctx, &priorChildValue, basetypes.ObjectAsOptions{})...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			priorChild = &priorChildValue
-		}
-
-		if !fvAEPgObjectIsEmpty(m.FvCrtrn) {
-			child := FvCrtrnModel{}
-			diagnostics.Append(m.FvCrtrn.As(ctx, &child, basetypes.ObjectAsOptions{})...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-
-			childObject, childDiagnostics := child.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
-			diagnostics.Append(childDiagnostics...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			children = append(children, map[string]any{"fvCrtrn": childObject})
-		} else if priorChild != nil {
-			children = append(children, map[string]any{"fvCrtrn": priorChild.BuildNestedDeletePayloadObject()})
-		}
+	fvRsCustQosPolPayloads, ok := modelHelpers.BuildSingletonChildPayload(
+		ctx,
+		&diagnostics,
+		m.FvRsCustQosPol,
+		priorFvRsCustQosPol,
+		"fvRsCustQosPol",
+		"FvRsCustQosPol object defined by relation_to_custom_qos_policy cannot be deleted",
+		defaultAnnotation,
+		(*FvRsCustQosPolModel).BuildPayloadObject,
+		nil,
+	)
+	if !ok {
+		return nil, diagnostics
 	}
-	if !m.FvRsAEPgMonPol.IsNull() && !m.FvRsAEPgMonPol.IsUnknown() {
-		var priorChild *FvRsAEPgMonPolModel
-		if priorState != nil &&
-			!priorState.FvRsAEPgMonPol.IsNull() &&
-			!priorState.FvRsAEPgMonPol.IsUnknown() &&
-			!fvAEPgObjectIsEmpty(priorState.FvRsAEPgMonPol) {
-			priorChildValue := FvRsAEPgMonPolModel{}
-			diagnostics.Append(priorState.FvRsAEPgMonPol.As(ctx, &priorChildValue, basetypes.ObjectAsOptions{})...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			priorChild = &priorChildValue
-		}
-
-		if !fvAEPgObjectIsEmpty(m.FvRsAEPgMonPol) {
-			child := FvRsAEPgMonPolModel{}
-			diagnostics.Append(m.FvRsAEPgMonPol.As(ctx, &child, basetypes.ObjectAsOptions{})...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-
-			childObject, childDiagnostics := child.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
-			diagnostics.Append(childDiagnostics...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			children = append(children, map[string]any{"fvRsAEPgMonPol": childObject})
-		} else if priorChild != nil {
-			children = append(children, map[string]any{"fvRsAEPgMonPol": priorChild.BuildNestedDeletePayloadObject()})
-		}
+	children = append(children, fvRsCustQosPolPayloads...)
+	var priorFvRsDomAtt *types.Set
+	if priorState != nil {
+		priorFvRsDomAtt = &priorState.FvRsDomAtt
 	}
-	if !m.FvRsAepAtt.IsNull() && !m.FvRsAepAtt.IsUnknown() {
-		var desiredChildren []FvRsAepAttModel
-		diagnostics.Append(m.FvRsAepAtt.ElementsAs(ctx, &desiredChildren, false)...)
-		if diagnostics.HasError() {
-			return nil, diagnostics
-		}
-
-		var priorChildren []FvRsAepAttModel
-		if priorState != nil &&
-			!priorState.FvRsAepAtt.IsNull() &&
-			!priorState.FvRsAepAtt.IsUnknown() {
-			diagnostics.Append(priorState.FvRsAepAtt.ElementsAs(ctx, &priorChildren, false)...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-		}
-
-		for desiredIndex := range desiredChildren {
-			desiredChild := &desiredChildren[desiredIndex]
-			var priorChild *FvRsAepAttModel
-			for priorIndex := range priorChildren {
-				if priorChildren[priorIndex].BuildRN() == desiredChild.BuildRN() {
-					priorChild = &priorChildren[priorIndex]
-					break
-				}
-			}
-
-			childObject, childDiagnostics := desiredChild.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
-			diagnostics.Append(childDiagnostics...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			children = append(children, map[string]any{"fvRsAepAtt": childObject})
-		}
-
-		for priorIndex := range priorChildren {
-			priorChild := &priorChildren[priorIndex]
-			found := false
-			for desiredIndex := range desiredChildren {
-				if desiredChildren[desiredIndex].BuildRN() == priorChild.BuildRN() {
-					found = true
-					break
-				}
-			}
-			if found {
-				continue
-			}
-			children = append(children, map[string]any{"fvRsAepAtt": priorChild.BuildNestedDeletePayloadObject()})
-		}
+	fvRsDomAttPayloads, ok := modelHelpers.BuildRepeatedChildPayloads(
+		ctx,
+		&diagnostics,
+		m.FvRsDomAtt,
+		priorFvRsDomAtt,
+		"fvRsDomAtt",
+		"FvRsDomAtt object defined by relation_to_domains cannot be deleted",
+		defaultAnnotation,
+		(*FvRsDomAttModel).BuildRN,
+		(*FvRsDomAttModel).BuildPayloadObject,
+		(*FvRsDomAttModel).BuildNestedDeletePayloadObject,
+	)
+	if !ok {
+		return nil, diagnostics
 	}
-	if !m.FvRsBd.IsNull() && !m.FvRsBd.IsUnknown() {
-		var priorChild *FvRsBdModel
-		if priorState != nil &&
-			!priorState.FvRsBd.IsNull() &&
-			!priorState.FvRsBd.IsUnknown() &&
-			!fvAEPgObjectIsEmpty(priorState.FvRsBd) {
-			priorChildValue := FvRsBdModel{}
-			diagnostics.Append(priorState.FvRsBd.As(ctx, &priorChildValue, basetypes.ObjectAsOptions{})...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			priorChild = &priorChildValue
-		}
-
-		if !fvAEPgObjectIsEmpty(m.FvRsBd) {
-			child := FvRsBdModel{}
-			diagnostics.Append(m.FvRsBd.As(ctx, &child, basetypes.ObjectAsOptions{})...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-
-			childObject, childDiagnostics := child.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
-			diagnostics.Append(childDiagnostics...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			children = append(children, map[string]any{"fvRsBd": childObject})
-		} else if priorChild != nil {
-			diagnostics.AddError(
-				"FvRsBd object defined by relation_to_bridge_domain cannot be deleted",
-				"deletion of child is only possible upon deletion of the parent",
-			)
-		}
+	children = append(children, fvRsDomAttPayloads...)
+	var priorFvRsDppPol *types.Object
+	if priorState != nil {
+		priorFvRsDppPol = &priorState.FvRsDppPol
 	}
-	if !m.FvRsCons.IsNull() && !m.FvRsCons.IsUnknown() {
-		var desiredChildren []FvRsConsModel
-		diagnostics.Append(m.FvRsCons.ElementsAs(ctx, &desiredChildren, false)...)
-		if diagnostics.HasError() {
-			return nil, diagnostics
-		}
-
-		var priorChildren []FvRsConsModel
-		if priorState != nil &&
-			!priorState.FvRsCons.IsNull() &&
-			!priorState.FvRsCons.IsUnknown() {
-			diagnostics.Append(priorState.FvRsCons.ElementsAs(ctx, &priorChildren, false)...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-		}
-
-		for desiredIndex := range desiredChildren {
-			desiredChild := &desiredChildren[desiredIndex]
-			var priorChild *FvRsConsModel
-			for priorIndex := range priorChildren {
-				if priorChildren[priorIndex].BuildRN() == desiredChild.BuildRN() {
-					priorChild = &priorChildren[priorIndex]
-					break
-				}
-			}
-
-			childObject, childDiagnostics := desiredChild.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
-			diagnostics.Append(childDiagnostics...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			children = append(children, map[string]any{"fvRsCons": childObject})
-		}
-
-		for priorIndex := range priorChildren {
-			priorChild := &priorChildren[priorIndex]
-			found := false
-			for desiredIndex := range desiredChildren {
-				if desiredChildren[desiredIndex].BuildRN() == priorChild.BuildRN() {
-					found = true
-					break
-				}
-			}
-			if found {
-				continue
-			}
-			children = append(children, map[string]any{"fvRsCons": priorChild.BuildNestedDeletePayloadObject()})
-		}
+	fvRsDppPolPayloads, ok := modelHelpers.BuildSingletonChildPayload(
+		ctx,
+		&diagnostics,
+		m.FvRsDppPol,
+		priorFvRsDppPol,
+		"fvRsDppPol",
+		"FvRsDppPol object defined by relation_to_data_plane_policing_policy cannot be deleted",
+		defaultAnnotation,
+		(*FvRsDppPolModel).BuildPayloadObject,
+		(*FvRsDppPolModel).BuildNestedDeletePayloadObject,
+	)
+	if !ok {
+		return nil, diagnostics
 	}
-	if !m.FvRsConsIf.IsNull() && !m.FvRsConsIf.IsUnknown() {
-		var desiredChildren []FvRsConsIfModel
-		diagnostics.Append(m.FvRsConsIf.ElementsAs(ctx, &desiredChildren, false)...)
-		if diagnostics.HasError() {
-			return nil, diagnostics
-		}
-
-		var priorChildren []FvRsConsIfModel
-		if priorState != nil &&
-			!priorState.FvRsConsIf.IsNull() &&
-			!priorState.FvRsConsIf.IsUnknown() {
-			diagnostics.Append(priorState.FvRsConsIf.ElementsAs(ctx, &priorChildren, false)...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-		}
-
-		for desiredIndex := range desiredChildren {
-			desiredChild := &desiredChildren[desiredIndex]
-			var priorChild *FvRsConsIfModel
-			for priorIndex := range priorChildren {
-				if priorChildren[priorIndex].BuildRN() == desiredChild.BuildRN() {
-					priorChild = &priorChildren[priorIndex]
-					break
-				}
-			}
-
-			childObject, childDiagnostics := desiredChild.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
-			diagnostics.Append(childDiagnostics...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			children = append(children, map[string]any{"fvRsConsIf": childObject})
-		}
-
-		for priorIndex := range priorChildren {
-			priorChild := &priorChildren[priorIndex]
-			found := false
-			for desiredIndex := range desiredChildren {
-				if desiredChildren[desiredIndex].BuildRN() == priorChild.BuildRN() {
-					found = true
-					break
-				}
-			}
-			if found {
-				continue
-			}
-			children = append(children, map[string]any{"fvRsConsIf": priorChild.BuildNestedDeletePayloadObject()})
-		}
+	children = append(children, fvRsDppPolPayloads...)
+	var priorFvRsFcPathAtt *types.Set
+	if priorState != nil {
+		priorFvRsFcPathAtt = &priorState.FvRsFcPathAtt
 	}
-	if !m.FvRsCustQosPol.IsNull() && !m.FvRsCustQosPol.IsUnknown() {
-		var priorChild *FvRsCustQosPolModel
-		if priorState != nil &&
-			!priorState.FvRsCustQosPol.IsNull() &&
-			!priorState.FvRsCustQosPol.IsUnknown() &&
-			!fvAEPgObjectIsEmpty(priorState.FvRsCustQosPol) {
-			priorChildValue := FvRsCustQosPolModel{}
-			diagnostics.Append(priorState.FvRsCustQosPol.As(ctx, &priorChildValue, basetypes.ObjectAsOptions{})...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			priorChild = &priorChildValue
-		}
-
-		if !fvAEPgObjectIsEmpty(m.FvRsCustQosPol) {
-			child := FvRsCustQosPolModel{}
-			diagnostics.Append(m.FvRsCustQosPol.As(ctx, &child, basetypes.ObjectAsOptions{})...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-
-			childObject, childDiagnostics := child.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
-			diagnostics.Append(childDiagnostics...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			children = append(children, map[string]any{"fvRsCustQosPol": childObject})
-		} else if priorChild != nil {
-			diagnostics.AddError(
-				"FvRsCustQosPol object defined by relation_to_custom_qos_policy cannot be deleted",
-				"deletion of child is only possible upon deletion of the parent",
-			)
-		}
+	fvRsFcPathAttPayloads, ok := modelHelpers.BuildRepeatedChildPayloads(
+		ctx,
+		&diagnostics,
+		m.FvRsFcPathAtt,
+		priorFvRsFcPathAtt,
+		"fvRsFcPathAtt",
+		"FvRsFcPathAtt object defined by relation_to_fibre_channel_paths cannot be deleted",
+		defaultAnnotation,
+		(*FvRsFcPathAttModel).BuildRN,
+		(*FvRsFcPathAttModel).BuildPayloadObject,
+		(*FvRsFcPathAttModel).BuildNestedDeletePayloadObject,
+	)
+	if !ok {
+		return nil, diagnostics
 	}
-	if !m.FvRsDomAtt.IsNull() && !m.FvRsDomAtt.IsUnknown() {
-		var desiredChildren []FvRsDomAttModel
-		diagnostics.Append(m.FvRsDomAtt.ElementsAs(ctx, &desiredChildren, false)...)
-		if diagnostics.HasError() {
-			return nil, diagnostics
-		}
-
-		var priorChildren []FvRsDomAttModel
-		if priorState != nil &&
-			!priorState.FvRsDomAtt.IsNull() &&
-			!priorState.FvRsDomAtt.IsUnknown() {
-			diagnostics.Append(priorState.FvRsDomAtt.ElementsAs(ctx, &priorChildren, false)...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-		}
-
-		for desiredIndex := range desiredChildren {
-			desiredChild := &desiredChildren[desiredIndex]
-			var priorChild *FvRsDomAttModel
-			for priorIndex := range priorChildren {
-				if priorChildren[priorIndex].BuildRN() == desiredChild.BuildRN() {
-					priorChild = &priorChildren[priorIndex]
-					break
-				}
-			}
-
-			childObject, childDiagnostics := desiredChild.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
-			diagnostics.Append(childDiagnostics...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			children = append(children, map[string]any{"fvRsDomAtt": childObject})
-		}
-
-		for priorIndex := range priorChildren {
-			priorChild := &priorChildren[priorIndex]
-			found := false
-			for desiredIndex := range desiredChildren {
-				if desiredChildren[desiredIndex].BuildRN() == priorChild.BuildRN() {
-					found = true
-					break
-				}
-			}
-			if found {
-				continue
-			}
-			children = append(children, map[string]any{"fvRsDomAtt": priorChild.BuildNestedDeletePayloadObject()})
-		}
+	children = append(children, fvRsFcPathAttPayloads...)
+	var priorFvRsIntraEpg *types.Set
+	if priorState != nil {
+		priorFvRsIntraEpg = &priorState.FvRsIntraEpg
 	}
-	if !m.FvRsDppPol.IsNull() && !m.FvRsDppPol.IsUnknown() {
-		var priorChild *FvRsDppPolModel
-		if priorState != nil &&
-			!priorState.FvRsDppPol.IsNull() &&
-			!priorState.FvRsDppPol.IsUnknown() &&
-			!fvAEPgObjectIsEmpty(priorState.FvRsDppPol) {
-			priorChildValue := FvRsDppPolModel{}
-			diagnostics.Append(priorState.FvRsDppPol.As(ctx, &priorChildValue, basetypes.ObjectAsOptions{})...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			priorChild = &priorChildValue
-		}
-
-		if !fvAEPgObjectIsEmpty(m.FvRsDppPol) {
-			child := FvRsDppPolModel{}
-			diagnostics.Append(m.FvRsDppPol.As(ctx, &child, basetypes.ObjectAsOptions{})...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-
-			childObject, childDiagnostics := child.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
-			diagnostics.Append(childDiagnostics...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			children = append(children, map[string]any{"fvRsDppPol": childObject})
-		} else if priorChild != nil {
-			children = append(children, map[string]any{"fvRsDppPol": priorChild.BuildNestedDeletePayloadObject()})
-		}
+	fvRsIntraEpgPayloads, ok := modelHelpers.BuildRepeatedChildPayloads(
+		ctx,
+		&diagnostics,
+		m.FvRsIntraEpg,
+		priorFvRsIntraEpg,
+		"fvRsIntraEpg",
+		"FvRsIntraEpg object defined by relation_to_intra_epg_contracts cannot be deleted",
+		defaultAnnotation,
+		(*FvRsIntraEpgModel).BuildRN,
+		(*FvRsIntraEpgModel).BuildPayloadObject,
+		(*FvRsIntraEpgModel).BuildNestedDeletePayloadObject,
+	)
+	if !ok {
+		return nil, diagnostics
 	}
-	if !m.FvRsFcPathAtt.IsNull() && !m.FvRsFcPathAtt.IsUnknown() {
-		var desiredChildren []FvRsFcPathAttModel
-		diagnostics.Append(m.FvRsFcPathAtt.ElementsAs(ctx, &desiredChildren, false)...)
-		if diagnostics.HasError() {
-			return nil, diagnostics
-		}
-
-		var priorChildren []FvRsFcPathAttModel
-		if priorState != nil &&
-			!priorState.FvRsFcPathAtt.IsNull() &&
-			!priorState.FvRsFcPathAtt.IsUnknown() {
-			diagnostics.Append(priorState.FvRsFcPathAtt.ElementsAs(ctx, &priorChildren, false)...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-		}
-
-		for desiredIndex := range desiredChildren {
-			desiredChild := &desiredChildren[desiredIndex]
-			var priorChild *FvRsFcPathAttModel
-			for priorIndex := range priorChildren {
-				if priorChildren[priorIndex].BuildRN() == desiredChild.BuildRN() {
-					priorChild = &priorChildren[priorIndex]
-					break
-				}
-			}
-
-			childObject, childDiagnostics := desiredChild.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
-			diagnostics.Append(childDiagnostics...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			children = append(children, map[string]any{"fvRsFcPathAtt": childObject})
-		}
-
-		for priorIndex := range priorChildren {
-			priorChild := &priorChildren[priorIndex]
-			found := false
-			for desiredIndex := range desiredChildren {
-				if desiredChildren[desiredIndex].BuildRN() == priorChild.BuildRN() {
-					found = true
-					break
-				}
-			}
-			if found {
-				continue
-			}
-			children = append(children, map[string]any{"fvRsFcPathAtt": priorChild.BuildNestedDeletePayloadObject()})
-		}
+	children = append(children, fvRsIntraEpgPayloads...)
+	var priorFvRsNodeAtt *types.Set
+	if priorState != nil {
+		priorFvRsNodeAtt = &priorState.FvRsNodeAtt
 	}
-	if !m.FvRsIntraEpg.IsNull() && !m.FvRsIntraEpg.IsUnknown() {
-		var desiredChildren []FvRsIntraEpgModel
-		diagnostics.Append(m.FvRsIntraEpg.ElementsAs(ctx, &desiredChildren, false)...)
-		if diagnostics.HasError() {
-			return nil, diagnostics
-		}
-
-		var priorChildren []FvRsIntraEpgModel
-		if priorState != nil &&
-			!priorState.FvRsIntraEpg.IsNull() &&
-			!priorState.FvRsIntraEpg.IsUnknown() {
-			diagnostics.Append(priorState.FvRsIntraEpg.ElementsAs(ctx, &priorChildren, false)...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-		}
-
-		for desiredIndex := range desiredChildren {
-			desiredChild := &desiredChildren[desiredIndex]
-			var priorChild *FvRsIntraEpgModel
-			for priorIndex := range priorChildren {
-				if priorChildren[priorIndex].BuildRN() == desiredChild.BuildRN() {
-					priorChild = &priorChildren[priorIndex]
-					break
-				}
-			}
-
-			childObject, childDiagnostics := desiredChild.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
-			diagnostics.Append(childDiagnostics...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			children = append(children, map[string]any{"fvRsIntraEpg": childObject})
-		}
-
-		for priorIndex := range priorChildren {
-			priorChild := &priorChildren[priorIndex]
-			found := false
-			for desiredIndex := range desiredChildren {
-				if desiredChildren[desiredIndex].BuildRN() == priorChild.BuildRN() {
-					found = true
-					break
-				}
-			}
-			if found {
-				continue
-			}
-			children = append(children, map[string]any{"fvRsIntraEpg": priorChild.BuildNestedDeletePayloadObject()})
-		}
+	fvRsNodeAttPayloads, ok := modelHelpers.BuildRepeatedChildPayloads(
+		ctx,
+		&diagnostics,
+		m.FvRsNodeAtt,
+		priorFvRsNodeAtt,
+		"fvRsNodeAtt",
+		"FvRsNodeAtt object defined by relation_to_static_leafs cannot be deleted",
+		defaultAnnotation,
+		(*FvRsNodeAttModel).BuildRN,
+		(*FvRsNodeAttModel).BuildPayloadObject,
+		(*FvRsNodeAttModel).BuildNestedDeletePayloadObject,
+	)
+	if !ok {
+		return nil, diagnostics
 	}
-	if !m.FvRsNodeAtt.IsNull() && !m.FvRsNodeAtt.IsUnknown() {
-		var desiredChildren []FvRsNodeAttModel
-		diagnostics.Append(m.FvRsNodeAtt.ElementsAs(ctx, &desiredChildren, false)...)
-		if diagnostics.HasError() {
-			return nil, diagnostics
-		}
-
-		var priorChildren []FvRsNodeAttModel
-		if priorState != nil &&
-			!priorState.FvRsNodeAtt.IsNull() &&
-			!priorState.FvRsNodeAtt.IsUnknown() {
-			diagnostics.Append(priorState.FvRsNodeAtt.ElementsAs(ctx, &priorChildren, false)...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-		}
-
-		for desiredIndex := range desiredChildren {
-			desiredChild := &desiredChildren[desiredIndex]
-			var priorChild *FvRsNodeAttModel
-			for priorIndex := range priorChildren {
-				if priorChildren[priorIndex].BuildRN() == desiredChild.BuildRN() {
-					priorChild = &priorChildren[priorIndex]
-					break
-				}
-			}
-
-			childObject, childDiagnostics := desiredChild.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
-			diagnostics.Append(childDiagnostics...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			children = append(children, map[string]any{"fvRsNodeAtt": childObject})
-		}
-
-		for priorIndex := range priorChildren {
-			priorChild := &priorChildren[priorIndex]
-			found := false
-			for desiredIndex := range desiredChildren {
-				if desiredChildren[desiredIndex].BuildRN() == priorChild.BuildRN() {
-					found = true
-					break
-				}
-			}
-			if found {
-				continue
-			}
-			children = append(children, map[string]any{"fvRsNodeAtt": priorChild.BuildNestedDeletePayloadObject()})
-		}
+	children = append(children, fvRsNodeAttPayloads...)
+	var priorFvRsPathAtt *types.Set
+	if priorState != nil {
+		priorFvRsPathAtt = &priorState.FvRsPathAtt
 	}
-	if !m.FvRsPathAtt.IsNull() && !m.FvRsPathAtt.IsUnknown() {
-		var desiredChildren []FvRsPathAttModel
-		diagnostics.Append(m.FvRsPathAtt.ElementsAs(ctx, &desiredChildren, false)...)
-		if diagnostics.HasError() {
-			return nil, diagnostics
-		}
-
-		var priorChildren []FvRsPathAttModel
-		if priorState != nil &&
-			!priorState.FvRsPathAtt.IsNull() &&
-			!priorState.FvRsPathAtt.IsUnknown() {
-			diagnostics.Append(priorState.FvRsPathAtt.ElementsAs(ctx, &priorChildren, false)...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-		}
-
-		for desiredIndex := range desiredChildren {
-			desiredChild := &desiredChildren[desiredIndex]
-			var priorChild *FvRsPathAttModel
-			for priorIndex := range priorChildren {
-				if priorChildren[priorIndex].BuildRN() == desiredChild.BuildRN() {
-					priorChild = &priorChildren[priorIndex]
-					break
-				}
-			}
-
-			childObject, childDiagnostics := desiredChild.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
-			diagnostics.Append(childDiagnostics...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			children = append(children, map[string]any{"fvRsPathAtt": childObject})
-		}
-
-		for priorIndex := range priorChildren {
-			priorChild := &priorChildren[priorIndex]
-			found := false
-			for desiredIndex := range desiredChildren {
-				if desiredChildren[desiredIndex].BuildRN() == priorChild.BuildRN() {
-					found = true
-					break
-				}
-			}
-			if found {
-				continue
-			}
-			children = append(children, map[string]any{"fvRsPathAtt": priorChild.BuildNestedDeletePayloadObject()})
-		}
+	fvRsPathAttPayloads, ok := modelHelpers.BuildRepeatedChildPayloads(
+		ctx,
+		&diagnostics,
+		m.FvRsPathAtt,
+		priorFvRsPathAtt,
+		"fvRsPathAtt",
+		"FvRsPathAtt object defined by relation_to_static_paths cannot be deleted",
+		defaultAnnotation,
+		(*FvRsPathAttModel).BuildRN,
+		(*FvRsPathAttModel).BuildPayloadObject,
+		(*FvRsPathAttModel).BuildNestedDeletePayloadObject,
+	)
+	if !ok {
+		return nil, diagnostics
 	}
-	if !m.FvRsProtBy.IsNull() && !m.FvRsProtBy.IsUnknown() {
-		var desiredChildren []FvRsProtByModel
-		diagnostics.Append(m.FvRsProtBy.ElementsAs(ctx, &desiredChildren, false)...)
-		if diagnostics.HasError() {
-			return nil, diagnostics
-		}
-
-		var priorChildren []FvRsProtByModel
-		if priorState != nil &&
-			!priorState.FvRsProtBy.IsNull() &&
-			!priorState.FvRsProtBy.IsUnknown() {
-			diagnostics.Append(priorState.FvRsProtBy.ElementsAs(ctx, &priorChildren, false)...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-		}
-
-		for desiredIndex := range desiredChildren {
-			desiredChild := &desiredChildren[desiredIndex]
-			var priorChild *FvRsProtByModel
-			for priorIndex := range priorChildren {
-				if priorChildren[priorIndex].BuildRN() == desiredChild.BuildRN() {
-					priorChild = &priorChildren[priorIndex]
-					break
-				}
-			}
-
-			childObject, childDiagnostics := desiredChild.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
-			diagnostics.Append(childDiagnostics...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			children = append(children, map[string]any{"fvRsProtBy": childObject})
-		}
-
-		for priorIndex := range priorChildren {
-			priorChild := &priorChildren[priorIndex]
-			found := false
-			for desiredIndex := range desiredChildren {
-				if desiredChildren[desiredIndex].BuildRN() == priorChild.BuildRN() {
-					found = true
-					break
-				}
-			}
-			if found {
-				continue
-			}
-			children = append(children, map[string]any{"fvRsProtBy": priorChild.BuildNestedDeletePayloadObject()})
-		}
+	children = append(children, fvRsPathAttPayloads...)
+	var priorFvRsProtBy *types.Set
+	if priorState != nil {
+		priorFvRsProtBy = &priorState.FvRsProtBy
 	}
-	if !m.FvRsProv.IsNull() && !m.FvRsProv.IsUnknown() {
-		var desiredChildren []FvRsProvModel
-		diagnostics.Append(m.FvRsProv.ElementsAs(ctx, &desiredChildren, false)...)
-		if diagnostics.HasError() {
-			return nil, diagnostics
-		}
-
-		var priorChildren []FvRsProvModel
-		if priorState != nil &&
-			!priorState.FvRsProv.IsNull() &&
-			!priorState.FvRsProv.IsUnknown() {
-			diagnostics.Append(priorState.FvRsProv.ElementsAs(ctx, &priorChildren, false)...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-		}
-
-		for desiredIndex := range desiredChildren {
-			desiredChild := &desiredChildren[desiredIndex]
-			var priorChild *FvRsProvModel
-			for priorIndex := range priorChildren {
-				if priorChildren[priorIndex].BuildRN() == desiredChild.BuildRN() {
-					priorChild = &priorChildren[priorIndex]
-					break
-				}
-			}
-
-			childObject, childDiagnostics := desiredChild.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
-			diagnostics.Append(childDiagnostics...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			children = append(children, map[string]any{"fvRsProv": childObject})
-		}
-
-		for priorIndex := range priorChildren {
-			priorChild := &priorChildren[priorIndex]
-			found := false
-			for desiredIndex := range desiredChildren {
-				if desiredChildren[desiredIndex].BuildRN() == priorChild.BuildRN() {
-					found = true
-					break
-				}
-			}
-			if found {
-				continue
-			}
-			children = append(children, map[string]any{"fvRsProv": priorChild.BuildNestedDeletePayloadObject()})
-		}
+	fvRsProtByPayloads, ok := modelHelpers.BuildRepeatedChildPayloads(
+		ctx,
+		&diagnostics,
+		m.FvRsProtBy,
+		priorFvRsProtBy,
+		"fvRsProtBy",
+		"FvRsProtBy object defined by relation_to_taboo_contracts cannot be deleted",
+		defaultAnnotation,
+		(*FvRsProtByModel).BuildRN,
+		(*FvRsProtByModel).BuildPayloadObject,
+		(*FvRsProtByModel).BuildNestedDeletePayloadObject,
+	)
+	if !ok {
+		return nil, diagnostics
 	}
-	if !m.FvRsSecInherited.IsNull() && !m.FvRsSecInherited.IsUnknown() {
-		var desiredChildren []FvRsSecInheritedModel
-		diagnostics.Append(m.FvRsSecInherited.ElementsAs(ctx, &desiredChildren, false)...)
-		if diagnostics.HasError() {
-			return nil, diagnostics
-		}
-
-		var priorChildren []FvRsSecInheritedModel
-		if priorState != nil &&
-			!priorState.FvRsSecInherited.IsNull() &&
-			!priorState.FvRsSecInherited.IsUnknown() {
-			diagnostics.Append(priorState.FvRsSecInherited.ElementsAs(ctx, &priorChildren, false)...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-		}
-
-		for desiredIndex := range desiredChildren {
-			desiredChild := &desiredChildren[desiredIndex]
-			var priorChild *FvRsSecInheritedModel
-			for priorIndex := range priorChildren {
-				if priorChildren[priorIndex].BuildRN() == desiredChild.BuildRN() {
-					priorChild = &priorChildren[priorIndex]
-					break
-				}
-			}
-
-			childObject, childDiagnostics := desiredChild.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
-			diagnostics.Append(childDiagnostics...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			children = append(children, map[string]any{"fvRsSecInherited": childObject})
-		}
-
-		for priorIndex := range priorChildren {
-			priorChild := &priorChildren[priorIndex]
-			found := false
-			for desiredIndex := range desiredChildren {
-				if desiredChildren[desiredIndex].BuildRN() == priorChild.BuildRN() {
-					found = true
-					break
-				}
-			}
-			if found {
-				continue
-			}
-			children = append(children, map[string]any{"fvRsSecInherited": priorChild.BuildNestedDeletePayloadObject()})
-		}
+	children = append(children, fvRsProtByPayloads...)
+	var priorFvRsProv *types.Set
+	if priorState != nil {
+		priorFvRsProv = &priorState.FvRsProv
 	}
-	if !m.FvRsTrustCtrl.IsNull() && !m.FvRsTrustCtrl.IsUnknown() {
-		var priorChild *FvRsTrustCtrlModel
-		if priorState != nil &&
-			!priorState.FvRsTrustCtrl.IsNull() &&
-			!priorState.FvRsTrustCtrl.IsUnknown() &&
-			!fvAEPgObjectIsEmpty(priorState.FvRsTrustCtrl) {
-			priorChildValue := FvRsTrustCtrlModel{}
-			diagnostics.Append(priorState.FvRsTrustCtrl.As(ctx, &priorChildValue, basetypes.ObjectAsOptions{})...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			priorChild = &priorChildValue
-		}
-
-		if !fvAEPgObjectIsEmpty(m.FvRsTrustCtrl) {
-			child := FvRsTrustCtrlModel{}
-			diagnostics.Append(m.FvRsTrustCtrl.As(ctx, &child, basetypes.ObjectAsOptions{})...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-
-			childObject, childDiagnostics := child.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
-			diagnostics.Append(childDiagnostics...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			children = append(children, map[string]any{"fvRsTrustCtrl": childObject})
-		} else if priorChild != nil {
-			children = append(children, map[string]any{"fvRsTrustCtrl": priorChild.BuildNestedDeletePayloadObject()})
-		}
+	fvRsProvPayloads, ok := modelHelpers.BuildRepeatedChildPayloads(
+		ctx,
+		&diagnostics,
+		m.FvRsProv,
+		priorFvRsProv,
+		"fvRsProv",
+		"FvRsProv object defined by relation_to_provided_contracts cannot be deleted",
+		defaultAnnotation,
+		(*FvRsProvModel).BuildRN,
+		(*FvRsProvModel).BuildPayloadObject,
+		(*FvRsProvModel).BuildNestedDeletePayloadObject,
+	)
+	if !ok {
+		return nil, diagnostics
 	}
-	if !m.TagAnnotation.IsNull() && !m.TagAnnotation.IsUnknown() {
-		var desiredChildren []TagAnnotationModel
-		diagnostics.Append(m.TagAnnotation.ElementsAs(ctx, &desiredChildren, false)...)
-		if diagnostics.HasError() {
-			return nil, diagnostics
-		}
-
-		var priorChildren []TagAnnotationModel
-		if priorState != nil &&
-			!priorState.TagAnnotation.IsNull() &&
-			!priorState.TagAnnotation.IsUnknown() {
-			diagnostics.Append(priorState.TagAnnotation.ElementsAs(ctx, &priorChildren, false)...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-		}
-
-		for desiredIndex := range desiredChildren {
-			desiredChild := &desiredChildren[desiredIndex]
-			var priorChild *TagAnnotationModel
-			for priorIndex := range priorChildren {
-				if priorChildren[priorIndex].BuildRN() == desiredChild.BuildRN() {
-					priorChild = &priorChildren[priorIndex]
-					break
-				}
-			}
-
-			childObject, childDiagnostics := desiredChild.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
-			diagnostics.Append(childDiagnostics...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			children = append(children, map[string]any{"tagAnnotation": childObject})
-		}
-
-		for priorIndex := range priorChildren {
-			priorChild := &priorChildren[priorIndex]
-			found := false
-			for desiredIndex := range desiredChildren {
-				if desiredChildren[desiredIndex].BuildRN() == priorChild.BuildRN() {
-					found = true
-					break
-				}
-			}
-			if found {
-				continue
-			}
-			children = append(children, map[string]any{"tagAnnotation": priorChild.BuildNestedDeletePayloadObject()})
-		}
+	children = append(children, fvRsProvPayloads...)
+	var priorFvRsSecInherited *types.Set
+	if priorState != nil {
+		priorFvRsSecInherited = &priorState.FvRsSecInherited
 	}
-	if !m.TagTag.IsNull() && !m.TagTag.IsUnknown() {
-		var desiredChildren []TagTagModel
-		diagnostics.Append(m.TagTag.ElementsAs(ctx, &desiredChildren, false)...)
-		if diagnostics.HasError() {
-			return nil, diagnostics
-		}
-
-		var priorChildren []TagTagModel
-		if priorState != nil &&
-			!priorState.TagTag.IsNull() &&
-			!priorState.TagTag.IsUnknown() {
-			diagnostics.Append(priorState.TagTag.ElementsAs(ctx, &priorChildren, false)...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-		}
-
-		for desiredIndex := range desiredChildren {
-			desiredChild := &desiredChildren[desiredIndex]
-			var priorChild *TagTagModel
-			for priorIndex := range priorChildren {
-				if priorChildren[priorIndex].BuildRN() == desiredChild.BuildRN() {
-					priorChild = &priorChildren[priorIndex]
-					break
-				}
-			}
-
-			childObject, childDiagnostics := desiredChild.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
-			diagnostics.Append(childDiagnostics...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			children = append(children, map[string]any{"tagTag": childObject})
-		}
-
-		for priorIndex := range priorChildren {
-			priorChild := &priorChildren[priorIndex]
-			found := false
-			for desiredIndex := range desiredChildren {
-				if desiredChildren[desiredIndex].BuildRN() == priorChild.BuildRN() {
-					found = true
-					break
-				}
-			}
-			if found {
-				continue
-			}
-			children = append(children, map[string]any{"tagTag": priorChild.BuildNestedDeletePayloadObject()})
-		}
+	fvRsSecInheritedPayloads, ok := modelHelpers.BuildRepeatedChildPayloads(
+		ctx,
+		&diagnostics,
+		m.FvRsSecInherited,
+		priorFvRsSecInherited,
+		"fvRsSecInherited",
+		"FvRsSecInherited object defined by relation_to_contract_masters cannot be deleted",
+		defaultAnnotation,
+		(*FvRsSecInheritedModel).BuildRN,
+		(*FvRsSecInheritedModel).BuildPayloadObject,
+		(*FvRsSecInheritedModel).BuildNestedDeletePayloadObject,
+	)
+	if !ok {
+		return nil, diagnostics
 	}
+	children = append(children, fvRsSecInheritedPayloads...)
+	var priorFvRsTrustCtrl *types.Object
+	if priorState != nil {
+		priorFvRsTrustCtrl = &priorState.FvRsTrustCtrl
+	}
+	fvRsTrustCtrlPayloads, ok := modelHelpers.BuildSingletonChildPayload(
+		ctx,
+		&diagnostics,
+		m.FvRsTrustCtrl,
+		priorFvRsTrustCtrl,
+		"fvRsTrustCtrl",
+		"FvRsTrustCtrl object defined by relation_to_trust_control_policy cannot be deleted",
+		defaultAnnotation,
+		(*FvRsTrustCtrlModel).BuildPayloadObject,
+		(*FvRsTrustCtrlModel).BuildNestedDeletePayloadObject,
+	)
+	if !ok {
+		return nil, diagnostics
+	}
+	children = append(children, fvRsTrustCtrlPayloads...)
+	var priorTagAnnotation *types.Set
+	if priorState != nil {
+		priorTagAnnotation = &priorState.TagAnnotation
+	}
+	tagAnnotationPayloads, ok := modelHelpers.BuildRepeatedChildPayloads(
+		ctx,
+		&diagnostics,
+		m.TagAnnotation,
+		priorTagAnnotation,
+		"tagAnnotation",
+		"TagAnnotation object defined by annotations cannot be deleted",
+		defaultAnnotation,
+		(*TagAnnotationModel).BuildRN,
+		(*TagAnnotationModel).BuildPayloadObject,
+		(*TagAnnotationModel).BuildNestedDeletePayloadObject,
+	)
+	if !ok {
+		return nil, diagnostics
+	}
+	children = append(children, tagAnnotationPayloads...)
+	var priorTagTag *types.Set
+	if priorState != nil {
+		priorTagTag = &priorState.TagTag
+	}
+	tagTagPayloads, ok := modelHelpers.BuildRepeatedChildPayloads(
+		ctx,
+		&diagnostics,
+		m.TagTag,
+		priorTagTag,
+		"tagTag",
+		"TagTag object defined by tags cannot be deleted",
+		defaultAnnotation,
+		(*TagTagModel).BuildRN,
+		(*TagTagModel).BuildPayloadObject,
+		(*TagTagModel).BuildNestedDeletePayloadObject,
+	)
+	if !ok {
+		return nil, diagnostics
+	}
+	children = append(children, tagTagPayloads...)
 
-	payloadObject := map[string]any{"attributes": attributes}
-	payloadObject["children"] = children
-	return payloadObject, diagnostics
+	return modelHelpers.NewPayloadObject(
+		ctx,
+		&diagnostics,
+		attributes,
+		children,
+		true,
+	), diagnostics
 }
 
-func (m *FvAEPgModel) BuildNestedDeletePayloadObject() map[string]any {
-	attributes := map[string]any{"status": "deleted"}
+func (m *FvAEPgModel) BuildNestedDeletePayloadObject(
+	ctx context.Context,
+	diagnostics *diag.Diagnostics,
+) map[string]any {
+	attributes := map[string]any{}
 	attributes["name"] = m.Name.ValueString()
-	return map[string]any{
-		"attributes": attributes,
-		"children":   []map[string]any{},
-	}
+	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, attributes)
 }
 
 type FvAEPgResourceModel struct {
@@ -1199,6 +973,23 @@ func (m *FvAEPgResourceModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
 
+func (m *FvAEPgResourceModel) SetFromResponse(
+	ctx context.Context,
+	response *container.Container,
+) (bool, diag.Diagnostics) {
+	fallbackModel := m.FvAEPgModel
+	model, dn, diagnostics := FvAEPgModelFromResponse(ctx, response, &fallbackModel)
+	found := model != nil
+	if diagnostics.HasError() || !found {
+		return found, diagnostics
+	}
+
+	m.FvAEPgModel = *model
+	m.ID = types.StringValue(dn)
+	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
+	return true, diagnostics
+}
+
 func (m *FvAEPgResourceModel) BuildPayload(
 	ctx context.Context,
 	priorState *FvAEPgModel,
@@ -1214,53 +1005,14 @@ func (m *FvAEPgResourceModel) BuildPayload(
 		payloadObject["attributes"].(map[string]any)["status"] = "created"
 	}
 	payloadEnvelope := map[string]any{"fvAEPg": payloadObject}
-	payload, err := json.Marshal(payloadEnvelope)
-	if err != nil {
-		diagnostics.AddError(
-			"Marshalling of JSON payload failed",
-			err.Error()+". Please report this issue to the provider developers.",
-		)
-		return nil, diagnostics
-	}
-
-	jsonPayload, err := container.ParseJSON(payload)
-	if err != nil {
-		diagnostics.AddError(
-			"Construction of JSON payload failed",
-			err.Error()+". Please report this issue to the provider developers.",
-		)
-		return nil, diagnostics
-	}
+	jsonPayload := modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload")
 	return jsonPayload, diagnostics
 }
 
-func (m *FvAEPgResourceModel) BuildDeletePayload() (*container.Container, diag.Diagnostics) {
+func (m *FvAEPgResourceModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
-	payload, err := json.Marshal(map[string]any{
-		"fvAEPg": map[string]any{
-			"attributes": map[string]any{
-				"dn":     m.ID.ValueString(),
-				"status": "deleted",
-			},
-		},
-	})
-	if err != nil {
-		diagnostics.AddError(
-			"Marshalling of JSON delete payload failed",
-			err.Error()+". Please report this issue to the provider developers.",
-		)
-		return nil, diagnostics
-	}
-
-	jsonPayload, err := container.ParseJSON(payload)
-	if err != nil {
-		diagnostics.AddError(
-			"Construction of JSON delete payload failed",
-			err.Error()+". Please report this issue to the provider developers.",
-		)
-		return nil, diagnostics
-	}
-	return jsonPayload, diagnostics
+	payload := modelHelpers.NewDeletePayload(ctx, &diagnostics, "fvAEPg", m.ID.ValueString())
+	return payload, diagnostics
 }
 
 type FvAEPgDataSourceModel struct {
@@ -1280,4 +1032,21 @@ func NewFvAEPgDataSourceModelNull() FvAEPgDataSourceModel {
 
 func (m *FvAEPgDataSourceModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
+}
+
+func (m *FvAEPgDataSourceModel) SetFromResponse(
+	ctx context.Context,
+	response *container.Container,
+) (bool, diag.Diagnostics) {
+	fallbackModel := m.FvAEPgModel
+	model, dn, diagnostics := FvAEPgModelFromResponse(ctx, response, &fallbackModel)
+	found := model != nil
+	if diagnostics.HasError() || !found {
+		return found, diagnostics
+	}
+
+	m.FvAEPgModel = *model
+	m.ID = types.StringValue(dn)
+	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
+	return true, diagnostics
 }

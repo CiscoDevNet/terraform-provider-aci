@@ -6,10 +6,12 @@ import (
 	"context"
 	"strings"
 
+	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
+
+	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
 
 type CommHttpsModel struct {
@@ -131,13 +133,109 @@ func (m *CommHttpsModel) BuildDN(parentDN string) string {
 	return parentDN + "/" + m.BuildRN()
 }
 
-func commHttpsObjectIsEmpty(value types.Object) bool {
-	for _, attribute := range value.Attributes() {
-		if !attribute.IsNull() {
-			return false
-		}
+func (m *CommHttpsModel) ParentDNFromDN(dn string) string {
+	rn := m.BuildRN()
+
+	parentDN, _ := strings.CutSuffix(dn, "/"+rn)
+	return parentDN
+}
+
+func CommHttpsModelFromObject(
+	ctx context.Context,
+	object *container.Container,
+	fallbackModel *CommHttpsModel,
+) (CommHttpsModel, diag.Diagnostics) {
+	model := NewCommHttpsModelNull()
+	var diagnostics diag.Diagnostics
+
+	attributes, ok := modelHelpers.AttributesFromObject(ctx, &diagnostics, object, "commHttps")
+	if !ok {
+		return model, diagnostics
 	}
-	return true
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "accessControlAllowCredential", &model.AccessControlAllowCredential)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "accessControlAllowOrigins", &model.AccessControlAllowOrigins)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "adminSt", &model.AdminSt)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "cliOnlyMode", &model.CliOnlyMode)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "clientCertAuthState", &model.ClientCertAuthState)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "descr", &model.Descr)
+	modelHelpers.DecodeStringAttributeWithEmptyValue(ctx, &diagnostics, attributes, "dhParam", "none", &model.DhParam)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "globalThrottleRate", &model.GlobalThrottleRate)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "globalThrottleSt", &model.GlobalThrottleSt)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "globalThrottleUnit", &model.GlobalThrottleUnit)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "maxRequestStatusCount", &model.MaxRequestStatusCount)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "name", &model.Name)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "nameAlias", &model.NameAlias)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "nodeExporter", &model.NodeExporter)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "port", &model.Port)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "referer", &model.Referer)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "serverHeader", &model.ServerHeader)
+	modelHelpers.DecodeStringSetAttribute(ctx, &diagnostics, attributes, "sslProtocols", &model.SslProtocols)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "throttleRate", &model.ThrottleRate)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "throttleSt", &model.ThrottleSt)
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "visoreAccess", &model.VisoreAccess)
+	childObjects := modelHelpers.ChildObjectsByClass(
+		ctx,
+		&diagnostics,
+		object,
+		"commHttps",
+		[]string{
+			"commRsClientCertCA",
+			"commRsKeyRing",
+			"tagAnnotation",
+			"tagTag",
+		},
+	)
+	var fallbackCommRsClientCertCA *types.Object
+	if fallbackModel != nil {
+		fallbackCommRsClientCertCA = &fallbackModel.CommRsClientCertCA
+	}
+	modelHelpers.DecodeSingletonChild(
+		ctx,
+		&diagnostics,
+		childObjects["commRsClientCertCA"],
+		fallbackCommRsClientCertCA,
+		CommRsClientCertCAModelAttributeTypes(),
+		"commHttps",
+		"commRsClientCertCA",
+		NewCommRsClientCertCAModelNull,
+		CommRsClientCertCAModelFromObject,
+		&model.CommRsClientCertCA,
+	)
+	var fallbackCommRsKeyRing *types.Object
+	if fallbackModel != nil {
+		fallbackCommRsKeyRing = &fallbackModel.CommRsKeyRing
+	}
+	modelHelpers.DecodeSingletonChild(
+		ctx,
+		&diagnostics,
+		childObjects["commRsKeyRing"],
+		fallbackCommRsKeyRing,
+		CommRsKeyRingModelAttributeTypes(),
+		"commHttps",
+		"commRsKeyRing",
+		NewCommRsKeyRingModelNull,
+		CommRsKeyRingModelFromObject,
+		&model.CommRsKeyRing,
+	)
+	modelHelpers.DecodeRepeatedChildren(
+		ctx,
+		&diagnostics,
+		childObjects["tagAnnotation"],
+		TagAnnotationModelAttributeTypes(),
+		TagAnnotationModelFromObject,
+		&model.TagAnnotation,
+	)
+	modelHelpers.DecodeRepeatedChildren(
+		ctx,
+		&diagnostics,
+		childObjects["tagTag"],
+		TagTagModelAttributeTypes(),
+		TagTagModelFromObject,
+		&model.TagTag,
+	)
+
+	return model, diagnostics
 }
 
 func (m *CommHttpsModel) BuildPayloadObject(
@@ -149,246 +247,117 @@ func (m *CommHttpsModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
-	if !m.AccessControlAllowCredential.IsNull() && !m.AccessControlAllowCredential.IsUnknown() {
-		attributes["accessControlAllowCredential"] = m.AccessControlAllowCredential.ValueString()
-	}
-	if !m.AccessControlAllowOrigins.IsNull() && !m.AccessControlAllowOrigins.IsUnknown() {
-		attributes["accessControlAllowOrigins"] = m.AccessControlAllowOrigins.ValueString()
-	}
-	if !m.AdminSt.IsNull() && !m.AdminSt.IsUnknown() {
-		attributes["adminSt"] = m.AdminSt.ValueString()
-	}
-	if !m.Annotation.IsNull() && !m.Annotation.IsUnknown() {
-		attributes["annotation"] = m.Annotation.ValueString()
-	} else if nested {
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "accessControlAllowCredential", m.AccessControlAllowCredential)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "accessControlAllowOrigins", m.AccessControlAllowOrigins)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "adminSt", m.AdminSt)
+	if !modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "annotation", m.Annotation) && nested {
 		attributes["annotation"] = defaultAnnotation
 	}
-	if !m.CliOnlyMode.IsNull() && !m.CliOnlyMode.IsUnknown() {
-		attributes["cliOnlyMode"] = m.CliOnlyMode.ValueString()
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "cliOnlyMode", m.CliOnlyMode)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "clientCertAuthState", m.ClientCertAuthState)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "descr", m.Descr)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "dhParam", m.DhParam)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "globalThrottleRate", m.GlobalThrottleRate)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "globalThrottleSt", m.GlobalThrottleSt)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "globalThrottleUnit", m.GlobalThrottleUnit)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "maxRequestStatusCount", m.MaxRequestStatusCount)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "name", m.Name)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "nameAlias", m.NameAlias)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "nodeExporter", m.NodeExporter)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "port", m.Port)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "referer", m.Referer)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "serverHeader", m.ServerHeader)
+	modelHelpers.AddPayloadStringSetAttribute(ctx, &diagnostics, attributes, "sslProtocols", m.SslProtocols)
+	if diagnostics.HasError() {
+		return nil, diagnostics
 	}
-	if !m.ClientCertAuthState.IsNull() && !m.ClientCertAuthState.IsUnknown() {
-		attributes["clientCertAuthState"] = m.ClientCertAuthState.ValueString()
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "throttleRate", m.ThrottleRate)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "throttleSt", m.ThrottleSt)
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "visoreAccess", m.VisoreAccess)
+	var priorCommRsClientCertCA *types.Object
+	if priorState != nil {
+		priorCommRsClientCertCA = &priorState.CommRsClientCertCA
 	}
-	if !m.Descr.IsNull() && !m.Descr.IsUnknown() {
-		attributes["descr"] = m.Descr.ValueString()
+	commRsClientCertCAPayloads, ok := modelHelpers.BuildSingletonChildPayload(
+		ctx,
+		&diagnostics,
+		m.CommRsClientCertCA,
+		priorCommRsClientCertCA,
+		"commRsClientCertCA",
+		"CommRsClientCertCA object defined by certificate_authority cannot be deleted",
+		defaultAnnotation,
+		(*CommRsClientCertCAModel).BuildPayloadObject,
+		(*CommRsClientCertCAModel).BuildNestedDeletePayloadObject,
+	)
+	if !ok {
+		return nil, diagnostics
 	}
-	if !m.DhParam.IsNull() && !m.DhParam.IsUnknown() {
-		attributes["dhParam"] = m.DhParam.ValueString()
+	children = append(children, commRsClientCertCAPayloads...)
+	var priorCommRsKeyRing *types.Object
+	if priorState != nil {
+		priorCommRsKeyRing = &priorState.CommRsKeyRing
 	}
-	if !m.GlobalThrottleRate.IsNull() && !m.GlobalThrottleRate.IsUnknown() {
-		attributes["globalThrottleRate"] = m.GlobalThrottleRate.ValueString()
+	commRsKeyRingPayloads, ok := modelHelpers.BuildSingletonChildPayload(
+		ctx,
+		&diagnostics,
+		m.CommRsKeyRing,
+		priorCommRsKeyRing,
+		"commRsKeyRing",
+		"CommRsKeyRing object defined by key_ring cannot be deleted",
+		defaultAnnotation,
+		(*CommRsKeyRingModel).BuildPayloadObject,
+		nil,
+	)
+	if !ok {
+		return nil, diagnostics
 	}
-	if !m.GlobalThrottleSt.IsNull() && !m.GlobalThrottleSt.IsUnknown() {
-		attributes["globalThrottleSt"] = m.GlobalThrottleSt.ValueString()
+	children = append(children, commRsKeyRingPayloads...)
+	var priorTagAnnotation *types.Set
+	if priorState != nil {
+		priorTagAnnotation = &priorState.TagAnnotation
 	}
-	if !m.GlobalThrottleUnit.IsNull() && !m.GlobalThrottleUnit.IsUnknown() {
-		attributes["globalThrottleUnit"] = m.GlobalThrottleUnit.ValueString()
+	tagAnnotationPayloads, ok := modelHelpers.BuildRepeatedChildPayloads(
+		ctx,
+		&diagnostics,
+		m.TagAnnotation,
+		priorTagAnnotation,
+		"tagAnnotation",
+		"TagAnnotation object defined by annotations cannot be deleted",
+		defaultAnnotation,
+		(*TagAnnotationModel).BuildRN,
+		(*TagAnnotationModel).BuildPayloadObject,
+		(*TagAnnotationModel).BuildNestedDeletePayloadObject,
+	)
+	if !ok {
+		return nil, diagnostics
 	}
-	if !m.MaxRequestStatusCount.IsNull() && !m.MaxRequestStatusCount.IsUnknown() {
-		attributes["maxRequestStatusCount"] = m.MaxRequestStatusCount.ValueString()
+	children = append(children, tagAnnotationPayloads...)
+	var priorTagTag *types.Set
+	if priorState != nil {
+		priorTagTag = &priorState.TagTag
 	}
-	if !m.Name.IsNull() && !m.Name.IsUnknown() {
-		attributes["name"] = m.Name.ValueString()
+	tagTagPayloads, ok := modelHelpers.BuildRepeatedChildPayloads(
+		ctx,
+		&diagnostics,
+		m.TagTag,
+		priorTagTag,
+		"tagTag",
+		"TagTag object defined by tags cannot be deleted",
+		defaultAnnotation,
+		(*TagTagModel).BuildRN,
+		(*TagTagModel).BuildPayloadObject,
+		(*TagTagModel).BuildNestedDeletePayloadObject,
+	)
+	if !ok {
+		return nil, diagnostics
 	}
-	if !m.NameAlias.IsNull() && !m.NameAlias.IsUnknown() {
-		attributes["nameAlias"] = m.NameAlias.ValueString()
-	}
-	if !m.NodeExporter.IsNull() && !m.NodeExporter.IsUnknown() {
-		attributes["nodeExporter"] = m.NodeExporter.ValueString()
-	}
-	if !m.Port.IsNull() && !m.Port.IsUnknown() {
-		attributes["port"] = m.Port.ValueString()
-	}
-	if !m.Referer.IsNull() && !m.Referer.IsUnknown() {
-		attributes["referer"] = m.Referer.ValueString()
-	}
-	if !m.ServerHeader.IsNull() && !m.ServerHeader.IsUnknown() {
-		attributes["serverHeader"] = m.ServerHeader.ValueString()
-	}
-	if !m.SslProtocols.IsNull() && !m.SslProtocols.IsUnknown() {
-		var values []string
-		diagnostics.Append(m.SslProtocols.ElementsAs(ctx, &values, false)...)
-		if diagnostics.HasError() {
-			return nil, diagnostics
-		}
-		attributes["sslProtocols"] = strings.Join(values, ",")
-	}
-	if !m.ThrottleRate.IsNull() && !m.ThrottleRate.IsUnknown() {
-		attributes["throttleRate"] = m.ThrottleRate.ValueString()
-	}
-	if !m.ThrottleSt.IsNull() && !m.ThrottleSt.IsUnknown() {
-		attributes["throttleSt"] = m.ThrottleSt.ValueString()
-	}
-	if !m.VisoreAccess.IsNull() && !m.VisoreAccess.IsUnknown() {
-		attributes["visoreAccess"] = m.VisoreAccess.ValueString()
-	}
-	if !m.CommRsClientCertCA.IsNull() && !m.CommRsClientCertCA.IsUnknown() {
-		var priorChild *CommRsClientCertCAModel
-		if priorState != nil &&
-			!priorState.CommRsClientCertCA.IsNull() &&
-			!priorState.CommRsClientCertCA.IsUnknown() &&
-			!commHttpsObjectIsEmpty(priorState.CommRsClientCertCA) {
-			priorChildValue := CommRsClientCertCAModel{}
-			diagnostics.Append(priorState.CommRsClientCertCA.As(ctx, &priorChildValue, basetypes.ObjectAsOptions{})...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			priorChild = &priorChildValue
-		}
+	children = append(children, tagTagPayloads...)
 
-		if !commHttpsObjectIsEmpty(m.CommRsClientCertCA) {
-			child := CommRsClientCertCAModel{}
-			diagnostics.Append(m.CommRsClientCertCA.As(ctx, &child, basetypes.ObjectAsOptions{})...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-
-			childObject, childDiagnostics := child.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
-			diagnostics.Append(childDiagnostics...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			children = append(children, map[string]any{"commRsClientCertCA": childObject})
-		} else if priorChild != nil {
-			children = append(children, map[string]any{"commRsClientCertCA": priorChild.BuildNestedDeletePayloadObject()})
-		}
-	}
-	if !m.CommRsKeyRing.IsNull() && !m.CommRsKeyRing.IsUnknown() {
-		var priorChild *CommRsKeyRingModel
-		if priorState != nil &&
-			!priorState.CommRsKeyRing.IsNull() &&
-			!priorState.CommRsKeyRing.IsUnknown() &&
-			!commHttpsObjectIsEmpty(priorState.CommRsKeyRing) {
-			priorChildValue := CommRsKeyRingModel{}
-			diagnostics.Append(priorState.CommRsKeyRing.As(ctx, &priorChildValue, basetypes.ObjectAsOptions{})...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			priorChild = &priorChildValue
-		}
-
-		if !commHttpsObjectIsEmpty(m.CommRsKeyRing) {
-			child := CommRsKeyRingModel{}
-			diagnostics.Append(m.CommRsKeyRing.As(ctx, &child, basetypes.ObjectAsOptions{})...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-
-			childObject, childDiagnostics := child.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
-			diagnostics.Append(childDiagnostics...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			children = append(children, map[string]any{"commRsKeyRing": childObject})
-		} else if priorChild != nil {
-			diagnostics.AddError(
-				"CommRsKeyRing object defined by key_ring cannot be deleted",
-				"deletion of child is only possible upon deletion of the parent",
-			)
-		}
-	}
-	if !m.TagAnnotation.IsNull() && !m.TagAnnotation.IsUnknown() {
-		var desiredChildren []TagAnnotationModel
-		diagnostics.Append(m.TagAnnotation.ElementsAs(ctx, &desiredChildren, false)...)
-		if diagnostics.HasError() {
-			return nil, diagnostics
-		}
-
-		var priorChildren []TagAnnotationModel
-		if priorState != nil &&
-			!priorState.TagAnnotation.IsNull() &&
-			!priorState.TagAnnotation.IsUnknown() {
-			diagnostics.Append(priorState.TagAnnotation.ElementsAs(ctx, &priorChildren, false)...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-		}
-
-		for desiredIndex := range desiredChildren {
-			desiredChild := &desiredChildren[desiredIndex]
-			var priorChild *TagAnnotationModel
-			for priorIndex := range priorChildren {
-				if priorChildren[priorIndex].BuildRN() == desiredChild.BuildRN() {
-					priorChild = &priorChildren[priorIndex]
-					break
-				}
-			}
-
-			childObject, childDiagnostics := desiredChild.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
-			diagnostics.Append(childDiagnostics...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			children = append(children, map[string]any{"tagAnnotation": childObject})
-		}
-
-		for priorIndex := range priorChildren {
-			priorChild := &priorChildren[priorIndex]
-			found := false
-			for desiredIndex := range desiredChildren {
-				if desiredChildren[desiredIndex].BuildRN() == priorChild.BuildRN() {
-					found = true
-					break
-				}
-			}
-			if found {
-				continue
-			}
-			children = append(children, map[string]any{"tagAnnotation": priorChild.BuildNestedDeletePayloadObject()})
-		}
-	}
-	if !m.TagTag.IsNull() && !m.TagTag.IsUnknown() {
-		var desiredChildren []TagTagModel
-		diagnostics.Append(m.TagTag.ElementsAs(ctx, &desiredChildren, false)...)
-		if diagnostics.HasError() {
-			return nil, diagnostics
-		}
-
-		var priorChildren []TagTagModel
-		if priorState != nil &&
-			!priorState.TagTag.IsNull() &&
-			!priorState.TagTag.IsUnknown() {
-			diagnostics.Append(priorState.TagTag.ElementsAs(ctx, &priorChildren, false)...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-		}
-
-		for desiredIndex := range desiredChildren {
-			desiredChild := &desiredChildren[desiredIndex]
-			var priorChild *TagTagModel
-			for priorIndex := range priorChildren {
-				if priorChildren[priorIndex].BuildRN() == desiredChild.BuildRN() {
-					priorChild = &priorChildren[priorIndex]
-					break
-				}
-			}
-
-			childObject, childDiagnostics := desiredChild.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
-			diagnostics.Append(childDiagnostics...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			children = append(children, map[string]any{"tagTag": childObject})
-		}
-
-		for priorIndex := range priorChildren {
-			priorChild := &priorChildren[priorIndex]
-			found := false
-			for desiredIndex := range desiredChildren {
-				if desiredChildren[desiredIndex].BuildRN() == priorChild.BuildRN() {
-					found = true
-					break
-				}
-			}
-			if found {
-				continue
-			}
-			children = append(children, map[string]any{"tagTag": priorChild.BuildNestedDeletePayloadObject()})
-		}
-	}
-
-	payloadObject := map[string]any{"attributes": attributes}
-	payloadObject["children"] = children
-	return payloadObject, diagnostics
+	return modelHelpers.NewPayloadObject(
+		ctx,
+		&diagnostics,
+		attributes,
+		children,
+		true,
+	), diagnostics
 }

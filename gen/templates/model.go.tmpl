@@ -4,28 +4,22 @@ package models
 
 import (
 	"context"
-	{{- if .Class.HasResourceArtifact }}
-	"encoding/json"
-	{{- end }}
 	{{- if .Class.ParentDnVariants }}
 	"regexp"
 	{{- end }}
-	{{- if or .Class.IdentifiedBy .Class.HasSetPayloadProperties }}
+	{{- if or .Class.IdentifiedBy .Class.ParentDnProperty }}
 	"strings"
 	{{- end }}
 
-	{{ if .Class.HasResourceArtifact }}
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
-	{{- end }}
-	{{ if .Class.HasCustomModelTypes }}
-	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
-	{{- end }}
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	{{- if .Class.HasSingleNestedChildren .DataStore }}
-	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
+
+	{{ if .Class.HasCustomModelTypes }}
+	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	{{- end }}
+	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
 
 {{ range $index, $variant := .Class.ParentDnVariants -}}
@@ -128,20 +122,133 @@ func (m *{{ .Class.Name.Capitalized }}Model) BuildDN(parentDN string) string {
 	return parentDN + "/" + m.BuildRN()
 	{{- end }}
 }
+
+func (m *{{ .Class.Name.Capitalized }}Model) ParentDNFromDN(dn string) string {
+	rn := m.BuildRN()
+	{{- if .Class.ParentDnVariants }}
+	{{- range $index, $variant := .Class.ParentDnVariants }}
+		{{- if $index }}
+	{{- if $variant.RnPrepend }}
+	if parentDN, found := strings.CutSuffix(dn, {{ printf "%q" (printf "/%s/" $variant.RnPrepend) }}+rn); found {
+	{{- else }}
+	if parentDN, found := strings.CutSuffix(dn, "/"+rn); found {
+	{{- end }}
+		for _, pattern := range {{ $.Class.Name.String }}ParentDnVariant{{ $index }}Patterns {
+			if pattern.MatchString(parentDN) {
+				return parentDN
+			}
+		}
+	}
+		{{- end }}
+	{{- end }}
+	{{- end }}
+
+	parentDN, _ := strings.CutSuffix(dn, "/"+rn)
+	return parentDN
+}
 {{- else }}
 func (m *{{ .Class.Name.Capitalized }}Model) BuildDN() string {
 	return {{ printf "%q" (printf "%s/" .Class.FixedParentDn) }} + m.BuildRN()
 }
 {{- end }}
 
-{{ if .Class.HasSingleNestedChildren .DataStore -}}
-func {{ .Class.Name.String }}ObjectIsEmpty(value types.Object) bool {
-	for _, attribute := range value.Attributes() {
-		if !attribute.IsNull() {
-			return false
-		}
+func {{ .Class.Name.Capitalized }}ModelFromObject(
+	ctx context.Context,
+	object *container.Container,
+	fallbackModel *{{ .Class.Name.Capitalized }}Model,
+) ({{ .Class.Name.Capitalized }}Model, diag.Diagnostics) {
+	model := New{{ .Class.Name.Capitalized }}ModelNull()
+	var diagnostics diag.Diagnostics
+
+	attributes, ok := modelHelpers.AttributesFromObject(ctx, &diagnostics, object, {{ printf "%q" .Class.Name.String }})
+	if !ok {
+		return model, diagnostics
 	}
-	return true
+
+	{{- range $property := .Class.ModelProperties }}
+	{{- if $property.Sensitive }}
+		{{- if eq $property.ValueType.String "set" }}
+	if !modelHelpers.DecodeStringSetAttribute(ctx, &diagnostics, attributes, {{ printf "%q" $property.PropertyName }}, &model.{{ $property.ModelFieldName $.Class.Name }}) && fallbackModel != nil {
+		{{- else if $property.UsesCustomModelType }}
+	if !modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, {{ printf "%q" $property.PropertyName }}, &model.{{ $property.ModelFieldName $.Class.Name }}, {{ $property.ModelStringValueConstructor $.Class.Name }}) && fallbackModel != nil {
+		{{- else if $property.ValidValues.HasLocalName "none" }}
+	if !modelHelpers.DecodeStringAttributeWithEmptyValue(ctx, &diagnostics, attributes, {{ printf "%q" $property.PropertyName }}, "none", &model.{{ $property.ModelFieldName $.Class.Name }}) && fallbackModel != nil {
+		{{- else }}
+	if !modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, {{ printf "%q" $property.PropertyName }}, &model.{{ $property.ModelFieldName $.Class.Name }}) && fallbackModel != nil {
+		{{- end }}
+			model.{{ $property.ModelFieldName $.Class.Name }} = fallbackModel.{{ $property.ModelFieldName $.Class.Name }}
+	}
+	{{- else }}
+		{{- if eq $property.ValueType.String "set" }}
+	modelHelpers.DecodeStringSetAttribute(ctx, &diagnostics, attributes, {{ printf "%q" $property.PropertyName }}, &model.{{ $property.ModelFieldName $.Class.Name }})
+		{{- else if $property.UsesCustomModelType }}
+	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, {{ printf "%q" $property.PropertyName }}, &model.{{ $property.ModelFieldName $.Class.Name }}, {{ $property.ModelStringValueConstructor $.Class.Name }})
+		{{- else if $property.ValidValues.HasLocalName "none" }}
+	modelHelpers.DecodeStringAttributeWithEmptyValue(ctx, &diagnostics, attributes, {{ printf "%q" $property.PropertyName }}, "none", &model.{{ $property.ModelFieldName $.Class.Name }})
+		{{- else }}
+	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, {{ printf "%q" $property.PropertyName }}, &model.{{ $property.ModelFieldName $.Class.Name }})
+		{{- end }}
+	{{- end }}
+	{{- end }}
+
+	{{- if .Class.Children }}
+	childObjects := modelHelpers.ChildObjectsByClass(
+		ctx,
+		&diagnostics,
+		object,
+		{{ printf "%q" .Class.Name.String }},
+		[]string{
+			{{- range $childName := .Class.Children }}
+				{{- $child := index $.DataStore.Classes $childName.String }}
+			{{ printf "%q" $child.Name.String }},
+			{{- end }}
+		},
+	)
+
+	{{- range $childName := .Class.Children }}
+		{{- $child := index $.DataStore.Classes $childName.String }}
+		{{- if $child.IsSingleNestedWhenDefinedAsChild }}
+	var fallback{{ $child.Name.Capitalized }} *types.Object
+	if fallbackModel != nil {
+		fallback{{ $child.Name.Capitalized }} = &fallbackModel.{{ $child.Name.Capitalized }}
+	}
+	modelHelpers.DecodeSingletonChild(
+		ctx,
+		&diagnostics,
+		childObjects[{{ printf "%q" $child.Name.String }}],
+		fallback{{ $child.Name.Capitalized }},
+		{{ $child.Name.Capitalized }}ModelAttributeTypes(),
+		{{ printf "%q" $.Class.Name.String }},
+		{{ printf "%q" $child.Name.String }},
+		New{{ $child.Name.Capitalized }}ModelNull,
+		{{ $child.Name.Capitalized }}ModelFromObject,
+		&model.{{ $child.Name.Capitalized }},
+	)
+		{{- else }}
+	modelHelpers.DecodeRepeatedChildren(
+		ctx,
+		&diagnostics,
+		childObjects[{{ printf "%q" $child.Name.String }}],
+		{{ $child.Name.Capitalized }}ModelAttributeTypes(),
+		{{ $child.Name.Capitalized }}ModelFromObject,
+		&model.{{ $child.Name.Capitalized }},
+	)
+		{{- end }}
+	{{- end }}
+	{{- end }}
+
+	return model, diagnostics
+}
+
+{{ if or .Class.HasResourceArtifact .Class.HasDatasourceArtifact -}}
+func {{ .Class.Name.Capitalized }}ModelFromResponse(
+	ctx context.Context,
+	response *container.Container,
+	fallbackModel *{{ .Class.Name.Capitalized }}Model,
+) (*{{ .Class.Name.Capitalized }}Model, string, diag.Diagnostics) {
+	var diagnostics diag.Diagnostics
+	model, dn := modelHelpers.ModelFromResponse(ctx, &diagnostics, response, {{ printf "%q" .Class.Name.String }}, fallbackModel, {{ .Class.Name.Capitalized }}ModelFromObject)
+	return model, dn, diagnostics
 }
 
 {{ end -}}
@@ -156,145 +263,100 @@ func (m *{{ .Class.Name.Capitalized }}Model) BuildPayloadObject(
 	children := make([]map[string]any, 0)
 
 	{{- range $property := .Class.PayloadProperties }}
-	if !m.{{ $property.ModelFieldName $.Class.Name }}.IsNull() && !m.{{ $property.ModelFieldName $.Class.Name }}.IsUnknown() {
-		{{- if eq $property.ValueType.String "set" }}
-		var values []string
-		diagnostics.Append(m.{{ $property.ModelFieldName $.Class.Name }}.ElementsAs(ctx, &values, false)...)
-		if diagnostics.HasError() {
-			return nil, diagnostics
-		}
-		attributes[{{ printf "%q" $property.PropertyName }}] = strings.Join(values, ",")
-		{{- else }}
-		attributes[{{ printf "%q" $property.PropertyName }}] = m.{{ $property.ModelFieldName $.Class.Name }}.ValueString()
-		{{- end }}
-	}{{ if eq $property.PropertyName "annotation" }} else if nested {
+	{{- if eq $property.ValueType.String "set" }}
+	modelHelpers.AddPayloadStringSetAttribute(ctx, &diagnostics, attributes, {{ printf "%q" $property.PropertyName }}, m.{{ $property.ModelFieldName $.Class.Name }})
+	if diagnostics.HasError() {
+		return nil, diagnostics
+	}
+	{{- else }}
+	{{- if eq $property.PropertyName "annotation" }}
+	if !modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, {{ printf "%q" $property.PropertyName }}, m.{{ $property.ModelFieldName $.Class.Name }}) && nested {
 		attributes["annotation"] = defaultAnnotation
-	}{{ end }}
+	}
+	{{- else }}
+	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, {{ printf "%q" $property.PropertyName }}, m.{{ $property.ModelFieldName $.Class.Name }})
+	{{- end }}
+	{{- end }}
 	{{- end }}
 
 	{{- range $childName := .Class.Children }}
 		{{- $child := index $.DataStore.Classes $childName.String }}
-	if !m.{{ $child.Name.Capitalized }}.IsNull() && !m.{{ $child.Name.Capitalized }}.IsUnknown() {
 		{{- if $child.IsSingleNestedWhenDefinedAsChild }}
-		var priorChild *{{ $child.Name.Capitalized }}Model
-		if priorState != nil &&
-			!priorState.{{ $child.Name.Capitalized }}.IsNull() &&
-			!priorState.{{ $child.Name.Capitalized }}.IsUnknown() &&
-			!{{ $.Class.Name.String }}ObjectIsEmpty(priorState.{{ $child.Name.Capitalized }}) {
-			priorChildValue := {{ $child.Name.Capitalized }}Model{}
-			diagnostics.Append(priorState.{{ $child.Name.Capitalized }}.As(ctx, &priorChildValue, basetypes.ObjectAsOptions{})...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			priorChild = &priorChildValue
-		}
-
-		if !{{ $.Class.Name.String }}ObjectIsEmpty(m.{{ $child.Name.Capitalized }}) {
-			child := {{ $child.Name.Capitalized }}Model{}
-			diagnostics.Append(m.{{ $child.Name.Capitalized }}.As(ctx, &child, basetypes.ObjectAsOptions{})...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-
-			childObject, childDiagnostics := child.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
-			diagnostics.Append(childDiagnostics...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			children = append(children, map[string]any{ {{- printf "%q" $child.Name.String -}}: childObject})
-		} else if priorChild != nil {
-			{{- if $child.AllowDelete }}
-			children = append(children, map[string]any{ {{- printf "%q" $child.Name.String -}}: priorChild.BuildNestedDeletePayloadObject()})
-			{{- else }}
-			diagnostics.AddError(
-				{{ printf "%q" (printf "%s object defined by %s cannot be deleted" $child.Name.Capitalized $child.ResourceNameNested) }},
-				"deletion of child is only possible upon deletion of the parent",
-			)
-			{{- end }}
-		}
+	var prior{{ $child.Name.Capitalized }} *types.Object
+	if priorState != nil {
+		prior{{ $child.Name.Capitalized }} = &priorState.{{ $child.Name.Capitalized }}
+	}
+	{{ $child.Name.String }}Payloads, ok := modelHelpers.BuildSingletonChildPayload(
+		ctx,
+		&diagnostics,
+		m.{{ $child.Name.Capitalized }},
+		prior{{ $child.Name.Capitalized }},
+		{{ printf "%q" $child.Name.String }},
+		{{ printf "%q" (printf "%s object defined by %s cannot be deleted" $child.Name.Capitalized $child.ResourceNameNested) }},
+		defaultAnnotation,
+		(*{{ $child.Name.Capitalized }}Model).BuildPayloadObject,
+		{{- if $child.AllowDelete }}
+		(*{{ $child.Name.Capitalized }}Model).BuildNestedDeletePayloadObject,
 		{{- else }}
-		var desiredChildren []{{ $child.Name.Capitalized }}Model
-		diagnostics.Append(m.{{ $child.Name.Capitalized }}.ElementsAs(ctx, &desiredChildren, false)...)
-		if diagnostics.HasError() {
-			return nil, diagnostics
-		}
-
-		var priorChildren []{{ $child.Name.Capitalized }}Model
-		if priorState != nil &&
-			!priorState.{{ $child.Name.Capitalized }}.IsNull() &&
-			!priorState.{{ $child.Name.Capitalized }}.IsUnknown() {
-			diagnostics.Append(priorState.{{ $child.Name.Capitalized }}.ElementsAs(ctx, &priorChildren, false)...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-		}
-
-		for desiredIndex := range desiredChildren {
-			desiredChild := &desiredChildren[desiredIndex]
-			var priorChild *{{ $child.Name.Capitalized }}Model
-			for priorIndex := range priorChildren {
-				if priorChildren[priorIndex].BuildRN() == desiredChild.BuildRN() {
-					priorChild = &priorChildren[priorIndex]
-					break
-				}
-			}
-
-			childObject, childDiagnostics := desiredChild.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
-			diagnostics.Append(childDiagnostics...)
-			if diagnostics.HasError() {
-				return nil, diagnostics
-			}
-			children = append(children, map[string]any{ {{- printf "%q" $child.Name.String -}}: childObject})
-		}
-
-		for priorIndex := range priorChildren {
-			priorChild := &priorChildren[priorIndex]
-			found := false
-			for desiredIndex := range desiredChildren {
-				if desiredChildren[desiredIndex].BuildRN() == priorChild.BuildRN() {
-					found = true
-					break
-				}
-			}
-			if found {
-				continue
-			}
-
-			{{- if $child.AllowDelete }}
-			children = append(children, map[string]any{ {{- printf "%q" $child.Name.String -}}: priorChild.BuildNestedDeletePayloadObject()})
-			{{- else }}
-			diagnostics.AddError(
-				{{ printf "%q" (printf "%s object defined by %s cannot be deleted" $child.Name.Capitalized $child.ResourceNameNested) }},
-				"deletion of child is only possible upon deletion of the parent",
-			)
-			{{- end }}
-		}
+		nil,
 		{{- end }}
+	)
+	if !ok {
+		return nil, diagnostics
 	}
+	children = append(children, {{ $child.Name.String }}Payloads...)
+		{{- else }}
+	var prior{{ $child.Name.Capitalized }} *types.Set
+	if priorState != nil {
+		prior{{ $child.Name.Capitalized }} = &priorState.{{ $child.Name.Capitalized }}
+	}
+	{{ $child.Name.String }}Payloads, ok := modelHelpers.BuildRepeatedChildPayloads(
+		ctx,
+		&diagnostics,
+		m.{{ $child.Name.Capitalized }},
+		prior{{ $child.Name.Capitalized }},
+		{{ printf "%q" $child.Name.String }},
+		{{ printf "%q" (printf "%s object defined by %s cannot be deleted" $child.Name.Capitalized $child.ResourceNameNested) }},
+		defaultAnnotation,
+		(*{{ $child.Name.Capitalized }}Model).BuildRN,
+		(*{{ $child.Name.Capitalized }}Model).BuildPayloadObject,
+		{{- if $child.AllowDelete }}
+		(*{{ $child.Name.Capitalized }}Model).BuildNestedDeletePayloadObject,
+		{{- else }}
+		nil,
+		{{- end }}
+	)
+	if !ok {
+		return nil, diagnostics
+	}
+	children = append(children, {{ $child.Name.String }}Payloads...)
+		{{- end }}
 	{{- end }}
 
-	payloadObject := map[string]any{"attributes": attributes}
-	{{- if .Class.Children }}
-	payloadObject["children"] = children
-	{{- else }}
-	if nested {
-		payloadObject["children"] = children
-	}
-	{{- end }}
-	return payloadObject, diagnostics
+	return modelHelpers.NewPayloadObject(
+		ctx,
+		&diagnostics,
+		attributes,
+		children,
+		{{- if .Class.Children }}
+		true,
+		{{- else }}
+		nested,
+		{{- end }}
+	), diagnostics
 }
 
 {{ if .Class.AllowDelete -}}
-func (m *{{ .Class.Name.Capitalized }}Model) BuildNestedDeletePayloadObject() map[string]any {
-	attributes := map[string]any{"status": "deleted"}
+func (m *{{ .Class.Name.Capitalized }}Model) BuildNestedDeletePayloadObject(
+	ctx context.Context,
+	diagnostics *diag.Diagnostics,
+) map[string]any {
+	attributes := map[string]any{}
 	{{- range $identifier := .Class.IdentifiedBy }}
 		{{- $property := index $.Class.Properties $identifier }}
 	attributes[{{ printf "%q" $property.PropertyName }}] = m.{{ $property.ModelFieldName $.Class.Name }}.ValueString()
 	{{- end }}
-	return map[string]any{
-		"attributes": attributes,
-		"children":   []map[string]any{},
-	}
+	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, attributes)
 }
 
 {{ end -}}
@@ -320,6 +382,25 @@ func New{{ .Class.Name.Capitalized }}ResourceModelNull() {{ .Class.Name.Capitali
 
 func (m *{{ .Class.Name.Capitalized }}ResourceModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
+}
+
+func (m *{{ .Class.Name.Capitalized }}ResourceModel) SetFromResponse(
+	ctx context.Context,
+	response *container.Container,
+) (bool, diag.Diagnostics) {
+	fallbackModel := m.{{ .Class.Name.Capitalized }}Model
+	model, dn, diagnostics := {{ .Class.Name.Capitalized }}ModelFromResponse(ctx, response, &fallbackModel)
+	found := model != nil
+	if diagnostics.HasError() || !found {
+		return found, diagnostics
+	}
+
+	m.{{ .Class.Name.Capitalized }}Model = *model
+	m.ID = types.StringValue(dn)
+	{{- with .Class.ParentDnProperty }}
+	m.{{ .ModelFieldName $.Class.Name }} = types.StringValue(model.ParentDNFromDN(dn))
+	{{- end }}
+	return true, diagnostics
 }
 
 {{ if .Class.ParentDnVariants -}}
@@ -374,54 +455,15 @@ func (m *{{ .Class.Name.Capitalized }}ResourceModel) BuildPayload(
 	{{- else }}
 	payloadEnvelope := map[string]any{ {{- printf "%q" .Class.Name.String -}}: payloadObject}
 	{{- end }}
-	payload, err := json.Marshal(payloadEnvelope)
-	if err != nil {
-		diagnostics.AddError(
-			"Marshalling of JSON payload failed",
-			err.Error()+". Please report this issue to the provider developers.",
-		)
-		return nil, diagnostics
-	}
-
-	jsonPayload, err := container.ParseJSON(payload)
-	if err != nil {
-		diagnostics.AddError(
-			"Construction of JSON payload failed",
-			err.Error()+". Please report this issue to the provider developers.",
-		)
-		return nil, diagnostics
-	}
+	jsonPayload := modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload")
 	return jsonPayload, diagnostics
 }
 
 {{ if .Class.AllowDelete -}}
-func (m *{{ .Class.Name.Capitalized }}ResourceModel) BuildDeletePayload() (*container.Container, diag.Diagnostics) {
+func (m *{{ .Class.Name.Capitalized }}ResourceModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
-	payload, err := json.Marshal(map[string]any{
-		{{ printf "%q" .Class.Name.String }}: map[string]any{
-			"attributes": map[string]any{
-				"dn":     m.ID.ValueString(),
-				"status": "deleted",
-			},
-		},
-	})
-	if err != nil {
-		diagnostics.AddError(
-			"Marshalling of JSON delete payload failed",
-			err.Error()+". Please report this issue to the provider developers.",
-		)
-		return nil, diagnostics
-	}
-
-	jsonPayload, err := container.ParseJSON(payload)
-	if err != nil {
-		diagnostics.AddError(
-			"Construction of JSON delete payload failed",
-			err.Error()+". Please report this issue to the provider developers.",
-		)
-		return nil, diagnostics
-	}
-	return jsonPayload, diagnostics
+	payload := modelHelpers.NewDeletePayload(ctx, &diagnostics, {{ printf "%q" .Class.Name.String }}, m.ID.ValueString())
+	return payload, diagnostics
 }
 {{ end }}
 {{ end }}
@@ -447,5 +489,24 @@ func New{{ .Class.Name.Capitalized }}DataSourceModelNull() {{ .Class.Name.Capita
 
 func (m *{{ .Class.Name.Capitalized }}DataSourceModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
+}
+
+func (m *{{ .Class.Name.Capitalized }}DataSourceModel) SetFromResponse(
+	ctx context.Context,
+	response *container.Container,
+) (bool, diag.Diagnostics) {
+	fallbackModel := m.{{ .Class.Name.Capitalized }}Model
+	model, dn, diagnostics := {{ .Class.Name.Capitalized }}ModelFromResponse(ctx, response, &fallbackModel)
+	found := model != nil
+	if diagnostics.HasError() || !found {
+		return found, diagnostics
+	}
+
+	m.{{ .Class.Name.Capitalized }}Model = *model
+	m.ID = types.StringValue(dn)
+	{{- with .Class.ParentDnProperty }}
+	m.{{ .ModelFieldName $.Class.Name }} = types.StringValue(model.ParentDNFromDN(dn))
+	{{- end }}
+	return true, diagnostics
 }
 {{ end }}
