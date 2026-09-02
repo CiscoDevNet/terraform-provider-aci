@@ -48,7 +48,7 @@ func NewDataStore(ctx *Context) (*DataStore, error) {
 	}
 	// Set the meta data host for retrieval of meta files.
 	dataStore.setMetaHost()
-	if err := dataStore.refreshUnsupportedAnnotationClassesIfRequested(); err != nil {
+	if err := dataStore.refreshUnsupportedAnnotationClasses(); err != nil {
 		return nil, err
 	}
 	// Check if classes are set in the environment variable 'GEN_ACI_TF_META_CLASSES' and retrieve the meta files for those classes.
@@ -91,7 +91,7 @@ type annotationMetadata struct {
 	} `json:"classes"`
 }
 
-func (ds *DataStore) refreshUnsupportedAnnotationClassesIfRequested() error {
+func (ds *DataStore) refreshUnsupportedAnnotationClasses() error {
 	refreshValue := os.Getenv(constEnvAnnotationUnsupported)
 	if refreshValue == "" {
 		return nil
@@ -106,10 +106,6 @@ func (ds *DataStore) refreshUnsupportedAnnotationClassesIfRequested() error {
 		return nil
 	}
 
-	return ds.refreshUnsupportedAnnotationClasses()
-}
-
-func (ds *DataStore) refreshUnsupportedAnnotationClasses() error {
 	url := fmt.Sprintf(constAnnotationUnsupportedMetaFile, ds.metaHost)
 	genLogger.Debugf("Retrieving unsupported annotation classes from: %s.", url)
 
