@@ -198,14 +198,24 @@ methods. The reusable model does not store them as fields:
 func (m *FvTenantModel) BuildRN() string
 func (m *FvTenantModel) BuildDN() string
 
-func (m *FvTenantModel) BuildPayload(
+func (m *FvTenantModel) BuildPayloadObject(
 	ctx context.Context,
 	priorState *FvTenantModel,
+	nested bool,
+	defaultAnnotation string,
+) (map[string]any, diag.Diagnostics)
+
+func (m *FvTenantModel) BuildNestedDeletePayloadObject() map[string]any
+
+func (m *FvTenantResourceModel) BuildPayload(
+	ctx context.Context,
+	priorState *FvTenantModel,
+	create bool,
+	markCreated bool,
+	defaultAnnotation string,
 ) (*container.Container, diag.Diagnostics)
 
-func (m *FvTenantModel) BuildDeletePayload(
-	ctx context.Context,
-) (*container.Container, diag.Diagnostics)
+func (m *FvTenantResourceModel) BuildDeletePayload() (*container.Container, diag.Diagnostics)
 
 func FvTenantModelFromResponse(
 	ctx context.Context,
@@ -346,11 +356,19 @@ The generated payload must:
 - append child payloads in deterministic order;
 - recursively include nested children.
 
-`BuildPayload` always emits the full desired object and desired children. The
-optional `priorState` model is used only to detect children that existed in
-the prior Terraform state but are absent from the desired model. Those
-children receive explicit APIC deletion entries because omission from a full
-payload does not itself necessarily delete an APIC child.
+`BuildPayload` always emits the full desired object and desired children. It
+is exposed only by the resource wrapper; data sources never construct request
+payloads. The optional `priorState` model is used only to detect children that
+existed in the prior Terraform state but are absent from the desired model.
+Those children receive explicit APIC deletion entries because omission from a
+full payload does not itself necessarily delete an APIC child.
+
+The resource adapter translates provider behavior into payload inputs. It
+passes `markCreated = create && !globalAllowExistingOnCreate`; the generated
+model therefore does not depend on provider globals. `create` remains a
+separate input because parent-DN variants can require a wrapper only for a
+create request. `defaultAnnotation` supplies the existing annotation fallback
+for nested children and is not applied to the top-level object.
 
 On create, `priorState` is nil unless the existing create behavior has first
 read an APIC object to use as a reconciliation baseline. On update,
@@ -361,8 +379,25 @@ code compares children by their APIC identity, not by slice position. A child
 whose identity remains the same but whose properties changed is part of the
 desired payload, not a remove-and-add operation.
 
-`BuildDeletePayload` emits the class DN and APIC delete status. Reads do not
-construct payloads.
+Child value states retain the current provider semantics during payload
+construction:
+
+- null or unknown -> omit the child and do not reconcile its prior value;
+- known empty -> explicitly remove a prior child;
+- populated -> emit the full desired child and recursively reconcile its
+  descendants.
+
+Repeated children are matched to prior children through `BuildRN`. Singleton
+children use their one prior object directly. A requested removal emits the
+child's naming attributes and `status: "deleted"`; removing a class whose
+normalized metadata has `AllowDelete == false` instead returns diagnostics.
+The reusable `BuildNestedDeletePayloadObject` method constructs this nested
+deletion fragment for deletable classes.
+
+`BuildDeletePayload` is generated on deletable resource wrappers and emits the
+resource model's ID together with the APIC delete status. A class that APIC
+does not allow deleting does not expose this method. Reads do not construct
+payloads.
 
 ## 7. Nested child composition
 

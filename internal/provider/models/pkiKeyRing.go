@@ -3,10 +3,15 @@
 package models
 
 import (
+	"context"
+	"encoding/json"
 	"regexp"
 	"strings"
 
+	"github.com/ciscoecosystem/aci-go-client/v2/container"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
@@ -109,6 +114,174 @@ func (m *PkiKeyRingModel) BuildDN(parentDN string) string {
 	return parentDN + "/" + rn
 }
 
+func (m *PkiKeyRingModel) BuildPayloadObject(
+	ctx context.Context,
+	priorState *PkiKeyRingModel,
+	nested bool,
+	defaultAnnotation string,
+) (map[string]any, diag.Diagnostics) {
+	var diagnostics diag.Diagnostics
+	attributes := map[string]any{}
+	children := make([]map[string]any, 0)
+	if !m.AdminState.IsNull() && !m.AdminState.IsUnknown() {
+		attributes["adminState"] = m.AdminState.ValueString()
+	}
+	if !m.Annotation.IsNull() && !m.Annotation.IsUnknown() {
+		attributes["annotation"] = m.Annotation.ValueString()
+	} else if nested {
+		attributes["annotation"] = defaultAnnotation
+	}
+	if !m.Cert.IsNull() && !m.Cert.IsUnknown() {
+		attributes["cert"] = m.Cert.ValueString()
+	}
+	if !m.Descr.IsNull() && !m.Descr.IsUnknown() {
+		attributes["descr"] = m.Descr.ValueString()
+	}
+	if !m.EccCurve.IsNull() && !m.EccCurve.IsUnknown() {
+		attributes["eccCurve"] = m.EccCurve.ValueString()
+	}
+	if !m.Key.IsNull() && !m.Key.IsUnknown() {
+		attributes["key"] = m.Key.ValueString()
+	}
+	if !m.KeyType.IsNull() && !m.KeyType.IsUnknown() {
+		attributes["keyType"] = m.KeyType.ValueString()
+	}
+	if !m.Modulus.IsNull() && !m.Modulus.IsUnknown() {
+		attributes["modulus"] = m.Modulus.ValueString()
+	}
+	if !m.Name.IsNull() && !m.Name.IsUnknown() {
+		attributes["name"] = m.Name.ValueString()
+	}
+	if !m.NameAlias.IsNull() && !m.NameAlias.IsUnknown() {
+		attributes["nameAlias"] = m.NameAlias.ValueString()
+	}
+	if !m.OwnerKey.IsNull() && !m.OwnerKey.IsUnknown() {
+		attributes["ownerKey"] = m.OwnerKey.ValueString()
+	}
+	if !m.OwnerTag.IsNull() && !m.OwnerTag.IsUnknown() {
+		attributes["ownerTag"] = m.OwnerTag.ValueString()
+	}
+	if !m.Regen.IsNull() && !m.Regen.IsUnknown() {
+		attributes["regen"] = m.Regen.ValueString()
+	}
+	if !m.Tp.IsNull() && !m.Tp.IsUnknown() {
+		attributes["tp"] = m.Tp.ValueString()
+	}
+	if !m.TagAnnotation.IsNull() && !m.TagAnnotation.IsUnknown() {
+		var desiredChildren []TagAnnotationModel
+		diagnostics.Append(m.TagAnnotation.ElementsAs(ctx, &desiredChildren, false)...)
+		if diagnostics.HasError() {
+			return nil, diagnostics
+		}
+
+		var priorChildren []TagAnnotationModel
+		if priorState != nil &&
+			!priorState.TagAnnotation.IsNull() &&
+			!priorState.TagAnnotation.IsUnknown() {
+			diagnostics.Append(priorState.TagAnnotation.ElementsAs(ctx, &priorChildren, false)...)
+			if diagnostics.HasError() {
+				return nil, diagnostics
+			}
+		}
+
+		for desiredIndex := range desiredChildren {
+			desiredChild := &desiredChildren[desiredIndex]
+			var priorChild *TagAnnotationModel
+			for priorIndex := range priorChildren {
+				if priorChildren[priorIndex].BuildRN() == desiredChild.BuildRN() {
+					priorChild = &priorChildren[priorIndex]
+					break
+				}
+			}
+
+			childObject, childDiagnostics := desiredChild.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
+			diagnostics.Append(childDiagnostics...)
+			if diagnostics.HasError() {
+				return nil, diagnostics
+			}
+			children = append(children, map[string]any{"tagAnnotation": childObject})
+		}
+
+		for priorIndex := range priorChildren {
+			priorChild := &priorChildren[priorIndex]
+			found := false
+			for desiredIndex := range desiredChildren {
+				if desiredChildren[desiredIndex].BuildRN() == priorChild.BuildRN() {
+					found = true
+					break
+				}
+			}
+			if found {
+				continue
+			}
+			children = append(children, map[string]any{"tagAnnotation": priorChild.BuildNestedDeletePayloadObject()})
+		}
+	}
+	if !m.TagTag.IsNull() && !m.TagTag.IsUnknown() {
+		var desiredChildren []TagTagModel
+		diagnostics.Append(m.TagTag.ElementsAs(ctx, &desiredChildren, false)...)
+		if diagnostics.HasError() {
+			return nil, diagnostics
+		}
+
+		var priorChildren []TagTagModel
+		if priorState != nil &&
+			!priorState.TagTag.IsNull() &&
+			!priorState.TagTag.IsUnknown() {
+			diagnostics.Append(priorState.TagTag.ElementsAs(ctx, &priorChildren, false)...)
+			if diagnostics.HasError() {
+				return nil, diagnostics
+			}
+		}
+
+		for desiredIndex := range desiredChildren {
+			desiredChild := &desiredChildren[desiredIndex]
+			var priorChild *TagTagModel
+			for priorIndex := range priorChildren {
+				if priorChildren[priorIndex].BuildRN() == desiredChild.BuildRN() {
+					priorChild = &priorChildren[priorIndex]
+					break
+				}
+			}
+
+			childObject, childDiagnostics := desiredChild.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
+			diagnostics.Append(childDiagnostics...)
+			if diagnostics.HasError() {
+				return nil, diagnostics
+			}
+			children = append(children, map[string]any{"tagTag": childObject})
+		}
+
+		for priorIndex := range priorChildren {
+			priorChild := &priorChildren[priorIndex]
+			found := false
+			for desiredIndex := range desiredChildren {
+				if desiredChildren[desiredIndex].BuildRN() == priorChild.BuildRN() {
+					found = true
+					break
+				}
+			}
+			if found {
+				continue
+			}
+			children = append(children, map[string]any{"tagTag": priorChild.BuildNestedDeletePayloadObject()})
+		}
+	}
+
+	payloadObject := map[string]any{"attributes": attributes}
+	payloadObject["children"] = children
+	return payloadObject, diagnostics
+}
+
+func (m *PkiKeyRingModel) BuildNestedDeletePayloadObject() map[string]any {
+	attributes := map[string]any{"status": "deleted"}
+	attributes["name"] = m.Name.ValueString()
+	return map[string]any{
+		"attributes": attributes,
+		"children":   []map[string]any{},
+	}
+}
+
 type PkiKeyRingResourceModel struct {
 	PkiKeyRingModel
 
@@ -126,6 +299,91 @@ func NewPkiKeyRingResourceModelNull() PkiKeyRingResourceModel {
 
 func (m *PkiKeyRingResourceModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
+}
+
+func (m *PkiKeyRingResourceModel) buildPayloadEnvelope(payloadObject map[string]any, create bool) map[string]any {
+	directEnvelope := map[string]any{"pkiKeyRing": payloadObject}
+	if !create {
+		return directEnvelope
+	}
+	for _, pattern := range pkiKeyRingParentDnVariant1Patterns {
+		if pattern.MatchString(m.ParentDn.ValueString()) {
+			return map[string]any{
+				"cloudCertStore": map[string]any{
+					"attributes": map[string]any{},
+					"children": []map[string]any{
+						{"pkiKeyRing": payloadObject},
+					},
+				},
+			}
+		}
+	}
+
+	return directEnvelope
+}
+
+func (m *PkiKeyRingResourceModel) BuildPayload(
+	ctx context.Context,
+	priorState *PkiKeyRingModel,
+	create bool,
+	markCreated bool,
+	defaultAnnotation string,
+) (*container.Container, diag.Diagnostics) {
+	payloadObject, diagnostics := m.BuildPayloadObject(ctx, priorState, false, defaultAnnotation)
+	if diagnostics.HasError() {
+		return nil, diagnostics
+	}
+	if markCreated {
+		payloadObject["attributes"].(map[string]any)["status"] = "created"
+	}
+	payloadEnvelope := m.buildPayloadEnvelope(payloadObject, create)
+	payload, err := json.Marshal(payloadEnvelope)
+	if err != nil {
+		diagnostics.AddError(
+			"Marshalling of JSON payload failed",
+			err.Error()+". Please report this issue to the provider developers.",
+		)
+		return nil, diagnostics
+	}
+
+	jsonPayload, err := container.ParseJSON(payload)
+	if err != nil {
+		diagnostics.AddError(
+			"Construction of JSON payload failed",
+			err.Error()+". Please report this issue to the provider developers.",
+		)
+		return nil, diagnostics
+	}
+	return jsonPayload, diagnostics
+}
+
+func (m *PkiKeyRingResourceModel) BuildDeletePayload() (*container.Container, diag.Diagnostics) {
+	var diagnostics diag.Diagnostics
+	payload, err := json.Marshal(map[string]any{
+		"pkiKeyRing": map[string]any{
+			"attributes": map[string]any{
+				"dn":     m.ID.ValueString(),
+				"status": "deleted",
+			},
+		},
+	})
+	if err != nil {
+		diagnostics.AddError(
+			"Marshalling of JSON delete payload failed",
+			err.Error()+". Please report this issue to the provider developers.",
+		)
+		return nil, diagnostics
+	}
+
+	jsonPayload, err := container.ParseJSON(payload)
+	if err != nil {
+		diagnostics.AddError(
+			"Construction of JSON delete payload failed",
+			err.Error()+". Please report this issue to the provider developers.",
+		)
+		return nil, diagnostics
+	}
+	return jsonPayload, diagnostics
 }
 
 type PkiKeyRingDataSourceModel struct {

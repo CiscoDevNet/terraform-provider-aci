@@ -3,7 +3,10 @@
 package models
 
 import (
+	"context"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
@@ -105,4 +108,178 @@ func (m *CommHttpModel) BuildRN() string {
 
 func (m *CommHttpModel) BuildDN(parentDN string) string {
 	return parentDN + "/" + m.BuildRN()
+}
+
+func (m *CommHttpModel) BuildPayloadObject(
+	ctx context.Context,
+	priorState *CommHttpModel,
+	nested bool,
+	defaultAnnotation string,
+) (map[string]any, diag.Diagnostics) {
+	var diagnostics diag.Diagnostics
+	attributes := map[string]any{}
+	children := make([]map[string]any, 0)
+	if !m.AccessControlAllowCredential.IsNull() && !m.AccessControlAllowCredential.IsUnknown() {
+		attributes["accessControlAllowCredential"] = m.AccessControlAllowCredential.ValueString()
+	}
+	if !m.AccessControlAllowOrigins.IsNull() && !m.AccessControlAllowOrigins.IsUnknown() {
+		attributes["accessControlAllowOrigins"] = m.AccessControlAllowOrigins.ValueString()
+	}
+	if !m.AdminSt.IsNull() && !m.AdminSt.IsUnknown() {
+		attributes["adminSt"] = m.AdminSt.ValueString()
+	}
+	if !m.Annotation.IsNull() && !m.Annotation.IsUnknown() {
+		attributes["annotation"] = m.Annotation.ValueString()
+	} else if nested {
+		attributes["annotation"] = defaultAnnotation
+	}
+	if !m.CliOnlyMode.IsNull() && !m.CliOnlyMode.IsUnknown() {
+		attributes["cliOnlyMode"] = m.CliOnlyMode.ValueString()
+	}
+	if !m.Descr.IsNull() && !m.Descr.IsUnknown() {
+		attributes["descr"] = m.Descr.ValueString()
+	}
+	if !m.GlobalThrottleRate.IsNull() && !m.GlobalThrottleRate.IsUnknown() {
+		attributes["globalThrottleRate"] = m.GlobalThrottleRate.ValueString()
+	}
+	if !m.GlobalThrottleSt.IsNull() && !m.GlobalThrottleSt.IsUnknown() {
+		attributes["globalThrottleSt"] = m.GlobalThrottleSt.ValueString()
+	}
+	if !m.GlobalThrottleUnit.IsNull() && !m.GlobalThrottleUnit.IsUnknown() {
+		attributes["globalThrottleUnit"] = m.GlobalThrottleUnit.ValueString()
+	}
+	if !m.MaxRequestStatusCount.IsNull() && !m.MaxRequestStatusCount.IsUnknown() {
+		attributes["maxRequestStatusCount"] = m.MaxRequestStatusCount.ValueString()
+	}
+	if !m.Name.IsNull() && !m.Name.IsUnknown() {
+		attributes["name"] = m.Name.ValueString()
+	}
+	if !m.NameAlias.IsNull() && !m.NameAlias.IsUnknown() {
+		attributes["nameAlias"] = m.NameAlias.ValueString()
+	}
+	if !m.NodeExporter.IsNull() && !m.NodeExporter.IsUnknown() {
+		attributes["nodeExporter"] = m.NodeExporter.ValueString()
+	}
+	if !m.Port.IsNull() && !m.Port.IsUnknown() {
+		attributes["port"] = m.Port.ValueString()
+	}
+	if !m.RedirectSt.IsNull() && !m.RedirectSt.IsUnknown() {
+		attributes["redirectSt"] = m.RedirectSt.ValueString()
+	}
+	if !m.ServerHeader.IsNull() && !m.ServerHeader.IsUnknown() {
+		attributes["serverHeader"] = m.ServerHeader.ValueString()
+	}
+	if !m.ThrottleRate.IsNull() && !m.ThrottleRate.IsUnknown() {
+		attributes["throttleRate"] = m.ThrottleRate.ValueString()
+	}
+	if !m.ThrottleSt.IsNull() && !m.ThrottleSt.IsUnknown() {
+		attributes["throttleSt"] = m.ThrottleSt.ValueString()
+	}
+	if !m.VisoreAccess.IsNull() && !m.VisoreAccess.IsUnknown() {
+		attributes["visoreAccess"] = m.VisoreAccess.ValueString()
+	}
+	if !m.TagAnnotation.IsNull() && !m.TagAnnotation.IsUnknown() {
+		var desiredChildren []TagAnnotationModel
+		diagnostics.Append(m.TagAnnotation.ElementsAs(ctx, &desiredChildren, false)...)
+		if diagnostics.HasError() {
+			return nil, diagnostics
+		}
+
+		var priorChildren []TagAnnotationModel
+		if priorState != nil &&
+			!priorState.TagAnnotation.IsNull() &&
+			!priorState.TagAnnotation.IsUnknown() {
+			diagnostics.Append(priorState.TagAnnotation.ElementsAs(ctx, &priorChildren, false)...)
+			if diagnostics.HasError() {
+				return nil, diagnostics
+			}
+		}
+
+		for desiredIndex := range desiredChildren {
+			desiredChild := &desiredChildren[desiredIndex]
+			var priorChild *TagAnnotationModel
+			for priorIndex := range priorChildren {
+				if priorChildren[priorIndex].BuildRN() == desiredChild.BuildRN() {
+					priorChild = &priorChildren[priorIndex]
+					break
+				}
+			}
+
+			childObject, childDiagnostics := desiredChild.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
+			diagnostics.Append(childDiagnostics...)
+			if diagnostics.HasError() {
+				return nil, diagnostics
+			}
+			children = append(children, map[string]any{"tagAnnotation": childObject})
+		}
+
+		for priorIndex := range priorChildren {
+			priorChild := &priorChildren[priorIndex]
+			found := false
+			for desiredIndex := range desiredChildren {
+				if desiredChildren[desiredIndex].BuildRN() == priorChild.BuildRN() {
+					found = true
+					break
+				}
+			}
+			if found {
+				continue
+			}
+			children = append(children, map[string]any{"tagAnnotation": priorChild.BuildNestedDeletePayloadObject()})
+		}
+	}
+	if !m.TagTag.IsNull() && !m.TagTag.IsUnknown() {
+		var desiredChildren []TagTagModel
+		diagnostics.Append(m.TagTag.ElementsAs(ctx, &desiredChildren, false)...)
+		if diagnostics.HasError() {
+			return nil, diagnostics
+		}
+
+		var priorChildren []TagTagModel
+		if priorState != nil &&
+			!priorState.TagTag.IsNull() &&
+			!priorState.TagTag.IsUnknown() {
+			diagnostics.Append(priorState.TagTag.ElementsAs(ctx, &priorChildren, false)...)
+			if diagnostics.HasError() {
+				return nil, diagnostics
+			}
+		}
+
+		for desiredIndex := range desiredChildren {
+			desiredChild := &desiredChildren[desiredIndex]
+			var priorChild *TagTagModel
+			for priorIndex := range priorChildren {
+				if priorChildren[priorIndex].BuildRN() == desiredChild.BuildRN() {
+					priorChild = &priorChildren[priorIndex]
+					break
+				}
+			}
+
+			childObject, childDiagnostics := desiredChild.BuildPayloadObject(ctx, priorChild, true, defaultAnnotation)
+			diagnostics.Append(childDiagnostics...)
+			if diagnostics.HasError() {
+				return nil, diagnostics
+			}
+			children = append(children, map[string]any{"tagTag": childObject})
+		}
+
+		for priorIndex := range priorChildren {
+			priorChild := &priorChildren[priorIndex]
+			found := false
+			for desiredIndex := range desiredChildren {
+				if desiredChildren[desiredIndex].BuildRN() == priorChild.BuildRN() {
+					found = true
+					break
+				}
+			}
+			if found {
+				continue
+			}
+			children = append(children, map[string]any{"tagTag": priorChild.BuildNestedDeletePayloadObject()})
+		}
+	}
+
+	payloadObject := map[string]any{"attributes": attributes}
+	payloadObject["children"] = children
+	return payloadObject, diagnostics
 }
