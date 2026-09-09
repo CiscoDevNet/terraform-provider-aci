@@ -8,19 +8,25 @@ exclude_parents:
 - fvSCrtrn
 properties:
   ip:
-    default_values:
-      131.107.1.200: ""
     documentation:
       description: The device IP address of the %s object.
     restriction: required
     test_config:
       create:
       - config_value: 0.0.0.0
+      default:
+      - config_value: 203.0.113.200
       update:
       - config_value: fe80::0002
   name:
-    default_values:
-      "131": ""
+    example_config:
+      full:
+      - value: ip_attribute
+      minimum:
+      - value: ip_attribute
+    test_config:
+      default:
+      - config_value: "131"
   usefvSubnet:
     attribute_name: use_epg_subnet
     default_values:

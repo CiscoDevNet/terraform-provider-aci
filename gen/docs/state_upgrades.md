@@ -10,12 +10,12 @@ This document describes the `state_upgrades` definition input used by the ACI pr
 
 `state_upgrades` is a per-class YAML list, declared inside a class definition file (e.g. `gen/definitions/fvAEPg.yaml`), that records every prior schema version a resource has ever had and exactly how each prior version differs from the current schema.
 
-It replaces the legacy `migration_blocks` / `migration_version` / `type_changes` keys that lived in older `gen/scripts/legacy_definitions/classes/*.yaml` files, along with the schema-git-commit JSON. Bulk conversion of those legacy keys is a separate follow-up effort; this design is the input contract for the new template wiring.
+It replaces the legacy `migration_blocks` / `migration_version` / `type_changes` keys in `gen/definitions/classes/*.yaml`. `gen/scripts/migrate_class_definitions.go` bulk-converts those inputs into this normalized shape; the remaining work is the new schema, resource, documentation, and test template wiring.
 
 Two pieces of information drive the renderer:
 
 - **`state_upgrades`** — the list of upgrade hops. Each entry describes one prior schema version's shape in enough detail to (a) reconstruct the prior schema for the framework's `UpgradeResourceState` RPC and (b) render the current schema's transitional legacy aliases.
-- **`migration_source`** — the lineage of the resource (e.g. `from_sdkv2`). Orthogonal to `state_upgrades`. Drives the docs migration warning and any future migration-source-specific codegen.
+- **`migration_source`** — the lineage of the resource (e.g. `from_sdkv2`). Orthogonal to `state_upgrades`. Populates the normalized documentation migration warning for the future active resource-documentation template and can drive other migration-source-specific code generation.
 
 ---
 
@@ -167,7 +167,7 @@ The converse is allowed: `migration_source` omitted with a `prior_schema_version
 
 ## 9. How the renderer consumes the data
 
-- `Class.StateUpgrades` carries the full validated tree, used by the upgrader template that emits one `resource.StateUpgrader` per entry.
+- `Class.StateUpgrades` carries the full validated tree and will be consumed by the future upgrader template that emits one `resource.StateUpgrader` per entry.
 - `Property.StateUpgradeValues` is a flattened convenience map of `prior_schema_version -> StateUpgradeValue`, populated by `Class.setPropertyStateUpgradeValues()` for each top-level attribute on the owning class. Templates that iterate properties can ask "what was my legacy name at v0?" without traversing the upgrade tree.
 - Each `StateUpgradeValue` carries the `legacy_status` lifecycle stage from §6 in its `Status` field. The generator uses this to populate `Property.TestValues.Legacy` for each property with a `Functioning` or `Frozen` renamed alias — see `test_configuration.md` §2.4 "Legacy bucket auto-derivation" for the full rules. `Removed` entries never produce a Legacy bucket because they describe migration-only attributes that no longer exist in the current schema.
 - Inner `children[X].attributes` entries are **not** distributed into child-class Property maps in this phase. Templates that need inner-child state-upgrade data walk `Class.StateUpgrades` directly.
@@ -177,7 +177,7 @@ The converse is allowed: `migration_source` omitted with a `prior_schema_version
 ## 10. Out of scope (in this phase)
 
 - Template wiring: how upgraders, prior schemas, and legacy alias rendering are emitted is a follow-up effort.
-- Bulk migration of existing `migration_blocks` / `migration_version` / `type_changes` keys from the older `gen/scripts/legacy_definitions/classes/*.yaml` files into the new model — those files are not loaded by the current generator.
+- Further source corrections belong in the migration logic and must be propagated by rerunning `gen/scripts/migrate_class_definitions.go`. The legacy inputs remain identical to `develop`, and the active generator reads only the emitted flat definitions.
 - Orphan-frozen edge case (legacy attribute with no current replacement, frozen alias only) — deferred until a real case appears.
 
 ---
@@ -215,12 +215,13 @@ state_upgrades:
         legacy_status: removed
 ```
 
-What the generator produces from this single entry:
+What the normalized model represents, and what the future schema and test
+templates will emit from this single entry:
 
 | Meta property | `Status` | Current schema | Auto-derived `TestValues.Legacy` |
 |---|---|---|---|
-| `arpFlood` | `Functioning` | Both `arp_flood` (current) and `arp_flooding` (deprecated alias) exposed; `ConflictsWith` enforced. | Clone of `arpFlood`'s `Create` bucket. Template renders one scenario configuring the resource under `arp_flooding` and asserts the value lands in state at the current name. |
-| `mac` | `Frozen` | Both names exposed; `mac_address` carries a state-preserving plan modifier so existing configs don't diff. | Clone of `mac`'s `Create` bucket. Template renders a scenario configuring the resource under `mac_address` and asserts no device write occurs. |
-| `legacyUnicastRoute` | `Removed` | Not exposed. Resource `SchemaVersion` bumped to 1. | Nil. Coverage comes from the `UpgradeResourceState` migration scenario, not from a current-schema scenario. |
+| `arpFlood` | `Functioning` | Both `arp_flood` (current) and `arp_flooding` (deprecated alias) will be exposed; `ConflictsWith` will be enforced. | Clone of `arpFlood`'s `Create` bucket. The future test template will render one scenario configuring the resource under `arp_flooding` and assert that the value lands in state at the current name. |
+| `mac` | `Frozen` | Both names will be exposed; `mac_address` will carry a state-preserving plan modifier so existing configs do not diff. | Clone of `mac`'s `Create` bucket. The future test template will render one scenario configuring the resource under `mac_address` and assert that no device write occurs. |
+| `legacyUnicastRoute` | `Removed` | Will not be exposed. The resource `SchemaVersion` will be bumped to 1. | Undefined. Coverage will come from the `UpgradeResourceState` migration scenario, not from a current-schema scenario. |
 
 If the `mac` rename had also changed type (for example a `string_attribute` becoming a `set_attribute`), `hasDivergentLegacyType()` would skip auto-derivation, emit a generator `Warn`, and require an explicit `test_config.legacy` block on the `mac` property carrying the prior-shape HCL values.

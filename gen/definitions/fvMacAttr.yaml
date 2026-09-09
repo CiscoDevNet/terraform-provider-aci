@@ -8,12 +8,21 @@ exclude_parents:
 - fvSCrtrn
 properties:
   mac:
-    default_values:
-      AA:BB:CC:DD:EE:FF: ""
     restriction: required
     test_config:
       create:
       - config_value: AA:BB:CC:BB:BB:EE
+      default:
+      - config_value: AA:BB:CC:DD:EE:FF
       update:
       - config_value: AA:BB:CC:BB:BB:EE
+  name:
+    example_config:
+      full:
+      - value: mac_attribute
+      minimum:
+      - value: mac_attribute
+    test_config:
+      default:
+      - config_value: mac_attr
 resource_name: epg_useg_mac_attribute

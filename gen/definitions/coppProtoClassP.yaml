@@ -20,9 +20,10 @@ properties:
       description: The protocols to match in the %s object.
     test_config:
       create:
-      - config_value: '["arp", "bfd"]'
-      default:
-      - config_value: '[]'
+      - config_value: arp
+      - config_value: bfd
+      default: []
+    value_type: set
   rate:
     default_values:
       "10": ""

@@ -4,10 +4,10 @@ documentation:
   - Tenants -> Networking -> VRFs -> Policy -> EIGRP Context Per Address Family
 properties:
   af:
-    default_values:
-      ipv4-ucast: ""
     test_config:
       create:
+      - config_value: ipv4-ucast
+      default:
       - config_value: ipv4-ucast
   tnEigrpCtxAfPolName:
     documentation:

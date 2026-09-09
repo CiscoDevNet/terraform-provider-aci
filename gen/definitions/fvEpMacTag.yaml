@@ -7,6 +7,12 @@ exclude_parents:
 include_parents:
 - fvTenant
 properties:
+  bdName:
+    reference:
+      classes:
+      - fvBD
+      example_attribute: name
+      example_class: fvBD
   ctxName:
     restriction: exclude
   id:
@@ -16,7 +22,8 @@ properties:
       create:
       - config_value: "1"
   mac:
-    default_values:
-      "00:00:00:00:00:00": ""
+    test_config:
+      default:
+      - config_value: "00:00:00:00:00:01"
 resource_name: endpoint_tag_mac
 rn_prepend: eptags

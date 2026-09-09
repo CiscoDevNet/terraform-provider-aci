@@ -11,22 +11,19 @@ test_config:
   - class_name: fvTenant
     config_overrides:
       name: test_name
-    reference: uni/tn-tenant_0
-    reference_type: static
+    reference: aci_tenant.test_tenant_0.id
     role: target
   - class_name: fvAp
     config_overrides:
       name: test_name
     dependencies:
     - class_name: fvTenant
-    reference: uni/tn-test_name/ap-ap_1
-    reference_type: static
+    reference: aci_application_profile.test_application_profile_0.id
     role: target
   - class_name: fvAEPg
     config_overrides:
       name: epg_0
     dependencies:
     - class_name: fvAp
-    reference: uni/tn-test_name/ap-test_name/epg-epg_0
-    reference_type: static
+    reference: aci_application_epg.test_application_epg_0.id
     role: target

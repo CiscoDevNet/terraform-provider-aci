@@ -18,15 +18,15 @@ import (
 
 type FvRsCtxToExtRouteTagPolModel struct {
 	Annotation             types.String `tfsdk:"annotation"`
-	TnL3extRouteTagPolName types.String `tfsdk:"route_tag_policy_name"`
+	TnL3extRouteTagPolName types.String `tfsdk:"l3out_route_tag_policy_name"`
 	TagAnnotation          types.Set    `tfsdk:"annotations"`
 	TagTag                 types.Set    `tfsdk:"tags"`
 }
 
 func FvRsCtxToExtRouteTagPolModelAttributeTypes() map[string]attr.Type {
 	return map[string]attr.Type{
-		"annotation":            types.StringType,
-		"route_tag_policy_name": types.StringType,
+		"annotation":                  types.StringType,
+		"l3out_route_tag_policy_name": types.StringType,
 		"annotations": types.SetType{
 			ElemType: types.ObjectType{
 				AttrTypes: TagAnnotationModelAttributeTypes(),

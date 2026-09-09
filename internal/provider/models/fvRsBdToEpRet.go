@@ -19,16 +19,16 @@ import (
 type FvRsBdToEpRetModel struct {
 	Annotation       types.String `tfsdk:"annotation"`
 	ResolveAct       types.String `tfsdk:"resolve_action"`
-	TnFvEpRetPolName types.String `tfsdk:"endpoint_retention_policy_name"`
+	TnFvEpRetPolName types.String `tfsdk:"end_point_retention_policy_name"`
 	TagAnnotation    types.Set    `tfsdk:"annotations"`
 	TagTag           types.Set    `tfsdk:"tags"`
 }
 
 func FvRsBdToEpRetModelAttributeTypes() map[string]attr.Type {
 	return map[string]attr.Type{
-		"annotation":                     types.StringType,
-		"resolve_action":                 types.StringType,
-		"endpoint_retention_policy_name": types.StringType,
+		"annotation":                      types.StringType,
+		"resolve_action":                  types.StringType,
+		"end_point_retention_policy_name": types.StringType,
 		"annotations": types.SetType{
 			ElemType: types.ObjectType{
 				AttrTypes: TagAnnotationModelAttributeTypes(),

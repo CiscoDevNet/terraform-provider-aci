@@ -7,4 +7,7 @@ properties:
     documentation:
       description: The direction on which to apply the Route Map associated with the
         Route Control Profile.
+    test_config:
+      default:
+      - config_value: import
 resource_name: relation_from_external_epg_to_route_control_profile

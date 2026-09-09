@@ -2,6 +2,13 @@ documentation:
   sub_category: Networking
   ui_locations:
   - Tenants -> Networking -> VRFs -> Policy
+properties:
+  tDn:
+    example_config:
+      full:
+      - value: uni/tn-example_tenant/sdwanvpncont/sdwanvpnentry-example_wan_vpn
+      minimum:
+      - value: uni/tn-example_tenant/sdwanvpncont/sdwanvpnentry-example_wan_vpn
 resource_name: relation_from_vrf_to_wan_vpn
 test_config:
   dependencies:

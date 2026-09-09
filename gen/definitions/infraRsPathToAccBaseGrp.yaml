@@ -8,6 +8,8 @@ test_config:
   dependencies:
   - class_name: infraHPathS
     role: parent
+    target_classes:
+    - infraAccPortGrp
   - class_name: infraAccPortGrp
     reference: uni/infra/funcprof/accportgrp-access_interface_policy_group
     reference_type: static

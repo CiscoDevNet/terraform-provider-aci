@@ -9,9 +9,10 @@ properties:
     attribute_name: control
     test_config:
       create:
-      - config_value: '["fast-leave", "querier"]'
-      default:
-      - config_value: '[]'
+      - config_value: fast-leave
+      - config_value: querier
+      default: []
+    value_type: set
   lastMbrIntvl:
     attribute_name: last_member_interval
     default_values:

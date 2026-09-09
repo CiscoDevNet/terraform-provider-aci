@@ -7,9 +7,9 @@ properties:
     attribute_name: controller_state
     test_config:
       create:
-      - config_value: '["managed-cfg"]'
-      default:
-      - config_value: '[]'
+      - config_value: managed-cfg
+      default: []
+    value_type: set
   hopLimit:
     default_values:
       "64": ""

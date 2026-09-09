@@ -1,4 +1,3 @@
-allow_delete: false
 required_as_child: true
 resource_name: relation_to_ip_sla_monitoring_policy
 sub_category: Tenant Policies

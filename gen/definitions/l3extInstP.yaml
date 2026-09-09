@@ -13,6 +13,14 @@ properties:
     attribute_name: flood_in_encapsulation
     documentation:
       description: Flood L2 Multicast/Broadcast and Link Local Layer based on encapsulation.
+  parentDn:
+    example_config:
+      full:
+      - value: aci_l3_outside.example.id
+        value_type: reference
+      minimum:
+      - value: aci_l3_outside.example.id
+        value_type: reference
   pcEnfPref:
     attribute_name: intra_epg_isolation
     documentation:

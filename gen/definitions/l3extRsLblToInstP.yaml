@@ -13,6 +13,13 @@ properties:
   tDn:
     documentation:
       description: The distinguished name (DN) of the External EPG object.
+    example_config:
+      full:
+      - value: aci_external_network_instance_profile.example.id
+        value_type: reference
+      minimum:
+      - value: aci_external_network_instance_profile.example.id
+        value_type: reference
 resource_name: relation_from_l3out_consumer_label_to_external_epg
 test_config:
   dependencies:
@@ -21,6 +28,8 @@ test_config:
     - class_name: l3extOut
     reference: aci_l3out_consumer_label.test.id
     role: parent
+    target_classes:
+    - l3extInstP
   - class_name: l3extInstP
     config_overrides:
       name: inst_profile_1
@@ -29,3 +38,10 @@ test_config:
     reference: uni/tn-test_name/out-test_l3_outside/instP-inst_profile_1
     reference_type: static
     role: target
+  embedded_instances:
+  - properties:
+      target_dn:
+      - config_value: uni/tn-test_name/out-test_l3_outside/instP-inst_profile_1
+  - properties:
+      target_dn:
+      - config_value: uni/tn-test_name/out-test_l3_outside/instP-inst_profile_2

@@ -2,9 +2,9 @@
 // +build ignore
 
 /*
-Migration script for class definition YAML files. Reads the per-class legacy
-inputs under gen/scripts/legacy_definitions/classes/ and emits canonical
-ClassDefinition YAML under gen/definitions/, rebased on the canonical
+Migration script for class definition YAML files. Reads the legacy inputs under
+gen/definitions/classes/ and gen/definitions/properties/ and emits canonical
+ClassDefinition YAML directly under gen/definitions/, rebased on the canonical
 gen/utils/data structs so the loader contract is enforced at migration time.
 
 Disposition table is the v2.19.0 coverage audit in MIGRATION_OVERVIEW.md
@@ -13,15 +13,10 @@ mirrors that audit one-for-one; anything found in the legacy YAML that is
 not in the map surfaces as an L1 unknown-key warning so drift cannot slip
 past a fresh import.
 
-Phase 1 (this commit) translates the keys the prior script already handled:
-  - allow_delete       (value remap "false" -> "never")
-  - exclude_children   (passthrough)
-  - include_children   (passthrough)
-  - sub_category       (moves under documentation)
-  - ui_locations       (moves under documentation)
-
-Every other known key is tallied as TODO so the per-run summary shows
-remaining coverage. Subsequent commits flesh out each section.
+Every key in the audited legacy corpus has a recorded disposition. Supported
+direct and semantic mappings are emitted into the canonical model; obsolete
+or derivable keys are dropped according to the documented rules, and the
+remaining postponed cases are logged explicitly.
 
 The four verification levels:
 
@@ -39,16 +34,16 @@ The four verification levels:
        becomes a per-file failure at migration time, not on the next
        go-generate run.
 
-  L4 - Derivation assertion hooks. Stub call sites where subsequent commits
-       cross-check legacy values against the resolver's auto-derivation
-       rules (e.g. confirm datasource_required is reproduced by the
-       IdentifiedBy + value-transform pipeline). Empty for the scaffold.
+  L4 - Reserved derivation assertion hook for cross-checking legacy values
+       against resolver auto-derivation rules when additional checks are
+       useful.
 
 USAGE
 
   go run gen/scripts/migrate_class_definitions.go        emit canonical YAML
-  go run gen/scripts/migrate_class_definitions.go clean  remove all .yaml
-                                                          under gen/definitions
+  go run gen/scripts/migrate_class_definitions.go clean  remove flat canonical
+                                                          .yaml files directly
+                                                          under gen/definitions,
                                                           except global.yaml
 */
 
@@ -117,7 +112,7 @@ type keyInfo struct {
 
 // knownLegacyKeys is the exhaustive allowlist of every top-level YAML key
 // the migration script expects to encounter under
-// gen/scripts/legacy_definitions/classes/*.yaml. Source of truth:
+// gen/definitions/classes/*.yaml. Source of truth:
 // MIGRATION_OVERVIEW.md section 10 v2.19.0 coverage audit + section 10.2
 // closing-gaps list. Keep this aligned with that audit; when a freshly
 // imported legacy file carries a new key, decide its disposition
@@ -140,7 +135,7 @@ var knownLegacyKeys = map[string]keyInfo{
 	"contained_by":         {sectionSemantic, true}, // -> include_parents (subtract meta containedBy first)
 	"class_version":        {sectionSemantic, true}, // -> supported_versions
 	"relationship_classes": {sectionSemantic, true}, // -> relation_info.to_classes
-	"migration_blocks":     {sectionSemantic, true}, // -> state_upgrades (two-source merge)
+	"migration_blocks":     {sectionSemantic, true}, // -> state_upgrades attribute-name mappings
 	"migration_version":    {sectionSemantic, true}, // -> state_upgrades (drives migration_source)
 	"type_changes":         {sectionSemantic, true}, // -> state_upgrades.attributes
 	"resource_notes":       {sectionSemantic, true}, // -> documentation.resource.notes
@@ -158,7 +153,7 @@ var knownLegacyKeys = map[string]keyInfo{
 
 	// S5 REUSE
 	"max_one_class_allowed": {sectionReuse, true}, // -> is_single_nested_when_defined_as_child
-	"parent_example_dn":     {sectionReuse, true}, // dropped (covered by static dependency)
+	"parent_example_dn":     {sectionReuse, true}, // dropped (duplicated by normalized parentDn property data)
 	"remove_from_contains":  {sectionReuse, true}, // -> exclude_children (now covers docs side too)
 
 	// S6 DERIVE (drop, computed in Go from meta)
@@ -175,7 +170,7 @@ var knownLegacyKeys = map[string]keyInfo{
 	"class_version_tests": {sectionPostpone, true},
 
 	// Property-level top-level keys (loaded from
-	// gen/scripts/legacy_definitions/properties/*.yaml). Tallied under the
+	// gen/definitions/properties/*.yaml). Tallied under the
 	// "prop:" prefix so they group separately from class-level keys with
 	// matching names (e.g. "documentation" exists on both sides). Same
 	// disposition codes apply; the per-key migration logic lives in
@@ -184,7 +179,7 @@ var knownLegacyKeys = map[string]keyInfo{
 	// S1 direct
 	"prop:documentation": {sectionDirect, true},
 
-	// S2 semantic (this commit)
+	// S2 semantic
 	"prop:overwrites":                {sectionSemantic, true},
 	"prop:read_only_properties":      {sectionSemantic, true},
 	"prop:resource_required":         {sectionSemantic, true},
@@ -195,21 +190,22 @@ var knownLegacyKeys = map[string]keyInfo{
 	"prop:add_valid_values":          {sectionSemantic, true},
 	"prop:ignore_properties_in_test": {sectionSemantic, true},
 
-	// S2 semantic (later commits)
+	// S2 semantic
 	"prop:test_values": {sectionSemantic, true}, // C20 (bucket merge)
-	"prop:parents":     {sectionSemantic, true}, // this commit (C21 - decision tree + polymorphic)
-	"prop:targets":     {sectionSemantic, true}, // this commit (C21 - decision tree + polymorphic)
+	"prop:parents":     {sectionSemantic, true}, // dependency pruning + parent-target mapping
+	"prop:targets":     {sectionSemantic, true}, // dependency pruning + test/example references
 
-	// S3 obsolete (later commit)
-	"prop:exclude_targets":             {sectionObsolete, true}, // this commit (C22 - drop, polymorphic auto-detector covers)
-	"prop:resource_name_doc_overwrite": {sectionReuse, true},    // this commit (C22 - lived only on properties/global.yaml, already skipped)
+	// S3 obsolete
+	"prop:exclude_targets":             {sectionObsolete, true}, // value-driven child dependencies make the exclusion redundant
+	"prop:resource_name_doc_overwrite": {sectionReuse, true},    // lived only on properties/global.yaml, already skipped
+	"prop:resource_name_overwrite":     {sectionObsolete, true}, // entire legacy compatibility file; values are audited below
 
 	// S6 DERIVE (verify-and-drop; meta auto-derives ip_address from validateAsIPv4OrIPv6)
 	"prop:static_custom_type": {sectionDerive, true},
 
 	// S8 POSTPONE - drop with per-file warning, no slot in canonical struct yet
 	"prop:ignore_custom_type_docs":     {sectionPostpone, true}, // section 8.3
-	"prop:example_value_overwrite":     {sectionPostpone, true}, // section 8.4
+	"prop:example_value_overwrite":     {sectionSemantic, true}, // section 8.4
 	"prop:custom_test_dependency_name": {sectionPostpone, true}, // section 8.5
 	"prop:datasource_required":         {sectionPostpone, true}, // section 8.2 (topSystem top-level only)
 }
@@ -233,6 +229,61 @@ var legacyNestedResourceNameOverwrites = map[string]string{
 var legacyIgnoredPropertyOverwrites = map[string]string{
 	"commRsClientCertCA": "admin_st",
 	"commRsKeyRing":      "admin_st",
+}
+
+type legacyPropertyReference struct {
+	Classes      []string
+	ExampleClass string
+}
+
+// These two configurable DN properties are references without relationInfo or
+// parentDn semantics in APIC metadata. The legacy example override supplies the
+// rendered expression, while this map preserves the target-class meaning.
+var legacyPropertyReferences = map[string]map[string]legacyPropertyReference{
+	"fvTrackMember": {
+		"scope": {Classes: []string{"fvBD", "l3extOut"}, ExampleClass: "fvBD"},
+	},
+	"vnsLDevIf": {
+		"logical_device": {Classes: []string{"vnsLDevVip"}, ExampleClass: "vnsLDevVip"},
+	},
+}
+
+// definitionOnlyResourceNames contains Terraform names needed when an APIC
+// class is referenced by a migrated definition but has no local metadata or
+// legacy class definition of its own. These entries emit normal flat canonical
+// definitions; they deliberately do not create synthetic legacy inputs.
+var definitionOnlyResourceNames = map[string]string{
+	"extdevSDWanVpnEntry": "wan_vpn",
+	"fabricNode":          "fabric_node",
+	"fvABDPol":            "bridge_domain",
+	"fvEPg":               "epg",
+	"infraADomP":          "abstract_domain",
+	"infraDomP":           "infra_domain_policy",
+	"infraSpAccGrp":       "spine_port_policy_group",
+	"l3extAConsLbl":       "l3out_consumer_label",
+	"netflowAExporterPol": "netflow_exporter_policy",
+	"vnsLDevVip":          "l4_l7_device",
+}
+
+// legacyClassNameCorrections normalizes known spelling mistakes while reading
+// the immutable legacy corpus. Corrections belong in the migration, never in
+// gen/definitions/classes or gen/definitions/properties.
+var legacyClassNameCorrections = map[string]string{
+	"VmmDomP": "vmmDomP",
+}
+
+// expectedLegacyResourceNameOverwrites freezes the contents of the obsolete
+// resource_name_overwrite.yaml compatibility map. The canonical dependency
+// model no longer consumes these values, but validating the complete map makes
+// any upstream addition or semantic change an explicit migration decision.
+var expectedLegacyResourceNameOverwrites = map[string]string{
+	"relation_from_l3out_consumer_label_to_external_epg":          "external_network_instance_profile",
+	"relation_from_l3out_consumer_label_to_route_control_profile": "route_control_profile",
+	"relation_from_netflow_exporter_to_epg":                       "application_epg",
+	"relation_from_netflow_exporter_to_vrf":                       "vrf",
+	"relation_to_epg":                                             "application_epg",
+	"relation_to_external_epgs":                                   "external_network_instance_profile",
+	"relation_to_vrf":                                             "vrf",
 }
 
 // keyTally accumulates per-key and per-section counts across the migration
@@ -330,12 +381,12 @@ func (t *keyTally) print() {
 	}
 }
 
-// assertDerivable is an L4 hook reserved for cross-checks between a legacy
-// value and the canonical resolver's auto-derivation rules. Subsequent
-// commits (S6 DERIVE) wire up specific assertions here (for example,
-// confirm datasource_required matches the IdentifiedBy + value-transform
-// prediction). Empty for the scaffold so the call sites already exist when
-// the assertions land.
+func (t *keyTally) hasUnknownKeys() bool {
+	return len(t.unknownKeyFiles) > 0
+}
+
+// assertDerivable is an L4 hook reserved for future cross-checks between a
+// legacy value and the canonical resolver's auto-derivation rules.
 func assertDerivable(file, key string, legacyValue any) {
 	_ = file
 	_ = key
@@ -351,12 +402,20 @@ func sortedStringMapKeys(values map[string]any) []string {
 	return keys
 }
 
+func sortedAnyMapStringKeys(values map[any]any) []string {
+	keys := make([]string, 0, len(values))
+	for key := range values {
+		if stringKey, ok := key.(string); ok {
+			keys = append(keys, stringKey)
+		}
+	}
+	sort.Strings(keys)
+	return keys
+}
+
 // migrate translates one legacy YAML payload (parsed as map[string]any)
-// into the canonical data.ClassDefinition. The translation is intentionally
-// narrow for Phase 1: only the keys flagged implemented in knownLegacyKeys
-// are written into the canonical struct. Every other known key is tallied
-// as TODO so the coverage gap is visible at every run; unknown keys raise
-// an L1 warning via the tally.
+// into the canonical data.ClassDefinition. Every known key follows its
+// catalogued disposition; unknown keys raise an L1 warning via the tally.
 func migrate(file string, legacy map[string]any, tally *keyTally) data.ClassDefinition {
 	var out data.ClassDefinition
 	for _, key := range sortedStringMapKeys(legacy) {
@@ -444,11 +503,10 @@ func migrate(file string, legacy map[string]any, tally *keyTally) data.ClassDefi
 				out.IsSingleNestedWhenDefinedAsChild = b
 			}
 		case "parent_example_dn":
-			// Drop intentionally. The legacy value supplied a static parent
-			// DN for example/test rendering; the canonical pipeline now
-			// derives the same DN from class.TestConfig.Dependencies (and
-			// the static_parent meta flag), so no canonical field needs the
-			// value.
+			// Drop intentionally. The legacy value duplicates the parentDn
+			// values migrated from the legacy property test configuration;
+			// active example normalization consumes that canonical property
+			// data, so no separate class field is needed.
 		case "remove_from_contains":
 			// Legacy remove_from_contains entries unioned into the canonical
 			// exclude_children list - C10 extended the docs-side setChildren
@@ -525,7 +583,7 @@ func migrate(file string, legacy map[string]any, tally *keyTally) data.ClassDefi
 // looksLikeIPOrCIDR returns true when s parses as an IPv4 / IPv6 address or
 // a CIDR prefix (e.g. "10.0.0.1", "fe80::1", "2001:db8::/32"). Used to gate
 // custom_type bucket migration so only IP-shaped values land in Update; the
-// rare non-IP entries (parent_dn-shaped scope, custom-enum ride-alongs)
+// rare non-IP entries (parent_dn-shaped scope, custom-enum duplicates)
 // would otherwise pollute Update with literals that override dependency
 // wiring or duplicate Create harmlessly.
 func looksLikeIPOrCIDR(s string) bool {
@@ -536,6 +594,41 @@ func looksLikeIPOrCIDR(s string) bool {
 		return true
 	}
 	return net.ParseIP(s) != nil
+}
+
+func testValueScenario(entries ...data.TestValueEntryDefinition) data.TestValueScenarioDefinition {
+	return data.TestValueScenarioDefinition{Defined: true, Entries: entries}
+}
+
+func legacyTestValueScenario(value any) data.TestValueScenarioDefinition {
+	rawValues, isList := value.([]any)
+	if !isList {
+		return testValueScenario(data.TestValueEntryDefinition{ConfigValue: legacyValueToHCL(value)})
+	}
+	entries := make([]data.TestValueEntryDefinition, 0, len(rawValues))
+	for _, rawValue := range rawValues {
+		entries = append(entries, data.TestValueEntryDefinition{ConfigValue: legacyValueToHCL(rawValue)})
+	}
+	return data.TestValueScenarioDefinition{Defined: true, Entries: entries}
+}
+
+func appendTestValueScenario(destination *data.TestValueScenarioDefinition, source data.TestValueScenarioDefinition) {
+	if !source.Defined {
+		return
+	}
+	destination.Defined = true
+	destination.Entries = append(destination.Entries, source.Entries...)
+}
+
+func exampleValueScenario(source data.TestValueScenarioDefinition) data.ExampleValueScenarioDefinition {
+	entries := make([]data.ExampleValueEntryDefinition, 0, len(source.Entries))
+	for _, entry := range source.Entries {
+		entries = append(entries, data.ExampleValueEntryDefinition{
+			Value:     entry.ConfigValue,
+			ValueType: entry.ValueType,
+		})
+	}
+	return data.ExampleValueScenarioDefinition{Defined: source.Defined, Entries: entries}
 }
 
 // propagateRequiredCreateToUpdate copies TestConfig.Create into Update for
@@ -552,10 +645,13 @@ func propagateRequiredCreateToUpdate(file string, out *data.ClassDefinition) {
 		if prop.Restriction != data.Required {
 			continue
 		}
-		if len(prop.TestConfig.Create) == 0 || len(prop.TestConfig.Update) > 0 {
+		if !prop.TestConfig.Create.Defined || prop.TestConfig.Update.Defined {
 			continue
 		}
-		prop.TestConfig.Update = append(prop.TestConfig.Update, prop.TestConfig.Create...)
+		prop.TestConfig.Update = data.TestValueScenarioDefinition{
+			Defined: true,
+			Entries: append([]data.TestValueEntryDefinition(nil), prop.TestConfig.Create.Entries...),
+		}
 		out.Properties[propName] = prop
 		fmt.Printf("COPY: %s: %s.test_config.update <- create (required attr, value unchanged across Update step)\n", file, propName)
 	}
@@ -633,11 +729,20 @@ func migrateContainedBy(file string, value any, out *data.ClassDefinition) {
 // in loadAndMigrateProperties so both inputs are visible.
 func liftTestDefaultsToDefaultValues(file, className string, out *data.ClassDefinition) {
 	for propName, prop := range out.Properties {
-		if len(prop.TestConfig.Default) == 0 {
+		if !prop.TestConfig.Default.Defined {
 			continue
 		}
-		kept := prop.TestConfig.Default[:0]
-		for _, entry := range prop.TestConfig.Default {
+		if prop.TestConfig.Default.Preserve {
+			continue
+		}
+		if len(prop.TestConfig.Default.Entries) == 0 {
+			continue
+		}
+		if prop.ValueType == data.Set {
+			continue
+		}
+		kept := prop.TestConfig.Default.Entries[:0]
+		for _, entry := range prop.TestConfig.Default.Entries {
 			cv := entry.ConfigValue
 			if strings.HasPrefix(cv, "[") {
 				kept = append(kept, entry)
@@ -662,9 +767,9 @@ func liftTestDefaultsToDefaultValues(file, className string, out *data.ClassDefi
 			fmt.Printf("LIFT: %s: %s.test_config.default[%q] -> default_values\n", file, propName, cv)
 		}
 		if len(kept) == 0 {
-			prop.TestConfig.Default = nil
+			prop.TestConfig.Default = data.TestValueScenarioDefinition{}
 		} else {
-			prop.TestConfig.Default = kept
+			prop.TestConfig.Default.Entries = kept
 		}
 		out.Properties[propName] = prop
 	}
@@ -763,10 +868,10 @@ type metaRegistry struct {
 	// preserve whether Terraform exposes parent_dn.
 	GlobalExcludeParents map[string]bool
 	// ClassResourceName: className -> resource_name from
-	// legacy_definitions/classes/<class>.yaml. Pre-loaded so the parents
-	// prune can compare a legacy parent_dn / parent_dependency_name
-	// reference against the canonical `aci_<resource_name>.test.id` form
-	// the loader would emit.
+	// definitions/classes/<class>.yaml or the definition-only compatibility
+	// map. Pre-loaded so the parents prune can compare a legacy parent_dn /
+	// parent_dependency_name reference against the canonical
+	// `aci_<resource_name>.test.id` form the loader would emit.
 	ClassResourceName map[string]string
 	// ClassRelationToMo: className -> sanitised target class name from
 	// meta `relationInfo.toMo` (e.g. `fv:BD` -> `fvBD`). Populated only
@@ -780,20 +885,19 @@ type metaRegistry struct {
 	// equivalent to the canonical resource reference the loader would
 	// emit after the prune.
 	ClassRnFormat map[string]string
-	// NoMetaFile: className -> resource_name for classes without meta
-	// JSON, loaded from gen/definitions/global.yaml's no_meta_file. Lets
-	// the targets prune resolve canonical references for vzBrCP / vzCPIf
-	// / monEPGPol / ... whose source-side relation lives in a meta file
-	// but whose target class is registered only via no_meta_file.
-	NoMetaFile map[string]string
 	// ClassMetaLabel: className -> meta `label` field. Used as the final
-	// resource_name fallback in targetResourceName, mirroring the loader's
+	// resource_name fallback in resourceNameForClass, mirroring the loader's
 	// setResourceName (utils.Underscore(label) when no explicit
 	// resource_name override is registered). Required to recognise classes
 	// like qosDppPol / fhsTrustCtrlPol whose legacy classes/<cn>.yaml omits
 	// resource_name but whose meta label resolves to the canonical Terraform
 	// resource name.
 	ClassMetaLabel map[string]string
+	// ClassExplicitInclude records the legacy include override for
+	// metadata-backed classes with an empty IdentifiedBy list. It is used only
+	// when deciding whether an authored dependency is exactly reproducible by
+	// the runtime's automatic resource dependency resolution.
+	ClassExplicitInclude map[string]bool
 }
 
 // newMetaRegistry pre-loads the three lookup tables. Errors during a single
@@ -812,8 +916,11 @@ func newMetaRegistry(metaDir, classesDir, globalDefPath, propertiesDir string) (
 		ClassResourceName:       map[string]string{},
 		ClassRelationToMo:       map[string]string{},
 		ClassRnFormat:           map[string]string{},
-		NoMetaFile:              map[string]string{},
 		ClassMetaLabel:          map[string]string{},
+		ClassExplicitInclude:    map[string]bool{},
+	}
+	for className, resourceName := range definitionOnlyResourceNames {
+		reg.ClassResourceName[className] = resourceName
 	}
 
 	// Meta property names.
@@ -892,7 +999,7 @@ func newMetaRegistry(metaDir, classesDir, globalDefPath, propertiesDir string) (
 		}
 	}
 
-	// resource_name from legacy_definitions/classes/*.yaml so the parents
+	// resource_name from definitions/classes/*.yaml so the parents
 	// prune can resolve the canonical `aci_<resource_name>.test.id` form
 	// for arbitrary parent classes.
 	classFiles, err := filepath.Glob(filepath.Join(classesDir, "*.yaml"))
@@ -910,8 +1017,12 @@ func newMetaRegistry(metaDir, classesDir, globalDefPath, propertiesDir string) (
 			if err := yaml.Unmarshal(raw, &doc); err != nil {
 				continue
 			}
+			className := strings.TrimSuffix(base, ".yaml")
 			if rn, ok := doc["resource_name"].(string); ok && rn != "" {
-				reg.ClassResourceName[strings.TrimSuffix(base, ".yaml")] = rn
+				reg.ClassResourceName[className] = rn
+			}
+			if include, ok := doc["include"].(bool); ok && include {
+				reg.ClassExplicitInclude[className] = true
 			}
 		}
 	}
@@ -927,15 +1038,6 @@ func newMetaRegistry(metaDir, classesDir, globalDefPath, propertiesDir string) (
 					attr, _ := attrAny.(string)
 					if metaKey != "" && attr != "" {
 						reg.GlobalAttributeInverter[attr] = metaKey
-					}
-				}
-			}
-			if nmf, ok := globalDoc["no_meta_file"].(map[any]any); ok {
-				for cnAny, rnAny := range nmf {
-					cn, _ := cnAny.(string)
-					rn, _ := rnAny.(string)
-					if cn != "" && rn != "" {
-						reg.NoMetaFile[cn] = rn
 					}
 				}
 			}
@@ -1127,13 +1229,11 @@ func parseLegacyAttributeType(s string) data.LegacyAttributeTypeEnum {
 // out.MigrationSource = FromSDKv2 when any of the three keys is present
 // (validates the cross-field rule in class.go validateStateUpgrades).
 //
-// The two-source merge with legacy_definitions/schema-git-commit-e21fb3e5.json
-// is NOT done here today - legacy_type and legacy_restriction default to
-// the zero value (interpreted as "inherit from current property"), which
-// covers the common case of a pure name rename. Authors needing a real
-// type or restriction diff write the explicit override into the migrated
-// YAML by hand; the script's only obligation is to capture the legacy
-// name pairs faithfully.
+// The frozen definitions/schema-git-commit-e21fb3e5.json is not consumed here.
+// legacy_type and legacy_restriction default to the zero value (interpreted as
+// "inherit from current property"), which covers the common case of a pure
+// name rename. A real type or restriction difference must be encoded in the
+// migration logic; the script captures the legacy name pairs faithfully.
 //
 // Per MIGRATION_OVERVIEW.md section 2.1, the script:
 //   - Keys top-level migration_blocks entries (className == file) into
@@ -1647,23 +1747,22 @@ func migrateProperties(file, className string, legacy map[string]any, tally *key
 			}
 
 		case "ignore_properties_in_test":
-			// Legacy shape is map<metaName, "no"> (the value is the
-			// historical "yes/no" string; "no" is the only observed
-			// value). New shape is a boolean test_config.ignore_in_test
-			// per property; flip true regardless of legacy value because
-			// the key's presence is what disables the test entry.
+			// The key's presence suppresses acceptance-test coverage, while its
+			// value is the explicitly authored value used by the legacy full
+			// example. Preserve those concerns independently.
 			ips, ok := val.(map[any]any)
 			if !ok {
 				fmt.Printf("WARN: %s: ignore_properties_in_test is not a map: %T\n", file, val)
 				continue
 			}
-			for metaKey := range ips {
+			for metaKey, exampleValue := range ips {
 				metaName, _ := metaKey.(string)
 				if metaName == "" {
 					continue
 				}
 				prop := upsertProperty(out, metaName)
 				prop.TestConfig.IgnoreInTest = true
+				prop.ExampleConfig.Full = exampleValueScenario(legacyTestValueScenario(exampleValue))
 				out.Properties[metaName] = prop
 			}
 
@@ -1692,8 +1791,10 @@ func migrateProperties(file, className string, legacy map[string]any, tally *key
 				fmt.Printf("WARN: %s: unknown static_custom_type[%s]=%s dropped\n", file, metaName, typeStr)
 			}
 
+		case "example_value_overwrite":
+			migrateExampleValueOverwrite(file, className, val, out)
+
 		case "ignore_custom_type_docs",
-			"example_value_overwrite",
 			"custom_test_dependency_name",
 			"datasource_required":
 			// S8 POSTPONE: no slot in canonical struct yet; drop with a
@@ -1713,17 +1814,10 @@ func migrateProperties(file, className string, legacy map[string]any, tally *key
 			// S3 obsolete per MIGRATION_OVERVIEW section 3. The legacy
 			// generator's getExcludeTargets subtracted entries from a
 			// SetModelTestDependencies-driven auto-union of child-class
-			// `targets:` lists. The new pipeline removes both legs of
-			// that mechanism: (a) collectChildDrivenDependencies is
-			// value-driven so no auto-union exists to subtract from, and
-			// (b) the polymorphic-same-type auto-detector (section 8.6)
-			// derives parent-class -> target-class matching from
-			// Parents intersect ToClasses plus the rendering site. Drop
-			// the key with a single log line per file; full editorial
-			// verification (catching divergence from the polymorphic
-			// rule) is gated on meta JSON loading and lands with the
-			// auto-resolution prune commit.
-			fmt.Printf("DROP: %s: exclude_targets=%v (polymorphic-same-type auto-detector now handles same-class filtering)\n", file, val)
+			// `targets:` lists. Child dependencies are now value-driven,
+			// so no cross-product exists to subtract from. Positive
+			// parent-to-target choices are retained through TargetClasses.
+			fmt.Printf("DROP: %s: exclude_targets=%v (child dependencies are value-driven; parent-target mappings are preserved)\n", file, val)
 		}
 	}
 
@@ -1732,6 +1826,69 @@ func migrateProperties(file, className string, legacy map[string]any, tally *key
 		property.ValueType = valueType
 		out.Properties[propertyName] = property
 	}
+}
+
+func migrateExampleValueOverwrite(file, className string, value any, out *data.ClassDefinition) {
+	overrides, ok := value.(map[any]any)
+	if !ok {
+		fmt.Printf("WARN: %s: example_value_overwrite is not a map: %T\n", file, value)
+		return
+	}
+	for _, attributeName := range sortedAnyMapStringKeys(overrides) {
+		expression, _ := overrides[attributeName].(string)
+		if reference, exists := legacyPropertyReferences[className][attributeName]; exists {
+			metaName, _ := metaReg.resolveMetaName(className, attributeName)
+			property := upsertProperty(out, metaName)
+			property.Reference = data.PropertyReferenceDefinition{
+				Classes:      append([]string(nil), reference.Classes...),
+				ExampleClass: reference.ExampleClass,
+				ExampleLabel: terraformReferenceInstanceName(expression),
+			}
+			out.Properties[metaName] = property
+			fmt.Printf("MIGRATE: %s: example_value_overwrite[%s] -> semantic property reference\n", file, attributeName)
+			continue
+		}
+		switch attributeName {
+		case "parent_dn":
+			setPropertyExampleOverride(out, "parentDn", expression, classifyReference(expression))
+			fmt.Printf("MIGRATE: %s: example_value_overwrite[parent_dn] -> properties.parentDn.example_config\n", file)
+			continue
+		case "target_dn":
+			setPropertyExampleOverride(out, "tDn", expression, classifyReference(expression))
+			fmt.Printf("MIGRATE: %s: example_value_overwrite[target_dn] -> properties.tDn.example_config\n", file)
+			continue
+		}
+		fmt.Printf("WARN: %s: example_value_overwrite[%s] has no semantic reference mapping\n", file, attributeName)
+	}
+}
+
+func setPropertyExampleOverride(out *data.ClassDefinition, propertyName, value string, referenceType data.ReferenceTypeEnum) {
+	property := upsertProperty(out, propertyName)
+	valueType := data.ReferenceValue
+	if referenceType == data.StaticReference {
+		valueType = data.StringValue
+	}
+	entry := data.ExampleValueEntryDefinition{Value: value, ValueType: valueType}
+	property.ExampleConfig.Minimum = data.ExampleValueScenarioDefinition{
+		Defined: true,
+		Entries: []data.ExampleValueEntryDefinition{entry},
+	}
+	property.ExampleConfig.Full = data.ExampleValueScenarioDefinition{
+		Defined: true,
+		Entries: []data.ExampleValueEntryDefinition{entry},
+	}
+	out.Properties[propertyName] = property
+}
+
+func terraformReferenceInstanceName(expression string) string {
+	parts := strings.Split(expression, ".")
+	if len(parts) >= 3 && parts[0] == "data" {
+		return parts[2]
+	}
+	if len(parts) >= 2 {
+		return parts[1]
+	}
+	return "example"
 }
 
 // applyCanonicalDefinitionCorrections records decisions that cannot be
@@ -1754,7 +1911,98 @@ func applyCanonicalDefinitionCorrections(className string, out *data.ClassDefini
 		out.Properties[propertyName] = property
 	}
 
+	// Public examples can carry richer values than acceptance tests without changing
+	// provider test behavior. Keep those differences in the canonical definition so a
+	// future migration run reproduces them.
 	switch className {
+	case "fvEpMacTag":
+		setCanonicalPropertyReference(out, "bdName", []string{"fvBD"}, "fvBD", "name")
+	case "fvEpIpTag":
+		setCanonicalPropertyReference(out, "ctxName", []string{"fvCtx"}, "fvCtx", "name")
+	case "pkiKeyRing":
+		setCanonicalPropertyReference(out, "tp", []string{"pkiTP"}, "pkiTP", "name")
+		setCanonicalExampleFull(out, "cert", data.ExampleValueEntryDefinition{Value: `file("${path.module}/certificate.pem")`, ValueType: data.ExpressionValue})
+		setCanonicalExampleFull(out, "key", data.ExampleValueEntryDefinition{Value: `file("${path.module}/private_key.pem")`, ValueType: data.ExpressionValue})
+		out.ExampleFiles = []string{"certificate.pem", "private_key.pem"}
+	case "pkiTP":
+		setCanonicalExampleMinimum(out, "certChain", data.ExampleValueEntryDefinition{Value: `file("${path.module}/certificate.pem")`, ValueType: data.ExpressionValue})
+		out.ExampleFiles = []string{"certificate.pem"}
+	case "fvMacAttr":
+		setCanonicalExample(out, "name", data.ExampleValueEntryDefinition{Value: "mac_attribute"})
+	case "fvIpAttr":
+		setCanonicalExample(out, "name", data.ExampleValueEntryDefinition{Value: "ip_attribute"})
+	case "fvVmAttr":
+		setCanonicalExampleMinimum(out, "value", data.ExampleValueEntryDefinition{Value: "example_vm"})
+		setCanonicalExampleFull(out, "value", data.ExampleValueEntryDefinition{Value: "example.com"})
+	case "fvDnsAttr":
+		setCanonicalExampleFull(out, "filter", data.ExampleValueEntryDefinition{Value: "example.com"})
+	case "netflowExporterPol":
+		setCanonicalExample(out, "name", data.ExampleValueEntryDefinition{Value: "netflow_exporter"})
+	case "netflowMonitorPol":
+		setCanonicalExample(out, "name", data.ExampleValueEntryDefinition{Value: "netflow_monitor"})
+	case "netflowRecordPol":
+		setCanonicalExample(out, "name", data.ExampleValueEntryDefinition{Value: "netflow_record"})
+	case "l3extProvLbl":
+		setCanonicalExample(out, "name", data.ExampleValueEntryDefinition{Value: "provider_label"})
+	case "vmmUplinkP":
+		entry := data.ExampleValueEntryDefinition{Value: "primary_uplink"}
+		setCanonicalExampleMinimum(out, "uplinkName", entry)
+		setCanonicalExampleFull(out, "uplinkName", entry)
+	case "fvRsDomAtt":
+		setCanonicalPropertyReference(out, "lagPolicyName", []string{"lacpEnhancedLagPol"}, "lacpEnhancedLagPol", "name")
+		setCanonicalExampleFull(out, "switchingMode", data.ExampleValueEntryDefinition{Value: "native"})
+		// The old provider documented a literal VMM domain DN because its example
+		// files were independent. The normalized example graph can now reference
+		// the generated VMM domain resource directly.
+		property := upsertProperty(out, "tDn")
+		property.ExampleConfig = data.PropertyExampleConfigDefinition{}
+		out.Properties["tDn"] = property
+	case "fvRsCtxToSDWanVpn":
+		setCanonicalExample(out, "tDn", data.ExampleValueEntryDefinition{Value: "uni/tn-example_tenant/sdwanvpncont/sdwanvpnentry-example_wan_vpn"})
+	}
+
+	// These compatibility corrections were identified after the initial bulk
+	// migration. They are intentionally applied here rather than changing the
+	// legacy files copied from develop.
+	switch className {
+	case "fabricPathEp":
+		out.ResourceName = "fabric_path_ep"
+	case "fvRsIpslaMonPol":
+		out.AllowDelete = "never"
+	case "tagAnnotation", "tagTag":
+		out.Documentation.SubCategory = "Generic"
+	case "fvRsBDToOut":
+		appendCanonicalTargetDependencies(out, "l3extOut", "l3_outside")
+	case "fvRsIntraEpg", "fvRsProv":
+		appendCanonicalTargetDependencies(out, "vzBrCP", "contract")
+	case "fvRsOspfCtxPol":
+		appendCanonicalTargetDependencies(out, "ospfCtxPol", "ospf_timers")
+	case "fvRsTenantMonPol":
+		appendCanonicalTargetDependencies(out, "monEPGPol", "monitoring_policy")
+	case "infraRsAccBndlSubgrp":
+		appendCanonicalTargetDependencies(out, "infraAccBndlSubgrp", "leaf_access_bundle_policy_sub_group")
+	case "vmmRsDomMcastAddrNs":
+		appendCanonicalTargetDependencies(out, "fvnsMcastAddrInstP", "multicast_pool")
+	case "l3extConsLbl", "l3extInstP", "l3extRsRedistributePol":
+		setCanonicalExample(out, "parentDn", data.ExampleValueEntryDefinition{
+			Value:     "aci_l3_outside.example.id",
+			ValueType: data.ReferenceValue,
+		})
+	case "mplsNodeSidP":
+		for dependencyIndex := range out.TestConfig.Dependencies {
+			dependency := &out.TestConfig.Dependencies[dependencyIndex]
+			if dependency.ClassName == "l3extLoopBackIfP" && dependency.Role == data.Parent {
+				dependency.Reference = "aci_l3out_loopback_interface_profile.test.id"
+				dependency.ReferenceType = data.ResourceReference
+			}
+		}
+	case "netflowRsExporterToEPg":
+		for dependencyIndex := range out.TestConfig.Dependencies {
+			dependency := &out.TestConfig.Dependencies[dependencyIndex]
+			if dependency.ClassName == "netflowExporterPol" && dependency.Role == data.Parent {
+				dependency.TargetClasses = []string{"fvAEPg"}
+			}
+		}
 	case "commHttps":
 		// APIC metadata provides globalThrottleUnit with both validValues and a
 		// regex validator, so generic normalization infers semantic_equality.
@@ -1775,6 +2023,56 @@ func applyCanonicalDefinitionCorrections(className string, out *data.ClassDefini
 		// current provider schema name explicit until a deliberate breaking change.
 		out.ResourceNameNested = "key_ring"
 	}
+}
+
+func applyDefinitionOnlyResourceName(className string, out *data.ClassDefinition) {
+	if out.ResourceName == "" {
+		out.ResourceName = definitionOnlyResourceNames[className]
+	}
+}
+
+func appendCanonicalTargetDependencies(out *data.ClassDefinition, className, resourceName string) {
+	out.TestConfig.Dependencies = append(out.TestConfig.Dependencies,
+		data.TestDependencyDefinition{
+			ClassName:     className,
+			Reference:     fmt.Sprintf("aci_%s.test.id", resourceName),
+			ReferenceType: data.ResourceReference,
+			Role:          data.Target,
+		},
+		data.TestDependencyDefinition{
+			ClassName:     className,
+			Reference:     fmt.Sprintf("aci_%s.test_2.id", resourceName),
+			ReferenceType: data.ResourceReference,
+			Role:          data.Target,
+		},
+	)
+}
+
+func setCanonicalPropertyReference(out *data.ClassDefinition, propertyName string, classes []string, exampleClass, exampleAttribute string) {
+	property := upsertProperty(out, propertyName)
+	property.Reference = data.PropertyReferenceDefinition{
+		Classes:              classes,
+		ExampleClass:         exampleClass,
+		ExampleAttributeName: exampleAttribute,
+	}
+	out.Properties[propertyName] = property
+}
+
+func setCanonicalExampleMinimum(out *data.ClassDefinition, propertyName string, entries ...data.ExampleValueEntryDefinition) {
+	property := upsertProperty(out, propertyName)
+	property.ExampleConfig.Minimum = data.ExampleValueScenarioDefinition{Defined: true, Entries: entries}
+	out.Properties[propertyName] = property
+}
+
+func setCanonicalExampleFull(out *data.ClassDefinition, propertyName string, entries ...data.ExampleValueEntryDefinition) {
+	property := upsertProperty(out, propertyName)
+	property.ExampleConfig.Full = data.ExampleValueScenarioDefinition{Defined: true, Entries: entries}
+	out.Properties[propertyName] = property
+}
+
+func setCanonicalExample(out *data.ClassDefinition, propertyName string, entries ...data.ExampleValueEntryDefinition) {
+	setCanonicalExampleMinimum(out, propertyName, entries...)
+	setCanonicalExampleFull(out, propertyName, entries...)
 }
 
 // buildOverwritesInverter returns a map<snake_case_new_attr_name, meta_camel_case>
@@ -1809,6 +2107,36 @@ func buildOverwritesInverter(legacy map[string]any, metaProps []string) map[stri
 	return out
 }
 
+// canonicalTestAddressValues replaces arbitrary publicly routable addresses from
+// the immutable legacy fixtures with IANA documentation ranges at migration time.
+// The canonical test data then supplies the same safe values to tests and examples.
+var canonicalTestAddressValues = map[string]string{
+	"1.1.1.0/24":    "192.0.2.0/24",
+	"1.1.1.1":       "192.0.2.1",
+	"1.1.1.1/10":    "192.0.2.1/24",
+	"1.1.1.1/30":    "192.0.2.1/30",
+	"1.1.1.3":       "192.0.2.3",
+	"1.1.1.4":       "192.0.2.4",
+	"2.2.2.0/24":    "198.51.100.0/24",
+	"2.2.2.1":       "198.51.100.1",
+	"2.2.2.2":       "198.51.100.2",
+	"2.2.2.2/24":    "198.51.100.2/24",
+	"2.2.2.3":       "198.51.100.3",
+	"2.2.2.3/24":    "198.51.100.3/24",
+	"2.2.2.4":       "198.51.100.4",
+	"2.2.2.4/24":    "198.51.100.4/24",
+	"11.11.11.1/11": "203.0.113.11/24",
+	"12.12.12.1":    "203.0.113.12",
+	"131.107.1.200": "203.0.113.200",
+}
+
+func canonicalTestAddressValue(value string) string {
+	if replacement, ok := canonicalTestAddressValues[value]; ok {
+		return replacement
+	}
+	return value
+}
+
 // legacyValueToHCL renders a yaml.v2-decoded test value as a single string
 // suitable for ConfigValue. Scalars stringify via fmt.Sprintf; lists render
 // as bracketed comma-separated literals so the renderer can copy them into
@@ -1821,7 +2149,7 @@ func legacyValueToHCL(v any) string {
 	case nil:
 		return ""
 	case string:
-		return x
+		return canonicalTestAddressValue(x)
 	case bool:
 		if x {
 			return "true"
@@ -1851,14 +2179,15 @@ func legacyValueToHCL(v any) string {
 //
 // Nested keys (per the same row):
 //
-//	custom_type            -> obsolete (section 3); silently dropped.
-//	                          The 10 IpAddress files fold the IPv6 author
-//	                          choice into the standard buckets; the 1
-//	                          vmm_arp_learning ride-along is section 8.1.
+//	custom_type            -> obsolete (section 3). The 10 IpAddress files
+//	                          fold the authored IP into the standard scenarios;
+//	                          vmm_arp_learning duplicates its Create value.
 //	datasource_required    -> DERIVE (section 6); IdentifiedBy + Default
 //	                          bucket drive the datasource lookup config.
 //	datasource_non_existing -> DERIVE (section 6); type-aware non-matching
 //	                          transform of resource_required.
+//	resource_required      -> TestConfig.Default; required and identifying properties
+//	                          use this scenario in both public examples.
 //	child_*, ignore_in_*   -> class-level test_config.children / dependency
 //	                          overrides; v2.19.0 carries no data here.
 //
@@ -1875,7 +2204,7 @@ func migrateTestValues(file, className string, val any, out *data.ClassDefinitio
 		return
 	}
 	// Sort bucket names so the per-file run order is deterministic and the
-	// per-property Create/Default/Legacy slices land in the same order on
+	// per-property Create/Default/Legacy scenarios land in the same order on
 	// every invocation.
 	bucketNames := make([]string, 0, len(tv))
 	for k := range tv {
@@ -1923,19 +2252,20 @@ func migrateTestValues(file, className string, val any, out *data.ClassDefinitio
 				if metaName == "" {
 					continue
 				}
-				tve := data.TestValueEntryDefinition{
-					ConfigValue: legacyValueToHCL(entries[snakeKey]),
-				}
+				scenario := legacyTestValueScenario(entries[snakeKey])
 				prop := upsertProperty(out, metaName)
+				if _, isSet := entries[snakeKey].([]any); isSet {
+					prop.ValueType = data.Set
+				}
 				switch bucket {
 				case "all":
-					prop.TestConfig.Create = append(prop.TestConfig.Create, tve)
+					appendTestValueScenario(&prop.TestConfig.Create, scenario)
 				case "default":
-					prop.TestConfig.Default = append(prop.TestConfig.Default, tve)
+					appendTestValueScenario(&prop.TestConfig.Default, scenario)
 				case "update":
-					prop.TestConfig.Update = append(prop.TestConfig.Update, tve)
+					appendTestValueScenario(&prop.TestConfig.Update, scenario)
 				case "force_new":
-					prop.TestConfig.ForceNew = append(prop.TestConfig.ForceNew, tve)
+					appendTestValueScenario(&prop.TestConfig.ForceNew, scenario)
 				}
 				out.Properties[metaName] = prop
 			}
@@ -1974,9 +2304,8 @@ func migrateTestValues(file, className string, val any, out *data.ClassDefinitio
 				if metaName == "" {
 					continue
 				}
-				tve := data.TestValueEntryDefinition{ConfigValue: value}
 				prop := upsertProperty(out, metaName)
-				prop.TestConfig.Update = append(prop.TestConfig.Update, tve)
+				appendTestValueScenario(&prop.TestConfig.Update, testValueScenario(data.TestValueEntryDefinition{ConfigValue: value}))
 				out.Properties[metaName] = prop
 				fmt.Printf("REUSE: %s: test_values.custom_type[%s]=%s -> test_config.update (exercise custom IpAddress type)\n", file, snakeKey, value)
 			}
@@ -1987,15 +2316,47 @@ func migrateTestValues(file, className string, val any, out *data.ClassDefinitio
 			// no migration of these nested keys today.
 			continue
 
-		case "resource_required", "test_values_for_parent":
-			// DERIVE per section 6 (resource_required is the variant used
-			// when the property is required-vs-optional; test_values_for_
-			// parent is the values used when this class is rendered as a
-			// parent in another class's test). Both are reproducible from
-			// the standard Create/Default buckets plus the property's
-			// Restriction; drop them silently and let the loader/renderer
-			// rebuild them.
-			continue
+		case "resource_required":
+			entries, ok := entry.(map[any]any)
+			if !ok {
+				fmt.Printf("WARN: %s: test_values.resource_required is not a map: %T\n", file, entry)
+				continue
+			}
+			for _, snakeKey := range sortedAnyMapStringKeys(entries) {
+				metaName, _ := metaReg.resolveMetaName(className, snakeKey)
+				if metaName == "" {
+					continue
+				}
+				prop := upsertProperty(out, metaName)
+				if _, isSet := entries[snakeKey].([]any); isSet {
+					prop.ValueType = data.Set
+				}
+				scenario := legacyTestValueScenario(entries[snakeKey])
+				prop.TestConfig.Default = scenario
+				prop.TestConfig.Default.Preserve = true
+				out.Properties[metaName] = prop
+			}
+
+		case "test_values_for_parent":
+			instances, ok := entry.([]any)
+			if !ok {
+				fmt.Printf("WARN: %s: test_values.test_values_for_parent is not a list: %T\n", file, entry)
+				continue
+			}
+			for _, rawInstance := range instances {
+				properties, ok := rawInstance.(map[any]any)
+				if !ok {
+					fmt.Printf("WARN: %s: test_values.test_values_for_parent instance is not a map: %T\n", file, rawInstance)
+					continue
+				}
+				instance := data.ChildTestInstanceOverrideDefinition{
+					Properties: make(map[string]data.TestValueScenarioDefinition, len(properties)),
+				}
+				for _, attributeName := range sortedAnyMapStringKeys(properties) {
+					instance.Properties[attributeName] = legacyTestValueScenario(properties[attributeName])
+				}
+				out.TestConfig.EmbeddedInstances = append(out.TestConfig.EmbeddedInstances, instance)
+			}
 
 		default:
 			// child_*, ignore_in_*, and any future nested key. Today
@@ -2066,8 +2427,10 @@ func stringifyConfigOverrides(file, who string, raw any) map[string]string {
 //     auto-emitted by the loader regardless of whether the legacy block
 //     mentions them, so the prune is dep-count-neutral for multi-parent
 //     classes too.
+//   - entry.class_name and any parent_dependency are metadata-backed and
+//     receive a resource artifact from IdentifiedBy or an explicit include.
 //   - entry has no `properties` (would become non-empty ConfigOverrides),
-//     no `target_classes` (polymorphic-detector input), and no
+//     no `target_classes` (parent-target mapping), and no
 //     `class_in_parent`.
 //   - entry's `parent_dn`, if present, equals the canonical
 //     `aci_<resourceName>.test.id` form. The bare `<resourceName>.test.id`
@@ -2090,6 +2453,9 @@ func canParentEntryAutoResolve(selfClass string, entry map[any]any) bool {
 	if len(cb) == 0 || cb[0] != className {
 		return false
 	}
+	if !canAutoResolveResourceDependency(className) {
+		return false
+	}
 	if props, ok := entry["properties"]; ok && props != nil {
 		if m, ok := props.(map[any]any); ok && len(m) > 0 {
 			return false
@@ -2107,6 +2473,9 @@ func canParentEntryAutoResolve(selfClass string, entry map[any]any) bool {
 	if pdep, ok := entry["parent_dependency"].(string); ok && pdep != "" {
 		parentCb := metaReg.ClassContainedBy[className]
 		if len(parentCb) == 0 || parentCb[0] != pdep {
+			return false
+		}
+		if !canAutoResolveResourceDependency(pdep) {
 			return false
 		}
 		if pdepName, ok := entry["parent_dependency_name"].(string); ok && pdepName != "" && !isCanonicalAutoRef(pdep, pdepName) {
@@ -2127,23 +2496,26 @@ func canParentEntryAutoResolve(selfClass string, entry map[any]any) bool {
 // Returns false when the resource_name is unknown so the parent entry stays
 // verbatim.
 func isCanonicalAutoRef(className, ref string) bool {
-	res := metaReg.ClassResourceName[className]
+	res := resourceNameForClass(className)
 	if res == "" {
 		return false
 	}
 	return ref == "aci_"+res+".test.id" || ref == res+".test.id"
 }
 
-// targetResourceName returns the resource_name for className mirroring the
-// loader's setResourceName resolution order: explicit resource_name from
-// legacy classes/<class>.yaml, then no_meta_file, then the meta `label`
-// projected through utils.Underscore (matches the setResourceName label
-// fallback). Returns "" when none of the three sources knows the class.
-func targetResourceName(className string) string {
+// canAutoResolveResourceDependency reports whether a class is backed by local
+// metadata and receives a resource artifact either from IdentifiedBy or the
+// legacy explicit include override. Definition-only classes never qualify.
+func canAutoResolveResourceDependency(className string) bool {
+	identifiedBy, hasMeta := metaReg.ClassIdentifiedBy[className]
+	return hasMeta && (len(identifiedBy) > 0 || metaReg.ClassExplicitInclude[className])
+}
+
+// resourceNameForClass returns the Terraform name for className, mirroring the
+// datastore's name-only lookup. Explicit resource_name wins; otherwise
+// metadata-backed classes fall back to their underscored label.
+func resourceNameForClass(className string) string {
 	if res := metaReg.ClassResourceName[className]; res != "" {
-		return res
-	}
-	if res := metaReg.NoMetaFile[className]; res != "" {
 		return res
 	}
 	if lbl := metaReg.ClassMetaLabel[className]; lbl != "" {
@@ -2168,16 +2540,15 @@ func targetResourceName(className string) string {
 //     diagnostic; we treat it as auto-resolvable because the loader's
 //     post-prune output replaces it with `aci_<resourceName>.test.id`.
 //   - `uni/tn-test_name/<anything><resourceName>_name_<N>` for N in 0..2
-//     when no meta rnFormat is registered (NoMetaFile targets such as
+//     when no meta rnFormat is registered (definition-only targets such as
 //     vzBrCP / monEPGPol / fvEpRetPol). The legacy fixtures uniformly
 //     used the `<resourceName>_name_<N>` token as the rightmost DN
 //     segment; the `static: true` flag (already excluded above) covers
 //     the rare case where an author pinned a non-conventional instance.
 //
-// Returns false when the resource_name is unknown (target class not in
-// DataStore or NoMetaFile), so the entry stays verbatim.
+// Returns false when the resource_name is unknown, so the entry stays verbatim.
 func isCanonicalAutoTargetRef(className, ref string) bool {
-	res := targetResourceName(className)
+	res := resourceNameForClass(className)
 	if res == "" {
 		return false
 	}
@@ -2203,7 +2574,7 @@ func isCanonicalAutoTargetRef(className, ref string) bool {
 		}
 		return false
 	}
-	// NoMetaFile fallback: require the rightmost DN segment to be the
+	// Definition-only fallback: require the rightmost DN segment to be the
 	// canonical `<resourceName>_name_<N>` token (the legacy generator
 	// uniformly used this form for relation targets).
 	last := ref[strings.LastIndex(ref, "/")+1:]
@@ -2244,10 +2615,11 @@ func isCanonicalAutoTargetRef(className, ref string) bool {
 //     migration trusts the meta as the source of truth for the target
 //     class identity. This single check filters polymorphic and
 //     non-canonical helper-target entries.
-//   - target class has a resource_name resolvable via targetResourceName
-//     (explicit, NoMetaFile, or derived from meta label). Without one,
-//     the loader's setResourceName errors and we keep the legacy entry
-//     for diagnostic clarity.
+//   - target class is metadata-backed, receives a resource artifact from
+//     IdentifiedBy or an explicit include, and has a resource_name resolvable
+//     via resourceNameForClass (explicit or derived from meta label).
+//     Definitions without metadata are name lookups only and cannot replace an
+//     authored dependency.
 //   - entry has no `target_dn_ref` and no `static: true`. target_dn_ref
 //     wins over target_dn in migrateTargets, so its presence indicates an
 //     authored reference shape we should preserve. `static: true` forces
@@ -2258,7 +2630,7 @@ func isCanonicalAutoTargetRef(className, ref string) bool {
 //     contained by both fvTenant and infraInfra) accept any of the
 //     declared parents because the loader's buildDependency chains via
 //     the target's own Parents regardless of which parent the legacy
-//     entry named. For NoMetaFile targets (no meta containedBy) any
+//     entry named. For definition-only targets (no meta containedBy) any
 //     parent_dependency is accepted because the chain rebuilds from
 //     the target class's own Parents.
 //   - entry's `target_dn`, if present, satisfies isCanonicalAutoTargetRef.
@@ -2272,9 +2644,10 @@ func isCanonicalAutoTargetRef(className, ref string) bool {
 //
 // The legacy keys overwrite_parent_dn_key, shared_classes,
 // target_dn_overwrite_docs, parent_dependency_dn_ref, target_classes,
-// class_in_parent are NOT pinning signals: migrateTargets either ignores
-// them entirely or drops them with a per-file log, so their presence does
-// not affect the migrated output we're comparing against.
+// and class_in_parent are not test-dependency pinning signals. In particular,
+// target_dn_overwrite_docs is preserved separately as a tDn ExampleConfig
+// override and therefore does not stop an otherwise redundant test dependency
+// being pruned.
 func canTargetEntryAutoResolve(selfClass string, entry map[any]any) bool {
 	if metaReg == nil {
 		return false
@@ -2286,7 +2659,7 @@ func canTargetEntryAutoResolve(selfClass string, entry map[any]any) bool {
 	if toMo := metaReg.ClassRelationToMo[selfClass]; toMo == "" || toMo != className {
 		return false
 	}
-	if targetResourceName(className) == "" {
+	if !canAutoResolveResourceDependency(className) || resourceNameForClass(className) == "" {
 		return false
 	}
 	if ref, ok := entry["target_dn_ref"].(string); ok && ref != "" {
@@ -2309,9 +2682,9 @@ func canTargetEntryAutoResolve(selfClass string, entry map[any]any) bool {
 				return false
 			}
 		}
-		// NoMetaFile target (len(cb) == 0): chain rebuilds from the
-		// target's own Parents; the legacy parent_dependency was
-		// redundant with the source's parent chain.
+		if !canAutoResolveResourceDependency(pdep) {
+			return false
+		}
 	}
 	if td, ok := entry["target_dn"].(string); ok && td != "" && !isCanonicalAutoTargetRef(className, td) {
 		return false
@@ -2333,9 +2706,18 @@ func canTargetEntryAutoResolve(selfClass string, entry map[any]any) bool {
 	return true
 }
 
+func normalizeLegacyDependencyEntry(entry map[any]any) {
+	for _, key := range []string{"class_name", "parent_dependency"} {
+		className, _ := entry[key].(string)
+		if correctedClassName := legacyClassNameCorrections[className]; correctedClassName != "" {
+			entry[key] = correctedClassName
+		}
+	}
+}
+
 // migrateParents translates one legacy `parents:` block into class-level
-// TestDependencyDefinition entries with Role=Parent, plus polymorphic-
-// same-type detection (section 8.6).
+// TestDependencyDefinition entries with Role=Parent, including explicit
+// parent-to-target mappings for polymorphic relations (section 8.6).
 //
 // Sub-key mapping (per MIGRATION_OVERVIEW.md section 2.2 parents row):
 //
@@ -2345,10 +2727,8 @@ func canTargetEntryAutoResolve(selfClass string, entry map[any]any) bool {
 //	properties             -> ConfigOverrides.
 //	parent_dependency      -> recursive single-level Dependencies[] entry.
 //	parent_dependency_name -> the dep's Reference (rare, 1 file today).
-//	target_classes         -> READ for polymorphic-same-type detection;
-//	                          NOT emitted (the filter now lives on
-//	                          Relation.ToClasses + the polymorphic
-//	                          auto-detector).
+//	target_classes         -> TargetClasses on the parent dependency and
+//	                          union input for missing concrete ToClasses.
 //	class_in_parent        -> dropped (covered by the recursive dependency
 //	                          shape; warn if data ever differs).
 //
@@ -2368,8 +2748,8 @@ func migrateParents(file, selfClass string, val any, out *data.ClassDefinition) 
 		fmt.Printf("WARN: %s: parents is not a list: %T\n", file, val)
 		return
 	}
-	// Track <entry.class_name, entry.target_classes> for polymorphic-same-
-	// type detection at the end. Only fvRsSecInherited matches today.
+	// Track <entry.class_name, entry.target_classes> so concrete target classes
+	// omitted by the legacy relationship list can be added at the end.
 	type parentSample struct {
 		ClassName     string
 		TargetClasses []string
@@ -2382,6 +2762,7 @@ func migrateParents(file, selfClass string, val any, out *data.ClassDefinition) 
 			fmt.Printf("WARN: %s: parents entry is not a map: %T\n", file, raw)
 			continue
 		}
+		normalizeLegacyDependencyEntry(entry)
 		className, _ := entry["class_name"].(string)
 		if className == "" {
 			// Legacy quirk: 4 v2.19.0 files specify only parent_dependency
@@ -2398,8 +2779,9 @@ func migrateParents(file, selfClass string, val any, out *data.ClassDefinition) 
 			continue
 		}
 		dep := data.TestDependencyDefinition{
-			ClassName: className,
-			Role:      data.Parent,
+			ClassName:     className,
+			Role:          data.Parent,
+			TargetClasses: asStringSlice(entry["target_classes"]),
 		}
 		if pd, ok := entry["parent_dn"].(string); ok && pd != "" {
 			dep.Reference = pd
@@ -2423,7 +2805,7 @@ func migrateParents(file, selfClass string, val any, out *data.ClassDefinition) 
 		}
 		out.TestConfig.Dependencies = append(out.TestConfig.Dependencies, dep)
 
-		// Collect target_classes for polymorphic detection. The slot is
+		// Collect target_classes for relation target completion. The slot is
 		// always a []string when present; missing slot is recorded as nil.
 		sample := parentSample{ClassName: className}
 		if tcRaw, ok := entry["target_classes"]; ok {
@@ -2432,11 +2814,10 @@ func migrateParents(file, selfClass string, val any, out *data.ClassDefinition) 
 		samples = append(samples, sample)
 	}
 
-	// Polymorphic-same-type detection (section 8.6): when every parents
+	// Polymorphic-same-type completion (section 8.6): when every parent's
 	// entry's target_classes list is exactly [class_name] (1:1 match), the
-	// resolved Relation.ToClasses must equal the distinct union of those
-	// class_names so the polymorphic auto-detector at render time can
-	// drive multi-scenario rendering without any further YAML hint. Only
+	// resolved Relation.ToClasses must include the distinct union of those
+	// class names. The per-parent mapping itself remains on TargetClasses. Only
 	// fvRsSecInherited triggers today, expanding ToClasses from
 	// [fvAEPg, fvESg] to [fvAEPg, fvESg, l3extInstP].
 	if len(samples) < 2 {
@@ -2481,7 +2862,7 @@ func migrateParents(file, selfClass string, val any, out *data.ClassDefinition) 
 //	                             resource name from class_name).
 //	overwrite_parent_dn_key -> dropped (canonical schema infers the
 //	                             parent_dn attribute name on the target).
-//	target_dn_overwrite_docs -> dropped (S3 obsolete, doc-only).
+//	target_dn_overwrite_docs -> properties.tDn.ExampleConfig.
 //	shared_classes          -> dropped (no canonical slot; 3 files).
 //	parent_dependency_dn_ref -> dropped (canonical struct derives; 2 files).
 //
@@ -2526,7 +2907,7 @@ func migrateTargets(file, selfClass string, val any, out *data.ClassDefinition) 
 	//     Create=aci_l3_outside.test.name and
 	//     Update=aci_l3_outside.test_2.name, because
 	//     setTargetNameProperty only auto-wires the toMo property and
-	//     tnL3extOutName has no other source. fillEmptyTestValueBuckets
+	//     tnL3extOutName has no other source. fillUndefinedTestValueScenarios
 	//     mirrors Create into Default / ForceNew.
 	// This is the only class in the meta with this shape (audit: of
 	// 22 named-relation classes with role:target entries,
@@ -2564,16 +2945,16 @@ func migrateTargets(file, selfClass string, val any, out *data.ClassDefinition) 
 			out.Properties = map[string]data.PropertyDefinition{}
 		}
 		prop := out.Properties["tnL3extOutName"]
-		prop.TestConfig.Create = []data.TestValueEntryDefinition{{
+		prop.TestConfig.Create = testValueScenario(data.TestValueEntryDefinition{
 			ConfigValue: "aci_l3_outside.test.name",
 			AssertValue: "aci_l3_outside.test.name",
 			ValueType:   data.ReferenceValue,
-		}}
-		prop.TestConfig.Update = []data.TestValueEntryDefinition{{
+		})
+		prop.TestConfig.Update = testValueScenario(data.TestValueEntryDefinition{
 			ConfigValue: "aci_l3_outside.test_2.name",
 			AssertValue: "aci_l3_outside.test_2.name",
 			ValueType:   data.ReferenceValue,
-		}}
+		})
 		out.Properties["tnL3extOutName"] = prop
 		return
 	}
@@ -2582,6 +2963,7 @@ func migrateTargets(file, selfClass string, val any, out *data.ClassDefinition) 
 		fmt.Printf("WARN: %s: targets is not a list: %T\n", file, val)
 		return
 	}
+	targetOccurrences := map[string]int{}
 	for _, raw := range list {
 		entry, ok := raw.(map[any]any)
 		if !ok {
@@ -2593,6 +2975,8 @@ func migrateTargets(file, selfClass string, val any, out *data.ClassDefinition) 
 			fmt.Printf("WARN: %s: targets entry missing class_name\n", file)
 			continue
 		}
+		instanceIndex := targetOccurrences[className]
+		targetOccurrences[className]++
 		if canTargetEntryAutoResolve(selfClass, entry) {
 			fmt.Printf("DROP: %s: targets.%s redundant with meta relationInfo auto-resolution\n", file, className)
 			continue
@@ -2601,18 +2985,35 @@ func migrateTargets(file, selfClass string, val any, out *data.ClassDefinition) 
 			ClassName: className,
 			Role:      data.Target,
 		}
-		// target_dn_ref wins when present; otherwise fall back to
-		// target_dn. The `static: true` flag forces StaticReference even
-		// for values that look like resource references.
-		if ref, ok := entry["target_dn_ref"].(string); ok && ref != "" {
-			dep.Reference = ref
-			dep.ReferenceType = classifyReference(ref)
-		} else if td, ok := entry["target_dn"].(string); ok && td != "" {
-			dep.Reference = td
-			dep.ReferenceType = classifyReference(td)
-		}
-		if isStatic, ok := entry["static"].(bool); ok && isStatic {
+		isStatic, _ := entry["static"].(bool)
+		if isStatic {
+			if targetDn, ok := entry["target_dn"].(string); ok {
+				dep.Reference = targetDn
+			} else if reference, ok := entry["target_dn_ref"].(string); ok {
+				dep.Reference = reference
+			}
 			dep.ReferenceType = data.StaticReference
+		} else if reference, ok := entry["target_dn_ref"].(string); ok && reference != "" {
+			dep.Reference = reference
+			dep.ReferenceType = classifyReference(reference)
+		} else if resourceName := resourceNameForClass(className); resourceName != "" {
+			instanceName := fmt.Sprintf("test_%s_%d", resourceName, instanceIndex)
+			dep.Reference = fmt.Sprintf("aci_%s.%s.id", resourceName, instanceName)
+			dep.ReferenceType = data.ResourceReference
+		} else if targetDn, ok := entry["target_dn"].(string); ok {
+			dep.Reference = targetDn
+			dep.ReferenceType = classifyReference(targetDn)
+			fmt.Printf("WARN: %s: target %s has no resource mapping; retained target_dn %q\n", file, className, targetDn)
+		}
+		if exampleReference, ok := entry["target_dn_overwrite_docs"].(string); ok && exampleReference != "" {
+			exampleReferenceType := classifyReference(exampleReference)
+			// Resource references are reconstructed from the semantic target class and use
+			// the standard example label. Preserve only cases where the public example must
+			// differ in kind from the test value, such as static-test/resource-example or
+			// an intentionally static documentation DN.
+			if dep.ReferenceType == data.StaticReference || exampleReferenceType == data.StaticReference {
+				setPropertyExampleOverride(out, "tDn", exampleReference, exampleReferenceType)
+			}
 		}
 		if props, ok := entry["properties"]; ok {
 			dep.ConfigOverrides = stringifyConfigOverrides(file, "targets."+className, props)
@@ -2621,8 +3022,7 @@ func migrateTargets(file, selfClass string, val any, out *data.ClassDefinition) 
 			dep.Dependencies = []data.TestDependencyDefinition{{ClassName: pdep}}
 		}
 		// The remaining sub-keys (relation_resource_name,
-		// overwrite_parent_dn_key, target_dn_overwrite_docs,
-		// shared_classes, parent_dependency_dn_ref) intentionally have no
+		// overwrite_parent_dn_key, shared_classes, parent_dependency_dn_ref) intentionally have no
 		// canonical slot — see the function doc for the rationale.
 		out.TestConfig.Dependencies = append(out.TestConfig.Dependencies, dep)
 	}
@@ -2644,6 +3044,9 @@ func projectTestDependency(d data.TestDependencyDefinition) map[string]any {
 	}
 	if d.Role != data.UndefinedRole {
 		m["role"] = d.Role.String()
+	}
+	if len(d.TargetClasses) > 0 {
+		m["target_classes"] = d.TargetClasses
 	}
 	if len(d.ConfigOverrides) > 0 {
 		m["config_overrides"] = d.ConfigOverrides
@@ -2694,9 +3097,55 @@ func projectProperty(p data.PropertyDefinition) map[string]any {
 			"description": p.Documentation.Description,
 		}
 	}
+	if len(p.Reference.Classes) > 0 || p.Reference.ExampleClass != "" {
+		reference := map[string]any{}
+		if len(p.Reference.Classes) > 0 {
+			reference["classes"] = p.Reference.Classes
+		}
+		if p.Reference.ExampleClass != "" {
+			reference["example_class"] = p.Reference.ExampleClass
+		}
+		if p.Reference.ExampleLabel != "" && p.Reference.ExampleLabel != "example" {
+			reference["example_label"] = p.Reference.ExampleLabel
+		}
+		if p.Reference.ExampleAttributeName != "" && p.Reference.ExampleAttributeName != "id" {
+			reference["example_attribute"] = p.Reference.ExampleAttributeName
+		}
+		out["reference"] = reference
+	}
+	ec := projectExampleConfig(p.ExampleConfig)
+	if len(ec) > 0 {
+		out["example_config"] = ec
+	}
 	tc := projectTestConfig(p.TestConfig)
 	if len(tc) > 0 {
 		out["test_config"] = tc
+	}
+	return out
+}
+
+func projectExampleConfig(config data.PropertyExampleConfigDefinition) map[string]any {
+	out := map[string]any{}
+	if config.Minimum.Defined {
+		out["minimum"] = projectExampleEntries(config.Minimum.Entries)
+	}
+	if config.Full.Defined {
+		out["full"] = projectExampleEntries(config.Full.Entries)
+	}
+	return out
+}
+
+func projectExampleEntries(entries []data.ExampleValueEntryDefinition) []map[string]any {
+	out := make([]map[string]any, len(entries))
+	for i, entry := range entries {
+		value := map[string]any{"value": entry.Value}
+		if entry.ValueType != data.StringValue {
+			value["value_type"] = entry.ValueType.String()
+		}
+		if entry.ParentClass != "" {
+			value["parent_class"] = entry.ParentClass
+		}
+		out[i] = value
 	}
 	return out
 }
@@ -2708,25 +3157,43 @@ func projectProperty(p data.PropertyDefinition) map[string]any {
 // implemented).
 func projectTestConfig(tc data.TestConfigDefinition) map[string]any {
 	out := map[string]any{}
-	if len(tc.Create) > 0 {
-		out["create"] = projectTestEntries(tc.Create)
+	if tc.Create.Defined {
+		out["create"] = projectTestEntries(tc.Create.Entries)
 	}
-	if len(tc.Default) > 0 {
-		out["default"] = projectTestEntries(tc.Default)
+	if tc.Default.Defined {
+		out["default"] = projectTestEntries(tc.Default.Entries)
 	}
-	if len(tc.Update) > 0 {
-		out["update"] = projectTestEntries(tc.Update)
+	if tc.Update.Defined {
+		out["update"] = projectTestEntries(tc.Update.Entries)
 	}
-	if len(tc.ForceNew) > 0 {
-		out["force_new"] = projectTestEntries(tc.ForceNew)
+	if tc.ForceNew.Defined {
+		out["force_new"] = projectTestEntries(tc.ForceNew.Entries)
 	}
-	if len(tc.Legacy) > 0 {
-		out["legacy"] = projectTestEntries(tc.Legacy)
+	if tc.Legacy.Defined {
+		out["legacy"] = projectTestEntries(tc.Legacy.Entries)
 	}
 	if tc.IgnoreInTest {
 		out["ignore_in_test"] = tc.IgnoreInTest
 	}
 	return out
+}
+
+func projectChildTestInstances(instances []data.ChildTestInstanceOverrideDefinition) []map[string]any {
+	result := make([]map[string]any, 0, len(instances))
+	for _, instance := range instances {
+		properties := make(map[string]any, len(instance.Properties))
+		for attributeName, scenario := range instance.Properties {
+			if scenario.Defined {
+				properties[attributeName] = projectTestEntries(scenario.Entries)
+			}
+		}
+		projected := map[string]any{}
+		if len(properties) > 0 {
+			projected["properties"] = properties
+		}
+		result = append(result, projected)
+	}
+	return result
 }
 
 func projectTestEntries(entries []data.TestValueEntryDefinition) []map[string]any {
@@ -2809,10 +3276,9 @@ func toStringSlice(v any) []string {
 	return out
 }
 
-// hasMigratedData returns true when at least one Phase-1 field has been
-// populated. Phase-1-empty inputs (the 60+ legacy files whose only keys
-// are TODO dispositions) are skipped to avoid emitting noisy empty .yaml
-// files at the migration target.
+// hasMigratedData returns true when at least one canonical field has been
+// populated. Inputs containing only obsolete or derivable legacy data are
+// skipped to avoid emitting noisy empty YAML files.
 func hasMigratedData(c data.ClassDefinition) bool {
 	if c.AllowDelete != "" || c.ResourceName != "" || c.ResourceNameNested != "" || c.RnPrepend != "" || c.RequiredAsChild || c.IsSingleNestedWhenDefinedAsChild {
 		return true
@@ -2829,10 +3295,10 @@ func hasMigratedData(c data.ClassDefinition) bool {
 	if len(c.ExcludeChildren) > 0 || len(c.ExcludeParents) > 0 || len(c.IncludeChildren) > 0 || len(c.IncludeParents) > 0 {
 		return true
 	}
-	if c.Artifacts != nil || len(c.ParentDnVariants) > 0 {
+	if c.Artifacts != nil || len(c.ExampleFiles) > 0 || len(c.ParentDnVariants) > 0 {
 		return true
 	}
-	if len(c.TestConfig.IgnoreTests) > 0 || c.TestConfig.IgnoreImportStateVerify || len(c.TestConfig.Dependencies) > 0 || c.TestConfig.ReplaceAutoResolved {
+	if len(c.TestConfig.IgnoreTests) > 0 || c.TestConfig.IgnoreImportStateVerify || len(c.TestConfig.Dependencies) > 0 || len(c.TestConfig.EmbeddedInstances) > 0 || c.TestConfig.ReplaceAutoResolved {
 		return true
 	}
 	if c.Documentation.SubCategory != "" || len(c.Documentation.UiLocations) > 0 || len(c.Documentation.DnFormats) > 0 || len(c.Documentation.ExampleParentClasses) > 0 {
@@ -2853,9 +3319,6 @@ func hasMigratedData(c data.ClassDefinition) bool {
 // noisy `allow_delete: ""` / `documentation: {}` entries on every file.
 // Hand-projecting keeps the migrated YAML clean and focuses the L3
 // round-trip on real content.
-//
-// Phase 1 covers the keys handled by migrate(); subsequent commits extend
-// this projection alongside their new translations.
 func marshalView(c data.ClassDefinition) map[string]any {
 	out := map[string]any{}
 	if c.AllowDelete != "" {
@@ -2886,6 +3349,9 @@ func marshalView(c data.ClassDefinition) map[string]any {
 			names[i] = a.String()
 		}
 		out["artifacts"] = names
+	}
+	if len(c.ExampleFiles) > 0 {
+		out["example_files"] = c.ExampleFiles
 	}
 	if len(c.ExcludeChildren) > 0 {
 		out["exclude_children"] = c.ExcludeChildren
@@ -2969,6 +3435,9 @@ func marshalView(c data.ClassDefinition) map[string]any {
 	if len(c.TestConfig.Dependencies) > 0 {
 		testCfg["dependencies"] = projectTestDependencies(c.TestConfig.Dependencies)
 	}
+	if len(c.TestConfig.EmbeddedInstances) > 0 {
+		testCfg["embedded_instances"] = projectChildTestInstances(c.TestConfig.EmbeddedInstances)
+	}
 	if len(testCfg) > 0 {
 		out["test_config"] = testCfg
 	}
@@ -3019,9 +3488,59 @@ func roundTripStrict(view map[string]any) ([]byte, error) {
 	return out, nil
 }
 
+func validateLegacyResourceNameOverwrites(file string, tally *keyTally) error {
+	payload, err := os.ReadFile(file)
+	if err != nil {
+		return err
+	}
+
+	var actual map[string]string
+	if err := yaml.UnmarshalStrict(payload, &actual); err != nil {
+		return fmt.Errorf("parse: %w", err)
+	}
+	if len(actual) != len(expectedLegacyResourceNameOverwrites) {
+		return fmt.Errorf("expected %d entries, found %d", len(expectedLegacyResourceNameOverwrites), len(actual))
+	}
+	for key, expectedValue := range expectedLegacyResourceNameOverwrites {
+		actualValue, ok := actual[key]
+		if !ok {
+			return fmt.Errorf("missing audited entry %q", key)
+		}
+		if actualValue != expectedValue {
+			return fmt.Errorf("entry %q changed from %q to %q", key, expectedValue, actualValue)
+		}
+		tally.recordProperty(file, "resource_name_overwrite")
+	}
+	return nil
+}
+
+func removeStaleCanonicalDefinitions(outputDir string, expectedDefinitions map[string]struct{}) (int, error) {
+	definitionFiles, err := filepath.Glob(filepath.Join(outputDir, "*.yaml"))
+	if err != nil {
+		return 0, fmt.Errorf("glob canonical definitions: %w", err)
+	}
+
+	removed := 0
+	for _, definitionFile := range definitionFiles {
+		base := filepath.Base(definitionFile)
+		if base == "global.yaml" {
+			continue
+		}
+		if _, expected := expectedDefinitions[base]; expected {
+			continue
+		}
+		if err := os.Remove(definitionFile); err != nil {
+			return removed, fmt.Errorf("remove stale canonical definition %q: %w", definitionFile, err)
+		}
+		fmt.Printf("Removed stale canonical definition: %s\n", definitionFile)
+		removed++
+	}
+	return removed, nil
+}
+
 func main() {
-	classesDir := "gen/scripts/legacy_definitions/classes"
-	propertiesDir := "gen/scripts/legacy_definitions/properties"
+	classesDir := "gen/definitions/classes"
+	propertiesDir := "gen/definitions/properties"
 	outputDir := "gen/definitions"
 	metaDir := "gen/meta"
 	globalDefPath := "gen/definitions/global.yaml"
@@ -3043,6 +3562,10 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error reading classes dir: %v\n", err)
 		os.Exit(1)
 	}
+	if len(files) == 0 {
+		fmt.Fprintf(os.Stderr, "Error reading classes dir: no legacy YAML files found in %s\n", classesDir)
+		os.Exit(1)
+	}
 
 	// Pre-load all property YAML files, keyed by basename (e.g. "fvBD.yaml").
 	// Entries are removed as the class loop consumes them so the remaining
@@ -3053,8 +3576,14 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error reading properties dir: %v\n", err)
 		os.Exit(1)
 	}
+	if len(propFiles) == 0 {
+		fmt.Fprintf(os.Stderr, "Error reading properties dir: no legacy YAML files found in %s\n", propertiesDir)
+		os.Exit(1)
+	}
 	propMap := map[string]string{} // basename -> full path
 	tally := newKeyTally()
+	migrated, skipped, failed := 0, 0, 0
+	expectedDefinitions := map[string]struct{}{}
 	for _, pf := range propFiles {
 		base := filepath.Base(pf)
 		// properties/global.yaml is the legacy carrier for what is now
@@ -3065,10 +3594,18 @@ func main() {
 			fmt.Printf("Skipped (properties/global.yaml - covered by GlobalMetaDefinition): %s\n", pf)
 			continue
 		}
+		if base == "resource_name_overwrite.yaml" {
+			if err := validateLegacyResourceNameOverwrites(pf, tally); err != nil {
+				fmt.Fprintf(os.Stderr, "Error validating obsolete compatibility file %s: %v\n", pf, err)
+				failed++
+			} else {
+				fmt.Printf("Skipped (obsolete resource-name compatibility map): %s\n", pf)
+				skipped++
+			}
+			continue
+		}
 		propMap[base] = pf
 	}
-
-	migrated, skipped, failed := 0, 0, 0
 
 	for _, file := range files {
 		// classes/global.yaml is the legacy carrier for what is now
@@ -3116,6 +3653,7 @@ func main() {
 		// but interact - run dedup once both are loaded.
 		liftTestDefaultsToDefaultValues(file, className, &canonical)
 		propagateRequiredCreateToUpdate(file, &canonical)
+		applyDefinitionOnlyResourceName(className, &canonical)
 		applyCanonicalDefinitionCorrections(className, &canonical)
 
 		if !hasMigratedData(canonical) {
@@ -3139,6 +3677,7 @@ func main() {
 		}
 
 		fmt.Printf("Migrated: %s -> %s\n", file, outputPath)
+		expectedDefinitions[filepath.Base(outputPath)] = struct{}{}
 		migrated++
 	}
 
@@ -3162,6 +3701,7 @@ func main() {
 		}
 		liftTestDefaultsToDefaultValues(propPath, orphanClass, &canonical)
 		propagateRequiredCreateToUpdate(propPath, &canonical)
+		applyDefinitionOnlyResourceName(orphanClass, &canonical)
 		applyCanonicalDefinitionCorrections(orphanClass, &canonical)
 		if !hasMigratedData(canonical) {
 			skipped++
@@ -3182,13 +3722,61 @@ func main() {
 			continue
 		}
 		fmt.Printf("Migrated (orphan property): %s -> %s\n", propPath, outputPath)
+		expectedDefinitions[filepath.Base(outputPath)] = struct{}{}
 		migrated++
 	}
 
-	fmt.Printf("\nDone: %d migrated, %d skipped (no Phase-1 fields), %d failed\n",
+	definitionOnlyClasses := make([]string, 0, len(definitionOnlyResourceNames))
+	for className := range definitionOnlyResourceNames {
+		definitionOnlyClasses = append(definitionOnlyClasses, className)
+	}
+	sort.Strings(definitionOnlyClasses)
+	for _, className := range definitionOnlyClasses {
+		outputName := className + ".yaml"
+		if _, migratedFromLegacy := expectedDefinitions[outputName]; migratedFromLegacy {
+			continue
+		}
+		canonical := data.ClassDefinition{ResourceName: definitionOnlyResourceNames[className]}
+		applyCanonicalDefinitionCorrections(className, &canonical)
+		view := marshalView(canonical)
+		out, err := roundTripStrict(view)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error round-tripping definition-only class %s: %v\n", className, err)
+			failed++
+			continue
+		}
+		outputPath := filepath.Join(outputDir, className+".yaml")
+		if err := os.WriteFile(outputPath, out, 0644); err != nil {
+			fmt.Fprintf(os.Stderr, "Error writing %s: %v\n", outputPath, err)
+			failed++
+			continue
+		}
+		fmt.Printf("Migrated (definition-only lookup): %s -> %s\n", className, outputPath)
+		expectedDefinitions[outputName] = struct{}{}
+		migrated++
+	}
+
+	unknownLegacyKeys := tally.hasUnknownKeys()
+	if unknownLegacyKeys {
+		failed++
+	}
+	if failed == 0 {
+		removed, err := removeStaleCanonicalDefinitions(outputDir, expectedDefinitions)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error removing stale canonical definitions: %v\n", err)
+			failed++
+		} else if removed > 0 {
+			fmt.Printf("Removed %d stale canonical definitions.\n", removed)
+		}
+	}
+
+	fmt.Printf("\nDone: %d migrated, %d skipped, %d failed\n",
 		migrated, skipped, failed)
 	tally.print()
 
+	if unknownLegacyKeys {
+		fmt.Fprintln(os.Stderr, "Migration failed: unknown legacy keys require an explicit disposition.")
+	}
 	if failed > 0 {
 		os.Exit(1)
 	}

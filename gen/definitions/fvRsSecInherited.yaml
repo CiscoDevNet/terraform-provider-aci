@@ -27,59 +27,59 @@ test_config:
     dependencies:
     - class_name: fvAp
     role: parent
+    target_classes:
+    - fvAEPg
   - class_name: fvESg
     dependencies:
     - class_name: fvAp
     role: parent
+    target_classes:
+    - fvESg
   - class_name: l3extInstP
     dependencies:
     - class_name: l3extOut
     role: parent
+    target_classes:
+    - l3extInstP
   - class_name: fvESg
     config_overrides:
       name: esg_0
     dependencies:
     - class_name: fvAp
-    reference: uni/tn-test_name/ap-test_name/esg-esg_0
-    reference_type: static
+    reference: aci_endpoint_security_group.test_endpoint_security_group_0.id
     role: target
   - class_name: fvESg
     config_overrides:
       name: esg_1
     dependencies:
     - class_name: fvAp
-    reference: uni/tn-test_name/ap-test_name/esg-esg_1
-    reference_type: static
+    reference: aci_endpoint_security_group.test_endpoint_security_group_1.id
     role: target
   - class_name: fvAEPg
     config_overrides:
       name: epg_0
     dependencies:
     - class_name: fvAp
-    reference: uni/tn-test_name/ap-test_name/epg-epg_0
-    reference_type: static
+    reference: aci_application_epg.test_application_epg_0.id
     role: target
   - class_name: fvAEPg
     config_overrides:
       name: epg_1
     dependencies:
     - class_name: fvAp
-    reference: uni/tn-test_name/ap-test_name/epg-epg_1
-    reference_type: static
+    reference: aci_application_epg.test_application_epg_1.id
     role: target
   - class_name: l3extInstP
     config_overrides:
       name: ext_epg_0
     dependencies:
     - class_name: l3extOut
-    reference: uni/tn-test_name/out-test_l3_outside/instP-ext_epg_1
-    reference_type: static
+    reference: aci_external_epg.test_external_epg_0.id
     role: target
   - class_name: l3extInstP
     config_overrides:
       name: ext_epg_1
     dependencies:
     - class_name: l3extOut
-    reference: uni/tn-test_name/out-test_l3_outside/instP-ext_epg_0
-    reference_type: static
+    reference: aci_external_epg.test_external_epg_1.id
     role: target

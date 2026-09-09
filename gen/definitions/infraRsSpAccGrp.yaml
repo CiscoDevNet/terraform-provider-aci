@@ -9,6 +9,5 @@ test_config:
   - class_name: infraSpAccPortGrp
     config_overrides:
       name: spine_port_policy_group_1
-    reference: uni/infra/funcprof/spaccportgrp-spine_port_policy_group_1
-    reference_type: static
+    reference: aci_spine_port_policy_group.test_spine_port_policy_group_0.id
     role: target

@@ -6,14 +6,14 @@ exclude_children:
 - l2PortSecurityPol
 properties:
   encap:
-    default_values:
-      vlan-201: ""
     documentation:
       description: The VLAN encapsulation of the %s object.
     restriction: required
     test_config:
       create:
       - config_value: vlan-202
+      default:
+      - config_value: vlan-201
       update:
       - config_value: vlan-202
   mode:
@@ -35,6 +35,8 @@ test_config:
     - class_name: fvAp
     reference: aci_application_epg.test.id
     role: parent
+    target_classes:
+    - fabricPathEp
   - class_name: fabricPathEp
     reference: topology/pod-1/paths-101/pathep-[eth1/1]
     reference_type: static

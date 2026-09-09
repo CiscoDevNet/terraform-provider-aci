@@ -15,6 +15,10 @@ properties:
     test_config:
       create:
       - config_value: all
+  name:
+    test_config:
+      default:
+      - config_value: sub_criterion
 resource_name: epg_useg_sub_block_statement
 test_config:
   dependencies:

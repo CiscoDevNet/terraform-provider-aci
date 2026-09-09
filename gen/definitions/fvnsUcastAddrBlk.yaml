@@ -9,17 +9,29 @@ documentation:
     -> Address Blocks
 properties:
   from:
-    default_values:
-      10.0.0.2: ""
     test_config:
       create:
       - config_value: 10.0.0.6
+      default:
+      - config_value: 10.0.0.2
     value_type: string
   to:
-    default_values:
-      10.0.0.5: ""
     test_config:
       create:
       - config_value: 10.0.0.13
+      default:
+      - config_value: 10.0.0.5
     value_type: string
 resource_name: ip_address_block
+test_config:
+  embedded_instances:
+  - properties:
+      from:
+      - config_value: 10.0.0.2
+      to:
+      - config_value: 10.0.0.5
+  - properties:
+      from:
+      - config_value: 10.0.0.6
+      to:
+      - config_value: 10.0.0.13

@@ -17,6 +17,10 @@ properties:
       - config_value: 0.0.0.0
       update:
       - config_value: ff0e::0101/128
+  order:
+    test_config:
+      default:
+      - config_value: "1"
   rp:
     attribute_name: rendezvous_point_ip
     default_values:
@@ -36,6 +40,6 @@ properties:
       description: The source ip of the %s object.
     test_config:
       create:
-      - config_value: 1.1.1.1/30
+      - config_value: 192.0.2.1/30
       update:
       - config_value: 2001:0db8:100::10/128

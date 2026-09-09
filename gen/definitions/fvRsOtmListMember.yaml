@@ -7,6 +7,13 @@ properties:
   tDn:
     documentation:
       description: The distinguished name (DN) of the IP SLA Track Member.
+    example_config:
+      full:
+      - value: aci_ip_sla_track_member.example.id
+        value_type: reference
+      minimum:
+      - value: aci_ip_sla_track_member.example.id
+        value_type: reference
   weight:
     default_values:
       "10": ""
@@ -28,3 +35,10 @@ test_config:
     reference: uni/tn-test_tenant/trackmember-track_member_name_1
     reference_type: static
     role: target
+  embedded_instances:
+  - properties:
+      target_dn:
+      - config_value: uni/tn-test_tenant/trackmember-track_member_name_1
+  - properties:
+      target_dn:
+      - config_value: uni/tn-test_tenant/trackmember-track_member_name_2

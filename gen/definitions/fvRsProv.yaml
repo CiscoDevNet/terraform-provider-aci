@@ -29,3 +29,9 @@ test_config:
     dependencies:
     - class_name: fvAp
     role: parent
+  - class_name: vzBrCP
+    reference: aci_contract.test.id
+    role: target
+  - class_name: vzBrCP
+    reference: aci_contract.test_2.id
+    role: target

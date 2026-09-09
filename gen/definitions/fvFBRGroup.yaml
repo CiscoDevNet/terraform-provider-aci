@@ -7,6 +7,7 @@ include_children:
 - fvFBRoute
 properties:
   name:
-    default_values:
-      fallback_route_group: ""
+    test_config:
+      default:
+      - config_value: fallback_route_group
 resource_name: vrf_fallback_route_group

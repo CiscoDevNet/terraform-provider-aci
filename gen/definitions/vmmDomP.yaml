@@ -16,6 +16,8 @@ properties:
     test_config:
       create:
       - config_value: disabled
+      default:
+      - config_value: disabled
     value_type: vmm_arp_learning
   aveTimeOut:
     documentation:

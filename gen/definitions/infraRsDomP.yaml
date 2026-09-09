@@ -19,12 +19,10 @@ test_config:
   - class_name: physDomP
     config_overrides:
       name: physical_domain_0
-    reference: uni/phys-physical_domain_0
-    reference_type: static
+    reference: aci_physical_domain.test_physical_domain_0.id
     role: target
   - class_name: physDomP
     config_overrides:
       name: physical_domain_1
-    reference: uni/phys-physical_domain_1
-    reference_type: static
+    reference: aci_physical_domain.test_physical_domain_1.id
     role: target

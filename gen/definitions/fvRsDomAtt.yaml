@@ -45,6 +45,9 @@ properties:
     documentation:
       description: The IP address management (IPAM) DHCP override of the %s object.
         Only applicable for Nutanix domains.
+    example_config:
+      full:
+      - value: 10.0.0.2
     test_config:
       ignore_in_test: true
     value_type: string
@@ -54,18 +57,29 @@ properties:
     documentation:
       description: The IP address management (IPAM) enabled status of the %s object.
         Only applicable for Nutanix domains.
+    example_config:
+      full:
+      - value: "yes"
     test_config:
       ignore_in_test: true
   ipamGateway:
     documentation:
       description: The IP address management (IPAM) gateway of the %s object. Only
         applicable for Nutanix domains.
+    example_config:
+      full:
+      - value: 10.0.0.1
     test_config:
       ignore_in_test: true
     value_type: string
   lagPolicyName:
     documentation:
       description: The link aggregation group (LAG) policy name of the %s object.
+    reference:
+      classes:
+      - lacpEnhancedLagPol
+      example_attribute: name
+      example_class: lacpEnhancedLagPol
   netflowDir:
     documentation:
       description: The NetFlow monitoring direction of the %s object.
@@ -116,6 +130,9 @@ properties:
   switchingMode:
     documentation:
       description: The switching mode of the %s object.
+    example_config:
+      full:
+      - value: native
   tDn:
     documentation:
       description: The distinguished name of the target Domain object.
@@ -140,6 +157,8 @@ test_config:
     - class_name: fvAp
     reference: aci_application_epg.test.id
     role: parent
+    target_classes:
+    - vmmDomP
   - class_name: vmmDomP
     reference: uni/vmmp-VMware/dom-domain_1
     reference_type: static

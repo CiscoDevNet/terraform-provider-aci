@@ -11,11 +11,16 @@ is_single_nested_when_defined_as_child: true
 properties:
   fbrPrefix:
     attribute_name: prefix_address
-    default_values:
-      2.2.2.2/24: ""
     documentation:
       description: The prefix address of the %s object.
     test_config:
+      default:
+      - config_value: 198.51.100.3/24
       update:
       - config_value: 2001:0db8::01/64
 resource_name: vrf_fallback_route
+test_config:
+  embedded_instances:
+  - properties:
+      prefix_address:
+      - config_value: 198.51.100.2/24

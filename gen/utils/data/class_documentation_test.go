@@ -658,6 +658,16 @@ func TestSetDocumentationChildren(t *testing.T) {
 	}
 }
 
+type documentationChildLinkInput struct {
+	ChildName    string
+	ForceInclude bool
+}
+
+type documentationChildLinkExpected struct {
+	Link string
+	OK   bool
+}
+
 func TestDocumentationChildLink(t *testing.T) {
 	t.Parallel()
 	test.InitializeTest(t)
@@ -676,41 +686,40 @@ func TestDocumentationChildLink(t *testing.T) {
 	documentationExcludes := map[string]struct{}{"excludedChild": {}}
 	childrenIncludedInResource := map[string]struct{}{"embeddedChild": {}}
 
-	testCases := []struct {
-		name         string
-		childName    string
-		forceInclude bool
-		expectedLink string
-		expectedOK   bool
-	}{
+	testCases := []test.TestCase{
 		{
-			name:         "valid child",
-			childName:    "validChild",
-			expectedLink: "[aci_valid_child](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/valid_child)",
-			expectedOK:   true,
+			Name:  "test_valid_child",
+			Input: documentationChildLinkInput{ChildName: "validChild"},
+			Expected: documentationChildLinkExpected{
+				Link: "[aci_valid_child](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/valid_child)",
+				OK:   true,
+			},
 		},
-		{name: "documentation excluded child", childName: "excludedChild"},
-		{name: "embedded child", childName: "embeddedChild"},
-		{name: "class excluded child", childName: "classExcluded"},
+		{Name: "test_documentation_excluded_child", Input: documentationChildLinkInput{ChildName: "excludedChild"}, Expected: documentationChildLinkExpected{}},
+		{Name: "test_embedded_child", Input: documentationChildLinkInput{ChildName: "embeddedChild"}, Expected: documentationChildLinkExpected{}},
+		{Name: "test_class_excluded_child", Input: documentationChildLinkInput{ChildName: "classExcluded"}, Expected: documentationChildLinkExpected{}},
 		{
-			name:         "forced child bypasses exclusions",
-			childName:    "excludedChild",
-			forceInclude: true,
-			expectedLink: "[aci_excluded_child](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/excluded_child)",
-			expectedOK:   true,
+			Name:  "test_forced_child_bypasses_exclusions",
+			Input: documentationChildLinkInput{ChildName: "excludedChild", ForceInclude: true},
+			Expected: documentationChildLinkExpected{
+				Link: "[aci_excluded_child](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/excluded_child)",
+				OK:   true,
+			},
 		},
-		{name: "unknown child"},
-		{name: "child without resource", childName: "noResourceChild"},
+		{Name: "test_unknown_child", Input: documentationChildLinkInput{}, Expected: documentationChildLinkExpected{}},
+		{Name: "test_child_without_resource", Input: documentationChildLinkInput{ChildName: "noResourceChild"}, Expected: documentationChildLinkExpected{}},
 	}
 
 	for _, testCase := range testCases {
-		t.Run(testCase.name, func(t *testing.T) {
+		t.Run(testCase.Name, func(t *testing.T) {
 			t.Parallel()
+			input := testCase.Input.(documentationChildLinkInput)
+			expected := testCase.Expected.(documentationChildLinkExpected)
 
-			link, ok := documentationChildLink(testCase.childName, testCase.forceInclude, &class, ds, documentationExcludes, childrenIncludedInResource)
+			link, ok := documentationChildLink(input.ChildName, input.ForceInclude, &class, ds, documentationExcludes, childrenIncludedInResource)
 
-			assert.Equal(t, testCase.expectedLink, link)
-			assert.Equal(t, testCase.expectedOK, ok)
+			assert.Equal(t, expected.Link, link)
+			assert.Equal(t, expected.OK, ok)
 		})
 	}
 }
@@ -1126,9 +1135,8 @@ func TestSetDnFormats(t *testing.T) {
 }
 
 type setExampleParentClassesInput struct {
-	Override          []string
-	MetaContainedBy   map[string]any
-	NoMetaFileContent bool
+	Override []string
+	Parents  []string
 }
 
 type setExampleParentClassesExpected struct {
@@ -1143,42 +1151,34 @@ func TestSetExampleParentClasses(t *testing.T) {
 
 	testCases := []test.TestCase{
 		{
-			// No override and no meta containedBy — top-level classes legitimately
+			// No override and no normalized parents — top-level classes legitimately
 			// have nothing to render here.
-			Name: "test_no_override_no_meta_returns_empty",
-			Input: setExampleParentClassesInput{
-				NoMetaFileContent: true,
-			},
+			Name:     "test_no_override_no_parents_returns_empty",
+			Input:    setExampleParentClassesInput{},
 			Expected: setExampleParentClassesExpected{Full: nil},
 		},
 		{
-			Name: "test_meta_fallback_single_parent",
+			Name: "test_normalized_fallback_single_parent",
 			Input: setExampleParentClassesInput{
-				MetaContainedBy: map[string]any{"fv:Tenant": ""},
+				Parents: []string{"fvTenant"},
 			},
 			Expected: setExampleParentClassesExpected{Full: []string{"fvTenant"}},
 		},
 		{
-			// containedBy keys arrive in random map order — verify the resolver
-			// sorts before capping so output is deterministic across regenerations.
-			Name: "test_meta_fallback_sorted_and_capped_at_two",
+			// setParents has already sorted and deduplicated this list. Verify the
+			// documentation projection preserves that order while capping it.
+			Name: "test_normalized_fallback_capped_at_two",
 			Input: setExampleParentClassesInput{
-				MetaContainedBy: map[string]any{
-					"fv:ESg":      "",
-					"fv:AEPg":     "",
-					"l3ext:InstP": "",
-					"l2ext:InstP": "",
-					"mgmt:InstP":  "",
-				},
+				Parents: []string{"fvAEPg", "fvESg", "l2extInstP", "l3extInstP", "mgmtInstP"},
 			},
 			Expected: setExampleParentClassesExpected{Full: []string{"fvAEPg", "fvESg"}},
 		},
 		{
-			// Override replaces the meta fallback completely.
-			Name: "test_override_replaces_meta_fallback",
+			// Override replaces the normalized-parent fallback completely.
+			Name: "test_override_replaces_parent_fallback",
 			Input: setExampleParentClassesInput{
-				Override:        []string{"fvAEPg", "fvESg"},
-				MetaContainedBy: map[string]any{"l3ext:InstP": "", "mgmt:InstP": ""},
+				Override: []string{"fvAEPg", "fvESg"},
+				Parents:  []string{"l3extInstP", "mgmtInstP"},
 			},
 			Expected: setExampleParentClassesExpected{Full: []string{"fvAEPg", "fvESg"}},
 		},
@@ -1201,16 +1201,6 @@ func TestSetExampleParentClasses(t *testing.T) {
 				ErrorMsg: "failed to parse example_parent_classes entry 'BadClassName'",
 			},
 		},
-		{
-			Name: "test_meta_invalid_key_errors",
-			Input: setExampleParentClassesInput{
-				MetaContainedBy: map[string]any{"badkey": ""},
-			},
-			Expected: setExampleParentClassesExpected{
-				Error:    true,
-				ErrorMsg: "failed to parse meta containedBy entry 'badkey'",
-			},
-		},
 	}
 
 	for _, testCase := range testCases {
@@ -1220,16 +1210,14 @@ func TestSetExampleParentClasses(t *testing.T) {
 			expected := testCase.Expected.(setExampleParentClassesExpected)
 
 			class := Class{
-				Name: testClassName("fvRsCons"),
+				Name:    testClassName("fvRsCons"),
+				Parents: make([]*ClassName, 0, len(input.Parents)),
 				ClassDefinition: ClassDefinition{
 					Documentation: ClassDocumentationDefinition{ExampleParentClasses: input.Override},
 				},
 			}
-			if !input.NoMetaFileContent {
-				class.MetaFileContent = map[string]any{}
-				if input.MetaContainedBy != nil {
-					class.MetaFileContent["containedBy"] = input.MetaContainedBy
-				}
+			for _, parent := range input.Parents {
+				class.Parents = append(class.Parents, testClassName(parent))
 			}
 
 			err := class.Documentation.setExampleParentClasses(&class)
@@ -1481,6 +1469,7 @@ type setDescriptionWhenDefinedAsChildInput struct {
 	Label              string
 	ResourceName       string
 	ResourceNameNested string
+	Artifacts          []ArtifactEnum
 	IsSingleNested     bool
 	Relation           Relation
 	StoreClasses       map[string]Class
@@ -1500,9 +1489,20 @@ func TestSetDescriptionWhenDefinedAsChild(t *testing.T) {
 				Label:              "Foo",
 				ResourceName:       "foo",
 				ResourceNameNested: "foo",
+				Artifacts:          []ArtifactEnum{ResourceArtifact},
 				IsSingleNested:     false,
 			},
 			Expected: "foo - (" + fooLink + ") - (list) A list of Foo which can also be configured using a separate [aci_foo](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/foo) resource.",
+		},
+		{
+			Name: "test_non_relational_list_without_resource_artifact",
+			Input: setDescriptionWhenDefinedAsChildInput{
+				Label:              "Foo",
+				ResourceName:       "foo",
+				ResourceNameNested: "foo",
+				IsSingleNested:     false,
+			},
+			Expected: "foo - (" + fooLink + ") - (list) A list of Foo.",
 		},
 		{
 			Name: "test_non_relational_map",
@@ -1523,7 +1523,7 @@ func TestSetDescriptionWhenDefinedAsChild(t *testing.T) {
 				IsSingleNested:     false,
 				Relation:           Relation{RelationalClass: true, ToClasses: []*ClassName{testClassName("fvBD")}},
 				StoreClasses: map[string]Class{
-					"fvBD": {ResourceName: "bridge_domain", Documentation: ClassDocumentation{Label: "Bridge Domain"}},
+					"fvBD": {ResourceName: "bridge_domain", Artifacts: []ArtifactEnum{ResourceArtifact}, Documentation: ClassDocumentation{Label: "Bridge Domain"}},
 				},
 			},
 			Expected: "relation_to_bd - (" + fooLink + ") - (list) A list of Relation From Foo To BD pointing to Bridge Domain (" + bdLink + ") which can be configured using the [aci_bridge_domain](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bridge_domain) resource.",
@@ -1555,7 +1555,7 @@ func TestSetDescriptionWhenDefinedAsChild(t *testing.T) {
 			Expected: "relation_to_bd - (" + fooLink + ") - (list) A list of Relation From Foo To BD pointing to fvBD (" + bdLink + ").",
 		},
 		{
-			Name: "test_relational_toclass_no_resource",
+			Name: "test_relational_toclass_without_resource_artifact",
 			Input: setDescriptionWhenDefinedAsChildInput{
 				Label:              "Relation From Foo To BD",
 				ResourceName:       "relation_from_foo_to_bd",
@@ -1563,7 +1563,7 @@ func TestSetDescriptionWhenDefinedAsChild(t *testing.T) {
 				IsSingleNested:     false,
 				Relation:           Relation{RelationalClass: true, ToClasses: []*ClassName{testClassName("fvBD")}},
 				StoreClasses: map[string]Class{
-					"fvBD": {ResourceName: "", Documentation: ClassDocumentation{Label: "Bridge Domain"}},
+					"fvBD": {ResourceName: "bridge_domain", Documentation: ClassDocumentation{Label: "Bridge Domain"}},
 				},
 			},
 			Expected: "relation_to_bd - (" + fooLink + ") - (list) A list of Relation From Foo To BD pointing to Bridge Domain (" + bdLink + ").",
@@ -1577,7 +1577,7 @@ func TestSetDescriptionWhenDefinedAsChild(t *testing.T) {
 				IsSingleNested:     false,
 				Relation:           Relation{RelationalClass: true, ToClasses: []*ClassName{testClassName("fvBD")}},
 				StoreClasses: map[string]Class{
-					"fvBD": {ResourceName: "bridge_domain"},
+					"fvBD": {ResourceName: "bridge_domain", Artifacts: []ArtifactEnum{ResourceArtifact}},
 				},
 			},
 			Expected: "relation_to_bd - (" + fooLink + ") - (list) A list of Relation From Foo To BD pointing to fvBD (" + bdLink + ") which can be configured using the [aci_bridge_domain](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bridge_domain) resource.",
@@ -1594,6 +1594,7 @@ func TestSetDescriptionWhenDefinedAsChild(t *testing.T) {
 				Name:                             testClassName("fvFoo"),
 				ResourceName:                     input.ResourceName,
 				ResourceNameNested:               input.ResourceNameNested,
+				Artifacts:                        input.Artifacts,
 				IsSingleNestedWhenDefinedAsChild: input.IsSingleNested,
 				Relation:                         input.Relation,
 			}

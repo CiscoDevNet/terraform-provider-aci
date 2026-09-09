@@ -16,6 +16,10 @@ properties:
     test_config:
       create:
       - config_value: label_name
+  name:
+    test_config:
+      default:
+      - config_value: vm_attribute
   operator:
     default_values:
       equals: ""
@@ -33,14 +37,19 @@ properties:
       create:
       - config_value: domain
   value:
-    default_values:
-      default_value: ""
     documentation:
       description: The value of the %s object.
+    example_config:
+      full:
+      - value: example.com
+      minimum:
+      - value: example_vm
     restriction: required
     test_config:
       create:
       - config_value: all_value
+      default:
+      - config_value: default_value
       update:
       - config_value: all_value
 resource_name: epg_useg_vm_attribute
