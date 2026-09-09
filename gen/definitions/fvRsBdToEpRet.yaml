@@ -8,3 +8,12 @@ properties:
     documentation:
       description: The name of the Endpoint Retention Policy object.
 resource_name: relation_from_bridge_domain_to_end_point_retention_policy
+test_config:
+  dependencies:
+  - class_name: fvEpRetPol
+    config_overrides:
+      name: end_point_retention_policy_name_1
+    dependencies:
+    - class_name: fvTenant
+    reference: aci_end_point_retention_policy.test_end_point_retention_policy_0.id
+    role: target

@@ -22,6 +22,8 @@ test_config:
     - class_name: fvAp
     reference: aci_application_epg.test.id
     role: parent
+    target_classes:
+    - fabricPathEp
   - class_name: fabricPathEp
     reference: topology/pod-1/paths-101/pathep-[eth1/1]
     reference_type: static

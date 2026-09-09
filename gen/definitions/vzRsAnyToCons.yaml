@@ -9,3 +9,12 @@ properties:
     documentation:
       description: The name of the Contract object.
 resource_name: relation_from_any_to_consumer_contract
+test_config:
+  dependencies:
+  - class_name: vzBrCP
+    config_overrides:
+      name: contract_name_0
+    dependencies:
+    - class_name: fvTenant
+    reference: aci_contract.test_contract_0.id
+    role: target

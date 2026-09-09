@@ -3,3 +3,12 @@ documentation:
   ui_locations:
   - Tenants -> Networking -> VRFs -> Policy
 resource_name: relation_from_vrf_to_monitoring_policy
+test_config:
+  dependencies:
+  - class_name: monEPGPol
+    config_overrides:
+      name: monitoring_policy_name_1
+    dependencies:
+    - class_name: fvTenant
+    reference: aci_monitoring_policy.test_monitoring_policy_0.id
+    role: target

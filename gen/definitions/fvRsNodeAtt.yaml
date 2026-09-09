@@ -4,14 +4,14 @@ documentation:
   - Tenants -> Application Profiles -> Application EPGs -> Static Leafs
 properties:
   encap:
-    default_values:
-      vlan-101: ""
     documentation:
       description: The VLAN encapsulation of the %s object.
     restriction: required
     test_config:
       create:
       - config_value: vlan-100
+      default:
+      - config_value: vlan-101
       update:
       - config_value: vlan-100
   mode:
@@ -25,6 +25,8 @@ test_config:
     - class_name: fvAp
     reference: aci_application_epg.test.id
     role: parent
+    target_classes:
+    - fabricNode
   - class_name: fabricNode
     reference: topology/pod-1/node-101
     reference_type: static

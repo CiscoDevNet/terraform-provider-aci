@@ -5,9 +5,17 @@ documentation:
     -> Rogue/Coop Exception List
 properties:
   mac:
-    default_values:
-      "00:00:00:00:00:01": ""
     test_config:
       create:
       - config_value: "00:00:00:00:00:01"
+      default:
+      - config_value: "00:00:00:00:00:01"
 resource_name: rogue_coop_exception
+test_config:
+  embedded_instances:
+  - properties:
+      mac:
+      - config_value: "00:00:00:00:00:03"
+  - properties:
+      mac:
+      - config_value: "00:00:00:00:00:01"

@@ -7,6 +7,12 @@ exclude_parents:
 include_parents:
 - fvTenant
 properties:
+  ctxName:
+    reference:
+      classes:
+      - fvCtx
+      example_attribute: name
+      example_class: fvCtx
   id:
     default_values:
       "0": ""
@@ -14,12 +20,12 @@ properties:
       create:
       - config_value: "1"
   ip:
-    default_values:
-      10.0.0.1: ""
     documentation:
       description: The IP address of the %s object.
     test_config:
       create:
+      - config_value: 10.0.0.2
+      default:
       - config_value: 10.0.0.2
       update:
       - config_value: fe80::0001

@@ -3,11 +3,22 @@ documentation:
   ui_locations:
   - Tenants -> Policies -> NetFlow -> NetFlow Exporters
   - Fabric -> Access Policies -> Policies -> Interface -> NetFlow -> NetFlow Exporters
+properties:
+  tDn:
+    example_config:
+      full:
+      - value: aci_vrf.example.id
+        value_type: reference
+      minimum:
+      - value: aci_vrf.example.id
+        value_type: reference
 resource_name: relation_from_netflow_exporter_to_vrf
 test_config:
   dependencies:
   - class_name: netflowExporterPol
     role: parent
+    target_classes:
+    - fvCtx
   - class_name: fvCtx
     reference: uni/tn-test_name/ctx-test_vrf
     reference_type: static

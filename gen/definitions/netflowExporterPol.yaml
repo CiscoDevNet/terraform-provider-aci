@@ -10,14 +10,14 @@ properties:
       description: The DSCP value of the %s object.
   dstAddr:
     attribute_name: destination_ip_address
-    default_values:
-      2.2.2.1: ""
     documentation:
       description: The destination IP address of the remote node.
     restriction: required
     test_config:
       create:
-      - config_value: 12.12.12.1
+      - config_value: 203.0.113.12
+      default:
+      - config_value: 198.51.100.1
       update:
       - config_value: 2001:db8::2
   dstPort:
@@ -33,10 +33,15 @@ properties:
       update:
       - config_value: ssh
   name:
-    default_values:
-      netfow_exporter_default: ""
+    example_config:
+      full:
+      - value: netflow_exporter
+      minimum:
+      - value: netflow_exporter
     test_config:
       create:
+      - config_value: netfow_exporter
+      default:
       - config_value: netfow_exporter
   parentDn:
     default_values:
@@ -46,13 +51,13 @@ properties:
       description: The type of the source IP address for the %s object.
   srcAddr:
     attribute_name: source_ip_address
-    default_values:
-      1.1.1.1/10: ""
     documentation:
       description: The source IP address.
     test_config:
       create:
-      - config_value: 11.11.11.1/11
+      - config_value: 203.0.113.11/24
+      default:
+      - config_value: 192.0.2.1/24
       update:
       - config_value: 2001:db8::1/116
   ver:

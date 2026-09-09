@@ -12,6 +12,5 @@ test_config:
   - class_name: infraAccPortGrp
     config_overrides:
       name: leaf_access_port_policy_group_1
-    reference: uni/infra/funcprof/accportgrp-leaf_access_port_policy_group_1
-    reference_type: static
+    reference: aci_leaf_access_port_policy_group.test_leaf_access_port_policy_group_0.id
     role: target

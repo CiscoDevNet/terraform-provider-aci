@@ -16,7 +16,7 @@ properties:
       description: The loopback address of the %s object.
     test_config:
       create:
-      - config_value: 1.1.1.1
+      - config_value: 192.0.2.1
       update:
       - config_value: fe80::0002
   name:
@@ -27,12 +27,12 @@ properties:
       - config_value: node_sid_profile
   sidoffset:
     attribute_name: segment_id
-    default_values:
-      "1": ""
     documentation:
       description: The segment ID of the %s object.
     test_config:
       create:
+      - config_value: "1"
+      default:
       - config_value: "1"
 resource_name: l3out_node_sid_profile
 test_config:
@@ -40,5 +40,5 @@ test_config:
   - class_name: l3extLoopBackIfP
     dependencies:
     - class_name: l3extRsNodeL3OutAtt
-    reference: aci_logical_node_to_fabric_node.test.id
+    reference: aci_l3out_loopback_interface_profile.test.id
     role: parent

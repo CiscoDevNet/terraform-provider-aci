@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"slices"
 	"sort"
 	"strconv"
 	"strings"
@@ -22,6 +23,9 @@ var failedToLoadClasses = []string{}
 type DataStore struct {
 	// A map containing all the information about the classes required to render the templates.
 	Classes map[string]Class
+	// All per-class definitions, including definition-only classes without local APIC metadata.
+	// Definition-only classes participate in Terraform-name resolution but are never rendered.
+	ClassDefinitions map[string]ClassDefinition
 	// Configurable APIC classes that do not expose an annotation property.
 	// This is populated only when an annotation refresh is requested.
 	UnsupportedAnnotationClasses []string
@@ -39,8 +43,14 @@ type DataStore struct {
 }
 
 func NewDataStore(ctx *Context) (*DataStore, error) {
+	classDefinitions, err := loadClassDefinitions()
+	if err != nil {
+		return nil, err
+	}
+
 	dataStore := &DataStore{
 		Classes:              make(map[string]Class),
+		ClassDefinitions:     classDefinitions,
 		client:               &http.Client{Transport: &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}}},
 		ctx:                  ctx,
 		GlobalMetaDefinition: loadGlobalMetaDefinition(),
@@ -52,11 +62,11 @@ func NewDataStore(ctx *Context) (*DataStore, error) {
 		return nil, err
 	}
 	// Check if classes are set in the environment variable 'GEN_ACI_TF_META_CLASSES' and retrieve the meta files for those classes.
-	err := dataStore.retrieveEnvMetaClassesFromRemote()
+	err = dataStore.retrieveEnvMetaClassesFromRemote()
 	if err != nil {
 		return nil, err
 	}
-	// Refresh the meta files from the remote location if specified in the environment variable 'GEN_ACI_TF_META_REFRESH'.
+	// Refresh the meta files from the remote location if specified in the environment variable 'GEN_ACI_TF_META_REFRESH_ALL'.
 	// If the environment variable is not set, the default is to not refresh the meta data.
 	err = dataStore.refreshMetaFiles()
 	if err != nil {
@@ -113,7 +123,9 @@ func (ds *DataStore) refreshUnsupportedAnnotationClasses() error {
 	if err != nil {
 		return fmt.Errorf("retrieve unsupported annotation classes: %w", err)
 	}
-	defer response.Body.Close()
+	defer func() {
+		_ = response.Body.Close()
+	}()
 
 	if response.StatusCode < http.StatusOK || response.StatusCode >= http.StatusMultipleChoices {
 		return fmt.Errorf("retrieve unsupported annotation classes: unexpected HTTP status %s", response.Status)
@@ -201,16 +213,25 @@ func (ds *DataStore) retrieveMetaFileFromRemote(classNameStr string) error {
 		if err != nil {
 			return fmt.Errorf("retrieve meta file for class '%s': %w", classNameStr, err)
 		}
+		defer func() {
+			_ = res.Body.Close()
+		}()
+
+		if res.StatusCode < http.StatusOK || res.StatusCode >= http.StatusMultipleChoices {
+			return fmt.Errorf("retrieve meta file for class '%s': unexpected HTTP status %s", classNameStr, res.Status)
+		}
 
 		outputFile, err := os.Create(fmt.Sprintf("%s/%s.json", constMetaPath, classNameStr))
 		if err != nil {
 			return fmt.Errorf("create meta file for class '%s': %w", classNameStr, err)
 		}
 
-		defer outputFile.Close()
-		_, err = io.Copy(outputFile, res.Body)
-		if err != nil {
+		if _, err = io.Copy(outputFile, res.Body); err != nil {
+			_ = outputFile.Close()
 			return fmt.Errorf("write meta file for class '%s': %w", classNameStr, err)
+		}
+		if err := outputFile.Close(); err != nil {
+			return fmt.Errorf("close meta file for class '%s': %w", classNameStr, err)
 		}
 
 		ds.retrievedClasses[classNameStr] = true
@@ -231,8 +252,8 @@ func (ds *DataStore) loadClasses() error {
 		}
 	}
 
-	// If there are any classes that failed to load, log a Error.
-	// The resource names for these classes require to be defined in global definition file
+	// Fail when referenced metadata classes cannot be loaded and no per-class
+	// definition supplies their Terraform naming information.
 	if len(failedToLoadClasses) > 0 {
 		sort.Strings(failedToLoadClasses)
 		return fmt.Errorf("failed to load classes: %s", failedToLoadClasses)
@@ -288,6 +309,29 @@ func (ds *DataStore) loadClass(classNameStr string) error {
 		genLogger.Debugf("Class '%s' already loaded, skipping.", classNameStr)
 	}
 	return nil
+}
+
+// getResourceName resolves the Terraform name for a metadata-backed or
+// definition-only APIC class. Artifact availability is evaluated only on
+// loaded classes by call sites that need to render or synthesize an artifact.
+func (ds *DataStore) getResourceName(className string) string {
+	if class, ok := ds.Classes[className]; ok {
+		return class.ResourceName
+	}
+
+	definition, definitionFound := ds.ClassDefinitions[className]
+	if definitionFound && definition.ResourceName != "" {
+		return definition.ResourceName
+	}
+
+	if err := ds.loadClass(className); err == nil {
+		return ds.Classes[className].ResourceName
+	}
+
+	if !slices.Contains(failedToLoadClasses, className) {
+		failedToLoadClasses = append(failedToLoadClasses, className)
+	}
+	return ""
 }
 
 func (ds *DataStore) setTestData() {

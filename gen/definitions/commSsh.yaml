@@ -5,6 +5,9 @@ properties:
     attribute_name: host_key_algorithms
     documentation:
       description: The supported algorithms for the host key.
+    example_config:
+      full:
+      - value: rsa-sha2-256
     test_config:
       ignore_in_test: true
   kexAlgos:
@@ -13,7 +16,8 @@ properties:
       description: The supported algorithms for key exchange.
     test_config:
       create:
-      - config_value: '["curve25519-sha256"]'
+      - config_value: curve25519-sha256
+    value_type: set
   passwordAuth:
     attribute_name: password_authentication_state
     documentation:
@@ -30,10 +34,12 @@ properties:
       description: The ciphers supported by the SSH service.
     test_config:
       create:
-      - config_value: '["aes192-ctr"]'
+      - config_value: aes192-ctr
+    value_type: set
   sshMacs:
     documentation:
       description: The message authentication codes (MACs) supported by the SSH service.
     test_config:
       create:
-      - config_value: '["hmac-sha1"]'
+      - config_value: hmac-sha1
+    value_type: set

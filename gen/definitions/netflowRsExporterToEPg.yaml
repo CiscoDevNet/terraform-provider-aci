@@ -3,6 +3,15 @@ documentation:
   ui_locations:
   - Tenants -> Policies -> NetFlow -> NetFlow Exporters
   - Fabric -> Access Policies -> Policies -> Interface -> NetFlow -> NetFlow Exporters
+properties:
+  tDn:
+    example_config:
+      full:
+      - value: aci_application_epg.example.id
+        value_type: reference
+      minimum:
+      - value: aci_application_epg.example.id
+        value_type: reference
 relation_info:
   to_classes:
   - fvAEPg
@@ -13,6 +22,8 @@ test_config:
   dependencies:
   - class_name: netflowExporterPol
     role: parent
+    target_classes:
+    - fvAEPg
   - class_name: fvAEPg
     reference: uni/tn-test_name/ap-test_name/epg-test_epg
     reference_type: static

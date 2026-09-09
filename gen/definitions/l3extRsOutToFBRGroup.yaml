@@ -14,11 +14,12 @@ test_config:
     - class_name: fvTenant
     reference: aci_l3_outside.test.id
     role: parent
+    target_classes:
+    - fvFBRGroup
   - class_name: fvFBRGroup
     config_overrides:
       name: vrf_fallback_route_group_0
     dependencies:
     - class_name: fvCtx
-    reference: uni/tn-test_name/ctx-test_vrf/fbrg-vrf_fallback_route_group_0
-    reference_type: static
+    reference: aci_vrf_fallback_route_group.test_vrf_fallback_route_group_0.id
     role: target
