@@ -7,3 +7,12 @@ properties:
     documentation:
       description: The name of the BGP timers policy associated with this context.
 resource_name: relation_to_bgp_timers
+test_config:
+  dependencies:
+  - class_name: bgpCtxPol
+    config_overrides:
+      name: bgp_timers_name_1
+    dependencies:
+    - class_name: fvTenant
+    reference: aci_bgp_timers.test_bgp_timers_0.id
+    role: target

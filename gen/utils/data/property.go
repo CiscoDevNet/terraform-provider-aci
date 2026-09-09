@@ -3,7 +3,9 @@ package data
 import (
 	"fmt"
 	"math"
+	"net"
 	"slices"
+	"strconv"
 	"strings"
 
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils"
@@ -62,9 +64,12 @@ type Property struct {
 	// Version-gating is handled separately via SupportedVersions.
 	IgnoreInTest bool
 	// Test specific information for the property.
-	// This is used to generate the test cases and examples for the property.
+	// This is used to generate the test cases for the property.
 	// Nil means no test values have been resolved for this property.
 	TestValues *TestValues
+	// Reference describes the target classes for a configurable DN or name property that
+	// is neither parentDn nor tDn. Nil for ordinary scalar properties.
+	Reference *PropertyReference
 	// Validation specific information for the property.
 	// In the meta file for the class this is a regex statement that is used to validate the property.
 	Validators []Validator
@@ -214,7 +219,8 @@ type TestValueEntry struct {
 	// When empty, defaults to ConfigValue. Used when the server normalizes the value
 	// (e.g. IP zero-padding: config "fe80::1" -> state "fe80::0001").
 	AssertValue string
-	// ValueType controls HCL rendering: StringValue = quoted, ReferenceValue = unquoted expression.
+	// ValueType controls HCL rendering: StringValue is quoted; ReferenceValue and
+	// ExpressionValue are unquoted.
 	ValueType ValueRenderTypeEnum
 	// Versions restricts this entry to specific APIC versions.
 	// Only set for Default step entries where the server default value is version-dependent.
@@ -222,31 +228,59 @@ type TestValueEntry struct {
 	Versions *Versions
 }
 
+// TestValueScenario holds all values for one lifecycle scenario and records whether
+// that scenario was explicitly defined. A defined scenario may intentionally contain
+// no entries, which represents an empty set rather than an absent override.
+type TestValueScenario struct {
+	Defined bool
+	Entries []TestValueEntry
+}
+
+func newTestValueScenario(entries []TestValueEntry) TestValueScenario {
+	return TestValueScenario{Defined: true, Entries: entries}
+}
+
+func (s TestValueScenario) clone() TestValueScenario {
+	entries := make([]TestValueEntry, len(s.Entries))
+	copy(entries, s.Entries)
+	return TestValueScenario{Defined: s.Defined, Entries: entries}
+}
+
+// PropertyReference is the resolved form of PropertyReferenceDefinition.
+type PropertyReference struct {
+	Classes              []*ClassName
+	ExampleClass         *ClassName
+	ExampleLabel         string
+	ExampleAttributeName string
+}
+
 // TestValues holds the per-property test values for each test scenario.
 // Each field is a full step description — the template renders all steps uniformly by iterating entries.
-// For set-typed properties, each slice contains multiple entries (one per set member).
+// For set-typed properties, each scenario can contain multiple entries (one per set member)
+// or be explicitly defined with no entries to represent an empty set.
 type TestValues struct {
 	// Create is the value(s) for the "all attributes" create step (Step 1).
 	// ConfigInclude=true for all properties that should appear in the HCL config.
-	Create []TestValueEntry
+	Create TestValueScenario
 	// Update is the changed value(s) for the update step (Step 2).
 	// ConfigInclude=true for all properties that should appear in the HCL config.
-	Update []TestValueEntry
+	Update TestValueScenario
 	// Default is the full step description for the "required-only" create step (Step 3).
-	// Required properties: ConfigInclude=true (still in config), AssertValue=same as Create.
+	// Required properties remain in config. Constrained and numeric values retain Create;
+	// unconstrained strings use a stable "test_<property_name>" value.
 	// Optional properties: ConfigInclude=false (omitted from config), AssertValue=server default.
-	Default []TestValueEntry
+	Default TestValueScenario
 	// ForceNew is the full step description for the ForceNew step (Step 4).
 	// parent_dn: uses second parent reference (triggers destroy+recreate).
 	// All other properties: same as Create (resource is recreated with same attribute values).
-	ForceNew []TestValueEntry
+	ForceNew TestValueScenario
 	// Legacy is the per-step values for legacy alias attributes exposed via
-	// state_upgrades (Functioning / Frozen). Nil when the property has no
+	// state_upgrades (Functioning / Frozen). Undefined when the property has no
 	// testable legacy alias (no distinct renamed alias, or all legacy aliases
 	// have Status Removed). Auto-derived from Create when the legacy type
 	// matches the current attribute type; explicit YAML test_config.legacy
 	// always wins and is required when types diverge.
-	Legacy []TestValueEntry
+	Legacy TestValueScenario
 }
 
 type Validator struct {
@@ -349,9 +383,14 @@ func (p *Property) setPropertyData() error {
 
 	p.setAttributeName()
 
+	err := p.setReference()
+	if err != nil {
+		return err
+	}
+
 	p.setDeprecated()
 
-	err := p.setDeprecatedVersions()
+	err = p.setDeprecatedVersions()
 	if err != nil {
 		return err
 	}
@@ -409,6 +448,42 @@ func (p *Property) setPropertyData() error {
 	}
 
 	genLogger.Debugf("Successfully set property data for property '%s'.", p.PropertyName)
+	return nil
+}
+
+func (p *Property) setReference() error {
+	definition := p.propertyDefinition.Reference
+	if len(definition.Classes) == 0 && definition.ExampleClass == "" {
+		return nil
+	}
+
+	reference := &PropertyReference{
+		ExampleLabel:         definition.ExampleLabel,
+		ExampleAttributeName: definition.ExampleAttributeName,
+	}
+	if reference.ExampleAttributeName == "" {
+		reference.ExampleAttributeName = "id"
+	}
+	for _, className := range definition.Classes {
+		parsed, err := NewClassName(className)
+		if err != nil {
+			return fmt.Errorf("property '%s': invalid reference class '%s': %w", p.PropertyName, className, err)
+		}
+		reference.Classes = append(reference.Classes, parsed)
+	}
+
+	exampleClass := definition.ExampleClass
+	if exampleClass == "" && len(definition.Classes) > 0 {
+		exampleClass = definition.Classes[0]
+	}
+	if exampleClass != "" {
+		parsed, err := NewClassName(exampleClass)
+		if err != nil {
+			return fmt.Errorf("property '%s': invalid example reference class '%s': %w", p.PropertyName, exampleClass, err)
+		}
+		reference.ExampleClass = parsed
+	}
+	p.Reference = reference
 	return nil
 }
 
@@ -584,8 +659,8 @@ func (p *Property) setSensitive() {
 }
 
 func (p *Property) setTestValues() {
-	// Determine the test values for the property with per-bucket merge:
-	// auto-derive every bucket first, then overlay any explicit YAML buckets.
+	// Determine the test values for the property with per-scenario merge:
+	// auto-derive every scenario first, then overlay explicit YAML scenarios.
 	// Default and ForceNew are re-derived from the merged Create so they
 	// stay consistent when only Create is overridden, then the explicit
 	// Default / ForceNew (rare) overlays last.
@@ -599,7 +674,7 @@ func (p *Property) setTestValues() {
 	}
 
 	// Reference properties: explicit YAML wins; otherwise dependency
-	// resolution populates TestValues later (autoWireParentDn / autoWireTargetDn).
+	// resolution populates TestValues later (setParentDn / setTargetDn).
 	if p.PropertyName == "parentDn" || p.PropertyName == "tDn" {
 		if p.hasTestConfigDefinition() {
 			p.TestValues = p.convertTestConfigDefinition()
@@ -608,38 +683,39 @@ func (p *Property) setTestValues() {
 		return
 	}
 
-	// 1. Auto-derive every bucket from meta. May return nil for read-only.
+	// 1. Auto-derive every scenario from meta. May return nil for read-only.
 	p.TestValues = p.generateTestValues()
 
-	// 2. Overlay explicit Create / Update from YAML.
+	// 2. Overlay explicit Create / Update from YAML. Defined-but-empty scenarios
+	// are preserved because they intentionally clear set-valued attributes.
 	explicit := p.convertTestConfigDefinition()
 	if p.TestValues == nil {
 		// Read-only with no explicit overrides stays nil to match the
 		// "no test config" sentinel downstream consumers expect.
-		if len(explicit.Create) == 0 && len(explicit.Update) == 0 &&
-			len(explicit.Default) == 0 && len(explicit.ForceNew) == 0 {
+		if !explicit.Create.Defined && !explicit.Update.Defined &&
+			!explicit.Default.Defined && !explicit.ForceNew.Defined {
 			genLogger.Debugf("Property '%s' has no auto-derive and no explicit test config; TestValues left nil.", p.PropertyName)
 			return
 		}
 		p.TestValues = &TestValues{}
 	}
-	if len(explicit.Create) > 0 {
+	if explicit.Create.Defined {
 		p.TestValues.Create = explicit.Create
 	}
-	if len(explicit.Update) > 0 {
+	if explicit.Update.Defined {
 		p.TestValues.Update = explicit.Update
 	}
 
 	// 3. Re-derive Default / ForceNew from the MERGED Create so an explicit
-	//    Create override flows through to the dependent buckets.
-	p.TestValues.Default = p.generateDefault(p.TestValues.Create)
-	p.TestValues.ForceNew = p.generateForceNew(p.TestValues.Create)
+	//    Create override flows through to the dependent scenarios.
+	p.TestValues.Default = newTestValueScenario(p.generateDefault(p.TestValues.Create.Entries))
+	p.TestValues.ForceNew = newTestValueScenario(p.generateForceNew(p.TestValues.Create.Entries))
 
 	// 4. Overlay explicit Default / ForceNew (rare manual overrides).
-	if len(explicit.Default) > 0 {
+	if explicit.Default.Defined {
 		p.TestValues.Default = explicit.Default
 	}
-	if len(explicit.ForceNew) > 0 {
+	if explicit.ForceNew.Defined {
 		p.TestValues.ForceNew = explicit.ForceNew
 	}
 
@@ -648,10 +724,11 @@ func (p *Property) setTestValues() {
 
 func (p *Property) hasTestConfigDefinition() bool {
 	// Determine if the property definition has any explicit test values configured.
-	// Returns true when at least one test step (Create, Update, Default, ForceNew) has entries.
+	// Returns true when at least one standard test step is present, including an
+	// explicitly empty set scenario.
 	genLogger.Tracef("Checking for explicit test config definition for property '%s'.", p.PropertyName)
 	testConfig := p.propertyDefinition.TestConfig
-	return len(testConfig.Create) > 0 || len(testConfig.Update) > 0 || len(testConfig.Default) > 0 || len(testConfig.ForceNew) > 0
+	return testConfig.Create.Defined || testConfig.Update.Defined || testConfig.Default.Defined || testConfig.ForceNew.Defined
 }
 
 func (p *Property) convertTestConfigDefinition() *TestValues {
@@ -660,13 +737,21 @@ func (p *Property) convertTestConfigDefinition() *TestValues {
 	testConfig := p.propertyDefinition.TestConfig
 	testValues := &TestValues{}
 
-	testValues.Create = convertTestValueEntries(testConfig.Create)
-	testValues.Update = convertTestValueEntries(testConfig.Update)
-	testValues.Default = convertTestValueEntries(testConfig.Default)
-	testValues.ForceNew = convertTestValueEntries(testConfig.ForceNew)
+	testValues.Create = convertTestValueScenario(testConfig.Create)
+	testValues.Update = convertTestValueScenario(testConfig.Update)
+	testValues.Default = convertTestValueScenario(testConfig.Default)
+	testValues.ForceNew = convertTestValueScenario(testConfig.ForceNew)
+	testValues.Legacy = convertTestValueScenario(testConfig.Legacy)
 
 	genLogger.Tracef("Successfully converted test config definition for property '%s'.", p.PropertyName)
 	return testValues
+}
+
+func convertTestValueScenario(definition TestValueScenarioDefinition) TestValueScenario {
+	return TestValueScenario{
+		Defined: definition.Defined,
+		Entries: convertTestValueEntries(definition.Entries),
+	}
 }
 
 func convertTestValueEntries(testValueEntryDefinitions []TestValueEntryDefinition) []TestValueEntry {
@@ -715,18 +800,24 @@ func (p *Property) generateTestValues() *TestValues {
 	// Auto-derive Create and Update values.
 	switch {
 	case p.ValueType == Set:
-		testValues.Create, testValues.Update = p.generateSetValues()
+		create, update := p.generateSetValues()
+		testValues.Create = newTestValueScenario(create)
+		testValues.Update = newTestValueScenario(update)
 	case len(p.ValidValues) > 0:
-		testValues.Create, testValues.Update = p.generateFromValidValues()
+		create, update := p.generateFromValidValues()
+		testValues.Create = newTestValueScenario(create)
+		testValues.Update = newTestValueScenario(update)
 	default:
-		testValues.Create, testValues.Update = p.generateStringValues()
+		create, update := p.generateStringValues()
+		testValues.Create = newTestValueScenario(create)
+		testValues.Update = newTestValueScenario(update)
 	}
 
 	// Auto-derive Default step.
-	testValues.Default = p.generateDefault(testValues.Create)
+	testValues.Default = newTestValueScenario(p.generateDefault(testValues.Create.Entries))
 
 	// Auto-derive ForceNew step (same as Create — resource is recreated).
-	testValues.ForceNew = p.generateForceNew(testValues.Create)
+	testValues.ForceNew = newTestValueScenario(p.generateForceNew(testValues.Create.Entries))
 
 	genLogger.Tracef("Successfully generated test values for property '%s'.", p.PropertyName)
 	return testValues
@@ -796,17 +887,67 @@ func (p *Property) generateStringValues() ([]TestValueEntry, []TestValueEntry) {
 	// Both Required and Optional properties get distinct Create/Update values so the two buckets
 	// are always usable as the source of truth for downstream consumers — in particular the
 	// per-instance derivation in buildChildInstance, which assigns Create to instance 0 and Update
-	// to instance 1 to disambiguate list-type child siblings. Required properties on the parent
+	// to instance 1 to disambiguate set-type child siblings. Required properties on the parent
 	// resource are not value-updated by the (template) Update step, so emitting distinct values
 	// here is safe; overrides on either bucket continue to win.
 	genLogger.Tracef("Generating string test values for property '%s'.", p.PropertyName)
 
-	createValue := p.AttributeName + "_1"
-	updateValue := p.AttributeName + "_2"
+	createValue := ""
+	for _, defaultValue := range p.Documentation.DefaultValues {
+		if defaultValue.Value != "" {
+			createValue = defaultValue.Value
+			break
+		}
+	}
+
+	updateValue := ""
+	rangeValues := p.numericRange()
+	switch {
+	case p.PropertyName == "annotation":
+		createValue = "annotation"
+		updateValue = "annotation_2"
+	case p.ValueType == IpAddress:
+		// These values feed future acceptance tests and examples, so use IANA
+		// documentation ranges instead of arbitrary publicly routable addresses.
+		if createValue == "" {
+			createValue = "192.0.2.1"
+		}
+		if net.ParseIP(createValue) != nil {
+			updateValue = "198.51.100.2"
+		} else {
+			updateValue = "198.51.100.2/24"
+		}
+	case rangeValues != nil:
+		if createValue == "" {
+			createValue = strconv.FormatInt(rangeValues[0], 10)
+		}
+		updateNumeric := rangeValues[0]
+		if rangeValues[1] > rangeValues[0] {
+			updateNumeric++
+		}
+		updateValue = strconv.FormatInt(updateNumeric, 10)
+	default:
+		if createValue == "" {
+			createValue = p.AttributeName + "_1"
+		}
+		updateValue = p.AttributeName + "_2"
+	}
 	create := []TestValueEntry{{ConfigValue: createValue, ConfigInclude: true, AssertValue: createValue, ValueType: StringValue}}
 	update := []TestValueEntry{{ConfigValue: updateValue, ConfigInclude: true, AssertValue: updateValue, ValueType: StringValue}}
 	genLogger.Tracef("Successfully generated string test values for property '%s'.", p.PropertyName)
 	return create, update
+}
+
+func (p *Property) numericRange() *[2]int64 {
+	if uiType, _ := p.metaDetails["uitype"].(string); uiType != "number" {
+		return nil
+	}
+	for _, validator := range p.Validators {
+		if validator.Min != 0 || validator.Max != 0 {
+			return &[2]int64{validator.Min, validator.Max}
+		}
+	}
+	return nil
 }
 
 func (p *Property) generateDefault(create []TestValueEntry) []TestValueEntry {
@@ -820,10 +961,16 @@ func (p *Property) generateDefault(create []TestValueEntry) []TestValueEntry {
 		// Required properties remain in HCL config during the required-only step.
 		defaults := make([]TestValueEntry, 0, len(create))
 		for _, c := range create {
+			configValue := c.ConfigValue
+			assertValue := c.AssertValue
+			if p.useGeneratedRequiredName() {
+				configValue = "test_" + utils.Underscore(p.PropertyName)
+				assertValue = configValue
+			}
 			defaults = append(defaults, TestValueEntry{
-				ConfigValue:   c.ConfigValue,
+				ConfigValue:   configValue,
 				ConfigInclude: true,
-				AssertValue:   c.AssertValue,
+				AssertValue:   assertValue,
 				ValueType:     c.ValueType,
 				Versions:      c.Versions,
 			})
@@ -856,10 +1003,18 @@ func (p *Property) generateDefault(create []TestValueEntry) []TestValueEntry {
 	return defaults
 }
 
+func (p *Property) useGeneratedRequiredName() bool {
+	if p.ValueType != String || len(p.ValidValues) > 0 {
+		return false
+	}
+	uiType, _ := p.metaDetails["uitype"].(string)
+	return uiType != "number"
+}
+
 func (p *Property) generateForceNew(create []TestValueEntry) []TestValueEntry {
 	// Build the ForceNew step description.
 	// ForceNew re-creates the resource under a different parent, so all properties use Create values.
-	// parent_dn is handled separately by autoWireParentDn (uses second parent reference).
+	// parent_dn is handled separately by setParentDn (uses the second parent reference).
 	genLogger.Tracef("Generating force new test values for property '%s'.", p.PropertyName)
 	if len(create) == 0 {
 		return nil
@@ -900,8 +1055,8 @@ func (p *Property) setLegacyTestValues() {
 		return
 	}
 
-	if entries := p.propertyDefinition.TestConfig.Legacy; len(entries) > 0 {
-		p.TestValues.Legacy = convertTestValueEntries(entries)
+	if definition := p.propertyDefinition.TestConfig.Legacy; definition.Defined {
+		p.TestValues.Legacy = convertTestValueScenario(definition)
 		genLogger.Tracef("Set Legacy test values for property '%s' from definition.", p.PropertyName)
 		return
 	}
@@ -918,9 +1073,9 @@ func (p *Property) setLegacyTestValues() {
 		return
 	}
 
-	p.TestValues.Legacy = make([]TestValueEntry, 0, len(p.TestValues.Create))
-	for _, c := range p.TestValues.Create {
-		p.TestValues.Legacy = append(p.TestValues.Legacy, TestValueEntry{
+	entries := make([]TestValueEntry, 0, len(p.TestValues.Create.Entries))
+	for _, c := range p.TestValues.Create.Entries {
+		entries = append(entries, TestValueEntry{
 			ConfigValue:   c.ConfigValue,
 			ConfigInclude: c.ConfigInclude,
 			AssertValue:   c.AssertValue,
@@ -928,66 +1083,53 @@ func (p *Property) setLegacyTestValues() {
 			Versions:      c.Versions,
 		})
 	}
+	p.TestValues.Legacy = newTestValueScenario(entries)
 	genLogger.Tracef("Auto-derived Legacy test values for property '%s' from Create bucket.", p.PropertyName)
 }
 
-// fillEmptyTestValueBuckets mirrors Create into any empty Update / Default /
-// ForceNew bucket. Runs as the final auto-derivation step in
+// fillUndefinedTestValueScenarios mirrors Create into any undefined Update / Default /
+// ForceNew scenario. Explicitly defined empty scenarios are retained. Runs as the
+// final auto-derivation step in
 // Class.setPropertyTestValues so authored values and earlier wiring
 // (setParentDn, setTargetDn, setTargetNameProperty, setLegacyTestValues)
 // have already populated whatever they intend to.
 //
 // Why mirror Create:
 //   - Single-parent classes wire Create/Update/Default from parents[0] in
-//     setParentDn but only fill ForceNew when a second parent is available.
-//     The four-bucket validator requires ForceNew to be non-empty, so we
-//     reuse Create. Test step is well-formed; it does not exercise an
-//     actual destroy+recreate but does exercise the schema's ForceNew
-//     edge in the property graph.
+//     setParentDn but only fills ForceNew when a second parent is available.
+//     The four-scenario validator requires ForceNew to be defined, so we
+//     reuse Create. This keeps the normalized lifecycle shape complete; an
+//     actual replacement test still requires a distinct value or parent.
 //   - Authored test_config blocks that supply only `create` (or
-//     `create` + `default`) leave the remaining buckets empty. Mirroring
+//     `create` + `default`) leave the remaining scenarios undefined. Mirroring
 //     preserves the author's value while keeping the lifecycle steps
 //     consistent.
 //
 // Skips:
 //   - Non-testable properties (no TestValues, IgnoreInTest, ReadOnly):
 //     match the validator's gate; nothing to fill.
-//   - Properties whose Create bucket is also empty: indicates a real
-//     wiring gap. validateTestCompleteness will surface the missing
-//     Create bucket as a separate diagnostic.
+//   - Properties whose Create scenario is undefined: indicates a real
+//     wiring gap. validateTestCompleteness will surface it separately.
 //   - Legacy bucket: derived independently by setLegacyTestValues and
 //     not subject to the four-bucket validator.
-func (p *Property) fillEmptyTestValueBuckets() {
+func (p *Property) fillUndefinedTestValueScenarios() {
 	if p.TestValues == nil || p.IgnoreInTest || p.ReadOnly {
 		return
 	}
-	if len(p.TestValues.Create) == 0 {
+	if !p.TestValues.Create.Defined {
 		return
 	}
-	clone := func() []TestValueEntry {
-		out := make([]TestValueEntry, 0, len(p.TestValues.Create))
-		for _, c := range p.TestValues.Create {
-			out = append(out, TestValueEntry{
-				ConfigValue:   c.ConfigValue,
-				ConfigInclude: c.ConfigInclude,
-				AssertValue:   c.AssertValue,
-				ValueType:     c.ValueType,
-				Versions:      c.Versions,
-			})
-		}
-		return out
+	if !p.TestValues.Update.Defined {
+		p.TestValues.Update = p.TestValues.Create.clone()
+		genLogger.Tracef("Filled undefined Update scenario for property '%s' from Create.", p.PropertyName)
 	}
-	if len(p.TestValues.Update) == 0 {
-		p.TestValues.Update = clone()
-		genLogger.Tracef("Filled empty Update bucket for property '%s' from Create.", p.PropertyName)
+	if !p.TestValues.Default.Defined {
+		p.TestValues.Default = p.TestValues.Create.clone()
+		genLogger.Tracef("Filled undefined Default scenario for property '%s' from Create.", p.PropertyName)
 	}
-	if len(p.TestValues.Default) == 0 {
-		p.TestValues.Default = clone()
-		genLogger.Tracef("Filled empty Default bucket for property '%s' from Create.", p.PropertyName)
-	}
-	if len(p.TestValues.ForceNew) == 0 {
-		p.TestValues.ForceNew = clone()
-		genLogger.Tracef("Filled empty ForceNew bucket for property '%s' from Create.", p.PropertyName)
+	if !p.TestValues.ForceNew.Defined {
+		p.TestValues.ForceNew = p.TestValues.Create.clone()
+		genLogger.Tracef("Filled undefined ForceNew scenario for property '%s' from Create.", p.PropertyName)
 	}
 }
 

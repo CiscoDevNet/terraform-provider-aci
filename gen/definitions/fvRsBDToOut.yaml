@@ -4,3 +4,11 @@ documentation:
   - Tenants -> Networking -> Bridge Domains -> Policy -> L3 Configurations -> Associated
     L3 Outs
 resource_name: relation_from_bridge_domain_to_l3_outside
+test_config:
+  dependencies:
+  - class_name: l3extOut
+    reference: aci_l3_outside.test.id
+    role: target
+  - class_name: l3extOut
+    reference: aci_l3_outside.test_2.id
+    role: target

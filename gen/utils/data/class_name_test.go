@@ -1,7 +1,6 @@
 package data
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils/test"
@@ -283,7 +282,7 @@ func TestNewClassName(t *testing.T) {
 				assert.Equal(t, expected.Package, className.Package(), test.MessageEqual(expected.Package, className.Package(), testCase.Name))
 				assert.Equal(t, expected.Short, className.Short(), test.MessageEqual(expected.Short, className.Short(), testCase.Name))
 				assert.Equal(t, expected.MetaStyle, className.MetaStyle(), test.MessageEqual(expected.MetaStyle, className.MetaStyle(), testCase.Name))
-				assert.Equal(t, expected.String, fmt.Sprintf("%s", className), test.MessageEqual(expected.String, fmt.Sprintf("%s", className), testCase.Name))
+				assert.Equal(t, expected.String, className.String(), test.MessageEqual(expected.String, className.String(), testCase.Name))
 			}
 		})
 	}

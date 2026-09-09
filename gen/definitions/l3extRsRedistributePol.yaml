@@ -3,6 +3,14 @@ documentation:
   ui_locations:
   - Tenants -> Networking -> L3Outs -> Policy -> Main -> Route Profile for Redistribution
 properties:
+  parentDn:
+    example_config:
+      full:
+      - value: aci_l3_outside.example.id
+        value_type: reference
+      minimum:
+      - value: aci_l3_outside.example.id
+        value_type: reference
   src:
     attribute_name: source
     documentation:
