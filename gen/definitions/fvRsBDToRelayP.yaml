@@ -4,3 +4,12 @@ properties:
       description: The name of the DHCP Relay Policy object.
 resource_name: relation_from_bridge_domain_to_dhcp_relay_policy
 supported_versions: 1.0(1e)-6.1(1e)
+test_config:
+  dependencies:
+  - class_name: dhcpRelayP
+    config_overrides:
+      name: dhcp_relay_policy_name_1
+    dependencies:
+    - class_name: fvTenant
+    reference: aci_dhcp_relay_policy.test_dhcp_relay_policy_0.id
+    role: target

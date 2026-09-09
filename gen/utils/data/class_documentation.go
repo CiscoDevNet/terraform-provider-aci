@@ -70,12 +70,10 @@ type ClassDocumentation struct {
 	DescriptionWhenDefinedAsChild string
 	// DN format strings from meta file (e.g., "uni/tn-{name}").
 	DnFormats []string
-	// Representative parent classes used to render the documentation examples
-	// (resource_example.tf, datasource_example.tf, resource.md import block, etc.).
-	// Resolved as ClassDocumentationDefinition.ExampleParentClasses when set; otherwise
-	// projected from meta containedBy keys sorted alphabetically. Capped at
-	// constMaxExamplesToDisplay so relation/tag classes with large containedBy sets
-	// (e.g., fvRsCons, tagAnnotation) do not produce dozens of example blocks.
+	// Ordered representative parent classes available to documentation and future
+	// example normalization. Resolved from
+	// ClassDocumentationDefinition.ExampleParentClasses when set; otherwise from
+	// the normalized Class.Parents list. Capped at constMaxExamplesToDisplay.
 	ExampleParentClasses []*ClassName
 	// Parent DN references rendered in the documentation. Built from class.Parents.
 	// Resources (parent classes that have a Terraform resource) are listed first in
@@ -388,7 +386,7 @@ func (d *ClassDocumentation) setDescriptionWhenDefinedAsChild(class *Class, ds *
 				toLabel = toClass.Documentation.Label
 			}
 			targetParts = append(targetParts, fmt.Sprintf("%s (%s)", toLabel, toClassLink))
-			if ok && toClass.ResourceName != "" {
+			if ok && toClass.HasResourceArtifact() && toClass.ResourceName != "" {
 				resourceParts = append(resourceParts, getResourceDocumentationLink(toClass.ResourceName))
 			}
 		}
@@ -408,8 +406,10 @@ func (d *ClassDocumentation) setDescriptionWhenDefinedAsChild(class *Class, ds *
 		// Single-nested (map) children are only configurable through their parent, so the
 		// standalone resource clause is omitted to avoid suggesting a separate resource.
 		sentence = fmt.Sprintf("A %s of %s.", nestingType, d.Label)
-	} else {
+	} else if class.HasResourceArtifact() {
 		sentence = fmt.Sprintf("A %s of %s which can also be configured using a separate %s resource.", nestingType, d.Label, getResourceDocumentationLink(class.ResourceName))
+	} else {
+		sentence = fmt.Sprintf("A %s of %s.", nestingType, d.Label)
 	}
 
 	d.DescriptionWhenDefinedAsChild = header + " " + sentence
@@ -464,31 +464,22 @@ func (d *ClassDocumentation) setExampleParentClasses(class *Class) error {
 		return nil
 	}
 
-	// Fallback projection: meta containedBy keys sorted alphabetically and capped.
-	containedBy, ok := class.MetaFileContent["containedBy"].(map[string]any)
-	if !ok || len(containedBy) == 0 {
-		genLogger.Debugf("No containedBy available for class '%s'; ExampleParentClasses left empty.", class.Name.full)
+	// Fallback projection uses the already-normalized parent list so global/per-class
+	// exclusions and explicit includes are reflected consistently in documentation.
+	if len(class.Parents) == 0 {
+		genLogger.Debugf("No normalized parents available for class '%s'; ExampleParentClasses left empty.", class.Name.full)
 		return nil
 	}
-	keys := make([]string, 0, len(containedBy))
-	for k := range containedBy {
-		keys = append(keys, k)
-	}
-	slices.Sort(keys)
-	resolved := make([]*ClassName, 0, min(len(keys), constMaxExamplesToDisplay))
-	for _, raw := range keys {
+	resolved := make([]*ClassName, 0, min(len(class.Parents), constMaxExamplesToDisplay))
+	for _, parent := range class.Parents {
 		if len(resolved) >= constMaxExamplesToDisplay {
 			break
 		}
-		parsed, err := NewClassName(raw)
-		if err != nil {
-			return fmt.Errorf("class '%s': failed to parse meta containedBy entry '%s' for example parent classes: %w", class.Name.full, raw, err)
-		}
-		resolved = append(resolved, parsed)
+		resolved = append(resolved, parent)
 	}
 	d.ExampleParentClasses = resolved
 
-	genLogger.Debugf("Successfully set Documentation ExampleParentClasses (meta fallback) for class '%s'. Count: %d", class.Name.full, len(d.ExampleParentClasses))
+	genLogger.Debugf("Successfully set Documentation ExampleParentClasses (normalized parent fallback) for class '%s'. Count: %d", class.Name.full, len(d.ExampleParentClasses))
 	return nil
 }
 

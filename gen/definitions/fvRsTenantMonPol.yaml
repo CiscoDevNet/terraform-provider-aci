@@ -8,3 +8,11 @@ properties:
       create:
       - config_value: default
 resource_name: relation_from_tenant_to_monitoring_policy
+test_config:
+  dependencies:
+  - class_name: monEPGPol
+    reference: aci_monitoring_policy.test.id
+    role: target
+  - class_name: monEPGPol
+    reference: aci_monitoring_policy.test_2.id
+    role: target

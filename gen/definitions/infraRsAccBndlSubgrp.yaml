@@ -2,7 +2,22 @@ properties:
   tDn:
     documentation:
       description: The distinguished name (DN) of the target PC VPC Override Policy.
+    example_config:
+      full:
+      - value: aci_leaf_access_bundle_policy_sub_group.example.id
+        value_type: reference
+      minimum:
+      - value: aci_leaf_access_bundle_policy_sub_group.example.id
+        value_type: reference
     test_config:
       create:
       - config_value: ""
 resource_name: relation_to_pc_vpc_override_policy
+test_config:
+  dependencies:
+  - class_name: infraAccBndlSubgrp
+    reference: aci_leaf_access_bundle_policy_sub_group.test.id
+    role: target
+  - class_name: infraAccBndlSubgrp
+    reference: aci_leaf_access_bundle_policy_sub_group.test_2.id
+    role: target

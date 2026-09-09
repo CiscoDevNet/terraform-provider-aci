@@ -177,10 +177,9 @@ func (r *ReferenceTypeEnum) UnmarshalText(text []byte) error {
 	return nil
 }
 
-// ValueRenderTypeEnum controls how a TestValueEntry is rendered in HCL
-// configuration. The iota zero (StringValue) is the documented default applied
-// when value_type is omitted from YAML — the overwhelmingly common case for
-// property test values.
+// ValueRenderTypeEnum controls how a test or public-example value is rendered in
+// HCL configuration. The iota zero (StringValue) is the documented default applied
+// when value_type is omitted from YAML — the overwhelmingly common case.
 type ValueRenderTypeEnum int
 
 const (
@@ -188,12 +187,16 @@ const (
 	StringValue ValueRenderTypeEnum = iota
 	// ReferenceValue renders as an unquoted reference expression: attribute = aci_tenant.test.id
 	ReferenceValue
+	// ExpressionValue renders as an arbitrary unquoted expression: attribute = file("value.pem")
+	ExpressionValue
 )
 
 func (v ValueRenderTypeEnum) String() string {
 	switch v {
 	case ReferenceValue:
 		return "reference"
+	case ExpressionValue:
+		return "expression"
 	default:
 		return "string"
 	}
@@ -208,8 +211,10 @@ func (v *ValueRenderTypeEnum) UnmarshalText(text []byte) error {
 		*v = StringValue
 	case "reference":
 		*v = ReferenceValue
+	case "expression":
+		*v = ExpressionValue
 	default:
-		return fmt.Errorf("unknown value_type %q (expected one of: string, reference)", string(text))
+		return fmt.Errorf("unknown value_type %q (expected one of: string, reference, expression)", string(text))
 	}
 	return nil
 }
@@ -343,19 +348,20 @@ func (r *RegexStatementTypeEnum) UnmarshalText(text []byte) error {
 }
 
 // MigrationSourceEnum records the lineage of a resource — the prior provider or
-// generator the resource was migrated from. Drives the documentation migration
-// warning and any future migration-source-specific codegen. Extensible: additional
-// sources can be added as plain new iota constants + String()/UnmarshalText cases
-// without touching the field type or consumers that check != UndefinedMigrationSource.
+// generator the resource was migrated from. Populates the normalized documentation
+// migration warning and can drive future migration-source-specific codegen.
+// Extensible: additional sources can be added as plain new iota constants +
+// String()/UnmarshalText cases without touching the field type or consumers that
+// check != UndefinedMigrationSource.
 type MigrationSourceEnum int
 
 const (
 	// UndefinedMigrationSource is the zero value: no migration history. The
 	// resource was born in the current framework provider; no migration warning
-	// is rendered in the docs.
+	// is populated for future documentation rendering.
 	UndefinedMigrationSource MigrationSourceEnum = iota
 	// FromSDKv2 indicates the resource was migrated from the SDKv2 provider
-	// implementation. Renders the SDKv2-specific migration warning in the docs.
+	// implementation. Populates the SDKv2-specific documentation warning.
 	FromSDKv2
 )
 
@@ -381,12 +387,13 @@ func (m *MigrationSourceEnum) UnmarshalText(text []byte) error {
 	return nil
 }
 
-// ArtifactEnum identifies a generated artifact kind that the renderer can
-// produce for a class. Used inside `ClassDefinition.Artifacts` to control
-// which artifacts are emitted. A nil slice (the YAML field omitted entirely)
-// is the signal to auto-derive the default set from IdentifiedBy; an empty
-// slice (`artifacts: []`) excludes the class from both `provider.Resources()`
-// and `provider.DataSources()`.
+// ArtifactEnum identifies a top-level Terraform artifact kind for a class.
+// Used inside ClassDefinition.Artifacts to select resource- and datasource-
+// scoped render jobs for metadata-backed classes. An omitted slice is derived
+// from IdentifiedBy, while an empty slice (`artifacts: []`) opts out of both
+// top-level kinds. Shared class models are still generated for metadata-backed
+// child-only classes. Definition-only classes are name lookups and do not use
+// artifact selection.
 type ArtifactEnum int
 
 const (

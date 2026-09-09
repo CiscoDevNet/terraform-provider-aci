@@ -4,10 +4,15 @@ documentation:
   - Tenants (infra) -> Networking -> L3Outs -> Policy -> Main -> Provider Label
 properties:
   name:
-    default_values:
-      default_prov_label: ""
+    example_config:
+      full:
+      - value: provider_label
+      minimum:
+      - value: provider_label
     test_config:
       create:
+      - config_value: prov_label
+      default:
       - config_value: prov_label
   tag:
     default_values:

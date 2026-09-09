@@ -3,6 +3,8 @@ package data
 import (
 	"fmt"
 	"os"
+	"path/filepath"
+	"strings"
 
 	"gopkg.in/yaml.v2"
 )
@@ -19,9 +21,6 @@ type GlobalMetaDefinition struct {
 	// A list of property names to exclude from all classes.
 	// A class-level PropertyDefinition entry for the same property takes precedence over this global exclude.
 	ExcludeProperties []string `yaml:"exclude_properties"`
-	// A map containing class names as keys and their corresponding resource names as values.
-	// This is used to search for the resource name of a class when it is not defined in meta directory.
-	NoMetaFile map[string]string `yaml:"no_meta_file"`
 	// A map of word substitutions applied when humanizing a snake_case resource name into a documentation label.
 	// e.g., "Bgp" → "BGP", "External Network Instance Profile" → "External EPG".
 	// Multi-word keys are matched as substrings; single-word keys are only replaced on whole-word matches.
@@ -61,6 +60,34 @@ func parseGlobalMetaDefinition(data []byte) (GlobalMetaDefinition, error) {
 	return definitionGlobalMetaData, err
 }
 
+func loadClassDefinitions() (map[string]ClassDefinition, error) {
+	entries, err := os.ReadDir(constDefinitionsPath)
+	if err != nil {
+		return nil, fmt.Errorf("read class definitions directory: %w", err)
+	}
+
+	definitions := make(map[string]ClassDefinition)
+	for _, entry := range entries {
+		if entry.IsDir() || entry.Name() == "global.yaml" || filepath.Ext(entry.Name()) != ".yaml" {
+			continue
+		}
+
+		definitionPath := filepath.Join(constDefinitionsPath, entry.Name())
+		definition, err := os.ReadFile(definitionPath)
+		if err != nil {
+			return nil, fmt.Errorf("read class definition %q: %w", definitionPath, err)
+		}
+
+		classDefinition, err := parseClassDefinition(definition)
+		if err != nil {
+			return nil, fmt.Errorf("parse class definition %q: %w", definitionPath, err)
+		}
+		definitions[strings.TrimSuffix(entry.Name(), filepath.Ext(entry.Name()))] = classDefinition
+	}
+
+	return definitions, nil
+}
+
 type ClassDocumentationDefinition struct {
 	// Overrides the humanized documentation label for this class (e.g., "Application EPG").
 	// Used to build "Manages ACI <Label>" / "Data source for ACI <Label>" and any other
@@ -74,14 +101,10 @@ type ClassDocumentationDefinition struct {
 	// Overrides the DN format strings sourced from the meta file. When set, these values are
 	// used verbatim. Sorting and the constMaxDnFormatsToDisplay cap still apply.
 	DnFormats []string `yaml:"dn_formats"`
-	// Curated subset of `containedBy` parent class names used to render example
-	// HCL snippets (one block per entry) in the resource/datasource docs,
-	// `resource_example.tf.tmpl`, `datasource_example.tf.tmpl`,
-	// `resource_example_all_attributes.tf.tmpl`, `resource.md.tmpl`, and
-	// `testvars.yaml.tmpl`. Used when meta `containedBy` is too large (e.g.
-	// relation/tag classes) to render every parent without producing dozens of
-	// near-identical snippets. Each entry must be a meta class name; the
-	// renderer resolves it to the generated resource name via `getResourceName`.
+	// Curated ordered subset of `containedBy` parent class names available to
+	// documentation and future example normalization. Used
+	// when meta `containedBy` is too large (for example relation/tag classes) or
+	// when a specific parent is clearer. Each entry must be a meta class name.
 	ExampleParentClasses []string `yaml:"example_parent_classes"`
 	// A list of child class names to exclude from the documentation children list.
 	ExcludeChildren []string `yaml:"exclude_children"`
@@ -170,6 +193,61 @@ type PropertyDefinition struct {
 	DefaultValues map[string]string `yaml:"default_values"`
 	// Test configuration for the property. Controls test value generation and inclusion/exclusion.
 	TestConfig TestConfigDefinition `yaml:"test_config"`
+	// Example configuration for values that cannot be derived from TestConfig or intentionally
+	// differ in public examples. A future example normalizer will derive omitted scenarios.
+	ExampleConfig PropertyExampleConfigDefinition `yaml:"example_config"`
+	// Semantic reference information for configurable DN/reference properties that are not
+	// relation target (`tDn`) or parent (`parentDn`) properties. The target classes describe
+	// what the value may reference; ExampleClass selects the class used in generated examples.
+	Reference PropertyReferenceDefinition `yaml:"reference"`
+}
+
+// ExampleValueEntryDefinition is an explicitly authored public-example value. A value is a
+// quoted Terraform string unless ValueType is ReferenceValue or ExpressionValue. ParentClass
+// optionally limits the value to the class's selected parent context.
+type ExampleValueEntryDefinition struct {
+	Value       string              `yaml:"value"`
+	ValueType   ValueRenderTypeEnum `yaml:"value_type"`
+	ParentClass string              `yaml:"parent_class"`
+}
+
+// ExampleValueScenarioDefinition preserves the distinction between an omitted scenario and
+// an explicitly empty value list. The latter renders an included empty value (`[]` for sets).
+type ExampleValueScenarioDefinition struct {
+	Defined bool
+	Entries []ExampleValueEntryDefinition
+}
+
+func (s *ExampleValueScenarioDefinition) UnmarshalYAML(unmarshal func(any) error) error {
+	var entries []ExampleValueEntryDefinition
+	if err := unmarshal(&entries); err != nil {
+		return err
+	}
+	s.Defined = true
+	s.Entries = entries
+	return nil
+}
+
+func (s ExampleValueScenarioDefinition) MarshalYAML() (any, error) {
+	return s.Entries, nil
+}
+
+// PropertyExampleConfigDefinition contains sparse public-example overrides. Minimum is intended
+// for resource.tf and Full for resource-all-attributes.tf. The future normalizer will fall back
+// from an omitted Full override to Minimum so a documentation-specific value can be authored once.
+type PropertyExampleConfigDefinition struct {
+	Minimum ExampleValueScenarioDefinition `yaml:"minimum"`
+	Full    ExampleValueScenarioDefinition `yaml:"full"`
+}
+
+// PropertyReferenceDefinition describes the Terraform resource reference used when a plain
+// APIC property carries another object's DN or name. Relation and parent properties derive
+// this information from the class model and do not need this override.
+type PropertyReferenceDefinition struct {
+	Classes              []string `yaml:"classes"`
+	ExampleClass         string   `yaml:"example_class"`
+	ExampleLabel         string   `yaml:"example_label"`
+	ExampleAttributeName string   `yaml:"example_attribute"`
 }
 
 // TestValueEntryDefinition is the YAML representation of a single test value entry.
@@ -184,22 +262,52 @@ type TestValueEntryDefinition struct {
 	ValueType ValueRenderTypeEnum `yaml:"value_type"`
 }
 
+// TestValueScenarioDefinition preserves whether a scenario was omitted or explicitly defined
+// as an empty list. The distinction matters for set attributes: `update: []` means clear the
+// set, while an omitted update allows the datastore to derive it from Create.
+//
+// Its custom YAML methods retain the existing compact list syntax:
+//
+//	update:
+//	- config_value: value
+type TestValueScenarioDefinition struct {
+	Defined bool
+	Entries []TestValueEntryDefinition
+	// Preserve is used only while migrating legacy definitions to prevent a
+	// required-input scenario from being folded into APIC default_values.
+	Preserve bool `yaml:"-"`
+}
+
+func (s *TestValueScenarioDefinition) UnmarshalYAML(unmarshal func(any) error) error {
+	var entries []TestValueEntryDefinition
+	if err := unmarshal(&entries); err != nil {
+		return err
+	}
+	s.Defined = true
+	s.Entries = entries
+	return nil
+}
+
+func (s TestValueScenarioDefinition) MarshalYAML() (any, error) {
+	return s.Entries, nil
+}
+
 // TestConfigDefinition groups test-related overrides for a property definition.
 type TestConfigDefinition struct {
 	// Values for the "all attributes" create step. Each entry becomes a TestValueEntry.
-	Create []TestValueEntryDefinition `yaml:"create"`
+	Create TestValueScenarioDefinition `yaml:"create"`
 	// Values for the "required-only" step. Typically auto-derived; explicit overrides here.
-	Default []TestValueEntryDefinition `yaml:"default"`
+	Default TestValueScenarioDefinition `yaml:"default"`
 	// Values for the update step. Each entry becomes a TestValueEntry.
-	Update []TestValueEntryDefinition `yaml:"update"`
+	Update TestValueScenarioDefinition `yaml:"update"`
 	// Values for the ForceNew step. Typically auto-derived (same as Create for non-parent_dn).
-	ForceNew []TestValueEntryDefinition `yaml:"force_new"`
+	ForceNew TestValueScenarioDefinition `yaml:"force_new"`
 	// Values for the Legacy step, exercising state_upgrades legacy attribute
 	// aliases (Functioning / Frozen). Independent of the standard buckets:
 	// supplying legacy alone is permitted, and supplying legacy is required
 	// when the legacy alias has a different Terraform type than the current
 	// attribute (auto-derivation skips that case with a warning).
-	Legacy []TestValueEntryDefinition `yaml:"legacy"`
+	Legacy TestValueScenarioDefinition `yaml:"legacy"`
 	// When true, the property is excluded from generated tests entirely.
 	IgnoreInTest bool `yaml:"ignore_in_test"`
 }
@@ -244,16 +352,17 @@ type ClassDefinition struct {
 	// Overrides the default deletion behavior from meta file. Set to "never" to prevent deletion of the class.
 	// The value "never" is used to keep the input consistent with the meta data file.
 	AllowDelete string `yaml:"allow_delete"`
-	// Selects which generated artifacts the renderer emits for this class.
-	// A nil slice (the YAML field omitted entirely) signals the resolver to
-	// auto-derive: classes with non-empty `IdentifiedBy` get [resource, datasource],
-	// classes with empty `IdentifiedBy` get nothing (the legacy default).
-	// A non-nil but empty slice (`artifacts: []`) is an explicit opt-out and
-	// removes the class from both `provider.Resources()` and
-	// `provider.DataSources()`. A non-empty list overrides the auto-derivation:
-	// `[resource, datasource]` opts an empty-`IdentifiedBy` class in as both;
-	// `[datasource]` or `[resource]` selects a single artifact (e.g. `topSystem`
-	// renders as a datasource only).
+	// Selects which top-level resource/data-source artifacts class-scoped renderers may
+	// emit for this metadata-backed class. Shared models already honor this selection;
+	// future resource, data-source, example, and documentation renderers will reuse it.
+	// A nil slice (the YAML field omitted entirely) signals the resolver to auto-derive:
+	// classes with non-empty `IdentifiedBy` get [resource, datasource], while classes
+	// with empty `IdentifiedBy` get nothing. Definition-only classes do not enter the
+	// renderer and therefore do not use this field.
+	// A non-nil but empty slice (`artifacts: []`) is an explicit opt-out. A
+	// non-empty list overrides the auto-derivation; `[resource, datasource]`
+	// opts an empty-`IdentifiedBy` class in as both, while `[datasource]` or
+	// `[resource]` selects one artifact kind.
 	Artifacts []ArtifactEnum `yaml:"artifacts"`
 	// Indicates that the resource and datasource are deprecated. A deprecation warning will be included in the schemas.
 	// When true, this overrides the meta `isDeprecated` flag with logical OR semantics: definition can flip true on top of meta but cannot force-off.
@@ -270,6 +379,9 @@ type ClassDefinition struct {
 	HiddenVersions string `yaml:"hidden_versions"`
 	// Documentation specific overrides for the class.
 	Documentation ClassDocumentationDefinition `yaml:"documentation"`
+	// ExampleFiles lists shared generator assets that must be copied into this
+	// class's resource-example directory.
+	ExampleFiles []string `yaml:"example_files"`
 	// A list of child class names to exclude from the Children list.
 	ExcludeChildren []string `yaml:"exclude_children"`
 	// A list of parent class names to exclude from the Parents list.
@@ -324,8 +436,9 @@ type ClassDefinition struct {
 	// Alternate parent-DN placements for classes that legitimately resolve under
 	// more than one user-facing parent and reach APIC via different request paths
 	// per placement (e.g. pkiKeyRing as system-scoped vs tenant-scoped). The
-	// generated resource branches on the user's `parent_dn` and selects the
-	// matching variant's (api_endpoint, json_envelope) pair. Each entry pins one
+	// generated model's DN and payload methods branch on `parent_dn` and select
+	// the matching variant's (api_endpoint, json_envelope) pair. A future resource
+	// adapter can reuse that behavior. Each entry pins one
 	// (parent_class, rn_prepend, wrapper_class, test_platform) tuple; not
 	// representable in meta `containedBy`, which lists direct parents without the
 	// implicit-wrapper or user-facing-parent annotations.
@@ -349,6 +462,10 @@ type TestDependencyDefinition struct {
 	ReferenceType ReferenceTypeEnum `yaml:"reference_type"`
 	// Role of this dependency. Valid values: "parent", "target". Required at top level, empty for nested.
 	Role TestDependencyRoleEnum `yaml:"role"`
+	// Target classes associated with this parent dependency for polymorphic relations.
+	// Future example normalization can use this mapping to select a compatible target
+	// for the representative parent placement.
+	TargetClasses []string `yaml:"target_classes"`
 	// Recursive dependencies: resources that THIS dependency needs to exist first.
 	Dependencies []TestDependencyDefinition `yaml:"dependencies"`
 	// Optional property overrides for the dependency resource's HCL configuration.
@@ -359,17 +476,20 @@ type TestDependencyDefinition struct {
 }
 
 // ChildTestOverrideDefinition is the YAML representation of child test value overrides.
-// Keyed by child class name in the parent map. No instance_count — count is determined
-// by the child class's own IsSingleNestedWhenDefinedAsChild setting.
+// Keyed by child class name in the parent map. No instance_count: when no instances
+// are listed, cardinality is derived from IsSingleNestedWhenDefinedAsChild; otherwise,
+// the listed entries determine the count.
 type ChildTestOverrideDefinition struct {
-	// Full replacement: when present, ALL auto-derived instances are discarded and replaced by these.
+	// When non-empty, these entries replace the auto-derived instance count. Each entry
+	// is a sparse overlay on the corresponding auto-derived instance's properties and children.
 	Instances []ChildTestInstanceOverrideDefinition `yaml:"instances"`
 }
 
 // ChildTestInstanceOverrideDefinition represents a single instance override with its properties and nested children.
 type ChildTestInstanceOverrideDefinition struct {
-	// Property overrides for this instance, keyed by attribute name.
-	Properties map[string]string `yaml:"properties"`
+	// Property overrides for this instance, keyed by attribute name. Each property retains
+	// all entries so set-valued child attributes are not collapsed to their first member.
+	Properties map[string]TestValueScenarioDefinition `yaml:"properties"`
 	// Grandchildren of THIS override instance (i.e. nested blocks within this child instance),
 	// keyed by grandchild class name. Recursively overrides auto-derived nested children.
 	Children map[string]ChildTestOverrideDefinition `yaml:"children"`
@@ -385,19 +505,20 @@ type ClassTestConfigDefinition struct {
 	// Set replace_auto_resolved to true to skip auto-resolution entirely.
 	Dependencies []TestDependencyDefinition `yaml:"dependencies"`
 	// Children of THIS class (the one being generated), keyed by child class name.
-	// When an entry's `instances` is set, it fully replaces the auto-derived instances
-	// for that child class; unspecified child classes keep their auto-derived values.
+	// A non-empty `instances` list replaces the auto-derived count and applies each
+	// entry as a sparse positional overlay. Empty entries and unspecified child
+	// classes keep their auto-derived values.
 	Children map[string]ChildTestOverrideDefinition `yaml:"children"`
-	// Suppresses generation of specific test buckets. `child` skips the entry in
-	// every parent's testvars.yaml iteration (the class still emits its own
-	// resource / datasource tests). `resource` skips this class's own
-	// resource_aci_<x>_test.go. `datasource` skips this class's own
-	// data_source_aci_<x>_test.go. Combinations are valid (e.g. [child, resource]).
-	// A nil or empty slice means no skips.
+	// Canonical instances to use whenever this class is embedded as a child of another class.
+	// This preserves correlated legacy test_values_for_parent values that cannot be derived by
+	// selecting each property independently.
+	EmbeddedInstances []ChildTestInstanceOverrideDefinition `yaml:"embedded_instances"`
+	// Retained for future test templates. `child`, `resource`, and `datasource`
+	// select the test buckets that should not be emitted. Combinations are valid;
+	// a nil or empty slice means no skips.
 	IgnoreTests []IgnoreTestEnum `yaml:"ignore_tests"`
-	// Suppresses just the ImportStateVerify assertion inside the import test (the
-	// import smoke test still runs). Required for classes whose APIC response
-	// carries non-roundtrip state that would fail attribute-equality verification.
+	// Tells the future resource-test renderer to omit ImportStateVerify equality
+	// checking while retaining the import smoke test.
 	IgnoreImportStateVerify bool `yaml:"ignore_import_state_verify"`
 }
 
@@ -520,35 +641,17 @@ type ParentDnVariantDefinition struct {
 	// system-scoped placements from wrapped tenant-scoped placements that meta
 	// `containedBy` lists as a single direct parent.
 	ParentClass string `yaml:"parent_class"`
-	// Intermediate RN segment that selects this variant. The generated resource
-	// matches the user's `parent_dn` against this segment to route the API call.
+	// Intermediate RN segment inserted between the matched parent DN and the class
+	// RN. Generated model methods select the variant using patterns derived from
+	// ParentClass; the future resource adapter can reuse the same selection.
 	RnPrepend string `yaml:"rn_prepend"`
 	// Implicit container the request nests the resource inside (e.g. "cloudCertStore"
 	// for a tenant-scoped pkiKeyRing). Empty for variants that POST against a real,
 	// user-addressable parent.
 	WrapperClass string `yaml:"wrapper_class"`
-	// Platform profile that exercises this variant in tests (apic / cloud / both).
-	// Lets testvars.yaml.tmpl gate variant-specific test cases without splitting the
-	// test file.
+	// Platform profile for this variant (apic / cloud / both). Public examples use
+	// it now; future test templates can use it to gate variant-specific scenarios.
 	TestPlatform PlatformTypeEnum `yaml:"test_platform"`
-}
-
-func loadClassDefinition(className string) ClassDefinition {
-	classDefinitionPath := fmt.Sprintf("%s/%s.yaml", constDefinitionsPath, className)
-	var classDefinitionData ClassDefinition
-
-	classDefinitionBytes, err := os.ReadFile(classDefinitionPath)
-	if err != nil {
-		genLogger.Debugf("The file '%s' was not found in the definitions folder.", classDefinitionPath)
-		return classDefinitionData
-	}
-
-	classDefinitionData, err = parseClassDefinition(classDefinitionBytes)
-	if err != nil {
-		genLogger.Fatal(err.Error())
-	}
-
-	return classDefinitionData
 }
 
 // parseClassDefinition decodes raw YAML bytes into a ClassDefinition.

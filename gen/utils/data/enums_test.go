@@ -105,9 +105,11 @@ func TestValueRenderTypeEnum(t *testing.T) {
 
 	assert.Equal(t, "string", StringValue.String())
 	assert.Equal(t, "reference", ReferenceValue.String())
+	assert.Equal(t, "expression", ExpressionValue.String())
 
 	assert.Equal(t, StringValue, test.MustUnmarshalText[ValueRenderTypeEnum](t, "string"))
 	assert.Equal(t, ReferenceValue, test.MustUnmarshalText[ValueRenderTypeEnum](t, "reference"))
+	assert.Equal(t, ExpressionValue, test.MustUnmarshalText[ValueRenderTypeEnum](t, "expression"))
 
 	// Category 1: iota zero IS the default (StringValue). Omitting value_type in YAML
 	// yields this automatically; a field present-but-empty is treated as a typo.
@@ -208,7 +210,7 @@ func TestLegacyTypeToValueType(t *testing.T) {
 	// Exhaustive over every LegacyAttributeTypeEnum constant. Adding a new
 	// LegacyAttributeTypeEnum must add a case here so the collapse policy stays
 	// explicit at the test level.
-	cases := []test.TestCase{
+	testCases := []test.TestCase{
 		// Zero value: no override; collapses to the String default.
 		{Name: "undefined_to_string", Input: UndefinedLegacyAttributeType, Expected: String},
 
@@ -230,10 +232,10 @@ func TestLegacyTypeToValueType(t *testing.T) {
 		{Name: "map_nested_to_object", Input: MapNestedAttribute, Expected: Object},
 	}
 
-	for _, tc := range cases {
-		t.Run(tc.Name, func(t *testing.T) {
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
 			t.Parallel()
-			assert.Equal(t, tc.Expected.(ValueTypeEnum), legacyTypeToValueType(tc.Input.(LegacyAttributeTypeEnum)))
+			assert.Equal(t, testCase.Expected.(ValueTypeEnum), legacyTypeToValueType(testCase.Input.(LegacyAttributeTypeEnum)))
 		})
 	}
 }

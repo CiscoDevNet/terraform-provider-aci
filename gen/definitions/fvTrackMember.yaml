@@ -5,20 +5,18 @@ documentation:
 properties:
   dstIpAddr:
     attribute_name: destination_ip_address
-    default_values:
-      1.1.1.1: ""
     documentation:
       description: The destination IP address to be tracked.
     restriction: required
     test_config:
       create:
-      - config_value: 2.2.2.2
+      - config_value: 198.51.100.2
+      default:
+      - config_value: 192.0.2.1
       update:
       - config_value: 2001:0db8::01
   scopeDn:
     attribute_name: scope
-    default_values:
-      uni/tn-test_tenant/BD-test_bd: ""
     documentation:
       description: The distinguished name (DN) of the scope (Bridge Domain or L3Out)
         of the %s. For a Bridge Domain this attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bridge_domain)
@@ -27,10 +25,17 @@ properties:
         referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3_outside)
         with 'aci_l3_outside.example.id' or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/l3_outside)
         with 'data.aci_l3_outside.example.id'.
+    reference:
+      classes:
+      - fvBD
+      - l3extOut
+      example_class: fvBD
     restriction: required
     test_config:
       create:
       - config_value: uni/tn-test_tenant/BD-test_bd_2
+      default:
+      - config_value: uni/tn-test_tenant/BD-test_bd
       update:
       - config_value: uni/tn-test_tenant/BD-test_bd_2
 resource_name: ip_sla_track_member

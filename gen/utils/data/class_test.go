@@ -47,10 +47,8 @@ func TestSetResourceNameFromLabelNoRelationWithIdentifier(t *testing.T) {
 func TestSetResourceNameFromLabelNoRelationWithoutIdentifier(t *testing.T) {
 	t.Parallel()
 	ds := initializeDataStoreTest(t)
-	ds.GlobalMetaDefinition = GlobalMetaDefinition{
-		NoMetaFile: map[string]string{
-			"fvCtx": "vrf",
-		},
+	ds.ClassDefinitions = map[string]ClassDefinition{
+		"fvCtx": {ResourceName: "vrf"},
 	}
 	class := Class{Name: testClassName("fvRsScope")}
 	class.MetaFileContent = map[string]any{
@@ -74,10 +72,8 @@ func TestSetResourceNameFromLabelNoRelationWithoutIdentifier(t *testing.T) {
 func TestSetResourceNameToRelation(t *testing.T) {
 	t.Parallel()
 	ds := initializeDataStoreTest(t)
-	ds.GlobalMetaDefinition = GlobalMetaDefinition{
-		NoMetaFile: map[string]string{
-			"vzBrCP": "contract",
-		},
+	ds.ClassDefinitions = map[string]ClassDefinition{
+		"vzBrCP": {ResourceName: "contract"},
 	}
 	class := Class{Name: testClassName("fvRsCons"), IdentifiedBy: []string{"tnVzBrCPName"}}
 	class.MetaFileContent = map[string]any{
@@ -101,11 +97,9 @@ func TestSetResourceNameToRelation(t *testing.T) {
 func TestSetResourceNameFromToRelation(t *testing.T) {
 	t.Parallel()
 	ds := initializeDataStoreTest(t)
-	ds.GlobalMetaDefinition = GlobalMetaDefinition{
-		NoMetaFile: map[string]string{
-			"fvCtx":               "vrf",
-			"netflowAExporterPol": "netflow_exporter_policy",
-		},
+	ds.ClassDefinitions = map[string]ClassDefinition{
+		"fvCtx":               {ResourceName: "vrf"},
+		"netflowAExporterPol": {ResourceName: "netflow_exporter_policy"},
 	}
 	class := Class{Name: testClassName("netflowRsExporterToCtx")}
 	class.MetaFileContent = map[string]any{
@@ -669,48 +663,45 @@ func TestSetArtifacts(t *testing.T) {
 	}
 }
 
-func TestHasArtifact(t *testing.T) {
+type artifactSelectionExpected struct {
+	Resource   bool
+	Datasource bool
+}
+
+func TestArtifactSelection(t *testing.T) {
 	t.Parallel()
 
-	testCases := []struct {
-		name          string
-		artifacts     []ArtifactEnum
-		hasResource   bool
-		hasDataSource bool
-	}{
+	testCases := []test.TestCase{
 		{
-			name:          "no artifacts",
-			artifacts:     nil,
-			hasResource:   false,
-			hasDataSource: false,
+			Name:     "test_no_artifacts",
+			Input:    []ArtifactEnum(nil),
+			Expected: artifactSelectionExpected{},
 		},
 		{
-			name:          "resource only",
-			artifacts:     []ArtifactEnum{ResourceArtifact},
-			hasResource:   true,
-			hasDataSource: false,
+			Name:     "test_resource_only",
+			Input:    []ArtifactEnum{ResourceArtifact},
+			Expected: artifactSelectionExpected{Resource: true},
 		},
 		{
-			name:          "datasource only",
-			artifacts:     []ArtifactEnum{DatasourceArtifact},
-			hasResource:   false,
-			hasDataSource: true,
+			Name:     "test_datasource_only",
+			Input:    []ArtifactEnum{DatasourceArtifact},
+			Expected: artifactSelectionExpected{Datasource: true},
 		},
 		{
-			name:          "resource and datasource",
-			artifacts:     []ArtifactEnum{ResourceArtifact, DatasourceArtifact},
-			hasResource:   true,
-			hasDataSource: true,
+			Name:     "test_resource_and_datasource",
+			Input:    []ArtifactEnum{ResourceArtifact, DatasourceArtifact},
+			Expected: artifactSelectionExpected{Resource: true, Datasource: true},
 		},
 	}
 
 	for _, testCase := range testCases {
-		t.Run(testCase.name, func(t *testing.T) {
+		t.Run(testCase.Name, func(t *testing.T) {
 			t.Parallel()
-			class := Class{Artifacts: testCase.artifacts}
+			expected := testCase.Expected.(artifactSelectionExpected)
+			class := Class{Artifacts: testCase.Input.([]ArtifactEnum)}
 
-			assert.Equal(t, testCase.hasResource, class.HasResourceArtifact())
-			assert.Equal(t, testCase.hasDataSource, class.HasDatasourceArtifact())
+			assert.Equal(t, expected.Resource, class.HasResourceArtifact())
+			assert.Equal(t, expected.Datasource, class.HasDatasourceArtifact())
 		})
 	}
 }
@@ -763,33 +754,29 @@ func TestClassDnFormatPatterns(t *testing.T) {
 func TestClassFixedParentDn(t *testing.T) {
 	t.Parallel()
 
-	testCases := []struct {
-		name     string
-		dnFormat string
-		parentDn string
-	}{
+	testCases := []test.TestCase{
 		{
-			name:     "direct polUni child",
-			dnFormat: "uni/tn-{name}",
-			parentDn: "uni",
+			Name:     "test_direct_pol_uni_child",
+			Input:    "uni/tn-{name}",
+			Expected: "uni",
 		},
 		{
-			name:     "fixed infra path included in RN",
-			dnFormat: "uni/infra/l2IfP-{name}",
-			parentDn: "uni",
+			Name:     "test_fixed_infra_path_included_in_rn",
+			Input:    "uni/infra/l2IfP-{name}",
+			Expected: "uni",
 		},
 	}
 
 	for _, testCase := range testCases {
-		t.Run(testCase.name, func(t *testing.T) {
+		t.Run(testCase.Name, func(t *testing.T) {
 			t.Parallel()
 
 			class := Class{
 				MetaFileContent: map[string]any{
-					"dnFormats": []any{testCase.dnFormat},
+					"dnFormats": []any{testCase.Input.(string)},
 				},
 			}
-			assert.Equal(t, testCase.parentDn, class.FixedParentDn())
+			assert.Equal(t, testCase.Expected, class.FixedParentDn())
 		})
 	}
 }
@@ -797,29 +784,26 @@ func TestClassFixedParentDn(t *testing.T) {
 func TestClassNestedModelValueType(t *testing.T) {
 	t.Parallel()
 
-	testCases := []struct {
-		name   string
-		single bool
-		value  string
-	}{
+	testCases := []test.TestCase{
 		{
-			name:  "repeated child",
-			value: "types.Set",
+			Name:     "test_repeated_child",
+			Input:    false,
+			Expected: "types.Set",
 		},
 		{
-			name:   "singleton child",
-			single: true,
-			value:  "types.Object",
+			Name:     "test_singleton_child",
+			Input:    true,
+			Expected: "types.Object",
 		},
 	}
 
 	for _, testCase := range testCases {
-		t.Run(testCase.name, func(t *testing.T) {
+		t.Run(testCase.Name, func(t *testing.T) {
 			t.Parallel()
 			class := Class{
-				IsSingleNestedWhenDefinedAsChild: testCase.single,
+				IsSingleNestedWhenDefinedAsChild: testCase.Input.(bool),
 			}
-			assert.Equal(t, testCase.value, class.NestedModelValueType())
+			assert.Equal(t, testCase.Expected, class.NestedModelValueType())
 		})
 	}
 }
@@ -3558,6 +3542,53 @@ type setTestDependenciesInput struct {
 	TargetClass string
 }
 
+func TestDefinitionOnlyParentIsNotAutoResolved(t *testing.T) {
+	t.Parallel()
+
+	parent := testClassName("l3extOut")
+	class := Class{
+		Name:    testClassName("l3extInstP"),
+		Parents: []*ClassName{parent},
+	}
+	ds := &DataStore{
+		Classes: map[string]Class{},
+		ClassDefinitions: map[string]ClassDefinition{
+			parent.String(): {ResourceName: "l3_outside"},
+		},
+		ctx: NewContext(),
+	}
+
+	assert.Equal(t, "l3_outside", ds.getResourceName(parent.String()))
+	assert.Empty(t, class.resolveParentDependencies(ds, map[string]*TestDependency{}))
+	assert.NoError(t, ds.ctx.Diagnostics.Error())
+}
+
+func TestDefinitionOnlyTargetRequiresExplicitDependency(t *testing.T) {
+	t.Parallel()
+
+	target := testClassName("vzBrCP")
+	class := Class{
+		Name: testClassName("fvRsProv"),
+		Relation: Relation{
+			RelationalClass: true,
+			ToClasses:       []*ClassName{target},
+		},
+	}
+	ds := &DataStore{
+		Classes: map[string]Class{},
+		ClassDefinitions: map[string]ClassDefinition{
+			target.String(): {ResourceName: "contract"},
+		},
+		ctx: NewContext(),
+	}
+
+	assert.Equal(t, "contract", ds.getResourceName(target.String()))
+	assert.Empty(t, class.resolveTargetDependencies(ds, map[string]*TestDependency{}))
+	err := ds.ctx.Diagnostics.Error()
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "explicit test_config.dependencies")
+}
+
 type setTestDependenciesExpected struct {
 	DependencyCount int
 	Dependencies    []expectedDependency
@@ -3890,6 +3921,12 @@ func TestSetTestDependencies(t *testing.T) {
 			t.Parallel()
 			input := testCase.Input.(setTestDependenciesInput)
 			expected := testCase.Expected.(setTestDependenciesExpected)
+			for className, class := range input.Classes {
+				if class.Artifacts == nil {
+					class.Artifacts = []ArtifactEnum{ResourceArtifact, DatasourceArtifact}
+					input.Classes[className] = class
+				}
+			}
 
 			ds := &DataStore{
 				Classes:              input.Classes,
@@ -3934,6 +3971,47 @@ func TestSetTestDependencies(t *testing.T) {
 	}
 }
 
+func TestExplicitTargetDependencySkipsAbstractTargetAutoResolution(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	ctx := NewContext()
+	ds := &DataStore{
+		Classes: map[string]Class{},
+		ctx:     ctx,
+	}
+	class := Class{
+		Name:         testClassName("infraRsPathToAccBaseGrp"),
+		ResourceName: "relation_to_access_interface_policy_group",
+		Relation: Relation{
+			RelationalClass: true,
+			ToClasses:       []*ClassName{testClassName("infraAccBaseGrp")},
+		},
+		ClassDefinition: ClassDefinition{
+			TestConfig: ClassTestConfigDefinition{
+				Dependencies: []TestDependencyDefinition{
+					{
+						ClassName:     "infraAccPortGrp",
+						Reference:     "uni/infra/funcprof/accportgrp-access_interface_policy_group",
+						ReferenceType: StaticReference,
+						Role:          Target,
+					},
+				},
+			},
+		},
+	}
+
+	class.setTestDependencies(ds)
+
+	assert.NoError(t, ctx.Diagnostics.Error())
+	if assert.Len(t, class.TestDependencies, 1) {
+		assert.Equal(t, "infraAccPortGrp", class.TestDependencies[0].Class.String())
+		assert.Equal(t, "uni/infra/funcprof/accportgrp-access_interface_policy_group", class.TestDependencies[0].Reference)
+		assert.Equal(t, StaticReference, class.TestDependencies[0].ReferenceType)
+		assert.Equal(t, Target, class.TestDependencies[0].Role)
+	}
+}
+
 func TestSetTestDependenciesDagDedup(t *testing.T) {
 	t.Parallel()
 	test.InitializeTest(t)
@@ -3943,15 +4021,18 @@ func TestSetTestDependenciesDagDedup(t *testing.T) {
 			"fvTenant": {
 				Name:         testClassName("fvTenant"),
 				ResourceName: "tenant",
+				Artifacts:    []ArtifactEnum{ResourceArtifact, DatasourceArtifact},
 			},
 			"fvAp": {
 				Name:         testClassName("fvAp"),
 				ResourceName: "application_profile",
+				Artifacts:    []ArtifactEnum{ResourceArtifact, DatasourceArtifact},
 				Parents:      []*ClassName{testClassName("fvTenant")},
 			},
 			"fvBD": {
 				Name:         testClassName("fvBD"),
 				ResourceName: "bridge_domain",
+				Artifacts:    []ArtifactEnum{ResourceArtifact, DatasourceArtifact},
 				Parents:      []*ClassName{testClassName("fvTenant")},
 			},
 			"fvRsBd": {
@@ -4088,7 +4169,7 @@ func TestIsPlaceholder(t *testing.T) {
 	t.Parallel()
 	test.InitializeTest(t)
 
-	cases := []test.TestCase{
+	testCases := []test.TestCase{
 		{Name: "valid", Input: "{{aci_tenant.test.id}}", Expected: true},
 		{Name: "valid_with_whitespace", Input: "{{ aci_tenant.test.id }}", Expected: true},
 		{Name: "empty_placeholder", Input: "{{}}", Expected: true},
@@ -4101,7 +4182,7 @@ func TestIsPlaceholder(t *testing.T) {
 		{Name: "single_braces", Input: "{x}", Expected: false},
 	}
 
-	for _, testCase := range cases {
+	for _, testCase := range testCases {
 		t.Run(testCase.Name, func(t *testing.T) {
 			t.Parallel()
 			got := isPlaceholder(testCase.Input.(string))
@@ -4272,9 +4353,9 @@ func TestResolvePropertyTestValues(t *testing.T) {
 						AttributeName: "target_dn",
 						propertyDefinition: PropertyDefinition{
 							TestConfig: TestConfigDefinition{
-								Create: []TestValueEntryDefinition{
-									{ConfigValue: "{{aci_tenant.test.id}}", ConfigInclude: &boolTrue, ValueType: ReferenceValue},
-								},
+								Create: testValueScenarioDefinition(
+									TestValueEntryDefinition{ConfigValue: "{{aci_tenant.test.id}}", ConfigInclude: &boolTrue, ValueType: ReferenceValue},
+								),
 							},
 						},
 					}
@@ -4396,9 +4477,9 @@ func TestResolvePropertyTestValues(t *testing.T) {
 						Required:      true,
 						propertyDefinition: PropertyDefinition{
 							TestConfig: TestConfigDefinition{
-								Create: []TestValueEntryDefinition{
-									{ConfigValue: "aci_tenant.custom.id", ConfigInclude: &boolTrue},
-								},
+								Create: testValueScenarioDefinition(
+									TestValueEntryDefinition{ConfigValue: "aci_tenant.custom.id", ConfigInclude: &boolTrue},
+								),
 							},
 						},
 					}
@@ -4520,9 +4601,9 @@ func TestResolvePropertyTestValues(t *testing.T) {
 						AttributeName: "tn_fv_bd_name",
 						propertyDefinition: PropertyDefinition{
 							TestConfig: TestConfigDefinition{
-								Create: []TestValueEntryDefinition{
-									{ConfigValue: "explicit_name", ConfigInclude: &boolTrue},
-								},
+								Create: testValueScenarioDefinition(
+									TestValueEntryDefinition{ConfigValue: "explicit_name", ConfigInclude: &boolTrue},
+								),
 							},
 						},
 					}
@@ -4628,9 +4709,9 @@ func TestResolvePropertyTestValues(t *testing.T) {
 						AttributeName: "tn_fv_bd_name",
 						propertyDefinition: PropertyDefinition{
 							TestConfig: TestConfigDefinition{
-								Create: []TestValueEntryDefinition{
-									{ConfigValue: "explicit_name", ConfigInclude: &boolTrue},
-								},
+								Create: testValueScenarioDefinition(
+									TestValueEntryDefinition{ConfigValue: "explicit_name", ConfigInclude: &boolTrue},
+								),
 							},
 						},
 					}
@@ -4700,27 +4781,27 @@ func TestResolvePropertyTestValues(t *testing.T) {
 					continue
 				}
 				if check.CreateValue != "" {
-					assert.Equal(t, check.CreateValue, prop.TestValues.Create[0].ConfigValue, test.MessageEqual(check.CreateValue, prop.TestValues.Create[0].ConfigValue, testCase.Name))
+					assert.Equal(t, check.CreateValue, prop.TestValues.Create.Entries[0].ConfigValue, test.MessageEqual(check.CreateValue, prop.TestValues.Create.Entries[0].ConfigValue, testCase.Name))
 					if check.CreateType != 0 {
-						assert.Equal(t, check.CreateType, prop.TestValues.Create[0].ValueType, test.MessageEqual(check.CreateType, prop.TestValues.Create[0].ValueType, testCase.Name))
+						assert.Equal(t, check.CreateType, prop.TestValues.Create.Entries[0].ValueType, test.MessageEqual(check.CreateType, prop.TestValues.Create.Entries[0].ValueType, testCase.Name))
 					}
 				}
 				if check.UpdateValue != "" {
-					assert.Equal(t, check.UpdateValue, prop.TestValues.Update[0].ConfigValue, test.MessageEqual(check.UpdateValue, prop.TestValues.Update[0].ConfigValue, testCase.Name))
+					assert.Equal(t, check.UpdateValue, prop.TestValues.Update.Entries[0].ConfigValue, test.MessageEqual(check.UpdateValue, prop.TestValues.Update.Entries[0].ConfigValue, testCase.Name))
 					if check.UpdateType != 0 {
-						assert.Equal(t, check.UpdateType, prop.TestValues.Update[0].ValueType, test.MessageEqual(check.UpdateType, prop.TestValues.Update[0].ValueType, testCase.Name))
+						assert.Equal(t, check.UpdateType, prop.TestValues.Update.Entries[0].ValueType, test.MessageEqual(check.UpdateType, prop.TestValues.Update.Entries[0].ValueType, testCase.Name))
 					}
 				}
 				if check.DefaultValue != "" {
-					assert.Equal(t, check.DefaultValue, prop.TestValues.Default[0].ConfigValue, test.MessageEqual(check.DefaultValue, prop.TestValues.Default[0].ConfigValue, testCase.Name))
-					assert.Equal(t, check.DefaultInclude, prop.TestValues.Default[0].ConfigInclude, test.MessageEqual(check.DefaultInclude, prop.TestValues.Default[0].ConfigInclude, testCase.Name))
+					assert.Equal(t, check.DefaultValue, prop.TestValues.Default.Entries[0].ConfigValue, test.MessageEqual(check.DefaultValue, prop.TestValues.Default.Entries[0].ConfigValue, testCase.Name))
+					assert.Equal(t, check.DefaultInclude, prop.TestValues.Default.Entries[0].ConfigInclude, test.MessageEqual(check.DefaultInclude, prop.TestValues.Default.Entries[0].ConfigInclude, testCase.Name))
 				}
 				if check.ForceNewNil {
-					assert.Nil(t, prop.TestValues.ForceNew, testCase.Name+": "+propName+" ForceNew should be nil")
+					assert.False(t, prop.TestValues.ForceNew.Defined, testCase.Name+": "+propName+" ForceNew should be undefined")
 				} else if check.ForceNewValue != "" {
-					assert.Equal(t, check.ForceNewValue, prop.TestValues.ForceNew[0].ConfigValue, test.MessageEqual(check.ForceNewValue, prop.TestValues.ForceNew[0].ConfigValue, testCase.Name))
+					assert.Equal(t, check.ForceNewValue, prop.TestValues.ForceNew.Entries[0].ConfigValue, test.MessageEqual(check.ForceNewValue, prop.TestValues.ForceNew.Entries[0].ConfigValue, testCase.Name))
 					if check.ForceNewType != 0 {
-						assert.Equal(t, check.ForceNewType, prop.TestValues.ForceNew[0].ValueType, test.MessageEqual(check.ForceNewType, prop.TestValues.ForceNew[0].ValueType, testCase.Name))
+						assert.Equal(t, check.ForceNewType, prop.TestValues.ForceNew.Entries[0].ValueType, test.MessageEqual(check.ForceNewType, prop.TestValues.ForceNew.Entries[0].ValueType, testCase.Name))
 					}
 				}
 			}
@@ -4753,7 +4834,7 @@ type expectedTestChildProperty struct {
 	ValueType   ValueRenderTypeEnum
 }
 
-func TestResolveChildTestValues(t *testing.T) {
+func TestSetChildTestValues(t *testing.T) {
 	t.Parallel()
 	test.InitializeTest(t)
 
@@ -4773,8 +4854,8 @@ func TestResolveChildTestValues(t *testing.T) {
 								AttributeName: "target_dn",
 								Required:      true,
 								TestValues: &TestValues{
-									Create: []TestValueEntry{{ConfigValue: "aci_bd.test.id", ConfigInclude: true, AssertValue: "aci_bd.test.id", ValueType: ReferenceValue}},
-									Update: []TestValueEntry{{ConfigValue: "aci_bd.test_2.id", ConfigInclude: true, AssertValue: "aci_bd.test_2.id", ValueType: ReferenceValue}},
+									Create: testValueScenario(TestValueEntry{ConfigValue: "aci_bd.test.id", ConfigInclude: true, AssertValue: "aci_bd.test.id", ValueType: ReferenceValue}),
+									Update: testValueScenario(TestValueEntry{ConfigValue: "aci_bd.test_2.id", ConfigInclude: true, AssertValue: "aci_bd.test_2.id", ValueType: ReferenceValue}),
 								},
 							},
 						},
@@ -4815,8 +4896,8 @@ func TestResolveChildTestValues(t *testing.T) {
 								AttributeName: "key",
 								Required:      true,
 								TestValues: &TestValues{
-									Create: []TestValueEntry{{ConfigValue: "key_0", ConfigInclude: true, AssertValue: "key_0", ValueType: StringValue}},
-									Update: []TestValueEntry{{ConfigValue: "key_1", ConfigInclude: true, AssertValue: "key_1", ValueType: StringValue}},
+									Create: testValueScenario(TestValueEntry{ConfigValue: "key_0", ConfigInclude: true, AssertValue: "key_0", ValueType: StringValue}),
+									Update: testValueScenario(TestValueEntry{ConfigValue: "key_1", ConfigInclude: true, AssertValue: "key_1", ValueType: StringValue}),
 								},
 							},
 							"value": {
@@ -4824,8 +4905,8 @@ func TestResolveChildTestValues(t *testing.T) {
 								AttributeName: "value",
 								Optional:      true,
 								TestValues: &TestValues{
-									Create: []TestValueEntry{{ConfigValue: "value_1", ConfigInclude: true, AssertValue: "value_1", ValueType: StringValue}},
-									Update: []TestValueEntry{{ConfigValue: "value_2", ConfigInclude: true, AssertValue: "value_2", ValueType: StringValue}},
+									Create: testValueScenario(TestValueEntry{ConfigValue: "value_1", ConfigInclude: true, AssertValue: "value_1", ValueType: StringValue}),
+									Update: testValueScenario(TestValueEntry{ConfigValue: "value_2", ConfigInclude: true, AssertValue: "value_2", ValueType: StringValue}),
 								},
 							},
 						},
@@ -4867,8 +4948,8 @@ func TestResolveChildTestValues(t *testing.T) {
 								AttributeName: "key",
 								Required:      true,
 								TestValues: &TestValues{
-									Create: []TestValueEntry{{ConfigValue: "auto_key", ConfigInclude: true, AssertValue: "auto_key", ValueType: StringValue}},
-									Update: []TestValueEntry{{ConfigValue: "auto_key_2", ConfigInclude: true, AssertValue: "auto_key_2", ValueType: StringValue}},
+									Create: testValueScenario(TestValueEntry{ConfigValue: "auto_key", ConfigInclude: true, AssertValue: "auto_key", ValueType: StringValue}),
+									Update: testValueScenario(TestValueEntry{ConfigValue: "auto_key_2", ConfigInclude: true, AssertValue: "auto_key_2", ValueType: StringValue}),
 								},
 							},
 						},
@@ -4882,8 +4963,8 @@ func TestResolveChildTestValues(t *testing.T) {
 								Children: map[string]ChildTestOverrideDefinition{
 									"tagAnnotation": {
 										Instances: []ChildTestInstanceOverrideDefinition{
-											{Properties: map[string]string{"key": "override_key_0"}},
-											{Properties: map[string]string{"key": "override_key_1"}},
+											{Properties: map[string]TestValueScenarioDefinition{"key": testValueDefinition("override_key_0")}},
+											{Properties: map[string]TestValueScenarioDefinition{"key": testValueDefinition("override_key_1")}},
 										},
 									},
 								},
@@ -4921,8 +5002,8 @@ func TestResolveChildTestValues(t *testing.T) {
 								AttributeName: "target_dn",
 								Required:      true,
 								TestValues: &TestValues{
-									Create: []TestValueEntry{{ConfigValue: "aci_bridge_domain.test.id", ConfigInclude: true, AssertValue: "aci_bridge_domain.test.id", ValueType: ReferenceValue}},
-									Update: []TestValueEntry{{ConfigValue: "aci_bridge_domain.test_2.id", ConfigInclude: true, AssertValue: "aci_bridge_domain.test_2.id", ValueType: ReferenceValue}},
+									Create: testValueScenario(TestValueEntry{ConfigValue: "aci_bridge_domain.test.id", ConfigInclude: true, AssertValue: "aci_bridge_domain.test.id", ValueType: ReferenceValue}),
+									Update: testValueScenario(TestValueEntry{ConfigValue: "aci_bridge_domain.test_2.id", ConfigInclude: true, AssertValue: "aci_bridge_domain.test_2.id", ValueType: ReferenceValue}),
 								},
 							},
 						},
@@ -4936,7 +5017,7 @@ func TestResolveChildTestValues(t *testing.T) {
 								Children: map[string]ChildTestOverrideDefinition{
 									"fvRsBd": {
 										Instances: []ChildTestInstanceOverrideDefinition{
-											{Properties: map[string]string{"target_dn": "{{aci_bridge_domain.test.id}}"}},
+											{Properties: map[string]TestValueScenarioDefinition{"target_dn": testValueDefinition("{{aci_bridge_domain.test.id}}")}},
 										},
 									},
 								},
@@ -4978,8 +5059,8 @@ func TestResolveChildTestValues(t *testing.T) {
 								AttributeName: "key",
 								Required:      true,
 								TestValues: &TestValues{
-									Create: []TestValueEntry{{ConfigValue: "key_0", ConfigInclude: true, AssertValue: "key_0", ValueType: StringValue}},
-									Update: []TestValueEntry{{ConfigValue: "key_1", ConfigInclude: true, AssertValue: "key_1", ValueType: StringValue}},
+									Create: testValueScenario(TestValueEntry{ConfigValue: "key_0", ConfigInclude: true, AssertValue: "key_0", ValueType: StringValue}),
+									Update: testValueScenario(TestValueEntry{ConfigValue: "key_1", ConfigInclude: true, AssertValue: "key_1", ValueType: StringValue}),
 								},
 							},
 							"value": {
@@ -4988,7 +5069,7 @@ func TestResolveChildTestValues(t *testing.T) {
 								Optional:      true,
 								// Update is intentionally missing — instance[1] must reuse Create.
 								TestValues: &TestValues{
-									Create: []TestValueEntry{{ConfigValue: "value_only_create", ConfigInclude: true, AssertValue: "value_only_create", ValueType: StringValue}},
+									Create: testValueScenario(TestValueEntry{ConfigValue: "value_only_create", ConfigInclude: true, AssertValue: "value_only_create", ValueType: StringValue}),
 								},
 							},
 						},
@@ -5036,8 +5117,8 @@ func TestResolveChildTestValues(t *testing.T) {
 								AttributeName: "key",
 								Required:      true,
 								TestValues: &TestValues{
-									Create: []TestValueEntry{{ConfigValue: "key_1", ConfigInclude: true, AssertValue: "key_1", ValueType: StringValue}},
-									Update: []TestValueEntry{{ConfigValue: "key_2", ConfigInclude: true, AssertValue: "key_2", ValueType: StringValue}},
+									Create: testValueScenario(TestValueEntry{ConfigValue: "key_1", ConfigInclude: true, AssertValue: "key_1", ValueType: StringValue}),
+									Update: testValueScenario(TestValueEntry{ConfigValue: "key_2", ConfigInclude: true, AssertValue: "key_2", ValueType: StringValue}),
 								},
 							},
 							"value": {
@@ -5045,8 +5126,8 @@ func TestResolveChildTestValues(t *testing.T) {
 								AttributeName: "value",
 								Optional:      true,
 								TestValues: &TestValues{
-									Create: []TestValueEntry{{ConfigValue: "value_1", ConfigInclude: true, AssertValue: "value_1", ValueType: StringValue}},
-									Update: []TestValueEntry{{ConfigValue: "value_2", ConfigInclude: true, AssertValue: "value_2", ValueType: StringValue}},
+									Create: testValueScenario(TestValueEntry{ConfigValue: "value_1", ConfigInclude: true, AssertValue: "value_1", ValueType: StringValue}),
+									Update: testValueScenario(TestValueEntry{ConfigValue: "value_2", ConfigInclude: true, AssertValue: "value_2", ValueType: StringValue}),
 								},
 							},
 						},
@@ -5093,8 +5174,8 @@ func TestResolveChildTestValues(t *testing.T) {
 								AttributeName: "tn_vz_br_cp_name",
 								Required:      true,
 								TestValues: &TestValues{
-									Create: []TestValueEntry{{ConfigValue: "aci_contract.test.name", ConfigInclude: true, AssertValue: "aci_contract.test.name", ValueType: ReferenceValue}},
-									Update: []TestValueEntry{{ConfigValue: "aci_contract.test_2.name", ConfigInclude: true, AssertValue: "aci_contract.test_2.name", ValueType: ReferenceValue}},
+									Create: testValueScenario(TestValueEntry{ConfigValue: "aci_contract.test.name", ConfigInclude: true, AssertValue: "aci_contract.test.name", ValueType: ReferenceValue}),
+									Update: testValueScenario(TestValueEntry{ConfigValue: "aci_contract.test_2.name", ConfigInclude: true, AssertValue: "aci_contract.test_2.name", ValueType: ReferenceValue}),
 								},
 							},
 						},
@@ -5138,7 +5219,7 @@ func TestResolveChildTestValues(t *testing.T) {
 								AttributeName: "key",
 								Required:      true,
 								TestValues: &TestValues{
-									Create: []TestValueEntry{{ConfigValue: "k", ConfigInclude: true, AssertValue: "k", ValueType: StringValue}},
+									Create: testValueScenario(TestValueEntry{ConfigValue: "k", ConfigInclude: true, AssertValue: "k", ValueType: StringValue}),
 								},
 							},
 							"ignored": {
@@ -5147,7 +5228,7 @@ func TestResolveChildTestValues(t *testing.T) {
 								Optional:      true,
 								IgnoreInTest:  true,
 								TestValues: &TestValues{
-									Create: []TestValueEntry{{ConfigValue: "skip_me", ConfigInclude: true, AssertValue: "skip_me", ValueType: StringValue}},
+									Create: testValueScenario(TestValueEntry{ConfigValue: "skip_me", ConfigInclude: true, AssertValue: "skip_me", ValueType: StringValue}),
 								},
 							},
 							"readOnly": {
@@ -5155,7 +5236,7 @@ func TestResolveChildTestValues(t *testing.T) {
 								AttributeName: "read_only",
 								ReadOnly:      true,
 								TestValues: &TestValues{
-									Create: []TestValueEntry{{ConfigValue: "skip_me_too", ConfigInclude: true, AssertValue: "skip_me_too", ValueType: StringValue}},
+									Create: testValueScenario(TestValueEntry{ConfigValue: "skip_me_too", ConfigInclude: true, AssertValue: "skip_me_too", ValueType: StringValue}),
 								},
 							},
 						},
@@ -5198,7 +5279,7 @@ func TestResolveChildTestValues(t *testing.T) {
 								AttributeName: "target_dn",
 								Required:      true,
 								TestValues: &TestValues{
-									Create: []TestValueEntry{{ConfigValue: "aci_bridge_domain.test.id", ConfigInclude: true, AssertValue: "aci_bridge_domain.test.id", ValueType: ReferenceValue}},
+									Create: testValueScenario(TestValueEntry{ConfigValue: "aci_bridge_domain.test.id", ConfigInclude: true, AssertValue: "aci_bridge_domain.test.id", ValueType: ReferenceValue}),
 								},
 							},
 						},
@@ -5212,7 +5293,7 @@ func TestResolveChildTestValues(t *testing.T) {
 								Children: map[string]ChildTestOverrideDefinition{
 									"fvRsBd": {
 										Instances: []ChildTestInstanceOverrideDefinition{
-											{Properties: map[string]string{"target_dn": "{{aci_bridge_domain.unresolved.id}}"}},
+											{Properties: map[string]TestValueScenarioDefinition{"target_dn": testValueDefinition("{{aci_bridge_domain.unresolved.id}}")}},
 										},
 									},
 								},
@@ -5277,7 +5358,7 @@ func TestResolveChildTestValues(t *testing.T) {
 								Children: map[string]ChildTestOverrideDefinition{
 									"unrelatedClass": {
 										Instances: []ChildTestInstanceOverrideDefinition{
-											{Properties: map[string]string{"foo": "bar"}},
+											{Properties: map[string]TestValueScenarioDefinition{"foo": testValueDefinition("bar")}},
 										},
 									},
 								},
@@ -5308,7 +5389,7 @@ func TestResolveChildTestValues(t *testing.T) {
 								AttributeName: "target_dn",
 								Required:      true,
 								TestValues: &TestValues{
-									Create: []TestValueEntry{{ConfigValue: "aci_bridge_domain.deep.id", ConfigInclude: true, AssertValue: "aci_bridge_domain.deep.id", ValueType: ReferenceValue}},
+									Create: testValueScenario(TestValueEntry{ConfigValue: "aci_bridge_domain.deep.id", ConfigInclude: true, AssertValue: "aci_bridge_domain.deep.id", ValueType: ReferenceValue}),
 								},
 							},
 						},
@@ -5378,9 +5459,13 @@ func TestResolveChildTestValues(t *testing.T) {
 						break
 					}
 					for propName, expectedProp := range expectedInstance.Properties {
-						actualEntry, exists := actual.Instances[j].Properties[propName]
+						actualScenario, exists := actual.Instances[j].Properties[propName]
 						assert.True(t, exists, testCase.Name+": property "+propName+" should exist in instance")
 						if exists {
+							if !assert.NotEmpty(t, actualScenario.Entries, testCase.Name+": property "+propName+" should contain a value") {
+								continue
+							}
+							actualEntry := actualScenario.Entries[0]
 							assert.Equal(t, expectedProp.ConfigValue, actualEntry.ConfigValue, test.MessageEqual(expectedProp.ConfigValue, actualEntry.ConfigValue, testCase.Name))
 							assert.Equal(t, expectedProp.ValueType, actualEntry.ValueType, test.MessageEqual(expectedProp.ValueType, actualEntry.ValueType, testCase.Name))
 						}
@@ -5394,14 +5479,14 @@ func TestResolveChildTestValues(t *testing.T) {
 // Exercises the full seam from YAML-defined test_config overrides on a child
 // class's properties through property.setTestValues() into TestValues and from
 // there into TestChildInstance values via class.setChildTestValues(). Other
-// resolveChildTestValues cases pre-populate TestValues directly and bypass the
+// setChildTestValues cases pre-populate TestValues directly and bypass the
 // YAML conversion layer; this case guarantees explicit Create/Update overrides
 // (arbitrary literals such as MAC addresses, IP addresses, or custom strings)
 // land in instance 0 / instance 1 respectively without being overwritten by
 // auto-derivation. The fixture supplies all four standard buckets explicitly
 // so the per-bucket merge in setTestValues passes the overrides through
 // without re-deriving from meta.
-func TestResolveChildTestValuesYAMLOverridesPropagate(t *testing.T) {
+func TestSetChildTestValuesYAMLOverridesPropagate(t *testing.T) {
 	t.Parallel()
 	test.InitializeTest(t)
 
@@ -5409,16 +5494,16 @@ func TestResolveChildTestValuesYAMLOverridesPropagate(t *testing.T) {
 	boolFalse := false
 
 	keyOverride := TestConfigDefinition{
-		Create:   []TestValueEntryDefinition{{ConfigValue: "00:00:00:00:00:01", ConfigInclude: &boolTrue, ValueType: StringValue}},
-		Update:   []TestValueEntryDefinition{{ConfigValue: "00:00:00:00:00:02", ConfigInclude: &boolTrue, ValueType: StringValue}},
-		Default:  []TestValueEntryDefinition{{ConfigValue: "00:00:00:00:00:01", ConfigInclude: &boolTrue, ValueType: StringValue}},
-		ForceNew: []TestValueEntryDefinition{{ConfigValue: "00:00:00:00:00:01", ConfigInclude: &boolTrue, ValueType: StringValue}},
+		Create:   testValueScenarioDefinition(TestValueEntryDefinition{ConfigValue: "00:00:00:00:00:01", ConfigInclude: &boolTrue, ValueType: StringValue}),
+		Update:   testValueScenarioDefinition(TestValueEntryDefinition{ConfigValue: "00:00:00:00:00:02", ConfigInclude: &boolTrue, ValueType: StringValue}),
+		Default:  testValueScenarioDefinition(TestValueEntryDefinition{ConfigValue: "00:00:00:00:00:01", ConfigInclude: &boolTrue, ValueType: StringValue}),
+		ForceNew: testValueScenarioDefinition(TestValueEntryDefinition{ConfigValue: "00:00:00:00:00:01", ConfigInclude: &boolTrue, ValueType: StringValue}),
 	}
 	valueOverride := TestConfigDefinition{
-		Create:   []TestValueEntryDefinition{{ConfigValue: "custom_value_create", ConfigInclude: &boolTrue, ValueType: StringValue}},
-		Update:   []TestValueEntryDefinition{{ConfigValue: "custom_value_update", ConfigInclude: &boolTrue, ValueType: StringValue}},
-		Default:  []TestValueEntryDefinition{{ConfigValue: "", ConfigInclude: &boolFalse, ValueType: StringValue}},
-		ForceNew: []TestValueEntryDefinition{{ConfigValue: "custom_value_create", ConfigInclude: &boolTrue, ValueType: StringValue}},
+		Create:   testValueScenarioDefinition(TestValueEntryDefinition{ConfigValue: "custom_value_create", ConfigInclude: &boolTrue, ValueType: StringValue}),
+		Update:   testValueScenarioDefinition(TestValueEntryDefinition{ConfigValue: "custom_value_update", ConfigInclude: &boolTrue, ValueType: StringValue}),
+		Default:  testValueScenarioDefinition(TestValueEntryDefinition{ConfigValue: "", ConfigInclude: &boolFalse, ValueType: StringValue}),
+		ForceNew: testValueScenarioDefinition(TestValueEntryDefinition{ConfigValue: "custom_value_create", ConfigInclude: &boolTrue, ValueType: StringValue}),
 	}
 
 	childClass := Class{
@@ -5473,16 +5558,56 @@ func TestResolveChildTestValuesYAMLOverridesPropagate(t *testing.T) {
 		return
 	}
 
-	assert.Equal(t, "00:00:00:00:00:01", child.Instances[0].Properties["key"].ConfigValue)
-	assert.Equal(t, "custom_value_create", child.Instances[0].Properties["value"].ConfigValue)
-	assert.Equal(t, "00:00:00:00:00:02", child.Instances[1].Properties["key"].ConfigValue)
-	assert.Equal(t, "custom_value_update", child.Instances[1].Properties["value"].ConfigValue)
+	assert.Equal(t, "00:00:00:00:00:01", child.Instances[0].Properties["key"].Entries[0].ConfigValue)
+	assert.Equal(t, "custom_value_create", child.Instances[0].Properties["value"].Entries[0].ConfigValue)
+	assert.Equal(t, "00:00:00:00:00:02", child.Instances[1].Properties["key"].Entries[0].ConfigValue)
+	assert.Equal(t, "custom_value_update", child.Instances[1].Properties["value"].Entries[0].ConfigValue)
+}
+
+func TestSetChildTestValuesPreservesSetMembers(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	classes := map[string]Class{
+		"childClass": {
+			Name:                             testClassName("childClass"),
+			IsSingleNestedWhenDefinedAsChild: true,
+			Properties: map[string]*Property{
+				"values": {
+					PropertyName:  "values",
+					AttributeName: "values",
+					Required:      true,
+					ValueType:     Set,
+					TestValues: &TestValues{
+						Create: testValueScenario(
+							TestValueEntry{ConfigValue: "first"},
+							TestValueEntry{ConfigValue: "second"},
+						),
+					},
+				},
+			},
+		},
+		"parentClass": {
+			Name:     testClassName("parentClass"),
+			Children: []*ClassName{testClassName("childClass")},
+		},
+	}
+	ds := &DataStore{Classes: classes, ctx: NewContext()}
+	class := ds.Classes["parentClass"]
+
+	class.setChildTestValues(ds)
+
+	if assert.Len(t, class.TestChildren, 1) && assert.Len(t, class.TestChildren[0].Instances, 1) {
+		scenario := class.TestChildren[0].Instances[0].Properties["values"]
+		assert.True(t, scenario.Defined)
+		assert.Equal(t, []string{"first", "second"}, []string{scenario.Entries[0].ConfigValue, scenario.Entries[1].ConfigValue})
+	}
 }
 
 // Item 8 case 10: placeholder inside a grandchild (nested override Children at level 2)
 // must resolve against the parent class's TestDependencies via the recursive
 // resolvePlaceholdersInTestChildren call.
-func TestResolveChildTestValuesGrandchildPlaceholder(t *testing.T) {
+func TestSetChildTestValuesGrandchildPlaceholder(t *testing.T) {
 	t.Parallel()
 	test.InitializeTest(t)
 
@@ -5500,15 +5625,20 @@ func TestResolveChildTestValuesGrandchildPlaceholder(t *testing.T) {
 					AttributeName: "ip",
 					Required:      true,
 					TestValues: &TestValues{
-						Create: []TestValueEntry{{ConfigValue: "10.0.0.1/24", ConfigInclude: true, AssertValue: "10.0.0.1/24", ValueType: StringValue}},
+						Create: testValueScenario(TestValueEntry{ConfigValue: "10.0.0.1/24", ConfigInclude: true, AssertValue: "10.0.0.1/24", ValueType: StringValue}),
 					},
 				},
 			},
 		},
+		"tagAnnotation": {
+			Name:                             testClassName("tagAnnotation"),
+			ResourceName:                     "annotation",
+			IsSingleNestedWhenDefinedAsChild: true,
+		},
 		"fvBD": {
 			Name:         testClassName("fvBD"),
 			ResourceName: "bridge_domain",
-			Children:     []*ClassName{testClassName("fvSubnet")},
+			Children:     []*ClassName{testClassName("fvSubnet"), testClassName("tagAnnotation")},
 		},
 		"fvAEPg": {
 			Name:         testClassName("fvAEPg"),
@@ -5520,11 +5650,11 @@ func TestResolveChildTestValuesGrandchildPlaceholder(t *testing.T) {
 						"fvBD": {
 							Instances: []ChildTestInstanceOverrideDefinition{
 								{
-									Properties: map[string]string{},
+									Properties: map[string]TestValueScenarioDefinition{},
 									Children: map[string]ChildTestOverrideDefinition{
 										"fvSubnet": {
 											Instances: []ChildTestInstanceOverrideDefinition{
-												{Properties: map[string]string{"ip": "{{aci_bridge_domain.test.id}}"}},
+												{Properties: map[string]TestValueScenarioDefinition{"ip": testValueDefinition("{{aci_bridge_domain.test.id}}")}},
 											},
 										},
 									},
@@ -5560,7 +5690,7 @@ func TestResolveChildTestValuesGrandchildPlaceholder(t *testing.T) {
 	if len(bd.Instances) == 0 {
 		return
 	}
-	assert.Len(t, bd.Instances[0].Children, 1, "expected one grandchild (fvSubnet)")
+	assert.Len(t, bd.Instances[0].Children, 2, "the override and unrelated auto-derived grandchild must both be preserved")
 	if len(bd.Instances[0].Children) == 0 {
 		return
 	}
@@ -5572,8 +5702,12 @@ func TestResolveChildTestValuesGrandchildPlaceholder(t *testing.T) {
 	}
 	ip, ok := subnet.Instances[0].Properties["ip"]
 	assert.True(t, ok, "grandchild property 'ip' must exist")
-	assert.Equal(t, "aci_bridge_domain.test.id", ip.ConfigValue, "grandchild placeholder must resolve against parent TestDependencies")
-	assert.Equal(t, ReferenceValue, ip.ValueType, "resolved grandchild value must be typed as ReferenceValue")
+	if !assert.NotEmpty(t, ip.Entries, "grandchild property 'ip' must contain a value") {
+		return
+	}
+	assert.Equal(t, "aci_bridge_domain.test.id", ip.Entries[0].ConfigValue, "grandchild placeholder must resolve against parent TestDependencies")
+	assert.Equal(t, ReferenceValue, ip.Entries[0].ValueType, "resolved grandchild value must be typed as ReferenceValue")
+	assert.Equal(t, "tagAnnotation", bd.Instances[0].Children[1].Class.String(), "an unrelated auto-derived grandchild must survive the override")
 }
 
 type validateTestCompletenessInput struct {
@@ -5599,7 +5733,7 @@ func TestValidateTestCompleteness(t *testing.T) {
 					"name": {
 						AttributeName: "name",
 						TestValues: &TestValues{
-							Create: []TestValueEntry{{ConfigValue: "name_1"}},
+							Create: testValueScenario(TestValueEntry{ConfigValue: "name_1"}),
 						},
 					},
 				},
@@ -5636,8 +5770,8 @@ func TestValidateTestCompleteness(t *testing.T) {
 					"tDn": {
 						AttributeName: "target_dn",
 						TestValues: &TestValues{
-							Create: []TestValueEntry{{ConfigValue: "{{aci_bd.test.id}}"}},
-							Update: []TestValueEntry{{ConfigValue: "{{aci_bd.test_2.id}}"}},
+							Create: testValueScenario(TestValueEntry{ConfigValue: "{{aci_bd.test.id}}"}),
+							Update: testValueScenario(TestValueEntry{ConfigValue: "{{aci_bd.test_2.id}}"}),
 						},
 					},
 				},
@@ -5651,7 +5785,7 @@ func TestValidateTestCompleteness(t *testing.T) {
 					{
 						Class: testClassName("fvRsBd"),
 						Instances: []TestChildInstance{
-							{Properties: map[string]TestValueEntry{"target_dn": {ConfigValue: "{{aci_bd.test.id}}"}}},
+							{Properties: map[string]TestValueScenario{"target_dn": testValueScenario(TestValueEntry{ConfigValue: "{{aci_bd.test.id}}"})}},
 						},
 					},
 				},
@@ -5712,8 +5846,8 @@ func TestValidateTestCompleteness(t *testing.T) {
 					"tDn": {
 						AttributeName: "target_dn",
 						TestValues: &TestValues{
-							Create:   []TestValueEntry{{ConfigValue: "{{aci_bd.test.id}}"}},
-							ForceNew: []TestValueEntry{{ConfigValue: "{{aci_bd.test.id}}"}},
+							Create:   testValueScenario(TestValueEntry{ConfigValue: "{{aci_bd.test.id}}"}),
+							ForceNew: testValueScenario(TestValueEntry{ConfigValue: "{{aci_bd.test.id}}"}),
 						},
 					},
 				},
@@ -5721,7 +5855,7 @@ func TestValidateTestCompleteness(t *testing.T) {
 					{
 						Class: testClassName("fvRsBd"),
 						Instances: []TestChildInstance{
-							{Properties: map[string]TestValueEntry{"target_dn": {ConfigValue: "{{aci_bd.test.id}}"}}},
+							{Properties: map[string]TestValueScenario{"target_dn": testValueScenario(TestValueEntry{ConfigValue: "{{aci_bd.test.id}}"})}},
 						},
 					},
 				},
@@ -5794,8 +5928,8 @@ func TestValidateTestDependencyPlaceholders_PerDependencyChildren(t *testing.T) 
 			"fvRsBd": {
 				Class: testClassName("fvRsBd"),
 				Instances: []TestChildInstance{
-					{Properties: map[string]TestValueEntry{
-						"target_dn": {ConfigValue: "{{aci_unknown.test.id}}"},
+					{Properties: map[string]TestValueScenario{
+						"target_dn": testValueScenario(TestValueEntry{ConfigValue: "{{aci_unknown.test.id}}"}),
 					}},
 				},
 			},
@@ -5823,8 +5957,8 @@ func TestResolvePlaceholdersInDependencyChildren_CycleProtection(t *testing.T) {
 			"fvRsBd": {
 				Class: testClassName("fvRsBd"),
 				Instances: []TestChildInstance{
-					{Properties: map[string]TestValueEntry{
-						"k": {ConfigValue: "{{aci_a.test.id}}"},
+					{Properties: map[string]TestValueScenario{
+						"k": testValueScenario(TestValueEntry{ConfigValue: "{{aci_a.test.id}}"}),
 					}},
 				},
 			},
@@ -5842,9 +5976,21 @@ func TestResolvePlaceholdersInDependencyChildren_CycleProtection(t *testing.T) {
 	// Must terminate; the placeholder resolves to dependencyA's own reference.
 	class.resolvePlaceholdersInDependencyChildren(class.TestDependencies, make(map[*TestDependency]bool))
 
-	entry := dependencyA.Children["fvRsBd"].Instances[0].Properties["k"]
+	entry := dependencyA.Children["fvRsBd"].Instances[0].Properties["k"].Entries[0]
 	assert.Equal(t, "aci_a.test.id", entry.ConfigValue)
 	assert.Equal(t, ReferenceValue, entry.ValueType)
+}
+
+type mergeOverrideChildrenInput struct {
+	Base    []*TestChild
+	Overlay map[string]ChildTestOverrideDefinition
+}
+
+type mergeOverrideChildrenExpected struct {
+	Nil               bool
+	ClassNames        []string
+	ConfigValues      map[int]string
+	SameAsBaseIndexes []int
 }
 
 // TestMergeOverrideChildren covers the three branches:
@@ -5858,97 +6004,111 @@ func TestMergeOverrideChildren(t *testing.T) {
 	t.Parallel()
 	test.InitializeTest(t)
 
-	t.Run("both_empty_returns_nil", func(t *testing.T) {
-		t.Parallel()
-		ds := &DataStore{Classes: map[string]Class{}}
-		got := mergeOverrideChildren(ds, nil, nil)
-		assert.Nil(t, got)
-	})
+	baseOnly := []*TestChild{{Class: testClassName("fvRsBd")}}
+	baseReplaced := []*TestChild{{
+		Class: testClassName("fvRsBd"),
+		Instances: []TestChildInstance{
+			{Properties: map[string]TestValueScenario{"k": testValueScenario(TestValueEntry{ConfigValue: "old"})}},
+		},
+	}}
+	baseWithEmptyOverlay := []*TestChild{{Class: testClassName("fvRsBd")}}
 
-	t.Run("base_only_kept_as_is", func(t *testing.T) {
-		t.Parallel()
-		ds := &DataStore{Classes: map[string]Class{}}
-		base := []*TestChild{{Class: testClassName("fvRsBd")}}
-		got := mergeOverrideChildren(ds, base, nil)
-		assert.Len(t, got, 1)
-		assert.Same(t, base[0], got[0], "base entry must be kept by-pointer when no overlay matches")
-	})
-
-	t.Run("base_replaced_by_overlay", func(t *testing.T) {
-		t.Parallel()
-		ds := &DataStore{Classes: map[string]Class{}}
-		base := []*TestChild{{
-			Class: testClassName("fvRsBd"),
-			Instances: []TestChildInstance{
-				{Properties: map[string]TestValueEntry{"k": {ConfigValue: "old"}}},
+	testCases := []test.TestCase{
+		{
+			Name:     "test_both_empty_returns_nil",
+			Input:    mergeOverrideChildrenInput{},
+			Expected: mergeOverrideChildrenExpected{Nil: true},
+		},
+		{
+			Name:     "test_base_only_kept_as_is",
+			Input:    mergeOverrideChildrenInput{Base: baseOnly},
+			Expected: mergeOverrideChildrenExpected{ClassNames: []string{"fvRsBd"}, SameAsBaseIndexes: []int{0}},
+		},
+		{
+			Name: "test_base_replaced_by_overlay",
+			Input: mergeOverrideChildrenInput{
+				Base: baseReplaced,
+				Overlay: map[string]ChildTestOverrideDefinition{
+					"fvRsBd": {Instances: []ChildTestInstanceOverrideDefinition{
+						{Properties: map[string]TestValueScenarioDefinition{"k": testValueDefinition("new")}},
+					}},
+				},
 			},
-		}}
-		overlay := map[string]ChildTestOverrideDefinition{
-			"fvRsBd": {Instances: []ChildTestInstanceOverrideDefinition{
-				{Properties: map[string]string{"k": "new"}},
+			Expected: mergeOverrideChildrenExpected{ClassNames: []string{"fvRsBd"}, ConfigValues: map[int]string{0: "new"}},
+		},
+		{
+			Name: "test_overlay_only_appended",
+			Input: mergeOverrideChildrenInput{Overlay: map[string]ChildTestOverrideDefinition{
+				"fvRsBd": {Instances: []ChildTestInstanceOverrideDefinition{
+					{Properties: map[string]TestValueScenarioDefinition{"k": testValueDefinition("v")}},
+				}},
 			}},
-		}
-
-		got := mergeOverrideChildren(ds, base, overlay)
-		assert.Len(t, got, 1)
-		assert.Equal(t, "fvRsBd", got[0].Class.String())
-		assert.Len(t, got[0].Instances, 1)
-		assert.Equal(t, "new", got[0].Instances[0].Properties["k"].ConfigValue)
-	})
-
-	t.Run("overlay_only_appended", func(t *testing.T) {
-		t.Parallel()
-		ds := &DataStore{Classes: map[string]Class{}}
-		overlay := map[string]ChildTestOverrideDefinition{
-			"fvRsBd": {Instances: []ChildTestInstanceOverrideDefinition{
-				{Properties: map[string]string{"k": "v"}},
+			Expected: mergeOverrideChildrenExpected{ClassNames: []string{"fvRsBd"}, ConfigValues: map[int]string{0: "v"}},
+		},
+		{
+			Name: "test_overlay_only_entries_are_sorted",
+			Input: mergeOverrideChildrenInput{Overlay: map[string]ChildTestOverrideDefinition{
+				"tagTag": {Instances: []ChildTestInstanceOverrideDefinition{{}}},
+				"fvRsBd": {Instances: []ChildTestInstanceOverrideDefinition{{}}},
 			}},
-		}
-
-		got := mergeOverrideChildren(ds, nil, overlay)
-		assert.Len(t, got, 1)
-		assert.Equal(t, "fvRsBd", got[0].Class.String())
-		assert.Equal(t, "v", got[0].Instances[0].Properties["k"].ConfigValue)
-	})
-
-	t.Run("overlay_only_with_empty_instances_skipped", func(t *testing.T) {
-		t.Parallel()
-		ds := &DataStore{Classes: map[string]Class{}}
-		overlay := map[string]ChildTestOverrideDefinition{
-			"fvRsBd": {Instances: nil},
-		}
-
-		got := mergeOverrideChildren(ds, nil, overlay)
-		assert.Empty(t, got, "overlay-only entry with no instances must not be appended")
-	})
-
-	t.Run("overlay_invalid_class_name_skipped", func(t *testing.T) {
-		t.Parallel()
-		ds := &DataStore{Classes: map[string]Class{}}
-		overlay := map[string]ChildTestOverrideDefinition{
-			// lowercase first letter of short name => NewClassName fails.
-			"badclassname": {Instances: []ChildTestInstanceOverrideDefinition{
-				{Properties: map[string]string{"k": "v"}},
+			Expected: mergeOverrideChildrenExpected{ClassNames: []string{"fvRsBd", "tagTag"}},
+		},
+		{
+			Name: "test_overlay_only_with_empty_instances_skipped",
+			Input: mergeOverrideChildrenInput{Overlay: map[string]ChildTestOverrideDefinition{
+				"fvRsBd": {Instances: nil},
 			}},
-		}
+			Expected: mergeOverrideChildrenExpected{},
+		},
+		{
+			Name: "test_overlay_invalid_class_name_skipped",
+			Input: mergeOverrideChildrenInput{Overlay: map[string]ChildTestOverrideDefinition{
+				// Lowercase first letter of short name causes NewClassName to fail.
+				"badclassname": {Instances: []ChildTestInstanceOverrideDefinition{
+					{Properties: map[string]TestValueScenarioDefinition{"k": testValueDefinition("v")}},
+				}},
+			}},
+			Expected: mergeOverrideChildrenExpected{},
+		},
+		{
+			Name: "test_base_kept_when_overlay_has_empty_instances_for_same_class",
+			Input: mergeOverrideChildrenInput{
+				Base: baseWithEmptyOverlay,
+				Overlay: map[string]ChildTestOverrideDefinition{
+					"fvRsBd": {Instances: nil},
+				},
+			},
+			Expected: mergeOverrideChildrenExpected{ClassNames: []string{"fvRsBd"}, SameAsBaseIndexes: []int{0}},
+		},
+	}
 
-		got := mergeOverrideChildren(ds, nil, overlay)
-		assert.Empty(t, got, "overlay entry with invalid class name must be skipped (logged as warning)")
-	})
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.(mergeOverrideChildrenInput)
+			expected := testCase.Expected.(mergeOverrideChildrenExpected)
+			actual := mergeOverrideChildren(&DataStore{Classes: map[string]Class{}}, input.Base, input.Overlay)
 
-	t.Run("base_kept_when_overlay_has_empty_instances_for_same_class", func(t *testing.T) {
-		t.Parallel()
-		ds := &DataStore{Classes: map[string]Class{}}
-		base := []*TestChild{{Class: testClassName("fvRsBd")}}
-		overlay := map[string]ChildTestOverrideDefinition{
-			// Match exists but Instances is empty -> base entry must be preserved unchanged.
-			"fvRsBd": {Instances: nil},
-		}
-
-		got := mergeOverrideChildren(ds, base, overlay)
-		assert.Len(t, got, 1)
-		assert.Same(t, base[0], got[0])
-	})
+			if expected.Nil {
+				assert.Nil(t, actual)
+				return
+			}
+			if !assert.Len(t, actual, len(expected.ClassNames)) {
+				return
+			}
+			for index, className := range expected.ClassNames {
+				assert.Equal(t, className, actual[index].Class.String())
+			}
+			for index, configValue := range expected.ConfigValues {
+				if assert.Len(t, actual[index].Instances, 1) {
+					assert.Equal(t, configValue, actual[index].Instances[0].Properties["k"].Entries[0].ConfigValue)
+				}
+			}
+			for _, index := range expected.SameAsBaseIndexes {
+				assert.Same(t, input.Base[index], actual[index])
+			}
+		})
+	}
 }
 
 // TestSetTestDependencies_ParentCycleProtection verifies setTestDependencies
@@ -5965,11 +6125,13 @@ func TestSetTestDependencies_ParentCycleProtection(t *testing.T) {
 	classA := Class{
 		Name:         classNameA,
 		ResourceName: "a",
+		Artifacts:    []ArtifactEnum{ResourceArtifact, DatasourceArtifact},
 		Parents:      []*ClassName{classNameB},
 	}
 	classB := Class{
 		Name:         classNameB,
 		ResourceName: "b",
+		Artifacts:    []ArtifactEnum{ResourceArtifact, DatasourceArtifact},
 		Parents:      []*ClassName{classNameA},
 	}
 
@@ -6185,6 +6347,11 @@ func TestSetStateUpgrades_DuplicatePriorSchemaVersion(t *testing.T) {
 	}
 }
 
+type stateUpgradesMigrationSourceInput struct {
+	Source   MigrationSourceEnum
+	Upgrades []StateUpgradeDefinition
+}
+
 // TestValidateStateUpgrades_MigrationSourceCoherence covers the rule that a
 // non-zero MigrationSource requires at least one state_upgrades entry. The
 // specific prior_schema_version on that entry does not matter — SDKv2 resources
@@ -6195,62 +6362,73 @@ func TestValidateStateUpgrades_MigrationSourceCoherence(t *testing.T) {
 	t.Parallel()
 	test.InitializeTest(t)
 
-	cases := []struct {
-		name     string
-		source   MigrationSourceEnum
-		upgrades []StateUpgradeDefinition
-		wantErr  string // empty == expect no error
-	}{
+	testCases := []test.TestCase{
 		{
-			name:    "source_set_no_entries_errors",
-			source:  FromSDKv2,
-			wantErr: "requires at least one state_upgrades entry",
+			Name:     "test_source_set_no_entries_errors",
+			Input:    stateUpgradesMigrationSourceInput{Source: FromSDKv2},
+			Expected: "requires at least one state_upgrades entry",
 		},
 		{
-			name:   "source_set_v0_entry_ok",
-			source: FromSDKv2,
-			upgrades: []StateUpgradeDefinition{
+			Name: "test_source_set_v0_entry_ok",
+			Input: stateUpgradesMigrationSourceInput{Source: FromSDKv2, Upgrades: []StateUpgradeDefinition{
 				{PriorSchemaVersion: 0, Attributes: map[string]AttributeUpgradeDefinition{"name": {LegacyAttribute: "n"}}},
-			},
+			}},
+			Expected: "",
 		},
 		{
-			name:   "source_set_non_zero_prior_version_ok",
-			source: FromSDKv2,
-			upgrades: []StateUpgradeDefinition{
+			Name: "test_source_set_non_zero_prior_version_ok",
+			Input: stateUpgradesMigrationSourceInput{Source: FromSDKv2, Upgrades: []StateUpgradeDefinition{
 				{PriorSchemaVersion: 2, Attributes: map[string]AttributeUpgradeDefinition{"name": {LegacyAttribute: "n"}}},
-			},
+			}},
+			Expected: "",
 		},
 		{
-			name: "no_source_v0_entry_ok",
-			upgrades: []StateUpgradeDefinition{
+			Name: "test_no_source_v0_entry_ok",
+			Input: stateUpgradesMigrationSourceInput{Upgrades: []StateUpgradeDefinition{
 				{PriorSchemaVersion: 0, Attributes: map[string]AttributeUpgradeDefinition{"name": {LegacyAttribute: "n"}}},
-			},
+			}},
+			Expected: "",
 		},
 		{
-			name: "no_source_no_entries_ok",
+			Name:     "test_no_source_no_entries_ok",
+			Input:    stateUpgradesMigrationSourceInput{},
+			Expected: "",
 		},
 	}
 
-	for _, tc := range cases {
-		t.Run(tc.name, func(t *testing.T) {
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
 			t.Parallel()
+			input := testCase.Input.(stateUpgradesMigrationSourceInput)
+			expected := testCase.Expected.(string)
 			class := classWithProperties("fvCtx", map[string]*Property{"name": {PropertyName: "name"}}, nil)
-			class.ClassDefinition.MigrationSource = tc.source
-			class.ClassDefinition.StateUpgrades = tc.upgrades
+			class.ClassDefinition.MigrationSource = input.Source
+			class.ClassDefinition.StateUpgrades = input.Upgrades
 
 			ds := &DataStore{ctx: NewContext()}
 			class.setStateUpgrades(ds)
 			err := ds.ctx.Diagnostics.Error()
-			if tc.wantErr == "" {
+			if expected == "" {
 				assert.NoError(t, err, test.MessageUnexpectedError(err))
-				assert.Equal(t, tc.source, class.MigrationSource)
+				assert.Equal(t, input.Source, class.MigrationSource)
 				return
 			}
 			if assert.Error(t, err) {
-				assert.Contains(t, err.Error(), tc.wantErr)
+				assert.Contains(t, err.Error(), expected)
 			}
 		})
 	}
+}
+
+type stateUpgradesExhaustivenessInput struct {
+	Properties map[string]*Property
+	Children   []string
+	Upgrades   []StateUpgradeDefinition
+}
+
+type stateUpgradesExhaustivenessExpected struct {
+	Error       string
+	NotContains []string
 }
 
 // TestValidateStateUpgrades_Exhaustiveness covers the top-level key resolution
@@ -6263,97 +6441,112 @@ func TestValidateStateUpgrades_Exhaustiveness(t *testing.T) {
 	t.Parallel()
 	test.InitializeTest(t)
 
-	cases := []struct {
-		name     string
-		props    map[string]*Property
-		children []string
-		upgrades []StateUpgradeDefinition
-		wantErr  string
-		wantNot  []string
-	}{
+	testCases := []test.TestCase{
 		{
-			name:  "attribute_resolves_ok",
-			props: map[string]*Property{"name": {PropertyName: "name"}},
-			upgrades: []StateUpgradeDefinition{
-				{PriorSchemaVersion: 0, Attributes: map[string]AttributeUpgradeDefinition{"name": {LegacyAttribute: "n"}}},
+			Name: "test_attribute_resolves_ok",
+			Input: stateUpgradesExhaustivenessInput{
+				Properties: map[string]*Property{"name": {PropertyName: "name"}},
+				Upgrades: []StateUpgradeDefinition{
+					{PriorSchemaVersion: 0, Attributes: map[string]AttributeUpgradeDefinition{"name": {LegacyAttribute: "n"}}},
+				},
 			},
+			Expected: stateUpgradesExhaustivenessExpected{},
 		},
 		{
-			name:  "attribute_unknown_errors",
-			props: map[string]*Property{"name": {PropertyName: "name"}},
-			upgrades: []StateUpgradeDefinition{
-				{PriorSchemaVersion: 0, Attributes: map[string]AttributeUpgradeDefinition{
-					"notARealProperty": {LegacyAttribute: "legacy_name"},
-				}},
+			Name: "test_attribute_unknown_errors",
+			Input: stateUpgradesExhaustivenessInput{
+				Properties: map[string]*Property{"name": {PropertyName: "name"}},
+				Upgrades: []StateUpgradeDefinition{
+					{PriorSchemaVersion: 0, Attributes: map[string]AttributeUpgradeDefinition{
+						"notARealProperty": {LegacyAttribute: "legacy_name"},
+					}},
+				},
 			},
-			wantErr: "not found in resolved properties",
+			Expected: stateUpgradesExhaustivenessExpected{Error: "not found in resolved properties"},
 		},
 		{
-			name:  "attribute_unknown_but_removed_ok",
-			props: map[string]*Property{"name": {PropertyName: "name"}},
-			upgrades: []StateUpgradeDefinition{
-				{PriorSchemaVersion: 0, Attributes: map[string]AttributeUpgradeDefinition{
-					"gone": {LegacyAttribute: "old_gone", LegacyType: StringAttribute, LegacyRestriction: Optional, LegacyStatus: Removed},
-				}},
+			Name: "test_attribute_unknown_but_removed_ok",
+			Input: stateUpgradesExhaustivenessInput{
+				Properties: map[string]*Property{"name": {PropertyName: "name"}},
+				Upgrades: []StateUpgradeDefinition{
+					{PriorSchemaVersion: 0, Attributes: map[string]AttributeUpgradeDefinition{
+						"gone": {LegacyAttribute: "old_gone", LegacyType: StringAttribute, LegacyRestriction: Optional, LegacyStatus: Removed},
+					}},
+				},
 			},
+			Expected: stateUpgradesExhaustivenessExpected{},
 		},
 		{
-			name:     "child_resolves_ok",
-			children: []string{"fvRsBd"},
-			upgrades: []StateUpgradeDefinition{
-				{PriorSchemaVersion: 0, Children: map[string]AttributeUpgradeDefinition{
-					"fvRsBd": {LegacyAttribute: "renamed"},
-				}},
+			Name: "test_child_resolves_ok",
+			Input: stateUpgradesExhaustivenessInput{
+				Children: []string{"fvRsBd"},
+				Upgrades: []StateUpgradeDefinition{
+					{PriorSchemaVersion: 0, Children: map[string]AttributeUpgradeDefinition{
+						"fvRsBd": {LegacyAttribute: "renamed"},
+					}},
+				},
 			},
+			Expected: stateUpgradesExhaustivenessExpected{},
 		},
 		{
-			name:     "child_unknown_errors",
-			children: []string{"fvRsBd"},
-			upgrades: []StateUpgradeDefinition{
-				{PriorSchemaVersion: 0, Children: map[string]AttributeUpgradeDefinition{
-					"notAChildClass": {LegacyAttribute: "x"},
-				}},
+			Name: "test_child_unknown_errors",
+			Input: stateUpgradesExhaustivenessInput{
+				Children: []string{"fvRsBd"},
+				Upgrades: []StateUpgradeDefinition{
+					{PriorSchemaVersion: 0, Children: map[string]AttributeUpgradeDefinition{
+						"notAChildClass": {LegacyAttribute: "x"},
+					}},
+				},
 			},
-			wantErr: "not found in resolved children",
+			Expected: stateUpgradesExhaustivenessExpected{Error: "not found in resolved children"},
 		},
 		{
-			name:     "child_unknown_but_removed_ok",
-			children: []string{"fvRsBd"},
-			upgrades: []StateUpgradeDefinition{
-				{PriorSchemaVersion: 0, Children: map[string]AttributeUpgradeDefinition{
-					"fvRsCustQosPol": {LegacyAttribute: "old_qos", LegacyType: StringAttribute, LegacyRestriction: Optional, LegacyStatus: Removed},
-				}},
+			Name: "test_child_unknown_but_removed_ok",
+			Input: stateUpgradesExhaustivenessInput{
+				Children: []string{"fvRsBd"},
+				Upgrades: []StateUpgradeDefinition{
+					{PriorSchemaVersion: 0, Children: map[string]AttributeUpgradeDefinition{
+						"fvRsCustQosPol": {LegacyAttribute: "old_qos", LegacyType: StringAttribute, LegacyRestriction: Optional, LegacyStatus: Removed},
+					}},
+				},
 			},
+			Expected: stateUpgradesExhaustivenessExpected{},
 		},
 		{
-			name:     "mixed_resolved_unknown_removed_only_unknown_errors",
-			children: []string{"fvRsBd"},
-			upgrades: []StateUpgradeDefinition{
-				{PriorSchemaVersion: 0, Children: map[string]AttributeUpgradeDefinition{
-					"fvRsBd":         {LegacyAttribute: "renamed"},
-					"fvRsDomAtt":     {LegacyAttribute: "relation_to_domain"},
-					"fvRsCustQosPol": {LegacyAttribute: "old_qos", LegacyType: StringAttribute, LegacyRestriction: Optional, LegacyStatus: Removed},
-				}},
+			Name: "test_mixed_resolved_unknown_removed_only_unknown_errors",
+			Input: stateUpgradesExhaustivenessInput{
+				Children: []string{"fvRsBd"},
+				Upgrades: []StateUpgradeDefinition{
+					{PriorSchemaVersion: 0, Children: map[string]AttributeUpgradeDefinition{
+						"fvRsBd":         {LegacyAttribute: "renamed"},
+						"fvRsDomAtt":     {LegacyAttribute: "relation_to_domain"},
+						"fvRsCustQosPol": {LegacyAttribute: "old_qos", LegacyType: StringAttribute, LegacyRestriction: Optional, LegacyStatus: Removed},
+					}},
+				},
 			},
-			wantErr: `child "fvRsDomAtt" not found in resolved children`,
-			wantNot: []string{`"fvRsBd"`, `"fvRsCustQosPol"`},
+			Expected: stateUpgradesExhaustivenessExpected{
+				Error:       `child "fvRsDomAtt" not found in resolved children`,
+				NotContains: []string{`"fvRsBd"`, `"fvRsCustQosPol"`},
+			},
 		},
 	}
 
-	for _, tc := range cases {
-		t.Run(tc.name, func(t *testing.T) {
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
 			t.Parallel()
-			props := tc.props
+			input := testCase.Input.(stateUpgradesExhaustivenessInput)
+			expected := testCase.Expected.(stateUpgradesExhaustivenessExpected)
+			props := input.Properties
 			if props == nil {
 				props = map[string]*Property{}
 			}
-			class := classWithProperties("fvAEPg", props, tc.children)
-			class.ClassDefinition.StateUpgrades = tc.upgrades
+			class := classWithProperties("fvAEPg", props, input.Children)
+			class.ClassDefinition.StateUpgrades = input.Upgrades
 
 			ds := &DataStore{ctx: NewContext()}
 			class.setStateUpgrades(ds)
 			err := ds.ctx.Diagnostics.Error()
-			if tc.wantErr == "" {
+			if expected.Error == "" {
 				assert.NoError(t, err, test.MessageUnexpectedError(err))
 				return
 			}
@@ -6361,8 +6554,8 @@ func TestValidateStateUpgrades_Exhaustiveness(t *testing.T) {
 				return
 			}
 			msg := err.Error()
-			assert.Contains(t, msg, tc.wantErr)
-			for _, forbidden := range tc.wantNot {
+			assert.Contains(t, msg, expected.Error)
+			for _, forbidden := range expected.NotContains {
 				assert.NotContains(t, msg, forbidden)
 			}
 		})
@@ -6414,14 +6607,10 @@ func TestValidateStateUpgradeEntry_LegacyAttributeCollisions(t *testing.T) {
 	t.Parallel()
 	test.InitializeTest(t)
 
-	cases := []struct {
-		name     string
-		upgrades []StateUpgradeDefinition
-		wantErr  string
-	}{
+	testCases := []test.TestCase{
 		{
-			name: "same_entry_duplicate_errors",
-			upgrades: []StateUpgradeDefinition{
+			Name: "test_same_entry_duplicate_errors",
+			Input: []StateUpgradeDefinition{
 				{
 					PriorSchemaVersion: 0,
 					Attributes: map[string]AttributeUpgradeDefinition{
@@ -6430,11 +6619,11 @@ func TestValidateStateUpgradeEntry_LegacyAttributeCollisions(t *testing.T) {
 					},
 				},
 			},
-			wantErr: "duplicate legacy_attribute",
+			Expected: "duplicate legacy_attribute",
 		},
 		{
-			name: "cross_entry_repeat_ok",
-			upgrades: []StateUpgradeDefinition{
+			Name: "test_cross_entry_repeat_ok",
+			Input: []StateUpgradeDefinition{
 				{
 					PriorSchemaVersion: 0,
 					Attributes:         map[string]AttributeUpgradeDefinition{"a": {LegacyAttribute: "shared_legacy"}},
@@ -6444,10 +6633,11 @@ func TestValidateStateUpgradeEntry_LegacyAttributeCollisions(t *testing.T) {
 					Attributes:         map[string]AttributeUpgradeDefinition{"b": {LegacyAttribute: "shared_legacy"}},
 				},
 			},
+			Expected: "",
 		},
 		{
-			name: "empty_legacy_attribute_not_counted",
-			upgrades: []StateUpgradeDefinition{
+			Name: "test_empty_legacy_attribute_not_counted",
+			Input: []StateUpgradeDefinition{
 				{
 					PriorSchemaVersion: 0,
 					Attributes: map[string]AttributeUpgradeDefinition{
@@ -6456,27 +6646,29 @@ func TestValidateStateUpgradeEntry_LegacyAttributeCollisions(t *testing.T) {
 					},
 				},
 			},
+			Expected: "",
 		},
 	}
 
-	for _, tc := range cases {
-		t.Run(tc.name, func(t *testing.T) {
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
 			t.Parallel()
+			expected := testCase.Expected.(string)
 			class := classWithProperties("fvCtx", map[string]*Property{
 				"a": {PropertyName: "a"},
 				"b": {PropertyName: "b"},
 			}, nil)
-			class.ClassDefinition.StateUpgrades = tc.upgrades
+			class.ClassDefinition.StateUpgrades = testCase.Input.([]StateUpgradeDefinition)
 
 			ds := &DataStore{ctx: NewContext()}
 			class.setStateUpgrades(ds)
 			err := ds.ctx.Diagnostics.Error()
-			if tc.wantErr == "" {
+			if expected == "" {
 				assert.NoError(t, err, test.MessageUnexpectedError(err))
 				return
 			}
 			if assert.Error(t, err) {
-				assert.Contains(t, err.Error(), tc.wantErr)
+				assert.Contains(t, err.Error(), expected)
 			}
 		})
 	}
@@ -6492,56 +6684,55 @@ func TestAttributeUpgradeDefinition_Validate_Removed(t *testing.T) {
 	t.Parallel()
 	test.InitializeTest(t)
 
-	cases := []struct {
-		name    string
-		node    AttributeUpgradeDefinition
-		wantErr string
-	}{
+	testCases := []test.TestCase{
 		{
-			name: "missing_legacy_attribute",
-			node: AttributeUpgradeDefinition{
+			Name: "test_missing_legacy_attribute",
+			Input: AttributeUpgradeDefinition{
 				LegacyType:        StringAttribute,
 				LegacyRestriction: Optional,
 				LegacyStatus:      Removed,
 			},
-			wantErr: "legacy_attribute",
+			Expected: "legacy_attribute",
 		},
 		{
-			name: "missing_legacy_type",
-			node: AttributeUpgradeDefinition{
+			Name: "test_missing_legacy_type",
+			Input: AttributeUpgradeDefinition{
 				LegacyAttribute:   "old",
 				LegacyRestriction: Optional,
 				LegacyStatus:      Removed,
 			},
-			wantErr: "legacy_type",
+			Expected: "legacy_type",
 		},
 		{
-			name: "missing_legacy_restriction",
-			node: AttributeUpgradeDefinition{
+			Name: "test_missing_legacy_restriction",
+			Input: AttributeUpgradeDefinition{
 				LegacyAttribute: "old",
 				LegacyType:      StringAttribute,
 				LegacyStatus:    Removed,
 			},
-			wantErr: "legacy_restriction",
+			Expected: "legacy_restriction",
 		},
 		{
-			name: "removed_all_legacy_fields_present_ok",
-			node: AttributeUpgradeDefinition{
+			Name: "test_removed_all_legacy_fields_present_ok",
+			Input: AttributeUpgradeDefinition{
 				LegacyAttribute:   "old",
 				LegacyType:        StringAttribute,
 				LegacyRestriction: Optional,
 				LegacyStatus:      Removed,
 			},
+			Expected: "",
 		},
 		{
-			name: "not_removed_missing_fields_ok",
-			node: AttributeUpgradeDefinition{LegacyStatus: Functioning},
+			Name:     "test_not_removed_missing_fields_ok",
+			Input:    AttributeUpgradeDefinition{LegacyStatus: Functioning},
+			Expected: "",
 		},
 	}
 
-	for _, tc := range cases {
-		t.Run(tc.name, func(t *testing.T) {
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
 			t.Parallel()
+			expected := testCase.Expected.(string)
 			// Use a key that resolves so the exhaustiveness check stays silent
 			// regardless of the node's LegacyStatus; only the Removed-required
 			// rule (or its absence) drives the assertion.
@@ -6551,22 +6742,27 @@ func TestAttributeUpgradeDefinition_Validate_Removed(t *testing.T) {
 			class.ClassDefinition.StateUpgrades = []StateUpgradeDefinition{
 				{
 					PriorSchemaVersion: 0,
-					Attributes:         map[string]AttributeUpgradeDefinition{"someProp": tc.node},
+					Attributes:         map[string]AttributeUpgradeDefinition{"someProp": testCase.Input.(AttributeUpgradeDefinition)},
 				},
 			}
 
 			ds := &DataStore{ctx: NewContext()}
 			class.setStateUpgrades(ds)
 			err := ds.ctx.Diagnostics.Error()
-			if tc.wantErr == "" {
+			if expected == "" {
 				assert.NoError(t, err, test.MessageUnexpectedError(err))
 				return
 			}
 			if assert.Error(t, err) {
-				assert.Contains(t, err.Error(), tc.wantErr)
+				assert.Contains(t, err.Error(), expected)
 			}
 		})
 	}
+}
+
+type validateChildShapeInput struct {
+	ChildKey   string
+	Definition AttributeUpgradeDefinition
 }
 
 // TestValidateChild_ShapeRules covers the children-bucket shape validator:
@@ -6579,100 +6775,93 @@ func TestValidateChild_ShapeRules(t *testing.T) {
 	t.Parallel()
 	test.InitializeTest(t)
 
-	cases := []struct {
-		name       string
-		childKey   string
-		definition AttributeUpgradeDefinition
-		wantErr    string
-	}{
+	testCases := []test.TestCase{
 		{
-			name:       "block_rename_only_ok",
-			childKey:   "fvRsBd",
-			definition: AttributeUpgradeDefinition{LegacyAttribute: "relation_to_bridge_domain"},
+			Name:     "test_block_rename_only_ok",
+			Input:    validateChildShapeInput{ChildKey: "fvRsBd", Definition: AttributeUpgradeDefinition{LegacyAttribute: "relation_to_bridge_domain"}},
+			Expected: "",
 		},
 		{
-			name:     "scalar_wrap_via_inner_attribute_ok",
-			childKey: "fvRsNodeAtt",
-			definition: AttributeUpgradeDefinition{
+			Name: "test_scalar_wrap_via_inner_attribute_ok",
+			Input: validateChildShapeInput{ChildKey: "fvRsNodeAtt", Definition: AttributeUpgradeDefinition{
 				Attributes: map[string]AttributeUpgradeDefinition{
 					"tDn":   {LegacyAttribute: "node_dn"},
 					"encap": {LegacyAttribute: "node_encap"},
 				},
-			},
+			}},
+			Expected: "",
 		},
 		{
-			name:     "scalar_wrap_via_inner_child_ok",
-			childKey: "fvSubnet",
-			definition: AttributeUpgradeDefinition{
+			Name: "test_scalar_wrap_via_inner_child_ok",
+			Input: validateChildShapeInput{ChildKey: "fvSubnet", Definition: AttributeUpgradeDefinition{
 				Children: map[string]AttributeUpgradeDefinition{
 					"fvRsBDSubnetToOut": {LegacyAttribute: "deep_legacy"},
 				},
-			},
+			}},
+			Expected: "",
 		},
 		{
-			name:       "empty_block_no_inner_errors",
-			childKey:   "fvRsBd",
-			definition: AttributeUpgradeDefinition{},
-			wantErr:    "neither legacy_attribute / legacy_type",
+			Name:     "test_empty_block_no_inner_errors",
+			Input:    validateChildShapeInput{ChildKey: "fvRsBd", Definition: AttributeUpgradeDefinition{}},
+			Expected: "neither legacy_attribute / legacy_type",
 		},
 		{
-			name:       "removed_block_missing_legacy_attribute_errors",
-			childKey:   "fvRsBd",
-			definition: AttributeUpgradeDefinition{LegacyStatus: Removed},
-			wantErr:    "removed requires legacy_attribute",
+			Name:     "test_removed_block_missing_legacy_attribute_errors",
+			Input:    validateChildShapeInput{ChildKey: "fvRsBd", Definition: AttributeUpgradeDefinition{LegacyStatus: Removed}},
+			Expected: "removed requires legacy_attribute",
 		},
 		{
-			name:     "removed_block_with_legacy_attribute_ok",
-			childKey: "fvRsBd",
-			definition: AttributeUpgradeDefinition{
+			Name: "test_removed_block_with_legacy_attribute_ok",
+			Input: validateChildShapeInput{ChildKey: "fvRsBd", Definition: AttributeUpgradeDefinition{
 				LegacyAttribute: "old",
 				LegacyStatus:    Removed,
-			},
+			}},
+			Expected: "",
 		},
 		{
-			name:     "inner_attribute_failure_propagates_with_path",
-			childKey: "fvRsBd",
-			definition: AttributeUpgradeDefinition{
+			Name: "test_inner_attribute_failure_propagates_with_path",
+			Input: validateChildShapeInput{ChildKey: "fvRsBd", Definition: AttributeUpgradeDefinition{
 				LegacyAttribute: "renamed",
 				Attributes: map[string]AttributeUpgradeDefinition{
 					"foo": {LegacyStatus: Removed}, // missing required fields
 				},
-			},
-			wantErr: `children["fvRsBd"]: attributes["foo"]`,
+			}},
+			Expected: `children["fvRsBd"]: attributes["foo"]`,
 		},
 		{
-			name:     "inner_child_failure_propagates_with_path",
-			childKey: "fvRsBd",
-			definition: AttributeUpgradeDefinition{
+			Name: "test_inner_child_failure_propagates_with_path",
+			Input: validateChildShapeInput{ChildKey: "fvRsBd", Definition: AttributeUpgradeDefinition{
 				LegacyAttribute: "renamed",
 				Children: map[string]AttributeUpgradeDefinition{
 					"fvSubnet": {}, // empty inner block triggers the shape error
 				},
-			},
-			wantErr: `children["fvRsBd"]: children["fvSubnet"]`,
+			}},
+			Expected: `children["fvRsBd"]: children["fvSubnet"]`,
 		},
 	}
 
-	for _, tc := range cases {
-		t.Run(tc.name, func(t *testing.T) {
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
 			t.Parallel()
-			class := classWithProperties("fvAEPg", map[string]*Property{}, []string{tc.childKey})
+			input := testCase.Input.(validateChildShapeInput)
+			expected := testCase.Expected.(string)
+			class := classWithProperties("fvAEPg", map[string]*Property{}, []string{input.ChildKey})
 			class.ClassDefinition.StateUpgrades = []StateUpgradeDefinition{
 				{
 					PriorSchemaVersion: 0,
-					Children:           map[string]AttributeUpgradeDefinition{tc.childKey: tc.definition},
+					Children:           map[string]AttributeUpgradeDefinition{input.ChildKey: input.Definition},
 				},
 			}
 
 			ds := &DataStore{ctx: NewContext()}
 			class.setStateUpgrades(ds)
 			err := ds.ctx.Diagnostics.Error()
-			if tc.wantErr == "" {
+			if expected == "" {
 				assert.NoError(t, err, test.MessageUnexpectedError(err))
 				return
 			}
 			if assert.Error(t, err) {
-				assert.Contains(t, err.Error(), tc.wantErr)
+				assert.Contains(t, err.Error(), expected)
 			}
 		})
 	}
@@ -6710,14 +6899,10 @@ func TestSetPropertyStateUpgradeValues_Distribution(t *testing.T) {
 	t.Parallel()
 	test.InitializeTest(t)
 
-	cases := []struct {
-		name   string
-		setup  func() *Class
-		assert func(t *testing.T, class *Class)
-	}{
+	testCases := []test.TestCase{
 		{
-			name: "single_version_single_property",
-			setup: func() *Class {
+			Name: "test_single_version_single_property",
+			Input: func() *Class {
 				class := classWithProperties("fvCtx", map[string]*Property{
 					"name": {PropertyName: "name", AttributeName: "name", Required: true, ValueType: String},
 				}, nil)
@@ -6729,7 +6914,7 @@ func TestSetPropertyStateUpgradeValues_Distribution(t *testing.T) {
 				}
 				return class
 			},
-			assert: func(t *testing.T, class *Class) {
+			Expected: func(t *testing.T, class *Class) {
 				name := class.Properties["name"]
 				if assert.Len(t, name.StateUpgradeValues, 1) {
 					assert.Equal(t, "old_name", name.StateUpgradeValues[0].AttributeName)
@@ -6737,8 +6922,8 @@ func TestSetPropertyStateUpgradeValues_Distribution(t *testing.T) {
 			},
 		},
 		{
-			name: "same_property_two_versions_accumulates",
-			setup: func() *Class {
+			Name: "test_same_property_two_versions_accumulates",
+			Input: func() *Class {
 				class := classWithProperties("fvCtx", map[string]*Property{
 					"name": {PropertyName: "name", AttributeName: "name", Required: true, ValueType: String},
 				}, nil)
@@ -6754,7 +6939,7 @@ func TestSetPropertyStateUpgradeValues_Distribution(t *testing.T) {
 				}
 				return class
 			},
-			assert: func(t *testing.T, class *Class) {
+			Expected: func(t *testing.T, class *Class) {
 				name := class.Properties["name"]
 				if assert.Len(t, name.StateUpgradeValues, 2) {
 					assert.Equal(t, "v0_name", name.StateUpgradeValues[0].AttributeName)
@@ -6763,8 +6948,8 @@ func TestSetPropertyStateUpgradeValues_Distribution(t *testing.T) {
 			},
 		},
 		{
-			name: "untouched_property_keeps_nil_map",
-			setup: func() *Class {
+			Name: "test_untouched_property_keeps_nil_map",
+			Input: func() *Class {
 				class := classWithProperties("fvCtx", map[string]*Property{
 					"name":  {PropertyName: "name", AttributeName: "name", Required: true, ValueType: String},
 					"descr": {PropertyName: "descr", AttributeName: "description", Optional: true, ValueType: String},
@@ -6777,14 +6962,14 @@ func TestSetPropertyStateUpgradeValues_Distribution(t *testing.T) {
 				}
 				return class
 			},
-			assert: func(t *testing.T, class *Class) {
+			Expected: func(t *testing.T, class *Class) {
 				assert.NotNil(t, class.Properties["name"].StateUpgradeValues)
 				assert.Nil(t, class.Properties["descr"].StateUpgradeValues, "property the upgrade tree never names keeps a nil map")
 			},
 		},
 		{
-			name: "removed_key_with_no_property_silent_skip",
-			setup: func() *Class {
+			Name: "test_removed_key_with_no_property_silent_skip",
+			Input: func() *Class {
 				class := classWithProperties("fvCtx", map[string]*Property{}, nil)
 				class.ClassDefinition.StateUpgrades = []StateUpgradeDefinition{
 					{
@@ -6801,13 +6986,13 @@ func TestSetPropertyStateUpgradeValues_Distribution(t *testing.T) {
 				}
 				return class
 			},
-			assert: func(t *testing.T, class *Class) {
+			Expected: func(t *testing.T, class *Class) {
 				assert.Empty(t, class.Properties, "no Property exists for the removed key, nothing to distribute")
 			},
 		},
 		{
-			name: "parentDn_distribution",
-			setup: func() *Class {
+			Name: "test_parent_dn_distribution",
+			Input: func() *Class {
 				class := classWithProperties("fvCtx", map[string]*Property{
 					"parentDn": {PropertyName: "parentDn", AttributeName: "parent_dn", Required: true, ValueType: String},
 				}, nil)
@@ -6819,7 +7004,7 @@ func TestSetPropertyStateUpgradeValues_Distribution(t *testing.T) {
 				}
 				return class
 			},
-			assert: func(t *testing.T, class *Class) {
+			Expected: func(t *testing.T, class *Class) {
 				parentDn := class.Properties["parentDn"]
 				if assert.Contains(t, parentDn.StateUpgradeValues, 0) {
 					assert.Equal(t, "old_parent_dn", parentDn.StateUpgradeValues[0].AttributeName)
@@ -6828,18 +7013,23 @@ func TestSetPropertyStateUpgradeValues_Distribution(t *testing.T) {
 		},
 	}
 
-	for _, tc := range cases {
-		t.Run(tc.name, func(t *testing.T) {
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
 			t.Parallel()
-			class := tc.setup()
+			class := testCase.Input.(func() *Class)()
 			ds := &DataStore{ctx: NewContext()}
 			class.setStateUpgrades(ds)
 			err := ds.ctx.Diagnostics.Error()
 			assert.NoError(t, err, test.MessageUnexpectedError(err))
 			class.setPropertyStateUpgradeValues()
-			tc.assert(t, class)
+			testCase.Expected.(func(*testing.T, *Class))(t, class)
 		})
 	}
+}
+
+type buildStateUpgradeValueInput struct {
+	Seed    *Property
+	Overlay AttributeUpgradeDefinition
 }
 
 // TestBuildStateUpgradeValue_Overlays covers the seed-then-overlay semantics of
@@ -6854,87 +7044,76 @@ func TestBuildStateUpgradeValue_Overlays(t *testing.T) {
 	t.Parallel()
 	test.InitializeTest(t)
 
-	cases := []struct {
-		name     string
-		seed     *Property
-		overlay  AttributeUpgradeDefinition
-		expected StateUpgradeValue
-	}{
+	testCases := []test.TestCase{
 		{
-			name:     "no_overlays_seed_carries_through",
-			seed:     &Property{PropertyName: "name", AttributeName: "name", Optional: true, Computed: true, ValueType: String},
-			expected: StateUpgradeValue{AttributeName: "name", Optional: true, Computed: true, Type: String},
+			Name:     "test_no_overlays_seed_carries_through",
+			Input:    buildStateUpgradeValueInput{Seed: &Property{PropertyName: "name", AttributeName: "name", Optional: true, Computed: true, ValueType: String}},
+			Expected: StateUpgradeValue{AttributeName: "name", Optional: true, Computed: true, Type: String},
 		},
 		{
-			name:     "legacy_attribute_rewrites_name",
-			seed:     &Property{PropertyName: "name", AttributeName: "name", Required: true, ValueType: String},
-			overlay:  AttributeUpgradeDefinition{LegacyAttribute: "old_name"},
-			expected: StateUpgradeValue{AttributeName: "old_name", Required: true, Type: String},
+			Name:     "test_legacy_attribute_rewrites_name",
+			Input:    buildStateUpgradeValueInput{Seed: &Property{PropertyName: "name", AttributeName: "name", Required: true, ValueType: String}, Overlay: AttributeUpgradeDefinition{LegacyAttribute: "old_name"}},
+			Expected: StateUpgradeValue{AttributeName: "old_name", Required: true, Type: String},
 		},
 		{
-			name:     "legacy_type_string_to_set",
-			seed:     &Property{PropertyName: "tags", AttributeName: "tags", Optional: true, ValueType: String},
-			overlay:  AttributeUpgradeDefinition{LegacyType: SetAttribute},
-			expected: StateUpgradeValue{AttributeName: "tags", Optional: true, Type: Set},
+			Name:     "test_legacy_type_string_to_set",
+			Input:    buildStateUpgradeValueInput{Seed: &Property{PropertyName: "tags", AttributeName: "tags", Optional: true, ValueType: String}, Overlay: AttributeUpgradeDefinition{LegacyType: SetAttribute}},
+			Expected: StateUpgradeValue{AttributeName: "tags", Optional: true, Type: Set},
 		},
 		{
-			name:     "legacy_type_set_to_string",
-			seed:     &Property{PropertyName: "tags", AttributeName: "tags", Optional: true, ValueType: Set},
-			overlay:  AttributeUpgradeDefinition{LegacyType: StringAttribute},
-			expected: StateUpgradeValue{AttributeName: "tags", Optional: true, Type: String},
+			Name:     "test_legacy_type_set_to_string",
+			Input:    buildStateUpgradeValueInput{Seed: &Property{PropertyName: "tags", AttributeName: "tags", Optional: true, ValueType: Set}, Overlay: AttributeUpgradeDefinition{LegacyType: StringAttribute}},
+			Expected: StateUpgradeValue{AttributeName: "tags", Optional: true, Type: String},
 		},
 		{
-			name:     "legacy_type_map_to_object",
-			seed:     &Property{PropertyName: "labels", AttributeName: "labels", Optional: true, ValueType: String},
-			overlay:  AttributeUpgradeDefinition{LegacyType: MapAttribute},
-			expected: StateUpgradeValue{AttributeName: "labels", Optional: true, Type: Object},
+			Name:     "test_legacy_type_map_to_object",
+			Input:    buildStateUpgradeValueInput{Seed: &Property{PropertyName: "labels", AttributeName: "labels", Optional: true, ValueType: String}, Overlay: AttributeUpgradeDefinition{LegacyType: MapAttribute}},
+			Expected: StateUpgradeValue{AttributeName: "labels", Optional: true, Type: Object},
 		},
 		{
-			name:     "legacy_type_single_nested_to_object",
-			seed:     &Property{PropertyName: "spec", AttributeName: "spec", Optional: true, ValueType: String},
-			overlay:  AttributeUpgradeDefinition{LegacyType: SingleNestedAttribute},
-			expected: StateUpgradeValue{AttributeName: "spec", Optional: true, Type: Object},
+			Name:     "test_legacy_type_single_nested_to_object",
+			Input:    buildStateUpgradeValueInput{Seed: &Property{PropertyName: "spec", AttributeName: "spec", Optional: true, ValueType: String}, Overlay: AttributeUpgradeDefinition{LegacyType: SingleNestedAttribute}},
+			Expected: StateUpgradeValue{AttributeName: "spec", Optional: true, Type: Object},
 		},
 		{
-			name:     "legacy_type_zero_keeps_seed_set",
-			seed:     &Property{PropertyName: "tags", AttributeName: "tags", Optional: true, ValueType: Set},
-			overlay:  AttributeUpgradeDefinition{LegacyType: UndefinedLegacyAttributeType},
-			expected: StateUpgradeValue{AttributeName: "tags", Optional: true, Type: Set},
+			Name:     "test_legacy_type_zero_keeps_seed_set",
+			Input:    buildStateUpgradeValueInput{Seed: &Property{PropertyName: "tags", AttributeName: "tags", Optional: true, ValueType: Set}, Overlay: AttributeUpgradeDefinition{LegacyType: UndefinedLegacyAttributeType}},
+			Expected: StateUpgradeValue{AttributeName: "tags", Optional: true, Type: Set},
 		},
 		{
-			name:     "legacy_restriction_required",
-			seed:     &Property{PropertyName: "name", AttributeName: "name", Optional: true, Computed: true, ValueType: String},
-			overlay:  AttributeUpgradeDefinition{LegacyRestriction: Required},
-			expected: StateUpgradeValue{AttributeName: "name", Required: true, Type: String},
+			Name:     "test_legacy_restriction_required",
+			Input:    buildStateUpgradeValueInput{Seed: &Property{PropertyName: "name", AttributeName: "name", Optional: true, Computed: true, ValueType: String}, Overlay: AttributeUpgradeDefinition{LegacyRestriction: Required}},
+			Expected: StateUpgradeValue{AttributeName: "name", Required: true, Type: String},
 		},
 		{
-			name:     "legacy_restriction_optional",
-			seed:     &Property{PropertyName: "name", AttributeName: "name", Required: true, ValueType: String},
-			overlay:  AttributeUpgradeDefinition{LegacyRestriction: Optional},
-			expected: StateUpgradeValue{AttributeName: "name", Optional: true, Computed: true, Type: String},
+			Name:     "test_legacy_restriction_optional",
+			Input:    buildStateUpgradeValueInput{Seed: &Property{PropertyName: "name", AttributeName: "name", Required: true, ValueType: String}, Overlay: AttributeUpgradeDefinition{LegacyRestriction: Optional}},
+			Expected: StateUpgradeValue{AttributeName: "name", Optional: true, Computed: true, Type: String},
 		},
 		{
-			name:     "legacy_restriction_read_only",
-			seed:     &Property{PropertyName: "name", AttributeName: "name", Required: true, ValueType: String},
-			overlay:  AttributeUpgradeDefinition{LegacyRestriction: ReadOnly},
-			expected: StateUpgradeValue{AttributeName: "name", Computed: true, Type: String},
+			Name:     "test_legacy_restriction_read_only",
+			Input:    buildStateUpgradeValueInput{Seed: &Property{PropertyName: "name", AttributeName: "name", Required: true, ValueType: String}, Overlay: AttributeUpgradeDefinition{LegacyRestriction: ReadOnly}},
+			Expected: StateUpgradeValue{AttributeName: "name", Computed: true, Type: String},
 		},
 		{
-			name: "all_three_overlays_combined",
-			seed: &Property{PropertyName: "x", AttributeName: "x", Required: true, ValueType: String},
-			overlay: AttributeUpgradeDefinition{
-				LegacyAttribute:   "old_x",
-				LegacyType:        SetAttribute,
-				LegacyRestriction: Optional,
+			Name: "test_all_three_overlays_combined",
+			Input: buildStateUpgradeValueInput{
+				Seed: &Property{PropertyName: "x", AttributeName: "x", Required: true, ValueType: String},
+				Overlay: AttributeUpgradeDefinition{
+					LegacyAttribute:   "old_x",
+					LegacyType:        SetAttribute,
+					LegacyRestriction: Optional,
+				},
 			},
-			expected: StateUpgradeValue{AttributeName: "old_x", Optional: true, Computed: true, Type: Set},
+			Expected: StateUpgradeValue{AttributeName: "old_x", Optional: true, Computed: true, Type: Set},
 		},
 	}
 
-	for _, tc := range cases {
-		t.Run(tc.name, func(t *testing.T) {
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
 			t.Parallel()
-			assert.Equal(t, tc.expected, buildStateUpgradeValue(tc.seed, tc.overlay))
+			input := testCase.Input.(buildStateUpgradeValueInput)
+			assert.Equal(t, testCase.Expected, buildStateUpgradeValue(input.Seed, input.Overlay))
 		})
 	}
 }

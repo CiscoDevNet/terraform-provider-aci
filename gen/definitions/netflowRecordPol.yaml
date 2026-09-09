@@ -10,9 +10,11 @@ properties:
       description: Collect parameters of the %s object.
     test_config:
       create:
-      - config_value: '["count-bytes", "src-intf"]'
+      - config_value: count-bytes
+      - config_value: src-intf
       default:
-      - config_value: '["src-intf"]'
+      - config_value: src-intf
+    value_type: set
   match:
     attribute_name: match_parameters
     documentation:
@@ -21,9 +23,19 @@ properties:
     - unspecified
     test_config:
       create:
-      - config_value: '["dst-ip", "src-ip"]'
+      - config_value: dst-ip
+      - config_value: src-ip
+      default: []
+    value_type: set
+  name:
+    example_config:
+      full:
+      - value: netflow_record
+      minimum:
+      - value: netflow_record
+    test_config:
       default:
-      - config_value: '[]'
+      - config_value: netfow_record
   parentDn:
     default_values:
       uni/infra: ""

@@ -23,8 +23,6 @@ exclude_parents:
   - polUni
 exclude_properties:
   - childAction
-no_meta_file:
-  fvCtx: vrf
 documentation_label_overrides:
   Bgp: BGP
 property_documentation_overrides:
@@ -38,7 +36,6 @@ property_documentation_overrides:
 	assert.Equal(t, "description", parsedDefinition.AttributeNameOverrides["descr"])
 	assert.Equal(t, []string{"polUni"}, parsedDefinition.ExcludeParents)
 	assert.Equal(t, []string{"childAction"}, parsedDefinition.ExcludeProperties)
-	assert.Equal(t, "vrf", parsedDefinition.NoMetaFile["fvCtx"])
 	assert.Equal(t, "BGP", parsedDefinition.DocumentationLabelOverrides["Bgp"])
 	assert.Equal(t, "The description of the %s object.", parsedDefinition.PropertyDocumentationOverrides["descr"])
 	assert.Equal(t, "The name alias of the %s object.", parsedDefinition.PropertyDocumentationOverrides["nameAlias"])
@@ -85,6 +82,8 @@ identified_by:
 artifacts:
   - resource
   - datasource
+example_files:
+  - certificate.pem
 parent_dn_variants:
   - parent_class: fvTenant
     rn_prepend: certstore
@@ -106,6 +105,16 @@ relation_info:
 properties:
   name:
     restriction: required
+    reference:
+      classes: [fvTenant]
+      example_class: fvTenant
+      example_attribute: name
+    example_config:
+      minimum:
+        - value: aci_tenant.example.id
+          value_type: reference
+          parent_class: fvTenant
+      full: []
     test_config:
       create:
         - config_value: test_tenant
@@ -128,6 +137,8 @@ test_config:
       reference: aci_tenant.test.id
       reference_type: resource
       role: parent
+      target_classes:
+        - fvBD
 `)
 
 	parsedDefinition, err := parseClassDefinition(yamlBytes)
@@ -136,6 +147,7 @@ test_config:
 	assert.Equal(t, "tenants", parsedDefinition.ResourceNameNested)
 	assert.Equal(t, []string{"name"}, parsedDefinition.IdentifiedBy)
 	assert.Equal(t, []ArtifactEnum{ResourceArtifact, DatasourceArtifact}, parsedDefinition.Artifacts)
+	assert.Equal(t, []string{"certificate.pem"}, parsedDefinition.ExampleFiles)
 	assert.Len(t, parsedDefinition.ParentDnVariants, 2)
 	assert.Equal(t, "fvTenant", parsedDefinition.ParentDnVariants[0].ParentClass)
 	assert.Equal(t, "certstore", parsedDefinition.ParentDnVariants[0].RnPrepend)
@@ -153,16 +165,26 @@ test_config:
 	nameProp, ok := parsedDefinition.Properties["name"]
 	assert.True(t, ok)
 	assert.Equal(t, Required, nameProp.Restriction)
-	assert.Len(t, nameProp.TestConfig.Create, 1)
-	assert.Equal(t, "test_tenant", nameProp.TestConfig.Create[0].ConfigValue)
-	assert.NotNil(t, nameProp.TestConfig.Create[0].ConfigInclude)
-	assert.True(t, *nameProp.TestConfig.Create[0].ConfigInclude)
+	assert.True(t, nameProp.TestConfig.Create.Defined)
+	assert.Len(t, nameProp.TestConfig.Create.Entries, 1)
+	assert.Equal(t, "test_tenant", nameProp.TestConfig.Create.Entries[0].ConfigValue)
+	assert.NotNil(t, nameProp.TestConfig.Create.Entries[0].ConfigInclude)
+	assert.True(t, *nameProp.TestConfig.Create.Entries[0].ConfigInclude)
+	assert.True(t, nameProp.ExampleConfig.Minimum.Defined)
+	assert.Len(t, nameProp.ExampleConfig.Minimum.Entries, 1)
+	assert.Equal(t, "aci_tenant.example.id", nameProp.ExampleConfig.Minimum.Entries[0].Value)
+	assert.Equal(t, ReferenceValue, nameProp.ExampleConfig.Minimum.Entries[0].ValueType)
+	assert.Equal(t, "fvTenant", nameProp.ExampleConfig.Minimum.Entries[0].ParentClass)
+	assert.Equal(t, "name", nameProp.Reference.ExampleAttributeName)
+	assert.True(t, nameProp.ExampleConfig.Full.Defined)
+	assert.Empty(t, nameProp.ExampleConfig.Full.Entries)
 
 	descrProp, ok := parsedDefinition.Properties["descr"]
 	assert.True(t, ok)
 	assert.True(t, descrProp.TestConfig.IgnoreInTest)
-	assert.Len(t, descrProp.TestConfig.Update, 1)
-	assert.Equal(t, "updated", descrProp.TestConfig.Update[0].AssertValue)
+	assert.True(t, descrProp.TestConfig.Update.Defined)
+	assert.Len(t, descrProp.TestConfig.Update.Entries, 1)
+	assert.Equal(t, "updated", descrProp.TestConfig.Update.Entries[0].AssertValue)
 
 	arpLearningProp, ok := parsedDefinition.Properties["arpLearning"]
 	assert.True(t, ok)
@@ -175,6 +197,7 @@ test_config:
 	assert.Equal(t, "fvTenant", parsedDefinition.TestConfig.Dependencies[0].ClassName)
 	assert.Equal(t, ResourceReference, parsedDefinition.TestConfig.Dependencies[0].ReferenceType)
 	assert.Equal(t, Parent, parsedDefinition.TestConfig.Dependencies[0].Role)
+	assert.Equal(t, []string{"fvBD"}, parsedDefinition.TestConfig.Dependencies[0].TargetClasses)
 }
 
 // TestParseClassDefinition_UnknownField at the top level.
@@ -236,7 +259,7 @@ func TestParseClassDefinition_InvalidEnumValues(t *testing.T) {
 	t.Parallel()
 	test.InitializeTest(t)
 
-	cases := []test.TestCase{
+	testCases := []test.TestCase{
 		{
 			Name: "invalid_restriction",
 			Input: `
@@ -299,6 +322,18 @@ properties:
 			Expected: "unknown value_type",
 		},
 		{
+			Name: "invalid_example_value_render_type",
+			Input: `
+properties:
+  name:
+    example_config:
+      full:
+        - value: x
+          value_type: not_a_render
+`,
+			Expected: "unknown value_type",
+		},
+		{
 			Name: "empty_restriction_is_typo",
 			Input: `
 properties:
@@ -343,12 +378,12 @@ parent_dn_variants:
 		},
 	}
 
-	for _, tc := range cases {
-		t.Run(tc.Name, func(t *testing.T) {
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
 			t.Parallel()
-			_, err := parseClassDefinition([]byte(tc.Input.(string)))
-			assert.Error(t, err, tc.Name)
-			assert.Contains(t, err.Error(), tc.Expected.(string), tc.Name)
+			_, err := parseClassDefinition([]byte(testCase.Input.(string)))
+			assert.Error(t, err, testCase.Name)
+			assert.Contains(t, err.Error(), testCase.Expected.(string), testCase.Name)
 		})
 	}
 }
@@ -374,7 +409,7 @@ properties:
 
 	parsedDefinition, err := parseClassDefinition(yamlBytes)
 	assert.NoError(t, err, test.MessageUnexpectedError(err))
-	entries := parsedDefinition.Properties["name"].TestConfig.Create
+	entries := parsedDefinition.Properties["name"].TestConfig.Create.Entries
 	assert.Len(t, entries, 3)
 	assert.Nil(t, entries[0].ConfigInclude, "omitted config_include must decode to nil")
 	if assert.NotNil(t, entries[1].ConfigInclude) {
@@ -385,30 +420,54 @@ properties:
 	}
 }
 
+func TestParseClassDefinition_TestValueScenarioPresence(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	parsedDefinition, err := parseClassDefinition([]byte(`
+properties:
+  tags:
+    test_config:
+      update: []
+  name:
+    test_config: {}
+`))
+	assert.NoError(t, err, test.MessageUnexpectedError(err))
+
+	tags := parsedDefinition.Properties["tags"].TestConfig
+	assert.True(t, tags.Update.Defined, "an explicit empty list must remain defined")
+	assert.Empty(t, tags.Update.Entries)
+	assert.False(t, tags.Create.Defined, "an omitted scenario must remain undefined")
+
+	name := parsedDefinition.Properties["name"].TestConfig
+	assert.False(t, name.Update.Defined)
+	assert.Nil(t, name.Update.Entries)
+}
+
 // TestParseClassDefinition_RequiresReplacePointerSemantics mirrors the
 // ConfigInclude check for the top-level *bool requires_replace override.
 func TestParseClassDefinition_RequiresReplacePointerSemantics(t *testing.T) {
 	t.Parallel()
 	test.InitializeTest(t)
 
-	cases := []test.TestCase{
+	testCases := []test.TestCase{
 		{Name: "omitted", Input: "properties:\n  name:\n    restriction: required\n", Expected: (*bool)(nil)},
 		{Name: "true", Input: "properties:\n  name:\n    requires_replace: true\n", Expected: boolPtr(true)},
 		{Name: "false", Input: "properties:\n  name:\n    requires_replace: false\n", Expected: boolPtr(false)},
 	}
 
-	for _, tc := range cases {
-		t.Run(tc.Name, func(t *testing.T) {
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
 			t.Parallel()
-			parsedDefinition, err := parseClassDefinition([]byte(tc.Input.(string)))
+			parsedDefinition, err := parseClassDefinition([]byte(testCase.Input.(string)))
 			assert.NoError(t, err, test.MessageUnexpectedError(err))
-			expected := tc.Expected.(*bool)
+			expected := testCase.Expected.(*bool)
 			actual := parsedDefinition.Properties["name"].RequiresReplace
 			if expected == nil {
-				assert.Nil(t, actual, tc.Name)
+				assert.Nil(t, actual, testCase.Name)
 			} else {
-				if assert.NotNil(t, actual, tc.Name) {
-					assert.Equal(t, *expected, *actual, tc.Name)
+				if assert.NotNil(t, actual, testCase.Name) {
+					assert.Equal(t, *expected, *actual, testCase.Name)
 				}
 			}
 		})
@@ -416,8 +475,7 @@ func TestParseClassDefinition_RequiresReplacePointerSemantics(t *testing.T) {
 }
 
 // TestParseClassDefinition_EmptyYAML verifies that an empty payload decodes
-// to a zero-value ClassDefinition without error — the same behavior used by
-// loadClassDefinition when the class has no override file.
+// to a zero-value ClassDefinition without error.
 func TestParseClassDefinition_EmptyYAML(t *testing.T) {
 	t.Parallel()
 	test.InitializeTest(t)
@@ -438,17 +496,17 @@ func TestParseClassDefinition_MigrationSource(t *testing.T) {
 	t.Parallel()
 	test.InitializeTest(t)
 
-	cases := []test.TestCase{
+	testCases := []test.TestCase{
 		{Name: "omitted", Input: "resource_name: tenant\n", Expected: UndefinedMigrationSource},
 		{Name: "from_sdkv2", Input: "migration_source: from_sdkv2\n", Expected: FromSDKv2},
 	}
 
-	for _, tc := range cases {
-		t.Run(tc.Name, func(t *testing.T) {
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
 			t.Parallel()
-			parsedDefinition, err := parseClassDefinition([]byte(tc.Input.(string)))
+			parsedDefinition, err := parseClassDefinition([]byte(testCase.Input.(string)))
 			assert.NoError(t, err, test.MessageUnexpectedError(err))
-			assert.Equal(t, tc.Expected.(MigrationSourceEnum), parsedDefinition.MigrationSource, tc.Name)
+			assert.Equal(t, testCase.Expected.(MigrationSourceEnum), parsedDefinition.MigrationSource, testCase.Name)
 		})
 	}
 }
@@ -586,7 +644,7 @@ func TestParseClassDefinition_StateUpgradesInvalidEnumValues(t *testing.T) {
 	t.Parallel()
 	test.InitializeTest(t)
 
-	cases := []test.TestCase{
+	testCases := []test.TestCase{
 		{
 			Name: "invalid_legacy_type",
 			Input: `
@@ -649,12 +707,12 @@ state_upgrades:
 		},
 	}
 
-	for _, tc := range cases {
-		t.Run(tc.Name, func(t *testing.T) {
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
 			t.Parallel()
-			_, err := parseClassDefinition([]byte(tc.Input.(string)))
-			assert.Error(t, err, tc.Name)
-			assert.Contains(t, err.Error(), tc.Expected.(string), tc.Name)
+			_, err := parseClassDefinition([]byte(testCase.Input.(string)))
+			assert.Error(t, err, testCase.Name)
+			assert.Contains(t, err.Error(), testCase.Expected.(string), testCase.Name)
 		})
 	}
 }
@@ -665,7 +723,7 @@ func TestParseClassDefinition_StateUpgradesUnknownField(t *testing.T) {
 	t.Parallel()
 	test.InitializeTest(t)
 
-	cases := []test.TestCase{
+	testCases := []test.TestCase{
 		{
 			Name: "unknown_field_on_entry",
 			Input: `
@@ -701,14 +759,19 @@ state_upgrades:
 		},
 	}
 
-	for _, tc := range cases {
-		t.Run(tc.Name, func(t *testing.T) {
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
 			t.Parallel()
-			_, err := parseClassDefinition([]byte(tc.Input.(string)))
-			assert.Error(t, err, tc.Name)
-			assert.Contains(t, err.Error(), tc.Expected.(string), tc.Name)
+			_, err := parseClassDefinition([]byte(testCase.Input.(string)))
+			assert.Error(t, err, testCase.Name)
+			assert.Contains(t, err.Error(), testCase.Expected.(string), testCase.Name)
 		})
 	}
+}
+
+type attributeUpgradeValidationExpected struct {
+	ErrorCount int
+	Substrings []string
 }
 
 // TestAttributeUpgradeDefinition_Validate covers the attributes-bucket validator.
@@ -720,78 +783,76 @@ func TestAttributeUpgradeDefinition_Validate(t *testing.T) {
 
 	const path = `Class 'fvCtx': prior_schema_version 0: attributes["name"]`
 
-	cases := []struct {
-		name       string
-		node       AttributeUpgradeDefinition
-		wantErrs   int
-		wantSubstr []string
-	}{
+	testCases := []test.TestCase{
 		{
-			name: "non_removed_status_skips_all_checks",
-			node: AttributeUpgradeDefinition{LegacyStatus: Functioning},
+			Name:     "test_non_removed_status_skips_all_checks",
+			Input:    AttributeUpgradeDefinition{LegacyStatus: Functioning},
+			Expected: attributeUpgradeValidationExpected{},
 		},
 		{
-			name: "removed_with_all_legacy_fields_set_passes",
-			node: AttributeUpgradeDefinition{
+			Name: "test_removed_with_all_legacy_fields_set_passes",
+			Input: AttributeUpgradeDefinition{
 				LegacyAttribute:   "old_name",
 				LegacyType:        StringAttribute,
 				LegacyRestriction: Optional,
 				LegacyStatus:      Removed,
 			},
+			Expected: attributeUpgradeValidationExpected{},
 		},
 		{
-			name: "removed_missing_legacy_attribute_only",
-			node: AttributeUpgradeDefinition{
+			Name: "test_removed_missing_legacy_attribute_only",
+			Input: AttributeUpgradeDefinition{
 				LegacyType:        StringAttribute,
 				LegacyRestriction: Optional,
 				LegacyStatus:      Removed,
 			},
-			wantErrs:   1,
-			wantSubstr: []string{"requires legacy_attribute"},
+			Expected: attributeUpgradeValidationExpected{ErrorCount: 1, Substrings: []string{"requires legacy_attribute"}},
 		},
 		{
-			name: "removed_missing_legacy_type_only",
-			node: AttributeUpgradeDefinition{
+			Name: "test_removed_missing_legacy_type_only",
+			Input: AttributeUpgradeDefinition{
 				LegacyAttribute:   "old_name",
 				LegacyRestriction: Optional,
 				LegacyStatus:      Removed,
 			},
-			wantErrs:   1,
-			wantSubstr: []string{"requires legacy_type"},
+			Expected: attributeUpgradeValidationExpected{ErrorCount: 1, Substrings: []string{"requires legacy_type"}},
 		},
 		{
-			name: "removed_missing_legacy_restriction_only",
-			node: AttributeUpgradeDefinition{
+			Name: "test_removed_missing_legacy_restriction_only",
+			Input: AttributeUpgradeDefinition{
 				LegacyAttribute: "old_name",
 				LegacyType:      StringAttribute,
 				LegacyStatus:    Removed,
 			},
-			wantErrs:   1,
-			wantSubstr: []string{"requires legacy_restriction"},
+			Expected: attributeUpgradeValidationExpected{ErrorCount: 1, Substrings: []string{"requires legacy_restriction"}},
 		},
 		{
-			name:       "removed_all_fields_missing_aggregates_three_diagnostics",
-			node:       AttributeUpgradeDefinition{LegacyStatus: Removed},
-			wantErrs:   3,
-			wantSubstr: []string{"requires legacy_attribute", "requires legacy_type", "requires legacy_restriction"},
+			Name:  "test_removed_all_fields_missing_aggregates_three_diagnostics",
+			Input: AttributeUpgradeDefinition{LegacyStatus: Removed},
+			Expected: attributeUpgradeValidationExpected{
+				ErrorCount: 3,
+				Substrings: []string{"requires legacy_attribute", "requires legacy_type", "requires legacy_restriction"},
+			},
 		},
 	}
 
-	for _, tc := range cases {
-		t.Run(tc.name, func(t *testing.T) {
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
 			t.Parallel()
+			expected := testCase.Expected.(attributeUpgradeValidationExpected)
+			node := testCase.Input.(AttributeUpgradeDefinition)
 			ctx := NewContext()
-			tc.node.validate(ctx, path)
+			node.validate(ctx, path)
 			err := ctx.Diagnostics.Error()
-			if tc.wantErrs == 0 {
+			if expected.ErrorCount == 0 {
 				assert.NoError(t, err)
 				return
 			}
 			assert.Error(t, err)
 			msg := err.Error()
-			assert.Contains(t, msg, fmt.Sprintf("encountered %d error(s)", tc.wantErrs))
+			assert.Contains(t, msg, fmt.Sprintf("encountered %d error(s)", expected.ErrorCount))
 			assert.Contains(t, msg, path)
-			for _, substr := range tc.wantSubstr {
+			for _, substr := range expected.Substrings {
 				assert.Contains(t, msg, substr)
 			}
 		})
@@ -808,86 +869,88 @@ func TestAttributeUpgradeDefinition_ValidateChild(t *testing.T) {
 
 	const path = `Class 'fvCtx': prior_schema_version 0: children["fvRsBd"]`
 
-	cases := []struct {
-		name       string
-		node       AttributeUpgradeDefinition
-		wantErrs   int
-		wantSubstr []string
-	}{
+	testCases := []test.TestCase{
 		{
-			name: "block_rename_only",
-			node: AttributeUpgradeDefinition{LegacyAttribute: "old_block"},
+			Name:     "test_block_rename_only",
+			Input:    AttributeUpgradeDefinition{LegacyAttribute: "old_block"},
+			Expected: attributeUpgradeValidationExpected{},
 		},
 		{
-			name: "scalar_wrap_inner_attribute_carries_legacy",
-			node: AttributeUpgradeDefinition{
+			Name: "test_scalar_wrap_inner_attribute_carries_legacy",
+			Input: AttributeUpgradeDefinition{
 				Attributes: map[string]AttributeUpgradeDefinition{
 					"value": {LegacyAttribute: "old_flat"},
 				},
 			},
+			Expected: attributeUpgradeValidationExpected{},
 		},
 		{
-			name: "inner_attributes_only_no_legacy_on_block_or_inner",
-			node: AttributeUpgradeDefinition{
+			Name: "test_inner_attributes_only_no_legacy_on_block_or_inner",
+			Input: AttributeUpgradeDefinition{
 				Attributes: map[string]AttributeUpgradeDefinition{
 					"value": {LegacyType: StringAttribute},
 				},
 			},
+			Expected: attributeUpgradeValidationExpected{},
 		},
 		{
-			name:       "orphan_block_no_legacy_no_inner_errors",
-			node:       AttributeUpgradeDefinition{},
-			wantErrs:   1,
-			wantSubstr: []string{"neither legacy_attribute / legacy_type"},
+			Name:     "test_orphan_block_no_legacy_no_inner_errors",
+			Input:    AttributeUpgradeDefinition{},
+			Expected: attributeUpgradeValidationExpected{ErrorCount: 1, Substrings: []string{"neither legacy_attribute / legacy_type"}},
 		},
 		{
-			name: "removed_block_missing_legacy_attribute",
-			node: AttributeUpgradeDefinition{
+			Name: "test_removed_block_missing_legacy_attribute",
+			Input: AttributeUpgradeDefinition{
 				LegacyType:        StringAttribute,
 				LegacyRestriction: Optional,
 				LegacyStatus:      Removed,
 			},
-			wantErrs:   1,
-			wantSubstr: []string{"requires legacy_attribute"},
+			Expected: attributeUpgradeValidationExpected{ErrorCount: 1, Substrings: []string{"requires legacy_attribute"}},
 		},
 		{
-			name: "recurses_into_inner_attribute_validate",
-			node: AttributeUpgradeDefinition{
+			Name: "test_recurses_into_inner_attribute_validate",
+			Input: AttributeUpgradeDefinition{
 				LegacyAttribute: "old_block",
 				Attributes: map[string]AttributeUpgradeDefinition{
 					"inner": {LegacyStatus: Removed},
 				},
 			},
-			wantErrs:   3,
-			wantSubstr: []string{`attributes["inner"]`, "requires legacy_attribute", "requires legacy_type", "requires legacy_restriction"},
+			Expected: attributeUpgradeValidationExpected{
+				ErrorCount: 3,
+				Substrings: []string{`attributes["inner"]`, "requires legacy_attribute", "requires legacy_type", "requires legacy_restriction"},
+			},
 		},
 		{
-			name: "recurses_into_inner_child_validateChild",
-			node: AttributeUpgradeDefinition{
+			Name: "test_recurses_into_inner_child_validate_child",
+			Input: AttributeUpgradeDefinition{
 				LegacyAttribute: "old_block",
 				Children: map[string]AttributeUpgradeDefinition{
 					"grand": {},
 				},
 			},
-			wantErrs:   1,
-			wantSubstr: []string{`children["grand"]`, "neither legacy_attribute / legacy_type"},
+			Expected: attributeUpgradeValidationExpected{
+				ErrorCount: 1,
+				Substrings: []string{`children["grand"]`, "neither legacy_attribute / legacy_type"},
+			},
 		},
 	}
 
-	for _, tc := range cases {
-		t.Run(tc.name, func(t *testing.T) {
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
 			t.Parallel()
+			node := testCase.Input.(AttributeUpgradeDefinition)
+			expected := testCase.Expected.(attributeUpgradeValidationExpected)
 			ctx := NewContext()
-			tc.node.validateChild(ctx, path)
+			node.validateChild(ctx, path)
 			err := ctx.Diagnostics.Error()
-			if tc.wantErrs == 0 {
+			if expected.ErrorCount == 0 {
 				assert.NoError(t, err)
 				return
 			}
 			assert.Error(t, err)
 			msg := err.Error()
-			assert.Contains(t, msg, fmt.Sprintf("encountered %d error(s)", tc.wantErrs))
-			for _, substr := range tc.wantSubstr {
+			assert.Contains(t, msg, fmt.Sprintf("encountered %d error(s)", expected.ErrorCount))
+			for _, substr := range expected.Substrings {
 				assert.Contains(t, msg, substr)
 			}
 		})
@@ -900,47 +963,47 @@ func TestAttributeUpgradeDefinition_HasInnerLegacyAttribute(t *testing.T) {
 	t.Parallel()
 	test.InitializeTest(t)
 
-	cases := []struct {
-		name string
-		node AttributeUpgradeDefinition
-		want bool
-	}{
+	testCases := []test.TestCase{
 		{
-			name: "empty_node",
+			Name:     "test_empty_node",
+			Input:    AttributeUpgradeDefinition{},
+			Expected: false,
 		},
 		{
-			name: "self_legacy_attribute_does_not_count_as_inner",
-			node: AttributeUpgradeDefinition{LegacyAttribute: "old_self"},
+			Name:     "test_self_legacy_attribute_does_not_count_as_inner",
+			Input:    AttributeUpgradeDefinition{LegacyAttribute: "old_self"},
+			Expected: false,
 		},
 		{
-			name: "inner_attribute_with_legacy_attribute",
-			node: AttributeUpgradeDefinition{
+			Name: "test_inner_attribute_with_legacy_attribute",
+			Input: AttributeUpgradeDefinition{
 				Attributes: map[string]AttributeUpgradeDefinition{
 					"value": {LegacyAttribute: "old_flat"},
 				},
 			},
-			want: true,
+			Expected: true,
 		},
 		{
-			name: "inner_attribute_without_legacy_attribute",
-			node: AttributeUpgradeDefinition{
+			Name: "test_inner_attribute_without_legacy_attribute",
+			Input: AttributeUpgradeDefinition{
 				Attributes: map[string]AttributeUpgradeDefinition{
 					"value": {LegacyType: StringAttribute},
 				},
 			},
+			Expected: false,
 		},
 		{
-			name: "inner_child_with_legacy_attribute",
-			node: AttributeUpgradeDefinition{
+			Name: "test_inner_child_with_legacy_attribute",
+			Input: AttributeUpgradeDefinition{
 				Children: map[string]AttributeUpgradeDefinition{
 					"sub": {LegacyAttribute: "old_block"},
 				},
 			},
-			want: true,
+			Expected: true,
 		},
 		{
-			name: "nested_child_carries_legacy_attribute",
-			node: AttributeUpgradeDefinition{
+			Name: "test_nested_child_carries_legacy_attribute",
+			Input: AttributeUpgradeDefinition{
 				Children: map[string]AttributeUpgradeDefinition{
 					"sub": {
 						Children: map[string]AttributeUpgradeDefinition{
@@ -949,11 +1012,11 @@ func TestAttributeUpgradeDefinition_HasInnerLegacyAttribute(t *testing.T) {
 					},
 				},
 			},
-			want: true,
+			Expected: true,
 		},
 		{
-			name: "nested_child_no_legacy_anywhere",
-			node: AttributeUpgradeDefinition{
+			Name: "test_nested_child_no_legacy_anywhere",
+			Input: AttributeUpgradeDefinition{
 				Children: map[string]AttributeUpgradeDefinition{
 					"sub": {
 						Children: map[string]AttributeUpgradeDefinition{
@@ -962,13 +1025,14 @@ func TestAttributeUpgradeDefinition_HasInnerLegacyAttribute(t *testing.T) {
 					},
 				},
 			},
+			Expected: false,
 		},
 	}
 
-	for _, tc := range cases {
-		t.Run(tc.name, func(t *testing.T) {
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
 			t.Parallel()
-			assert.Equal(t, tc.want, tc.node.hasInnerLegacyAttribute())
+			assert.Equal(t, testCase.Expected, testCase.Input.(AttributeUpgradeDefinition).hasInnerLegacyAttribute())
 		})
 	}
 }

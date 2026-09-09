@@ -6,4 +6,11 @@ properties:
   filter:
     documentation:
       description: The domain name filter of the %s object.
+    example_config:
+      full:
+      - value: example.com
+  name:
+    test_config:
+      default:
+      - config_value: dns_attribute
 resource_name: epg_useg_dns_attribute

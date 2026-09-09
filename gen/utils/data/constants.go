@@ -1,7 +1,6 @@
 package data
 
 const (
-	// Environment variables for logging configuration.
 	// The path to the definition files.
 	constDefinitionsPath = "./gen/definitions"
 	// The path to the global definition file.
@@ -33,10 +32,8 @@ const (
 	// The maximum number of DN formats rendered in the documentation. When the source
 	// list exceeds this, a notice line is prepended and only the first N entries are kept.
 	constMaxDnFormatsToDisplay = 5
-	// The maximum number of example parent classes rendered as example HCL snippets
-	// in the documentation. When ClassDocumentationDefinition.ExampleParentClasses or
-	// the meta `containedBy` list exceeds this, only the first N entries are kept.
-	// Mirrors the legacy `docs_examples_amount` global tuning knob.
+	// The maximum number of normalized representative parent classes retained for
+	// documentation consumers. Mirrors the legacy `docs_examples_amount` global tuning knob.
 	constMaxExamplesToDisplay = 2
 	// The maximum number of parent DN entries (per section: resources and class-only)
 	// rendered in the documentation. Beyond this, a notice line replaces that section's list.

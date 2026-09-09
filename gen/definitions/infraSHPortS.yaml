@@ -9,6 +9,9 @@ properties:
     attribute_name: port_selector_type
     documentation:
       description: The port selector type of the %s object.
+    test_config:
+      default:
+      - config_value: ALL
 resource_name: spine_access_port_selector
 state_upgrades:
 - attributes:

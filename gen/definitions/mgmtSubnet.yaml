@@ -7,6 +7,8 @@ documentation:
 properties:
   ip:
     test_config:
+      default:
+      - config_value: 192.0.2.0/24
       update:
       - config_value: 2001:0db8::/32
 resource_name: external_management_network_subnet

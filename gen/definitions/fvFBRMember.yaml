@@ -10,11 +10,19 @@ documentation:
 properties:
   rnhAddr:
     attribute_name: fallback_member
-    default_values:
-      2.2.2.2: ""
     documentation:
       description: The address of the %s object.
     test_config:
+      default:
+      - config_value: 198.51.100.3
       update:
       - config_value: fe80::0001
 resource_name: vrf_fallback_route_group_member
+test_config:
+  embedded_instances:
+  - properties:
+      fallback_member:
+      - config_value: 198.51.100.2
+  - properties:
+      fallback_member:
+      - config_value: 198.51.100.3

@@ -3,3 +3,11 @@ documentation:
   ui_locations:
   - Tenants -> Networking -> VRFs -> Policy
 resource_name: relation_to_ospf_timers
+test_config:
+  dependencies:
+  - class_name: ospfCtxPol
+    reference: aci_ospf_timers.test.id
+    role: target
+  - class_name: ospfCtxPol
+    reference: aci_ospf_timers.test_2.id
+    role: target

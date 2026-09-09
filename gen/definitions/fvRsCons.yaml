@@ -29,3 +29,17 @@ test_config:
     dependencies:
     - class_name: fvAp
     role: parent
+  - class_name: vzBrCP
+    config_overrides:
+      name: contract_name_0
+    dependencies:
+    - class_name: fvTenant
+    reference: aci_contract.test_contract_0.id
+    role: target
+  - class_name: vzBrCP
+    config_overrides:
+      name: contract_name_1
+    dependencies:
+    - class_name: fvTenant
+    reference: aci_contract.test_contract_1.id
+    role: target

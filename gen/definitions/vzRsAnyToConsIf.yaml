@@ -7,3 +7,19 @@ properties:
     documentation:
       description: The name of the imported Contract object.
 resource_name: relation_from_any_to_contract_interface
+test_config:
+  dependencies:
+  - class_name: vzCPIf
+    config_overrides:
+      name: imported_contract_name_0
+    dependencies:
+    - class_name: fvTenant
+    reference: aci_imported_contract.test_imported_contract_0.id
+    role: target
+  - class_name: vzCPIf
+    config_overrides:
+      name: imported_contract_name_1
+    dependencies:
+    - class_name: fvTenant
+    reference: aci_imported_contract.test_imported_contract_1.id
+    role: target

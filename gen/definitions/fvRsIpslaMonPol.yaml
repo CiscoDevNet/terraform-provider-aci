@@ -7,6 +7,13 @@ properties:
   tDn:
     documentation:
       description: The distinguished name (DN) of the IP SLA Monitoring Policy.
+    example_config:
+      full:
+      - value: aci_ip_sla_monitoring_policy.example.id
+        value_type: reference
+      minimum:
+      - value: aci_ip_sla_monitoring_policy.example.id
+        value_type: reference
     restriction: required
 required_as_child: true
 resource_name: relation_to_ip_sla_monitoring_policy
@@ -21,3 +28,7 @@ test_config:
     reference: uni/tn-test_tenant/ipslaMonitoringPol-monitoring_policy_name_1
     reference_type: static
     role: target
+  embedded_instances:
+  - properties:
+      target_dn:
+      - config_value: uni/tn-test_tenant/ipslaMonitoringPol-monitoring_policy_name_1

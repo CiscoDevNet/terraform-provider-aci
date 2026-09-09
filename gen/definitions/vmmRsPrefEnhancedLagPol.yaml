@@ -1,6 +1,15 @@
 documentation:
   ui_locations:
   - Virtual Networking -> Provider -> Domain -> Enhanced Lag Policy
+properties:
+  tDn:
+    example_config:
+      full:
+      - value: aci_lacp_enhanced_lag_policy.example.id
+        value_type: reference
+      minimum:
+      - value: aci_lacp_enhanced_lag_policy.example.id
+        value_type: reference
 resource_name: relation_to_lacp_enhanced_lag_policy
 test_config:
   ignore_tests:

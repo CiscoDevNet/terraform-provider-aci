@@ -1,9 +1,11 @@
 package data
 
 import (
+	"errors"
 	"io"
 	"net/http"
-	"net/http/httptest"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -17,7 +19,10 @@ const (
 
 func initializeDataStoreTest(t *testing.T) *DataStore {
 	test.InitializeTest(t)
-	return &DataStore{}
+	return &DataStore{
+		Classes:          make(map[string]Class),
+		ClassDefinitions: make(map[string]ClassDefinition),
+	}
 }
 
 func TestFilterClassChildren(t *testing.T) {
@@ -37,6 +42,32 @@ func TestFilterClassChildren(t *testing.T) {
 	ds.filterClassChildren()
 
 	assert.Equal(t, []string{"fvAp"}, classNamesToStrings(ds.Classes["fvTenant"].Children))
+}
+
+func TestGetResourceName(t *testing.T) {
+	t.Parallel()
+
+	resourceClassName := testClassName("fvTenant")
+	ds := &DataStore{
+		Classes: map[string]Class{
+			"fvTenant": {
+				Name:         resourceClassName,
+				ResourceName: "tenant",
+				Artifacts:    []ArtifactEnum{ResourceArtifact},
+			},
+		},
+		ClassDefinitions: map[string]ClassDefinition{
+			"fvTenant":   {ResourceName: "ignored_definition_name"},
+			"vzBrCP":     {ResourceName: "contract"},
+			"fabricNode": {ResourceName: "fabric_node"},
+			"fvABDPol":   {ResourceName: "bridge_domain"},
+		},
+	}
+
+	assert.Equal(t, "tenant", ds.getResourceName("fvTenant"))
+	assert.Equal(t, "contract", ds.getResourceName("vzBrCP"))
+	assert.Equal(t, "fabric_node", ds.getResourceName("fabricNode"))
+	assert.Equal(t, "bridge_domain", ds.getResourceName("fvABDPol"))
 }
 
 func TestSetHostDefault(t *testing.T) {
@@ -205,46 +236,60 @@ func TestRetrieveEnvMetaClassesFromRemote(t *testing.T) {
 			},
 			Expected: retrieveEnvMetaClassesExpected{Error: true},
 		},
+		{
+			Name: "test_remote_error",
+			Input: retrieveEnvMetaClassesInput{
+				EnvValue:       "fvTenant",
+				ServerResponse: `not found`,
+				ServerStatus:   http.StatusNotFound,
+			},
+			Expected: retrieveEnvMetaClassesExpected{Error: true},
+		},
 	}
 
 	for _, testCase := range testCases {
 		t.Run(testCase.Name, func(t *testing.T) {
 			input := testCase.Input.(retrieveEnvMetaClassesInput)
 			expected := testCase.Expected.(retrieveEnvMetaClassesExpected)
-			// Create temp directory for meta files
 			tempDir := t.TempDir()
-
-			// Create a test server
-			server := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.WriteHeader(input.ServerStatus)
-				w.Write([]byte(input.ServerResponse))
-			}))
-			defer server.Close()
-
-			// Set environment variable
-			if input.EnvValue != "" {
-				t.Setenv(constEnvMetaClasses, input.EnvValue)
+			t.Chdir(tempDir)
+			if err := os.MkdirAll(constMetaPath, 0o755); err != nil {
+				t.Fatalf("create metadata directory: %v", err)
 			}
 
+			t.Setenv(constEnvMetaClasses, input.EnvValue)
+
 			ds := &DataStore{
-				Classes:          make(map[string]Class),
-				client:           server.Client(),
-				metaHost:         server.URL[8:], // Remove "https://"
+				Classes: make(map[string]Class),
+				client: &http.Client{Transport: test.RoundTripFunc(func(request *http.Request) (*http.Response, error) {
+					return &http.Response{
+						StatusCode: input.ServerStatus,
+						Status:     http.StatusText(input.ServerStatus),
+						Body:       io.NopCloser(strings.NewReader(input.ServerResponse)),
+						Header:     make(http.Header),
+						Request:    request,
+					}, nil
+				})},
+				metaHost:         "metadata.example.com",
 				retrievedClasses: make(map[string]bool),
 			}
 
-			// We need to override constMetaPath for this test
-			// Since we can't easily do that, we'll just test the error cases
 			err := ds.retrieveEnvMetaClassesFromRemote()
 
 			if expected.Error {
 				assert.Error(t, err)
-			} else if input.EnvValue == "" {
-				// Empty env should not error
-				assert.NoError(t, err, test.MessageUnexpectedError(err))
+				return
 			}
+			assert.NoError(t, err, test.MessageUnexpectedError(err))
 
-			_ = tempDir // Used for cleanup
+			for _, className := range strings.Split(input.EnvValue, ",") {
+				if className == "" {
+					continue
+				}
+				contents, err := os.ReadFile(filepath.Join(constMetaPath, className+".json"))
+				assert.NoError(t, err)
+				assert.Equal(t, input.ServerResponse, string(contents))
+			}
 		})
 	}
 }
@@ -326,9 +371,25 @@ type retrieveMetaFileExpected struct {
 }
 
 func TestRetrieveMetaFileFromRemote(t *testing.T) {
-	t.Parallel()
-
 	testCases := []test.TestCase{
+		{
+			Name: "test_success",
+			Input: retrieveMetaFileInput{
+				ClassName:      "fvTenant",
+				ServerResponse: `{"label": "tenant"}`,
+				ServerStatus:   http.StatusOK,
+			},
+			Expected: retrieveMetaFileExpected{Error: false},
+		},
+		{
+			Name: "test_remote_error",
+			Input: retrieveMetaFileInput{
+				ClassName:      "fvTenant",
+				ServerResponse: `not found`,
+				ServerStatus:   http.StatusNotFound,
+			},
+			Expected: retrieveMetaFileExpected{Error: true},
+		},
 		{
 			Name: "test_invalid_class_name",
 			Input: retrieveMetaFileInput{
@@ -351,20 +412,25 @@ func TestRetrieveMetaFileFromRemote(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run(testCase.Name, func(t *testing.T) {
-			t.Parallel()
 			input := testCase.Input.(retrieveMetaFileInput)
 			expected := testCase.Expected.(retrieveMetaFileExpected)
-
-			server := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.WriteHeader(input.ServerStatus)
-				w.Write([]byte(input.ServerResponse))
-			}))
-			defer server.Close()
+			t.Chdir(t.TempDir())
+			if err := os.MkdirAll(constMetaPath, 0o755); err != nil {
+				t.Fatalf("create metadata directory: %v", err)
+			}
 
 			ds := &DataStore{
-				Classes:          make(map[string]Class),
-				client:           server.Client(),
-				metaHost:         server.URL[8:],
+				Classes: make(map[string]Class),
+				client: &http.Client{Transport: test.RoundTripFunc(func(request *http.Request) (*http.Response, error) {
+					return &http.Response{
+						StatusCode: input.ServerStatus,
+						Status:     http.StatusText(input.ServerStatus),
+						Body:       io.NopCloser(strings.NewReader(input.ServerResponse)),
+						Header:     make(http.Header),
+						Request:    request,
+					}, nil
+				})},
+				metaHost:         "metadata.example.com",
 				retrievedClasses: make(map[string]bool),
 			}
 
@@ -372,9 +438,16 @@ func TestRetrieveMetaFileFromRemote(t *testing.T) {
 
 			if expected.Error {
 				assert.Error(t, err)
-			} else {
-				assert.NoError(t, err, test.MessageUnexpectedError(err))
+				if input.ClassName == "fvTenant" {
+					_, statErr := os.Stat(filepath.Join(constMetaPath, "fvTenant.json"))
+					assert.ErrorIs(t, statErr, os.ErrNotExist)
+				}
+				return
 			}
+			assert.NoError(t, err, test.MessageUnexpectedError(err))
+			contents, readErr := os.ReadFile(filepath.Join(constMetaPath, input.ClassName+".json"))
+			assert.NoError(t, readErr)
+			assert.Equal(t, input.ServerResponse, string(contents))
 		})
 	}
 }
@@ -400,14 +473,12 @@ func TestRetrieveMetaFileFromRemote_HTTPTransportError(t *testing.T) {
 	t.Parallel()
 	test.InitializeTest(t)
 
-	// Spin up a server then close it immediately so the dial fails.
-	server := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}))
-	server.Close()
-
 	ds := &DataStore{
-		Classes:          make(map[string]Class),
-		client:           server.Client(),
-		metaHost:         server.URL[8:],
+		Classes: make(map[string]Class),
+		client: &http.Client{Transport: test.RoundTripFunc(func(*http.Request) (*http.Response, error) {
+			return nil, errors.New("transport failure")
+		})},
+		metaHost:         "metadata.example.com",
 		retrievedClasses: make(map[string]bool),
 	}
 

@@ -3,3 +3,12 @@ documentation:
   ui_locations:
   - Tenants -> Networking -> VRFs -> Policy
 resource_name: relation_from_vrf_to_end_point_retention_policy
+test_config:
+  dependencies:
+  - class_name: fvEpRetPol
+    config_overrides:
+      name: end_point_retention_policy_name_1
+    dependencies:
+    - class_name: fvTenant
+    reference: aci_end_point_retention_policy.test_end_point_retention_policy_0.id
+    role: target

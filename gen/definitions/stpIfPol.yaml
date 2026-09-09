@@ -16,9 +16,10 @@ properties:
     - unspecified
     test_config:
       create:
-      - config_value: '["bpdu-filter", "bpdu-guard"]'
-      default:
-      - config_value: '[]'
+      - config_value: bpdu-filter
+      - config_value: bpdu-guard
+      default: []
+    value_type: set
 resource_name: spanning_tree_interface_policy
 rn_prepend: infra
 state_upgrades:

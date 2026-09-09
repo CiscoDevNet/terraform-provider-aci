@@ -10,109 +10,132 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func testValueScenarioDefinition(entries ...TestValueEntryDefinition) TestValueScenarioDefinition {
+	return TestValueScenarioDefinition{Defined: true, Entries: entries}
+}
+
+func testValueScenario(entries ...TestValueEntry) TestValueScenario {
+	return TestValueScenario{Defined: true, Entries: entries}
+}
+
+func testValueDefinition(value string) TestValueScenarioDefinition {
+	return testValueScenarioDefinition(TestValueEntryDefinition{ConfigValue: value})
+}
+
 func TestPropertyModelFieldName(t *testing.T) {
 	t.Parallel()
 
 	className := testClassName("fvEpIpTag")
-	testCases := map[string]string{
-		"id":     "FvEpIpTagID",
-		"siteId": "SiteId",
-		"tDn":    "TDn",
+	testCases := []test.TestCase{
+		{Name: "test_id", Input: "id", Expected: "FvEpIpTagID"},
+		{Name: "test_site_id", Input: "siteId", Expected: "SiteId"},
+		{Name: "test_target_dn", Input: "tDn", Expected: "TDn"},
 	}
 
-	for propertyName, expected := range testCases {
-		propertyName := propertyName
-		expected := expected
-		t.Run(propertyName, func(t *testing.T) {
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
 			t.Parallel()
-			property := Property{PropertyName: propertyName}
-			assert.Equal(t, expected, property.ModelFieldName(className))
+			property := Property{PropertyName: testCase.Input.(string)}
+			actual := property.ModelFieldName(className)
+			assert.Equal(t, testCase.Expected, actual, test.MessageEqual(testCase.Expected, actual, testCase.Name))
 		})
 	}
+}
+
+type propertyModelRenderingInput struct {
+	ValueType    ValueTypeEnum
+	PropertyName string
+}
+
+type propertyModelRenderingExpected struct {
+	Value         string
+	AttributeType string
+	NullValue     string
+	Constructor   string
+	Custom        bool
 }
 
 func TestPropertyModelRendering(t *testing.T) {
 	t.Parallel()
 
 	className := testClassName("fvAp")
-	testCases := []struct {
-		name          string
-		valueType     ValueTypeEnum
-		propertyName  string
-		value         string
-		attributeType string
-		nullValue     string
-		constructor   string
-		custom        bool
-	}{
+	testCases := []test.TestCase{
 		{
-			name:          "string",
-			valueType:     String,
-			propertyName:  "name",
-			value:         "types.String",
-			attributeType: "types.StringType",
-			nullValue:     "types.StringNull()",
-			constructor:   "types.StringValue",
+			Name:  "test_string",
+			Input: propertyModelRenderingInput{ValueType: String, PropertyName: "name"},
+			Expected: propertyModelRenderingExpected{
+				Value:         "types.String",
+				AttributeType: "types.StringType",
+				NullValue:     "types.StringNull()",
+				Constructor:   "types.StringValue",
+			},
 		},
 		{
-			name:          "set",
-			valueType:     Set,
-			propertyName:  "tags",
-			value:         "types.Set",
-			attributeType: "types.SetType{ElemType: types.StringType}",
-			nullValue:     "types.SetNull(types.StringType)",
-			constructor:   "types.StringValue",
+			Name:  "test_set",
+			Input: propertyModelRenderingInput{ValueType: Set, PropertyName: "tags"},
+			Expected: propertyModelRenderingExpected{
+				Value:         "types.Set",
+				AttributeType: "types.SetType{ElemType: types.StringType}",
+				NullValue:     "types.SetNull(types.StringType)",
+				Constructor:   "types.StringValue",
+			},
 		},
 		{
-			name:          "object",
-			valueType:     Object,
-			propertyName:  "settings",
-			value:         "types.Object",
-			attributeType: "types.ObjectType{AttrTypes: map[string]attr.Type{}}",
-			nullValue:     "types.ObjectNull(map[string]attr.Type{})",
-			constructor:   "types.StringValue",
+			Name:  "test_object",
+			Input: propertyModelRenderingInput{ValueType: Object, PropertyName: "settings"},
+			Expected: propertyModelRenderingExpected{
+				Value:         "types.Object",
+				AttributeType: "types.ObjectType{AttrTypes: map[string]attr.Type{}}",
+				NullValue:     "types.ObjectNull(map[string]attr.Type{})",
+				Constructor:   "types.StringValue",
+			},
 		},
 		{
-			name:          "ip address",
-			valueType:     IpAddress,
-			propertyName:  "address",
-			value:         "customTypes.IPAddressStringValue",
-			attributeType: "customTypes.IPAddressStringType{}",
-			nullValue:     "customTypes.NewIPAddressStringNull()",
-			constructor:   "customTypes.NewIPAddressStringValue",
-			custom:        true,
+			Name:  "test_ip_address",
+			Input: propertyModelRenderingInput{ValueType: IpAddress, PropertyName: "address"},
+			Expected: propertyModelRenderingExpected{
+				Value:         "customTypes.IPAddressStringValue",
+				AttributeType: "customTypes.IPAddressStringType{}",
+				NullValue:     "customTypes.NewIPAddressStringNull()",
+				Constructor:   "customTypes.NewIPAddressStringValue",
+				Custom:        true,
+			},
 		},
 		{
-			name:          "semantic equality",
-			valueType:     SemanticEquality,
-			propertyName:  "prio",
-			value:         "customTypes.FvApPrioStringValue",
-			attributeType: "customTypes.FvApPrioStringType{}",
-			nullValue:     "customTypes.NewFvApPrioStringNull()",
-			constructor:   "customTypes.NewFvApPrioStringValue",
-			custom:        true,
+			Name:  "test_semantic_equality",
+			Input: propertyModelRenderingInput{ValueType: SemanticEquality, PropertyName: "prio"},
+			Expected: propertyModelRenderingExpected{
+				Value:         "customTypes.FvApPrioStringValue",
+				AttributeType: "customTypes.FvApPrioStringType{}",
+				NullValue:     "customTypes.NewFvApPrioStringNull()",
+				Constructor:   "customTypes.NewFvApPrioStringValue",
+				Custom:        true,
+			},
 		},
 		{
-			name:          "VMM ARP learning",
-			valueType:     VMMArpLearning,
-			propertyName:  "arpLearning",
-			value:         "customTypes.VMMArpLearningStringValue",
-			attributeType: "customTypes.VMMArpLearningStringType{}",
-			nullValue:     "customTypes.NewVMMArpLearningStringNull()",
-			constructor:   "customTypes.NewVMMArpLearningStringValue",
-			custom:        true,
+			Name:  "test_vmm_arp_learning",
+			Input: propertyModelRenderingInput{ValueType: VMMArpLearning, PropertyName: "arpLearning"},
+			Expected: propertyModelRenderingExpected{
+				Value:         "customTypes.VMMArpLearningStringValue",
+				AttributeType: "customTypes.VMMArpLearningStringType{}",
+				NullValue:     "customTypes.NewVMMArpLearningStringNull()",
+				Constructor:   "customTypes.NewVMMArpLearningStringValue",
+				Custom:        true,
+			},
 		},
 	}
 
 	for _, testCase := range testCases {
-		t.Run(testCase.name, func(t *testing.T) {
+		t.Run(testCase.Name, func(t *testing.T) {
 			t.Parallel()
-			property := Property{PropertyName: testCase.propertyName, ValueType: testCase.valueType}
-			assert.Equal(t, testCase.value, property.ModelValueType(className))
-			assert.Equal(t, testCase.attributeType, property.ModelAttributeType(className))
-			assert.Equal(t, testCase.nullValue, property.ModelNullValue(className))
-			assert.Equal(t, testCase.constructor, property.ModelStringValueConstructor(className))
-			assert.Equal(t, testCase.custom, property.UsesCustomModelType())
+			input := testCase.Input.(propertyModelRenderingInput)
+			expected := testCase.Expected.(propertyModelRenderingExpected)
+			property := Property{PropertyName: input.PropertyName, ValueType: input.ValueType}
+			assert.Equal(t, expected.Value, property.ModelValueType(className))
+			assert.Equal(t, expected.AttributeType, property.ModelAttributeType(className))
+			assert.Equal(t, expected.NullValue, property.ModelNullValue(className))
+			assert.Equal(t, expected.Constructor, property.ModelStringValueConstructor(className))
+			assert.Equal(t, expected.Custom, property.UsesCustomModelType())
 		})
 	}
 }
@@ -1960,6 +1983,8 @@ type setTestValuesInput struct {
 	ValidValues        ValidValues
 	ValueType          ValueTypeEnum
 	Documentation      PropertyDocumentation
+	Validators         []Validator
+	MetaDetails        map[string]any
 	Required           bool
 	Optional           bool
 	ReadOnly           bool
@@ -2015,18 +2040,18 @@ func TestSetTestValues(t *testing.T) {
 				PropertyName: "testProp",
 				PropertyDefinition: PropertyDefinition{
 					TestConfig: TestConfigDefinition{
-						Create: []TestValueEntryDefinition{
-							{ConfigValue: "create_val", ConfigInclude: &boolTrue, AssertValue: "assert_val", ValueType: StringValue},
-						},
-						Update: []TestValueEntryDefinition{
-							{ConfigValue: "update_val", ConfigInclude: &boolTrue},
-						},
-						Default: []TestValueEntryDefinition{
-							{ConfigValue: "", ConfigInclude: &boolFalse, AssertValue: "default_val"},
-						},
-						ForceNew: []TestValueEntryDefinition{
-							{ConfigValue: "force_new_val", ConfigInclude: &boolTrue},
-						},
+						Create: testValueScenarioDefinition(
+							TestValueEntryDefinition{ConfigValue: "create_val", ConfigInclude: &boolTrue, AssertValue: "assert_val", ValueType: StringValue},
+						),
+						Update: testValueScenarioDefinition(
+							TestValueEntryDefinition{ConfigValue: "update_val", ConfigInclude: &boolTrue},
+						),
+						Default: testValueScenarioDefinition(
+							TestValueEntryDefinition{ConfigValue: "", ConfigInclude: &boolFalse, AssertValue: "default_val"},
+						),
+						ForceNew: testValueScenarioDefinition(
+							TestValueEntryDefinition{ConfigValue: "force_new_val", ConfigInclude: &boolTrue},
+						),
 					},
 				},
 			},
@@ -2044,9 +2069,9 @@ func TestSetTestValues(t *testing.T) {
 				PropertyName: "tDn",
 				PropertyDefinition: PropertyDefinition{
 					TestConfig: TestConfigDefinition{
-						Create: []TestValueEntryDefinition{
-							{ConfigValue: "aci_tenant.test.id", ConfigInclude: &boolTrue, ValueType: ReferenceValue},
-						},
+						Create: testValueScenarioDefinition(
+							TestValueEntryDefinition{ConfigValue: "aci_tenant.test.id", ConfigInclude: &boolTrue, ValueType: ReferenceValue},
+						),
 					},
 				},
 			},
@@ -2113,14 +2138,65 @@ func TestSetTestValues(t *testing.T) {
 			Input: setTestValuesInput{
 				PropertyName:  "name",
 				AttributeName: "name",
+				ValueType:     String,
 				Required:      true,
 			},
 			Expected: setTestValuesExpected{
 				CreateValues:   []string{"name_1"},
 				UpdateValues:   []string{"name_2"},
 				DefaultInclude: []bool{true},
-				DefaultAssert:  []string{"name_1"},
+				DefaultAssert:  []string{"test_name"},
 				ForceNewValues: []string{"name_1"},
+			},
+		},
+		{
+			Name: "test_auto_derive_annotation",
+			Input: setTestValuesInput{
+				PropertyName:  "annotation",
+				AttributeName: "annotation",
+				ValueType:     String,
+				Optional:      true,
+			},
+			Expected: setTestValuesExpected{
+				CreateValues:   []string{"annotation"},
+				UpdateValues:   []string{"annotation_2"},
+				DefaultInclude: []bool{false},
+				DefaultAssert:  []string{""},
+				ForceNewValues: []string{"annotation"},
+			},
+		},
+		{
+			Name: "test_auto_derive_ip_address",
+			Input: setTestValuesInput{
+				PropertyName:  "ip",
+				AttributeName: "ip_address",
+				ValueType:     IpAddress,
+				Required:      true,
+			},
+			Expected: setTestValuesExpected{
+				CreateValues:   []string{"192.0.2.1"},
+				UpdateValues:   []string{"198.51.100.2"},
+				DefaultInclude: []bool{true},
+				DefaultAssert:  []string{"192.0.2.1"},
+				ForceNewValues: []string{"192.0.2.1"},
+			},
+		},
+		{
+			Name: "test_auto_derive_numeric_range",
+			Input: setTestValuesInput{
+				PropertyName:  "id",
+				AttributeName: "fabric_id",
+				ValueType:     String,
+				Validators:    []Validator{{Min: 1, Max: 10}},
+				MetaDetails:   map[string]any{"uitype": "number"},
+				Required:      true,
+			},
+			Expected: setTestValuesExpected{
+				CreateValues:   []string{"1"},
+				UpdateValues:   []string{"2"},
+				DefaultInclude: []bool{true},
+				DefaultAssert:  []string{"1"},
+				ForceNewValues: []string{"1"},
 			},
 		},
 		{
@@ -2160,6 +2236,8 @@ func TestSetTestValues(t *testing.T) {
 				ValidValues:        input.ValidValues,
 				ValueType:          input.ValueType,
 				Documentation:      input.Documentation,
+				Validators:         input.Validators,
+				metaDetails:        input.MetaDetails,
 				Required:           input.Required,
 				Optional:           input.Optional,
 				ReadOnly:           input.ReadOnly,
@@ -2177,45 +2255,100 @@ func TestSetTestValues(t *testing.T) {
 			assert.NotNil(t, property.TestValues, testCase.Name+": TestValues should not be nil")
 
 			if expected.CreateValues != nil {
-				assert.Len(t, property.TestValues.Create, len(expected.CreateValues), testCase.Name+": Create length mismatch")
+				assert.Len(t, property.TestValues.Create.Entries, len(expected.CreateValues), testCase.Name+": Create length mismatch")
 				for i, v := range expected.CreateValues {
-					assert.Equal(t, v, property.TestValues.Create[i].ConfigValue, test.MessageEqual(v, property.TestValues.Create[i].ConfigValue, testCase.Name))
+					assert.Equal(t, v, property.TestValues.Create.Entries[i].ConfigValue, test.MessageEqual(v, property.TestValues.Create.Entries[i].ConfigValue, testCase.Name))
 				}
 			}
 
 			if expected.UpdateValues != nil {
-				assert.Len(t, property.TestValues.Update, len(expected.UpdateValues), testCase.Name+": Update length mismatch")
+				assert.Len(t, property.TestValues.Update.Entries, len(expected.UpdateValues), testCase.Name+": Update length mismatch")
 				for i, v := range expected.UpdateValues {
-					assert.Equal(t, v, property.TestValues.Update[i].ConfigValue, test.MessageEqual(v, property.TestValues.Update[i].ConfigValue, testCase.Name))
+					assert.Equal(t, v, property.TestValues.Update.Entries[i].ConfigValue, test.MessageEqual(v, property.TestValues.Update.Entries[i].ConfigValue, testCase.Name))
 				}
 			}
 
 			if expected.DefaultInclude != nil {
-				assert.Len(t, property.TestValues.Default, len(expected.DefaultInclude), testCase.Name+": Default length mismatch")
+				assert.Len(t, property.TestValues.Default.Entries, len(expected.DefaultInclude), testCase.Name+": Default length mismatch")
 				for i, inc := range expected.DefaultInclude {
-					assert.Equal(t, inc, property.TestValues.Default[i].ConfigInclude, test.MessageEqual(inc, property.TestValues.Default[i].ConfigInclude, testCase.Name))
+					assert.Equal(t, inc, property.TestValues.Default.Entries[i].ConfigInclude, test.MessageEqual(inc, property.TestValues.Default.Entries[i].ConfigInclude, testCase.Name))
 				}
 			}
 
 			if expected.DefaultAssert != nil {
 				for i, v := range expected.DefaultAssert {
-					assert.Equal(t, v, property.TestValues.Default[i].AssertValue, test.MessageEqual(v, property.TestValues.Default[i].AssertValue, testCase.Name))
+					assert.Equal(t, v, property.TestValues.Default.Entries[i].AssertValue, test.MessageEqual(v, property.TestValues.Default.Entries[i].AssertValue, testCase.Name))
 				}
 			}
 
 			if expected.CreateTypes != nil {
 				for i, vt := range expected.CreateTypes {
-					assert.Equal(t, vt, property.TestValues.Create[i].ValueType, test.MessageEqual(vt, property.TestValues.Create[i].ValueType, testCase.Name))
+					assert.Equal(t, vt, property.TestValues.Create.Entries[i].ValueType, test.MessageEqual(vt, property.TestValues.Create.Entries[i].ValueType, testCase.Name))
 				}
 			}
 
 			if expected.ForceNewValues != nil {
-				assert.Len(t, property.TestValues.ForceNew, len(expected.ForceNewValues), testCase.Name+": ForceNew length mismatch")
+				assert.Len(t, property.TestValues.ForceNew.Entries, len(expected.ForceNewValues), testCase.Name+": ForceNew length mismatch")
 				for i, v := range expected.ForceNewValues {
-					assert.Equal(t, v, property.TestValues.ForceNew[i].ConfigValue, test.MessageEqual(v, property.TestValues.ForceNew[i].ConfigValue, testCase.Name))
+					assert.Equal(t, v, property.TestValues.ForceNew.Entries[i].ConfigValue, test.MessageEqual(v, property.TestValues.ForceNew.Entries[i].ConfigValue, testCase.Name))
 				}
 			}
 		})
+	}
+}
+
+func TestSetTestValuesPreservesExplicitEmptySetScenario(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	property := &Property{
+		PropertyName:  "matchT",
+		AttributeName: "match_type",
+		Optional:      true,
+		ValueType:     Set,
+		ValidValues: ValidValues{
+			"1": {LocalName: "all"},
+			"2": {LocalName: "none"},
+		},
+		propertyDefinition: PropertyDefinition{
+			TestConfig: TestConfigDefinition{
+				Update: testValueScenarioDefinition(),
+			},
+		},
+	}
+
+	property.setTestValues()
+	property.fillUndefinedTestValueScenarios()
+
+	if assert.NotNil(t, property.TestValues) {
+		assert.True(t, property.TestValues.Update.Defined)
+		assert.Empty(t, property.TestValues.Update.Entries, "an explicit empty set must not be refilled from Create")
+		assert.True(t, property.TestValues.Create.Defined)
+		assert.NotEmpty(t, property.TestValues.Create.Entries)
+	}
+}
+
+func TestSetReference(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	property := &Property{
+		PropertyName: "scope",
+		propertyDefinition: PropertyDefinition{
+			Reference: PropertyReferenceDefinition{
+				Classes:      []string{"fvBD", "l3extOut"},
+				ExampleClass: "fvBD",
+			},
+		},
+	}
+
+	err := property.setReference()
+	assert.NoError(t, err, test.MessageUnexpectedError(err))
+	if assert.NotNil(t, property.Reference) {
+		assert.Empty(t, property.Reference.ExampleLabel)
+		assert.Equal(t, "id", property.Reference.ExampleAttributeName)
+		assert.Equal(t, "fvBD", property.Reference.ExampleClass.String())
+		assert.Equal(t, []string{"fvBD", "l3extOut"}, classNamesToStrings(property.Reference.Classes))
 	}
 }
 
@@ -2329,7 +2462,6 @@ type setLegacyTestValuesExpected struct {
 // and the clone path with Versions preservation (which generateForceNew
 // currently drops).
 func TestSetLegacyTestValues(t *testing.T) {
-	t.Parallel()
 	test.InitializeTest(t)
 
 	boolFalse := false
@@ -2352,7 +2484,7 @@ func TestSetLegacyTestValues(t *testing.T) {
 				AttributeName:      "name",
 				IgnoreInTest:       true,
 				StateUpgradeValues: map[int]StateUpgradeValue{0: {AttributeName: "old_name", Type: String, Status: Functioning}},
-				ExistingTestValues: &TestValues{Create: []TestValueEntry{{ConfigValue: "name_1", ConfigInclude: true, AssertValue: "name_1", ValueType: StringValue}}},
+				ExistingTestValues: &TestValues{Create: testValueScenario(TestValueEntry{ConfigValue: "name_1", ConfigInclude: true, AssertValue: "name_1", ValueType: StringValue})},
 			},
 			Expected: setLegacyTestValuesExpected{LegacyNil: true},
 		},
@@ -2363,7 +2495,7 @@ func TestSetLegacyTestValues(t *testing.T) {
 				AttributeName:      "pc_tag",
 				ReadOnly:           true,
 				StateUpgradeValues: map[int]StateUpgradeValue{0: {AttributeName: "old_pc_tag", Type: String, Status: Functioning}},
-				ExistingTestValues: &TestValues{Create: []TestValueEntry{{ConfigValue: "1", ConfigInclude: true, AssertValue: "1", ValueType: StringValue}}},
+				ExistingTestValues: &TestValues{Create: testValueScenario(TestValueEntry{ConfigValue: "1", ConfigInclude: true, AssertValue: "1", ValueType: StringValue})},
 			},
 			Expected: setLegacyTestValuesExpected{LegacyNil: true},
 		},
@@ -2376,12 +2508,12 @@ func TestSetLegacyTestValues(t *testing.T) {
 				StateUpgradeValues: map[int]StateUpgradeValue{
 					0: {AttributeName: "tag_string", Type: String, Status: Functioning},
 				},
-				ExistingTestValues: &TestValues{Create: []TestValueEntry{{ConfigValue: "tag_a", ConfigInclude: true, AssertValue: "tag_a", ValueType: StringValue}}},
+				ExistingTestValues: &TestValues{Create: testValueScenario(TestValueEntry{ConfigValue: "tag_a", ConfigInclude: true, AssertValue: "tag_a", ValueType: StringValue})},
 				PropertyDefinition: PropertyDefinition{
 					TestConfig: TestConfigDefinition{
-						Legacy: []TestValueEntryDefinition{
-							{ConfigValue: "legacy_value", ConfigInclude: nil, AssertValue: "legacy_assert", ValueType: StringValue},
-						},
+						Legacy: testValueScenarioDefinition(
+							TestValueEntryDefinition{ConfigValue: "legacy_value", ConfigInclude: nil, AssertValue: "legacy_assert", ValueType: StringValue},
+						),
 					},
 				},
 			},
@@ -2399,12 +2531,12 @@ func TestSetLegacyTestValues(t *testing.T) {
 				AttributeName:      "description",
 				ValueType:          String,
 				StateUpgradeValues: map[int]StateUpgradeValue{0: {AttributeName: "old_description", Type: String, Status: Functioning}},
-				ExistingTestValues: &TestValues{Create: []TestValueEntry{{ConfigValue: "description_1", ConfigInclude: true, AssertValue: "description_1", ValueType: StringValue}}},
+				ExistingTestValues: &TestValues{Create: testValueScenario(TestValueEntry{ConfigValue: "description_1", ConfigInclude: true, AssertValue: "description_1", ValueType: StringValue})},
 				PropertyDefinition: PropertyDefinition{
 					TestConfig: TestConfigDefinition{
-						Legacy: []TestValueEntryDefinition{
-							{ConfigValue: "", ConfigInclude: &boolFalse, AssertValue: "server_default"},
-						},
+						Legacy: testValueScenarioDefinition(
+							TestValueEntryDefinition{ConfigValue: "", ConfigInclude: &boolFalse, AssertValue: "server_default"},
+						),
 					},
 				},
 			},
@@ -2420,7 +2552,7 @@ func TestSetLegacyTestValues(t *testing.T) {
 				PropertyName:       "name",
 				AttributeName:      "name",
 				ValueType:          String,
-				ExistingTestValues: &TestValues{Create: []TestValueEntry{{ConfigValue: "name_1", ConfigInclude: true, AssertValue: "name_1", ValueType: StringValue}}},
+				ExistingTestValues: &TestValues{Create: testValueScenario(TestValueEntry{ConfigValue: "name_1", ConfigInclude: true, AssertValue: "name_1", ValueType: StringValue})},
 			},
 			Expected: setLegacyTestValuesExpected{LegacyNil: true},
 		},
@@ -2433,7 +2565,7 @@ func TestSetLegacyTestValues(t *testing.T) {
 				StateUpgradeValues: map[int]StateUpgradeValue{
 					0: {AttributeName: "old_name", Type: String, Status: Removed},
 				},
-				ExistingTestValues: &TestValues{Create: []TestValueEntry{{ConfigValue: "name_1", ConfigInclude: true, AssertValue: "name_1", ValueType: StringValue}}},
+				ExistingTestValues: &TestValues{Create: testValueScenario(TestValueEntry{ConfigValue: "name_1", ConfigInclude: true, AssertValue: "name_1", ValueType: StringValue})},
 			},
 			Expected: setLegacyTestValuesExpected{LegacyNil: true},
 		},
@@ -2446,7 +2578,7 @@ func TestSetLegacyTestValues(t *testing.T) {
 				StateUpgradeValues: map[int]StateUpgradeValue{
 					0: {AttributeName: "name", Type: String, Status: Functioning},
 				},
-				ExistingTestValues: &TestValues{Create: []TestValueEntry{{ConfigValue: "name_1", ConfigInclude: true, AssertValue: "name_1", ValueType: StringValue}}},
+				ExistingTestValues: &TestValues{Create: testValueScenario(TestValueEntry{ConfigValue: "name_1", ConfigInclude: true, AssertValue: "name_1", ValueType: StringValue})},
 			},
 			Expected: setLegacyTestValuesExpected{LegacyNil: true},
 		},
@@ -2460,7 +2592,7 @@ func TestSetLegacyTestValues(t *testing.T) {
 					0: {AttributeName: "old_name", Type: String, Status: Removed},
 					1: {AttributeName: "name", Type: String, Status: Functioning},
 				},
-				ExistingTestValues: &TestValues{Create: []TestValueEntry{{ConfigValue: "name_1", ConfigInclude: true, AssertValue: "name_1", ValueType: StringValue}}},
+				ExistingTestValues: &TestValues{Create: testValueScenario(TestValueEntry{ConfigValue: "name_1", ConfigInclude: true, AssertValue: "name_1", ValueType: StringValue})},
 			},
 			Expected: setLegacyTestValuesExpected{LegacyNil: true},
 		},
@@ -2473,7 +2605,7 @@ func TestSetLegacyTestValues(t *testing.T) {
 				StateUpgradeValues: map[int]StateUpgradeValue{
 					0: {AttributeName: "old_name", Type: String, Status: Functioning},
 				},
-				ExistingTestValues: &TestValues{Create: []TestValueEntry{{ConfigValue: "name_1", ConfigInclude: true, AssertValue: "name_1", ValueType: StringValue}}},
+				ExistingTestValues: &TestValues{Create: testValueScenario(TestValueEntry{ConfigValue: "name_1", ConfigInclude: true, AssertValue: "name_1", ValueType: StringValue})},
 			},
 			Expected: setLegacyTestValuesExpected{
 				LegacyValues:   []string{"name_1"},
@@ -2491,7 +2623,7 @@ func TestSetLegacyTestValues(t *testing.T) {
 				StateUpgradeValues: map[int]StateUpgradeValue{
 					0: {AttributeName: "old_description", Type: String, Status: Frozen},
 				},
-				ExistingTestValues: &TestValues{Create: []TestValueEntry{{ConfigValue: "description_1", ConfigInclude: true, AssertValue: "description_1", ValueType: StringValue}}},
+				ExistingTestValues: &TestValues{Create: testValueScenario(TestValueEntry{ConfigValue: "description_1", ConfigInclude: true, AssertValue: "description_1", ValueType: StringValue})},
 			},
 			Expected: setLegacyTestValuesExpected{
 				LegacyValues:   []string{"description_1"},
@@ -2509,7 +2641,7 @@ func TestSetLegacyTestValues(t *testing.T) {
 				StateUpgradeValues: map[int]StateUpgradeValue{
 					0: {AttributeName: "tenant_dn", Type: String, Status: Functioning},
 				},
-				ExistingTestValues: &TestValues{Create: []TestValueEntry{{ConfigValue: "aci_tenant.test.id", ConfigInclude: true, AssertValue: "aci_tenant.test.id", ValueType: ReferenceValue}}},
+				ExistingTestValues: &TestValues{Create: testValueScenario(TestValueEntry{ConfigValue: "aci_tenant.test.id", ConfigInclude: true, AssertValue: "aci_tenant.test.id", ValueType: ReferenceValue})},
 			},
 			Expected: setLegacyTestValuesExpected{
 				LegacyValues: []string{"aci_tenant.test.id"},
@@ -2525,7 +2657,7 @@ func TestSetLegacyTestValues(t *testing.T) {
 				StateUpgradeValues: map[int]StateUpgradeValue{
 					0: {AttributeName: "old_vlan_scope", Type: String, Status: Functioning},
 				},
-				ExistingTestValues: &TestValues{Create: []TestValueEntry{{ConfigValue: "portlocal", ConfigInclude: true, AssertValue: "portlocal", ValueType: StringValue, Versions: versionsAll}}},
+				ExistingTestValues: &TestValues{Create: testValueScenario(TestValueEntry{ConfigValue: "portlocal", ConfigInclude: true, AssertValue: "portlocal", ValueType: StringValue, Versions: versionsAll})},
 			},
 			Expected: setLegacyTestValuesExpected{
 				LegacyValues:   []string{"portlocal"},
@@ -2541,7 +2673,7 @@ func TestSetLegacyTestValues(t *testing.T) {
 				StateUpgradeValues: map[int]StateUpgradeValue{
 					0: {AttributeName: "tag_string", Type: String, Status: Functioning},
 				},
-				ExistingTestValues: &TestValues{Create: []TestValueEntry{{ConfigValue: "tag_a", ConfigInclude: true, AssertValue: "tag_a", ValueType: StringValue}}},
+				ExistingTestValues: &TestValues{Create: testValueScenario(TestValueEntry{ConfigValue: "tag_a", ConfigInclude: true, AssertValue: "tag_a", ValueType: StringValue})},
 			},
 			Expected: setLegacyTestValuesExpected{
 				LegacyNil: true,
@@ -2558,7 +2690,7 @@ func TestSetLegacyTestValues(t *testing.T) {
 					0: {AttributeName: "old_name", Type: Set, Status: Removed},
 					1: {AttributeName: "renamed_name", Type: String, Status: Functioning},
 				},
-				ExistingTestValues: &TestValues{Create: []TestValueEntry{{ConfigValue: "name_1", ConfigInclude: true, AssertValue: "name_1", ValueType: StringValue}}},
+				ExistingTestValues: &TestValues{Create: testValueScenario(TestValueEntry{ConfigValue: "name_1", ConfigInclude: true, AssertValue: "name_1", ValueType: StringValue})},
 			},
 			Expected: setLegacyTestValuesExpected{
 				LegacyValues:   []string{"name_1"},
@@ -2570,7 +2702,6 @@ func TestSetLegacyTestValues(t *testing.T) {
 	// Capture warnings via the package logger; restored after the test.
 	var logBuffer bytes.Buffer
 	genLogger.SetOutputForTesting(&logBuffer)
-	genLogger.SetLogLevel("WARN")
 	defer func() {
 		genLogger.SetOutputForTesting(os.Stdout)
 	}()
@@ -2604,41 +2735,41 @@ func TestSetLegacyTestValues(t *testing.T) {
 
 			if expected.LegacyNil {
 				if property.TestValues != nil {
-					assert.Nil(t, property.TestValues.Legacy, testCase.Name+": Legacy should be nil")
+					assert.False(t, property.TestValues.Legacy.Defined, testCase.Name+": Legacy should be undefined")
 				}
 				return
 			}
 
 			assert.NotNil(t, property.TestValues, testCase.Name+": TestValues should not be nil")
-			assert.NotNil(t, property.TestValues.Legacy, testCase.Name+": Legacy should not be nil")
+			assert.True(t, property.TestValues.Legacy.Defined, testCase.Name+": Legacy should be defined")
 
 			if expected.LegacyValues != nil {
-				assert.Len(t, property.TestValues.Legacy, len(expected.LegacyValues), testCase.Name+": Legacy length mismatch")
+				assert.Len(t, property.TestValues.Legacy.Entries, len(expected.LegacyValues), testCase.Name+": Legacy length mismatch")
 				for i, v := range expected.LegacyValues {
-					assert.Equal(t, v, property.TestValues.Legacy[i].ConfigValue, test.MessageEqual(v, property.TestValues.Legacy[i].ConfigValue, testCase.Name))
+					assert.Equal(t, v, property.TestValues.Legacy.Entries[i].ConfigValue, test.MessageEqual(v, property.TestValues.Legacy.Entries[i].ConfigValue, testCase.Name))
 				}
 			}
 			if expected.LegacyAsserts != nil {
 				for i, v := range expected.LegacyAsserts {
-					assert.Equal(t, v, property.TestValues.Legacy[i].AssertValue, test.MessageEqual(v, property.TestValues.Legacy[i].AssertValue, testCase.Name))
+					assert.Equal(t, v, property.TestValues.Legacy.Entries[i].AssertValue, test.MessageEqual(v, property.TestValues.Legacy.Entries[i].AssertValue, testCase.Name))
 				}
 			}
 			if expected.LegacyIncludes != nil {
 				for i, inc := range expected.LegacyIncludes {
-					assert.Equal(t, inc, property.TestValues.Legacy[i].ConfigInclude, test.MessageEqual(inc, property.TestValues.Legacy[i].ConfigInclude, testCase.Name))
+					assert.Equal(t, inc, property.TestValues.Legacy.Entries[i].ConfigInclude, test.MessageEqual(inc, property.TestValues.Legacy.Entries[i].ConfigInclude, testCase.Name))
 				}
 			}
 			if expected.LegacyTypes != nil {
 				for i, vt := range expected.LegacyTypes {
-					assert.Equal(t, vt, property.TestValues.Legacy[i].ValueType, test.MessageEqual(vt, property.TestValues.Legacy[i].ValueType, testCase.Name))
+					assert.Equal(t, vt, property.TestValues.Legacy.Entries[i].ValueType, test.MessageEqual(vt, property.TestValues.Legacy.Entries[i].ValueType, testCase.Name))
 				}
 			}
 			if expected.LegacyVersions != nil {
 				for i, hasVersions := range expected.LegacyVersions {
 					if hasVersions {
-						assert.NotNil(t, property.TestValues.Legacy[i].Versions, testCase.Name+": Versions should be preserved")
+						assert.NotNil(t, property.TestValues.Legacy.Entries[i].Versions, testCase.Name+": Versions should be preserved")
 					} else {
-						assert.Nil(t, property.TestValues.Legacy[i].Versions, testCase.Name+": Versions should be nil")
+						assert.Nil(t, property.TestValues.Legacy.Entries[i].Versions, testCase.Name+": Versions should be nil")
 					}
 				}
 			}

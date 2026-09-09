@@ -5,6 +5,13 @@ properties:
   tDn:
     documentation:
       description: The distinguished name of the target.
+    example_config:
+      full:
+      - value: aci_vlan_pool.example.id
+        value_type: reference
+      minimum:
+      - value: aci_vlan_pool.example.id
+        value_type: reference
 resource_name: relation_to_vlan_pool
 test_config:
   dependencies:

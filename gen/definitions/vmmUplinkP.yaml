@@ -11,16 +11,32 @@ properties:
     documentation:
       description: The uplink identifier of the %s object.
     restriction: required
+    test_config:
+      default:
+      - config_value: "1"
   uplinkName:
-    default_values:
-      uplink_name_1: ""
     documentation:
       description: The uplink name of the %s object.
+    example_config:
+      full:
+      - value: primary_uplink
+      minimum:
+      - value: primary_uplink
     restriction: required
     test_config:
       create:
       - config_value: uplink_name_2
+      default:
+      - config_value: uplink_name_1
       update:
       - config_value: uplink_name_2
 resource_name: vmm_uplink_policy
 resource_name_nested: uplink_policies
+test_config:
+  embedded_instances:
+  - properties:
+      uplink_id:
+      - config_value: "2"
+  - properties:
+      uplink_id:
+      - config_value: "1"

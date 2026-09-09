@@ -6,8 +6,14 @@ documentation:
 migration_source: from_sdkv2
 properties:
   name:
-    default_values:
-      netfow_monitor_default: ""
+    example_config:
+      full:
+      - value: netflow_monitor
+      minimum:
+      - value: netflow_monitor
+    test_config:
+      default:
+      - config_value: netfow_monitor
   parentDn:
     default_values:
       uni/infra: ""

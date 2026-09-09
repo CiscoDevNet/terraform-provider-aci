@@ -25,6 +25,9 @@ properties:
       "no": ""
     documentation:
       description: Enable rogue exception based on MAC wildcard for the %s object.
+    example_config:
+      full:
+      - value: "no"
     test_config:
       ignore_in_test: true
   epClear:

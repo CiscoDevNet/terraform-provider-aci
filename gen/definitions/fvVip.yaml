@@ -8,5 +8,7 @@ properties:
     documentation:
       description: The L4-L7 Virtual IP Address for this object.
     test_config:
+      default:
+      - config_value: 192.0.2.4
       update:
       - config_value: 2001:0db8::01

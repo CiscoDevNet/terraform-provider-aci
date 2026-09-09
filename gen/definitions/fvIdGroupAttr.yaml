@@ -7,4 +7,7 @@ properties:
     documentation:
       description: The selector of the %s object. Represents the DN or expression
         to select an identity group.
+    test_config:
+      default:
+      - config_value: adepg/authsvr-common-sg1-ISE_1/grpcont/dom-cisco.com/grp-Eng
 resource_name: epg_useg_ad_group_attribute

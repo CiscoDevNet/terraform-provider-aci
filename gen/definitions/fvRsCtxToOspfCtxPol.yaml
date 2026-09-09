@@ -10,3 +10,12 @@ properties:
       default:
       - config_value: ipv4-ucast
 resource_name: relation_from_vrf_to_address_family_ospf_timers
+test_config:
+  dependencies:
+  - class_name: ospfCtxPol
+    config_overrides:
+      name: ospf_timers_name_1
+    dependencies:
+    - class_name: fvTenant
+    reference: aci_ospf_timers.test_ospf_timers_0.id
+    role: target

@@ -10,6 +10,8 @@ test_config:
   dependencies:
   - class_name: infraHPathS
     role: parent
+    target_classes:
+    - fabricPathEp
   - class_name: fabricPathEp
     reference: topology/pod-1/paths-101/pathep-[eth1/1]
     reference_type: static
