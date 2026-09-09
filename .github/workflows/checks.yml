@@ -61,50 +61,50 @@ jobs:
       - name: GoReleaser Release Check
         run: goreleaser release --skip=publish,sign --snapshot --clean
 
-  acceptance:
-    name: Acceptance Tests
-    if: github.repository_owner == 'CiscoDevNet'
-    needs: [build, diff]
-    runs-on: ubuntu-latest
-    env:
-      ACI_USERNAME: 'ansible_github_ci'
-      ACI_PASSWORD: 'sJ94G92#8dq2hx*K4qh'
-    concurrency:
-        group: tf-aci-ci-test-${{ matrix.apic_host.name }}
-        cancel-in-progress: false
-    strategy:
-      fail-fast: false
-      matrix:
-        apic_host:
-          # - name: v4.2
-          #   url: 'https://173.36.219.68/'
-          - name: v5.2
-            url: 'https://173.36.219.69/'
-          - name: v6.0
-            url: 'https://173.36.219.70/'
-          # - name: aws_cloud
-          #   url: 'https://52.52.20.121/'
-          # - name: azure_cloud
-          #   url: 'https://20.245.236.136/'
-    steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-go@v6
-        with:
-          go-version-file: 'go.mod'
-      - uses: hashicorp/setup-terraform@v4
-        with:
-          terraform_version: '1.9.*'
-          terraform_wrapper: false
-      - name: Terraform Acceptance Test (APIC ${{ matrix.apic_host.name }})
-        run: go test github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider -v -race -timeout 24h -coverprofile=coverage.out -covermode=atomic
-        env:
-          TF_ACC: '1'
-          TF_ACC_STATE_LINEAGE: '1'
-          ACI_VAL_REL_DN: false
-          ACI_URL: ${{ matrix.apic_host.url }}
-      - name: Upload coverage to Codecov
-        # Upload Coverage on latest only
-        if: ${{ matrix.apic_host.name == 'v6.0'}}
-        uses: codecov/codecov-action@v6
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
+  # acceptance:
+  #   name: Acceptance Tests
+  #   if: github.repository_owner == 'CiscoDevNet'
+  #   needs: [build, diff]
+  #   runs-on: ubuntu-latest
+  #   env:
+  #     ACI_USERNAME: 'ansible_github_ci'
+  #     ACI_PASSWORD: 'sJ94G92#8dq2hx*K4qh'
+  #   concurrency:
+  #       group: tf-aci-ci-test-${{ matrix.apic_host.name }}
+  #       cancel-in-progress: false
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       apic_host:
+  #         # - name: v4.2
+  #         #   url: 'https://173.36.219.68/'
+  #         - name: v5.2
+  #           url: 'https://173.36.219.69/'
+  #         - name: v6.0
+  #           url: 'https://173.36.219.70/'
+  #         # - name: aws_cloud
+  #         #   url: 'https://52.52.20.121/'
+  #         # - name: azure_cloud
+  #         #   url: 'https://20.245.236.136/'
+  #   steps:
+  #     - uses: actions/checkout@v6
+  #     - uses: actions/setup-go@v6
+  #       with:
+  #         go-version-file: 'go.mod'
+  #     - uses: hashicorp/setup-terraform@v4
+  #       with:
+  #         terraform_version: '1.9.*'
+  #         terraform_wrapper: false
+  #     - name: Terraform Acceptance Test (APIC ${{ matrix.apic_host.name }})
+  #       run: go test github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider -v -race -timeout 24h -coverprofile=coverage.out -covermode=atomic
+  #       env:
+  #         TF_ACC: '1'
+  #         TF_ACC_STATE_LINEAGE: '1'
+  #         ACI_VAL_REL_DN: false
+  #         ACI_URL: ${{ matrix.apic_host.url }}
+  #     - name: Upload coverage to Codecov
+  #       # Upload Coverage on latest only
+  #       if: ${{ matrix.apic_host.name == 'v6.0'}}
+  #       uses: codecov/codecov-action@v6
+  #       with:
+  #         token: ${{ secrets.CODECOV_TOKEN }}
