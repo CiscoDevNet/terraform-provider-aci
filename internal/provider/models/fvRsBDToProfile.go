@@ -18,7 +18,7 @@ import (
 
 type FvRsBDToProfileModel struct {
 	Annotation          types.String `tfsdk:"annotation"`
-	TnL3extOutName      types.String `tfsdk:"tn_l3ext_out_name"`
+	TnL3extOutName      types.String `tfsdk:"l3_outside_name"`
 	TnRtctrlProfileName types.String `tfsdk:"route_control_profile_name"`
 	TagAnnotation       types.Set    `tfsdk:"annotations"`
 	TagTag              types.Set    `tfsdk:"tags"`
@@ -27,7 +27,7 @@ type FvRsBDToProfileModel struct {
 func FvRsBDToProfileModelAttributeTypes() map[string]attr.Type {
 	return map[string]attr.Type{
 		"annotation":                 types.StringType,
-		"tn_l3ext_out_name":          types.StringType,
+		"l3_outside_name":            types.StringType,
 		"route_control_profile_name": types.StringType,
 		"annotations": types.SetType{
 			ElemType: types.ObjectType{

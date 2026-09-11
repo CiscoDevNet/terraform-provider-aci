@@ -147,7 +147,7 @@ var knownLegacyKeys = map[string]keyInfo{
 	// S4 ADD - schema additions
 	"include":                            {sectionAdd, true}, // -> artifacts ([] when include: false)
 	"multi_parents":                      {sectionAdd, true}, // -> parent_dn_variants
-	"example_classes":                    {sectionAdd, true}, // -> documentation.example_parent_classes
+	"example_classes":                    {sectionAdd, true}, // -> example_parent_class (first entry)
 	"exclude_from_testing":               {sectionAdd, true}, // -> test_config.ignore_tests: [child]
 	"ignore_import_state_verify_in_test": {sectionAdd, true}, // -> test_config.ignore_import_state_verify
 
@@ -163,8 +163,8 @@ var knownLegacyKeys = map[string]keyInfo{
 	"contained_by_excludes":              {sectionDerive, true}, // S10.2 - classes/global.yaml
 
 	// S7 CONST (drop, relocated to constants.go)
-	"docs_examples_amount":  {sectionConst, true}, // classes/global.yaml
-	"docs_parent_dn_amount": {sectionConst, true}, // classes/global.yaml
+	"docs_examples_amount":  {sectionObsolete, true}, // multiple parent examples are no longer generated
+	"docs_parent_dn_amount": {sectionConst, true},    // classes/global.yaml
 
 	// S8 POSTPONE
 	"class_version_tests": {sectionPostpone, true},
@@ -487,7 +487,11 @@ func migrate(file string, legacy map[string]any, tally *keyTally) data.ClassDefi
 				}
 			}
 		case "example_classes":
-			out.Documentation.ExampleParentClasses = toStringSlice(val)
+			if classes := toStringSlice(val); len(classes) > 0 {
+				// Active generation has one representative placement per class, so only
+				// the first legacy documentation example class remains meaningful.
+				out.ExampleParentClass = classes[0]
+			}
 		case "multi_parents":
 			out.ParentDnVariants = migrateMultiParents(val)
 		case "exclude_from_testing":
@@ -1842,53 +1846,17 @@ func migrateExampleValueOverwrite(file, className string, value any, out *data.C
 			property.Reference = data.PropertyReferenceDefinition{
 				Classes:      append([]string(nil), reference.Classes...),
 				ExampleClass: reference.ExampleClass,
-				ExampleLabel: terraformReferenceInstanceName(expression),
 			}
 			out.Properties[metaName] = property
 			fmt.Printf("MIGRATE: %s: example_value_overwrite[%s] -> semantic property reference\n", file, attributeName)
 			continue
 		}
-		switch attributeName {
-		case "parent_dn":
-			setPropertyExampleOverride(out, "parentDn", expression, classifyReference(expression))
-			fmt.Printf("MIGRATE: %s: example_value_overwrite[parent_dn] -> properties.parentDn.example_config\n", file)
-			continue
-		case "target_dn":
-			setPropertyExampleOverride(out, "tDn", expression, classifyReference(expression))
-			fmt.Printf("MIGRATE: %s: example_value_overwrite[target_dn] -> properties.tDn.example_config\n", file)
+		if attributeName == "target_dn" {
+			fmt.Printf("DROP: %s: example_value_overwrite[target_dn]=%s (public reference is derived from the target dependency)\n", file, expression)
 			continue
 		}
 		fmt.Printf("WARN: %s: example_value_overwrite[%s] has no semantic reference mapping\n", file, attributeName)
 	}
-}
-
-func setPropertyExampleOverride(out *data.ClassDefinition, propertyName, value string, referenceType data.ReferenceTypeEnum) {
-	property := upsertProperty(out, propertyName)
-	valueType := data.ReferenceValue
-	if referenceType == data.StaticReference {
-		valueType = data.StringValue
-	}
-	entry := data.ExampleValueEntryDefinition{Value: value, ValueType: valueType}
-	property.ExampleConfig.Minimum = data.ExampleValueScenarioDefinition{
-		Defined: true,
-		Entries: []data.ExampleValueEntryDefinition{entry},
-	}
-	property.ExampleConfig.Full = data.ExampleValueScenarioDefinition{
-		Defined: true,
-		Entries: []data.ExampleValueEntryDefinition{entry},
-	}
-	out.Properties[propertyName] = property
-}
-
-func terraformReferenceInstanceName(expression string) string {
-	parts := strings.Split(expression, ".")
-	if len(parts) >= 3 && parts[0] == "data" {
-		return parts[2]
-	}
-	if len(parts) >= 2 {
-		return parts[1]
-	}
-	return "example"
 }
 
 // applyCanonicalDefinitionCorrections records decisions that cannot be
@@ -1928,22 +1896,22 @@ func applyCanonicalDefinitionCorrections(className string, out *data.ClassDefini
 		setCanonicalExampleMinimum(out, "certChain", data.ExampleValueEntryDefinition{Value: `file("${path.module}/certificate.pem")`, ValueType: data.ExpressionValue})
 		out.ExampleFiles = []string{"certificate.pem"}
 	case "fvMacAttr":
-		setCanonicalExample(out, "name", data.ExampleValueEntryDefinition{Value: "mac_attribute"})
+		setCanonicalExampleMinimum(out, "name", data.ExampleValueEntryDefinition{Value: "mac_attribute"})
 	case "fvIpAttr":
-		setCanonicalExample(out, "name", data.ExampleValueEntryDefinition{Value: "ip_attribute"})
+		setCanonicalExampleMinimum(out, "name", data.ExampleValueEntryDefinition{Value: "ip_attribute"})
 	case "fvVmAttr":
 		setCanonicalExampleMinimum(out, "value", data.ExampleValueEntryDefinition{Value: "example_vm"})
 		setCanonicalExampleFull(out, "value", data.ExampleValueEntryDefinition{Value: "example.com"})
 	case "fvDnsAttr":
 		setCanonicalExampleFull(out, "filter", data.ExampleValueEntryDefinition{Value: "example.com"})
 	case "netflowExporterPol":
-		setCanonicalExample(out, "name", data.ExampleValueEntryDefinition{Value: "netflow_exporter"})
+		setCanonicalExampleMinimum(out, "name", data.ExampleValueEntryDefinition{Value: "netflow_exporter"})
 	case "netflowMonitorPol":
-		setCanonicalExample(out, "name", data.ExampleValueEntryDefinition{Value: "netflow_monitor"})
+		setCanonicalExampleMinimum(out, "name", data.ExampleValueEntryDefinition{Value: "netflow_monitor"})
 	case "netflowRecordPol":
-		setCanonicalExample(out, "name", data.ExampleValueEntryDefinition{Value: "netflow_record"})
+		setCanonicalExampleMinimum(out, "name", data.ExampleValueEntryDefinition{Value: "netflow_record"})
 	case "l3extProvLbl":
-		setCanonicalExample(out, "name", data.ExampleValueEntryDefinition{Value: "provider_label"})
+		setCanonicalExampleMinimum(out, "name", data.ExampleValueEntryDefinition{Value: "provider_label"})
 	case "vmmUplinkP":
 		entry := data.ExampleValueEntryDefinition{Value: "primary_uplink"}
 		setCanonicalExampleMinimum(out, "uplinkName", entry)
@@ -1951,14 +1919,8 @@ func applyCanonicalDefinitionCorrections(className string, out *data.ClassDefini
 	case "fvRsDomAtt":
 		setCanonicalPropertyReference(out, "lagPolicyName", []string{"lacpEnhancedLagPol"}, "lacpEnhancedLagPol", "name")
 		setCanonicalExampleFull(out, "switchingMode", data.ExampleValueEntryDefinition{Value: "native"})
-		// The old provider documented a literal VMM domain DN because its example
-		// files were independent. The normalized example graph can now reference
-		// the generated VMM domain resource directly.
-		property := upsertProperty(out, "tDn")
-		property.ExampleConfig = data.PropertyExampleConfigDefinition{}
-		out.Properties["tDn"] = property
 	case "fvRsCtxToSDWanVpn":
-		setCanonicalExample(out, "tDn", data.ExampleValueEntryDefinition{Value: "uni/tn-example_tenant/sdwanvpncont/sdwanvpnentry-example_wan_vpn"})
+		setCanonicalExampleMinimum(out, "tDn", data.ExampleValueEntryDefinition{Value: "uni/tn-example_tenant/sdwanvpncont/sdwanvpnentry-example_wan_vpn"})
 	}
 
 	// These compatibility corrections were identified after the initial bulk
@@ -1969,10 +1931,21 @@ func applyCanonicalDefinitionCorrections(className string, out *data.ClassDefini
 		out.ResourceName = "fabric_path_ep"
 	case "fvRsIpslaMonPol":
 		out.AllowDelete = "never"
+		// The test target is a static DN and fvIPSLAMonitoringPol has no local
+		// metadata, so target normalization cannot infer this SDKv2 resource.
+		setCanonicalExampleMinimum(out, "tDn", data.ExampleValueEntryDefinition{
+			Reference: &data.ExampleReferenceDefinition{ClassName: "fvIPSLAMonitoringPol"},
+		})
 	case "tagAnnotation", "tagTag":
 		out.Documentation.SubCategory = "Generic"
 	case "fvRsBDToOut":
 		appendCanonicalTargetDependencies(out, "l3extOut", "l3_outside")
+	case "fvRsBDToProfile":
+		// tnL3extOutName identifies the L3Out parent of the route-control
+		// profile target rather than the relation target itself. Its canonical
+		// tn<Class>Name shape lets the datastore infer the example class and
+		// name attribute from the referenced class.
+		setCanonicalPropertyReference(out, "tnL3extOutName", []string{"l3extOut"}, "", "")
 	case "fvRsIntraEpg", "fvRsProv":
 		appendCanonicalTargetDependencies(out, "vzBrCP", "contract")
 	case "fvRsOspfCtxPol":
@@ -1984,9 +1957,17 @@ func applyCanonicalDefinitionCorrections(className string, out *data.ClassDefini
 	case "vmmRsDomMcastAddrNs":
 		appendCanonicalTargetDependencies(out, "fvnsMcastAddrInstP", "multicast_pool")
 	case "l3extConsLbl", "l3extInstP", "l3extRsRedistributePol":
-		setCanonicalExample(out, "parentDn", data.ExampleValueEntryDefinition{
-			Value:     "aci_l3_outside.example.id",
-			ValueType: data.ReferenceValue,
+		setCanonicalExampleMinimum(out, "parentDn", data.ExampleValueEntryDefinition{
+			Reference: &data.ExampleReferenceDefinition{ClassName: "l3extOut"},
+		})
+	case "l3extRsLblToInstP":
+		// l3extInstP normalizes to the plugin-framework aci_external_epg name;
+		// preserve the established SDKv2 alias used by this public example.
+		setCanonicalExampleMinimum(out, "tDn", data.ExampleValueEntryDefinition{
+			Reference: &data.ExampleReferenceDefinition{
+				ClassName:    "l3extInstP",
+				ResourceName: "external_network_instance_profile",
+			},
 		})
 	case "mplsNodeSidP":
 		for dependencyIndex := range out.TestConfig.Dependencies {
@@ -2003,6 +1984,10 @@ func applyCanonicalDefinitionCorrections(className string, out *data.ClassDefini
 				dependency.TargetClasses = []string{"fvAEPg"}
 			}
 		}
+	case "vnsLDevIf":
+		property := upsertProperty(out, "ldev")
+		property.Documentation.Description += ". The referenced Logical Device must belong to a different tenant from the Imported Logical Device."
+		out.Properties["ldev"] = property
 	case "commHttps":
 		// APIC metadata provides globalThrottleUnit with both validValues and a
 		// regex validator, so generic normalization infers semantic_equality.
@@ -2068,11 +2053,6 @@ func setCanonicalExampleFull(out *data.ClassDefinition, propertyName string, ent
 	property := upsertProperty(out, propertyName)
 	property.ExampleConfig.Full = data.ExampleValueScenarioDefinition{Defined: true, Entries: entries}
 	out.Properties[propertyName] = property
-}
-
-func setCanonicalExample(out *data.ClassDefinition, propertyName string, entries ...data.ExampleValueEntryDefinition) {
-	setCanonicalExampleMinimum(out, propertyName, entries...)
-	setCanonicalExampleFull(out, propertyName, entries...)
 }
 
 // buildOverwritesInverter returns a map<snake_case_new_attr_name, meta_camel_case>
@@ -2645,9 +2625,8 @@ func isCanonicalAutoTargetRef(className, ref string) bool {
 // The legacy keys overwrite_parent_dn_key, shared_classes,
 // target_dn_overwrite_docs, parent_dependency_dn_ref, target_classes,
 // and class_in_parent are not test-dependency pinning signals. In particular,
-// target_dn_overwrite_docs is preserved separately as a tDn ExampleConfig
-// override and therefore does not stop an otherwise redundant test dependency
-// being pruned.
+// target_dn_overwrite_docs is obsolete because public references are derived
+// from the normalized target dependency.
 func canTargetEntryAutoResolve(selfClass string, entry map[any]any) bool {
 	if metaReg == nil {
 		return false
@@ -2862,7 +2841,7 @@ func migrateParents(file, selfClass string, val any, out *data.ClassDefinition) 
 //	                             resource name from class_name).
 //	overwrite_parent_dn_key -> dropped (canonical schema infers the
 //	                             parent_dn attribute name on the target).
-//	target_dn_overwrite_docs -> properties.tDn.ExampleConfig.
+//	target_dn_overwrite_docs -> dropped (public reference derives from target).
 //	shared_classes          -> dropped (no canonical slot; 3 files).
 //	parent_dependency_dn_ref -> dropped (canonical struct derives; 2 files).
 //
@@ -3006,14 +2985,7 @@ func migrateTargets(file, selfClass string, val any, out *data.ClassDefinition) 
 			fmt.Printf("WARN: %s: target %s has no resource mapping; retained target_dn %q\n", file, className, targetDn)
 		}
 		if exampleReference, ok := entry["target_dn_overwrite_docs"].(string); ok && exampleReference != "" {
-			exampleReferenceType := classifyReference(exampleReference)
-			// Resource references are reconstructed from the semantic target class and use
-			// the standard example label. Preserve only cases where the public example must
-			// differ in kind from the test value, such as static-test/resource-example or
-			// an intentionally static documentation DN.
-			if dep.ReferenceType == data.StaticReference || exampleReferenceType == data.StaticReference {
-				setPropertyExampleOverride(out, "tDn", exampleReference, exampleReferenceType)
-			}
+			fmt.Printf("DROP: %s: targets.%s.target_dn_overwrite_docs=%s (public reference is derived from the target dependency)\n", file, className, exampleReference)
 		}
 		if props, ok := entry["properties"]; ok {
 			dep.ConfigOverrides = stringifyConfigOverrides(file, "targets."+className, props)
@@ -3105,9 +3077,6 @@ func projectProperty(p data.PropertyDefinition) map[string]any {
 		if p.Reference.ExampleClass != "" {
 			reference["example_class"] = p.Reference.ExampleClass
 		}
-		if p.Reference.ExampleLabel != "" && p.Reference.ExampleLabel != "example" {
-			reference["example_label"] = p.Reference.ExampleLabel
-		}
 		if p.Reference.ExampleAttributeName != "" && p.Reference.ExampleAttributeName != "id" {
 			reference["example_attribute"] = p.Reference.ExampleAttributeName
 		}
@@ -3138,12 +3107,21 @@ func projectExampleConfig(config data.PropertyExampleConfigDefinition) map[strin
 func projectExampleEntries(entries []data.ExampleValueEntryDefinition) []map[string]any {
 	out := make([]map[string]any, len(entries))
 	for i, entry := range entries {
-		value := map[string]any{"value": entry.Value}
-		if entry.ValueType != data.StringValue {
-			value["value_type"] = entry.ValueType.String()
-		}
-		if entry.ParentClass != "" {
-			value["parent_class"] = entry.ParentClass
+		value := map[string]any{}
+		if entry.Reference != nil {
+			reference := map[string]any{"class_name": entry.Reference.ClassName}
+			if entry.Reference.ResourceName != "" {
+				reference["resource_name"] = entry.Reference.ResourceName
+			}
+			if entry.Reference.AttributeName != "" && entry.Reference.AttributeName != "id" {
+				reference["attribute_name"] = entry.Reference.AttributeName
+			}
+			value["reference"] = reference
+		} else {
+			value["value"] = entry.Value
+			if entry.ValueType != data.StringValue {
+				value["value_type"] = entry.ValueType.String()
+			}
 		}
 		out[i] = value
 	}
@@ -3295,13 +3273,13 @@ func hasMigratedData(c data.ClassDefinition) bool {
 	if len(c.ExcludeChildren) > 0 || len(c.ExcludeParents) > 0 || len(c.IncludeChildren) > 0 || len(c.IncludeParents) > 0 {
 		return true
 	}
-	if c.Artifacts != nil || len(c.ExampleFiles) > 0 || len(c.ParentDnVariants) > 0 {
+	if c.Artifacts != nil || len(c.ExampleFiles) > 0 || c.ExampleParentClass != "" || len(c.ParentDnVariants) > 0 {
 		return true
 	}
 	if len(c.TestConfig.IgnoreTests) > 0 || c.TestConfig.IgnoreImportStateVerify || len(c.TestConfig.Dependencies) > 0 || len(c.TestConfig.EmbeddedInstances) > 0 || c.TestConfig.ReplaceAutoResolved {
 		return true
 	}
-	if c.Documentation.SubCategory != "" || len(c.Documentation.UiLocations) > 0 || len(c.Documentation.DnFormats) > 0 || len(c.Documentation.ExampleParentClasses) > 0 {
+	if c.Documentation.SubCategory != "" || len(c.Documentation.UiLocations) > 0 || len(c.Documentation.DnFormats) > 0 {
 		return true
 	}
 	if len(c.Documentation.Resource.Notes) > 0 {
@@ -3352,6 +3330,9 @@ func marshalView(c data.ClassDefinition) map[string]any {
 	}
 	if len(c.ExampleFiles) > 0 {
 		out["example_files"] = c.ExampleFiles
+	}
+	if c.ExampleParentClass != "" {
+		out["example_parent_class"] = c.ExampleParentClass
 	}
 	if len(c.ExcludeChildren) > 0 {
 		out["exclude_children"] = c.ExcludeChildren
@@ -3450,9 +3431,6 @@ func marshalView(c data.ClassDefinition) map[string]any {
 	}
 	if len(c.Documentation.DnFormats) > 0 {
 		doc["dn_formats"] = c.Documentation.DnFormats
-	}
-	if len(c.Documentation.ExampleParentClasses) > 0 {
-		doc["example_parent_classes"] = c.Documentation.ExampleParentClasses
 	}
 	if len(c.Documentation.Resource.Notes) > 0 {
 		doc["resource"] = map[string]any{

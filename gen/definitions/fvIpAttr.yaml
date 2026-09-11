@@ -20,8 +20,6 @@ properties:
       - config_value: fe80::0002
   name:
     example_config:
-      full:
-      - value: ip_attribute
       minimum:
       - value: ip_attribute
     test_config:
