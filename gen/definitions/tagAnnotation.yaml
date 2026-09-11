@@ -7,9 +7,6 @@ documentation:
   - uni/tn-{name}/ctx-{name}/annotationKey-[{key}]
   - Too many DN formats to display, see model documentation for all possible parents
     of [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview).
-  example_parent_classes:
-  - fvTenant
-  - fvAEPg
   resource:
     notes:
     - This resource should not be used in combination with the `annotations` nested
@@ -18,6 +15,7 @@ documentation:
   sub_category: Generic
   ui_locations:
   - Under every object as Annotations in the Policy tab in recent APIC versions.
+example_parent_class: fvTenant
 properties:
   key:
     documentation:

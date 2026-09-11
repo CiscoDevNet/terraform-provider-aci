@@ -18,7 +18,6 @@ import (
 
 // Initialize a logger instance for the generator.
 var genLogger = logger.InitializeLogger()
-var failedToLoadClasses = []string{}
 
 type DataStore struct {
 	// A map containing all the information about the classes required to render the templates.
@@ -40,6 +39,8 @@ type DataStore struct {
 	// This is used to avoid retrieving the same class multiple times.
 	// Using a map allows for every lookup to take the same amount of time and removes the slices.contains dependency.
 	retrievedClasses map[string]bool
+	// Classes that could not be loaded while resolving cross-class references.
+	failedToLoadClasses []string
 }
 
 func NewDataStore(ctx *Context) (*DataStore, error) {
@@ -254,9 +255,9 @@ func (ds *DataStore) loadClasses() error {
 
 	// Fail when referenced metadata classes cannot be loaded and no per-class
 	// definition supplies their Terraform naming information.
-	if len(failedToLoadClasses) > 0 {
-		sort.Strings(failedToLoadClasses)
-		return fmt.Errorf("failed to load classes: %s", failedToLoadClasses)
+	if len(ds.failedToLoadClasses) > 0 {
+		sort.Strings(ds.failedToLoadClasses)
+		return fmt.Errorf("failed to load classes: %s", ds.failedToLoadClasses)
 	}
 
 	// Class rnMap metadata can reference APIC classes for which this repository
@@ -278,6 +279,12 @@ func (ds *DataStore) loadClasses() error {
 	// This requires all classes to be present in the data store for cross-class lookups
 	// (e.g. parent and target classes).
 	ds.setTestData()
+
+	// Build renderer-facing public example artifacts only after all test values,
+	// dependencies, and child instances have been normalized.
+	if err := ds.setExampleData(); err != nil {
+		return err
+	}
 
 	genLogger.Debugf("Successfully loaded classes from: %s.", constMetaPath)
 	return nil
@@ -311,10 +318,9 @@ func (ds *DataStore) loadClass(classNameStr string) error {
 	return nil
 }
 
-// getResourceName resolves the Terraform name for a metadata-backed or
-// definition-only APIC class. Artifact availability is evaluated only on
-// loaded classes by call sites that need to render or synthesize an artifact.
 func (ds *DataStore) getResourceName(className string) string {
+	// Resolve the Terraform name for a metadata-backed or definition-only APIC
+	// class. Call sites evaluate artifact availability only for loaded classes.
 	if class, ok := ds.Classes[className]; ok {
 		return class.ResourceName
 	}
@@ -328,8 +334,8 @@ func (ds *DataStore) getResourceName(className string) string {
 		return ds.Classes[className].ResourceName
 	}
 
-	if !slices.Contains(failedToLoadClasses, className) {
-		failedToLoadClasses = append(failedToLoadClasses, className)
+	if !slices.Contains(ds.failedToLoadClasses, className) {
+		ds.failedToLoadClasses = append(ds.failedToLoadClasses, className)
 	}
 	return ""
 }
@@ -360,4 +366,21 @@ func (ds *DataStore) setTestData() {
 	}
 
 	genLogger.Debugf("Successfully set test data for all classes.")
+}
+
+func (ds *DataStore) setExampleData() error {
+	// Project normalized test and class data into renderer-facing examples.
+	genLogger.Debug("Setting example data for all classes.")
+
+	for className, class := range ds.Classes {
+		if err := class.setExampleContext(ds); err != nil {
+			return err
+		}
+		class.setResourceExamples(ds)
+		class.setDataSourceExample(ds)
+		ds.Classes[className] = class
+	}
+
+	genLogger.Debug("Successfully set example data for all classes.")
+	return nil
 }
