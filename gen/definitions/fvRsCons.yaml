@@ -6,15 +6,13 @@ documentation:
   - uni/tn-{name}/l2out-{name}/instP-{name}/rscons-{tnVzBrCPName}
   - Too many DN formats to display, see model documentation for all possible parents
     of [fvRsCons](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsCons/overview).
-  example_parent_classes:
-  - fvAEPg
-  - fvESg
   sub_category: Application Management
   ui_locations:
   - Tenants -> Application Profiles -> Application EPGs -> Contracts
   - Tenants -> Application Profiles -> Endpoint Security Groups -> Contracts
   - Tenants -> Networking -> L3Outs -> External EPGs -> Contracts
   - Tenants -> Networking -> L2Outs -> External EPGs -> Contracts
+example_parent_class: fvAEPg
 properties:
   intent:
     restriction: exclude

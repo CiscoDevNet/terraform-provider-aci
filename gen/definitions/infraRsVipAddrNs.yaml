@@ -1,12 +1,3 @@
-properties:
-  tDn:
-    example_config:
-      full:
-      - value: aci_ip_address_pool.example.id
-        value_type: reference
-      minimum:
-      - value: aci_ip_address_pool.example.id
-        value_type: reference
 resource_name: relation_to_ip_address_pool
 test_config:
   dependencies:

@@ -22,13 +22,6 @@ properties:
   tDn:
     documentation:
       description: The distinguished name (DN) of the Route Control Profile object.
-    example_config:
-      full:
-      - value: aci_route_control_profile.example.id
-        value_type: reference
-      minimum:
-      - value: aci_route_control_profile.example.id
-        value_type: reference
 resource_name: relation_from_l3out_consumer_label_to_route_control_profile
 test_config:
   dependencies:

@@ -5,8 +5,6 @@ documentation:
 properties:
   name:
     example_config:
-      full:
-      - value: provider_label
       minimum:
       - value: provider_label
     test_config:

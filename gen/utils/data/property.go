@@ -64,7 +64,7 @@ type Property struct {
 	// Version-gating is handled separately via SupportedVersions.
 	IgnoreInTest bool
 	// Test specific information for the property.
-	// This is used to generate the test cases for the property.
+	// This is used to generate the test cases and examples for the property.
 	// Nil means no test values have been resolved for this property.
 	TestValues *TestValues
 	// Reference describes the target classes for a configurable DN or name property that
@@ -250,7 +250,6 @@ func (s TestValueScenario) clone() TestValueScenario {
 type PropertyReference struct {
 	Classes              []*ClassName
 	ExampleClass         *ClassName
-	ExampleLabel         string
 	ExampleAttributeName string
 }
 
@@ -458,7 +457,6 @@ func (p *Property) setReference() error {
 	}
 
 	reference := &PropertyReference{
-		ExampleLabel:         definition.ExampleLabel,
 		ExampleAttributeName: definition.ExampleAttributeName,
 	}
 	if reference.ExampleAttributeName == "" {
@@ -485,6 +483,13 @@ func (p *Property) setReference() error {
 	}
 	p.Reference = reference
 	return nil
+}
+
+func (p *Property) setNamedReferenceAttributeName(ds *DataStore, referenceClass *ClassName) {
+	// Use the referenced class's Terraform resource name for a name-reference attribute.
+	if resourceName := ds.getResourceName(referenceClass.String()); resourceName != "" {
+		p.AttributeName = resourceName + "_name"
+	}
 }
 
 func (p *Property) setAttributeName() {
@@ -887,7 +892,7 @@ func (p *Property) generateStringValues() ([]TestValueEntry, []TestValueEntry) {
 	// Both Required and Optional properties get distinct Create/Update values so the two buckets
 	// are always usable as the source of truth for downstream consumers — in particular the
 	// per-instance derivation in buildChildInstance, which assigns Create to instance 0 and Update
-	// to instance 1 to disambiguate set-type child siblings. Required properties on the parent
+	// to instance 1 to disambiguate list-type child siblings. Required properties on the parent
 	// resource are not value-updated by the (template) Update step, so emitting distinct values
 	// here is safe; overrides on either bucket continue to win.
 	genLogger.Tracef("Generating string test values for property '%s'.", p.PropertyName)
@@ -907,8 +912,8 @@ func (p *Property) generateStringValues() ([]TestValueEntry, []TestValueEntry) {
 		createValue = "annotation"
 		updateValue = "annotation_2"
 	case p.ValueType == IpAddress:
-		// These values feed future acceptance tests and examples, so use IANA
-		// documentation ranges instead of arbitrary publicly routable addresses.
+		// These values feed both future acceptance tests and public examples, so use
+		// IANA documentation ranges instead of arbitrary publicly routable addresses.
 		if createValue == "" {
 			createValue = "192.0.2.1"
 		}

@@ -28,6 +28,8 @@ documentation_label_overrides:
 property_documentation_overrides:
   descr: The description of the %s object.
   nameAlias: The name alias of the %s object.
+property_example_value_overrides:
+  accessControlAllowOrigins: https://example.com
 `)
 
 	parsedDefinition, err := parseGlobalMetaDefinition(yamlBytes)
@@ -39,6 +41,7 @@ property_documentation_overrides:
 	assert.Equal(t, "BGP", parsedDefinition.DocumentationLabelOverrides["Bgp"])
 	assert.Equal(t, "The description of the %s object.", parsedDefinition.PropertyDocumentationOverrides["descr"])
 	assert.Equal(t, "The name alias of the %s object.", parsedDefinition.PropertyDocumentationOverrides["nameAlias"])
+	assert.Equal(t, "https://example.com", parsedDefinition.PropertyExampleValueOverrides["accessControlAllowOrigins"])
 }
 
 // TestParseGlobalMetaDefinition_UnknownField verifies UnmarshalStrict rejects
@@ -84,6 +87,7 @@ artifacts:
   - datasource
 example_files:
   - certificate.pem
+example_parent_class: fvTenant
 parent_dn_variants:
   - parent_class: fvTenant
     rn_prepend: certstore
@@ -95,9 +99,6 @@ parent_dn_variants:
 documentation:
   label: Tenant
   description: A tenant.
-  example_parent_classes:
-    - fvTenant
-    - fvAEPg
 relation_info:
   type: named
   to_classes:
@@ -111,9 +112,8 @@ properties:
       example_attribute: name
     example_config:
       minimum:
-        - value: aci_tenant.example.id
-          value_type: reference
-          parent_class: fvTenant
+        - reference:
+            class_name: fvTenant
       full: []
     test_config:
       create:
@@ -148,6 +148,7 @@ test_config:
 	assert.Equal(t, []string{"name"}, parsedDefinition.IdentifiedBy)
 	assert.Equal(t, []ArtifactEnum{ResourceArtifact, DatasourceArtifact}, parsedDefinition.Artifacts)
 	assert.Equal(t, []string{"certificate.pem"}, parsedDefinition.ExampleFiles)
+	assert.Equal(t, "fvTenant", parsedDefinition.ExampleParentClass)
 	assert.Len(t, parsedDefinition.ParentDnVariants, 2)
 	assert.Equal(t, "fvTenant", parsedDefinition.ParentDnVariants[0].ParentClass)
 	assert.Equal(t, "certstore", parsedDefinition.ParentDnVariants[0].RnPrepend)
@@ -158,7 +159,6 @@ test_config:
 	assert.Equal(t, "", parsedDefinition.ParentDnVariants[1].WrapperClass)
 	assert.Equal(t, Cloud, parsedDefinition.ParentDnVariants[1].TestPlatform)
 	assert.Equal(t, "Tenant", parsedDefinition.Documentation.Label)
-	assert.Equal(t, []string{"fvTenant", "fvAEPg"}, parsedDefinition.Documentation.ExampleParentClasses)
 	assert.Equal(t, Named, parsedDefinition.RelationInfo.Type)
 	assert.Equal(t, []string{"vz:BrCP"}, parsedDefinition.RelationInfo.ToClasses)
 
@@ -172,9 +172,7 @@ test_config:
 	assert.True(t, *nameProp.TestConfig.Create.Entries[0].ConfigInclude)
 	assert.True(t, nameProp.ExampleConfig.Minimum.Defined)
 	assert.Len(t, nameProp.ExampleConfig.Minimum.Entries, 1)
-	assert.Equal(t, "aci_tenant.example.id", nameProp.ExampleConfig.Minimum.Entries[0].Value)
-	assert.Equal(t, ReferenceValue, nameProp.ExampleConfig.Minimum.Entries[0].ValueType)
-	assert.Equal(t, "fvTenant", nameProp.ExampleConfig.Minimum.Entries[0].ParentClass)
+	assert.Equal(t, &ExampleReferenceDefinition{ClassName: "fvTenant"}, nameProp.ExampleConfig.Minimum.Entries[0].Reference)
 	assert.Equal(t, "name", nameProp.Reference.ExampleAttributeName)
 	assert.True(t, nameProp.ExampleConfig.Full.Defined)
 	assert.Empty(t, nameProp.ExampleConfig.Full.Entries)

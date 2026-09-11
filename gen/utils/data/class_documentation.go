@@ -70,11 +70,6 @@ type ClassDocumentation struct {
 	DescriptionWhenDefinedAsChild string
 	// DN format strings from meta file (e.g., "uni/tn-{name}").
 	DnFormats []string
-	// Ordered representative parent classes available to documentation and future
-	// example normalization. Resolved from
-	// ClassDocumentationDefinition.ExampleParentClasses when set; otherwise from
-	// the normalized Class.Parents list. Capped at constMaxExamplesToDisplay.
-	ExampleParentClasses []*ClassName
 	// Parent DN references rendered in the documentation. Built from class.Parents.
 	// Resources (parent classes that have a Terraform resource) are listed first in
 	// alphabetical order, followed by parent classes without a resource under an
@@ -121,10 +116,6 @@ func (c *Class) setDocumentation(ds *DataStore) error {
 	c.Documentation.setDescriptionWhenDefinedAsChild(c, ds)
 
 	c.Documentation.setDnFormats(c)
-
-	if err := c.Documentation.setExampleParentClasses(c); err != nil {
-		return err
-	}
 
 	c.Documentation.setParentDns(c, ds)
 
@@ -441,46 +432,6 @@ func (d *ClassDocumentation) setDnFormats(class *Class) {
 	}
 
 	genLogger.Debugf("Successfully set Documentation DnFormats for class '%s'. DnFormats: %v", class.Name.full, d.DnFormats)
-}
-
-func (d *ClassDocumentation) setExampleParentClasses(class *Class) error {
-	genLogger.Debugf("Setting Documentation ExampleParentClasses for class '%s'.", class.Name.full)
-
-	overrides := class.ClassDefinition.Documentation.ExampleParentClasses
-	if len(overrides) > 0 {
-		resolved := make([]*ClassName, 0, len(overrides))
-		for _, raw := range overrides {
-			parsed, err := NewClassName(raw)
-			if err != nil {
-				return fmt.Errorf("class '%s': failed to parse example_parent_classes entry '%s': %w", class.Name.full, raw, err)
-			}
-			resolved = append(resolved, parsed)
-		}
-		if len(resolved) > constMaxExamplesToDisplay {
-			resolved = resolved[:constMaxExamplesToDisplay]
-		}
-		d.ExampleParentClasses = resolved
-		genLogger.Debugf("Successfully set Documentation ExampleParentClasses (override) for class '%s'. Count: %d", class.Name.full, len(d.ExampleParentClasses))
-		return nil
-	}
-
-	// Fallback projection uses the already-normalized parent list so global/per-class
-	// exclusions and explicit includes are reflected consistently in documentation.
-	if len(class.Parents) == 0 {
-		genLogger.Debugf("No normalized parents available for class '%s'; ExampleParentClasses left empty.", class.Name.full)
-		return nil
-	}
-	resolved := make([]*ClassName, 0, min(len(class.Parents), constMaxExamplesToDisplay))
-	for _, parent := range class.Parents {
-		if len(resolved) >= constMaxExamplesToDisplay {
-			break
-		}
-		resolved = append(resolved, parent)
-	}
-	d.ExampleParentClasses = resolved
-
-	genLogger.Debugf("Successfully set Documentation ExampleParentClasses (normalized parent fallback) for class '%s'. Count: %d", class.Name.full, len(d.ExampleParentClasses))
-	return nil
 }
 
 func (d *ClassDocumentation) setMigrationWarning(class *Class) {
