@@ -35,6 +35,10 @@ type GlobalMetaDefinition struct {
 	// Normalises inconsistent meta `comment` wording across the ~180 classes
 	// without duplicating the same text into every per-class file.
 	PropertyDocumentationOverrides map[string]string `yaml:"property_documentation_overrides"`
+	// A map of meta property names to fixed public-example values. These values replace
+	// automatically generated placeholders only; per-class PropertyDefinition.ExampleConfig
+	// values take precedence.
+	PropertyExampleValueOverrides map[string]string `yaml:"property_example_value_overrides"`
 }
 
 func loadGlobalMetaDefinition() GlobalMetaDefinition {
@@ -101,11 +105,6 @@ type ClassDocumentationDefinition struct {
 	// Overrides the DN format strings sourced from the meta file. When set, these values are
 	// used verbatim. Sorting and the constMaxDnFormatsToDisplay cap still apply.
 	DnFormats []string `yaml:"dn_formats"`
-	// Curated ordered subset of `containedBy` parent class names available to
-	// documentation and future example normalization. Used
-	// when meta `containedBy` is too large (for example relation/tag classes) or
-	// when a specific parent is clearer. Each entry must be a meta class name.
-	ExampleParentClasses []string `yaml:"example_parent_classes"`
 	// A list of child class names to exclude from the documentation children list.
 	ExcludeChildren []string `yaml:"exclude_children"`
 	// A list of child class names to force-include in the documentation children list.
@@ -194,21 +193,30 @@ type PropertyDefinition struct {
 	// Test configuration for the property. Controls test value generation and inclusion/exclusion.
 	TestConfig TestConfigDefinition `yaml:"test_config"`
 	// Example configuration for values that cannot be derived from TestConfig or intentionally
-	// differ in public examples. A future example normalizer will derive omitted scenarios.
+	// differ in public examples. Omitted scenarios are derived by the datastore.
 	ExampleConfig PropertyExampleConfigDefinition `yaml:"example_config"`
-	// Semantic reference information for configurable DN/reference properties that are not
-	// relation target (`tDn`) or parent (`parentDn`) properties. The target classes describe
+	// Semantic reference information for configurable DN/name reference properties that cannot
+	// be inferred from parentDn, tDn, or named-relation semantics. The target classes describe
 	// what the value may reference; ExampleClass selects the class used in generated examples.
 	Reference PropertyReferenceDefinition `yaml:"reference"`
 }
 
 // ExampleValueEntryDefinition is an explicitly authored public-example value. A value is a
-// quoted Terraform string unless ValueType is ReferenceValue or ExpressionValue. ParentClass
-// optionally limits the value to the class's selected parent context.
+// quoted Terraform string unless ValueType is ExpressionValue. References use the structured
+// Reference field so the datastore never has to infer their class from an HCL expression.
 type ExampleValueEntryDefinition struct {
-	Value       string              `yaml:"value"`
-	ValueType   ValueRenderTypeEnum `yaml:"value_type"`
-	ParentClass string              `yaml:"parent_class"`
+	Value     string                      `yaml:"value"`
+	ValueType ValueRenderTypeEnum         `yaml:"value_type"`
+	Reference *ExampleReferenceDefinition `yaml:"reference"`
+}
+
+// ExampleReferenceDefinition identifies a resource reference used only by a public example.
+// ResourceName is normally derived from ClassName and is set only to preserve a deliberate
+// compatibility alias. AttributeName defaults to id.
+type ExampleReferenceDefinition struct {
+	ClassName     string `yaml:"class_name"`
+	ResourceName  string `yaml:"resource_name"`
+	AttributeName string `yaml:"attribute_name"`
 }
 
 // ExampleValueScenarioDefinition preserves the distinction between an omitted scenario and
@@ -232,21 +240,20 @@ func (s ExampleValueScenarioDefinition) MarshalYAML() (any, error) {
 	return s.Entries, nil
 }
 
-// PropertyExampleConfigDefinition contains sparse public-example overrides. Minimum is intended
-// for resource.tf and Full for resource-all-attributes.tf. The future normalizer will fall back
-// from an omitted Full override to Minimum so a documentation-specific value can be authored once.
+// PropertyExampleConfigDefinition contains sparse public-example overrides. Minimum is used
+// by resource.tf and Full by resource-all-attributes.tf. A Full override falls back to
+// Minimum when Full is omitted so a documentation-specific value can be authored once.
 type PropertyExampleConfigDefinition struct {
 	Minimum ExampleValueScenarioDefinition `yaml:"minimum"`
 	Full    ExampleValueScenarioDefinition `yaml:"full"`
 }
 
-// PropertyReferenceDefinition describes the Terraform resource reference used when a plain
-// APIC property carries another object's DN or name. Relation and parent properties derive
+// PropertyReferenceDefinition describes the Terraform resource reference used when an APIC
+// property carries another object's DN or name. Relation and parent properties normally derive
 // this information from the class model and do not need this override.
 type PropertyReferenceDefinition struct {
 	Classes              []string `yaml:"classes"`
 	ExampleClass         string   `yaml:"example_class"`
-	ExampleLabel         string   `yaml:"example_label"`
 	ExampleAttributeName string   `yaml:"example_attribute"`
 }
 
@@ -353,8 +360,9 @@ type ClassDefinition struct {
 	// The value "never" is used to keep the input consistent with the meta data file.
 	AllowDelete string `yaml:"allow_delete"`
 	// Selects which top-level resource/data-source artifacts class-scoped renderers may
-	// emit for this metadata-backed class. Shared models already honor this selection;
-	// future resource, data-source, example, and documentation renderers will reuse it.
+	// emit for this metadata-backed class. Current public-example jobs honor this
+	// selection; shared models are generated for every loaded class. Resource,
+	// data-source, and documentation renderers will use it as those templates are migrated.
 	// A nil slice (the YAML field omitted entirely) signals the resolver to auto-derive:
 	// classes with non-empty `IdentifiedBy` get [resource, datasource], while classes
 	// with empty `IdentifiedBy` get nothing. Definition-only classes do not enter the
@@ -382,6 +390,9 @@ type ClassDefinition struct {
 	// ExampleFiles lists shared generator assets that must be copied into this
 	// class's resource-example directory.
 	ExampleFiles []string `yaml:"example_files"`
+	// ExampleParentClass selects the single parent used to place generated public
+	// examples when the first normalized parent with a resource is not suitable.
+	ExampleParentClass string `yaml:"example_parent_class"`
 	// A list of child class names to exclude from the Children list.
 	ExcludeChildren []string `yaml:"exclude_children"`
 	// A list of parent class names to exclude from the Parents list.
@@ -463,8 +474,8 @@ type TestDependencyDefinition struct {
 	// Role of this dependency. Valid values: "parent", "target". Required at top level, empty for nested.
 	Role TestDependencyRoleEnum `yaml:"role"`
 	// Target classes associated with this parent dependency for polymorphic relations.
-	// Future example normalization can use this mapping to select a compatible target
-	// for the representative parent placement.
+	// Generated examples use this mapping to select a compatible target for the
+	// representative parent placement.
 	TargetClasses []string `yaml:"target_classes"`
 	// Recursive dependencies: resources that THIS dependency needs to exist first.
 	Dependencies []TestDependencyDefinition `yaml:"dependencies"`

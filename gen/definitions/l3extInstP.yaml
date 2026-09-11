@@ -15,12 +15,9 @@ properties:
       description: Flood L2 Multicast/Broadcast and Link Local Layer based on encapsulation.
   parentDn:
     example_config:
-      full:
-      - value: aci_l3_outside.example.id
-        value_type: reference
       minimum:
-      - value: aci_l3_outside.example.id
-        value_type: reference
+      - reference:
+          class_name: l3extOut
   pcEnfPref:
     attribute_name: intra_epg_isolation
     documentation:

@@ -34,8 +34,6 @@ properties:
       - config_value: ssh
   name:
     example_config:
-      full:
-      - value: netflow_exporter
       minimum:
       - value: netflow_exporter
     test_config:

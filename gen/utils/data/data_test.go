@@ -70,6 +70,18 @@ func TestGetResourceName(t *testing.T) {
 	assert.Equal(t, "bridge_domain", ds.getResourceName("fvABDPol"))
 }
 
+func TestGetResourceNameTracksLoadFailuresPerDataStore(t *testing.T) {
+	t.Parallel()
+
+	first := &DataStore{Classes: map[string]Class{}}
+	second := &DataStore{Classes: map[string]Class{}}
+
+	assert.Empty(t, first.getResourceName("invalidfirst"))
+	assert.Empty(t, second.getResourceName("invalidsecond"))
+	assert.Equal(t, []string{"invalidfirst"}, first.failedToLoadClasses)
+	assert.Equal(t, []string{"invalidsecond"}, second.failedToLoadClasses)
+}
+
 func TestSetHostDefault(t *testing.T) {
 	t.Parallel()
 	ds := initializeDataStoreTest(t)

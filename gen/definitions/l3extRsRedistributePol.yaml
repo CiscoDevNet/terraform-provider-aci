@@ -5,12 +5,9 @@ documentation:
 properties:
   parentDn:
     example_config:
-      full:
-      - value: aci_l3_outside.example.id
-        value_type: reference
       minimum:
-      - value: aci_l3_outside.example.id
-        value_type: reference
+      - reference:
+          class_name: l3extOut
   src:
     attribute_name: source
     documentation:

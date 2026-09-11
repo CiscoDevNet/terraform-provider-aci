@@ -2345,7 +2345,6 @@ func TestSetReference(t *testing.T) {
 	err := property.setReference()
 	assert.NoError(t, err, test.MessageUnexpectedError(err))
 	if assert.NotNil(t, property.Reference) {
-		assert.Empty(t, property.Reference.ExampleLabel)
 		assert.Equal(t, "id", property.Reference.ExampleAttributeName)
 		assert.Equal(t, "fvBD", property.Reference.ExampleClass.String())
 		assert.Equal(t, []string{"fvBD", "l3extOut"}, classNamesToStrings(property.Reference.Classes))

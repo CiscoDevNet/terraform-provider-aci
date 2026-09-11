@@ -7,8 +7,6 @@ migration_source: from_sdkv2
 properties:
   name:
     example_config:
-      full:
-      - value: netflow_monitor
       minimum:
       - value: netflow_monitor
     test_config:

@@ -52,6 +52,11 @@ func (cn *ClassName) Capitalized() string {
 	return cn.capitalized
 }
 
+func (cn *ClassName) namedRelationPropertyName() string {
+	// Return the canonical APIC property carrying this class's target name.
+	return "tn" + cn.Capitalized() + "Name"
+}
+
 func (cn *ClassName) Package() string {
 	// Returns the package prefix (e.g., "fv").
 	return cn.packageName
@@ -70,6 +75,14 @@ func (cn *ClassName) MetaStyle() string {
 func (cn *ClassName) String() string {
 	// Returns the full class name (alias for Full).
 	return cn.full
+}
+
+func (cn *ClassName) Equal(other *ClassName) bool {
+	// Equal reports whether two class names identify the same APIC class.
+	if cn == nil || other == nil {
+		return cn == nil && other == nil
+	}
+	return cn.full == other.full
 }
 
 func sanitizeClassName(className string) (string, error) {

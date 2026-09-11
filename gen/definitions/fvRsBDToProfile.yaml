@@ -1,5 +1,8 @@
 properties:
   tnL3extOutName:
+    reference:
+      classes:
+      - l3extOut
     test_config:
       create:
       - assert_value: aci_l3_outside.test.name

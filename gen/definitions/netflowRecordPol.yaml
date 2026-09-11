@@ -29,8 +29,6 @@ properties:
     value_type: set
   name:
     example_config:
-      full:
-      - value: netflow_record
       minimum:
       - value: netflow_record
     test_config:
