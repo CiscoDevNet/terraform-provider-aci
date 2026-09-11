@@ -11,12 +11,34 @@ import (
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils"
 )
 
+// ExampleParentDnModeEnum identifies how parent_dn is represented in a public example.
+type ExampleParentDnModeEnum int
+
+const (
+	// ParentDnFromTestValues uses the property's normalized test scenario.
+	ParentDnFromTestValues ExampleParentDnModeEnum = iota
+	// ParentDnFromSchemaDefault omits parent_dn so the schema default is used.
+	ParentDnFromSchemaDefault
+	// ParentDnFromReference uses the selected parent resource reference.
+	ParentDnFromReference
+)
+
+// ExampleContext identifies the single parent placement represented in public examples.
+type ExampleContext struct {
+	ParentClass  *ClassName
+	ParentValue  ExampleValue
+	Platform     PlatformTypeEnum
+	ParentDnMode ExampleParentDnModeEnum
+}
+
 type Class struct {
 	// This is used to prevent the deletion of the class if it is not allowed on APIC.
 	AllowDelete bool
-	// Generated top-level artifact kinds for this class. The resource/data-source
-	// wrappers in shared model files honor the selection; a class's base model is
-	// generated for every loaded class. Future class-scoped renderers will reuse it.
+	// Generated top-level artifact kinds for this class. Current public-example
+	// jobs and the resource/data-source wrappers in shared model files honor the
+	// selection; a class's base model is generated for every loaded class.
+	// Resource and datasource implementation and documentation jobs will honor it
+	// when those templates are migrated. Provider registration is currently static.
 	// Resolved from ClassDefinition.Artifacts
 	// with the following semantics:
 	//   - YAML field omitted entirely (nil slice in ClassDefinition): auto-derive
@@ -52,6 +74,12 @@ type Class struct {
 	// Used to indicate versions where the class is deprecated but still functional.
 	// Driven by the meta `deprecatedSince` value with an optional definition override.
 	DeprecatedVersions *Versions
+	// The representative parent placement and platform used by generated examples.
+	ExampleContext ExampleContext
+	// Fully resolved minimum and all-attributes examples for the resource artifact.
+	ResourceExamples ResourceExamples
+	// Fully resolved lookup example for the datasource artifact.
+	DataSourceExample Example
 	// Documentation specific information for the class.
 	Documentation ClassDocumentation
 	// Hidden indicates that the class is no longer accepted by the APIC API.
@@ -122,7 +150,8 @@ type Class struct {
 	TestConfig ClassTestConfig
 }
 
-// ClassTestConfig groups resolved per-class gates retained for future test templates.
+// ClassTestConfig groups resolved per-class gates retained for the future test
+// templates. The current model and public-example templates do not consume them.
 type ClassTestConfig struct {
 	// IgnoreTests lists the test buckets future test renderers should skip.
 	// Distinct from Class.Artifacts, which selects generated artifact kinds.
@@ -547,6 +576,35 @@ func (c Class) PayloadProperties() []*Property {
 // the class has one.
 func (c Class) ParentDnProperty() *Property {
 	return c.Properties["parentDn"]
+}
+
+// ParentDnHasSchemaDefault reports whether omitting parent_dn selects the
+// documented schema default.
+func (c Class) ParentDnHasSchemaDefault() bool {
+	// A functioning legacy alias prevents the default from being applied because
+	// either the new or legacy attribute must be supplied instead (for example vmmDomP).
+	parentDn := c.ParentDnProperty()
+	if parentDn == nil {
+		return false
+	}
+
+	hasDefault := false
+	for _, defaultValue := range parentDn.Documentation.DefaultValues {
+		if defaultValue.Value != "" {
+			hasDefault = true
+			break
+		}
+	}
+	if !hasDefault {
+		return false
+	}
+
+	for _, stateUpgrade := range parentDn.StateUpgradeValues {
+		if stateUpgrade.Status != Removed && stateUpgrade.AttributeName != "" && stateUpgrade.AttributeName != parentDn.AttributeName {
+			return false
+		}
+	}
+	return true
 }
 
 // FixedParentDn returns the static root DN for a class that does not expose
@@ -1533,6 +1591,9 @@ func (c *Class) setPropertyTestValues(ds *DataStore) {
 	// Auto-wire parent_dn from Parent dependencies.
 	c.setParentDn()
 
+	// Apply the named-relation schema convention to matching semantic property references.
+	c.setPropertyReferenceAttributeNames(ds)
+
 	// Auto-wire target property for relational classes.
 	// Explicit relations expose `tDn` (full DN). Named relations expose `tn<TargetCap>Name`
 	// (target's name attribute). Other RelationalClass types are unsupported.
@@ -1683,16 +1744,16 @@ func testValueEntryForDependency(dependency *TestDependency) TestValueEntry {
 
 func (c *Class) setTargetNameProperty(ds *DataStore) {
 	// Wire the tn<TargetCap>Name property's TestValues from Target dependencies (Named relations).
-	// Named relations always have exactly one target class (ToClasses[0]); the property
-	// holds the target resource's name attribute rather than its full DN.
+	// The caller has already identified this as a named relation. Named relations must
+	// have exactly one target class, and the property holds that target's name.
 	genLogger.Tracef("Setting target-name test values for class '%s'.", c.Name)
 
-	if len(c.Relation.ToClasses) == 0 {
-		ds.ctx.Diagnostics.AddError("Class '%s': named relation has no target classes.", c.Name)
+	if len(c.Relation.ToClasses) != 1 {
+		ds.ctx.Diagnostics.AddError("Class '%s': named relation must have exactly one target class.", c.Name)
 		return
 	}
 	targetClass := c.Relation.ToClasses[0]
-	propertyName := "tn" + targetClass.Capitalized() + "Name"
+	propertyName := targetClass.namedRelationPropertyName()
 
 	property, exists := c.Properties[propertyName]
 	if !exists {
@@ -1702,12 +1763,14 @@ func (c *Class) setTargetNameProperty(ds *DataStore) {
 		return
 	}
 
-	// Rename tn<TargetCap>Name to "<target_resource_name>_name" (e.g. contract_name)
-	// so the schema attribute matches the legacy overwriteProperty template convention.
-	// Leave AttributeName unchanged when the target's Terraform name cannot be resolved.
-	if targetResourceName := ds.getResourceName(targetClass.String()); targetResourceName != "" {
-		property.AttributeName = targetResourceName + "_name"
+	// Normalize the primary named-relation property into the same semantic
+	// reference model used by every other name or DN reference.
+	property.Reference = &PropertyReference{
+		Classes:              []*ClassName{targetClass},
+		ExampleClass:         targetClass,
+		ExampleAttributeName: "name",
 	}
+	property.setNamedReferenceAttributeName(ds, targetClass)
 
 	// Skip when an explicit TestConfig already drives the property.
 	if property.hasTestConfigDefinition() {
@@ -1742,36 +1805,37 @@ func (c *Class) setTargetNameProperty(ds *DataStore) {
 		genLogger.Tracef("Class '%s': only one Target dependency available for named relation; Update reuses Create target.", c.Name)
 	}
 
-	createRef := targetReferenceToName(createTarget.Reference)
-	updateRef := targetReferenceToName(updateTarget.Reference)
+	createEntry := testValueEntryForDependency(createTarget)
+	createEntry.ConfigValue = targetReferenceToName(createEntry.ConfigValue)
+	createEntry.AssertValue = targetReferenceToName(createEntry.AssertValue)
+	updateEntry := testValueEntryForDependency(updateTarget)
+	updateEntry.ConfigValue = targetReferenceToName(updateEntry.ConfigValue)
+	updateEntry.AssertValue = targetReferenceToName(updateEntry.AssertValue)
 
 	property.TestValues = &TestValues{
-		Create: newTestValueScenario([]TestValueEntry{{
-			ConfigValue:   createRef,
-			ConfigInclude: true,
-			AssertValue:   createRef,
-			ValueType:     ReferenceValue,
-		}}),
-		Update: newTestValueScenario([]TestValueEntry{{
-			ConfigValue:   updateRef,
-			ConfigInclude: true,
-			AssertValue:   updateRef,
-			ValueType:     ReferenceValue,
-		}}),
-		Default: newTestValueScenario([]TestValueEntry{{
-			ConfigValue:   createRef,
-			ConfigInclude: true,
-			AssertValue:   createRef,
-			ValueType:     ReferenceValue,
-		}}),
-		ForceNew: newTestValueScenario([]TestValueEntry{{
-			ConfigValue:   createRef,
-			ConfigInclude: true,
-			AssertValue:   createRef,
-			ValueType:     ReferenceValue,
-		}}),
+		Create:   newTestValueScenario([]TestValueEntry{createEntry}),
+		Update:   newTestValueScenario([]TestValueEntry{updateEntry}),
+		Default:  newTestValueScenario([]TestValueEntry{createEntry}),
+		ForceNew: newTestValueScenario([]TestValueEntry{createEntry}),
 	}
 	genLogger.Tracef("Successfully set target-name test values for class '%s'.", c.Name)
+}
+func (c *Class) setPropertyReferenceAttributeNames(ds *DataStore) {
+	// A semantic name reference following APIC's tn<Class>Name convention uses
+	// the same Terraform attribute name as a primary named-relation target.
+	for _, propertyName := range c.PropertiesAll {
+		property := c.Properties[propertyName]
+		if property.Reference == nil {
+			continue
+		}
+		for _, referenceClass := range property.Reference.Classes {
+			if property.PropertyName == referenceClass.namedRelationPropertyName() {
+				property.Reference.ExampleAttributeName = "name"
+				property.setNamedReferenceAttributeName(ds, referenceClass)
+				break
+			}
+		}
+	}
 }
 
 func targetReferenceToName(ref string) string {
@@ -1946,7 +2010,7 @@ func buildChildInstance(childClass *Class, instanceIndex int) TestChildInstance 
 	// instanceIndex 0 takes the Create bucket value, instanceIndex > 0 takes the Update bucket
 	// value (falling back to Create when Update is undefined).
 	// Auto-derived string values are guaranteed distinct between Create (`<attr>_1`) and Update
-	// (`<attr>_2`) by generateStringValues, so set-type children with naming attributes resolve
+	// (`<attr>_2`) by generateStringValues, so list-type children with naming attributes resolve
 	// to distinct APIC Dns without further mangling. Reference-typed identifiers are already
 	// disambiguated upstream (e.g. aci_contract.test.name vs aci_contract.test_2.name).
 	instance := TestChildInstance{

@@ -7,9 +7,6 @@ documentation:
   - uni/tn-{name}/BD-{name}/tagKey-{key}
   - Too many DN formats to display, see model documentation for all possible parents
     of [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview).
-  example_parent_classes:
-  - fvTenant
-  - fvAEPg
   resource:
     notes:
     - This resource should not be used in combination with the `tags` nested attributes
@@ -17,6 +14,7 @@ documentation:
   sub_category: Generic
   ui_locations:
   - Under every object as Policy Tags in the Operational tab in recent APIC versions.
+example_parent_class: fvTenant
 migration_source: from_sdkv2
 properties:
   key:

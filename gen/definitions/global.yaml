@@ -114,3 +114,7 @@ property_documentation_overrides:
   tnL3extOutName: The name of the L3 Outside object.
   tnRtctrlProfileName: The name of the Route Control Profile object.
   tnVzOOBBrCPName: The name of the Out Of Band Contract object.
+
+property_example_value_overrides:
+  accessControlAllowOrigins: https://example.com
+  referer: https://example.com

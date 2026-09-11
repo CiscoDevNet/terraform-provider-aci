@@ -182,6 +182,11 @@ type newClassNameExpected struct {
 	ErrorMsg    string
 }
 
+type classNameEqualInput struct {
+	Left  *ClassName
+	Right *ClassName
+}
+
 func TestNewClassName(t *testing.T) {
 	t.Parallel()
 	test.InitializeTest(t)
@@ -284,6 +289,41 @@ func TestNewClassName(t *testing.T) {
 				assert.Equal(t, expected.MetaStyle, className.MetaStyle(), test.MessageEqual(expected.MetaStyle, className.MetaStyle(), testCase.Name))
 				assert.Equal(t, expected.String, className.String(), test.MessageEqual(expected.String, className.String(), testCase.Name))
 			}
+		})
+	}
+}
+
+func TestClassNameEqual(t *testing.T) {
+	t.Parallel()
+
+	testCases := []test.TestCase{
+		{
+			Name:     "test_equal",
+			Input:    classNameEqualInput{Left: testClassName("fvTenant"), Right: testClassName("fvTenant")},
+			Expected: true,
+		},
+		{
+			Name:     "test_different",
+			Input:    classNameEqualInput{Left: testClassName("fvTenant"), Right: testClassName("fvBD")},
+			Expected: false,
+		},
+		{
+			Name:     "test_left_nil",
+			Input:    classNameEqualInput{Right: testClassName("fvTenant")},
+			Expected: false,
+		},
+		{
+			Name:     "test_both_nil",
+			Input:    classNameEqualInput{},
+			Expected: true,
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.(classNameEqualInput)
+			assert.Equal(t, testCase.Expected, input.Left.Equal(input.Right))
 		})
 	}
 }

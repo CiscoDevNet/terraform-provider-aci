@@ -5,13 +5,6 @@ properties:
   tDn:
     documentation:
       description: The distinguished name of the target.
-    example_config:
-      full:
-      - value: aci_multicast_pool.example.id
-        value_type: reference
-      minimum:
-      - value: aci_multicast_pool.example.id
-        value_type: reference
 resource_name: relation_to_multicast_pool
 test_config:
   dependencies:

@@ -18,8 +18,6 @@ properties:
       - config_value: AA:BB:CC:BB:BB:EE
   name:
     example_config:
-      full:
-      - value: mac_attribute
       minimum:
       - value: mac_attribute
     test_config:

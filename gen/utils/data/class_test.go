@@ -4262,6 +4262,7 @@ func collectAllDeps(deps []*TestDependency, result *[]*TestDependency, ref strin
 
 type resolvePropertyTestValuesInput struct {
 	Properties       map[string]*Property
+	PropertiesAll    []string
 	TestDependencies []*TestDependency
 	Relation         Relation
 	LoadedClasses    map[string]Class
@@ -4273,17 +4274,19 @@ type resolvePropertyTestValuesExpected struct {
 }
 
 type expectedPropertyTestValues struct {
-	Nil            bool
-	AttributeName  string
-	CreateValue    string
-	CreateType     ValueRenderTypeEnum
-	UpdateValue    string
-	UpdateType     ValueRenderTypeEnum
-	DefaultValue   string
-	DefaultInclude bool
-	ForceNewValue  string
-	ForceNewType   ValueRenderTypeEnum
-	ForceNewNil    bool
+	Nil                    bool
+	AttributeName          string
+	ReferenceClass         string
+	ReferenceAttributeName string
+	CreateValue            string
+	CreateType             ValueRenderTypeEnum
+	UpdateValue            string
+	UpdateType             ValueRenderTypeEnum
+	DefaultValue           string
+	DefaultInclude         bool
+	ForceNewValue          string
+	ForceNewType           ValueRenderTypeEnum
+	ForceNewNil            bool
 }
 
 func TestResolvePropertyTestValues(t *testing.T) {
@@ -4664,15 +4667,36 @@ func TestResolvePropertyTestValues(t *testing.T) {
 			Expected: resolvePropertyTestValuesExpected{
 				PropertyChecks: map[string]expectedPropertyTestValues{
 					"tnFvBDName": {
-						AttributeName: "bridge_domain_name",
-						CreateValue:   "aci_bridge_domain.test.name",
-						CreateType:    ReferenceValue,
-						UpdateValue:   "aci_bridge_domain.test.name",
-						UpdateType:    ReferenceValue,
-						ForceNewValue: "aci_bridge_domain.test.name",
-						ForceNewType:  ReferenceValue,
+						AttributeName:          "bridge_domain_name",
+						ReferenceClass:         "fvBD",
+						ReferenceAttributeName: "name",
+						CreateValue:            "aci_bridge_domain.test.name",
+						CreateType:             ReferenceValue,
+						UpdateValue:            "aci_bridge_domain.test.name",
+						UpdateType:             ReferenceValue,
+						ForceNewValue:          "aci_bridge_domain.test.name",
+						ForceNewType:           ReferenceValue,
 					},
 				},
+			},
+		},
+		{
+			Name: "test_named_relation_multiple_target_classes_diagnostic",
+			Input: resolvePropertyTestValuesInput{
+				Properties: map[string]*Property{
+					"tnFvBDName": {PropertyName: "tnFvBDName", AttributeName: "tn_fv_bd_name", Required: true},
+				},
+				Relation: Relation{
+					RelationalClass: true,
+					Type:            Named,
+					ToClasses:       []*ClassName{testClassName("fvBD"), testClassName("fvCtx")},
+				},
+			},
+			Expected: resolvePropertyTestValuesExpected{
+				PropertyChecks: map[string]expectedPropertyTestValues{
+					"tnFvBDName": {Nil: true},
+				},
+				DiagnosticContains: "exactly one target class",
 			},
 		},
 		{
@@ -4739,6 +4763,64 @@ func TestResolvePropertyTestValues(t *testing.T) {
 				},
 			},
 		},
+		{
+			Name: "test_semantic_named_reference_uses_target_resource_attribute_name",
+			Input: resolvePropertyTestValuesInput{
+				Properties: map[string]*Property{
+					"tnL3extOutName": {
+						PropertyName:  "tnL3extOutName",
+						AttributeName: "tn_l3ext_out_name",
+						Reference: &PropertyReference{
+							Classes:              []*ClassName{testClassName("l3extOut")},
+							ExampleClass:         testClassName("l3extOut"),
+							ExampleAttributeName: "id",
+						},
+					},
+				},
+				PropertiesAll: []string{"tnL3extOutName"},
+				LoadedClasses: map[string]Class{
+					"l3extOut": {Name: testClassName("l3extOut"), ResourceName: "l3_outside"},
+				},
+			},
+			Expected: resolvePropertyTestValuesExpected{
+				PropertyChecks: map[string]expectedPropertyTestValues{
+					"tnL3extOutName": {
+						Nil:                    true,
+						AttributeName:          "l3_outside_name",
+						ReferenceClass:         "l3extOut",
+						ReferenceAttributeName: "name",
+					},
+				},
+			},
+		},
+		{
+			Name: "test_semantic_reference_without_named_relation_property_is_unchanged",
+			Input: resolvePropertyTestValuesInput{
+				Properties: map[string]*Property{
+					"lagPolicyName": {
+						PropertyName:  "lagPolicyName",
+						AttributeName: "lag_policy_name",
+						Reference: &PropertyReference{
+							Classes:              []*ClassName{testClassName("lacpEnhancedLagPol")},
+							ExampleClass:         testClassName("lacpEnhancedLagPol"),
+							ExampleAttributeName: "name",
+						},
+					},
+				},
+				PropertiesAll: []string{"lagPolicyName"},
+				LoadedClasses: map[string]Class{
+					"lacpEnhancedLagPol": {Name: testClassName("lacpEnhancedLagPol"), ResourceName: "lacp_enhanced_lag_policy"},
+				},
+			},
+			Expected: resolvePropertyTestValuesExpected{
+				PropertyChecks: map[string]expectedPropertyTestValues{
+					"lagPolicyName": {
+						Nil:           true,
+						AttributeName: "lag_policy_name",
+					},
+				},
+			},
+		},
 	}
 
 	for _, testCase := range testCases {
@@ -4750,6 +4832,7 @@ func TestResolvePropertyTestValues(t *testing.T) {
 			class := Class{
 				Relation:         input.Relation,
 				Properties:       input.Properties,
+				PropertiesAll:    input.PropertiesAll,
 				TestDependencies: input.TestDependencies,
 			}
 
@@ -4771,6 +4854,12 @@ func TestResolvePropertyTestValues(t *testing.T) {
 				prop := class.Properties[propName]
 				if check.AttributeName != "" {
 					assert.Equal(t, check.AttributeName, prop.AttributeName, test.MessageEqual(check.AttributeName, prop.AttributeName, testCase.Name))
+				}
+				if check.ReferenceClass != "" {
+					if assert.NotNil(t, prop.Reference, testCase.Name+": semantic reference should be resolved") {
+						assert.Equal(t, check.ReferenceClass, prop.Reference.ExampleClass.String(), test.MessageEqual(check.ReferenceClass, prop.Reference.ExampleClass, testCase.Name))
+						assert.Equal(t, check.ReferenceAttributeName, prop.Reference.ExampleAttributeName, test.MessageEqual(check.ReferenceAttributeName, prop.Reference.ExampleAttributeName, testCase.Name))
+					}
 				}
 				if check.Nil {
 					assert.Nil(t, prop.TestValues, testCase.Name+": "+propName+" TestValues should be nil")
@@ -6886,6 +6975,28 @@ func TestHasChild(t *testing.T) {
 
 	empty := &Class{Name: testClassName("fvAEPg")}
 	assert.False(t, empty.hasChild("fvRsBd"), "class with no children returns false without panicking")
+}
+
+func TestParentDnHasSchemaDefaultDisabledByFunctioningLegacyAlias(t *testing.T) {
+	t.Parallel()
+
+	parentDn := &Property{
+		PropertyName:  "parentDn",
+		AttributeName: "parent_dn",
+		Documentation: PropertyDocumentation{DefaultValues: []DefaultValue{{Value: "uni/vmmp-VMware"}}},
+		StateUpgradeValues: map[int]StateUpgradeValue{
+			0: {AttributeName: "provider_profile_dn", Status: Functioning},
+		},
+	}
+	class := Class{Properties: map[string]*Property{"parentDn": parentDn}}
+	if class.ParentDnHasSchemaDefault() {
+		t.Fatal("functioning legacy alias must prevent an implicit parent_dn schema default")
+	}
+
+	parentDn.StateUpgradeValues[0] = StateUpgradeValue{AttributeName: "provider_profile_dn", Status: Removed}
+	if !class.ParentDnHasSchemaDefault() {
+		t.Fatal("removed legacy alias must not prevent an implicit parent_dn schema default")
+	}
 }
 
 // TestSetPropertyStateUpgradeValues_Distribution covers the per-version

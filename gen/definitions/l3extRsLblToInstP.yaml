@@ -14,12 +14,10 @@ properties:
     documentation:
       description: The distinguished name (DN) of the External EPG object.
     example_config:
-      full:
-      - value: aci_external_network_instance_profile.example.id
-        value_type: reference
       minimum:
-      - value: aci_external_network_instance_profile.example.id
-        value_type: reference
+      - reference:
+          class_name: l3extInstP
+          resource_name: external_network_instance_profile
 resource_name: relation_from_l3out_consumer_label_to_external_epg
 test_config:
   dependencies:

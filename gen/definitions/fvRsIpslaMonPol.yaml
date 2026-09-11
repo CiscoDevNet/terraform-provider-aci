@@ -8,12 +8,9 @@ properties:
     documentation:
       description: The distinguished name (DN) of the IP SLA Monitoring Policy.
     example_config:
-      full:
-      - value: aci_ip_sla_monitoring_policy.example.id
-        value_type: reference
       minimum:
-      - value: aci_ip_sla_monitoring_policy.example.id
-        value_type: reference
+      - reference:
+          class_name: fvIPSLAMonitoringPol
     restriction: required
 required_as_child: true
 resource_name: relation_to_ip_sla_monitoring_policy
