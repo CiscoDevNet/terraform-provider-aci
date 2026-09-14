@@ -52,18 +52,21 @@ const (
 
 var genLogger = logger.InitializeLogger()
 
+// Generator owns template loading, output planning, rendering, and manifest replacement.
 type Generator struct {
 	dataStore       *data.DataStore
 	providerExample string
 	templates       map[string]*texttemplate.Template
 }
 
+// TemplateContext exposes normalized class or global data directly to every template.
 type TemplateContext struct {
 	Class           *data.Class
 	DataStore       *data.DataStore
 	ProviderExample string
 }
 
+// renderJob binds one loaded template to its destination and normalized input.
 type renderJob struct {
 	TemplateName string
 	OutputPath   string
@@ -79,6 +82,7 @@ type exampleFileJob struct {
 	Contents   []byte
 }
 
+// NewGenerator loads all static inputs needed before generation can modify managed files.
 func NewGenerator(dataStore *data.DataStore) (*Generator, error) {
 	if dataStore == nil {
 		return nil, fmt.Errorf("initialize template generator: data store is nil")
@@ -144,6 +148,7 @@ func parseTemplate(templateName string, contents []byte) (*texttemplate.Template
 	return parsedTemplate, nil
 }
 
+// Generate replaces the complete manifest-owned output set in one run.
 func (g *Generator) Generate() error {
 	genLogger.Trace("Building template render jobs")
 	jobs := g.buildRenderJobs()
