@@ -15,7 +15,7 @@ associated with, `gen/generator.go`:
 | `internal/provider/models/` | 176 files | Managed by the active generator manifest |
 | `internal/custom_types/` | 36 files | Legacy output outside the active generator manifest |
 | `docs/` | 255 files | Static and legacy output outside the active generator manifest |
-| `examples/resources/` | 373 files | All 125 `provider.tf` and 125 minimum `resource.tf` files are managed; full examples remain outside the active manifest |
+| `examples/resources/` | 376 files | All 125 `provider.tf` and 125 `resource.tf` files, 123 distinct `resource-all-attributes.tf` files, and 3 copied PEM files are managed |
 | `examples/data-sources/` | 252 files | All 125 class `provider.tf` and 125 class `data-source.tf` files are managed; both system files remain static |
 | `gen/testvars/` | 125 files | Legacy output outside the active generator manifest |
 | `legacy-docs/` | 4 generated-marked files | Not managed by the active generator |
@@ -100,11 +100,11 @@ scan output directories for generated markers.
 or simplified after all legacy artifacts have been migrated and generated
 output is isolated into dedicated directories.
 
-Render jobs are validated before managed files are deleted. Validation checks
-that every referenced template is loaded and output paths are unique.
-Generation then deletes all paths from the previous manifest before writing
-the current output set. A managed file that is already absent is skipped;
-other deletion errors stop generation.
+Render jobs are validated and supporting example files are read before managed
+files are deleted. Validation checks that every referenced template is loaded
+and output paths are unique. Generation then deletes all paths from the
+previous manifest before writing the current output set. A managed file that is
+already absent is skipped; other deletion errors stop generation.
 
 `template.Generator` owns the canonical DataStore, loaded templates, render
 jobs, managed-file cleanup, concurrent file rendering, and replacement
@@ -113,15 +113,16 @@ template generator, and calls `Generate()`.
 
 `Generator.renderTemplate` is the shared renderer for every template and
 output path. It renders one artifact into its own memory buffer, formats it
-according to the output extension, validates its marker, creates its output
-directory, and writes it directly to its final path. A bounded worker pool
-calls this renderer concurrently because every artifact owns a unique path
-and the normalized DataStore is read-only during rendering. The replacement
-manifest is written only after every worker succeeds. If any worker fails,
-every planned output path is removed and the previous manifest is retained.
-Existing generated outputs may therefore be absent after a failed run, but
-files written by an unsuccessful attempt cannot become unmanaged. Rerunning
-the generator recreates the complete output set.
+according to the output extension, validates its marker, and writes it directly
+to its final path. A bounded worker pool calls this renderer concurrently
+because every artifact owns a unique path and the normalized DataStore is
+read-only during rendering. Supporting example files are copied only after all
+templates render successfully. The replacement manifest is written only after
+every render and copy succeeds. If rendering or copying fails, every planned
+output path is removed and the previous manifest is retained. Existing
+generated outputs may therefore be absent after a failed run, but files written
+by an unsuccessful attempt cannot become unmanaged. Rerunning the generator
+recreates the complete output set.
 
 Generated Go is validated and formatted with `go/format`. Terraform
 configuration is validated with the HCL parser and formatted with `hclwrite`.
@@ -154,6 +155,14 @@ artifact-derived destinations vary. The provider file beside the static
 class with a resource artifact. It renders the already-resolved attributes and
 nested children from `Class.ResourceExamples.Minimum`; the template does not
 derive example values or relationships.
+
+`resource_example_all_attributes.tf.tmpl` owns a
+`resource-all-attributes.tf` example when
+`Class.ResourceExamples.Full` differs from its minimum counterpart. Files
+listed by the class definition's `example_files` field are read from
+`gen/definitions/example_files/` and copied beside that class's generated
+resource examples. These copied destinations participate in the same managed
+output transaction and manifest as rendered templates.
 
 `datasource_example.tf.tmpl` owns the `data-source.tf` example for every class
 with a data-source artifact. It renders only the already-resolved identifying
