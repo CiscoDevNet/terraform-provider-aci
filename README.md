@@ -7,24 +7,22 @@
   - v0.12 and higher (ACI Provider v1.0.0 or higher)
   - v0.11.x or below (ACI Provider v0.7.1 or below)
 
-- [Go](https://golang.org/doc/install) Latest Version
+- The [Go toolchain declared in `go.mod`](https://go.dev/doc/toolchain)
 
 ## Building The Provider
 
-Clone this repository to: `$GOPATH/src/github.com/CiscoDevNet/terraform-provider-cisco-aci`.
+Clone the repository into any local directory:
 
 ```sh
-$ mkdir -p $GOPATH/src/github.com/CiscoDevNet; cd $GOPATH/src/github.com/CiscoDevNet
-$ git clone https://github.com/CiscoDevNet/terraform-provider-aci.git
+git clone https://github.com/CiscoDevNet/terraform-provider-aci.git
+cd terraform-provider-aci
 ```
 
-Enter the provider directory and run dep ensure to install all the dependancies. After, that run make build to build the provider binary.
+Download the module dependencies and build the provider:
 
 ```sh
-$ cd $GOPATH/src/github.com/CiscoDevNet/terraform-provider-aci
-$ dep ensure
-$ make build
-
+go mod download
+make build
 ```
 
 ## Using The Provider
@@ -53,13 +51,13 @@ provider "aci" {
   proxy_url = "https://proxy_server:proxy_port"
 }
 
-resource "aci_tenant" "test-tenant" {
+resource "aci_tenant" "example" {
   name        = "test-tenant"
   description = "This tenant is created by terraform"
 }
 
-resource "aci_application_profile" "test-app" {
-  tenant_dn   = aci_tenant.test-tenant.id
+resource "aci_application_profile" "example" {
+  tenant_dn   = aci_tenant.example.id
   name        = "test-app"
   description = "This application profile is created by terraform"
 }
@@ -94,7 +92,7 @@ Currently the ACI provider is a [muxed provider](https://developer.hashicorp.com
 
 ### Pre-Requirements
 
-1. Install latest version of [Go](http://www.golang.org)
+1. Install the [Go toolchain declared in `go.mod`](https://go.dev/doc/toolchain).
 
 ### Existing resources and data-sources developed with terraform-plugin-sdk/v2
 
@@ -102,9 +100,12 @@ Currently the ACI provider is a [muxed provider](https://developer.hashicorp.com
 
 * Changes are made directly in the `provider.go`, `resource_*.go`, `data_source_*.go` and `utils` files. The [aci-go-client](https://github.com/ciscoecosystem/aci-go-client) is leveraged to construct payload constructs and handle REST communication towards the APIC.
 
-* Documentation is manually maintained in the [legacy-docs](https://github.com/CiscoDevNet/terraform-provider-aci/tree/main/legacy-docs) directory and are copied automatically up on execution of `go generate` command.
+* Documentation is manually maintained in the [legacy-docs](https://github.com/CiscoDevNet/terraform-provider-aci/tree/main/legacy-docs) directory and in the corresponding Terraform Registry pages under [docs](https://github.com/CiscoDevNet/terraform-provider-aci/tree/main/docs). The current generator does not copy legacy documentation into `docs`.
 
-* Examples are manually maintained in the [examples](https://github.com/CiscoDevNet/terraform-provider-aci/tree/main/examples) directory, where each resource has it's own directory.
+* Examples outside `gen/managed_files.json` are maintained manually in the
+  [examples](https://github.com/CiscoDevNet/terraform-provider-aci/tree/main/examples)
+  directory. Manifest-owned examples are regenerated from normalized class
+  data and active templates.
 
 #### Manual Development Process
 
@@ -121,13 +122,15 @@ The below steps should be followed for developing `terraform-plugin-sdk/v2` reso
     * Examples changes
     * Documentation changes 
 
-5. Run `go generate` in the root of the local repository where the `main.go` is located. Assure that the documentation is copied to the docs folder and no changes are made to files in the [internal/provider](https://github.com/CiscoDevNet/terraform-provider-aci/tree/main/internal/provider) directory.
+5. Keep the matching files under `legacy-docs` and `docs` synchronized manually.
 
-5. Test the code.
+6. If generator inputs were changed, run `go generate` from the repository root and review every generated change. Normal generation also updates owned files under [internal/provider](https://github.com/CiscoDevNet/terraform-provider-aci/tree/main/internal/provider) and `examples`.
 
-6. Create PR for the code and request review from active maintainers.
+7. Test the code.
 
-7. Review process
+8. Create PR for the code and request review from active maintainers.
+
+9. Review process
 
 ### Resources and data-sources developed with terraform-plugin-framework
 
@@ -141,10 +144,9 @@ itself mean that the current generator owns a file: legacy generated files keep
 their marker until their templates have been replaced. The exact files owned by
 normal generation are recorded in [`gen/managed_files.json`](https://github.com/CiscoDevNet/terraform-provider-aci/blob/main/gen/managed_files.json).
 Currently, normal generation owns the class model files, provider index, and
-the provider files beside class-backed resource and data-source examples,
-together with minimum and distinct all-attributes resource examples,
-data-source examples, and their declared supporting files. Resource and
-data-source implementations, tests, and the remaining documentation stay
+the provider, minimum-resource, all-attributes-resource, and data-source
+example files and associated supporting files recorded in the manifest. Resource
+and data-source implementations, tests, and their Markdown documentation remain
 static or legacy outputs until their replacement templates are introduced.
 
 Generated files should not be edited manually. Fix their normalized metadata,
@@ -187,6 +189,16 @@ unset, the DevNet metadata host is used.
 GEN_ACI_TF_META_CLASSES=fvTenant,fvBD go generate
 ```
 
+Set `GEN_ACI_TF_META_REFRESH_ALL=1` to refresh every existing metadata file
+before generation. Generator logging defaults to `INFO` on standard output.
+`GEN_ACI_TF_LOG_LEVEL` accepts `TRACE`, `DEBUG`, `INFO`, `WARN`, `ERROR`, or
+`FATAL`; `GEN_ACI_TF_LOG_PATH` redirects output to a file opened in append
+mode. For example:
+
+```sh
+GEN_ACI_TF_LOG_LEVEL=DEBUG GEN_ACI_TF_LOG_PATH=generator.log go generate
+```
+
 `internal/provider/annotation_unsupported.go` is a refresh-only generated file.
 Refresh it explicitly from the complete ACI metadata:
 
@@ -195,68 +207,53 @@ GEN_ANNOTATION_UNSUPPORTED=1 go generate
 ```
 
 When changing a definition produced by
-`gen/scripts/migrate_class_definitions.go`, update the migration source and
-regenerate the definition instead of changing only its emitted YAML. After
-generation, review all generated changes and run the relevant unit and
-acceptance tests before opening a pull request.
+`gen/scripts/migrate_class_definitions.go`, update the migration logic and
+regenerate the definition instead of changing either its emitted YAML or the
+legacy inputs under `gen/definitions/classes` and `gen/definitions/properties`:
 
-### Troubleshooting 
+```sh
+go run gen/scripts/migrate_class_definitions.go
+go generate
+```
+
+`gen/definitions/global.yaml` is the canonical source for shared configuration
+and is intentionally not rewritten by the migration script. The legacy input
+directories retain their `develop` layout so upstream changes and additions are
+discovered automatically. After generation, review all generated changes and
+run the relevant unit and acceptance tests before opening a pull request.
+
+### Troubleshooting
 
 #### Go Generate Fail
 
-If you encounter an error message while generating the resources using go generate, a few steps can be followed:
+Run the generator with the Go toolchain declared in `go.mod`:
 
-1. Make sure that you're running the latest version of Go
+```sh
+go generate
+```
 
-2. Update dependencies and populate the vendor directory: If you're using Go modules, you can update your dependencies and populate your vendor directory by running the following commands in your terminal:
+The repository commits its vendor directory. When a dependency is intentionally
+added, removed, or changed, synchronize both the module files and vendor tree:
 
 ```sh
 go mod tidy
 go mod vendor
 ```
 
-The go mod tidy command will clean up unused dependencies and add missing ones. The go mod vendor command will copy all dependencies into the vendor directory.
-
-3. Disable vendor mode (if necessary): If the error still persists, consider disabling vendor mode by setting GOFLAGS="-mod=mod", and then run go get again:
-
-```sh
-export GOFLAGS="-mod=mod"
-```
-
-This will force Go to fetch the package directly, regardless of the vendor directory. After the package is downloaded, you can switch back to vendor mode if needed.
-
-#### Missing packages
-
-If you encounter an error indicating that the golang.org/x/text/language package is missing from your vendor directory, you can fetch it by following these steps:
-
-1. Disable vendor mode: Go operates in vendor mode when the -mod=vendor flag is set. You'll need to disable vendor mode to fetch packages directly. Run the following command in your terminal:
-
-```sh
-export GOFLAGS="-mod=mod"
-```
-
-2. Fetch the missing package: Now that vendor mode is disabled, you can fetch the missing package by running:
-
-```sh
-go get golang.org/x/text/language
-```
-
-This command tells Go to fetch the golang.org/x/text/language package directly, regardless of the vendor directory
-
-3. Re-enable vendor mode (if necessary): If you wish to switch back to vendor mode, you can do so by running:
-
-```sh
-export GOFLAGS="-mod=vendor"
-```
+Review changes to `go.mod`, `go.sum`, and `vendor/` before committing them. Do
+not use `go get` to repair an unchanged checkout; a missing vendored package in
+that case indicates repository drift or an incomplete checkout.
 
 
 ### Compiling
 
-To compile the provider, run `make build`. This will build the provider with sanity checks present in scripts directory and put the provider binary in `$GOPATH/bin` directory.
+To compile the provider, run `make build`. This runs the formatting check and
+installs the provider binary into `GOBIN`, or into `GOPATH/bin` when `GOBIN` is
+not set.
 
 <strong>Important: </strong>To successfully use the provider you need to follow these steps:
 
-- Copy or Symlink the provider from the `$GOPATH/bin` to `~/.terraform.d/plugins/terraform.local/CiscoDevNet/aci/<Version>/<architecture>/` for example:
+- Copy or symlink the provider from `GOBIN` (or from `GOPATH/bin` when `GOBIN` is unset) to `~/.terraform.d/plugins/terraform.local/CiscoDevNet/aci/<Version>/<architecture>/`, for example:
   ```bash
   ln -s ~/go/bin/terraform-provider-aci ~/.terraform.d/plugins/terraform.local/CiscoDevNet/aci/2.3.0/linux_amd64/terraform-provider-aci
   ```

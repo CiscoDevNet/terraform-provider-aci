@@ -52,14 +52,17 @@ type Logger struct {
 	exitFunc func(int)
 }
 
-// Initialize a singleton logger instance if one does not exist yet else return existing logger.
+// Initialize a singleton logger instance if one does not exist yet, otherwise return the
+// existing logger without reopening its configured output file.
 func InitializeLogger() *Logger {
-	if logger == nil {
-		// Create a new logger instance with default settings.
-		logger = &Logger{
-			log:      log.New(os.Stdout, "", constLogFlags),
-			exitFunc: os.Exit,
-		}
+	if logger != nil {
+		return logger
+	}
+
+	// Create a new logger instance with default settings.
+	logger = &Logger{
+		log:      log.New(os.Stdout, "", constLogFlags),
+		exitFunc: os.Exit,
 	}
 
 	// Check if the log path is set in the environment variables.
@@ -103,15 +106,19 @@ func (l *Logger) SetLogFile(logPath string) {
 		l.Fatalf("Failed to open log file: %s", err.Error())
 		return
 	}
-	l.Tracef("Logging to file: %s", logPath)
+	previousFile := l.logFile
 	l.log.SetOutput(file)
 	l.logFile = file
+	if previousFile != nil {
+		_ = previousFile.Close()
+	}
+	l.Tracef("Logging to file: %s", logPath)
 }
 
 // Closes the log file if it is open and resets the logger to log to stdout.
 func (l *Logger) CloseLogFile() {
 	if l.logFile != nil {
-		l.logFile.Close()
+		_ = l.logFile.Close()
 		l.logFile = nil
 		l.log.SetOutput(os.Stdout)
 		l.Trace("Log file closed, logging to stdout")
@@ -157,7 +164,7 @@ const constLogCallDepth = 3
 func (l *Logger) println(errorLevel, message string) {
 	if logLevels[errorLevel] <= l.logLevel {
 		// calldepth=constLogCallDepth so Llongfile points at the caller of the public level method.
-		l.log.Output(constLogCallDepth, errorLevel+": "+message)
+		_ = l.log.Output(constLogCallDepth, errorLevel+": "+message)
 	}
 }
 
@@ -166,7 +173,7 @@ func (l *Logger) println(errorLevel, message string) {
 func (l *Logger) printf(errorLevel, format string, v ...any) {
 	if logLevels[errorLevel] <= l.logLevel {
 		// calldepth=constLogCallDepth so Llongfile points at the caller of the public level method.
-		l.log.Output(constLogCallDepth, errorLevel+": "+fmt.Sprintf(format, v...))
+		_ = l.log.Output(constLogCallDepth, errorLevel+": "+fmt.Sprintf(format, v...))
 	}
 }
 
@@ -174,7 +181,7 @@ func (l *Logger) printf(errorLevel, format string, v ...any) {
 // Fatalf so both share the same calldepth as the other levels.
 func (l *Logger) fatal(message string) {
 	// calldepth=constLogCallDepth so Llongfile points at the caller of Fatal/Fatalf.
-	l.log.Output(constLogCallDepth, "FATAL: "+message)
+	_ = l.log.Output(constLogCallDepth, "FATAL: "+message)
 	l.exitFunc(1)
 }
 
