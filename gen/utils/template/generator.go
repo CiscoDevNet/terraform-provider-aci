@@ -36,6 +36,8 @@ const (
 	providerExampleOutputName         = "provider.tf"
 	resourceExampleTemplateName       = "resource_example.tf.tmpl"
 	resourceExampleOutputName         = "resource.tf"
+	datasourceExampleTemplateName     = "datasource_example.tf.tmpl"
+	datasourceExampleOutputName       = "data-source.tf"
 
 	annotationUnsupportedTemplateName = "annotation_unsupported.go.tmpl"
 	annotationUnsupportedOutputPath   = "internal/provider/annotation_unsupported.go"
@@ -175,6 +177,7 @@ func (g *Generator) buildRenderJobs() []renderJob {
 	jobs := g.buildModelRenderJobs()
 	jobs = append(jobs, g.buildProviderExampleRenderJobs()...)
 	jobs = append(jobs, g.buildResourceExampleRenderJobs()...)
+	jobs = append(jobs, g.buildDatasourceExampleRenderJobs()...)
 	if g.dataStore.UnsupportedAnnotationClasses != nil {
 		jobs = append(jobs, g.buildAnnotationUnsupportedRenderJob())
 	}
@@ -187,6 +190,15 @@ func (g *Generator) buildResourceExampleRenderJobs() []renderJob {
 		resourceExampleTemplateName,
 		resourceExamplesOutputDirectory,
 		resourceExampleOutputName,
+	)
+}
+
+func (g *Generator) buildDatasourceExampleRenderJobs() []renderJob {
+	return g.buildClassExampleRenderJobs(
+		data.DatasourceArtifact,
+		datasourceExampleTemplateName,
+		datasourceExamplesOutputDirectory,
+		datasourceExampleOutputName,
 	)
 }
 

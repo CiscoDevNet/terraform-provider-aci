@@ -18,6 +18,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils/data"
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils/test"
 	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models"
 )
@@ -57,6 +58,7 @@ func TestGeneratorLoadsActiveTemplates(t *testing.T) {
 		modelTemplateName,
 		providerExampleTemplateName,
 		resourceExampleTemplateName,
+		datasourceExampleTemplateName,
 		annotationUnsupportedTemplateName,
 	} {
 		if _, ok := generator.templates[templateName]; !ok {
@@ -191,7 +193,12 @@ func TestBuildProviderExampleRenderJobs(t *testing.T) {
 	}
 }
 
-func TestBuildResourceExampleRenderJobs(t *testing.T) {
+type buildClassExampleRenderJobsInput struct {
+	BuildJobs    func() []renderJob
+	TemplateName string
+}
+
+func TestBuildClassExampleRenderJobs(t *testing.T) {
 	childClass := testClass(t, "fvRsTenantMonPol")
 	childClass.ResourceName = "relation_to_monitoring_policy"
 	resourceClass := testClass(t, "fvBD", data.ResourceArtifact)
@@ -208,23 +215,50 @@ func TestBuildResourceExampleRenderJobs(t *testing.T) {
 	}}
 	generator := &Generator{dataStore: dataStore}
 
-	jobs := generator.buildResourceExampleRenderJobs()
-	expectedPaths := []string{
-		"examples/resources/aci_bridge_domain/resource.tf",
-		"examples/resources/aci_tenant/resource.tf",
+	testCases := []test.TestCase{
+		{
+			Name: "test_minimum_resources",
+			Input: buildClassExampleRenderJobsInput{
+				BuildJobs:    generator.buildResourceExampleRenderJobs,
+				TemplateName: resourceExampleTemplateName,
+			},
+			Expected: []string{
+				"examples/resources/aci_bridge_domain/resource.tf",
+				"examples/resources/aci_tenant/resource.tf",
+			},
+		},
+		{
+			Name: "test_datasources",
+			Input: buildClassExampleRenderJobsInput{
+				BuildJobs:    generator.buildDatasourceExampleRenderJobs,
+				TemplateName: datasourceExampleTemplateName,
+			},
+			Expected: []string{
+				"examples/data-sources/aci_vrf/data-source.tf",
+				"examples/data-sources/aci_tenant/data-source.tf",
+			},
+		},
 	}
-	actualPaths := make([]string, 0, len(jobs))
-	for _, job := range jobs {
-		actualPaths = append(actualPaths, job.OutputPath)
-		if job.TemplateName != resourceExampleTemplateName {
-			t.Fatalf("unexpected template name %q", job.TemplateName)
-		}
-		if job.Context.Class == nil || job.Context.DataStore != dataStore {
-			t.Fatalf("resource example job has an incomplete context: %#v", job.Context)
-		}
-	}
-	if !reflect.DeepEqual(actualPaths, expectedPaths) {
-		t.Fatalf("resource example output paths %#v, expected %#v", actualPaths, expectedPaths)
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			input := testCase.Input.(buildClassExampleRenderJobsInput)
+			expected := testCase.Expected.([]string)
+			jobs := input.BuildJobs()
+			actualPaths := make([]string, 0, len(jobs))
+			for _, job := range jobs {
+				actualPaths = append(actualPaths, job.OutputPath)
+				if job.TemplateName != input.TemplateName {
+					t.Fatalf("unexpected template name %q", job.TemplateName)
+				}
+				if job.Context.Class == nil || job.Context.DataStore != dataStore {
+					t.Fatalf("class example job has an incomplete context: %#v", job.Context)
+				}
+			}
+			if !reflect.DeepEqual(actualPaths, expected) {
+				t.Fatalf("example output paths %#v, expected %#v", actualPaths, expected)
+			}
+		})
 	}
 }
 
@@ -247,17 +281,18 @@ func TestBuildRenderJobsIncludesAnnotationOnlyAfterRefresh(t *testing.T) {
 	generator := &Generator{dataStore: dataStore}
 
 	jobs := generator.buildRenderJobs()
-	if len(jobs) != 4 ||
+	if len(jobs) != 5 ||
 		jobs[0].TemplateName != modelTemplateName ||
 		jobs[1].TemplateName != providerExampleTemplateName ||
 		jobs[2].TemplateName != providerExampleTemplateName ||
-		jobs[3].TemplateName != resourceExampleTemplateName {
+		jobs[3].TemplateName != resourceExampleTemplateName ||
+		jobs[4].TemplateName != datasourceExampleTemplateName {
 		t.Fatalf("unexpected ordinary render jobs: %#v", jobs)
 	}
 
 	dataStore.UnsupportedAnnotationClasses = []string{}
 	jobs = generator.buildRenderJobs()
-	if len(jobs) != 5 || jobs[4].TemplateName != annotationUnsupportedTemplateName || !jobs[4].RefreshOnly {
+	if len(jobs) != 6 || jobs[5].TemplateName != annotationUnsupportedTemplateName || !jobs[5].RefreshOnly {
 		t.Fatalf("unexpected refresh render jobs: %#v", jobs)
 	}
 }
@@ -270,9 +305,11 @@ func TestFormatTemplateRenderSummaries(t *testing.T) {
 		{TemplateName: providerExampleTemplateName},
 		{TemplateName: providerExampleTemplateName},
 		{TemplateName: resourceExampleTemplateName},
+		{TemplateName: datasourceExampleTemplateName},
 	}
 	expected := []string{
 		"Rendered 1 file using template annotation_unsupported.go.tmpl.",
+		"Rendered 1 file using template datasource_example.tf.tmpl.",
 		"Rendered 2 files using template model.go.tmpl.",
 		"Rendered 2 files using template provider_example.tf.tmpl.",
 		"Rendered 1 file using template resource_example.tf.tmpl.",
