@@ -30,6 +30,11 @@ const (
 	modelTemplateName    = "model.go.tmpl"
 	modelOutputDirectory = "internal/provider/models"
 
+	providerExampleTemplateName       = "provider_example.tf.tmpl"
+	resourceExamplesOutputDirectory   = "examples/resources"
+	datasourceExamplesOutputDirectory = "examples/data-sources"
+	providerExampleOutputName         = "provider.tf"
+
 	annotationUnsupportedTemplateName = "annotation_unsupported.go.tmpl"
 	annotationUnsupportedOutputPath   = "internal/provider/annotation_unsupported.go"
 )
@@ -166,6 +171,7 @@ func (g *Generator) Generate() error {
 
 func (g *Generator) buildRenderJobs() []renderJob {
 	jobs := g.buildModelRenderJobs()
+	jobs = append(jobs, g.buildProviderExampleRenderJobs()...)
 	if g.dataStore.UnsupportedAnnotationClasses != nil {
 		jobs = append(jobs, g.buildAnnotationUnsupportedRenderJob())
 	}
@@ -182,11 +188,7 @@ func (g *Generator) buildAnnotationUnsupportedRenderJob() renderJob {
 }
 
 func (g *Generator) buildModelRenderJobs() []renderJob {
-	classNames := make([]string, 0, len(g.dataStore.Classes))
-	for className := range g.dataStore.Classes {
-		classNames = append(classNames, className)
-	}
-	sort.Strings(classNames)
+	classNames := g.sortedClassNames()
 
 	jobs := make([]renderJob, 0, len(classNames))
 	for _, className := range classNames {
@@ -203,6 +205,49 @@ func (g *Generator) buildModelRenderJobs() []renderJob {
 	}
 
 	return jobs
+}
+
+func (g *Generator) buildProviderExampleRenderJobs() []renderJob {
+	classNames := g.sortedClassNames()
+
+	jobs := make([]renderJob, 0, len(classNames)*2)
+	for _, className := range classNames {
+		class := g.dataStore.Classes[className]
+		if class.HasResourceArtifact() {
+			jobs = append(jobs, renderJob{
+				TemplateName: providerExampleTemplateName,
+				OutputPath: pathpkg.Join(
+					resourceExamplesOutputDirectory,
+					"aci_"+class.ResourceName,
+					providerExampleOutputName,
+				),
+			})
+		}
+		if class.HasDatasourceArtifact() {
+			jobs = append(jobs, renderJob{
+				TemplateName: providerExampleTemplateName,
+				OutputPath: pathpkg.Join(
+					datasourceExamplesOutputDirectory,
+					"aci_"+class.ResourceName,
+					providerExampleOutputName,
+				),
+			})
+		}
+	}
+
+	sort.Slice(jobs, func(i, j int) bool {
+		return jobs[i].OutputPath < jobs[j].OutputPath
+	})
+	return jobs
+}
+
+func (g *Generator) sortedClassNames() []string {
+	classNames := make([]string, 0, len(g.dataStore.Classes))
+	for className := range g.dataStore.Classes {
+		classNames = append(classNames, className)
+	}
+	sort.Strings(classNames)
+	return classNames
 }
 
 func (g *Generator) validateRenderJobs(jobs []renderJob) ([]string, error) {
