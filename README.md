@@ -140,18 +140,19 @@ The generator is being migrated incrementally. A generated marker does not by
 itself mean that the current generator owns a file: legacy generated files keep
 their marker until their templates have been replaced. The exact files owned by
 normal generation are recorded in [`gen/managed_files.json`](https://github.com/CiscoDevNet/terraform-provider-aci/blob/main/gen/managed_files.json).
-Currently, normal generation owns the class model files and the provider files
-beside class-backed resource and data-source examples, together with minimum
-and distinct all-attributes resource examples, data-source examples, and their
-declared supporting files. Resource and data-source implementations, tests,
-and documentation remain static or legacy outputs until their replacement
-templates are introduced.
+Currently, normal generation owns the class model files, provider index, and
+the provider files beside class-backed resource and data-source examples,
+together with minimum and distinct all-attributes resource examples,
+data-source examples, and their declared supporting files. Resource and
+data-source implementations, tests, and the remaining documentation stay
+static or legacy outputs until their replacement templates are introduced.
 
 Generated files should not be edited manually. Fix their normalized metadata,
 class definition, generator logic, or active template and regenerate the full
-output set. Provider bootstrap and registry files, `docs/index.md`, and
-`examples/provider/provider.tf` are intentionally static. The complete current
-ownership contract is documented in
+output set. Provider bootstrap and registry files and
+`examples/provider/provider.tf` are intentionally static. The provider index
+is rendered from its active template using that static example. The complete
+current ownership contract is documented in
 [`gen/docs/templates.md`](https://github.com/CiscoDevNet/terraform-provider-aci/blob/main/gen/docs/templates.md),
 and the generated class-model contract is documented in
 [`gen/docs/model.md`](https://github.com/CiscoDevNet/terraform-provider-aci/blob/main/gen/docs/model.md).
