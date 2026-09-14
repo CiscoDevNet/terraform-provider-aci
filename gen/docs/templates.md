@@ -6,19 +6,19 @@ previous manifest. Files outside that manifest are not inspected or removed.
 
 ## Current inventory
 
-The following output areas contain files produced by, or historically
+The following tracked output areas contain files produced by, or historically
 associated with, `gen/generator.go`:
 
-| Output area | Current inventory | Cleanup status |
+| Output area | Tracked inventory | Cleanup status |
 | --- | ---: | --- |
-| `internal/provider/` | 505 files | Mixed static and legacy output; active ownership is limited to manifest entries |
-| `internal/provider/models/` | 176 files | Managed by the active generator manifest |
-| `internal/custom_types/` | 36 files | Legacy output outside the active generator manifest |
-| `docs/` | 255 files | Mixed static and legacy output; active ownership is limited to `index.md` |
+| `internal/provider/` | 695 files | Mixed static and generated output; active ownership is limited to manifest entries |
+| `internal/provider/models/` | 179 files | 176 class models are managed; shared model helpers are static |
+| `internal/custom_types/` | 37 files | Legacy output outside the active generator manifest |
+| `docs/` | 699 files | Mixed static and legacy output; active ownership is limited to `index.md` |
 | `examples/resources/` | 376 files | All 125 `provider.tf` and 125 `resource.tf` files, 123 distinct `resource-all-attributes.tf` files, and 3 copied PEM files are managed |
-| `examples/data-sources/` | 252 files | All 125 class `provider.tf` and 125 class `data-source.tf` files are managed; both system files remain static |
+| `examples/data-sources/` | 252 files | The 125 class `provider.tf` and 125 `data-source.tf` files are managed; both system example files are static |
 | `gen/testvars/` | 125 files | Legacy output outside the active generator manifest |
-| `legacy-docs/` | 4 generated-marked files | Not managed by the active generator |
+| `legacy-docs/` | 447 files (4 retain a generated marker) | Not managed by the active generator |
 
 The generated marker is not an ownership declaration. Some legacy files still
 have the marker, while some handwritten files do not. Active ownership is
@@ -49,15 +49,15 @@ internal/custom_types/ipAddress.go
 internal/custom_types/arpLearning.go
 docs/data-sources/system.md
 examples/provider/provider.tf
-examples/data-sources/aci_system/*
+examples/data-sources/aci_system/data-source.tf
+examples/data-sources/aci_system/provider.tf
 ```
 
-`provider.go`, the provider registry files, and `examples/provider/provider.tf`
-are intentionally static. `docs/index.md` is rendered by the active index
-template and is therefore not listed above. The remaining entries are currently
-unmanaged and can either remain static or be migrated to an active template
-later, except for `annotation_unsupported.go`, which is the refresh-owned
-generated output described below.
+`provider.go`, the provider registry files, and
+`examples/provider/provider.tf` are intentionally static. The remaining
+entries are currently unmanaged and can either remain static or be migrated
+to an active template later, except for `annotation_unsupported.go`, which is
+the refresh-owned generated output described below.
 
 ## Cleanup contract
 
@@ -100,29 +100,37 @@ scan output directories for generated markers.
 or simplified after all legacy artifacts have been migrated and generated
 output is isolated into dedicated directories.
 
-Render jobs are validated and supporting example files are read before managed
-files are deleted. Validation checks that every referenced template is loaded
-and output paths are unique. Generation then deletes all paths from the
+Render jobs are validated and configured example files are read before managed
+files are deleted. Render validation checks that every referenced template is
+loaded and output paths are unique. Generation then deletes all paths from the
 previous manifest before writing the current output set. A managed file that is
 already absent is skipped; other deletion errors stop generation.
 
 `template.Generator` owns the canonical DataStore, loaded templates, render
-jobs, managed-file cleanup, concurrent file rendering, and replacement
-manifest. The outer generator only initializes the DataStore, constructs the
-template generator, and calls `Generate()`.
+jobs, example-file copies, managed-file cleanup, concurrent file rendering,
+and replacement manifest. The outer generator only initializes the DataStore,
+constructs the template generator, and calls `Generate()`.
 
 `Generator.renderTemplate` is the shared renderer for every template and
 output path. It renders one artifact into its own memory buffer, formats it
-according to the output extension, validates its marker, and writes it directly
-to its final path. A bounded worker pool calls this renderer concurrently
-because every artifact owns a unique path and the normalized DataStore is
-read-only during rendering. Supporting example files are copied only after all
-templates render successfully. The replacement manifest is written only after
-every render and copy succeeds. If rendering or copying fails, every planned
-output path is removed and the previous manifest is retained. Existing
-generated outputs may therefore be absent after a failed run, but files written
-by an unsuccessful attempt cannot become unmanaged. Rerunning the generator
-recreates the complete output set.
+according to the output extension, validates its marker, creates its output
+directory, and writes it directly to its final path. A bounded worker pool
+calls this renderer concurrently because every artifact owns a unique path
+and the normalized DataStore is read-only during rendering. After every render
+worker succeeds, configured example files are copied to their final paths.
+The replacement manifest is written only after rendering and copying both
+succeed. If either phase fails, every planned managed output path is removed
+and the previous manifest is retained. Refresh-only outputs are not in that
+cleanup set and may already have been replaced by a successful worker.
+Existing managed outputs may therefore be absent after a failed run, but files
+written by an unsuccessful attempt cannot become unmanaged. Rerunning the
+generator recreates the complete managed output set.
+
+If all rendering succeeds but writing `gen/managed_files.json` fails, the
+rendered outputs remain on disk and the manifest may still contain its prior
+contents or be incomplete. This internal-tool failure mode is intentionally
+handled by fixing the filesystem problem and rerunning generation (or restoring
+the worktree through Git), rather than by adding transactional file staging.
 
 Generated Go is validated and formatted with `go/format`. Terraform
 configuration is validated with the HCL parser and formatted with `hclwrite`.
@@ -132,7 +140,7 @@ rendered by its template.
 ## Template ownership
 
 The former templates are stored in `gen/templates/legacy_templates/` for
-comparison and migration reference. The active templates will be stored in
+comparison and migration reference. Active templates are stored directly in
 `gen/templates/`. Legacy templates remain unchanged even when their former
 outputs become static.
 
@@ -151,38 +159,21 @@ Its provider example is read from the intentionally static
 template context. This keeps the documented example identical to the example
 users can copy from the repository.
 
-`provider_example.tf.tmpl` is a static-content template rendered beside every
-class-backed resource and data-source example selected by the class artifact
-metadata. These jobs require no template context because only their
-artifact-derived destinations vary. The provider file beside the static
-`aci_system` data-source example remains unmanaged.
+The provider index intentionally documents `insecure` and
+`validate_relation_dn` as Boolean inputs and `retries` as a Number, matching
+the established SDKv2 user contract. While the provider is muxed, its framework
+schema receives those values through temporary string-backed attributes so it
+can coexist with the SDKv2 schema; Terraform configurations and public
+documentation retain the original value forms.
 
-`resource_example.tf.tmpl` owns the minimum `resource.tf` example for every
-class with a resource artifact. It renders the already-resolved attributes and
-nested children from `Class.ResourceExamples.Minimum`; the template does not
-derive example values or relationships.
-
-`resource_example_all_attributes.tf.tmpl` owns a
-`resource-all-attributes.tf` example when
-`Class.ResourceExamples.Full` differs from its minimum counterpart. Files
-listed by the class definition's `example_files` field are read from
-`gen/definitions/example_files/` and copied beside that class's generated
-resource examples. These copied destinations participate in the same managed
-output transaction and manifest as rendered templates.
-
-`datasource_example.tf.tmpl` owns the `data-source.tf` example for every class
-with a data-source artifact. It renders only the already-resolved identifying
-attributes from `Class.DataSourceExample`. The `aci_system` example remains
-static because that definition-only class has no metadata-backed DataStore
-entry.
-
-Active resource and data-source templates must register their generated
-factory with the provider registry from an `init` function in the generated
-artifact.
+The current resource and data-source implementations register their factories
+with the provider registry from per-file `init` functions. Replacement
+implementation templates must retain that self-registration behavior in each
+generated artifact.
 
 Each active template declares its output location centrally, so the generator
 can account for every expected file. Each active template must also emit a
-generated marker in the format-valid location:
+format-valid generated marker at the start of its output:
 
 | Output format | Marker form |
 | --- | --- |
@@ -192,12 +183,16 @@ generated marker in the format-valid location:
 
 The manifest remains authoritative for cleanup; the marker provides human
 visibility and a safety check that a rendered file came from an active
-template. A Markdown marker is a YAML comment inside the document front matter,
-so it does not invalidate either the metadata or rendered document.
+template. Template-specific front matter must be tested to ensure the marker
+does not invalidate the document format.
 
-Every template executes with an internally constructed standard context that
-can expose the canonical DataStore, current resolved class, and static provider
-example when its content requires them:
+Copied example files are not templates and therefore do not carry a generated
+marker. Their sources live under `gen/definitions/example_files/`, while their
+exact generated destinations are still owned by the managed-files manifest.
+
+Every template executes with the same internally constructed context shape,
+which can carry the canonical DataStore, the current resolved class, and a
+static provider example when the particular template needs them:
 
 ```go
 type TemplateContext struct {
@@ -208,7 +203,70 @@ type TemplateContext struct {
 ```
 
 This context does not duplicate or reshape datastore fields. Class-specific
-information is read from `Class`; global templates leave `Class` nil and read
-their global or cross-class information from `DataStore`. The index template
-receives its static example through `ProviderExample`. Static-content templates
-use the zero-value context.
+content templates receive both `Class` and `DataStore`; global templates leave
+`Class` nil and read their global or cross-class information from `DataStore`.
+Templates that embed the static provider example receive it through
+`ProviderExample`. Provider-example jobs use an empty context because their
+content is static and only their artifact-derived destinations vary.
+
+`resource_example.tf.tmpl` owns every minimal `examples/resources/aci_*/resource.tf`
+file. `resource_example_all_attributes.tf.tmpl` owns a corresponding
+`resource-all-attributes.tf` only when the resolved full example differs from
+the minimum example. `datasource_example.tf.tmpl` owns every generated
+`examples/data-sources/aci_*/data-source.tf` except the static system example.
+`provider_example.tf.tmpl` owns the provider file beside each of those
+class-backed resource and data-source examples. The provider file beside the
+static system example remains unmanaged.
+
+Before rendering, `DataStore.setExampleData` builds the complete class-scoped
+artifacts:
+
+```go
+Class.ResourceExamples.Minimum Example
+Class.ResourceExamples.Full    Example
+Class.ResourceExamples.Files   []string
+Class.DataSourceExample        Example
+```
+
+Each example contains its platform annotation, ordered attributes, semantic
+literal/reference/expression values, and recursively resolved children. One
+representative parent placement is selected when a class requires one. An
+applicable resource-schema default is preferred and its redundant `parent_dn` is omitted;
+otherwise an explicit `ClassDefinition.ExampleParentClass` or the first normalized
+parent with a resource artifact is used. Minimum resources
+derive from included `TestValues.Default` entries and required child properties;
+full resources add optional values from `TestValues.Create` and one representative
+instance of every normalized child. Child values use an explicit
+`PropertyDefinition.ExampleConfig` first, then the selected normalized child
+instance, and finally the child class's inferred value when the instance has no
+entry. Top-level required and identifier values remain stable between minimum,
+full, and datasource examples by default. An explicitly defined
+`ExampleConfig.Full` scenario may intentionally override that default.
+Datasources contain only `parent_dn` and `IdentifiedBy` attributes. Sparse
+`PropertyDefinition.ExampleConfig` values are applied during this normalization
+for cases that intentionally differ from test data and take precedence over all
+derived and global example values. For automatically generated string
+placeholders, `GlobalMetaDefinition.PropertyExampleValueOverrides` supplies
+fixed values shared by every class, keyed by the stable APIC property name.
+Class-derived `name` and `description` values and the generic
+`example_<attribute_name>` fallback remain generator behavior. Explicitly
+authored test literals that do not match a generated placeholder are preserved.
+
+`ClassDefinition.ExampleFiles` declares shared files needed by a class's
+resource example. Normalization copies that list into `ResourceExamples.Files`;
+the generator reads each named source from `gen/definitions/example_files/`
+before cleanup and copies it into the class's example directory after template
+rendering.
+
+The templates assign the fixed block names `example` and `full_example`.
+References assembled from normalized class and property data always use the
+`example` block name. An explicitly authored `example_config` reference records
+its APIC class and only overrides the Terraform resource name when a compatibility
+alias is required; normalization constructs the final typed reference directly.
+
+The two resource templates each contain the same small recursive object-layout
+definition; the datasource template only loops over its flat attribute list.
+None of them looks up dependencies, inspects property metadata, infers references,
+chooses test values, or contains class-specific helpers. Terraform formatting is
+applied after rendering, so the model controls content while the templates control
+block layout.

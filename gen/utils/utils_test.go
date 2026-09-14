@@ -3,8 +3,9 @@ package utils
 import (
 	"testing"
 
-	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils/test"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils/test"
 )
 
 const (
@@ -125,66 +126,58 @@ func TestGetValueFromMapWithOverrideString(t *testing.T) {
 	t.Parallel()
 	test.InitializeTest(t)
 
-	t.Run("nil_map_empty_override", func(t *testing.T) {
-		t.Parallel()
-		assert.Equal(t, "", GetValueFromMapWithOverride[string](nil, "x", ""))
-	})
-	t.Run("nil_map_with_override", func(t *testing.T) {
-		t.Parallel()
-		assert.Equal(t, "v", GetValueFromMapWithOverride[string](nil, "x", "v"))
-	})
-	t.Run("missing_key_empty_override", func(t *testing.T) {
-		t.Parallel()
-		assert.Equal(t, "", GetValueFromMapWithOverride(map[string]any{}, "x", ""))
-	})
-	t.Run("missing_key_with_override", func(t *testing.T) {
-		t.Parallel()
-		assert.Equal(t, "v", GetValueFromMapWithOverride(map[string]any{}, "x", "v"))
-	})
-	t.Run("string_value_no_override", func(t *testing.T) {
-		t.Parallel()
-		assert.Equal(t, "m", GetValueFromMapWithOverride(map[string]any{"x": "m"}, "x", ""))
-	})
-	t.Run("string_value_override_wins", func(t *testing.T) {
-		t.Parallel()
-		assert.Equal(t, "v", GetValueFromMapWithOverride(map[string]any{"x": "m"}, "x", "v"))
-	})
-	t.Run("non_string_value_returns_zero", func(t *testing.T) {
-		t.Parallel()
-		assert.Equal(t, "", GetValueFromMapWithOverride[string](map[string]any{"x": 42}, "x", ""))
-	})
-	t.Run("nil_value_returns_zero", func(t *testing.T) {
-		t.Parallel()
-		assert.Equal(t, "", GetValueFromMapWithOverride[string](map[string]any{"x": nil}, "x", ""))
-	})
+	testCases := []test.TestCase{
+		{Name: "test_nil_map_empty_override", Input: getStringValueFromMapWithOverrideInput{Key: "x"}, Expected: ""},
+		{Name: "test_nil_map_with_override", Input: getStringValueFromMapWithOverrideInput{Key: "x", Override: "v"}, Expected: "v"},
+		{Name: "test_missing_key_empty_override", Input: getStringValueFromMapWithOverrideInput{Values: map[string]any{}, Key: "x"}, Expected: ""},
+		{Name: "test_missing_key_with_override", Input: getStringValueFromMapWithOverrideInput{Values: map[string]any{}, Key: "x", Override: "v"}, Expected: "v"},
+		{Name: "test_string_value_no_override", Input: getStringValueFromMapWithOverrideInput{Values: map[string]any{"x": "m"}, Key: "x"}, Expected: "m"},
+		{Name: "test_string_value_override_wins", Input: getStringValueFromMapWithOverrideInput{Values: map[string]any{"x": "m"}, Key: "x", Override: "v"}, Expected: "v"},
+		{Name: "test_non_string_value_returns_zero", Input: getStringValueFromMapWithOverrideInput{Values: map[string]any{"x": 42}, Key: "x"}, Expected: ""},
+		{Name: "test_nil_value_returns_zero", Input: getStringValueFromMapWithOverrideInput{Values: map[string]any{"x": nil}, Key: "x"}, Expected: ""},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.(getStringValueFromMapWithOverrideInput)
+			actual := GetValueFromMapWithOverride(input.Values, input.Key, input.Override)
+			assert.Equal(t, testCase.Expected, actual, test.MessageEqual(testCase.Expected, actual, testCase.Name))
+		})
+	}
 }
 
 func TestGetValueFromMapWithOverrideOtherTypes(t *testing.T) {
 	t.Parallel()
 	test.InitializeTest(t)
 
-	t.Run("int_value_no_override", func(t *testing.T) {
-		t.Parallel()
-		assert.Equal(t, 7, GetValueFromMapWithOverride(map[string]any{"x": 7}, "x", 0))
-	})
-	t.Run("int_override_wins", func(t *testing.T) {
-		t.Parallel()
-		assert.Equal(t, 9, GetValueFromMapWithOverride(map[string]any{"x": 7}, "x", 9))
-	})
-	t.Run("bool_true_value_no_override", func(t *testing.T) {
-		t.Parallel()
-		assert.Equal(t, true, GetValueFromMapWithOverride(map[string]any{"x": true}, "x", false))
-	})
-	t.Run("pointer_override_wins", func(t *testing.T) {
-		t.Parallel()
-		s := "v"
-		got := GetValueFromMapWithOverride[*string](nil, "x", &s)
-		assert.Equal(t, &s, got)
-	})
-	t.Run("pointer_nil_override_falls_back", func(t *testing.T) {
-		t.Parallel()
-		s := "m"
-		got := GetValueFromMapWithOverride[*string](map[string]any{"x": &s}, "x", nil)
-		assert.Equal(t, &s, got)
-	})
+	value := "v"
+	mapValue := "m"
+	testCases := []struct {
+		Name string
+		Run  func(*testing.T)
+	}{
+		{Name: "test_int_value_no_override", Run: func(t *testing.T) { assert.Equal(t, 7, GetValueFromMapWithOverride(map[string]any{"x": 7}, "x", 0)) }},
+		{Name: "test_int_override_wins", Run: func(t *testing.T) { assert.Equal(t, 9, GetValueFromMapWithOverride(map[string]any{"x": 7}, "x", 9)) }},
+		{Name: "test_bool_true_value_no_override", Run: func(t *testing.T) {
+			assert.Equal(t, true, GetValueFromMapWithOverride(map[string]any{"x": true}, "x", false))
+		}},
+		{Name: "test_pointer_override_wins", Run: func(t *testing.T) { assert.Equal(t, &value, GetValueFromMapWithOverride[*string](nil, "x", &value)) }},
+		{Name: "test_pointer_nil_override_falls_back", Run: func(t *testing.T) {
+			assert.Equal(t, &mapValue, GetValueFromMapWithOverride[*string](map[string]any{"x": &mapValue}, "x", nil))
+		}},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			testCase.Run(t)
+		})
+	}
+}
+
+type getStringValueFromMapWithOverrideInput struct {
+	Values   map[string]any
+	Key      string
+	Override string
 }

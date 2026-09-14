@@ -221,7 +221,7 @@ templates will emit from this single entry:
 | Meta property | `Status` | Current schema | Auto-derived `TestValues.Legacy` |
 |---|---|---|---|
 | `arpFlood` | `Functioning` | Both `arp_flood` (current) and `arp_flooding` (deprecated alias) will be exposed; `ConflictsWith` will be enforced. | Clone of `arpFlood`'s `Create` bucket. The future test template will render one scenario configuring the resource under `arp_flooding` and assert that the value lands in state at the current name. |
-| `mac` | `Frozen` | Both names will be exposed; `mac_address` will carry a state-preserving plan modifier so existing configs do not diff. | Clone of `mac`'s `Create` bucket. The future test template will render one scenario configuring the resource under `mac_address` and assert that no device write occurs. |
+| `mac` | `Frozen` | Both names will be exposed; `mac_address` will carry a state-preserving plan modifier so existing configs do not diff. | Clone of `mac`'s `Create` bucket. The future test template will render a scenario configuring the resource under `mac_address` and assert that no device write occurs. |
 | `legacyUnicastRoute` | `Removed` | Will not be exposed. The resource `SchemaVersion` will be bumped to 1. | Undefined. Coverage will come from the `UpgradeResourceState` migration scenario, not from a current-schema scenario. |
 
 If the `mac` rename had also changed type (for example a `string_attribute` becoming a `set_attribute`), `hasDivergentLegacyType()` would skip auto-derivation, emit a generator `Warn`, and require an explicit `test_config.legacy` block on the `mac` property carrying the prior-shape HCL values.

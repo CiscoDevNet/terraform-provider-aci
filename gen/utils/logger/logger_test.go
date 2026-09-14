@@ -7,8 +7,9 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils/test"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils/test"
 )
 
 // newTestLogger resets the package singleton, constructs a fresh logger,
@@ -101,33 +102,39 @@ func TestFatalAndFatalf_RouteThroughExitFunc(t *testing.T) {
 
 func TestLogLevelFiltering(t *testing.T) {
 	// Use a fresh buffer per case so assertions are independent.
-	cases := []struct {
-		level      string
-		expectShow []string
-		expectHide []string
-	}{
+	testCases := []test.TestCase{
 		{
-			level:      "WARN",
-			expectShow: []string{"FATAL: f", "ERROR: e", "WARN: w"},
-			expectHide: []string{"INFO: i", "DEBUG: d", "TRACE: t"},
+			Name:  "test_warn",
+			Input: "WARN",
+			Expected: logLevelFilteringExpected{
+				Show: []string{"FATAL: f", "ERROR: e", "WARN: w"},
+				Hide: []string{"INFO: i", "DEBUG: d", "TRACE: t"},
+			},
 		},
 		{
-			level:      "INFO",
-			expectShow: []string{"FATAL: f", "ERROR: e", "WARN: w", "INFO: i"},
-			expectHide: []string{"DEBUG: d", "TRACE: t"},
+			Name:  "test_info",
+			Input: "INFO",
+			Expected: logLevelFilteringExpected{
+				Show: []string{"FATAL: f", "ERROR: e", "WARN: w", "INFO: i"},
+				Hide: []string{"DEBUG: d", "TRACE: t"},
+			},
 		},
 		{
-			level:      "TRACE",
-			expectShow: []string{"FATAL: f", "ERROR: e", "WARN: w", "INFO: i", "DEBUG: d", "TRACE: t"},
-			expectHide: nil,
+			Name:  "test_trace",
+			Input: "TRACE",
+			Expected: logLevelFilteringExpected{
+				Show: []string{"FATAL: f", "ERROR: e", "WARN: w", "INFO: i", "DEBUG: d", "TRACE: t"},
+			},
 		},
 	}
 
-	for _, testCase := range cases {
-		t.Run(testCase.level, func(t *testing.T) {
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			level := testCase.Input.(string)
+			expected := testCase.Expected.(logLevelFilteringExpected)
 			var outputBuffer bytes.Buffer
 			testLogger := newTestLogger(t, &outputBuffer)
-			testLogger.SetLogLevel(testCase.level)
+			testLogger.SetLogLevel(level)
 
 			testLogger.Fatal("f")
 			testLogger.Error("e")
@@ -137,14 +144,19 @@ func TestLogLevelFiltering(t *testing.T) {
 			testLogger.Trace("t")
 
 			out := outputBuffer.String()
-			for _, want := range testCase.expectShow {
-				assert.Contains(t, out, want, test.MessageContains(out, want, testCase.level))
+			for _, want := range expected.Show {
+				assert.Contains(t, out, want, test.MessageContains(out, want, testCase.Name))
 			}
-			for _, hide := range testCase.expectHide {
-				assert.NotContains(t, out, hide, test.MessageNotContains(out, hide, testCase.level))
+			for _, hide := range expected.Hide {
+				assert.NotContains(t, out, hide, test.MessageNotContains(out, hide, testCase.Name))
 			}
 		})
 	}
+}
+
+type logLevelFilteringExpected struct {
+	Show []string
+	Hide []string
 }
 
 func TestCloseLogFile(t *testing.T) {
@@ -230,6 +242,27 @@ func TestSetLogFile_WritesToFile(t *testing.T) {
 	assert.Contains(t, string(contents), "INFO: hello-file")
 }
 
+func TestSetLogFile_ReplacesAndClosesPreviousFile(t *testing.T) {
+	firstLogFilePath := filepath.Join(t.TempDir(), "first.log")
+	secondLogFilePath := filepath.Join(t.TempDir(), "second.log")
+	testLogger := newTestLogger(t, nil)
+	testLogger.SetLogFile(firstLogFilePath)
+	firstLogFile := testLogger.logFile
+
+	testLogger.SetLogFile(secondLogFilePath)
+	t.Cleanup(testLogger.CloseLogFile)
+
+	_, err := firstLogFile.WriteString("closed")
+	assert.Error(t, err, "previous log file should be closed after replacement")
+	assert.Equal(t, secondLogFilePath, testLogger.logFile.Name())
+
+	testLogger.SetLogLevel("INFO")
+	testLogger.Info("second-file")
+	contents, err := os.ReadFile(secondLogFilePath)
+	assert.NoError(t, err)
+	assert.Contains(t, string(contents), "INFO: second-file")
+}
+
 // TestInitializeLogger_Idempotent verifies that calling InitializeLogger
 // twice returns the same singleton instance (production behavior relied on
 // by per-package var genLogger = logger.InitializeLogger()).
@@ -237,8 +270,12 @@ func TestInitializeLogger_Idempotent(t *testing.T) {
 	test.InitializeTest(t)
 	ResetForTest()
 	t.Cleanup(ResetForTest)
+	logFilePath := filepath.Join(t.TempDir(), "idempotent.log")
+	t.Setenv(constEnvLogPath, logFilePath)
 
 	a := InitializeLogger()
+	firstLogFile := a.logFile
 	b := InitializeLogger()
 	assert.Same(t, a, b, "InitializeLogger must return the same singleton on subsequent calls")
+	assert.Same(t, firstLogFile, b.logFile, "InitializeLogger must not reopen the configured log file")
 }
