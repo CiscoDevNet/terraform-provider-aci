@@ -15,7 +15,7 @@ associated with, `gen/generator.go`:
 | `internal/provider/models/` | 176 files | Managed by the active generator manifest |
 | `internal/custom_types/` | 36 files | Legacy output outside the active generator manifest |
 | `docs/` | 255 files | Static and legacy output outside the active generator manifest |
-| `examples/resources/` | 373 files | The 125 `provider.tf` files are managed; resource examples remain outside the active manifest |
+| `examples/resources/` | 373 files | All 125 `provider.tf` and 125 minimum `resource.tf` files are managed; full examples remain outside the active manifest |
 | `examples/data-sources/` | 252 files | The 125 class `provider.tf` files are managed; data-source examples and both system files remain static |
 | `gen/testvars/` | 125 files | Legacy output outside the active generator manifest |
 | `legacy-docs/` | 4 generated-marked files | Not managed by the active generator |
@@ -149,6 +149,11 @@ class-backed resource and data-source example selected by the class artifact
 metadata. These jobs require no template context because only their
 artifact-derived destinations vary. The provider file beside the static
 `aci_system` data-source example remains unmanaged.
+
+`resource_example.tf.tmpl` owns the minimum `resource.tf` example for every
+class with a resource artifact. It renders the already-resolved attributes and
+nested children from `Class.ResourceExamples.Minimum`; the template does not
+derive example values or relationships.
 
 Active resource and data-source templates must register their generated
 factory with the provider registry from an `init` function in the generated
