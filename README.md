@@ -142,9 +142,9 @@ their marker until their templates have been replaced. The exact files owned by
 normal generation are recorded in [`gen/managed_files.json`](https://github.com/CiscoDevNet/terraform-provider-aci/blob/main/gen/managed_files.json).
 Currently, normal generation owns the class model files and the provider files
 beside class-backed resource and data-source examples, together with minimum
-resource examples. Resource and data-source implementations, tests,
-documentation, full resource examples, and data-source content examples remain
-static or legacy outputs until their replacement templates are introduced.
+resource and data-source examples. Resource and data-source implementations,
+tests, documentation, and full resource examples remain static or legacy
+outputs until their replacement templates are introduced.
 
 Generated files should not be edited manually. Fix their normalized metadata,
 class definition, generator logic, or active template and regenerate the full
