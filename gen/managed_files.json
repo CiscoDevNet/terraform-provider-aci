@@ -1,378 +1,503 @@
 {
   "directories": {
     "examples/data-sources/aci_access_interface_override": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_access_monitoring_policy": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_access_port_block": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_access_port_selector": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_annotation": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_any": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_application_epg": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_application_profile": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_associated_site": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_attachable_access_entity_profile": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_bridge_domain": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_cdp_interface_policy": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_certificate_authority": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_copp_interface_policy": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_copp_interface_protocol_policy": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_custom_qos_policy": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_data_plane_policing_policy": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_dot1p_classifier": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_dot1x_port_authentication_interface_policy": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_dscp_to_priority_map": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_dwdm_interface_policy": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_eigrp_address_family_context": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_endpoint_security_group": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_endpoint_tag_ip": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_endpoint_tag_mac": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_epg_useg_ad_group_attribute": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_epg_useg_block_statement": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_epg_useg_dns_attribute": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_epg_useg_ip_attribute": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_epg_useg_mac_attribute": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_epg_useg_sub_block_statement": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_epg_useg_vm_attribute": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_external_epg": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_external_management_network_instance_profile": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_external_management_network_subnet": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_fabric_external_connection_policy": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_fex_profile": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_fibre_channel_interface_policy": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_firewall_policy": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_first_hop_security_policy": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_igmp_snooping_policy": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_imported_logical_device": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_ip_address_block": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_ip_address_pool": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_ip_sla_track_list": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_ip_sla_track_member": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_key_ring": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_l2_interface_policy": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_l2_mtu_policy": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_l3out_consumer_label": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_l3out_node_sid_profile": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_l3out_provider_label": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_l3out_redistribute_policy": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_lacp_enhanced_lag_policy": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_leaf_interface_profile": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_link_flap_interface_policy": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_link_level_flow_control_interface_policy": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_link_level_interface_policy": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_lldp_interface_policy": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_management_access_policy": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_mcp_interface_policy": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_mld_snooping_policy": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_neighbor_discovery_interface_policy": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_netflow_exporter_policy": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_netflow_monitor_policy": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_netflow_record_policy": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_no_drop_dscp_match_interface_policy": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_out_of_band_contract": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_pim_route_map_entry": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_pim_route_map_policy": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_poe_interface_policy": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_port_security_interface_policy": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_priority_flow_control_interface_policy": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_relation_from_any_to_consumer_contract": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_relation_from_any_to_contract_interface": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_relation_from_any_to_provider_contract": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_relation_from_application_epg_to_attachable_access_entity_profile": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_relation_from_attachable_access_entity_profile_to_domain": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_relation_from_bridge_domain_to_l3_outside": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_relation_from_bridge_domain_to_netflow_monitor_policy": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_relation_from_external_epg_to_route_control_profile": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_relation_from_l3out_consumer_label_to_external_epg": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_relation_from_l3out_consumer_label_to_route_control_profile": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_relation_from_taboo_contract_subject_to_filter": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_relation_from_vrf_to_address_family_ospf_timers": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_relation_from_vrf_to_bgp_address_family_context": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_relation_from_vrf_to_eigrp_address_family_context": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_relation_to_consumed_contract": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_relation_to_consumed_out_of_band_contract": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_relation_to_contract_master": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_relation_to_domain": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_relation_to_fibre_channel_path": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_relation_to_imported_contract": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_relation_to_intra_epg_contract": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_relation_to_ip_sla_track_member": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_relation_to_netflow_exporter": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_relation_to_provided_contract": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_relation_to_static_leaf": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_relation_to_static_path": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_relation_to_taboo_contract": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_relation_to_vrf_fallback_route_group": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_remote_site": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_rogue_coop_exception": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_route_control_profile": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_slow_drain_interface_policy": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_spanning_tree_interface_policy": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_spine_access_port_selector": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_spine_interface_profile": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_synce_interface_policy": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_taboo_contract": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_taboo_contract_subject": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_tag": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_tenant": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_trust_control_policy": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_virtual_ip_address": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_vmm_credential": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_vmm_domain": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_vmm_uplink_container": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_vmm_uplink_policy": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_vrf": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_vrf_fallback_route": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_vrf_fallback_route_group": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_vrf_fallback_route_group_member": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_zr_transceiver_interface_policy": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/data-sources/aci_zrp_transceiver_interface_policy": [
+      "data-source.tf",
       "provider.tf"
     ],
     "examples/resources/aci_access_interface_override": [
