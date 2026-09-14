@@ -58,6 +58,7 @@ func TestGeneratorLoadsActiveTemplates(t *testing.T) {
 		modelTemplateName,
 		providerExampleTemplateName,
 		resourceExampleTemplateName,
+		resourceFullExampleTemplateName,
 		datasourceExampleTemplateName,
 		annotationUnsupportedTemplateName,
 	} {
@@ -203,15 +204,20 @@ func TestBuildClassExampleRenderJobs(t *testing.T) {
 	childClass.ResourceName = "relation_to_monitoring_policy"
 	resourceClass := testClass(t, "fvBD", data.ResourceArtifact)
 	resourceClass.ResourceName = "bridge_domain"
+	resourceClass.ResourceExamples.Full.Body.Attributes = []data.ExampleAttribute{{Name: "description", Value: data.ExampleLiteral("")}}
 	datasourceClass := testClass(t, "fvCtx", data.DatasourceArtifact)
 	datasourceClass.ResourceName = "vrf"
 	bothClass := testClass(t, "fvTenant", data.ResourceArtifact, data.DatasourceArtifact)
 	bothClass.ResourceName = "tenant"
+	bothClass.ResourceExamples.Full.Body.Attributes = []data.ExampleAttribute{{Name: "description", Value: data.ExampleLiteral("")}}
+	redundantClass := testClass(t, "tagAnnotation", data.ResourceArtifact)
+	redundantClass.ResourceName = "annotation"
 	dataStore := &data.DataStore{Classes: map[string]data.Class{
 		"fvBD":             resourceClass,
 		"fvCtx":            datasourceClass,
 		"fvRsTenantMonPol": childClass,
 		"fvTenant":         bothClass,
+		"tagAnnotation":    redundantClass,
 	}}
 	generator := &Generator{dataStore: dataStore}
 
@@ -225,6 +231,18 @@ func TestBuildClassExampleRenderJobs(t *testing.T) {
 			Expected: []string{
 				"examples/resources/aci_bridge_domain/resource.tf",
 				"examples/resources/aci_tenant/resource.tf",
+				"examples/resources/aci_annotation/resource.tf",
+			},
+		},
+		{
+			Name: "test_full_resources",
+			Input: buildClassExampleRenderJobsInput{
+				BuildJobs:    generator.buildResourceFullExampleRenderJobs,
+				TemplateName: resourceFullExampleTemplateName,
+			},
+			Expected: []string{
+				"examples/resources/aci_bridge_domain/resource-all-attributes.tf",
+				"examples/resources/aci_tenant/resource-all-attributes.tf",
 			},
 		},
 		{
@@ -259,6 +277,75 @@ func TestBuildClassExampleRenderJobs(t *testing.T) {
 				t.Fatalf("example output paths %#v, expected %#v", actualPaths, expected)
 			}
 		})
+	}
+}
+
+func TestBuildAndWriteResourceExampleFileJobs(t *testing.T) {
+	repositoryRoot := t.TempDir()
+	t.Chdir(repositoryRoot)
+	exampleFileDirectory := filepath.FromSlash(exampleFilesPath)
+	if err := os.MkdirAll(exampleFileDirectory, 0o755); err != nil {
+		t.Fatalf("create example file directory: %v", err)
+	}
+	certificate := []byte("example certificate\n")
+	privateKey := []byte("example private key\n")
+	if err := os.WriteFile(filepath.Join(exampleFileDirectory, "certificate.pem"), certificate, 0o600); err != nil {
+		t.Fatalf("write certificate example file: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(exampleFileDirectory, "private_key.pem"), privateKey, 0o600); err != nil {
+		t.Fatalf("write private-key example file: %v", err)
+	}
+
+	keyRing := testClass(t, "pkiKeyRing", data.ResourceArtifact)
+	keyRing.ResourceName = "key_ring"
+	keyRing.ResourceExamples.Files = []string{"certificate.pem", "private_key.pem"}
+	certificateAuthority := testClass(t, "pkiTP", data.ResourceArtifact)
+	certificateAuthority.ResourceName = "certificate_authority"
+	certificateAuthority.ResourceExamples.Files = []string{"certificate.pem"}
+	datasourceOnly := testClass(t, "exampleDatasource", data.DatasourceArtifact)
+	datasourceOnly.ResourceName = "example_datasource"
+	datasourceOnly.ResourceExamples.Files = []string{"certificate.pem"}
+	generator := &Generator{dataStore: &data.DataStore{Classes: map[string]data.Class{
+		"exampleDatasource": datasourceOnly,
+		"pkiKeyRing":        keyRing,
+		"pkiTP":             certificateAuthority,
+	}}}
+
+	jobs, err := generator.buildResourceExampleFileJobs()
+	if err != nil {
+		t.Fatalf("build example file jobs: %v", err)
+	}
+	expectedJobs := []exampleFileJob{
+		{SourcePath: "gen/definitions/example_files/certificate.pem", OutputPath: "examples/resources/aci_key_ring/certificate.pem", Contents: certificate},
+		{SourcePath: "gen/definitions/example_files/private_key.pem", OutputPath: "examples/resources/aci_key_ring/private_key.pem", Contents: privateKey},
+		{SourcePath: "gen/definitions/example_files/certificate.pem", OutputPath: "examples/resources/aci_certificate_authority/certificate.pem", Contents: certificate},
+	}
+	if !reflect.DeepEqual(jobs, expectedJobs) {
+		t.Fatalf("example file jobs %#v, expected %#v", jobs, expectedJobs)
+	}
+	if err := writeExampleFiles(jobs); err != nil {
+		t.Fatalf("write example files: %v", err)
+	}
+	for _, job := range jobs {
+		contents, err := os.ReadFile(filepath.FromSlash(job.OutputPath))
+		if err != nil {
+			t.Fatalf("read copied example file %q: %v", job.OutputPath, err)
+		}
+		if !reflect.DeepEqual(contents, job.Contents) {
+			t.Fatalf("copied example file %q contains %q, expected %q", job.OutputPath, contents, job.Contents)
+		}
+	}
+}
+
+func TestBuildResourceExampleFileJobsRejectsMissingFile(t *testing.T) {
+	t.Chdir(t.TempDir())
+	class := testClass(t, "pkiKeyRing", data.ResourceArtifact)
+	class.ResourceName = "key_ring"
+	class.ResourceExamples.Files = []string{"missing.pem"}
+	generator := &Generator{dataStore: &data.DataStore{Classes: map[string]data.Class{"pkiKeyRing": class}}}
+
+	if _, err := generator.buildResourceExampleFileJobs(); err == nil || !strings.Contains(err.Error(), "missing.pem") {
+		t.Fatalf("expected missing example file error, got %v", err)
 	}
 }
 
@@ -305,6 +392,7 @@ func TestFormatTemplateRenderSummaries(t *testing.T) {
 		{TemplateName: providerExampleTemplateName},
 		{TemplateName: providerExampleTemplateName},
 		{TemplateName: resourceExampleTemplateName},
+		{TemplateName: resourceFullExampleTemplateName},
 		{TemplateName: datasourceExampleTemplateName},
 	}
 	expected := []string{
@@ -313,6 +401,7 @@ func TestFormatTemplateRenderSummaries(t *testing.T) {
 		"Rendered 2 files using template model.go.tmpl.",
 		"Rendered 2 files using template provider_example.tf.tmpl.",
 		"Rendered 1 file using template resource_example.tf.tmpl.",
+		"Rendered 1 file using template resource_example_all_attributes.tf.tmpl.",
 	}
 	if actual := formatTemplateRenderSummaries(jobs); !reflect.DeepEqual(actual, expected) {
 		t.Fatalf("formatted template summaries %#v, expected %#v", actual, expected)
