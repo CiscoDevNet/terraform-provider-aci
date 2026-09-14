@@ -31,6 +31,10 @@ const (
 	modelTemplateName    = "model.go.tmpl"
 	modelOutputDirectory = "internal/provider/models"
 
+	indexTemplateName   = "index.md.tmpl"
+	indexOutputPath     = "docs/index.md"
+	providerExamplePath = "examples/provider/provider.tf"
+
 	providerExampleTemplateName       = "provider_example.tf.tmpl"
 	resourceExamplesOutputDirectory   = "examples/resources"
 	datasourceExamplesOutputDirectory = "examples/data-sources"
@@ -49,13 +53,15 @@ const (
 var genLogger = logger.InitializeLogger()
 
 type Generator struct {
-	dataStore *data.DataStore
-	templates map[string]*texttemplate.Template
+	dataStore       *data.DataStore
+	providerExample string
+	templates       map[string]*texttemplate.Template
 }
 
 type TemplateContext struct {
-	Class     *data.Class
-	DataStore *data.DataStore
+	Class           *data.Class
+	DataStore       *data.DataStore
+	ProviderExample string
 }
 
 type renderJob struct {
@@ -78,7 +84,15 @@ func NewGenerator(dataStore *data.DataStore) (*Generator, error) {
 		return nil, fmt.Errorf("initialize template generator: data store is nil")
 	}
 
-	generator := &Generator{dataStore: dataStore}
+	providerExample, err := os.ReadFile(providerExamplePath)
+	if err != nil {
+		return nil, fmt.Errorf("read provider example %q: %w", providerExamplePath, err)
+	}
+
+	generator := &Generator{
+		dataStore:       dataStore,
+		providerExample: strings.TrimRight(string(providerExample), "\r\n"),
+	}
 	if err := generator.loadTemplates(); err != nil {
 		return nil, err
 	}
@@ -119,12 +133,8 @@ func (g *Generator) loadTemplates() error {
 }
 
 func parseTemplate(templateName string, contents []byte) (*texttemplate.Template, error) {
-	marker, err := generatedMarkerForPath(templateName)
-	if err != nil {
+	if err := validateGeneratedMarker(templateName, contents); err != nil {
 		return nil, err
-	}
-	if firstLine(string(contents)) != marker {
-		return nil, fmt.Errorf("must start with %q", marker)
 	}
 
 	parsedTemplate, err := texttemplate.New(templateName).Parse(string(contents))
@@ -203,6 +213,7 @@ func (g *Generator) Generate() error {
 
 func (g *Generator) buildRenderJobs() []renderJob {
 	jobs := g.buildModelRenderJobs()
+	jobs = append(jobs, g.buildIndexRenderJob())
 	jobs = append(jobs, g.buildProviderExampleRenderJobs()...)
 	jobs = append(jobs, g.buildResourceExampleRenderJobs()...)
 	jobs = append(jobs, g.buildResourceFullExampleRenderJobs()...)
@@ -297,6 +308,17 @@ func (g *Generator) buildClassExampleRenderJobs(artifact data.ArtifactEnum, temp
 		})
 	}
 	return jobs
+}
+
+func (g *Generator) buildIndexRenderJob() renderJob {
+	return renderJob{
+		TemplateName: indexTemplateName,
+		OutputPath:   indexOutputPath,
+		Context: TemplateContext{
+			DataStore:       g.dataStore,
+			ProviderExample: g.providerExample,
+		},
+	}
 }
 
 func (g *Generator) buildAnnotationUnsupportedRenderJob() renderJob {
@@ -476,12 +498,8 @@ func (g *Generator) renderTemplate(templateName, outputPath string, context Temp
 	if err != nil {
 		return err
 	}
-	marker, err := generatedMarkerForPath(outputPath)
-	if err != nil {
-		return err
-	}
-	if firstLine(string(contents)) != marker {
-		return fmt.Errorf("generated marker is not the first line")
+	if err := validateGeneratedMarker(outputPath, contents); err != nil {
+		return fmt.Errorf("validate generated marker: %w", err)
 	}
 
 	if err := writeOutputFile(outputPath, contents); err != nil {
@@ -545,12 +563,34 @@ func generatedMarkerForPath(filePath string) (string, error) {
 	case ".go":
 		return "// " + fmt.Sprintf(generatedMarkerFormat, "Code"), nil
 	case ".md":
-		return "<!-- " + fmt.Sprintf(generatedMarkerFormat, "Documentation") + " -->", nil
+		return "# " + fmt.Sprintf(generatedMarkerFormat, "Documentation"), nil
 	case ".tf":
 		return "# " + fmt.Sprintf(generatedMarkerFormat, "Configuration"), nil
 	default:
 		return "", fmt.Errorf("file %q has unsupported output format", filePath)
 	}
+}
+
+func validateGeneratedMarker(filePath string, contents []byte) error {
+	marker, err := generatedMarkerForPath(filePath)
+	if err != nil {
+		return err
+	}
+
+	contentsString := string(contents)
+	outputName := strings.TrimSuffix(filePath, ".tmpl")
+	if filepath.Ext(outputName) == ".md" {
+		frontMatter, remainingContents, found := strings.Cut(contentsString, "\n")
+		if strings.TrimSuffix(frontMatter, "\r") != "---" || !found || firstLine(remainingContents) != marker {
+			return fmt.Errorf("must start with YAML front matter delimiter followed by %q", marker)
+		}
+		return nil
+	}
+
+	if firstLine(contentsString) != marker {
+		return fmt.Errorf("must start with %q", marker)
+	}
+	return nil
 }
 
 func firstLine(contents string) string {
