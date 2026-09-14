@@ -15,6 +15,8 @@ associated with, `gen/generator.go`:
 | `internal/provider/models/` | 176 files | Managed by the active generator manifest |
 | `internal/custom_types/` | 36 files | Legacy output outside the active generator manifest |
 | `docs/` | 255 files | Static and legacy output outside the active generator manifest |
+| `examples/resources/` | 373 files | The 125 `provider.tf` files are managed; resource examples remain outside the active manifest |
+| `examples/data-sources/` | 252 files | The 125 class `provider.tf` files are managed; data-source examples and both system files remain static |
 | `gen/testvars/` | 125 files | Legacy output outside the active generator manifest |
 | `legacy-docs/` | 4 generated-marked files | Not managed by the active generator |
 
@@ -142,6 +144,12 @@ The output remains outside the managed-files manifest so a later ordinary run
 does not delete it. Changing this template therefore requires running the
 generator with the refresh flag.
 
+`provider_example.tf.tmpl` is a static-content template rendered beside every
+class-backed resource and data-source example selected by the class artifact
+metadata. These jobs require no template context because only their
+artifact-derived destinations vary. The provider file beside the static
+`aci_system` data-source example remains unmanaged.
+
 Active resource and data-source templates must register their generated
 factory with the provider registry from an `init` function in the generated
 artifact.
@@ -161,9 +169,9 @@ visibility and a safety check that a rendered file came from an active
 template. Template-specific front matter must be tested to ensure the marker
 does not invalidate the document format.
 
-Every template executes with an internally constructed standard context
-containing the canonical DataStore and, for class-scoped artifacts, the
-current resolved class:
+Every template executes with an internally constructed standard context that
+can expose the canonical DataStore and current resolved class when its content
+requires them:
 
 ```go
 type TemplateContext struct {
@@ -174,4 +182,5 @@ type TemplateContext struct {
 
 This context does not duplicate or reshape datastore fields. Class-specific
 information is read from `Class`; global templates leave `Class` nil and read
-their global or cross-class information from `DataStore`.
+their global or cross-class information from `DataStore`. Static-content
+templates use the zero-value context.
