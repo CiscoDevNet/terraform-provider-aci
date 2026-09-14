@@ -1,5 +1,8 @@
 {
   "directories": {
+    "docs": [
+      "index.md"
+    ],
     "examples/data-sources/aci_access_interface_override": [
       "data-source.tf",
       "provider.tf"
