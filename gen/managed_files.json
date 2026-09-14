@@ -376,379 +376,504 @@
       "provider.tf"
     ],
     "examples/resources/aci_access_interface_override": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_access_monitoring_policy": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_access_port_block": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_access_port_selector": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_annotation": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_any": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_application_epg": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_application_profile": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_associated_site": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_attachable_access_entity_profile": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_bridge_domain": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_cdp_interface_policy": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_certificate_authority": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_copp_interface_policy": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_copp_interface_protocol_policy": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_custom_qos_policy": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_data_plane_policing_policy": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_dot1p_classifier": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_dot1x_port_authentication_interface_policy": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_dscp_to_priority_map": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_dwdm_interface_policy": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_eigrp_address_family_context": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_endpoint_security_group": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_endpoint_tag_ip": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_endpoint_tag_mac": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_epg_useg_ad_group_attribute": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_epg_useg_block_statement": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_epg_useg_dns_attribute": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_epg_useg_ip_attribute": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_epg_useg_mac_attribute": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_epg_useg_sub_block_statement": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_epg_useg_vm_attribute": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_external_epg": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_external_management_network_instance_profile": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_external_management_network_subnet": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_fabric_external_connection_policy": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_fex_profile": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_fibre_channel_interface_policy": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_firewall_policy": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_first_hop_security_policy": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_igmp_snooping_policy": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_imported_logical_device": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_ip_address_block": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_ip_address_pool": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_ip_sla_track_list": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_ip_sla_track_member": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_key_ring": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_l2_interface_policy": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_l2_mtu_policy": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_l3out_consumer_label": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_l3out_node_sid_profile": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_l3out_provider_label": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_l3out_redistribute_policy": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_lacp_enhanced_lag_policy": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_leaf_interface_profile": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_link_flap_interface_policy": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_link_level_flow_control_interface_policy": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_link_level_interface_policy": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_lldp_interface_policy": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_management_access_policy": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_mcp_interface_policy": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_mld_snooping_policy": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_neighbor_discovery_interface_policy": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_netflow_exporter_policy": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_netflow_monitor_policy": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_netflow_record_policy": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_no_drop_dscp_match_interface_policy": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_out_of_band_contract": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_pim_route_map_entry": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_pim_route_map_policy": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_poe_interface_policy": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_port_security_interface_policy": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_priority_flow_control_interface_policy": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_relation_from_any_to_consumer_contract": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_relation_from_any_to_contract_interface": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_relation_from_any_to_provider_contract": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_relation_from_application_epg_to_attachable_access_entity_profile": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_relation_from_attachable_access_entity_profile_to_domain": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_relation_from_bridge_domain_to_l3_outside": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_relation_from_bridge_domain_to_netflow_monitor_policy": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_relation_from_external_epg_to_route_control_profile": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_relation_from_l3out_consumer_label_to_external_epg": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_relation_from_l3out_consumer_label_to_route_control_profile": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_relation_from_taboo_contract_subject_to_filter": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_relation_from_vrf_to_address_family_ospf_timers": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_relation_from_vrf_to_bgp_address_family_context": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_relation_from_vrf_to_eigrp_address_family_context": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_relation_to_consumed_contract": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_relation_to_consumed_out_of_band_contract": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_relation_to_contract_master": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_relation_to_domain": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_relation_to_fibre_channel_path": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_relation_to_imported_contract": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_relation_to_intra_epg_contract": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_relation_to_ip_sla_track_member": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_relation_to_netflow_exporter": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_relation_to_provided_contract": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_relation_to_static_leaf": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_relation_to_static_path": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_relation_to_taboo_contract": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_relation_to_vrf_fallback_route_group": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_remote_site": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_rogue_coop_exception": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_route_control_profile": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_slow_drain_interface_policy": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_spanning_tree_interface_policy": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_spine_access_port_selector": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_spine_interface_profile": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_synce_interface_policy": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_taboo_contract": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_taboo_contract_subject": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_tag": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_tenant": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_trust_control_policy": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_virtual_ip_address": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_vmm_credential": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_vmm_domain": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_vmm_uplink_container": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_vmm_uplink_policy": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_vrf": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_vrf_fallback_route": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_vrf_fallback_route_group": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_vrf_fallback_route_group_member": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_zr_transceiver_interface_policy": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "examples/resources/aci_zrp_transceiver_interface_policy": [
-      "provider.tf"
+      "provider.tf",
+      "resource.tf"
     ],
     "internal/provider/models": [
       "cdpIfPol.go",

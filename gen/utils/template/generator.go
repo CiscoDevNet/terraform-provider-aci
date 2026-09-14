@@ -34,6 +34,8 @@ const (
 	resourceExamplesOutputDirectory   = "examples/resources"
 	datasourceExamplesOutputDirectory = "examples/data-sources"
 	providerExampleOutputName         = "provider.tf"
+	resourceExampleTemplateName       = "resource_example.tf.tmpl"
+	resourceExampleOutputName         = "resource.tf"
 
 	annotationUnsupportedTemplateName = "annotation_unsupported.go.tmpl"
 	annotationUnsupportedOutputPath   = "internal/provider/annotation_unsupported.go"
@@ -172,8 +174,40 @@ func (g *Generator) Generate() error {
 func (g *Generator) buildRenderJobs() []renderJob {
 	jobs := g.buildModelRenderJobs()
 	jobs = append(jobs, g.buildProviderExampleRenderJobs()...)
+	jobs = append(jobs, g.buildResourceExampleRenderJobs()...)
 	if g.dataStore.UnsupportedAnnotationClasses != nil {
 		jobs = append(jobs, g.buildAnnotationUnsupportedRenderJob())
+	}
+	return jobs
+}
+
+func (g *Generator) buildResourceExampleRenderJobs() []renderJob {
+	return g.buildClassExampleRenderJobs(
+		data.ResourceArtifact,
+		resourceExampleTemplateName,
+		resourceExamplesOutputDirectory,
+		resourceExampleOutputName,
+	)
+}
+
+func (g *Generator) buildClassExampleRenderJobs(artifact data.ArtifactEnum, templateName, outputDirectory, outputName string) []renderJob {
+	// Apply common ordering and artifact filtering to resource and datasource examples.
+	classNames := g.sortedClassNames()
+
+	jobs := make([]renderJob, 0, len(classNames))
+	for _, className := range classNames {
+		class := g.dataStore.Classes[className]
+		if artifact == data.ResourceArtifact && !class.HasResourceArtifact() {
+			continue
+		}
+		if artifact == data.DatasourceArtifact && !class.HasDatasourceArtifact() {
+			continue
+		}
+		jobs = append(jobs, renderJob{
+			TemplateName: templateName,
+			OutputPath:   pathpkg.Join(outputDirectory, "aci_"+class.ResourceName, outputName),
+			Context:      TemplateContext{Class: &class, DataStore: g.dataStore},
+		})
 	}
 	return jobs
 }
