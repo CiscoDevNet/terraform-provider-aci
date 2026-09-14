@@ -53,7 +53,7 @@ func TestParseTemplateSupportsOutputFormats(t *testing.T) {
 
 func TestGeneratorLoadsActiveTemplates(t *testing.T) {
 	generator := loadActiveGenerator(t, &data.DataStore{})
-	for _, templateName := range []string{modelTemplateName, annotationUnsupportedTemplateName} {
+	for _, templateName := range []string{modelTemplateName, providerExampleTemplateName, annotationUnsupportedTemplateName} {
 		if _, ok := generator.templates[templateName]; !ok {
 			t.Fatalf("required template %q was not loaded", templateName)
 		}
@@ -147,6 +147,45 @@ func TestBuildModelRenderJobs(t *testing.T) {
 	}
 }
 
+func TestBuildProviderExampleRenderJobs(t *testing.T) {
+	childClass := testClass(t, "fvRsTenantMonPol")
+	childClass.ResourceName = "relation_to_monitoring_policy"
+	resourceClass := testClass(t, "fvBD", data.ResourceArtifact)
+	resourceClass.ResourceName = "bridge_domain"
+	datasourceClass := testClass(t, "fvCtx", data.DatasourceArtifact)
+	datasourceClass.ResourceName = "vrf"
+	bothClass := testClass(t, "fvTenant", data.ResourceArtifact, data.DatasourceArtifact)
+	bothClass.ResourceName = "tenant"
+	dataStore := &data.DataStore{Classes: map[string]data.Class{
+		"fvBD":             resourceClass,
+		"fvCtx":            datasourceClass,
+		"fvRsTenantMonPol": childClass,
+		"fvTenant":         bothClass,
+	}}
+	generator := &Generator{dataStore: dataStore}
+
+	jobs := generator.buildProviderExampleRenderJobs()
+	expectedPaths := []string{
+		"examples/data-sources/aci_tenant/provider.tf",
+		"examples/data-sources/aci_vrf/provider.tf",
+		"examples/resources/aci_bridge_domain/provider.tf",
+		"examples/resources/aci_tenant/provider.tf",
+	}
+	actualPaths := make([]string, 0, len(jobs))
+	for _, job := range jobs {
+		actualPaths = append(actualPaths, job.OutputPath)
+		if job.TemplateName != providerExampleTemplateName {
+			t.Fatalf("unexpected template name %q", job.TemplateName)
+		}
+		if job.Context != (TemplateContext{}) {
+			t.Fatalf("static provider example has an unexpected context: %#v", job.Context)
+		}
+	}
+	if !reflect.DeepEqual(actualPaths, expectedPaths) {
+		t.Fatalf("provider example output paths %#v, expected %#v", actualPaths, expectedPaths)
+	}
+}
+
 func TestBuildAnnotationUnsupportedRenderJob(t *testing.T) {
 	dataStore := &data.DataStore{}
 	generator := &Generator{dataStore: dataStore}
@@ -161,18 +200,18 @@ func TestBuildAnnotationUnsupportedRenderJob(t *testing.T) {
 }
 
 func TestBuildRenderJobsIncludesAnnotationOnlyAfterRefresh(t *testing.T) {
-	class := testClass(t, "fvTenant")
+	class := testClass(t, "fvTenant", data.ResourceArtifact, data.DatasourceArtifact)
 	dataStore := &data.DataStore{Classes: map[string]data.Class{"fvTenant": class}}
 	generator := &Generator{dataStore: dataStore}
 
 	jobs := generator.buildRenderJobs()
-	if len(jobs) != 1 || jobs[0].TemplateName != modelTemplateName {
+	if len(jobs) != 3 || jobs[0].TemplateName != modelTemplateName || jobs[1].TemplateName != providerExampleTemplateName || jobs[2].TemplateName != providerExampleTemplateName {
 		t.Fatalf("unexpected ordinary render jobs: %#v", jobs)
 	}
 
 	dataStore.UnsupportedAnnotationClasses = []string{}
 	jobs = generator.buildRenderJobs()
-	if len(jobs) != 2 || jobs[1].TemplateName != annotationUnsupportedTemplateName || !jobs[1].RefreshOnly {
+	if len(jobs) != 4 || jobs[3].TemplateName != annotationUnsupportedTemplateName || !jobs[3].RefreshOnly {
 		t.Fatalf("unexpected refresh render jobs: %#v", jobs)
 	}
 }
@@ -182,10 +221,13 @@ func TestFormatTemplateRenderSummaries(t *testing.T) {
 		{TemplateName: modelTemplateName},
 		{TemplateName: annotationUnsupportedTemplateName},
 		{TemplateName: modelTemplateName},
+		{TemplateName: providerExampleTemplateName},
+		{TemplateName: providerExampleTemplateName},
 	}
 	expected := []string{
 		"Rendered 1 file using template annotation_unsupported.go.tmpl.",
 		"Rendered 2 files using template model.go.tmpl.",
+		"Rendered 2 files using template provider_example.tf.tmpl.",
 	}
 	if actual := formatTemplateRenderSummaries(jobs); !reflect.DeepEqual(actual, expected) {
 		t.Fatalf("formatted template summaries %#v, expected %#v", actual, expected)

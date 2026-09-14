@@ -7,8 +7,8 @@ terraform {
 }
 
 provider "aci" {
-  username = ""
-  password = ""
-  url      = ""
+  username = "admin"
+  password = "password"
+  url      = "https://my-cisco-aci.com"
   insecure = true
 }
