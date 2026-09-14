@@ -53,7 +53,12 @@ func TestParseTemplateSupportsOutputFormats(t *testing.T) {
 
 func TestGeneratorLoadsActiveTemplates(t *testing.T) {
 	generator := loadActiveGenerator(t, &data.DataStore{})
-	for _, templateName := range []string{modelTemplateName, providerExampleTemplateName, annotationUnsupportedTemplateName} {
+	for _, templateName := range []string{
+		modelTemplateName,
+		providerExampleTemplateName,
+		resourceExampleTemplateName,
+		annotationUnsupportedTemplateName,
+	} {
 		if _, ok := generator.templates[templateName]; !ok {
 			t.Fatalf("required template %q was not loaded", templateName)
 		}
@@ -186,6 +191,43 @@ func TestBuildProviderExampleRenderJobs(t *testing.T) {
 	}
 }
 
+func TestBuildResourceExampleRenderJobs(t *testing.T) {
+	childClass := testClass(t, "fvRsTenantMonPol")
+	childClass.ResourceName = "relation_to_monitoring_policy"
+	resourceClass := testClass(t, "fvBD", data.ResourceArtifact)
+	resourceClass.ResourceName = "bridge_domain"
+	datasourceClass := testClass(t, "fvCtx", data.DatasourceArtifact)
+	datasourceClass.ResourceName = "vrf"
+	bothClass := testClass(t, "fvTenant", data.ResourceArtifact, data.DatasourceArtifact)
+	bothClass.ResourceName = "tenant"
+	dataStore := &data.DataStore{Classes: map[string]data.Class{
+		"fvBD":             resourceClass,
+		"fvCtx":            datasourceClass,
+		"fvRsTenantMonPol": childClass,
+		"fvTenant":         bothClass,
+	}}
+	generator := &Generator{dataStore: dataStore}
+
+	jobs := generator.buildResourceExampleRenderJobs()
+	expectedPaths := []string{
+		"examples/resources/aci_bridge_domain/resource.tf",
+		"examples/resources/aci_tenant/resource.tf",
+	}
+	actualPaths := make([]string, 0, len(jobs))
+	for _, job := range jobs {
+		actualPaths = append(actualPaths, job.OutputPath)
+		if job.TemplateName != resourceExampleTemplateName {
+			t.Fatalf("unexpected template name %q", job.TemplateName)
+		}
+		if job.Context.Class == nil || job.Context.DataStore != dataStore {
+			t.Fatalf("resource example job has an incomplete context: %#v", job.Context)
+		}
+	}
+	if !reflect.DeepEqual(actualPaths, expectedPaths) {
+		t.Fatalf("resource example output paths %#v, expected %#v", actualPaths, expectedPaths)
+	}
+}
+
 func TestBuildAnnotationUnsupportedRenderJob(t *testing.T) {
 	dataStore := &data.DataStore{}
 	generator := &Generator{dataStore: dataStore}
@@ -205,13 +247,17 @@ func TestBuildRenderJobsIncludesAnnotationOnlyAfterRefresh(t *testing.T) {
 	generator := &Generator{dataStore: dataStore}
 
 	jobs := generator.buildRenderJobs()
-	if len(jobs) != 3 || jobs[0].TemplateName != modelTemplateName || jobs[1].TemplateName != providerExampleTemplateName || jobs[2].TemplateName != providerExampleTemplateName {
+	if len(jobs) != 4 ||
+		jobs[0].TemplateName != modelTemplateName ||
+		jobs[1].TemplateName != providerExampleTemplateName ||
+		jobs[2].TemplateName != providerExampleTemplateName ||
+		jobs[3].TemplateName != resourceExampleTemplateName {
 		t.Fatalf("unexpected ordinary render jobs: %#v", jobs)
 	}
 
 	dataStore.UnsupportedAnnotationClasses = []string{}
 	jobs = generator.buildRenderJobs()
-	if len(jobs) != 4 || jobs[3].TemplateName != annotationUnsupportedTemplateName || !jobs[3].RefreshOnly {
+	if len(jobs) != 5 || jobs[4].TemplateName != annotationUnsupportedTemplateName || !jobs[4].RefreshOnly {
 		t.Fatalf("unexpected refresh render jobs: %#v", jobs)
 	}
 }
@@ -223,11 +269,13 @@ func TestFormatTemplateRenderSummaries(t *testing.T) {
 		{TemplateName: modelTemplateName},
 		{TemplateName: providerExampleTemplateName},
 		{TemplateName: providerExampleTemplateName},
+		{TemplateName: resourceExampleTemplateName},
 	}
 	expected := []string{
 		"Rendered 1 file using template annotation_unsupported.go.tmpl.",
 		"Rendered 2 files using template model.go.tmpl.",
 		"Rendered 2 files using template provider_example.tf.tmpl.",
+		"Rendered 1 file using template resource_example.tf.tmpl.",
 	}
 	if actual := formatTemplateRenderSummaries(jobs); !reflect.DeepEqual(actual, expected) {
 		t.Fatalf("formatted template summaries %#v, expected %#v", actual, expected)
