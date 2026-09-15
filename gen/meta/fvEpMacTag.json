@@ -233,17 +233,17 @@
                              "platformFlavors": [
 
                              ],
-                             "label": "deleteAll "},
+                             "label": "Delete All "},
                          { "value": "8192", "localName": "deleteNonPresent",
                              "platformFlavors": [
 
                              ],
-                             "label": "deleteNonPresent "},
+                             "label": "Delete Non Present "},
                          { "value": "4096", "localName": "ignore",
                              "platformFlavors": [
 
                              ],
-                             "label": "ignore "}
+                             "label": "Ignore "}
                     ],
                     "platformFlavors": [
 
@@ -445,7 +445,7 @@
                     "isConfigurable": false,
                     "propGlobalId": "70094",
                     "propLocalId": "143",
-                    "label": "encap",
+                    "label": "Encap",
                     "baseType": "base:Encap",
                     "modelType": "base:Encap",
                     "needsPropDelimiters": true,
@@ -463,7 +463,7 @@
 
                     ],
                     "isNxosConverged": false,
-                    "isDeprecated": false,
+                    "isDeprecated": true,
                     "isHidden": false
                 },
                 "extMngdBy": {
@@ -498,12 +498,12 @@
                              "platformFlavors": [
 
                              ],
-                             "label": "msc "},
+                             "label": "MSC "},
                          { "value": "0", "localName": "undefined",
                              "platformFlavors": [
 
                              ],
-                             "label": "undefined "}
+                             "label": "Undefined "}
                     ],
                     "default": "undefined",
                     "platformFlavors": [
@@ -646,7 +646,7 @@
                              "comment": [
                                  "802.1x authentication Ep"
                              ],
-                             "label": "802-dot-1x "},
+                             "label": "802-Dot-1x "},
                          { "value": "8", "localName": "dynamic",
                              "platformFlavors": [
 
@@ -654,7 +654,7 @@
                              "comment": [
                                  "dynamically detected through special HV signalling"
                              ],
-                             "label": "dynamic "},
+                             "label": "Dynamic "},
                          { "value": "2", "localName": "learned",
                              "platformFlavors": [
 
@@ -662,7 +662,7 @@
                              "comment": [
                                  "learned through network protocol magic"
                              ],
-                             "label": "learned "},
+                             "label": "Learned "},
                          { "value": "32", "localName": "poe",
                              "platformFlavors": [
 
@@ -670,7 +670,7 @@
                              "comment": [
                                  "Power Over Ethernet Ep"
                              ],
-                             "label": "poe "},
+                             "label": "PoE "},
                          { "value": "4", "localName": "static",
                              "platformFlavors": [
 
@@ -678,7 +678,7 @@
                              "comment": [
                                  "statically configured by admin"
                              ],
-                             "label": "static "},
+                             "label": "Static "},
                          { "value": "1", "localName": "vmm",
                              "platformFlavors": [
 
@@ -686,7 +686,7 @@
                              "comment": [
                                  "instanciated by a trigger from corresponding VMM domain"
                              ],
-                             "label": "vmm "}
+                             "label": "VMM "}
                     ],
                     "platformFlavors": [
 
@@ -747,7 +747,7 @@
                              "platformFlavors": [
 
                              ],
-                             "label": "ResolvedOnBehalf "}
+                             "label": "Resolved On Behalf "}
                     ],
                     "default": "local",
                     "platformFlavors": [
@@ -819,7 +819,7 @@
                              "platformFlavors": [
 
                              ],
-                             "label": "never "}
+                             "label": "Never "}
                     ],
                     "default": "never",
                     "platformFlavors": [
@@ -837,7 +837,7 @@
                     "isConfigurable": false,
                     "propGlobalId": "62881",
                     "propLocalId": "228",
-                    "label": "Monitoring policy",
+                    "label": "Monitoring Policy",
                     "baseType": "reference:BinRef",
                     "modelType": "reference:BinRef",
                     "needsPropDelimiters": true,
@@ -891,7 +891,7 @@
 
                     ],
                     "isNxosConverged": false,
-                    "isDeprecated": false,
+                    "isDeprecated": true,
                     "isHidden": false
                 },
                 "nameAlias": {
@@ -924,7 +924,7 @@
 
                     ],
                     "isNxosConverged": false,
-                    "isDeprecated": false,
+                    "isDeprecated": true,
                     "isHidden": false
                 },
                 "rn": {
@@ -1012,7 +1012,7 @@
                              "comment": [
                                  "In a setter method: specifies that an object should be created. An error is returned if the object already exists.  \nIn the return value of a setter method: indicates that an object has been created.  \n"
                              ],
-                             "label": "created "},
+                             "label": "Created "},
                          { "value": "8", "localName": "deleted",
                              "platformFlavors": [
 
@@ -1020,7 +1020,7 @@
                              "comment": [
                                  "In a setter method: specifies that an object should be deleted.  \nIn the return value of a setter method: indicates that an object has been deleted.\n"
                              ],
-                             "label": "deleted "},
+                             "label": "Deleted "},
                          { "value": "4", "localName": "modified",
                              "platformFlavors": [
 
@@ -1028,7 +1028,7 @@
                              "comment": [
                                  "In a setter method: specifies that an object should be modified  \nIn the return value of a setter method: indicates that an object has been modified.\n"
                              ],
-                             "label": "modified "}
+                             "label": "Modified "}
                     ],
                     "platformFlavors": [
 
