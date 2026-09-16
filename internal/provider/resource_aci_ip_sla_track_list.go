@@ -30,10 +30,15 @@ import (
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &FvTrackListResource{}
+var _ resource.ResourceWithIdentity = &FvTrackListResource{}
 var _ resource.ResourceWithImportState = &FvTrackListResource{}
 
 func NewFvTrackListResource() resource.Resource {
 	return &FvTrackListResource{}
+}
+
+func (r FvTrackListResource) IdentitySchema(_ context.Context, _ resource.IdentitySchemaRequest, resp *resource.IdentitySchemaResponse) {
+	resp.IdentitySchema = getIdentitySchema()
 }
 
 // FvTrackListResource defines the resource implementation.
@@ -637,6 +642,7 @@ func (r *FvTrackListResource) Create(ctx context.Context, req resource.CreateReq
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_ip_sla_track_list with id '%s'", data.Id.ValueString()))
 }
 
@@ -661,6 +667,7 @@ func (r *FvTrackListResource) Read(ctx context.Context, req resource.ReadRequest
 		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
 	} else {
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+		resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_ip_sla_track_list with id '%s'", data.Id.ValueString()))
@@ -706,6 +713,7 @@ func (r *FvTrackListResource) Update(ctx context.Context, req resource.UpdateReq
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_ip_sla_track_list with id '%s'", data.Id.ValueString()))
 }
 
@@ -734,10 +742,11 @@ func (r *FvTrackListResource) Delete(ctx context.Context, req resource.DeleteReq
 
 func (r *FvTrackListResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_ip_sla_track_list")
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	resource.ImportStatePassthroughWithIdentity(ctx, path.Root("id"), path.Root("id"), req, resp)
 
 	var stateData *FvTrackListResourceModel
 	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: stateData.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_ip_sla_track_list with id '%s'", stateData.Id.ValueString()))
 
 	tflog.Debug(ctx, "End import of state resource: aci_ip_sla_track_list")
@@ -747,11 +756,17 @@ func getAndSetFvTrackListAttributes(ctx context.Context, diags *diag.Diagnostics
 	childClasses := getChildClassesForGetRequest([]string{"fvRsOtmListMember", "tagAnnotation", "tagTag"})
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), strings.Join(childClasses, ",")), "GET", nil)
 
-	readData := getEmptyFvTrackListResourceModel()
-
 	if diags.HasError() {
 		return
 	}
+
+	setFvTrackListAttributes(ctx, diags, data, requestData)
+}
+
+func setFvTrackListAttributes(ctx context.Context, diags *diag.Diagnostics, data *FvTrackListResourceModel, requestData *container.Container) {
+
+	readData := getEmptyFvTrackListResourceModel()
+
 	if requestData.Search("imdata").Search("fvTrackList").Data() != nil {
 		classReadInfo := requestData.Search("imdata").Search("fvTrackList").Data().([]interface{})
 		if len(classReadInfo) == 1 {

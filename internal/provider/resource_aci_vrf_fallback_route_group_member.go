@@ -29,10 +29,15 @@ import (
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &FvFBRMemberResource{}
+var _ resource.ResourceWithIdentity = &FvFBRMemberResource{}
 var _ resource.ResourceWithImportState = &FvFBRMemberResource{}
 
 func NewFvFBRMemberResource() resource.Resource {
 	return &FvFBRMemberResource{}
+}
+
+func (r FvFBRMemberResource) IdentitySchema(_ context.Context, _ resource.IdentitySchemaRequest, resp *resource.IdentitySchemaResponse) {
+	resp.IdentitySchema = getIdentitySchema()
 }
 
 // FvFBRMemberResource defines the resource implementation.
@@ -354,6 +359,7 @@ func (r *FvFBRMemberResource) Create(ctx context.Context, req resource.CreateReq
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_vrf_fallback_route_group_member with id '%s'", data.Id.ValueString()))
 }
 
@@ -378,6 +384,7 @@ func (r *FvFBRMemberResource) Read(ctx context.Context, req resource.ReadRequest
 		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
 	} else {
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+		resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_vrf_fallback_route_group_member with id '%s'", data.Id.ValueString()))
@@ -420,6 +427,7 @@ func (r *FvFBRMemberResource) Update(ctx context.Context, req resource.UpdateReq
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_vrf_fallback_route_group_member with id '%s'", data.Id.ValueString()))
 }
 
@@ -448,10 +456,11 @@ func (r *FvFBRMemberResource) Delete(ctx context.Context, req resource.DeleteReq
 
 func (r *FvFBRMemberResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_vrf_fallback_route_group_member")
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	resource.ImportStatePassthroughWithIdentity(ctx, path.Root("id"), path.Root("id"), req, resp)
 
 	var stateData *FvFBRMemberResourceModel
 	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: stateData.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_vrf_fallback_route_group_member with id '%s'", stateData.Id.ValueString()))
 
 	tflog.Debug(ctx, "End import of state resource: aci_vrf_fallback_route_group_member")
@@ -461,11 +470,17 @@ func getAndSetFvFBRMemberAttributes(ctx context.Context, diags *diag.Diagnostics
 	childClasses := getChildClassesForGetRequest([]string{"tagAnnotation", "tagTag"})
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), strings.Join(childClasses, ",")), "GET", nil)
 
-	readData := getEmptyFvFBRMemberResourceModel()
-
 	if diags.HasError() {
 		return
 	}
+
+	setFvFBRMemberAttributes(ctx, diags, data, requestData)
+}
+
+func setFvFBRMemberAttributes(ctx context.Context, diags *diag.Diagnostics, data *FvFBRMemberResourceModel, requestData *container.Container) {
+
+	readData := getEmptyFvFBRMemberResourceModel()
+
 	if requestData.Search("imdata").Search("fvFBRMember").Data() != nil {
 		classReadInfo := requestData.Search("imdata").Search("fvFBRMember").Data().([]interface{})
 		if len(classReadInfo) == 1 {

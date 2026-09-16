@@ -28,10 +28,15 @@ import (
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &NetflowRsMonitorToExporterResource{}
+var _ resource.ResourceWithIdentity = &NetflowRsMonitorToExporterResource{}
 var _ resource.ResourceWithImportState = &NetflowRsMonitorToExporterResource{}
 
 func NewNetflowRsMonitorToExporterResource() resource.Resource {
 	return &NetflowRsMonitorToExporterResource{}
+}
+
+func (r NetflowRsMonitorToExporterResource) IdentitySchema(_ context.Context, _ resource.IdentitySchemaRequest, resp *resource.IdentitySchemaResponse) {
+	resp.IdentitySchema = getIdentitySchema()
 }
 
 // NetflowRsMonitorToExporterResource defines the resource implementation.
@@ -319,6 +324,7 @@ func (r *NetflowRsMonitorToExporterResource) Create(ctx context.Context, req res
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_relation_to_netflow_exporter with id '%s'", data.Id.ValueString()))
 }
 
@@ -343,6 +349,7 @@ func (r *NetflowRsMonitorToExporterResource) Read(ctx context.Context, req resou
 		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
 	} else {
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+		resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_relation_to_netflow_exporter with id '%s'", data.Id.ValueString()))
@@ -385,6 +392,7 @@ func (r *NetflowRsMonitorToExporterResource) Update(ctx context.Context, req res
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_relation_to_netflow_exporter with id '%s'", data.Id.ValueString()))
 }
 
@@ -413,10 +421,11 @@ func (r *NetflowRsMonitorToExporterResource) Delete(ctx context.Context, req res
 
 func (r *NetflowRsMonitorToExporterResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_relation_to_netflow_exporter")
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	resource.ImportStatePassthroughWithIdentity(ctx, path.Root("id"), path.Root("id"), req, resp)
 
 	var stateData *NetflowRsMonitorToExporterResourceModel
 	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: stateData.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_relation_to_netflow_exporter with id '%s'", stateData.Id.ValueString()))
 
 	tflog.Debug(ctx, "End import of state resource: aci_relation_to_netflow_exporter")
@@ -426,11 +435,17 @@ func getAndSetNetflowRsMonitorToExporterAttributes(ctx context.Context, diags *d
 	childClasses := getChildClassesForGetRequest([]string{"tagAnnotation", "tagTag"})
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), strings.Join(childClasses, ",")), "GET", nil)
 
-	readData := getEmptyNetflowRsMonitorToExporterResourceModel()
-
 	if diags.HasError() {
 		return
 	}
+
+	setNetflowRsMonitorToExporterAttributes(ctx, diags, data, requestData)
+}
+
+func setNetflowRsMonitorToExporterAttributes(ctx context.Context, diags *diag.Diagnostics, data *NetflowRsMonitorToExporterResourceModel, requestData *container.Container) {
+
+	readData := getEmptyNetflowRsMonitorToExporterResourceModel()
+
 	if requestData.Search("imdata").Search("netflowRsMonitorToExporter").Data() != nil {
 		classReadInfo := requestData.Search("imdata").Search("netflowRsMonitorToExporter").Data().([]interface{})
 		if len(classReadInfo) == 1 {

@@ -33,10 +33,15 @@ import (
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &NetflowExporterPolResource{}
+var _ resource.ResourceWithIdentity = &NetflowExporterPolResource{}
 var _ resource.ResourceWithImportState = &NetflowExporterPolResource{}
 
 func NewNetflowExporterPolResource() resource.Resource {
 	return &NetflowExporterPolResource{}
+}
+
+func (r NetflowExporterPolResource) IdentitySchema(_ context.Context, _ resource.IdentitySchemaRequest, resp *resource.IdentitySchemaResponse) {
+	resp.IdentitySchema = getIdentitySchema()
 }
 
 // NetflowExporterPolResource defines the resource implementation.
@@ -795,6 +800,7 @@ func (r *NetflowExporterPolResource) Create(ctx context.Context, req resource.Cr
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_netflow_exporter_policy with id '%s'", data.Id.ValueString()))
 }
 
@@ -819,6 +825,7 @@ func (r *NetflowExporterPolResource) Read(ctx context.Context, req resource.Read
 		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
 	} else {
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+		resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_netflow_exporter_policy with id '%s'", data.Id.ValueString()))
@@ -867,6 +874,7 @@ func (r *NetflowExporterPolResource) Update(ctx context.Context, req resource.Up
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_netflow_exporter_policy with id '%s'", data.Id.ValueString()))
 }
 
@@ -895,10 +903,11 @@ func (r *NetflowExporterPolResource) Delete(ctx context.Context, req resource.De
 
 func (r *NetflowExporterPolResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_netflow_exporter_policy")
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	resource.ImportStatePassthroughWithIdentity(ctx, path.Root("id"), path.Root("id"), req, resp)
 
 	var stateData *NetflowExporterPolResourceModel
 	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: stateData.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_netflow_exporter_policy with id '%s'", stateData.Id.ValueString()))
 
 	tflog.Debug(ctx, "End import of state resource: aci_netflow_exporter_policy")
@@ -908,11 +917,17 @@ func getAndSetNetflowExporterPolAttributes(ctx context.Context, diags *diag.Diag
 	childClasses := getChildClassesForGetRequest([]string{"netflowRsExporterToCtx", "netflowRsExporterToEPg", "tagAnnotation", "tagTag"})
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), strings.Join(childClasses, ",")), "GET", nil)
 
-	readData := getEmptyNetflowExporterPolResourceModel()
-
 	if diags.HasError() {
 		return
 	}
+
+	setNetflowExporterPolAttributes(ctx, diags, data, requestData)
+}
+
+func setNetflowExporterPolAttributes(ctx context.Context, diags *diag.Diagnostics, data *NetflowExporterPolResourceModel, requestData *container.Container) {
+
+	readData := getEmptyNetflowExporterPolResourceModel()
+
 	if requestData.Search("imdata").Search("netflowExporterPol").Data() != nil {
 		classReadInfo := requestData.Search("imdata").Search("netflowExporterPol").Data().([]interface{})
 		if len(classReadInfo) == 1 {

@@ -24,10 +24,15 @@ import (
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &TagTagResource{}
+var _ resource.ResourceWithIdentity = &TagTagResource{}
 var _ resource.ResourceWithImportState = &TagTagResource{}
 
 func NewTagTagResource() resource.Resource {
 	return &TagTagResource{}
+}
+
+func (r TagTagResource) IdentitySchema(_ context.Context, _ resource.IdentitySchemaRequest, resp *resource.IdentitySchemaResponse) {
+	resp.IdentitySchema = getIdentitySchema()
 }
 
 // TagTagResource defines the resource implementation.
@@ -188,6 +193,7 @@ func (r *TagTagResource) Create(ctx context.Context, req resource.CreateRequest,
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_tag with id '%s'", data.Id.ValueString()))
 }
 
@@ -212,6 +218,7 @@ func (r *TagTagResource) Read(ctx context.Context, req resource.ReadRequest, res
 		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
 	} else {
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+		resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_tag with id '%s'", data.Id.ValueString()))
@@ -246,6 +253,7 @@ func (r *TagTagResource) Update(ctx context.Context, req resource.UpdateRequest,
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_tag with id '%s'", data.Id.ValueString()))
 }
 
@@ -274,10 +282,11 @@ func (r *TagTagResource) Delete(ctx context.Context, req resource.DeleteRequest,
 
 func (r *TagTagResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_tag")
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	resource.ImportStatePassthroughWithIdentity(ctx, path.Root("id"), path.Root("id"), req, resp)
 
 	var stateData *TagTagResourceModel
 	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: stateData.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_tag with id '%s'", stateData.Id.ValueString()))
 
 	tflog.Debug(ctx, "End import of state resource: aci_tag")
@@ -286,11 +295,17 @@ func (r *TagTagResource) ImportState(ctx context.Context, req resource.ImportSta
 func getAndSetTagTagAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *TagTagResourceModel) {
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "GET", nil)
 
-	readData := getEmptyTagTagResourceModel()
-
 	if diags.HasError() {
 		return
 	}
+
+	setTagTagAttributes(ctx, diags, data, requestData)
+}
+
+func setTagTagAttributes(ctx context.Context, diags *diag.Diagnostics, data *TagTagResourceModel, requestData *container.Container) {
+
+	readData := getEmptyTagTagResourceModel()
+
 	if requestData.Search("imdata").Search("tagTag").Data() != nil {
 		classReadInfo := requestData.Search("imdata").Search("tagTag").Data().([]interface{})
 		if len(classReadInfo) == 1 {

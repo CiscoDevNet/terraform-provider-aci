@@ -30,10 +30,15 @@ import (
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &InfraHPathSResource{}
+var _ resource.ResourceWithIdentity = &InfraHPathSResource{}
 var _ resource.ResourceWithImportState = &InfraHPathSResource{}
 
 func NewInfraHPathSResource() resource.Resource {
 	return &InfraHPathSResource{}
+}
+
+func (r InfraHPathSResource) IdentitySchema(_ context.Context, _ resource.IdentitySchemaRequest, resp *resource.IdentitySchemaResponse) {
+	resp.IdentitySchema = getIdentitySchema()
 }
 
 // InfraHPathSResource defines the resource implementation.
@@ -709,6 +714,7 @@ func (r *InfraHPathSResource) Create(ctx context.Context, req resource.CreateReq
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_access_interface_override with id '%s'", data.Id.ValueString()))
 }
 
@@ -733,6 +739,7 @@ func (r *InfraHPathSResource) Read(ctx context.Context, req resource.ReadRequest
 		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
 	} else {
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+		resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_access_interface_override with id '%s'", data.Id.ValueString()))
@@ -781,6 +788,7 @@ func (r *InfraHPathSResource) Update(ctx context.Context, req resource.UpdateReq
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_access_interface_override with id '%s'", data.Id.ValueString()))
 }
 
@@ -809,10 +817,11 @@ func (r *InfraHPathSResource) Delete(ctx context.Context, req resource.DeleteReq
 
 func (r *InfraHPathSResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_access_interface_override")
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	resource.ImportStatePassthroughWithIdentity(ctx, path.Root("id"), path.Root("id"), req, resp)
 
 	var stateData *InfraHPathSResourceModel
 	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: stateData.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_access_interface_override with id '%s'", stateData.Id.ValueString()))
 
 	tflog.Debug(ctx, "End import of state resource: aci_access_interface_override")
@@ -822,11 +831,17 @@ func getAndSetInfraHPathSAttributes(ctx context.Context, diags *diag.Diagnostics
 	childClasses := getChildClassesForGetRequest([]string{"infraRsHPathAtt", "infraRsPathToAccBaseGrp", "tagAnnotation", "tagTag"})
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), strings.Join(childClasses, ",")), "GET", nil)
 
-	readData := getEmptyInfraHPathSResourceModel()
-
 	if diags.HasError() {
 		return
 	}
+
+	setInfraHPathSAttributes(ctx, diags, data, requestData)
+}
+
+func setInfraHPathSAttributes(ctx context.Context, diags *diag.Diagnostics, data *InfraHPathSResourceModel, requestData *container.Container) {
+
+	readData := getEmptyInfraHPathSResourceModel()
+
 	if requestData.Search("imdata").Search("infraHPathS").Data() != nil {
 		classReadInfo := requestData.Search("imdata").Search("infraHPathS").Data().([]interface{})
 		if len(classReadInfo) == 1 {
