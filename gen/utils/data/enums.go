@@ -389,11 +389,12 @@ func (m *MigrationSourceEnum) UnmarshalText(text []byte) error {
 
 // ArtifactEnum identifies a top-level Terraform artifact kind for a class.
 // Used inside ClassDefinition.Artifacts to select resource- and datasource-
-// scoped render jobs for metadata-backed classes. An omitted slice is derived
-// from IdentifiedBy, while an empty slice (`artifacts: []`) opts out of both
-// top-level kinds. Shared class models are still generated for metadata-backed
-// child-only classes. Definition-only classes are name lookups and do not use
-// artifact selection.
+// scoped render jobs for metadata-backed classes and to describe existing
+// legacy artifacts for definition-only classes. For metadata-backed classes an
+// omitted slice is derived from IdentifiedBy; for definition-only classes it
+// means both artifacts are available. An empty slice (`artifacts: []`) opts out
+// of both kinds. Shared class models are still generated for metadata-backed
+// child-only classes.
 type ArtifactEnum int
 
 const (
@@ -540,6 +541,23 @@ func (v ValueTypeEnum) String() string {
 		return "semantic_equality"
 	case VMMArpLearning:
 		return "vmm_arp_learning"
+	default:
+		return ""
+	}
+}
+
+// DocumentationType returns the established Terraform type label used in
+// generated provider documentation. It intentionally differs from String:
+// Terraform sets and objects have historically been documented as lists and
+// maps, while custom string types remain string attributes.
+func (v ValueTypeEnum) DocumentationType() string {
+	switch v {
+	case Set:
+		return "list"
+	case Object:
+		return "map"
+	case String, IpAddress, SemanticEquality, VMMArpLearning:
+		return "string"
 	default:
 		return ""
 	}

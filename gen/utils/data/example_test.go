@@ -45,3 +45,40 @@ func TestExampleValueHCL(t *testing.T) {
 		})
 	}
 }
+
+func TestDataSourceExampleHCL(t *testing.T) {
+	t.Parallel()
+
+	testCases := []test.TestCase{
+		{
+			Name: "test_apic",
+			Input: Example{
+				Body: ExampleObject{Attributes: []ExampleAttribute{
+					{Name: "parent_dn", Value: ExampleLiteral("uni/tn-example")},
+					{Name: "name", Value: ExampleLiteral("example")},
+				}},
+			},
+			Expected: "data \"aci_tenant\" \"example\" {\n  parent_dn = \"uni/tn-example\"\n  name      = \"example\"\n}",
+		},
+		{
+			Name: "test_cloud",
+			Input: Example{
+				Platform: Cloud,
+				Body: ExampleObject{Attributes: []ExampleAttribute{
+					{Name: "name", Value: ExampleLiteral("example")},
+				}},
+			},
+			Expected: "# This example is only applicable to Cisco Cloud Network Controller.\ndata \"aci_tenant\" \"example\" {\n  name = \"example\"\n}",
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			actual := testCase.Input.(Example).DataSourceHCL("tenant")
+			if actual != testCase.Expected.(string) {
+				t.Fatalf("data-source HCL %q, expected %q", actual, testCase.Expected)
+			}
+		})
+	}
+}

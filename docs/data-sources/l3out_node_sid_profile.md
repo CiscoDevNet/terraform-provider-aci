@@ -30,7 +30,7 @@ Data source for ACI L3Out Node SR-MPLS Segment ID Profile
 
 ```hcl
 
-data "aci_l3out_node_sid_profile" "example_l3out_loopback_interface_profile" {
+data "aci_l3out_node_sid_profile" "example" {
   parent_dn  = aci_l3out_loopback_interface_profile.example.id
   segment_id = "1"
 }
@@ -53,9 +53,9 @@ data "aci_l3out_node_sid_profile" "example_l3out_loopback_interface_profile" {
 * `loopback_address` (loopbackAddr) - (string) The loopback address of the L3Out Node SR-MPLS Segment ID Profile object.
 * `name` (name) - (string) The name of the L3Out Node SR-MPLS Segment ID Profile object.
 * `name_alias` (nameAlias) - (string) The name alias of the L3Out Node SR-MPLS Segment ID Profile object.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.

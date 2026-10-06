@@ -65,6 +65,7 @@ func TestGeneratorLoadsActiveTemplates(t *testing.T) {
 		resourceExampleTemplateName,
 		resourceFullExampleTemplateName,
 		datasourceExampleTemplateName,
+		datasourceDocumentationTemplateName,
 		annotationUnsupportedTemplateName,
 	} {
 		if _, ok := generator.templates[templateName]; !ok {
@@ -303,6 +304,43 @@ func TestBuildClassExampleRenderJobs(t *testing.T) {
 	}
 }
 
+func TestBuildDatasourceDocumentationRenderJobs(t *testing.T) {
+	childClass := testClass(t, "fvRsTenantMonPol")
+	childClass.ResourceName = "relation_to_monitoring_policy"
+	resourceClass := testClass(t, "fvBD", data.ResourceArtifact)
+	resourceClass.ResourceName = "bridge_domain"
+	datasourceClass := testClass(t, "fvCtx", data.DatasourceArtifact)
+	datasourceClass.ResourceName = "vrf"
+	bothClass := testClass(t, "fvTenant", data.ResourceArtifact, data.DatasourceArtifact)
+	bothClass.ResourceName = "tenant"
+	dataStore := &data.DataStore{Classes: map[string]data.Class{
+		"fvBD":             resourceClass,
+		"fvCtx":            datasourceClass,
+		"fvRsTenantMonPol": childClass,
+		"fvTenant":         bothClass,
+	}}
+	generator := &Generator{dataStore: dataStore}
+
+	jobs := generator.buildDatasourceDocumentationRenderJobs()
+	expectedPaths := []string{
+		"docs/data-sources/vrf.md",
+		"docs/data-sources/tenant.md",
+	}
+	actualPaths := make([]string, 0, len(jobs))
+	for _, job := range jobs {
+		actualPaths = append(actualPaths, job.OutputPath)
+		if job.TemplateName != datasourceDocumentationTemplateName {
+			t.Fatalf("unexpected template name %q", job.TemplateName)
+		}
+		if job.Context.Class == nil || job.Context.DataStore != dataStore {
+			t.Fatalf("data-source documentation job has an incomplete context: %#v", job.Context)
+		}
+	}
+	if !reflect.DeepEqual(actualPaths, expectedPaths) {
+		t.Fatalf("data-source documentation output paths %#v, expected %#v", actualPaths, expectedPaths)
+	}
+}
+
 func TestBuildAndWriteResourceExampleFileJobs(t *testing.T) {
 	repositoryRoot := t.TempDir()
 	t.Chdir(repositoryRoot)
@@ -404,19 +442,20 @@ func TestBuildRenderJobsIncludesAnnotationOnlyAfterRefresh(t *testing.T) {
 	generator := &Generator{dataStore: dataStore, providerExample: `provider "aci" {}`}
 
 	jobs := generator.buildRenderJobs()
-	if len(jobs) != 6 ||
+	if len(jobs) != 7 ||
 		jobs[0].TemplateName != modelTemplateName ||
 		jobs[1].TemplateName != indexTemplateName ||
 		jobs[2].TemplateName != providerExampleTemplateName ||
 		jobs[3].TemplateName != providerExampleTemplateName ||
 		jobs[4].TemplateName != resourceExampleTemplateName ||
-		jobs[5].TemplateName != datasourceExampleTemplateName {
+		jobs[5].TemplateName != datasourceExampleTemplateName ||
+		jobs[6].TemplateName != datasourceDocumentationTemplateName {
 		t.Fatalf("unexpected ordinary render jobs: %#v", jobs)
 	}
 
 	dataStore.UnsupportedAnnotationClasses = []string{}
 	jobs = generator.buildRenderJobs()
-	if len(jobs) != 7 || jobs[6].TemplateName != annotationUnsupportedTemplateName || !jobs[6].RefreshOnly {
+	if len(jobs) != 8 || jobs[7].TemplateName != annotationUnsupportedTemplateName || !jobs[7].RefreshOnly {
 		t.Fatalf("unexpected refresh render jobs: %#v", jobs)
 	}
 }
@@ -432,9 +471,11 @@ func TestFormatTemplateRenderSummaries(t *testing.T) {
 		{TemplateName: resourceExampleTemplateName},
 		{TemplateName: resourceFullExampleTemplateName},
 		{TemplateName: datasourceExampleTemplateName},
+		{TemplateName: datasourceDocumentationTemplateName},
 	}
 	expected := []string{
 		"Rendered 1 file using template annotation_unsupported.go.tmpl.",
+		"Rendered 1 file using template datasource.md.tmpl.",
 		"Rendered 1 file using template datasource_example.tf.tmpl.",
 		"Rendered 1 file using template index.md.tmpl.",
 		"Rendered 2 files using template model.go.tmpl.",
@@ -463,6 +504,203 @@ func TestAnnotationUnsupportedTemplate(t *testing.T) {
 	for _, className := range dataStore.UnsupportedAnnotationClasses {
 		if !strings.Contains(contents, `"`+className+`"`) {
 			t.Fatalf("rendered annotation output does not contain class %q", className)
+		}
+	}
+}
+
+func TestDatasourceDocumentationTemplate(t *testing.T) {
+	parentDn := &data.Property{
+		AttributeName: "parent_dn",
+		PropertyName:  "parentDn",
+		ValueType:     data.String,
+		Documentation: data.PropertyDocumentation{
+			Description: "The distinguished name (DN) of the parent object.",
+			Notes:       []string{"Select an existing parent object."},
+		},
+	}
+	name := &data.Property{
+		AttributeName: "name",
+		PropertyName:  "name",
+		ValueType:     data.String,
+		ValidValues: data.ValidValues{
+			"one": {LocalName: "one"},
+			"two": {LocalName: "two"},
+		},
+		Documentation: data.PropertyDocumentation{Description: "The name of the Tenant object."},
+	}
+	roles := &data.Property{
+		AttributeName: "roles",
+		PropertyName:  "roles",
+		ValueType:     data.Set,
+		Documentation: data.PropertyDocumentation{Description: "The assigned roles."},
+	}
+	settings := &data.Property{
+		AttributeName: "settings",
+		PropertyName:  "settings",
+		ValueType:     data.Object,
+		Documentation: data.PropertyDocumentation{Description: "The object settings."},
+	}
+
+	annotation := testClass(t, "tagAnnotation")
+	annotation.PropertiesAll = []string{"key"}
+	annotation.Properties = map[string]*data.Property{
+		"key": {
+			AttributeName: "key",
+			PropertyName:  "key",
+			ValueType:     data.String,
+			Documentation: data.PropertyDocumentation{Description: "The annotation key."},
+		},
+	}
+	annotation.Documentation.DescriptionWhenDefinedAsChild = "`annotations` - (list) A list of Annotations."
+
+	relation := testClass(t, "fvRsTenantMonPol")
+	relation.Children = []*data.ClassName{annotation.Name}
+	relation.PropertiesAll = []string{"monitoringPolicyName"}
+	relation.Properties = map[string]*data.Property{
+		"monitoringPolicyName": {
+			AttributeName: "monitoring_policy_name",
+			PropertyName:  "tnMonEPGPolName",
+			ValueType:     data.SemanticEquality,
+			Documentation: data.PropertyDocumentation{Description: "The monitoring policy name."},
+		},
+	}
+	relation.Documentation.DescriptionWhenDefinedAsChild = "`relation_to_monitoring_policy` - (map) A map of the monitoring-policy relation."
+	relation.Documentation.RelationTargetClasses = []string{
+		"[fvBD](https://example.test/fvBD)",
+		"[fvCtx](https://example.test/fvCtx)",
+	}
+	relationVersions, err := data.NewVersions("2.3(1e)-")
+	if err != nil {
+		t.Fatalf("parse relation versions: %v", err)
+	}
+	relation.SupportedVersions = relationVersions
+
+	class := testClass(t, "fvTenant", data.DatasourceArtifact)
+	class.ResourceName = "tenant"
+	class.Children = []*data.ClassName{relation.Name}
+	class.IdentifiedBy = []string{"name"}
+	class.PropertiesAll = []string{"parentDn", "name", "roles", "settings"}
+	class.Properties = map[string]*data.Property{
+		"parentDn": parentDn,
+		"name":     name,
+		"roles":    roles,
+		"settings": settings,
+	}
+	class.Documentation = data.ClassDocumentation{
+		ClassName:             "[fvTenant](https://example.test/fvTenant)",
+		DatasourceDescription: "Data source for ACI Tenant",
+		DatasourceNotes:       []string{"A data-source note."},
+		DatasourceWarnings:    []string{"A data-source warning."},
+		DnFormats:             []string{"uni/tn-{name}"},
+		Label:                 "Tenant",
+		ParentDnResources:     []string{"[aci_root](https://example.test/root)"},
+		SubCategory:           "Application Management",
+		SupportedVersions:     "1.0(1e) and later.",
+		UiLocations:           []string{"Tenants"},
+	}
+	class.DataSourceExample = data.Example{
+		Platform: data.Cloud,
+		Body: data.ExampleObject{Attributes: []data.ExampleAttribute{
+			{Name: "parent_dn", Value: data.ExampleLiteral("uni")},
+			{Name: "name", Value: data.ExampleLiteral("example_tenant")},
+		}},
+	}
+
+	dataStore := &data.DataStore{Classes: map[string]data.Class{
+		"fvTenant":         class,
+		"fvRsTenantMonPol": relation,
+		"tagAnnotation":    annotation,
+	}}
+	generator := loadActiveGenerator(t, dataStore)
+
+	var rendered bytes.Buffer
+	if err := generator.templates[datasourceDocumentationTemplateName].Execute(&rendered, TemplateContext{Class: &class, DataStore: dataStore}); err != nil {
+		t.Fatalf("execute data-source documentation template: %v", err)
+	}
+	contents := rendered.String()
+	requiredContents := []string{
+		`page_title: "ACI: aci_tenant"`,
+		"# aci_tenant #\n",
+		"-> A data-source note.",
+		"~> A data-source warning.",
+		"* Class: [fvTenant](https://example.test/fvTenant)",
+		"* Distinguished Name Format: `uni/tn-{name}`",
+		"# This example is only applicable to Cisco Cloud Network Controller.",
+		`data "aci_tenant" "example" {`,
+		`  name      = "example_tenant"`,
+		"* `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:",
+		"- Valid Values: `one`, `two`.",
+		"* `roles` (roles) - (list) The assigned roles.",
+		"* `settings` (settings) - (map) The object settings.",
+		"* `relation_to_monitoring_policy` - (map) A map of the monitoring-policy relation. This attribute is supported in ACI versions: 2.3(1e) and later. This relation can point to multiple ACI objects:",
+		"    - [fvBD](https://example.test/fvBD).",
+		"    - [fvCtx](https://example.test/fvCtx).",
+		"    * `monitoring_policy_name` (tnMonEPGPolName) - (string) The monitoring policy name.",
+		"    * `annotations` - (list) A list of Annotations.",
+		"        * `key` (key) - (string) The annotation key.",
+	}
+	for _, required := range requiredContents {
+		if !strings.Contains(contents, required) {
+			t.Fatalf("rendered data-source documentation does not contain %q:\n%s", required, contents)
+		}
+	}
+
+	class.Documentation.ParentDnResources = nil
+	class.Documentation.ParentDnClasses = []string{"[fvRoot](https://example.test/fvRoot)"}
+	var classOnlyRendered bytes.Buffer
+	if err := generator.templates[datasourceDocumentationTemplateName].Execute(&classOnlyRendered, TemplateContext{Class: &class, DataStore: dataStore}); err != nil {
+		t.Fatalf("execute data-source documentation template with class-only parent DN: %v", err)
+	}
+	classOnlyContents := classOnlyRendered.String()
+	expectedClassOnlyParentDn := "* `parent_dn` - (string) The distinguished name (DN) of a parent object from one of the following APIC classes; no Terraform resources are currently available for these classes:\n  - [fvRoot](https://example.test/fvRoot)"
+	if !strings.Contains(classOnlyContents, expectedClassOnlyParentDn) {
+		t.Fatalf("rendered data-source documentation does not contain class-only parent DN details %q:\n%s", expectedClassOnlyParentDn, classOnlyContents)
+	}
+	if strings.Contains(classOnlyContents, "possible resources:") {
+		t.Fatalf("rendered class-only parent DN details incorrectly describe APIC classes as resources:\n%s", classOnlyContents)
+	}
+
+	class.Documentation.ParentDnResources = []string{"[aci_root](https://example.test/root)"}
+	class.Documentation.ParentDnClasses = nil
+	parentDnNotice := "Additional parent options are available; see model documentation for all possible parents of [fvTenant](https://example.test/fvTenant)."
+	class.Documentation.ParentDnNotice = parentDnNotice
+	var noticeRendered bytes.Buffer
+	if err := generator.templates[datasourceDocumentationTemplateName].Execute(&noticeRendered, TemplateContext{Class: &class, DataStore: dataStore}); err != nil {
+		t.Fatalf("execute data-source documentation template with parent DN notice: %v", err)
+	}
+	noticeContents := noticeRendered.String()
+	expectedParentDn := "* `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:\n  - [aci_root](https://example.test/root)\n  - " + parentDnNotice
+	if !strings.Contains(noticeContents, expectedParentDn) {
+		t.Fatalf("rendered data-source documentation does not contain parent DN notice %q:\n%s", expectedParentDn, noticeContents)
+	}
+	if strings.Contains(noticeContents, "classes below") {
+		t.Fatalf("rendered parent DN notice contains a class-only heading without entries:\n%s", noticeContents)
+	}
+
+	parentDn.Documentation.DefaultValues = []data.DefaultValue{{Value: "uni"}}
+	noticeRendered.Reset()
+	if err := generator.templates[datasourceDocumentationTemplateName].Execute(&noticeRendered, TemplateContext{Class: &class, DataStore: dataStore}); err != nil {
+		t.Fatalf("execute data-source documentation template with optional parent DN notice: %v", err)
+	}
+	noticeContents = noticeRendered.String()
+	optionalIndex := strings.Index(noticeContents, "### Optional ###")
+	noticeIndex := strings.Index(noticeContents, expectedParentDn)
+	if optionalIndex == -1 || noticeIndex < optionalIndex {
+		t.Fatalf("rendered optional parent DN notice is missing or outside the optional section:\n%s", noticeContents)
+	}
+
+	exampleStart := strings.Index(contents, "```hcl\n")
+	if exampleStart == -1 {
+		t.Fatal("rendered data-source documentation has no HCL example")
+	}
+	exampleEnd := strings.Index(contents[exampleStart+len("```hcl\n"):], "```")
+	if exampleEnd == -1 {
+		t.Fatal("rendered data-source documentation has no closing HCL fence")
+	}
+	exampleContents := contents[exampleStart : exampleStart+len("```hcl\n")+exampleEnd]
+	for _, generatedHeaderFragment := range []string{"generated by", "regenerate this file", "README"} {
+		if strings.Contains(exampleContents, generatedHeaderFragment) {
+			t.Fatalf("HCL example unexpectedly contains generated header fragment %q:\n%s", generatedHeaderFragment, exampleContents)
 		}
 	}
 }

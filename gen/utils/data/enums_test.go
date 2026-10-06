@@ -3,8 +3,9 @@ package data
 import (
 	"testing"
 
-	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils/test"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils/test"
 )
 
 func TestPlatformTypeEnum(t *testing.T) {
@@ -130,6 +131,13 @@ func TestValueTypeEnum(t *testing.T) {
 	assert.Equal(t, "semantic_equality", SemanticEquality.String())
 	assert.Equal(t, "vmm_arp_learning", VMMArpLearning.String())
 	assert.Equal(t, "object", Object.String())
+	assert.Equal(t, "", UndefinedValueType.DocumentationType())
+	assert.Equal(t, "string", String.DocumentationType())
+	assert.Equal(t, "list", Set.DocumentationType())
+	assert.Equal(t, "map", Object.DocumentationType())
+	assert.Equal(t, "string", IpAddress.DocumentationType())
+	assert.Equal(t, "string", SemanticEquality.DocumentationType())
+	assert.Equal(t, "string", VMMArpLearning.DocumentationType())
 
 	assert.Equal(t, String, test.MustUnmarshalText[ValueTypeEnum](t, "string"))
 	assert.Equal(t, Set, test.MustUnmarshalText[ValueTypeEnum](t, "set"))

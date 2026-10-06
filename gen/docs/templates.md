@@ -14,7 +14,7 @@ associated with, `gen/generator.go`:
 | `internal/provider/` | 695 files | Mixed static and generated output; active ownership is limited to manifest entries |
 | `internal/provider/models/` | 179 files | 176 class models are managed; shared model helpers are static |
 | `internal/custom_types/` | 37 files | Legacy output outside the active generator manifest |
-| `docs/` | 699 files | Mixed static and legacy output; active ownership is limited to `index.md` |
+| `docs/` | 699 files | Mixed static and generated output; `index.md` and 125 class-backed data-source pages are actively managed |
 | `examples/resources/` | 376 files | All 125 `provider.tf` and 125 `resource.tf` files, 123 distinct `resource-all-attributes.tf` files, and 3 copied PEM files are managed |
 | `examples/data-sources/` | 252 files | The 125 class `provider.tf` and 125 `data-source.tf` files are managed; both system example files are static |
 | `gen/testvars/` | 125 files | Legacy output outside the active generator manifest |
@@ -47,6 +47,7 @@ internal/provider/function_compare_versions.go
 internal/provider/function_compare_versions_test.go
 internal/custom_types/ipAddress.go
 internal/custom_types/arpLearning.go
+docs/data-sources/rest_managed.md
 docs/data-sources/system.md
 examples/provider/provider.tf
 examples/data-sources/aci_system/data-source.tf
@@ -158,6 +159,11 @@ Its provider example is read from the intentionally static
 `examples/provider/provider.tf` file and supplied through the standard
 template context. This keeps the documented example identical to the example
 users can copy from the repository.
+
+`datasource.md.tmpl` owns the documentation page for every loaded class with a
+datasource artifact. The handwritten `docs/data-sources/rest_managed.md` and
+`docs/data-sources/system.md` pages remain static because `aci_rest_managed` and
+`aci_system` have no metadata-backed classes in the active generator.
 
 The provider index intentionally documents `insecure` and
 `validate_relation_dn` as Boolean inputs and `retries` as a Number, matching

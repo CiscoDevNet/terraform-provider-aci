@@ -31,7 +31,7 @@ Data source for ACI ZR Transceiver Interface Policy
 ```hcl
 
 data "aci_zr_transceiver_interface_policy" "example" {
-  name = "test_name"
+  name = "zr_transceiver_interface_policy"
 }
 
 ```
@@ -63,9 +63,9 @@ data "aci_zr_transceiver_interface_policy" "example" {
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 * `transmit_power` (transmitPower) - (string) The transmit power of the ZR Transceiver Interface Policy object. The value must be in the range -190 - 50.
 * `wavelength_50_ghz` (wavelength50GHz) - (string) The 50 gigahertz (GHz) wavelength of the ZR Transceiver Interface Policy object. The value must be in the range 1528773 - 1568362.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.

@@ -30,9 +30,9 @@ Data source for ACI Endpoint Tag MAC
 
 ```hcl
 
-data "aci_endpoint_tag_mac" "example_tenant" {
+data "aci_endpoint_tag_mac" "example" {
   parent_dn = aci_tenant.example.id
-  bd_name   = "test_bd_name"
+  bd_name   = aci_bridge_domain.example.name
   mac       = "00:00:00:00:00:01"
 }
 
@@ -44,7 +44,7 @@ data "aci_endpoint_tag_mac" "example_tenant" {
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tenant) ([fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview))
-* `bd_name` (bdName) - (string) The bridge domain name of the Endpoint Tag MAC object.
+* `bd_name` (bdName) - (string) The bridge domain name of the Endpoint Tag MAC object. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bridge_domain) with `aci_bridge_domain.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/bridge_domain) with `data.aci_bridge_domain.example.name`.
 * `mac` (mac) - (string) The MAC address of the Endpoint Tag MAC object.
 
 ### Read-Only ###
@@ -54,9 +54,9 @@ data "aci_endpoint_tag_mac" "example_tenant" {
 * `id_attribute` (id) - (string) The identifier of the Endpoint Tag MAC object.
 * `name` (name) - (string) The name of the Endpoint Tag MAC object.
 * `name_alias` (nameAlias) - (string) The name alias of the Endpoint Tag MAC object.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.

@@ -32,13 +32,8 @@ Data source for ACI EPG uSeg VM Attribute
 
 ```hcl
 
-data "aci_epg_useg_vm_attribute" "example_epg_useg_block_statement" {
+data "aci_epg_useg_vm_attribute" "example" {
   parent_dn = aci_epg_useg_block_statement.example.id
-  name      = "vm_attribute"
-}
-
-data "aci_epg_useg_vm_attribute" "example_epg_useg_sub_block_statement" {
-  parent_dn = aci_epg_useg_sub_block_statement.example.id
   name      = "vm_attribute"
 }
 
@@ -66,9 +61,9 @@ data "aci_epg_useg_vm_attribute" "example_epg_useg_sub_block_statement" {
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 * `type` (type) - (string) The type of the EPG uSeg VM Attribute object.
 * `value` (value) - (string) The value of the EPG uSeg VM Attribute object.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.

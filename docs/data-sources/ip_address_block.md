@@ -34,7 +34,7 @@ Data source for ACI IP Address Block
 
 ```hcl
 
-data "aci_ip_address_block" "example_ip_address_pool" {
+data "aci_ip_address_block" "example" {
   parent_dn = aci_ip_address_pool.example.id
   from      = "10.0.0.2"
   to        = "10.0.0.5"
@@ -48,7 +48,7 @@ data "aci_ip_address_block" "example_ip_address_pool" {
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_ip_address_pool](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/ip_address_pool) ([fvnsAddrInst](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvnsAddrInst/overview))
-  - The distinguished name (DN) of classes below can be used but currently there is no available resource for it:
+  - The distinguished names (DNs) of parent objects from the following APIC classes can also be used, but no Terraform resources are currently available for these classes:
     - [vnsAddrInst](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vnsAddrInst/overview)
 
 * `from` (from) - (string) The first unicast address in the address block.
@@ -61,9 +61,9 @@ data "aci_ip_address_block" "example_ip_address_pool" {
 * `description` (descr) - (string) The description of the IP Address Block object.
 * `name` (name) - (string) The name of the IP Address Block object.
 * `name_alias` (nameAlias) - (string) The name alias of the IP Address Block object. This attribute is supported in ACI versions: 2.2(1k) and later.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.

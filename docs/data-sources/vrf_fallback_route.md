@@ -30,9 +30,9 @@ Data source for ACI VRF Fallback Route
 
 ```hcl
 
-data "aci_vrf_fallback_route" "example_vrf_fallback_route_group" {
+data "aci_vrf_fallback_route" "example" {
   parent_dn      = aci_vrf_fallback_route_group.example.id
-  prefix_address = "2.2.2.3/24"
+  prefix_address = "198.51.100.3/24"
 }
 
 ```
@@ -52,9 +52,9 @@ data "aci_vrf_fallback_route" "example_vrf_fallback_route_group" {
 * `description` (descr) - (string) The description of the VRF Fallback Route object.
 * `name` (name) - (string) The name of the VRF Fallback Route object.
 * `name_alias` (nameAlias) - (string) The name alias of the VRF Fallback Route object.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.

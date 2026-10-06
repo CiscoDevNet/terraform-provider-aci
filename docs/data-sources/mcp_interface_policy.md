@@ -31,7 +31,7 @@ Data source for ACI MCP Interface Policy
 ```hcl
 
 data "aci_mcp_interface_policy" "example" {
-  name = "test_name"
+  name = "mcp_interface_policy"
 }
 
 ```
@@ -59,9 +59,9 @@ data "aci_mcp_interface_policy" "example" {
 * `initial_delay_time` (strictInitDelayTime) - (string) The initial delay time in seconds for the MCP Interface Policy object. This allows for MCP to wait before sending Bridge Protocol Data Units (BPDUs) which gives Spanning Tree Protocol (STP) on the external network time to converge. This attribute is only applicable when 'strict_mode' is 'on'. The value must be in the range 0 - 1800. This attribute is supported in ACI versions: 5.2(4d) and later.
 * `transmission_frequency_seconds` (strictTxFreq) - (string) The transmission frequency in seconds for the MCP Interface Policy object. This attribute is only applicable when 'strict_mode' is 'on'. The value must be in the range 0 - 300. This attribute is supported in ACI versions: 5.2(4d) and later.
 * `transmission_frequency_milliseconds` (strictTxFreqMsec) - (string) The transmission frequency in milliseconds for the MCP Interface Policy object. This attribute is only applicable when 'strict_mode' is 'on'. The value must be in the range 0 - 999. This attribute is supported in ACI versions: 5.2(4d) and later.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.

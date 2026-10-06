@@ -94,6 +94,36 @@ type Example struct {
 	Body     ExampleObject
 }
 
+// DataSourceHCL renders the complete, formatter-normalized data-source block
+// shared by the standalone example and generated documentation.
+func (e Example) DataSourceHCL(resourceName string) string {
+	var contents strings.Builder
+	if e.Platform == Cloud {
+		contents.WriteString("# This example is only applicable to Cisco Cloud Network Controller.\n")
+	}
+	fmt.Fprintf(&contents, "data %q %q {\n", "aci_"+resourceName, "example")
+	writeExampleObjectHCL(&contents, e.Body)
+	contents.WriteString("}\n")
+	return strings.TrimSuffix(string(hclwrite.Format([]byte(contents.String()))), "\n")
+}
+
+func writeExampleObjectHCL(contents *strings.Builder, object ExampleObject) {
+	for _, attribute := range object.Attributes {
+		fmt.Fprintf(contents, "%s = %s\n", attribute.Name, attribute.Value.HCL())
+	}
+	for _, child := range object.Children {
+		if child.IsSingle {
+			fmt.Fprintf(contents, "%s = {\n", child.Name)
+			writeExampleObjectHCL(contents, child.Body)
+			contents.WriteString("}\n")
+			continue
+		}
+		fmt.Fprintf(contents, "%s = [{\n", child.Name)
+		writeExampleObjectHCL(contents, child.Body)
+		contents.WriteString("}]\n")
+	}
+}
+
 // ResourceExamples contains both resource artifacts and files copied beside them.
 type ResourceExamples struct {
 	Minimum Example

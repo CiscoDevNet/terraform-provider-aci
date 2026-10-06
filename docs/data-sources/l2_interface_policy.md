@@ -31,7 +31,7 @@ Data source for ACI L2 Interface Policy
 ```hcl
 
 data "aci_l2_interface_policy" "example" {
-  name = "test_name"
+  name = "l2_interface_policy"
 }
 
 ```
@@ -53,9 +53,9 @@ data "aci_l2_interface_policy" "example" {
 * `q_in_q` (qinq) - (string) The QinQ port type of the L2 Interface Policy object. This attribute is supported in ACI versions: 2.2(1k) and later.
 * `reflective_relay` (vepa) - (string) The reflective relay (802.1Qbg) state of the L2 Interface Policy object. This attribute is supported in ACI versions: 2.3(1e) and later.
 * `vlan_scope` (vlanScope) - (string) The vlan scope of the L2 Interface Policy object.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.

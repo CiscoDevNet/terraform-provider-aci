@@ -31,7 +31,7 @@ Data source for ACI SyncE Interface Policy
 ```hcl
 
 data "aci_synce_interface_policy" "example" {
-  name = "test_name"
+  name = "synce_interface_policy"
 }
 
 ```
@@ -62,9 +62,9 @@ data "aci_synce_interface_policy" "example" {
 * `source_priority` (srcpriority) - (string) The source priority of the SyncE Interface Policy object. This attribute is only applicable when 'selection_input' is 'yes'. The value must be in the range 1 - 254.
 * `synchronization_status_message` (ssm) - (string) Enable a synchronization status message for the SyncE Interface Policy object.
 * `wait_to_restore_time` (wtr) - (string) The wait-to-restore time (minutes) for the SyncE Interface Policy object. This attribute is only applicable when 'selection_input' is 'yes'. The value must be in the range 0 - 12.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.

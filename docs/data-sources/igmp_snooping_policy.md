@@ -32,9 +32,9 @@ Data source for ACI IGMP Snooping Policy
 
 ```hcl
 
-data "aci_igmp_snooping_policy" "example_tenant" {
+data "aci_igmp_snooping_policy" "example" {
   parent_dn = aci_tenant.example.id
-  name      = "test_name"
+  name      = "igmp_snooping_policy"
 }
 
 ```
@@ -63,9 +63,9 @@ data "aci_igmp_snooping_policy" "example_tenant" {
 * `start_query_count` (startQueryCnt) - (string) The start query count of the IGMP Snooping Policy object.
 * `start_query_interval` (startQueryIntvl) - (string) The query interval (seconds) of the IGMP Snooping Policy object at start-up.
 * `querier_version` (ver) - (string) The version of the IGMP querier. This attribute is supported in ACI versions: 5.1(1h) and later.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.

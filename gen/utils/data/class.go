@@ -34,11 +34,11 @@ type ExampleContext struct {
 type Class struct {
 	// This is used to prevent the deletion of the class if it is not allowed on APIC.
 	AllowDelete bool
-	// Generated top-level artifact kinds for this class. Current public-example
-	// jobs and the resource/data-source wrappers in shared model files honor the
-	// selection; a class's base model is generated for every loaded class.
-	// Resource and datasource implementation and documentation jobs will honor it
-	// when those templates are migrated. Provider registration is currently static.
+	// Available top-level artifact kinds for this class. Current public-example
+	// and datasource-documentation jobs honor the selection; a class's base model
+	// is generated for every loaded class. Resource and datasource implementation
+	// jobs will honor it when those templates are migrated. Provider registration
+	// is currently static.
 	// Resolved from ClassDefinition.Artifacts
 	// with the following semantics:
 	//   - YAML field omitted entirely (nil slice in ClassDefinition): auto-derive
@@ -505,6 +505,13 @@ func (c *Class) setIdentifiedBy() {
 	slices.Sort(c.IdentifiedBy)
 
 	genLogger.Debugf("Successfully set IdentifiedBy for class '%s'. IdentifiedBy: %v", c.Name, c.IdentifiedBy)
+}
+
+// IsIdentifyingProperty reports whether a property participates in the
+// class's APIC identity. Data-source documentation uses this distinction to
+// separate lookup inputs from attributes populated by Read.
+func (c *Class) IsIdentifyingProperty(propertyName string) bool {
+	return slices.Contains(c.IdentifiedBy, propertyName)
 }
 
 func (c *Class) setIsSingleNestedWhenDefinedAsChild() {
@@ -1591,9 +1598,6 @@ func (c *Class) setPropertyTestValues(ds *DataStore) {
 	// Auto-wire parent_dn from Parent dependencies.
 	c.setParentDn()
 
-	// Apply the named-relation schema convention to matching semantic property references.
-	c.setPropertyReferenceAttributeNames(ds)
-
 	// Auto-wire target property for relational classes.
 	// Explicit relations expose `tDn` (full DN). Named relations expose `tn<TargetCap>Name`
 	// (target's name attribute). Other RelationalClass types are unsupported.
@@ -1763,15 +1767,6 @@ func (c *Class) setTargetNameProperty(ds *DataStore) {
 		return
 	}
 
-	// Normalize the primary named-relation property into the same semantic
-	// reference model used by every other name or DN reference.
-	property.Reference = &PropertyReference{
-		Classes:              []*ClassName{targetClass},
-		ExampleClass:         targetClass,
-		ExampleAttributeName: "name",
-	}
-	property.setNamedReferenceAttributeName(ds, targetClass)
-
 	// Skip when an explicit TestConfig already drives the property.
 	if property.hasTestConfigDefinition() {
 		return
@@ -1821,6 +1816,20 @@ func (c *Class) setTargetNameProperty(ds *DataStore) {
 	genLogger.Tracef("Successfully set target-name test values for class '%s'.", c.Name)
 }
 func (c *Class) setPropertyReferenceAttributeNames(ds *DataStore) {
+	// Normalize a named relation's canonical tn<Class>Name property into the
+	// same semantic reference model used by definition-authored references.
+	if c.Relation.RelationalClass && c.Relation.Type == Named && len(c.Relation.ToClasses) == 1 {
+		referenceClass := c.Relation.ToClasses[0]
+		if property, ok := c.Properties[referenceClass.namedRelationPropertyName()]; ok {
+			property.Reference = &PropertyReference{
+				Classes:              []*ClassName{referenceClass},
+				ExampleClass:         referenceClass,
+				ExampleAttributeName: "name",
+			}
+			property.setNamedReferenceAttributeName(ds, referenceClass)
+		}
+	}
+
 	// A semantic name reference following APIC's tn<Class>Name convention uses
 	// the same Terraform attribute name as a primary named-relation target.
 	for _, propertyName := range c.PropertiesAll {
