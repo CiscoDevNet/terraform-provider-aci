@@ -33,7 +33,7 @@ Data source for ACI Relation From Bridge Domain To L3 Outside
 
 ```hcl
 
-data "aci_relation_from_bridge_domain_to_l3_outside" "example_bridge_domain" {
+data "aci_relation_from_bridge_domain_to_l3_outside" "example" {
   parent_dn       = aci_bridge_domain.example.id
   l3_outside_name = aci_l3_outside.example.name
 }
@@ -46,7 +46,7 @@ data "aci_relation_from_bridge_domain_to_l3_outside" "example_bridge_domain" {
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_bridge_domain](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bridge_domain) ([fvBD](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvBD/overview))
-  - The distinguished name (DN) of classes below can be used but currently there is no available resource for it:
+  - The distinguished names (DNs) of parent objects from the following APIC classes can also be used, but no Terraform resources are currently available for these classes:
     - [fvSvcBD](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvSvcBD/overview)
 
 * `l3_outside_name` (tnL3extOutName) - (string) The name of the L3 Outside object. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3_outside) with `aci_l3_outside.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/l3_outside) with `data.aci_l3_outside.example.name`.
@@ -55,9 +55,9 @@ data "aci_relation_from_bridge_domain_to_l3_outside" "example_bridge_domain" {
 
 * `id` - (string) The distinguished name (DN) of the Relation From Bridge Domain To L3 Outside object.
 * `annotation` (annotation) - (string) The annotation of the Relation From Bridge Domain To L3 Outside object. This attribute is supported in ACI versions: 3.2(1l) and later.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.

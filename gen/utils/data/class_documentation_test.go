@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils/test"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils/test"
 )
 
 func TestSetClassName(t *testing.T) {
@@ -496,7 +497,7 @@ func TestSetDocumentationChildren(t *testing.T) {
 				},
 				ChildrenIncludedInResource: []string{"fvRsToEpg"},
 				StoreClasses: map[string]Class{
-					"fvRsToEpg": {ResourceName: "relation_to_epg"},
+					"fvRsToEpg": {ResourceName: "relation_to_epg", Artifacts: []ArtifactEnum{ResourceArtifact}},
 				},
 			},
 			Expected: setDocumentationChildrenExpected{Children: []string{}},
@@ -531,8 +532,8 @@ func TestSetDocumentationChildren(t *testing.T) {
 					"alpha-{name}": "fv:Alpha",
 				},
 				StoreClasses: map[string]Class{
-					"fvZeta":  {ResourceName: "zeta"},
-					"fvAlpha": {ResourceName: "alpha"},
+					"fvZeta":  {ResourceName: "zeta", Artifacts: []ArtifactEnum{ResourceArtifact}},
+					"fvAlpha": {ResourceName: "alpha", Artifacts: []ArtifactEnum{ResourceArtifact}},
 				},
 			},
 			Expected: setDocumentationChildrenExpected{Children: []string{
@@ -550,8 +551,8 @@ func TestSetDocumentationChildren(t *testing.T) {
 				},
 				ChildrenIncludedInResource: []string{"fvIncluded"},
 				StoreClasses: map[string]Class{
-					"fvIncluded": {ResourceName: "included"},
-					"fvValid":    {ResourceName: "valid"},
+					"fvIncluded": {ResourceName: "included", Artifacts: []ArtifactEnum{ResourceArtifact}},
+					"fvValid":    {ResourceName: "valid", Artifacts: []ArtifactEnum{ResourceArtifact}},
 				},
 			},
 			Expected: setDocumentationChildrenExpected{Children: []string{
@@ -570,8 +571,8 @@ func TestSetDocumentationChildren(t *testing.T) {
 				},
 				ExcludeChildren: []string{"l2PortSecurityPol"},
 				StoreClasses: map[string]Class{
-					"l2PortSecurityPol": {ResourceName: "port_security_policy"},
-					"fvKeep":            {ResourceName: "keep"},
+					"l2PortSecurityPol": {ResourceName: "port_security_policy", Artifacts: []ArtifactEnum{ResourceArtifact}},
+					"fvKeep":            {ResourceName: "keep", Artifacts: []ArtifactEnum{ResourceArtifact}},
 				},
 			},
 			Expected: setDocumentationChildrenExpected{Children: []string{
@@ -587,8 +588,8 @@ func TestSetDocumentationChildren(t *testing.T) {
 				},
 				DocumentationExcludeChildren: []string{"l2Exclude"},
 				StoreClasses: map[string]Class{
-					"l2Exclude": {ResourceName: "exclude"},
-					"fvKeep":    {ResourceName: "keep"},
+					"l2Exclude": {ResourceName: "exclude", Artifacts: []ArtifactEnum{ResourceArtifact}},
+					"fvKeep":    {ResourceName: "keep", Artifacts: []ArtifactEnum{ResourceArtifact}},
 				},
 			},
 			Expected: setDocumentationChildrenExpected{Children: []string{
@@ -600,7 +601,7 @@ func TestSetDocumentationChildren(t *testing.T) {
 			Input: setDocumentationChildrenInput{
 				DocumentationIncludeChildren: []string{"l2:Included"},
 				StoreClasses: map[string]Class{
-					"l2Included": {ResourceName: "included"},
+					"l2Included": {ResourceName: "included", Artifacts: []ArtifactEnum{ResourceArtifact}},
 				},
 			},
 			Expected: setDocumentationChildrenExpected{Children: []string{
@@ -618,7 +619,7 @@ func TestSetDocumentationChildren(t *testing.T) {
 				DocumentationExcludeChildren: []string{"l2Included"},
 				DocumentationIncludeChildren: []string{"l2Included"},
 				StoreClasses: map[string]Class{
-					"l2Included": {ResourceName: "included"},
+					"l2Included": {ResourceName: "included", Artifacts: []ArtifactEnum{ResourceArtifact}},
 				},
 			},
 			Expected: setDocumentationChildrenExpected{Children: []string{
@@ -677,12 +678,19 @@ func TestDocumentationChildLink(t *testing.T) {
 			ExcludeChildren: []string{"classExcluded"},
 		},
 	}
-	ds := &DataStore{Classes: map[string]Class{
-		"validChild":    {ResourceName: "valid_child"},
-		"excludedChild": {ResourceName: "excluded_child"},
-		"embeddedChild": {ResourceName: "embedded_child"},
-		"classExcluded": {ResourceName: "class_excluded"},
-	}}
+	ds := &DataStore{
+		Classes: map[string]Class{
+			"validChild":     {ResourceName: "valid_child", Artifacts: []ArtifactEnum{ResourceArtifact}},
+			"excludedChild":  {ResourceName: "excluded_child", Artifacts: []ArtifactEnum{ResourceArtifact}},
+			"embeddedChild":  {ResourceName: "embedded_child", Artifacts: []ArtifactEnum{ResourceArtifact}},
+			"classExcluded":  {ResourceName: "class_excluded", Artifacts: []ArtifactEnum{ResourceArtifact}},
+			"namedOnlyChild": {ResourceName: "named_only_child"},
+		},
+		ClassDefinitions: map[string]ClassDefinition{
+			"legacyChild":         {ResourceName: "legacy_child"},
+			"datasourceOnlyChild": {ResourceName: "datasource_only_child", Artifacts: []ArtifactEnum{DatasourceArtifact}},
+		},
+	}
 	documentationExcludes := map[string]struct{}{"excludedChild": {}}
 	childrenIncludedInResource := map[string]struct{}{"embeddedChild": {}}
 
@@ -708,6 +716,16 @@ func TestDocumentationChildLink(t *testing.T) {
 		},
 		{Name: "test_unknown_child", Input: documentationChildLinkInput{}, Expected: documentationChildLinkExpected{}},
 		{Name: "test_child_without_resource", Input: documentationChildLinkInput{ChildName: "noResourceChild"}, Expected: documentationChildLinkExpected{}},
+		{Name: "test_child_without_resource_artifact", Input: documentationChildLinkInput{ChildName: "namedOnlyChild"}, Expected: documentationChildLinkExpected{}},
+		{
+			Name:  "test_definition_only_child_with_legacy_resource",
+			Input: documentationChildLinkInput{ChildName: "legacyChild"},
+			Expected: documentationChildLinkExpected{
+				Link: "[aci_legacy_child](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/legacy_child)",
+				OK:   true,
+			},
+		},
+		{Name: "test_definition_only_child_without_resource_artifact", Input: documentationChildLinkInput{ChildName: "datasourceOnlyChild"}, Expected: documentationChildLinkExpected{}},
 	}
 
 	for _, testCase := range testCases {
@@ -923,8 +941,8 @@ func TestSetDescription(t *testing.T) {
 				Label: "Application EPG",
 			},
 			Expected: setDescriptionExpected{
-				ResourceDescription:   "Manages ACI Application EPG.",
-				DatasourceDescription: "Data source for ACI Application EPG.",
+				ResourceDescription:   "Manages ACI Application EPG",
+				DatasourceDescription: "Data source for ACI Application EPG",
 			},
 		},
 		{
@@ -946,7 +964,7 @@ func TestSetDescription(t *testing.T) {
 			},
 			Expected: setDescriptionExpected{
 				ResourceDescription:   "Manages ACI Application EPG. Use with caution.",
-				DatasourceDescription: "Data source for ACI Application EPG.",
+				DatasourceDescription: "Data source for ACI Application EPG",
 			},
 		},
 		{
@@ -956,7 +974,7 @@ func TestSetDescription(t *testing.T) {
 				DataDescription: "Returns matching objects.",
 			},
 			Expected: setDescriptionExpected{
-				ResourceDescription:   "Manages ACI Application EPG.",
+				ResourceDescription:   "Manages ACI Application EPG",
 				DatasourceDescription: "Data source for ACI Application EPG. Returns matching objects.",
 			},
 		},
@@ -1085,6 +1103,19 @@ func TestSetDnFormats(t *testing.T) {
 			Expected: []string{"a/{name}", "z/{name}"},
 		},
 		{
+			Name: "test_override_over_cap_is_not_truncated",
+			Input: setDnFormatsInput{
+				OverrideFormats: []string{
+					tooManyNotice,
+					"f/{name}", "e/{name}", "d/{name}", "c/{name}", "b/{name}",
+				},
+			},
+			Expected: []string{
+				tooManyNotice,
+				"b/{name}", "c/{name}", "d/{name}", "e/{name}", "f/{name}",
+			},
+		},
+		{
 			Name: "test_at_cap_no_notice",
 			Input: setDnFormatsInput{
 				MetaFormats: []any{"e/{name}", "d/{name}", "c/{name}", "b/{name}", "a/{name}"},
@@ -1174,23 +1205,29 @@ func TestSetMigrationWarning(t *testing.T) {
 }
 
 type setParentDnsInput struct {
-	Parents      []string
-	StoreClasses map[string]Class
+	Parents          []string
+	VariantParents   []string
+	StoreClasses     map[string]Class
+	StoreDefinitions map[string]ClassDefinition
+}
+
+type setParentDnsExpected struct {
+	Notice    string
+	Resources []string
+	Classes   []string
 }
 
 func TestSetParentDns(t *testing.T) {
 	t.Parallel()
 	test.InitializeTest(t)
 
-	const note = "The distinguished name (DN) of classes below can be used but currently there is no available resource for it:"
 	link := func(className string) string {
 		return fmt.Sprintf("[%s](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/%s/overview)", className, className)
 	}
 	resourceEntry := func(resourceName, className string) string {
 		return fmt.Sprintf("[aci_%s](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/%s) (%s)", resourceName, resourceName, link(className))
 	}
-	tooManyResources := "Too many parent DNs to display, see model documentation for all possible parents of " + link("fvFoo") + "."
-	tooManyClasses := "Too many classes to display, see model documentation for all possible classes of " + link("fvFoo") + "."
+	additionalParents := "Additional parent options are available; see model documentation for all possible parents of " + link("fvFoo") + "."
 
 	// Helpers to build large input sets for the over-cap cases.
 	manyParentNames := func(prefix string, count int) []string {
@@ -1203,40 +1240,78 @@ func TestSetParentDns(t *testing.T) {
 	manyResourceStore := func(names []string) map[string]Class {
 		store := make(map[string]Class, len(names))
 		for _, n := range names {
-			store[n] = Class{ResourceName: n}
+			store[n] = Class{ResourceName: n, Artifacts: []ArtifactEnum{ResourceArtifact}}
 		}
 		return store
+	}
+	resourceEntries := func(names []string) []string {
+		entries := make([]string, 0, len(names))
+		for _, name := range names {
+			entries = append(entries, resourceEntry(name, name))
+		}
+		return entries
+	}
+	classEntries := func(names []string) []string {
+		entries := make([]string, 0, len(names))
+		for _, name := range names {
+			entries = append(entries, link(name))
+		}
+		return entries
 	}
 
 	testCases := []test.TestCase{
 		{
 			Name:     "test_no_parents",
 			Input:    setParentDnsInput{},
-			Expected: []string(nil),
+			Expected: setParentDnsExpected{},
 		},
 		{
 			Name: "test_single_resource",
 			Input: setParentDnsInput{
 				Parents: []string{"fvTenant"},
 				StoreClasses: map[string]Class{
-					"fvTenant": {ResourceName: "tenant"},
+					"fvTenant": {ResourceName: "tenant", Artifacts: []ArtifactEnum{ResourceArtifact}},
 				},
 			},
-			Expected: []string{resourceEntry("tenant", "fvTenant")},
+			Expected: setParentDnsExpected{Resources: []string{resourceEntry("tenant", "fvTenant")}},
+		},
+		{
+			Name: "test_definition_only_resource",
+			Input: setParentDnsInput{
+				Parents: []string{"l3extOut"},
+				StoreDefinitions: map[string]ClassDefinition{
+					"l3extOut": {ResourceName: "l3_outside"},
+				},
+			},
+			Expected: setParentDnsExpected{Resources: []string{resourceEntry("l3_outside", "l3extOut")}},
+		},
+		{
+			Name: "test_parent_dn_variants_replace_internal_wrapper_parents",
+			Input: setParentDnsInput{
+				Parents:        []string{"cloudCertStore", "pkiEp"},
+				VariantParents: []string{"pkiEp", "fvTenant"},
+				StoreClasses: map[string]Class{
+					"fvTenant": {ResourceName: "tenant", Artifacts: []ArtifactEnum{ResourceArtifact}},
+				},
+			},
+			Expected: setParentDnsExpected{
+				Resources: []string{resourceEntry("tenant", "fvTenant")},
+				Classes:   []string{link("pkiEp")},
+			},
 		},
 		{
 			Name: "test_multiple_resources_preserve_order",
 			Input: setParentDnsInput{
 				Parents: []string{"fvAlpha", "fvZeta"},
 				StoreClasses: map[string]Class{
-					"fvAlpha": {ResourceName: "alpha"},
-					"fvZeta":  {ResourceName: "zeta"},
+					"fvAlpha": {ResourceName: "alpha", Artifacts: []ArtifactEnum{ResourceArtifact}},
+					"fvZeta":  {ResourceName: "zeta", Artifacts: []ArtifactEnum{ResourceArtifact}},
 				},
 			},
-			Expected: []string{
+			Expected: setParentDnsExpected{Resources: []string{
 				resourceEntry("alpha", "fvAlpha"),
 				resourceEntry("zeta", "fvZeta"),
-			},
+			}},
 		},
 		{
 			Name: "test_only_class_only_with_note",
@@ -1244,20 +1319,19 @@ func TestSetParentDns(t *testing.T) {
 				Parents:      []string{"fvAlpha", "fvZeta"},
 				StoreClasses: map[string]Class{},
 			},
-			Expected: []string{note, link("fvAlpha"), link("fvZeta")},
+			Expected: setParentDnsExpected{Classes: []string{link("fvAlpha"), link("fvZeta")}},
 		},
 		{
 			Name: "test_unknown_in_store_treated_as_class_only",
 			Input: setParentDnsInput{
 				Parents: []string{"fvKnown", "fvUnknown"},
 				StoreClasses: map[string]Class{
-					"fvKnown": {ResourceName: "known"},
+					"fvKnown": {ResourceName: "known", Artifacts: []ArtifactEnum{ResourceArtifact}},
 				},
 			},
-			Expected: []string{
-				resourceEntry("known", "fvKnown"),
-				note,
-				link("fvUnknown"),
+			Expected: setParentDnsExpected{
+				Resources: []string{resourceEntry("known", "fvKnown")},
+				Classes:   []string{link("fvUnknown")},
 			},
 		},
 		{
@@ -1268,31 +1342,59 @@ func TestSetParentDns(t *testing.T) {
 					"fvNoResource": {ResourceName: ""},
 				},
 			},
-			Expected: []string{note, link("fvNoResource")},
+			Expected: setParentDnsExpected{Classes: []string{link("fvNoResource")}},
 		},
 		{
-			Name: "test_resources_over_cap_replaced_by_notice",
+			Name: "test_known_without_resource_artifact_treated_as_class_only",
+			Input: setParentDnsInput{
+				Parents: []string{"fvNoResource"},
+				StoreClasses: map[string]Class{
+					"fvNoResource": {ResourceName: "not_rendered"},
+				},
+			},
+			Expected: setParentDnsExpected{Classes: []string{link("fvNoResource")}},
+		},
+		{
+			Name: "test_resources_at_cap_have_no_notice",
+			Input: setParentDnsInput{
+				Parents:      manyParentNames("fvRes", 20),
+				StoreClasses: manyResourceStore(manyParentNames("fvRes", 20)),
+			},
+			Expected: setParentDnsExpected{Resources: resourceEntries(manyParentNames("fvRes", 20))},
+		},
+		{
+			Name: "test_resources_over_cap_are_sampled",
 			Input: setParentDnsInput{
 				Parents:      manyParentNames("fvRes", 21),
 				StoreClasses: manyResourceStore(manyParentNames("fvRes", 21)),
 			},
-			Expected: []string{tooManyResources},
+			Expected: setParentDnsExpected{
+				Notice:    additionalParents,
+				Resources: resourceEntries(manyParentNames("fvRes", 20)),
+			},
 		},
 		{
-			Name: "test_classes_over_cap_replaced_by_notice",
+			Name: "test_classes_over_cap_are_sampled",
 			Input: setParentDnsInput{
 				Parents:      manyParentNames("fvCls", 21),
 				StoreClasses: map[string]Class{},
 			},
-			Expected: []string{note, tooManyClasses},
+			Expected: setParentDnsExpected{
+				Notice:  additionalParents,
+				Classes: classEntries(manyParentNames("fvCls", 20)),
+			},
 		},
 		{
-			Name: "test_resources_over_cap_with_class_only_entries",
+			Name: "test_combined_groups_over_cap_prioritize_resources",
 			Input: setParentDnsInput{
-				Parents:      append(manyParentNames("fvRes", 21), "fvOrphan"),
-				StoreClasses: manyResourceStore(manyParentNames("fvRes", 21)),
+				Parents:      append(manyParentNames("fvCls", 10), manyParentNames("fvRes", 11)...),
+				StoreClasses: manyResourceStore(manyParentNames("fvRes", 11)),
 			},
-			Expected: []string{tooManyResources, note, link("fvOrphan")},
+			Expected: setParentDnsExpected{
+				Notice:    additionalParents,
+				Resources: resourceEntries(manyParentNames("fvRes", 11)),
+				Classes:   classEntries(manyParentNames("fvCls", 9)),
+			},
 		},
 	}
 
@@ -1300,23 +1402,34 @@ func TestSetParentDns(t *testing.T) {
 		t.Run(testCase.Name, func(t *testing.T) {
 			t.Parallel()
 			input := testCase.Input.(setParentDnsInput)
-			expected := testCase.Expected.([]string)
+			expected := testCase.Expected.(setParentDnsExpected)
 
 			parents := make([]*ClassName, 0, len(input.Parents))
 			for _, name := range input.Parents {
 				parents = append(parents, testClassName(name))
 			}
 
-			class := Class{
-				Name:    testClassName("fvFoo"),
-				Parents: parents,
+			variants := make([]ParentDnVariant, 0, len(input.VariantParents))
+			for _, name := range input.VariantParents {
+				variants = append(variants, ParentDnVariant{ParentClass: testClassName(name)})
 			}
-			ds := &DataStore{Classes: input.StoreClasses}
+
+			class := Class{
+				Name:             testClassName("fvFoo"),
+				Parents:          parents,
+				ParentDnVariants: variants,
+			}
+			ds := &DataStore{Classes: input.StoreClasses, ClassDefinitions: input.StoreDefinitions}
 
 			class.Documentation.setClassName(&class)
 			class.Documentation.setParentDns(&class, ds)
 
-			assert.Equal(t, expected, class.Documentation.ParentDns, test.MessageEqual(expected, class.Documentation.ParentDns, testCase.Name))
+			actual := setParentDnsExpected{
+				Notice:    class.Documentation.ParentDnNotice,
+				Resources: class.Documentation.ParentDnResources,
+				Classes:   class.Documentation.ParentDnClasses,
+			}
+			assert.Equal(t, expected, actual, test.MessageEqual(expected, actual, testCase.Name))
 		})
 	}
 }
@@ -1329,10 +1442,10 @@ func TestSetClassDocumentationSupportedVersions(t *testing.T) {
 		{Name: "test_nil_versions", Input: "", Expected: ""},
 		{Name: "test_single_version", Input: "1.0(1e)", Expected: "1.0(1e)"},
 		{Name: "test_bounded_range", Input: "4.2(7f)-4.2(7w)", Expected: "4.2(7f) to 4.2(7w)"},
-		{Name: "test_unbounded_max", Input: "5.2(1g)-", Expected: "5.2(1g) and later"},
+		{Name: "test_unbounded_max", Input: "5.2(1g)-", Expected: "5.2(1g) and later."},
 		{Name: "test_unbounded_min", Input: "-4.2(7w)", Expected: "up to 4.2(7w)"},
-		{Name: "test_multiple_ranges_sorted", Input: "5.2(1g)-,3.2(10e)-3.2(10g)", Expected: "3.2(10e) to 3.2(10g), 5.2(1g) and later"},
-		{Name: "test_mixed_single_and_range", Input: "1.0(1e),4.2(7f)-", Expected: "1.0(1e), 4.2(7f) and later"},
+		{Name: "test_multiple_ranges_preserve_source_order", Input: "5.2(1g)-,3.2(10e)-3.2(10g)", Expected: "5.2(1g) and later, 3.2(10e) to 3.2(10g)"},
+		{Name: "test_mixed_single_and_range", Input: "1.0(1e),4.2(7f)-", Expected: "1.0(1e), 4.2(7f) and later."},
 	}
 
 	for _, testCase := range testCases {
@@ -1362,7 +1475,14 @@ type setDescriptionWhenDefinedAsChildInput struct {
 	Artifacts          []ArtifactEnum
 	IsSingleNested     bool
 	Relation           Relation
+	ClassDefinition    ClassDefinition
 	StoreClasses       map[string]Class
+	StoreDefinitions   map[string]ClassDefinition
+}
+
+type setDescriptionWhenDefinedAsChildExpected struct {
+	Description           string
+	RelationTargetClasses []string
 }
 
 func TestSetDescriptionWhenDefinedAsChild(t *testing.T) {
@@ -1371,6 +1491,7 @@ func TestSetDescriptionWhenDefinedAsChild(t *testing.T) {
 
 	fooLink := "[fvFoo](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvFoo/overview)"
 	bdLink := "[fvBD](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvBD/overview)"
+	ctxLink := "[fvCtx](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvCtx/overview)"
 
 	testCases := []test.TestCase{
 		{
@@ -1382,7 +1503,7 @@ func TestSetDescriptionWhenDefinedAsChild(t *testing.T) {
 				Artifacts:          []ArtifactEnum{ResourceArtifact},
 				IsSingleNested:     false,
 			},
-			Expected: "foo - (" + fooLink + ") - (list) A list of Foo which can also be configured using a separate [aci_foo](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/foo) resource.",
+			Expected: setDescriptionWhenDefinedAsChildExpected{Description: "`foo` - (list) A list of Foos (ACI object " + fooLink + ") which can also be configured using a separate [aci_foo](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/foo) resource."},
 		},
 		{
 			Name: "test_non_relational_list_without_resource_artifact",
@@ -1392,7 +1513,7 @@ func TestSetDescriptionWhenDefinedAsChild(t *testing.T) {
 				ResourceNameNested: "foo",
 				IsSingleNested:     false,
 			},
-			Expected: "foo - (" + fooLink + ") - (list) A list of Foo.",
+			Expected: setDescriptionWhenDefinedAsChildExpected{Description: "`foo` - (list) A list of Foos (ACI object " + fooLink + ")."},
 		},
 		{
 			Name: "test_non_relational_map",
@@ -1402,7 +1523,7 @@ func TestSetDescriptionWhenDefinedAsChild(t *testing.T) {
 				ResourceNameNested: "foo",
 				IsSingleNested:     true,
 			},
-			Expected: "foo - (" + fooLink + ") - (map) A map of Foo.",
+			Expected: setDescriptionWhenDefinedAsChildExpected{Description: "`foo` - (map) A map of Foo (ACI object " + fooLink + ")."},
 		},
 		{
 			Name: "test_relational_list",
@@ -1416,7 +1537,7 @@ func TestSetDescriptionWhenDefinedAsChild(t *testing.T) {
 					"fvBD": {ResourceName: "bridge_domain", Artifacts: []ArtifactEnum{ResourceArtifact}, Documentation: ClassDocumentation{Label: "Bridge Domain"}},
 				},
 			},
-			Expected: "relation_to_bd - (" + fooLink + ") - (list) A list of Relation From Foo To BD pointing to Bridge Domain (" + bdLink + ") which can be configured using the [aci_bridge_domain](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bridge_domain) resource.",
+			Expected: setDescriptionWhenDefinedAsChildExpected{Description: "`relation_to_bd` - (list) A list of Relation From Foo To BDs (ACI object " + fooLink + ") pointing to Bridge Domain (ACI Object " + bdLink + ") which can be configured using the [aci_bridge_domain](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bridge_domain) resource."},
 		},
 		{
 			Name: "test_relational_map",
@@ -1430,7 +1551,7 @@ func TestSetDescriptionWhenDefinedAsChild(t *testing.T) {
 					"fvBD": {ResourceName: "bridge_domain", Documentation: ClassDocumentation{Label: "Bridge Domain"}},
 				},
 			},
-			Expected: "relation_to_bd - (" + fooLink + ") - (map) A map of Relation From Foo To BD pointing to Bridge Domain (" + bdLink + ").",
+			Expected: setDescriptionWhenDefinedAsChildExpected{Description: "`relation_to_bd` - (map) A map of Relation From Foo To BD (ACI object " + fooLink + ") pointing to Bridge Domain (ACI Object " + bdLink + ")."},
 		},
 		{
 			Name: "test_relational_toclass_missing_in_store",
@@ -1442,7 +1563,34 @@ func TestSetDescriptionWhenDefinedAsChild(t *testing.T) {
 				Relation:           Relation{RelationalClass: true, ToClasses: []*ClassName{testClassName("fvBD")}},
 				StoreClasses:       map[string]Class{},
 			},
-			Expected: "relation_to_bd - (" + fooLink + ") - (list) A list of Relation From Foo To BD pointing to fvBD (" + bdLink + ").",
+			Expected: setDescriptionWhenDefinedAsChildExpected{Description: "`relation_to_bd` - (list) A list of Relation From Foo To BDs (ACI object " + fooLink + ") pointing to fvBD (ACI Object " + bdLink + ")."},
+		},
+		{
+			Name: "test_relational_toclass_uses_definition_label",
+			Input: setDescriptionWhenDefinedAsChildInput{
+				Label:              "Relation From Foo To Monitoring Policy",
+				ResourceName:       "relation_from_foo_to_monitoring_policy",
+				ResourceNameNested: "relation_to_monitoring_policy",
+				IsSingleNested:     true,
+				Relation:           Relation{RelationalClass: true, ToClasses: []*ClassName{testClassName("monEPGPol")}},
+				StoreDefinitions: map[string]ClassDefinition{
+					"monEPGPol": {ResourceName: "monitoring_policy"},
+				},
+			},
+			Expected: setDescriptionWhenDefinedAsChildExpected{Description: "`relation_to_monitoring_policy` - (map) A map of Relation From Foo To Monitoring Policy (ACI object " + fooLink + ") pointing to Monitoring Policy (ACI Object [monEPGPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/monEPGPol/overview))."},
+		},
+		{
+			Name: "test_relational_toclass_uses_definition_only_resource",
+			Input: setDescriptionWhenDefinedAsChildInput{
+				Label:              "Relation From Foo To BD",
+				ResourceName:       "relation_from_foo_to_bd",
+				ResourceNameNested: "relation_to_bd",
+				Relation:           Relation{RelationalClass: true, ToClasses: []*ClassName{testClassName("fvBD")}},
+				StoreDefinitions: map[string]ClassDefinition{
+					"fvBD": {ResourceName: "bridge_domain"},
+				},
+			},
+			Expected: setDescriptionWhenDefinedAsChildExpected{Description: "`relation_to_bd` - (list) A list of Relation From Foo To BDs (ACI object " + fooLink + ") pointing to Bridge Domain (ACI Object " + bdLink + ") which can be configured using the [aci_bridge_domain](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bridge_domain) resource."},
 		},
 		{
 			Name: "test_relational_toclass_without_resource_artifact",
@@ -1456,7 +1604,7 @@ func TestSetDescriptionWhenDefinedAsChild(t *testing.T) {
 					"fvBD": {ResourceName: "bridge_domain", Documentation: ClassDocumentation{Label: "Bridge Domain"}},
 				},
 			},
-			Expected: "relation_to_bd - (" + fooLink + ") - (list) A list of Relation From Foo To BD pointing to Bridge Domain (" + bdLink + ").",
+			Expected: setDescriptionWhenDefinedAsChildExpected{Description: "`relation_to_bd` - (list) A list of Relation From Foo To BDs (ACI object " + fooLink + ") pointing to Bridge Domain (ACI Object " + bdLink + ")."},
 		},
 		{
 			Name: "test_relational_toclass_empty_label",
@@ -1470,7 +1618,24 @@ func TestSetDescriptionWhenDefinedAsChild(t *testing.T) {
 					"fvBD": {ResourceName: "bridge_domain", Artifacts: []ArtifactEnum{ResourceArtifact}},
 				},
 			},
-			Expected: "relation_to_bd - (" + fooLink + ") - (list) A list of Relation From Foo To BD pointing to fvBD (" + bdLink + ") which can be configured using the [aci_bridge_domain](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bridge_domain) resource.",
+			Expected: setDescriptionWhenDefinedAsChildExpected{Description: "`relation_to_bd` - (list) A list of Relation From Foo To BDs (ACI object " + fooLink + ") pointing to fvBD (ACI Object " + bdLink + ") which can be configured using the [aci_bridge_domain](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bridge_domain) resource."},
+		},
+		{
+			Name: "test_relational_multi_target_preserves_definition_order",
+			Input: setDescriptionWhenDefinedAsChildInput{
+				Label:              "Domain",
+				ResourceName:       "relation_to_domain",
+				ResourceNameNested: "relations_to_domains",
+				Relation: Relation{RelationalClass: true, ToClasses: []*ClassName{
+					testClassName("fvBD"),
+					testClassName("fvCtx"),
+				}},
+				ClassDefinition: ClassDefinition{RelationInfo: RelationInfoDefinition{ToClasses: []string{"fvCtx", "fvBD"}}},
+			},
+			Expected: setDescriptionWhenDefinedAsChildExpected{
+				Description:           "`relations_to_domains` - (list) A list of Domains (ACI object " + fooLink + ").",
+				RelationTargetClasses: []string{ctxLink, bdLink},
+			},
 		},
 	}
 
@@ -1478,7 +1643,7 @@ func TestSetDescriptionWhenDefinedAsChild(t *testing.T) {
 		t.Run(testCase.Name, func(t *testing.T) {
 			t.Parallel()
 			input := testCase.Input.(setDescriptionWhenDefinedAsChildInput)
-			expected := testCase.Expected.(string)
+			expected := testCase.Expected.(setDescriptionWhenDefinedAsChildExpected)
 
 			class := Class{
 				Name:                             testClassName("fvFoo"),
@@ -1487,14 +1652,86 @@ func TestSetDescriptionWhenDefinedAsChild(t *testing.T) {
 				Artifacts:                        input.Artifacts,
 				IsSingleNestedWhenDefinedAsChild: input.IsSingleNested,
 				Relation:                         input.Relation,
+				ClassDefinition:                  input.ClassDefinition,
 			}
 			class.Documentation.Label = input.Label
-			ds := &DataStore{Classes: input.StoreClasses}
+			ds := &DataStore{Classes: input.StoreClasses, ClassDefinitions: input.StoreDefinitions}
 
 			class.Documentation.setClassName(&class)
 			class.Documentation.setDescriptionWhenDefinedAsChild(&class, ds)
 
-			assert.Equal(t, expected, class.Documentation.DescriptionWhenDefinedAsChild, test.MessageEqual(expected, class.Documentation.DescriptionWhenDefinedAsChild, testCase.Name))
+			assert.Equal(t, expected.Description, class.Documentation.DescriptionWhenDefinedAsChild, test.MessageEqual(expected.Description, class.Documentation.DescriptionWhenDefinedAsChild, testCase.Name))
+			assert.Equal(t, expected.RelationTargetClasses, class.Documentation.RelationTargetClasses, test.MessageEqual(expected.RelationTargetClasses, class.Documentation.RelationTargetClasses, testCase.Name))
+		})
+	}
+}
+
+type nestedDocumentationClassExpected struct {
+	Class          string
+	Depth          int
+	Indent         string
+	PropertyIndent string
+}
+
+func TestNestedDocumentationClasses(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	testCases := []test.TestCase{
+		{
+			Name: "test_without_children",
+			Input: Class{
+				Name: testClassName("fvTenant"),
+			},
+			Expected: []nestedDocumentationClassExpected{},
+		},
+		{
+			Name: "test_depth_first_with_repeated_class",
+			Input: Class{
+				Name: testClassName("fvTenant"),
+				Children: []*ClassName{
+					testClassName("fvRsTenantMonPol"),
+					testClassName("tagAnnotation"),
+				},
+			},
+			Expected: []nestedDocumentationClassExpected{
+				{Class: "fvRsTenantMonPol", Depth: 0, PropertyIndent: "    "},
+				{Class: "tagAnnotation", Depth: 1, Indent: "    ", PropertyIndent: "        "},
+				{Class: "tagTag", Depth: 1, Indent: "    ", PropertyIndent: "        "},
+				{Class: "tagAnnotation", Depth: 0, PropertyIndent: "    "},
+			},
+		},
+	}
+
+	classes := map[string]Class{
+		"fvRsTenantMonPol": {
+			Name: testClassName("fvRsTenantMonPol"),
+			Children: []*ClassName{
+				testClassName("tagAnnotation"),
+				testClassName("tagTag"),
+			},
+		},
+		"tagAnnotation": {Name: testClassName("tagAnnotation")},
+		"tagTag":        {Name: testClassName("tagTag")},
+	}
+	ds := &DataStore{Classes: classes}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			class := testCase.Input.(Class)
+			expected := testCase.Expected.([]nestedDocumentationClassExpected)
+			nestedClasses := class.NestedDocumentationClasses(ds)
+			actual := make([]nestedDocumentationClassExpected, 0, len(nestedClasses))
+			for _, nestedClass := range nestedClasses {
+				actual = append(actual, nestedDocumentationClassExpected{
+					Class:          nestedClass.Class.Name.String(),
+					Depth:          nestedClass.Depth,
+					Indent:         nestedClass.Indent(0),
+					PropertyIndent: nestedClass.Indent(1),
+				})
+			}
+			assert.Equal(t, expected, actual, test.MessageEqual(expected, actual, testCase.Name))
 		})
 	}
 }

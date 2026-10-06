@@ -1927,8 +1927,20 @@ func applyCanonicalDefinitionCorrections(className string, out *data.ClassDefini
 	// migration. They are intentionally applied here rather than changing the
 	// legacy files copied from develop.
 	switch className {
+	case "extdevSDWanVpnEntry", "fvEPg", "infraADomP", "infraAccBaseGrp", "infraDomP":
+		// These definition-only classes provide APIC-to-Terraform naming but do
+		// not have a matching top-level artifact in the current provider.
+		out.Artifacts = []data.ArtifactEnum{}
+	case "fabricNode":
+		// The current provider exposes this definition-only class only as a
+		// datasource.
+		out.Artifacts = []data.ArtifactEnum{data.DatasourceArtifact}
 	case "fabricPathEp":
 		out.ResourceName = "fabric_path_ep"
+		out.Documentation.Label = "Fabric Path Endpoint"
+		// The current provider exposes this definition-only class only as a
+		// datasource.
+		out.Artifacts = []data.ArtifactEnum{data.DatasourceArtifact}
 	case "fvRsIpslaMonPol":
 		out.AllowDelete = "never"
 		// The test target is a static DN and fvIPSLAMonitoringPol has no local
@@ -3064,10 +3076,8 @@ func projectProperty(p data.PropertyDefinition) map[string]any {
 	if len(p.RemoveValidValues) > 0 {
 		out["remove_valid_values"] = p.RemoveValidValues
 	}
-	if p.Documentation.Description != "" {
-		out["documentation"] = map[string]any{
-			"description": p.Documentation.Description,
-		}
+	if documentation := projectArtifactDocumentation(p.Documentation); len(documentation) > 0 {
+		out["documentation"] = documentation
 	}
 	if len(p.Reference.Classes) > 0 || p.Reference.ExampleClass != "" {
 		reference := map[string]any{}
@@ -3279,10 +3289,14 @@ func hasMigratedData(c data.ClassDefinition) bool {
 	if len(c.TestConfig.IgnoreTests) > 0 || c.TestConfig.IgnoreImportStateVerify || len(c.TestConfig.Dependencies) > 0 || len(c.TestConfig.EmbeddedInstances) > 0 || c.TestConfig.ReplaceAutoResolved {
 		return true
 	}
-	if c.Documentation.SubCategory != "" || len(c.Documentation.UiLocations) > 0 || len(c.Documentation.DnFormats) > 0 {
+	documentation := c.Documentation
+	if documentation.Label != "" || documentation.Description != "" || documentation.SubCategory != "" {
 		return true
 	}
-	if len(c.Documentation.Resource.Notes) > 0 {
+	if len(documentation.UiLocations) > 0 || len(documentation.DnFormats) > 0 || len(documentation.ExcludeChildren) > 0 || len(documentation.IncludeChildren) > 0 || len(documentation.Notes) > 0 || len(documentation.Warnings) > 0 {
+		return true
+	}
+	if len(projectArtifactDocumentation(documentation.Resource)) > 0 || len(projectArtifactDocumentation(documentation.Datasource)) > 0 {
 		return true
 	}
 	if len(c.Properties) > 0 {
@@ -3423,6 +3437,12 @@ func marshalView(c data.ClassDefinition) map[string]any {
 		out["test_config"] = testCfg
 	}
 	doc := map[string]any{}
+	if c.Documentation.Label != "" {
+		doc["label"] = c.Documentation.Label
+	}
+	if c.Documentation.Description != "" {
+		doc["description"] = c.Documentation.Description
+	}
 	if c.Documentation.SubCategory != "" {
 		doc["sub_category"] = c.Documentation.SubCategory
 	}
@@ -3432,10 +3452,23 @@ func marshalView(c data.ClassDefinition) map[string]any {
 	if len(c.Documentation.DnFormats) > 0 {
 		doc["dn_formats"] = c.Documentation.DnFormats
 	}
-	if len(c.Documentation.Resource.Notes) > 0 {
-		doc["resource"] = map[string]any{
-			"notes": c.Documentation.Resource.Notes,
-		}
+	if len(c.Documentation.ExcludeChildren) > 0 {
+		doc["exclude_children"] = c.Documentation.ExcludeChildren
+	}
+	if len(c.Documentation.IncludeChildren) > 0 {
+		doc["include_children"] = c.Documentation.IncludeChildren
+	}
+	if len(c.Documentation.Notes) > 0 {
+		doc["notes"] = c.Documentation.Notes
+	}
+	if len(c.Documentation.Warnings) > 0 {
+		doc["warnings"] = c.Documentation.Warnings
+	}
+	if artifactDocumentation := projectArtifactDocumentation(c.Documentation.Resource); len(artifactDocumentation) > 0 {
+		doc["resource"] = artifactDocumentation
+	}
+	if artifactDocumentation := projectArtifactDocumentation(c.Documentation.Datasource); len(artifactDocumentation) > 0 {
+		doc["datasource"] = artifactDocumentation
 	}
 	if len(doc) > 0 {
 		out["documentation"] = doc
@@ -3446,6 +3479,20 @@ func marshalView(c data.ClassDefinition) map[string]any {
 			props[name] = projectProperty(p)
 		}
 		out["properties"] = props
+	}
+	return out
+}
+
+func projectArtifactDocumentation(documentation data.ArtifactDocumentationDefinition) map[string]any {
+	out := map[string]any{}
+	if documentation.Description != "" {
+		out["description"] = documentation.Description
+	}
+	if len(documentation.Notes) > 0 {
+		out["notes"] = documentation.Notes
+	}
+	if len(documentation.Warnings) > 0 {
+		out["warnings"] = documentation.Warnings
 	}
 	return out
 }

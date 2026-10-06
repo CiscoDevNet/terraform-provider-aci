@@ -30,9 +30,9 @@ Data source for ACI Relation To VRF Fallback Route Group
 
 ```hcl
 
-data "aci_relation_to_vrf_fallback_route_group" "example_l3_outside" {
+data "aci_relation_to_vrf_fallback_route_group" "example" {
   parent_dn = aci_l3_outside.example.id
-  target_dn = aci_vrf_fallback_route_group.example_vrf_fallback_route_group.id
+  target_dn = aci_vrf_fallback_route_group.example.id
 }
 
 ```
@@ -49,9 +49,9 @@ data "aci_relation_to_vrf_fallback_route_group" "example_l3_outside" {
 
 * `id` - (string) The distinguished name (DN) of the Relation To VRF Fallback Route Group object.
 * `annotation` (annotation) - (string) The annotation of the Relation To VRF Fallback Route Group object.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.

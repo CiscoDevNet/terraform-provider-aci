@@ -30,8 +30,11 @@ type PropertyDocumentation struct {
 	Description string
 	// Notes rendered with -> prefix in the property documentation.
 	Notes []string
-	// Warnings rendered with !> prefix in the property documentation.
+	// Warnings rendered with ~> prefix in the property documentation.
 	Warnings []string
+	// SupportedVersions is rendered when this property is not available for the
+	// complete version range of its owning class.
+	SupportedVersions string
 }
 
 func (p *Property) setDocumentation() error {
@@ -72,9 +75,50 @@ func (d *PropertyDocumentation) setDescription(p *Property) {
 	genLogger.Debugf("Successfully set Documentation Description for property '%s'. Description: %s", p.PropertyName, d.Description)
 }
 
-// applyGlobalPropertyDocumentationOverrides walks the class's resolved
-// Properties and replaces each Description with the matching entry from
-// ds.GlobalMetaDefinition.PropertyDocumentationOverrides when present.
+func (c *Class) setPropertyDocumentationReferences(ds *DataStore) {
+	// Mention only artifacts that users can actually address in configuration;
+	// a class name alone is insufficient evidence that a registry page exists.
+	for _, propertyName := range c.PropertiesAll {
+		property := c.Properties[propertyName]
+		if property == nil || property.Reference == nil || property.Reference.ExampleClass == nil {
+			continue
+		}
+		description := strings.ToLower(property.Documentation.Description)
+		if strings.Contains(description, "can be referenced from") || strings.Contains(description, "registry.terraform.io/") {
+			continue
+		}
+
+		attributeName := property.Reference.ExampleAttributeName
+		var references []string
+		if resourceName := ds.getResourceNameForArtifact(property.Reference.ExampleClass.String(), ResourceArtifact); resourceName != "" {
+			references = append(references, fmt.Sprintf(
+				"a [resource](%s/%s) with `aci_%s.example.%s`",
+				constRegistryResourceBaseUrl,
+				resourceName,
+				resourceName,
+				attributeName,
+			))
+		}
+		if resourceName := ds.getResourceNameForArtifact(property.Reference.ExampleClass.String(), DatasourceArtifact); resourceName != "" {
+			references = append(references, fmt.Sprintf(
+				"a [datasource](%s/%s) with `data.aci_%s.example.%s`",
+				constRegistryDatasourceBaseUrl,
+				resourceName,
+				resourceName,
+				attributeName,
+			))
+		}
+		if len(references) == 0 {
+			continue
+		}
+
+		referenceDescription := "This attribute can be referenced from " + strings.Join(references, " or from ") + "."
+		property.Documentation.Description = strings.TrimSpace(property.Documentation.Description + " " + referenceDescription)
+	}
+}
+
+// setPropertyDocumentationDescriptions applies global description overrides
+// and resolves class-label placeholders in the resulting descriptions.
 //
 // The override is keyed by APIC PropertyName (not the snake_case schema
 // AttributeName). Per the section 9.1 contract this branch sits between the
@@ -83,31 +127,29 @@ func (d *PropertyDocumentation) setDescription(p *Property) {
 // value; otherwise the global template wins over whatever Property.setDescription
 // derived from meta comment / meta label.
 //
-// When the global template contains "%s" it is interpolated with the class's
-// humanised Label (e.g. "Application EPG"), matching the legacy generator's
-// GetResourceNameAsDescription substitution. Templates without "%s" are used
-// verbatim.
-//
 // Must run after ClassDocumentation.setLabel so the substitution target exists.
-func (c *Class) applyGlobalPropertyDocumentationOverrides(ds *DataStore) {
+func (c *Class) setPropertyDocumentationDescriptions(ds *DataStore) {
 	overrides := ds.GlobalMetaDefinition.PropertyDocumentationOverrides
-	if len(overrides) == 0 {
-		return
-	}
 	for name, property := range c.Properties {
-		template, ok := overrides[name]
-		if !ok {
-			continue
-		}
-		if property.propertyDefinition.Documentation.Description != "" {
-			continue
-		}
-		if strings.Contains(template, "%s") {
-			property.Documentation.Description = fmt.Sprintf(template, c.Documentation.Label)
-		} else {
+		if template, ok := overrides[name]; ok && property.propertyDefinition.Documentation.Description == "" {
 			property.Documentation.Description = template
+			genLogger.Debugf("Applied global PropertyDocumentationOverride for class '%s' property '%s'. Description: %s", c.Name.full, name, property.Documentation.Description)
 		}
-		genLogger.Debugf("Applied global PropertyDocumentationOverride for class '%s' property '%s'. Description: %s", c.Name.full, name, property.Documentation.Description)
+
+		if strings.Contains(property.Documentation.Description, "%s") {
+			property.Documentation.Description = strings.ReplaceAll(property.Documentation.Description, "%s", c.Documentation.Label)
+		}
+		if property.Documentation.Description != "" && !strings.HasSuffix(property.Documentation.Description, ".") {
+			property.Documentation.Description += "."
+		}
+	}
+}
+
+func (c *Class) setPropertyDocumentationSupportedVersions() {
+	for _, property := range c.Properties {
+		if property.SupportedVersions != nil && !property.SupportedVersions.Covers(c.SupportedVersions) {
+			property.Documentation.SupportedVersions = documentationVersions(property.SupportedVersions)
+		}
 	}
 }
 

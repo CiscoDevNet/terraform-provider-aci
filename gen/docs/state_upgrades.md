@@ -15,7 +15,7 @@ It replaces the legacy `migration_blocks` / `migration_version` / `type_changes`
 Two pieces of information drive the renderer:
 
 - **`state_upgrades`** — the list of upgrade hops. Each entry describes one prior schema version's shape in enough detail to (a) reconstruct the prior schema for the framework's `UpgradeResourceState` RPC and (b) render the current schema's transitional legacy aliases.
-- **`migration_source`** — the lineage of the resource (e.g. `from_sdkv2`). Orthogonal to `state_upgrades`. Populates the normalized documentation migration warning for the future active resource-documentation template and can drive other migration-source-specific code generation.
+- **`migration_source`** — the lineage of the resource (e.g. `from_sdkv2`). Orthogonal to `state_upgrades`. Populates the normalized warning for the future active resource-documentation template; the active datasource template intentionally does not render a resource state-migration warning.
 
 ---
 
