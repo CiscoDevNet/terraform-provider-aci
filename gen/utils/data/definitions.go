@@ -103,7 +103,7 @@ type ClassDocumentationDefinition struct {
 	// Per-artifact entries in Resource.Description / Datasource.Description are appended after this shared text.
 	Description string `yaml:"description"`
 	// Overrides the DN format strings sourced from the meta file. When set, these values are
-	// used verbatim. Sorting and the constMaxDnFormatsToDisplay cap still apply.
+	// sorted but are not capped because the explicitly curated list is used in full.
 	DnFormats []string `yaml:"dn_formats"`
 	// A list of child class names to exclude from the documentation children list.
 	ExcludeChildren []string `yaml:"exclude_children"`
@@ -117,7 +117,7 @@ type ClassDocumentationDefinition struct {
 	SubCategory string `yaml:"sub_category"`
 	// GUI locations in APIC (e.g., "Tenants -> Networking -> VRFs").
 	UiLocations []string `yaml:"ui_locations"`
-	// Warnings rendered with !> prefix in the documentation.
+	// Warnings rendered with ~> prefix in the documentation.
 	// These are shared and applied to both the resource and datasource documentation.
 	// Per-artifact entries in Resource.Warnings / Datasource.Warnings are appended after this shared list.
 	Warnings []string `yaml:"warnings"`
@@ -135,7 +135,7 @@ type ArtifactDocumentationDefinition struct {
 	Description string `yaml:"description"`
 	// Notes rendered with -> prefix in the documentation, appended after the shared notes.
 	Notes []string `yaml:"notes"`
-	// Warnings rendered with !> prefix in the documentation, appended after the shared warnings.
+	// Warnings rendered with ~> prefix in the documentation, appended after the shared warnings.
 	Warnings []string `yaml:"warnings"`
 }
 
@@ -359,14 +359,14 @@ type ClassDefinition struct {
 	// Overrides the default deletion behavior from meta file. Set to "never" to prevent deletion of the class.
 	// The value "never" is used to keep the input consistent with the meta data file.
 	AllowDelete string `yaml:"allow_delete"`
-	// Selects which top-level resource/data-source artifacts class-scoped renderers may
-	// emit for this metadata-backed class. Current public-example jobs honor this
-	// selection; shared models are generated for every loaded class. Resource,
-	// data-source, and documentation renderers will use it as those templates are migrated.
-	// A nil slice (the YAML field omitted entirely) signals the resolver to auto-derive:
-	// classes with non-empty `IdentifiedBy` get [resource, datasource], while classes
-	// with empty `IdentifiedBy` get nothing. Definition-only classes do not enter the
-	// renderer and therefore do not use this field.
+	// Selects which top-level resource/data-source artifacts are available for a
+	// class. For metadata-backed classes, class-scoped renderers honor this
+	// selection; shared models are generated for every loaded class. A nil slice
+	// signals the resolver to auto-derive: classes with non-empty `IdentifiedBy`
+	// get [resource, datasource], while classes with empty `IdentifiedBy` get
+	// nothing. Definition-only classes never enter class-scoped render jobs, but
+	// their artifact availability is used when documentation resolves links; an
+	// omitted field defaults to both existing legacy artifacts.
 	// A non-nil but empty slice (`artifacts: []`) is an explicit opt-out. A
 	// non-empty list overrides the auto-derivation; `[resource, datasource]`
 	// opts an empty-`IdentifiedBy` class in as both, while `[datasource]` or

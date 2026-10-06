@@ -7,6 +7,8 @@ import (
 
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
+
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils"
 )
 
 // validSubCategories contains the allowed sub-category values for Terraform Registry sidebar grouping.
@@ -68,14 +70,17 @@ type ClassDocumentation struct {
 	DatasourceDescription string
 	// The description used when this class appears as a nested child in a parent resource.
 	DescriptionWhenDefinedAsChild string
+	// APIC-class links rendered below a multi-target child relation description.
+	RelationTargetClasses []string
 	// DN format strings from meta file (e.g., "uni/tn-{name}").
 	DnFormats []string
-	// Parent DN references rendered in the documentation. Built from class.Parents.
-	// Resources (parent classes that have a Terraform resource) are listed first in
-	// alphabetical order, followed by parent classes without a resource under an
-	// explanatory note. Each section is independently capped by constMaxParentDnsToDisplay;
-	// a notice line replaces that section's list when exceeded.
-	ParentDns []string
+	// ParentDnNotice follows the sampled parent lists when the complete parent
+	// set is too large to render. ParentDnResources contains links to parent
+	// classes backed by a Terraform resource and ParentDnClasses contains
+	// APIC-class links for the remaining parents.
+	ParentDnNotice    string
+	ParentDnResources []string
+	ParentDnClasses   []string
 	// A migration warning message for the documentation when the class has been migrated from a previous provider version.
 	MigrationWarning string
 	// The supported APIC versions string for display in documentation.
@@ -83,13 +88,13 @@ type ClassDocumentation struct {
 	// Notes rendered with -> prefix in the resource documentation.
 	// Resolved as the shared ClassDocumentationDefinition.Notes followed by ClassDocumentationDefinition.Resource.Notes.
 	ResourceNotes []string
-	// Warnings rendered with !> prefix in the resource documentation.
+	// Warnings rendered with ~> prefix in the resource documentation.
 	// Resolved as the shared ClassDocumentationDefinition.Warnings followed by ClassDocumentationDefinition.Resource.Warnings.
 	ResourceWarnings []string
 	// Notes rendered with -> prefix in the datasource documentation.
 	// Resolved as the shared ClassDocumentationDefinition.Notes followed by ClassDocumentationDefinition.Datasource.Notes.
 	DatasourceNotes []string
-	// Warnings rendered with !> prefix in the datasource documentation.
+	// Warnings rendered with ~> prefix in the datasource documentation.
 	// Resolved as the shared ClassDocumentationDefinition.Warnings followed by ClassDocumentationDefinition.Datasource.Warnings.
 	DatasourceWarnings []string
 	// Sub-category for Terraform Registry sidebar grouping.
@@ -98,18 +103,58 @@ type ClassDocumentation struct {
 	UiLocations []string
 }
 
+// NestedDocumentationClass identifies one embedded class in depth-first
+// documentation order. Depth is used only to indent the corresponding
+// Markdown list entries.
+type NestedDocumentationClass struct {
+	Class             *Class
+	Depth             int
+	SupportedVersions string
+}
+
+// Indent returns four spaces for each nesting level plus additionalDepth.
+func (c NestedDocumentationClass) Indent(additionalDepth int) string {
+	return strings.Repeat("    ", c.Depth+additionalDepth)
+}
+
+// NestedDocumentationClasses resolves all embedded children in deterministic
+// parent-first order without storing a second class hierarchy.
+func (c *Class) NestedDocumentationClasses(ds *DataStore) []NestedDocumentationClass {
+	return nestedDocumentationClasses(c, ds, 0)
+}
+
+func nestedDocumentationClasses(parent *Class, ds *DataStore, depth int) []NestedDocumentationClass {
+	var nestedClasses []NestedDocumentationClass
+	for _, childName := range parent.Children {
+		childClass, ok := ds.Classes[childName.String()]
+		if !ok {
+			continue
+		}
+		child := &childClass
+		supportedVersions := ""
+		if child.SupportedVersions != nil && !child.SupportedVersions.Covers(parent.SupportedVersions) {
+			supportedVersions = documentationVersions(child.SupportedVersions)
+		}
+		nestedClasses = append(nestedClasses, NestedDocumentationClass{
+			Class:             child,
+			Depth:             depth,
+			SupportedVersions: supportedVersions,
+		})
+		nestedClasses = append(nestedClasses, nestedDocumentationClasses(child, ds, depth+1)...)
+	}
+	return nestedClasses
+}
+
 func (c *Class) setDocumentation(ds *DataStore) error {
 	genLogger.Debugf("Setting Documentation for class '%s'.", c.Name)
-
-	c.Documentation.setClassName(c)
 
 	c.Documentation.setChildren(c, ds)
 
 	c.Documentation.setDeprecationWarning(c)
 
-	c.Documentation.setLabel(c, ds)
-
-	c.applyGlobalPropertyDocumentationOverrides(ds)
+	c.setPropertyDocumentationDescriptions(ds)
+	c.setPropertyDocumentationReferences(ds)
+	c.setPropertyDocumentationSupportedVersions()
 
 	c.Documentation.setDescription(c)
 
@@ -268,12 +313,12 @@ func documentationChildLink(
 		}
 	}
 
-	childClass, ok := ds.Classes[childName]
-	if !ok || childClass.ResourceName == "" {
+	resourceName := ds.getResourceNameForArtifact(childName, ResourceArtifact)
+	if resourceName == "" {
 		return "", false
 	}
 
-	return getResourceDocumentationLink(childClass.ResourceName), true
+	return getResourceDocumentationLink(resourceName), true
 }
 
 func (d *ClassDocumentation) setDeprecationWarning(class *Class) {
@@ -311,19 +356,39 @@ func (d *ClassDocumentation) setLabel(class *Class, ds *DataStore) {
 	if class.ClassDefinition.Documentation.Label != "" {
 		d.Label = class.ClassDefinition.Documentation.Label
 	} else {
-		d.Label = cases.Title(language.English).String(strings.ReplaceAll(class.ResourceName, "_", " "))
-		// Apply word substitutions: multi-word keys are matched as substrings;
-		// single-word keys are only replaced on whole-word matches to avoid partial-word collisions.
-		for key, replacement := range ds.GlobalMetaDefinition.DocumentationLabelOverrides {
-			if strings.Contains(key, " ") {
-				d.Label = strings.ReplaceAll(d.Label, key, replacement)
-			} else if slices.Contains(strings.Split(d.Label, " "), key) {
-				d.Label = strings.ReplaceAll(d.Label, key, replacement)
-			}
-		}
+		d.Label = documentationLabel(class.ResourceName, ds.GlobalMetaDefinition.DocumentationLabelOverrides)
 	}
 
 	genLogger.Debugf("Successfully set Documentation Label for class '%s'. Label: %s", class.Name.full, d.Label)
+}
+
+func documentationLabel(resourceName string, overrides map[string]string) string {
+	label := cases.Title(language.English).String(strings.ReplaceAll(resourceName, "_", " "))
+	// Apply multi-word substitutions as phrases and single-word substitutions
+	// only to complete words so short acronyms do not alter longer words.
+	for key, replacement := range overrides {
+		if strings.Contains(key, " ") {
+			label = strings.ReplaceAll(label, key, replacement)
+		} else if slices.Contains(strings.Split(label, " "), key) {
+			label = strings.ReplaceAll(label, key, replacement)
+		}
+	}
+	return label
+}
+
+func documentationClassLabel(className string, ds *DataStore) string {
+	if class, ok := ds.Classes[className]; ok && class.Documentation.Label != "" {
+		return class.Documentation.Label
+	}
+	if definition, ok := ds.ClassDefinitions[className]; ok {
+		if definition.Documentation.Label != "" {
+			return definition.Documentation.Label
+		}
+		if definition.ResourceName != "" {
+			return documentationLabel(definition.ResourceName, ds.GlobalMetaDefinition.DocumentationLabelOverrides)
+		}
+	}
+	return className
 }
 
 func (d *ClassDocumentation) setDescription(class *Class) {
@@ -331,9 +396,12 @@ func (d *ClassDocumentation) setDescription(class *Class) {
 
 	docDef := class.ClassDefinition.Documentation
 
-	// Build the resource and datasource description lines. The standard prefix sentence is always
-	// applied; shared and artifact-specific text is appended afterwards, separated by a single space.
-	resourceParts := []string{fmt.Sprintf("Manages ACI %s.", d.Label)}
+	// Build the resource and datasource description lines. Keep the standard description without
+	// terminal punctuation unless more text follows, matching the existing generated documentation.
+	resourceParts := []string{fmt.Sprintf("Manages ACI %s", d.Label)}
+	if docDef.Description != "" || docDef.Resource.Description != "" {
+		resourceParts[0] += "."
+	}
 	if docDef.Description != "" {
 		resourceParts = append(resourceParts, docDef.Description)
 	}
@@ -342,7 +410,10 @@ func (d *ClassDocumentation) setDescription(class *Class) {
 	}
 	d.ResourceDescription = strings.Join(resourceParts, " ")
 
-	datasourceParts := []string{fmt.Sprintf("Data source for ACI %s.", d.Label)}
+	datasourceParts := []string{fmt.Sprintf("Data source for ACI %s", d.Label)}
+	if docDef.Description != "" || docDef.Datasource.Description != "" {
+		datasourceParts[0] += "."
+	}
 	if docDef.Description != "" {
 		datasourceParts = append(datasourceParts, docDef.Description)
 	}
@@ -356,29 +427,39 @@ func (d *ClassDocumentation) setDescription(class *Class) {
 
 func (d *ClassDocumentation) setDescriptionWhenDefinedAsChild(class *Class, ds *DataStore) {
 	genLogger.Debugf("Setting Documentation DescriptionWhenDefinedAsChild for class '%s'.", class.Name.full)
+	d.RelationTargetClasses = nil
 
 	nestingType := "list"
+	nestedLabel := utils.Plural(d.Label)
 	if class.IsSingleNestedWhenDefinedAsChild {
 		nestingType = "map"
+		nestedLabel = d.Label
 	}
 
-	header := fmt.Sprintf("%s - (%s) - (%s)", class.ResourceNameNested, d.ClassName, nestingType)
+	header := fmt.Sprintf("`%s` - (%s)", class.ResourceNameNested, nestingType)
+	childDescription := fmt.Sprintf("%s (ACI object %s)", nestedLabel, d.ClassName)
 
 	var sentence string
 	if class.Relation.RelationalClass {
+		if len(class.Relation.ToClasses) > 1 {
+			for _, toClassName := range documentationRelationTargets(class) {
+				d.RelationTargetClasses = append(d.RelationTargetClasses, getDevnetObjectDocumentationLink(toClassName.String()))
+			}
+			sentence = fmt.Sprintf("A %s of %s.", nestingType, childDescription)
+			d.DescriptionWhenDefinedAsChild = header + " " + sentence
+			genLogger.Debugf("Successfully set Documentation DescriptionWhenDefinedAsChild for class '%s'. DescriptionWhenDefinedAsChild: %s", class.Name.full, d.DescriptionWhenDefinedAsChild)
+			return
+		}
+
 		targetParts := make([]string, 0, len(class.Relation.ToClasses))
 		resourceParts := make([]string, 0, len(class.Relation.ToClasses))
 		for _, toClassName := range class.Relation.ToClasses {
 			toClassFull := toClassName.String()
 			toClassLink := getDevnetObjectDocumentationLink(toClassFull)
-			toClass, ok := ds.Classes[toClassFull]
-			toLabel := toClassFull
-			if ok && toClass.Documentation.Label != "" {
-				toLabel = toClass.Documentation.Label
-			}
-			targetParts = append(targetParts, fmt.Sprintf("%s (%s)", toLabel, toClassLink))
-			if ok && toClass.HasResourceArtifact() && toClass.ResourceName != "" {
-				resourceParts = append(resourceParts, getResourceDocumentationLink(toClass.ResourceName))
+			toLabel := documentationClassLabel(toClassFull, ds)
+			targetParts = append(targetParts, fmt.Sprintf("%s (ACI Object %s)", toLabel, toClassLink))
+			if resourceName := ds.getResourceNameForArtifact(toClassFull, ResourceArtifact); resourceName != "" {
+				resourceParts = append(resourceParts, getResourceDocumentationLink(resourceName))
 			}
 		}
 		targets := strings.Join(targetParts, ", ")
@@ -389,18 +470,18 @@ func (d *ClassDocumentation) setDescriptionWhenDefinedAsChild(class *Class, ds *
 			if len(resourceParts) > 1 {
 				resourceWord = "resources"
 			}
-			sentence = fmt.Sprintf("A %s of %s pointing to %s which can be configured using the %s %s.", nestingType, d.Label, targets, strings.Join(resourceParts, ", "), resourceWord)
+			sentence = fmt.Sprintf("A %s of %s pointing to %s which can be configured using the %s %s.", nestingType, childDescription, targets, strings.Join(resourceParts, ", "), resourceWord)
 		} else {
-			sentence = fmt.Sprintf("A %s of %s pointing to %s.", nestingType, d.Label, targets)
+			sentence = fmt.Sprintf("A %s of %s pointing to %s.", nestingType, childDescription, targets)
 		}
 	} else if class.IsSingleNestedWhenDefinedAsChild {
 		// Single-nested (map) children are only configurable through their parent, so the
 		// standalone resource clause is omitted to avoid suggesting a separate resource.
-		sentence = fmt.Sprintf("A %s of %s.", nestingType, d.Label)
+		sentence = fmt.Sprintf("A %s of %s (ACI object %s).", nestingType, d.Label, d.ClassName)
 	} else if class.HasResourceArtifact() {
-		sentence = fmt.Sprintf("A %s of %s which can also be configured using a separate %s resource.", nestingType, d.Label, getResourceDocumentationLink(class.ResourceName))
+		sentence = fmt.Sprintf("A %s of %s which can also be configured using a separate %s resource.", nestingType, childDescription, getResourceDocumentationLink(class.ResourceName))
 	} else {
-		sentence = fmt.Sprintf("A %s of %s.", nestingType, d.Label)
+		sentence = fmt.Sprintf("A %s of %s.", nestingType, childDescription)
 	}
 
 	d.DescriptionWhenDefinedAsChild = header + " " + sentence
@@ -408,11 +489,29 @@ func (d *ClassDocumentation) setDescriptionWhenDefinedAsChild(class *Class, ds *
 	genLogger.Debugf("Successfully set Documentation DescriptionWhenDefinedAsChild for class '%s'. DescriptionWhenDefinedAsChild: %s", class.Name.full, d.DescriptionWhenDefinedAsChild)
 }
 
+func documentationRelationTargets(class *Class) []*ClassName {
+	definedTargets := class.ClassDefinition.RelationInfo.ToClasses
+	if len(definedTargets) != len(class.Relation.ToClasses) {
+		return class.Relation.ToClasses
+	}
+
+	orderedTargets := make([]*ClassName, 0, len(definedTargets))
+	for _, definedTarget := range definedTargets {
+		target, err := NewClassName(definedTarget)
+		if err != nil {
+			return class.Relation.ToClasses
+		}
+		orderedTargets = append(orderedTargets, target)
+	}
+	return orderedTargets
+}
+
 func (d *ClassDocumentation) setDnFormats(class *Class) {
 	genLogger.Debugf("Setting Documentation DnFormats for class '%s'.", class.Name.full)
 
-	if override := class.ClassDefinition.Documentation.DnFormats; len(override) > 0 {
-		d.DnFormats = override
+	override := class.ClassDefinition.Documentation.DnFormats
+	if len(override) > 0 {
+		d.DnFormats = slices.Clone(override)
 	} else if rawFormats, ok := class.MetaFileContent["dnFormats"].([]any); ok {
 		for _, raw := range rawFormats {
 			if s, ok := raw.(string); ok {
@@ -426,7 +525,7 @@ func (d *ClassDocumentation) setDnFormats(class *Class) {
 	// Sort to guarantee stable, deterministic output across regenerations.
 	slices.Sort(d.DnFormats)
 
-	if len(d.DnFormats) > constMaxDnFormatsToDisplay {
+	if len(override) == 0 && len(d.DnFormats) > constMaxDnFormatsToDisplay {
 		notice := fmt.Sprintf("Too many DN formats to display, see model documentation for all possible parents of %s.", d.ClassName)
 		d.DnFormats = append([]string{notice}, d.DnFormats[:constMaxDnFormatsToDisplay]...)
 	}
@@ -447,43 +546,61 @@ func (d *ClassDocumentation) setMigrationWarning(class *Class) {
 func (d *ClassDocumentation) setParentDns(class *Class, ds *DataStore) {
 	genLogger.Debugf("Setting Documentation ParentDns for class '%s'.", class.Name.full)
 
+	parents := class.Parents
+	if len(class.ParentDnVariants) > 0 {
+		parents = make([]*ClassName, 0, len(class.ParentDnVariants))
+		seen := make(map[string]struct{}, len(class.ParentDnVariants))
+		for _, variant := range class.ParentDnVariants {
+			if variant.ParentClass == nil {
+				continue
+			}
+			parentName := variant.ParentClass.String()
+			if _, ok := seen[parentName]; ok {
+				continue
+			}
+			seen[parentName] = struct{}{}
+			parents = append(parents, variant.ParentClass)
+		}
+	}
+
+	d.ParentDnNotice = ""
+	d.ParentDnResources = nil
+	d.ParentDnClasses = nil
+
 	var resourceEntries, classOnlyEntries []string
-	for _, parent := range class.Parents {
+	for _, parent := range parents {
 		parentLink := getDevnetObjectDocumentationLink(parent.full)
-		parentClass, knownInStore := ds.Classes[parent.full]
-		if knownInStore && parentClass.ResourceName != "" {
-			resourceEntries = append(resourceEntries, fmt.Sprintf("%s (%s)", getResourceDocumentationLink(parentClass.ResourceName), parentLink))
+		if resourceName := ds.getResourceNameForArtifact(parent.full, ResourceArtifact); resourceName != "" {
+			resourceEntries = append(resourceEntries, fmt.Sprintf("%s (%s)", getResourceDocumentationLink(resourceName), parentLink))
 		} else {
 			classOnlyEntries = append(classOnlyEntries, parentLink)
 		}
 	}
 
-	// class.Parents is already sorted by sortAndConvertToClassNames, so the partitioned
-	// slices preserve that order; no extra sort needed.
+	// The source parent list is deterministic, so the partitioned slices preserve
+	// its order without an additional sort.
 
-	if len(resourceEntries) > constMaxParentDnsToDisplay {
-		d.ParentDns = []string{fmt.Sprintf("Too many parent DNs to display, see model documentation for all possible parents of %s.", d.ClassName)}
-	} else {
-		d.ParentDns = resourceEntries
-	}
-
-	if len(classOnlyEntries) > 0 {
-		d.ParentDns = append(d.ParentDns, "The distinguished name (DN) of classes below can be used but currently there is no available resource for it:")
-		if len(classOnlyEntries) > constMaxParentDnsToDisplay {
-			d.ParentDns = append(d.ParentDns, fmt.Sprintf("Too many classes to display, see model documentation for all possible classes of %s.", d.ClassName))
-		} else {
-			d.ParentDns = append(d.ParentDns, classOnlyEntries...)
+	if len(parents) > constMaxParentDnsToDisplay {
+		d.ParentDnNotice = fmt.Sprintf("Additional parent options are available; see model documentation for all possible parents of %s.", d.ClassName)
+		resourceCount := min(len(resourceEntries), constMaxParentDnsToDisplay)
+		d.ParentDnResources = resourceEntries[:resourceCount]
+		remaining := constMaxParentDnsToDisplay - resourceCount
+		if remaining > 0 {
+			d.ParentDnClasses = classOnlyEntries[:min(len(classOnlyEntries), remaining)]
 		}
+	} else {
+		d.ParentDnResources = resourceEntries
+		d.ParentDnClasses = classOnlyEntries
 	}
 
-	genLogger.Debugf("Successfully set Documentation ParentDns for class '%s'. ParentDns: %v", class.Name.full, d.ParentDns)
+	genLogger.Debugf("Successfully set Documentation ParentDns for class '%s'. Notice: %s, Resources: %v, Classes: %v", class.Name.full, d.ParentDnNotice, d.ParentDnResources, d.ParentDnClasses)
 }
 
 func (d *ClassDocumentation) setSupportedVersions(class *Class) {
 	genLogger.Debugf("Setting Documentation SupportedVersions for class '%s'.", class.Name.full)
 
 	if class.SupportedVersions != nil {
-		d.SupportedVersions = class.SupportedVersions.String()
+		d.SupportedVersions = documentationVersions(class.SupportedVersions)
 	}
 
 	genLogger.Debugf("Successfully set Documentation SupportedVersions for class '%s'. SupportedVersions: %s", class.Name.full, d.SupportedVersions)

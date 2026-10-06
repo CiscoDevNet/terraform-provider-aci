@@ -35,16 +35,18 @@ const (
 	indexOutputPath     = "docs/index.md"
 	providerExamplePath = "examples/provider/provider.tf"
 
-	providerExampleTemplateName       = "provider_example.tf.tmpl"
-	resourceExamplesOutputDirectory   = "examples/resources"
-	datasourceExamplesOutputDirectory = "examples/data-sources"
-	providerExampleOutputName         = "provider.tf"
-	resourceExampleTemplateName       = "resource_example.tf.tmpl"
-	resourceExampleOutputName         = "resource.tf"
-	resourceFullExampleTemplateName   = "resource_example_all_attributes.tf.tmpl"
-	resourceFullExampleOutputName     = "resource-all-attributes.tf"
-	datasourceExampleTemplateName     = "datasource_example.tf.tmpl"
-	datasourceExampleOutputName       = "data-source.tf"
+	providerExampleTemplateName            = "provider_example.tf.tmpl"
+	resourceExamplesOutputDirectory        = "examples/resources"
+	datasourceExamplesOutputDirectory      = "examples/data-sources"
+	providerExampleOutputName              = "provider.tf"
+	resourceExampleTemplateName            = "resource_example.tf.tmpl"
+	resourceExampleOutputName              = "resource.tf"
+	resourceFullExampleTemplateName        = "resource_example_all_attributes.tf.tmpl"
+	resourceFullExampleOutputName          = "resource-all-attributes.tf"
+	datasourceExampleTemplateName          = "datasource_example.tf.tmpl"
+	datasourceExampleOutputName            = "data-source.tf"
+	datasourceDocumentationTemplateName    = "datasource.md.tmpl"
+	datasourceDocumentationOutputDirectory = "docs/data-sources"
 
 	annotationUnsupportedTemplateName = "annotation_unsupported.go.tmpl"
 	annotationUnsupportedOutputPath   = "internal/provider/annotation_unsupported.go"
@@ -223,6 +225,7 @@ func (g *Generator) buildRenderJobs() []renderJob {
 	jobs = append(jobs, g.buildResourceExampleRenderJobs()...)
 	jobs = append(jobs, g.buildResourceFullExampleRenderJobs()...)
 	jobs = append(jobs, g.buildDatasourceExampleRenderJobs()...)
+	jobs = append(jobs, g.buildDatasourceDocumentationRenderJobs()...)
 	if g.dataStore.UnsupportedAnnotationClasses != nil {
 		jobs = append(jobs, g.buildAnnotationUnsupportedRenderJob())
 	}
@@ -291,6 +294,27 @@ func (g *Generator) buildDatasourceExampleRenderJobs() []renderJob {
 		datasourceExamplesOutputDirectory,
 		datasourceExampleOutputName,
 	)
+}
+
+func (g *Generator) buildDatasourceDocumentationRenderJobs() []renderJob {
+	classNames := g.sortedClassNames()
+
+	jobs := make([]renderJob, 0, len(classNames))
+	for _, className := range classNames {
+		class := g.dataStore.Classes[className]
+		if !class.HasDatasourceArtifact() {
+			continue
+		}
+		jobs = append(jobs, renderJob{
+			TemplateName: datasourceDocumentationTemplateName,
+			OutputPath: pathpkg.Join(
+				datasourceDocumentationOutputDirectory,
+				class.ResourceName+".md",
+			),
+			Context: TemplateContext{Class: &class, DataStore: g.dataStore},
+		})
+	}
+	return jobs
 }
 
 func (g *Generator) buildClassExampleRenderJobs(artifact data.ArtifactEnum, templateName, outputDirectory, outputName string) []renderJob {

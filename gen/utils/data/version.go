@@ -147,6 +147,54 @@ func (v *Versions) String() string {
 	return strings.Join(versionRanges, ", ")
 }
 
+func documentationVersions(v *Versions) string {
+	formattedRanges := make([]string, 0, len(v.ranges))
+	for _, rawRange := range strings.Split(v.Raw(), ",") {
+		versionRange, err := NewVersionRange(strings.TrimSpace(rawRange))
+		if err != nil {
+			return v.String()
+		}
+		formattedRanges = append(formattedRanges, versionRange.String())
+	}
+	formatted := strings.Join(formattedRanges, ", ")
+	if strings.HasSuffix(v.Raw(), "-") {
+		return formatted + "."
+	}
+	return formatted
+}
+
+// Covers reports whether every range in other is fully supported by v.
+func (v *Versions) Covers(other *Versions) bool {
+	if v == nil || other == nil {
+		return false
+	}
+
+	for _, otherRange := range other.ranges {
+		if !slices.ContainsFunc(v.ranges, func(versionRange VersionRange) bool {
+			return versionRangeCovers(versionRange, otherRange)
+		}) {
+			return false
+		}
+	}
+
+	return true
+}
+
+func versionRangeCovers(versionRange, otherRange VersionRange) bool {
+	if otherRange.min == nil {
+		if versionRange.min != nil {
+			return false
+		}
+	} else if versionRange.min != nil && provider.IsVersionGreater(*versionRange.min, *otherRange.min) {
+		return false
+	}
+
+	if otherRange.max == nil {
+		return versionRange.max == nil
+	}
+	return versionRange.max == nil || !provider.IsVersionLesser(*versionRange.max, *otherRange.max)
+}
+
 func (v *Versions) Sort() {
 	// Sort orders the version ranges from lowest to highest.
 	// Ranges are compared first by their minimum version, then by their maximum version.

@@ -111,6 +111,7 @@ property_documentation_overrides:
   seg: The segment ID (L2-VNI) of the %s object.
   startQueryCnt: The start query count of the %s object.
   startQueryIntvl: The query interval (seconds) of the %s object at start-up.
+  tDn: The distinguished name (DN) of the target object.
   tnL3extOutName: The name of the L3 Outside object.
   tnRtctrlProfileName: The name of the Route Control Profile object.
   tnVzOOBBrCPName: The name of the Out Of Band Contract object.

@@ -30,7 +30,7 @@ Data source for ACI Relation From L3Out Consumer Label To External EPG
 
 ```hcl
 
-data "aci_relation_from_l3out_consumer_label_to_external_epg" "example_l3out_consumer_label" {
+data "aci_relation_from_l3out_consumer_label_to_external_epg" "example" {
   parent_dn = aci_l3out_consumer_label.example.id
   target_dn = aci_external_network_instance_profile.example.id
 }
@@ -43,7 +43,7 @@ data "aci_relation_from_l3out_consumer_label_to_external_epg" "example_l3out_con
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_l3out_consumer_label](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3out_consumer_label) ([l3extConsLbl](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extConsLbl/overview))
-  - The distinguished name (DN) of classes below can be used but currently there is no available resource for it:
+  - The distinguished names (DNs) of parent objects from the following APIC classes can also be used, but no Terraform resources are currently available for these classes:
     - [l3extConsLblDef](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extConsLblDef/overview)
 
 * `target_dn` (tDn) - (string) The distinguished name (DN) of the External EPG object.
@@ -52,9 +52,9 @@ data "aci_relation_from_l3out_consumer_label_to_external_epg" "example_l3out_con
 
 * `id` - (string) The distinguished name (DN) of the Relation From L3Out Consumer Label To External EPG object.
 * `annotation` (annotation) - (string) The annotation of the Relation From L3Out Consumer Label To External EPG object.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
