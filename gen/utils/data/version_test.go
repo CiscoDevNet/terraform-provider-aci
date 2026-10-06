@@ -302,6 +302,82 @@ func TestNewVersions(t *testing.T) {
 	}
 }
 
+type versionsCoverInput struct {
+	Supported string
+	Required  string
+}
+
+func TestVersionsCovers(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	testCases := []test.TestCase{
+		{
+			Name: "test_same_range",
+			Input: versionsCoverInput{
+				Supported: "1.0(1e)-",
+				Required:  "1.0(1e)-",
+			},
+			Expected: true,
+		},
+		{
+			Name: "test_earlier_start_covers",
+			Input: versionsCoverInput{
+				Supported: "1.0(1e)-",
+				Required:  "1.1(1j)-",
+			},
+			Expected: true,
+		},
+		{
+			Name: "test_later_start_does_not_cover",
+			Input: versionsCoverInput{
+				Supported: "2.0(1a)-",
+				Required:  "1.0(1e)-",
+			},
+			Expected: false,
+		},
+		{
+			Name: "test_earlier_end_does_not_cover",
+			Input: versionsCoverInput{
+				Supported: "1.0(1e)-5.2(1g)",
+				Required:  "1.0(1e)-",
+			},
+			Expected: false,
+		},
+		{
+			Name: "test_unbounded_lower_covers_bounded",
+			Input: versionsCoverInput{
+				Supported: "-5.2(1g)",
+				Required:  "1.0(1e)-4.2(7f)",
+			},
+			Expected: true,
+		},
+		{
+			Name: "test_each_required_range_is_covered",
+			Input: versionsCoverInput{
+				Supported: "1.0(1e)-2.0(1a),4.0(1a)-",
+				Required:  "1.1(1j)-1.2(1i),5.0(1a)-",
+			},
+			Expected: true,
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.(versionsCoverInput)
+			expected := testCase.Expected.(bool)
+
+			supported, err := NewVersions(input.Supported)
+			assert.NoError(t, err)
+			required, err := NewVersions(input.Required)
+			assert.NoError(t, err)
+
+			assert.Equal(t, expected, supported.Covers(required), test.MessageEqual(expected, supported.Covers(required), testCase.Name))
+		})
+	}
+}
+
 type sortVersionsExpected struct {
 	Result int
 }

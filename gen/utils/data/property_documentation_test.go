@@ -3,8 +3,9 @@ package data
 import (
 	"testing"
 
-	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils/test"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils/test"
 )
 
 type setPropertyDescriptionInput struct {
@@ -94,17 +95,170 @@ func TestSetPropertyDescription(t *testing.T) {
 	}
 }
 
-type applyGlobalPropertyDocumentationOverridesInput struct {
+type setPropertyDocumentationReferenceInput struct {
+	Reference        *PropertyReference
+	TargetArtifacts  []ArtifactEnum
+	TargetPresent    bool
+	TargetDefinition *ClassDefinition
+	Description      string
+}
+
+func TestSetPropertyDocumentationReferences(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	resourceReference := "a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3_outside) with `aci_l3_outside.example.name`"
+	datasourceReference := "a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/l3_outside) with `data.aci_l3_outside.example.name`"
+	reference := func() *PropertyReference {
+		return &PropertyReference{
+			ExampleClass:         testClassName("l3extOut"),
+			ExampleAttributeName: "name",
+		}
+	}
+
+	testCases := []test.TestCase{
+		{
+			Name:     "test_without_reference",
+			Input:    setPropertyDocumentationReferenceInput{},
+			Expected: "The target name.",
+		},
+		{
+			Name: "test_missing_target_class",
+			Input: setPropertyDocumentationReferenceInput{
+				Reference: reference(),
+			},
+			Expected: "The target name.",
+		},
+		{
+			Name: "test_target_without_artifact",
+			Input: setPropertyDocumentationReferenceInput{
+				Reference:     reference(),
+				TargetPresent: true,
+			},
+			Expected: "The target name.",
+		},
+		{
+			Name: "test_resource_reference",
+			Input: setPropertyDocumentationReferenceInput{
+				Reference:       reference(),
+				TargetArtifacts: []ArtifactEnum{ResourceArtifact},
+				TargetPresent:   true,
+			},
+			Expected: "The target name. This attribute can be referenced from " + resourceReference + ".",
+		},
+		{
+			Name: "test_datasource_reference",
+			Input: setPropertyDocumentationReferenceInput{
+				Reference:       reference(),
+				TargetArtifacts: []ArtifactEnum{DatasourceArtifact},
+				TargetPresent:   true,
+			},
+			Expected: "The target name. This attribute can be referenced from " + datasourceReference + ".",
+		},
+		{
+			Name: "test_resource_and_datasource_reference",
+			Input: setPropertyDocumentationReferenceInput{
+				Reference:       reference(),
+				TargetArtifacts: []ArtifactEnum{ResourceArtifact, DatasourceArtifact},
+				TargetPresent:   true,
+			},
+			Expected: "The target name. This attribute can be referenced from " + resourceReference + " or from " + datasourceReference + ".",
+		},
+		{
+			Name: "test_definition_only_target_defaults_to_both_artifacts",
+			Input: setPropertyDocumentationReferenceInput{
+				Reference:        reference(),
+				TargetDefinition: &ClassDefinition{ResourceName: "l3_outside"},
+			},
+			Expected: "The target name. This attribute can be referenced from " + resourceReference + " or from " + datasourceReference + ".",
+		},
+		{
+			Name: "test_definition_only_datasource_target",
+			Input: setPropertyDocumentationReferenceInput{
+				Reference:        reference(),
+				TargetDefinition: &ClassDefinition{ResourceName: "l3_outside", Artifacts: []ArtifactEnum{DatasourceArtifact}},
+			},
+			Expected: "The target name. This attribute can be referenced from " + datasourceReference + ".",
+		},
+		{
+			Name: "test_definition_only_target_without_artifacts",
+			Input: setPropertyDocumentationReferenceInput{
+				Reference:        reference(),
+				TargetDefinition: &ClassDefinition{ResourceName: "l3_outside", Artifacts: []ArtifactEnum{}},
+			},
+			Expected: "The target name.",
+		},
+		{
+			Name: "test_existing_reference_description_is_not_duplicated",
+			Input: setPropertyDocumentationReferenceInput{
+				Reference:       reference(),
+				TargetArtifacts: []ArtifactEnum{ResourceArtifact, DatasourceArtifact},
+				TargetPresent:   true,
+				Description:     "This attribute can be referenced from multiple target resources.",
+			},
+			Expected: "This attribute can be referenced from multiple target resources.",
+		},
+		{
+			Name: "test_existing_registry_link_is_not_duplicated",
+			Input: setPropertyDocumentationReferenceInput{
+				Reference:       reference(),
+				TargetArtifacts: []ArtifactEnum{ResourceArtifact, DatasourceArtifact},
+				TargetPresent:   true,
+				Description:     "The target can be configured using [aci_l3_outside](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3_outside).",
+			},
+			Expected: "The target can be configured using [aci_l3_outside](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3_outside).",
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.(setPropertyDocumentationReferenceInput)
+			expected := testCase.Expected.(string)
+			description := input.Description
+			if description == "" {
+				description = "The target name."
+			}
+			property := &Property{
+				PropertyName:  "tnL3extOutName",
+				Reference:     input.Reference,
+				Documentation: PropertyDocumentation{Description: description},
+			}
+			class := Class{
+				PropertiesAll: []string{"tnL3extOutName"},
+				Properties:    map[string]*Property{"tnL3extOutName": property},
+			}
+			classes := map[string]Class{}
+			if input.TargetPresent {
+				classes["l3extOut"] = Class{
+					ResourceName: "l3_outside",
+					Artifacts:    input.TargetArtifacts,
+				}
+			}
+
+			definitions := map[string]ClassDefinition{}
+			if input.TargetDefinition != nil {
+				definitions["l3extOut"] = *input.TargetDefinition
+			}
+
+			class.setPropertyDocumentationReferences(&DataStore{Classes: classes, ClassDefinitions: definitions})
+
+			assert.Equal(t, expected, property.Documentation.Description, test.MessageEqual(expected, property.Documentation.Description, testCase.Name))
+		})
+	}
+}
+
+type setPropertyDocumentationDescriptionsInput struct {
 	GlobalOverrides map[string]string
 	Properties      map[string]*Property
 	Label           string
 }
 
-type applyGlobalPropertyDocumentationOverridesExpected struct {
+type setPropertyDocumentationDescriptionsExpected struct {
 	Descriptions map[string]string
 }
 
-func TestApplyGlobalPropertyDocumentationOverrides(t *testing.T) {
+func TestSetPropertyDocumentationDescriptions(t *testing.T) {
 	t.Parallel()
 	test.InitializeTest(t)
 
@@ -122,20 +276,20 @@ func TestApplyGlobalPropertyDocumentationOverrides(t *testing.T) {
 		{
 			// No global overrides: every existing Description is left intact.
 			Name: "test_no_overrides_noop",
-			Input: applyGlobalPropertyDocumentationOverridesInput{
+			Input: setPropertyDocumentationDescriptionsInput{
 				Label: "Application EPG",
 				Properties: map[string]*Property{
 					"name": newProperty("name", "", "Meta-derived description."),
 				},
 			},
-			Expected: applyGlobalPropertyDocumentationOverridesExpected{
+			Expected: setPropertyDocumentationDescriptionsExpected{
 				Descriptions: map[string]string{"name": "Meta-derived description."},
 			},
 		},
 		{
 			// Override with %s gets interpolated against the class Label.
 			Name: "test_template_interpolates_label",
-			Input: applyGlobalPropertyDocumentationOverridesInput{
+			Input: setPropertyDocumentationDescriptionsInput{
 				Label: "Application EPG",
 				GlobalOverrides: map[string]string{
 					"annotation": "The annotation of the %s object.",
@@ -144,14 +298,14 @@ func TestApplyGlobalPropertyDocumentationOverrides(t *testing.T) {
 					"annotation": newProperty("annotation", "", "Meta comment for annotation."),
 				},
 			},
-			Expected: applyGlobalPropertyDocumentationOverridesExpected{
+			Expected: setPropertyDocumentationDescriptionsExpected{
 				Descriptions: map[string]string{"annotation": "The annotation of the Application EPG object."},
 			},
 		},
 		{
 			// Override without %s is used verbatim.
 			Name: "test_template_no_placeholder_verbatim",
-			Input: applyGlobalPropertyDocumentationOverridesInput{
+			Input: setPropertyDocumentationDescriptionsInput{
 				Label: "Application EPG",
 				GlobalOverrides: map[string]string{
 					"nameAlias": "A name alias for this object.",
@@ -160,14 +314,14 @@ func TestApplyGlobalPropertyDocumentationOverrides(t *testing.T) {
 					"nameAlias": newProperty("nameAlias", "", "Meta-derived alias text."),
 				},
 			},
-			Expected: applyGlobalPropertyDocumentationOverridesExpected{
+			Expected: setPropertyDocumentationDescriptionsExpected{
 				Descriptions: map[string]string{"nameAlias": "A name alias for this object."},
 			},
 		},
 		{
 			// Per-class override wins — the global lookup must NOT replace it.
 			Name: "test_per_class_override_wins",
-			Input: applyGlobalPropertyDocumentationOverridesInput{
+			Input: setPropertyDocumentationDescriptionsInput{
 				Label: "Application EPG",
 				GlobalOverrides: map[string]string{
 					"annotation": "Global override for %s.",
@@ -176,14 +330,30 @@ func TestApplyGlobalPropertyDocumentationOverrides(t *testing.T) {
 					"annotation": newProperty("annotation", "Per-class override wins.", "Per-class override wins."),
 				},
 			},
-			Expected: applyGlobalPropertyDocumentationOverridesExpected{
+			Expected: setPropertyDocumentationDescriptionsExpected{
 				Descriptions: map[string]string{"annotation": "Per-class override wins."},
+			},
+		},
+		{
+			// Per-class templates retain precedence and still resolve their class label.
+			Name: "test_per_class_template_interpolates_label",
+			Input: setPropertyDocumentationDescriptionsInput{
+				Label: "Application EPG",
+				GlobalOverrides: map[string]string{
+					"contractExceptionTag": "Global override for %s.",
+				},
+				Properties: map[string]*Property{
+					"contractExceptionTag": newProperty("contractExceptionTag", "The contract exception tag of the %s object.", "The contract exception tag of the %s object."),
+				},
+			},
+			Expected: setPropertyDocumentationDescriptionsExpected{
+				Descriptions: map[string]string{"contractExceptionTag": "The contract exception tag of the Application EPG object."},
 			},
 		},
 		{
 			// Mixed: one property has a global match, one does not.
 			Name: "test_mixed_match_and_no_match",
-			Input: applyGlobalPropertyDocumentationOverridesInput{
+			Input: setPropertyDocumentationDescriptionsInput{
 				Label: "Application EPG",
 				GlobalOverrides: map[string]string{
 					"annotation": "The annotation of the %s object.",
@@ -193,11 +363,24 @@ func TestApplyGlobalPropertyDocumentationOverrides(t *testing.T) {
 					"name":       newProperty("name", "", "Meta name comment."),
 				},
 			},
-			Expected: applyGlobalPropertyDocumentationOverridesExpected{
+			Expected: setPropertyDocumentationDescriptionsExpected{
 				Descriptions: map[string]string{
 					"annotation": "The annotation of the Application EPG object.",
 					"name":       "Meta name comment.",
 				},
+			},
+		},
+		{
+			// Descriptions use the same terminal-period normalization as the legacy generator.
+			Name: "test_missing_terminal_period",
+			Input: setPropertyDocumentationDescriptionsInput{
+				Label: "Application EPG",
+				Properties: map[string]*Property{
+					"name": newProperty("name", "", "Name"),
+				},
+			},
+			Expected: setPropertyDocumentationDescriptionsExpected{
+				Descriptions: map[string]string{"name": "Name."},
 			},
 		},
 	}
@@ -205,8 +388,8 @@ func TestApplyGlobalPropertyDocumentationOverrides(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run(testCase.Name, func(t *testing.T) {
 			t.Parallel()
-			input := testCase.Input.(applyGlobalPropertyDocumentationOverridesInput)
-			expected := testCase.Expected.(applyGlobalPropertyDocumentationOverridesExpected)
+			input := testCase.Input.(setPropertyDocumentationDescriptionsInput)
+			expected := testCase.Expected.(setPropertyDocumentationDescriptionsExpected)
 
 			class := Class{
 				Name:       testClassName("fvAEPg"),
@@ -220,12 +403,71 @@ func TestApplyGlobalPropertyDocumentationOverrides(t *testing.T) {
 				},
 			}
 
-			class.applyGlobalPropertyDocumentationOverrides(ds)
+			class.setPropertyDocumentationDescriptions(ds)
 
 			for name, want := range expected.Descriptions {
 				got := class.Properties[name].Documentation.Description
 				assert.Equal(t, want, got, test.MessageEqual(want, got, testCase.Name+"/"+name))
 			}
+		})
+	}
+}
+
+type setPropertyDocumentationSupportedVersionsInput struct {
+	ClassVersions    string
+	PropertyVersions string
+}
+
+func TestSetPropertyDocumentationSupportedVersions(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	testCases := []test.TestCase{
+		{
+			Name: "test_property_covers_class",
+			Input: setPropertyDocumentationSupportedVersionsInput{
+				ClassVersions:    "1.1(1j)-",
+				PropertyVersions: "1.0(1e)-",
+			},
+			Expected: "",
+		},
+		{
+			Name: "test_property_starts_later",
+			Input: setPropertyDocumentationSupportedVersionsInput{
+				ClassVersions:    "1.0(1e)-",
+				PropertyVersions: "3.2(1l)-",
+			},
+			Expected: "3.2(1l) and later.",
+		},
+		{
+			Name: "test_property_ends_earlier",
+			Input: setPropertyDocumentationSupportedVersionsInput{
+				ClassVersions:    "1.0(1e)-",
+				PropertyVersions: "1.0(1e)-6.1(1e)",
+			},
+			Expected: "1.0(1e) to 6.1(1e)",
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.(setPropertyDocumentationSupportedVersionsInput)
+			expected := testCase.Expected.(string)
+
+			classVersions, err := NewVersions(input.ClassVersions)
+			assert.NoError(t, err)
+			propertyVersions, err := NewVersions(input.PropertyVersions)
+			assert.NoError(t, err)
+			property := &Property{SupportedVersions: propertyVersions}
+			class := Class{
+				SupportedVersions: classVersions,
+				Properties:        map[string]*Property{"property": property},
+			}
+
+			class.setPropertyDocumentationSupportedVersions()
+
+			assert.Equal(t, expected, property.Documentation.SupportedVersions, test.MessageEqual(expected, property.Documentation.SupportedVersions, testCase.Name))
 		})
 	}
 }

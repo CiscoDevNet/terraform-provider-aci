@@ -31,7 +31,7 @@ Data source for ACI Fibre Channel Interface Policy
 ```hcl
 
 data "aci_fibre_channel_interface_policy" "example" {
-  name = "test_name"
+  name = "fibre_channel_interface_policy"
 }
 
 ```
@@ -56,9 +56,9 @@ data "aci_fibre_channel_interface_policy" "example" {
 * `receive_buffer_credit` (rxBBCredit) - (string) The receive buffer credit amount for the Fibre Channel Interface Policy object. This attribute is only applicable for native fibre channel ports. The value must be in the range 16 - 64. This attribute is supported in ACI versions: 3.2(1l) and later.
 * `speed` (speed) - (string) The speed for the Fibre Channel Interface Policy object. This attribute is only applicable for native fibre channel ports. This attribute is supported in ACI versions: 3.2(1l) and later.
 * `trunk_mode` (trunkMode) - (string) The trunk mode for the Fibre Channel Interface Policy object. This attribute is only applicable for native fibre channel ports. This attribute is supported in ACI versions: 3.2(1l) and later.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.

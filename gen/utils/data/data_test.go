@@ -70,6 +70,104 @@ func TestGetResourceName(t *testing.T) {
 	assert.Equal(t, "bridge_domain", ds.getResourceName("fvABDPol"))
 }
 
+type getResourceNameForArtifactInput struct {
+	ClassName string
+	Artifact  ArtifactEnum
+	Store     *DataStore
+}
+
+func TestGetResourceNameForArtifact(t *testing.T) {
+	t.Parallel()
+
+	testCases := []test.TestCase{
+		{
+			Name: "test_loaded_class_resource",
+			Input: getResourceNameForArtifactInput{
+				ClassName: "fvTenant",
+				Artifact:  ResourceArtifact,
+				Store: &DataStore{Classes: map[string]Class{
+					"fvTenant": {ResourceName: "tenant", Artifacts: []ArtifactEnum{ResourceArtifact, DatasourceArtifact}},
+				}},
+			},
+			Expected: "tenant",
+		},
+		{
+			Name: "test_loaded_class_without_requested_artifact",
+			Input: getResourceNameForArtifactInput{
+				ClassName: "fvTenant",
+				Artifact:  DatasourceArtifact,
+				Store: &DataStore{Classes: map[string]Class{
+					"fvTenant": {ResourceName: "tenant", Artifacts: []ArtifactEnum{ResourceArtifact}},
+				}},
+			},
+			Expected: "",
+		},
+		{
+			Name: "test_definition_only_defaults_to_both_artifacts",
+			Input: getResourceNameForArtifactInput{
+				ClassName: "l3extOut",
+				Artifact:  ResourceArtifact,
+				Store: &DataStore{ClassDefinitions: map[string]ClassDefinition{
+					"l3extOut": {ResourceName: "l3_outside"},
+				}},
+			},
+			Expected: "l3_outside",
+		},
+		{
+			Name: "test_definition_only_explicit_datasource",
+			Input: getResourceNameForArtifactInput{
+				ClassName: "fabricNode",
+				Artifact:  DatasourceArtifact,
+				Store: &DataStore{ClassDefinitions: map[string]ClassDefinition{
+					"fabricNode": {ResourceName: "fabric_node", Artifacts: []ArtifactEnum{DatasourceArtifact}},
+				}},
+			},
+			Expected: "fabric_node",
+		},
+		{
+			Name: "test_definition_only_explicit_datasource_has_no_resource",
+			Input: getResourceNameForArtifactInput{
+				ClassName: "fabricNode",
+				Artifact:  ResourceArtifact,
+				Store: &DataStore{ClassDefinitions: map[string]ClassDefinition{
+					"fabricNode": {ResourceName: "fabric_node", Artifacts: []ArtifactEnum{DatasourceArtifact}},
+				}},
+			},
+			Expected: "",
+		},
+		{
+			Name: "test_definition_only_explicit_opt_out",
+			Input: getResourceNameForArtifactInput{
+				ClassName: "fvEPg",
+				Artifact:  ResourceArtifact,
+				Store: &DataStore{ClassDefinitions: map[string]ClassDefinition{
+					"fvEPg": {ResourceName: "epg", Artifacts: []ArtifactEnum{}},
+				}},
+			},
+			Expected: "",
+		},
+		{
+			Name: "test_unknown_class",
+			Input: getResourceNameForArtifactInput{
+				ClassName: "unknownClass",
+				Artifact:  ResourceArtifact,
+				Store:     &DataStore{},
+			},
+			Expected: "",
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.(getResourceNameForArtifactInput)
+			expected := testCase.Expected.(string)
+
+			assert.Equal(t, expected, input.Store.getResourceNameForArtifact(input.ClassName, input.Artifact))
+		})
+	}
+}
+
 func TestGetResourceNameTracksLoadFailuresPerDataStore(t *testing.T) {
 	t.Parallel()
 
