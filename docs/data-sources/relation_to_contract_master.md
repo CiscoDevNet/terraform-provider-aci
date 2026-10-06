@@ -39,14 +39,9 @@ Data source for ACI Relation To Contract Master
 
 ```hcl
 
-data "aci_relation_to_contract_master" "example_application_epg" {
+data "aci_relation_to_contract_master" "example" {
   parent_dn = aci_application_epg.example.id
-  target_dn = aci_application_epg.example_application_epg.id
-}
-
-data "aci_relation_to_contract_master" "example_endpoint_security_group" {
-  parent_dn = aci_endpoint_security_group.example.id
-  target_dn = aci_endpoint_security_group.example_endpoint_security_group_2.id
+  target_dn = aci_application_epg.example.id
 }
 
 ```
@@ -64,7 +59,7 @@ data "aci_relation_to_contract_master" "example_endpoint_security_group" {
   - [aci_l2out_extepg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l2out_extepg) ([l2extInstP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l2extInstP/overview))
   - [aci_external_epg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/external_epg) ([l3extInstP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extInstP/overview))
   - [aci_node_mgmt_epg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/node_mgmt_epg) ([mgmtInB](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/mgmtInB/overview))
-  - The distinguished name (DN) of classes below can be used but currently there is no available resource for it:
+  - The distinguished names (DNs) of parent objects from the following APIC classes can also be used, but no Terraform resources are currently available for these classes:
     - [cloudISvcEPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/cloudISvcEPg/overview)
     - [dhcpCRelPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/dhcpCRelPg/overview)
     - [dhcpPRelPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/dhcpPRelPg/overview)
@@ -78,15 +73,15 @@ data "aci_relation_to_contract_master" "example_endpoint_security_group" {
     - [vnsSDEPpInfo](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vnsSDEPpInfo/overview)
     - [vnsSHEPpInfo](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vnsSHEPpInfo/overview)
 
-* `target_dn` (tDn) - (string) The distinguished name of the target.
+* `target_dn` (tDn) - (string) The distinguished name (DN) of the target object.
 
 ### Read-Only ###
 
 * `id` - (string) The distinguished name (DN) of the Relation To Contract Master object.
 * `annotation` (annotation) - (string) The annotation of the Relation To Contract Master object. This attribute is supported in ACI versions: 3.2(1l) and later.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.

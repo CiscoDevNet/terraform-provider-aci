@@ -33,14 +33,9 @@ Data source for ACI Access Port Block
 
 ```hcl
 
-data "aci_access_port_block" "example_access_port_selector" {
+data "aci_access_port_block" "example" {
   parent_dn = aci_access_port_selector.example.id
-  name      = "test_name"
-}
-
-data "aci_access_port_block" "example_spine_access_port_selector" {
-  parent_dn = aci_spine_access_port_selector.example.id
-  name      = "test_name"
+  name      = "access_port_block"
 }
 
 ```
@@ -67,15 +62,15 @@ data "aci_access_port_block" "example_spine_access_port_selector" {
 * `relation_to_pc_vpc_override_policy` - (map) A map of Relation To PC VPC Override Policy (ACI object [infraRsAccBndlSubgrp](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraRsAccBndlSubgrp/overview)) pointing to Leaf Access Bundle Policy Sub Group (ACI Object [infraAccBndlSubgrp](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraAccBndlSubgrp/overview)).
     * `annotation` (annotation) - (string) The annotation of the Relation To PC VPC Override Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
     * `target_dn` (tDn) - (string) The distinguished name (DN) of the target PC VPC Override Policy.
-    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.

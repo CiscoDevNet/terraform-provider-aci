@@ -30,7 +30,7 @@ Data source for ACI Relation From External EPG To Route Control Profile
 
 ```hcl
 
-data "aci_relation_from_external_epg_to_route_control_profile" "example_external_epg" {
+data "aci_relation_from_external_epg_to_route_control_profile" "example" {
   parent_dn                  = aci_external_epg.example.id
   direction                  = "import"
   route_control_profile_name = aci_route_control_profile.example.name
@@ -52,9 +52,9 @@ data "aci_relation_from_external_epg_to_route_control_profile" "example_external
 
 * `id` - (string) The distinguished name (DN) of the Relation From External EPG To Route Control Profile object.
 * `annotation` (annotation) - (string) The annotation of the Relation From External EPG To Route Control Profile object. This attribute is supported in ACI versions: 3.2(1l) and later.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.

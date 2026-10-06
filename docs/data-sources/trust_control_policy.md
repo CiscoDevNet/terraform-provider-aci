@@ -30,9 +30,9 @@ Data source for ACI Trust Control Policy
 
 ```hcl
 
-data "aci_trust_control_policy" "example_tenant" {
+data "aci_trust_control_policy" "example" {
   parent_dn = aci_tenant.example.id
-  name      = "test_name"
+  name      = "trust_control_policy"
 }
 
 ```
@@ -59,9 +59,9 @@ data "aci_trust_control_policy" "example_tenant" {
 * `trust_arp` (trustArp) - (string) The address resolution protocol (ARP) trust status of the Trust Control Policy object.
 * `trust_nd` (trustNd) - (string) The neighbor discovery (ND) trust status of the Trust Control Policy object.
 * `trust_ra` (trustRa) - (string) The router advertisement (RA) trust status of the Trust Control Policy object.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.

@@ -6,8 +6,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils/test"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils/test"
 )
 
 // testClassName creates a ClassName for testing purposes.
@@ -2442,6 +2443,25 @@ func TestSetIdentifiedBy(t *testing.T) {
 	}
 }
 
+func TestIsIdentifyingProperty(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	class := Class{IdentifiedBy: []string{"key", "value"}}
+	testCases := []test.TestCase{
+		{Name: "test_identifier", Input: "key", Expected: true},
+		{Name: "test_non_identifier", Input: "description", Expected: false},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			actual := class.IsIdentifyingProperty(testCase.Input.(string))
+			assert.Equal(t, testCase.Expected, actual, test.MessageEqual(testCase.Expected, actual, testCase.Name))
+		})
+	}
+}
+
 type setIsSingleNestedWhenDefinedAsChildInput struct {
 	ClassDefinitionIsSingleNestedWhenDefinedAsChild bool
 	IdentifiedBy                                    []string
@@ -4840,6 +4860,7 @@ func TestResolvePropertyTestValues(t *testing.T) {
 			for name, loaded := range input.LoadedClasses {
 				ds.Classes[name] = loaded
 			}
+			class.setPropertyReferenceAttributeNames(ds)
 			class.setPropertyTestValues(ds)
 
 			if expected.DiagnosticContains != "" {

@@ -23,7 +23,8 @@ type DataStore struct {
 	// A map containing all the information about the classes required to render the templates.
 	Classes map[string]Class
 	// All per-class definitions, including definition-only classes without local APIC metadata.
-	// Definition-only classes participate in Terraform-name resolution but are never rendered.
+	// Definition-only classes participate in Terraform-name and artifact-availability
+	// resolution but are never rendered.
 	ClassDefinitions map[string]ClassDefinition
 	// Configurable APIC classes that do not expose an annotation property.
 	// This is populated only when an annotation refresh is requested.
@@ -265,8 +266,18 @@ func (ds *DataStore) loadClasses() error {
 	// expose loaded classes as generated children.
 	ds.filterClassChildren()
 
-	// Set documentation for classes after all class data is loaded.
-	// This ensures that all child class information from the DataStore is available.
+	// Resolve cross-class names and the documentation identity of every class
+	// before building descriptions. Relation and parent descriptions can then use
+	// stable labels and artifact names regardless of Go map iteration order.
+	for classNameStr, class := range ds.Classes {
+		class.setPropertyReferenceAttributeNames(ds)
+		class.Documentation.setClassName(&class)
+		class.Documentation.setLabel(&class, ds)
+		ds.Classes[classNameStr] = class
+	}
+
+	// Build complete documentation only after every referenced class has its
+	// documentation identity.
 	for classNameStr, class := range ds.Classes {
 		err := class.setDocumentation(ds)
 		if err != nil {
@@ -320,7 +331,7 @@ func (ds *DataStore) loadClass(classNameStr string) error {
 
 func (ds *DataStore) getResourceName(className string) string {
 	// Resolve the Terraform name for a metadata-backed or definition-only APIC
-	// class. Call sites evaluate artifact availability only for loaded classes.
+	// class.
 	if class, ok := ds.Classes[className]; ok {
 		return class.ResourceName
 	}
@@ -338,6 +349,28 @@ func (ds *DataStore) getResourceName(className string) string {
 		ds.failedToLoadClasses = append(ds.failedToLoadClasses, className)
 	}
 	return ""
+}
+
+// getResourceNameForArtifact returns the Terraform name only when the class
+// exposes the requested top-level artifact. Definition-only classes default to
+// both legacy artifacts when artifacts is omitted; an explicit list narrows or
+// disables that availability without making the class renderable.
+func (ds *DataStore) getResourceNameForArtifact(className string, artifact ArtifactEnum) string {
+	if class, ok := ds.Classes[className]; ok {
+		if slices.Contains(class.Artifacts, artifact) {
+			return class.ResourceName
+		}
+		return ""
+	}
+
+	definition, ok := ds.ClassDefinitions[className]
+	if !ok || definition.ResourceName == "" {
+		return ""
+	}
+	if definition.Artifacts != nil && !slices.Contains(definition.Artifacts, artifact) {
+		return ""
+	}
+	return definition.ResourceName
 }
 
 func (ds *DataStore) setTestData() {

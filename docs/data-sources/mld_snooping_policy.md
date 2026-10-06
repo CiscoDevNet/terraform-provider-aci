@@ -32,9 +32,9 @@ Data source for ACI MLD Snooping Policy
 
 ```hcl
 
-data "aci_mld_snooping_policy" "example_tenant" {
+data "aci_mld_snooping_policy" "example" {
   parent_dn = aci_tenant.example.id
-  name      = "test_name"
+  name      = "mld_snooping_policy"
 }
 
 ```
@@ -63,9 +63,9 @@ data "aci_mld_snooping_policy" "example_tenant" {
 * `start_query_count` (startQueryCnt) - (string) The start query count of the MLD Snooping Policy object.
 * `start_query_interval` (startQueryIntvl) - (string) The query interval (seconds) of the MLD Snooping Policy object at start-up.
 * `version` (ver) - (string) The MLD version. This attribute is supported in ACI versions: 5.1(1h) and later.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.

@@ -36,14 +36,9 @@ Data source for ACI Annotation
 
 ```hcl
 
-data "aci_annotation" "example_tenant" {
+data "aci_annotation" "example" {
   parent_dn = aci_tenant.example.id
-  key       = "test_key"
-}
-
-data "aci_annotation" "example_application_epg" {
-  parent_dn = aci_application_epg.example.id
-  key       = "test_key"
+  key       = "example_key"
 }
 
 ```
@@ -53,7 +48,6 @@ data "aci_annotation" "example_application_epg" {
 ### Required ###
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
-  - Too many parent DNs to display, see model documentation for all possible parents of [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview).
   - [aci_bgp_address_family_context](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bgp_address_family_context) ([bgpCtxAfPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/bgpCtxAfPol/overview))
   - [aci_bgp_timers](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bgp_timers) ([bgpCtxPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/bgpCtxPol/overview))
   - [aci_cdp_interface_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/cdp_interface_policy) ([cdpIfPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/cdpIfPol/overview))
@@ -74,6 +68,7 @@ data "aci_annotation" "example_application_epg" {
   - [aci_application_epg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/application_epg) ([fvAEPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvAEPg/overview))
   - [aci_application_profile](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/application_profile) ([fvAp](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvAp/overview))
   - [aci_bridge_domain](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bridge_domain) ([fvBD](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvBD/overview))
+  - Additional parent options are available; see model documentation for all possible parents of [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview).
 * `key` (key) - (string) The key used to uniquely identify this configuration object.
 
 ### Read-Only ###
