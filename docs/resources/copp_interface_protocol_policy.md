@@ -14,8 +14,6 @@ description: |-
 
 Manages ACI CoPP Interface Protocol Policy
 
-
-
 ## API Information ##
 
 * Class: [coppProtoClassP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/coppProtoClassP/overview)
@@ -34,40 +32,42 @@ The configuration snippet below creates a CoPP Interface Protocol Policy with on
 
 ```hcl
 
-resource "aci_copp_interface_protocol_policy" "example_copp_interface_policy" {
-  parent_dn = aci_copp_interface_policy.example.id
-  name      = "test_name"
+resource "aci_copp_interface_protocol_policy" "example" {
+  parent_dn       = aci_copp_interface_policy.example.id
+  match_protocols = []
+  name            = "copp_interface_protocol_policy"
 }
 
 ```
+
 The configuration snippet below shows all possible attributes of the CoPP Interface Protocol Policy.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
 ```hcl
 
-resource "aci_copp_interface_protocol_policy" "full_example_copp_interface_policy" {
+resource "aci_copp_interface_protocol_policy" "full_example" {
   parent_dn       = aci_copp_interface_policy.example.id
-  annotation      = "annotation"
+  annotation      = "example_annotation"
   burst           = "15"
-  description     = "description_1"
+  description     = "Example CoPP Interface Protocol Policy"
   match_protocols = ["arp", "bfd"]
-  name            = "test_name"
-  name_alias      = "name_alias_1"
-  owner_key       = "owner_key_1"
-  owner_tag       = "owner_tag_1"
+  name            = "copp_interface_protocol_policy"
+  name_alias      = "example_name_alias"
+  owner_key       = "example_owner_key"
+  owner_tag       = "example_owner_tag"
   rate            = "15"
   annotations = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
   tags = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
 }
 
@@ -81,6 +81,7 @@ All examples for the CoPP Interface Protocol Policy resource can be found in the
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_copp_interface_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/copp_interface_policy) ([coppIfPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/coppIfPol/overview))
+
 * `name` (name) - (string) The name of the CoPP Interface Protocol Policy object.
 
 ### Read-Only ###
@@ -102,14 +103,14 @@ All examples for the CoPP Interface Protocol Policy resource can be found in the
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 * `rate` (rate) - (string) The rate of the CoPP Interface Protocol Policy object.
   - Default: `"10"`
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
 
@@ -118,7 +119,7 @@ All examples for the CoPP Interface Protocol Policy resource can be found in the
 An existing CoPP Interface Protocol Policy can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_copp_interface_protocol_policy.example_copp_interface_policy uni/infra/coppifpol-{name}/protoclassp-{name}
+terraform import aci_copp_interface_protocol_policy.example uni/infra/coppifpol-{name}/protoclassp-{name}
 ```
 
 Starting in Terraform version 1.5, an existing CoPP Interface Protocol Policy can be imported
@@ -127,6 +128,6 @@ using [import blocks](https://developer.hashicorp.com/terraform/language/import)
 ```
 import {
   id = "uni/infra/coppifpol-{name}/protoclassp-{name}"
-  to = aci_copp_interface_protocol_policy.example_copp_interface_policy
+  to = aci_copp_interface_protocol_policy.example
 }
 ```

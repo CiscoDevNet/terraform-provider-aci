@@ -14,8 +14,6 @@ description: |-
 
 Manages ACI SyncE Interface Policy
 
-
-
 ## API Information ##
 
 * Class: [synceEthIfPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/synceEthIfPol/overview)
@@ -35,10 +33,11 @@ The configuration snippet below creates a SyncE Interface Policy with only requi
 ```hcl
 
 resource "aci_synce_interface_policy" "example" {
-  name = "test_name"
+  name = "synce_interface_policy"
 }
 
 ```
+
 The configuration snippet below shows all possible attributes of the SyncE Interface Policy.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
@@ -47,12 +46,12 @@ The configuration snippet below shows all possible attributes of the SyncE Inter
 
 resource "aci_synce_interface_policy" "full_example" {
   admin_state                    = "enabled"
-  annotation                     = "annotation"
-  description                    = "description_1"
-  name                           = "test_name"
-  name_alias                     = "name_alias_1"
-  owner_key                      = "owner_key_1"
-  owner_tag                      = "owner_tag_1"
+  annotation                     = "example_annotation"
+  description                    = "Example SyncE Interface Policy"
+  name                           = "synce_interface_policy"
+  name_alias                     = "example_name_alias"
+  owner_key                      = "example_owner_key"
+  owner_tag                      = "example_owner_tag"
   quality_level_options          = "op2g2"
   quality_receive_exact_value    = "fsync-ql-o2-g2-eec2"
   quality_receive_highest_value  = "fsync-ql-common-none"
@@ -66,15 +65,15 @@ resource "aci_synce_interface_policy" "full_example" {
   wait_to_restore_time           = "8"
   annotations = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
   tags = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
 }
 
@@ -134,14 +133,14 @@ All examples for the SyncE Interface Policy resource can be found in the [exampl
   - Valid Values: `"no"`, `"yes"`.
 * `wait_to_restore_time` (wtr) - (string) The wait-to-restore time (minutes) for the SyncE Interface Policy object. This attribute is only applicable when 'selection_input' is 'yes'. The value must be in the range 0 - 12.
   - Default: `"5"`
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
 

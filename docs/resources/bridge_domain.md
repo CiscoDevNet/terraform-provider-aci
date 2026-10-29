@@ -14,7 +14,6 @@ description: |-
 
 Manages ACI Bridge Domain
 
-
   !> This resource has been migrated to the terraform plugin protocol version 6, refer to the [migration guide](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/guides/migration) for more details and implications for already managed resources.
 
 ## API Information ##
@@ -35,24 +34,25 @@ The configuration snippet below creates a Bridge Domain with only required attri
 
 ```hcl
 
-resource "aci_bridge_domain" "example_tenant" {
+resource "aci_bridge_domain" "example" {
   parent_dn = aci_tenant.example.id
-  name      = "test_name"
+  name      = "bridge_domain"
 }
 
 ```
+
 The configuration snippet below shows all possible attributes of the Bridge Domain.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
 ```hcl
 
-resource "aci_bridge_domain" "full_example_tenant" {
+resource "aci_bridge_domain" "full_example" {
   parent_dn                          = aci_tenant.example.id
   optimize_wan_bandwidth             = "no"
-  annotation                         = "annotation"
+  annotation                         = "example_annotation"
   arp_flooding                       = "no"
-  description                        = "description_1"
+  description                        = "Example Bridge Domain"
   enable_rogue_exception_mac         = "no"
   clear_remote_mac_entries           = "no"
   endpoint_move_detection_mode       = "garp"
@@ -67,10 +67,10 @@ resource "aci_bridge_domain" "full_example_tenant" {
   drop_arp_with_multicast_smac       = "no"
   pim                                = "no"
   multi_destination_flooding         = "bd-flood"
-  name                               = "test_name"
-  name_alias                         = "name_alias_1"
-  owner_key                          = "owner_key_1"
-  owner_tag                          = "owner_tag_1"
+  name                               = "bridge_domain"
+  name_alias                         = "example_name_alias"
+  owner_key                          = "example_owner_key"
+  owner_tag                          = "example_owner_tag"
   service_bd_routing_disable         = "no"
   bridge_domain_type                 = "fc"
   unicast_routing                    = "no"
@@ -79,241 +79,241 @@ resource "aci_bridge_domain" "full_example_tenant" {
   ipv6_l3_unknown_multicast_flooding = "flood"
   virtual_mac_address                = "00:22:BD:F8:19:FB"
   legacy_mode = {
-    annotation    = "annotation_1"
-    description   = "description_1"
+    annotation    = "example_annotation"
+    description   = "Example Legacy Mode"
     encapsulation = "vlan-100"
-    name          = "name_1"
-    name_alias    = "name_alias_1"
-    owner_key     = "owner_key_1"
-    owner_tag     = "owner_tag_1"
+    name          = "legacy_mode"
+    name_alias    = "example_name_alias"
+    owner_key     = "example_owner_key"
+    owner_tag     = "example_owner_tag"
     annotations = [
       {
-        key   = "key_0"
-        value = "value_1"
-      }
+        key   = "example_key"
+        value = "example_value"
+      },
     ]
     tags = [
       {
-        key   = "key_0"
-        value = "value_1"
-      }
+        key   = "example_key"
+        value = "example_value"
+      },
     ]
   }
   rogue_coop_exceptions = [
     {
-      annotation  = "annotation_1"
-      description = "description_1"
+      annotation  = "example_annotation"
+      description = "Example Rogue Coop Exception"
       mac         = "00:00:00:00:00:03"
-      name        = "name_1"
-      name_alias  = "name_alias_1"
+      name        = "rogue_coop_exception"
+      name_alias  = "example_name_alias"
       annotations = [
         {
-          key   = "key_0"
-          value = "value_1"
-        }
+          key   = "example_key"
+          value = "example_value"
+        },
       ]
       tags = [
         {
-          key   = "key_0"
-          value = "value_1"
-        }
+          key   = "example_key"
+          value = "example_value"
+        },
       ]
-    }
+    },
   ]
   relation_to_monitoring_policy = {
-    annotation             = "annotation_1"
+    annotation             = "example_annotation"
     monitoring_policy_name = aci_monitoring_policy.example.name
     annotations = [
       {
-        key   = "key_0"
-        value = "value_1"
-      }
+        key   = "example_key"
+        value = "example_value"
+      },
     ]
     tags = [
       {
-        key   = "key_0"
-        value = "value_1"
-      }
+        key   = "example_key"
+        value = "example_value"
+      },
     ]
   }
   relation_to_first_hop_security_policy = {
-    annotation                     = "annotation_1"
+    annotation                     = "example_annotation"
     first_hop_security_policy_name = aci_first_hop_security_policy.example.name
     annotations = [
       {
-        key   = "key_0"
-        value = "value_1"
-      }
+        key   = "example_key"
+        value = "example_value"
+      },
     ]
     tags = [
       {
-        key   = "key_0"
-        value = "value_1"
-      }
+        key   = "example_key"
+        value = "example_value"
+      },
     ]
   }
   relation_to_neighbor_discovery_interface_policy = {
-    annotation                               = "annotation_1"
+    annotation                               = "example_annotation"
     neighbor_discovery_interface_policy_name = aci_neighbor_discovery_interface_policy.example.name
     annotations = [
       {
-        key   = "key_0"
-        value = "value_1"
-      }
+        key   = "example_key"
+        value = "example_value"
+      },
     ]
     tags = [
       {
-        key   = "key_0"
-        value = "value_1"
-      }
+        key   = "example_key"
+        value = "example_value"
+      },
     ]
   }
   relation_to_netflow_monitor_policies = [
     {
-      annotation                  = "annotation_1"
+      annotation                  = "example_annotation"
       filter_type                 = "ce"
       netflow_monitor_policy_name = aci_netflow_monitor_policy.example.name
       annotations = [
         {
-          key   = "key_0"
-          value = "value_1"
-        }
+          key   = "example_key"
+          value = "example_value"
+        },
       ]
       tags = [
         {
-          key   = "key_0"
-          value = "value_1"
-        }
+          key   = "example_key"
+          value = "example_value"
+        },
       ]
-    }
+    },
   ]
   relation_to_l3_outsides = [
     {
-      annotation      = "annotation_1"
+      annotation      = "example_annotation"
       l3_outside_name = aci_l3_outside.example.name
       annotations = [
         {
-          key   = "key_0"
-          value = "value_1"
-        }
+          key   = "example_key"
+          value = "example_value"
+        },
       ]
       tags = [
         {
-          key   = "key_0"
-          value = "value_1"
-        }
+          key   = "example_key"
+          value = "example_value"
+        },
       ]
-    }
+    },
   ]
   relation_to_route_control_profile = {
-    annotation                 = "annotation_1"
+    annotation                 = "example_annotation"
     l3_outside_name            = aci_l3_outside.example.name
     route_control_profile_name = aci_route_control_profile.example.name
     annotations = [
       {
-        key   = "key_0"
-        value = "value_1"
-      }
+        key   = "example_key"
+        value = "example_value"
+      },
     ]
     tags = [
       {
-        key   = "key_0"
-        value = "value_1"
-      }
+        key   = "example_key"
+        value = "example_value"
+      },
     ]
   }
   relation_to_dhcp_relay_policy = {
-    annotation             = "annotation_1"
+    annotation             = "example_annotation"
     dhcp_relay_policy_name = aci_dhcp_relay_policy.example.name
     annotations = [
       {
-        key   = "key_0"
-        value = "value_1"
-      }
+        key   = "example_key"
+        value = "example_value"
+      },
     ]
     tags = [
       {
-        key   = "key_0"
-        value = "value_1"
-      }
+        key   = "example_key"
+        value = "example_value"
+      },
     ]
   }
   relation_to_end_point_retention_policy = {
-    annotation                      = "annotation_1"
+    annotation                      = "example_annotation"
     resolve_action                  = "inherit"
     end_point_retention_policy_name = aci_end_point_retention_policy.example.name
     annotations = [
       {
-        key   = "key_0"
-        value = "value_1"
-      }
+        key   = "example_key"
+        value = "example_value"
+      },
     ]
     tags = [
       {
-        key   = "key_0"
-        value = "value_1"
-      }
+        key   = "example_key"
+        value = "example_value"
+      },
     ]
   }
   relation_to_vrf = {
-    annotation = "annotation_1"
+    annotation = "example_annotation"
     vrf_name   = aci_vrf.example.name
     annotations = [
       {
-        key   = "key_0"
-        value = "value_1"
-      }
+        key   = "example_key"
+        value = "example_value"
+      },
     ]
     tags = [
       {
-        key   = "key_0"
-        value = "value_1"
-      }
+        key   = "example_key"
+        value = "example_value"
+      },
     ]
   }
   relation_to_igmp_snooping_policy = {
-    annotation                = "annotation_1"
+    annotation                = "example_annotation"
     igmp_snooping_policy_name = aci_igmp_snooping_policy.example.name
     annotations = [
       {
-        key   = "key_0"
-        value = "value_1"
-      }
+        key   = "example_key"
+        value = "example_value"
+      },
     ]
     tags = [
       {
-        key   = "key_0"
-        value = "value_1"
-      }
+        key   = "example_key"
+        value = "example_value"
+      },
     ]
   }
   relation_to_mld_snooping_policy = {
-    annotation               = "annotation_1"
+    annotation               = "example_annotation"
     mld_snooping_policy_name = aci_mld_snooping_policy.example.name
     annotations = [
       {
-        key   = "key_0"
-        value = "value_1"
-      }
+        key   = "example_key"
+        value = "example_value"
+      },
     ]
     tags = [
       {
-        key   = "key_0"
-        value = "value_1"
-      }
+        key   = "example_key"
+        value = "example_value"
+      },
     ]
   }
   annotations = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
   tags = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
 }
 
@@ -327,15 +327,19 @@ All examples for the Bridge Domain resource can be found in the [examples](https
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tenant) ([fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview))
+
 * `name` (name) - (string) The name of the Bridge Domain object.
 
 ### Read-Only ###
 
 * `id` - (string) The distinguished name (DN) of the Bridge Domain object.
 * `pc_tag` (pcTag) - (string) The classification tag used for policy enforcement and zoning.
+
 * `scope` (scope) - (string) The scope ID (L3-VNI) of the Bridge Domain object.
   - Default: `"0"`
+
 * `segment` (seg) - (string) The segment ID (L2-VNI) of the Bridge Domain object.
+
 
 ### Optional ###
 
@@ -376,6 +380,7 @@ All examples for the Bridge Domain resource can be found in the [examples](https
   - Default: `"yes"`
   - Valid Values: `"no"`, `"yes"`.
 * `link_local_ipv6_address` (llAddr) - (string) The override of the system generated IPv6 link-local address. This attribute is supported in ACI versions: 1.1(1j) and later.
+  - Default: `"::"`
 * `custom_mac_address` (mac) - (string) The MAC address of the Bridge Domain object.
   - Default: `"00:22:BD:F8:19:FF"`
 * `drop_arp_with_multicast_smac` (mcastARPDrop) - (string) Drop rogue multicast ARP packets for the Bridge Domain object. This attribute is supported in ACI versions: 5.2(5c) and later.
@@ -412,10 +417,10 @@ All examples for the Bridge Domain resource can be found in the [examples](https
   - Default: `"not-applicable"`
 * `legacy_mode` - (map) A map of Legacy Mode (ACI object [fvAccP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvAccP/overview)).
   #### Required ####
-  
+
     * `encapsulation` (encap) - (string) The VLAN or VXLAN encapsulation of the Legacy Mode object.
   #### Optional ####
-    
+
     * `annotation` (annotation) - (string) The annotation of the Legacy Mode object. This attribute is supported in ACI versions: 3.2(1l) and later.
       - Default: `"orchestrator:terraform"`
     * `description` (descr) - (string) The description of the Legacy Mode object.
@@ -423,231 +428,231 @@ All examples for the Bridge Domain resource can be found in the [examples](https
     * `name_alias` (nameAlias) - (string) The name alias of the Legacy Mode object. This attribute is supported in ACI versions: 2.2(1k) and later.
     * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
     * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
-    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-* `rogue_coop_exceptions` - (list) A list of Rogue Coop Exceptions (ACI object [fvRogueExceptionMac](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRogueExceptionMac/overview)). Rogue Coop Exceptions can also be configured using a separate [aci_rogue_coop_exception](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/rogue_coop_exception) resource. This attribute is supported in ACI versions: 5.2(3e) and later.
+* `rogue_coop_exceptions` - (list) A list of Rogue Coop Exceptions (ACI object [fvRogueExceptionMac](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRogueExceptionMac/overview)) which can also be configured using a separate [aci_rogue_coop_exception](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/rogue_coop_exception) resource. This attribute is supported in ACI versions: 5.2(3e) and later.
   #### Required ####
-  
+
     * `mac` (mac) - (string) The MAC address of the Rogue Coop Exception object.
   #### Optional ####
-    
+
     * `annotation` (annotation) - (string) The annotation of the Rogue Coop Exception object.
       - Default: `"orchestrator:terraform"`
     * `description` (descr) - (string) The description of the Rogue Coop Exception object.
     * `name` (name) - (string) The name of the Rogue Coop Exception object.
     * `name_alias` (nameAlias) - (string) The name alias of the Rogue Coop Exception object.
-    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
 * `relation_to_monitoring_policy` - (map) A map of Relation From Bridge Domain To Monitoring Policy (ACI object [fvRsABDPolMonPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsABDPolMonPol/overview)) pointing to Monitoring Policy (ACI Object [monEPGPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/monEPGPol/overview)) which can be configured using the [aci_monitoring_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/monitoring_policy) resource.
   #### Optional ####
-    
+
     * `annotation` (annotation) - (string) The annotation of the Relation From Bridge Domain To Monitoring Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
       - Default: `"orchestrator:terraform"`
-    * `monitoring_policy_name` (tnMonEPGPolName) - (string) The name of the Monitoring Policy object.
-    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `monitoring_policy_name` (tnMonEPGPolName) - (string) The name of the Monitoring Policy object. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/monitoring_policy) with `aci_monitoring_policy.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/monitoring_policy) with `data.aci_monitoring_policy.example.name`.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
 * `relation_to_first_hop_security_policy` - (map) A map of Relation From Bridge Domain To First Hop Security Policy (ACI object [fvRsBDToFhs](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsBDToFhs/overview)) pointing to First Hop Security Policy (ACI Object [fhsBDPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fhsBDPol/overview)) which can be configured using the [aci_first_hop_security_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/first_hop_security_policy) resource. This attribute is supported in ACI versions: 3.0(1k) and later.
   #### Optional ####
-    
+
     * `annotation` (annotation) - (string) The annotation of the Relation From Bridge Domain To First Hop Security Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
       - Default: `"orchestrator:terraform"`
-    * `first_hop_security_policy_name` (tnFhsBDPolName) - (string) The name of the First Hop Security Policy object.
-    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `first_hop_security_policy_name` (tnFhsBDPolName) - (string) The name of the First Hop Security Policy object. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/first_hop_security_policy) with `aci_first_hop_security_policy.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/first_hop_security_policy) with `data.aci_first_hop_security_policy.example.name`.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
 * `relation_to_neighbor_discovery_interface_policy` - (map) A map of Relation From Bridge Domain To Neighbor Discovery Interface Policy (ACI object [fvRsBDToNdP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsBDToNdP/overview)) pointing to Neighbor Discovery Interface Policy (ACI Object [ndIfPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/ndIfPol/overview)) which can be configured using the [aci_neighbor_discovery_interface_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/neighbor_discovery_interface_policy) resource. This attribute is supported in ACI versions: 1.1(1j) and later.
   #### Optional ####
-    
+
     * `annotation` (annotation) - (string) The annotation of the Relation From Bridge Domain To Neighbor Discovery Interface Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
       - Default: `"orchestrator:terraform"`
-    * `neighbor_discovery_interface_policy_name` (tnNdIfPolName) - (string) The name of the Neighbor Discovery Interface Policy object.
-    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `neighbor_discovery_interface_policy_name` (tnNdIfPolName) - (string) The name of the Neighbor Discovery Interface Policy object. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/neighbor_discovery_interface_policy) with `aci_neighbor_discovery_interface_policy.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/neighbor_discovery_interface_policy) with `data.aci_neighbor_discovery_interface_policy.example.name`.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
 * `relation_to_netflow_monitor_policies` - (list) A list of Relation From Bridge Domain To NetFlow Monitor Policies (ACI object [fvRsBDToNetflowMonitorPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsBDToNetflowMonitorPol/overview)) pointing to NetFlow Monitor Policy (ACI Object [netflowMonitorPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowMonitorPol/overview)) which can be configured using the [aci_netflow_monitor_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/netflow_monitor_policy) resource. This attribute is supported in ACI versions: 2.2(1k) and later.
   #### Required ####
-  
+
     * `filter_type` (fltType) - (string) The filter type of the NetFlow Monitor Policy object.
-     - Valid Values: `"ce"`, `"ipv4"`, `"ipv6"`, `"unspecified"`.
+      - Valid Values: `"ce"`, `"ipv4"`, `"ipv6"`, `"unspecified"`.
     * `netflow_monitor_policy_name` (tnNetflowMonitorPolName) - (string) The name of the NetFlow Monitor Policy object. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/netflow_monitor_policy) with `aci_netflow_monitor_policy.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/netflow_monitor_policy) with `data.aci_netflow_monitor_policy.example.name`.
   #### Optional ####
-    
+
     * `annotation` (annotation) - (string) The annotation of the Relation From Bridge Domain To NetFlow Monitor Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
       - Default: `"orchestrator:terraform"`
-    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
 * `relation_to_l3_outsides` - (list) A list of Relation From Bridge Domain To L3 Outsides (ACI object [fvRsBDToOut](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsBDToOut/overview)) pointing to L3 Outside (ACI Object [l3extOut](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extOut/overview)) which can be configured using the [aci_l3_outside](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3_outside) resource.
   #### Required ####
-  
+
     * `l3_outside_name` (tnL3extOutName) - (string) The name of the L3 Outside object. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3_outside) with `aci_l3_outside.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/l3_outside) with `data.aci_l3_outside.example.name`.
   #### Optional ####
-    
+
     * `annotation` (annotation) - (string) The annotation of the Relation From Bridge Domain To L3 Outside object. This attribute is supported in ACI versions: 3.2(1l) and later.
       - Default: `"orchestrator:terraform"`
-    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
 * `relation_to_route_control_profile` - (map) A map of Relation From Bridge Domain To Route Control Profile (ACI object [fvRsBDToProfile](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsBDToProfile/overview)) pointing to Route Control Profile (ACI Object [rtctrlProfile](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/rtctrlProfile/overview)) which can be configured using the [aci_route_control_profile](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/route_control_profile) resource.
   #### Optional ####
-    
+
     * `annotation` (annotation) - (string) The annotation of the Relation From Bridge Domain To Route Control Profile object. This attribute is supported in ACI versions: 3.2(1l) and later.
       - Default: `"orchestrator:terraform"`
-    * `l3_outside_name` (tnL3extOutName) - (string) The name of the L3 Outside object.
-    * `route_control_profile_name` (tnRtctrlProfileName) - (string) The name of the Route Control Profile object.
-    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `l3_outside_name` (tnL3extOutName) - (string) The name of the L3 Outside object. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3_outside) with `aci_l3_outside.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/l3_outside) with `data.aci_l3_outside.example.name`.
+    * `route_control_profile_name` (tnRtctrlProfileName) - (string) The name of the Route Control Profile object. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/route_control_profile) with `aci_route_control_profile.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/route_control_profile) with `data.aci_route_control_profile.example.name`.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
 * `relation_to_dhcp_relay_policy` - (map) A map of Relation From Bridge Domain To DHCP Relay Policy (ACI object [fvRsBDToRelayP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsBDToRelayP/overview)) pointing to DHCP Relay Policy (ACI Object [dhcpRelayP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/dhcpRelayP/overview)) which can be configured using the [aci_dhcp_relay_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/dhcp_relay_policy) resource. This attribute is supported in ACI versions: 1.0(1e) to 6.1(1e)
   #### Optional ####
-    
+
     * `annotation` (annotation) - (string) The annotation of the Relation From Bridge Domain To DHCP Relay Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
       - Default: `"orchestrator:terraform"`
-    * `dhcp_relay_policy_name` (tnDhcpRelayPName) - (string) The name of the DHCP Relay Policy object.
-    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `dhcp_relay_policy_name` (tnDhcpRelayPName) - (string) The name of the DHCP Relay Policy object. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/dhcp_relay_policy) with `aci_dhcp_relay_policy.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/dhcp_relay_policy) with `data.aci_dhcp_relay_policy.example.name`.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
 * `relation_to_end_point_retention_policy` - (map) A map of Relation From Bridge Domain To End Point Retention Policy (ACI object [fvRsBdToEpRet](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsBdToEpRet/overview)) pointing to End Point Retention Policy (ACI Object [fvEpRetPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvEpRetPol/overview)) which can be configured using the [aci_end_point_retention_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/end_point_retention_policy) resource.
   #### Optional ####
-    
+
     * `annotation` (annotation) - (string) The annotation of the Relation From Bridge Domain To End Point Retention Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
       - Default: `"orchestrator:terraform"`
     * `resolve_action` (resolveAct) - (string) The action to take for resolving the Endpoint Retention Policy object.
       - Default: `"resolve"`
       - Valid Values: `"inherit"`, `"resolve"`.
-    * `end_point_retention_policy_name` (tnFvEpRetPolName) - (string) The name of the Endpoint Retention Policy object.
-    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `end_point_retention_policy_name` (tnFvEpRetPolName) - (string) The name of the Endpoint Retention Policy object. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/end_point_retention_policy) with `aci_end_point_retention_policy.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/end_point_retention_policy) with `data.aci_end_point_retention_policy.example.name`.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
 * `relation_to_vrf` - (map) A map of Relation To VRF (ACI object [fvRsCtx](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsCtx/overview)) pointing to VRF (ACI Object [fvCtx](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvCtx/overview)) which can be configured using the [aci_vrf](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vrf) resource.
   #### Optional ####
-    
+
     * `annotation` (annotation) - (string) The annotation of the Relation To VRF object. This attribute is supported in ACI versions: 3.2(1l) and later.
       - Default: `"orchestrator:terraform"`
-    * `vrf_name` (tnFvCtxName) - (string) The name of the VRF object.
-    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `vrf_name` (tnFvCtxName) - (string) The name of the VRF object. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vrf) with `aci_vrf.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/vrf) with `data.aci_vrf.example.name`.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
 * `relation_to_igmp_snooping_policy` - (map) A map of Relation To IGMP Snooping Policy (ACI object [fvRsIgmpsn](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsIgmpsn/overview)) pointing to IGMP Snooping Policy (ACI Object [igmpSnoopPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/igmpSnoopPol/overview)) which can be configured using the [aci_igmp_snooping_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/igmp_snooping_policy) resource.
   #### Optional ####
-    
+
     * `annotation` (annotation) - (string) The annotation of the Relation To IGMP Snooping Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
       - Default: `"orchestrator:terraform"`
-    * `igmp_snooping_policy_name` (tnIgmpSnoopPolName) - (string) The name of the IGMP Snooping Policy object.
-    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `igmp_snooping_policy_name` (tnIgmpSnoopPolName) - (string) The name of the IGMP Snooping Policy object. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/igmp_snooping_policy) with `aci_igmp_snooping_policy.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/igmp_snooping_policy) with `data.aci_igmp_snooping_policy.example.name`.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
 * `relation_to_mld_snooping_policy` - (map) A map of Relation To MLD Snooping Policy (ACI object [fvRsMldsn](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsMldsn/overview)) pointing to MLD Snooping Policy (ACI Object [mldSnoopPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/mldSnoopPol/overview)) which can be configured using the [aci_mld_snooping_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/mld_snooping_policy) resource. This attribute is supported in ACI versions: 4.1(1i) and later.
   #### Optional ####
-    
+
     * `annotation` (annotation) - (string) The annotation of the Relation To MLD Snooping Policy object.
       - Default: `"orchestrator:terraform"`
-    * `mld_snooping_policy_name` (tnMldSnoopPolName) - (string) The name of the MLD Snooping Policy object.
-    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `mld_snooping_policy_name` (tnMldSnoopPolName) - (string) The name of the MLD Snooping Policy object. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/mld_snooping_policy) with `aci_mld_snooping_policy.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/mld_snooping_policy) with `data.aci_mld_snooping_policy.example.name`.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
 
@@ -656,7 +661,7 @@ All examples for the Bridge Domain resource can be found in the [examples](https
 An existing Bridge Domain can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_bridge_domain.example_tenant uni/tn-{name}/BD-{name}
+terraform import aci_bridge_domain.example uni/tn-{name}/BD-{name}
 ```
 
 Starting in Terraform version 1.5, an existing Bridge Domain can be imported
@@ -665,10 +670,10 @@ using [import blocks](https://developer.hashicorp.com/terraform/language/import)
 ```
 import {
   id = "uni/tn-{name}/BD-{name}"
-  to = aci_bridge_domain.example_tenant
+  to = aci_bridge_domain.example
 }
 ```
 
 ## Child Resources
-  
+
   - [aci_associated_site](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/associated_site)

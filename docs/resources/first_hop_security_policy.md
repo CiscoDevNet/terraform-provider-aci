@@ -14,8 +14,6 @@ description: |-
 
 Manages ACI First Hop Security Policy
 
-
-
 ## API Information ##
 
 * Class: [fhsBDPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fhsBDPol/overview)
@@ -34,67 +32,68 @@ The configuration snippet below creates a First Hop Security Policy with only re
 
 ```hcl
 
-resource "aci_first_hop_security_policy" "example_tenant" {
+resource "aci_first_hop_security_policy" "example" {
   parent_dn = aci_tenant.example.id
-  name      = "test_name"
+  name      = "first_hop_security_policy"
 }
 
 ```
+
 The configuration snippet below shows all possible attributes of the First Hop Security Policy.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
 ```hcl
 
-resource "aci_first_hop_security_policy" "full_example_tenant" {
+resource "aci_first_hop_security_policy" "full_example" {
   parent_dn            = aci_tenant.example.id
-  annotation           = "annotation"
-  description          = "description_1"
+  annotation           = "example_annotation"
+  description          = "Example First Hop Security Policy"
   ip_inspection        = "disabled"
-  name                 = "test_name"
-  name_alias           = "name_alias_1"
-  owner_key            = "owner_key_1"
-  owner_tag            = "owner_tag_1"
+  name                 = "first_hop_security_policy"
+  name_alias           = "example_name_alias"
+  owner_key            = "example_owner_key"
+  owner_tag            = "example_owner_tag"
   router_advertisement = "disabled"
   source_guard         = "disabled"
   route_advertisement_guard_policy = {
-    annotation            = "annotation_1"
-    description           = "description_1"
+    annotation            = "example_annotation"
+    description           = "Example Route Advertisement Guard Policy"
     managed_config_check  = "no"
     managed_config_flag   = "no"
     max_hop_limit         = "10"
     max_router_preference = "disabled"
     min_hop_limit         = "1"
-    name                  = "name_1"
-    name_alias            = "name_alias_1"
+    name                  = "route_advertisement_guard_policy"
+    name_alias            = "example_name_alias"
     other_config_check    = "no"
     other_config_flag     = "no"
-    owner_key             = "owner_key_1"
-    owner_tag             = "owner_tag_1"
+    owner_key             = "example_owner_key"
+    owner_tag             = "example_owner_tag"
     annotations = [
       {
-        key   = "key_0"
-        value = "value_1"
-      }
+        key   = "example_key"
+        value = "example_value"
+      },
     ]
     tags = [
       {
-        key   = "key_0"
-        value = "value_1"
-      }
+        key   = "example_key"
+        value = "example_value"
+      },
     ]
   }
   annotations = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
   tags = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
 }
 
@@ -108,6 +107,7 @@ All examples for the First Hop Security Policy resource can be found in the [exa
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tenant) ([fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview))
+
 * `name` (name) - (string) The name of the First Hop Security Policy object.
 
 ### Read-Only ###
@@ -133,7 +133,7 @@ All examples for the First Hop Security Policy resource can be found in the [exa
   - Valid Values: `"disabled"`, `"enabled-both"`, `"enabled-ipv4"`, `"enabled-ipv6"`.
 * `route_advertisement_guard_policy` - (map) A map of Route Advertisement Guard Policy (ACI object [fhsRaGuardPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fhsRaGuardPol/overview)).
   #### Optional ####
-    
+
     * `annotation` (annotation) - (string) The annotation of the Route Advertisement Guard Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
       - Default: `"orchestrator:terraform"`
     * `description` (descr) - (string) The description of the Route Advertisement Guard Policy object.
@@ -160,24 +160,24 @@ All examples for the First Hop Security Policy resource can be found in the [exa
       - Valid Values: `"no"`, `"yes"`.
     * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
     * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
-    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
 
@@ -186,7 +186,7 @@ All examples for the First Hop Security Policy resource can be found in the [exa
 An existing First Hop Security Policy can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_first_hop_security_policy.example_tenant uni/tn-{name}/bdpol-{name}
+terraform import aci_first_hop_security_policy.example uni/tn-{name}/bdpol-{name}
 ```
 
 Starting in Terraform version 1.5, an existing First Hop Security Policy can be imported
@@ -195,6 +195,6 @@ using [import blocks](https://developer.hashicorp.com/terraform/language/import)
 ```
 import {
   id = "uni/tn-{name}/bdpol-{name}"
-  to = aci_first_hop_security_policy.example_tenant
+  to = aci_first_hop_security_policy.example
 }
 ```

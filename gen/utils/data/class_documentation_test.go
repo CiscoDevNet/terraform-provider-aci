@@ -2,6 +2,7 @@ package data
 
 import (
 	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -755,6 +756,16 @@ func TestDocumentationLinks(t *testing.T) {
 		getDatasourceDocumentationLink("tenant"),
 	)
 	assert.Equal(t, "", getTerraformRegistryDocumentationLink("tenant", ArtifactEnum(99)))
+	ds := &DataStore{ClassDefinitions: map[string]ClassDefinition{
+		"vnsLDevVip": {
+			ResourceName:  "l4_l7_device",
+			Documentation: ClassDocumentationDefinition{RegistryPath: "l4_l7_devices"},
+		},
+	}}
+	assert.Equal(t,
+		"[aci_l4_l7_device](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l4_l7_devices)",
+		ds.getTerraformRegistryDocumentationLink("vnsLDevVip", ResourceArtifact),
+	)
 	assert.Equal(t,
 		"[fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview)",
 		getDevnetObjectDocumentationLink("fvTenant"),
@@ -1161,6 +1172,125 @@ func TestSetDnFormats(t *testing.T) {
 			class.Documentation.setDnFormats(&class)
 
 			assert.Equal(t, expected, class.Documentation.DnFormats, test.MessageEqual(expected, class.Documentation.DnFormats, testCase.Name))
+			expectedImportDnFormat := ""
+			for _, dnFormat := range expected {
+				if !strings.HasPrefix(dnFormat, "Too many DN formats") {
+					expectedImportDnFormat = dnFormat
+					break
+				}
+			}
+			assert.Equal(t, expectedImportDnFormat, class.Documentation.ImportDnFormat, test.MessageEqual(expectedImportDnFormat, class.Documentation.ImportDnFormat, testCase.Name+"/import"))
+		})
+	}
+}
+
+func TestSetImportDnFormat(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	tenantName := testClassName("fvTenant")
+	pkiEpName := testClassName("pkiEp")
+	aepgName := testClassName("fvAEPg")
+	associatedSiteName := testClassName("fvSiteAssociated")
+	ds := &DataStore{Classes: map[string]Class{
+		"fvTenant": {Name: tenantName, MetaFileContent: map[string]any{"dnFormats": []any{"uni/tn-{name}"}}},
+		"pkiEp":    {Name: pkiEpName, MetaFileContent: map[string]any{"dnFormats": []any{"uni/userext/pkiext"}}},
+		"fvAEPg": {
+			Name:            aepgName,
+			MetaFileContent: map[string]any{"dnFormats": []any{"uni/tn-{name}/ap-{name}/epg-{name}"}},
+		},
+		"fvSiteAssociated": {
+			Name:           associatedSiteName,
+			RnFormat:       "stAsc",
+			ExampleContext: ExampleContext{ParentClass: aepgName, ParentDnMode: ParentDnFromReference},
+			MetaFileContent: map[string]any{"dnFormats": []any{
+				"uni/tn-{name}/BD-{name}/stAsc",
+				"uni/tn-{name}/ap-{name}/epg-{name}/stAsc",
+			}},
+		},
+	}}
+
+	testCases := []test.TestCase{
+		{
+			Name: "test_selected_parent_format",
+			Input: Class{
+				ExampleContext: ExampleContext{ParentClass: tenantName},
+				RnFormat:       "annotationKey-[{key}]",
+				MetaFileContent: map[string]any{"dnFormats": []any{
+					"uni/tn-{name}/annotationKey-[{key}]",
+					"uni/tn-{name}/BD-{name}/annotationKey-[{key}]",
+				}},
+			},
+			Expected: "uni/tn-{name}/annotationKey-[{key}]",
+		},
+		{
+			Name: "test_selected_parent_format_outside_displayed_formats",
+			Input: Class{
+				ExampleContext: ExampleContext{ParentClass: tenantName},
+				RnFormat:       "annotationKey-[{key}]",
+				MetaFileContent: map[string]any{"dnFormats": []any{
+					"uni/a/annotationKey-[{key}]",
+					"uni/b/annotationKey-[{key}]",
+					"uni/c/annotationKey-[{key}]",
+					"uni/d/annotationKey-[{key}]",
+					"uni/e/annotationKey-[{key}]",
+					"uni/tn-{name}/annotationKey-[{key}]",
+				}},
+			},
+			Expected: "uni/tn-{name}/annotationKey-[{key}]",
+		},
+		{
+			Name: "test_parent_dn_default_format",
+			Input: Class{
+				RnFormat:       "keyring-{name}",
+				ExampleContext: ExampleContext{ParentDnMode: ParentDnFromSchemaDefault},
+				Properties: map[string]*Property{
+					"parentDn": {Documentation: PropertyDocumentation{DefaultValues: []DefaultValue{{Value: "uni/userext/pkiext"}}}},
+				},
+				MetaFileContent: map[string]any{"dnFormats": []any{
+					"uni/tn-{name}/certstore/keyring-{name}",
+					"uni/userext/pkiext/keyring-{name}",
+				}},
+			},
+			Expected: "uni/userext/pkiext/keyring-{name}",
+		},
+		{
+			Name: "test_nested_selected_parent_chain",
+			Input: Class{
+				RnFormat:       "site-{siteId}",
+				ExampleContext: ExampleContext{ParentClass: associatedSiteName, ParentDnMode: ParentDnFromReference},
+				MetaFileContent: map[string]any{"dnFormats": []any{
+					"uni/tn-{name}/BD-{name}/stAsc/site-{siteId}",
+					"uni/tn-{name}/ap-{name}/epg-{name}/stAsc/site-{siteId}",
+				}},
+			},
+			Expected: "uni/tn-{name}/ap-{name}/epg-{name}/stAsc/site-{siteId}",
+		},
+		{
+			Name: "test_parameterized_parent_dn_default_format",
+			Input: Class{
+				RnFormat:       "fabricExtConnP-{id}",
+				ExampleContext: ExampleContext{ParentDnMode: ParentDnFromSchemaDefault},
+				Properties: map[string]*Property{
+					"parentDn": {Documentation: PropertyDocumentation{DefaultValues: []DefaultValue{{Value: "uni/tn-infra"}}}},
+				},
+				MetaFileContent: map[string]any{"dnFormats": []any{"uni/tn-{name}/fabricExtConnP-{id}"}},
+			},
+			Expected: "uni/tn-infra/fabricExtConnP-{id}",
+		},
+		{
+			Name:     "test_first_actual_format_fallback",
+			Input:    Class{MetaFileContent: map[string]any{"dnFormats": []any{"uni/infra/policy-{name}"}}},
+			Expected: "uni/infra/policy-{name}",
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			class := testCase.Input.(Class)
+			class.Documentation.setImportDnFormat(&class, ds)
+			assert.Equal(t, testCase.Expected, class.Documentation.ImportDnFormat, test.MessageEqual(testCase.Expected, class.Documentation.ImportDnFormat, testCase.Name))
 		})
 	}
 }
@@ -1481,8 +1611,8 @@ type setDescriptionWhenDefinedAsChildInput struct {
 }
 
 type setDescriptionWhenDefinedAsChildExpected struct {
-	Description           string
-	RelationTargetClasses []string
+	Description                string
+	RelationTargetDescriptions []string
 }
 
 func TestSetDescriptionWhenDefinedAsChild(t *testing.T) {
@@ -1521,6 +1651,17 @@ func TestSetDescriptionWhenDefinedAsChild(t *testing.T) {
 				Label:              "Foo",
 				ResourceName:       "foo",
 				ResourceNameNested: "foo",
+				Artifacts:          []ArtifactEnum{ResourceArtifact},
+				IsSingleNested:     true,
+			},
+			Expected: setDescriptionWhenDefinedAsChildExpected{Description: "`foo` - (map) A map of Foo (ACI object " + fooLink + ") which can also be configured using a separate [aci_foo](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/foo) resource."},
+		},
+		{
+			Name: "test_non_relational_map_without_resource_artifact",
+			Input: setDescriptionWhenDefinedAsChildInput{
+				Label:              "Foo",
+				ResourceName:       "foo",
+				ResourceNameNested: "foo",
 				IsSingleNested:     true,
 			},
 			Expected: setDescriptionWhenDefinedAsChildExpected{Description: "`foo` - (map) A map of Foo (ACI object " + fooLink + ")."},
@@ -1541,6 +1682,20 @@ func TestSetDescriptionWhenDefinedAsChild(t *testing.T) {
 		},
 		{
 			Name: "test_relational_map",
+			Input: setDescriptionWhenDefinedAsChildInput{
+				Label:              "Relation From Foo To BD",
+				ResourceName:       "relation_from_foo_to_bd",
+				ResourceNameNested: "relation_to_bd",
+				IsSingleNested:     true,
+				Relation:           Relation{RelationalClass: true, ToClasses: []*ClassName{testClassName("fvBD")}},
+				StoreClasses: map[string]Class{
+					"fvBD": {ResourceName: "bridge_domain", Artifacts: []ArtifactEnum{ResourceArtifact}, Documentation: ClassDocumentation{Label: "Bridge Domain"}},
+				},
+			},
+			Expected: setDescriptionWhenDefinedAsChildExpected{Description: "`relation_to_bd` - (map) A map of Relation From Foo To BD (ACI object " + fooLink + ") pointing to Bridge Domain (ACI Object " + bdLink + ") which can be configured using the [aci_bridge_domain](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bridge_domain) resource."},
+		},
+		{
+			Name: "test_relational_map_without_resource_artifact",
 			Input: setDescriptionWhenDefinedAsChildInput{
 				Label:              "Relation From Foo To BD",
 				ResourceName:       "relation_from_foo_to_bd",
@@ -1577,7 +1732,7 @@ func TestSetDescriptionWhenDefinedAsChild(t *testing.T) {
 					"monEPGPol": {ResourceName: "monitoring_policy"},
 				},
 			},
-			Expected: setDescriptionWhenDefinedAsChildExpected{Description: "`relation_to_monitoring_policy` - (map) A map of Relation From Foo To Monitoring Policy (ACI object " + fooLink + ") pointing to Monitoring Policy (ACI Object [monEPGPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/monEPGPol/overview))."},
+			Expected: setDescriptionWhenDefinedAsChildExpected{Description: "`relation_to_monitoring_policy` - (map) A map of Relation From Foo To Monitoring Policy (ACI object " + fooLink + ") pointing to Monitoring Policy (ACI Object [monEPGPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/monEPGPol/overview)) which can be configured using the [aci_monitoring_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/monitoring_policy) resource."},
 		},
 		{
 			Name: "test_relational_toclass_uses_definition_only_resource",
@@ -1631,10 +1786,17 @@ func TestSetDescriptionWhenDefinedAsChild(t *testing.T) {
 					testClassName("fvCtx"),
 				}},
 				ClassDefinition: ClassDefinition{RelationInfo: RelationInfoDefinition{ToClasses: []string{"fvCtx", "fvBD"}}},
+				StoreClasses: map[string]Class{
+					"fvCtx": {ResourceName: "vrf", Artifacts: []ArtifactEnum{ResourceArtifact}},
+					"fvBD":  {ResourceName: "bridge_domain"},
+				},
 			},
 			Expected: setDescriptionWhenDefinedAsChildExpected{
-				Description:           "`relations_to_domains` - (list) A list of Domains (ACI object " + fooLink + ").",
-				RelationTargetClasses: []string{ctxLink, bdLink},
+				Description: "`relations_to_domains` - (list) A list of Domains (ACI object " + fooLink + ").",
+				RelationTargetDescriptions: []string{
+					ctxLink + " which can be configured using the [aci_vrf](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vrf) resource",
+					bdLink + ". Currently there is no resource available to configure this ACI object",
+				},
 			},
 		},
 	}
@@ -1661,7 +1823,7 @@ func TestSetDescriptionWhenDefinedAsChild(t *testing.T) {
 			class.Documentation.setDescriptionWhenDefinedAsChild(&class, ds)
 
 			assert.Equal(t, expected.Description, class.Documentation.DescriptionWhenDefinedAsChild, test.MessageEqual(expected.Description, class.Documentation.DescriptionWhenDefinedAsChild, testCase.Name))
-			assert.Equal(t, expected.RelationTargetClasses, class.Documentation.RelationTargetClasses, test.MessageEqual(expected.RelationTargetClasses, class.Documentation.RelationTargetClasses, testCase.Name))
+			assert.Equal(t, expected.RelationTargetDescriptions, class.Documentation.RelationTargetDescriptions, test.MessageEqual(expected.RelationTargetDescriptions, class.Documentation.RelationTargetDescriptions, testCase.Name))
 		})
 	}
 }
@@ -1731,6 +1893,99 @@ func TestNestedDocumentationClasses(t *testing.T) {
 					PropertyIndent: nestedClass.Indent(1),
 				})
 			}
+			assert.Equal(t, expected, actual, test.MessageEqual(expected, actual, testCase.Name))
+		})
+	}
+}
+
+func TestNestedDocumentationClassesByResourceSection(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	parent := Class{
+		Name: testClassName("fvTenant"),
+		Children: []*ClassName{
+			testClassName("requiredChild"),
+			testClassName("optionalChild"),
+		},
+	}
+	classes := map[string]Class{
+		"requiredChild": {
+			Name:            testClassName("requiredChild"),
+			RequiredAsChild: true,
+			Children:        []*ClassName{testClassName("optionalGrandchild")},
+		},
+		"optionalChild": {
+			Name:     testClassName("optionalChild"),
+			Children: []*ClassName{testClassName("requiredGrandchild")},
+		},
+		"optionalGrandchild": {Name: testClassName("optionalGrandchild")},
+		"requiredGrandchild": {Name: testClassName("requiredGrandchild"), RequiredAsChild: true},
+	}
+	ds := &DataStore{Classes: classes}
+
+	testCases := []test.TestCase{
+		{
+			Name:     "test_required_root_keeps_optional_descendant",
+			Input:    parent.RequiredNestedDocumentationClasses(ds),
+			Expected: []nestedDocumentationClassExpected{{Class: "requiredChild", Depth: 0, PropertyIndent: "    "}, {Class: "optionalGrandchild", Depth: 1, Indent: "    ", PropertyIndent: "        "}},
+		},
+		{
+			Name:     "test_optional_root_keeps_required_descendant",
+			Input:    parent.OptionalNestedDocumentationClasses(ds),
+			Expected: []nestedDocumentationClassExpected{{Class: "optionalChild", Depth: 0, PropertyIndent: "    "}, {Class: "requiredGrandchild", Depth: 1, Indent: "    ", PropertyIndent: "        "}},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			nestedClasses := testCase.Input.([]NestedDocumentationClass)
+			actual := make([]nestedDocumentationClassExpected, 0, len(nestedClasses))
+			for _, nestedClass := range nestedClasses {
+				actual = append(actual, nestedDocumentationClassExpected{
+					Class:          nestedClass.Class.Name.String(),
+					Depth:          nestedClass.Depth,
+					Indent:         nestedClass.Indent(0),
+					PropertyIndent: nestedClass.Indent(1),
+				})
+			}
+			expected := testCase.Expected.([]nestedDocumentationClassExpected)
+			assert.Equal(t, expected, actual, test.MessageEqual(expected, actual, testCase.Name))
+		})
+	}
+}
+
+func TestDocumentationProperties(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	parentDn := &Property{PropertyName: "parentDn"}
+	name := &Property{PropertyName: "name"}
+	description := &Property{PropertyName: "descr"}
+	status := &Property{PropertyName: "status"}
+	class := Class{
+		Properties: map[string]*Property{
+			"parentDn": parentDn,
+			"name":     name,
+			"descr":    description,
+			"status":   status,
+		},
+		PropertiesRequired: []string{"parentDn", "name"},
+		PropertiesOptional: []string{"descr"},
+		PropertiesReadOnly: []string{"status"},
+	}
+
+	testCases := []test.TestCase{
+		{Name: "test_required", Input: class.RequiredDocumentationProperties(), Expected: []*Property{name}},
+		{Name: "test_optional", Input: class.OptionalDocumentationProperties(), Expected: []*Property{description}},
+		{Name: "test_read_only", Input: class.ReadOnlyDocumentationProperties(), Expected: []*Property{status}},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			actual := testCase.Input.([]*Property)
+			expected := testCase.Expected.([]*Property)
 			assert.Equal(t, expected, actual, test.MessageEqual(expected, actual, testCase.Name))
 		})
 	}

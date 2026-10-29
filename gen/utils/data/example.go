@@ -97,29 +97,45 @@ type Example struct {
 // DataSourceHCL renders the complete, formatter-normalized data-source block
 // shared by the standalone example and generated documentation.
 func (e Example) DataSourceHCL(resourceName string) string {
+	return e.blockHCL("data", resourceName, "example", false)
+}
+
+// ResourceHCL renders the complete, formatter-normalized resource block shared
+// by the standalone examples and generated documentation.
+func (e Example) ResourceHCL(resourceName, instanceName string) string {
+	return e.blockHCL("resource", resourceName, instanceName, true)
+}
+
+func (e Example) blockHCL(blockType, resourceName, instanceName string, expandCollections bool) string {
 	var contents strings.Builder
 	if e.Platform == Cloud {
 		contents.WriteString("# This example is only applicable to Cisco Cloud Network Controller.\n")
 	}
-	fmt.Fprintf(&contents, "data %q %q {\n", "aci_"+resourceName, "example")
-	writeExampleObjectHCL(&contents, e.Body)
+	fmt.Fprintf(&contents, "%s %q %q {\n", blockType, "aci_"+resourceName, instanceName)
+	writeExampleObjectHCL(&contents, e.Body, expandCollections)
 	contents.WriteString("}\n")
 	return strings.TrimSuffix(string(hclwrite.Format([]byte(contents.String()))), "\n")
 }
 
-func writeExampleObjectHCL(contents *strings.Builder, object ExampleObject) {
+func writeExampleObjectHCL(contents *strings.Builder, object ExampleObject, expandCollections bool) {
 	for _, attribute := range object.Attributes {
 		fmt.Fprintf(contents, "%s = %s\n", attribute.Name, attribute.Value.HCL())
 	}
 	for _, child := range object.Children {
 		if child.IsSingle {
 			fmt.Fprintf(contents, "%s = {\n", child.Name)
-			writeExampleObjectHCL(contents, child.Body)
+			writeExampleObjectHCL(contents, child.Body, expandCollections)
 			contents.WriteString("}\n")
 			continue
 		}
+		if expandCollections {
+			fmt.Fprintf(contents, "%s = [\n{\n", child.Name)
+			writeExampleObjectHCL(contents, child.Body, true)
+			contents.WriteString("},\n]\n")
+			continue
+		}
 		fmt.Fprintf(contents, "%s = [{\n", child.Name)
-		writeExampleObjectHCL(contents, child.Body)
+		writeExampleObjectHCL(contents, child.Body, false)
 		contents.WriteString("}]\n")
 	}
 }

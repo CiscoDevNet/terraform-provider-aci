@@ -14,8 +14,6 @@ description: |-
 
 Manages ACI Endpoint Tag MAC
 
-
-
 ## API Information ##
 
 * Class: [fvEpMacTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvEpMacTag/overview)
@@ -34,38 +32,39 @@ The configuration snippet below creates a Endpoint Tag MAC with only required at
 
 ```hcl
 
-resource "aci_endpoint_tag_mac" "example_tenant" {
+resource "aci_endpoint_tag_mac" "example" {
   parent_dn = aci_tenant.example.id
-  bd_name   = "test_bd_name"
+  bd_name   = aci_bridge_domain.example.name
   mac       = "00:00:00:00:00:01"
 }
 
 ```
+
 The configuration snippet below shows all possible attributes of the Endpoint Tag MAC.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
 ```hcl
 
-resource "aci_endpoint_tag_mac" "full_example_tenant" {
+resource "aci_endpoint_tag_mac" "full_example" {
   parent_dn    = aci_tenant.example.id
-  annotation   = "annotation"
-  bd_name      = "test_bd_name"
+  annotation   = "example_annotation"
+  bd_name      = aci_bridge_domain.example.name
   id_attribute = "1"
   mac          = "00:00:00:00:00:01"
-  name         = "name_1"
-  name_alias   = "name_alias_1"
+  name         = "endpoint_tag_mac"
+  name_alias   = "example_name_alias"
   annotations = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
   tags = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
 }
 
@@ -79,7 +78,8 @@ All examples for the Endpoint Tag MAC resource can be found in the [examples](ht
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tenant) ([fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview))
-* `bd_name` (bdName) - (string) The bridge domain name of the Endpoint Tag MAC object.
+
+* `bd_name` (bdName) - (string) The bridge domain name of the Endpoint Tag MAC object. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bridge_domain) with `aci_bridge_domain.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/bridge_domain) with `data.aci_bridge_domain.example.name`.
 * `mac` (mac) - (string) The MAC address of the Endpoint Tag MAC object.
 
 ### Read-Only ###
@@ -91,16 +91,17 @@ All examples for the Endpoint Tag MAC resource can be found in the [examples](ht
 * `annotation` (annotation) - (string) The annotation of the Endpoint Tag MAC object.
   - Default: `"orchestrator:terraform"`
 * `id_attribute` (id) - (string) The identifier of the Endpoint Tag MAC object.
+  - Default: `"0"`
 * `name` (name) - (string) The name of the Endpoint Tag MAC object.
 * `name_alias` (nameAlias) - (string) The name alias of the Endpoint Tag MAC object.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
 
@@ -109,7 +110,7 @@ All examples for the Endpoint Tag MAC resource can be found in the [examples](ht
 An existing Endpoint Tag MAC can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_endpoint_tag_mac.example_tenant uni/tn-{name}/eptags/epmactag-{mac}-[{bdName}]
+terraform import aci_endpoint_tag_mac.example uni/tn-{name}/eptags/epmactag-{mac}-[{bdName}]
 ```
 
 Starting in Terraform version 1.5, an existing Endpoint Tag MAC can be imported
@@ -118,6 +119,6 @@ using [import blocks](https://developer.hashicorp.com/terraform/language/import)
 ```
 import {
   id = "uni/tn-{name}/eptags/epmactag-{mac}-[{bdName}]"
-  to = aci_endpoint_tag_mac.example_tenant
+  to = aci_endpoint_tag_mac.example
 }
 ```

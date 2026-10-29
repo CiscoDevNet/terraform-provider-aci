@@ -14,8 +14,6 @@ description: |-
 
 Manages ACI IP Address Pool
 
-
-
 ## API Information ##
 
 * Class: [fvnsAddrInst](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvnsAddrInst/overview)
@@ -36,10 +34,11 @@ The configuration snippet below creates a IP Address Pool with only required att
 
 resource "aci_ip_address_pool" "example" {
   gateway_address = "10.0.0.1/24"
-  name            = "test_name"
+  name            = "ip_address_pool"
 }
 
 ```
+
 The configuration snippet below shows all possible attributes of the IP Address Pool.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
@@ -49,46 +48,46 @@ The configuration snippet below shows all possible attributes of the IP Address 
 resource "aci_ip_address_pool" "full_example" {
   gateway_address         = "10.0.0.1/24"
   address_type            = "regular"
-  annotation              = "annotation"
-  description             = "description_1"
-  name                    = "test_name"
-  name_alias              = "name_alias_1"
-  owner_key               = "owner_key_1"
-  owner_tag               = "owner_tag_1"
+  annotation              = "example_annotation"
+  description             = "Example IP Address Pool"
+  name                    = "ip_address_pool"
+  name_alias              = "example_name_alias"
+  owner_key               = "example_owner_key"
+  owner_tag               = "example_owner_tag"
   skip_gateway_validation = "no"
   ip_address_blocks = [
     {
-      annotation  = "annotation_1"
-      description = "description_1"
+      annotation  = "example_annotation"
+      description = "Example IP Address Block"
       from        = "10.0.0.2"
-      name        = "name_1"
-      name_alias  = "name_alias_1"
+      name        = "ip_address_block"
+      name_alias  = "example_name_alias"
       to          = "10.0.0.5"
       annotations = [
         {
-          key   = "key_0"
-          value = "value_1"
-        }
+          key   = "example_key"
+          value = "example_value"
+        },
       ]
       tags = [
         {
-          key   = "key_0"
-          value = "value_1"
-        }
+          key   = "example_key"
+          value = "example_value"
+        },
       ]
-    }
+    },
   ]
   annotations = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
   tags = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
 }
 
@@ -121,36 +120,36 @@ All examples for the IP Address Pool resource can be found in the [examples](htt
 * `skip_gateway_validation` (skipGwVal) - (string) Skip gateway validation for the IP Address Pool object.
   - Default: `"no"`
   - Valid Values: `"no"`, `"yes"`.
-* `ip_address_blocks` - (list) A list of IP Address Blocks (ACI object [fvnsUcastAddrBlk](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvnsUcastAddrBlk/overview)). IP Address Blocks can also be configured using a separate [aci_ip_address_block](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/ip_address_block) resource.
+* `ip_address_blocks` - (list) A list of IP Address Blocks (ACI object [fvnsUcastAddrBlk](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvnsUcastAddrBlk/overview)) which can also be configured using a separate [aci_ip_address_block](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/ip_address_block) resource.
   #### Required ####
-  
+
     * `from` (from) - (string) The first unicast address in the address block.
     * `to` (to) - (string) The last unicast address in the address block.
   #### Optional ####
-    
+
     * `annotation` (annotation) - (string) The annotation of the IP Address Block object. This attribute is supported in ACI versions: 3.2(1l) and later.
       - Default: `"orchestrator:terraform"`
     * `description` (descr) - (string) The description of the IP Address Block object.
     * `name` (name) - (string) The name of the IP Address Block object.
     * `name_alias` (nameAlias) - (string) The name alias of the IP Address Block object. This attribute is supported in ACI versions: 2.2(1k) and later.
-    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
 

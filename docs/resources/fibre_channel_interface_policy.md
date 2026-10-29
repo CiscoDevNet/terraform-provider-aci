@@ -14,8 +14,6 @@ description: |-
 
 Manages ACI Fibre Channel Interface Policy
 
-
-
 ## API Information ##
 
 * Class: [fcIfPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fcIfPol/overview)
@@ -35,10 +33,11 @@ The configuration snippet below creates a Fibre Channel Interface Policy with on
 ```hcl
 
 resource "aci_fibre_channel_interface_policy" "example" {
-  name = "test_name"
+  name = "fibre_channel_interface_policy"
 }
 
 ```
+
 The configuration snippet below shows all possible attributes of the Fibre Channel Interface Policy.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
@@ -46,29 +45,29 @@ The configuration snippet below shows all possible attributes of the Fibre Chann
 ```hcl
 
 resource "aci_fibre_channel_interface_policy" "full_example" {
-  annotation            = "annotation"
+  annotation            = "example_annotation"
   auto_max_speed        = "16G"
-  description           = "description_1"
+  description           = "Example Fibre Channel Interface Policy"
   fill_pattern          = "ARBFF"
-  name                  = "test_name"
-  name_alias            = "name_alias_1"
-  owner_key             = "owner_key_1"
-  owner_tag             = "owner_tag_1"
+  name                  = "fibre_channel_interface_policy"
+  name_alias            = "example_name_alias"
+  owner_key             = "example_owner_key"
+  owner_tag             = "example_owner_tag"
   port_mode             = "f"
   receive_buffer_credit = "16"
   speed                 = "16G"
   trunk_mode            = "auto"
   annotations = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
   tags = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
 }
 
@@ -111,14 +110,14 @@ All examples for the Fibre Channel Interface Policy resource can be found in the
 * `trunk_mode` (trunkMode) - (string) The trunk mode for the Fibre Channel Interface Policy object. This attribute is only applicable for native fibre channel ports. This attribute is supported in ACI versions: 3.2(1l) and later.
   - Default: `"trunk-off"`
   - Valid Values: `"auto"`, `"trunk-off"`, `"trunk-on"`.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
 

@@ -14,8 +14,6 @@ description: |-
 
 Manages ACI DSCP to Priority Map
 
-
-
 ## API Information ##
 
 * Class: [qosDscpClass](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/qosDscpClass/overview)
@@ -34,41 +32,42 @@ The configuration snippet below creates a DSCP to Priority Map with only require
 
 ```hcl
 
-resource "aci_dscp_to_priority_map" "example_custom_qos_policy" {
+resource "aci_dscp_to_priority_map" "example" {
   parent_dn = aci_custom_qos_policy.example.id
   from      = "AF11"
   to        = "AF22"
 }
 
 ```
+
 The configuration snippet below shows all possible attributes of the DSCP to Priority Map.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
 ```hcl
 
-resource "aci_dscp_to_priority_map" "full_example_custom_qos_policy" {
+resource "aci_dscp_to_priority_map" "full_example" {
   parent_dn   = aci_custom_qos_policy.example.id
-  annotation  = "annotation"
-  description = "description_1"
+  annotation  = "example_annotation"
+  description = "Example DSCP to Priority Map"
   from        = "AF11"
-  name        = "name_1"
-  name_alias  = "name_alias_1"
+  name        = "dscp_to_priority_map"
+  name_alias  = "example_name_alias"
   priority    = "level1"
   target      = "AF11"
   target_cos  = "0"
   to          = "AF22"
   annotations = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
   tags = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
 }
 
@@ -82,6 +81,7 @@ All examples for the DSCP to Priority Map resource can be found in the [examples
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_custom_qos_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/custom_qos_policy) ([qosCustomPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/qosCustomPol/overview))
+
 * `from` (from) - (string) The DSCP range starting value.
   - Valid Values:
     * `"AF11"`, `"AF12"`, `"AF13"`, `"AF21"`, `"AF22"`, `"AF23"`, `"AF31"`, `"AF32"`, `"AF33"`, `"AF41"`, `"AF42"`, `"AF43"`, `"CS0"`, `"CS1"`, `"CS2"`, `"CS3"`, `"CS4"`, `"CS5"`, `"CS6"`, `"CS7"`, `"EF"`, `"VA"`.
@@ -117,14 +117,14 @@ All examples for the DSCP to Priority Map resource can be found in the [examples
   - Valid Values:
     * `"0"`, `"1"`, `"2"`, `"3"`, `"4"`, `"5"`, `"6"`, `"7"`, `"unspecified"`.
     * Or a value in the range of `0` to `8`.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
 
@@ -133,7 +133,7 @@ All examples for the DSCP to Priority Map resource can be found in the [examples
 An existing DSCP to Priority Map can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_dscp_to_priority_map.example_custom_qos_policy uni/tn-{name}/qoscustom-{name}/dcsp-{from}-{to}
+terraform import aci_dscp_to_priority_map.example uni/tn-{name}/qoscustom-{name}/dcsp-{from}-{to}
 ```
 
 Starting in Terraform version 1.5, an existing DSCP to Priority Map can be imported
@@ -142,6 +142,6 @@ using [import blocks](https://developer.hashicorp.com/terraform/language/import)
 ```
 import {
   id = "uni/tn-{name}/qoscustom-{name}/dcsp-{from}-{to}"
-  to = aci_dscp_to_priority_map.example_custom_qos_policy
+  to = aci_dscp_to_priority_map.example
 }
 ```

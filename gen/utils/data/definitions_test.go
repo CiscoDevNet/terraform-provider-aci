@@ -98,6 +98,7 @@ parent_dn_variants:
     test_platform: cloud
 documentation:
   label: Tenant
+  registry_path: tenants
   description: A tenant.
 relation_info:
   type: named
@@ -159,6 +160,7 @@ test_config:
 	assert.Equal(t, "", parsedDefinition.ParentDnVariants[1].WrapperClass)
 	assert.Equal(t, Cloud, parsedDefinition.ParentDnVariants[1].TestPlatform)
 	assert.Equal(t, "Tenant", parsedDefinition.Documentation.Label)
+	assert.Equal(t, "tenants", parsedDefinition.Documentation.RegistryPath)
 	assert.Equal(t, Named, parsedDefinition.RelationInfo.Type)
 	assert.Equal(t, []string{"vz:BrCP"}, parsedDefinition.RelationInfo.ToClasses)
 

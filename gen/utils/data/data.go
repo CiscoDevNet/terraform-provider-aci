@@ -402,13 +402,19 @@ func (ds *DataStore) setTestData() {
 }
 
 func (ds *DataStore) setExampleData() error {
-	// Project normalized test and class data into renderer-facing examples.
+	// Resolve example placement first because import documentation follows the
+	// same selected parent, then project the renderer-facing example artifacts.
 	genLogger.Debug("Setting example data for all classes.")
 
 	for className, class := range ds.Classes {
 		if err := class.setExampleContext(ds); err != nil {
 			return err
 		}
+		ds.Classes[className] = class
+	}
+
+	for className, class := range ds.Classes {
+		class.Documentation.setImportDnFormat(&class, ds)
 		class.setResourceExamples(ds)
 		class.setDataSourceExample(ds)
 		ds.Classes[className] = class

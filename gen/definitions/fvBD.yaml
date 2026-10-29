@@ -1,4 +1,6 @@
 documentation:
+  include_children:
+  - fvSiteAssociated
   sub_category: Networking
   ui_locations:
   - Tenants -> Networking -> Bridge Domains

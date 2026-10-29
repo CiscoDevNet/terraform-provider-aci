@@ -14,8 +14,6 @@ description: |-
 
 Manages ACI Relation From External EPG To Route Control Profile
 
-
-
 ## API Information ##
 
 * Class: [l3extRsInstPToProfile](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extRsInstPToProfile/overview)
@@ -34,35 +32,36 @@ The configuration snippet below creates a Relation From External EPG To Route Co
 
 ```hcl
 
-resource "aci_relation_from_external_epg_to_route_control_profile" "example_external_epg" {
+resource "aci_relation_from_external_epg_to_route_control_profile" "example" {
   parent_dn                  = aci_external_epg.example.id
   direction                  = "import"
   route_control_profile_name = aci_route_control_profile.example.name
 }
 
 ```
+
 The configuration snippet below shows all possible attributes of the Relation From External EPG To Route Control Profile.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
 ```hcl
 
-resource "aci_relation_from_external_epg_to_route_control_profile" "full_example_external_epg" {
+resource "aci_relation_from_external_epg_to_route_control_profile" "full_example" {
   parent_dn                  = aci_external_epg.example.id
-  annotation                 = "annotation"
+  annotation                 = "example_annotation"
   direction                  = "import"
   route_control_profile_name = aci_route_control_profile.example.name
   annotations = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
   tags = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
 }
 
@@ -76,6 +75,7 @@ All examples for the Relation From External EPG To Route Control Profile resourc
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_external_epg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/external_epg) ([l3extInstP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extInstP/overview))
+
 * `direction` (direction) - (string) The direction on which to apply the Route Map associated with the Route Control Profile.
   - Valid Values: `"export"`, `"import"`.
 * `route_control_profile_name` (tnRtctrlProfileName) - (string) The name of the Route Control Profile object. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/route_control_profile) with `aci_route_control_profile.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/route_control_profile) with `data.aci_route_control_profile.example.name`.
@@ -88,14 +88,14 @@ All examples for the Relation From External EPG To Route Control Profile resourc
 
 * `annotation` (annotation) - (string) The annotation of the Relation From External EPG To Route Control Profile object. This attribute is supported in ACI versions: 3.2(1l) and later.
   - Default: `"orchestrator:terraform"`
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
 
@@ -104,7 +104,7 @@ All examples for the Relation From External EPG To Route Control Profile resourc
 An existing Relation From External EPG To Route Control Profile can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_relation_from_external_epg_to_route_control_profile.example_external_epg uni/tn-{name}/out-{name}/instP-{name}/rsinstPToProfile-[{tnRtctrlProfileName}]-{direction}
+terraform import aci_relation_from_external_epg_to_route_control_profile.example uni/tn-{name}/out-{name}/instP-{name}/rsinstPToProfile-[{tnRtctrlProfileName}]-{direction}
 ```
 
 Starting in Terraform version 1.5, an existing Relation From External EPG To Route Control Profile can be imported
@@ -113,6 +113,6 @@ using [import blocks](https://developer.hashicorp.com/terraform/language/import)
 ```
 import {
   id = "uni/tn-{name}/out-{name}/instP-{name}/rsinstPToProfile-[{tnRtctrlProfileName}]-{direction}"
-  to = aci_relation_from_external_epg_to_route_control_profile.example_external_epg
+  to = aci_relation_from_external_epg_to_route_control_profile.example
 }
 ```

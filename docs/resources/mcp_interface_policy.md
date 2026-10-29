@@ -14,8 +14,6 @@ description: |-
 
 Manages ACI MCP Interface Policy
 
-
-
 ## API Information ##
 
 * Class: [mcpIfPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/mcpIfPol/overview)
@@ -35,10 +33,11 @@ The configuration snippet below creates a MCP Interface Policy with only require
 ```hcl
 
 resource "aci_mcp_interface_policy" "example" {
-  name = "test_name"
+  name = "mcp_interface_policy"
 }
 
 ```
+
 The configuration snippet below shows all possible attributes of the MCP Interface Policy.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
@@ -47,31 +46,31 @@ The configuration snippet below shows all possible attributes of the MCP Interfa
 
 resource "aci_mcp_interface_policy" "full_example" {
   admin_state                         = "enabled"
-  annotation                          = "annotation"
-  description                         = "description_1"
+  annotation                          = "example_annotation"
+  description                         = "Example MCP Interface Policy"
   grace_period_seconds                = "3"
   grace_period_milliseconds           = "138"
   maximum_number_of_vlan              = "129"
   strict_mode                         = "on"
   mcp_pdu_per_vlan                    = "off"
-  name                                = "test_name"
-  name_alias                          = "name_alias_1"
-  owner_key                           = "owner_key_1"
-  owner_tag                           = "owner_tag_1"
+  name                                = "mcp_interface_policy"
+  name_alias                          = "example_name_alias"
+  owner_key                           = "example_owner_key"
+  owner_tag                           = "example_owner_tag"
   initial_delay_time                  = "1750"
   transmission_frequency_seconds      = "10"
   transmission_frequency_milliseconds = "800"
   annotations = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
   tags = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
 }
 
@@ -118,14 +117,14 @@ All examples for the MCP Interface Policy resource can be found in the [examples
   - Default: `"0"`
 * `transmission_frequency_milliseconds` (strictTxFreqMsec) - (string) The transmission frequency in milliseconds for the MCP Interface Policy object. This attribute is only applicable when 'strict_mode' is 'on'. The value must be in the range 0 - 999. This attribute is supported in ACI versions: 5.2(4d) and later.
   - Default: `"500"`
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
 

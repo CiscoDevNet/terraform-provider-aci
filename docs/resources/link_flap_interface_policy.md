@@ -14,8 +14,6 @@ description: |-
 
 Manages ACI Link Flap Interface Policy
 
-
-
 ## API Information ##
 
 * Class: [fabricLinkFlapPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fabricLinkFlapPol/overview)
@@ -35,10 +33,11 @@ The configuration snippet below creates a Link Flap Interface Policy with only r
 ```hcl
 
 resource "aci_link_flap_interface_policy" "example" {
-  name = "test_name"
+  name = "link_flap_interface_policy"
 }
 
 ```
+
 The configuration snippet below shows all possible attributes of the Link Flap Interface Policy.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
@@ -46,25 +45,25 @@ The configuration snippet below shows all possible attributes of the Link Flap I
 ```hcl
 
 resource "aci_link_flap_interface_policy" "full_example" {
-  annotation             = "annotation"
-  description            = "description_1"
+  annotation             = "example_annotation"
+  description            = "Example Link Flap Interface Policy"
   maximum_flaps          = "10"
   allowed_time_for_flaps = "350"
-  name                   = "test_name"
-  name_alias             = "name_alias_1"
-  owner_key              = "owner_key_1"
-  owner_tag              = "owner_tag_1"
+  name                   = "link_flap_interface_policy"
+  name_alias             = "example_name_alias"
+  owner_key              = "example_owner_key"
+  owner_tag              = "example_owner_tag"
   annotations = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
   tags = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
 }
 
@@ -94,14 +93,14 @@ All examples for the Link Flap Interface Policy resource can be found in the [ex
 * `name_alias` (nameAlias) - (string) The name alias of the Link Flap Interface Policy object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
 

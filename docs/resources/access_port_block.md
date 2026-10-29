@@ -39,100 +39,56 @@ The configuration snippet below creates a Access Port Block with only required a
 
 ```hcl
 
-resource "aci_access_port_block" "example_access_port_selector" {
+resource "aci_access_port_block" "example" {
   parent_dn = aci_access_port_selector.example.id
-  name      = "test_name"
-}
-
-resource "aci_access_port_block" "example_spine_access_port_selector" {
-  parent_dn = aci_spine_access_port_selector.example.id
-  name      = "test_name"
+  name      = "access_port_block"
 }
 
 ```
+
 The configuration snippet below shows all possible attributes of the Access Port Block.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
 ```hcl
 
-resource "aci_access_port_block" "full_example_access_port_selector" {
+resource "aci_access_port_block" "full_example" {
   parent_dn   = aci_access_port_selector.example.id
-  annotation  = "annotation"
-  description = "description_1"
+  annotation  = "example_annotation"
+  description = "Example Access Port Block"
   from_card   = "2"
   from_port   = "3"
-  name        = "test_name"
-  name_alias  = "name_alias_1"
+  name        = "access_port_block"
+  name_alias  = "example_name_alias"
   to_card     = "4"
   to_port     = "5"
   relation_to_pc_vpc_override_policy = {
-    annotation = "annotation_1"
+    annotation = "example_annotation"
     target_dn  = aci_leaf_access_bundle_policy_sub_group.example.id
     annotations = [
       {
-        key   = "key_0"
-        value = "value_1"
-      }
+        key   = "example_key"
+        value = "example_value"
+      },
     ]
     tags = [
       {
-        key   = "key_0"
-        value = "value_1"
-      }
+        key   = "example_key"
+        value = "example_value"
+      },
     ]
   }
   annotations = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
   tags = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
-  ]
-}
-
-resource "aci_access_port_block" "full_example_spine_access_port_selector" {
-  parent_dn   = aci_spine_access_port_selector.example.id
-  annotation  = "annotation"
-  description = "description_1"
-  from_card   = "2"
-  from_port   = "3"
-  name        = "test_name"
-  name_alias  = "name_alias_1"
-  to_card     = "4"
-  to_port     = "5"
-  relation_to_pc_vpc_override_policy = {
-    annotation = "annotation_1"
-    target_dn  = aci_leaf_access_bundle_policy_sub_group.example.id
-    annotations = [
-      {
-        key   = "key_0"
-        value = "value_1"
-      }
-    ]
-    tags = [
-      {
-        key   = "key_0"
-        value = "value_1"
-      }
-    ]
-  }
-  annotations = [
-    {
-      key   = "key_0"
-      value = "value_1"
-    }
-  ]
-  tags = [
-    {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
 }
 
@@ -147,6 +103,7 @@ All examples for the Access Port Block resource can be found in the [examples](h
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_access_port_selector](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/access_port_selector) ([infraHPortS](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraHPortS/overview))
   - [aci_spine_access_port_selector](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/spine_access_port_selector) ([infraSHPortS](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraSHPortS/overview))
+
 * `name` (name) - (string) The name of the Access Port Block object.
 
 ### Read-Only ###
@@ -169,28 +126,28 @@ All examples for the Access Port Block resource can be found in the [examples](h
   - Default: `"1"`
 * `relation_to_pc_vpc_override_policy` - (map) A map of Relation To PC VPC Override Policy (ACI object [infraRsAccBndlSubgrp](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraRsAccBndlSubgrp/overview)) pointing to Leaf Access Bundle Policy Sub Group (ACI Object [infraAccBndlSubgrp](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraAccBndlSubgrp/overview)) which can be configured using the [aci_leaf_access_bundle_policy_sub_group](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/leaf_access_bundle_policy_sub_group) resource.
   #### Optional ####
-    
+
     * `annotation` (annotation) - (string) The annotation of the Relation To PC VPC Override Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
       - Default: `"orchestrator:terraform"`
     * `target_dn` (tDn) - (string) The distinguished name (DN) of the target PC VPC Override Policy.
-    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
 
@@ -199,7 +156,7 @@ All examples for the Access Port Block resource can be found in the [examples](h
 An existing Access Port Block can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_access_port_block.example_access_port_selector uni/infra/spaccportprof-{name}/shports-{name}-typ-{type}/portblk-{name}
+terraform import aci_access_port_block.example uni/infra/accportprof-{name}/hports-{name}-typ-{type}/portblk-{name}
 ```
 
 Starting in Terraform version 1.5, an existing Access Port Block can be imported
@@ -207,7 +164,7 @@ using [import blocks](https://developer.hashicorp.com/terraform/language/import)
 
 ```
 import {
-  id = "uni/infra/spaccportprof-{name}/shports-{name}-typ-{type}/portblk-{name}"
-  to = aci_access_port_block.example_access_port_selector
+  id = "uni/infra/accportprof-{name}/hports-{name}-typ-{type}/portblk-{name}"
+  to = aci_access_port_block.example
 }
 ```

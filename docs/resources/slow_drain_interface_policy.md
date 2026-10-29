@@ -14,8 +14,6 @@ description: |-
 
 Manages ACI Slow Drain Interface Policy
 
-
-
 ## API Information ##
 
 * Class: [qosSdIfPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/qosSdIfPol/overview)
@@ -35,10 +33,11 @@ The configuration snippet below creates a Slow Drain Interface Policy with only 
 ```hcl
 
 resource "aci_slow_drain_interface_policy" "example" {
-  name = "test_name"
+  name = "slow_drain_interface_policy"
 }
 
 ```
+
 The configuration snippet below shows all possible attributes of the Slow Drain Interface Policy.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
@@ -46,27 +45,27 @@ The configuration snippet below shows all possible attributes of the Slow Drain 
 ```hcl
 
 resource "aci_slow_drain_interface_policy" "full_example" {
-  annotation                   = "annotation"
+  annotation                   = "example_annotation"
   congestion_clear_action      = "err-disable"
   congestion_detect_multiplier = "15"
-  description                  = "description_1"
+  description                  = "Example Slow Drain Interface Policy"
   flush_admin_state            = "disabled"
   flush_timeout                = "300"
-  name                         = "test_name"
-  name_alias                   = "name_alias_1"
-  owner_key                    = "owner_key_1"
-  owner_tag                    = "owner_tag_1"
+  name                         = "slow_drain_interface_policy"
+  name_alias                   = "example_name_alias"
+  owner_key                    = "example_owner_key"
+  owner_tag                    = "example_owner_tag"
   annotations = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
   tags = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
 }
 
@@ -102,14 +101,14 @@ All examples for the Slow Drain Interface Policy resource can be found in the [e
 * `name_alias` (nameAlias) - (string) The name alias of the Slow Drain Interface Policy object. This attribute is supported in ACI versions: 2.2(1k) and later.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
 

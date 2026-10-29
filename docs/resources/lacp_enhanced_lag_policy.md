@@ -14,8 +14,6 @@ description: |-
 
 Manages ACI LACP Enhanced Lag Policy
 
-
-
 ## API Information ##
 
 * Class: [lacpEnhancedLagPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/lacpEnhancedLagPol/overview)
@@ -34,37 +32,38 @@ The configuration snippet below creates a LACP Enhanced Lag Policy with only req
 
 ```hcl
 
-resource "aci_lacp_enhanced_lag_policy" "example_vswitch_policy" {
+resource "aci_lacp_enhanced_lag_policy" "example" {
   parent_dn = aci_vswitch_policy.example.id
-  name      = "test_name"
+  name      = "lacp_enhanced_lag_policy"
 }
 
 ```
+
 The configuration snippet below shows all possible attributes of the LACP Enhanced Lag Policy.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
 ```hcl
 
-resource "aci_lacp_enhanced_lag_policy" "full_example_vswitch_policy" {
+resource "aci_lacp_enhanced_lag_policy" "full_example" {
   parent_dn           = aci_vswitch_policy.example.id
-  annotation          = "annotation"
+  annotation          = "example_annotation"
   load_balancing_mode = "dst-ip"
   mode                = "active"
-  name                = "test_name"
-  name_alias          = "name_alias_1"
+  name                = "lacp_enhanced_lag_policy"
+  name_alias          = "example_name_alias"
   number_of_links     = "2"
   annotations = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
   tags = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
 }
 
@@ -78,6 +77,7 @@ All examples for the LACP Enhanced Lag Policy resource can be found in the [exam
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_vswitch_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vswitch_policy) ([vmmVSwitchPolicyCont](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vmmVSwitchPolicyCont/overview))
+
 * `name` (name) - (string) The name of the LACP Enhanced Lag Policy object.
 
 ### Read-Only ###
@@ -97,14 +97,14 @@ All examples for the LACP Enhanced Lag Policy resource can be found in the [exam
 * `name_alias` (nameAlias) - (string) The name alias of the LACP Enhanced Lag Policy object.
 * `number_of_links` (numLinks) - (string) The number of links of the LACP Enhanced Lag Policy object.
   - Default: `"2"`
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
 
@@ -113,7 +113,7 @@ All examples for the LACP Enhanced Lag Policy resource can be found in the [exam
 An existing LACP Enhanced Lag Policy can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_lacp_enhanced_lag_policy.example_vswitch_policy uni/vmmp-{vendor}/dom-{name}/vswitchpolcont/enlacplagp-{name}
+terraform import aci_lacp_enhanced_lag_policy.example uni/vmmp-{vendor}/dom-{name}/vswitchpolcont/enlacplagp-{name}
 ```
 
 Starting in Terraform version 1.5, an existing LACP Enhanced Lag Policy can be imported
@@ -122,6 +122,6 @@ using [import blocks](https://developer.hashicorp.com/terraform/language/import)
 ```
 import {
   id = "uni/vmmp-{vendor}/dom-{name}/vswitchpolcont/enlacplagp-{name}"
-  to = aci_lacp_enhanced_lag_policy.example_vswitch_policy
+  to = aci_lacp_enhanced_lag_policy.example
 }
 ```

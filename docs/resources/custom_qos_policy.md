@@ -14,8 +14,6 @@ description: |-
 
 Manages ACI Custom QoS Policy
 
-
-
 ## API Information ##
 
 * Class: [qosCustomPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/qosCustomPol/overview)
@@ -34,87 +32,88 @@ The configuration snippet below creates a Custom QoS Policy with only required a
 
 ```hcl
 
-resource "aci_custom_qos_policy" "example_tenant" {
+resource "aci_custom_qos_policy" "example" {
   parent_dn = aci_tenant.example.id
-  name      = "test_name"
+  name      = "custom_qos_policy"
 }
 
 ```
+
 The configuration snippet below shows all possible attributes of the Custom QoS Policy.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
 ```hcl
 
-resource "aci_custom_qos_policy" "full_example_tenant" {
+resource "aci_custom_qos_policy" "full_example" {
   parent_dn   = aci_tenant.example.id
-  annotation  = "annotation"
-  description = "description_1"
-  name        = "test_name"
-  name_alias  = "name_alias_1"
-  owner_key   = "owner_key_1"
-  owner_tag   = "owner_tag_1"
+  annotation  = "example_annotation"
+  description = "Example Custom QoS Policy"
+  name        = "custom_qos_policy"
+  name_alias  = "example_name_alias"
+  owner_key   = "example_owner_key"
+  owner_tag   = "example_owner_tag"
   dot1p_classifiers = [
     {
-      annotation  = "annotation_1"
-      description = "description_1"
-      from        = "0"
-      name        = "name_1"
-      name_alias  = "name_alias_1"
+      annotation  = "example_annotation"
+      description = "Example Dot1p Classifier"
+      from        = "4"
+      name        = "dot1p_classifier"
+      name_alias  = "example_name_alias"
       priority    = "level1"
       target      = "AF11"
       target_cos  = "0"
-      to          = "0"
+      to          = "5"
       annotations = [
         {
-          key   = "key_0"
-          value = "value_1"
-        }
+          key   = "example_key"
+          value = "example_value"
+        },
       ]
       tags = [
         {
-          key   = "key_0"
-          value = "value_1"
-        }
+          key   = "example_key"
+          value = "example_value"
+        },
       ]
-    }
+    },
   ]
   dscp_to_priority_maps = [
     {
-      annotation  = "annotation_1"
-      description = "description_1"
-      from        = "AF11"
-      name        = "name_1"
-      name_alias  = "name_alias_1"
+      annotation  = "example_annotation"
+      description = "Example DSCP to Priority Map"
+      from        = "CS1"
+      name        = "dscp_to_priority_map"
+      name_alias  = "example_name_alias"
       priority    = "level1"
       target      = "AF11"
       target_cos  = "0"
-      to          = "AF11"
+      to          = "CS5"
       annotations = [
         {
-          key   = "key_0"
-          value = "value_1"
-        }
+          key   = "example_key"
+          value = "example_value"
+        },
       ]
       tags = [
         {
-          key   = "key_0"
-          value = "value_1"
-        }
+          key   = "example_key"
+          value = "example_value"
+        },
       ]
-    }
+    },
   ]
   annotations = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
   tags = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
 }
 
@@ -128,6 +127,7 @@ All examples for the Custom QoS Policy resource can be found in the [examples](h
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tenant) ([fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview))
+
 * `name` (name) - (string) The name of the Custom QoS Policy object.
 
 ### Read-Only ###
@@ -142,19 +142,19 @@ All examples for the Custom QoS Policy resource can be found in the [examples](h
 * `name_alias` (nameAlias) - (string) The name alias of the Custom QoS Policy object. This attribute is supported in ACI versions: 2.2(1k) and later.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
-* `dot1p_classifiers` - (list) A list of Dot1p Classifiers (ACI object [qosDot1PClass](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/qosDot1PClass/overview)). Dot1p Classifiers can also be configured using a separate [aci_dot1p_classifier](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/dot1p_classifier) resource.
+* `dot1p_classifiers` - (list) A list of Dot1p Classifiers (ACI object [qosDot1PClass](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/qosDot1PClass/overview)) which can also be configured using a separate [aci_dot1p_classifier](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/dot1p_classifier) resource.
   #### Required ####
-  
+
     * `from` (from) - (string) The Dot1p priority range starting value.
-     - Valid Values:
-       * `"0"`, `"1"`, `"2"`, `"3"`, `"4"`, `"5"`, `"6"`, `"7"`, `"unspecified"`.
-       * Or a value in the range of `0` to `8`.
+      - Valid Values:
+        * `"0"`, `"1"`, `"2"`, `"3"`, `"4"`, `"5"`, `"6"`, `"7"`, `"unspecified"`.
+        * Or a value in the range of `0` to `8`.
     * `to` (to) - (string) The Dot1p priority range ending value.
-     - Valid Values:
-       * `"0"`, `"1"`, `"2"`, `"3"`, `"4"`, `"5"`, `"6"`, `"7"`, `"unspecified"`.
-       * Or a value in the range of `0` to `8`.
+      - Valid Values:
+        * `"0"`, `"1"`, `"2"`, `"3"`, `"4"`, `"5"`, `"6"`, `"7"`, `"unspecified"`.
+        * Or a value in the range of `0` to `8`.
   #### Optional ####
-    
+
     * `annotation` (annotation) - (string) The annotation of the Dot1p Classifier object. This attribute is supported in ACI versions: 3.2(1l) and later.
       - Default: `"orchestrator:terraform"`
     * `description` (descr) - (string) The description of the Dot1p Classifier object.
@@ -162,36 +162,42 @@ All examples for the Custom QoS Policy resource can be found in the [examples](h
     * `name_alias` (nameAlias) - (string) The name alias of the Dot1p Classifier object. This attribute is supported in ACI versions: 2.2(1k) and later.
     * `priority` (prio) - (string) The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.
       - Default: `"unspecified"`
-      - Valid Values: `"level1"`, `"level2"`, `"level3"`, `"level4"`, `"level5"`, `"level6"`, `"unspecified"`.
+      - Valid Values:
+        * `"level1"`, `"level2"`, `"level3"`, `"level4"`, `"level5"`, `"level6"`, `"unspecified"`.
+        * Or a value in the range of `0` to `9`.
     * `target` (target) - (string) The target of the Dot1p Classifier object. This Fabric only supports DSCP mutation, Dot1P mutation is not supported.
       - Default: `"unspecified"`
-      - Valid Values: `"AF11"`, `"AF12"`, `"AF13"`, `"AF21"`, `"AF22"`, `"AF23"`, `"AF31"`, `"AF32"`, `"AF33"`, `"AF41"`, `"AF42"`, `"AF43"`, `"CS0"`, `"CS1"`, `"CS2"`, `"CS3"`, `"CS4"`, `"CS5"`, `"CS6"`, `"CS7"`, `"EF"`, `"VA"`, `"unspecified"`.
+      - Valid Values:
+        * `"AF11"`, `"AF12"`, `"AF13"`, `"AF21"`, `"AF22"`, `"AF23"`, `"AF31"`, `"AF32"`, `"AF33"`, `"AF41"`, `"AF42"`, `"AF43"`, `"CS0"`, `"CS1"`, `"CS2"`, `"CS3"`, `"CS4"`, `"CS5"`, `"CS6"`, `"CS7"`, `"EF"`, `"VA"`, `"unspecified"`.
+        * Or a value in the range of `0` to `64`.
     * `target_cos` (targetCos) - (string) The target Class of Service (CoS) to be driven based on the range of DSCP input values coming into the fabric. This attribute is supported in ACI versions: 2.1(1h) and later.
       - Default: `"unspecified"`
-      - Valid Values: `"0"`, `"1"`, `"2"`, `"3"`, `"4"`, `"5"`, `"6"`, `"7"`, `"unspecified"`.
-    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+      - Valid Values:
+        * `"0"`, `"1"`, `"2"`, `"3"`, `"4"`, `"5"`, `"6"`, `"7"`, `"unspecified"`.
+        * Or a value in the range of `0` to `8`.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-* `dscp_to_priority_maps` - (list) A list of DSCP to Priority Maps (ACI object [qosDscpClass](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/qosDscpClass/overview)). DSCP to Priority Maps can also be configured using a separate [aci_dscp_to_priority_map](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/dscp_to_priority_map) resource.
+* `dscp_to_priority_maps` - (list) A list of DSCP to Priority Maps (ACI object [qosDscpClass](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/qosDscpClass/overview)) which can also be configured using a separate [aci_dscp_to_priority_map](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/dscp_to_priority_map) resource.
   #### Required ####
-  
+
     * `from` (from) - (string) The DSCP range starting value.
-     - Valid Values:
-       * `"AF11"`, `"AF12"`, `"AF13"`, `"AF21"`, `"AF22"`, `"AF23"`, `"AF31"`, `"AF32"`, `"AF33"`, `"AF41"`, `"AF42"`, `"AF43"`, `"CS0"`, `"CS1"`, `"CS2"`, `"CS3"`, `"CS4"`, `"CS5"`, `"CS6"`, `"CS7"`, `"EF"`, `"VA"`.
-       * Or a value in the range of `0` to `63`.
+      - Valid Values:
+        * `"AF11"`, `"AF12"`, `"AF13"`, `"AF21"`, `"AF22"`, `"AF23"`, `"AF31"`, `"AF32"`, `"AF33"`, `"AF41"`, `"AF42"`, `"AF43"`, `"CS0"`, `"CS1"`, `"CS2"`, `"CS3"`, `"CS4"`, `"CS5"`, `"CS6"`, `"CS7"`, `"EF"`, `"VA"`.
+        * Or a value in the range of `0` to `63`.
     * `to` (to) - (string) The DSCP range ending value.
-     - Valid Values:
-       * `"AF11"`, `"AF12"`, `"AF13"`, `"AF21"`, `"AF22"`, `"AF23"`, `"AF31"`, `"AF32"`, `"AF33"`, `"AF41"`, `"AF42"`, `"AF43"`, `"CS0"`, `"CS1"`, `"CS2"`, `"CS3"`, `"CS4"`, `"CS5"`, `"CS6"`, `"CS7"`, `"EF"`, `"VA"`.
-       * Or a value in the range of `0` to `63`.
+      - Valid Values:
+        * `"AF11"`, `"AF12"`, `"AF13"`, `"AF21"`, `"AF22"`, `"AF23"`, `"AF31"`, `"AF32"`, `"AF33"`, `"AF41"`, `"AF42"`, `"AF43"`, `"CS0"`, `"CS1"`, `"CS2"`, `"CS3"`, `"CS4"`, `"CS5"`, `"CS6"`, `"CS7"`, `"EF"`, `"VA"`.
+        * Or a value in the range of `0` to `63`.
   #### Optional ####
-    
+
     * `annotation` (annotation) - (string) The annotation of the DSCP to Priority Map object. This attribute is supported in ACI versions: 3.2(1l) and later.
       - Default: `"orchestrator:terraform"`
     * `description` (descr) - (string) The description of the DSCP to Priority Map object.
@@ -199,31 +205,37 @@ All examples for the Custom QoS Policy resource can be found in the [examples](h
     * `name_alias` (nameAlias) - (string) The name alias of the DSCP to Priority Map object. This attribute is supported in ACI versions: 2.2(1k) and later.
     * `priority` (prio) - (string) The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.
       - Default: `"unspecified"`
-      - Valid Values: `"level1"`, `"level2"`, `"level3"`, `"level4"`, `"level5"`, `"level6"`, `"unspecified"`.
+      - Valid Values:
+        * `"level1"`, `"level2"`, `"level3"`, `"level4"`, `"level5"`, `"level6"`, `"unspecified"`.
+        * Or a value in the range of `0` to `9`.
     * `target` (target) - (string) The target of the DSCP to Priority Map object. This Fabric only supports DSCP mutation, Dot1P mutation is not supported.
       - Default: `"unspecified"`
-      - Valid Values: `"AF11"`, `"AF12"`, `"AF13"`, `"AF21"`, `"AF22"`, `"AF23"`, `"AF31"`, `"AF32"`, `"AF33"`, `"AF41"`, `"AF42"`, `"AF43"`, `"CS0"`, `"CS1"`, `"CS2"`, `"CS3"`, `"CS4"`, `"CS5"`, `"CS6"`, `"CS7"`, `"EF"`, `"VA"`, `"unspecified"`.
+      - Valid Values:
+        * `"AF11"`, `"AF12"`, `"AF13"`, `"AF21"`, `"AF22"`, `"AF23"`, `"AF31"`, `"AF32"`, `"AF33"`, `"AF41"`, `"AF42"`, `"AF43"`, `"CS0"`, `"CS1"`, `"CS2"`, `"CS3"`, `"CS4"`, `"CS5"`, `"CS6"`, `"CS7"`, `"EF"`, `"VA"`, `"unspecified"`.
+        * Or a value in the range of `0` to `64`.
     * `target_cos` (targetCos) - (string) Target COS to be driven based on the range of input values of DSCP coming into the fabric. This attribute is supported in ACI versions: 2.1(1h) and later.
       - Default: `"unspecified"`
-      - Valid Values: `"0"`, `"1"`, `"2"`, `"3"`, `"4"`, `"5"`, `"6"`, `"7"`, `"unspecified"`.
-    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+      - Valid Values:
+        * `"0"`, `"1"`, `"2"`, `"3"`, `"4"`, `"5"`, `"6"`, `"7"`, `"unspecified"`.
+        * Or a value in the range of `0` to `8`.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
 
@@ -232,7 +244,7 @@ All examples for the Custom QoS Policy resource can be found in the [examples](h
 An existing Custom QoS Policy can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_custom_qos_policy.example_tenant uni/tn-{name}/qoscustom-{name}
+terraform import aci_custom_qos_policy.example uni/tn-{name}/qoscustom-{name}
 ```
 
 Starting in Terraform version 1.5, an existing Custom QoS Policy can be imported
@@ -241,6 +253,6 @@ using [import blocks](https://developer.hashicorp.com/terraform/language/import)
 ```
 import {
   id = "uni/tn-{name}/qoscustom-{name}"
-  to = aci_custom_qos_policy.example_tenant
+  to = aci_custom_qos_policy.example
 }
 ```

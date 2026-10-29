@@ -14,13 +14,13 @@ description: |-
 
 {{ .Class.Documentation.DatasourceDescription }}
 {{ range .Class.Documentation.DatasourceNotes }}
--> {{ . }}
+  -> {{ . }}
 {{ end -}}
 {{ range .Class.Documentation.DatasourceWarnings }}
-~> {{ . }}
+  ~> {{ . }}
 {{ end -}}
 {{ with .Class.Documentation.DeprecationWarning }}
-~> {{ . }}
+  ~> {{ . }}
 {{ end }}
 ## API Information ##
 
@@ -175,9 +175,9 @@ description: |-
 {{ range $nestedClass := $class.NestedDocumentationClasses .DataStore -}}
   {{- $child := $nestedClass.Class -}}
   {{- $childIndent := $nestedClass.Indent 0 -}}
-  {{- $propertyIndent := $nestedClass.Indent 1 }}{{ $childIndent }}* {{ $child.Documentation.DescriptionWhenDefinedAsChild }}{{ with $nestedClass.SupportedVersions }} This attribute is supported in ACI versions: {{ . }}{{ end }}{{ if $child.Documentation.RelationTargetClasses }} This relation can point to multiple ACI objects:{{ end }}
-  {{- range $targetClass := $child.Documentation.RelationTargetClasses }}
-{{ $propertyIndent }}- {{ $targetClass }}.
+  {{- $propertyIndent := $nestedClass.Indent 1 }}{{ $childIndent }}* {{ $child.Documentation.DescriptionWhenDefinedAsChild }}{{ with $nestedClass.SupportedVersions }} This attribute is supported in ACI versions: {{ . }}{{ end }}{{ if $child.Documentation.RelationTargetDescriptions }} This relation can point to multiple ACI objects:{{ end }}
+  {{- range $targetDescription := $child.Documentation.RelationTargetDescriptions }}
+{{ $propertyIndent }}- {{ $targetDescription }}.
   {{- end }}
   {{- range $propertyName := $child.PropertiesAll }}
     {{- if ne $propertyName "parentDn" }}

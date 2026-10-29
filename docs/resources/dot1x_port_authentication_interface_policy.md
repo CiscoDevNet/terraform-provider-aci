@@ -14,8 +14,6 @@ description: |-
 
 Manages ACI 802.1x Port Authentication Interface Policy
 
-
-
 ## API Information ##
 
 * Class: [l2PortAuthPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l2PortAuthPol/overview)
@@ -35,10 +33,11 @@ The configuration snippet below creates a 802.1x Port Authentication Interface P
 ```hcl
 
 resource "aci_dot1x_port_authentication_interface_policy" "example" {
-  name = "test_name"
+  name = "dot1x_port_authentication_interface_policy"
 }
 
 ```
+
 The configuration snippet below shows all possible attributes of the 802.1x Port Authentication Interface Policy.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
@@ -47,15 +46,15 @@ The configuration snippet below shows all possible attributes of the 802.1x Port
 
 resource "aci_dot1x_port_authentication_interface_policy" "full_example" {
   admin_state = "disabled"
-  annotation  = "annotation"
-  description = "description_1"
+  annotation  = "example_annotation"
+  description = "Example 802.1x Port Authentication Interface Policy"
   host_mode   = "multi-auth"
-  name        = "test_name"
-  name_alias  = "name_alias_1"
-  owner_key   = "owner_key_1"
-  owner_tag   = "owner_tag_1"
+  name        = "dot1x_port_authentication_interface_policy"
+  name_alias  = "example_name_alias"
+  owner_key   = "example_owner_key"
+  owner_tag   = "example_owner_tag"
   configuration = {
-    annotation                        = "annotation_1"
+    annotation                        = "example_annotation"
     authentication_mode               = "bypass"
     maximum_reauthentication_requests = "5"
     maximum_requests                  = "4"
@@ -66,28 +65,28 @@ resource "aci_dot1x_port_authentication_interface_policy" "full_example" {
     transmit_period                   = "35"
     annotations = [
       {
-        key   = "key_0"
-        value = "value_1"
-      }
+        key   = "example_key"
+        value = "example_value"
+      },
     ]
     tags = [
       {
-        key   = "key_0"
-        value = "value_1"
-      }
+        key   = "example_key"
+        value = "example_value"
+      },
     ]
   }
   annotations = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
   tags = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
 }
 
@@ -121,7 +120,7 @@ All examples for the 802.1x Port Authentication Interface Policy resource can be
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 * `configuration` - (map) A map of Configuration (ACI object [l2PortAuthCfgPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l2PortAuthCfgPol/overview)). This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Optional ####
-    
+
     * `annotation` (annotation) - (string) The annotation of the Configuration object.
       - Default: `"orchestrator:terraform"`
     * `authentication_mode` (macAuth) - (string) The authentication mode of the 802.1x Port Authentication Interface Policy.
@@ -142,24 +141,24 @@ All examples for the 802.1x Port Authentication Interface Policy resource can be
       - Default: `"30"`
     * `transmit_period` (txPeriod) - (string) The transmit period (seconds) for the 802.1x Port Authentication Interface Policy. The value must be in the range 1 - 65535.
       - Default: `"30"`
-    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
 
