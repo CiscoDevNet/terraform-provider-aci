@@ -14,8 +14,6 @@ description: |-
 
 Manages ACI Relation From VRF To Address Family OSPF Timers
 
-
-
 ## API Information ##
 
 * Class: [fvRsCtxToOspfCtxPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsCtxToOspfCtxPol/overview)
@@ -34,35 +32,36 @@ The configuration snippet below creates a Relation From VRF To Address Family OS
 
 ```hcl
 
-resource "aci_relation_from_vrf_to_address_family_ospf_timers" "example_vrf" {
+resource "aci_relation_from_vrf_to_address_family_ospf_timers" "example" {
   parent_dn        = aci_vrf.example.id
   address_family   = "ipv4-ucast"
   ospf_timers_name = aci_ospf_timers.example.name
 }
 
 ```
+
 The configuration snippet below shows all possible attributes of the Relation From VRF To Address Family OSPF Timers.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
 ```hcl
 
-resource "aci_relation_from_vrf_to_address_family_ospf_timers" "full_example_vrf" {
+resource "aci_relation_from_vrf_to_address_family_ospf_timers" "full_example" {
   parent_dn        = aci_vrf.example.id
   address_family   = "ipv4-ucast"
-  annotation       = "annotation"
+  annotation       = "example_annotation"
   ospf_timers_name = aci_ospf_timers.example.name
   annotations = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
   tags = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
 }
 
@@ -76,6 +75,7 @@ All examples for the Relation From VRF To Address Family OSPF Timers resource ca
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_vrf](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vrf) ([fvCtx](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvCtx/overview))
+
 * `address_family` (af) - (string) The type of address family for the Relation From VRF To Address Family OSPF Timers.
   - Valid Values: `"ipv4-ucast"`, `"ipv6-ucast"`.
 * `ospf_timers_name` (tnOspfCtxPolName) - (string) The name of the OSPF timers policy associated with this object. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/ospf_timers) with `aci_ospf_timers.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/ospf_timers) with `data.aci_ospf_timers.example.name`.
@@ -88,14 +88,14 @@ All examples for the Relation From VRF To Address Family OSPF Timers resource ca
 
 * `annotation` (annotation) - (string) The annotation of the Relation From VRF To Address Family OSPF Timers object. This attribute is supported in ACI versions: 3.2(1l) and later.
   - Default: `"orchestrator:terraform"`
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
 
@@ -104,7 +104,7 @@ All examples for the Relation From VRF To Address Family OSPF Timers resource ca
 An existing Relation From VRF To Address Family OSPF Timers can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_relation_from_vrf_to_address_family_ospf_timers.example_vrf uni/tn-{name}/ctx-{name}/rsctxToOspfCtxPol-[{tnOspfCtxPolName}]-{af}
+terraform import aci_relation_from_vrf_to_address_family_ospf_timers.example uni/tn-{name}/ctx-{name}/rsctxToOspfCtxPol-[{tnOspfCtxPolName}]-{af}
 ```
 
 Starting in Terraform version 1.5, an existing Relation From VRF To Address Family OSPF Timers can be imported
@@ -113,6 +113,6 @@ using [import blocks](https://developer.hashicorp.com/terraform/language/import)
 ```
 import {
   id = "uni/tn-{name}/ctx-{name}/rsctxToOspfCtxPol-[{tnOspfCtxPolName}]-{af}"
-  to = aci_relation_from_vrf_to_address_family_ospf_timers.example_vrf
+  to = aci_relation_from_vrf_to_address_family_ospf_timers.example
 }
 ```

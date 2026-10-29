@@ -138,6 +138,10 @@ func TestValueTypeEnum(t *testing.T) {
 	assert.Equal(t, "string", IpAddress.DocumentationType())
 	assert.Equal(t, "string", SemanticEquality.DocumentationType())
 	assert.Equal(t, "string", VMMArpLearning.DocumentationType())
+	assert.Equal(t, `"value"`, String.DocumentationLiteral("value"))
+	assert.Equal(t, `""`, String.DocumentationLiteral(""))
+	assert.Equal(t, `[]`, Set.DocumentationLiteral(""))
+	assert.Equal(t, `"enabled"`, Set.DocumentationLiteral("enabled"))
 
 	assert.Equal(t, String, test.MustUnmarshalText[ValueTypeEnum](t, "string"))
 	assert.Equal(t, Set, test.MustUnmarshalText[ValueTypeEnum](t, "set"))

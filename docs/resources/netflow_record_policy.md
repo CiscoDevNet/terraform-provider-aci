@@ -14,8 +14,6 @@ description: |-
 
 Manages ACI NetFlow Record Policy
 
-
-
 ## API Information ##
 
 * Class: [netflowRecordPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowRecordPol/overview)
@@ -38,39 +36,40 @@ The configuration snippet below creates a NetFlow Record Policy with only requir
 
 ```hcl
 
-resource "aci_netflow_record_policy" "example_tenant" {
-  parent_dn = aci_tenant.example.id
-  name      = "netfow_record"
+resource "aci_netflow_record_policy" "example" {
+  collect_parameters = ["src-intf"]
+  match_parameters   = []
+  name               = "netflow_record"
 }
 
 ```
+
 The configuration snippet below shows all possible attributes of the NetFlow Record Policy.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
 ```hcl
 
-resource "aci_netflow_record_policy" "full_example_tenant" {
-  parent_dn          = aci_tenant.example.id
-  annotation         = "annotation"
+resource "aci_netflow_record_policy" "full_example" {
+  annotation         = "example_annotation"
   collect_parameters = ["count-bytes", "src-intf"]
-  description        = "description_1"
+  description        = "Example NetFlow Record Policy"
   match_parameters   = ["dst-ip", "src-ip"]
-  name               = "netfow_record"
-  name_alias         = "name_alias_1"
-  owner_key          = "owner_key_1"
-  owner_tag          = "owner_tag_1"
+  name               = "netflow_record"
+  name_alias         = "example_name_alias"
+  owner_key          = "example_owner_key"
+  owner_tag          = "example_owner_tag"
   annotations = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
   tags = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
 }
 
@@ -92,10 +91,10 @@ All examples for the NetFlow Record Policy resource can be found in the [example
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tenant) ([fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview))
-  - The distinguished name (DN) of classes below can be used but currently there is no available resource for it:
+  - The distinguished names (DNs) of parent objects from the following APIC classes can also be used, but no Terraform resources are currently available for these classes:
     - [infraInfra](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraInfra/overview)
+  - Default: `"uni/infra"`
 
-  - Default: `uni/infra`
 * `annotation` (annotation) - (string) The annotation of the NetFlow Record Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
   - Default: `"orchestrator:terraform"`
 * `collect_parameters` (collect) - (list) Collect parameters of the NetFlow Record Policy object.
@@ -108,14 +107,14 @@ All examples for the NetFlow Record Policy resource can be found in the [example
 * `name_alias` (nameAlias) - (string) The name alias of the NetFlow Record Policy object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
 
@@ -124,7 +123,7 @@ All examples for the NetFlow Record Policy resource can be found in the [example
 An existing NetFlow Record Policy can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_netflow_record_policy.example_tenant uni/infra/recordpol-{name}
+terraform import aci_netflow_record_policy.example uni/infra/recordpol-{name}
 ```
 
 Starting in Terraform version 1.5, an existing NetFlow Record Policy can be imported
@@ -133,6 +132,6 @@ using [import blocks](https://developer.hashicorp.com/terraform/language/import)
 ```
 import {
   id = "uni/infra/recordpol-{name}"
-  to = aci_netflow_record_policy.example_tenant
+  to = aci_netflow_record_policy.example
 }
 ```

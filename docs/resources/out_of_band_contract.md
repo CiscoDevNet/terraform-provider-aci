@@ -14,8 +14,6 @@ description: |-
 
 Manages ACI Out Of Band Contract
 
-
-
 ## API Information ##
 
 * Class: [vzOOBBrCP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzOOBBrCP/overview)
@@ -35,10 +33,11 @@ The configuration snippet below creates a Out Of Band Contract with only require
 ```hcl
 
 resource "aci_out_of_band_contract" "example" {
-  name = "test_name"
+  name = "out_of_band_contract"
 }
 
 ```
+
 The configuration snippet below shows all possible attributes of the Out Of Band Contract.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
@@ -46,27 +45,27 @@ The configuration snippet below shows all possible attributes of the Out Of Band
 ```hcl
 
 resource "aci_out_of_band_contract" "full_example" {
-  annotation  = "annotation"
-  description = "description_1"
+  annotation  = "example_annotation"
+  description = "Example Out Of Band Contract"
   intent      = "estimate_add"
-  name        = "test_name"
-  name_alias  = "name_alias_1"
-  owner_key   = "owner_key_1"
-  owner_tag   = "owner_tag_1"
+  name        = "out_of_band_contract"
+  name_alias  = "example_name_alias"
+  owner_key   = "example_owner_key"
+  owner_tag   = "example_owner_tag"
   priority    = "level1"
   scope       = "application-profile"
   target_dscp = "AF11"
   annotations = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
   tags = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
 }
 
@@ -108,14 +107,14 @@ All examples for the Out Of Band Contract resource can be found in the [examples
   - Valid Values:
     * `"AF11"`, `"AF12"`, `"AF13"`, `"AF21"`, `"AF22"`, `"AF23"`, `"AF31"`, `"AF32"`, `"AF33"`, `"AF41"`, `"AF42"`, `"AF43"`, `"CS0"`, `"CS1"`, `"CS2"`, `"CS3"`, `"CS4"`, `"CS5"`, `"CS6"`, `"CS7"`, `"EF"`, `"VA"`, `"unspecified"`.
     * Or a value in the range of `0` to `64`.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
 

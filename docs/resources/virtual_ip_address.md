@@ -14,8 +14,6 @@ description: |-
 
 Manages ACI Virtual IP Address
 
-
-
 ## API Information ##
 
 * Class: [fvVip](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvVip/overview)
@@ -34,38 +32,39 @@ The configuration snippet below creates a Virtual IP Address with only required 
 
 ```hcl
 
-resource "aci_virtual_ip_address" "example_application_epg" {
+resource "aci_virtual_ip_address" "example" {
   parent_dn = aci_application_epg.example.id
-  ip        = "1.1.1.4"
+  ip        = "192.0.2.4"
 }
 
 ```
+
 The configuration snippet below shows all possible attributes of the Virtual IP Address.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
 ```hcl
 
-resource "aci_virtual_ip_address" "full_example_application_epg" {
+resource "aci_virtual_ip_address" "full_example" {
   parent_dn   = aci_application_epg.example.id
-  ip          = "1.1.1.4"
-  annotation  = "annotation"
-  description = "description_1"
-  name        = "name_1"
-  name_alias  = "name_alias_1"
-  owner_key   = "owner_key_1"
-  owner_tag   = "owner_tag_1"
+  ip          = "192.0.2.4"
+  annotation  = "example_annotation"
+  description = "Example Virtual IP Address"
+  name        = "virtual_ip_address"
+  name_alias  = "example_name_alias"
+  owner_key   = "example_owner_key"
+  owner_tag   = "example_owner_tag"
   annotations = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
   tags = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
 }
 
@@ -79,6 +78,7 @@ All examples for the Virtual IP Address resource can be found in the [examples](
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_application_epg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/application_epg) ([fvAEPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvAEPg/overview))
+
 * `ip` (addr) - (string) The L4-L7 Virtual IP Address for this object.
 
 ### Read-Only ###
@@ -94,14 +94,14 @@ All examples for the Virtual IP Address resource can be found in the [examples](
 * `name_alias` (nameAlias) - (string) The name alias of the Virtual IP Address object. This attribute is supported in ACI versions: 2.2(1k) and later.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
 
@@ -110,7 +110,7 @@ All examples for the Virtual IP Address resource can be found in the [examples](
 An existing Virtual IP Address can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_virtual_ip_address.example_application_epg uni/tn-{name}/ap-{name}/epg-{name}/vip-[{addr}]
+terraform import aci_virtual_ip_address.example uni/tn-{name}/ap-{name}/epg-{name}/vip-[{addr}]
 ```
 
 Starting in Terraform version 1.5, an existing Virtual IP Address can be imported
@@ -119,6 +119,6 @@ using [import blocks](https://developer.hashicorp.com/terraform/language/import)
 ```
 import {
   id = "uni/tn-{name}/ap-{name}/epg-{name}/vip-[{addr}]"
-  to = aci_virtual_ip_address.example_application_epg
+  to = aci_virtual_ip_address.example
 }
 ```

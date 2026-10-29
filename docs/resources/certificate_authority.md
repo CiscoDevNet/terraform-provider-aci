@@ -14,8 +14,6 @@ description: |-
 
 Manages ACI Certificate Authority
 
-
-
 ## API Information ##
 
 * Class: [pkiTP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/pkiTP/overview)
@@ -39,60 +37,12 @@ The configuration snippet below creates a Certificate Authority with only requir
 ```hcl
 
 resource "aci_certificate_authority" "example" {
-  certificate_chain = <<EOT
------BEGIN CERTIFICATE-----
-MIIDUzCCAjugAwIBAgIUbIvQNyz27t/xrIW2dgMwlGWqJvowDQYJKoZIhvcNAQEL
-BQAwODERMA8GA1UEAwwIVXNlciBBQkMxFjAUBgNVBAoMDUNpc2NvIFN5c3RlbXMx
-CzAJBgNVBAYTAlVTMCAXDTI2MDMxNzEwMjY0MVoYDzIxMjYwMjIxMTAyNjQxWjA4
-MREwDwYDVQQDDAhVc2VyIEFCQzEWMBQGA1UECgwNQ2lzY28gU3lzdGVtczELMAkG
-A1UEBhMCVVMwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCeulLqFk1C
-H6wKdn0/sNrpDOfkjxeIfsT388BV2FH9XWBYumk8iAIRLp2Tae0+dKOr50t0q9xX
-pCmC0dT4vF6h7NYQIihCNE//LpijuGbw+iG8YsavCr8wUAKdkuwzdA/3MiXRACzE
-WY3CYuhReGnSsjXUVvuaSb02jm80eCGDWUxm/KqH1qO/vlrzSU7NORvNrqQpKPA7
-e4ukjGD7k6jO8c5+DWWC6aOAgD6Orpb58yK7jUPSlQsYHtoKmJb245lpE5yMWg8e
-ZFfJIPh+cdP4gXcWVPSKJ/nMAj/vEhSp0WK6CJwu8+W/nhdvkemQR0oKb3XcJikV
-ZBj3OO0HK1HlAgMBAAGjUzBRMB0GA1UdDgQWBBT9EPk1GYfyISGUsTX/+7mREkPV
-djAfBgNVHSMEGDAWgBT9EPk1GYfyISGUsTX/+7mREkPVdjAPBgNVHRMBAf8EBTAD
-AQH/MA0GCSqGSIb3DQEBCwUAA4IBAQAzIrT1/ih7/BP363+90gRA29q4nA8RBWF6
-JC1TVExRbgVtJOEbEUywTcUxeW1Q3bSSwW836qEWJpRcwvu103yZgn0yIWubndtb
-pArujgGt5irDwQmwW9zVUPWrJkkUkNezEZzM9WrRh+fvepvlDQwq6Pqd75BpmiOr
-ZPfliCH5wX8Hjlg3cFeQviRLEMjkLtaDmmDfTFRQYCjKohTSgZdd9aauzgsYOq/2
-S2sHwyJR8MTUyxawvCRJP8q5v3KGLVUzU6vRtEbZUx5FvjNkgxLgsSP4+buQi7FR
-aY0EpluqxPc3Wsl5AkIpFAf97vrRPGTPpSZig5LX9eS0Rmh4eJ10
------END CERTIFICATE-----
-EOT
-  name              = "test_name"
-}
-
-// This example is only applicable to Cisco Cloud Network Controller
-resource "aci_certificate_authority" "example_tenant" {
-  parent_dn         = aci_tenant.example.id
-  certificate_chain = <<EOT
------BEGIN CERTIFICATE-----
-MIIDUzCCAjugAwIBAgIUbIvQNyz27t/xrIW2dgMwlGWqJvowDQYJKoZIhvcNAQEL
-BQAwODERMA8GA1UEAwwIVXNlciBBQkMxFjAUBgNVBAoMDUNpc2NvIFN5c3RlbXMx
-CzAJBgNVBAYTAlVTMCAXDTI2MDMxNzEwMjY0MVoYDzIxMjYwMjIxMTAyNjQxWjA4
-MREwDwYDVQQDDAhVc2VyIEFCQzEWMBQGA1UECgwNQ2lzY28gU3lzdGVtczELMAkG
-A1UEBhMCVVMwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCeulLqFk1C
-H6wKdn0/sNrpDOfkjxeIfsT388BV2FH9XWBYumk8iAIRLp2Tae0+dKOr50t0q9xX
-pCmC0dT4vF6h7NYQIihCNE//LpijuGbw+iG8YsavCr8wUAKdkuwzdA/3MiXRACzE
-WY3CYuhReGnSsjXUVvuaSb02jm80eCGDWUxm/KqH1qO/vlrzSU7NORvNrqQpKPA7
-e4ukjGD7k6jO8c5+DWWC6aOAgD6Orpb58yK7jUPSlQsYHtoKmJb245lpE5yMWg8e
-ZFfJIPh+cdP4gXcWVPSKJ/nMAj/vEhSp0WK6CJwu8+W/nhdvkemQR0oKb3XcJikV
-ZBj3OO0HK1HlAgMBAAGjUzBRMB0GA1UdDgQWBBT9EPk1GYfyISGUsTX/+7mREkPV
-djAfBgNVHSMEGDAWgBT9EPk1GYfyISGUsTX/+7mREkPVdjAPBgNVHRMBAf8EBTAD
-AQH/MA0GCSqGSIb3DQEBCwUAA4IBAQAzIrT1/ih7/BP363+90gRA29q4nA8RBWF6
-JC1TVExRbgVtJOEbEUywTcUxeW1Q3bSSwW836qEWJpRcwvu103yZgn0yIWubndtb
-pArujgGt5irDwQmwW9zVUPWrJkkUkNezEZzM9WrRh+fvepvlDQwq6Pqd75BpmiOr
-ZPfliCH5wX8Hjlg3cFeQviRLEMjkLtaDmmDfTFRQYCjKohTSgZdd9aauzgsYOq/2
-S2sHwyJR8MTUyxawvCRJP8q5v3KGLVUzU6vRtEbZUx5FvjNkgxLgsSP4+buQi7FR
-aY0EpluqxPc3Wsl5AkIpFAf97vrRPGTPpSZig5LX9eS0Rmh4eJ10
------END CERTIFICATE-----
-EOT
-  name              = "test_name"
+  certificate_chain = file("${path.module}/certificate.pem")
+  name              = "certificate_authority"
 }
 
 ```
+
 The configuration snippet below shows all possible attributes of the Certificate Authority.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
@@ -100,140 +50,25 @@ The configuration snippet below shows all possible attributes of the Certificate
 ```hcl
 
 resource "aci_certificate_authority" "full_example" {
-  annotation        = "annotation"
-  certificate_chain = <<EOT
------BEGIN CERTIFICATE-----
-MIIDUzCCAjugAwIBAgIUbIvQNyz27t/xrIW2dgMwlGWqJvowDQYJKoZIhvcNAQEL
-BQAwODERMA8GA1UEAwwIVXNlciBBQkMxFjAUBgNVBAoMDUNpc2NvIFN5c3RlbXMx
-CzAJBgNVBAYTAlVTMCAXDTI2MDMxNzEwMjY0MVoYDzIxMjYwMjIxMTAyNjQxWjA4
-MREwDwYDVQQDDAhVc2VyIEFCQzEWMBQGA1UECgwNQ2lzY28gU3lzdGVtczELMAkG
-A1UEBhMCVVMwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCeulLqFk1C
-H6wKdn0/sNrpDOfkjxeIfsT388BV2FH9XWBYumk8iAIRLp2Tae0+dKOr50t0q9xX
-pCmC0dT4vF6h7NYQIihCNE//LpijuGbw+iG8YsavCr8wUAKdkuwzdA/3MiXRACzE
-WY3CYuhReGnSsjXUVvuaSb02jm80eCGDWUxm/KqH1qO/vlrzSU7NORvNrqQpKPA7
-e4ukjGD7k6jO8c5+DWWC6aOAgD6Orpb58yK7jUPSlQsYHtoKmJb245lpE5yMWg8e
-ZFfJIPh+cdP4gXcWVPSKJ/nMAj/vEhSp0WK6CJwu8+W/nhdvkemQR0oKb3XcJikV
-ZBj3OO0HK1HlAgMBAAGjUzBRMB0GA1UdDgQWBBT9EPk1GYfyISGUsTX/+7mREkPV
-djAfBgNVHSMEGDAWgBT9EPk1GYfyISGUsTX/+7mREkPVdjAPBgNVHRMBAf8EBTAD
-AQH/MA0GCSqGSIb3DQEBCwUAA4IBAQAzIrT1/ih7/BP363+90gRA29q4nA8RBWF6
-JC1TVExRbgVtJOEbEUywTcUxeW1Q3bSSwW836qEWJpRcwvu103yZgn0yIWubndtb
-pArujgGt5irDwQmwW9zVUPWrJkkUkNezEZzM9WrRh+fvepvlDQwq6Pqd75BpmiOr
-ZPfliCH5wX8Hjlg3cFeQviRLEMjkLtaDmmDfTFRQYCjKohTSgZdd9aauzgsYOq/2
-S2sHwyJR8MTUyxawvCRJP8q5v3KGLVUzU6vRtEbZUx5FvjNkgxLgsSP4+buQi7FR
-aY0EpluqxPc3Wsl5AkIpFAf97vrRPGTPpSZig5LX9eS0Rmh4eJ10
------END CERTIFICATE-----
-EOT
+  annotation        = "example_annotation"
+  certificate_chain = file("${path.module}/certificate.pem")
   certificate_usage = ["WebSvcOrAuth"]
-  description       = "description_1"
-  name              = "test_name"
-  name_alias        = "name_alias_1"
-  owner_key         = "owner_key_1"
-  owner_tag         = "owner_tag_1"
+  description       = "Example Certificate Authority"
+  name              = "certificate_authority"
+  name_alias        = "example_name_alias"
+  owner_key         = "example_owner_key"
+  owner_tag         = "example_owner_tag"
   annotations = [
     {
-      key   = "key_0"
-      value = "value_1"
-      annotations = [
-        {
-          key   = "key_0"
-          value = "value_1"
-        }
-      ]
-      tags = [
-        {
-          key   = "key_0"
-          value = "value_1"
-        }
-      ]
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
   tags = [
     {
-      key   = "key_0"
-      value = "value_1"
-      annotations = [
-        {
-          key   = "key_0"
-          value = "value_1"
-        }
-      ]
-      tags = [
-        {
-          key   = "key_0"
-          value = "value_1"
-        }
-      ]
-    }
-  ]
-}
-
-// This example is only applicable to Cisco Cloud Network Controller
-resource "aci_certificate_authority" "full_example_tenant" {
-  parent_dn         = aci_tenant.example.id
-  annotation        = "annotation"
-  certificate_chain = <<EOT
------BEGIN CERTIFICATE-----
-MIIDUzCCAjugAwIBAgIUbIvQNyz27t/xrIW2dgMwlGWqJvowDQYJKoZIhvcNAQEL
-BQAwODERMA8GA1UEAwwIVXNlciBBQkMxFjAUBgNVBAoMDUNpc2NvIFN5c3RlbXMx
-CzAJBgNVBAYTAlVTMCAXDTI2MDMxNzEwMjY0MVoYDzIxMjYwMjIxMTAyNjQxWjA4
-MREwDwYDVQQDDAhVc2VyIEFCQzEWMBQGA1UECgwNQ2lzY28gU3lzdGVtczELMAkG
-A1UEBhMCVVMwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCeulLqFk1C
-H6wKdn0/sNrpDOfkjxeIfsT388BV2FH9XWBYumk8iAIRLp2Tae0+dKOr50t0q9xX
-pCmC0dT4vF6h7NYQIihCNE//LpijuGbw+iG8YsavCr8wUAKdkuwzdA/3MiXRACzE
-WY3CYuhReGnSsjXUVvuaSb02jm80eCGDWUxm/KqH1qO/vlrzSU7NORvNrqQpKPA7
-e4ukjGD7k6jO8c5+DWWC6aOAgD6Orpb58yK7jUPSlQsYHtoKmJb245lpE5yMWg8e
-ZFfJIPh+cdP4gXcWVPSKJ/nMAj/vEhSp0WK6CJwu8+W/nhdvkemQR0oKb3XcJikV
-ZBj3OO0HK1HlAgMBAAGjUzBRMB0GA1UdDgQWBBT9EPk1GYfyISGUsTX/+7mREkPV
-djAfBgNVHSMEGDAWgBT9EPk1GYfyISGUsTX/+7mREkPVdjAPBgNVHRMBAf8EBTAD
-AQH/MA0GCSqGSIb3DQEBCwUAA4IBAQAzIrT1/ih7/BP363+90gRA29q4nA8RBWF6
-JC1TVExRbgVtJOEbEUywTcUxeW1Q3bSSwW836qEWJpRcwvu103yZgn0yIWubndtb
-pArujgGt5irDwQmwW9zVUPWrJkkUkNezEZzM9WrRh+fvepvlDQwq6Pqd75BpmiOr
-ZPfliCH5wX8Hjlg3cFeQviRLEMjkLtaDmmDfTFRQYCjKohTSgZdd9aauzgsYOq/2
-S2sHwyJR8MTUyxawvCRJP8q5v3KGLVUzU6vRtEbZUx5FvjNkgxLgsSP4+buQi7FR
-aY0EpluqxPc3Wsl5AkIpFAf97vrRPGTPpSZig5LX9eS0Rmh4eJ10
------END CERTIFICATE-----
-EOT
-  certificate_usage = ["WebSvcOrAuth"]
-  description       = "description_1"
-  name              = "test_name"
-  name_alias        = "name_alias_1"
-  owner_key         = "owner_key_1"
-  owner_tag         = "owner_tag_1"
-  annotations = [
-    {
-      key   = "key_0"
-      value = "value_1"
-      annotations = [
-        {
-          key   = "key_0"
-          value = "value_1"
-        }
-      ]
-      tags = [
-        {
-          key   = "key_0"
-          value = "value_1"
-        }
-      ]
-    }
-  ]
-  tags = [
-    {
-      key   = "key_0"
-      value = "value_1"
-      annotations = [
-        {
-          key   = "key_0"
-          value = "value_1"
-        }
-      ]
-      tags = [
-        {
-          key   = "key_0"
-          value = "value_1"
-        }
-      ]
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
 }
 
@@ -255,8 +90,11 @@ All examples for the Certificate Authority resource can be found in the [example
 ### Optional ###
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
-  - [aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/fvTenant) ([fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview))
-  - Default: `uni/userext/pkiext`
+  - [aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tenant) ([fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview))
+  - The distinguished names (DNs) of parent objects from the following APIC classes can also be used, but no Terraform resources are currently available for these classes:
+    - [pkiEp](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/pkiEp/overview)
+  - Default: `"uni/userext/pkiext"`
+
 * `annotation` (annotation) - (string) The annotation of the Certificate Authority object. This attribute is supported in ACI versions: 3.2(1l) and later.
   - Default: `"orchestrator:terraform"`
 * `certificate_usage` (certUsage) - (list) The usage of the Certificate Authority object which can be Web Service/Authentication (WebSvcOrAuth), Platform Experience Grid (pxGrid), or both.
@@ -266,14 +104,14 @@ All examples for the Certificate Authority resource can be found in the [example
 * `name_alias` (nameAlias) - (string) The name alias of the Certificate Authority object. This attribute is supported in ACI versions: 2.2(1k) and later.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
 
@@ -282,7 +120,7 @@ All examples for the Certificate Authority resource can be found in the [example
 An existing Certificate Authority can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_certificate_authority.example uni/tn-{name}/certstore/tp-{name}
+terraform import aci_certificate_authority.example uni/userext/pkiext/tp-{name}
 ```
 
 Starting in Terraform version 1.5, an existing Certificate Authority can be imported
@@ -290,7 +128,7 @@ using [import blocks](https://developer.hashicorp.com/terraform/language/import)
 
 ```
 import {
-  id = "uni/tn-{name}/certstore/tp-{name}"
+  id = "uni/userext/pkiext/tp-{name}"
   to = aci_certificate_authority.example
 }
 ```

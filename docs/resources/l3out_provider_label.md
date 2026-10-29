@@ -14,8 +14,6 @@ description: |-
 
 Manages ACI L3Out Provider Label
 
-
-
 ## API Information ##
 
 * Class: [l3extProvLbl](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extProvLbl/overview)
@@ -34,38 +32,39 @@ The configuration snippet below creates a L3Out Provider Label with only require
 
 ```hcl
 
-resource "aci_l3out_provider_label" "example_l3_outside" {
+resource "aci_l3out_provider_label" "example" {
   parent_dn = aci_l3_outside.example.id
-  name      = "prov_label"
+  name      = "provider_label"
 }
 
 ```
+
 The configuration snippet below shows all possible attributes of the L3Out Provider Label.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
 ```hcl
 
-resource "aci_l3out_provider_label" "full_example_l3_outside" {
+resource "aci_l3out_provider_label" "full_example" {
   parent_dn   = aci_l3_outside.example.id
-  annotation  = "annotation"
-  description = "description_1"
-  name        = "prov_label"
-  name_alias  = "name_alias_1"
-  owner_key   = "owner_key_1"
-  owner_tag   = "owner_tag_1"
+  annotation  = "example_annotation"
+  description = "Example L3Out Provider Label"
+  name        = "provider_label"
+  name_alias  = "example_name_alias"
+  owner_key   = "example_owner_key"
+  owner_tag   = "example_owner_tag"
   tag         = "alice-blue"
   annotations = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
   tags = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
 }
 
@@ -79,6 +78,7 @@ All examples for the L3Out Provider Label resource can be found in the [examples
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_l3_outside](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3_outside) ([l3extOut](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extOut/overview))
+
 * `name` (name) - (string) The name of the L3Out Provider Label object.
 
 ### Read-Only ###
@@ -94,15 +94,16 @@ All examples for the L3Out Provider Label resource can be found in the [examples
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 * `tag` (tag) - (string) Specifies the color of a policy label.
+  - Default: `"yellow-green"`
   - Valid Values: `"alice-blue"`, `"antique-white"`, `"aqua"`, `"aquamarine"`, `"azure"`, `"beige"`, `"bisque"`, `"black"`, `"blanched-almond"`, `"blue"`, `"blue-violet"`, `"brown"`, `"burlywood"`, `"cadet-blue"`, `"chartreuse"`, `"chocolate"`, `"coral"`, `"cornflower-blue"`, `"cornsilk"`, `"crimson"`, `"cyan"`, `"dark-blue"`, `"dark-cyan"`, `"dark-goldenrod"`, `"dark-gray"`, `"dark-green"`, `"dark-khaki"`, `"dark-magenta"`, `"dark-olive-green"`, `"dark-orange"`, `"dark-orchid"`, `"dark-red"`, `"dark-salmon"`, `"dark-sea-green"`, `"dark-slate-blue"`, `"dark-slate-gray"`, `"dark-turquoise"`, `"dark-violet"`, `"deep-pink"`, `"deep-sky-blue"`, `"dim-gray"`, `"dodger-blue"`, `"fire-brick"`, `"floral-white"`, `"forest-green"`, `"fuchsia"`, `"gainsboro"`, `"ghost-white"`, `"gold"`, `"goldenrod"`, `"gray"`, `"green"`, `"green-yellow"`, `"honeydew"`, `"hot-pink"`, `"indian-red"`, `"indigo"`, `"ivory"`, `"khaki"`, `"lavender"`, `"lavender-blush"`, `"lawn-green"`, `"lemon-chiffon"`, `"light-blue"`, `"light-coral"`, `"light-cyan"`, `"light-goldenrod-yellow"`, `"light-gray"`, `"light-green"`, `"light-pink"`, `"light-salmon"`, `"light-sea-green"`, `"light-sky-blue"`, `"light-slate-gray"`, `"light-steel-blue"`, `"light-yellow"`, `"lime"`, `"lime-green"`, `"linen"`, `"magenta"`, `"maroon"`, `"medium-aquamarine"`, `"medium-blue"`, `"medium-orchid"`, `"medium-purple"`, `"medium-sea-green"`, `"medium-slate-blue"`, `"medium-spring-green"`, `"medium-turquoise"`, `"medium-violet-red"`, `"midnight-blue"`, `"mint-cream"`, `"misty-rose"`, `"moccasin"`, `"navajo-white"`, `"navy"`, `"old-lace"`, `"olive"`, `"olive-drab"`, `"orange"`, `"orange-red"`, `"orchid"`, `"pale-goldenrod"`, `"pale-green"`, `"pale-turquoise"`, `"pale-violet-red"`, `"papaya-whip"`, `"peachpuff"`, `"peru"`, `"pink"`, `"plum"`, `"powder-blue"`, `"purple"`, `"red"`, `"rosy-brown"`, `"royal-blue"`, `"saddle-brown"`, `"salmon"`, `"sandy-brown"`, `"sea-green"`, `"seashell"`, `"sienna"`, `"silver"`, `"sky-blue"`, `"slate-blue"`, `"slate-gray"`, `"snow"`, `"spring-green"`, `"steel-blue"`, `"tan"`, `"teal"`, `"thistle"`, `"tomato"`, `"turquoise"`, `"violet"`, `"wheat"`, `"white"`, `"white-smoke"`, `"yellow"`, `"yellow-green"`.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
 
@@ -111,7 +112,7 @@ All examples for the L3Out Provider Label resource can be found in the [examples
 An existing L3Out Provider Label can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_l3out_provider_label.example_l3_outside uni/tn-{name}/out-{name}/provlbl-{name}
+terraform import aci_l3out_provider_label.example uni/tn-{name}/out-{name}/provlbl-{name}
 ```
 
 Starting in Terraform version 1.5, an existing L3Out Provider Label can be imported
@@ -120,6 +121,6 @@ using [import blocks](https://developer.hashicorp.com/terraform/language/import)
 ```
 import {
   id = "uni/tn-{name}/out-{name}/provlbl-{name}"
-  to = aci_l3out_provider_label.example_l3_outside
+  to = aci_l3out_provider_label.example
 }
 ```

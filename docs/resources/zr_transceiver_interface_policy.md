@@ -14,8 +14,6 @@ description: |-
 
 Manages ACI ZR Transceiver Interface Policy
 
-
-
 ## API Information ##
 
 * Class: [xcvrZRIfPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/xcvrZRIfPol/overview)
@@ -35,10 +33,11 @@ The configuration snippet below creates a ZR Transceiver Interface Policy with o
 ```hcl
 
 resource "aci_zr_transceiver_interface_policy" "example" {
-  name = "test_name"
+  name = "zr_transceiver_interface_policy"
 }
 
 ```
+
 The configuration snippet below shows all possible attributes of the ZR Transceiver Interface Policy.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
@@ -47,11 +46,11 @@ The configuration snippet below shows all possible attributes of the ZR Transcei
 
 resource "aci_zr_transceiver_interface_policy" "full_example" {
   admin_state                  = "enabled"
-  annotation                   = "annotation"
+  annotation                   = "example_annotation"
   maximum_chromatic_dispersion = "-1390"
   minimum_chromatic_dispersion = "-2391"
   dac_rate                     = "1x1"
-  description                  = "description_1"
+  description                  = "Example ZR Transceiver Interface Policy"
   dwdm_carrier_grid            = "50GHzFrequency"
   fec_mode                     = "cFEC"
   frequency_100_mhz            = "1912504"
@@ -59,23 +58,23 @@ resource "aci_zr_transceiver_interface_policy" "full_example" {
   itu_channel_50_ghz           = "23"
   modulation                   = "16QAM"
   muxponder_mode               = "1x400"
-  name                         = "test_name"
-  name_alias                   = "name_alias_1"
-  owner_key                    = "owner_key_1"
-  owner_tag                    = "owner_tag_1"
+  name                         = "zr_transceiver_interface_policy"
+  name_alias                   = "example_name_alias"
+  owner_key                    = "example_owner_key"
+  owner_tag                    = "example_owner_tag"
   transmit_power               = "20"
   wavelength_50_ghz            = "1563742"
   annotations = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
   tags = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
 }
 
@@ -133,14 +132,14 @@ All examples for the ZR Transceiver Interface Policy resource can be found in th
   - Default: `"-190"`
 * `wavelength_50_ghz` (wavelength50GHz) - (string) The 50 gigahertz (GHz) wavelength of the ZR Transceiver Interface Policy object. The value must be in the range 1528773 - 1568362.
   - Default: `"1552524"`
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
 

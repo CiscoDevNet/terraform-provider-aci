@@ -2,6 +2,7 @@ package data
 
 import (
 	"fmt"
+	"regexp"
 	"slices"
 	"strings"
 
@@ -70,10 +71,14 @@ type ClassDocumentation struct {
 	DatasourceDescription string
 	// The description used when this class appears as a nested child in a parent resource.
 	DescriptionWhenDefinedAsChild string
-	// APIC-class links rendered below a multi-target child relation description.
-	RelationTargetClasses []string
+	// Completed target descriptions rendered below a multi-target child relation.
+	RelationTargetDescriptions []string
 	// DN format strings from meta file (e.g., "uni/tn-{name}").
 	DnFormats []string
+	// ImportDnFormat is the actual DN format used by import examples. It follows
+	// the selected example parent or parent_dn default before falling back to the
+	// first actual format and never contains a display-only notice.
+	ImportDnFormat string
 	// ParentDnNotice follows the sampled parent lists when the complete parent
 	// set is too large to render. ParentDnResources contains links to parent
 	// classes backed by a Terraform resource and ParentDnClasses contains
@@ -123,6 +128,62 @@ func (c *Class) NestedDocumentationClasses(ds *DataStore) []NestedDocumentationC
 	return nestedDocumentationClasses(c, ds, 0)
 }
 
+// RequiredNestedDocumentationClasses resolves the complete subtrees rooted at
+// children that are required in the owning resource schema.
+func (c *Class) RequiredNestedDocumentationClasses(ds *DataStore) []NestedDocumentationClass {
+	return nestedDocumentationClassesForSection(c, ds, true)
+}
+
+// OptionalNestedDocumentationClasses resolves the complete subtrees rooted at
+// children that are optional in the owning resource schema.
+func (c *Class) OptionalNestedDocumentationClasses(ds *DataStore) []NestedDocumentationClass {
+	return nestedDocumentationClassesForSection(c, ds, false)
+}
+
+// RequiredDocumentationProperties returns required APIC properties in schema
+// order. parentDn is rendered separately because its required/optional status
+// depends on the top-level schema default and it is never part of a child model.
+func (c *Class) RequiredDocumentationProperties() []*Property {
+	return c.documentationProperties(c.PropertiesRequired)
+}
+
+// OptionalDocumentationProperties returns optional APIC properties in schema
+// order, excluding the separately rendered parentDn property.
+func (c *Class) OptionalDocumentationProperties() []*Property {
+	return c.documentationProperties(c.PropertiesOptional)
+}
+
+// ReadOnlyDocumentationProperties returns read-only APIC properties in schema
+// order, excluding the separately rendered parentDn property.
+func (c *Class) ReadOnlyDocumentationProperties() []*Property {
+	return c.documentationProperties(c.PropertiesReadOnly)
+}
+
+func (c *Class) documentationProperties(propertyNames []string) []*Property {
+	properties := make([]*Property, 0, len(propertyNames))
+	for _, propertyName := range propertyNames {
+		if propertyName == "parentDn" {
+			continue
+		}
+		properties = append(properties, c.Properties[propertyName])
+	}
+	return properties
+}
+
+func nestedDocumentationClassesForSection(parent *Class, ds *DataStore, required bool) []NestedDocumentationClass {
+	var nestedClasses []NestedDocumentationClass
+	for _, childName := range parent.Children {
+		childClass, ok := ds.Classes[childName.String()]
+		if !ok || childClass.RequiredAsChild != required {
+			continue
+		}
+		child := &childClass
+		nestedClasses = append(nestedClasses, nestedDocumentationClass(child, parent, 0))
+		nestedClasses = append(nestedClasses, nestedDocumentationClasses(child, ds, 1)...)
+	}
+	return nestedClasses
+}
+
 func nestedDocumentationClasses(parent *Class, ds *DataStore, depth int) []NestedDocumentationClass {
 	var nestedClasses []NestedDocumentationClass
 	for _, childName := range parent.Children {
@@ -131,18 +192,22 @@ func nestedDocumentationClasses(parent *Class, ds *DataStore, depth int) []Neste
 			continue
 		}
 		child := &childClass
-		supportedVersions := ""
-		if child.SupportedVersions != nil && !child.SupportedVersions.Covers(parent.SupportedVersions) {
-			supportedVersions = documentationVersions(child.SupportedVersions)
-		}
-		nestedClasses = append(nestedClasses, NestedDocumentationClass{
-			Class:             child,
-			Depth:             depth,
-			SupportedVersions: supportedVersions,
-		})
+		nestedClasses = append(nestedClasses, nestedDocumentationClass(child, parent, depth))
 		nestedClasses = append(nestedClasses, nestedDocumentationClasses(child, ds, depth+1)...)
 	}
 	return nestedClasses
+}
+
+func nestedDocumentationClass(child, parent *Class, depth int) NestedDocumentationClass {
+	supportedVersions := ""
+	if child.SupportedVersions != nil && !child.SupportedVersions.Covers(parent.SupportedVersions) {
+		supportedVersions = documentationVersions(child.SupportedVersions)
+	}
+	return NestedDocumentationClass{
+		Class:             child,
+		Depth:             depth,
+		SupportedVersions: supportedVersions,
+	}
 }
 
 func (c *Class) setDocumentation(ds *DataStore) error {
@@ -199,6 +264,19 @@ func getDevnetObjectDocumentationLink(className string) string {
 }
 
 func getTerraformRegistryDocumentationLink(resourceName string, artifact ArtifactEnum) string {
+	return getTerraformRegistryDocumentationLinkAtPath(resourceName, resourceName, artifact)
+}
+
+func getTerraformRegistryDocumentationLinkAtPath(resourceName, registryPath string, artifact ArtifactEnum) string {
+	url := getTerraformRegistryDocumentationURL(registryPath, artifact)
+	if url == "" {
+		return ""
+	}
+
+	return fmt.Sprintf("[%s_%s](%s)", constProviderName, resourceName, url)
+}
+
+func getTerraformRegistryDocumentationURL(registryPath string, artifact ArtifactEnum) string {
 	var baseURL string
 	switch artifact {
 	case ResourceArtifact:
@@ -209,7 +287,30 @@ func getTerraformRegistryDocumentationLink(resourceName string, artifact Artifac
 		return ""
 	}
 
-	return fmt.Sprintf("[%s_%s](%s/%s)", constProviderName, resourceName, baseURL, resourceName)
+	return fmt.Sprintf("%s/%s", baseURL, registryPath)
+}
+
+func (ds *DataStore) getTerraformRegistryDocumentationReference(className string, artifact ArtifactEnum) (string, string) {
+	resourceName := ds.getResourceNameForArtifact(className, artifact)
+	if resourceName == "" {
+		return "", ""
+	}
+
+	registryPath := resourceName
+	if definition, ok := ds.ClassDefinitions[className]; ok && definition.Documentation.RegistryPath != "" {
+		registryPath = definition.Documentation.RegistryPath
+	}
+
+	return resourceName, getTerraformRegistryDocumentationURL(registryPath, artifact)
+}
+
+func (ds *DataStore) getTerraformRegistryDocumentationLink(className string, artifact ArtifactEnum) string {
+	resourceName, url := ds.getTerraformRegistryDocumentationReference(className, artifact)
+	if url == "" {
+		return ""
+	}
+
+	return fmt.Sprintf("[%s_%s](%s)", constProviderName, resourceName, url)
 }
 
 func getResourceDocumentationLink(resourceName string) string {
@@ -313,12 +414,12 @@ func documentationChildLink(
 		}
 	}
 
-	resourceName := ds.getResourceNameForArtifact(childName, ResourceArtifact)
-	if resourceName == "" {
+	link := ds.getTerraformRegistryDocumentationLink(childName, ResourceArtifact)
+	if link == "" {
 		return "", false
 	}
 
-	return getResourceDocumentationLink(resourceName), true
+	return link, true
 }
 
 func (d *ClassDocumentation) setDeprecationWarning(class *Class) {
@@ -427,7 +528,7 @@ func (d *ClassDocumentation) setDescription(class *Class) {
 
 func (d *ClassDocumentation) setDescriptionWhenDefinedAsChild(class *Class, ds *DataStore) {
 	genLogger.Debugf("Setting Documentation DescriptionWhenDefinedAsChild for class '%s'.", class.Name.full)
-	d.RelationTargetClasses = nil
+	d.RelationTargetDescriptions = nil
 
 	nestingType := "list"
 	nestedLabel := utils.Plural(d.Label)
@@ -443,7 +544,14 @@ func (d *ClassDocumentation) setDescriptionWhenDefinedAsChild(class *Class, ds *
 	if class.Relation.RelationalClass {
 		if len(class.Relation.ToClasses) > 1 {
 			for _, toClassName := range documentationRelationTargets(class) {
-				d.RelationTargetClasses = append(d.RelationTargetClasses, getDevnetObjectDocumentationLink(toClassName.String()))
+				toClassFull := toClassName.String()
+				targetDescription := getDevnetObjectDocumentationLink(toClassFull)
+				if resourceLink := ds.getTerraformRegistryDocumentationLink(toClassFull, ResourceArtifact); resourceLink != "" {
+					targetDescription += fmt.Sprintf(" which can be configured using the %s resource", resourceLink)
+				} else {
+					targetDescription += ". Currently there is no resource available to configure this ACI object"
+				}
+				d.RelationTargetDescriptions = append(d.RelationTargetDescriptions, targetDescription)
 			}
 			sentence = fmt.Sprintf("A %s of %s.", nestingType, childDescription)
 			d.DescriptionWhenDefinedAsChild = header + " " + sentence
@@ -458,14 +566,14 @@ func (d *ClassDocumentation) setDescriptionWhenDefinedAsChild(class *Class, ds *
 			toClassLink := getDevnetObjectDocumentationLink(toClassFull)
 			toLabel := documentationClassLabel(toClassFull, ds)
 			targetParts = append(targetParts, fmt.Sprintf("%s (ACI Object %s)", toLabel, toClassLink))
-			if resourceName := ds.getResourceNameForArtifact(toClassFull, ResourceArtifact); resourceName != "" {
-				resourceParts = append(resourceParts, getResourceDocumentationLink(resourceName))
+			if resourceLink := ds.getTerraformRegistryDocumentationLink(toClassFull, ResourceArtifact); resourceLink != "" {
+				resourceParts = append(resourceParts, resourceLink)
 			}
 		}
 		targets := strings.Join(targetParts, ", ")
-		// Single-nested (map) children are only configurable through their parent, so the
-		// standalone resource clause is omitted to avoid suggesting a separate resource.
-		if len(resourceParts) > 0 && len(resourceParts) == len(class.Relation.ToClasses) && !class.IsSingleNestedWhenDefinedAsChild {
+		// Relation cardinality controls only the nested schema shape. A relation target
+		// remains independently configurable when it has a resource artifact.
+		if len(resourceParts) > 0 && len(resourceParts) == len(class.Relation.ToClasses) {
 			resourceWord := "resource"
 			if len(resourceParts) > 1 {
 				resourceWord = "resources"
@@ -474,12 +582,13 @@ func (d *ClassDocumentation) setDescriptionWhenDefinedAsChild(class *Class, ds *
 		} else {
 			sentence = fmt.Sprintf("A %s of %s pointing to %s.", nestingType, childDescription, targets)
 		}
-	} else if class.IsSingleNestedWhenDefinedAsChild {
-		// Single-nested (map) children are only configurable through their parent, so the
-		// standalone resource clause is omitted to avoid suggesting a separate resource.
-		sentence = fmt.Sprintf("A %s of %s (ACI object %s).", nestingType, d.Label, d.ClassName)
 	} else if class.HasResourceArtifact() {
-		sentence = fmt.Sprintf("A %s of %s which can also be configured using a separate %s resource.", nestingType, childDescription, getResourceDocumentationLink(class.ResourceName))
+		registryPath := class.ResourceName
+		if class.ClassDefinition.Documentation.RegistryPath != "" {
+			registryPath = class.ClassDefinition.Documentation.RegistryPath
+		}
+		resourceLink := getTerraformRegistryDocumentationLinkAtPath(class.ResourceName, registryPath, ResourceArtifact)
+		sentence = fmt.Sprintf("A %s of %s which can also be configured using a separate %s resource.", nestingType, childDescription, resourceLink)
 	} else {
 		sentence = fmt.Sprintf("A %s of %s.", nestingType, childDescription)
 	}
@@ -509,28 +618,134 @@ func documentationRelationTargets(class *Class) []*ClassName {
 func (d *ClassDocumentation) setDnFormats(class *Class) {
 	genLogger.Debugf("Setting Documentation DnFormats for class '%s'.", class.Name.full)
 
-	override := class.ClassDefinition.Documentation.DnFormats
-	if len(override) > 0 {
-		d.DnFormats = slices.Clone(override)
-	} else if rawFormats, ok := class.MetaFileContent["dnFormats"].([]any); ok {
-		for _, raw := range rawFormats {
-			if s, ok := raw.(string); ok {
-				d.DnFormats = append(d.DnFormats, s)
-			}
-		}
-	} else {
+	d.ImportDnFormat = ""
+	d.DnFormats = class.documentationDnFormats()
+	if len(d.DnFormats) == 0 {
 		genLogger.Debugf("No dnFormats available for class '%s'.", class.Name.full)
 	}
 
-	// Sort to guarantee stable, deterministic output across regenerations.
-	slices.Sort(d.DnFormats)
-
-	if len(override) == 0 && len(d.DnFormats) > constMaxDnFormatsToDisplay {
+	if dnFormats := actualDnFormats(d.DnFormats); len(dnFormats) > 0 {
+		d.ImportDnFormat = dnFormats[0]
+	}
+	if len(class.ClassDefinition.Documentation.DnFormats) == 0 && len(d.DnFormats) > constMaxDnFormatsToDisplay {
 		notice := fmt.Sprintf("Too many DN formats to display, see model documentation for all possible parents of %s.", d.ClassName)
 		d.DnFormats = append([]string{notice}, d.DnFormats[:constMaxDnFormatsToDisplay]...)
 	}
 
-	genLogger.Debugf("Successfully set Documentation DnFormats for class '%s'. DnFormats: %v", class.Name.full, d.DnFormats)
+	genLogger.Debugf("Successfully set Documentation DnFormats for class '%s'. DnFormats: %v, ImportDnFormat: %s", class.Name.full, d.DnFormats, d.ImportDnFormat)
+}
+
+func (c *Class) documentationDnFormats() []string {
+	if override := c.ClassDefinition.Documentation.DnFormats; len(override) > 0 {
+		dnFormats := slices.Clone(override)
+		slices.Sort(dnFormats)
+		return dnFormats
+	}
+
+	var dnFormats []string
+	if rawFormats, ok := c.MetaFileContent["dnFormats"].([]any); ok {
+		for _, raw := range rawFormats {
+			if dnFormat, ok := raw.(string); ok {
+				dnFormats = append(dnFormats, dnFormat)
+			}
+		}
+	}
+	slices.Sort(dnFormats)
+	return dnFormats
+}
+
+func (d *ClassDocumentation) setImportDnFormat(class *Class, ds *DataStore) {
+	d.ImportDnFormat = class.documentationImportDnFormat(ds, make(map[string]struct{}))
+}
+
+func (c *Class) documentationImportDnFormat(ds *DataStore, visited map[string]struct{}) string {
+	// Select from the complete source list because the rendered DN formats can be
+	// shortened to a representative sample.
+	dnFormats := actualDnFormats(c.documentationDnFormats())
+	if len(dnFormats) == 0 {
+		return ""
+	}
+	fallback := dnFormats[0]
+
+	if c.Name != nil {
+		className := c.Name.String()
+		if _, found := visited[className]; found {
+			return fallback
+		}
+		visited[className] = struct{}{}
+		defer delete(visited, className)
+	}
+
+	var parentDnFormat string
+	if c.ExampleContext.ParentDnMode == ParentDnFromSchemaDefault {
+		if c.DefaultParentDn != nil {
+			parentDnFormat = c.DefaultParentDn.ParentDn
+		}
+		if parentDnFormat == "" {
+			if parentDn := c.ParentDnProperty(); parentDn != nil {
+				for _, defaultValue := range parentDn.Documentation.DefaultValues {
+					if defaultValue.Value != "" {
+						parentDnFormat = defaultValue.Value
+						break
+					}
+				}
+			}
+		}
+	}
+	if parentDnFormat == "" && c.ExampleContext.ParentClass != nil {
+		if parent, ok := ds.Classes[c.ExampleContext.ParentClass.String()]; ok {
+			parentDnFormat = parent.documentationImportDnFormat(ds, visited)
+		}
+	}
+	if parentDnFormat == "" {
+		return fallback
+	}
+
+	expectedDnFormat := strings.TrimSuffix(parentDnFormat, "/") + "/" + c.RnFormat
+	for _, dnFormat := range dnFormats {
+		if documentationDnFormatMatches(dnFormat, expectedDnFormat) {
+			return expectedDnFormat
+		}
+	}
+	return fallback
+}
+
+func documentationDnFormatMatches(pattern, value string) bool {
+	if pattern == value {
+		return true
+	}
+
+	var expression strings.Builder
+	expression.WriteByte('^')
+	for {
+		start := strings.IndexByte(pattern, '{')
+		if start == -1 {
+			expression.WriteString(regexp.QuoteMeta(pattern))
+			break
+		}
+		end := strings.IndexByte(pattern[start:], '}')
+		if end == -1 {
+			expression.WriteString(regexp.QuoteMeta(pattern))
+			break
+		}
+		expression.WriteString(regexp.QuoteMeta(pattern[:start]))
+		expression.WriteString(`[^/]+`)
+		pattern = pattern[start+end+1:]
+	}
+	expression.WriteByte('$')
+
+	matches, err := regexp.MatchString(expression.String(), value)
+	return err == nil && matches
+}
+
+func actualDnFormats(dnFormats []string) []string {
+	actualFormats := make([]string, 0, len(dnFormats))
+	for _, dnFormat := range dnFormats {
+		if !strings.HasPrefix(dnFormat, "Too many DN formats") {
+			actualFormats = append(actualFormats, dnFormat)
+		}
+	}
+	return actualFormats
 }
 
 func (d *ClassDocumentation) setMigrationWarning(class *Class) {
@@ -570,8 +785,8 @@ func (d *ClassDocumentation) setParentDns(class *Class, ds *DataStore) {
 	var resourceEntries, classOnlyEntries []string
 	for _, parent := range parents {
 		parentLink := getDevnetObjectDocumentationLink(parent.full)
-		if resourceName := ds.getResourceNameForArtifact(parent.full, ResourceArtifact); resourceName != "" {
-			resourceEntries = append(resourceEntries, fmt.Sprintf("%s (%s)", getResourceDocumentationLink(resourceName), parentLink))
+		if resourceLink := ds.getTerraformRegistryDocumentationLink(parent.full, ResourceArtifact); resourceLink != "" {
+			resourceEntries = append(resourceEntries, fmt.Sprintf("%s (%s)", resourceLink, parentLink))
 		} else {
 			classOnlyEntries = append(classOnlyEntries, parentLink)
 		}

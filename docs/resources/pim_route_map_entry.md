@@ -14,8 +14,6 @@ description: |-
 
 Manages ACI PIM Route Map Entry
 
-
-
 ## API Information ##
 
 * Class: [pimRouteMapEntry](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/pimRouteMapEntry/overview)
@@ -34,40 +32,41 @@ The configuration snippet below creates a PIM Route Map Entry with only required
 
 ```hcl
 
-resource "aci_pim_route_map_entry" "example_pim_route_map_policy" {
+resource "aci_pim_route_map_entry" "example" {
   parent_dn = aci_pim_route_map_policy.example.id
   order     = "1"
 }
 
 ```
+
 The configuration snippet below shows all possible attributes of the PIM Route Map Entry.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
 ```hcl
 
-resource "aci_pim_route_map_entry" "full_example_pim_route_map_policy" {
+resource "aci_pim_route_map_entry" "full_example" {
   parent_dn           = aci_pim_route_map_policy.example.id
   action              = "deny"
-  annotation          = "annotation"
-  description         = "description_1"
+  annotation          = "example_annotation"
+  description         = "Example PIM Route Map Entry"
   group_ip            = "0.0.0.0"
-  name                = "name_1"
-  name_alias          = "name_alias_1"
+  name                = "pim_route_map_entry"
+  name_alias          = "example_name_alias"
   order               = "1"
   rendezvous_point_ip = "0.0.0.0"
-  source_ip           = "1.1.1.1/30"
+  source_ip           = "192.0.2.1/30"
   annotations = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
   tags = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
 }
 
@@ -81,6 +80,7 @@ All examples for the PIM Route Map Entry resource can be found in the [examples]
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_pim_route_map_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/pim_route_map_policy) ([pimRouteMapPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/pimRouteMapPol/overview))
+
 * `order` (order) - (string) PIM route map entry order.
 
 ### Read-Only ###
@@ -96,18 +96,21 @@ All examples for the PIM Route Map Entry resource can be found in the [examples]
   - Default: `"orchestrator:terraform"`
 * `description` (descr) - (string) The description of the PIM Route Map Entry object.
 * `group_ip` (grp) - (string) The group ip of the PIM Route Map Entry object.
+  - Default: `"0.0.0.0"`
 * `name` (name) - (string) The name of the PIM Route Map Entry object.
 * `name_alias` (nameAlias) - (string) The name alias of the PIM Route Map Entry object. This attribute is supported in ACI versions: 2.2(1k) and later.
 * `rendezvous_point_ip` (rp) - (string) The rendezvous point ip of the PIM Route Map Entry object.
+  - Default: `"0.0.0.0"`
 * `source_ip` (src) - (string) The source ip of the PIM Route Map Entry object.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+  - Default: `"0.0.0.0"`
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
 
@@ -116,7 +119,7 @@ All examples for the PIM Route Map Entry resource can be found in the [examples]
 An existing PIM Route Map Entry can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_pim_route_map_entry.example_pim_route_map_policy uni/tn-{name}/rtmap-{name}/rtmapentry-{order}
+terraform import aci_pim_route_map_entry.example uni/tn-{name}/rtmap-{name}/rtmapentry-{order}
 ```
 
 Starting in Terraform version 1.5, an existing PIM Route Map Entry can be imported
@@ -125,6 +128,6 @@ using [import blocks](https://developer.hashicorp.com/terraform/language/import)
 ```
 import {
   id = "uni/tn-{name}/rtmap-{name}/rtmapentry-{order}"
-  to = aci_pim_route_map_entry.example_pim_route_map_policy
+  to = aci_pim_route_map_entry.example
 }
 ```

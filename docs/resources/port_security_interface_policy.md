@@ -14,8 +14,6 @@ description: |-
 
 Manages ACI Port Security Interface Policy
 
-
-
 ## API Information ##
 
 * Class: [l2PortSecurityPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l2PortSecurityPol/overview)
@@ -35,10 +33,11 @@ The configuration snippet below creates a Port Security Interface Policy with on
 ```hcl
 
 resource "aci_port_security_interface_policy" "example" {
-  name = "test_name"
+  name = "port_security_interface_policy"
 }
 
 ```
+
 The configuration snippet below shows all possible attributes of the Port Security Interface Policy.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
@@ -46,26 +45,26 @@ The configuration snippet below shows all possible attributes of the Port Securi
 ```hcl
 
 resource "aci_port_security_interface_policy" "full_example" {
-  annotation        = "annotation"
-  description       = "description_1"
+  annotation        = "example_annotation"
+  description       = "Example Port Security Interface Policy"
   maximum_endpoints = "10101"
-  name              = "test_name"
-  name_alias        = "name_alias_1"
-  owner_key         = "owner_key_1"
-  owner_tag         = "owner_tag_1"
+  name              = "port_security_interface_policy"
+  name_alias        = "example_name_alias"
+  owner_key         = "example_owner_key"
+  owner_tag         = "example_owner_tag"
   timeout           = "3200"
   violation_action  = "protect"
   annotations = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
   tags = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
 }
 
@@ -98,14 +97,14 @@ All examples for the Port Security Interface Policy resource can be found in the
 * `violation_action` (violation) - (string) The violation action of the Port Security Interface Policy object.
   - Default: `"protect"`
   - Valid Values: `"protect"`.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
 

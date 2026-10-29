@@ -14,8 +14,6 @@ description: |-
 
 Manages ACI Link Level Interface Policy
 
-
-
 ## API Information ##
 
 * Class: [fabricHIfPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fabricHIfPol/overview)
@@ -35,10 +33,11 @@ The configuration snippet below creates a Link Level Interface Policy with only 
 ```hcl
 
 resource "aci_link_level_interface_policy" "example" {
-  name = "test_name"
+  name = "link_level_interface_policy"
 }
 
 ```
+
 The configuration snippet below shows all possible attributes of the Link Level Interface Policy.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
@@ -46,30 +45,30 @@ The configuration snippet below shows all possible attributes of the Link Level 
 ```hcl
 
 resource "aci_link_level_interface_policy" "full_example" {
-  annotation          = "annotation"
+  annotation          = "example_annotation"
   auto_negotiation    = "off"
-  description         = "description_1"
+  description         = "Example Link Level Interface Policy"
   port_delay          = "50"
   emi_retrain         = "enable"
   fec_mode            = "auto-fec"
   link_debounce       = "2001"
-  name                = "test_name"
-  name_alias          = "name_alias_1"
-  owner_key           = "owner_key_1"
-  owner_tag           = "owner_tag_1"
+  name                = "link_level_interface_policy"
+  name_alias          = "example_name_alias"
+  owner_key           = "example_owner_key"
+  owner_tag           = "example_owner_tag"
   physical_media_type = "sfp-10g-tx"
   speed               = "100G"
   annotations = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
   tags = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
 }
 
@@ -114,14 +113,14 @@ All examples for the Link Level Interface Policy resource can be found in the [e
 * `speed` (speed) - (string) The speed of the Link Level Interface Policy object. The data transfer rate for the port should match the destination to which the port is linked.
   - Default: `"inherit"`
   - Valid Values: `"100G"`, `"100M"`, `"10G"`, `"1G"`, `"2.5G"`, `"200G"`, `"25G"`, `"400G"`, `"40G"`, `"50G"`, `"5G"`, `"auto"`, `"inherit"`.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
 

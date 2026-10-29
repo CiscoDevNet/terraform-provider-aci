@@ -14,7 +14,6 @@ description: |-
 
 Manages ACI L2 Interface Policy
 
-
   !> This resource has been migrated to the terraform plugin protocol version 6, refer to the [migration guide](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/guides/migration) for more details and implications for already managed resources.
 
 ## API Information ##
@@ -36,10 +35,11 @@ The configuration snippet below creates a L2 Interface Policy with only required
 ```hcl
 
 resource "aci_l2_interface_policy" "example" {
-  name = "test_name"
+  name = "l2_interface_policy"
 }
 
 ```
+
 The configuration snippet below shows all possible attributes of the L2 Interface Policy.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
@@ -47,26 +47,26 @@ The configuration snippet below shows all possible attributes of the L2 Interfac
 ```hcl
 
 resource "aci_l2_interface_policy" "full_example" {
-  annotation       = "annotation"
-  description      = "description_1"
-  name             = "test_name"
-  name_alias       = "name_alias_1"
-  owner_key        = "owner_key_1"
-  owner_tag        = "owner_tag_1"
+  annotation       = "example_annotation"
+  description      = "Example L2 Interface Policy"
+  name             = "l2_interface_policy"
+  name_alias       = "example_name_alias"
+  owner_key        = "example_owner_key"
+  owner_tag        = "example_owner_tag"
   q_in_q           = "corePort"
   reflective_relay = "enabled"
   vlan_scope       = "portlocal"
   annotations = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
   tags = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
 }
 
@@ -101,14 +101,14 @@ All examples for the L2 Interface Policy resource can be found in the [examples]
 * `vlan_scope` (vlanScope) - (string) The vlan scope of the L2 Interface Policy object.
   - Default: `"global"`
   - Valid Values: `"global"`, `"portlocal"`.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
 

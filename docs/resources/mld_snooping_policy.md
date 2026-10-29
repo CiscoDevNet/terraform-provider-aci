@@ -14,8 +14,6 @@ description: |-
 
 Manages ACI MLD Snooping Policy
 
-
-
 ## API Information ##
 
 * Class: [mldSnoopPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/mldSnoopPol/overview)
@@ -36,29 +34,31 @@ The configuration snippet below creates a MLD Snooping Policy with only required
 
 ```hcl
 
-resource "aci_mld_snooping_policy" "example_tenant" {
+resource "aci_mld_snooping_policy" "example" {
   parent_dn = aci_tenant.example.id
-  name      = "test_name"
+  control   = []
+  name      = "mld_snooping_policy"
 }
 
 ```
+
 The configuration snippet below shows all possible attributes of the MLD Snooping Policy.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
 ```hcl
 
-resource "aci_mld_snooping_policy" "full_example_tenant" {
+resource "aci_mld_snooping_policy" "full_example" {
   parent_dn            = aci_tenant.example.id
   admin_state          = "disabled"
-  annotation           = "annotation"
+  annotation           = "example_annotation"
   control              = ["fast-leave", "querier"]
-  description          = "description_1"
+  description          = "Example MLD Snooping Policy"
   last_member_interval = "3"
-  name                 = "test_name"
-  name_alias           = "name_alias_1"
-  owner_key            = "owner_key_1"
-  owner_tag            = "owner_tag_1"
+  name                 = "mld_snooping_policy"
+  name_alias           = "example_name_alias"
+  owner_key            = "example_owner_key"
+  owner_tag            = "example_owner_tag"
   query_interval       = "140"
   response_interval    = "11"
   start_query_count    = "9"
@@ -66,15 +66,15 @@ resource "aci_mld_snooping_policy" "full_example_tenant" {
   version              = "unspecified"
   annotations = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
   tags = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
 }
 
@@ -88,6 +88,7 @@ All examples for the MLD Snooping Policy resource can be found in the [examples]
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tenant) ([fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview))
+
 * `name` (name) - (string) The name of the MLD Snooping Policy object.
 
 ### Read-Only ###
@@ -102,6 +103,7 @@ All examples for the MLD Snooping Policy resource can be found in the [examples]
 * `annotation` (annotation) - (string) The annotation of the MLD Snooping Policy object.
   - Default: `"orchestrator:terraform"`
 * `control` (ctrl) - (list) The controls for the MLD Snooping Policy object.
+  - Default: `[]`
   - Valid Values: `"fast-leave"`, `"opt-flood"`, `"querier"`, `"routing"`.
 * `description` (descr) - (string) The description of the MLD Snooping Policy object.
 * `last_member_interval` (lastMbrIntvl) - (string) The last member interval (seconds) of the MLD Snooping Policy object. The group state is removed when no host responds before the timeout.
@@ -120,14 +122,14 @@ All examples for the MLD Snooping Policy resource can be found in the [examples]
 * `version` (ver) - (string) The MLD version. This attribute is supported in ACI versions: 5.1(1h) and later.
   - Default: `"v2"`
   - Valid Values: `"unspecified"`, `"v1"`, `"v2"`.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
 
@@ -136,7 +138,7 @@ All examples for the MLD Snooping Policy resource can be found in the [examples]
 An existing MLD Snooping Policy can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_mld_snooping_policy.example_tenant uni/tn-{name}/mldsnoopPol-{name}
+terraform import aci_mld_snooping_policy.example uni/tn-{name}/mldsnoopPol-{name}
 ```
 
 Starting in Terraform version 1.5, an existing MLD Snooping Policy can be imported
@@ -145,6 +147,6 @@ using [import blocks](https://developer.hashicorp.com/terraform/language/import)
 ```
 import {
   id = "uni/tn-{name}/mldsnoopPol-{name}"
-  to = aci_mld_snooping_policy.example_tenant
+  to = aci_mld_snooping_policy.example
 }
 ```

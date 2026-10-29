@@ -14,8 +14,6 @@ description: |-
 
 Manages ACI NetFlow Exporter Policy
 
-
-
 ## API Information ##
 
 * Class: [netflowExporterPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowExporterPol/overview)
@@ -38,77 +36,77 @@ The configuration snippet below creates a NetFlow Exporter Policy with only requ
 
 ```hcl
 
-resource "aci_netflow_exporter_policy" "example_tenant" {
-  parent_dn              = aci_tenant.example.id
-  destination_ip_address = "2.2.2.1"
+resource "aci_netflow_exporter_policy" "example" {
+  destination_ip_address = "198.51.100.1"
   destination_port       = "https"
-  name                   = "netfow_exporter"
+  name                   = "netflow_exporter"
+  source_ip_address      = "192.0.2.1/24"
 }
 
 ```
+
 The configuration snippet below shows all possible attributes of the NetFlow Exporter Policy.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
 ```hcl
 
-resource "aci_netflow_exporter_policy" "full_example_tenant" {
-  parent_dn              = aci_tenant.example.id
-  annotation             = "annotation"
-  description            = "description_1"
+resource "aci_netflow_exporter_policy" "full_example" {
+  annotation             = "example_annotation"
+  description            = "Example NetFlow Exporter Policy"
   qos_dscp_value         = "AF11"
-  destination_ip_address = "2.2.2.1"
+  destination_ip_address = "198.51.100.1"
   destination_port       = "https"
-  name                   = "netfow_exporter"
-  name_alias             = "name_alias_1"
-  owner_key              = "owner_key_1"
-  owner_tag              = "owner_tag_1"
+  name                   = "netflow_exporter"
+  name_alias             = "example_name_alias"
+  owner_key              = "example_owner_key"
+  owner_tag              = "example_owner_tag"
   source_ip_type         = "custom-src-ip"
-  source_ip_address      = "1.1.1.1/10"
+  source_ip_address      = "203.0.113.11/24"
   version                = "v9"
   relation_to_vrf = {
-    annotation = "annotation_1"
+    annotation = "example_annotation"
     target_dn  = aci_vrf.example.id
     annotations = [
       {
-        key   = "key_0"
-        value = "value_1"
-      }
+        key   = "example_key"
+        value = "example_value"
+      },
     ]
     tags = [
       {
-        key   = "key_0"
-        value = "value_1"
-      }
+        key   = "example_key"
+        value = "example_value"
+      },
     ]
   }
   relation_to_epg = {
-    annotation = "annotation_1"
+    annotation = "example_annotation"
     target_dn  = aci_application_epg.example.id
     annotations = [
       {
-        key   = "key_0"
-        value = "value_1"
-      }
+        key   = "example_key"
+        value = "example_value"
+      },
     ]
     tags = [
       {
-        key   = "key_0"
-        value = "value_1"
-      }
+        key   = "example_key"
+        value = "example_value"
+      },
     ]
   }
   annotations = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
   tags = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
 }
 
@@ -135,10 +133,10 @@ All examples for the NetFlow Exporter Policy resource can be found in the [examp
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tenant) ([fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview))
-  - The distinguished name (DN) of classes below can be used but currently there is no available resource for it:
+  - The distinguished names (DNs) of parent objects from the following APIC classes can also be used, but no Terraform resources are currently available for these classes:
     - [infraInfra](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraInfra/overview)
+  - Default: `"uni/infra"`
 
-  - Default: `uni/infra`
 * `annotation` (annotation) - (string) The annotation of the NetFlow Exporter Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
   - Default: `"orchestrator:terraform"`
 * `description` (descr) - (string) The description of the NetFlow Exporter Policy object.
@@ -159,48 +157,47 @@ All examples for the NetFlow Exporter Policy resource can be found in the [examp
   - Valid Values: `"cisco-v1"`, `"v5"`, `"v9"`.
 * `relation_to_vrf` - (map) A map of Relation From NetFlow Exporter To VRF (ACI object [netflowRsExporterToCtx](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowRsExporterToCtx/overview)) pointing to VRF (ACI Object [fvCtx](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvCtx/overview)) which can be configured using the [aci_vrf](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vrf) resource.
   #### Optional ####
-    
+
     * `annotation` (annotation) - (string) The annotation of the Relation From NetFlow Exporter To VRF object. This attribute is supported in ACI versions: 3.2(1l) and later.
       - Default: `"orchestrator:terraform"`
-    * `target_dn` (tDn) - (string) The distinguished name of the target.
-    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `target_dn` (tDn) - (string) The distinguished name (DN) of the target object.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-      
-* `relation_to_epg` - (list) A list of Relation From NetFlow Exporter To EPG (ACI object [netflowRsExporterToEPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowRsExporterToEPg/overview)). This relation can point to multiple ACI objects:
+* `relation_to_epg` - (map) A map of Relation From NetFlow Exporter To EPG (ACI object [netflowRsExporterToEPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowRsExporterToEPg/overview)). This relation can point to multiple ACI objects:
     - [fvAEPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvAEPg/overview) which can be configured using the [aci_application_epg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/application_epg) resource.
     - [l3extInstP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extInstP/overview) which can be configured using the [aci_external_epg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/external_epg) resource.
     - [l2extInstP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l2extInstP/overview) which can be configured using the [aci_l2out_extepg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l2out_extepg) resource.
   #### Optional ####
-    
+
     * `annotation` (annotation) - (string) The annotation of the Relation From NetFlow Exporter To EPG object. This attribute is supported in ACI versions: 3.2(1l) and later.
       - Default: `"orchestrator:terraform"`
-    * `target_dn` (tDn) - (string) The distinguished name of the target.
-    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `target_dn` (tDn) - (string) The distinguished name (DN) of the target object.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
 
@@ -209,7 +206,7 @@ All examples for the NetFlow Exporter Policy resource can be found in the [examp
 An existing NetFlow Exporter Policy can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_netflow_exporter_policy.example_tenant uni/infra/exporterpol-{name}
+terraform import aci_netflow_exporter_policy.example uni/infra/exporterpol-{name}
 ```
 
 Starting in Terraform version 1.5, an existing NetFlow Exporter Policy can be imported
@@ -218,6 +215,6 @@ using [import blocks](https://developer.hashicorp.com/terraform/language/import)
 ```
 import {
   id = "uni/infra/exporterpol-{name}"
-  to = aci_netflow_exporter_policy.example_tenant
+  to = aci_netflow_exporter_policy.example
 }
 ```

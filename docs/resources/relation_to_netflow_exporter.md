@@ -14,8 +14,6 @@ description: |-
 
 Manages ACI Relation To NetFlow Exporter
 
-
-
 ## API Information ##
 
 * Class: [netflowRsMonitorToExporter](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowRsMonitorToExporter/overview)
@@ -38,33 +36,34 @@ The configuration snippet below creates a Relation To NetFlow Exporter with only
 
 ```hcl
 
-resource "aci_relation_to_netflow_exporter" "example_netflow_monitor_policy" {
+resource "aci_relation_to_netflow_exporter" "example" {
   parent_dn                    = aci_netflow_monitor_policy.example.id
   netflow_exporter_policy_name = aci_netflow_exporter_policy.example.name
 }
 
 ```
+
 The configuration snippet below shows all possible attributes of the Relation To NetFlow Exporter.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
 ```hcl
 
-resource "aci_relation_to_netflow_exporter" "full_example_netflow_monitor_policy" {
+resource "aci_relation_to_netflow_exporter" "full_example" {
   parent_dn                    = aci_netflow_monitor_policy.example.id
-  annotation                   = "annotation"
+  annotation                   = "example_annotation"
   netflow_exporter_policy_name = aci_netflow_exporter_policy.example.name
   annotations = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
   tags = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
 }
 
@@ -78,6 +77,7 @@ All examples for the Relation To NetFlow Exporter resource can be found in the [
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_netflow_monitor_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/netflow_monitor_policy) ([netflowMonitorPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowMonitorPol/overview))
+
 * `netflow_exporter_policy_name` (tnNetflowExporterPolName) - (string) Name. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/netflow_exporter_policy) with `aci_netflow_exporter_policy.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/netflow_exporter_policy) with `data.aci_netflow_exporter_policy.example.name`.
 
 ### Read-Only ###
@@ -88,14 +88,14 @@ All examples for the Relation To NetFlow Exporter resource can be found in the [
 
 * `annotation` (annotation) - (string) The annotation of the Relation To NetFlow Exporter object. This attribute is supported in ACI versions: 3.2(1l) and later.
   - Default: `"orchestrator:terraform"`
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
 
@@ -104,7 +104,7 @@ All examples for the Relation To NetFlow Exporter resource can be found in the [
 An existing Relation To NetFlow Exporter can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_relation_to_netflow_exporter.example_netflow_monitor_policy uni/infra/monitorpol-{name}/rsmonitorToExporter-{tnNetflowExporterPolName}
+terraform import aci_relation_to_netflow_exporter.example uni/infra/monitorpol-{name}/rsmonitorToExporter-{tnNetflowExporterPolName}
 ```
 
 Starting in Terraform version 1.5, an existing Relation To NetFlow Exporter can be imported
@@ -113,6 +113,6 @@ using [import blocks](https://developer.hashicorp.com/terraform/language/import)
 ```
 import {
   id = "uni/infra/monitorpol-{name}/rsmonitorToExporter-{tnNetflowExporterPolName}"
-  to = aci_relation_to_netflow_exporter.example_netflow_monitor_policy
+  to = aci_relation_to_netflow_exporter.example
 }
 ```

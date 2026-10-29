@@ -14,8 +14,6 @@ description: |-
 
 Manages ACI IP Address Block
 
-
-
 ## API Information ##
 
 * Class: [fvnsUcastAddrBlk](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvnsUcastAddrBlk/overview)
@@ -38,38 +36,39 @@ The configuration snippet below creates a IP Address Block with only required at
 
 ```hcl
 
-resource "aci_ip_address_block" "example_ip_address_pool" {
+resource "aci_ip_address_block" "example" {
   parent_dn = aci_ip_address_pool.example.id
   from      = "10.0.0.2"
   to        = "10.0.0.5"
 }
 
 ```
+
 The configuration snippet below shows all possible attributes of the IP Address Block.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
 ```hcl
 
-resource "aci_ip_address_block" "full_example_ip_address_pool" {
+resource "aci_ip_address_block" "full_example" {
   parent_dn   = aci_ip_address_pool.example.id
-  annotation  = "annotation"
-  description = "description_1"
+  annotation  = "example_annotation"
+  description = "Example IP Address Block"
   from        = "10.0.0.2"
-  name        = "name_1"
-  name_alias  = "name_alias_1"
+  name        = "ip_address_block"
+  name_alias  = "example_name_alias"
   to          = "10.0.0.5"
   annotations = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
   tags = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
 }
 
@@ -83,7 +82,7 @@ All examples for the IP Address Block resource can be found in the [examples](ht
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_ip_address_pool](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/ip_address_pool) ([fvnsAddrInst](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvnsAddrInst/overview))
-  - The distinguished name (DN) of classes below can be used but currently there is no available resource for it:
+  - The distinguished names (DNs) of parent objects from the following APIC classes can also be used, but no Terraform resources are currently available for these classes:
     - [vnsAddrInst](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vnsAddrInst/overview)
 
 * `from` (from) - (string) The first unicast address in the address block.
@@ -100,14 +99,14 @@ All examples for the IP Address Block resource can be found in the [examples](ht
 * `description` (descr) - (string) The description of the IP Address Block object.
 * `name` (name) - (string) The name of the IP Address Block object.
 * `name_alias` (nameAlias) - (string) The name alias of the IP Address Block object. This attribute is supported in ACI versions: 2.2(1k) and later.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
 
@@ -116,7 +115,7 @@ All examples for the IP Address Block resource can be found in the [examples](ht
 An existing IP Address Block can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_ip_address_block.example_ip_address_pool uni/tn-{name}/addrinst-{name}/fromaddr-[{from}]-toaddr-[{to}]
+terraform import aci_ip_address_block.example uni/tn-{name}/addrinst-{name}/fromaddr-[{from}]-toaddr-[{to}]
 ```
 
 Starting in Terraform version 1.5, an existing IP Address Block can be imported
@@ -125,6 +124,6 @@ using [import blocks](https://developer.hashicorp.com/terraform/language/import)
 ```
 import {
   id = "uni/tn-{name}/addrinst-{name}/fromaddr-[{from}]-toaddr-[{to}]"
-  to = aci_ip_address_block.example_ip_address_pool
+  to = aci_ip_address_block.example
 }
 ```

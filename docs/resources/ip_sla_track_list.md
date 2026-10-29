@@ -14,8 +14,6 @@ description: |-
 
 Manages ACI IP SLA Track List
 
-
-
 ## API Information ##
 
 * Class: [fvTrackList](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTrackList/overview)
@@ -34,26 +32,27 @@ The configuration snippet below creates a IP SLA Track List with only required a
 
 ```hcl
 
-resource "aci_ip_sla_track_list" "example_tenant" {
+resource "aci_ip_sla_track_list" "example" {
   parent_dn = aci_tenant.example.id
-  name      = "test_name"
+  name      = "ip_sla_track_list"
 }
 
 ```
+
 The configuration snippet below shows all possible attributes of the IP SLA Track List.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
 ```hcl
 
-resource "aci_ip_sla_track_list" "full_example_tenant" {
+resource "aci_ip_sla_track_list" "full_example" {
   parent_dn       = aci_tenant.example.id
-  annotation      = "annotation"
-  description     = "description_1"
-  name            = "test_name"
-  name_alias      = "name_alias_1"
-  owner_key       = "owner_key_1"
-  owner_tag       = "owner_tag_1"
+  annotation      = "example_annotation"
+  description     = "Example IP SLA Track List"
+  name            = "ip_sla_track_list"
+  name_alias      = "example_name_alias"
+  owner_key       = "example_owner_key"
+  owner_tag       = "example_owner_tag"
   percentage_down = "30"
   percentage_up   = "40"
   type            = "weight"
@@ -61,34 +60,34 @@ resource "aci_ip_sla_track_list" "full_example_tenant" {
   weight_up       = "20"
   relation_to_ip_sla_track_members = [
     {
-      annotation = "annotation_1"
+      annotation = "example_annotation"
       target_dn  = aci_ip_sla_track_member.example.id
       weight     = "20"
       annotations = [
         {
-          key   = "key_0"
-          value = "value_1"
-        }
+          key   = "example_key"
+          value = "example_value"
+        },
       ]
       tags = [
         {
-          key   = "key_0"
-          value = "value_1"
-        }
+          key   = "example_key"
+          value = "example_value"
+        },
       ]
-    }
+    },
   ]
   annotations = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
   tags = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
 }
 
@@ -102,6 +101,7 @@ All examples for the IP SLA Track List resource can be found in the [examples](h
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tenant) ([fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview))
+
 * `name` (name) - (string) The name of the IP SLA Track List object.
 
 ### Read-Only ###
@@ -129,32 +129,32 @@ All examples for the IP SLA Track List resource can be found in the [examples](h
   - Default: `"1"`
 * `relation_to_ip_sla_track_members` - (list) A list of Relation To IP SLA Track Members (ACI object [fvRsOtmListMember](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsOtmListMember/overview)) pointing to IP SLA Track Member (ACI Object [fvTrackMember](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTrackMember/overview)) which can be configured using the [aci_ip_sla_track_member](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/ip_sla_track_member) resource.
   #### Required ####
-  
+
     * `target_dn` (tDn) - (string) The distinguished name (DN) of the IP SLA Track Member.
   #### Optional ####
-    
+
     * `annotation` (annotation) - (string) The annotation of the Relation To IP SLA Track Member object.
       - Default: `"orchestrator:terraform"`
     * `weight` (weight) - (string) The weight associated with the IP SLA Track Member that contributes to the total weight that is used to determines whether a route is considered available or unavailable.
       - Default: `"10"`
-    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
 
@@ -163,7 +163,7 @@ All examples for the IP SLA Track List resource can be found in the [examples](h
 An existing IP SLA Track List can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_ip_sla_track_list.example_tenant uni/tn-{name}/tracklist-{name}
+terraform import aci_ip_sla_track_list.example uni/tn-{name}/tracklist-{name}
 ```
 
 Starting in Terraform version 1.5, an existing IP SLA Track List can be imported
@@ -172,6 +172,6 @@ using [import blocks](https://developer.hashicorp.com/terraform/language/import)
 ```
 import {
   id = "uni/tn-{name}/tracklist-{name}"
-  to = aci_ip_sla_track_list.example_tenant
+  to = aci_ip_sla_track_list.example
 }
 ```

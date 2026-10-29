@@ -14,8 +14,6 @@ description: |-
 
 Manages ACI VMM Uplink Policy
 
-
-
 ## API Information ##
 
 * Class: [vmmUplinkP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vmmUplinkP/overview)
@@ -34,36 +32,37 @@ The configuration snippet below creates a VMM Uplink Policy with only required a
 
 ```hcl
 
-resource "aci_vmm_uplink_policy" "example_vmm_uplink_container" {
+resource "aci_vmm_uplink_policy" "example" {
   parent_dn   = aci_vmm_uplink_container.example.id
   uplink_id   = "1"
-  uplink_name = "uplink_name_1"
+  uplink_name = "primary_uplink"
 }
 
 ```
+
 The configuration snippet below shows all possible attributes of the VMM Uplink Policy.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
 ```hcl
 
-resource "aci_vmm_uplink_policy" "full_example_vmm_uplink_container" {
+resource "aci_vmm_uplink_policy" "full_example" {
   parent_dn   = aci_vmm_uplink_container.example.id
-  annotation  = "annotation"
-  name_alias  = "name_alias_1"
+  annotation  = "example_annotation"
+  name_alias  = "example_name_alias"
   uplink_id   = "1"
-  uplink_name = "uplink_name_1"
+  uplink_name = "primary_uplink"
   annotations = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
   tags = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
 }
 
@@ -77,6 +76,7 @@ All examples for the VMM Uplink Policy resource can be found in the [examples](h
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_vmm_uplink_container](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vmm_uplink_container) ([vmmUplinkPCont](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vmmUplinkPCont/overview))
+
 * `uplink_id` (uplinkId) - (string) The uplink identifier of the VMM Uplink Policy object.
 * `uplink_name` (uplinkName) - (string) The uplink name of the VMM Uplink Policy object.
 
@@ -89,14 +89,14 @@ All examples for the VMM Uplink Policy resource can be found in the [examples](h
 * `annotation` (annotation) - (string) The annotation of the VMM Uplink Policy object.
   - Default: `"orchestrator:terraform"`
 * `name_alias` (nameAlias) - (string) The name alias of the VMM Uplink Policy object.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
 
@@ -105,7 +105,7 @@ All examples for the VMM Uplink Policy resource can be found in the [examples](h
 An existing VMM Uplink Policy can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_vmm_uplink_policy.example_vmm_uplink_container uni/vmmp-{vendor}/dom-{name}/uplinkpcont/uplinkp-{uplinkId}
+terraform import aci_vmm_uplink_policy.example uni/vmmp-{vendor}/dom-{name}/uplinkpcont/uplinkp-{uplinkId}
 ```
 
 Starting in Terraform version 1.5, an existing VMM Uplink Policy can be imported
@@ -114,6 +114,6 @@ using [import blocks](https://developer.hashicorp.com/terraform/language/import)
 ```
 import {
   id = "uni/vmmp-{vendor}/dom-{name}/uplinkpcont/uplinkp-{uplinkId}"
-  to = aci_vmm_uplink_policy.example_vmm_uplink_container
+  to = aci_vmm_uplink_policy.example
 }
 ```

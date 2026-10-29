@@ -14,8 +14,6 @@ description: |-
 
 Manages ACI Relation From VRF To BGP Address Family Context
 
-
-
 ## API Information ##
 
 * Class: [fvRsCtxToBgpCtxAfPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsCtxToBgpCtxAfPol/overview)
@@ -34,35 +32,36 @@ The configuration snippet below creates a Relation From VRF To BGP Address Famil
 
 ```hcl
 
-resource "aci_relation_from_vrf_to_bgp_address_family_context" "example_vrf" {
+resource "aci_relation_from_vrf_to_bgp_address_family_context" "example" {
   parent_dn                       = aci_vrf.example.id
   address_family                  = "ipv4-ucast"
   bgp_address_family_context_name = aci_bgp_address_family_context.example.name
 }
 
 ```
+
 The configuration snippet below shows all possible attributes of the Relation From VRF To BGP Address Family Context.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
 ```hcl
 
-resource "aci_relation_from_vrf_to_bgp_address_family_context" "full_example_vrf" {
+resource "aci_relation_from_vrf_to_bgp_address_family_context" "full_example" {
   parent_dn                       = aci_vrf.example.id
   address_family                  = "ipv4-ucast"
-  annotation                      = "annotation"
+  annotation                      = "example_annotation"
   bgp_address_family_context_name = aci_bgp_address_family_context.example.name
   annotations = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
   tags = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
 }
 
@@ -76,6 +75,7 @@ All examples for the Relation From VRF To BGP Address Family Context resource ca
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_vrf](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vrf) ([fvCtx](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvCtx/overview))
+
 * `address_family` (af) - (string) The type of address family for the Relation From VRF To BGP Address Family Context.
   - Valid Values: `"ipv4-ucast"`, `"ipv6-ucast"`.
 * `bgp_address_family_context_name` (tnBgpCtxAfPolName) - (string) The name of the BGP Address Family Context. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bgp_address_family_context) with `aci_bgp_address_family_context.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/bgp_address_family_context) with `data.aci_bgp_address_family_context.example.name`.
@@ -88,14 +88,14 @@ All examples for the Relation From VRF To BGP Address Family Context resource ca
 
 * `annotation` (annotation) - (string) The annotation of the Relation From VRF To BGP Address Family Context object. This attribute is supported in ACI versions: 3.2(1l) and later.
   - Default: `"orchestrator:terraform"`
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
 
@@ -104,7 +104,7 @@ All examples for the Relation From VRF To BGP Address Family Context resource ca
 An existing Relation From VRF To BGP Address Family Context can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_relation_from_vrf_to_bgp_address_family_context.example_vrf uni/tn-{name}/ctx-{name}/rsctxToBgpCtxAfPol-[{tnBgpCtxAfPolName}]-{af}
+terraform import aci_relation_from_vrf_to_bgp_address_family_context.example uni/tn-{name}/ctx-{name}/rsctxToBgpCtxAfPol-[{tnBgpCtxAfPolName}]-{af}
 ```
 
 Starting in Terraform version 1.5, an existing Relation From VRF To BGP Address Family Context can be imported
@@ -113,6 +113,6 @@ using [import blocks](https://developer.hashicorp.com/terraform/language/import)
 ```
 import {
   id = "uni/tn-{name}/ctx-{name}/rsctxToBgpCtxAfPol-[{tnBgpCtxAfPolName}]-{af}"
-  to = aci_relation_from_vrf_to_bgp_address_family_context.example_vrf
+  to = aci_relation_from_vrf_to_bgp_address_family_context.example
 }
 ```

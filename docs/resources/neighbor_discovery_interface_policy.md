@@ -14,8 +14,6 @@ description: |-
 
 Manages ACI Neighbor Discovery Interface Policy
 
-
-
 ## API Information ##
 
 * Class: [ndIfPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/ndIfPol/overview)
@@ -34,49 +32,51 @@ The configuration snippet below creates a Neighbor Discovery Interface Policy wi
 
 ```hcl
 
-resource "aci_neighbor_discovery_interface_policy" "example_tenant" {
-  parent_dn = aci_tenant.example.id
-  name      = "test_name"
+resource "aci_neighbor_discovery_interface_policy" "example" {
+  parent_dn        = aci_tenant.example.id
+  controller_state = []
+  name             = "neighbor_discovery_interface_policy"
 }
 
 ```
+
 The configuration snippet below shows all possible attributes of the Neighbor Discovery Interface Policy.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
 ```hcl
 
-resource "aci_neighbor_discovery_interface_policy" "full_example_tenant" {
+resource "aci_neighbor_discovery_interface_policy" "full_example" {
   parent_dn                      = aci_tenant.example.id
-  annotation                     = "annotation"
+  annotation                     = "example_annotation"
   controller_state               = ["managed-cfg"]
-  description                    = "description_1"
+  description                    = "Example Neighbor Discovery Interface Policy"
   hop_limit                      = "40"
   mtu                            = "8700"
-  name                           = "test_name"
-  name_alias                     = "name_alias_1"
+  name                           = "neighbor_discovery_interface_policy"
+  name_alias                     = "example_name_alias"
   neighbor_solicitation_interval = "1500"
   neighbor_solicitation_retries  = "6"
   nud_retry_base                 = "2"
   nud_retry_interval             = "1300"
   nud_retry_max_attempts         = "5"
-  owner_key                      = "owner_key_1"
-  owner_tag                      = "owner_tag_1"
+  owner_key                      = "example_owner_key"
+  owner_tag                      = "example_owner_tag"
   router_advertisement_interval  = "500"
   router_advertisement_lifetime  = "1500"
   reachable_time                 = "2"
   retransmit_timer               = "2"
   annotations = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
   tags = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
 }
 
@@ -90,6 +90,7 @@ All examples for the Neighbor Discovery Interface Policy resource can be found i
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tenant) ([fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview))
+
 * `name` (name) - (string) The name of the Neighbor Discovery Interface Policy object.
 
 ### Read-Only ###
@@ -129,14 +130,14 @@ All examples for the Neighbor Discovery Interface Policy resource can be found i
   - Default: `"0"`
 * `retransmit_timer` (retransTimer) - (string) The retransmission time (milliseconds) for sending neighbor solicitation messages.
   - Default: `"0"`
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
 
@@ -145,7 +146,7 @@ All examples for the Neighbor Discovery Interface Policy resource can be found i
 An existing Neighbor Discovery Interface Policy can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_neighbor_discovery_interface_policy.example_tenant uni/tn-{name}/ndifpol-{name}
+terraform import aci_neighbor_discovery_interface_policy.example uni/tn-{name}/ndifpol-{name}
 ```
 
 Starting in Terraform version 1.5, an existing Neighbor Discovery Interface Policy can be imported
@@ -154,6 +155,6 @@ using [import blocks](https://developer.hashicorp.com/terraform/language/import)
 ```
 import {
   id = "uni/tn-{name}/ndifpol-{name}"
-  to = aci_neighbor_discovery_interface_policy.example_tenant
+  to = aci_neighbor_discovery_interface_policy.example
 }
 ```
