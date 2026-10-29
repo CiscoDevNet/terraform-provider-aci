@@ -37,6 +37,16 @@ type PropertyDocumentation struct {
 	SupportedVersions string
 }
 
+// ResourceDocumentationDefaultValues returns the defaults displayed in resource documentation.
+// The annotation default is provider-driven and is therefore not available in APIC metadata.
+func (p *Property) ResourceDocumentationDefaultValues() []DefaultValue {
+	if p.PropertyName == "annotation" {
+		return []DefaultValue{{Value: "orchestrator:terraform"}}
+	}
+
+	return p.Documentation.DefaultValues
+}
+
 func (p *Property) setDocumentation() error {
 	genLogger.Debugf("Setting Documentation for property '%s'.", p.PropertyName)
 
@@ -90,20 +100,18 @@ func (c *Class) setPropertyDocumentationReferences(ds *DataStore) {
 
 		attributeName := property.Reference.ExampleAttributeName
 		var references []string
-		if resourceName := ds.getResourceNameForArtifact(property.Reference.ExampleClass.String(), ResourceArtifact); resourceName != "" {
+		if resourceName, url := ds.getTerraformRegistryDocumentationReference(property.Reference.ExampleClass.String(), ResourceArtifact); resourceName != "" {
 			references = append(references, fmt.Sprintf(
-				"a [resource](%s/%s) with `aci_%s.example.%s`",
-				constRegistryResourceBaseUrl,
-				resourceName,
+				"a [resource](%s) with `aci_%s.example.%s`",
+				url,
 				resourceName,
 				attributeName,
 			))
 		}
-		if resourceName := ds.getResourceNameForArtifact(property.Reference.ExampleClass.String(), DatasourceArtifact); resourceName != "" {
+		if resourceName, url := ds.getTerraformRegistryDocumentationReference(property.Reference.ExampleClass.String(), DatasourceArtifact); resourceName != "" {
 			references = append(references, fmt.Sprintf(
-				"a [datasource](%s/%s) with `data.aci_%s.example.%s`",
-				constRegistryDatasourceBaseUrl,
-				resourceName,
+				"a [datasource](%s) with `data.aci_%s.example.%s`",
+				url,
 				resourceName,
 				attributeName,
 			))

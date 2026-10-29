@@ -14,7 +14,6 @@ description: |-
 
 Manages ACI VMM Domain
 
-
   !> This resource has been migrated to the terraform plugin protocol version 6, refer to the [migration guide](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/guides/migration) for more details and implications for already managed resources.
 
 ## API Information ##
@@ -36,11 +35,13 @@ The configuration snippet below creates a VMM Domain with only required attribut
 ```hcl
 
 resource "aci_vmm_domain" "example" {
-  parent_dn = "uni/vmmp-VMware"
-  name      = "test_name"
+  parent_dn    = "uni/vmmp-VMware"
+  arp_learning = "disabled"
+  name         = "vmm_domain"
 }
 
 ```
+
 The configuration snippet below shows all possible attributes of the VMM Domain.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
@@ -50,7 +51,7 @@ The configuration snippet below shows all possible attributes of the VMM Domain.
 resource "aci_vmm_domain" "full_example" {
   parent_dn                        = "uni/vmmp-VMware"
   access_mode                      = "read-only"
-  annotation                       = "annotation"
+  annotation                       = "example_annotation"
   arp_learning                     = "disabled"
   ave_time_out                     = "30"
   configure_infra_port_groups      = "no"
@@ -67,122 +68,122 @@ resource "aci_vmm_domain" "full_example" {
   host_availability_assurance      = "no"
   multicast_address                = "224.0.1.0"
   switch_type                      = "cf"
-  name                             = "test_name"
-  name_alias                       = "name_alias_1"
-  owner_key                        = "owner_key_1"
-  owner_tag                        = "owner_tag_1"
+  name                             = "vmm_domain"
+  name_alias                       = "example_name_alias"
+  owner_key                        = "example_owner_key"
+  owner_tag                        = "example_owner_tag"
   default_encapsulation_mode       = "unspecified"
   relation_to_ip_address_pool = {
-    annotation = "annotation_1"
+    annotation = "example_annotation"
     target_dn  = aci_ip_address_pool.example.id
     annotations = [
       {
-        key   = "key_0"
-        value = "value_1"
-      }
+        key   = "example_key"
+        value = "example_value"
+      },
     ]
     tags = [
       {
-        key   = "key_0"
-        value = "value_1"
-      }
+        key   = "example_key"
+        value = "example_value"
+      },
     ]
   }
   relation_to_vlan_pool = {
-    annotation = "annotation_1"
+    annotation = "example_annotation"
     target_dn  = aci_vlan_pool.example.id
     annotations = [
       {
-        key   = "key_0"
-        value = "value_1"
-      }
+        key   = "example_key"
+        value = "example_value"
+      },
     ]
     tags = [
       {
-        key   = "key_0"
-        value = "value_1"
-      }
+        key   = "example_key"
+        value = "example_value"
+      },
     ]
   }
   annotations = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
   tags = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
   relation_to_multicast_pool = {
-    annotation = "test_value_for_child"
+    annotation = "example_annotation"
     target_dn  = aci_multicast_pool.example.id
     annotations = [
       {
-        key   = "key_0"
-        value = "value_1"
-      }
+        key   = "example_key"
+        value = "example_value"
+      },
     ]
     tags = [
       {
-        key   = "key_0"
-        value = "value_1"
-      }
+        key   = "example_key"
+        value = "example_value"
+      },
     ]
   }
   relation_to_lacp_enhanced_lag_policy = {
-    annotation = "test_value_for_child"
+    annotation = "example_annotation"
     target_dn  = aci_lacp_enhanced_lag_policy.example.id
     annotations = [
       {
-        key   = "key_0"
-        value = "value_1"
-      }
+        key   = "example_key"
+        value = "example_value"
+      },
     ]
     tags = [
       {
-        key   = "key_0"
-        value = "value_1"
-      }
+        key   = "example_key"
+        value = "example_value"
+      },
     ]
   }
   vmm_uplink_container = {
-    annotation        = "annotation_1"
-    name_alias        = "name_alias_1"
+    annotation        = "example_annotation"
+    name_alias        = "example_name_alias"
     number_of_uplinks = "1"
     annotations = [
       {
-        key   = "key_0"
-        value = "value_1"
-      }
+        key   = "example_key"
+        value = "example_value"
+      },
     ]
     tags = [
       {
-        key   = "key_0"
-        value = "value_1"
-      }
+        key   = "example_key"
+        value = "example_value"
+      },
     ]
     uplink_policies = [
       {
-        annotation  = "annotation_1"
-        name_alias  = "name_alias_1"
+        annotation  = "example_annotation"
+        name_alias  = "example_name_alias"
         uplink_id   = "2"
-        uplink_name = "uplink_name_2"
+        uplink_name = "primary_uplink"
         annotations = [
           {
-            key   = "key_0"
-            value = "value_1"
-          }
+            key   = "example_key"
+            value = "example_value"
+          },
         ]
         tags = [
           {
-            key   = "key_0"
-            value = "value_1"
-          }
+            key   = "example_key"
+            value = "example_value"
+          },
         ]
-      }
+      },
     ]
   }
 }
@@ -195,18 +196,10 @@ All examples for the VMM Domain resource can be found in the [examples](https://
 
 ### Required ###
 
-* `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
-  - The distinguished name (DN) of classes below can be used but currently there is no available resource for it:
-    - [vmmProvP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vmmProvP/overview)
+* `parent_dn` - (string) The distinguished name (DN) of a parent object from one of the following APIC classes; no Terraform resources are currently available for these classes:
+  - [vmmProvP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vmmProvP/overview)
+  - Valid Values: `"uni/vmmp-CloudFoundry"`, `"uni/vmmp-Kubernetes"`, `"uni/vmmp-Microsoft"`, `"uni/vmmp-Nutanix"`, `"uni/vmmp-OpenShift"`, `"uni/vmmp-OpenStack"`, `"uni/vmmp-Redhat"`, `"uni/vmmp-VMware"`.
 
-          1. uni/vmmp-CloudFoundry
-          2. uni/vmmp-Kubernetes
-          3. uni/vmmp-Microsoft
-          4. uni/vmmp-Nutanix
-          5. uni/vmmp-OpenShift
-          6. uni/vmmp-OpenStack
-          7. uni/vmmp-Redhat
-          8. uni/vmmp-VMware
 * `name` (name) - (string) The name of the VMM Domain object.
 
 ### Read-Only ###
@@ -222,8 +215,7 @@ All examples for the VMM Domain resource can be found in the [examples](https://
   - Default: `"orchestrator:terraform"`
 * `arp_learning` (arpLearning) - (string) Enable ARP learning for the the VMM Domain object, this attribute is only applicable for Application Virtual Switch (AVS). This attribute is supported in ACI versions: 3.1(1i) and later.
   - Default: `"disabled"`
-  - Valid Values:
-    * `"disabled"`, `"enabled"`.
+  - Valid Values: `"disabled"`, `"enabled"`.
 * `ave_time_out` (aveTimeOut) - (string) The timeout in seconds that the Cisco ACI Virtual Edge (AVE), the virtual switch for ACI, can remain in a non-working state before vCenter takes action. This attribute is supported in ACI versions: 3.2(10e) to 3.2(10g), 3.2(3n) and later.
   - Default: `"30"`
 * `configure_infra_port_groups` (configInfraPg) - (string) Configure port groups for the virtual APIC. This attribute is supported in ACI versions: 4.0(1h) and later.
@@ -233,7 +225,9 @@ All examples for the VMM Domain resource can be found in the [examples](https://
   - Default: `"epDpVerify"`
   - Valid Values: `"epDpVerify"`, `"none"`.
 * `custom_switch_name` (customSwitchName) - (string) The custom vSwitch name. This attribute is supported in ACI versions: 6.0(3d) and later.
+  - Default: `""`
 * `delimiter` (delimiter) - (string) The delimiter of the VMM Domain object. This attribute is supported in ACI versions: 2.0(1m) and later.
+  - Default: `""`
 * `enable_ave_mode` (enableAVE) - (string) Enable Cisco ACI Virtual Edge (AVE) mode on the VMM Domain object. This attribute is supported in ACI versions: 3.1(1i) and later.
   - Default: `"no"`
   - Valid Values: `"no"`, `"yes"`.
@@ -258,6 +252,7 @@ All examples for the VMM Domain resource can be found in the [examples](https://
   - Default: `"no"`
   - Valid Values: `"no"`, `"yes"`.
 * `multicast_address` (mcastAddr) - (string) The multicast address of the VMM Domain object.
+  - Default: `"0.0.0.0"`
 * `switch_type` (mode) - (string) The switch type of the VMM Domain object.
   - Default: `"default"`
   - Valid Values: `"cf"`, `"default"`, `"k8s"`, `"n1kv"`, `"nsx"`, `"nutanix_pc"`, `"nutanix_pe"`, `"openshift"`, `"ovs"`, `"rancher"`, `"rhev"`, `"unknown"`.
@@ -269,115 +264,115 @@ All examples for the VMM Domain resource can be found in the [examples](https://
   - Valid Values: `"unspecified"`, `"vlan"`, `"vxlan"`.
 * `relation_to_ip_address_pool` - (map) A map of Relation To IP Address Pool (ACI object [infraRsVipAddrNs](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraRsVipAddrNs/overview)) pointing to IP Address Pool (ACI Object [fvnsAddrInst](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvnsAddrInst/overview)) which can be configured using the [aci_ip_address_pool](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/ip_address_pool) resource.
   #### Optional ####
-    
+
     * `annotation` (annotation) - (string) The annotation of the Relation To IP Address Pool object. This attribute is supported in ACI versions: 3.2(1l) and later.
       - Default: `"orchestrator:terraform"`
-    * `target_dn` (tDn) - (string) The distinguished name of the target.
-    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `target_dn` (tDn) - (string) The distinguished name (DN) of the target object.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
 * `relation_to_vlan_pool` - (map) A map of Relation To Vlan Pool (ACI object [infraRsVlanNs](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraRsVlanNs/overview)) pointing to Vlan Pool (ACI Object [fvnsVlanInstP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvnsVlanInstP/overview)) which can be configured using the [aci_vlan_pool](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vlan_pool) resource.
   #### Optional ####
-    
+
     * `annotation` (annotation) - (string) The annotation of the Relation To Vlan Pool object. This attribute is supported in ACI versions: 3.2(1l) and later.
       - Default: `"orchestrator:terraform"`
     * `target_dn` (tDn) - (string) The distinguished name of the target.
-    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
 * `relation_to_multicast_pool` - (map) A map of Relation To Multicast Pool (ACI object [vmmRsDomMcastAddrNs](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vmmRsDomMcastAddrNs/overview)) pointing to Multicast Pool (ACI Object [fvnsMcastAddrInstP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvnsMcastAddrInstP/overview)) which can be configured using the [aci_multicast_pool](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/multicast_pool) resource.
   #### Optional ####
-    
+
     * `annotation` (annotation) - (string) The annotation of the Relation To Multicast Pool object. This attribute is supported in ACI versions: 3.2(1l) and later.
       - Default: `"orchestrator:terraform"`
     * `target_dn` (tDn) - (string) The distinguished name of the target.
-    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
 * `relation_to_lacp_enhanced_lag_policy` - (map) A map of Relation To LACP Enhanced Lag Policy (ACI object [vmmRsPrefEnhancedLagPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vmmRsPrefEnhancedLagPol/overview)) pointing to LACP Enhanced Lag Policy (ACI Object [lacpEnhancedLagPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/lacpEnhancedLagPol/overview)) which can be configured using the [aci_lacp_enhanced_lag_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/lacp_enhanced_lag_policy) resource. This attribute is supported in ACI versions: 3.2(10e) to 3.2(10g), 3.2(7f) and later.
   #### Optional ####
-    
+
     * `annotation` (annotation) - (string) The annotation of the Relation To LACP Enhanced Lag Policy object.
       - Default: `"orchestrator:terraform"`
-    * `target_dn` (tDn) - (string) The distinguished name of the target.
-    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `target_dn` (tDn) - (string) The distinguished name (DN) of the target object.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-* `vmm_uplink_container` - (map) A map of VMM Uplink Container (ACI object [vmmUplinkPCont](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vmmUplinkPCont/overview)). VMM Uplink Container can also be configured using a separate [aci_vmm_uplink_container](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vmm_uplink_container) resource. This attribute is supported in ACI versions: 4.2(1i) and later.
+* `vmm_uplink_container` - (map) A map of VMM Uplink Container (ACI object [vmmUplinkPCont](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vmmUplinkPCont/overview)) which can also be configured using a separate [aci_vmm_uplink_container](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vmm_uplink_container) resource. This attribute is supported in ACI versions: 4.2(1i) and later.
   #### Required ####
-  
+
     * `number_of_uplinks` (numOfUplinks) - (string) The number of uplinks in the VMM Uplink Container object.
   #### Optional ####
-    
+
     * `annotation` (annotation) - (string) The annotation of the VMM Uplink Container object.
       - Default: `"orchestrator:terraform"`
     * `name_alias` (nameAlias) - (string) The name alias of the VMM Uplink Container object.
-    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-    * `uplink_policies` - (list) A list of VMM Uplink Policies (ACI object [vmmUplinkP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vmmUplinkP/overview)). VMM Uplink Policies can also be configured using a separate [aci_vmm_uplink_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vmm_uplink_policy) resource. This attribute is supported in ACI versions: 4.2(1i) and later.
+    * `uplink_policies` - (list) A list of VMM Uplink Policies (ACI object [vmmUplinkP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vmmUplinkP/overview)) which can also be configured using a separate [aci_vmm_uplink_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vmm_uplink_policy) resource.
       #### Required ####
-  
+
         * `uplink_id` (uplinkId) - (string) The uplink identifier of the VMM Uplink Policy object.
         * `uplink_name` (uplinkName) - (string) The uplink name of the VMM Uplink Policy object.
       #### Optional ####
-    
+
         * `annotation` (annotation) - (string) The annotation of the VMM Uplink Policy object.
           - Default: `"orchestrator:terraform"`
         * `name_alias` (nameAlias) - (string) The name alias of the VMM Uplink Policy object.
-        * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+        * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
           #### Required ####
-  
+
             * `key` (key) - (string) The key used to uniquely identify this configuration object.
             * `value` (value) - (string) The value of the property.
-        * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+        * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.
           #### Required ####
-  
+
             * `key` (key) - (string) The key used to uniquely identify this configuration object.
             * `value` (value) - (string) The value of the property.
 
@@ -400,6 +395,6 @@ import {
 ```
 
 ## Child Resources
-  
+
   - [aci_vmm_credential](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vmm_credential)
   - [aci_vswitch_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vswitch_policy)

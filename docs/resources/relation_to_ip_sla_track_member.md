@@ -14,8 +14,6 @@ description: |-
 
 Manages ACI Relation To IP SLA Track Member
 
-
-
 ## API Information ##
 
 * Class: [fvRsOtmListMember](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsOtmListMember/overview)
@@ -34,34 +32,35 @@ The configuration snippet below creates a Relation To IP SLA Track Member with o
 
 ```hcl
 
-resource "aci_relation_to_ip_sla_track_member" "example_ip_sla_track_list" {
+resource "aci_relation_to_ip_sla_track_member" "example" {
   parent_dn = aci_ip_sla_track_list.example.id
   target_dn = aci_ip_sla_track_member.example.id
 }
 
 ```
+
 The configuration snippet below shows all possible attributes of the Relation To IP SLA Track Member.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
 ```hcl
 
-resource "aci_relation_to_ip_sla_track_member" "full_example_ip_sla_track_list" {
+resource "aci_relation_to_ip_sla_track_member" "full_example" {
   parent_dn  = aci_ip_sla_track_list.example.id
-  annotation = "annotation"
+  annotation = "example_annotation"
   target_dn  = aci_ip_sla_track_member.example.id
   weight     = "20"
   annotations = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
   tags = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
 }
 
@@ -75,6 +74,7 @@ All examples for the Relation To IP SLA Track Member resource can be found in th
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_ip_sla_track_list](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/ip_sla_track_list) ([fvTrackList](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTrackList/overview))
+
 * `target_dn` (tDn) - (string) The distinguished name (DN) of the IP SLA Track Member.
 
 ### Read-Only ###
@@ -87,14 +87,14 @@ All examples for the Relation To IP SLA Track Member resource can be found in th
   - Default: `"orchestrator:terraform"`
 * `weight` (weight) - (string) The weight associated with the IP SLA Track Member that contributes to the total weight that is used to determines whether a route is considered available or unavailable.
   - Default: `"10"`
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
 
@@ -103,7 +103,7 @@ All examples for the Relation To IP SLA Track Member resource can be found in th
 An existing Relation To IP SLA Track Member can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_relation_to_ip_sla_track_member.example_ip_sla_track_list uni/tn-{name}/tracklist-{name}/rsotmListMember-[{tDn}]
+terraform import aci_relation_to_ip_sla_track_member.example uni/tn-{name}/tracklist-{name}/rsotmListMember-[{tDn}]
 ```
 
 Starting in Terraform version 1.5, an existing Relation To IP SLA Track Member can be imported
@@ -112,6 +112,6 @@ using [import blocks](https://developer.hashicorp.com/terraform/language/import)
 ```
 import {
   id = "uni/tn-{name}/tracklist-{name}/rsotmListMember-[{tDn}]"
-  to = aci_relation_to_ip_sla_track_member.example_ip_sla_track_list
+  to = aci_relation_to_ip_sla_track_member.example
 }
 ```

@@ -14,8 +14,6 @@ description: |-
 
 Manages ACI Management Access Policy
 
-
-
 ## API Information ##
 
 * Class: [commPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/commPol/overview)
@@ -35,10 +33,11 @@ The configuration snippet below creates a Management Access Policy with only req
 ```hcl
 
 resource "aci_management_access_policy" "example" {
-  name = "test_name"
+  name = "management_access_policy"
 }
 
 ```
+
 The configuration snippet below shows all possible attributes of the Management Access Policy.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
@@ -46,26 +45,26 @@ The configuration snippet below shows all possible attributes of the Management 
 ```hcl
 
 resource "aci_management_access_policy" "full_example" {
-  annotation                         = "annotation"
-  description                        = "description_1"
-  name                               = "test_name"
-  name_alias                         = "name_alias_1"
-  owner_key                          = "owner_key_1"
-  owner_tag                          = "owner_tag_1"
+  annotation                         = "example_annotation"
+  description                        = "Example Management Access Policy"
+  name                               = "management_access_policy"
+  name_alias                         = "example_name_alias"
+  owner_key                          = "example_owner_key"
+  owner_tag                          = "example_owner_tag"
   strict_security_on_apic_oob_subnet = "no"
   http_service = {
     allow_credentials        = "disabled"
-    allow_origins            = "allow_origins_1"
+    allow_origins            = "https://example.com"
     admin_state              = "disabled"
-    annotation               = "annotation_1"
+    annotation               = "example_annotation"
     cli_only_mode            = "disabled"
-    description              = "description_1"
+    description              = "Example HTTP Service"
     global_throttle_rate     = "10000"
     global_throttle_state    = "disabled"
     global_throttle_unit     = "r/s"
     max_request_status_count = "0"
-    name                     = "name_1"
-    name_alias               = "name_alias_1"
+    name                     = "http_service"
+    name_alias               = "example_name_alias"
     node_exporter            = "disabled"
     port                     = "80"
     redirect_state           = "disabled"
@@ -75,160 +74,160 @@ resource "aci_management_access_policy" "full_example" {
     visore_access            = "disabled"
     annotations = [
       {
-        key   = "key_0"
-        value = "value_1"
-      }
+        key   = "example_key"
+        value = "example_value"
+      },
     ]
     tags = [
       {
-        key   = "key_0"
-        value = "value_1"
-      }
+        key   = "example_key"
+        value = "example_value"
+      },
     ]
   }
   http_ssl_configuration = {
     allow_credentials                       = "disabled"
-    allow_origins                           = "allow_origins_1"
+    allow_origins                           = "https://example.com"
     admin_state                             = "enabled"
-    annotation                              = "annotation_1"
+    annotation                              = "example_annotation"
     cli_only_mode                           = "disabled"
     client_certificate_authentication_state = "disabled"
-    description                             = "description_1"
+    description                             = "Example HTTPS Service"
     dh_parameter                            = "1024"
     global_throttle_rate                    = "10000"
     global_throttle_state                   = "disabled"
     global_throttle_unit                    = "r/s"
     max_request_status_count                = "0"
-    name                                    = "name_1"
-    name_alias                              = "name_alias_1"
+    name                                    = "http_ssl_configuration"
+    name_alias                              = "example_name_alias"
     node_exporter                           = "disabled"
     port                                    = "443"
-    referer                                 = "referer_1"
+    referer                                 = "https://example.com"
     server_header                           = "disabled"
     ssl_protocols                           = ["TLSv1"]
     login_throttle_rate                     = "2"
     login_throttle_state                    = "disabled"
     visore_access                           = "disabled"
     certificate_authority = {
-      annotation = "annotation_1"
-      target_dn  = "uni/userext/pkiext/tp-test_name"
+      annotation = "example_annotation"
+      target_dn  = aci_certificate_authority.example.id
       annotations = [
         {
-          key   = "key_0"
-          value = "value_1"
-        }
+          key   = "example_key"
+          value = "example_value"
+        },
       ]
       tags = [
         {
-          key   = "key_0"
-          value = "value_1"
-        }
+          key   = "example_key"
+          value = "example_value"
+        },
       ]
     }
     key_ring = {
-      annotation    = "annotation_1"
+      annotation    = "example_annotation"
       key_ring_name = aci_key_ring.example.name
       annotations = [
         {
-          key   = "key_0"
-          value = "value_1"
-        }
+          key   = "example_key"
+          value = "example_value"
+        },
       ]
       tags = [
         {
-          key   = "key_0"
-          value = "value_1"
-        }
+          key   = "example_key"
+          value = "example_value"
+        },
       ]
     }
     annotations = [
       {
-        key   = "key_0"
-        value = "value_1"
-      }
+        key   = "example_key"
+        value = "example_value"
+      },
     ]
     tags = [
       {
-        key   = "key_0"
-        value = "value_1"
-      }
+        key   = "example_key"
+        value = "example_value"
+      },
     ]
   }
   ssh_access_via_web = {
     admin_state = "disabled"
-    annotation  = "annotation_1"
-    description = "description_1"
-    name        = "name_1"
-    name_alias  = "name_alias_1"
+    annotation  = "example_annotation"
+    description = "Shellinabox server"
+    name        = "shellinabox"
+    name_alias  = "example_name_alias"
     annotations = [
       {
-        key   = "key_0"
-        value = "value_1"
-      }
+        key   = "example_key"
+        value = "example_value"
+      },
     ]
     tags = [
       {
-        key   = "key_0"
-        value = "value_1"
-      }
+        key   = "example_key"
+        value = "example_value"
+      },
     ]
   }
   ssh_service = {
     admin_state                   = "disabled"
-    annotation                    = "annotation_1"
-    description                   = "description_1"
+    annotation                    = "example_annotation"
+    description                   = "Example SSH Service"
     host_key_algorithms           = ["rsa-sha2-256"]
     kex_algorithms                = ["curve25519-sha256"]
-    name                          = "name_1"
-    name_alias                    = "name_alias_1"
+    name                          = "ssh"
+    name_alias                    = "example_name_alias"
     password_authentication_state = "disabled"
     port                          = "22"
     ssh_ciphers                   = ["aes192-ctr"]
     ssh_macs                      = ["hmac-sha1"]
     annotations = [
       {
-        key   = "key_0"
-        value = "value_1"
-      }
+        key   = "example_key"
+        value = "example_value"
+      },
     ]
     tags = [
       {
-        key   = "key_0"
-        value = "value_1"
-      }
+        key   = "example_key"
+        value = "example_value"
+      },
     ]
   }
   telnet_service = {
     admin_state = "disabled"
-    annotation  = "annotation_1"
-    description = "description_1"
-    name        = "name_1"
-    name_alias  = "name_alias_1"
+    annotation  = "example_annotation"
+    description = "Example Telnet Service"
+    name        = "telnet"
+    name_alias  = "example_name_alias"
     port        = "23"
     annotations = [
       {
-        key   = "key_0"
-        value = "value_1"
-      }
+        key   = "example_key"
+        value = "example_value"
+      },
     ]
     tags = [
       {
-        key   = "key_0"
-        value = "value_1"
-      }
+        key   = "example_key"
+        value = "example_value"
+      },
     ]
   }
   annotations = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
   tags = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
 }
 
@@ -259,11 +258,12 @@ All examples for the Management Access Policy resource can be found in the [exam
   - Valid Values: `"no"`, `"yes"`.
 * `http_service` - (map) A map of HTTP Service (ACI object [commHttp](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/commHttp/overview)).
   #### Optional ####
-    
+
     * `allow_credentials` (accessControlAllowCredential) - (string) Determines if credentials are allowed in HTTP responses. This attribute is supported in ACI versions: 2.3(1e) and later.
       - Default: `"disabled"`
       - Valid Values: `"disabled"`, `"enabled"`.
     * `allow_origins` (accessControlAllowOrigins) - (string) Determines which origins can access the resource. For example, inputting http://127.0.0.1:8000 would allow access from a source device with that IP address and port. This attribute is supported in ACI versions: 1.1(1j) and later.
+      - Default: `""`
     * `admin_state` (adminSt) - (string) The administrative state of the HTTP Service.
       - Default: `"disabled"`
       - Valid Values: `"disabled"`, `"enabled"`.
@@ -303,23 +303,24 @@ All examples for the Management Access Policy resource can be found in the [exam
     * `visore_access` (visoreAccess) - (string) Grants permissions for accessing the Visore tool, also known as Object Store Browser, in Cisco ACI. This attribute is supported in ACI versions: 3.1(1i) and later.
       - Default: `"enabled"`
       - Valid Values: `"disabled"`, `"enabled"`.
-    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
 * `http_ssl_configuration` - (map) A map of HTTPS Service (ACI object [commHttps](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/commHttps/overview)).
   #### Optional ####
-    
+
     * `allow_credentials` (accessControlAllowCredential) - (string) Determines if credentials are allowed in HTTPS responses. This attribute is supported in ACI versions: 2.3(1e) and later.
       - Default: `"disabled"`
       - Valid Values: `"disabled"`, `"enabled"`.
     * `allow_origins` (accessControlAllowOrigins) - (string) Determines which origins can access the resource. For example, inputting http://127.0.0.1:8000 would allow access from a source device with that IP address and port. This attribute is supported in ACI versions: 1.1(1j) and later.
+      - Default: `""`
     * `admin_state` (adminSt) - (string) The administrative state of the HTTPS Service.
       - Default: `"enabled"`
       - Valid Values: `"enabled"`.
@@ -353,6 +354,7 @@ All examples for the Management Access Policy resource can be found in the [exam
     * `port` (port) - (string) The port used by the HTTPS communication service.
       - Default: `"443"`
     * `referer` (referer) - (string) Allowed HTTP referers. This attribute is supported in ACI versions: 6.0(2h) and later.
+      - Default: `""`
     * `server_header` (serverHeader) - (string) Determines if the server header is included in responses. This attribute is supported in ACI versions: 5.2(1g) and later.
       - Default: `"enabled"`
       - Valid Values: `"disabled"`, `"enabled"`.
@@ -367,51 +369,51 @@ All examples for the Management Access Policy resource can be found in the [exam
     * `visore_access` (visoreAccess) - (string) Grants permissions for accessing the Visore tool, also known as Object Store Browser, in Cisco ACI. This attribute is supported in ACI versions: 3.1(1i) and later.
       - Default: `"enabled"`
       - Valid Values: `"disabled"`, `"enabled"`.
-    * `certificate_authority` - (map) A map of Certificate Authority (ACI object [commRsClientCertCA](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/commRsClientCertCA/overview)) pointing to Certificate Authority (ACI Object [pkiTP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/pkiTP/overview)) which can be configured using the [aci_certificate_authority](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/certificate_authority) resource. This attribute is supported in ACI versions: 4.0(1h) and later.
+    * `certificate_authority` - (map) A map of Relation To Certificate Authority (ACI object [commRsClientCertCA](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/commRsClientCertCA/overview)) pointing to Certificate Authority (ACI Object [pkiTP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/pkiTP/overview)) which can be configured using the [aci_certificate_authority](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/certificate_authority) resource. This attribute is supported in ACI versions: 4.0(1h) and later.
       #### Optional ####
-    
-        * `annotation` (annotation) - (string) The annotation of the Certificate Authority object.
+
+        * `annotation` (annotation) - (string) The annotation of the Relation To Certificate Authority object.
           - Default: `"orchestrator:terraform"`
-        * `target_dn` (tDn) - (string) The distinguished name of the target.
-        * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+        * `target_dn` (tDn) - (string) The distinguished name (DN) of the target object.
+        * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
           #### Required ####
-  
+
             * `key` (key) - (string) The key used to uniquely identify this configuration object.
             * `value` (value) - (string) The value of the property.
-        * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+        * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.
           #### Required ####
-  
+
             * `key` (key) - (string) The key used to uniquely identify this configuration object.
             * `value` (value) - (string) The value of the property.
-    * `key_ring` - (map) A map of Key Ring (ACI object [commRsKeyRing](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/commRsKeyRing/overview)) pointing to Key Ring (ACI Object [pkiKeyRing](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/pkiKeyRing/overview)) which can be configured using the [aci_key_ring](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/key_ring) resource.
+    * `key_ring` - (map) A map of Relation To Key Ring (ACI object [commRsKeyRing](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/commRsKeyRing/overview)) pointing to Key Ring (ACI Object [pkiKeyRing](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/pkiKeyRing/overview)) which can be configured using the [aci_key_ring](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/key_ring) resource.
       #### Optional ####
-    
-        * `annotation` (annotation) - (string) The annotation of the Key Ring object. This attribute is supported in ACI versions: 3.2(1l) and later.
+
+        * `annotation` (annotation) - (string) The annotation of the Relation To Key Ring object. This attribute is supported in ACI versions: 3.2(1l) and later.
           - Default: `"orchestrator:terraform"`
-        * `key_ring_name` (tnPkiKeyRingName) - (string) The HTTP connection key ring. Each PKI device holds a pair of asymmetric Rivest-Shamir-Adleman (RSA) or Elliptic Curve Cryptography (ECC) encryption keys, one kept private and one made public, stored in an internal key ring.
-        * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+        * `key_ring_name` (tnPkiKeyRingName) - (string) The HTTP connection key ring. Each PKI device holds a pair of asymmetric Rivest-Shamir-Adleman (RSA) or Elliptic Curve Cryptography (ECC) encryption keys, one kept private and one made public, stored in an internal key ring. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/key_ring) with `aci_key_ring.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/key_ring) with `data.aci_key_ring.example.name`.
+        * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
           #### Required ####
-  
+
             * `key` (key) - (string) The key used to uniquely identify this configuration object.
             * `value` (value) - (string) The value of the property.
-        * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+        * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
           #### Required ####
-  
+
             * `key` (key) - (string) The key used to uniquely identify this configuration object.
             * `value` (value) - (string) The value of the property.
-    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
 * `ssh_access_via_web` - (map) A map of SSH access via WEB (ACI object [commShellinabox](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/commShellinabox/overview)). This attribute is supported in ACI versions: 1.2(1i) and later.
   #### Optional ####
-    
+
     * `admin_state` (adminSt) - (string) The administrative state of the SSH access via WEB object.
       - Default: `"disabled"`
       - Valid Values: `"disabled"`, `"enabled"`.
@@ -422,26 +424,26 @@ All examples for the Management Access Policy resource can be found in the [exam
     * `name` (name) - (string) The name of the SSH access via WEB object.
       - Default: `"shellinabox"`
     * `name_alias` (nameAlias) - (string) The name alias of the SSH access via WEB object. This attribute is supported in ACI versions: 2.2(1k) and later.
-    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
 * `ssh_service` - (map) A map of SSH Service (ACI object [commSsh](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/commSsh/overview)).
   #### Optional ####
-    
+
     * `admin_state` (adminSt) - (string) The administrative state of the SSH Service object.
       - Default: `"enabled"`
       - Valid Values: `"disabled"`, `"enabled"`.
     * `annotation` (annotation) - (string) The annotation of the SSH Service object. This attribute is supported in ACI versions: 3.2(1l) and later.
       - Default: `"orchestrator:terraform"`
     * `description` (descr) - (string) The description of the SSH Service object.
-    * `host_key_algorithms` (hostkeyAlgos) - (list) The supported algorithms for the host key. This attribute is supported in ACI versions: 
+    * `host_key_algorithms` (hostkeyAlgos) - (list) The supported algorithms for the host key.
       - Default: `"rsa-sha2-256,rsa-sha2-512,ssh-ed25519"`
       - Valid Values: `"rsa-sha2-256"`, `"rsa-sha2-512"`, `"ssh-ed25519"`.
     * `kex_algorithms` (kexAlgos) - (list) The supported algorithms for key exchange. This attribute is supported in ACI versions: 4.2(7f) to 4.2(7w), 5.2(1g) and later.
@@ -461,19 +463,19 @@ All examples for the Management Access Policy resource can be found in the [exam
     * `ssh_macs` (sshMacs) - (list) The message authentication codes (MACs) supported by the SSH service. This attribute is supported in ACI versions: 3.1(1i) and later.
       - Default: `"hmac-sha2-256,hmac-sha2-512,hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com"`
       - Valid Values: `"hmac-sha1"`, `"hmac-sha2-256"`, `"hmac-sha2-256-etm@openssh.com"`, `"hmac-sha2-512"`, `"hmac-sha2-512-etm@openssh.com"`.
-    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
 * `telnet_service` - (map) A map of Telnet Service (ACI object [commTelnet](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/commTelnet/overview)).
   #### Optional ####
-    
+
     * `admin_state` (adminSt) - (string) The administrative state of the Telnet Service object.
       - Default: `"disabled"`
       - Valid Values: `"disabled"`, `"enabled"`.
@@ -485,24 +487,24 @@ All examples for the Management Access Policy resource can be found in the [exam
     * `name_alias` (nameAlias) - (string) The name alias of the Telnet Service object. This attribute is supported in ACI versions: 2.2(1k) and later.
     * `port` (port) - (string) The port used by the Telnet service.
       - Default: `"23"`
-    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
 

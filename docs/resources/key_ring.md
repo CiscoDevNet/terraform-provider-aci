@@ -14,8 +14,6 @@ description: |-
 
 Manages ACI Key Ring
 
-
-
 ## API Information ##
 
 * Class: [pkiKeyRing](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/pkiKeyRing/overview)
@@ -39,16 +37,11 @@ The configuration snippet below creates a Key Ring with only required attributes
 ```hcl
 
 resource "aci_key_ring" "example" {
-  name = "test_name"
-}
-
-// This example is only applicable to Cisco Cloud Network Controller
-resource "aci_key_ring" "example_tenant" {
-  parent_dn = aci_tenant.example.id
-  name      = "test_name"
+  name = "key_ring"
 }
 
 ```
+
 The configuration snippet below shows all possible attributes of the Key Ring.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
@@ -57,209 +50,30 @@ The configuration snippet below shows all possible attributes of the Key Ring.
 
 resource "aci_key_ring" "full_example" {
   admin_state           = "completed"
-  annotation            = "annotation"
-  certificate           = <<EOT
------BEGIN CERTIFICATE-----
-MIIDUzCCAjugAwIBAgIUbIvQNyz27t/xrIW2dgMwlGWqJvowDQYJKoZIhvcNAQEL
-BQAwODERMA8GA1UEAwwIVXNlciBBQkMxFjAUBgNVBAoMDUNpc2NvIFN5c3RlbXMx
-CzAJBgNVBAYTAlVTMCAXDTI2MDMxNzEwMjY0MVoYDzIxMjYwMjIxMTAyNjQxWjA4
-MREwDwYDVQQDDAhVc2VyIEFCQzEWMBQGA1UECgwNQ2lzY28gU3lzdGVtczELMAkG
-A1UEBhMCVVMwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCeulLqFk1C
-H6wKdn0/sNrpDOfkjxeIfsT388BV2FH9XWBYumk8iAIRLp2Tae0+dKOr50t0q9xX
-pCmC0dT4vF6h7NYQIihCNE//LpijuGbw+iG8YsavCr8wUAKdkuwzdA/3MiXRACzE
-WY3CYuhReGnSsjXUVvuaSb02jm80eCGDWUxm/KqH1qO/vlrzSU7NORvNrqQpKPA7
-e4ukjGD7k6jO8c5+DWWC6aOAgD6Orpb58yK7jUPSlQsYHtoKmJb245lpE5yMWg8e
-ZFfJIPh+cdP4gXcWVPSKJ/nMAj/vEhSp0WK6CJwu8+W/nhdvkemQR0oKb3XcJikV
-ZBj3OO0HK1HlAgMBAAGjUzBRMB0GA1UdDgQWBBT9EPk1GYfyISGUsTX/+7mREkPV
-djAfBgNVHSMEGDAWgBT9EPk1GYfyISGUsTX/+7mREkPVdjAPBgNVHRMBAf8EBTAD
-AQH/MA0GCSqGSIb3DQEBCwUAA4IBAQAzIrT1/ih7/BP363+90gRA29q4nA8RBWF6
-JC1TVExRbgVtJOEbEUywTcUxeW1Q3bSSwW836qEWJpRcwvu103yZgn0yIWubndtb
-pArujgGt5irDwQmwW9zVUPWrJkkUkNezEZzM9WrRh+fvepvlDQwq6Pqd75BpmiOr
-ZPfliCH5wX8Hjlg3cFeQviRLEMjkLtaDmmDfTFRQYCjKohTSgZdd9aauzgsYOq/2
-S2sHwyJR8MTUyxawvCRJP8q5v3KGLVUzU6vRtEbZUx5FvjNkgxLgsSP4+buQi7FR
-aY0EpluqxPc3Wsl5AkIpFAf97vrRPGTPpSZig5LX9eS0Rmh4eJ10
------END CERTIFICATE-----
-EOT
-  description           = "description_1"
+  annotation            = "example_annotation"
+  certificate           = file("${path.module}/certificate.pem")
+  description           = "Example Key Ring"
   elliptic_curve        = "none"
-  key                   = <<EOT
------BEGIN PRIVATE KEY-----
-MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCeulLqFk1CH6wK
-dn0/sNrpDOfkjxeIfsT388BV2FH9XWBYumk8iAIRLp2Tae0+dKOr50t0q9xXpCmC
-0dT4vF6h7NYQIihCNE//LpijuGbw+iG8YsavCr8wUAKdkuwzdA/3MiXRACzEWY3C
-YuhReGnSsjXUVvuaSb02jm80eCGDWUxm/KqH1qO/vlrzSU7NORvNrqQpKPA7e4uk
-jGD7k6jO8c5+DWWC6aOAgD6Orpb58yK7jUPSlQsYHtoKmJb245lpE5yMWg8eZFfJ
-IPh+cdP4gXcWVPSKJ/nMAj/vEhSp0WK6CJwu8+W/nhdvkemQR0oKb3XcJikVZBj3
-OO0HK1HlAgMBAAECggEAGRrupa2/Vy0RQK+7DF7ZpltvNhxXzt6reBhVRylUK9cg
-DQihlScMmfvIhUS6IdMVrB6E4GrqX/D2y9qKbTPGDVBwudPdOujGml2cBjvStFyr
-sf3hilVl0KtnA9X1hrHdxe29mNAGmfZxey8PqwsjmbqsKZipv56CzzqPZjogpYMz
-Q0Vu9ek2Y8Piw4TCepixAkFHlYtzpfzxFJ1xapam8o+mOyi+5FwVbx2QnA31Y+6p
-cjzXnXnWl3aRNTTfvhz6Z/cZmDJ+sd/ATpk4/jt8biR4mOaYNS4k0cZX0PpjKP3K
-hoR9DPU5qRDmgoShF7TMkBRiM2oG2Nxd794unRZMJQKBgQDbfdx/ThXhLnCbl98B
-hN2JfLLuGvgO0NvDjlViPwmwnjIotiOArn4MP79m6CS/nKgW6wzuXfIJQcxPUslC
-coloK9TDSya5nD1tqFkukhPukc3Q5Sb41pZzhksTjZgG3dohwqqRvcmnZPpxssa5
-Bqv64zhiPPHhLE9whLNJ0oPl2wKBgQC5IRaQcyLXLHFjd2JIn2KrWAf9T3StUeE1
-03y/IgZtwC6Kt8MvLmy3LENbHQdISibY+4IKoe+oEI/jjvNwM9sBwbcqm3L20+mY
-i6W5r6qYufc58+sVtn2PqL8DK47xrqsTYnYIO6XxgavVIxGFAlgm0WDS7/tyZFZ0
-oJ63uvuTPwKBgE8BgOr6Cnohozr+cbE0SCIDFs0KPBvpJhHAHA/fLPe8GcX5udHJ
-/WkfUSATk5a9JuwI84ChpEucuZQb8oHOhJNQo6cgV/IbwSjFnkRbJH2NUg5NTbfo
-VgODZWbGYuCl3qykS41mST3N5TAj79AODL2kKFmEInSw5G9V9Msv0XZdAoGAEzp7
-lH9Q9BZ6pIEm5TIg1nkrQ0U4cjQZ9zRDNbr7/fRDIUda75Cb3B6t1E3cjsac6Faf
-OCl/se4ec91KLbJFIhaTxsokk7yI+74tdW7ogjp2kj9igHvW6M/3HwYsL7AbtsS4
-S7yeTMpSJa4hyLXooAeJTf99F3GShUSVl7HFJZMCgYBrBTmJrHDhIAwIuzLwZfpr
-R5jCxJmzpnEYjS7EBZqslTnB/Abr79SSezRPaR3H7OE/Ig4kSym0ekyjGPQbDV0T
-+gpPD7GMWzFZ1RWQ6aJZ5bgwQACemsfYbWuV7bf9jx5Phle/KAjOzP8NgnqwSD3B
-Hd067NWQRwOjTHgato7Yxg==
------END PRIVATE KEY-----
-EOT
+  key                   = file("${path.module}/private_key.pem")
   key_type              = "RSA"
   modulus               = "mod2048"
-  name                  = "test_name"
-  name_alias            = "name_alias_1"
-  owner_key             = "owner_key_1"
-  owner_tag             = "owner_tag_1"
+  name                  = "key_ring"
+  name_alias            = "example_name_alias"
+  owner_key             = "example_owner_key"
+  owner_tag             = "example_owner_tag"
   regenerate            = "no"
-  certificate_authority = "test_name"
+  certificate_authority = aci_certificate_authority.example.name
   annotations = [
     {
-      key   = "key_0"
-      value = "value_1"
-      annotations = [
-        {
-          key   = "key_0"
-          value = "value_1"
-        }
-      ]
-      tags = [
-        {
-          key   = "key_0"
-          value = "value_1"
-        }
-      ]
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
   tags = [
     {
-      key   = "key_0"
-      value = "value_1"
-      annotations = [
-        {
-          key   = "key_0"
-          value = "value_1"
-        }
-      ]
-      tags = [
-        {
-          key   = "key_0"
-          value = "value_1"
-        }
-      ]
-    }
-  ]
-}
-
-// This example is only applicable to Cisco Cloud Network Controller
-resource "aci_key_ring" "full_example_tenant" {
-  parent_dn             = aci_tenant.example.id
-  admin_state           = "completed"
-  annotation            = "annotation"
-  certificate           = <<EOT
------BEGIN CERTIFICATE-----
-MIIDUzCCAjugAwIBAgIUbIvQNyz27t/xrIW2dgMwlGWqJvowDQYJKoZIhvcNAQEL
-BQAwODERMA8GA1UEAwwIVXNlciBBQkMxFjAUBgNVBAoMDUNpc2NvIFN5c3RlbXMx
-CzAJBgNVBAYTAlVTMCAXDTI2MDMxNzEwMjY0MVoYDzIxMjYwMjIxMTAyNjQxWjA4
-MREwDwYDVQQDDAhVc2VyIEFCQzEWMBQGA1UECgwNQ2lzY28gU3lzdGVtczELMAkG
-A1UEBhMCVVMwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCeulLqFk1C
-H6wKdn0/sNrpDOfkjxeIfsT388BV2FH9XWBYumk8iAIRLp2Tae0+dKOr50t0q9xX
-pCmC0dT4vF6h7NYQIihCNE//LpijuGbw+iG8YsavCr8wUAKdkuwzdA/3MiXRACzE
-WY3CYuhReGnSsjXUVvuaSb02jm80eCGDWUxm/KqH1qO/vlrzSU7NORvNrqQpKPA7
-e4ukjGD7k6jO8c5+DWWC6aOAgD6Orpb58yK7jUPSlQsYHtoKmJb245lpE5yMWg8e
-ZFfJIPh+cdP4gXcWVPSKJ/nMAj/vEhSp0WK6CJwu8+W/nhdvkemQR0oKb3XcJikV
-ZBj3OO0HK1HlAgMBAAGjUzBRMB0GA1UdDgQWBBT9EPk1GYfyISGUsTX/+7mREkPV
-djAfBgNVHSMEGDAWgBT9EPk1GYfyISGUsTX/+7mREkPVdjAPBgNVHRMBAf8EBTAD
-AQH/MA0GCSqGSIb3DQEBCwUAA4IBAQAzIrT1/ih7/BP363+90gRA29q4nA8RBWF6
-JC1TVExRbgVtJOEbEUywTcUxeW1Q3bSSwW836qEWJpRcwvu103yZgn0yIWubndtb
-pArujgGt5irDwQmwW9zVUPWrJkkUkNezEZzM9WrRh+fvepvlDQwq6Pqd75BpmiOr
-ZPfliCH5wX8Hjlg3cFeQviRLEMjkLtaDmmDfTFRQYCjKohTSgZdd9aauzgsYOq/2
-S2sHwyJR8MTUyxawvCRJP8q5v3KGLVUzU6vRtEbZUx5FvjNkgxLgsSP4+buQi7FR
-aY0EpluqxPc3Wsl5AkIpFAf97vrRPGTPpSZig5LX9eS0Rmh4eJ10
------END CERTIFICATE-----
-EOT
-  description           = "description_1"
-  elliptic_curve        = "none"
-  key                   = <<EOT
------BEGIN PRIVATE KEY-----
-MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCeulLqFk1CH6wK
-dn0/sNrpDOfkjxeIfsT388BV2FH9XWBYumk8iAIRLp2Tae0+dKOr50t0q9xXpCmC
-0dT4vF6h7NYQIihCNE//LpijuGbw+iG8YsavCr8wUAKdkuwzdA/3MiXRACzEWY3C
-YuhReGnSsjXUVvuaSb02jm80eCGDWUxm/KqH1qO/vlrzSU7NORvNrqQpKPA7e4uk
-jGD7k6jO8c5+DWWC6aOAgD6Orpb58yK7jUPSlQsYHtoKmJb245lpE5yMWg8eZFfJ
-IPh+cdP4gXcWVPSKJ/nMAj/vEhSp0WK6CJwu8+W/nhdvkemQR0oKb3XcJikVZBj3
-OO0HK1HlAgMBAAECggEAGRrupa2/Vy0RQK+7DF7ZpltvNhxXzt6reBhVRylUK9cg
-DQihlScMmfvIhUS6IdMVrB6E4GrqX/D2y9qKbTPGDVBwudPdOujGml2cBjvStFyr
-sf3hilVl0KtnA9X1hrHdxe29mNAGmfZxey8PqwsjmbqsKZipv56CzzqPZjogpYMz
-Q0Vu9ek2Y8Piw4TCepixAkFHlYtzpfzxFJ1xapam8o+mOyi+5FwVbx2QnA31Y+6p
-cjzXnXnWl3aRNTTfvhz6Z/cZmDJ+sd/ATpk4/jt8biR4mOaYNS4k0cZX0PpjKP3K
-hoR9DPU5qRDmgoShF7TMkBRiM2oG2Nxd794unRZMJQKBgQDbfdx/ThXhLnCbl98B
-hN2JfLLuGvgO0NvDjlViPwmwnjIotiOArn4MP79m6CS/nKgW6wzuXfIJQcxPUslC
-coloK9TDSya5nD1tqFkukhPukc3Q5Sb41pZzhksTjZgG3dohwqqRvcmnZPpxssa5
-Bqv64zhiPPHhLE9whLNJ0oPl2wKBgQC5IRaQcyLXLHFjd2JIn2KrWAf9T3StUeE1
-03y/IgZtwC6Kt8MvLmy3LENbHQdISibY+4IKoe+oEI/jjvNwM9sBwbcqm3L20+mY
-i6W5r6qYufc58+sVtn2PqL8DK47xrqsTYnYIO6XxgavVIxGFAlgm0WDS7/tyZFZ0
-oJ63uvuTPwKBgE8BgOr6Cnohozr+cbE0SCIDFs0KPBvpJhHAHA/fLPe8GcX5udHJ
-/WkfUSATk5a9JuwI84ChpEucuZQb8oHOhJNQo6cgV/IbwSjFnkRbJH2NUg5NTbfo
-VgODZWbGYuCl3qykS41mST3N5TAj79AODL2kKFmEInSw5G9V9Msv0XZdAoGAEzp7
-lH9Q9BZ6pIEm5TIg1nkrQ0U4cjQZ9zRDNbr7/fRDIUda75Cb3B6t1E3cjsac6Faf
-OCl/se4ec91KLbJFIhaTxsokk7yI+74tdW7ogjp2kj9igHvW6M/3HwYsL7AbtsS4
-S7yeTMpSJa4hyLXooAeJTf99F3GShUSVl7HFJZMCgYBrBTmJrHDhIAwIuzLwZfpr
-R5jCxJmzpnEYjS7EBZqslTnB/Abr79SSezRPaR3H7OE/Ig4kSym0ekyjGPQbDV0T
-+gpPD7GMWzFZ1RWQ6aJZ5bgwQACemsfYbWuV7bf9jx5Phle/KAjOzP8NgnqwSD3B
-Hd067NWQRwOjTHgato7Yxg==
------END PRIVATE KEY-----
-EOT
-  key_type              = "RSA"
-  modulus               = "mod2048"
-  name                  = "test_name"
-  name_alias            = "name_alias_1"
-  owner_key             = "owner_key_1"
-  owner_tag             = "owner_tag_1"
-  regenerate            = "no"
-  certificate_authority = "test_name"
-  annotations = [
-    {
-      key   = "key_0"
-      value = "value_1"
-      annotations = [
-        {
-          key   = "key_0"
-          value = "value_1"
-        }
-      ]
-      tags = [
-        {
-          key   = "key_0"
-          value = "value_1"
-        }
-      ]
-    }
-  ]
-  tags = [
-    {
-      key   = "key_0"
-      value = "value_1"
-      annotations = [
-        {
-          key   = "key_0"
-          value = "value_1"
-        }
-      ]
-      tags = [
-        {
-          key   = "key_0"
-          value = "value_1"
-        }
-      ]
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
 }
 
@@ -280,8 +94,11 @@ All examples for the Key Ring resource can be found in the [examples](https://gi
 ### Optional ###
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
-  - [aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/fvTenant) ([fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview))
-  - Default: `uni/userext/pkiext`
+  - [aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tenant) ([fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview))
+  - The distinguished names (DNs) of parent objects from the following APIC classes can also be used, but no Terraform resources are currently available for these classes:
+    - [pkiEp](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/pkiEp/overview)
+  - Default: `"uni/userext/pkiext"`
+
 * `admin_state` (adminState) - (string) The current administrative state of the certificate request process.
   - Default: `"started"`
   - Valid Values: `"completed"`, `"created"`, `"reqCreated"`, `"started"`, `"tpSet"`.
@@ -290,8 +107,10 @@ All examples for the Key Ring resource can be found in the [examples](https://gi
 * `certificate` (cert) - (string) A certificate contains a device's public key along with signed information verifying the identity of the device.
 * `description` (descr) - (string) The description of the Key Ring object.
 * `elliptic_curve` (eccCurve) - (string) The elliptic curve used by the provided key. This attribute is supported in ACI versions: 6.0(2h) and later.
+  - Default: `"none"`
   - Valid Values: `"none"`, `"prime256v1"`, `"secp384r1"`, `"secp521r1"`.
 * `key` (key) - (string) The private key of the certificate. This sensitive value is excluded from the resource's lifecycle configuration and is not tracked by Terraform.
+  - Default: `""`
 * `key_type` (keyType) - (string) The type used by the provided key. This attribute is supported in ACI versions: 6.0(2h) and later.
   - Default: `"RSA"`
   - Valid Values: `"ECC"`, `"RSA"`, `"indeterminate"`.
@@ -304,15 +123,15 @@ All examples for the Key Ring resource can be found in the [examples](https://gi
 * `regenerate` (regen) - (string) Forces regeneration of the keypair. Each PKI device holds a pair of asymmetric Rivest-Shamir-Adleman (RSA) or Elliptic Curve Cryptography (ECC) encryption keys, one kept private and one made public, stored in an internal key ring.
   - Default: `"no"`
   - Valid Values: `"no"`, `"yes"`.
-* `certificate_authority` (tp) - (string) The certificate of the Certificate Authority (CA) that issued the certificate provided in the 'certificate' attribute. The CA can be a root CA, an intermediate CA, or a trust anchor in a chain of trust leading to a root CA.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `certificate_authority` (tp) - (string) The certificate of the Certificate Authority (CA) that issued the certificate provided in the 'certificate' attribute. The CA can be a root CA, an intermediate CA, or a trust anchor in a chain of trust leading to a root CA. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/certificate_authority) with `aci_certificate_authority.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/certificate_authority) with `data.aci_certificate_authority.example.name`.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
 
@@ -321,7 +140,7 @@ All examples for the Key Ring resource can be found in the [examples](https://gi
 An existing Key Ring can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_key_ring.example uni/tn-{name}/certstore/keyring-{name}
+terraform import aci_key_ring.example uni/userext/pkiext/keyring-{name}
 ```
 
 Starting in Terraform version 1.5, an existing Key Ring can be imported
@@ -329,7 +148,7 @@ using [import blocks](https://developer.hashicorp.com/terraform/language/import)
 
 ```
 import {
-  id = "uni/tn-{name}/certstore/keyring-{name}"
+  id = "uni/userext/pkiext/keyring-{name}"
   to = aci_key_ring.example
 }
 ```

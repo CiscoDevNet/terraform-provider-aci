@@ -82,3 +82,54 @@ func TestDataSourceExampleHCL(t *testing.T) {
 		})
 	}
 }
+
+func TestResourceExampleHCL(t *testing.T) {
+	t.Parallel()
+
+	testCases := []test.TestCase{
+		{
+			Name: "test_minimum",
+			Input: Example{
+				Body: ExampleObject{Attributes: []ExampleAttribute{
+					{Name: "parent_dn", Value: ExampleReference{Type: ResourceReference, ResourceName: "tenant", AttributeName: "id"}},
+					{Name: "name", Value: ExampleLiteral("example")},
+				}},
+			},
+			Expected: "resource \"aci_application_profile\" \"example\" {\n  parent_dn = aci_tenant.example.id\n  name      = \"example\"\n}",
+		},
+		{
+			Name: "test_full_cloud",
+			Input: Example{
+				Platform: Cloud,
+				Body: ExampleObject{
+					Attributes: []ExampleAttribute{{Name: "name", Value: ExampleLiteral("example")}},
+					Children: []ExampleChild{{
+						Name:     "labels",
+						IsSingle: false,
+						Body: ExampleObject{Attributes: []ExampleAttribute{
+							{Name: "key", Value: ExampleLiteral("example_key")},
+						}},
+					}},
+				},
+			},
+			Expected: "# This example is only applicable to Cisco Cloud Network Controller.\nresource \"aci_cloud_context_profile\" \"full_example\" {\n  name = \"example\"\n  labels = [\n    {\n      key = \"example_key\"\n    },\n  ]\n}",
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			example := testCase.Input.(Example)
+			resourceName := "application_profile"
+			instanceName := "example"
+			if testCase.Name == "test_full_cloud" {
+				resourceName = "cloud_context_profile"
+				instanceName = "full_example"
+			}
+			actual := example.ResourceHCL(resourceName, instanceName)
+			if actual != testCase.Expected.(string) {
+				t.Fatalf("resource HCL %q, expected %q", actual, testCase.Expected)
+			}
+		})
+	}
+}

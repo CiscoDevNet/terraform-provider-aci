@@ -14,8 +14,6 @@ description: |-
 
 Manages ACI Relation From Any To Consumer Contract
 
-
-
 ## API Information ##
 
 * Class: [vzRsAnyToCons](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzRsAnyToCons/overview)
@@ -34,34 +32,35 @@ The configuration snippet below creates a Relation From Any To Consumer Contract
 
 ```hcl
 
-resource "aci_relation_from_any_to_consumer_contract" "example_any" {
+resource "aci_relation_from_any_to_consumer_contract" "example" {
   parent_dn     = aci_any.example.id
   contract_name = aci_contract.example.name
 }
 
 ```
+
 The configuration snippet below shows all possible attributes of the Relation From Any To Consumer Contract.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
 ```hcl
 
-resource "aci_relation_from_any_to_consumer_contract" "full_example_any" {
+resource "aci_relation_from_any_to_consumer_contract" "full_example" {
   parent_dn     = aci_any.example.id
-  annotation    = "annotation"
+  annotation    = "example_annotation"
   priority      = "level1"
   contract_name = aci_contract.example.name
   annotations = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
   tags = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
 }
 
@@ -75,6 +74,7 @@ All examples for the Relation From Any To Consumer Contract resource can be foun
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_any](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/any) ([vzAny](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzAny/overview))
+
 * `contract_name` (tnVzBrCPName) - (string) The name of the Contract object. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/contract) with `aci_contract.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/contract) with `data.aci_contract.example.name`.
 
 ### Read-Only ###
@@ -90,14 +90,14 @@ All examples for the Relation From Any To Consumer Contract resource can be foun
   - Valid Values:
     * `"level1"`, `"level2"`, `"level3"`, `"level4"`, `"level5"`, `"level6"`, `"unspecified"`.
     * Or a value in the range of `0` to `9`.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
 
@@ -106,7 +106,7 @@ All examples for the Relation From Any To Consumer Contract resource can be foun
 An existing Relation From Any To Consumer Contract can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_relation_from_any_to_consumer_contract.example_any uni/tn-{name}/ctx-{name}/any/rsanyToCons-{tnVzBrCPName}
+terraform import aci_relation_from_any_to_consumer_contract.example uni/tn-{name}/ctx-{name}/any/rsanyToCons-{tnVzBrCPName}
 ```
 
 Starting in Terraform version 1.5, an existing Relation From Any To Consumer Contract can be imported
@@ -115,6 +115,6 @@ using [import blocks](https://developer.hashicorp.com/terraform/language/import)
 ```
 import {
   id = "uni/tn-{name}/ctx-{name}/any/rsanyToCons-{tnVzBrCPName}"
-  to = aci_relation_from_any_to_consumer_contract.example_any
+  to = aci_relation_from_any_to_consumer_contract.example
 }
 ```

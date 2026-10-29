@@ -14,8 +14,6 @@ description: |-
 
 Manages ACI Relation To Domain
 
-
-
 ## API Information ##
 
 * Class: [fvRsDomAtt](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsDomAtt/overview)
@@ -34,24 +32,25 @@ The configuration snippet below creates a Relation To Domain with only required 
 
 ```hcl
 
-resource "aci_relation_to_domain" "example_application_epg" {
+resource "aci_relation_to_domain" "example" {
   parent_dn = aci_application_epg.example.id
-  target_dn = "uni/vmmp-VMware/dom-domain_2"
+  target_dn = aci_vmm_domain.example.id
 }
 
 ```
+
 The configuration snippet below shows all possible attributes of the Relation To Domain.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
 ```hcl
 
-resource "aci_relation_to_domain" "full_example_application_epg" {
+resource "aci_relation_to_domain" "full_example" {
   parent_dn                     = aci_application_epg.example.id
-  annotation                    = "annotation"
+  annotation                    = "example_annotation"
   binding_type                  = "dynamicBinding"
   class_preference              = "encap"
-  custom_epg_name               = "custom_epg_name_1"
+  custom_epg_name               = "example_custom_epg_name"
   delimiter                     = "@"
   encapsulation                 = "vlan-100"
   encapsulation_mode            = "auto"
@@ -61,7 +60,7 @@ resource "aci_relation_to_domain" "full_example_application_epg" {
   ipam_dhcp_override            = "10.0.0.2"
   ipam_enabled                  = "yes"
   ipam_gateway                  = "10.0.0.1"
-  lag_policy_name               = "lag_policy_name_1"
+  lag_policy_name               = aci_lacp_enhanced_lag_policy.example.name
   netflow_direction             = "both"
   enable_netflow                = "disabled"
   number_of_ports               = "1"
@@ -70,42 +69,42 @@ resource "aci_relation_to_domain" "full_example_application_epg" {
   primary_encapsulation_inner   = "vlan-300"
   resolution_immediacy          = "immediate"
   secondary_encapsulation_inner = "vlan-400"
-  switching_mode                = "AVE"
-  target_dn                     = "uni/vmmp-VMware/dom-domain_2"
+  switching_mode                = "native"
+  target_dn                     = aci_vmm_domain.example.id
   untagged                      = "no"
   uplink_order_container = {
     active_uplinks  = "1,2"
-    annotation      = "annotation_1"
-    description     = "description_1"
-    name            = "name_1"
-    name_alias      = "name_alias_1"
-    owner_key       = "owner_key_1"
-    owner_tag       = "owner_tag_1"
+    annotation      = "example_annotation"
+    description     = "Example Uplink Order Container"
+    name            = "uplink_order_container"
+    name_alias      = "example_name_alias"
+    owner_key       = "example_owner_key"
+    owner_tag       = "example_owner_tag"
     standby_uplinks = "3,4"
     annotations = [
       {
-        key   = "key_0"
-        value = "value_1"
-      }
+        key   = "example_key"
+        value = "example_value"
+      },
     ]
     tags = [
       {
-        key   = "key_0"
-        value = "value_1"
-      }
+        key   = "example_key"
+        value = "example_value"
+      },
     ]
   }
   annotations = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
   tags = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
 }
 
@@ -119,6 +118,7 @@ All examples for the Relation To Domain resource can be found in the [examples](
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_application_epg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/application_epg) ([fvAEPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvAEPg/overview))
+
 * `target_dn` (tDn) - (string) The distinguished name of the target Domain object.
 
 ### Read-Only ###
@@ -137,7 +137,9 @@ All examples for the Relation To Domain resource can be found in the [examples](
   - Valid Values: `"encap"`, `"useg"`.
 * `custom_epg_name` (customEpgName) - (string) The display name of the user configured port-group. This attribute is supported in ACI versions: 4.2(3j) and later.
 * `delimiter` (delimiter) - (string) The delimiter of the Relation To Domain object. This attribute is supported in ACI versions: 2.0(1m) and later.
+  - Default: `""`
 * `encapsulation` (encap) - (string) The encapsulation of the Relation To Domain object. The encapsulation refers to the EPG VLAN when class preference is set to 'encap', or to the Secondary VLAN when class preference is set to 'useg'. This attribute is supported in ACI versions: 1.1(1j) and later.
+  - Default: `"unknown"`
 * `encapsulation_mode` (encapMode) - (string) The encapsulation mode of the Relation To Domain object. This attribute is supported in ACI versions: 2.1(1h) and later.
   - Default: `"auto"`
   - Valid Values: `"auto"`, `"vlan"`, `"vxlan"`.
@@ -155,7 +157,7 @@ All examples for the Relation To Domain resource can be found in the [examples](
   - Default: `"no"`
   - Valid Values: `"no"`, `"yes"`.
 * `ipam_gateway` (ipamGateway) - (string) The IP address management (IPAM) gateway of the Relation To Domain object. Only applicable for Nutanix domains. This attribute is supported in ACI versions: 6.0(3d) and later.
-* `lag_policy_name` (lagPolicyName) - (string) The link aggregation group (LAG) policy name of the Relation To Domain object. This attribute is supported in ACI versions: 3.2(10e) to 3.2(10g), 3.2(7f) and later.
+* `lag_policy_name` (lagPolicyName) - (string) The link aggregation group (LAG) policy name of the Relation To Domain object. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/lacp_enhanced_lag_policy) with `aci_lacp_enhanced_lag_policy.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/lacp_enhanced_lag_policy) with `data.aci_lacp_enhanced_lag_policy.example.name`. This attribute is supported in ACI versions: 3.2(10e) to 3.2(10g), 3.2(7f) and later.
 * `netflow_direction` (netflowDir) - (string) The NetFlow monitoring direction of the Relation To Domain object. This attribute is supported in ACI versions: 3.0(1k) and later.
   - Default: `"both"`
   - Valid Values: `"both"`, `"egress"`, `"ingress"`.
@@ -163,15 +165,19 @@ All examples for the Relation To Domain resource can be found in the [examples](
   - Default: `"disabled"`
   - Valid Values: `"disabled"`, `"enabled"`.
 * `number_of_ports` (numPorts) - (string) The number of ports of the Relation To Domain object. This attribute is supported in ACI versions: 4.0(1h) and later.
+  - Default: `"0"`
 * `port_allocation` (portAllocation) - (string) Port allocation for ports. This attribute is supported in ACI versions: 4.0(1h) and later.
   - Default: `"none"`
   - Valid Values: `"elastic"`, `"fixed"`, `"none"`.
 * `primary_encapsulation` (primaryEncap) - (string) The primary encapsulation of the Relation To Domain object. This is used when the class preference is set to 'useg'. This attribute is supported in ACI versions: 1.2(2g) and later.
+  - Default: `"unknown"`
 * `primary_encapsulation_inner` (primaryEncapInner) - (string) The primary inner encapsulation of the Relation To Domain object. This is used for the portgroup at the VMWare Distributed Virtual Switch (DVS). This VLAN is internal to the DVS and is used for communication between the other VMs and the AVE VM at a host. Traffic is not forwarded to the fabric over the VLAN. Only applicable for Cisco ACI Virtual Edge (AVE) domains. This attribute is supported in ACI versions: 3.1(1i) and later.
+  - Default: `"unknown"`
 * `resolution_immediacy` (resImedcy) - (string) The resolution immediacy of the Relation To Domain object. Specifies if policies are resolved immmediately or when needed.
   - Default: `"lazy"`
   - Valid Values: `"immediate"`, `"lazy"`, `"pre-provision"`.
 * `secondary_encapsulation_inner` (secondaryEncapInner) - (string) The secondary inner encapsulation of the Relation To Domain object. This is used for the portgroup at the VMWare Distributed Virtual Switch (DVS). This VLAN is internal to the DVS and is used for communication between the other VMs and the AVE VM at a host. Traffic is not forwarded to the fabric over the VLAN. Only applicable for Cisco ACI Virtual Edge (AVE) domains. This attribute is supported in ACI versions: 3.1(1i) and later.
+  - Default: `"unknown"`
 * `switching_mode` (switchingMode) - (string) The switching mode of the Relation To Domain object. This attribute is supported in ACI versions: 3.1(1i) and later.
   - Default: `"native"`
   - Valid Values: `"AVE"`, `"native"`.
@@ -180,7 +186,7 @@ All examples for the Relation To Domain resource can be found in the [examples](
   - Valid Values: `"no"`, `"yes"`.
 * `uplink_order_container` - (map) A map of Uplink Order Container (ACI object [fvUplinkOrderCont](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvUplinkOrderCont/overview)). This attribute is supported in ACI versions: 4.2(1i) and later.
   #### Optional ####
-    
+
     * `active_uplinks` (active) - (string) The active uplink IDs of the Uplink Order Container object. When defined the value cannot be set back to empty.
     * `annotation` (annotation) - (string) The annotation of the Uplink Order Container object.
       - Default: `"orchestrator:terraform"`
@@ -190,24 +196,24 @@ All examples for the Relation To Domain resource can be found in the [examples](
     * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
     * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
     * `standby_uplinks` (standby) - (string) The passive uplink IDs of the Uplink Order Container object.
-    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
 
@@ -216,7 +222,7 @@ All examples for the Relation To Domain resource can be found in the [examples](
 An existing Relation To Domain can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_relation_to_domain.example_application_epg uni/tn-{name}/ap-{name}/epg-{name}/rsdomAtt-[{tDn}]
+terraform import aci_relation_to_domain.example uni/tn-{name}/ap-{name}/epg-{name}/rsdomAtt-[{tDn}]
 ```
 
 Starting in Terraform version 1.5, an existing Relation To Domain can be imported
@@ -225,6 +231,6 @@ using [import blocks](https://developer.hashicorp.com/terraform/language/import)
 ```
 import {
   id = "uni/tn-{name}/ap-{name}/epg-{name}/rsdomAtt-[{tDn}]"
-  to = aci_relation_to_domain.example_application_epg
+  to = aci_relation_to_domain.example
 }
 ```

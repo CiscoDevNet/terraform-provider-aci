@@ -14,7 +14,6 @@ description: |-
 
 Manages ACI Tenant
 
-
   !> This resource has been migrated to the terraform plugin protocol version 6, refer to the [migration guide](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/guides/migration) for more details and implications for already managed resources.
 
 ## API Information ##
@@ -36,10 +35,11 @@ The configuration snippet below creates a Tenant with only required attributes.
 ```hcl
 
 resource "aci_tenant" "example" {
-  name = "test_name"
+  name = "tenant"
 }
 
 ```
+
 The configuration snippet below shows all possible attributes of the Tenant.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
@@ -47,39 +47,39 @@ The configuration snippet below shows all possible attributes of the Tenant.
 ```hcl
 
 resource "aci_tenant" "full_example" {
-  annotation  = "annotation"
-  description = "description_1"
-  name        = "test_name"
-  name_alias  = "name_alias_1"
-  owner_key   = "owner_key_1"
-  owner_tag   = "owner_tag_1"
+  annotation  = "example_annotation"
+  description = "Example Tenant"
+  name        = "tenant"
+  name_alias  = "example_name_alias"
+  owner_key   = "example_owner_key"
+  owner_tag   = "example_owner_tag"
   relation_to_monitoring_policy = {
-    annotation             = "annotation_1"
+    annotation             = "example_annotation"
     monitoring_policy_name = aci_monitoring_policy.example.name
     annotations = [
       {
-        key   = "key_0"
-        value = "value_1"
-      }
+        key   = "example_key"
+        value = "example_value"
+      },
     ]
     tags = [
       {
-        key   = "key_0"
-        value = "value_1"
-      }
+        key   = "example_key"
+        value = "example_value"
+      },
     ]
   }
   annotations = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
   tags = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
 }
 
@@ -107,28 +107,29 @@ All examples for the Tenant resource can be found in the [examples](https://gith
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 * `relation_to_monitoring_policy` - (map) A map of Relation From Tenant To Monitoring Policy (ACI object [fvRsTenantMonPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsTenantMonPol/overview)) pointing to Monitoring Policy (ACI Object [monEPGPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/monEPGPol/overview)) which can be configured using the [aci_monitoring_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/monitoring_policy) resource.
   #### Optional ####
-    
+
     * `annotation` (annotation) - (string) The annotation of the Relation From Tenant To Monitoring Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
       - Default: `"orchestrator:terraform"`
-    * `monitoring_policy_name` (tnMonEPGPolName) - (string) The name of the monitoring policy.
-    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `monitoring_policy_name` (tnMonEPGPolName) - (string) The name of the monitoring policy. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/monitoring_policy) with `aci_monitoring_policy.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/monitoring_policy) with `data.aci_monitoring_policy.example.name`.
+      - Default: `"uni/tn-common/monepg-default"`
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
 
@@ -151,25 +152,30 @@ import {
 ```
 
 ## Child Resources
-  
+
   - [aci_application_profile](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/application_profile)
   - [aci_bgp_address_family_context](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bgp_address_family_context)
   - [aci_bgp_timers](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bgp_timers)
   - [aci_bridge_domain](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bridge_domain)
-  - [aci_certificate_store](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/certificate_store)
   - [aci_contract](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/contract)
+  - [aci_custom_qos_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/custom_qos_policy)
+  - [aci_data_plane_policing_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/data_plane_policing_policy)
   - [aci_dhcp_relay_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/dhcp_relay_policy)
   - [aci_eigrp_address_family_context](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/eigrp_address_family_context)
   - [aci_end_point_retention_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/end_point_retention_policy)
   - [aci_fabric_external_connection_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/fabric_external_connection_policy)
   - [aci_filter](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/filter)
+  - [aci_first_hop_security_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/first_hop_security_policy)
   - [aci_igmp_snooping_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/igmp_snooping_policy)
   - [aci_imported_contract](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/imported_contract)
+  - [aci_imported_logical_device](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/imported_logical_device)
+  - [aci_ip_address_pool](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/ip_address_pool)
   - [aci_ip_sla_monitoring_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/ip_sla_monitoring_policy)
   - [aci_ip_sla_track_list](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/ip_sla_track_list)
   - [aci_ip_sla_track_member](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/ip_sla_track_member)
   - [aci_l3_outside](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3_outside)
   - [aci_l3out_route_tag_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3out_route_tag_policy)
+  - [aci_l4_l7_device](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l4_l7_devices)
   - [aci_mld_snooping_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/mld_snooping_policy)
   - [aci_monitoring_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/monitoring_policy)
   - [aci_neighbor_discovery_interface_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/neighbor_discovery_interface_policy)
@@ -181,4 +187,5 @@ import {
   - [aci_pim_route_map_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/pim_route_map_policy)
   - [aci_route_control_profile](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/route_control_profile)
   - [aci_taboo_contract](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/taboo_contract)
+  - [aci_trust_control_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/trust_control_policy)
   - [aci_vrf](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vrf)

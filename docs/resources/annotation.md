@@ -16,7 +16,6 @@ Manages ACI Annotation
 
   -> This resource should not be used in combination with the `annotations` nested attributes of other resources for the same object. Doing so will result in unexpected behaviour.
 
-
 ## API Information ##
 
 * Class: [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)
@@ -41,16 +40,10 @@ The configuration snippet below creates a Annotation with only required attribut
 
 ```hcl
 
-resource "aci_annotation" "example_tenant" {
+resource "aci_annotation" "example" {
   parent_dn = aci_tenant.example.id
-  key       = "test_key"
-  value     = "test_value"
-}
-
-resource "aci_annotation" "example_application_epg" {
-  parent_dn = aci_application_epg.example.id
-  key       = "test_key"
-  value     = "test_value"
+  key       = "example_key"
+  value     = "example_value"
 }
 
 ```
@@ -62,7 +55,6 @@ All examples for the Annotation resource can be found in the [examples](https://
 ### Required ###
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
-  - Too many parent DNs to display, see model documentation for all possible parents of [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview).
   - [aci_bgp_address_family_context](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bgp_address_family_context) ([bgpCtxAfPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/bgpCtxAfPol/overview))
   - [aci_bgp_timers](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bgp_timers) ([bgpCtxPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/bgpCtxPol/overview))
   - [aci_cdp_interface_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/cdp_interface_policy) ([cdpIfPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/cdpIfPol/overview))
@@ -83,6 +75,8 @@ All examples for the Annotation resource can be found in the [examples](https://
   - [aci_application_epg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/application_epg) ([fvAEPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvAEPg/overview))
   - [aci_application_profile](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/application_profile) ([fvAp](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvAp/overview))
   - [aci_bridge_domain](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bridge_domain) ([fvBD](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvBD/overview))
+  - Additional parent options are available; see model documentation for all possible parents of [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview).
+
 * `key` (key) - (string) The key used to uniquely identify this configuration object.
 * `value` (value) - (string) The value of the property.
 
@@ -95,7 +89,7 @@ All examples for the Annotation resource can be found in the [examples](https://
 An existing Annotation can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_annotation.example_tenant uni/tn-{name}/annotationKey-[{key}]
+terraform import aci_annotation.example uni/tn-{name}/annotationKey-[{key}]
 ```
 
 Starting in Terraform version 1.5, an existing Annotation can be imported
@@ -104,6 +98,6 @@ using [import blocks](https://developer.hashicorp.com/terraform/language/import)
 ```
 import {
   id = "uni/tn-{name}/annotationKey-[{key}]"
-  to = aci_annotation.example_tenant
+  to = aci_annotation.example
 }
 ```

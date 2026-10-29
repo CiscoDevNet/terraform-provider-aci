@@ -14,7 +14,7 @@ associated with, `gen/generator.go`:
 | `internal/provider/` | 695 files | Mixed static and generated output; active ownership is limited to manifest entries |
 | `internal/provider/models/` | 179 files | 176 class models are managed; shared model helpers are static |
 | `internal/custom_types/` | 37 files | Legacy output outside the active generator manifest |
-| `docs/` | 699 files | Mixed static and generated output; `index.md` and 125 class-backed data-source pages are actively managed |
+| `docs/` | 699 files | Mixed static and generated output; `index.md`, 125 class-backed resource pages, and 125 class-backed data-source pages are actively managed |
 | `examples/resources/` | 376 files | All 125 `provider.tf` and 125 `resource.tf` files, 123 distinct `resource-all-attributes.tf` files, and 3 copied PEM files are managed |
 | `examples/data-sources/` | 252 files | The 125 class `provider.tf` and 125 `data-source.tf` files are managed; both system example files are static |
 | `gen/testvars/` | 125 files | Legacy output outside the active generator manifest |
@@ -165,6 +165,14 @@ datasource artifact. The handwritten `docs/data-sources/rest_managed.md` and
 `docs/data-sources/system.md` pages remain static because `aci_rest_managed` and
 `aci_system` have no metadata-backed classes in the active generator.
 
+`resource.md.tmpl` owns the documentation page for every loaded class with a
+resource artifact. Resource pages without a metadata-backed class remain
+static and outside the managed-files manifest. The template embeds the same
+normalized `Example.ResourceHCL` output used by the standalone resource
+examples. Its import example uses the DN format matching the selected example
+parent or the documented `parent_dn` default, then falls back to the first
+actual DN format; display-only notices are never used as import identifiers.
+
 The provider index intentionally documents `insecure` and
 `validate_relation_dn` as Boolean inputs and `retries` as a Number, matching
 the established SDKv2 user contract. While the provider is muxed, its framework
@@ -218,7 +226,9 @@ content is static and only their artifact-derived destinations vary.
 `resource_example.tf.tmpl` owns every minimal `examples/resources/aci_*/resource.tf`
 file. `resource_example_all_attributes.tf.tmpl` owns a corresponding
 `resource-all-attributes.tf` only when the resolved full example differs from
-the minimum example. `datasource_example.tf.tmpl` owns every generated
+the minimum example. Both templates call `Example.ResourceHCL`, which is also
+used by `resource.md.tmpl`, so the embedded and standalone resource blocks are
+rendered from one implementation. `datasource_example.tf.tmpl` owns every generated
 `examples/data-sources/aci_*/data-source.tf` except the static system example.
 `provider_example.tf.tmpl` owns the provider file beside each of those
 class-backed resource and data-source examples. The provider file beside the
