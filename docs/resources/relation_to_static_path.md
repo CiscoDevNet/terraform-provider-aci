@@ -14,8 +14,6 @@ description: |-
 
 Manages ACI Relation To Static Path
 
-
-
 ## API Information ##
 
 * Class: [fvRsPathAtt](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsPathAtt/overview)
@@ -34,23 +32,24 @@ The configuration snippet below creates a Relation To Static Path with only requ
 
 ```hcl
 
-resource "aci_relation_to_static_path" "example_application_epg" {
+resource "aci_relation_to_static_path" "example" {
   parent_dn     = aci_application_epg.example.id
   encapsulation = "vlan-201"
   target_dn     = "topology/pod-1/paths-101/pathep-[eth1/1]"
 }
 
 ```
+
 The configuration snippet below shows all possible attributes of the Relation To Static Path.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
 ```hcl
 
-resource "aci_relation_to_static_path" "full_example_application_epg" {
+resource "aci_relation_to_static_path" "full_example" {
   parent_dn             = aci_application_epg.example.id
-  annotation            = "annotation"
-  description           = "description_1"
+  annotation            = "example_annotation"
+  description           = "Example Relation To Static Path"
   encapsulation         = "vlan-201"
   deployment_immediacy  = "immediate"
   mode                  = "native"
@@ -58,15 +57,15 @@ resource "aci_relation_to_static_path" "full_example_application_epg" {
   target_dn             = "topology/pod-1/paths-101/pathep-[eth1/1]"
   annotations = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
   tags = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
 }
 
@@ -80,8 +79,9 @@ All examples for the Relation To Static Path resource can be found in the [examp
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_application_epg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/application_epg) ([fvAEPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvAEPg/overview))
+
 * `encapsulation` (encap) - (string) The VLAN encapsulation of the Relation To Static Path object.
-* `target_dn` (tDn) - (string) null.
+* `target_dn` (tDn) - (string) The distinguished name (DN) of the target object.
 
 ### Read-Only ###
 
@@ -99,14 +99,15 @@ All examples for the Relation To Static Path resource can be found in the [examp
   - Default: `"regular"`
   - Valid Values: `"native"`, `"regular"`, `"untagged"`.
 * `primary_encapsulation` (primaryEncap) - (string) The primary VLAN encapsulation of the Relation To Static Path object. This attribute is supported in ACI versions: 1.2(2g) and later.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+  - Default: `"unknown"`
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
 
@@ -115,7 +116,7 @@ All examples for the Relation To Static Path resource can be found in the [examp
 An existing Relation To Static Path can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_relation_to_static_path.example_application_epg uni/tn-{name}/ap-{name}/epg-{name}/rspathAtt-[{tDn}]
+terraform import aci_relation_to_static_path.example uni/tn-{name}/ap-{name}/epg-{name}/rspathAtt-[{tDn}]
 ```
 
 Starting in Terraform version 1.5, an existing Relation To Static Path can be imported
@@ -124,6 +125,6 @@ using [import blocks](https://developer.hashicorp.com/terraform/language/import)
 ```
 import {
   id = "uni/tn-{name}/ap-{name}/epg-{name}/rspathAtt-[{tDn}]"
-  to = aci_relation_to_static_path.example_application_epg
+  to = aci_relation_to_static_path.example
 }
 ```

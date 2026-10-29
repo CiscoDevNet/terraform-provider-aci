@@ -14,8 +14,6 @@ description: |-
 
 Manages ACI CoPP Interface Policy
 
-
-
 ## API Information ##
 
 * Class: [coppIfPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/coppIfPol/overview)
@@ -35,10 +33,11 @@ The configuration snippet below creates a CoPP Interface Policy with only requir
 ```hcl
 
 resource "aci_copp_interface_policy" "example" {
-  name = "test_name"
+  name = "copp_interface_policy"
 }
 
 ```
+
 The configuration snippet below shows all possible attributes of the CoPP Interface Policy.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
@@ -46,48 +45,48 @@ The configuration snippet below shows all possible attributes of the CoPP Interf
 ```hcl
 
 resource "aci_copp_interface_policy" "full_example" {
-  annotation  = "annotation"
-  description = "description_1"
-  name        = "test_name"
-  name_alias  = "name_alias_1"
-  owner_key   = "owner_key_1"
-  owner_tag   = "owner_tag_1"
+  annotation  = "example_annotation"
+  description = "Example CoPP Interface Policy"
+  name        = "copp_interface_policy"
+  name_alias  = "example_name_alias"
+  owner_key   = "example_owner_key"
+  owner_tag   = "example_owner_tag"
   protocol_policies = [
     {
-      annotation      = "annotation_1"
+      annotation      = "example_annotation"
       burst           = "15"
-      description     = "description_1"
+      description     = "Example CoPP Interface Protocol Policy"
       match_protocols = ["arp", "bfd"]
-      name            = "name_0"
-      name_alias      = "name_alias_1"
-      owner_key       = "owner_key_1"
-      owner_tag       = "owner_tag_1"
+      name            = "copp_interface_protocol_policy"
+      name_alias      = "example_name_alias"
+      owner_key       = "example_owner_key"
+      owner_tag       = "example_owner_tag"
       rate            = "15"
       annotations = [
         {
-          key   = "key_0"
-          value = "value_1"
-        }
+          key   = "example_key"
+          value = "example_value"
+        },
       ]
       tags = [
         {
-          key   = "key_0"
-          value = "value_1"
-        }
+          key   = "example_key"
+          value = "example_value"
+        },
       ]
-    }
+    },
   ]
   annotations = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
   tags = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
 }
 
@@ -113,12 +112,12 @@ All examples for the CoPP Interface Policy resource can be found in the [example
 * `name_alias` (nameAlias) - (string) The name alias of the CoPP Interface Policy object.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
-* `protocol_policies` - (list) A list of CoPP Interface Protocol Policies (ACI object [coppProtoClassP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/coppProtoClassP/overview)). CoPP Interface Protocol Policies can also be configured using a separate [aci_copp_interface_protocol_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/copp_interface_protocol_policy) resource.
+* `protocol_policies` - (list) A list of CoPP Interface Protocol Policies (ACI object [coppProtoClassP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/coppProtoClassP/overview)) which can also be configured using a separate [aci_copp_interface_protocol_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/copp_interface_protocol_policy) resource.
   #### Required ####
-  
+
     * `name` (name) - (string) The name of the CoPP Interface Protocol Policy object.
   #### Optional ####
-    
+
     * `annotation` (annotation) - (string) The annotation of the CoPP Interface Protocol Policy object. This attribute is supported in ACI versions: 3.2(1l) and later.
       - Default: `"orchestrator:terraform"`
     * `burst` (burst) - (string) The burst size of the CoPP Interface Protocol Policy object.
@@ -132,24 +131,24 @@ All examples for the CoPP Interface Policy resource can be found in the [example
     * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
     * `rate` (rate) - (string) The rate of the CoPP Interface Protocol Policy object.
       - Default: `"10"`
-    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
 

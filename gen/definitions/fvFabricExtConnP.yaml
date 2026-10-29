@@ -20,7 +20,6 @@ properties:
       description: A global route target used to define communities for route leaking
         or redistribution in multi-pod or multi-site deployments to manage routing
         policies across fabrics.
-    restriction: required
     test_config:
       create:
       - config_value: extended:as2-nn4:5:16

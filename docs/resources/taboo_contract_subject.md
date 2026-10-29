@@ -14,8 +14,6 @@ description: |-
 
 Manages ACI Taboo Contract Subject
 
-
-
 ## API Information ##
 
 * Class: [vzTSubj](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzTSubj/overview)
@@ -34,54 +32,55 @@ The configuration snippet below creates a Taboo Contract Subject with only requi
 
 ```hcl
 
-resource "aci_taboo_contract_subject" "example_taboo_contract" {
+resource "aci_taboo_contract_subject" "example" {
   parent_dn = aci_taboo_contract.example.id
-  name      = "test_name"
+  name      = "taboo_contract_subject"
 }
 
 ```
+
 The configuration snippet below shows all possible attributes of the Taboo Contract Subject.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
 ```hcl
 
-resource "aci_taboo_contract_subject" "full_example_taboo_contract" {
+resource "aci_taboo_contract_subject" "full_example" {
   parent_dn   = aci_taboo_contract.example.id
-  annotation  = "annotation"
-  description = "description_1"
-  name        = "test_name"
-  name_alias  = "name_alias_1"
+  annotation  = "example_annotation"
+  description = "Example Taboo Contract Subject"
+  name        = "taboo_contract_subject"
+  name_alias  = "example_name_alias"
   annotations = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
   tags = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
   relation_to_filters = [
     {
-      annotation  = "annotation_1"
+      annotation  = "example_annotation"
       directives  = ["log", "no_stats"]
       filter_name = aci_filter.example.name
       annotations = [
         {
-          key   = "key_0"
-          value = "value_1"
-        }
+          key   = "example_key"
+          value = "example_value"
+        },
       ]
       tags = [
         {
-          key   = "key_0"
-          value = "value_1"
-        }
+          key   = "example_key"
+          value = "example_value"
+        },
       ]
-    }
+    },
   ]
 }
 
@@ -95,6 +94,7 @@ All examples for the Taboo Contract Subject resource can be found in the [exampl
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_taboo_contract](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/taboo_contract) ([vzTaboo](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzTaboo/overview))
+
 * `name` (name) - (string) The name of the Taboo Contract Subject object.
 
 ### Read-Only ###
@@ -107,34 +107,35 @@ All examples for the Taboo Contract Subject resource can be found in the [exampl
   - Default: `"orchestrator:terraform"`
 * `description` (descr) - (string) The description of the Taboo Contract Subject object.
 * `name_alias` (nameAlias) - (string) The name alias of the Taboo Contract Subject object. This attribute is supported in ACI versions: 2.2(1k) and later.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
 * `relation_to_filters` - (list) A list of Relation From Taboo Contract Subject To Filters (ACI object [vzRsDenyRule](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzRsDenyRule/overview)) pointing to Filter (ACI Object [vzFilter](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzFilter/overview)) which can be configured using the [aci_filter](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/filter) resource.
   #### Required ####
-  
+
     * `filter_name` (tnVzFilterName) - (string) The name of the filter object. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/filter) with `aci_filter.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/filter) with `data.aci_filter.example.name`.
   #### Optional ####
-    
+
     * `annotation` (annotation) - (string) The annotation of the Relation From Taboo Contract Subject To Filter object. This attribute is supported in ACI versions: 3.2(1l) and later.
       - Default: `"orchestrator:terraform"`
     * `directives` (directives) - (list) The directives of the Relation From Taboo Contract Subject To Filter object. Use the 'no_stats' option for Policy Compression, which allows for the utilization of fewer TCAM resources. Use the 'log' option to log packets and provide information about traffic that is hitting the rule of interest. See the [contract configuration options](https://www.cisco.com/c/en/us/solutions/collateral/data-center-virtualization/application-centric-infrastructure/white-paper-c11-743951.html#Contractconfigurationoptions) in the Cisco ACI Contract Guide White Paper for more information.
+      - Default: `[]`
       - Valid Values: `"log"`, `"no_stats"`.
-    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
 
@@ -143,7 +144,7 @@ All examples for the Taboo Contract Subject resource can be found in the [exampl
 An existing Taboo Contract Subject can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_taboo_contract_subject.example_taboo_contract uni/tn-{name}/taboo-{name}/tsubj-{name}
+terraform import aci_taboo_contract_subject.example uni/tn-{name}/taboo-{name}/tsubj-{name}
 ```
 
 Starting in Terraform version 1.5, an existing Taboo Contract Subject can be imported
@@ -152,6 +153,6 @@ using [import blocks](https://developer.hashicorp.com/terraform/language/import)
 ```
 import {
   id = "uni/tn-{name}/taboo-{name}/tsubj-{name}"
-  to = aci_taboo_contract_subject.example_taboo_contract
+  to = aci_taboo_contract_subject.example
 }
 ```

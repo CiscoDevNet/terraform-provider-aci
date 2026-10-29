@@ -14,8 +14,6 @@ description: |-
 
 Manages ACI Relation To Consumed Contract
 
-
-
 ## API Information ##
 
 * Class: [fvRsCons](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsCons/overview)
@@ -43,58 +41,35 @@ The configuration snippet below creates a Relation To Consumed Contract with onl
 
 ```hcl
 
-resource "aci_relation_to_consumed_contract" "example_application_epg" {
+resource "aci_relation_to_consumed_contract" "example" {
   parent_dn     = aci_application_epg.example.id
   contract_name = aci_contract.example.name
 }
 
-resource "aci_relation_to_consumed_contract" "example_endpoint_security_group" {
-  parent_dn     = aci_endpoint_security_group.example.id
-  contract_name = aci_contract.example.name
-}
-
 ```
+
 The configuration snippet below shows all possible attributes of the Relation To Consumed Contract.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
 ```hcl
 
-resource "aci_relation_to_consumed_contract" "full_example_application_epg" {
+resource "aci_relation_to_consumed_contract" "full_example" {
   parent_dn     = aci_application_epg.example.id
-  annotation    = "annotation"
+  annotation    = "example_annotation"
   priority      = "level1"
   contract_name = aci_contract.example.name
   annotations = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
   tags = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
-  ]
-}
-
-resource "aci_relation_to_consumed_contract" "full_example_endpoint_security_group" {
-  parent_dn     = aci_endpoint_security_group.example.id
-  annotation    = "annotation"
-  priority      = "level1"
-  contract_name = aci_contract.example.name
-  annotations = [
-    {
-      key   = "key_0"
-      value = "value_1"
-    }
-  ]
-  tags = [
-    {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
 }
 
@@ -115,7 +90,7 @@ All examples for the Relation To Consumed Contract resource can be found in the 
   - [aci_l2out_extepg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l2out_extepg) ([l2extInstP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l2extInstP/overview))
   - [aci_external_epg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/external_epg) ([l3extInstP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extInstP/overview))
   - [aci_node_mgmt_epg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/node_mgmt_epg) ([mgmtInB](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/mgmtInB/overview))
-  - The distinguished name (DN) of classes below can be used but currently there is no available resource for it:
+  - The distinguished names (DNs) of parent objects from the following APIC classes can also be used, but no Terraform resources are currently available for these classes:
     - [cloudISvcEPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/cloudISvcEPg/overview)
     - [dhcpCRelPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/dhcpCRelPg/overview)
     - [dhcpPRelPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/dhcpPRelPg/overview)
@@ -141,15 +116,17 @@ All examples for the Relation To Consumed Contract resource can be found in the 
   - Default: `"orchestrator:terraform"`
 * `priority` (prio) - (string) The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.
   - Default: `"unspecified"`
-  - Valid Values: `"level1"`, `"level2"`, `"level3"`, `"level4"`, `"level5"`, `"level6"`, `"unspecified"`.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+  - Valid Values:
+    * `"level1"`, `"level2"`, `"level3"`, `"level4"`, `"level5"`, `"level6"`, `"unspecified"`.
+    * Or a value in the range of `0` to `9`.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
 
@@ -158,7 +135,7 @@ All examples for the Relation To Consumed Contract resource can be found in the 
 An existing Relation To Consumed Contract can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_relation_to_consumed_contract.example_application_epg uni/tn-{name}/ap-{name}/epg-{name}/rscons-{tnVzBrCPName}
+terraform import aci_relation_to_consumed_contract.example uni/tn-{name}/ap-{name}/epg-{name}/rscons-{tnVzBrCPName}
 ```
 
 Starting in Terraform version 1.5, an existing Relation To Consumed Contract can be imported
@@ -167,6 +144,6 @@ using [import blocks](https://developer.hashicorp.com/terraform/language/import)
 ```
 import {
   id = "uni/tn-{name}/ap-{name}/epg-{name}/rscons-{tnVzBrCPName}"
-  to = aci_relation_to_consumed_contract.example_application_epg
+  to = aci_relation_to_consumed_contract.example
 }
 ```

@@ -1,6 +1,7 @@
 package data
 
 import (
+	"slices"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -752,6 +753,54 @@ func TestSetPropertyDefaultValues(t *testing.T) {
 				assert.NoError(t, err, test.MessageUnexpectedError(err))
 				assert.Equal(t, expected.DefaultValues, p.Documentation.DefaultValues, test.MessageEqual(expected.DefaultValues, p.Documentation.DefaultValues, testCase.Name))
 			}
+		})
+	}
+}
+
+func TestResourceDocumentationDefaultValues(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	testCases := []test.TestCase{
+		{
+			Name: "test_apic_default",
+			Input: Property{
+				PropertyName: "descr",
+				Documentation: PropertyDocumentation{
+					DefaultValues: []DefaultValue{{Value: "description"}},
+				},
+			},
+			Expected: []DefaultValue{{Value: "description"}},
+		},
+		{
+			Name: "test_provider_annotation_default",
+			Input: Property{
+				PropertyName: "annotation",
+			},
+			Expected: []DefaultValue{{Value: "orchestrator:terraform"}},
+		},
+		{
+			Name: "test_provider_annotation_default_does_not_mutate_apic_default",
+			Input: Property{
+				PropertyName: "annotation",
+				Documentation: PropertyDocumentation{
+					DefaultValues: []DefaultValue{{Value: "apic-default"}},
+				},
+			},
+			Expected: []DefaultValue{{Value: "orchestrator:terraform"}},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			property := testCase.Input.(Property)
+			expected := testCase.Expected.([]DefaultValue)
+			apicDefaults := slices.Clone(property.Documentation.DefaultValues)
+			actual := property.ResourceDocumentationDefaultValues()
+
+			assert.Equal(t, expected, actual, test.MessageEqual(expected, actual, testCase.Name))
+			assert.Equal(t, apicDefaults, property.Documentation.DefaultValues, test.MessageEqual(apicDefaults, property.Documentation.DefaultValues, testCase.Name))
 		})
 	}
 }

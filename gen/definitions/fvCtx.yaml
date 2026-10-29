@@ -1,4 +1,7 @@
 documentation:
+  include_children:
+  - fvSiteAssociated
+  - vzAny
   sub_category: Networking
   ui_locations:
   - Tenants -> Networking -> VRFs

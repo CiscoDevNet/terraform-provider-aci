@@ -98,6 +98,9 @@ type ClassDocumentationDefinition struct {
 	// documentation text that references the class by its label.
 	// When empty, the label is derived from class.ResourceName via humanization + DocumentationLabelOverrides.
 	Label string `yaml:"label"`
+	// Overrides the final Terraform Registry documentation path segment when a
+	// legacy page filename differs from the Terraform artifact name.
+	RegistryPath string `yaml:"registry_path"`
 	// Additional sentence(s) appended after the standard description prefix.
 	// Shared and applied to both the resource and datasource documentation.
 	// Per-artifact entries in Resource.Description / Datasource.Description are appended after this shared text.

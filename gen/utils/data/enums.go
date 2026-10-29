@@ -1,6 +1,9 @@
 package data
 
-import "fmt"
+import (
+	"fmt"
+	"strconv"
+)
 
 // This file defines every typed enum used by the gen/utils/data package and the
 // definition YAML schema. Two rules apply uniformly to all of them:
@@ -561,6 +564,16 @@ func (v ValueTypeEnum) DocumentationType() string {
 	default:
 		return ""
 	}
+}
+
+// DocumentationLiteral returns the established HCL literal used to document a
+// default value. An empty set is represented by [], while all string-backed
+// values use a quoted Terraform string literal.
+func (v ValueTypeEnum) DocumentationLiteral(value string) string {
+	if v == Set && value == "" {
+		return "[]"
+	}
+	return strconv.Quote(value)
 }
 
 func (v *ValueTypeEnum) UnmarshalText(text []byte) error {
