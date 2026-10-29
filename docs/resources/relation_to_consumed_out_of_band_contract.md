@@ -14,8 +14,6 @@ description: |-
 
 Manages ACI Relation To Consumed Out Of Band Contract
 
-
-
 ## API Information ##
 
 * Class: [mgmtRsOoBCons](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/mgmtRsOoBCons/overview)
@@ -34,34 +32,35 @@ The configuration snippet below creates a Relation To Consumed Out Of Band Contr
 
 ```hcl
 
-resource "aci_relation_to_consumed_out_of_band_contract" "example_external_management_network_instance_profile" {
+resource "aci_relation_to_consumed_out_of_band_contract" "example" {
   parent_dn                 = aci_external_management_network_instance_profile.example.id
   out_of_band_contract_name = aci_out_of_band_contract.example.name
 }
 
 ```
+
 The configuration snippet below shows all possible attributes of the Relation To Consumed Out Of Band Contract.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
 ```hcl
 
-resource "aci_relation_to_consumed_out_of_band_contract" "full_example_external_management_network_instance_profile" {
+resource "aci_relation_to_consumed_out_of_band_contract" "full_example" {
   parent_dn                 = aci_external_management_network_instance_profile.example.id
-  annotation                = "annotation"
+  annotation                = "example_annotation"
   priority                  = "level1"
   out_of_band_contract_name = aci_out_of_band_contract.example.name
   annotations = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
   tags = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
 }
 
@@ -75,6 +74,7 @@ All examples for the Relation To Consumed Out Of Band Contract resource can be f
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_external_management_network_instance_profile](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/external_management_network_instance_profile) ([mgmtInstP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/mgmtInstP/overview))
+
 * `out_of_band_contract_name` (tnVzOOBBrCPName) - (string) The name of the Out Of Band Contract object. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/out_of_band_contract) with `aci_out_of_band_contract.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/out_of_band_contract) with `data.aci_out_of_band_contract.example.name`.
 
 ### Read-Only ###
@@ -87,15 +87,17 @@ All examples for the Relation To Consumed Out Of Band Contract resource can be f
   - Default: `"orchestrator:terraform"`
 * `priority` (prio) - (string) The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.
   - Default: `"unspecified"`
-  - Valid Values: `"level1"`, `"level2"`, `"level3"`, `"level4"`, `"level5"`, `"level6"`, `"unspecified"`.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+  - Valid Values:
+    * `"level1"`, `"level2"`, `"level3"`, `"level4"`, `"level5"`, `"level6"`, `"unspecified"`.
+    * Or a value in the range of `0` to `9`.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
 
@@ -104,7 +106,7 @@ All examples for the Relation To Consumed Out Of Band Contract resource can be f
 An existing Relation To Consumed Out Of Band Contract can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_relation_to_consumed_out_of_band_contract.example_external_management_network_instance_profile uni/tn-{name}/extmgmt-{name}/instp-{name}/rsooBCons-{tnVzOOBBrCPName}
+terraform import aci_relation_to_consumed_out_of_band_contract.example uni/tn-mgmt/extmgmt-default/instp-{name}/rsooBCons-{tnVzOOBBrCPName}
 ```
 
 Starting in Terraform version 1.5, an existing Relation To Consumed Out Of Band Contract can be imported
@@ -112,7 +114,7 @@ using [import blocks](https://developer.hashicorp.com/terraform/language/import)
 
 ```
 import {
-  id = "uni/tn-{name}/extmgmt-{name}/instp-{name}/rsooBCons-{tnVzOOBBrCPName}"
-  to = aci_relation_to_consumed_out_of_band_contract.example_external_management_network_instance_profile
+  id = "uni/tn-mgmt/extmgmt-default/instp-{name}/rsooBCons-{tnVzOOBBrCPName}"
+  to = aci_relation_to_consumed_out_of_band_contract.example
 }
 ```

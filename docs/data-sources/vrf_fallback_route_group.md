@@ -63,7 +63,7 @@ data "aci_vrf_fallback_route_group" "example" {
     * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-* `vrf_fallback_route` - (map) A map of VRF Fallback Route (ACI object [fvFBRoute](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvFBRoute/overview)).
+* `vrf_fallback_route` - (map) A map of VRF Fallback Route (ACI object [fvFBRoute](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvFBRoute/overview)) which can also be configured using a separate [aci_vrf_fallback_route](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vrf_fallback_route) resource.
     * `annotation` (annotation) - (string) The annotation of the VRF Fallback Route object.
     * `description` (descr) - (string) The description of the VRF Fallback Route object.
     * `prefix_address` (fbrPrefix) - (string) The prefix address of the VRF Fallback Route object.

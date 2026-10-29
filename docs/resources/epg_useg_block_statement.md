@@ -14,8 +14,6 @@ description: |-
 
 Manages ACI EPG uSeg Block Statement
 
-
-
 ## API Information ##
 
 * Class: [fvCrtrn](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvCrtrn/overview)
@@ -34,39 +32,40 @@ The configuration snippet below creates a EPG uSeg Block Statement with only req
 
 ```hcl
 
-resource "aci_epg_useg_block_statement" "example_application_epg" {
+resource "aci_epg_useg_block_statement" "example" {
   parent_dn = aci_application_epg.example.id
 }
 
 ```
+
 The configuration snippet below shows all possible attributes of the EPG uSeg Block Statement.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
 ```hcl
 
-resource "aci_epg_useg_block_statement" "full_example_application_epg" {
+resource "aci_epg_useg_block_statement" "full_example" {
   parent_dn   = aci_application_epg.example.id
-  annotation  = "annotation"
-  description = "description_1"
+  annotation  = "example_annotation"
+  description = "Example EPG uSeg Block Statement"
   match       = "all"
   name        = "criterion"
-  name_alias  = "name_alias_1"
-  owner_key   = "owner_key_1"
-  owner_tag   = "owner_tag_1"
+  name_alias  = "example_name_alias"
+  owner_key   = "example_owner_key"
+  owner_tag   = "example_owner_tag"
   precedence  = "1"
   scope       = "scope-bd"
   annotations = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
   tags = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
 }
 
@@ -80,6 +79,7 @@ All examples for the EPG uSeg Block Statement resource can be found in the [exam
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_application_epg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/application_epg) ([fvAEPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvAEPg/overview))
+
 
 ### Read-Only ###
 
@@ -98,17 +98,18 @@ All examples for the EPG uSeg Block Statement resource can be found in the [exam
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
 * `precedence` (prec) - (string) The precedence of the EPG uSeg Block Statement object. This attribute is supported in ACI versions: 4.1(1i) and later.
+  - Default: `"0"`
 * `scope` (scope) - (string) The scope of the EPG uSeg Block Statement object. This attribute is supported in ACI versions: 4.1(1i) and later.
   - Default: `"scope-bd"`
   - Valid Values: `"scope-bd"`, `"scope-vrf"`.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
 
@@ -117,7 +118,7 @@ All examples for the EPG uSeg Block Statement resource can be found in the [exam
 An existing EPG uSeg Block Statement can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_epg_useg_block_statement.example_application_epg uni/tn-{name}/ap-{name}/epg-{name}/crtrn
+terraform import aci_epg_useg_block_statement.example uni/tn-{name}/ap-{name}/epg-{name}/crtrn
 ```
 
 Starting in Terraform version 1.5, an existing EPG uSeg Block Statement can be imported
@@ -126,13 +127,14 @@ using [import blocks](https://developer.hashicorp.com/terraform/language/import)
 ```
 import {
   id = "uni/tn-{name}/ap-{name}/epg-{name}/crtrn"
-  to = aci_epg_useg_block_statement.example_application_epg
+  to = aci_epg_useg_block_statement.example
 }
 ```
 
 ## Child Resources
-  
+
   - [aci_epg_useg_ad_group_attribute](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/epg_useg_ad_group_attribute)
+  - [aci_epg_useg_dns_attribute](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/epg_useg_dns_attribute)
   - [aci_epg_useg_ip_attribute](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/epg_useg_ip_attribute)
   - [aci_epg_useg_mac_attribute](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/epg_useg_mac_attribute)
   - [aci_epg_useg_sub_block_statement](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/epg_useg_sub_block_statement)

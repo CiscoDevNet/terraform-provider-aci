@@ -14,8 +14,6 @@ description: |-
 
 Manages ACI Data Plane Policing Policy
 
-
-
 ## API Information ##
 
 * Class: [qosDppPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/qosDppPol/overview)
@@ -36,22 +34,21 @@ The configuration snippet below creates a Data Plane Policing Policy with only r
 
 ```hcl
 
-resource "aci_data_plane_policing_policy" "example_tenant" {
-  parent_dn = aci_tenant.example.id
-  name      = "test_name"
+resource "aci_data_plane_policing_policy" "example" {
+  name = "data_plane_policing_policy"
 }
 
 ```
+
 The configuration snippet below shows all possible attributes of the Data Plane Policing Policy.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
 ```hcl
 
-resource "aci_data_plane_policing_policy" "full_example_tenant" {
-  parent_dn            = aci_tenant.example.id
+resource "aci_data_plane_policing_policy" "full_example" {
   admin_state          = "disabled"
-  annotation           = "annotation"
+  annotation           = "example_annotation"
   excessive_burst      = "unspecified"
   excessive_burst_unit = "giga"
   burst                = "unspecified"
@@ -59,15 +56,15 @@ resource "aci_data_plane_policing_policy" "full_example_tenant" {
   conform_action       = "drop"
   conform_mark_cos     = "unspecified"
   conform_mark_dscp    = "unspecified"
-  description          = "description_1"
+  description          = "Example Data Plane Policing Policy"
   exceed_action        = "drop"
   exceed_mark_cos      = "unspecified"
   exceed_mark_dscp     = "unspecified"
   mode                 = "bit"
-  name                 = "test_name"
-  name_alias           = "name_alias_1"
-  owner_key            = "owner_key_1"
-  owner_tag            = "owner_tag_1"
+  name                 = "data_plane_policing_policy"
+  name_alias           = "example_name_alias"
+  owner_key            = "example_owner_key"
+  owner_tag            = "example_owner_tag"
   peak_rate            = "0"
   peak_rate_unit       = "giga"
   rate                 = "0"
@@ -79,15 +76,15 @@ resource "aci_data_plane_policing_policy" "full_example_tenant" {
   violate_mark_dscp    = "unspecified"
   annotations = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
   tags = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
 }
 
@@ -109,10 +106,10 @@ All examples for the Data Plane Policing Policy resource can be found in the [ex
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tenant) ([fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview))
-  - The distinguished name (DN) of classes below can be used but currently there is no available resource for it:
+  - The distinguished names (DNs) of parent objects from the following APIC classes can also be used, but no Terraform resources are currently available for these classes:
     - [infraInfra](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraInfra/overview)
+  - Default: `"uni/infra"`
 
-  - Default: `uni/infra`
 * `admin_state` (adminSt) - (string) The administrative state of the Data Plane Policing Policy object.
   - Default: `"disabled"`
   - Valid Values: `"disabled"`, `"enabled"`.
@@ -196,14 +193,14 @@ All examples for the Data Plane Policing Policy resource can be found in the [ex
   - Valid Values:
     * `"unspecified"`.
     * Or a value in the range of `0` to `63`.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
 
@@ -212,7 +209,7 @@ All examples for the Data Plane Policing Policy resource can be found in the [ex
 An existing Data Plane Policing Policy can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_data_plane_policing_policy.example_tenant uni/infra/qosdpppol-{name}
+terraform import aci_data_plane_policing_policy.example uni/infra/qosdpppol-{name}
 ```
 
 Starting in Terraform version 1.5, an existing Data Plane Policing Policy can be imported
@@ -221,6 +218,6 @@ using [import blocks](https://developer.hashicorp.com/terraform/language/import)
 ```
 import {
   id = "uni/infra/qosdpppol-{name}"
-  to = aci_data_plane_policing_policy.example_tenant
+  to = aci_data_plane_policing_policy.example
 }
 ```

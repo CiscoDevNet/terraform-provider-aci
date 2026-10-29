@@ -16,6 +16,7 @@ Manages ACI Tag
 
   -> This resource should not be used in combination with the `tags` nested attributes of other resources for the same object. Doing so will result in unexpected behaviour.
 
+  !> This resource has been migrated to the terraform plugin protocol version 6, refer to the [migration guide](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/guides/migration) for more details and implications for already managed resources.
 
 ## API Information ##
 
@@ -41,16 +42,10 @@ The configuration snippet below creates a Tag with only required attributes.
 
 ```hcl
 
-resource "aci_tag" "example_tenant" {
+resource "aci_tag" "example" {
   parent_dn = aci_tenant.example.id
-  key       = "test_key"
-  value     = "test_value"
-}
-
-resource "aci_tag" "example_application_epg" {
-  parent_dn = aci_application_epg.example.id
-  key       = "test_key"
-  value     = "test_value"
+  key       = "example_key"
+  value     = "example_value"
 }
 
 ```
@@ -62,7 +57,6 @@ All examples for the Tag resource can be found in the [examples](https://github.
 ### Required ###
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
-  - Too many parent DNs to display, see model documentation for all possible parents of [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview).
   - [aci_bgp_address_family_context](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bgp_address_family_context) ([bgpCtxAfPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/bgpCtxAfPol/overview))
   - [aci_bgp_timers](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bgp_timers) ([bgpCtxPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/bgpCtxPol/overview))
   - [aci_cdp_interface_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/cdp_interface_policy) ([cdpIfPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/cdpIfPol/overview))
@@ -83,6 +77,8 @@ All examples for the Tag resource can be found in the [examples](https://github.
   - [aci_application_epg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/application_epg) ([fvAEPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvAEPg/overview))
   - [aci_application_profile](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/application_profile) ([fvAp](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvAp/overview))
   - [aci_bridge_domain](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bridge_domain) ([fvBD](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvBD/overview))
+  - Additional parent options are available; see model documentation for all possible parents of [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview).
+
 * `key` (key) - (string) The key used to uniquely identify this configuration object.
 * `value` (value) - (string) The value of the property.
 
@@ -95,7 +91,7 @@ All examples for the Tag resource can be found in the [examples](https://github.
 An existing Tag can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_tag.example_tenant uni/tn-{name}/tagKey-{key}
+terraform import aci_tag.example uni/tn-{name}/tagKey-{key}
 ```
 
 Starting in Terraform version 1.5, an existing Tag can be imported
@@ -104,6 +100,6 @@ using [import blocks](https://developer.hashicorp.com/terraform/language/import)
 ```
 import {
   id = "uni/tn-{name}/tagKey-{key}"
-  to = aci_tag.example_tenant
+  to = aci_tag.example
 }
 ```

@@ -14,8 +14,6 @@ description: |-
 
 Manages ACI Relation From Attachable Access Entity Profile To Domain
 
-
-
 ## API Information ##
 
 * Class: [infraRsDomP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraRsDomP/overview)
@@ -34,33 +32,34 @@ The configuration snippet below creates a Relation From Attachable Access Entity
 
 ```hcl
 
-resource "aci_relation_from_attachable_access_entity_profile_to_domain" "example_attachable_access_entity_profile" {
+resource "aci_relation_from_attachable_access_entity_profile_to_domain" "example" {
   parent_dn = aci_attachable_access_entity_profile.example.id
   target_dn = aci_physical_domain.example.id
 }
 
 ```
+
 The configuration snippet below shows all possible attributes of the Relation From Attachable Access Entity Profile To Domain.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
 ```hcl
 
-resource "aci_relation_from_attachable_access_entity_profile_to_domain" "full_example_attachable_access_entity_profile" {
+resource "aci_relation_from_attachable_access_entity_profile_to_domain" "full_example" {
   parent_dn  = aci_attachable_access_entity_profile.example.id
-  annotation = "annotation"
+  annotation = "example_annotation"
   target_dn  = aci_physical_domain.example.id
   annotations = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
   tags = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
 }
 
@@ -74,6 +73,7 @@ All examples for the Relation From Attachable Access Entity Profile To Domain re
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_attachable_access_entity_profile](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/attachable_access_entity_profile) ([infraAttEntityP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraAttEntityP/overview))
+
 * `target_dn` (tDn) - (string) The distinguished name of the target Domain object.
 
 ### Read-Only ###
@@ -84,14 +84,14 @@ All examples for the Relation From Attachable Access Entity Profile To Domain re
 
 * `annotation` (annotation) - (string) The annotation of the Relation From Attachable Access Entity Profile To Domain object. This attribute is supported in ACI versions: 3.2(1l) and later.
   - Default: `"orchestrator:terraform"`
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
 
@@ -100,7 +100,7 @@ All examples for the Relation From Attachable Access Entity Profile To Domain re
 An existing Relation From Attachable Access Entity Profile To Domain can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_relation_from_attachable_access_entity_profile_to_domain.example_attachable_access_entity_profile uni/infra/attentp-{name}/rsdomP-[{tDn}]
+terraform import aci_relation_from_attachable_access_entity_profile_to_domain.example uni/infra/attentp-{name}/rsdomP-[{tDn}]
 ```
 
 Starting in Terraform version 1.5, an existing Relation From Attachable Access Entity Profile To Domain can be imported
@@ -109,6 +109,6 @@ using [import blocks](https://developer.hashicorp.com/terraform/language/import)
 ```
 import {
   id = "uni/infra/attentp-{name}/rsdomP-[{tDn}]"
-  to = aci_relation_from_attachable_access_entity_profile_to_domain.example_attachable_access_entity_profile
+  to = aci_relation_from_attachable_access_entity_profile_to_domain.example
 }
 ```

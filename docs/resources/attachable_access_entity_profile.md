@@ -14,7 +14,6 @@ description: |-
 
 Manages ACI Attachable Access Entity Profile
 
-
   !> This resource has been migrated to the terraform plugin protocol version 6, refer to the [migration guide](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/guides/migration) for more details and implications for already managed resources.
 
 ## API Information ##
@@ -36,10 +35,11 @@ The configuration snippet below creates a Attachable Access Entity Profile with 
 ```hcl
 
 resource "aci_attachable_access_entity_profile" "example" {
-  name = "test_name"
+  name = "attachable_access_entity_profile"
 }
 
 ```
+
 The configuration snippet below shows all possible attributes of the Attachable Access Entity Profile.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
@@ -47,41 +47,41 @@ The configuration snippet below shows all possible attributes of the Attachable 
 ```hcl
 
 resource "aci_attachable_access_entity_profile" "full_example" {
-  annotation  = "annotation"
-  description = "description_1"
-  name        = "test_name"
-  name_alias  = "name_alias_1"
-  owner_key   = "owner_key_1"
-  owner_tag   = "owner_tag_1"
+  annotation  = "example_annotation"
+  description = "Example Attachable Access Entity Profile"
+  name        = "attachable_access_entity_profile"
+  name_alias  = "example_name_alias"
+  owner_key   = "example_owner_key"
+  owner_tag   = "example_owner_tag"
   relation_to_domains = [
     {
-      annotation = "annotation_1"
-      target_dn  = aci_physical_domain.test_physical_domain_0.id
+      annotation = "example_annotation"
+      target_dn  = aci_physical_domain.example.id
       annotations = [
         {
-          key   = "key_0"
-          value = "value_1"
-        }
+          key   = "example_key"
+          value = "example_value"
+        },
       ]
       tags = [
         {
-          key   = "key_0"
-          value = "value_1"
-        }
+          key   = "example_key"
+          value = "example_value"
+        },
       ]
-    }
+    },
   ]
   annotations = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
   tags = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
 }
 
@@ -107,37 +107,36 @@ All examples for the Attachable Access Entity Profile resource can be found in t
 * `name_alias` (nameAlias) - (string) The name alias of the Attachable Access Entity Profile object. This attribute is supported in ACI versions: 2.2(1k) and later.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
-      
-* `relation_to_domains` - (list) A list of Relation To Domains (ACI object [infraRsDomP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraRsDomP/overview)). This relation can point to multiple ACI objects:
+* `relation_to_domains` - (list) A list of Relation From Attachable Access Entity Profile To Domains (ACI object [infraRsDomP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraRsDomP/overview)). This relation can point to multiple ACI objects:
     - [vmmDomP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vmmDomP/overview) which can be configured using the [aci_vmm_domain](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vmm_domain) resource.
     - [physDomP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/physDomP/overview) which can be configured using the [aci_physical_domain](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/physical_domain) resource.
     - [fcDomP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fcDomP/overview). Currently there is no resource available to configure this ACI object.
     - [l2extDomP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l2extDomP/overview). Currently there is no resource available to configure this ACI object.
   #### Required ####
-  
+
     * `target_dn` (tDn) - (string) The distinguished name of the target Domain object.
   #### Optional ####
-    
+
     * `annotation` (annotation) - (string) The annotation of the Relation From Attachable Access Entity Profile To Domain object. This attribute is supported in ACI versions: 3.2(1l) and later.
       - Default: `"orchestrator:terraform"`
-    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+    * `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
       #### Required ####
-  
+
         * `key` (key) - (string) The key used to uniquely identify this configuration object.
         * `value` (value) - (string) The value of the property.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
 

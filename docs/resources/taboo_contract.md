@@ -14,7 +14,6 @@ description: |-
 
 Manages ACI Taboo Contract
 
-
   !> This resource has been migrated to the terraform plugin protocol version 6, refer to the [migration guide](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/guides/migration) for more details and implications for already managed resources.
 
 ## API Information ##
@@ -35,37 +34,38 @@ The configuration snippet below creates a Taboo Contract with only required attr
 
 ```hcl
 
-resource "aci_taboo_contract" "example_tenant" {
+resource "aci_taboo_contract" "example" {
   parent_dn = aci_tenant.example.id
-  name      = "test_name"
+  name      = "taboo_contract"
 }
 
 ```
+
 The configuration snippet below shows all possible attributes of the Taboo Contract.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
 ```hcl
 
-resource "aci_taboo_contract" "full_example_tenant" {
+resource "aci_taboo_contract" "full_example" {
   parent_dn   = aci_tenant.example.id
-  annotation  = "annotation"
-  description = "description_1"
-  name        = "test_name"
-  name_alias  = "name_alias_1"
-  owner_key   = "owner_key_1"
-  owner_tag   = "owner_tag_1"
+  annotation  = "example_annotation"
+  description = "Example Taboo Contract"
+  name        = "taboo_contract"
+  name_alias  = "example_name_alias"
+  owner_key   = "example_owner_key"
+  owner_tag   = "example_owner_tag"
   annotations = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
   tags = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
 }
 
@@ -79,6 +79,7 @@ All examples for the Taboo Contract resource can be found in the [examples](http
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_tenant](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tenant) ([fvTenant](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTenant/overview))
+
 * `name` (name) - (string) The name of the Taboo Contract object.
 
 ### Read-Only ###
@@ -93,14 +94,14 @@ All examples for the Taboo Contract resource can be found in the [examples](http
 * `name_alias` (nameAlias) - (string) The name alias of the Taboo Contract object. This attribute is supported in ACI versions: 2.2(1k) and later.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
 
@@ -109,7 +110,7 @@ All examples for the Taboo Contract resource can be found in the [examples](http
 An existing Taboo Contract can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_taboo_contract.example_tenant uni/tn-{name}/taboo-{name}
+terraform import aci_taboo_contract.example uni/tn-{name}/taboo-{name}
 ```
 
 Starting in Terraform version 1.5, an existing Taboo Contract can be imported
@@ -118,10 +119,10 @@ using [import blocks](https://developer.hashicorp.com/terraform/language/import)
 ```
 import {
   id = "uni/tn-{name}/taboo-{name}"
-  to = aci_taboo_contract.example_tenant
+  to = aci_taboo_contract.example
 }
 ```
 
 ## Child Resources
-  
+
   - [aci_taboo_contract_subject](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/taboo_contract_subject)

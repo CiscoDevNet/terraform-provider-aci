@@ -16,7 +16,6 @@ Manages ACI Firewall Policy
 
   -> For more information about the Firewall Policy, refer to the [Cisco ACI Virtual Edge Configuration Guide](https://www.cisco.com/c/en/us/td/docs/dcn/aci/aci-virtual-edge/3x/Configuration/cisco-aci-virtual-edge-configuration-guide-32x/Cisco-ACI-Virtual-Edge-Configuration-Guide-32x_chapter_distributed_firewall.html)
 
-
 ## API Information ##
 
 * Class: [nwsFwPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/nwsFwPol/overview)
@@ -36,10 +35,11 @@ The configuration snippet below creates a Firewall Policy with only required att
 ```hcl
 
 resource "aci_firewall_policy" "example" {
-  name = "test_name"
+  name = "firewall_policy"
 }
 
 ```
+
 The configuration snippet below shows all possible attributes of the Firewall Policy.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
@@ -47,24 +47,24 @@ The configuration snippet below shows all possible attributes of the Firewall Po
 ```hcl
 
 resource "aci_firewall_policy" "full_example" {
-  annotation  = "annotation"
-  description = "description_1"
+  annotation  = "example_annotation"
+  description = "Example Firewall Policy"
   mode        = "disabled"
-  name        = "test_name"
-  name_alias  = "name_alias_1"
-  owner_key   = "owner_key_1"
-  owner_tag   = "owner_tag_1"
+  name        = "firewall_policy"
+  name_alias  = "example_name_alias"
+  owner_key   = "example_owner_key"
+  owner_tag   = "example_owner_tag"
   annotations = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
   tags = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
 }
 
@@ -93,14 +93,14 @@ All examples for the Firewall Policy resource can be found in the [examples](htt
 * `name_alias` (nameAlias) - (string) The name alias of the Firewall Policy object. This attribute is supported in ACI versions: 2.2(1k) and later.
 * `owner_key` (ownerKey) - (string) The key for enabling clients to own their data for entity correlation.
 * `owner_tag` (ownerTag) - (string) A tag for enabling clients to add their own data. For example, to indicate who created this object.
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
 

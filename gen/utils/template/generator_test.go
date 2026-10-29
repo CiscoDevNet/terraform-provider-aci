@@ -65,6 +65,7 @@ func TestGeneratorLoadsActiveTemplates(t *testing.T) {
 		resourceExampleTemplateName,
 		resourceFullExampleTemplateName,
 		datasourceExampleTemplateName,
+		resourceDocumentationTemplateName,
 		datasourceDocumentationTemplateName,
 		annotationUnsupportedTemplateName,
 	} {
@@ -304,7 +305,7 @@ func TestBuildClassExampleRenderJobs(t *testing.T) {
 	}
 }
 
-func TestBuildDatasourceDocumentationRenderJobs(t *testing.T) {
+func TestBuildClassDocumentationRenderJobs(t *testing.T) {
 	childClass := testClass(t, "fvRsTenantMonPol")
 	childClass.ResourceName = "relation_to_monitoring_policy"
 	resourceClass := testClass(t, "fvBD", data.ResourceArtifact)
@@ -321,23 +322,45 @@ func TestBuildDatasourceDocumentationRenderJobs(t *testing.T) {
 	}}
 	generator := &Generator{dataStore: dataStore}
 
-	jobs := generator.buildDatasourceDocumentationRenderJobs()
-	expectedPaths := []string{
-		"docs/data-sources/vrf.md",
-		"docs/data-sources/tenant.md",
+	testCases := []test.TestCase{
+		{
+			Name:     "test_resource_documentation",
+			Input:    generator.buildResourceDocumentationRenderJobs,
+			Expected: []string{"docs/resources/bridge_domain.md", "docs/resources/tenant.md"},
+		},
+		{
+			Name:     "test_datasource_documentation",
+			Input:    generator.buildDatasourceDocumentationRenderJobs,
+			Expected: []string{"docs/data-sources/vrf.md", "docs/data-sources/tenant.md"},
+		},
 	}
-	actualPaths := make([]string, 0, len(jobs))
-	for _, job := range jobs {
-		actualPaths = append(actualPaths, job.OutputPath)
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			buildJobs := testCase.Input.(func() []renderJob)
+			expectedPaths := testCase.Expected.([]string)
+			jobs := buildJobs()
+			actualPaths := make([]string, 0, len(jobs))
+			for _, job := range jobs {
+				actualPaths = append(actualPaths, job.OutputPath)
+				if job.Context.Class == nil || job.Context.DataStore != dataStore {
+					t.Fatalf("documentation job has an incomplete context: %#v", job.Context)
+				}
+			}
+			if !reflect.DeepEqual(actualPaths, expectedPaths) {
+				t.Fatalf("documentation output paths %#v, expected %#v", actualPaths, expectedPaths)
+			}
+		})
+	}
+	for _, job := range generator.buildResourceDocumentationRenderJobs() {
+		if job.TemplateName != resourceDocumentationTemplateName {
+			t.Fatalf("unexpected resource documentation template name %q", job.TemplateName)
+		}
+	}
+	for _, job := range generator.buildDatasourceDocumentationRenderJobs() {
 		if job.TemplateName != datasourceDocumentationTemplateName {
-			t.Fatalf("unexpected template name %q", job.TemplateName)
+			t.Fatalf("unexpected datasource documentation template name %q", job.TemplateName)
 		}
-		if job.Context.Class == nil || job.Context.DataStore != dataStore {
-			t.Fatalf("data-source documentation job has an incomplete context: %#v", job.Context)
-		}
-	}
-	if !reflect.DeepEqual(actualPaths, expectedPaths) {
-		t.Fatalf("data-source documentation output paths %#v, expected %#v", actualPaths, expectedPaths)
 	}
 }
 
@@ -442,20 +465,21 @@ func TestBuildRenderJobsIncludesAnnotationOnlyAfterRefresh(t *testing.T) {
 	generator := &Generator{dataStore: dataStore, providerExample: `provider "aci" {}`}
 
 	jobs := generator.buildRenderJobs()
-	if len(jobs) != 7 ||
+	if len(jobs) != 8 ||
 		jobs[0].TemplateName != modelTemplateName ||
 		jobs[1].TemplateName != indexTemplateName ||
 		jobs[2].TemplateName != providerExampleTemplateName ||
 		jobs[3].TemplateName != providerExampleTemplateName ||
 		jobs[4].TemplateName != resourceExampleTemplateName ||
 		jobs[5].TemplateName != datasourceExampleTemplateName ||
-		jobs[6].TemplateName != datasourceDocumentationTemplateName {
+		jobs[6].TemplateName != resourceDocumentationTemplateName ||
+		jobs[7].TemplateName != datasourceDocumentationTemplateName {
 		t.Fatalf("unexpected ordinary render jobs: %#v", jobs)
 	}
 
 	dataStore.UnsupportedAnnotationClasses = []string{}
 	jobs = generator.buildRenderJobs()
-	if len(jobs) != 8 || jobs[7].TemplateName != annotationUnsupportedTemplateName || !jobs[7].RefreshOnly {
+	if len(jobs) != 9 || jobs[8].TemplateName != annotationUnsupportedTemplateName || !jobs[8].RefreshOnly {
 		t.Fatalf("unexpected refresh render jobs: %#v", jobs)
 	}
 }
@@ -471,6 +495,7 @@ func TestFormatTemplateRenderSummaries(t *testing.T) {
 		{TemplateName: resourceExampleTemplateName},
 		{TemplateName: resourceFullExampleTemplateName},
 		{TemplateName: datasourceExampleTemplateName},
+		{TemplateName: resourceDocumentationTemplateName},
 		{TemplateName: datasourceDocumentationTemplateName},
 	}
 	expected := []string{
@@ -480,6 +505,7 @@ func TestFormatTemplateRenderSummaries(t *testing.T) {
 		"Rendered 1 file using template index.md.tmpl.",
 		"Rendered 2 files using template model.go.tmpl.",
 		"Rendered 2 files using template provider_example.tf.tmpl.",
+		"Rendered 1 file using template resource.md.tmpl.",
 		"Rendered 1 file using template resource_example.tf.tmpl.",
 		"Rendered 1 file using template resource_example_all_attributes.tf.tmpl.",
 	}
@@ -565,7 +591,7 @@ func TestDatasourceDocumentationTemplate(t *testing.T) {
 		},
 	}
 	relation.Documentation.DescriptionWhenDefinedAsChild = "`relation_to_monitoring_policy` - (map) A map of the monitoring-policy relation."
-	relation.Documentation.RelationTargetClasses = []string{
+	relation.Documentation.RelationTargetDescriptions = []string{
 		"[fvBD](https://example.test/fvBD)",
 		"[fvCtx](https://example.test/fvCtx)",
 	}
@@ -621,8 +647,8 @@ func TestDatasourceDocumentationTemplate(t *testing.T) {
 	requiredContents := []string{
 		`page_title: "ACI: aci_tenant"`,
 		"# aci_tenant #\n",
-		"-> A data-source note.",
-		"~> A data-source warning.",
+		"  -> A data-source note.",
+		"  ~> A data-source warning.",
 		"* Class: [fvTenant](https://example.test/fvTenant)",
 		"* Distinguished Name Format: `uni/tn-{name}`",
 		"# This example is only applicable to Cisco Cloud Network Controller.",
@@ -702,6 +728,204 @@ func TestDatasourceDocumentationTemplate(t *testing.T) {
 		if strings.Contains(exampleContents, generatedHeaderFragment) {
 			t.Fatalf("HCL example unexpectedly contains generated header fragment %q:\n%s", generatedHeaderFragment, exampleContents)
 		}
+	}
+}
+
+func TestResourceDocumentationTemplate(t *testing.T) {
+	parentDn := &data.Property{
+		AttributeName: "parent_dn",
+		PropertyName:  "parentDn",
+		ValueType:     data.String,
+		Documentation: data.PropertyDocumentation{
+			Description: "The distinguished name (DN) of the parent object.",
+			Notes:       []string{"Select an existing parent object."},
+		},
+	}
+	name := &data.Property{
+		AttributeName: "name",
+		PropertyName:  "name",
+		ValueType:     data.SemanticEquality,
+		Validators:    []data.Validator{{Min: 1, Max: 10}},
+		ValidValues: data.ValidValues{
+			"one": {LocalName: "one"},
+			"two": {LocalName: "two"},
+		},
+		Documentation: data.PropertyDocumentation{Description: "The name of the Tenant object."},
+	}
+	status := &data.Property{
+		AttributeName: "status",
+		PropertyName:  "status",
+		ValueType:     data.String,
+		Documentation: data.PropertyDocumentation{
+			Description:   "The current status.",
+			DefaultValues: []data.DefaultValue{{Value: "ready"}},
+		},
+	}
+	roles := &data.Property{
+		AttributeName: "roles",
+		PropertyName:  "roles",
+		ValueType:     data.Set,
+		ValidValues: data.ValidValues{
+			"admin": {LocalName: "admin"},
+			"user":  {LocalName: "user"},
+		},
+		Documentation: data.PropertyDocumentation{
+			Description:   "The assigned roles.",
+			DefaultValues: []data.DefaultValue{{Value: ""}},
+			Warnings:      []string{"Use supported roles only."},
+		},
+	}
+	annotationProperty := &data.Property{
+		AttributeName: "annotation",
+		PropertyName:  "annotation",
+		ValueType:     data.String,
+		Documentation: data.PropertyDocumentation{Description: "The annotation for the Tenant object."},
+	}
+
+	annotation := testClass(t, "tagAnnotation")
+	annotation.ResourceNameNested = "annotations"
+	annotation.PropertiesRequired = []string{"key"}
+	annotation.Properties = map[string]*data.Property{
+		"key": {
+			AttributeName: "key",
+			PropertyName:  "key",
+			ValueType:     data.String,
+			Documentation: data.PropertyDocumentation{Description: "The annotation key."},
+		},
+	}
+	annotation.Documentation.DescriptionWhenDefinedAsChild = "`annotations` - (list) A list of Annotations."
+
+	requiredChild := testClass(t, "requiredChild")
+	requiredChild.RequiredAsChild = true
+	requiredChild.Children = []*data.ClassName{annotation.Name}
+	requiredChild.PropertiesRequired = []string{"key"}
+	requiredChild.Properties = map[string]*data.Property{
+		"key": {
+			AttributeName: "key",
+			PropertyName:  "key",
+			ValueType:     data.String,
+			Documentation: data.PropertyDocumentation{Description: "The required child key."},
+		},
+	}
+	requiredChild.Documentation.DescriptionWhenDefinedAsChild = "`required_child` - (map) A required child."
+
+	optionalChild := testClass(t, "optionalChild")
+	optionalChild.PropertiesOptional = []string{"description"}
+	optionalChild.Properties = map[string]*data.Property{
+		"description": {
+			AttributeName: "description",
+			PropertyName:  "descr",
+			ValueType:     data.String,
+			Documentation: data.PropertyDocumentation{Description: "The optional child description."},
+		},
+	}
+	optionalChild.Documentation.DescriptionWhenDefinedAsChild = "`optional_child` - (list) Optional children."
+	optionalChild.Documentation.RelationTargetDescriptions = []string{"[fvBD](https://example.test/fvBD)"}
+
+	class := testClass(t, "fvTenant", data.ResourceArtifact)
+	class.ResourceName = "tenant"
+	class.Children = []*data.ClassName{requiredChild.Name, optionalChild.Name}
+	class.PropertiesRequired = []string{"parentDn", "name"}
+	class.PropertiesOptional = []string{"annotation", "roles"}
+	class.PropertiesReadOnly = []string{"status"}
+	class.Properties = map[string]*data.Property{
+		"parentDn":   parentDn,
+		"name":       name,
+		"status":     status,
+		"annotation": annotationProperty,
+		"roles":      roles,
+	}
+	class.Documentation = data.ClassDocumentation{
+		Children:            []string{"[aci_application_profile](https://example.test/application_profile)"},
+		ClassName:           "[fvTenant](https://example.test/fvTenant)",
+		DeprecationWarning:  "This resource is deprecated.",
+		DnFormats:           []string{"uni/tn-{name}"},
+		ImportDnFormat:      "uni/tn-{name}",
+		Label:               "Tenant",
+		MigrationWarning:    "Review the migration guide.",
+		ParentDnResources:   []string{"[aci_root](https://example.test/root)"},
+		ResourceDescription: "Manages ACI Tenant",
+		ResourceNotes:       []string{"A resource note."},
+		ResourceWarnings:    []string{"A resource warning."},
+		SubCategory:         "Application Management",
+		SupportedVersions:   "1.0(1e) and later.",
+		UiLocations:         []string{"Tenants"},
+	}
+	class.ResourceExamples = data.ResourceExamples{
+		Minimum: data.Example{Body: data.ExampleObject{Attributes: []data.ExampleAttribute{
+			{Name: "name", Value: data.ExampleLiteral("tenant")},
+		}}},
+		Full: data.Example{Body: data.ExampleObject{Attributes: []data.ExampleAttribute{
+			{Name: "name", Value: data.ExampleLiteral("tenant")},
+			{Name: "roles", Value: data.ExampleCollection{data.ExampleLiteral("admin")}},
+		}}},
+	}
+
+	dataStore := &data.DataStore{Classes: map[string]data.Class{
+		"fvTenant":      class,
+		"requiredChild": requiredChild,
+		"optionalChild": optionalChild,
+		"tagAnnotation": annotation,
+	}}
+	generator := loadActiveGenerator(t, dataStore)
+
+	var rendered bytes.Buffer
+	if err := generator.templates[resourceDocumentationTemplateName].Execute(&rendered, TemplateContext{Class: &class, DataStore: dataStore}); err != nil {
+		t.Fatalf("execute resource documentation template: %v", err)
+	}
+	contents := rendered.String()
+	requiredContents := []string{
+		`page_title: "ACI: aci_tenant"`,
+		"# aci_tenant #\n",
+		"  -> A resource note.",
+		"  ~> A resource warning.",
+		"  ~> This resource is deprecated.",
+		"  !> Review the migration guide.",
+		`resource "aci_tenant" "example" {`,
+		`resource "aci_tenant" "full_example" {`,
+		"!> This example might not be valid configuration",
+		"* `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:",
+		"* `name` (name) - (string) The name of the Tenant object.",
+		"  - Valid Values:\n    * `\"one\"`, `\"two\"`.\n    * Or a value in the range of `1` to `10`.",
+		"* `status` (status) - (string) The current status.\n  - Default: `\"ready\"`",
+		"* `annotation` (annotation) - (string) The annotation for the Tenant object.\n  - Default: `\"orchestrator:terraform\"`",
+		"* `roles` (roles) - (list) The assigned roles.\n  - Default: `[]`\n  - Valid Values: `\"admin\"`, `\"user\"`.\n  ~> Use supported roles only.",
+		"* `required_child` - (map) A required child.\n  #### Required ####\n\n    * `key` (key) - (string) The required child key.",
+		"    * `annotations` - (list) A list of Annotations.\n      #### Required ####\n\n        * `key` (key) - (string) The annotation key.",
+		"* `optional_child` - (list) Optional children. This relation can point to multiple ACI objects:\n    - [fvBD](https://example.test/fvBD).",
+		"  #### Optional ####\n\n    * `description` (descr) - (string) The optional child description.",
+		"terraform import aci_tenant.example uni/tn-{name}",
+		`id = "uni/tn-{name}"`,
+		"- [aci_application_profile](https://example.test/application_profile)",
+	}
+	for _, required := range requiredContents {
+		if !strings.Contains(contents, required) {
+			t.Fatalf("rendered resource documentation does not contain %q:\n%s", required, contents)
+		}
+	}
+	if strings.Contains(contents, "generated by \"gen/generator.go\"; DO NOT EDIT.\nresource") {
+		t.Fatalf("embedded resource example unexpectedly contains a generated header:\n%s", contents)
+	}
+
+	class.ResourceExamples.Full = class.ResourceExamples.Minimum
+	rendered.Reset()
+	if err := generator.templates[resourceDocumentationTemplateName].Execute(&rendered, TemplateContext{Class: &class, DataStore: dataStore}); err != nil {
+		t.Fatalf("execute resource documentation template without distinct full example: %v", err)
+	}
+	if strings.Contains(rendered.String(), `resource "aci_tenant" "full_example"`) || strings.Contains(rendered.String(), "shows all possible attributes") {
+		t.Fatalf("resource documentation renders a duplicate full example:\n%s", rendered.String())
+	}
+
+	parentDn.Documentation.DefaultValues = []data.DefaultValue{{Value: "uni"}}
+	rendered.Reset()
+	if err := generator.templates[resourceDocumentationTemplateName].Execute(&rendered, TemplateContext{Class: &class, DataStore: dataStore}); err != nil {
+		t.Fatalf("execute resource documentation template with optional parent DN: %v", err)
+	}
+	contents = rendered.String()
+	optionalIndex := strings.Index(contents, "### Optional ###")
+	parentDnIndex := strings.Index(contents, "* `parent_dn`")
+	if optionalIndex == -1 || parentDnIndex < optionalIndex || !strings.Contains(contents[parentDnIndex:], "- Default: `\"uni\"`") {
+		t.Fatalf("optional parent_dn is missing, outside the optional section, or lacks its default:\n%s", contents)
 	}
 }
 

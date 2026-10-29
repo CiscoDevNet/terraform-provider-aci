@@ -35,7 +35,7 @@ type Class struct {
 	// This is used to prevent the deletion of the class if it is not allowed on APIC.
 	AllowDelete bool
 	// Available top-level artifact kinds for this class. Current public-example
-	// and datasource-documentation jobs honor the selection; a class's base model
+	// and class-documentation jobs honor the selection; a class's base model
 	// is generated for every loaded class. Resource and datasource implementation
 	// jobs will honor it when those templates are migrated. Provider registration
 	// is currently static.

@@ -16,7 +16,6 @@ Manages ACI Relation From L3Out Consumer Label To Route Control Profile
 
   -> This resource should not be used in combination with the `l3out_consumer_label` nested attributes of other resources for the same object. Doing so will result in unexpected behaviour.
 
-
 ## API Information ##
 
 * Class: [l3extRsLblToProfile](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extRsLblToProfile/overview)
@@ -35,35 +34,36 @@ The configuration snippet below creates a Relation From L3Out Consumer Label To 
 
 ```hcl
 
-resource "aci_relation_from_l3out_consumer_label_to_route_control_profile" "example_l3out_consumer_label" {
+resource "aci_relation_from_l3out_consumer_label_to_route_control_profile" "example" {
   parent_dn = aci_l3out_consumer_label.example.id
   direction = "import"
   target_dn = aci_route_control_profile.example.id
 }
 
 ```
+
 The configuration snippet below shows all possible attributes of the Relation From L3Out Consumer Label To Route Control Profile.
 
 !> This example might not be valid configuration and is only used to show all possible attributes.
 
 ```hcl
 
-resource "aci_relation_from_l3out_consumer_label_to_route_control_profile" "full_example_l3out_consumer_label" {
+resource "aci_relation_from_l3out_consumer_label_to_route_control_profile" "full_example" {
   parent_dn  = aci_l3out_consumer_label.example.id
-  annotation = "annotation"
+  annotation = "example_annotation"
   direction  = "import"
   target_dn  = aci_route_control_profile.example.id
   annotations = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
   tags = [
     {
-      key   = "key_0"
-      value = "value_1"
-    }
+      key   = "example_key"
+      value = "example_value"
+    },
   ]
 }
 
@@ -77,7 +77,7 @@ All examples for the Relation From L3Out Consumer Label To Route Control Profile
 
 * `parent_dn` - (string) The distinguished name (DN) of the parent object, possible resources:
   - [aci_l3out_consumer_label](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3out_consumer_label) ([l3extConsLbl](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extConsLbl/overview))
-  - The distinguished name (DN) of classes below can be used but currently there is no available resource for it:
+  - The distinguished names (DNs) of parent objects from the following APIC classes can also be used, but no Terraform resources are currently available for these classes:
     - [l3extConsLblDef](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extConsLblDef/overview)
 
 * `direction` (direction) - (string) The direction on which to apply the Route Map associated with the Route Control Profile.
@@ -92,14 +92,14 @@ All examples for the Relation From L3Out Consumer Label To Route Control Profile
 
 * `annotation` (annotation) - (string) The annotation of the Relation From L3Out Consumer Label To Route Control Profile object.
   - Default: `"orchestrator:terraform"`
-* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)). Annotations can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
-* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)). Tags can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource. This attribute is supported in ACI versions: 3.2(1l) and later.
+* `tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.
   #### Required ####
-  
+
     * `key` (key) - (string) The key used to uniquely identify this configuration object.
     * `value` (value) - (string) The value of the property.
 
@@ -108,7 +108,7 @@ All examples for the Relation From L3Out Consumer Label To Route Control Profile
 An existing Relation From L3Out Consumer Label To Route Control Profile can be [imported](https://www.terraform.io/docs/import/index.html) into this resource with its distinguished name (DN), via the following command:
 
 ```
-terraform import aci_relation_from_l3out_consumer_label_to_route_control_profile.example_l3out_consumer_label uni/tn-{name}/out-{name}/conslbl-{name}/rslblToProfile-[{tDn}]-{direction}
+terraform import aci_relation_from_l3out_consumer_label_to_route_control_profile.example uni/tn-{name}/out-{name}/conslbl-{name}/rslblToProfile-[{tDn}]-{direction}
 ```
 
 Starting in Terraform version 1.5, an existing Relation From L3Out Consumer Label To Route Control Profile can be imported
@@ -117,6 +117,6 @@ using [import blocks](https://developer.hashicorp.com/terraform/language/import)
 ```
 import {
   id = "uni/tn-{name}/out-{name}/conslbl-{name}/rslblToProfile-[{tDn}]-{direction}"
-  to = aci_relation_from_l3out_consumer_label_to_route_control_profile.example_l3out_consumer_label
+  to = aci_relation_from_l3out_consumer_label_to_route_control_profile.example
 }
 ```

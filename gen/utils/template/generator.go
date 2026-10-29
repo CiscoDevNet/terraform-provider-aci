@@ -45,6 +45,8 @@ const (
 	resourceFullExampleOutputName          = "resource-all-attributes.tf"
 	datasourceExampleTemplateName          = "datasource_example.tf.tmpl"
 	datasourceExampleOutputName            = "data-source.tf"
+	resourceDocumentationTemplateName      = "resource.md.tmpl"
+	resourceDocumentationOutputDirectory   = "docs/resources"
 	datasourceDocumentationTemplateName    = "datasource.md.tmpl"
 	datasourceDocumentationOutputDirectory = "docs/data-sources"
 
@@ -225,6 +227,7 @@ func (g *Generator) buildRenderJobs() []renderJob {
 	jobs = append(jobs, g.buildResourceExampleRenderJobs()...)
 	jobs = append(jobs, g.buildResourceFullExampleRenderJobs()...)
 	jobs = append(jobs, g.buildDatasourceExampleRenderJobs()...)
+	jobs = append(jobs, g.buildResourceDocumentationRenderJobs()...)
 	jobs = append(jobs, g.buildDatasourceDocumentationRenderJobs()...)
 	if g.dataStore.UnsupportedAnnotationClasses != nil {
 		jobs = append(jobs, g.buildAnnotationUnsupportedRenderJob())
@@ -297,18 +300,37 @@ func (g *Generator) buildDatasourceExampleRenderJobs() []renderJob {
 }
 
 func (g *Generator) buildDatasourceDocumentationRenderJobs() []renderJob {
+	return g.buildClassDocumentationRenderJobs(
+		data.DatasourceArtifact,
+		datasourceDocumentationTemplateName,
+		datasourceDocumentationOutputDirectory,
+	)
+}
+
+func (g *Generator) buildResourceDocumentationRenderJobs() []renderJob {
+	return g.buildClassDocumentationRenderJobs(
+		data.ResourceArtifact,
+		resourceDocumentationTemplateName,
+		resourceDocumentationOutputDirectory,
+	)
+}
+
+func (g *Generator) buildClassDocumentationRenderJobs(artifact data.ArtifactEnum, templateName, outputDirectory string) []renderJob {
 	classNames := g.sortedClassNames()
 
 	jobs := make([]renderJob, 0, len(classNames))
 	for _, className := range classNames {
 		class := g.dataStore.Classes[className]
-		if !class.HasDatasourceArtifact() {
+		if artifact == data.ResourceArtifact && !class.HasResourceArtifact() {
+			continue
+		}
+		if artifact == data.DatasourceArtifact && !class.HasDatasourceArtifact() {
 			continue
 		}
 		jobs = append(jobs, renderJob{
-			TemplateName: datasourceDocumentationTemplateName,
+			TemplateName: templateName,
 			OutputPath: pathpkg.Join(
-				datasourceDocumentationOutputDirectory,
+				outputDirectory,
 				class.ResourceName+".md",
 			),
 			Context: TemplateContext{Class: &class, DataStore: g.dataStore},

@@ -1879,6 +1879,17 @@ func applyCanonicalDefinitionCorrections(className string, out *data.ClassDefini
 		out.Properties[propertyName] = property
 	}
 
+	// These APIC children remain standalone resources and are deliberately not
+	// embedded in their parents' schemas. Preserve their established discovery
+	// links in the resource documentation through the documentation-specific
+	// include list.
+	switch className {
+	case "fvAEPg", "fvBD", "l3extInstP":
+		out.Documentation.IncludeChildren = append(out.Documentation.IncludeChildren, "fvSiteAssociated")
+	case "fvCtx":
+		out.Documentation.IncludeChildren = append(out.Documentation.IncludeChildren, "fvSiteAssociated", "vzAny")
+	}
+
 	// Public examples can carry richer values than acceptance tests without changing
 	// provider test behavior. Keep those differences in the canonical definition so a
 	// future migration run reproduces them.
@@ -1941,6 +1952,14 @@ func applyCanonicalDefinitionCorrections(className string, out *data.ClassDefini
 		// The current provider exposes this definition-only class only as a
 		// datasource.
 		out.Artifacts = []data.ArtifactEnum{data.DatasourceArtifact}
+	case "fvFabricExtConnP":
+		// Legacy resource_required made rt available to minimum test and example
+		// configurations, but the current provider schema exposes community as
+		// optional and computed. Preserve that public behavior; its migrated test
+		// scenarios continue to supply the value where needed.
+		property := upsertProperty(out, "rt")
+		property.Restriction = data.UndefinedRestriction
+		out.Properties["rt"] = property
 	case "fvRsIpslaMonPol":
 		out.AllowDelete = "never"
 		// The test target is a static DN and fvIPSLAMonitoringPol has no local
@@ -2000,6 +2019,10 @@ func applyCanonicalDefinitionCorrections(className string, out *data.ClassDefini
 		property := upsertProperty(out, "ldev")
 		property.Documentation.Description += ". The referenced Logical Device must belong to a different tenant from the Imported Logical Device."
 		out.Properties["ldev"] = property
+	case "vnsLDevVip":
+		// The legacy resource and datasource use the singular Terraform name but
+		// retain their established plural documentation filename.
+		out.Documentation.RegistryPath = "l4_l7_devices"
 	case "commHttps":
 		// APIC metadata provides globalThrottleUnit with both validValues and a
 		// regex validator, so generic normalization infers semantic_equality.
@@ -3293,7 +3316,7 @@ func hasMigratedData(c data.ClassDefinition) bool {
 	if documentation.Label != "" || documentation.Description != "" || documentation.SubCategory != "" {
 		return true
 	}
-	if len(documentation.UiLocations) > 0 || len(documentation.DnFormats) > 0 || len(documentation.ExcludeChildren) > 0 || len(documentation.IncludeChildren) > 0 || len(documentation.Notes) > 0 || len(documentation.Warnings) > 0 {
+	if documentation.RegistryPath != "" || len(documentation.UiLocations) > 0 || len(documentation.DnFormats) > 0 || len(documentation.ExcludeChildren) > 0 || len(documentation.IncludeChildren) > 0 || len(documentation.Notes) > 0 || len(documentation.Warnings) > 0 {
 		return true
 	}
 	if len(projectArtifactDocumentation(documentation.Resource)) > 0 || len(projectArtifactDocumentation(documentation.Datasource)) > 0 {
@@ -3439,6 +3462,9 @@ func marshalView(c data.ClassDefinition) map[string]any {
 	doc := map[string]any{}
 	if c.Documentation.Label != "" {
 		doc["label"] = c.Documentation.Label
+	}
+	if c.Documentation.RegistryPath != "" {
+		doc["registry_path"] = c.Documentation.RegistryPath
 	}
 	if c.Documentation.Description != "" {
 		doc["description"] = c.Documentation.Description
