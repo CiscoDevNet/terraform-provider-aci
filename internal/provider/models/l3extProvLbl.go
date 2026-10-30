@@ -6,15 +6,239 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+func l3extProvLblSchemaDefinition() modelHelpers.ClassSchema {
+	return modelHelpers.ClassSchema{
+		ResourceDescription:   "Manages ACI L3Out Provider Label",
+		DataSourceDescription: "Data source for ACI L3Out Provider Label",
+		Properties: map[string]modelHelpers.PropertySchema{
+			"annotation": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The annotation of the L3Out Provider Label object.",
+			},
+			"description": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The description of the L3Out Provider Label object.",
+			},
+			"name": {
+				Type:            modelHelpers.StringProperty,
+				Required:        true,
+				RequiresReplace: true,
+				Description:     "The name of the L3Out Provider Label object.",
+			},
+			"name_alias": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The name alias of the L3Out Provider Label object.",
+			},
+			"owner_key": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The key for enabling clients to own their data for entity correlation.",
+			},
+			"owner_tag": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "A tag for enabling clients to add their own data. For example, to indicate who created this object.",
+			},
+			"tag": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"alice-blue",
+					"antique-white",
+					"aqua",
+					"aquamarine",
+					"azure",
+					"beige",
+					"bisque",
+					"black",
+					"blanched-almond",
+					"blue",
+					"blue-violet",
+					"brown",
+					"burlywood",
+					"cadet-blue",
+					"chartreuse",
+					"chocolate",
+					"coral",
+					"cornflower-blue",
+					"cornsilk",
+					"crimson",
+					"cyan",
+					"dark-blue",
+					"dark-cyan",
+					"dark-goldenrod",
+					"dark-gray",
+					"dark-green",
+					"dark-khaki",
+					"dark-magenta",
+					"dark-olive-green",
+					"dark-orange",
+					"dark-orchid",
+					"dark-red",
+					"dark-salmon",
+					"dark-sea-green",
+					"dark-slate-blue",
+					"dark-slate-gray",
+					"dark-turquoise",
+					"dark-violet",
+					"deep-pink",
+					"deep-sky-blue",
+					"dim-gray",
+					"dodger-blue",
+					"fire-brick",
+					"floral-white",
+					"forest-green",
+					"fuchsia",
+					"gainsboro",
+					"ghost-white",
+					"gold",
+					"goldenrod",
+					"gray",
+					"green",
+					"green-yellow",
+					"honeydew",
+					"hot-pink",
+					"indian-red",
+					"indigo",
+					"ivory",
+					"khaki",
+					"lavender",
+					"lavender-blush",
+					"lawn-green",
+					"lemon-chiffon",
+					"light-blue",
+					"light-coral",
+					"light-cyan",
+					"light-goldenrod-yellow",
+					"light-gray",
+					"light-green",
+					"light-pink",
+					"light-salmon",
+					"light-sea-green",
+					"light-sky-blue",
+					"light-slate-gray",
+					"light-steel-blue",
+					"light-yellow",
+					"lime",
+					"lime-green",
+					"linen",
+					"magenta",
+					"maroon",
+					"medium-aquamarine",
+					"medium-blue",
+					"medium-orchid",
+					"medium-purple",
+					"medium-sea-green",
+					"medium-slate-blue",
+					"medium-spring-green",
+					"medium-turquoise",
+					"medium-violet-red",
+					"midnight-blue",
+					"mint-cream",
+					"misty-rose",
+					"moccasin",
+					"navajo-white",
+					"navy",
+					"old-lace",
+					"olive",
+					"olive-drab",
+					"orange",
+					"orange-red",
+					"orchid",
+					"pale-goldenrod",
+					"pale-green",
+					"pale-turquoise",
+					"pale-violet-red",
+					"papaya-whip",
+					"peachpuff",
+					"peru",
+					"pink",
+					"plum",
+					"powder-blue",
+					"purple",
+					"red",
+					"rosy-brown",
+					"royal-blue",
+					"saddle-brown",
+					"salmon",
+					"sandy-brown",
+					"sea-green",
+					"seashell",
+					"sienna",
+					"silver",
+					"sky-blue",
+					"slate-blue",
+					"slate-gray",
+					"snow",
+					"spring-green",
+					"steel-blue",
+					"tan",
+					"teal",
+					"thistle",
+					"tomato",
+					"turquoise",
+					"violet",
+					"wheat",
+					"white",
+					"white-smoke",
+					"yellow",
+					"yellow-green",
+				},
+				Description: "Specifies the color of a policy label.",
+			},
+		},
+		Children: map[string]modelHelpers.ChildSchema{
+			"annotations": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.",
+				Schema:      tagAnnotationSchemaDefinition,
+			},
+			"tags": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.",
+				Schema:      tagTagSchemaDefinition,
+			},
+		},
+		Identifiers: []string{
+			"name",
+		},
+		ParentDN: &modelHelpers.ParentDNSchema{
+			AttributeName: "parent_dn",
+			Config:        modelHelpers.ParentDNAttributeConfig{},
+		},
+		AnnotationAttribute: "annotation",
+	}
+}
+
+func L3extProvLblResourceSchema(defaultAnnotation string) resourceschema.Schema {
+	return l3extProvLblSchemaDefinition().ResourceSchema(defaultAnnotation)
+}
+
+func L3extProvLblDataSourceSchema() datasourceschema.Schema {
+	return l3extProvLblSchemaDefinition().DataSourceSchema()
+}
 
 type L3extProvLblModel struct {
 	Annotation    types.String `tfsdk:"annotation"`
@@ -75,19 +299,15 @@ func NewL3extProvLblModelNull() L3extProvLblModel {
 func (m *L3extProvLblModel) BuildRN() string {
 	rn := "provlbl-{name}"
 	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
-
 	return rn
 }
 
 func (m *L3extProvLblModel) BuildDN(parentDN string) string {
-	return parentDN + "/" + m.BuildRN()
+	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
 }
 
 func (m *L3extProvLblModel) ParentDNFromDN(dn string) string {
-	rn := m.BuildRN()
-
-	parentDN, _ := strings.CutSuffix(dn, "/"+rn)
-	return parentDN
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
 }
 
 func L3extProvLblModelFromObject(
@@ -102,6 +322,7 @@ func L3extProvLblModelFromObject(
 	if !ok {
 		return model, diagnostics
 	}
+
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "descr", &model.Descr)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "name", &model.Name)
@@ -109,6 +330,7 @@ func L3extProvLblModelFromObject(
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ownerKey", &model.OwnerKey)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ownerTag", &model.OwnerTag)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "tag", &model.Tag)
+
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,
 		&diagnostics,
@@ -119,6 +341,7 @@ func L3extProvLblModelFromObject(
 			"tagTag",
 		},
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -127,6 +350,7 @@ func L3extProvLblModelFromObject(
 		TagAnnotationModelFromObject,
 		&model.TagAnnotation,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -158,6 +382,7 @@ func (m *L3extProvLblModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
+
 	if !modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "annotation", m.Annotation) && nested {
 		attributes["annotation"] = defaultAnnotation
 	}
@@ -167,6 +392,7 @@ func (m *L3extProvLblModel) BuildPayloadObject(
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "ownerKey", m.OwnerKey)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "ownerTag", m.OwnerTag)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "tag", m.Tag)
+
 	var priorTagAnnotation *types.Set
 	if priorState != nil {
 		priorTagAnnotation = &priorState.TagAnnotation
@@ -187,6 +413,7 @@ func (m *L3extProvLblModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, tagAnnotationPayloads...)
+
 	var priorTagTag *types.Set
 	if priorState != nil {
 		priorTagTag = &priorState.TagTag
@@ -221,31 +448,31 @@ func (m *L3extProvLblModel) BuildNestedDeletePayloadObject(
 	ctx context.Context,
 	diagnostics *diag.Diagnostics,
 ) map[string]any {
-	attributes := map[string]any{}
-	attributes["name"] = m.Name.ValueString()
-	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, attributes)
+	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, map[string]any{
+		"name": m.Name.ValueString(),
+	})
 }
 
-type L3extProvLblResourceModel struct {
+type L3extProvLblRootModel struct {
 	L3extProvLblModel
 
 	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ParentDN types.String `tfsdk:"parent_dn"`
 }
 
-func NewL3extProvLblResourceModelNull() L3extProvLblResourceModel {
-	return L3extProvLblResourceModel{
+func NewL3extProvLblRootModelNull() L3extProvLblRootModel {
+	return L3extProvLblRootModel{
 		L3extProvLblModel: NewL3extProvLblModelNull(),
 		ID:                types.StringNull(),
-		ParentDn:          types.StringNull(),
+		ParentDN:          types.StringNull(),
 	}
 }
 
-func (m *L3extProvLblResourceModel) SetIDFromDN(dn string) {
+func (m *L3extProvLblRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
 
-func (m *L3extProvLblResourceModel) SetFromResponse(
+func (m *L3extProvLblRootModel) SetFromResponse(
 	ctx context.Context,
 	response *container.Container,
 ) (bool, diag.Diagnostics) {
@@ -258,11 +485,11 @@ func (m *L3extProvLblResourceModel) SetFromResponse(
 
 	m.L3extProvLblModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 
-func (m *L3extProvLblResourceModel) BuildPayload(
+func (m *L3extProvLblRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *L3extProvLblModel,
 	create bool,
@@ -273,52 +500,16 @@ func (m *L3extProvLblResourceModel) BuildPayload(
 	if diagnostics.HasError() {
 		return nil, diagnostics
 	}
+
 	if markCreated {
 		payloadObject["attributes"].(map[string]any)["status"] = "created"
 	}
+
 	payloadEnvelope := map[string]any{"l3extProvLbl": payloadObject}
-	jsonPayload := modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload")
-	return jsonPayload, diagnostics
+	return modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload"), diagnostics
 }
 
-func (m *L3extProvLblResourceModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
+func (m *L3extProvLblRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
-	payload := modelHelpers.NewDeletePayload(ctx, &diagnostics, "l3extProvLbl", m.ID.ValueString())
-	return payload, diagnostics
-}
-
-type L3extProvLblDataSourceModel struct {
-	L3extProvLblModel
-
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
-}
-
-func NewL3extProvLblDataSourceModelNull() L3extProvLblDataSourceModel {
-	return L3extProvLblDataSourceModel{
-		L3extProvLblModel: NewL3extProvLblModelNull(),
-		ID:                types.StringNull(),
-		ParentDn:          types.StringNull(),
-	}
-}
-
-func (m *L3extProvLblDataSourceModel) SetIDFromDN(dn string) {
-	m.ID = types.StringValue(dn)
-}
-
-func (m *L3extProvLblDataSourceModel) SetFromResponse(
-	ctx context.Context,
-	response *container.Container,
-) (bool, diag.Diagnostics) {
-	fallbackModel := m.L3extProvLblModel
-	model, dn, diagnostics := L3extProvLblModelFromResponse(ctx, response, &fallbackModel)
-	found := model != nil
-	if diagnostics.HasError() || !found {
-		return found, diagnostics
-	}
-
-	m.L3extProvLblModel = *model
-	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
-	return true, diagnostics
+	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "l3extProvLbl", m.ID.ValueString()), diagnostics
 }

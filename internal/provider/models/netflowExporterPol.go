@@ -6,16 +6,190 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+func netflowExporterPolSchemaDefinition() modelHelpers.ClassSchema {
+	return modelHelpers.ClassSchema{
+		ResourceDescription:   "Manages ACI NetFlow Exporter Policy",
+		DataSourceDescription: "Data source for ACI NetFlow Exporter Policy",
+		Properties: map[string]modelHelpers.PropertySchema{
+			"annotation": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The annotation of the NetFlow Exporter Policy object.",
+			},
+			"description": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The description of the NetFlow Exporter Policy object.",
+			},
+			"qos_dscp_value": {
+				Type:             modelHelpers.StringProperty,
+				CustomStringType: customTypes.NetflowExporterPolDscpStringType{},
+				Optional:         true,
+				Computed:         true,
+				ValidValues: []string{
+					"AF11",
+					"AF12",
+					"AF13",
+					"AF21",
+					"AF22",
+					"AF23",
+					"AF31",
+					"AF32",
+					"AF33",
+					"AF41",
+					"AF42",
+					"AF43",
+					"CS0",
+					"CS1",
+					"CS2",
+					"CS3",
+					"CS4",
+					"CS5",
+					"CS6",
+					"CS7",
+					"EF",
+					"VA",
+				},
+				StringRange: &modelHelpers.StringRange{Min: 0, Max: 63},
+				Description: "The DSCP value of the NetFlow Exporter Policy object.",
+			},
+			"destination_ip_address": {
+				Type:             modelHelpers.StringProperty,
+				CustomStringType: customTypes.IPAddressStringType{},
+				Required:         true,
+				Description:      "The destination IP address of the remote node.",
+			},
+			"destination_port": {
+				Type:             modelHelpers.StringProperty,
+				CustomStringType: customTypes.NetflowExporterPolDstPortStringType{},
+				Required:         true,
+				ValidValues: []string{
+					"dns",
+					"ftpData",
+					"http",
+					"https",
+					"pop3",
+					"rtsp",
+					"smtp",
+					"ssh",
+					"unspecified",
+				},
+				StringRange: &modelHelpers.StringRange{Min: 0, Max: 65535},
+				Description: "The destination port of the remote node.",
+			},
+			"name": {
+				Type:            modelHelpers.StringProperty,
+				Required:        true,
+				RequiresReplace: true,
+				Description:     "The name of the NetFlow Exporter Policy object.",
+			},
+			"name_alias": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The name alias of the NetFlow Exporter Policy object.",
+			},
+			"owner_key": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The key for enabling clients to own their data for entity correlation.",
+			},
+			"owner_tag": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "A tag for enabling clients to add their own data. For example, to indicate who created this object.",
+			},
+			"source_ip_type": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"custom-src-ip",
+					"inband-mgmt-ip",
+					"oob-mgmt-ip",
+					"ptep",
+				},
+				Description: "The type of the source IP address for the NetFlow Exporter Policy object.",
+			},
+			"source_ip_address": {
+				Type:             modelHelpers.StringProperty,
+				CustomStringType: customTypes.IPAddressStringType{},
+				Optional:         true,
+				Computed:         true,
+				Description:      "The source IP address.",
+			},
+			"version": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"cisco-v1",
+					"v5",
+					"v9",
+				},
+				Description: "The NetFlow Exporter Version of the NetFlow Exporter Policy object.",
+			},
+		},
+		Children: map[string]modelHelpers.ChildSchema{
+			"relation_to_vrf": {
+				Cardinality: modelHelpers.SingleChild,
+				Description: "`relation_to_vrf` - (map) A map of Relation From NetFlow Exporter To VRF (ACI object [netflowRsExporterToCtx](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowRsExporterToCtx/overview)) pointing to VRF (ACI Object [fvCtx](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvCtx/overview)) which can be configured using the [aci_vrf](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vrf) resource.",
+				Schema:      netflowRsExporterToCtxSchemaDefinition,
+			},
+			"relation_to_epg": {
+				Cardinality: modelHelpers.SingleChild,
+				Description: "`relation_to_epg` - (map) A map of Relation From NetFlow Exporter To EPG (ACI object [netflowRsExporterToEPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowRsExporterToEPg/overview)).",
+				Schema:      netflowRsExporterToEPgSchemaDefinition,
+			},
+			"annotations": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.",
+				Schema:      tagAnnotationSchemaDefinition,
+			},
+			"tags": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.",
+				Schema:      tagTagSchemaDefinition,
+			},
+		},
+		Identifiers: []string{
+			"name",
+		},
+		ParentDN: &modelHelpers.ParentDNSchema{
+			AttributeName: "parent_dn",
+			Config: modelHelpers.ParentDNAttributeConfig{
+				DefaultValue: "uni/infra",
+			},
+		},
+		AnnotationAttribute: "annotation",
+	}
+}
+
+func NetflowExporterPolResourceSchema(defaultAnnotation string) resourceschema.Schema {
+	return netflowExporterPolSchemaDefinition().ResourceSchema(defaultAnnotation)
+}
+
+func NetflowExporterPolDataSourceSchema() datasourceschema.Schema {
+	return netflowExporterPolSchemaDefinition().DataSourceSchema()
+}
 
 type NetflowExporterPolModel struct {
 	Annotation             types.String                                     `tfsdk:"annotation"`
@@ -101,19 +275,15 @@ func NewNetflowExporterPolModelNull() NetflowExporterPolModel {
 func (m *NetflowExporterPolModel) BuildRN() string {
 	rn := "exporterpol-{name}"
 	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
-
 	return rn
 }
 
 func (m *NetflowExporterPolModel) BuildDN(parentDN string) string {
-	return parentDN + "/" + m.BuildRN()
+	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
 }
 
 func (m *NetflowExporterPolModel) ParentDNFromDN(dn string) string {
-	rn := m.BuildRN()
-
-	parentDN, _ := strings.CutSuffix(dn, "/"+rn)
-	return parentDN
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
 }
 
 func NetflowExporterPolModelFromObject(
@@ -128,6 +298,7 @@ func NetflowExporterPolModelFromObject(
 	if !ok {
 		return model, diagnostics
 	}
+
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "descr", &model.Descr)
 	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "dscp", &model.Dscp, customTypes.NewNetflowExporterPolDscpStringValue)
@@ -140,6 +311,7 @@ func NetflowExporterPolModelFromObject(
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "sourceIpType", &model.SourceIpType)
 	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "srcAddr", &model.SrcAddr, customTypes.NewIPAddressStringValue)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ver", &model.Ver)
+
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,
 		&diagnostics,
@@ -152,6 +324,7 @@ func NetflowExporterPolModelFromObject(
 			"tagTag",
 		},
 	)
+
 	var fallbackNetflowRsExporterToCtx *types.Object
 	if fallbackModel != nil {
 		fallbackNetflowRsExporterToCtx = &fallbackModel.NetflowRsExporterToCtx
@@ -168,6 +341,7 @@ func NetflowExporterPolModelFromObject(
 		NetflowRsExporterToCtxModelFromObject,
 		&model.NetflowRsExporterToCtx,
 	)
+
 	var fallbackNetflowRsExporterToEPg *types.Object
 	if fallbackModel != nil {
 		fallbackNetflowRsExporterToEPg = &fallbackModel.NetflowRsExporterToEPg
@@ -184,6 +358,7 @@ func NetflowExporterPolModelFromObject(
 		NetflowRsExporterToEPgModelFromObject,
 		&model.NetflowRsExporterToEPg,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -192,6 +367,7 @@ func NetflowExporterPolModelFromObject(
 		TagAnnotationModelFromObject,
 		&model.TagAnnotation,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -223,6 +399,7 @@ func (m *NetflowExporterPolModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
+
 	if !modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "annotation", m.Annotation) && nested {
 		attributes["annotation"] = defaultAnnotation
 	}
@@ -237,6 +414,7 @@ func (m *NetflowExporterPolModel) BuildPayloadObject(
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "sourceIpType", m.SourceIpType)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "srcAddr", m.SrcAddr)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "ver", m.Ver)
+
 	var priorNetflowRsExporterToCtx *types.Object
 	if priorState != nil {
 		priorNetflowRsExporterToCtx = &priorState.NetflowRsExporterToCtx
@@ -256,6 +434,7 @@ func (m *NetflowExporterPolModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, netflowRsExporterToCtxPayloads...)
+
 	var priorNetflowRsExporterToEPg *types.Object
 	if priorState != nil {
 		priorNetflowRsExporterToEPg = &priorState.NetflowRsExporterToEPg
@@ -275,6 +454,7 @@ func (m *NetflowExporterPolModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, netflowRsExporterToEPgPayloads...)
+
 	var priorTagAnnotation *types.Set
 	if priorState != nil {
 		priorTagAnnotation = &priorState.TagAnnotation
@@ -295,6 +475,7 @@ func (m *NetflowExporterPolModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, tagAnnotationPayloads...)
+
 	var priorTagTag *types.Set
 	if priorState != nil {
 		priorTagTag = &priorState.TagTag
@@ -329,31 +510,31 @@ func (m *NetflowExporterPolModel) BuildNestedDeletePayloadObject(
 	ctx context.Context,
 	diagnostics *diag.Diagnostics,
 ) map[string]any {
-	attributes := map[string]any{}
-	attributes["name"] = m.Name.ValueString()
-	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, attributes)
+	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, map[string]any{
+		"name": m.Name.ValueString(),
+	})
 }
 
-type NetflowExporterPolResourceModel struct {
+type NetflowExporterPolRootModel struct {
 	NetflowExporterPolModel
 
 	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ParentDN types.String `tfsdk:"parent_dn"`
 }
 
-func NewNetflowExporterPolResourceModelNull() NetflowExporterPolResourceModel {
-	return NetflowExporterPolResourceModel{
+func NewNetflowExporterPolRootModelNull() NetflowExporterPolRootModel {
+	return NetflowExporterPolRootModel{
 		NetflowExporterPolModel: NewNetflowExporterPolModelNull(),
 		ID:                      types.StringNull(),
-		ParentDn:                types.StringNull(),
+		ParentDN:                types.StringNull(),
 	}
 }
 
-func (m *NetflowExporterPolResourceModel) SetIDFromDN(dn string) {
+func (m *NetflowExporterPolRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
 
-func (m *NetflowExporterPolResourceModel) SetFromResponse(
+func (m *NetflowExporterPolRootModel) SetFromResponse(
 	ctx context.Context,
 	response *container.Container,
 ) (bool, diag.Diagnostics) {
@@ -366,11 +547,11 @@ func (m *NetflowExporterPolResourceModel) SetFromResponse(
 
 	m.NetflowExporterPolModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 
-func (m *NetflowExporterPolResourceModel) BuildPayload(
+func (m *NetflowExporterPolRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *NetflowExporterPolModel,
 	create bool,
@@ -381,52 +562,16 @@ func (m *NetflowExporterPolResourceModel) BuildPayload(
 	if diagnostics.HasError() {
 		return nil, diagnostics
 	}
+
 	if markCreated {
 		payloadObject["attributes"].(map[string]any)["status"] = "created"
 	}
+
 	payloadEnvelope := map[string]any{"netflowExporterPol": payloadObject}
-	jsonPayload := modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload")
-	return jsonPayload, diagnostics
+	return modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload"), diagnostics
 }
 
-func (m *NetflowExporterPolResourceModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
+func (m *NetflowExporterPolRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
-	payload := modelHelpers.NewDeletePayload(ctx, &diagnostics, "netflowExporterPol", m.ID.ValueString())
-	return payload, diagnostics
-}
-
-type NetflowExporterPolDataSourceModel struct {
-	NetflowExporterPolModel
-
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
-}
-
-func NewNetflowExporterPolDataSourceModelNull() NetflowExporterPolDataSourceModel {
-	return NetflowExporterPolDataSourceModel{
-		NetflowExporterPolModel: NewNetflowExporterPolModelNull(),
-		ID:                      types.StringNull(),
-		ParentDn:                types.StringNull(),
-	}
-}
-
-func (m *NetflowExporterPolDataSourceModel) SetIDFromDN(dn string) {
-	m.ID = types.StringValue(dn)
-}
-
-func (m *NetflowExporterPolDataSourceModel) SetFromResponse(
-	ctx context.Context,
-	response *container.Container,
-) (bool, diag.Diagnostics) {
-	fallbackModel := m.NetflowExporterPolModel
-	model, dn, diagnostics := NetflowExporterPolModelFromResponse(ctx, response, &fallbackModel)
-	found := model != nil
-	if diagnostics.HasError() || !found {
-		return found, diagnostics
-	}
-
-	m.NetflowExporterPolModel = *model
-	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
-	return true, diagnostics
+	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "netflowExporterPol", m.ID.ValueString()), diagnostics
 }

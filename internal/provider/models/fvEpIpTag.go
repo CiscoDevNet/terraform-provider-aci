@@ -6,16 +6,94 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+func fvEpIpTagSchemaDefinition() modelHelpers.ClassSchema {
+	return modelHelpers.ClassSchema{
+		ResourceDescription:   "Manages ACI Endpoint Tag IP",
+		DataSourceDescription: "Data source for ACI Endpoint Tag IP",
+		Properties: map[string]modelHelpers.PropertySchema{
+			"annotation": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The annotation of the Endpoint Tag IP object.",
+			},
+			"vrf_name": {
+				Type:            modelHelpers.StringProperty,
+				Required:        true,
+				RequiresReplace: true,
+				Description:     "The VRF name of the Endpoint Tag IP object. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vrf) with `aci_vrf.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/vrf) with `data.aci_vrf.example.name`.",
+			},
+			"id_attribute": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The identifier of the Endpoint Tag IP object.",
+			},
+			"ip": {
+				Type:             modelHelpers.StringProperty,
+				CustomStringType: customTypes.IPAddressStringType{},
+				Required:         true,
+				RequiresReplace:  true,
+				Description:      "The IP address of the Endpoint Tag IP object.",
+			},
+			"name": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The name of the Endpoint Tag IP object.",
+			},
+			"name_alias": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The name alias of the Endpoint Tag IP object.",
+			},
+		},
+		Children: map[string]modelHelpers.ChildSchema{
+			"annotations": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.",
+				Schema:      tagAnnotationSchemaDefinition,
+			},
+			"tags": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.",
+				Schema:      tagTagSchemaDefinition,
+			},
+		},
+		Identifiers: []string{
+			"vrf_name",
+			"ip",
+		},
+		ParentDN: &modelHelpers.ParentDNSchema{
+			AttributeName: "parent_dn",
+			Config:        modelHelpers.ParentDNAttributeConfig{},
+		},
+		AnnotationAttribute: "annotation",
+	}
+}
+
+func FvEpIpTagResourceSchema(defaultAnnotation string) resourceschema.Schema {
+	return fvEpIpTagSchemaDefinition().ResourceSchema(defaultAnnotation)
+}
+
+func FvEpIpTagDataSourceSchema() datasourceschema.Schema {
+	return fvEpIpTagSchemaDefinition().DataSourceSchema()
+}
 
 type FvEpIpTagModel struct {
 	Annotation    types.String                     `tfsdk:"annotation"`
@@ -74,19 +152,15 @@ func (m *FvEpIpTagModel) BuildRN() string {
 	rn := "eptags/epiptag-[{ip}]-{ctxName}"
 	rn = strings.ReplaceAll(rn, "{ctxName}", m.CtxName.ValueString())
 	rn = strings.ReplaceAll(rn, "{ip}", m.Ip.NamedValueString())
-
 	return rn
 }
 
 func (m *FvEpIpTagModel) BuildDN(parentDN string) string {
-	return parentDN + "/" + m.BuildRN()
+	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
 }
 
 func (m *FvEpIpTagModel) ParentDNFromDN(dn string) string {
-	rn := m.BuildRN()
-
-	parentDN, _ := strings.CutSuffix(dn, "/"+rn)
-	return parentDN
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
 }
 
 func FvEpIpTagModelFromObject(
@@ -101,12 +175,14 @@ func FvEpIpTagModelFromObject(
 	if !ok {
 		return model, diagnostics
 	}
+
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ctxName", &model.CtxName)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "id", &model.FvEpIpTagID)
 	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "ip", &model.Ip, customTypes.NewIPAddressStringValue)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "name", &model.Name)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "nameAlias", &model.NameAlias)
+
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,
 		&diagnostics,
@@ -117,6 +193,7 @@ func FvEpIpTagModelFromObject(
 			"tagTag",
 		},
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -125,6 +202,7 @@ func FvEpIpTagModelFromObject(
 		TagAnnotationModelFromObject,
 		&model.TagAnnotation,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -156,6 +234,7 @@ func (m *FvEpIpTagModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
+
 	if !modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "annotation", m.Annotation) && nested {
 		attributes["annotation"] = defaultAnnotation
 	}
@@ -164,6 +243,7 @@ func (m *FvEpIpTagModel) BuildPayloadObject(
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "ip", m.Ip)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "name", m.Name)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "nameAlias", m.NameAlias)
+
 	var priorTagAnnotation *types.Set
 	if priorState != nil {
 		priorTagAnnotation = &priorState.TagAnnotation
@@ -184,6 +264,7 @@ func (m *FvEpIpTagModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, tagAnnotationPayloads...)
+
 	var priorTagTag *types.Set
 	if priorState != nil {
 		priorTagTag = &priorState.TagTag
@@ -218,32 +299,32 @@ func (m *FvEpIpTagModel) BuildNestedDeletePayloadObject(
 	ctx context.Context,
 	diagnostics *diag.Diagnostics,
 ) map[string]any {
-	attributes := map[string]any{}
-	attributes["ctxName"] = m.CtxName.ValueString()
-	attributes["ip"] = m.Ip.ValueString()
-	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, attributes)
+	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, map[string]any{
+		"ctxName": m.CtxName.ValueString(),
+		"ip":      m.Ip.ValueString(),
+	})
 }
 
-type FvEpIpTagResourceModel struct {
+type FvEpIpTagRootModel struct {
 	FvEpIpTagModel
 
 	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ParentDN types.String `tfsdk:"parent_dn"`
 }
 
-func NewFvEpIpTagResourceModelNull() FvEpIpTagResourceModel {
-	return FvEpIpTagResourceModel{
+func NewFvEpIpTagRootModelNull() FvEpIpTagRootModel {
+	return FvEpIpTagRootModel{
 		FvEpIpTagModel: NewFvEpIpTagModelNull(),
 		ID:             types.StringNull(),
-		ParentDn:       types.StringNull(),
+		ParentDN:       types.StringNull(),
 	}
 }
 
-func (m *FvEpIpTagResourceModel) SetIDFromDN(dn string) {
+func (m *FvEpIpTagRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
 
-func (m *FvEpIpTagResourceModel) SetFromResponse(
+func (m *FvEpIpTagRootModel) SetFromResponse(
 	ctx context.Context,
 	response *container.Container,
 ) (bool, diag.Diagnostics) {
@@ -256,11 +337,11 @@ func (m *FvEpIpTagResourceModel) SetFromResponse(
 
 	m.FvEpIpTagModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 
-func (m *FvEpIpTagResourceModel) BuildPayload(
+func (m *FvEpIpTagRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *FvEpIpTagModel,
 	create bool,
@@ -271,52 +352,16 @@ func (m *FvEpIpTagResourceModel) BuildPayload(
 	if diagnostics.HasError() {
 		return nil, diagnostics
 	}
+
 	if markCreated {
 		payloadObject["attributes"].(map[string]any)["status"] = "created"
 	}
+
 	payloadEnvelope := map[string]any{"fvEpIpTag": payloadObject}
-	jsonPayload := modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload")
-	return jsonPayload, diagnostics
+	return modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload"), diagnostics
 }
 
-func (m *FvEpIpTagResourceModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
+func (m *FvEpIpTagRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
-	payload := modelHelpers.NewDeletePayload(ctx, &diagnostics, "fvEpIpTag", m.ID.ValueString())
-	return payload, diagnostics
-}
-
-type FvEpIpTagDataSourceModel struct {
-	FvEpIpTagModel
-
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
-}
-
-func NewFvEpIpTagDataSourceModelNull() FvEpIpTagDataSourceModel {
-	return FvEpIpTagDataSourceModel{
-		FvEpIpTagModel: NewFvEpIpTagModelNull(),
-		ID:             types.StringNull(),
-		ParentDn:       types.StringNull(),
-	}
-}
-
-func (m *FvEpIpTagDataSourceModel) SetIDFromDN(dn string) {
-	m.ID = types.StringValue(dn)
-}
-
-func (m *FvEpIpTagDataSourceModel) SetFromResponse(
-	ctx context.Context,
-	response *container.Container,
-) (bool, diag.Diagnostics) {
-	fallbackModel := m.FvEpIpTagModel
-	model, dn, diagnostics := FvEpIpTagModelFromResponse(ctx, response, &fallbackModel)
-	found := model != nil
-	if diagnostics.HasError() || !found {
-		return found, diagnostics
-	}
-
-	m.FvEpIpTagModel = *model
-	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
-	return true, diagnostics
+	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "fvEpIpTag", m.ID.ValueString()), diagnostics
 }

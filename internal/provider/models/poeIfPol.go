@@ -6,15 +6,146 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+func poeIfPolSchemaDefinition() modelHelpers.ClassSchema {
+	return modelHelpers.ClassSchema{
+		ResourceDescription:   "Manages ACI PoE Interface Policy",
+		DataSourceDescription: "Data source for ACI PoE Interface Policy",
+		Properties: map[string]modelHelpers.PropertySchema{
+			"admin_state": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"disabled",
+					"enabled",
+				},
+				Description: "The administrative state of the PoE Interface Policy object.",
+			},
+			"annotation": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The annotation of the PoE Interface Policy object.",
+			},
+			"description": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The description of the PoE Interface Policy object.",
+			},
+			"maximum_power": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The maximum power in milliwatts that is allowed for the PoE Interface Policy object. The value must be in the range 4000 - 60000.",
+			},
+			"host_mode": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"auto",
+					"never",
+					"static",
+				},
+				Description: "The host mode of the PoE Interface Policy object.",
+			},
+			"name": {
+				Type:            modelHelpers.StringProperty,
+				Required:        true,
+				RequiresReplace: true,
+				Description:     "The name of the PoE Interface Policy object.",
+			},
+			"name_alias": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The name alias of the PoE Interface Policy object.",
+			},
+			"owner_key": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The key for enabling clients to own their data for entity correlation.",
+			},
+			"owner_tag": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "A tag for enabling clients to add their own data. For example, to indicate who created this object.",
+			},
+			"poe_vlan": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The PoE VLAN of the PoE Interface Policy object.",
+			},
+			"policing_action": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"err-dis",
+					"log",
+					"none",
+				},
+				Description: "The policing action of the PoE Interface Policy object.",
+			},
+			"port_priority_high": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"no",
+					"yes",
+				},
+				Description: "Enable high port priority for the PoE Interface Policy object.",
+			},
+		},
+		Children: map[string]modelHelpers.ChildSchema{
+			"relation_to_application_epg": {
+				Cardinality: modelHelpers.SingleChild,
+				Description: "`relation_to_application_epg` - (map) A map of Relation To Application EPG (ACI object [poeRsPoeEpg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/poeRsPoeEpg/overview)) pointing to Application EPG (ACI Object [fvAEPg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvAEPg/overview)) which can be configured using the [aci_application_epg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/application_epg) resource.",
+				Schema:      poeRsPoeEpgSchemaDefinition,
+			},
+			"annotations": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.",
+				Schema:      tagAnnotationSchemaDefinition,
+			},
+			"tags": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.",
+				Schema:      tagTagSchemaDefinition,
+			},
+		},
+		Identifiers: []string{
+			"name",
+		},
+		AnnotationAttribute: "annotation",
+	}
+}
+
+func PoeIfPolResourceSchema(defaultAnnotation string) resourceschema.Schema {
+	return poeIfPolSchemaDefinition().ResourceSchema(defaultAnnotation)
+}
+
+func PoeIfPolDataSourceSchema() datasourceschema.Schema {
+	return poeIfPolSchemaDefinition().DataSourceSchema()
+}
 
 type PoeIfPolModel struct {
 	AdminSt       types.String `tfsdk:"admin_state"`
@@ -95,12 +226,11 @@ func NewPoeIfPolModelNull() PoeIfPolModel {
 func (m *PoeIfPolModel) BuildRN() string {
 	rn := "infra/poeIfP-{name}"
 	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
-
 	return rn
 }
 
 func (m *PoeIfPolModel) BuildDN() string {
-	return "uni/" + m.BuildRN()
+	return fmt.Sprintf("uni/%s", m.BuildRN())
 }
 
 func PoeIfPolModelFromObject(
@@ -115,6 +245,7 @@ func PoeIfPolModelFromObject(
 	if !ok {
 		return model, diagnostics
 	}
+
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "adminSt", &model.AdminSt)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "descr", &model.Descr)
@@ -127,6 +258,7 @@ func PoeIfPolModelFromObject(
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "poeVoiceVlan", &model.PoeVoiceVlan)
 	modelHelpers.DecodeStringAttributeWithEmptyValue(ctx, &diagnostics, attributes, "policeAct", "none", &model.PoliceAct)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "prioHigh", &model.PrioHigh)
+
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,
 		&diagnostics,
@@ -138,6 +270,7 @@ func PoeIfPolModelFromObject(
 			"tagTag",
 		},
 	)
+
 	var fallbackPoeRsPoeEpg *types.Object
 	if fallbackModel != nil {
 		fallbackPoeRsPoeEpg = &fallbackModel.PoeRsPoeEpg
@@ -154,6 +287,7 @@ func PoeIfPolModelFromObject(
 		PoeRsPoeEpgModelFromObject,
 		&model.PoeRsPoeEpg,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -162,6 +296,7 @@ func PoeIfPolModelFromObject(
 		TagAnnotationModelFromObject,
 		&model.TagAnnotation,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -193,6 +328,7 @@ func (m *PoeIfPolModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
+
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "adminSt", m.AdminSt)
 	if !modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "annotation", m.Annotation) && nested {
 		attributes["annotation"] = defaultAnnotation
@@ -207,6 +343,7 @@ func (m *PoeIfPolModel) BuildPayloadObject(
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "poeVoiceVlan", m.PoeVoiceVlan)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "policeAct", m.PoliceAct)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "prioHigh", m.PrioHigh)
+
 	var priorPoeRsPoeEpg *types.Object
 	if priorState != nil {
 		priorPoeRsPoeEpg = &priorState.PoeRsPoeEpg
@@ -226,6 +363,7 @@ func (m *PoeIfPolModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, poeRsPoeEpgPayloads...)
+
 	var priorTagAnnotation *types.Set
 	if priorState != nil {
 		priorTagAnnotation = &priorState.TagAnnotation
@@ -246,6 +384,7 @@ func (m *PoeIfPolModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, tagAnnotationPayloads...)
+
 	var priorTagTag *types.Set
 	if priorState != nil {
 		priorTagTag = &priorState.TagTag
@@ -280,29 +419,29 @@ func (m *PoeIfPolModel) BuildNestedDeletePayloadObject(
 	ctx context.Context,
 	diagnostics *diag.Diagnostics,
 ) map[string]any {
-	attributes := map[string]any{}
-	attributes["name"] = m.Name.ValueString()
-	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, attributes)
+	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, map[string]any{
+		"name": m.Name.ValueString(),
+	})
 }
 
-type PoeIfPolResourceModel struct {
+type PoeIfPolRootModel struct {
 	PoeIfPolModel
 
 	ID types.String `tfsdk:"id"`
 }
 
-func NewPoeIfPolResourceModelNull() PoeIfPolResourceModel {
-	return PoeIfPolResourceModel{
+func NewPoeIfPolRootModelNull() PoeIfPolRootModel {
+	return PoeIfPolRootModel{
 		PoeIfPolModel: NewPoeIfPolModelNull(),
 		ID:            types.StringNull(),
 	}
 }
 
-func (m *PoeIfPolResourceModel) SetIDFromDN(dn string) {
+func (m *PoeIfPolRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
 
-func (m *PoeIfPolResourceModel) SetFromResponse(
+func (m *PoeIfPolRootModel) SetFromResponse(
 	ctx context.Context,
 	response *container.Container,
 ) (bool, diag.Diagnostics) {
@@ -318,7 +457,7 @@ func (m *PoeIfPolResourceModel) SetFromResponse(
 	return true, diagnostics
 }
 
-func (m *PoeIfPolResourceModel) BuildPayload(
+func (m *PoeIfPolRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *PoeIfPolModel,
 	create bool,
@@ -329,49 +468,16 @@ func (m *PoeIfPolResourceModel) BuildPayload(
 	if diagnostics.HasError() {
 		return nil, diagnostics
 	}
+
 	if markCreated {
 		payloadObject["attributes"].(map[string]any)["status"] = "created"
 	}
+
 	payloadEnvelope := map[string]any{"poeIfPol": payloadObject}
-	jsonPayload := modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload")
-	return jsonPayload, diagnostics
+	return modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload"), diagnostics
 }
 
-func (m *PoeIfPolResourceModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
+func (m *PoeIfPolRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
-	payload := modelHelpers.NewDeletePayload(ctx, &diagnostics, "poeIfPol", m.ID.ValueString())
-	return payload, diagnostics
-}
-
-type PoeIfPolDataSourceModel struct {
-	PoeIfPolModel
-
-	ID types.String `tfsdk:"id"`
-}
-
-func NewPoeIfPolDataSourceModelNull() PoeIfPolDataSourceModel {
-	return PoeIfPolDataSourceModel{
-		PoeIfPolModel: NewPoeIfPolModelNull(),
-		ID:            types.StringNull(),
-	}
-}
-
-func (m *PoeIfPolDataSourceModel) SetIDFromDN(dn string) {
-	m.ID = types.StringValue(dn)
-}
-
-func (m *PoeIfPolDataSourceModel) SetFromResponse(
-	ctx context.Context,
-	response *container.Container,
-) (bool, diag.Diagnostics) {
-	fallbackModel := m.PoeIfPolModel
-	model, dn, diagnostics := PoeIfPolModelFromResponse(ctx, response, &fallbackModel)
-	found := model != nil
-	if diagnostics.HasError() || !found {
-		return found, diagnostics
-	}
-
-	m.PoeIfPolModel = *model
-	m.ID = types.StringValue(dn)
-	return true, diagnostics
+	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "poeIfPol", m.ID.ValueString()), diagnostics
 }

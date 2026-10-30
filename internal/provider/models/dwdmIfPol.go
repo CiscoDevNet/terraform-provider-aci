@@ -6,16 +6,194 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+func dwdmIfPolSchemaDefinition() modelHelpers.ClassSchema {
+	return modelHelpers.ClassSchema{
+		ResourceDescription:   "Manages ACI DWDM Interface Policy",
+		DataSourceDescription: "Data source for ACI DWDM Interface Policy",
+		Properties: map[string]modelHelpers.PropertySchema{
+			"annotation": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The annotation of the DWDM Interface Policy object.",
+			},
+			"description": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The description of the DWDM Interface Policy object.",
+			},
+			"channel_nummber": {
+				Type:             modelHelpers.StringProperty,
+				CustomStringType: customTypes.DwdmIfPolFcotChannelNumberStringType{},
+				Optional:         true,
+				Computed:         true,
+				ValidValues: []string{
+					"Channel1",
+					"Channel10",
+					"Channel11",
+					"Channel12",
+					"Channel13",
+					"Channel14",
+					"Channel15",
+					"Channel16",
+					"Channel17",
+					"Channel18",
+					"Channel19",
+					"Channel2",
+					"Channel20",
+					"Channel21",
+					"Channel22",
+					"Channel23",
+					"Channel24",
+					"Channel25",
+					"Channel26",
+					"Channel27",
+					"Channel28",
+					"Channel29",
+					"Channel3",
+					"Channel30",
+					"Channel31",
+					"Channel32",
+					"Channel33",
+					"Channel34",
+					"Channel35",
+					"Channel36",
+					"Channel37",
+					"Channel38",
+					"Channel39",
+					"Channel4",
+					"Channel40",
+					"Channel41",
+					"Channel42",
+					"Channel43",
+					"Channel44",
+					"Channel45",
+					"Channel46",
+					"Channel47",
+					"Channel48",
+					"Channel49",
+					"Channel5",
+					"Channel50",
+					"Channel51",
+					"Channel52",
+					"Channel53",
+					"Channel54",
+					"Channel55",
+					"Channel56",
+					"Channel57",
+					"Channel58",
+					"Channel59",
+					"Channel6",
+					"Channel60",
+					"Channel61",
+					"Channel62",
+					"Channel63",
+					"Channel64",
+					"Channel65",
+					"Channel66",
+					"Channel67",
+					"Channel68",
+					"Channel69",
+					"Channel7",
+					"Channel70",
+					"Channel71",
+					"Channel72",
+					"Channel73",
+					"Channel74",
+					"Channel75",
+					"Channel76",
+					"Channel77",
+					"Channel78",
+					"Channel79",
+					"Channel8",
+					"Channel80",
+					"Channel81",
+					"Channel82",
+					"Channel83",
+					"Channel84",
+					"Channel85",
+					"Channel86",
+					"Channel87",
+					"Channel88",
+					"Channel89",
+					"Channel9",
+					"Channel90",
+					"Channel91",
+					"Channel92",
+					"Channel93",
+					"Channel94",
+					"Channel95",
+					"Channel96",
+				},
+				StringRange: &modelHelpers.StringRange{Min: 1, Max: 96},
+				Description: "The channel number of the DWDM Interface Policy object.",
+			},
+			"name": {
+				Type:            modelHelpers.StringProperty,
+				Required:        true,
+				RequiresReplace: true,
+				Description:     "The name of the DWDM Interface Policy object.",
+			},
+			"name_alias": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The name alias of the DWDM Interface Policy object.",
+			},
+			"owner_key": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The key for enabling clients to own their data for entity correlation.",
+			},
+			"owner_tag": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "A tag for enabling clients to add their own data. For example, to indicate who created this object.",
+			},
+		},
+		Children: map[string]modelHelpers.ChildSchema{
+			"annotations": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.",
+				Schema:      tagAnnotationSchemaDefinition,
+			},
+			"tags": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.",
+				Schema:      tagTagSchemaDefinition,
+			},
+		},
+		Identifiers: []string{
+			"name",
+		},
+		AnnotationAttribute: "annotation",
+	}
+}
+
+func DwdmIfPolResourceSchema(defaultAnnotation string) resourceschema.Schema {
+	return dwdmIfPolSchemaDefinition().ResourceSchema(defaultAnnotation)
+}
+
+func DwdmIfPolDataSourceSchema() datasourceschema.Schema {
+	return dwdmIfPolSchemaDefinition().DataSourceSchema()
+}
 
 type DwdmIfPolModel struct {
 	Annotation        types.String                                      `tfsdk:"annotation"`
@@ -76,12 +254,11 @@ func NewDwdmIfPolModelNull() DwdmIfPolModel {
 func (m *DwdmIfPolModel) BuildRN() string {
 	rn := "infra/dwdmifpol-{name}"
 	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
-
 	return rn
 }
 
 func (m *DwdmIfPolModel) BuildDN() string {
-	return "uni/" + m.BuildRN()
+	return fmt.Sprintf("uni/%s", m.BuildRN())
 }
 
 func DwdmIfPolModelFromObject(
@@ -96,6 +273,7 @@ func DwdmIfPolModelFromObject(
 	if !ok {
 		return model, diagnostics
 	}
+
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "descr", &model.Descr)
 	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "fcotChannelNumber", &model.FcotChannelNumber, customTypes.NewDwdmIfPolFcotChannelNumberStringValue)
@@ -103,6 +281,7 @@ func DwdmIfPolModelFromObject(
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "nameAlias", &model.NameAlias)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ownerKey", &model.OwnerKey)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ownerTag", &model.OwnerTag)
+
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,
 		&diagnostics,
@@ -113,6 +292,7 @@ func DwdmIfPolModelFromObject(
 			"tagTag",
 		},
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -121,6 +301,7 @@ func DwdmIfPolModelFromObject(
 		TagAnnotationModelFromObject,
 		&model.TagAnnotation,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -152,6 +333,7 @@ func (m *DwdmIfPolModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
+
 	if !modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "annotation", m.Annotation) && nested {
 		attributes["annotation"] = defaultAnnotation
 	}
@@ -161,6 +343,7 @@ func (m *DwdmIfPolModel) BuildPayloadObject(
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "nameAlias", m.NameAlias)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "ownerKey", m.OwnerKey)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "ownerTag", m.OwnerTag)
+
 	var priorTagAnnotation *types.Set
 	if priorState != nil {
 		priorTagAnnotation = &priorState.TagAnnotation
@@ -181,6 +364,7 @@ func (m *DwdmIfPolModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, tagAnnotationPayloads...)
+
 	var priorTagTag *types.Set
 	if priorState != nil {
 		priorTagTag = &priorState.TagTag
@@ -215,29 +399,29 @@ func (m *DwdmIfPolModel) BuildNestedDeletePayloadObject(
 	ctx context.Context,
 	diagnostics *diag.Diagnostics,
 ) map[string]any {
-	attributes := map[string]any{}
-	attributes["name"] = m.Name.ValueString()
-	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, attributes)
+	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, map[string]any{
+		"name": m.Name.ValueString(),
+	})
 }
 
-type DwdmIfPolResourceModel struct {
+type DwdmIfPolRootModel struct {
 	DwdmIfPolModel
 
 	ID types.String `tfsdk:"id"`
 }
 
-func NewDwdmIfPolResourceModelNull() DwdmIfPolResourceModel {
-	return DwdmIfPolResourceModel{
+func NewDwdmIfPolRootModelNull() DwdmIfPolRootModel {
+	return DwdmIfPolRootModel{
 		DwdmIfPolModel: NewDwdmIfPolModelNull(),
 		ID:             types.StringNull(),
 	}
 }
 
-func (m *DwdmIfPolResourceModel) SetIDFromDN(dn string) {
+func (m *DwdmIfPolRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
 
-func (m *DwdmIfPolResourceModel) SetFromResponse(
+func (m *DwdmIfPolRootModel) SetFromResponse(
 	ctx context.Context,
 	response *container.Container,
 ) (bool, diag.Diagnostics) {
@@ -253,7 +437,7 @@ func (m *DwdmIfPolResourceModel) SetFromResponse(
 	return true, diagnostics
 }
 
-func (m *DwdmIfPolResourceModel) BuildPayload(
+func (m *DwdmIfPolRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *DwdmIfPolModel,
 	create bool,
@@ -264,49 +448,16 @@ func (m *DwdmIfPolResourceModel) BuildPayload(
 	if diagnostics.HasError() {
 		return nil, diagnostics
 	}
+
 	if markCreated {
 		payloadObject["attributes"].(map[string]any)["status"] = "created"
 	}
+
 	payloadEnvelope := map[string]any{"dwdmIfPol": payloadObject}
-	jsonPayload := modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload")
-	return jsonPayload, diagnostics
+	return modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload"), diagnostics
 }
 
-func (m *DwdmIfPolResourceModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
+func (m *DwdmIfPolRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
-	payload := modelHelpers.NewDeletePayload(ctx, &diagnostics, "dwdmIfPol", m.ID.ValueString())
-	return payload, diagnostics
-}
-
-type DwdmIfPolDataSourceModel struct {
-	DwdmIfPolModel
-
-	ID types.String `tfsdk:"id"`
-}
-
-func NewDwdmIfPolDataSourceModelNull() DwdmIfPolDataSourceModel {
-	return DwdmIfPolDataSourceModel{
-		DwdmIfPolModel: NewDwdmIfPolModelNull(),
-		ID:             types.StringNull(),
-	}
-}
-
-func (m *DwdmIfPolDataSourceModel) SetIDFromDN(dn string) {
-	m.ID = types.StringValue(dn)
-}
-
-func (m *DwdmIfPolDataSourceModel) SetFromResponse(
-	ctx context.Context,
-	response *container.Container,
-) (bool, diag.Diagnostics) {
-	fallbackModel := m.DwdmIfPolModel
-	model, dn, diagnostics := DwdmIfPolModelFromResponse(ctx, response, &fallbackModel)
-	found := model != nil
-	if diagnostics.HasError() || !found {
-		return found, diagnostics
-	}
-
-	m.DwdmIfPolModel = *model
-	m.ID = types.StringValue(dn)
-	return true, diagnostics
+	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "dwdmIfPol", m.ID.ValueString()), diagnostics
 }

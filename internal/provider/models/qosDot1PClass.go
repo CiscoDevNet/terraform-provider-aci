@@ -6,16 +6,188 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+func qosDot1PClassSchemaDefinition() modelHelpers.ClassSchema {
+	return modelHelpers.ClassSchema{
+		ResourceDescription:   "Manages ACI Dot1p Classifier",
+		DataSourceDescription: "Data source for ACI Dot1p Classifier",
+		Properties: map[string]modelHelpers.PropertySchema{
+			"annotation": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The annotation of the Dot1p Classifier object.",
+			},
+			"description": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The description of the Dot1p Classifier object.",
+			},
+			"from": {
+				Type:             modelHelpers.StringProperty,
+				CustomStringType: customTypes.QosDot1PClassFromStringType{},
+				Required:         true,
+				RequiresReplace:  true,
+				ValidValues: []string{
+					"0",
+					"1",
+					"2",
+					"3",
+					"4",
+					"5",
+					"6",
+					"7",
+					"unspecified",
+				},
+				StringRange: &modelHelpers.StringRange{Min: 0, Max: 8},
+				Description: "The Dot1p priority range starting value.",
+			},
+			"name": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The name of the Dot1p Classifier object.",
+			},
+			"name_alias": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The name alias of the Dot1p Classifier object.",
+			},
+			"priority": {
+				Type:             modelHelpers.StringProperty,
+				CustomStringType: customTypes.QosDot1PClassPrioStringType{},
+				Optional:         true,
+				Computed:         true,
+				ValidValues: []string{
+					"level1",
+					"level2",
+					"level3",
+					"level4",
+					"level5",
+					"level6",
+					"unspecified",
+				},
+				StringRange: &modelHelpers.StringRange{Min: 0, Max: 9},
+				Description: "The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.",
+			},
+			"target": {
+				Type:             modelHelpers.StringProperty,
+				CustomStringType: customTypes.QosDot1PClassTargetStringType{},
+				Optional:         true,
+				Computed:         true,
+				ValidValues: []string{
+					"AF11",
+					"AF12",
+					"AF13",
+					"AF21",
+					"AF22",
+					"AF23",
+					"AF31",
+					"AF32",
+					"AF33",
+					"AF41",
+					"AF42",
+					"AF43",
+					"CS0",
+					"CS1",
+					"CS2",
+					"CS3",
+					"CS4",
+					"CS5",
+					"CS6",
+					"CS7",
+					"EF",
+					"VA",
+					"unspecified",
+				},
+				StringRange: &modelHelpers.StringRange{Min: 0, Max: 64},
+				Description: "The target of the Dot1p Classifier object. This Fabric only supports DSCP mutation, Dot1P mutation is not supported.",
+			},
+			"target_cos": {
+				Type:             modelHelpers.StringProperty,
+				CustomStringType: customTypes.QosDot1PClassTargetCosStringType{},
+				Optional:         true,
+				Computed:         true,
+				ValidValues: []string{
+					"0",
+					"1",
+					"2",
+					"3",
+					"4",
+					"5",
+					"6",
+					"7",
+					"unspecified",
+				},
+				StringRange: &modelHelpers.StringRange{Min: 0, Max: 8},
+				Description: "The target Class of Service (CoS) to be driven based on the range of DSCP input values coming into the fabric.",
+			},
+			"to": {
+				Type:             modelHelpers.StringProperty,
+				CustomStringType: customTypes.QosDot1PClassToStringType{},
+				Required:         true,
+				RequiresReplace:  true,
+				ValidValues: []string{
+					"0",
+					"1",
+					"2",
+					"3",
+					"4",
+					"5",
+					"6",
+					"7",
+					"unspecified",
+				},
+				StringRange: &modelHelpers.StringRange{Min: 0, Max: 8},
+				Description: "The Dot1p priority range ending value.",
+			},
+		},
+		Children: map[string]modelHelpers.ChildSchema{
+			"annotations": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.",
+				Schema:      tagAnnotationSchemaDefinition,
+			},
+			"tags": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.",
+				Schema:      tagTagSchemaDefinition,
+			},
+		},
+		Identifiers: []string{
+			"from",
+			"to",
+		},
+		ParentDN: &modelHelpers.ParentDNSchema{
+			AttributeName: "parent_dn",
+			Config:        modelHelpers.ParentDNAttributeConfig{},
+		},
+		AnnotationAttribute: "annotation",
+	}
+}
+
+func QosDot1PClassResourceSchema(defaultAnnotation string) resourceschema.Schema {
+	return qosDot1PClassSchemaDefinition().ResourceSchema(defaultAnnotation)
+}
+
+func QosDot1PClassDataSourceSchema() datasourceschema.Schema {
+	return qosDot1PClassSchemaDefinition().DataSourceSchema()
+}
 
 type QosDot1PClassModel struct {
 	Annotation    types.String                                  `tfsdk:"annotation"`
@@ -83,19 +255,15 @@ func (m *QosDot1PClassModel) BuildRN() string {
 	rn := "dot1P-{from}-{to}"
 	rn = strings.ReplaceAll(rn, "{from}", m.From.NamedValueString())
 	rn = strings.ReplaceAll(rn, "{to}", m.To.NamedValueString())
-
 	return rn
 }
 
 func (m *QosDot1PClassModel) BuildDN(parentDN string) string {
-	return parentDN + "/" + m.BuildRN()
+	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
 }
 
 func (m *QosDot1PClassModel) ParentDNFromDN(dn string) string {
-	rn := m.BuildRN()
-
-	parentDN, _ := strings.CutSuffix(dn, "/"+rn)
-	return parentDN
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
 }
 
 func QosDot1PClassModelFromObject(
@@ -110,6 +278,7 @@ func QosDot1PClassModelFromObject(
 	if !ok {
 		return model, diagnostics
 	}
+
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "descr", &model.Descr)
 	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "from", &model.From, customTypes.NewQosDot1PClassFromStringValue)
@@ -119,6 +288,7 @@ func QosDot1PClassModelFromObject(
 	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "target", &model.Target, customTypes.NewQosDot1PClassTargetStringValue)
 	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "targetCos", &model.TargetCos, customTypes.NewQosDot1PClassTargetCosStringValue)
 	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "to", &model.To, customTypes.NewQosDot1PClassToStringValue)
+
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,
 		&diagnostics,
@@ -129,6 +299,7 @@ func QosDot1PClassModelFromObject(
 			"tagTag",
 		},
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -137,6 +308,7 @@ func QosDot1PClassModelFromObject(
 		TagAnnotationModelFromObject,
 		&model.TagAnnotation,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -168,6 +340,7 @@ func (m *QosDot1PClassModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
+
 	if !modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "annotation", m.Annotation) && nested {
 		attributes["annotation"] = defaultAnnotation
 	}
@@ -179,6 +352,7 @@ func (m *QosDot1PClassModel) BuildPayloadObject(
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "target", m.Target)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "targetCos", m.TargetCos)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "to", m.To)
+
 	var priorTagAnnotation *types.Set
 	if priorState != nil {
 		priorTagAnnotation = &priorState.TagAnnotation
@@ -199,6 +373,7 @@ func (m *QosDot1PClassModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, tagAnnotationPayloads...)
+
 	var priorTagTag *types.Set
 	if priorState != nil {
 		priorTagTag = &priorState.TagTag
@@ -233,32 +408,32 @@ func (m *QosDot1PClassModel) BuildNestedDeletePayloadObject(
 	ctx context.Context,
 	diagnostics *diag.Diagnostics,
 ) map[string]any {
-	attributes := map[string]any{}
-	attributes["from"] = m.From.ValueString()
-	attributes["to"] = m.To.ValueString()
-	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, attributes)
+	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, map[string]any{
+		"from": m.From.ValueString(),
+		"to":   m.To.ValueString(),
+	})
 }
 
-type QosDot1PClassResourceModel struct {
+type QosDot1PClassRootModel struct {
 	QosDot1PClassModel
 
 	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ParentDN types.String `tfsdk:"parent_dn"`
 }
 
-func NewQosDot1PClassResourceModelNull() QosDot1PClassResourceModel {
-	return QosDot1PClassResourceModel{
+func NewQosDot1PClassRootModelNull() QosDot1PClassRootModel {
+	return QosDot1PClassRootModel{
 		QosDot1PClassModel: NewQosDot1PClassModelNull(),
 		ID:                 types.StringNull(),
-		ParentDn:           types.StringNull(),
+		ParentDN:           types.StringNull(),
 	}
 }
 
-func (m *QosDot1PClassResourceModel) SetIDFromDN(dn string) {
+func (m *QosDot1PClassRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
 
-func (m *QosDot1PClassResourceModel) SetFromResponse(
+func (m *QosDot1PClassRootModel) SetFromResponse(
 	ctx context.Context,
 	response *container.Container,
 ) (bool, diag.Diagnostics) {
@@ -271,11 +446,11 @@ func (m *QosDot1PClassResourceModel) SetFromResponse(
 
 	m.QosDot1PClassModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 
-func (m *QosDot1PClassResourceModel) BuildPayload(
+func (m *QosDot1PClassRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *QosDot1PClassModel,
 	create bool,
@@ -286,52 +461,16 @@ func (m *QosDot1PClassResourceModel) BuildPayload(
 	if diagnostics.HasError() {
 		return nil, diagnostics
 	}
+
 	if markCreated {
 		payloadObject["attributes"].(map[string]any)["status"] = "created"
 	}
+
 	payloadEnvelope := map[string]any{"qosDot1PClass": payloadObject}
-	jsonPayload := modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload")
-	return jsonPayload, diagnostics
+	return modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload"), diagnostics
 }
 
-func (m *QosDot1PClassResourceModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
+func (m *QosDot1PClassRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
-	payload := modelHelpers.NewDeletePayload(ctx, &diagnostics, "qosDot1PClass", m.ID.ValueString())
-	return payload, diagnostics
-}
-
-type QosDot1PClassDataSourceModel struct {
-	QosDot1PClassModel
-
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
-}
-
-func NewQosDot1PClassDataSourceModelNull() QosDot1PClassDataSourceModel {
-	return QosDot1PClassDataSourceModel{
-		QosDot1PClassModel: NewQosDot1PClassModelNull(),
-		ID:                 types.StringNull(),
-		ParentDn:           types.StringNull(),
-	}
-}
-
-func (m *QosDot1PClassDataSourceModel) SetIDFromDN(dn string) {
-	m.ID = types.StringValue(dn)
-}
-
-func (m *QosDot1PClassDataSourceModel) SetFromResponse(
-	ctx context.Context,
-	response *container.Container,
-) (bool, diag.Diagnostics) {
-	fallbackModel := m.QosDot1PClassModel
-	model, dn, diagnostics := QosDot1PClassModelFromResponse(ctx, response, &fallbackModel)
-	found := model != nil
-	if diagnostics.HasError() || !found {
-		return found, diagnostics
-	}
-
-	m.QosDot1PClassModel = *model
-	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
-	return true, diagnostics
+	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "qosDot1PClass", m.ID.ValueString()), diagnostics
 }

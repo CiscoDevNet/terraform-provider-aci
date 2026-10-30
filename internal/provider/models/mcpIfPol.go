@@ -6,15 +6,153 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+func mcpIfPolSchemaDefinition() modelHelpers.ClassSchema {
+	return modelHelpers.ClassSchema{
+		ResourceDescription:   "Manages ACI MCP Interface Policy",
+		DataSourceDescription: "Data source for ACI MCP Interface Policy",
+		Properties: map[string]modelHelpers.PropertySchema{
+			"admin_state": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"disabled",
+					"enabled",
+				},
+				Description: "The administrative state of the MCP Interface Policy object.",
+			},
+			"annotation": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The annotation of the MCP Interface Policy object.",
+			},
+			"description": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The description of the MCP Interface Policy object.",
+			},
+			"grace_period_seconds": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The grace period in seconds for the MCP Interface Policy object. This attribute is only applicable when 'strict_mode' is 'on'. The value must be in the range 0 - 300.",
+			},
+			"grace_period_milliseconds": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The grace period in milliseconds for the MCP Interface Policy object. This attribute is only applicable when 'strict_mode' is 'on'. The value must be in the range 0 - 999.",
+			},
+			"maximum_number_of_vlan": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The maximum amount of VLANs for the MCP Interface Policy object. The value must be in the range 1 - 2000 when 'strict_mode' is 'off', else the value must be in range 1 - 256.",
+			},
+			"strict_mode": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"off",
+					"on",
+				},
+				Description: "Enable strict mode for the MCP Interface Policy object.",
+			},
+			"mcp_pdu_per_vlan": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"off",
+					"on",
+				},
+				Description: "Send MCP PDU packets per VLAN for the MCP Interface Policy object.",
+			},
+			"name": {
+				Type:            modelHelpers.StringProperty,
+				Required:        true,
+				RequiresReplace: true,
+				Description:     "The name of the MCP Interface Policy object.",
+			},
+			"name_alias": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The name alias of the MCP Interface Policy object.",
+			},
+			"owner_key": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The key for enabling clients to own their data for entity correlation.",
+			},
+			"owner_tag": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "A tag for enabling clients to add their own data. For example, to indicate who created this object.",
+			},
+			"initial_delay_time": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The initial delay time in seconds for the MCP Interface Policy object. This allows for MCP to wait before sending Bridge Protocol Data Units (BPDUs) which gives Spanning Tree Protocol (STP) on the external network time to converge. This attribute is only applicable when 'strict_mode' is 'on'. The value must be in the range 0 - 1800.",
+			},
+			"transmission_frequency_seconds": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The transmission frequency in seconds for the MCP Interface Policy object. This attribute is only applicable when 'strict_mode' is 'on'. The value must be in the range 0 - 300.",
+			},
+			"transmission_frequency_milliseconds": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The transmission frequency in milliseconds for the MCP Interface Policy object. This attribute is only applicable when 'strict_mode' is 'on'. The value must be in the range 0 - 999.",
+			},
+		},
+		Children: map[string]modelHelpers.ChildSchema{
+			"annotations": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.",
+				Schema:      tagAnnotationSchemaDefinition,
+			},
+			"tags": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.",
+				Schema:      tagTagSchemaDefinition,
+			},
+		},
+		Identifiers: []string{
+			"name",
+		},
+		AnnotationAttribute: "annotation",
+	}
+}
+
+func McpIfPolResourceSchema(defaultAnnotation string) resourceschema.Schema {
+	return mcpIfPolSchemaDefinition().ResourceSchema(defaultAnnotation)
+}
+
+func McpIfPolDataSourceSchema() datasourceschema.Schema {
+	return mcpIfPolSchemaDefinition().DataSourceSchema()
+}
 
 type McpIfPolModel struct {
 	AdminSt             types.String `tfsdk:"admin_state"`
@@ -99,12 +237,11 @@ func NewMcpIfPolModelNull() McpIfPolModel {
 func (m *McpIfPolModel) BuildRN() string {
 	rn := "infra/mcpIfP-{name}"
 	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
-
 	return rn
 }
 
 func (m *McpIfPolModel) BuildDN() string {
-	return "uni/" + m.BuildRN()
+	return fmt.Sprintf("uni/%s", m.BuildRN())
 }
 
 func McpIfPolModelFromObject(
@@ -119,6 +256,7 @@ func McpIfPolModelFromObject(
 	if !ok {
 		return model, diagnostics
 	}
+
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "adminSt", &model.AdminSt)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "descr", &model.Descr)
@@ -134,6 +272,7 @@ func McpIfPolModelFromObject(
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "strictInitDelayTime", &model.StrictInitDelayTime)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "strictTxFreq", &model.StrictTxFreq)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "strictTxFreqMsec", &model.StrictTxFreqMsec)
+
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,
 		&diagnostics,
@@ -144,6 +283,7 @@ func McpIfPolModelFromObject(
 			"tagTag",
 		},
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -152,6 +292,7 @@ func McpIfPolModelFromObject(
 		TagAnnotationModelFromObject,
 		&model.TagAnnotation,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -183,6 +324,7 @@ func (m *McpIfPolModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
+
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "adminSt", m.AdminSt)
 	if !modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "annotation", m.Annotation) && nested {
 		attributes["annotation"] = defaultAnnotation
@@ -200,6 +342,7 @@ func (m *McpIfPolModel) BuildPayloadObject(
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "strictInitDelayTime", m.StrictInitDelayTime)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "strictTxFreq", m.StrictTxFreq)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "strictTxFreqMsec", m.StrictTxFreqMsec)
+
 	var priorTagAnnotation *types.Set
 	if priorState != nil {
 		priorTagAnnotation = &priorState.TagAnnotation
@@ -220,6 +363,7 @@ func (m *McpIfPolModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, tagAnnotationPayloads...)
+
 	var priorTagTag *types.Set
 	if priorState != nil {
 		priorTagTag = &priorState.TagTag
@@ -254,29 +398,29 @@ func (m *McpIfPolModel) BuildNestedDeletePayloadObject(
 	ctx context.Context,
 	diagnostics *diag.Diagnostics,
 ) map[string]any {
-	attributes := map[string]any{}
-	attributes["name"] = m.Name.ValueString()
-	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, attributes)
+	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, map[string]any{
+		"name": m.Name.ValueString(),
+	})
 }
 
-type McpIfPolResourceModel struct {
+type McpIfPolRootModel struct {
 	McpIfPolModel
 
 	ID types.String `tfsdk:"id"`
 }
 
-func NewMcpIfPolResourceModelNull() McpIfPolResourceModel {
-	return McpIfPolResourceModel{
+func NewMcpIfPolRootModelNull() McpIfPolRootModel {
+	return McpIfPolRootModel{
 		McpIfPolModel: NewMcpIfPolModelNull(),
 		ID:            types.StringNull(),
 	}
 }
 
-func (m *McpIfPolResourceModel) SetIDFromDN(dn string) {
+func (m *McpIfPolRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
 
-func (m *McpIfPolResourceModel) SetFromResponse(
+func (m *McpIfPolRootModel) SetFromResponse(
 	ctx context.Context,
 	response *container.Container,
 ) (bool, diag.Diagnostics) {
@@ -292,7 +436,7 @@ func (m *McpIfPolResourceModel) SetFromResponse(
 	return true, diagnostics
 }
 
-func (m *McpIfPolResourceModel) BuildPayload(
+func (m *McpIfPolRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *McpIfPolModel,
 	create bool,
@@ -303,49 +447,16 @@ func (m *McpIfPolResourceModel) BuildPayload(
 	if diagnostics.HasError() {
 		return nil, diagnostics
 	}
+
 	if markCreated {
 		payloadObject["attributes"].(map[string]any)["status"] = "created"
 	}
+
 	payloadEnvelope := map[string]any{"mcpIfPol": payloadObject}
-	jsonPayload := modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload")
-	return jsonPayload, diagnostics
+	return modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload"), diagnostics
 }
 
-func (m *McpIfPolResourceModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
+func (m *McpIfPolRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
-	payload := modelHelpers.NewDeletePayload(ctx, &diagnostics, "mcpIfPol", m.ID.ValueString())
-	return payload, diagnostics
-}
-
-type McpIfPolDataSourceModel struct {
-	McpIfPolModel
-
-	ID types.String `tfsdk:"id"`
-}
-
-func NewMcpIfPolDataSourceModelNull() McpIfPolDataSourceModel {
-	return McpIfPolDataSourceModel{
-		McpIfPolModel: NewMcpIfPolModelNull(),
-		ID:            types.StringNull(),
-	}
-}
-
-func (m *McpIfPolDataSourceModel) SetIDFromDN(dn string) {
-	m.ID = types.StringValue(dn)
-}
-
-func (m *McpIfPolDataSourceModel) SetFromResponse(
-	ctx context.Context,
-	response *container.Container,
-) (bool, diag.Diagnostics) {
-	fallbackModel := m.McpIfPolModel
-	model, dn, diagnostics := McpIfPolModelFromResponse(ctx, response, &fallbackModel)
-	found := model != nil
-	if diagnostics.HasError() || !found {
-		return found, diagnostics
-	}
-
-	m.McpIfPolModel = *model
-	m.ID = types.StringValue(dn)
-	return true, diagnostics
+	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "mcpIfPol", m.ID.ValueString()), diagnostics
 }

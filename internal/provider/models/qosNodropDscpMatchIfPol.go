@@ -6,15 +6,97 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+func qosNodropDscpMatchIfPolSchemaDefinition() modelHelpers.ClassSchema {
+	return modelHelpers.ClassSchema{
+		ResourceDescription:   "Manages ACI No-Drop-DSCP Match Interface Policy",
+		DataSourceDescription: "Data source for ACI No-Drop-DSCP Match Interface Policy",
+		Properties: map[string]modelHelpers.PropertySchema{
+			"annotation": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The annotation of the No-Drop-DSCP Match Interface Policy object.",
+			},
+			"description": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The description of the No-Drop-DSCP Match Interface Policy object.",
+			},
+			"admin_state": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"off",
+					"on",
+				},
+				Description: "The administrative state of the No-Drop-DSCP Match Interface Policy object.",
+			},
+			"name": {
+				Type:            modelHelpers.StringProperty,
+				Required:        true,
+				RequiresReplace: true,
+				Description:     "The name of the No-Drop-DSCP Match Interface Policy object.",
+			},
+			"name_alias": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The name alias of the No-Drop-DSCP Match Interface Policy object.",
+			},
+			"owner_key": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The key for enabling clients to own their data for entity correlation.",
+			},
+			"owner_tag": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "A tag for enabling clients to add their own data. For example, to indicate who created this object.",
+			},
+		},
+		Children: map[string]modelHelpers.ChildSchema{
+			"annotations": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.",
+				Schema:      tagAnnotationSchemaDefinition,
+			},
+			"tags": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.",
+				Schema:      tagTagSchemaDefinition,
+			},
+		},
+		Identifiers: []string{
+			"name",
+		},
+		AnnotationAttribute: "annotation",
+	}
+}
+
+func QosNodropDscpMatchIfPolResourceSchema(defaultAnnotation string) resourceschema.Schema {
+	return qosNodropDscpMatchIfPolSchemaDefinition().ResourceSchema(defaultAnnotation)
+}
+
+func QosNodropDscpMatchIfPolDataSourceSchema() datasourceschema.Schema {
+	return qosNodropDscpMatchIfPolSchemaDefinition().DataSourceSchema()
+}
 
 type QosNodropDscpMatchIfPolModel struct {
 	Annotation       types.String `tfsdk:"annotation"`
@@ -75,12 +157,11 @@ func NewQosNodropDscpMatchIfPolModelNull() QosNodropDscpMatchIfPolModel {
 func (m *QosNodropDscpMatchIfPolModel) BuildRN() string {
 	rn := "infra/nodropDscpMatch-{name}"
 	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
-
 	return rn
 }
 
 func (m *QosNodropDscpMatchIfPolModel) BuildDN() string {
-	return "uni/" + m.BuildRN()
+	return fmt.Sprintf("uni/%s", m.BuildRN())
 }
 
 func QosNodropDscpMatchIfPolModelFromObject(
@@ -95,6 +176,7 @@ func QosNodropDscpMatchIfPolModelFromObject(
 	if !ok {
 		return model, diagnostics
 	}
+
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "descr", &model.Descr)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "dscpMatchAdminSt", &model.DscpMatchAdminSt)
@@ -102,6 +184,7 @@ func QosNodropDscpMatchIfPolModelFromObject(
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "nameAlias", &model.NameAlias)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ownerKey", &model.OwnerKey)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ownerTag", &model.OwnerTag)
+
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,
 		&diagnostics,
@@ -112,6 +195,7 @@ func QosNodropDscpMatchIfPolModelFromObject(
 			"tagTag",
 		},
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -120,6 +204,7 @@ func QosNodropDscpMatchIfPolModelFromObject(
 		TagAnnotationModelFromObject,
 		&model.TagAnnotation,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -151,6 +236,7 @@ func (m *QosNodropDscpMatchIfPolModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
+
 	if !modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "annotation", m.Annotation) && nested {
 		attributes["annotation"] = defaultAnnotation
 	}
@@ -160,6 +246,7 @@ func (m *QosNodropDscpMatchIfPolModel) BuildPayloadObject(
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "nameAlias", m.NameAlias)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "ownerKey", m.OwnerKey)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "ownerTag", m.OwnerTag)
+
 	var priorTagAnnotation *types.Set
 	if priorState != nil {
 		priorTagAnnotation = &priorState.TagAnnotation
@@ -180,6 +267,7 @@ func (m *QosNodropDscpMatchIfPolModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, tagAnnotationPayloads...)
+
 	var priorTagTag *types.Set
 	if priorState != nil {
 		priorTagTag = &priorState.TagTag
@@ -214,29 +302,29 @@ func (m *QosNodropDscpMatchIfPolModel) BuildNestedDeletePayloadObject(
 	ctx context.Context,
 	diagnostics *diag.Diagnostics,
 ) map[string]any {
-	attributes := map[string]any{}
-	attributes["name"] = m.Name.ValueString()
-	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, attributes)
+	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, map[string]any{
+		"name": m.Name.ValueString(),
+	})
 }
 
-type QosNodropDscpMatchIfPolResourceModel struct {
+type QosNodropDscpMatchIfPolRootModel struct {
 	QosNodropDscpMatchIfPolModel
 
 	ID types.String `tfsdk:"id"`
 }
 
-func NewQosNodropDscpMatchIfPolResourceModelNull() QosNodropDscpMatchIfPolResourceModel {
-	return QosNodropDscpMatchIfPolResourceModel{
+func NewQosNodropDscpMatchIfPolRootModelNull() QosNodropDscpMatchIfPolRootModel {
+	return QosNodropDscpMatchIfPolRootModel{
 		QosNodropDscpMatchIfPolModel: NewQosNodropDscpMatchIfPolModelNull(),
 		ID:                           types.StringNull(),
 	}
 }
 
-func (m *QosNodropDscpMatchIfPolResourceModel) SetIDFromDN(dn string) {
+func (m *QosNodropDscpMatchIfPolRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
 
-func (m *QosNodropDscpMatchIfPolResourceModel) SetFromResponse(
+func (m *QosNodropDscpMatchIfPolRootModel) SetFromResponse(
 	ctx context.Context,
 	response *container.Container,
 ) (bool, diag.Diagnostics) {
@@ -252,7 +340,7 @@ func (m *QosNodropDscpMatchIfPolResourceModel) SetFromResponse(
 	return true, diagnostics
 }
 
-func (m *QosNodropDscpMatchIfPolResourceModel) BuildPayload(
+func (m *QosNodropDscpMatchIfPolRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *QosNodropDscpMatchIfPolModel,
 	create bool,
@@ -263,49 +351,16 @@ func (m *QosNodropDscpMatchIfPolResourceModel) BuildPayload(
 	if diagnostics.HasError() {
 		return nil, diagnostics
 	}
+
 	if markCreated {
 		payloadObject["attributes"].(map[string]any)["status"] = "created"
 	}
+
 	payloadEnvelope := map[string]any{"qosNodropDscpMatchIfPol": payloadObject}
-	jsonPayload := modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload")
-	return jsonPayload, diagnostics
+	return modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload"), diagnostics
 }
 
-func (m *QosNodropDscpMatchIfPolResourceModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
+func (m *QosNodropDscpMatchIfPolRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
-	payload := modelHelpers.NewDeletePayload(ctx, &diagnostics, "qosNodropDscpMatchIfPol", m.ID.ValueString())
-	return payload, diagnostics
-}
-
-type QosNodropDscpMatchIfPolDataSourceModel struct {
-	QosNodropDscpMatchIfPolModel
-
-	ID types.String `tfsdk:"id"`
-}
-
-func NewQosNodropDscpMatchIfPolDataSourceModelNull() QosNodropDscpMatchIfPolDataSourceModel {
-	return QosNodropDscpMatchIfPolDataSourceModel{
-		QosNodropDscpMatchIfPolModel: NewQosNodropDscpMatchIfPolModelNull(),
-		ID:                           types.StringNull(),
-	}
-}
-
-func (m *QosNodropDscpMatchIfPolDataSourceModel) SetIDFromDN(dn string) {
-	m.ID = types.StringValue(dn)
-}
-
-func (m *QosNodropDscpMatchIfPolDataSourceModel) SetFromResponse(
-	ctx context.Context,
-	response *container.Container,
-) (bool, diag.Diagnostics) {
-	fallbackModel := m.QosNodropDscpMatchIfPolModel
-	model, dn, diagnostics := QosNodropDscpMatchIfPolModelFromResponse(ctx, response, &fallbackModel)
-	found := model != nil
-	if diagnostics.HasError() || !found {
-		return found, diagnostics
-	}
-
-	m.QosNodropDscpMatchIfPolModel = *model
-	m.ID = types.StringValue(dn)
-	return true, diagnostics
+	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "qosNodropDscpMatchIfPol", m.ID.ValueString()), diagnostics
 }

@@ -6,15 +6,107 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+func infraSHPortSSchemaDefinition() modelHelpers.ClassSchema {
+	return modelHelpers.ClassSchema{
+		ResourceDescription:   "Manages ACI Spine Access Port Selector",
+		DataSourceDescription: "Data source for ACI Spine Access Port Selector",
+		Properties: map[string]modelHelpers.PropertySchema{
+			"annotation": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The annotation of the Spine Access Port Selector object.",
+			},
+			"description": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The description of the Spine Access Port Selector object.",
+			},
+			"name": {
+				Type:            modelHelpers.StringProperty,
+				Required:        true,
+				RequiresReplace: true,
+				Description:     "The name of the Spine Access Port Selector object.",
+			},
+			"name_alias": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The name alias of the Spine Access Port Selector object.",
+			},
+			"owner_key": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The key for enabling clients to own their data for entity correlation.",
+			},
+			"owner_tag": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "A tag for enabling clients to add their own data. For example, to indicate who created this object.",
+			},
+			"port_selector_type": {
+				Type:            modelHelpers.StringProperty,
+				Required:        true,
+				RequiresReplace: true,
+				ValidValues: []string{
+					"ALL",
+					"range",
+				},
+				Description: "The port selector type of the Spine Access Port Selector object.",
+			},
+		},
+		Children: map[string]modelHelpers.ChildSchema{
+			"relation_to_spine_port_policy_group": {
+				Cardinality: modelHelpers.SingleChild,
+				Description: "`relation_to_spine_port_policy_group` - (map) A map of Relation To Spine Port Policy Group (ACI object [infraRsSpAccGrp](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraRsSpAccGrp/overview)) pointing to Spine Port Policy Group (ACI Object [infraSpAccGrp](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraSpAccGrp/overview)) which can be configured using the [aci_spine_port_policy_group](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/spine_port_policy_group) resource.",
+				Schema:      infraRsSpAccGrpSchemaDefinition,
+			},
+			"annotations": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.",
+				Schema:      tagAnnotationSchemaDefinition,
+			},
+			"tags": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.",
+				Schema:      tagTagSchemaDefinition,
+			},
+		},
+		Identifiers: []string{
+			"name",
+			"port_selector_type",
+		},
+		ParentDN: &modelHelpers.ParentDNSchema{
+			AttributeName: "parent_dn",
+			Config:        modelHelpers.ParentDNAttributeConfig{},
+		},
+		AnnotationAttribute: "annotation",
+	}
+}
+
+func InfraSHPortSResourceSchema(defaultAnnotation string) resourceschema.Schema {
+	return infraSHPortSSchemaDefinition().ResourceSchema(defaultAnnotation)
+}
+
+func InfraSHPortSDataSourceSchema() datasourceschema.Schema {
+	return infraSHPortSSchemaDefinition().DataSourceSchema()
+}
 
 type InfraSHPortSModel struct {
 	Annotation      types.String `tfsdk:"annotation"`
@@ -81,19 +173,15 @@ func (m *InfraSHPortSModel) BuildRN() string {
 	rn := "shports-{name}-typ-{type}"
 	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
 	rn = strings.ReplaceAll(rn, "{type}", m.Type.ValueString())
-
 	return rn
 }
 
 func (m *InfraSHPortSModel) BuildDN(parentDN string) string {
-	return parentDN + "/" + m.BuildRN()
+	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
 }
 
 func (m *InfraSHPortSModel) ParentDNFromDN(dn string) string {
-	rn := m.BuildRN()
-
-	parentDN, _ := strings.CutSuffix(dn, "/"+rn)
-	return parentDN
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
 }
 
 func InfraSHPortSModelFromObject(
@@ -108,6 +196,7 @@ func InfraSHPortSModelFromObject(
 	if !ok {
 		return model, diagnostics
 	}
+
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "descr", &model.Descr)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "name", &model.Name)
@@ -115,6 +204,7 @@ func InfraSHPortSModelFromObject(
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ownerKey", &model.OwnerKey)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ownerTag", &model.OwnerTag)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "type", &model.Type)
+
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,
 		&diagnostics,
@@ -126,6 +216,7 @@ func InfraSHPortSModelFromObject(
 			"tagTag",
 		},
 	)
+
 	var fallbackInfraRsSpAccGrp *types.Object
 	if fallbackModel != nil {
 		fallbackInfraRsSpAccGrp = &fallbackModel.InfraRsSpAccGrp
@@ -142,6 +233,7 @@ func InfraSHPortSModelFromObject(
 		InfraRsSpAccGrpModelFromObject,
 		&model.InfraRsSpAccGrp,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -150,6 +242,7 @@ func InfraSHPortSModelFromObject(
 		TagAnnotationModelFromObject,
 		&model.TagAnnotation,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -181,6 +274,7 @@ func (m *InfraSHPortSModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
+
 	if !modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "annotation", m.Annotation) && nested {
 		attributes["annotation"] = defaultAnnotation
 	}
@@ -190,6 +284,7 @@ func (m *InfraSHPortSModel) BuildPayloadObject(
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "ownerKey", m.OwnerKey)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "ownerTag", m.OwnerTag)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "type", m.Type)
+
 	var priorInfraRsSpAccGrp *types.Object
 	if priorState != nil {
 		priorInfraRsSpAccGrp = &priorState.InfraRsSpAccGrp
@@ -209,6 +304,7 @@ func (m *InfraSHPortSModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, infraRsSpAccGrpPayloads...)
+
 	var priorTagAnnotation *types.Set
 	if priorState != nil {
 		priorTagAnnotation = &priorState.TagAnnotation
@@ -229,6 +325,7 @@ func (m *InfraSHPortSModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, tagAnnotationPayloads...)
+
 	var priorTagTag *types.Set
 	if priorState != nil {
 		priorTagTag = &priorState.TagTag
@@ -263,32 +360,32 @@ func (m *InfraSHPortSModel) BuildNestedDeletePayloadObject(
 	ctx context.Context,
 	diagnostics *diag.Diagnostics,
 ) map[string]any {
-	attributes := map[string]any{}
-	attributes["name"] = m.Name.ValueString()
-	attributes["type"] = m.Type.ValueString()
-	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, attributes)
+	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, map[string]any{
+		"name": m.Name.ValueString(),
+		"type": m.Type.ValueString(),
+	})
 }
 
-type InfraSHPortSResourceModel struct {
+type InfraSHPortSRootModel struct {
 	InfraSHPortSModel
 
 	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ParentDN types.String `tfsdk:"parent_dn"`
 }
 
-func NewInfraSHPortSResourceModelNull() InfraSHPortSResourceModel {
-	return InfraSHPortSResourceModel{
+func NewInfraSHPortSRootModelNull() InfraSHPortSRootModel {
+	return InfraSHPortSRootModel{
 		InfraSHPortSModel: NewInfraSHPortSModelNull(),
 		ID:                types.StringNull(),
-		ParentDn:          types.StringNull(),
+		ParentDN:          types.StringNull(),
 	}
 }
 
-func (m *InfraSHPortSResourceModel) SetIDFromDN(dn string) {
+func (m *InfraSHPortSRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
 
-func (m *InfraSHPortSResourceModel) SetFromResponse(
+func (m *InfraSHPortSRootModel) SetFromResponse(
 	ctx context.Context,
 	response *container.Container,
 ) (bool, diag.Diagnostics) {
@@ -301,11 +398,11 @@ func (m *InfraSHPortSResourceModel) SetFromResponse(
 
 	m.InfraSHPortSModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 
-func (m *InfraSHPortSResourceModel) BuildPayload(
+func (m *InfraSHPortSRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *InfraSHPortSModel,
 	create bool,
@@ -316,52 +413,16 @@ func (m *InfraSHPortSResourceModel) BuildPayload(
 	if diagnostics.HasError() {
 		return nil, diagnostics
 	}
+
 	if markCreated {
 		payloadObject["attributes"].(map[string]any)["status"] = "created"
 	}
+
 	payloadEnvelope := map[string]any{"infraSHPortS": payloadObject}
-	jsonPayload := modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload")
-	return jsonPayload, diagnostics
+	return modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload"), diagnostics
 }
 
-func (m *InfraSHPortSResourceModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
+func (m *InfraSHPortSRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
-	payload := modelHelpers.NewDeletePayload(ctx, &diagnostics, "infraSHPortS", m.ID.ValueString())
-	return payload, diagnostics
-}
-
-type InfraSHPortSDataSourceModel struct {
-	InfraSHPortSModel
-
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
-}
-
-func NewInfraSHPortSDataSourceModelNull() InfraSHPortSDataSourceModel {
-	return InfraSHPortSDataSourceModel{
-		InfraSHPortSModel: NewInfraSHPortSModelNull(),
-		ID:                types.StringNull(),
-		ParentDn:          types.StringNull(),
-	}
-}
-
-func (m *InfraSHPortSDataSourceModel) SetIDFromDN(dn string) {
-	m.ID = types.StringValue(dn)
-}
-
-func (m *InfraSHPortSDataSourceModel) SetFromResponse(
-	ctx context.Context,
-	response *container.Container,
-) (bool, diag.Diagnostics) {
-	fallbackModel := m.InfraSHPortSModel
-	model, dn, diagnostics := InfraSHPortSModelFromResponse(ctx, response, &fallbackModel)
-	found := model != nil
-	if diagnostics.HasError() || !found {
-		return found, diagnostics
-	}
-
-	m.InfraSHPortSModel = *model
-	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
-	return true, diagnostics
+	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "infraSHPortS", m.ID.ValueString()), diagnostics
 }

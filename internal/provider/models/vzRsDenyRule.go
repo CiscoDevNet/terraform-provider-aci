@@ -6,15 +6,78 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+func vzRsDenyRuleSchemaDefinition() modelHelpers.ClassSchema {
+	return modelHelpers.ClassSchema{
+		ResourceDescription:   "Manages ACI Relation From Taboo Contract Subject To Filter",
+		DataSourceDescription: "Data source for ACI Relation From Taboo Contract Subject To Filter",
+		Properties: map[string]modelHelpers.PropertySchema{
+			"annotation": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The annotation of the Relation From Taboo Contract Subject To Filter object.",
+			},
+			"directives": {
+				Type:           modelHelpers.SetProperty,
+				SetElementType: types.StringType,
+				Optional:       true,
+				Computed:       true,
+				ValidValues: []string{
+					"log",
+					"no_stats",
+				},
+				Description: "The directives of the Relation From Taboo Contract Subject To Filter object. Use the 'no_stats' option for Policy Compression, which allows for the utilization of fewer TCAM resources. Use the 'log' option to log packets and provide information about traffic that is hitting the rule of interest. See the [contract configuration options](https://www.cisco.com/c/en/us/solutions/collateral/data-center-virtualization/application-centric-infrastructure/white-paper-c11-743951.html#Contractconfigurationoptions) in the Cisco ACI Contract Guide White Paper for more information.",
+			},
+			"filter_name": {
+				Type:            modelHelpers.StringProperty,
+				Required:        true,
+				RequiresReplace: true,
+				Description:     "The name of the filter object. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/filter) with `aci_filter.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/filter) with `data.aci_filter.example.name`.",
+			},
+		},
+		Children: map[string]modelHelpers.ChildSchema{
+			"annotations": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.",
+				Schema:      tagAnnotationSchemaDefinition,
+			},
+			"tags": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.",
+				Schema:      tagTagSchemaDefinition,
+			},
+		},
+		Identifiers: []string{
+			"filter_name",
+		},
+		ParentDN: &modelHelpers.ParentDNSchema{
+			AttributeName: "parent_dn",
+			Config:        modelHelpers.ParentDNAttributeConfig{},
+		},
+		AnnotationAttribute: "annotation",
+	}
+}
+
+func VzRsDenyRuleResourceSchema(defaultAnnotation string) resourceschema.Schema {
+	return vzRsDenyRuleSchemaDefinition().ResourceSchema(defaultAnnotation)
+}
+
+func VzRsDenyRuleDataSourceSchema() datasourceschema.Schema {
+	return vzRsDenyRuleSchemaDefinition().DataSourceSchema()
+}
 
 type VzRsDenyRuleModel struct {
 	Annotation     types.String `tfsdk:"annotation"`
@@ -63,19 +126,15 @@ func NewVzRsDenyRuleModelNull() VzRsDenyRuleModel {
 func (m *VzRsDenyRuleModel) BuildRN() string {
 	rn := "rsdenyRule-{tnVzFilterName}"
 	rn = strings.ReplaceAll(rn, "{tnVzFilterName}", m.TnVzFilterName.ValueString())
-
 	return rn
 }
 
 func (m *VzRsDenyRuleModel) BuildDN(parentDN string) string {
-	return parentDN + "/" + m.BuildRN()
+	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
 }
 
 func (m *VzRsDenyRuleModel) ParentDNFromDN(dn string) string {
-	rn := m.BuildRN()
-
-	parentDN, _ := strings.CutSuffix(dn, "/"+rn)
-	return parentDN
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
 }
 
 func VzRsDenyRuleModelFromObject(
@@ -90,9 +149,11 @@ func VzRsDenyRuleModelFromObject(
 	if !ok {
 		return model, diagnostics
 	}
+
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
 	modelHelpers.DecodeStringSetAttribute(ctx, &diagnostics, attributes, "directives", &model.Directives)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "tnVzFilterName", &model.TnVzFilterName)
+
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,
 		&diagnostics,
@@ -103,6 +164,7 @@ func VzRsDenyRuleModelFromObject(
 			"tagTag",
 		},
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -111,6 +173,7 @@ func VzRsDenyRuleModelFromObject(
 		TagAnnotationModelFromObject,
 		&model.TagAnnotation,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -142,6 +205,7 @@ func (m *VzRsDenyRuleModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
+
 	if !modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "annotation", m.Annotation) && nested {
 		attributes["annotation"] = defaultAnnotation
 	}
@@ -150,6 +214,7 @@ func (m *VzRsDenyRuleModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "tnVzFilterName", m.TnVzFilterName)
+
 	var priorTagAnnotation *types.Set
 	if priorState != nil {
 		priorTagAnnotation = &priorState.TagAnnotation
@@ -170,6 +235,7 @@ func (m *VzRsDenyRuleModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, tagAnnotationPayloads...)
+
 	var priorTagTag *types.Set
 	if priorState != nil {
 		priorTagTag = &priorState.TagTag
@@ -204,31 +270,31 @@ func (m *VzRsDenyRuleModel) BuildNestedDeletePayloadObject(
 	ctx context.Context,
 	diagnostics *diag.Diagnostics,
 ) map[string]any {
-	attributes := map[string]any{}
-	attributes["tnVzFilterName"] = m.TnVzFilterName.ValueString()
-	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, attributes)
+	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, map[string]any{
+		"tnVzFilterName": m.TnVzFilterName.ValueString(),
+	})
 }
 
-type VzRsDenyRuleResourceModel struct {
+type VzRsDenyRuleRootModel struct {
 	VzRsDenyRuleModel
 
 	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ParentDN types.String `tfsdk:"parent_dn"`
 }
 
-func NewVzRsDenyRuleResourceModelNull() VzRsDenyRuleResourceModel {
-	return VzRsDenyRuleResourceModel{
+func NewVzRsDenyRuleRootModelNull() VzRsDenyRuleRootModel {
+	return VzRsDenyRuleRootModel{
 		VzRsDenyRuleModel: NewVzRsDenyRuleModelNull(),
 		ID:                types.StringNull(),
-		ParentDn:          types.StringNull(),
+		ParentDN:          types.StringNull(),
 	}
 }
 
-func (m *VzRsDenyRuleResourceModel) SetIDFromDN(dn string) {
+func (m *VzRsDenyRuleRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
 
-func (m *VzRsDenyRuleResourceModel) SetFromResponse(
+func (m *VzRsDenyRuleRootModel) SetFromResponse(
 	ctx context.Context,
 	response *container.Container,
 ) (bool, diag.Diagnostics) {
@@ -241,11 +307,11 @@ func (m *VzRsDenyRuleResourceModel) SetFromResponse(
 
 	m.VzRsDenyRuleModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 
-func (m *VzRsDenyRuleResourceModel) BuildPayload(
+func (m *VzRsDenyRuleRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *VzRsDenyRuleModel,
 	create bool,
@@ -256,52 +322,16 @@ func (m *VzRsDenyRuleResourceModel) BuildPayload(
 	if diagnostics.HasError() {
 		return nil, diagnostics
 	}
+
 	if markCreated {
 		payloadObject["attributes"].(map[string]any)["status"] = "created"
 	}
+
 	payloadEnvelope := map[string]any{"vzRsDenyRule": payloadObject}
-	jsonPayload := modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload")
-	return jsonPayload, diagnostics
+	return modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload"), diagnostics
 }
 
-func (m *VzRsDenyRuleResourceModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
+func (m *VzRsDenyRuleRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
-	payload := modelHelpers.NewDeletePayload(ctx, &diagnostics, "vzRsDenyRule", m.ID.ValueString())
-	return payload, diagnostics
-}
-
-type VzRsDenyRuleDataSourceModel struct {
-	VzRsDenyRuleModel
-
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
-}
-
-func NewVzRsDenyRuleDataSourceModelNull() VzRsDenyRuleDataSourceModel {
-	return VzRsDenyRuleDataSourceModel{
-		VzRsDenyRuleModel: NewVzRsDenyRuleModelNull(),
-		ID:                types.StringNull(),
-		ParentDn:          types.StringNull(),
-	}
-}
-
-func (m *VzRsDenyRuleDataSourceModel) SetIDFromDN(dn string) {
-	m.ID = types.StringValue(dn)
-}
-
-func (m *VzRsDenyRuleDataSourceModel) SetFromResponse(
-	ctx context.Context,
-	response *container.Container,
-) (bool, diag.Diagnostics) {
-	fallbackModel := m.VzRsDenyRuleModel
-	model, dn, diagnostics := VzRsDenyRuleModelFromResponse(ctx, response, &fallbackModel)
-	found := model != nil
-	if diagnostics.HasError() || !found {
-		return found, diagnostics
-	}
-
-	m.VzRsDenyRuleModel = *model
-	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
-	return true, diagnostics
+	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "vzRsDenyRule", m.ID.ValueString()), diagnostics
 }

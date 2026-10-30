@@ -6,15 +6,117 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+func lacpEnhancedLagPolSchemaDefinition() modelHelpers.ClassSchema {
+	return modelHelpers.ClassSchema{
+		ResourceDescription:   "Manages ACI LACP Enhanced Lag Policy",
+		DataSourceDescription: "Data source for ACI LACP Enhanced Lag Policy",
+		Properties: map[string]modelHelpers.PropertySchema{
+			"annotation": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The annotation of the LACP Enhanced Lag Policy object.",
+			},
+			"load_balancing_mode": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"dst-ip",
+					"dst-ip-l4port",
+					"dst-ip-l4port-vlan",
+					"dst-ip-vlan",
+					"dst-l4port",
+					"dst-mac",
+					"src-dst-ip",
+					"src-dst-ip-l4port",
+					"src-dst-ip-l4port-vlan",
+					"src-dst-ip-vlan",
+					"src-dst-l4port",
+					"src-dst-mac",
+					"src-ip",
+					"src-ip-l4port",
+					"src-ip-l4port-vlan",
+					"src-ip-vlan",
+					"src-l4port",
+					"src-mac",
+					"src-port-id",
+					"vlan",
+				},
+				Description: "The load balancing mode of the LACP Enhanced Lag Policy object.",
+			},
+			"mode": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"active",
+					"passive",
+				},
+				Description: "The LACP mode of the LACP Enhanced Lag Policy object.",
+			},
+			"name": {
+				Type:            modelHelpers.StringProperty,
+				Required:        true,
+				RequiresReplace: true,
+				Description:     "The name of the LACP Enhanced Lag Policy object.",
+			},
+			"name_alias": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The name alias of the LACP Enhanced Lag Policy object.",
+			},
+			"number_of_links": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The number of links of the LACP Enhanced Lag Policy object.",
+			},
+		},
+		Children: map[string]modelHelpers.ChildSchema{
+			"annotations": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.",
+				Schema:      tagAnnotationSchemaDefinition,
+			},
+			"tags": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.",
+				Schema:      tagTagSchemaDefinition,
+			},
+		},
+		Identifiers: []string{
+			"name",
+		},
+		ParentDN: &modelHelpers.ParentDNSchema{
+			AttributeName: "parent_dn",
+			Config:        modelHelpers.ParentDNAttributeConfig{},
+		},
+		AnnotationAttribute: "annotation",
+	}
+}
+
+func LacpEnhancedLagPolResourceSchema(defaultAnnotation string) resourceschema.Schema {
+	return lacpEnhancedLagPolSchemaDefinition().ResourceSchema(defaultAnnotation)
+}
+
+func LacpEnhancedLagPolDataSourceSchema() datasourceschema.Schema {
+	return lacpEnhancedLagPolSchemaDefinition().DataSourceSchema()
+}
 
 type LacpEnhancedLagPolModel struct {
 	Annotation    types.String `tfsdk:"annotation"`
@@ -72,19 +174,15 @@ func NewLacpEnhancedLagPolModelNull() LacpEnhancedLagPolModel {
 func (m *LacpEnhancedLagPolModel) BuildRN() string {
 	rn := "enlacplagp-{name}"
 	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
-
 	return rn
 }
 
 func (m *LacpEnhancedLagPolModel) BuildDN(parentDN string) string {
-	return parentDN + "/" + m.BuildRN()
+	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
 }
 
 func (m *LacpEnhancedLagPolModel) ParentDNFromDN(dn string) string {
-	rn := m.BuildRN()
-
-	parentDN, _ := strings.CutSuffix(dn, "/"+rn)
-	return parentDN
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
 }
 
 func LacpEnhancedLagPolModelFromObject(
@@ -99,12 +197,14 @@ func LacpEnhancedLagPolModelFromObject(
 	if !ok {
 		return model, diagnostics
 	}
+
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "lbmode", &model.Lbmode)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "mode", &model.Mode)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "name", &model.Name)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "nameAlias", &model.NameAlias)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "numLinks", &model.NumLinks)
+
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,
 		&diagnostics,
@@ -115,6 +215,7 @@ func LacpEnhancedLagPolModelFromObject(
 			"tagTag",
 		},
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -123,6 +224,7 @@ func LacpEnhancedLagPolModelFromObject(
 		TagAnnotationModelFromObject,
 		&model.TagAnnotation,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -154,6 +256,7 @@ func (m *LacpEnhancedLagPolModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
+
 	if !modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "annotation", m.Annotation) && nested {
 		attributes["annotation"] = defaultAnnotation
 	}
@@ -162,6 +265,7 @@ func (m *LacpEnhancedLagPolModel) BuildPayloadObject(
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "name", m.Name)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "nameAlias", m.NameAlias)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "numLinks", m.NumLinks)
+
 	var priorTagAnnotation *types.Set
 	if priorState != nil {
 		priorTagAnnotation = &priorState.TagAnnotation
@@ -182,6 +286,7 @@ func (m *LacpEnhancedLagPolModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, tagAnnotationPayloads...)
+
 	var priorTagTag *types.Set
 	if priorState != nil {
 		priorTagTag = &priorState.TagTag
@@ -216,31 +321,31 @@ func (m *LacpEnhancedLagPolModel) BuildNestedDeletePayloadObject(
 	ctx context.Context,
 	diagnostics *diag.Diagnostics,
 ) map[string]any {
-	attributes := map[string]any{}
-	attributes["name"] = m.Name.ValueString()
-	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, attributes)
+	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, map[string]any{
+		"name": m.Name.ValueString(),
+	})
 }
 
-type LacpEnhancedLagPolResourceModel struct {
+type LacpEnhancedLagPolRootModel struct {
 	LacpEnhancedLagPolModel
 
 	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ParentDN types.String `tfsdk:"parent_dn"`
 }
 
-func NewLacpEnhancedLagPolResourceModelNull() LacpEnhancedLagPolResourceModel {
-	return LacpEnhancedLagPolResourceModel{
+func NewLacpEnhancedLagPolRootModelNull() LacpEnhancedLagPolRootModel {
+	return LacpEnhancedLagPolRootModel{
 		LacpEnhancedLagPolModel: NewLacpEnhancedLagPolModelNull(),
 		ID:                      types.StringNull(),
-		ParentDn:                types.StringNull(),
+		ParentDN:                types.StringNull(),
 	}
 }
 
-func (m *LacpEnhancedLagPolResourceModel) SetIDFromDN(dn string) {
+func (m *LacpEnhancedLagPolRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
 
-func (m *LacpEnhancedLagPolResourceModel) SetFromResponse(
+func (m *LacpEnhancedLagPolRootModel) SetFromResponse(
 	ctx context.Context,
 	response *container.Container,
 ) (bool, diag.Diagnostics) {
@@ -253,11 +358,11 @@ func (m *LacpEnhancedLagPolResourceModel) SetFromResponse(
 
 	m.LacpEnhancedLagPolModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 
-func (m *LacpEnhancedLagPolResourceModel) BuildPayload(
+func (m *LacpEnhancedLagPolRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *LacpEnhancedLagPolModel,
 	create bool,
@@ -268,52 +373,16 @@ func (m *LacpEnhancedLagPolResourceModel) BuildPayload(
 	if diagnostics.HasError() {
 		return nil, diagnostics
 	}
+
 	if markCreated {
 		payloadObject["attributes"].(map[string]any)["status"] = "created"
 	}
+
 	payloadEnvelope := map[string]any{"lacpEnhancedLagPol": payloadObject}
-	jsonPayload := modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload")
-	return jsonPayload, diagnostics
+	return modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload"), diagnostics
 }
 
-func (m *LacpEnhancedLagPolResourceModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
+func (m *LacpEnhancedLagPolRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
-	payload := modelHelpers.NewDeletePayload(ctx, &diagnostics, "lacpEnhancedLagPol", m.ID.ValueString())
-	return payload, diagnostics
-}
-
-type LacpEnhancedLagPolDataSourceModel struct {
-	LacpEnhancedLagPolModel
-
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
-}
-
-func NewLacpEnhancedLagPolDataSourceModelNull() LacpEnhancedLagPolDataSourceModel {
-	return LacpEnhancedLagPolDataSourceModel{
-		LacpEnhancedLagPolModel: NewLacpEnhancedLagPolModelNull(),
-		ID:                      types.StringNull(),
-		ParentDn:                types.StringNull(),
-	}
-}
-
-func (m *LacpEnhancedLagPolDataSourceModel) SetIDFromDN(dn string) {
-	m.ID = types.StringValue(dn)
-}
-
-func (m *LacpEnhancedLagPolDataSourceModel) SetFromResponse(
-	ctx context.Context,
-	response *container.Container,
-) (bool, diag.Diagnostics) {
-	fallbackModel := m.LacpEnhancedLagPolModel
-	model, dn, diagnostics := LacpEnhancedLagPolModelFromResponse(ctx, response, &fallbackModel)
-	found := model != nil
-	if diagnostics.HasError() || !found {
-		return found, diagnostics
-	}
-
-	m.LacpEnhancedLagPolModel = *model
-	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
-	return true, diagnostics
+	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "lacpEnhancedLagPol", m.ID.ValueString()), diagnostics
 }
