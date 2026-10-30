@@ -6,6 +6,7 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
@@ -15,6 +16,72 @@ import (
 
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+func commTelnetSchemaDefinition() modelHelpers.ClassSchema {
+	return modelHelpers.ClassSchema{
+		ResourceDescription:   "Manages ACI Telnet Service",
+		DataSourceDescription: "Data source for ACI Telnet Service",
+		Properties: map[string]modelHelpers.PropertySchema{
+			"admin_state": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"disabled",
+					"enabled",
+				},
+				Description: "The administrative state of the Telnet Service object.",
+			},
+			"annotation": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The annotation of the Telnet Service object.",
+			},
+			"description": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The description of the Telnet Service object.",
+			},
+			"name": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The name of the Telnet Service object.",
+			},
+			"name_alias": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The name alias of the Telnet Service object.",
+			},
+			"port": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The port used by the Telnet service.",
+			},
+		},
+		Children: map[string]modelHelpers.ChildSchema{
+			"annotations": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.",
+				Schema:      tagAnnotationSchemaDefinition,
+			},
+			"tags": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.",
+				Schema:      tagTagSchemaDefinition,
+			},
+		},
+		ParentDN: &modelHelpers.ParentDNSchema{
+			AttributeName: "parent_dn",
+			Config:        modelHelpers.ParentDNAttributeConfig{},
+		},
+		AnnotationAttribute: "annotation",
+	}
+}
 
 type CommTelnetModel struct {
 	AdminSt       types.String `tfsdk:"admin_state"`
@@ -74,14 +141,11 @@ func (m *CommTelnetModel) BuildRN() string {
 }
 
 func (m *CommTelnetModel) BuildDN(parentDN string) string {
-	return parentDN + "/" + m.BuildRN()
+	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
 }
 
 func (m *CommTelnetModel) ParentDNFromDN(dn string) string {
-	rn := m.BuildRN()
-
-	parentDN, _ := strings.CutSuffix(dn, "/"+rn)
-	return parentDN
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
 }
 
 func CommTelnetModelFromObject(
@@ -96,12 +160,14 @@ func CommTelnetModelFromObject(
 	if !ok {
 		return model, diagnostics
 	}
+
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "adminSt", &model.AdminSt)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "descr", &model.Descr)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "name", &model.Name)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "nameAlias", &model.NameAlias)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "port", &model.Port)
+
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,
 		&diagnostics,
@@ -112,6 +178,7 @@ func CommTelnetModelFromObject(
 			"tagTag",
 		},
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -120,6 +187,7 @@ func CommTelnetModelFromObject(
 		TagAnnotationModelFromObject,
 		&model.TagAnnotation,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -141,6 +209,7 @@ func (m *CommTelnetModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
+
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "adminSt", m.AdminSt)
 	if !modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "annotation", m.Annotation) && nested {
 		attributes["annotation"] = defaultAnnotation
@@ -149,6 +218,7 @@ func (m *CommTelnetModel) BuildPayloadObject(
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "name", m.Name)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "nameAlias", m.NameAlias)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "port", m.Port)
+
 	var priorTagAnnotation *types.Set
 	if priorState != nil {
 		priorTagAnnotation = &priorState.TagAnnotation
@@ -169,6 +239,7 @@ func (m *CommTelnetModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, tagAnnotationPayloads...)
+
 	var priorTagTag *types.Set
 	if priorState != nil {
 		priorTagTag = &priorState.TagTag

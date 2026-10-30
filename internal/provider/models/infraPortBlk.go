@@ -6,15 +6,108 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+func infraPortBlkSchemaDefinition() modelHelpers.ClassSchema {
+	return modelHelpers.ClassSchema{
+		ResourceDescription:   "Manages ACI Access Port Block",
+		DataSourceDescription: "Data source for ACI Access Port Block",
+		Properties: map[string]modelHelpers.PropertySchema{
+			"annotation": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The annotation of the Access Port Block object.",
+			},
+			"description": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The description of the Access Port Block object.",
+			},
+			"from_card": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The start of the line card range for the Access Port Block object.",
+			},
+			"from_port": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The start of the port range for the Access Port Block object.",
+			},
+			"name": {
+				Type:            modelHelpers.StringProperty,
+				Required:        true,
+				RequiresReplace: true,
+				Description:     "The name of the Access Port Block object.",
+			},
+			"name_alias": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The name alias of the Access Port Block object.",
+			},
+			"to_card": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: " The end of the line card range for the Access Port Block object.",
+			},
+			"to_port": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The end of the port range for the Access Port Block object.",
+			},
+		},
+		Children: map[string]modelHelpers.ChildSchema{
+			"relation_to_pc_vpc_override_policy": {
+				Cardinality: modelHelpers.SingleChild,
+				Description: "`relation_to_pc_vpc_override_policy` - (map) A map of Relation To PC VPC Override Policy (ACI object [infraRsAccBndlSubgrp](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraRsAccBndlSubgrp/overview)) pointing to Leaf Access Bundle Policy Sub Group (ACI Object [infraAccBndlSubgrp](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraAccBndlSubgrp/overview)) which can be configured using the [aci_leaf_access_bundle_policy_sub_group](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/leaf_access_bundle_policy_sub_group) resource.",
+				Schema:      infraRsAccBndlSubgrpSchemaDefinition,
+			},
+			"annotations": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.",
+				Schema:      tagAnnotationSchemaDefinition,
+			},
+			"tags": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.",
+				Schema:      tagTagSchemaDefinition,
+			},
+		},
+		Identifiers: []string{
+			"name",
+		},
+		ParentDN: &modelHelpers.ParentDNSchema{
+			AttributeName: "parent_dn",
+			Config:        modelHelpers.ParentDNAttributeConfig{},
+		},
+		AnnotationAttribute: "annotation",
+	}
+}
+
+func InfraPortBlkResourceSchema(defaultAnnotation string) resourceschema.Schema {
+	return infraPortBlkSchemaDefinition().ResourceSchema(defaultAnnotation)
+}
+
+func InfraPortBlkDataSourceSchema() datasourceschema.Schema {
+	return infraPortBlkSchemaDefinition().DataSourceSchema()
+}
 
 type InfraPortBlkModel struct {
 	Annotation           types.String `tfsdk:"annotation"`
@@ -83,19 +176,15 @@ func NewInfraPortBlkModelNull() InfraPortBlkModel {
 func (m *InfraPortBlkModel) BuildRN() string {
 	rn := "portblk-{name}"
 	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
-
 	return rn
 }
 
 func (m *InfraPortBlkModel) BuildDN(parentDN string) string {
-	return parentDN + "/" + m.BuildRN()
+	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
 }
 
 func (m *InfraPortBlkModel) ParentDNFromDN(dn string) string {
-	rn := m.BuildRN()
-
-	parentDN, _ := strings.CutSuffix(dn, "/"+rn)
-	return parentDN
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
 }
 
 func InfraPortBlkModelFromObject(
@@ -110,6 +199,7 @@ func InfraPortBlkModelFromObject(
 	if !ok {
 		return model, diagnostics
 	}
+
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "descr", &model.Descr)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "fromCard", &model.FromCard)
@@ -118,6 +208,7 @@ func InfraPortBlkModelFromObject(
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "nameAlias", &model.NameAlias)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "toCard", &model.ToCard)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "toPort", &model.ToPort)
+
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,
 		&diagnostics,
@@ -129,6 +220,7 @@ func InfraPortBlkModelFromObject(
 			"tagTag",
 		},
 	)
+
 	var fallbackInfraRsAccBndlSubgrp *types.Object
 	if fallbackModel != nil {
 		fallbackInfraRsAccBndlSubgrp = &fallbackModel.InfraRsAccBndlSubgrp
@@ -145,6 +237,7 @@ func InfraPortBlkModelFromObject(
 		InfraRsAccBndlSubgrpModelFromObject,
 		&model.InfraRsAccBndlSubgrp,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -153,6 +246,7 @@ func InfraPortBlkModelFromObject(
 		TagAnnotationModelFromObject,
 		&model.TagAnnotation,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -184,6 +278,7 @@ func (m *InfraPortBlkModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
+
 	if !modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "annotation", m.Annotation) && nested {
 		attributes["annotation"] = defaultAnnotation
 	}
@@ -194,6 +289,7 @@ func (m *InfraPortBlkModel) BuildPayloadObject(
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "nameAlias", m.NameAlias)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "toCard", m.ToCard)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "toPort", m.ToPort)
+
 	var priorInfraRsAccBndlSubgrp *types.Object
 	if priorState != nil {
 		priorInfraRsAccBndlSubgrp = &priorState.InfraRsAccBndlSubgrp
@@ -213,6 +309,7 @@ func (m *InfraPortBlkModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, infraRsAccBndlSubgrpPayloads...)
+
 	var priorTagAnnotation *types.Set
 	if priorState != nil {
 		priorTagAnnotation = &priorState.TagAnnotation
@@ -233,6 +330,7 @@ func (m *InfraPortBlkModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, tagAnnotationPayloads...)
+
 	var priorTagTag *types.Set
 	if priorState != nil {
 		priorTagTag = &priorState.TagTag
@@ -267,31 +365,31 @@ func (m *InfraPortBlkModel) BuildNestedDeletePayloadObject(
 	ctx context.Context,
 	diagnostics *diag.Diagnostics,
 ) map[string]any {
-	attributes := map[string]any{}
-	attributes["name"] = m.Name.ValueString()
-	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, attributes)
+	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, map[string]any{
+		"name": m.Name.ValueString(),
+	})
 }
 
-type InfraPortBlkResourceModel struct {
+type InfraPortBlkRootModel struct {
 	InfraPortBlkModel
 
 	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ParentDN types.String `tfsdk:"parent_dn"`
 }
 
-func NewInfraPortBlkResourceModelNull() InfraPortBlkResourceModel {
-	return InfraPortBlkResourceModel{
+func NewInfraPortBlkRootModelNull() InfraPortBlkRootModel {
+	return InfraPortBlkRootModel{
 		InfraPortBlkModel: NewInfraPortBlkModelNull(),
 		ID:                types.StringNull(),
-		ParentDn:          types.StringNull(),
+		ParentDN:          types.StringNull(),
 	}
 }
 
-func (m *InfraPortBlkResourceModel) SetIDFromDN(dn string) {
+func (m *InfraPortBlkRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
 
-func (m *InfraPortBlkResourceModel) SetFromResponse(
+func (m *InfraPortBlkRootModel) SetFromResponse(
 	ctx context.Context,
 	response *container.Container,
 ) (bool, diag.Diagnostics) {
@@ -304,11 +402,11 @@ func (m *InfraPortBlkResourceModel) SetFromResponse(
 
 	m.InfraPortBlkModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 
-func (m *InfraPortBlkResourceModel) BuildPayload(
+func (m *InfraPortBlkRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *InfraPortBlkModel,
 	create bool,
@@ -319,52 +417,16 @@ func (m *InfraPortBlkResourceModel) BuildPayload(
 	if diagnostics.HasError() {
 		return nil, diagnostics
 	}
+
 	if markCreated {
 		payloadObject["attributes"].(map[string]any)["status"] = "created"
 	}
+
 	payloadEnvelope := map[string]any{"infraPortBlk": payloadObject}
-	jsonPayload := modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload")
-	return jsonPayload, diagnostics
+	return modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload"), diagnostics
 }
 
-func (m *InfraPortBlkResourceModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
+func (m *InfraPortBlkRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
-	payload := modelHelpers.NewDeletePayload(ctx, &diagnostics, "infraPortBlk", m.ID.ValueString())
-	return payload, diagnostics
-}
-
-type InfraPortBlkDataSourceModel struct {
-	InfraPortBlkModel
-
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
-}
-
-func NewInfraPortBlkDataSourceModelNull() InfraPortBlkDataSourceModel {
-	return InfraPortBlkDataSourceModel{
-		InfraPortBlkModel: NewInfraPortBlkModelNull(),
-		ID:                types.StringNull(),
-		ParentDn:          types.StringNull(),
-	}
-}
-
-func (m *InfraPortBlkDataSourceModel) SetIDFromDN(dn string) {
-	m.ID = types.StringValue(dn)
-}
-
-func (m *InfraPortBlkDataSourceModel) SetFromResponse(
-	ctx context.Context,
-	response *container.Container,
-) (bool, diag.Diagnostics) {
-	fallbackModel := m.InfraPortBlkModel
-	model, dn, diagnostics := InfraPortBlkModelFromResponse(ctx, response, &fallbackModel)
-	found := model != nil
-	if diagnostics.HasError() || !found {
-		return found, diagnostics
-	}
-
-	m.InfraPortBlkModel = *model
-	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
-	return true, diagnostics
+	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "infraPortBlk", m.ID.ValueString()), diagnostics
 }

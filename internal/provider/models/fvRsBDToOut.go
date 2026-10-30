@@ -6,15 +6,67 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+func fvRsBDToOutSchemaDefinition() modelHelpers.ClassSchema {
+	return modelHelpers.ClassSchema{
+		ResourceDescription:   "Manages ACI Relation From Bridge Domain To L3 Outside",
+		DataSourceDescription: "Data source for ACI Relation From Bridge Domain To L3 Outside",
+		Properties: map[string]modelHelpers.PropertySchema{
+			"annotation": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The annotation of the Relation From Bridge Domain To L3 Outside object.",
+			},
+			"l3_outside_name": {
+				Type:            modelHelpers.StringProperty,
+				Required:        true,
+				RequiresReplace: true,
+				Description:     "The name of the L3 Outside object. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3_outside) with `aci_l3_outside.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/l3_outside) with `data.aci_l3_outside.example.name`.",
+			},
+		},
+		Children: map[string]modelHelpers.ChildSchema{
+			"annotations": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.",
+				Schema:      tagAnnotationSchemaDefinition,
+			},
+			"tags": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.",
+				Schema:      tagTagSchemaDefinition,
+			},
+		},
+		Identifiers: []string{
+			"l3_outside_name",
+		},
+		ParentDN: &modelHelpers.ParentDNSchema{
+			AttributeName: "parent_dn",
+			Config:        modelHelpers.ParentDNAttributeConfig{},
+		},
+		AnnotationAttribute: "annotation",
+	}
+}
+
+func FvRsBDToOutResourceSchema(defaultAnnotation string) resourceschema.Schema {
+	return fvRsBDToOutSchemaDefinition().ResourceSchema(defaultAnnotation)
+}
+
+func FvRsBDToOutDataSourceSchema() datasourceschema.Schema {
+	return fvRsBDToOutSchemaDefinition().DataSourceSchema()
+}
 
 type FvRsBDToOutModel struct {
 	Annotation     types.String `tfsdk:"annotation"`
@@ -60,19 +112,15 @@ func NewFvRsBDToOutModelNull() FvRsBDToOutModel {
 func (m *FvRsBDToOutModel) BuildRN() string {
 	rn := "rsBDToOut-{tnL3extOutName}"
 	rn = strings.ReplaceAll(rn, "{tnL3extOutName}", m.TnL3extOutName.ValueString())
-
 	return rn
 }
 
 func (m *FvRsBDToOutModel) BuildDN(parentDN string) string {
-	return parentDN + "/" + m.BuildRN()
+	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
 }
 
 func (m *FvRsBDToOutModel) ParentDNFromDN(dn string) string {
-	rn := m.BuildRN()
-
-	parentDN, _ := strings.CutSuffix(dn, "/"+rn)
-	return parentDN
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
 }
 
 func FvRsBDToOutModelFromObject(
@@ -87,8 +135,10 @@ func FvRsBDToOutModelFromObject(
 	if !ok {
 		return model, diagnostics
 	}
+
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "tnL3extOutName", &model.TnL3extOutName)
+
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,
 		&diagnostics,
@@ -99,6 +149,7 @@ func FvRsBDToOutModelFromObject(
 			"tagTag",
 		},
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -107,6 +158,7 @@ func FvRsBDToOutModelFromObject(
 		TagAnnotationModelFromObject,
 		&model.TagAnnotation,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -138,10 +190,12 @@ func (m *FvRsBDToOutModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
+
 	if !modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "annotation", m.Annotation) && nested {
 		attributes["annotation"] = defaultAnnotation
 	}
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "tnL3extOutName", m.TnL3extOutName)
+
 	var priorTagAnnotation *types.Set
 	if priorState != nil {
 		priorTagAnnotation = &priorState.TagAnnotation
@@ -162,6 +216,7 @@ func (m *FvRsBDToOutModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, tagAnnotationPayloads...)
+
 	var priorTagTag *types.Set
 	if priorState != nil {
 		priorTagTag = &priorState.TagTag
@@ -196,31 +251,31 @@ func (m *FvRsBDToOutModel) BuildNestedDeletePayloadObject(
 	ctx context.Context,
 	diagnostics *diag.Diagnostics,
 ) map[string]any {
-	attributes := map[string]any{}
-	attributes["tnL3extOutName"] = m.TnL3extOutName.ValueString()
-	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, attributes)
+	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, map[string]any{
+		"tnL3extOutName": m.TnL3extOutName.ValueString(),
+	})
 }
 
-type FvRsBDToOutResourceModel struct {
+type FvRsBDToOutRootModel struct {
 	FvRsBDToOutModel
 
 	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ParentDN types.String `tfsdk:"parent_dn"`
 }
 
-func NewFvRsBDToOutResourceModelNull() FvRsBDToOutResourceModel {
-	return FvRsBDToOutResourceModel{
+func NewFvRsBDToOutRootModelNull() FvRsBDToOutRootModel {
+	return FvRsBDToOutRootModel{
 		FvRsBDToOutModel: NewFvRsBDToOutModelNull(),
 		ID:               types.StringNull(),
-		ParentDn:         types.StringNull(),
+		ParentDN:         types.StringNull(),
 	}
 }
 
-func (m *FvRsBDToOutResourceModel) SetIDFromDN(dn string) {
+func (m *FvRsBDToOutRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
 
-func (m *FvRsBDToOutResourceModel) SetFromResponse(
+func (m *FvRsBDToOutRootModel) SetFromResponse(
 	ctx context.Context,
 	response *container.Container,
 ) (bool, diag.Diagnostics) {
@@ -233,11 +288,11 @@ func (m *FvRsBDToOutResourceModel) SetFromResponse(
 
 	m.FvRsBDToOutModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 
-func (m *FvRsBDToOutResourceModel) BuildPayload(
+func (m *FvRsBDToOutRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *FvRsBDToOutModel,
 	create bool,
@@ -248,52 +303,16 @@ func (m *FvRsBDToOutResourceModel) BuildPayload(
 	if diagnostics.HasError() {
 		return nil, diagnostics
 	}
+
 	if markCreated {
 		payloadObject["attributes"].(map[string]any)["status"] = "created"
 	}
+
 	payloadEnvelope := map[string]any{"fvRsBDToOut": payloadObject}
-	jsonPayload := modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload")
-	return jsonPayload, diagnostics
+	return modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload"), diagnostics
 }
 
-func (m *FvRsBDToOutResourceModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
+func (m *FvRsBDToOutRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
-	payload := modelHelpers.NewDeletePayload(ctx, &diagnostics, "fvRsBDToOut", m.ID.ValueString())
-	return payload, diagnostics
-}
-
-type FvRsBDToOutDataSourceModel struct {
-	FvRsBDToOutModel
-
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
-}
-
-func NewFvRsBDToOutDataSourceModelNull() FvRsBDToOutDataSourceModel {
-	return FvRsBDToOutDataSourceModel{
-		FvRsBDToOutModel: NewFvRsBDToOutModelNull(),
-		ID:               types.StringNull(),
-		ParentDn:         types.StringNull(),
-	}
-}
-
-func (m *FvRsBDToOutDataSourceModel) SetIDFromDN(dn string) {
-	m.ID = types.StringValue(dn)
-}
-
-func (m *FvRsBDToOutDataSourceModel) SetFromResponse(
-	ctx context.Context,
-	response *container.Container,
-) (bool, diag.Diagnostics) {
-	fallbackModel := m.FvRsBDToOutModel
-	model, dn, diagnostics := FvRsBDToOutModelFromResponse(ctx, response, &fallbackModel)
-	found := model != nil
-	if diagnostics.HasError() || !found {
-		return found, diagnostics
-	}
-
-	m.FvRsBDToOutModel = *model
-	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
-	return true, diagnostics
+	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "fvRsBDToOut", m.ID.ValueString()), diagnostics
 }

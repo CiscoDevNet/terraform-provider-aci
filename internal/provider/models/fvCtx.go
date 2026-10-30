@@ -6,15 +6,188 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+func fvCtxSchemaDefinition() modelHelpers.ClassSchema {
+	return modelHelpers.ClassSchema{
+		ResourceDescription:   "Manages ACI VRF",
+		DataSourceDescription: "Data source for ACI VRF",
+		Properties: map[string]modelHelpers.PropertySchema{
+			"annotation": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The annotation of the VRF object.",
+			},
+			"bd_enforcement": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"no",
+					"yes",
+				},
+				Description: "The Bridge Domain (BD) enforcement status of the VRF. BD enforcement will restrict a host from sending ping requests to subnets outside the Bridge Domain (BD). The feature blocks ICMP, TCP and UDP traffic between BDs.",
+			},
+			"description": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The description of the VRF object.",
+			},
+			"ip_data_plane_learning": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"disabled",
+					"enabled",
+				},
+				Description: "The IP data plane status of the VRF object. The process known as IP data plane learning involves acquiring the endpoint's IPv4 or IPv6 address through data plane routing of traffic from the endpoint.",
+			},
+			"name": {
+				Type:            modelHelpers.StringProperty,
+				Required:        true,
+				RequiresReplace: true,
+				Description:     "The name of the VRF object.",
+			},
+			"name_alias": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The name alias of the VRF object.",
+			},
+			"owner_key": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The key for enabling clients to own their data for entity correlation.",
+			},
+			"owner_tag": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "A tag for enabling clients to add their own data. For example, to indicate who created this object.",
+			},
+			"policy_control_enforcement_direction": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"egress",
+					"ingress",
+				},
+				Description: "The policy control enforcement direction of the VRF object. VRF ingress policy enforcement involves ACL filtering on the leaf switch where the endpoint is located, reducing the policy CAM usage on the border leaf switch by confining the filtering to 'compute' leaf switches. VRF egress policy enforcement extends ACL filtering to the border leaf switch, increasing its policy CAM usage. The border leaf switch handles filtering for traffic from L3Out to EPG after the endpoint is learned, unless the endpoint-to-destination class mapping is unknown, in which case the compute leaf switch handles the filtering.",
+			},
+			"policy_control_enforcement_mode": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"enforced",
+					"unenforced",
+				},
+				Description: "The policy control enforcement mode of the VRF object. VRFs in unenforced mode do not restrict traffic between EPGs that are member of the VRF. VRFs in enforced mode restrict traffic not allowed by contracts between EPGs that are member of the VRF. The policy control enforcement direction is used to determine the preferred enforcement method.",
+			},
+			"pc_tag": {
+				Type:        modelHelpers.StringProperty,
+				Computed:    true,
+				ReadOnly:    true,
+				Description: "The classification tag used for policy enforcement and zoning.",
+			},
+			"scope": {
+				Type:        modelHelpers.StringProperty,
+				Computed:    true,
+				ReadOnly:    true,
+				Description: "The scope ID (L3-VNI) of the VRF object.",
+			},
+		},
+		Children: map[string]modelHelpers.ChildSchema{
+			"relation_to_bgp_timers": {
+				Cardinality: modelHelpers.SingleChild,
+				Description: "`relation_to_bgp_timers` - (map) A map of Relation To BGP Timers (ACI object [fvRsBgpCtxPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsBgpCtxPol/overview)) pointing to BGP Timers (ACI Object [bgpCtxPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/bgpCtxPol/overview)) which can be configured using the [aci_bgp_timers](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bgp_timers) resource.",
+				Schema:      fvRsBgpCtxPolSchemaDefinition,
+			},
+			"relation_to_monitoring_policy": {
+				Cardinality: modelHelpers.SingleChild,
+				Description: "`relation_to_monitoring_policy` - (map) A map of Relation From VRF To Monitoring Policy (ACI object [fvRsCtxMonPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsCtxMonPol/overview)) pointing to Monitoring Policy (ACI Object [monEPGPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/monEPGPol/overview)) which can be configured using the [aci_monitoring_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/monitoring_policy) resource.",
+				Schema:      fvRsCtxMonPolSchemaDefinition,
+			},
+			"relation_to_bgp_address_family_contexts": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`relation_to_bgp_address_family_contexts` - (list) A list of Relation From VRF To BGP Address Family Contexts (ACI object [fvRsCtxToBgpCtxAfPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsCtxToBgpCtxAfPol/overview)) pointing to BGP Address Family Context (ACI Object [bgpCtxAfPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/bgpCtxAfPol/overview)) which can be configured using the [aci_bgp_address_family_context](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bgp_address_family_context) resource.",
+				Schema:      fvRsCtxToBgpCtxAfPolSchemaDefinition,
+			},
+			"relation_to_eigrp_address_family_contexts": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`relation_to_eigrp_address_family_contexts` - (list) A list of Relation From VRF To EIGRP Address Family Contexts (ACI object [fvRsCtxToEigrpCtxAfPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsCtxToEigrpCtxAfPol/overview)) pointing to EIGRP Address Family Context (ACI Object [eigrpCtxAfPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/eigrpCtxAfPol/overview)) which can be configured using the [aci_eigrp_address_family_context](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/eigrp_address_family_context) resource.",
+				Schema:      fvRsCtxToEigrpCtxAfPolSchemaDefinition,
+			},
+			"relation_to_end_point_retention_policy": {
+				Cardinality: modelHelpers.SingleChild,
+				Description: "`relation_to_end_point_retention_policy` - (map) A map of Relation From VRF To End Point Retention Policy (ACI object [fvRsCtxToEpRet](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsCtxToEpRet/overview)) pointing to End Point Retention Policy (ACI Object [fvEpRetPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvEpRetPol/overview)) which can be configured using the [aci_end_point_retention_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/end_point_retention_policy) resource.",
+				Schema:      fvRsCtxToEpRetSchemaDefinition,
+			},
+			"relation_to_l3out_route_tag_policy": {
+				Cardinality: modelHelpers.SingleChild,
+				Description: "`relation_to_l3out_route_tag_policy` - (map) A map of Relation From VRF To L3Out Route Tag Policy (ACI object [fvRsCtxToExtRouteTagPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsCtxToExtRouteTagPol/overview)) pointing to L3Out Route Tag Policy (ACI Object [l3extRouteTagPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extRouteTagPol/overview)) which can be configured using the [aci_l3out_route_tag_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3out_route_tag_policy) resource.",
+				Schema:      fvRsCtxToExtRouteTagPolSchemaDefinition,
+			},
+			"relation_to_address_family_ospf_timers": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`relation_to_address_family_ospf_timers` - (list) A list of Relation From VRF To Address Family OSPF Timers (ACI object [fvRsCtxToOspfCtxPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsCtxToOspfCtxPol/overview)) pointing to OSPF Timers (ACI Object [ospfCtxPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/ospfCtxPol/overview)) which can be configured using the [aci_ospf_timers](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/ospf_timers) resource.",
+				Schema:      fvRsCtxToOspfCtxPolSchemaDefinition,
+			},
+			"relation_to_wan_vpn": {
+				Cardinality: modelHelpers.SingleChild,
+				Description: "`relation_to_wan_vpn` - (map) A map of Relation From VRF To WAN VPN (ACI object [fvRsCtxToSDWanVpn](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsCtxToSDWanVpn/overview)) pointing to WAN VPN (ACI Object [extdevSDWanVpnEntry](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/extdevSDWanVpnEntry/overview)).",
+				Schema:      fvRsCtxToSDWanVpnSchemaDefinition,
+			},
+			"relation_to_ospf_timers": {
+				Cardinality: modelHelpers.SingleChild,
+				Description: "`relation_to_ospf_timers` - (map) A map of Relation To OSPF Timers (ACI object [fvRsOspfCtxPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsOspfCtxPol/overview)) pointing to OSPF Timers (ACI Object [ospfCtxPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/ospfCtxPol/overview)) which can be configured using the [aci_ospf_timers](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/ospf_timers) resource.",
+				Schema:      fvRsOspfCtxPolSchemaDefinition,
+			},
+			"annotations": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.",
+				Schema:      tagAnnotationSchemaDefinition,
+			},
+			"tags": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.",
+				Schema:      tagTagSchemaDefinition,
+			},
+		},
+		Identifiers: []string{
+			"name",
+		},
+		ParentDN: &modelHelpers.ParentDNSchema{
+			AttributeName: "parent_dn",
+			Config:        modelHelpers.ParentDNAttributeConfig{},
+		},
+		AnnotationAttribute: "annotation",
+	}
+}
+
+func FvCtxResourceSchema(defaultAnnotation string) resourceschema.Schema {
+	return fvCtxSchemaDefinition().ResourceSchema(defaultAnnotation)
+}
+
+func FvCtxDataSourceSchema() datasourceschema.Schema {
+	return fvCtxSchemaDefinition().DataSourceSchema()
+}
 
 type FvCtxModel struct {
 	Annotation              types.String `tfsdk:"annotation"`
@@ -153,19 +326,15 @@ func NewFvCtxModelNull() FvCtxModel {
 func (m *FvCtxModel) BuildRN() string {
 	rn := "ctx-{name}"
 	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
-
 	return rn
 }
 
 func (m *FvCtxModel) BuildDN(parentDN string) string {
-	return parentDN + "/" + m.BuildRN()
+	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
 }
 
 func (m *FvCtxModel) ParentDNFromDN(dn string) string {
-	rn := m.BuildRN()
-
-	parentDN, _ := strings.CutSuffix(dn, "/"+rn)
-	return parentDN
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
 }
 
 func FvCtxModelFromObject(
@@ -180,6 +349,7 @@ func FvCtxModelFromObject(
 	if !ok {
 		return model, diagnostics
 	}
+
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "bdEnforcedEnable", &model.BdEnforcedEnable)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "descr", &model.Descr)
@@ -192,6 +362,7 @@ func FvCtxModelFromObject(
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "pcEnfPref", &model.PcEnfPref)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "pcTag", &model.PcTag)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "scope", &model.Scope)
+
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,
 		&diagnostics,
@@ -211,6 +382,7 @@ func FvCtxModelFromObject(
 			"tagTag",
 		},
 	)
+
 	var fallbackFvRsBgpCtxPol *types.Object
 	if fallbackModel != nil {
 		fallbackFvRsBgpCtxPol = &fallbackModel.FvRsBgpCtxPol
@@ -227,6 +399,7 @@ func FvCtxModelFromObject(
 		FvRsBgpCtxPolModelFromObject,
 		&model.FvRsBgpCtxPol,
 	)
+
 	var fallbackFvRsCtxMonPol *types.Object
 	if fallbackModel != nil {
 		fallbackFvRsCtxMonPol = &fallbackModel.FvRsCtxMonPol
@@ -243,6 +416,7 @@ func FvCtxModelFromObject(
 		FvRsCtxMonPolModelFromObject,
 		&model.FvRsCtxMonPol,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -251,6 +425,7 @@ func FvCtxModelFromObject(
 		FvRsCtxToBgpCtxAfPolModelFromObject,
 		&model.FvRsCtxToBgpCtxAfPol,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -259,6 +434,7 @@ func FvCtxModelFromObject(
 		FvRsCtxToEigrpCtxAfPolModelFromObject,
 		&model.FvRsCtxToEigrpCtxAfPol,
 	)
+
 	var fallbackFvRsCtxToEpRet *types.Object
 	if fallbackModel != nil {
 		fallbackFvRsCtxToEpRet = &fallbackModel.FvRsCtxToEpRet
@@ -275,6 +451,7 @@ func FvCtxModelFromObject(
 		FvRsCtxToEpRetModelFromObject,
 		&model.FvRsCtxToEpRet,
 	)
+
 	var fallbackFvRsCtxToExtRouteTagPol *types.Object
 	if fallbackModel != nil {
 		fallbackFvRsCtxToExtRouteTagPol = &fallbackModel.FvRsCtxToExtRouteTagPol
@@ -291,6 +468,7 @@ func FvCtxModelFromObject(
 		FvRsCtxToExtRouteTagPolModelFromObject,
 		&model.FvRsCtxToExtRouteTagPol,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -299,6 +477,7 @@ func FvCtxModelFromObject(
 		FvRsCtxToOspfCtxPolModelFromObject,
 		&model.FvRsCtxToOspfCtxPol,
 	)
+
 	var fallbackFvRsCtxToSDWanVpn *types.Object
 	if fallbackModel != nil {
 		fallbackFvRsCtxToSDWanVpn = &fallbackModel.FvRsCtxToSDWanVpn
@@ -315,6 +494,7 @@ func FvCtxModelFromObject(
 		FvRsCtxToSDWanVpnModelFromObject,
 		&model.FvRsCtxToSDWanVpn,
 	)
+
 	var fallbackFvRsOspfCtxPol *types.Object
 	if fallbackModel != nil {
 		fallbackFvRsOspfCtxPol = &fallbackModel.FvRsOspfCtxPol
@@ -331,6 +511,7 @@ func FvCtxModelFromObject(
 		FvRsOspfCtxPolModelFromObject,
 		&model.FvRsOspfCtxPol,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -339,6 +520,7 @@ func FvCtxModelFromObject(
 		TagAnnotationModelFromObject,
 		&model.TagAnnotation,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -370,6 +552,7 @@ func (m *FvCtxModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
+
 	if !modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "annotation", m.Annotation) && nested {
 		attributes["annotation"] = defaultAnnotation
 	}
@@ -382,6 +565,7 @@ func (m *FvCtxModel) BuildPayloadObject(
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "ownerTag", m.OwnerTag)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "pcEnfDir", m.PcEnfDir)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "pcEnfPref", m.PcEnfPref)
+
 	var priorFvRsBgpCtxPol *types.Object
 	if priorState != nil {
 		priorFvRsBgpCtxPol = &priorState.FvRsBgpCtxPol
@@ -401,6 +585,7 @@ func (m *FvCtxModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, fvRsBgpCtxPolPayloads...)
+
 	var priorFvRsCtxMonPol *types.Object
 	if priorState != nil {
 		priorFvRsCtxMonPol = &priorState.FvRsCtxMonPol
@@ -420,6 +605,7 @@ func (m *FvCtxModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, fvRsCtxMonPolPayloads...)
+
 	var priorFvRsCtxToBgpCtxAfPol *types.Set
 	if priorState != nil {
 		priorFvRsCtxToBgpCtxAfPol = &priorState.FvRsCtxToBgpCtxAfPol
@@ -440,6 +626,7 @@ func (m *FvCtxModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, fvRsCtxToBgpCtxAfPolPayloads...)
+
 	var priorFvRsCtxToEigrpCtxAfPol *types.Set
 	if priorState != nil {
 		priorFvRsCtxToEigrpCtxAfPol = &priorState.FvRsCtxToEigrpCtxAfPol
@@ -460,6 +647,7 @@ func (m *FvCtxModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, fvRsCtxToEigrpCtxAfPolPayloads...)
+
 	var priorFvRsCtxToEpRet *types.Object
 	if priorState != nil {
 		priorFvRsCtxToEpRet = &priorState.FvRsCtxToEpRet
@@ -479,6 +667,7 @@ func (m *FvCtxModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, fvRsCtxToEpRetPayloads...)
+
 	var priorFvRsCtxToExtRouteTagPol *types.Object
 	if priorState != nil {
 		priorFvRsCtxToExtRouteTagPol = &priorState.FvRsCtxToExtRouteTagPol
@@ -498,6 +687,7 @@ func (m *FvCtxModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, fvRsCtxToExtRouteTagPolPayloads...)
+
 	var priorFvRsCtxToOspfCtxPol *types.Set
 	if priorState != nil {
 		priorFvRsCtxToOspfCtxPol = &priorState.FvRsCtxToOspfCtxPol
@@ -518,6 +708,7 @@ func (m *FvCtxModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, fvRsCtxToOspfCtxPolPayloads...)
+
 	var priorFvRsCtxToSDWanVpn *types.Object
 	if priorState != nil {
 		priorFvRsCtxToSDWanVpn = &priorState.FvRsCtxToSDWanVpn
@@ -537,6 +728,7 @@ func (m *FvCtxModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, fvRsCtxToSDWanVpnPayloads...)
+
 	var priorFvRsOspfCtxPol *types.Object
 	if priorState != nil {
 		priorFvRsOspfCtxPol = &priorState.FvRsOspfCtxPol
@@ -556,6 +748,7 @@ func (m *FvCtxModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, fvRsOspfCtxPolPayloads...)
+
 	var priorTagAnnotation *types.Set
 	if priorState != nil {
 		priorTagAnnotation = &priorState.TagAnnotation
@@ -576,6 +769,7 @@ func (m *FvCtxModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, tagAnnotationPayloads...)
+
 	var priorTagTag *types.Set
 	if priorState != nil {
 		priorTagTag = &priorState.TagTag
@@ -610,31 +804,31 @@ func (m *FvCtxModel) BuildNestedDeletePayloadObject(
 	ctx context.Context,
 	diagnostics *diag.Diagnostics,
 ) map[string]any {
-	attributes := map[string]any{}
-	attributes["name"] = m.Name.ValueString()
-	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, attributes)
+	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, map[string]any{
+		"name": m.Name.ValueString(),
+	})
 }
 
-type FvCtxResourceModel struct {
+type FvCtxRootModel struct {
 	FvCtxModel
 
 	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ParentDN types.String `tfsdk:"parent_dn"`
 }
 
-func NewFvCtxResourceModelNull() FvCtxResourceModel {
-	return FvCtxResourceModel{
+func NewFvCtxRootModelNull() FvCtxRootModel {
+	return FvCtxRootModel{
 		FvCtxModel: NewFvCtxModelNull(),
 		ID:         types.StringNull(),
-		ParentDn:   types.StringNull(),
+		ParentDN:   types.StringNull(),
 	}
 }
 
-func (m *FvCtxResourceModel) SetIDFromDN(dn string) {
+func (m *FvCtxRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
 
-func (m *FvCtxResourceModel) SetFromResponse(
+func (m *FvCtxRootModel) SetFromResponse(
 	ctx context.Context,
 	response *container.Container,
 ) (bool, diag.Diagnostics) {
@@ -647,11 +841,11 @@ func (m *FvCtxResourceModel) SetFromResponse(
 
 	m.FvCtxModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 
-func (m *FvCtxResourceModel) BuildPayload(
+func (m *FvCtxRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *FvCtxModel,
 	create bool,
@@ -662,52 +856,16 @@ func (m *FvCtxResourceModel) BuildPayload(
 	if diagnostics.HasError() {
 		return nil, diagnostics
 	}
+
 	if markCreated {
 		payloadObject["attributes"].(map[string]any)["status"] = "created"
 	}
+
 	payloadEnvelope := map[string]any{"fvCtx": payloadObject}
-	jsonPayload := modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload")
-	return jsonPayload, diagnostics
+	return modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload"), diagnostics
 }
 
-func (m *FvCtxResourceModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
+func (m *FvCtxRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
-	payload := modelHelpers.NewDeletePayload(ctx, &diagnostics, "fvCtx", m.ID.ValueString())
-	return payload, diagnostics
-}
-
-type FvCtxDataSourceModel struct {
-	FvCtxModel
-
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
-}
-
-func NewFvCtxDataSourceModelNull() FvCtxDataSourceModel {
-	return FvCtxDataSourceModel{
-		FvCtxModel: NewFvCtxModelNull(),
-		ID:         types.StringNull(),
-		ParentDn:   types.StringNull(),
-	}
-}
-
-func (m *FvCtxDataSourceModel) SetIDFromDN(dn string) {
-	m.ID = types.StringValue(dn)
-}
-
-func (m *FvCtxDataSourceModel) SetFromResponse(
-	ctx context.Context,
-	response *container.Container,
-) (bool, diag.Diagnostics) {
-	fallbackModel := m.FvCtxModel
-	model, dn, diagnostics := FvCtxModelFromResponse(ctx, response, &fallbackModel)
-	found := model != nil
-	if diagnostics.HasError() || !found {
-		return found, diagnostics
-	}
-
-	m.FvCtxModel = *model
-	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
-	return true, diagnostics
+	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "fvCtx", m.ID.ValueString()), diagnostics
 }

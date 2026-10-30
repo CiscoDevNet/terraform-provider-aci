@@ -6,6 +6,7 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
@@ -15,6 +16,226 @@ import (
 
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+func commHttpsSchemaDefinition() modelHelpers.ClassSchema {
+	return modelHelpers.ClassSchema{
+		ResourceDescription:   "Manages ACI HTTPS Service",
+		DataSourceDescription: "Data source for ACI HTTPS Service",
+		Properties: map[string]modelHelpers.PropertySchema{
+			"allow_credentials": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"disabled",
+					"enabled",
+				},
+				Description: "Determines if credentials are allowed in HTTPS responses.",
+			},
+			"allow_origins": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "Determines which origins can access the resource. For example, inputting http://127.0.0.1:8000 would allow access from a source device with that IP address and port.",
+			},
+			"admin_state": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"enabled",
+				},
+				Description: "The administrative state of the HTTPS Service.",
+			},
+			"annotation": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The annotation of the HTTPS Service object.",
+			},
+			"cli_only_mode": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"disabled",
+					"enabled",
+				},
+				Description: "Determines if CLI-only mode is enabled.",
+			},
+			"client_certificate_authentication_state": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"disabled",
+					"enabled",
+				},
+				Description: "The authentication state of the client certificate.",
+			},
+			"description": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The description of the HTTPS Service object.",
+			},
+			"dh_parameter": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"1024",
+					"2048",
+					"4096",
+					"none",
+				},
+				Description: "Determines the settings for Diffie-Hellman (DH) parameters.",
+			},
+			"global_throttle_rate": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The maximum amount of API calls allowed per unit time.",
+			},
+			"global_throttle_state": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"disabled",
+					"enabled",
+				},
+				Description: "The throttle state for all clients without specific identifier in their headers.",
+			},
+			"global_throttle_unit": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"r/m",
+					"r/s",
+				},
+				Description: "The unit of measurement for rate limiting specified with the 'global_throttle_rate' attribute.",
+			},
+			"max_request_status_count": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The maximum number of request status objects to keep.",
+			},
+			"name": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The name of the HTTPS Service object.",
+			},
+			"name_alias": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The name alias of the HTTPS Service object.",
+			},
+			"node_exporter": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"disabled",
+					"enabled",
+				},
+				Description: "The node exporter service status.",
+			},
+			"port": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The port used by the HTTPS communication service.",
+			},
+			"referer": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "Allowed HTTP referers.",
+			},
+			"server_header": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"disabled",
+					"enabled",
+				},
+				Description: "Determines if the server header is included in responses.",
+			},
+			"ssl_protocols": {
+				Type:           modelHelpers.SetProperty,
+				SetElementType: types.StringType,
+				Optional:       true,
+				Computed:       true,
+				ValidValues: []string{
+					"TLSv1",
+					"TLSv1.1",
+					"TLSv1.2",
+					"TLSv1.3",
+				},
+				Description: "The SSL protocols allowed by HTTPS communication service.",
+			},
+			"login_throttle_rate": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The maximum login/refresh allowed per second.",
+			},
+			"login_throttle_state": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"disabled",
+					"enabled",
+				},
+				Description: "The state of login and refresh throttling.",
+			},
+			"visore_access": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"disabled",
+					"enabled",
+				},
+				Description: "Grants permissions for accessing the Visore tool, also known as Object Store Browser, in Cisco ACI.",
+			},
+		},
+		Children: map[string]modelHelpers.ChildSchema{
+			"certificate_authority": {
+				Cardinality: modelHelpers.SingleChild,
+				Description: "`certificate_authority` - (map) A map of Relation To Certificate Authority (ACI object [commRsClientCertCA](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/commRsClientCertCA/overview)) pointing to Certificate Authority (ACI Object [pkiTP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/pkiTP/overview)) which can be configured using the [aci_certificate_authority](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/certificate_authority) resource.",
+				Schema:      commRsClientCertCASchemaDefinition,
+			},
+			"key_ring": {
+				Cardinality: modelHelpers.SingleChild,
+				Description: "`key_ring` - (map) A map of Relation To Key Ring (ACI object [commRsKeyRing](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/commRsKeyRing/overview)) pointing to Key Ring (ACI Object [pkiKeyRing](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/pkiKeyRing/overview)) which can be configured using the [aci_key_ring](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/key_ring) resource.",
+				Schema:      commRsKeyRingSchemaDefinition,
+			},
+			"annotations": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.",
+				Schema:      tagAnnotationSchemaDefinition,
+			},
+			"tags": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.",
+				Schema:      tagTagSchemaDefinition,
+			},
+		},
+		ParentDN: &modelHelpers.ParentDNSchema{
+			AttributeName: "parent_dn",
+			Config:        modelHelpers.ParentDNAttributeConfig{},
+		},
+		AnnotationAttribute: "annotation",
+	}
+}
 
 type CommHttpsModel struct {
 	AccessControlAllowCredential types.String `tfsdk:"allow_credentials"`
@@ -132,14 +353,11 @@ func (m *CommHttpsModel) BuildRN() string {
 }
 
 func (m *CommHttpsModel) BuildDN(parentDN string) string {
-	return parentDN + "/" + m.BuildRN()
+	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
 }
 
 func (m *CommHttpsModel) ParentDNFromDN(dn string) string {
-	rn := m.BuildRN()
-
-	parentDN, _ := strings.CutSuffix(dn, "/"+rn)
-	return parentDN
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
 }
 
 func CommHttpsModelFromObject(
@@ -154,6 +372,7 @@ func CommHttpsModelFromObject(
 	if !ok {
 		return model, diagnostics
 	}
+
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "accessControlAllowCredential", &model.AccessControlAllowCredential)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "accessControlAllowOrigins", &model.AccessControlAllowOrigins)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "adminSt", &model.AdminSt)
@@ -176,6 +395,7 @@ func CommHttpsModelFromObject(
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "throttleRate", &model.ThrottleRate)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "throttleSt", &model.ThrottleSt)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "visoreAccess", &model.VisoreAccess)
+
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,
 		&diagnostics,
@@ -188,6 +408,7 @@ func CommHttpsModelFromObject(
 			"tagTag",
 		},
 	)
+
 	var fallbackCommRsClientCertCA *types.Object
 	if fallbackModel != nil {
 		fallbackCommRsClientCertCA = &fallbackModel.CommRsClientCertCA
@@ -204,6 +425,7 @@ func CommHttpsModelFromObject(
 		CommRsClientCertCAModelFromObject,
 		&model.CommRsClientCertCA,
 	)
+
 	var fallbackCommRsKeyRing *types.Object
 	if fallbackModel != nil {
 		fallbackCommRsKeyRing = &fallbackModel.CommRsKeyRing
@@ -220,6 +442,7 @@ func CommHttpsModelFromObject(
 		CommRsKeyRingModelFromObject,
 		&model.CommRsKeyRing,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -228,6 +451,7 @@ func CommHttpsModelFromObject(
 		TagAnnotationModelFromObject,
 		&model.TagAnnotation,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -249,6 +473,7 @@ func (m *CommHttpsModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
+
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "accessControlAllowCredential", m.AccessControlAllowCredential)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "accessControlAllowOrigins", m.AccessControlAllowOrigins)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "adminSt", m.AdminSt)
@@ -276,6 +501,7 @@ func (m *CommHttpsModel) BuildPayloadObject(
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "throttleRate", m.ThrottleRate)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "throttleSt", m.ThrottleSt)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "visoreAccess", m.VisoreAccess)
+
 	var priorCommRsClientCertCA *types.Object
 	if priorState != nil {
 		priorCommRsClientCertCA = &priorState.CommRsClientCertCA
@@ -295,6 +521,7 @@ func (m *CommHttpsModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, commRsClientCertCAPayloads...)
+
 	var priorCommRsKeyRing *types.Object
 	if priorState != nil {
 		priorCommRsKeyRing = &priorState.CommRsKeyRing
@@ -314,6 +541,7 @@ func (m *CommHttpsModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, commRsKeyRingPayloads...)
+
 	var priorTagAnnotation *types.Set
 	if priorState != nil {
 		priorTagAnnotation = &priorState.TagAnnotation
@@ -334,6 +562,7 @@ func (m *CommHttpsModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, tagAnnotationPayloads...)
+
 	var priorTagTag *types.Set
 	if priorState != nil {
 		priorTagTag = &priorState.TagTag

@@ -549,6 +549,21 @@ func (v ValueTypeEnum) String() string {
 	}
 }
 
+// SchemaPropertyType returns the neutral model-helper property type used to
+// construct resource and data-source schema attributes.
+func (v ValueTypeEnum) SchemaPropertyType() string {
+	switch v {
+	case Set:
+		return "SetProperty"
+	case Object:
+		return "ObjectProperty"
+	case String, IpAddress, SemanticEquality, VMMArpLearning:
+		return "StringProperty"
+	default:
+		return ""
+	}
+}
+
 // DocumentationType returns the established Terraform type label used in
 // generated provider documentation. It intentionally differs from String:
 // Terraform sets and objects have historically been documented as lists and

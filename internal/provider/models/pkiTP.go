@@ -6,19 +6,113 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"regexp"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
 
-var pkiTPParentDnVariant1Patterns = []*regexp.Regexp{
+var pkiTPParentDNVariant1Patterns = []*regexp.Regexp{
 	regexp.MustCompile("^uni/tn-[^/]+$"),
+}
+
+func pkiTPSchemaDefinition() modelHelpers.ClassSchema {
+	return modelHelpers.ClassSchema{
+		ResourceDescription:   "Manages ACI Certificate Authority",
+		DataSourceDescription: "Data source for ACI Certificate Authority",
+		Properties: map[string]modelHelpers.PropertySchema{
+			"annotation": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The annotation of the Certificate Authority object.",
+			},
+			"certificate_chain": {
+				Type:        modelHelpers.StringProperty,
+				Required:    true,
+				Description: "The PEM-encoded chain of trust from the trustpoint to a trusted root authority.",
+			},
+			"certificate_usage": {
+				Type:           modelHelpers.SetProperty,
+				SetElementType: types.StringType,
+				Optional:       true,
+				Computed:       true,
+				ValidValues: []string{
+					"WebSvcOrAuth",
+					"pxGrid",
+				},
+				Description: "The usage of the Certificate Authority object which can be Web Service/Authentication (WebSvcOrAuth), Platform Experience Grid (pxGrid), or both.",
+			},
+			"description": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The description of the Certificate Authority object.",
+			},
+			"name": {
+				Type:            modelHelpers.StringProperty,
+				Required:        true,
+				RequiresReplace: true,
+				Description:     "The name of the Certificate Authority object.",
+			},
+			"name_alias": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The name alias of the Certificate Authority object.",
+			},
+			"owner_key": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The key for enabling clients to own their data for entity correlation.",
+			},
+			"owner_tag": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "A tag for enabling clients to add their own data. For example, to indicate who created this object.",
+			},
+		},
+		Children: map[string]modelHelpers.ChildSchema{
+			"annotations": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.",
+				Schema:      tagAnnotationSchemaDefinition,
+			},
+			"tags": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.",
+				Schema:      tagTagSchemaDefinition,
+			},
+		},
+		Identifiers: []string{
+			"name",
+		},
+		ParentDN: &modelHelpers.ParentDNSchema{
+			AttributeName: "parent_dn",
+			Config: modelHelpers.ParentDNAttributeConfig{
+				DefaultValue: "uni/userext/pkiext",
+			},
+		},
+		AnnotationAttribute: "annotation",
+	}
+}
+
+func PkiTPResourceSchema(defaultAnnotation string) resourceschema.Schema {
+	return pkiTPSchemaDefinition().ResourceSchema(defaultAnnotation)
+}
+
+func PkiTPDataSourceSchema() datasourceschema.Schema {
+	return pkiTPSchemaDefinition().DataSourceSchema()
 }
 
 type PkiTPModel struct {
@@ -83,33 +177,31 @@ func NewPkiTPModelNull() PkiTPModel {
 func (m *PkiTPModel) BuildRN() string {
 	rn := "tp-{name}"
 	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
-
 	return rn
 }
 
 func (m *PkiTPModel) BuildDN(parentDN string) string {
 	rn := m.BuildRN()
-	for _, pattern := range pkiTPParentDnVariant1Patterns {
+	for _, pattern := range pkiTPParentDNVariant1Patterns {
 		if pattern.MatchString(parentDN) {
-			return parentDN + "/certstore/" + rn
+			return fmt.Sprintf("%s/certstore/%s", parentDN, rn)
 		}
 	}
 
-	return parentDN + "/" + rn
+	return fmt.Sprintf("%s/%s", parentDN, rn)
 }
 
 func (m *PkiTPModel) ParentDNFromDN(dn string) string {
 	rn := m.BuildRN()
-	if parentDN, found := strings.CutSuffix(dn, "/certstore/"+rn); found {
-		for _, pattern := range pkiTPParentDnVariant1Patterns {
+	if parentDN, found := strings.CutSuffix(dn, fmt.Sprintf("/certstore/%s", rn)); found {
+		for _, pattern := range pkiTPParentDNVariant1Patterns {
 			if pattern.MatchString(parentDN) {
 				return parentDN
 			}
 		}
 	}
 
-	parentDN, _ := strings.CutSuffix(dn, "/"+rn)
-	return parentDN
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", rn))
 }
 
 func PkiTPModelFromObject(
@@ -124,6 +216,7 @@ func PkiTPModelFromObject(
 	if !ok {
 		return model, diagnostics
 	}
+
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "certChain", &model.CertChain)
 	modelHelpers.DecodeStringSetAttribute(ctx, &diagnostics, attributes, "certUsage", &model.CertUsage)
@@ -132,6 +225,7 @@ func PkiTPModelFromObject(
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "nameAlias", &model.NameAlias)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ownerKey", &model.OwnerKey)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ownerTag", &model.OwnerTag)
+
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,
 		&diagnostics,
@@ -142,6 +236,7 @@ func PkiTPModelFromObject(
 			"tagTag",
 		},
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -150,6 +245,7 @@ func PkiTPModelFromObject(
 		TagAnnotationModelFromObject,
 		&model.TagAnnotation,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -181,6 +277,7 @@ func (m *PkiTPModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
+
 	if !modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "annotation", m.Annotation) && nested {
 		attributes["annotation"] = defaultAnnotation
 	}
@@ -194,6 +291,7 @@ func (m *PkiTPModel) BuildPayloadObject(
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "nameAlias", m.NameAlias)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "ownerKey", m.OwnerKey)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "ownerTag", m.OwnerTag)
+
 	var priorTagAnnotation *types.Set
 	if priorState != nil {
 		priorTagAnnotation = &priorState.TagAnnotation
@@ -214,6 +312,7 @@ func (m *PkiTPModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, tagAnnotationPayloads...)
+
 	var priorTagTag *types.Set
 	if priorState != nil {
 		priorTagTag = &priorState.TagTag
@@ -248,31 +347,31 @@ func (m *PkiTPModel) BuildNestedDeletePayloadObject(
 	ctx context.Context,
 	diagnostics *diag.Diagnostics,
 ) map[string]any {
-	attributes := map[string]any{}
-	attributes["name"] = m.Name.ValueString()
-	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, attributes)
+	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, map[string]any{
+		"name": m.Name.ValueString(),
+	})
 }
 
-type PkiTPResourceModel struct {
+type PkiTPRootModel struct {
 	PkiTPModel
 
 	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ParentDN types.String `tfsdk:"parent_dn"`
 }
 
-func NewPkiTPResourceModelNull() PkiTPResourceModel {
-	return PkiTPResourceModel{
+func NewPkiTPRootModelNull() PkiTPRootModel {
+	return PkiTPRootModel{
 		PkiTPModel: NewPkiTPModelNull(),
 		ID:         types.StringNull(),
-		ParentDn:   types.StringNull(),
+		ParentDN:   types.StringNull(),
 	}
 }
 
-func (m *PkiTPResourceModel) SetIDFromDN(dn string) {
+func (m *PkiTPRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
 
-func (m *PkiTPResourceModel) SetFromResponse(
+func (m *PkiTPRootModel) SetFromResponse(
 	ctx context.Context,
 	response *container.Container,
 ) (bool, diag.Diagnostics) {
@@ -285,17 +384,18 @@ func (m *PkiTPResourceModel) SetFromResponse(
 
 	m.PkiTPModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 
-func (m *PkiTPResourceModel) buildPayloadEnvelope(payloadObject map[string]any, create bool) map[string]any {
+func (m *PkiTPRootModel) buildPayloadEnvelope(payloadObject map[string]any, create bool) map[string]any {
 	directEnvelope := map[string]any{"pkiTP": payloadObject}
 	if !create {
 		return directEnvelope
 	}
-	for _, pattern := range pkiTPParentDnVariant1Patterns {
-		if pattern.MatchString(m.ParentDn.ValueString()) {
+
+	for _, pattern := range pkiTPParentDNVariant1Patterns {
+		if pattern.MatchString(m.ParentDN.ValueString()) {
 			return map[string]any{
 				"cloudCertStore": map[string]any{
 					"attributes": map[string]any{},
@@ -310,7 +410,7 @@ func (m *PkiTPResourceModel) buildPayloadEnvelope(payloadObject map[string]any, 
 	return directEnvelope
 }
 
-func (m *PkiTPResourceModel) BuildPayload(
+func (m *PkiTPRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *PkiTPModel,
 	create bool,
@@ -321,52 +421,16 @@ func (m *PkiTPResourceModel) BuildPayload(
 	if diagnostics.HasError() {
 		return nil, diagnostics
 	}
+
 	if markCreated {
 		payloadObject["attributes"].(map[string]any)["status"] = "created"
 	}
+
 	payloadEnvelope := m.buildPayloadEnvelope(payloadObject, create)
-	jsonPayload := modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload")
-	return jsonPayload, diagnostics
+	return modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload"), diagnostics
 }
 
-func (m *PkiTPResourceModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
+func (m *PkiTPRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
-	payload := modelHelpers.NewDeletePayload(ctx, &diagnostics, "pkiTP", m.ID.ValueString())
-	return payload, diagnostics
-}
-
-type PkiTPDataSourceModel struct {
-	PkiTPModel
-
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
-}
-
-func NewPkiTPDataSourceModelNull() PkiTPDataSourceModel {
-	return PkiTPDataSourceModel{
-		PkiTPModel: NewPkiTPModelNull(),
-		ID:         types.StringNull(),
-		ParentDn:   types.StringNull(),
-	}
-}
-
-func (m *PkiTPDataSourceModel) SetIDFromDN(dn string) {
-	m.ID = types.StringValue(dn)
-}
-
-func (m *PkiTPDataSourceModel) SetFromResponse(
-	ctx context.Context,
-	response *container.Container,
-) (bool, diag.Diagnostics) {
-	fallbackModel := m.PkiTPModel
-	model, dn, diagnostics := PkiTPModelFromResponse(ctx, response, &fallbackModel)
-	found := model != nil
-	if diagnostics.HasError() || !found {
-		return found, diagnostics
-	}
-
-	m.PkiTPModel = *model
-	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
-	return true, diagnostics
+	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "pkiTP", m.ID.ValueString()), diagnostics
 }

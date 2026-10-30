@@ -6,15 +6,92 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+func fvEpMacTagSchemaDefinition() modelHelpers.ClassSchema {
+	return modelHelpers.ClassSchema{
+		ResourceDescription:   "Manages ACI Endpoint Tag MAC",
+		DataSourceDescription: "Data source for ACI Endpoint Tag MAC",
+		Properties: map[string]modelHelpers.PropertySchema{
+			"annotation": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The annotation of the Endpoint Tag MAC object.",
+			},
+			"bd_name": {
+				Type:            modelHelpers.StringProperty,
+				Required:        true,
+				RequiresReplace: true,
+				Description:     "The bridge domain name of the Endpoint Tag MAC object. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bridge_domain) with `aci_bridge_domain.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/bridge_domain) with `data.aci_bridge_domain.example.name`.",
+			},
+			"id_attribute": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The identifier of the Endpoint Tag MAC object.",
+			},
+			"mac": {
+				Type:            modelHelpers.StringProperty,
+				Required:        true,
+				RequiresReplace: true,
+				Description:     "The MAC address of the Endpoint Tag MAC object.",
+			},
+			"name": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The name of the Endpoint Tag MAC object.",
+			},
+			"name_alias": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The name alias of the Endpoint Tag MAC object.",
+			},
+		},
+		Children: map[string]modelHelpers.ChildSchema{
+			"annotations": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.",
+				Schema:      tagAnnotationSchemaDefinition,
+			},
+			"tags": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.",
+				Schema:      tagTagSchemaDefinition,
+			},
+		},
+		Identifiers: []string{
+			"bd_name",
+			"mac",
+		},
+		ParentDN: &modelHelpers.ParentDNSchema{
+			AttributeName: "parent_dn",
+			Config:        modelHelpers.ParentDNAttributeConfig{},
+		},
+		AnnotationAttribute: "annotation",
+	}
+}
+
+func FvEpMacTagResourceSchema(defaultAnnotation string) resourceschema.Schema {
+	return fvEpMacTagSchemaDefinition().ResourceSchema(defaultAnnotation)
+}
+
+func FvEpMacTagDataSourceSchema() datasourceschema.Schema {
+	return fvEpMacTagSchemaDefinition().DataSourceSchema()
+}
 
 type FvEpMacTagModel struct {
 	Annotation    types.String `tfsdk:"annotation"`
@@ -73,19 +150,15 @@ func (m *FvEpMacTagModel) BuildRN() string {
 	rn := "eptags/epmactag-{mac}-[{bdName}]"
 	rn = strings.ReplaceAll(rn, "{bdName}", m.BdName.ValueString())
 	rn = strings.ReplaceAll(rn, "{mac}", m.Mac.ValueString())
-
 	return rn
 }
 
 func (m *FvEpMacTagModel) BuildDN(parentDN string) string {
-	return parentDN + "/" + m.BuildRN()
+	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
 }
 
 func (m *FvEpMacTagModel) ParentDNFromDN(dn string) string {
-	rn := m.BuildRN()
-
-	parentDN, _ := strings.CutSuffix(dn, "/"+rn)
-	return parentDN
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
 }
 
 func FvEpMacTagModelFromObject(
@@ -100,12 +173,14 @@ func FvEpMacTagModelFromObject(
 	if !ok {
 		return model, diagnostics
 	}
+
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "bdName", &model.BdName)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "id", &model.FvEpMacTagID)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "mac", &model.Mac)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "name", &model.Name)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "nameAlias", &model.NameAlias)
+
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,
 		&diagnostics,
@@ -116,6 +191,7 @@ func FvEpMacTagModelFromObject(
 			"tagTag",
 		},
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -124,6 +200,7 @@ func FvEpMacTagModelFromObject(
 		TagAnnotationModelFromObject,
 		&model.TagAnnotation,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -155,6 +232,7 @@ func (m *FvEpMacTagModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
+
 	if !modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "annotation", m.Annotation) && nested {
 		attributes["annotation"] = defaultAnnotation
 	}
@@ -163,6 +241,7 @@ func (m *FvEpMacTagModel) BuildPayloadObject(
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "mac", m.Mac)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "name", m.Name)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "nameAlias", m.NameAlias)
+
 	var priorTagAnnotation *types.Set
 	if priorState != nil {
 		priorTagAnnotation = &priorState.TagAnnotation
@@ -183,6 +262,7 @@ func (m *FvEpMacTagModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, tagAnnotationPayloads...)
+
 	var priorTagTag *types.Set
 	if priorState != nil {
 		priorTagTag = &priorState.TagTag
@@ -217,32 +297,32 @@ func (m *FvEpMacTagModel) BuildNestedDeletePayloadObject(
 	ctx context.Context,
 	diagnostics *diag.Diagnostics,
 ) map[string]any {
-	attributes := map[string]any{}
-	attributes["bdName"] = m.BdName.ValueString()
-	attributes["mac"] = m.Mac.ValueString()
-	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, attributes)
+	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, map[string]any{
+		"bdName": m.BdName.ValueString(),
+		"mac":    m.Mac.ValueString(),
+	})
 }
 
-type FvEpMacTagResourceModel struct {
+type FvEpMacTagRootModel struct {
 	FvEpMacTagModel
 
 	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ParentDN types.String `tfsdk:"parent_dn"`
 }
 
-func NewFvEpMacTagResourceModelNull() FvEpMacTagResourceModel {
-	return FvEpMacTagResourceModel{
+func NewFvEpMacTagRootModelNull() FvEpMacTagRootModel {
+	return FvEpMacTagRootModel{
 		FvEpMacTagModel: NewFvEpMacTagModelNull(),
 		ID:              types.StringNull(),
-		ParentDn:        types.StringNull(),
+		ParentDN:        types.StringNull(),
 	}
 }
 
-func (m *FvEpMacTagResourceModel) SetIDFromDN(dn string) {
+func (m *FvEpMacTagRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
 
-func (m *FvEpMacTagResourceModel) SetFromResponse(
+func (m *FvEpMacTagRootModel) SetFromResponse(
 	ctx context.Context,
 	response *container.Container,
 ) (bool, diag.Diagnostics) {
@@ -255,11 +335,11 @@ func (m *FvEpMacTagResourceModel) SetFromResponse(
 
 	m.FvEpMacTagModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 
-func (m *FvEpMacTagResourceModel) BuildPayload(
+func (m *FvEpMacTagRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *FvEpMacTagModel,
 	create bool,
@@ -270,52 +350,16 @@ func (m *FvEpMacTagResourceModel) BuildPayload(
 	if diagnostics.HasError() {
 		return nil, diagnostics
 	}
+
 	if markCreated {
 		payloadObject["attributes"].(map[string]any)["status"] = "created"
 	}
+
 	payloadEnvelope := map[string]any{"fvEpMacTag": payloadObject}
-	jsonPayload := modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload")
-	return jsonPayload, diagnostics
+	return modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload"), diagnostics
 }
 
-func (m *FvEpMacTagResourceModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
+func (m *FvEpMacTagRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
-	payload := modelHelpers.NewDeletePayload(ctx, &diagnostics, "fvEpMacTag", m.ID.ValueString())
-	return payload, diagnostics
-}
-
-type FvEpMacTagDataSourceModel struct {
-	FvEpMacTagModel
-
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
-}
-
-func NewFvEpMacTagDataSourceModelNull() FvEpMacTagDataSourceModel {
-	return FvEpMacTagDataSourceModel{
-		FvEpMacTagModel: NewFvEpMacTagModelNull(),
-		ID:              types.StringNull(),
-		ParentDn:        types.StringNull(),
-	}
-}
-
-func (m *FvEpMacTagDataSourceModel) SetIDFromDN(dn string) {
-	m.ID = types.StringValue(dn)
-}
-
-func (m *FvEpMacTagDataSourceModel) SetFromResponse(
-	ctx context.Context,
-	response *container.Container,
-) (bool, diag.Diagnostics) {
-	fallbackModel := m.FvEpMacTagModel
-	model, dn, diagnostics := FvEpMacTagModelFromResponse(ctx, response, &fallbackModel)
-	found := model != nil
-	if diagnostics.HasError() || !found {
-		return found, diagnostics
-	}
-
-	m.FvEpMacTagModel = *model
-	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
-	return true, diagnostics
+	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "fvEpMacTag", m.ID.ValueString()), diagnostics
 }

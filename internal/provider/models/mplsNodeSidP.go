@@ -6,16 +6,93 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+func mplsNodeSidPSchemaDefinition() modelHelpers.ClassSchema {
+	return modelHelpers.ClassSchema{
+		ResourceDescription:   "Manages ACI L3Out Node SR-MPLS Segment ID Profile",
+		DataSourceDescription: "Data source for ACI L3Out Node SR-MPLS Segment ID Profile",
+		Properties: map[string]modelHelpers.PropertySchema{
+			"annotation": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The annotation of the L3Out Node SR-MPLS Segment ID Profile object.",
+			},
+			"description": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The description of the L3Out Node SR-MPLS Segment ID Profile object.",
+			},
+			"loopback_address": {
+				Type:             modelHelpers.StringProperty,
+				CustomStringType: customTypes.IPAddressStringType{},
+				Optional:         true,
+				Computed:         true,
+				Description:      "The loopback address of the L3Out Node SR-MPLS Segment ID Profile object.",
+			},
+			"name": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The name of the L3Out Node SR-MPLS Segment ID Profile object.",
+			},
+			"name_alias": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The name alias of the L3Out Node SR-MPLS Segment ID Profile object.",
+			},
+			"segment_id": {
+				Type:            modelHelpers.StringProperty,
+				Required:        true,
+				RequiresReplace: true,
+				Description:     "The segment ID of the L3Out Node SR-MPLS Segment ID Profile object.",
+			},
+		},
+		Children: map[string]modelHelpers.ChildSchema{
+			"annotations": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.",
+				Schema:      tagAnnotationSchemaDefinition,
+			},
+			"tags": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.",
+				Schema:      tagTagSchemaDefinition,
+			},
+		},
+		Identifiers: []string{
+			"segment_id",
+		},
+		ParentDN: &modelHelpers.ParentDNSchema{
+			AttributeName: "parent_dn",
+			Config:        modelHelpers.ParentDNAttributeConfig{},
+		},
+		AnnotationAttribute: "annotation",
+	}
+}
+
+func MplsNodeSidPResourceSchema(defaultAnnotation string) resourceschema.Schema {
+	return mplsNodeSidPSchemaDefinition().ResourceSchema(defaultAnnotation)
+}
+
+func MplsNodeSidPDataSourceSchema() datasourceschema.Schema {
+	return mplsNodeSidPSchemaDefinition().DataSourceSchema()
+}
 
 type MplsNodeSidPModel struct {
 	Annotation    types.String                     `tfsdk:"annotation"`
@@ -73,19 +150,15 @@ func NewMplsNodeSidPModelNull() MplsNodeSidPModel {
 func (m *MplsNodeSidPModel) BuildRN() string {
 	rn := "nodesidp-{sidoffset}"
 	rn = strings.ReplaceAll(rn, "{sidoffset}", m.Sidoffset.ValueString())
-
 	return rn
 }
 
 func (m *MplsNodeSidPModel) BuildDN(parentDN string) string {
-	return parentDN + "/" + m.BuildRN()
+	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
 }
 
 func (m *MplsNodeSidPModel) ParentDNFromDN(dn string) string {
-	rn := m.BuildRN()
-
-	parentDN, _ := strings.CutSuffix(dn, "/"+rn)
-	return parentDN
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
 }
 
 func MplsNodeSidPModelFromObject(
@@ -100,12 +173,14 @@ func MplsNodeSidPModelFromObject(
 	if !ok {
 		return model, diagnostics
 	}
+
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "descr", &model.Descr)
 	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "loopbackAddr", &model.LoopbackAddr, customTypes.NewIPAddressStringValue)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "name", &model.Name)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "nameAlias", &model.NameAlias)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "sidoffset", &model.Sidoffset)
+
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,
 		&diagnostics,
@@ -116,6 +191,7 @@ func MplsNodeSidPModelFromObject(
 			"tagTag",
 		},
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -124,6 +200,7 @@ func MplsNodeSidPModelFromObject(
 		TagAnnotationModelFromObject,
 		&model.TagAnnotation,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -155,6 +232,7 @@ func (m *MplsNodeSidPModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
+
 	if !modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "annotation", m.Annotation) && nested {
 		attributes["annotation"] = defaultAnnotation
 	}
@@ -163,6 +241,7 @@ func (m *MplsNodeSidPModel) BuildPayloadObject(
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "name", m.Name)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "nameAlias", m.NameAlias)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "sidoffset", m.Sidoffset)
+
 	var priorTagAnnotation *types.Set
 	if priorState != nil {
 		priorTagAnnotation = &priorState.TagAnnotation
@@ -183,6 +262,7 @@ func (m *MplsNodeSidPModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, tagAnnotationPayloads...)
+
 	var priorTagTag *types.Set
 	if priorState != nil {
 		priorTagTag = &priorState.TagTag
@@ -217,31 +297,31 @@ func (m *MplsNodeSidPModel) BuildNestedDeletePayloadObject(
 	ctx context.Context,
 	diagnostics *diag.Diagnostics,
 ) map[string]any {
-	attributes := map[string]any{}
-	attributes["sidoffset"] = m.Sidoffset.ValueString()
-	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, attributes)
+	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, map[string]any{
+		"sidoffset": m.Sidoffset.ValueString(),
+	})
 }
 
-type MplsNodeSidPResourceModel struct {
+type MplsNodeSidPRootModel struct {
 	MplsNodeSidPModel
 
 	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ParentDN types.String `tfsdk:"parent_dn"`
 }
 
-func NewMplsNodeSidPResourceModelNull() MplsNodeSidPResourceModel {
-	return MplsNodeSidPResourceModel{
+func NewMplsNodeSidPRootModelNull() MplsNodeSidPRootModel {
+	return MplsNodeSidPRootModel{
 		MplsNodeSidPModel: NewMplsNodeSidPModelNull(),
 		ID:                types.StringNull(),
-		ParentDn:          types.StringNull(),
+		ParentDN:          types.StringNull(),
 	}
 }
 
-func (m *MplsNodeSidPResourceModel) SetIDFromDN(dn string) {
+func (m *MplsNodeSidPRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
 
-func (m *MplsNodeSidPResourceModel) SetFromResponse(
+func (m *MplsNodeSidPRootModel) SetFromResponse(
 	ctx context.Context,
 	response *container.Container,
 ) (bool, diag.Diagnostics) {
@@ -254,11 +334,11 @@ func (m *MplsNodeSidPResourceModel) SetFromResponse(
 
 	m.MplsNodeSidPModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 
-func (m *MplsNodeSidPResourceModel) BuildPayload(
+func (m *MplsNodeSidPRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *MplsNodeSidPModel,
 	create bool,
@@ -269,52 +349,16 @@ func (m *MplsNodeSidPResourceModel) BuildPayload(
 	if diagnostics.HasError() {
 		return nil, diagnostics
 	}
+
 	if markCreated {
 		payloadObject["attributes"].(map[string]any)["status"] = "created"
 	}
+
 	payloadEnvelope := map[string]any{"mplsNodeSidP": payloadObject}
-	jsonPayload := modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload")
-	return jsonPayload, diagnostics
+	return modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload"), diagnostics
 }
 
-func (m *MplsNodeSidPResourceModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
+func (m *MplsNodeSidPRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
-	payload := modelHelpers.NewDeletePayload(ctx, &diagnostics, "mplsNodeSidP", m.ID.ValueString())
-	return payload, diagnostics
-}
-
-type MplsNodeSidPDataSourceModel struct {
-	MplsNodeSidPModel
-
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
-}
-
-func NewMplsNodeSidPDataSourceModelNull() MplsNodeSidPDataSourceModel {
-	return MplsNodeSidPDataSourceModel{
-		MplsNodeSidPModel: NewMplsNodeSidPModelNull(),
-		ID:                types.StringNull(),
-		ParentDn:          types.StringNull(),
-	}
-}
-
-func (m *MplsNodeSidPDataSourceModel) SetIDFromDN(dn string) {
-	m.ID = types.StringValue(dn)
-}
-
-func (m *MplsNodeSidPDataSourceModel) SetFromResponse(
-	ctx context.Context,
-	response *container.Container,
-) (bool, diag.Diagnostics) {
-	fallbackModel := m.MplsNodeSidPModel
-	model, dn, diagnostics := MplsNodeSidPModelFromResponse(ctx, response, &fallbackModel)
-	found := model != nil
-	if diagnostics.HasError() || !found {
-		return found, diagnostics
-	}
-
-	m.MplsNodeSidPModel = *model
-	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
-	return true, diagnostics
+	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "mplsNodeSidP", m.ID.ValueString()), diagnostics
 }

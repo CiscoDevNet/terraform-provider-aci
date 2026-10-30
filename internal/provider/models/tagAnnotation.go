@@ -6,15 +6,54 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+func tagAnnotationSchemaDefinition() modelHelpers.ClassSchema {
+	return modelHelpers.ClassSchema{
+		ResourceDescription:   "Manages ACI Annotation",
+		DataSourceDescription: "Data source for ACI Annotation",
+		Properties: map[string]modelHelpers.PropertySchema{
+			"key": {
+				Type:            modelHelpers.StringProperty,
+				Required:        true,
+				RequiresReplace: true,
+				Description:     "The key used to uniquely identify this configuration object.",
+			},
+			"value": {
+				Type:        modelHelpers.StringProperty,
+				Required:    true,
+				Description: "The value of the property.",
+			},
+		},
+		Children: map[string]modelHelpers.ChildSchema{},
+		Identifiers: []string{
+			"key",
+		},
+		ParentDN: &modelHelpers.ParentDNSchema{
+			AttributeName: "parent_dn",
+			Config:        modelHelpers.ParentDNAttributeConfig{},
+		},
+	}
+}
+
+func TagAnnotationResourceSchema(defaultAnnotation string) resourceschema.Schema {
+	return tagAnnotationSchemaDefinition().ResourceSchema(defaultAnnotation)
+}
+
+func TagAnnotationDataSourceSchema() datasourceschema.Schema {
+	return tagAnnotationSchemaDefinition().DataSourceSchema()
+}
 
 type TagAnnotationModel struct {
 	Key   types.String `tfsdk:"key"`
@@ -38,19 +77,15 @@ func NewTagAnnotationModelNull() TagAnnotationModel {
 func (m *TagAnnotationModel) BuildRN() string {
 	rn := "annotationKey-[{key}]"
 	rn = strings.ReplaceAll(rn, "{key}", m.Key.ValueString())
-
 	return rn
 }
 
 func (m *TagAnnotationModel) BuildDN(parentDN string) string {
-	return parentDN + "/" + m.BuildRN()
+	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
 }
 
 func (m *TagAnnotationModel) ParentDNFromDN(dn string) string {
-	rn := m.BuildRN()
-
-	parentDN, _ := strings.CutSuffix(dn, "/"+rn)
-	return parentDN
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
 }
 
 func TagAnnotationModelFromObject(
@@ -65,6 +100,7 @@ func TagAnnotationModelFromObject(
 	if !ok {
 		return model, diagnostics
 	}
+
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "key", &model.Key)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "value", &model.Value)
 
@@ -90,6 +126,7 @@ func (m *TagAnnotationModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
+
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "key", m.Key)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "value", m.Value)
 
@@ -106,31 +143,31 @@ func (m *TagAnnotationModel) BuildNestedDeletePayloadObject(
 	ctx context.Context,
 	diagnostics *diag.Diagnostics,
 ) map[string]any {
-	attributes := map[string]any{}
-	attributes["key"] = m.Key.ValueString()
-	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, attributes)
+	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, map[string]any{
+		"key": m.Key.ValueString(),
+	})
 }
 
-type TagAnnotationResourceModel struct {
+type TagAnnotationRootModel struct {
 	TagAnnotationModel
 
 	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ParentDN types.String `tfsdk:"parent_dn"`
 }
 
-func NewTagAnnotationResourceModelNull() TagAnnotationResourceModel {
-	return TagAnnotationResourceModel{
+func NewTagAnnotationRootModelNull() TagAnnotationRootModel {
+	return TagAnnotationRootModel{
 		TagAnnotationModel: NewTagAnnotationModelNull(),
 		ID:                 types.StringNull(),
-		ParentDn:           types.StringNull(),
+		ParentDN:           types.StringNull(),
 	}
 }
 
-func (m *TagAnnotationResourceModel) SetIDFromDN(dn string) {
+func (m *TagAnnotationRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
 
-func (m *TagAnnotationResourceModel) SetFromResponse(
+func (m *TagAnnotationRootModel) SetFromResponse(
 	ctx context.Context,
 	response *container.Container,
 ) (bool, diag.Diagnostics) {
@@ -143,11 +180,11 @@ func (m *TagAnnotationResourceModel) SetFromResponse(
 
 	m.TagAnnotationModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 
-func (m *TagAnnotationResourceModel) BuildPayload(
+func (m *TagAnnotationRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *TagAnnotationModel,
 	create bool,
@@ -158,52 +195,16 @@ func (m *TagAnnotationResourceModel) BuildPayload(
 	if diagnostics.HasError() {
 		return nil, diagnostics
 	}
+
 	if markCreated {
 		payloadObject["attributes"].(map[string]any)["status"] = "created"
 	}
+
 	payloadEnvelope := map[string]any{"tagAnnotation": payloadObject}
-	jsonPayload := modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload")
-	return jsonPayload, diagnostics
+	return modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload"), diagnostics
 }
 
-func (m *TagAnnotationResourceModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
+func (m *TagAnnotationRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
-	payload := modelHelpers.NewDeletePayload(ctx, &diagnostics, "tagAnnotation", m.ID.ValueString())
-	return payload, diagnostics
-}
-
-type TagAnnotationDataSourceModel struct {
-	TagAnnotationModel
-
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
-}
-
-func NewTagAnnotationDataSourceModelNull() TagAnnotationDataSourceModel {
-	return TagAnnotationDataSourceModel{
-		TagAnnotationModel: NewTagAnnotationModelNull(),
-		ID:                 types.StringNull(),
-		ParentDn:           types.StringNull(),
-	}
-}
-
-func (m *TagAnnotationDataSourceModel) SetIDFromDN(dn string) {
-	m.ID = types.StringValue(dn)
-}
-
-func (m *TagAnnotationDataSourceModel) SetFromResponse(
-	ctx context.Context,
-	response *container.Container,
-) (bool, diag.Diagnostics) {
-	fallbackModel := m.TagAnnotationModel
-	model, dn, diagnostics := TagAnnotationModelFromResponse(ctx, response, &fallbackModel)
-	found := model != nil
-	if diagnostics.HasError() || !found {
-		return found, diagnostics
-	}
-
-	m.TagAnnotationModel = *model
-	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
-	return true, diagnostics
+	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "tagAnnotation", m.ID.ValueString()), diagnostics
 }

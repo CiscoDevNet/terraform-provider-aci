@@ -6,15 +6,109 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+func fvRemoteIdSchemaDefinition() modelHelpers.ClassSchema {
+	return modelHelpers.ClassSchema{
+		ResourceDescription:   "Manages ACI Remote Site",
+		DataSourceDescription: "Data source for ACI Remote Site",
+		Properties: map[string]modelHelpers.PropertySchema{
+			"annotation": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The annotation of the Remote Site object.",
+			},
+			"description": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The description of the Remote Site object.",
+			},
+			"name": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The name of the Remote Site object.",
+			},
+			"name_alias": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The name alias of the Remote Site object.",
+			},
+			"owner_key": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The key for enabling clients to own their data for entity correlation.",
+			},
+			"owner_tag": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "A tag for enabling clients to add their own data. For example, to indicate who created this object.",
+			},
+			"remote_vrf_pc_tag": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The policy class tag (pcTag) of the remote VRF. This attribute can only be present when the object for site association is a VRF.",
+			},
+			"remote_pc_tag": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The policy class tag (pcTag) of the remote object.",
+			},
+			"site_id": {
+				Type:            modelHelpers.StringProperty,
+				Required:        true,
+				RequiresReplace: true,
+				Description:     "The remote site identifier that is associated with the object of the primary/local site as an integer.",
+			},
+		},
+		Children: map[string]modelHelpers.ChildSchema{
+			"annotations": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.",
+				Schema:      tagAnnotationSchemaDefinition,
+			},
+			"tags": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.",
+				Schema:      tagTagSchemaDefinition,
+			},
+		},
+		Identifiers: []string{
+			"site_id",
+		},
+		ParentDN: &modelHelpers.ParentDNSchema{
+			AttributeName: "parent_dn",
+			Config:        modelHelpers.ParentDNAttributeConfig{},
+		},
+		AnnotationAttribute: "annotation",
+	}
+}
+
+func FvRemoteIdResourceSchema(defaultAnnotation string) resourceschema.Schema {
+	return fvRemoteIdSchemaDefinition().ResourceSchema(defaultAnnotation)
+}
+
+func FvRemoteIdDataSourceSchema() datasourceschema.Schema {
+	return fvRemoteIdSchemaDefinition().DataSourceSchema()
+}
 
 type FvRemoteIdModel struct {
 	Annotation     types.String `tfsdk:"annotation"`
@@ -81,19 +175,15 @@ func NewFvRemoteIdModelNull() FvRemoteIdModel {
 func (m *FvRemoteIdModel) BuildRN() string {
 	rn := "site-{siteId}"
 	rn = strings.ReplaceAll(rn, "{siteId}", m.SiteId.ValueString())
-
 	return rn
 }
 
 func (m *FvRemoteIdModel) BuildDN(parentDN string) string {
-	return parentDN + "/" + m.BuildRN()
+	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
 }
 
 func (m *FvRemoteIdModel) ParentDNFromDN(dn string) string {
-	rn := m.BuildRN()
-
-	parentDN, _ := strings.CutSuffix(dn, "/"+rn)
-	return parentDN
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
 }
 
 func FvRemoteIdModelFromObject(
@@ -108,6 +198,7 @@ func FvRemoteIdModelFromObject(
 	if !ok {
 		return model, diagnostics
 	}
+
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "descr", &model.Descr)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "name", &model.Name)
@@ -117,6 +208,7 @@ func FvRemoteIdModelFromObject(
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "remoteCtxPcTag", &model.RemoteCtxPcTag)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "remotePcTag", &model.RemotePcTag)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "siteId", &model.SiteId)
+
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,
 		&diagnostics,
@@ -127,6 +219,7 @@ func FvRemoteIdModelFromObject(
 			"tagTag",
 		},
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -135,6 +228,7 @@ func FvRemoteIdModelFromObject(
 		TagAnnotationModelFromObject,
 		&model.TagAnnotation,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -166,6 +260,7 @@ func (m *FvRemoteIdModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
+
 	if !modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "annotation", m.Annotation) && nested {
 		attributes["annotation"] = defaultAnnotation
 	}
@@ -177,6 +272,7 @@ func (m *FvRemoteIdModel) BuildPayloadObject(
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "remoteCtxPcTag", m.RemoteCtxPcTag)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "remotePcTag", m.RemotePcTag)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "siteId", m.SiteId)
+
 	var priorTagAnnotation *types.Set
 	if priorState != nil {
 		priorTagAnnotation = &priorState.TagAnnotation
@@ -197,6 +293,7 @@ func (m *FvRemoteIdModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, tagAnnotationPayloads...)
+
 	var priorTagTag *types.Set
 	if priorState != nil {
 		priorTagTag = &priorState.TagTag
@@ -231,31 +328,31 @@ func (m *FvRemoteIdModel) BuildNestedDeletePayloadObject(
 	ctx context.Context,
 	diagnostics *diag.Diagnostics,
 ) map[string]any {
-	attributes := map[string]any{}
-	attributes["siteId"] = m.SiteId.ValueString()
-	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, attributes)
+	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, map[string]any{
+		"siteId": m.SiteId.ValueString(),
+	})
 }
 
-type FvRemoteIdResourceModel struct {
+type FvRemoteIdRootModel struct {
 	FvRemoteIdModel
 
 	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ParentDN types.String `tfsdk:"parent_dn"`
 }
 
-func NewFvRemoteIdResourceModelNull() FvRemoteIdResourceModel {
-	return FvRemoteIdResourceModel{
+func NewFvRemoteIdRootModelNull() FvRemoteIdRootModel {
+	return FvRemoteIdRootModel{
 		FvRemoteIdModel: NewFvRemoteIdModelNull(),
 		ID:              types.StringNull(),
-		ParentDn:        types.StringNull(),
+		ParentDN:        types.StringNull(),
 	}
 }
 
-func (m *FvRemoteIdResourceModel) SetIDFromDN(dn string) {
+func (m *FvRemoteIdRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
 
-func (m *FvRemoteIdResourceModel) SetFromResponse(
+func (m *FvRemoteIdRootModel) SetFromResponse(
 	ctx context.Context,
 	response *container.Container,
 ) (bool, diag.Diagnostics) {
@@ -268,11 +365,11 @@ func (m *FvRemoteIdResourceModel) SetFromResponse(
 
 	m.FvRemoteIdModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 
-func (m *FvRemoteIdResourceModel) BuildPayload(
+func (m *FvRemoteIdRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *FvRemoteIdModel,
 	create bool,
@@ -283,52 +380,16 @@ func (m *FvRemoteIdResourceModel) BuildPayload(
 	if diagnostics.HasError() {
 		return nil, diagnostics
 	}
+
 	if markCreated {
 		payloadObject["attributes"].(map[string]any)["status"] = "created"
 	}
+
 	payloadEnvelope := map[string]any{"fvRemoteId": payloadObject}
-	jsonPayload := modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload")
-	return jsonPayload, diagnostics
+	return modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload"), diagnostics
 }
 
-func (m *FvRemoteIdResourceModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
+func (m *FvRemoteIdRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
-	payload := modelHelpers.NewDeletePayload(ctx, &diagnostics, "fvRemoteId", m.ID.ValueString())
-	return payload, diagnostics
-}
-
-type FvRemoteIdDataSourceModel struct {
-	FvRemoteIdModel
-
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
-}
-
-func NewFvRemoteIdDataSourceModelNull() FvRemoteIdDataSourceModel {
-	return FvRemoteIdDataSourceModel{
-		FvRemoteIdModel: NewFvRemoteIdModelNull(),
-		ID:              types.StringNull(),
-		ParentDn:        types.StringNull(),
-	}
-}
-
-func (m *FvRemoteIdDataSourceModel) SetIDFromDN(dn string) {
-	m.ID = types.StringValue(dn)
-}
-
-func (m *FvRemoteIdDataSourceModel) SetFromResponse(
-	ctx context.Context,
-	response *container.Container,
-) (bool, diag.Diagnostics) {
-	fallbackModel := m.FvRemoteIdModel
-	model, dn, diagnostics := FvRemoteIdModelFromResponse(ctx, response, &fallbackModel)
-	found := model != nil
-	if diagnostics.HasError() || !found {
-		return found, diagnostics
-	}
-
-	m.FvRemoteIdModel = *model
-	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
-	return true, diagnostics
+	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "fvRemoteId", m.ID.ValueString()), diagnostics
 }

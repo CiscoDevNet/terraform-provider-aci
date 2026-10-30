@@ -99,7 +99,7 @@ func (p *Property) ModelFieldName(className *ClassName) string {
 // ModelValueType returns the Terraform framework value type used by the
 // generated model field.
 func (p *Property) ModelValueType(className *ClassName) string {
-	if customTypeName := p.modelCustomTypeName(className); customTypeName != "" {
+	if customTypeName := p.CustomTypeName(className); customTypeName != "" {
 		return fmt.Sprintf("customTypes.%sStringValue", customTypeName)
 	}
 
@@ -116,7 +116,7 @@ func (p *Property) ModelValueType(className *ClassName) string {
 // ModelAttributeType returns the attr.Type expression for a generated model
 // field. It is reused by parent models when constructing nested object types.
 func (p *Property) ModelAttributeType(className *ClassName) string {
-	if customTypeName := p.modelCustomTypeName(className); customTypeName != "" {
+	if customTypeName := p.CustomTypeName(className); customTypeName != "" {
 		return fmt.Sprintf("customTypes.%sStringType{}", customTypeName)
 	}
 
@@ -133,7 +133,7 @@ func (p *Property) ModelAttributeType(className *ClassName) string {
 // ModelNullValue returns the constructor expression used to initialize a
 // generated model field with an explicit Terraform null value.
 func (p *Property) ModelNullValue(className *ClassName) string {
-	if customTypeName := p.modelCustomTypeName(className); customTypeName != "" {
+	if customTypeName := p.CustomTypeName(className); customTypeName != "" {
 		return fmt.Sprintf("customTypes.New%sStringNull()", customTypeName)
 	}
 
@@ -150,7 +150,7 @@ func (p *Property) ModelNullValue(className *ClassName) string {
 // ModelStringValueConstructor returns the Terraform string value constructor
 // used when decoding this property from an APIC response.
 func (p *Property) ModelStringValueConstructor(className *ClassName) string {
-	if customTypeName := p.modelCustomTypeName(className); customTypeName != "" {
+	if customTypeName := p.CustomTypeName(className); customTypeName != "" {
 		return fmt.Sprintf("customTypes.New%sStringValue", customTypeName)
 	}
 
@@ -168,7 +168,10 @@ func (p *Property) UsesCustomModelType() bool {
 	}
 }
 
-func (p *Property) modelCustomTypeName(className *ClassName) string {
+// CustomTypeName returns the shared custom string type name used by generated
+// model fields and schema attributes. An empty string denotes a framework
+// built-in value type.
+func (p *Property) CustomTypeName(className *ClassName) string {
 	switch p.ValueType {
 	case IpAddress:
 		return "IPAddress"
@@ -410,10 +413,11 @@ func (p *Property) setPropertyData() error {
 
 	p.setReadOnly()
 
-	// setComputed is called after setRequired because it depends on p.Required.
-	p.setComputed()
-
 	p.setSensitive()
+
+	// setComputed is called after setRequired, setReadOnly, and setSensitive
+	// because its resource-schema behavior depends on all three values.
+	p.setComputed()
 
 	err = p.setValidators()
 	if err != nil {
@@ -510,11 +514,11 @@ func (p *Property) setAttributeName() {
 
 func (p *Property) setComputed() {
 	// Determine if the property is computed.
-	// By default all properties are computed except required properties,
-	// because optional properties can have server-side defaults and read-only properties are always computed.
+	// Configurable sensitive properties are retained from the prior model when
+	// APIC omits them and therefore remain optional rather than computed.
 	genLogger.Debugf("Setting Computed for property '%s'.", p.PropertyName)
 
-	p.Computed = !p.Required
+	p.Computed = p.ReadOnly || (!p.Required && !p.Sensitive)
 
 	genLogger.Debugf("Successfully set Computed '%t' for property '%s'.", p.Computed, p.PropertyName)
 }

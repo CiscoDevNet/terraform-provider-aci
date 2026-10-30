@@ -6,15 +6,140 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+func fvVmAttrSchemaDefinition() modelHelpers.ClassSchema {
+	return modelHelpers.ClassSchema{
+		ResourceDescription:   "Manages ACI EPG uSeg VM Attribute",
+		DataSourceDescription: "Data source for ACI EPG uSeg VM Attribute",
+		Properties: map[string]modelHelpers.PropertySchema{
+			"annotation": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The annotation of the EPG uSeg VM Attribute object.",
+			},
+			"category": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The category of the EPG uSeg VM Attribute object.",
+			},
+			"description": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The description of the EPG uSeg VM Attribute object.",
+			},
+			"label_name": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The label name of the EPG uSeg VM Attribute object.",
+			},
+			"name": {
+				Type:            modelHelpers.StringProperty,
+				Required:        true,
+				RequiresReplace: true,
+				Description:     "The name of the EPG uSeg VM Attribute object.",
+			},
+			"name_alias": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The name alias of the EPG uSeg VM Attribute object.",
+			},
+			"operator": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"contains",
+					"endsWith",
+					"equals",
+					"notEquals",
+					"startsWith",
+				},
+				Description: "The operator of the EPG uSeg VM Attribute object.",
+			},
+			"owner_key": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The key for enabling clients to own their data for entity correlation.",
+			},
+			"owner_tag": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "A tag for enabling clients to add their own data. For example, to indicate who created this object.",
+			},
+			"type": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"custom-label",
+					"domain",
+					"guest-os",
+					"hv",
+					"rootContName",
+					"tag",
+					"vm",
+					"vm-folder",
+					"vm-name",
+					"vmfolder-path",
+					"vnic",
+				},
+				Description: "The type of the EPG uSeg VM Attribute object.",
+			},
+			"value": {
+				Type:        modelHelpers.StringProperty,
+				Required:    true,
+				Description: "The value of the EPG uSeg VM Attribute object.",
+			},
+		},
+		Children: map[string]modelHelpers.ChildSchema{
+			"annotations": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.",
+				Schema:      tagAnnotationSchemaDefinition,
+			},
+			"tags": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.",
+				Schema:      tagTagSchemaDefinition,
+			},
+		},
+		Identifiers: []string{
+			"name",
+		},
+		ParentDN: &modelHelpers.ParentDNSchema{
+			AttributeName: "parent_dn",
+			Config:        modelHelpers.ParentDNAttributeConfig{},
+		},
+		AnnotationAttribute: "annotation",
+	}
+}
+
+func FvVmAttrResourceSchema(defaultAnnotation string) resourceschema.Schema {
+	return fvVmAttrSchemaDefinition().ResourceSchema(defaultAnnotation)
+}
+
+func FvVmAttrDataSourceSchema() datasourceschema.Schema {
+	return fvVmAttrSchemaDefinition().DataSourceSchema()
+}
 
 type FvVmAttrModel struct {
 	Annotation    types.String `tfsdk:"annotation"`
@@ -87,19 +212,15 @@ func NewFvVmAttrModelNull() FvVmAttrModel {
 func (m *FvVmAttrModel) BuildRN() string {
 	rn := "vmattr-{name}"
 	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
-
 	return rn
 }
 
 func (m *FvVmAttrModel) BuildDN(parentDN string) string {
-	return parentDN + "/" + m.BuildRN()
+	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
 }
 
 func (m *FvVmAttrModel) ParentDNFromDN(dn string) string {
-	rn := m.BuildRN()
-
-	parentDN, _ := strings.CutSuffix(dn, "/"+rn)
-	return parentDN
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
 }
 
 func FvVmAttrModelFromObject(
@@ -114,6 +235,7 @@ func FvVmAttrModelFromObject(
 	if !ok {
 		return model, diagnostics
 	}
+
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "category", &model.Category)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "descr", &model.Descr)
@@ -125,6 +247,7 @@ func FvVmAttrModelFromObject(
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ownerTag", &model.OwnerTag)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "type", &model.Type)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "value", &model.Value)
+
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,
 		&diagnostics,
@@ -135,6 +258,7 @@ func FvVmAttrModelFromObject(
 			"tagTag",
 		},
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -143,6 +267,7 @@ func FvVmAttrModelFromObject(
 		TagAnnotationModelFromObject,
 		&model.TagAnnotation,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -174,6 +299,7 @@ func (m *FvVmAttrModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
+
 	if !modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "annotation", m.Annotation) && nested {
 		attributes["annotation"] = defaultAnnotation
 	}
@@ -187,6 +313,7 @@ func (m *FvVmAttrModel) BuildPayloadObject(
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "ownerTag", m.OwnerTag)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "type", m.Type)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "value", m.Value)
+
 	var priorTagAnnotation *types.Set
 	if priorState != nil {
 		priorTagAnnotation = &priorState.TagAnnotation
@@ -207,6 +334,7 @@ func (m *FvVmAttrModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, tagAnnotationPayloads...)
+
 	var priorTagTag *types.Set
 	if priorState != nil {
 		priorTagTag = &priorState.TagTag
@@ -241,31 +369,31 @@ func (m *FvVmAttrModel) BuildNestedDeletePayloadObject(
 	ctx context.Context,
 	diagnostics *diag.Diagnostics,
 ) map[string]any {
-	attributes := map[string]any{}
-	attributes["name"] = m.Name.ValueString()
-	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, attributes)
+	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, map[string]any{
+		"name": m.Name.ValueString(),
+	})
 }
 
-type FvVmAttrResourceModel struct {
+type FvVmAttrRootModel struct {
 	FvVmAttrModel
 
 	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ParentDN types.String `tfsdk:"parent_dn"`
 }
 
-func NewFvVmAttrResourceModelNull() FvVmAttrResourceModel {
-	return FvVmAttrResourceModel{
+func NewFvVmAttrRootModelNull() FvVmAttrRootModel {
+	return FvVmAttrRootModel{
 		FvVmAttrModel: NewFvVmAttrModelNull(),
 		ID:            types.StringNull(),
-		ParentDn:      types.StringNull(),
+		ParentDN:      types.StringNull(),
 	}
 }
 
-func (m *FvVmAttrResourceModel) SetIDFromDN(dn string) {
+func (m *FvVmAttrRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
 
-func (m *FvVmAttrResourceModel) SetFromResponse(
+func (m *FvVmAttrRootModel) SetFromResponse(
 	ctx context.Context,
 	response *container.Container,
 ) (bool, diag.Diagnostics) {
@@ -278,11 +406,11 @@ func (m *FvVmAttrResourceModel) SetFromResponse(
 
 	m.FvVmAttrModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 
-func (m *FvVmAttrResourceModel) BuildPayload(
+func (m *FvVmAttrRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *FvVmAttrModel,
 	create bool,
@@ -293,52 +421,16 @@ func (m *FvVmAttrResourceModel) BuildPayload(
 	if diagnostics.HasError() {
 		return nil, diagnostics
 	}
+
 	if markCreated {
 		payloadObject["attributes"].(map[string]any)["status"] = "created"
 	}
+
 	payloadEnvelope := map[string]any{"fvVmAttr": payloadObject}
-	jsonPayload := modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload")
-	return jsonPayload, diagnostics
+	return modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload"), diagnostics
 }
 
-func (m *FvVmAttrResourceModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
+func (m *FvVmAttrRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
-	payload := modelHelpers.NewDeletePayload(ctx, &diagnostics, "fvVmAttr", m.ID.ValueString())
-	return payload, diagnostics
-}
-
-type FvVmAttrDataSourceModel struct {
-	FvVmAttrModel
-
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
-}
-
-func NewFvVmAttrDataSourceModelNull() FvVmAttrDataSourceModel {
-	return FvVmAttrDataSourceModel{
-		FvVmAttrModel: NewFvVmAttrModelNull(),
-		ID:            types.StringNull(),
-		ParentDn:      types.StringNull(),
-	}
-}
-
-func (m *FvVmAttrDataSourceModel) SetIDFromDN(dn string) {
-	m.ID = types.StringValue(dn)
-}
-
-func (m *FvVmAttrDataSourceModel) SetFromResponse(
-	ctx context.Context,
-	response *container.Container,
-) (bool, diag.Diagnostics) {
-	fallbackModel := m.FvVmAttrModel
-	model, dn, diagnostics := FvVmAttrModelFromResponse(ctx, response, &fallbackModel)
-	found := model != nil
-	if diagnostics.HasError() || !found {
-		return found, diagnostics
-	}
-
-	m.FvVmAttrModel = *model
-	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
-	return true, diagnostics
+	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "fvVmAttr", m.ID.ValueString()), diagnostics
 }

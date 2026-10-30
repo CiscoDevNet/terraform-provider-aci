@@ -6,6 +6,7 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
@@ -15,6 +16,94 @@ import (
 
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+func l2PortAuthCfgPolSchemaDefinition() modelHelpers.ClassSchema {
+	return modelHelpers.ClassSchema{
+		ResourceDescription:   "Manages ACI Configuration",
+		DataSourceDescription: "Data source for ACI Configuration",
+		Properties: map[string]modelHelpers.PropertySchema{
+			"annotation": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The annotation of the Configuration object.",
+			},
+			"authentication_mode": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"bypass",
+					"eap",
+				},
+				Description: "The authentication mode of the 802.1x Port Authentication Interface Policy.",
+			},
+			"maximum_reauthentication_requests": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The maximum re-authentication requests for the 802.1x Port Authentication Interface Policy. The value must be in the range 1 - 10.",
+			},
+			"maximum_requests": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The maximum requests for the 802.1x Port Authentication Interface Policy. The value must be in the range 2 - 10.",
+			},
+			"reauthenticate": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"no",
+					"yes",
+				},
+				Description: "Enabling re-authentication for the 802.1x Port Authentication Interface Policy.",
+			},
+			"reauthentication_period": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The re-authentication period (seconds) for the 802.1x Port Authentication Interface Policy. The value must be in the range 1 - 2147483.",
+			},
+			"server_timeout": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The server timeout (seconds) for the 802.1x Port Authentication Interface Policy. The value must be in the range 1 - 65535.",
+			},
+			"supplicant_timeout": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The supplicant timeout (seconds) for the 802.1x Port Authentication Interface Policy. The value must be in the range 1 - 65535.",
+			},
+			"transmit_period": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The transmit period (seconds) for the 802.1x Port Authentication Interface Policy. The value must be in the range 1 - 65535.",
+			},
+		},
+		Children: map[string]modelHelpers.ChildSchema{
+			"annotations": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.",
+				Schema:      tagAnnotationSchemaDefinition,
+			},
+			"tags": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.",
+				Schema:      tagTagSchemaDefinition,
+			},
+		},
+		ParentDN: &modelHelpers.ParentDNSchema{
+			AttributeName: "parent_dn",
+			Config:        modelHelpers.ParentDNAttributeConfig{},
+		},
+		AnnotationAttribute: "annotation",
+	}
+}
 
 type L2PortAuthCfgPolModel struct {
 	Annotation    types.String `tfsdk:"annotation"`
@@ -83,14 +172,11 @@ func (m *L2PortAuthCfgPolModel) BuildRN() string {
 }
 
 func (m *L2PortAuthCfgPolModel) BuildDN(parentDN string) string {
-	return parentDN + "/" + m.BuildRN()
+	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
 }
 
 func (m *L2PortAuthCfgPolModel) ParentDNFromDN(dn string) string {
-	rn := m.BuildRN()
-
-	parentDN, _ := strings.CutSuffix(dn, "/"+rn)
-	return parentDN
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
 }
 
 func L2PortAuthCfgPolModelFromObject(
@@ -105,6 +191,7 @@ func L2PortAuthCfgPolModelFromObject(
 	if !ok {
 		return model, diagnostics
 	}
+
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "macAuth", &model.MacAuth)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "maxReauthReq", &model.MaxReauthReq)
@@ -114,6 +201,7 @@ func L2PortAuthCfgPolModelFromObject(
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "serverTimeout", &model.ServerTimeout)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "suppTimeout", &model.SuppTimeout)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "txPeriod", &model.TxPeriod)
+
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,
 		&diagnostics,
@@ -124,6 +212,7 @@ func L2PortAuthCfgPolModelFromObject(
 			"tagTag",
 		},
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -132,6 +221,7 @@ func L2PortAuthCfgPolModelFromObject(
 		TagAnnotationModelFromObject,
 		&model.TagAnnotation,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -153,6 +243,7 @@ func (m *L2PortAuthCfgPolModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
+
 	if !modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "annotation", m.Annotation) && nested {
 		attributes["annotation"] = defaultAnnotation
 	}
@@ -164,6 +255,7 @@ func (m *L2PortAuthCfgPolModel) BuildPayloadObject(
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "serverTimeout", m.ServerTimeout)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "suppTimeout", m.SuppTimeout)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "txPeriod", m.TxPeriod)
+
 	var priorTagAnnotation *types.Set
 	if priorState != nil {
 		priorTagAnnotation = &priorState.TagAnnotation
@@ -184,6 +276,7 @@ func (m *L2PortAuthCfgPolModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, tagAnnotationPayloads...)
+
 	var priorTagTag *types.Set
 	if priorState != nil {
 		priorTagTag = &priorState.TagTag
@@ -218,6 +311,5 @@ func (m *L2PortAuthCfgPolModel) BuildNestedDeletePayloadObject(
 	ctx context.Context,
 	diagnostics *diag.Diagnostics,
 ) map[string]any {
-	attributes := map[string]any{}
-	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, attributes)
+	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, map[string]any{})
 }

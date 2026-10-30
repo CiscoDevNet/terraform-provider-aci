@@ -6,15 +6,111 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+func rtctrlProfileSchemaDefinition() modelHelpers.ClassSchema {
+	return modelHelpers.ClassSchema{
+		ResourceDescription:   "Manages ACI Route Control Profile",
+		DataSourceDescription: "Data source for ACI Route Control Profile",
+		Properties: map[string]modelHelpers.PropertySchema{
+			"annotation": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The annotation of the Route Control Profile object.",
+			},
+			"route_map_continue": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"no",
+					"yes",
+				},
+				Description: "The route_map_continue applies a continue statement for all user-configured sequences (contexts) in a given BGP route profile so that switches will continue to find matches with subsequent user-configured sequences in the route map. Without the continue statement, after a route matches one of the sequences in a route map, switches will not continue to check other sequences.",
+			},
+			"description": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The description of the Route Control Profile object.",
+			},
+			"name": {
+				Type:            modelHelpers.StringProperty,
+				Required:        true,
+				RequiresReplace: true,
+				Description:     "The name of the Route Control Profile object.",
+			},
+			"name_alias": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The name alias of the Route Control Profile object.",
+			},
+			"owner_key": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The key for enabling clients to own their data for entity correlation.",
+			},
+			"owner_tag": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "A tag for enabling clients to add their own data. For example, to indicate who created this object.",
+			},
+			"route_control_profile_type": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"combinable",
+					"global",
+				},
+				Description: "The type of the Route Control Profile object. Use combinable when pervasive subnets (fvSubnet) and external subnets (l3extSubnet) should be combined with a route profile and merged into a single route map or route map entry. Use global when the route profile is the only source of information to generate a route map, this will overwrite other policy attributes.",
+			},
+		},
+		Children: map[string]modelHelpers.ChildSchema{
+			"annotations": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.",
+				Schema:      tagAnnotationSchemaDefinition,
+			},
+			"tags": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.",
+				Schema:      tagTagSchemaDefinition,
+			},
+		},
+		Identifiers: []string{
+			"name",
+		},
+		ParentDN: &modelHelpers.ParentDNSchema{
+			AttributeName: "parent_dn",
+			Config:        modelHelpers.ParentDNAttributeConfig{},
+		},
+		AnnotationAttribute: "annotation",
+	}
+}
+
+func RtctrlProfileResourceSchema(defaultAnnotation string) resourceschema.Schema {
+	return rtctrlProfileSchemaDefinition().ResourceSchema(defaultAnnotation)
+}
+
+func RtctrlProfileDataSourceSchema() datasourceschema.Schema {
+	return rtctrlProfileSchemaDefinition().DataSourceSchema()
+}
 
 type RtctrlProfileModel struct {
 	Annotation    types.String `tfsdk:"annotation"`
@@ -78,19 +174,15 @@ func NewRtctrlProfileModelNull() RtctrlProfileModel {
 func (m *RtctrlProfileModel) BuildRN() string {
 	rn := "prof-{name}"
 	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
-
 	return rn
 }
 
 func (m *RtctrlProfileModel) BuildDN(parentDN string) string {
-	return parentDN + "/" + m.BuildRN()
+	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
 }
 
 func (m *RtctrlProfileModel) ParentDNFromDN(dn string) string {
-	rn := m.BuildRN()
-
-	parentDN, _ := strings.CutSuffix(dn, "/"+rn)
-	return parentDN
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
 }
 
 func RtctrlProfileModelFromObject(
@@ -105,6 +197,7 @@ func RtctrlProfileModelFromObject(
 	if !ok {
 		return model, diagnostics
 	}
+
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "autoContinue", &model.AutoContinue)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "descr", &model.Descr)
@@ -113,6 +206,7 @@ func RtctrlProfileModelFromObject(
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ownerKey", &model.OwnerKey)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ownerTag", &model.OwnerTag)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "type", &model.Type)
+
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,
 		&diagnostics,
@@ -123,6 +217,7 @@ func RtctrlProfileModelFromObject(
 			"tagTag",
 		},
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -131,6 +226,7 @@ func RtctrlProfileModelFromObject(
 		TagAnnotationModelFromObject,
 		&model.TagAnnotation,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -162,6 +258,7 @@ func (m *RtctrlProfileModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
+
 	if !modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "annotation", m.Annotation) && nested {
 		attributes["annotation"] = defaultAnnotation
 	}
@@ -172,6 +269,7 @@ func (m *RtctrlProfileModel) BuildPayloadObject(
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "ownerKey", m.OwnerKey)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "ownerTag", m.OwnerTag)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "type", m.Type)
+
 	var priorTagAnnotation *types.Set
 	if priorState != nil {
 		priorTagAnnotation = &priorState.TagAnnotation
@@ -192,6 +290,7 @@ func (m *RtctrlProfileModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, tagAnnotationPayloads...)
+
 	var priorTagTag *types.Set
 	if priorState != nil {
 		priorTagTag = &priorState.TagTag
@@ -226,31 +325,31 @@ func (m *RtctrlProfileModel) BuildNestedDeletePayloadObject(
 	ctx context.Context,
 	diagnostics *diag.Diagnostics,
 ) map[string]any {
-	attributes := map[string]any{}
-	attributes["name"] = m.Name.ValueString()
-	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, attributes)
+	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, map[string]any{
+		"name": m.Name.ValueString(),
+	})
 }
 
-type RtctrlProfileResourceModel struct {
+type RtctrlProfileRootModel struct {
 	RtctrlProfileModel
 
 	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ParentDN types.String `tfsdk:"parent_dn"`
 }
 
-func NewRtctrlProfileResourceModelNull() RtctrlProfileResourceModel {
-	return RtctrlProfileResourceModel{
+func NewRtctrlProfileRootModelNull() RtctrlProfileRootModel {
+	return RtctrlProfileRootModel{
 		RtctrlProfileModel: NewRtctrlProfileModelNull(),
 		ID:                 types.StringNull(),
-		ParentDn:           types.StringNull(),
+		ParentDN:           types.StringNull(),
 	}
 }
 
-func (m *RtctrlProfileResourceModel) SetIDFromDN(dn string) {
+func (m *RtctrlProfileRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
 
-func (m *RtctrlProfileResourceModel) SetFromResponse(
+func (m *RtctrlProfileRootModel) SetFromResponse(
 	ctx context.Context,
 	response *container.Container,
 ) (bool, diag.Diagnostics) {
@@ -263,11 +362,11 @@ func (m *RtctrlProfileResourceModel) SetFromResponse(
 
 	m.RtctrlProfileModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 
-func (m *RtctrlProfileResourceModel) BuildPayload(
+func (m *RtctrlProfileRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *RtctrlProfileModel,
 	create bool,
@@ -278,52 +377,16 @@ func (m *RtctrlProfileResourceModel) BuildPayload(
 	if diagnostics.HasError() {
 		return nil, diagnostics
 	}
+
 	if markCreated {
 		payloadObject["attributes"].(map[string]any)["status"] = "created"
 	}
+
 	payloadEnvelope := map[string]any{"rtctrlProfile": payloadObject}
-	jsonPayload := modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload")
-	return jsonPayload, diagnostics
+	return modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload"), diagnostics
 }
 
-func (m *RtctrlProfileResourceModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
+func (m *RtctrlProfileRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
-	payload := modelHelpers.NewDeletePayload(ctx, &diagnostics, "rtctrlProfile", m.ID.ValueString())
-	return payload, diagnostics
-}
-
-type RtctrlProfileDataSourceModel struct {
-	RtctrlProfileModel
-
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
-}
-
-func NewRtctrlProfileDataSourceModelNull() RtctrlProfileDataSourceModel {
-	return RtctrlProfileDataSourceModel{
-		RtctrlProfileModel: NewRtctrlProfileModelNull(),
-		ID:                 types.StringNull(),
-		ParentDn:           types.StringNull(),
-	}
-}
-
-func (m *RtctrlProfileDataSourceModel) SetIDFromDN(dn string) {
-	m.ID = types.StringValue(dn)
-}
-
-func (m *RtctrlProfileDataSourceModel) SetFromResponse(
-	ctx context.Context,
-	response *container.Container,
-) (bool, diag.Diagnostics) {
-	fallbackModel := m.RtctrlProfileModel
-	model, dn, diagnostics := RtctrlProfileModelFromResponse(ctx, response, &fallbackModel)
-	found := model != nil
-	if diagnostics.HasError() || !found {
-		return found, diagnostics
-	}
-
-	m.RtctrlProfileModel = *model
-	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
-	return true, diagnostics
+	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "rtctrlProfile", m.ID.ValueString()), diagnostics
 }

@@ -6,16 +6,395 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+func fvBDSchemaDefinition() modelHelpers.ClassSchema {
+	return modelHelpers.ClassSchema{
+		ResourceDescription:   "Manages ACI Bridge Domain",
+		DataSourceDescription: "Data source for ACI Bridge Domain",
+		Properties: map[string]modelHelpers.PropertySchema{
+			"optimize_wan_bandwidth": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"no",
+					"yes",
+				},
+				Description: "Optimize WAN Bandwidth for the Bridge Domain object.",
+			},
+			"annotation": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The annotation of the Bridge Domain object.",
+			},
+			"arp_flooding": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"no",
+					"yes",
+				},
+				Description: "Enable ARP flooding for the Bridge Domain object. If flooding is disabled, ARP requests for unknown endpoints will be forwarded by the leaf switch to the spine proxy for resolution and might trigger an ARP glean if the endpoint is not present in the COOP database.",
+			},
+			"description": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The description of the Bridge Domain object.",
+			},
+			"enable_rogue_exception_mac": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"no",
+					"yes",
+				},
+				Description: "Enable rogue exception based on MAC wildcard for the Bridge Domain object.",
+			},
+			"clear_remote_mac_entries": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"no",
+					"yes",
+				},
+				Description: "Clear all endpoints in leaf switches for the Bridge Domain object.",
+			},
+			"endpoint_move_detection_mode": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"",
+					"garp",
+				},
+				Description: "The End Point move detection option uses the Gratuitous Address Resolution Protocol (GARP). A gratuitous ARP is an ARP broadcast-type of packet that is used to verify that no other device on the network has the same IP address as the sending device.",
+			},
+			"advertise_host_routes": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"no",
+					"yes",
+				},
+				Description: "Advertise host routes (/32 prefixes) out of the L3Out(s) associated to the Bridge Domain object.",
+			},
+			"enable_intersite_bum_traffic": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"no",
+					"yes",
+				},
+				Description: "Enable intersite Broadcast, Unknown-Unicast and Multicast (BUM) traffic between sites for the Bridge Domain object.",
+			},
+			"intersite_l2_stretch": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"no",
+					"yes",
+				},
+				Description: "Enable L2 stretch between sites for the Bridge Domain object.",
+			},
+			"ip_learning": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"no",
+					"yes",
+				},
+				Description: "The IP learning setting of the Bridge Domain object.",
+			},
+			"pim_ipv6": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"no",
+					"yes",
+				},
+				Description: "Enable IPv6 Protocol Independent Multicast (PIM) traffic for the Bridge Domain object.",
+			},
+			"limit_ip_learn_to_subnets": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"no",
+					"yes",
+				},
+				Description: "Limit IP address learning to subnets for the Bridge Domain object. Every Bridge Domain object can have multiple subnets associated with it.",
+			},
+			"link_local_ipv6_address": {
+				Type:             modelHelpers.StringProperty,
+				CustomStringType: customTypes.IPAddressStringType{},
+				Optional:         true,
+				Computed:         true,
+				Description:      "The override of the system generated IPv6 link-local address.",
+			},
+			"custom_mac_address": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The MAC address of the Bridge Domain object.",
+			},
+			"drop_arp_with_multicast_smac": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"no",
+					"yes",
+				},
+				Description: "Drop rogue multicast ARP packets for the Bridge Domain object.",
+			},
+			"pim": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"no",
+					"yes",
+				},
+				Description: "Enable IPv4 Protocol Independent Multicast (PIM) traffic for the Bridge Domain object.",
+			},
+			"multi_destination_flooding": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"bd-flood",
+					"drop",
+					"encap-flood",
+				},
+				Description: "The multiple destination forwarding method for L2 Multicast, Broadcast, and Link Layer traffic types.",
+			},
+			"name": {
+				Type:            modelHelpers.StringProperty,
+				Required:        true,
+				RequiresReplace: true,
+				Description:     "The name of the Bridge Domain object.",
+			},
+			"name_alias": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The name alias of the Bridge Domain object.",
+			},
+			"owner_key": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The key for enabling clients to own their data for entity correlation.",
+			},
+			"owner_tag": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "A tag for enabling clients to add their own data. For example, to indicate who created this object.",
+			},
+			"pc_tag": {
+				Type:        modelHelpers.StringProperty,
+				Computed:    true,
+				ReadOnly:    true,
+				Description: "The classification tag used for policy enforcement and zoning.",
+			},
+			"scope": {
+				Type:        modelHelpers.StringProperty,
+				Computed:    true,
+				ReadOnly:    true,
+				Description: "The scope ID (L3-VNI) of the Bridge Domain object.",
+			},
+			"segment": {
+				Type:        modelHelpers.StringProperty,
+				Computed:    true,
+				ReadOnly:    true,
+				Description: "The segment ID (L2-VNI) of the Bridge Domain object.",
+			},
+			"service_bd_routing_disable": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"no",
+					"yes",
+				},
+				Description: "Disable Routing on service BD.",
+			},
+			"bridge_domain_type": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"fc",
+					"regular",
+				},
+				Description: "The domain type of the Bridge Domain object.",
+			},
+			"unicast_routing": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"no",
+					"yes",
+				},
+				Description: "Enables L3 routing and endpoint IP learning for the Bridge Domain object.",
+			},
+			"l2_unknown_unicast_flooding": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"flood",
+					"proxy",
+				},
+				Description: "The forwarding method for unknown layer 2 destinations.",
+			},
+			"l3_unknown_multicast_flooding": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"flood",
+					"opt-flood",
+				},
+				Description: "The forwarding method for unknown layer 3 multicast destinations.",
+			},
+			"ipv6_l3_unknown_multicast_flooding": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"flood",
+					"opt-flood",
+				},
+				Description: "The forwarding method for unknown IPv6 multicast destinations.",
+			},
+			"virtual_mac_address": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The virtual MAC address of the Bridge Domain object. This is used when the the BD/SVI is extended to multiple sites using a L2 Outside.",
+			},
+		},
+		Children: map[string]modelHelpers.ChildSchema{
+			"legacy_mode": {
+				Cardinality: modelHelpers.SingleChild,
+				Description: "`legacy_mode` - (map) A map of Legacy Mode (ACI object [fvAccP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvAccP/overview)).",
+				Schema:      fvAccPSchemaDefinition,
+			},
+			"rogue_coop_exceptions": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`rogue_coop_exceptions` - (list) A list of Rogue Coop Exceptions (ACI object [fvRogueExceptionMac](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRogueExceptionMac/overview)) which can also be configured using a separate [aci_rogue_coop_exception](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/rogue_coop_exception) resource.",
+				Schema:      fvRogueExceptionMacSchemaDefinition,
+			},
+			"relation_to_monitoring_policy": {
+				Cardinality: modelHelpers.SingleChild,
+				Description: "`relation_to_monitoring_policy` - (map) A map of Relation From Bridge Domain To Monitoring Policy (ACI object [fvRsABDPolMonPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsABDPolMonPol/overview)) pointing to Monitoring Policy (ACI Object [monEPGPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/monEPGPol/overview)) which can be configured using the [aci_monitoring_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/monitoring_policy) resource.",
+				Schema:      fvRsABDPolMonPolSchemaDefinition,
+			},
+			"relation_to_first_hop_security_policy": {
+				Cardinality: modelHelpers.SingleChild,
+				Description: "`relation_to_first_hop_security_policy` - (map) A map of Relation From Bridge Domain To First Hop Security Policy (ACI object [fvRsBDToFhs](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsBDToFhs/overview)) pointing to First Hop Security Policy (ACI Object [fhsBDPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fhsBDPol/overview)) which can be configured using the [aci_first_hop_security_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/first_hop_security_policy) resource.",
+				Schema:      fvRsBDToFhsSchemaDefinition,
+			},
+			"relation_to_neighbor_discovery_interface_policy": {
+				Cardinality: modelHelpers.SingleChild,
+				Description: "`relation_to_neighbor_discovery_interface_policy` - (map) A map of Relation From Bridge Domain To Neighbor Discovery Interface Policy (ACI object [fvRsBDToNdP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsBDToNdP/overview)) pointing to Neighbor Discovery Interface Policy (ACI Object [ndIfPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/ndIfPol/overview)) which can be configured using the [aci_neighbor_discovery_interface_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/neighbor_discovery_interface_policy) resource.",
+				Schema:      fvRsBDToNdPSchemaDefinition,
+			},
+			"relation_to_netflow_monitor_policies": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`relation_to_netflow_monitor_policies` - (list) A list of Relation From Bridge Domain To NetFlow Monitor Policies (ACI object [fvRsBDToNetflowMonitorPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsBDToNetflowMonitorPol/overview)) pointing to NetFlow Monitor Policy (ACI Object [netflowMonitorPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowMonitorPol/overview)) which can be configured using the [aci_netflow_monitor_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/netflow_monitor_policy) resource.",
+				Schema:      fvRsBDToNetflowMonitorPolSchemaDefinition,
+			},
+			"relation_to_l3_outsides": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`relation_to_l3_outsides` - (list) A list of Relation From Bridge Domain To L3 Outsides (ACI object [fvRsBDToOut](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsBDToOut/overview)) pointing to L3 Outside (ACI Object [l3extOut](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/l3extOut/overview)) which can be configured using the [aci_l3_outside](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3_outside) resource.",
+				Schema:      fvRsBDToOutSchemaDefinition,
+			},
+			"relation_to_route_control_profile": {
+				Cardinality: modelHelpers.SingleChild,
+				Description: "`relation_to_route_control_profile` - (map) A map of Relation From Bridge Domain To Route Control Profile (ACI object [fvRsBDToProfile](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsBDToProfile/overview)) pointing to Route Control Profile (ACI Object [rtctrlProfile](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/rtctrlProfile/overview)) which can be configured using the [aci_route_control_profile](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/route_control_profile) resource.",
+				Schema:      fvRsBDToProfileSchemaDefinition,
+			},
+			"relation_to_dhcp_relay_policy": {
+				Cardinality: modelHelpers.SingleChild,
+				Description: "`relation_to_dhcp_relay_policy` - (map) A map of Relation From Bridge Domain To DHCP Relay Policy (ACI object [fvRsBDToRelayP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsBDToRelayP/overview)) pointing to DHCP Relay Policy (ACI Object [dhcpRelayP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/dhcpRelayP/overview)) which can be configured using the [aci_dhcp_relay_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/dhcp_relay_policy) resource.",
+				Schema:      fvRsBDToRelayPSchemaDefinition,
+			},
+			"relation_to_end_point_retention_policy": {
+				Cardinality: modelHelpers.SingleChild,
+				Description: "`relation_to_end_point_retention_policy` - (map) A map of Relation From Bridge Domain To End Point Retention Policy (ACI object [fvRsBdToEpRet](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsBdToEpRet/overview)) pointing to End Point Retention Policy (ACI Object [fvEpRetPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvEpRetPol/overview)) which can be configured using the [aci_end_point_retention_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/end_point_retention_policy) resource.",
+				Schema:      fvRsBdToEpRetSchemaDefinition,
+			},
+			"relation_to_vrf": {
+				Cardinality: modelHelpers.SingleChild,
+				Description: "`relation_to_vrf` - (map) A map of Relation To VRF (ACI object [fvRsCtx](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsCtx/overview)) pointing to VRF (ACI Object [fvCtx](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvCtx/overview)) which can be configured using the [aci_vrf](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vrf) resource.",
+				Schema:      fvRsCtxSchemaDefinition,
+			},
+			"relation_to_igmp_snooping_policy": {
+				Cardinality: modelHelpers.SingleChild,
+				Description: "`relation_to_igmp_snooping_policy` - (map) A map of Relation To IGMP Snooping Policy (ACI object [fvRsIgmpsn](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsIgmpsn/overview)) pointing to IGMP Snooping Policy (ACI Object [igmpSnoopPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/igmpSnoopPol/overview)) which can be configured using the [aci_igmp_snooping_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/igmp_snooping_policy) resource.",
+				Schema:      fvRsIgmpsnSchemaDefinition,
+			},
+			"relation_to_mld_snooping_policy": {
+				Cardinality: modelHelpers.SingleChild,
+				Description: "`relation_to_mld_snooping_policy` - (map) A map of Relation To MLD Snooping Policy (ACI object [fvRsMldsn](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsMldsn/overview)) pointing to MLD Snooping Policy (ACI Object [mldSnoopPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/mldSnoopPol/overview)) which can be configured using the [aci_mld_snooping_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/mld_snooping_policy) resource.",
+				Schema:      fvRsMldsnSchemaDefinition,
+			},
+			"annotations": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.",
+				Schema:      tagAnnotationSchemaDefinition,
+			},
+			"tags": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.",
+				Schema:      tagTagSchemaDefinition,
+			},
+		},
+		Identifiers: []string{
+			"name",
+		},
+		ParentDN: &modelHelpers.ParentDNSchema{
+			AttributeName: "parent_dn",
+			Config:        modelHelpers.ParentDNAttributeConfig{},
+		},
+		AnnotationAttribute: "annotation",
+	}
+}
+
+func FvBDResourceSchema(defaultAnnotation string) resourceschema.Schema {
+	return fvBDSchemaDefinition().ResourceSchema(defaultAnnotation)
+}
+
+func FvBDDataSourceSchema() datasourceschema.Schema {
+	return fvBDSchemaDefinition().DataSourceSchema()
+}
 
 type FvBDModel struct {
 	OptimizeWanBandwidth      types.String                     `tfsdk:"optimize_wan_bandwidth"`
@@ -234,19 +613,15 @@ func NewFvBDModelNull() FvBDModel {
 func (m *FvBDModel) BuildRN() string {
 	rn := "BD-{name}"
 	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
-
 	return rn
 }
 
 func (m *FvBDModel) BuildDN(parentDN string) string {
-	return parentDN + "/" + m.BuildRN()
+	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
 }
 
 func (m *FvBDModel) ParentDNFromDN(dn string) string {
-	rn := m.BuildRN()
-
-	parentDN, _ := strings.CutSuffix(dn, "/"+rn)
-	return parentDN
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
 }
 
 func FvBDModelFromObject(
@@ -261,6 +636,7 @@ func FvBDModelFromObject(
 	if !ok {
 		return model, diagnostics
 	}
+
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "OptimizeWanBandwidth", &model.OptimizeWanBandwidth)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "arpFlood", &model.ArpFlood)
@@ -293,6 +669,7 @@ func FvBDModelFromObject(
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "unkMcastAct", &model.UnkMcastAct)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "v6unkMcastAct", &model.V6unkMcastAct)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "vmac", &model.Vmac)
+
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,
 		&diagnostics,
@@ -316,6 +693,7 @@ func FvBDModelFromObject(
 			"tagTag",
 		},
 	)
+
 	var fallbackFvAccP *types.Object
 	if fallbackModel != nil {
 		fallbackFvAccP = &fallbackModel.FvAccP
@@ -332,6 +710,7 @@ func FvBDModelFromObject(
 		FvAccPModelFromObject,
 		&model.FvAccP,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -340,6 +719,7 @@ func FvBDModelFromObject(
 		FvRogueExceptionMacModelFromObject,
 		&model.FvRogueExceptionMac,
 	)
+
 	var fallbackFvRsABDPolMonPol *types.Object
 	if fallbackModel != nil {
 		fallbackFvRsABDPolMonPol = &fallbackModel.FvRsABDPolMonPol
@@ -356,6 +736,7 @@ func FvBDModelFromObject(
 		FvRsABDPolMonPolModelFromObject,
 		&model.FvRsABDPolMonPol,
 	)
+
 	var fallbackFvRsBDToFhs *types.Object
 	if fallbackModel != nil {
 		fallbackFvRsBDToFhs = &fallbackModel.FvRsBDToFhs
@@ -372,6 +753,7 @@ func FvBDModelFromObject(
 		FvRsBDToFhsModelFromObject,
 		&model.FvRsBDToFhs,
 	)
+
 	var fallbackFvRsBDToNdP *types.Object
 	if fallbackModel != nil {
 		fallbackFvRsBDToNdP = &fallbackModel.FvRsBDToNdP
@@ -388,6 +770,7 @@ func FvBDModelFromObject(
 		FvRsBDToNdPModelFromObject,
 		&model.FvRsBDToNdP,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -396,6 +779,7 @@ func FvBDModelFromObject(
 		FvRsBDToNetflowMonitorPolModelFromObject,
 		&model.FvRsBDToNetflowMonitorPol,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -404,6 +788,7 @@ func FvBDModelFromObject(
 		FvRsBDToOutModelFromObject,
 		&model.FvRsBDToOut,
 	)
+
 	var fallbackFvRsBDToProfile *types.Object
 	if fallbackModel != nil {
 		fallbackFvRsBDToProfile = &fallbackModel.FvRsBDToProfile
@@ -420,6 +805,7 @@ func FvBDModelFromObject(
 		FvRsBDToProfileModelFromObject,
 		&model.FvRsBDToProfile,
 	)
+
 	var fallbackFvRsBDToRelayP *types.Object
 	if fallbackModel != nil {
 		fallbackFvRsBDToRelayP = &fallbackModel.FvRsBDToRelayP
@@ -436,6 +822,7 @@ func FvBDModelFromObject(
 		FvRsBDToRelayPModelFromObject,
 		&model.FvRsBDToRelayP,
 	)
+
 	var fallbackFvRsBdToEpRet *types.Object
 	if fallbackModel != nil {
 		fallbackFvRsBdToEpRet = &fallbackModel.FvRsBdToEpRet
@@ -452,6 +839,7 @@ func FvBDModelFromObject(
 		FvRsBdToEpRetModelFromObject,
 		&model.FvRsBdToEpRet,
 	)
+
 	var fallbackFvRsCtx *types.Object
 	if fallbackModel != nil {
 		fallbackFvRsCtx = &fallbackModel.FvRsCtx
@@ -468,6 +856,7 @@ func FvBDModelFromObject(
 		FvRsCtxModelFromObject,
 		&model.FvRsCtx,
 	)
+
 	var fallbackFvRsIgmpsn *types.Object
 	if fallbackModel != nil {
 		fallbackFvRsIgmpsn = &fallbackModel.FvRsIgmpsn
@@ -484,6 +873,7 @@ func FvBDModelFromObject(
 		FvRsIgmpsnModelFromObject,
 		&model.FvRsIgmpsn,
 	)
+
 	var fallbackFvRsMldsn *types.Object
 	if fallbackModel != nil {
 		fallbackFvRsMldsn = &fallbackModel.FvRsMldsn
@@ -500,6 +890,7 @@ func FvBDModelFromObject(
 		FvRsMldsnModelFromObject,
 		&model.FvRsMldsn,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -508,6 +899,7 @@ func FvBDModelFromObject(
 		TagAnnotationModelFromObject,
 		&model.TagAnnotation,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -539,6 +931,7 @@ func (m *FvBDModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
+
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "OptimizeWanBandwidth", m.OptimizeWanBandwidth)
 	if !modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "annotation", m.Annotation) && nested {
 		attributes["annotation"] = defaultAnnotation
@@ -570,6 +963,7 @@ func (m *FvBDModel) BuildPayloadObject(
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "unkMcastAct", m.UnkMcastAct)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "v6unkMcastAct", m.V6unkMcastAct)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "vmac", m.Vmac)
+
 	var priorFvAccP *types.Object
 	if priorState != nil {
 		priorFvAccP = &priorState.FvAccP
@@ -589,6 +983,7 @@ func (m *FvBDModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, fvAccPPayloads...)
+
 	var priorFvRogueExceptionMac *types.Set
 	if priorState != nil {
 		priorFvRogueExceptionMac = &priorState.FvRogueExceptionMac
@@ -609,6 +1004,7 @@ func (m *FvBDModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, fvRogueExceptionMacPayloads...)
+
 	var priorFvRsABDPolMonPol *types.Object
 	if priorState != nil {
 		priorFvRsABDPolMonPol = &priorState.FvRsABDPolMonPol
@@ -628,6 +1024,7 @@ func (m *FvBDModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, fvRsABDPolMonPolPayloads...)
+
 	var priorFvRsBDToFhs *types.Object
 	if priorState != nil {
 		priorFvRsBDToFhs = &priorState.FvRsBDToFhs
@@ -647,6 +1044,7 @@ func (m *FvBDModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, fvRsBDToFhsPayloads...)
+
 	var priorFvRsBDToNdP *types.Object
 	if priorState != nil {
 		priorFvRsBDToNdP = &priorState.FvRsBDToNdP
@@ -666,6 +1064,7 @@ func (m *FvBDModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, fvRsBDToNdPPayloads...)
+
 	var priorFvRsBDToNetflowMonitorPol *types.Set
 	if priorState != nil {
 		priorFvRsBDToNetflowMonitorPol = &priorState.FvRsBDToNetflowMonitorPol
@@ -686,6 +1085,7 @@ func (m *FvBDModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, fvRsBDToNetflowMonitorPolPayloads...)
+
 	var priorFvRsBDToOut *types.Set
 	if priorState != nil {
 		priorFvRsBDToOut = &priorState.FvRsBDToOut
@@ -706,6 +1106,7 @@ func (m *FvBDModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, fvRsBDToOutPayloads...)
+
 	var priorFvRsBDToProfile *types.Object
 	if priorState != nil {
 		priorFvRsBDToProfile = &priorState.FvRsBDToProfile
@@ -725,6 +1126,7 @@ func (m *FvBDModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, fvRsBDToProfilePayloads...)
+
 	var priorFvRsBDToRelayP *types.Object
 	if priorState != nil {
 		priorFvRsBDToRelayP = &priorState.FvRsBDToRelayP
@@ -744,6 +1146,7 @@ func (m *FvBDModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, fvRsBDToRelayPPayloads...)
+
 	var priorFvRsBdToEpRet *types.Object
 	if priorState != nil {
 		priorFvRsBdToEpRet = &priorState.FvRsBdToEpRet
@@ -763,6 +1166,7 @@ func (m *FvBDModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, fvRsBdToEpRetPayloads...)
+
 	var priorFvRsCtx *types.Object
 	if priorState != nil {
 		priorFvRsCtx = &priorState.FvRsCtx
@@ -782,6 +1186,7 @@ func (m *FvBDModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, fvRsCtxPayloads...)
+
 	var priorFvRsIgmpsn *types.Object
 	if priorState != nil {
 		priorFvRsIgmpsn = &priorState.FvRsIgmpsn
@@ -801,6 +1206,7 @@ func (m *FvBDModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, fvRsIgmpsnPayloads...)
+
 	var priorFvRsMldsn *types.Object
 	if priorState != nil {
 		priorFvRsMldsn = &priorState.FvRsMldsn
@@ -820,6 +1226,7 @@ func (m *FvBDModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, fvRsMldsnPayloads...)
+
 	var priorTagAnnotation *types.Set
 	if priorState != nil {
 		priorTagAnnotation = &priorState.TagAnnotation
@@ -840,6 +1247,7 @@ func (m *FvBDModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, tagAnnotationPayloads...)
+
 	var priorTagTag *types.Set
 	if priorState != nil {
 		priorTagTag = &priorState.TagTag
@@ -874,31 +1282,31 @@ func (m *FvBDModel) BuildNestedDeletePayloadObject(
 	ctx context.Context,
 	diagnostics *diag.Diagnostics,
 ) map[string]any {
-	attributes := map[string]any{}
-	attributes["name"] = m.Name.ValueString()
-	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, attributes)
+	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, map[string]any{
+		"name": m.Name.ValueString(),
+	})
 }
 
-type FvBDResourceModel struct {
+type FvBDRootModel struct {
 	FvBDModel
 
 	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ParentDN types.String `tfsdk:"parent_dn"`
 }
 
-func NewFvBDResourceModelNull() FvBDResourceModel {
-	return FvBDResourceModel{
+func NewFvBDRootModelNull() FvBDRootModel {
+	return FvBDRootModel{
 		FvBDModel: NewFvBDModelNull(),
 		ID:        types.StringNull(),
-		ParentDn:  types.StringNull(),
+		ParentDN:  types.StringNull(),
 	}
 }
 
-func (m *FvBDResourceModel) SetIDFromDN(dn string) {
+func (m *FvBDRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
 
-func (m *FvBDResourceModel) SetFromResponse(
+func (m *FvBDRootModel) SetFromResponse(
 	ctx context.Context,
 	response *container.Container,
 ) (bool, diag.Diagnostics) {
@@ -911,11 +1319,11 @@ func (m *FvBDResourceModel) SetFromResponse(
 
 	m.FvBDModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 
-func (m *FvBDResourceModel) BuildPayload(
+func (m *FvBDRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *FvBDModel,
 	create bool,
@@ -926,52 +1334,16 @@ func (m *FvBDResourceModel) BuildPayload(
 	if diagnostics.HasError() {
 		return nil, diagnostics
 	}
+
 	if markCreated {
 		payloadObject["attributes"].(map[string]any)["status"] = "created"
 	}
+
 	payloadEnvelope := map[string]any{"fvBD": payloadObject}
-	jsonPayload := modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload")
-	return jsonPayload, diagnostics
+	return modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload"), diagnostics
 }
 
-func (m *FvBDResourceModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
+func (m *FvBDRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
-	payload := modelHelpers.NewDeletePayload(ctx, &diagnostics, "fvBD", m.ID.ValueString())
-	return payload, diagnostics
-}
-
-type FvBDDataSourceModel struct {
-	FvBDModel
-
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
-}
-
-func NewFvBDDataSourceModelNull() FvBDDataSourceModel {
-	return FvBDDataSourceModel{
-		FvBDModel: NewFvBDModelNull(),
-		ID:        types.StringNull(),
-		ParentDn:  types.StringNull(),
-	}
-}
-
-func (m *FvBDDataSourceModel) SetIDFromDN(dn string) {
-	m.ID = types.StringValue(dn)
-}
-
-func (m *FvBDDataSourceModel) SetFromResponse(
-	ctx context.Context,
-	response *container.Container,
-) (bool, diag.Diagnostics) {
-	fallbackModel := m.FvBDModel
-	model, dn, diagnostics := FvBDModelFromResponse(ctx, response, &fallbackModel)
-	found := model != nil
-	if diagnostics.HasError() || !found {
-		return found, diagnostics
-	}
-
-	m.FvBDModel = *model
-	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
-	return true, diagnostics
+	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "fvBD", m.ID.ValueString()), diagnostics
 }

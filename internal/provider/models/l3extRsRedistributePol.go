@@ -6,15 +6,79 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+func l3extRsRedistributePolSchemaDefinition() modelHelpers.ClassSchema {
+	return modelHelpers.ClassSchema{
+		ResourceDescription:   "Manages ACI L3Out Redistribute Policy",
+		DataSourceDescription: "Data source for ACI L3Out Redistribute Policy",
+		Properties: map[string]modelHelpers.PropertySchema{
+			"annotation": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The annotation of the L3Out Redistribute Policy object.",
+			},
+			"source": {
+				Type:            modelHelpers.StringProperty,
+				Required:        true,
+				RequiresReplace: true,
+				ValidValues: []string{
+					"attached-host",
+					"direct",
+					"static",
+				},
+				Description: "The source of the L3Out Redistribute Policy object.",
+			},
+			"route_control_profile_name": {
+				Type:            modelHelpers.StringProperty,
+				Required:        true,
+				RequiresReplace: true,
+				Description:     "The name of the Route Control Profile object. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/route_control_profile) with `aci_route_control_profile.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/route_control_profile) with `data.aci_route_control_profile.example.name`.",
+			},
+		},
+		Children: map[string]modelHelpers.ChildSchema{
+			"annotations": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.",
+				Schema:      tagAnnotationSchemaDefinition,
+			},
+			"tags": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.",
+				Schema:      tagTagSchemaDefinition,
+			},
+		},
+		Identifiers: []string{
+			"source",
+			"route_control_profile_name",
+		},
+		ParentDN: &modelHelpers.ParentDNSchema{
+			AttributeName: "parent_dn",
+			Config:        modelHelpers.ParentDNAttributeConfig{},
+		},
+		AnnotationAttribute: "annotation",
+	}
+}
+
+func L3extRsRedistributePolResourceSchema(defaultAnnotation string) resourceschema.Schema {
+	return l3extRsRedistributePolSchemaDefinition().ResourceSchema(defaultAnnotation)
+}
+
+func L3extRsRedistributePolDataSourceSchema() datasourceschema.Schema {
+	return l3extRsRedistributePolSchemaDefinition().DataSourceSchema()
+}
 
 type L3extRsRedistributePolModel struct {
 	Annotation          types.String `tfsdk:"annotation"`
@@ -64,19 +128,15 @@ func (m *L3extRsRedistributePolModel) BuildRN() string {
 	rn := "rsredistributePol-[{tnRtctrlProfileName}]-{src}"
 	rn = strings.ReplaceAll(rn, "{src}", m.Src.ValueString())
 	rn = strings.ReplaceAll(rn, "{tnRtctrlProfileName}", m.TnRtctrlProfileName.ValueString())
-
 	return rn
 }
 
 func (m *L3extRsRedistributePolModel) BuildDN(parentDN string) string {
-	return parentDN + "/" + m.BuildRN()
+	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
 }
 
 func (m *L3extRsRedistributePolModel) ParentDNFromDN(dn string) string {
-	rn := m.BuildRN()
-
-	parentDN, _ := strings.CutSuffix(dn, "/"+rn)
-	return parentDN
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
 }
 
 func L3extRsRedistributePolModelFromObject(
@@ -91,9 +151,11 @@ func L3extRsRedistributePolModelFromObject(
 	if !ok {
 		return model, diagnostics
 	}
+
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "src", &model.Src)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "tnRtctrlProfileName", &model.TnRtctrlProfileName)
+
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,
 		&diagnostics,
@@ -104,6 +166,7 @@ func L3extRsRedistributePolModelFromObject(
 			"tagTag",
 		},
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -112,6 +175,7 @@ func L3extRsRedistributePolModelFromObject(
 		TagAnnotationModelFromObject,
 		&model.TagAnnotation,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -143,11 +207,13 @@ func (m *L3extRsRedistributePolModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
+
 	if !modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "annotation", m.Annotation) && nested {
 		attributes["annotation"] = defaultAnnotation
 	}
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "src", m.Src)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "tnRtctrlProfileName", m.TnRtctrlProfileName)
+
 	var priorTagAnnotation *types.Set
 	if priorState != nil {
 		priorTagAnnotation = &priorState.TagAnnotation
@@ -168,6 +234,7 @@ func (m *L3extRsRedistributePolModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, tagAnnotationPayloads...)
+
 	var priorTagTag *types.Set
 	if priorState != nil {
 		priorTagTag = &priorState.TagTag
@@ -202,32 +269,32 @@ func (m *L3extRsRedistributePolModel) BuildNestedDeletePayloadObject(
 	ctx context.Context,
 	diagnostics *diag.Diagnostics,
 ) map[string]any {
-	attributes := map[string]any{}
-	attributes["src"] = m.Src.ValueString()
-	attributes["tnRtctrlProfileName"] = m.TnRtctrlProfileName.ValueString()
-	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, attributes)
+	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, map[string]any{
+		"src":                 m.Src.ValueString(),
+		"tnRtctrlProfileName": m.TnRtctrlProfileName.ValueString(),
+	})
 }
 
-type L3extRsRedistributePolResourceModel struct {
+type L3extRsRedistributePolRootModel struct {
 	L3extRsRedistributePolModel
 
 	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ParentDN types.String `tfsdk:"parent_dn"`
 }
 
-func NewL3extRsRedistributePolResourceModelNull() L3extRsRedistributePolResourceModel {
-	return L3extRsRedistributePolResourceModel{
+func NewL3extRsRedistributePolRootModelNull() L3extRsRedistributePolRootModel {
+	return L3extRsRedistributePolRootModel{
 		L3extRsRedistributePolModel: NewL3extRsRedistributePolModelNull(),
 		ID:                          types.StringNull(),
-		ParentDn:                    types.StringNull(),
+		ParentDN:                    types.StringNull(),
 	}
 }
 
-func (m *L3extRsRedistributePolResourceModel) SetIDFromDN(dn string) {
+func (m *L3extRsRedistributePolRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
 
-func (m *L3extRsRedistributePolResourceModel) SetFromResponse(
+func (m *L3extRsRedistributePolRootModel) SetFromResponse(
 	ctx context.Context,
 	response *container.Container,
 ) (bool, diag.Diagnostics) {
@@ -240,11 +307,11 @@ func (m *L3extRsRedistributePolResourceModel) SetFromResponse(
 
 	m.L3extRsRedistributePolModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 
-func (m *L3extRsRedistributePolResourceModel) BuildPayload(
+func (m *L3extRsRedistributePolRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *L3extRsRedistributePolModel,
 	create bool,
@@ -255,52 +322,16 @@ func (m *L3extRsRedistributePolResourceModel) BuildPayload(
 	if diagnostics.HasError() {
 		return nil, diagnostics
 	}
+
 	if markCreated {
 		payloadObject["attributes"].(map[string]any)["status"] = "created"
 	}
+
 	payloadEnvelope := map[string]any{"l3extRsRedistributePol": payloadObject}
-	jsonPayload := modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload")
-	return jsonPayload, diagnostics
+	return modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload"), diagnostics
 }
 
-func (m *L3extRsRedistributePolResourceModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
+func (m *L3extRsRedistributePolRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
-	payload := modelHelpers.NewDeletePayload(ctx, &diagnostics, "l3extRsRedistributePol", m.ID.ValueString())
-	return payload, diagnostics
-}
-
-type L3extRsRedistributePolDataSourceModel struct {
-	L3extRsRedistributePolModel
-
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
-}
-
-func NewL3extRsRedistributePolDataSourceModelNull() L3extRsRedistributePolDataSourceModel {
-	return L3extRsRedistributePolDataSourceModel{
-		L3extRsRedistributePolModel: NewL3extRsRedistributePolModelNull(),
-		ID:                          types.StringNull(),
-		ParentDn:                    types.StringNull(),
-	}
-}
-
-func (m *L3extRsRedistributePolDataSourceModel) SetIDFromDN(dn string) {
-	m.ID = types.StringValue(dn)
-}
-
-func (m *L3extRsRedistributePolDataSourceModel) SetFromResponse(
-	ctx context.Context,
-	response *container.Container,
-) (bool, diag.Diagnostics) {
-	fallbackModel := m.L3extRsRedistributePolModel
-	model, dn, diagnostics := L3extRsRedistributePolModelFromResponse(ctx, response, &fallbackModel)
-	found := model != nil
-	if diagnostics.HasError() || !found {
-		return found, diagnostics
-	}
-
-	m.L3extRsRedistributePolModel = *model
-	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
-	return true, diagnostics
+	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "l3extRsRedistributePol", m.ID.ValueString()), diagnostics
 }

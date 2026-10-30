@@ -6,15 +6,119 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+func l2IfPolSchemaDefinition() modelHelpers.ClassSchema {
+	return modelHelpers.ClassSchema{
+		ResourceDescription:   "Manages ACI L2 Interface Policy",
+		DataSourceDescription: "Data source for ACI L2 Interface Policy",
+		Properties: map[string]modelHelpers.PropertySchema{
+			"annotation": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The annotation of the L2 Interface Policy object.",
+			},
+			"description": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The description of the L2 Interface Policy object.",
+			},
+			"name": {
+				Type:            modelHelpers.StringProperty,
+				Required:        true,
+				RequiresReplace: true,
+				Description:     "The name of the L2 Interface Policy object.",
+			},
+			"name_alias": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The name alias of the L2 Interface Policy object.",
+			},
+			"owner_key": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The key for enabling clients to own their data for entity correlation.",
+			},
+			"owner_tag": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "A tag for enabling clients to add their own data. For example, to indicate who created this object.",
+			},
+			"q_in_q": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"corePort",
+					"disabled",
+					"doubleQtagPort",
+					"edgePort",
+				},
+				Description: "The QinQ port type of the L2 Interface Policy object.",
+			},
+			"reflective_relay": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"disabled",
+					"enabled",
+				},
+				Description: "The reflective relay (802.1Qbg) state of the L2 Interface Policy object.",
+			},
+			"vlan_scope": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"global",
+					"portlocal",
+				},
+				Description: "The vlan scope of the L2 Interface Policy object.",
+			},
+		},
+		Children: map[string]modelHelpers.ChildSchema{
+			"annotations": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.",
+				Schema:      tagAnnotationSchemaDefinition,
+			},
+			"tags": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.",
+				Schema:      tagTagSchemaDefinition,
+			},
+		},
+		Identifiers: []string{
+			"name",
+		},
+		AnnotationAttribute: "annotation",
+	}
+}
+
+func L2IfPolResourceSchema(defaultAnnotation string) resourceschema.Schema {
+	return l2IfPolSchemaDefinition().ResourceSchema(defaultAnnotation)
+}
+
+func L2IfPolDataSourceSchema() datasourceschema.Schema {
+	return l2IfPolSchemaDefinition().DataSourceSchema()
+}
 
 type L2IfPolModel struct {
 	Annotation    types.String `tfsdk:"annotation"`
@@ -81,12 +185,11 @@ func NewL2IfPolModelNull() L2IfPolModel {
 func (m *L2IfPolModel) BuildRN() string {
 	rn := "infra/l2IfP-{name}"
 	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
-
 	return rn
 }
 
 func (m *L2IfPolModel) BuildDN() string {
-	return "uni/" + m.BuildRN()
+	return fmt.Sprintf("uni/%s", m.BuildRN())
 }
 
 func L2IfPolModelFromObject(
@@ -101,6 +204,7 @@ func L2IfPolModelFromObject(
 	if !ok {
 		return model, diagnostics
 	}
+
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "descr", &model.Descr)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "name", &model.Name)
@@ -110,6 +214,7 @@ func L2IfPolModelFromObject(
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "qinq", &model.Qinq)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "vepa", &model.Vepa)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "vlanScope", &model.VlanScope)
+
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,
 		&diagnostics,
@@ -120,6 +225,7 @@ func L2IfPolModelFromObject(
 			"tagTag",
 		},
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -128,6 +234,7 @@ func L2IfPolModelFromObject(
 		TagAnnotationModelFromObject,
 		&model.TagAnnotation,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -159,6 +266,7 @@ func (m *L2IfPolModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
+
 	if !modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "annotation", m.Annotation) && nested {
 		attributes["annotation"] = defaultAnnotation
 	}
@@ -170,6 +278,7 @@ func (m *L2IfPolModel) BuildPayloadObject(
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "qinq", m.Qinq)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "vepa", m.Vepa)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "vlanScope", m.VlanScope)
+
 	var priorTagAnnotation *types.Set
 	if priorState != nil {
 		priorTagAnnotation = &priorState.TagAnnotation
@@ -190,6 +299,7 @@ func (m *L2IfPolModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, tagAnnotationPayloads...)
+
 	var priorTagTag *types.Set
 	if priorState != nil {
 		priorTagTag = &priorState.TagTag
@@ -224,29 +334,29 @@ func (m *L2IfPolModel) BuildNestedDeletePayloadObject(
 	ctx context.Context,
 	diagnostics *diag.Diagnostics,
 ) map[string]any {
-	attributes := map[string]any{}
-	attributes["name"] = m.Name.ValueString()
-	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, attributes)
+	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, map[string]any{
+		"name": m.Name.ValueString(),
+	})
 }
 
-type L2IfPolResourceModel struct {
+type L2IfPolRootModel struct {
 	L2IfPolModel
 
 	ID types.String `tfsdk:"id"`
 }
 
-func NewL2IfPolResourceModelNull() L2IfPolResourceModel {
-	return L2IfPolResourceModel{
+func NewL2IfPolRootModelNull() L2IfPolRootModel {
+	return L2IfPolRootModel{
 		L2IfPolModel: NewL2IfPolModelNull(),
 		ID:           types.StringNull(),
 	}
 }
 
-func (m *L2IfPolResourceModel) SetIDFromDN(dn string) {
+func (m *L2IfPolRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
 
-func (m *L2IfPolResourceModel) SetFromResponse(
+func (m *L2IfPolRootModel) SetFromResponse(
 	ctx context.Context,
 	response *container.Container,
 ) (bool, diag.Diagnostics) {
@@ -262,7 +372,7 @@ func (m *L2IfPolResourceModel) SetFromResponse(
 	return true, diagnostics
 }
 
-func (m *L2IfPolResourceModel) BuildPayload(
+func (m *L2IfPolRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *L2IfPolModel,
 	create bool,
@@ -273,49 +383,16 @@ func (m *L2IfPolResourceModel) BuildPayload(
 	if diagnostics.HasError() {
 		return nil, diagnostics
 	}
+
 	if markCreated {
 		payloadObject["attributes"].(map[string]any)["status"] = "created"
 	}
+
 	payloadEnvelope := map[string]any{"l2IfPol": payloadObject}
-	jsonPayload := modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload")
-	return jsonPayload, diagnostics
+	return modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload"), diagnostics
 }
 
-func (m *L2IfPolResourceModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
+func (m *L2IfPolRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
-	payload := modelHelpers.NewDeletePayload(ctx, &diagnostics, "l2IfPol", m.ID.ValueString())
-	return payload, diagnostics
-}
-
-type L2IfPolDataSourceModel struct {
-	L2IfPolModel
-
-	ID types.String `tfsdk:"id"`
-}
-
-func NewL2IfPolDataSourceModelNull() L2IfPolDataSourceModel {
-	return L2IfPolDataSourceModel{
-		L2IfPolModel: NewL2IfPolModelNull(),
-		ID:           types.StringNull(),
-	}
-}
-
-func (m *L2IfPolDataSourceModel) SetIDFromDN(dn string) {
-	m.ID = types.StringValue(dn)
-}
-
-func (m *L2IfPolDataSourceModel) SetFromResponse(
-	ctx context.Context,
-	response *container.Container,
-) (bool, diag.Diagnostics) {
-	fallbackModel := m.L2IfPolModel
-	model, dn, diagnostics := L2IfPolModelFromResponse(ctx, response, &fallbackModel)
-	found := model != nil
-	if diagnostics.HasError() || !found {
-		return found, diagnostics
-	}
-
-	m.L2IfPolModel = *model
-	m.ID = types.StringValue(dn)
-	return true, diagnostics
+	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "l2IfPol", m.ID.ValueString()), diagnostics
 }

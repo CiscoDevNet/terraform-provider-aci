@@ -6,15 +6,405 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+func synceEthIfPolSchemaDefinition() modelHelpers.ClassSchema {
+	return modelHelpers.ClassSchema{
+		ResourceDescription:   "Manages ACI SyncE Interface Policy",
+		DataSourceDescription: "Data source for ACI SyncE Interface Policy",
+		Properties: map[string]modelHelpers.PropertySchema{
+			"admin_state": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"disabled",
+					"enabled",
+				},
+				Description: "The administrative state of the SyncE Interface Policy object.",
+			},
+			"annotation": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The annotation of the SyncE Interface Policy object.",
+			},
+			"description": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The description of the SyncE Interface Policy object.",
+			},
+			"name": {
+				Type:            modelHelpers.StringProperty,
+				Required:        true,
+				RequiresReplace: true,
+				Description:     "The name of the SyncE Interface Policy object.",
+			},
+			"name_alias": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The name alias of the SyncE Interface Policy object.",
+			},
+			"owner_key": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The key for enabling clients to own their data for entity correlation.",
+			},
+			"owner_tag": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "A tag for enabling clients to add their own data. For example, to indicate who created this object.",
+			},
+			"quality_level_options": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"none",
+					"op1",
+					"op2g1",
+					"op2g2",
+				},
+				Description: "The quality level options of the SyncE Interface Policy object. This attribute is only applicable when 'synchronization_status_message' is 'yes'.",
+			},
+			"quality_receive_exact_value": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"fsync-ql-common-dnu",
+					"fsync-ql-common-failed",
+					"fsync-ql-common-invalid",
+					"fsync-ql-common-none",
+					"fsync-ql-o1-eec1",
+					"fsync-ql-o1-eeec",
+					"fsync-ql-o1-eprtc",
+					"fsync-ql-o1-prc",
+					"fsync-ql-o1-prtc",
+					"fsync-ql-o1-sec",
+					"fsync-ql-o1-ssu-a",
+					"fsync-ql-o1-ssu-b",
+					"fsync-ql-o2-g1-eec2",
+					"fsync-ql-o2-g1-eeec",
+					"fsync-ql-o2-g1-eprtc",
+					"fsync-ql-o2-g1-prs",
+					"fsync-ql-o2-g1-prtc",
+					"fsync-ql-o2-g1-res",
+					"fsync-ql-o2-g1-smc",
+					"fsync-ql-o2-g1-st2",
+					"fsync-ql-o2-g1-st3",
+					"fsync-ql-o2-g1-st4",
+					"fsync-ql-o2-g1-stu",
+					"fsync-ql-o2-g2-eec2",
+					"fsync-ql-o2-g2-eeec",
+					"fsync-ql-o2-g2-eprtc",
+					"fsync-ql-o2-g2-prov",
+					"fsync-ql-o2-g2-prs",
+					"fsync-ql-o2-g2-prtc",
+					"fsync-ql-o2-g2-smc",
+					"fsync-ql-o2-g2-st2",
+					"fsync-ql-o2-g2-st3",
+					"fsync-ql-o2-g2-st3e",
+					"fsync-ql-o2-g2-st4",
+					"fsync-ql-o2-g2-stu",
+					"fsync-ql-o2-g2-tnc",
+				},
+				Description: "The exact quality receive value for the SyncE Interface Policy object. This attribute is only applicable when 'synchronization_status_message' is 'yes', and valid input value depends on the choice of 'quality_level_options'.",
+			},
+			"quality_receive_highest_value": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"fsync-ql-common-dnu",
+					"fsync-ql-common-failed",
+					"fsync-ql-common-invalid",
+					"fsync-ql-common-none",
+					"fsync-ql-o1-eec1",
+					"fsync-ql-o1-eeec",
+					"fsync-ql-o1-eprtc",
+					"fsync-ql-o1-prc",
+					"fsync-ql-o1-prtc",
+					"fsync-ql-o1-sec",
+					"fsync-ql-o1-ssu-a",
+					"fsync-ql-o1-ssu-b",
+					"fsync-ql-o2-g1-eec2",
+					"fsync-ql-o2-g1-eeec",
+					"fsync-ql-o2-g1-eprtc",
+					"fsync-ql-o2-g1-prs",
+					"fsync-ql-o2-g1-prtc",
+					"fsync-ql-o2-g1-res",
+					"fsync-ql-o2-g1-smc",
+					"fsync-ql-o2-g1-st2",
+					"fsync-ql-o2-g1-st3",
+					"fsync-ql-o2-g1-st4",
+					"fsync-ql-o2-g1-stu",
+					"fsync-ql-o2-g2-eec2",
+					"fsync-ql-o2-g2-eeec",
+					"fsync-ql-o2-g2-eprtc",
+					"fsync-ql-o2-g2-prov",
+					"fsync-ql-o2-g2-prs",
+					"fsync-ql-o2-g2-prtc",
+					"fsync-ql-o2-g2-smc",
+					"fsync-ql-o2-g2-st2",
+					"fsync-ql-o2-g2-st3",
+					"fsync-ql-o2-g2-st3e",
+					"fsync-ql-o2-g2-st4",
+					"fsync-ql-o2-g2-stu",
+					"fsync-ql-o2-g2-tnc",
+				},
+				Description: "The highest quality receive value for the SyncE Interface Policy object. This attribute is only applicable when 'synchronization_status_message' is 'yes', and valid input value depends on the choice of 'quality_level_options'.",
+			},
+			"quality_receive_lowest_value": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"fsync-ql-common-dnu",
+					"fsync-ql-common-failed",
+					"fsync-ql-common-invalid",
+					"fsync-ql-common-none",
+					"fsync-ql-o1-eec1",
+					"fsync-ql-o1-eeec",
+					"fsync-ql-o1-eprtc",
+					"fsync-ql-o1-prc",
+					"fsync-ql-o1-prtc",
+					"fsync-ql-o1-sec",
+					"fsync-ql-o1-ssu-a",
+					"fsync-ql-o1-ssu-b",
+					"fsync-ql-o2-g1-eec2",
+					"fsync-ql-o2-g1-eeec",
+					"fsync-ql-o2-g1-eprtc",
+					"fsync-ql-o2-g1-prs",
+					"fsync-ql-o2-g1-prtc",
+					"fsync-ql-o2-g1-res",
+					"fsync-ql-o2-g1-smc",
+					"fsync-ql-o2-g1-st2",
+					"fsync-ql-o2-g1-st3",
+					"fsync-ql-o2-g1-st4",
+					"fsync-ql-o2-g1-stu",
+					"fsync-ql-o2-g2-eec2",
+					"fsync-ql-o2-g2-eeec",
+					"fsync-ql-o2-g2-eprtc",
+					"fsync-ql-o2-g2-prov",
+					"fsync-ql-o2-g2-prs",
+					"fsync-ql-o2-g2-prtc",
+					"fsync-ql-o2-g2-smc",
+					"fsync-ql-o2-g2-st2",
+					"fsync-ql-o2-g2-st3",
+					"fsync-ql-o2-g2-st3e",
+					"fsync-ql-o2-g2-st4",
+					"fsync-ql-o2-g2-stu",
+					"fsync-ql-o2-g2-tnc",
+				},
+				Description: "The lowest quality receive value for the SyncE Interface Policy object. This attribute is only applicable when 'synchronization_status_message' is 'yes', and valid input value depends on the choice of 'quality_level_options'.",
+			},
+			"quality_transmit_exact_value": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"fsync-ql-common-dnu",
+					"fsync-ql-common-failed",
+					"fsync-ql-common-invalid",
+					"fsync-ql-common-none",
+					"fsync-ql-o1-eec1",
+					"fsync-ql-o1-eeec",
+					"fsync-ql-o1-eprtc",
+					"fsync-ql-o1-prc",
+					"fsync-ql-o1-prtc",
+					"fsync-ql-o1-sec",
+					"fsync-ql-o1-ssu-a",
+					"fsync-ql-o1-ssu-b",
+					"fsync-ql-o2-g1-eec2",
+					"fsync-ql-o2-g1-eeec",
+					"fsync-ql-o2-g1-eprtc",
+					"fsync-ql-o2-g1-prs",
+					"fsync-ql-o2-g1-prtc",
+					"fsync-ql-o2-g1-res",
+					"fsync-ql-o2-g1-smc",
+					"fsync-ql-o2-g1-st2",
+					"fsync-ql-o2-g1-st3",
+					"fsync-ql-o2-g1-st4",
+					"fsync-ql-o2-g1-stu",
+					"fsync-ql-o2-g2-eec2",
+					"fsync-ql-o2-g2-eeec",
+					"fsync-ql-o2-g2-eprtc",
+					"fsync-ql-o2-g2-prov",
+					"fsync-ql-o2-g2-prs",
+					"fsync-ql-o2-g2-prtc",
+					"fsync-ql-o2-g2-smc",
+					"fsync-ql-o2-g2-st2",
+					"fsync-ql-o2-g2-st3",
+					"fsync-ql-o2-g2-st3e",
+					"fsync-ql-o2-g2-st4",
+					"fsync-ql-o2-g2-stu",
+					"fsync-ql-o2-g2-tnc",
+				},
+				Description: "The exact quality transmit value of the SyncE Interface Policy object. This attribute is only applicable when 'synchronization_status_message' is 'yes', and valid input value depends on the choice of 'quality_level_options'.",
+			},
+			"quality_transmit_highest_value": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"fsync-ql-common-dnu",
+					"fsync-ql-common-failed",
+					"fsync-ql-common-invalid",
+					"fsync-ql-common-none",
+					"fsync-ql-o1-eec1",
+					"fsync-ql-o1-eeec",
+					"fsync-ql-o1-eprtc",
+					"fsync-ql-o1-prc",
+					"fsync-ql-o1-prtc",
+					"fsync-ql-o1-sec",
+					"fsync-ql-o1-ssu-a",
+					"fsync-ql-o1-ssu-b",
+					"fsync-ql-o2-g1-eec2",
+					"fsync-ql-o2-g1-eeec",
+					"fsync-ql-o2-g1-eprtc",
+					"fsync-ql-o2-g1-prs",
+					"fsync-ql-o2-g1-prtc",
+					"fsync-ql-o2-g1-res",
+					"fsync-ql-o2-g1-smc",
+					"fsync-ql-o2-g1-st2",
+					"fsync-ql-o2-g1-st3",
+					"fsync-ql-o2-g1-st4",
+					"fsync-ql-o2-g1-stu",
+					"fsync-ql-o2-g2-eec2",
+					"fsync-ql-o2-g2-eeec",
+					"fsync-ql-o2-g2-eprtc",
+					"fsync-ql-o2-g2-prov",
+					"fsync-ql-o2-g2-prs",
+					"fsync-ql-o2-g2-prtc",
+					"fsync-ql-o2-g2-smc",
+					"fsync-ql-o2-g2-st2",
+					"fsync-ql-o2-g2-st3",
+					"fsync-ql-o2-g2-st3e",
+					"fsync-ql-o2-g2-st4",
+					"fsync-ql-o2-g2-stu",
+					"fsync-ql-o2-g2-tnc",
+				},
+				Description: "The highest quality transmit value of the SyncE Interface Policy object. This attribute is only applicable when 'synchronization_status_message' is 'yes', and valid input value depends on the choice of 'quality_level_options'.",
+			},
+			"quality_transmit_lowest_value": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"fsync-ql-common-dnu",
+					"fsync-ql-common-failed",
+					"fsync-ql-common-invalid",
+					"fsync-ql-common-none",
+					"fsync-ql-o1-eec1",
+					"fsync-ql-o1-eeec",
+					"fsync-ql-o1-eprtc",
+					"fsync-ql-o1-prc",
+					"fsync-ql-o1-prtc",
+					"fsync-ql-o1-sec",
+					"fsync-ql-o1-ssu-a",
+					"fsync-ql-o1-ssu-b",
+					"fsync-ql-o2-g1-eec2",
+					"fsync-ql-o2-g1-eeec",
+					"fsync-ql-o2-g1-eprtc",
+					"fsync-ql-o2-g1-prs",
+					"fsync-ql-o2-g1-prtc",
+					"fsync-ql-o2-g1-res",
+					"fsync-ql-o2-g1-smc",
+					"fsync-ql-o2-g1-st2",
+					"fsync-ql-o2-g1-st3",
+					"fsync-ql-o2-g1-st4",
+					"fsync-ql-o2-g1-stu",
+					"fsync-ql-o2-g2-eec2",
+					"fsync-ql-o2-g2-eeec",
+					"fsync-ql-o2-g2-eprtc",
+					"fsync-ql-o2-g2-prov",
+					"fsync-ql-o2-g2-prs",
+					"fsync-ql-o2-g2-prtc",
+					"fsync-ql-o2-g2-smc",
+					"fsync-ql-o2-g2-st2",
+					"fsync-ql-o2-g2-st3",
+					"fsync-ql-o2-g2-st3e",
+					"fsync-ql-o2-g2-st4",
+					"fsync-ql-o2-g2-stu",
+					"fsync-ql-o2-g2-tnc",
+				},
+				Description: "The lowest quality transmit value of the SyncE Interface Policy object. This attribute is only applicable when 'synchronization_status_message' is 'yes', and valid input value depends on the choice of 'quality_level_options'.",
+			},
+			"selection_input": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"no",
+					"yes",
+				},
+				Description: "Enable selection input for the SyncE Interface Policy object.",
+			},
+			"source_priority": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The source priority of the SyncE Interface Policy object. This attribute is only applicable when 'selection_input' is 'yes'. The value must be in the range 1 - 254.",
+			},
+			"synchronization_status_message": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"no",
+					"yes",
+				},
+				Description: "Enable a synchronization status message for the SyncE Interface Policy object.",
+			},
+			"wait_to_restore_time": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The wait-to-restore time (minutes) for the SyncE Interface Policy object. This attribute is only applicable when 'selection_input' is 'yes'. The value must be in the range 0 - 12.",
+			},
+		},
+		Children: map[string]modelHelpers.ChildSchema{
+			"annotations": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.",
+				Schema:      tagAnnotationSchemaDefinition,
+			},
+			"tags": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.",
+				Schema:      tagTagSchemaDefinition,
+			},
+		},
+		Identifiers: []string{
+			"name",
+		},
+		AnnotationAttribute: "annotation",
+	}
+}
+
+func SynceEthIfPolResourceSchema(defaultAnnotation string) resourceschema.Schema {
+	return synceEthIfPolSchemaDefinition().ResourceSchema(defaultAnnotation)
+}
+
+func SynceEthIfPolDataSourceSchema() datasourceschema.Schema {
+	return synceEthIfPolSchemaDefinition().DataSourceSchema()
+}
 
 type SynceEthIfPolModel struct {
 	AdminSt       types.String `tfsdk:"admin_state"`
@@ -108,12 +498,11 @@ func NewSynceEthIfPolModelNull() SynceEthIfPolModel {
 func (m *SynceEthIfPolModel) BuildRN() string {
 	rn := "infra/synceEthIfP-{name}"
 	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
-
 	return rn
 }
 
 func (m *SynceEthIfPolModel) BuildDN() string {
-	return "uni/" + m.BuildRN()
+	return fmt.Sprintf("uni/%s", m.BuildRN())
 }
 
 func SynceEthIfPolModelFromObject(
@@ -128,6 +517,7 @@ func SynceEthIfPolModelFromObject(
 	if !ok {
 		return model, diagnostics
 	}
+
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "adminSt", &model.AdminSt)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "descr", &model.Descr)
@@ -146,6 +536,7 @@ func SynceEthIfPolModelFromObject(
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "srcpriority", &model.Srcpriority)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ssm", &model.Ssm)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "wtr", &model.Wtr)
+
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,
 		&diagnostics,
@@ -156,6 +547,7 @@ func SynceEthIfPolModelFromObject(
 			"tagTag",
 		},
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -164,6 +556,7 @@ func SynceEthIfPolModelFromObject(
 		TagAnnotationModelFromObject,
 		&model.TagAnnotation,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -195,6 +588,7 @@ func (m *SynceEthIfPolModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
+
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "adminSt", m.AdminSt)
 	if !modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "annotation", m.Annotation) && nested {
 		attributes["annotation"] = defaultAnnotation
@@ -215,6 +609,7 @@ func (m *SynceEthIfPolModel) BuildPayloadObject(
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "srcpriority", m.Srcpriority)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "ssm", m.Ssm)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "wtr", m.Wtr)
+
 	var priorTagAnnotation *types.Set
 	if priorState != nil {
 		priorTagAnnotation = &priorState.TagAnnotation
@@ -235,6 +630,7 @@ func (m *SynceEthIfPolModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, tagAnnotationPayloads...)
+
 	var priorTagTag *types.Set
 	if priorState != nil {
 		priorTagTag = &priorState.TagTag
@@ -269,29 +665,29 @@ func (m *SynceEthIfPolModel) BuildNestedDeletePayloadObject(
 	ctx context.Context,
 	diagnostics *diag.Diagnostics,
 ) map[string]any {
-	attributes := map[string]any{}
-	attributes["name"] = m.Name.ValueString()
-	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, attributes)
+	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, map[string]any{
+		"name": m.Name.ValueString(),
+	})
 }
 
-type SynceEthIfPolResourceModel struct {
+type SynceEthIfPolRootModel struct {
 	SynceEthIfPolModel
 
 	ID types.String `tfsdk:"id"`
 }
 
-func NewSynceEthIfPolResourceModelNull() SynceEthIfPolResourceModel {
-	return SynceEthIfPolResourceModel{
+func NewSynceEthIfPolRootModelNull() SynceEthIfPolRootModel {
+	return SynceEthIfPolRootModel{
 		SynceEthIfPolModel: NewSynceEthIfPolModelNull(),
 		ID:                 types.StringNull(),
 	}
 }
 
-func (m *SynceEthIfPolResourceModel) SetIDFromDN(dn string) {
+func (m *SynceEthIfPolRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
 
-func (m *SynceEthIfPolResourceModel) SetFromResponse(
+func (m *SynceEthIfPolRootModel) SetFromResponse(
 	ctx context.Context,
 	response *container.Container,
 ) (bool, diag.Diagnostics) {
@@ -307,7 +703,7 @@ func (m *SynceEthIfPolResourceModel) SetFromResponse(
 	return true, diagnostics
 }
 
-func (m *SynceEthIfPolResourceModel) BuildPayload(
+func (m *SynceEthIfPolRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *SynceEthIfPolModel,
 	create bool,
@@ -318,49 +714,16 @@ func (m *SynceEthIfPolResourceModel) BuildPayload(
 	if diagnostics.HasError() {
 		return nil, diagnostics
 	}
+
 	if markCreated {
 		payloadObject["attributes"].(map[string]any)["status"] = "created"
 	}
+
 	payloadEnvelope := map[string]any{"synceEthIfPol": payloadObject}
-	jsonPayload := modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload")
-	return jsonPayload, diagnostics
+	return modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload"), diagnostics
 }
 
-func (m *SynceEthIfPolResourceModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
+func (m *SynceEthIfPolRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
-	payload := modelHelpers.NewDeletePayload(ctx, &diagnostics, "synceEthIfPol", m.ID.ValueString())
-	return payload, diagnostics
-}
-
-type SynceEthIfPolDataSourceModel struct {
-	SynceEthIfPolModel
-
-	ID types.String `tfsdk:"id"`
-}
-
-func NewSynceEthIfPolDataSourceModelNull() SynceEthIfPolDataSourceModel {
-	return SynceEthIfPolDataSourceModel{
-		SynceEthIfPolModel: NewSynceEthIfPolModelNull(),
-		ID:                 types.StringNull(),
-	}
-}
-
-func (m *SynceEthIfPolDataSourceModel) SetIDFromDN(dn string) {
-	m.ID = types.StringValue(dn)
-}
-
-func (m *SynceEthIfPolDataSourceModel) SetFromResponse(
-	ctx context.Context,
-	response *container.Container,
-) (bool, diag.Diagnostics) {
-	fallbackModel := m.SynceEthIfPolModel
-	model, dn, diagnostics := SynceEthIfPolModelFromResponse(ctx, response, &fallbackModel)
-	found := model != nil
-	if diagnostics.HasError() || !found {
-		return found, diagnostics
-	}
-
-	m.SynceEthIfPolModel = *model
-	m.ID = types.StringValue(dn)
-	return true, diagnostics
+	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "synceEthIfPol", m.ID.ValueString()), diagnostics
 }

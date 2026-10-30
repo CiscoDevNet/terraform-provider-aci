@@ -6,15 +6,274 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+func fvRsDomAttSchemaDefinition() modelHelpers.ClassSchema {
+	return modelHelpers.ClassSchema{
+		ResourceDescription:   "Manages ACI Relation To Domain",
+		DataSourceDescription: "Data source for ACI Relation To Domain",
+		Properties: map[string]modelHelpers.PropertySchema{
+			"annotation": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The annotation of the Relation To Domain object.",
+			},
+			"binding_type": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"dynamicBinding",
+					"ephemeral",
+					"none",
+					"staticBinding",
+				},
+				Description: "The binding type of the Relation To Domain object.",
+			},
+			"class_preference": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"encap",
+					"useg",
+				},
+				Description: "The class preference of the Relation To Domain object. Set 'useg' to allow microsegmentation.",
+			},
+			"custom_epg_name": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The display name of the user configured port-group.",
+			},
+			"delimiter": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The delimiter of the Relation To Domain object.",
+			},
+			"encapsulation": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The encapsulation of the Relation To Domain object. The encapsulation refers to the EPG VLAN when class preference is set to 'encap', or to the Secondary VLAN when class preference is set to 'useg'.",
+			},
+			"encapsulation_mode": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"auto",
+					"vlan",
+					"vxlan",
+				},
+				Description: "The encapsulation mode of the Relation To Domain object.",
+			},
+			"epg_cos": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"Cos0",
+					"Cos1",
+					"Cos2",
+					"Cos3",
+					"Cos4",
+					"Cos5",
+					"Cos6",
+					"Cos7",
+				},
+				Description: "The class of service (CoS) of the Relation To Domain object.",
+			},
+			"epg_cos_pref": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"disabled",
+					"enabled",
+				},
+				Description: "The class of service (CoS) preference of the Relation To Domain object.",
+			},
+			"deployment_immediacy": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"immediate",
+					"lazy",
+				},
+				Description: "The deployment immediacy of the Relation To Domain object. Specifies when the policy is pushed into the hardware policy content-addressable memory (CAM).",
+			},
+			"ipam_dhcp_override": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The IP address management (IPAM) DHCP override of the Relation To Domain object. Only applicable for Nutanix domains.",
+			},
+			"ipam_enabled": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"no",
+					"yes",
+				},
+				Description: "The IP address management (IPAM) enabled status of the Relation To Domain object. Only applicable for Nutanix domains.",
+			},
+			"ipam_gateway": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The IP address management (IPAM) gateway of the Relation To Domain object. Only applicable for Nutanix domains.",
+			},
+			"lag_policy_name": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The link aggregation group (LAG) policy name of the Relation To Domain object. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/lacp_enhanced_lag_policy) with `aci_lacp_enhanced_lag_policy.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/lacp_enhanced_lag_policy) with `data.aci_lacp_enhanced_lag_policy.example.name`.",
+			},
+			"netflow_direction": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"both",
+					"egress",
+					"ingress",
+				},
+				Description: "The NetFlow monitoring direction of the Relation To Domain object.",
+			},
+			"enable_netflow": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"disabled",
+					"enabled",
+				},
+				Description: "The NetFlow enabled status for the Relation To Domain object.",
+			},
+			"number_of_ports": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The number of ports of the Relation To Domain object.",
+			},
+			"port_allocation": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"elastic",
+					"fixed",
+					"none",
+				},
+				Description: "Port allocation for ports.",
+			},
+			"primary_encapsulation": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The primary encapsulation of the Relation To Domain object. This is used when the class preference is set to 'useg'.",
+			},
+			"primary_encapsulation_inner": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The primary inner encapsulation of the Relation To Domain object. This is used for the portgroup at the VMWare Distributed Virtual Switch (DVS). This VLAN is internal to the DVS and is used for communication between the other VMs and the AVE VM at a host. Traffic is not forwarded to the fabric over the VLAN. Only applicable for Cisco ACI Virtual Edge (AVE) domains.",
+			},
+			"resolution_immediacy": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"immediate",
+					"lazy",
+					"pre-provision",
+				},
+				Description: "The resolution immediacy of the Relation To Domain object. Specifies if policies are resolved immmediately or when needed.",
+			},
+			"secondary_encapsulation_inner": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The secondary inner encapsulation of the Relation To Domain object. This is used for the portgroup at the VMWare Distributed Virtual Switch (DVS). This VLAN is internal to the DVS and is used for communication between the other VMs and the AVE VM at a host. Traffic is not forwarded to the fabric over the VLAN. Only applicable for Cisco ACI Virtual Edge (AVE) domains.",
+			},
+			"switching_mode": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"AVE",
+					"native",
+				},
+				Description: "The switching mode of the Relation To Domain object.",
+			},
+			"target_dn": {
+				Type:            modelHelpers.StringProperty,
+				Required:        true,
+				RequiresReplace: true,
+				Description:     "The distinguished name of the target Domain object.",
+			},
+			"untagged": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"no",
+					"yes",
+				},
+				Description: "The untagged status of the Relation To Domain object.",
+			},
+		},
+		Children: map[string]modelHelpers.ChildSchema{
+			"uplink_order_container": {
+				Cardinality: modelHelpers.SingleChild,
+				Description: "`uplink_order_container` - (map) A map of Uplink Order Container (ACI object [fvUplinkOrderCont](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvUplinkOrderCont/overview)).",
+				Schema:      fvUplinkOrderContSchemaDefinition,
+			},
+			"annotations": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.",
+				Schema:      tagAnnotationSchemaDefinition,
+			},
+			"tags": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.",
+				Schema:      tagTagSchemaDefinition,
+			},
+		},
+		Identifiers: []string{
+			"target_dn",
+		},
+		ParentDN: &modelHelpers.ParentDNSchema{
+			AttributeName: "parent_dn",
+			Config:        modelHelpers.ParentDNAttributeConfig{},
+		},
+		AnnotationAttribute: "annotation",
+	}
+}
+
+func FvRsDomAttResourceSchema(defaultAnnotation string) resourceschema.Schema {
+	return fvRsDomAttSchemaDefinition().ResourceSchema(defaultAnnotation)
+}
+
+func FvRsDomAttDataSourceSchema() datasourceschema.Schema {
+	return fvRsDomAttSchemaDefinition().DataSourceSchema()
+}
 
 type FvRsDomAttModel struct {
 	Annotation          types.String `tfsdk:"annotation"`
@@ -134,19 +393,15 @@ func NewFvRsDomAttModelNull() FvRsDomAttModel {
 func (m *FvRsDomAttModel) BuildRN() string {
 	rn := "rsdomAtt-[{tDn}]"
 	rn = strings.ReplaceAll(rn, "{tDn}", m.TDn.ValueString())
-
 	return rn
 }
 
 func (m *FvRsDomAttModel) BuildDN(parentDN string) string {
-	return parentDN + "/" + m.BuildRN()
+	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
 }
 
 func (m *FvRsDomAttModel) ParentDNFromDN(dn string) string {
-	rn := m.BuildRN()
-
-	parentDN, _ := strings.CutSuffix(dn, "/"+rn)
-	return parentDN
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
 }
 
 func FvRsDomAttModelFromObject(
@@ -161,6 +416,7 @@ func FvRsDomAttModelFromObject(
 	if !ok {
 		return model, diagnostics
 	}
+
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
 	modelHelpers.DecodeStringAttributeWithEmptyValue(ctx, &diagnostics, attributes, "bindingType", "none", &model.BindingType)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "classPref", &model.ClassPref)
@@ -186,6 +442,7 @@ func FvRsDomAttModelFromObject(
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "switchingMode", &model.SwitchingMode)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "tDn", &model.TDn)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "untagged", &model.Untagged)
+
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,
 		&diagnostics,
@@ -197,6 +454,7 @@ func FvRsDomAttModelFromObject(
 			"tagTag",
 		},
 	)
+
 	var fallbackFvUplinkOrderCont *types.Object
 	if fallbackModel != nil {
 		fallbackFvUplinkOrderCont = &fallbackModel.FvUplinkOrderCont
@@ -213,6 +471,7 @@ func FvRsDomAttModelFromObject(
 		FvUplinkOrderContModelFromObject,
 		&model.FvUplinkOrderCont,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -221,6 +480,7 @@ func FvRsDomAttModelFromObject(
 		TagAnnotationModelFromObject,
 		&model.TagAnnotation,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -252,6 +512,7 @@ func (m *FvRsDomAttModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
+
 	if !modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "annotation", m.Annotation) && nested {
 		attributes["annotation"] = defaultAnnotation
 	}
@@ -279,6 +540,7 @@ func (m *FvRsDomAttModel) BuildPayloadObject(
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "switchingMode", m.SwitchingMode)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "tDn", m.TDn)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "untagged", m.Untagged)
+
 	var priorFvUplinkOrderCont *types.Object
 	if priorState != nil {
 		priorFvUplinkOrderCont = &priorState.FvUplinkOrderCont
@@ -298,6 +560,7 @@ func (m *FvRsDomAttModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, fvUplinkOrderContPayloads...)
+
 	var priorTagAnnotation *types.Set
 	if priorState != nil {
 		priorTagAnnotation = &priorState.TagAnnotation
@@ -318,6 +581,7 @@ func (m *FvRsDomAttModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, tagAnnotationPayloads...)
+
 	var priorTagTag *types.Set
 	if priorState != nil {
 		priorTagTag = &priorState.TagTag
@@ -352,31 +616,31 @@ func (m *FvRsDomAttModel) BuildNestedDeletePayloadObject(
 	ctx context.Context,
 	diagnostics *diag.Diagnostics,
 ) map[string]any {
-	attributes := map[string]any{}
-	attributes["tDn"] = m.TDn.ValueString()
-	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, attributes)
+	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, map[string]any{
+		"tDn": m.TDn.ValueString(),
+	})
 }
 
-type FvRsDomAttResourceModel struct {
+type FvRsDomAttRootModel struct {
 	FvRsDomAttModel
 
 	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ParentDN types.String `tfsdk:"parent_dn"`
 }
 
-func NewFvRsDomAttResourceModelNull() FvRsDomAttResourceModel {
-	return FvRsDomAttResourceModel{
+func NewFvRsDomAttRootModelNull() FvRsDomAttRootModel {
+	return FvRsDomAttRootModel{
 		FvRsDomAttModel: NewFvRsDomAttModelNull(),
 		ID:              types.StringNull(),
-		ParentDn:        types.StringNull(),
+		ParentDN:        types.StringNull(),
 	}
 }
 
-func (m *FvRsDomAttResourceModel) SetIDFromDN(dn string) {
+func (m *FvRsDomAttRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
 
-func (m *FvRsDomAttResourceModel) SetFromResponse(
+func (m *FvRsDomAttRootModel) SetFromResponse(
 	ctx context.Context,
 	response *container.Container,
 ) (bool, diag.Diagnostics) {
@@ -389,11 +653,11 @@ func (m *FvRsDomAttResourceModel) SetFromResponse(
 
 	m.FvRsDomAttModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 
-func (m *FvRsDomAttResourceModel) BuildPayload(
+func (m *FvRsDomAttRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *FvRsDomAttModel,
 	create bool,
@@ -404,52 +668,16 @@ func (m *FvRsDomAttResourceModel) BuildPayload(
 	if diagnostics.HasError() {
 		return nil, diagnostics
 	}
+
 	if markCreated {
 		payloadObject["attributes"].(map[string]any)["status"] = "created"
 	}
+
 	payloadEnvelope := map[string]any{"fvRsDomAtt": payloadObject}
-	jsonPayload := modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload")
-	return jsonPayload, diagnostics
+	return modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload"), diagnostics
 }
 
-func (m *FvRsDomAttResourceModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
+func (m *FvRsDomAttRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
-	payload := modelHelpers.NewDeletePayload(ctx, &diagnostics, "fvRsDomAtt", m.ID.ValueString())
-	return payload, diagnostics
-}
-
-type FvRsDomAttDataSourceModel struct {
-	FvRsDomAttModel
-
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
-}
-
-func NewFvRsDomAttDataSourceModelNull() FvRsDomAttDataSourceModel {
-	return FvRsDomAttDataSourceModel{
-		FvRsDomAttModel: NewFvRsDomAttModelNull(),
-		ID:              types.StringNull(),
-		ParentDn:        types.StringNull(),
-	}
-}
-
-func (m *FvRsDomAttDataSourceModel) SetIDFromDN(dn string) {
-	m.ID = types.StringValue(dn)
-}
-
-func (m *FvRsDomAttDataSourceModel) SetFromResponse(
-	ctx context.Context,
-	response *container.Container,
-) (bool, diag.Diagnostics) {
-	fallbackModel := m.FvRsDomAttModel
-	model, dn, diagnostics := FvRsDomAttModelFromResponse(ctx, response, &fallbackModel)
-	found := model != nil
-	if diagnostics.HasError() || !found {
-		return found, diagnostics
-	}
-
-	m.FvRsDomAttModel = *model
-	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
-	return true, diagnostics
+	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "fvRsDomAtt", m.ID.ValueString()), diagnostics
 }

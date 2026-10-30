@@ -6,15 +6,101 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+func qosCustomPolSchemaDefinition() modelHelpers.ClassSchema {
+	return modelHelpers.ClassSchema{
+		ResourceDescription:   "Manages ACI Custom QoS Policy",
+		DataSourceDescription: "Data source for ACI Custom QoS Policy",
+		Properties: map[string]modelHelpers.PropertySchema{
+			"annotation": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The annotation of the Custom QoS Policy object.",
+			},
+			"description": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The description of the Custom QoS Policy object.",
+			},
+			"name": {
+				Type:            modelHelpers.StringProperty,
+				Required:        true,
+				RequiresReplace: true,
+				Description:     "The name of the Custom QoS Policy object.",
+			},
+			"name_alias": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The name alias of the Custom QoS Policy object.",
+			},
+			"owner_key": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The key for enabling clients to own their data for entity correlation.",
+			},
+			"owner_tag": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "A tag for enabling clients to add their own data. For example, to indicate who created this object.",
+			},
+		},
+		Children: map[string]modelHelpers.ChildSchema{
+			"dot1p_classifiers": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`dot1p_classifiers` - (list) A list of Dot1p Classifiers (ACI object [qosDot1PClass](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/qosDot1PClass/overview)) which can also be configured using a separate [aci_dot1p_classifier](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/dot1p_classifier) resource.",
+				Schema:      qosDot1PClassSchemaDefinition,
+			},
+			"dscp_to_priority_maps": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`dscp_to_priority_maps` - (list) A list of DSCP to Priority Maps (ACI object [qosDscpClass](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/qosDscpClass/overview)) which can also be configured using a separate [aci_dscp_to_priority_map](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/dscp_to_priority_map) resource.",
+				Schema:      qosDscpClassSchemaDefinition,
+			},
+			"annotations": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.",
+				Schema:      tagAnnotationSchemaDefinition,
+			},
+			"tags": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.",
+				Schema:      tagTagSchemaDefinition,
+			},
+		},
+		Identifiers: []string{
+			"name",
+		},
+		ParentDN: &modelHelpers.ParentDNSchema{
+			AttributeName: "parent_dn",
+			Config:        modelHelpers.ParentDNAttributeConfig{},
+		},
+		AnnotationAttribute: "annotation",
+	}
+}
+
+func QosCustomPolResourceSchema(defaultAnnotation string) resourceschema.Schema {
+	return qosCustomPolSchemaDefinition().ResourceSchema(defaultAnnotation)
+}
+
+func QosCustomPolDataSourceSchema() datasourceschema.Schema {
+	return qosCustomPolSchemaDefinition().DataSourceSchema()
+}
 
 type QosCustomPolModel struct {
 	Annotation    types.String `tfsdk:"annotation"`
@@ -94,19 +180,15 @@ func NewQosCustomPolModelNull() QosCustomPolModel {
 func (m *QosCustomPolModel) BuildRN() string {
 	rn := "qoscustom-{name}"
 	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
-
 	return rn
 }
 
 func (m *QosCustomPolModel) BuildDN(parentDN string) string {
-	return parentDN + "/" + m.BuildRN()
+	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
 }
 
 func (m *QosCustomPolModel) ParentDNFromDN(dn string) string {
-	rn := m.BuildRN()
-
-	parentDN, _ := strings.CutSuffix(dn, "/"+rn)
-	return parentDN
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
 }
 
 func QosCustomPolModelFromObject(
@@ -121,12 +203,14 @@ func QosCustomPolModelFromObject(
 	if !ok {
 		return model, diagnostics
 	}
+
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "descr", &model.Descr)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "name", &model.Name)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "nameAlias", &model.NameAlias)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ownerKey", &model.OwnerKey)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ownerTag", &model.OwnerTag)
+
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,
 		&diagnostics,
@@ -139,6 +223,7 @@ func QosCustomPolModelFromObject(
 			"tagTag",
 		},
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -147,6 +232,7 @@ func QosCustomPolModelFromObject(
 		QosDot1PClassModelFromObject,
 		&model.QosDot1PClass,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -155,6 +241,7 @@ func QosCustomPolModelFromObject(
 		QosDscpClassModelFromObject,
 		&model.QosDscpClass,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -163,6 +250,7 @@ func QosCustomPolModelFromObject(
 		TagAnnotationModelFromObject,
 		&model.TagAnnotation,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -194,6 +282,7 @@ func (m *QosCustomPolModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
+
 	if !modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "annotation", m.Annotation) && nested {
 		attributes["annotation"] = defaultAnnotation
 	}
@@ -202,6 +291,7 @@ func (m *QosCustomPolModel) BuildPayloadObject(
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "nameAlias", m.NameAlias)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "ownerKey", m.OwnerKey)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "ownerTag", m.OwnerTag)
+
 	var priorQosDot1PClass *types.Set
 	if priorState != nil {
 		priorQosDot1PClass = &priorState.QosDot1PClass
@@ -222,6 +312,7 @@ func (m *QosCustomPolModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, qosDot1PClassPayloads...)
+
 	var priorQosDscpClass *types.Set
 	if priorState != nil {
 		priorQosDscpClass = &priorState.QosDscpClass
@@ -242,6 +333,7 @@ func (m *QosCustomPolModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, qosDscpClassPayloads...)
+
 	var priorTagAnnotation *types.Set
 	if priorState != nil {
 		priorTagAnnotation = &priorState.TagAnnotation
@@ -262,6 +354,7 @@ func (m *QosCustomPolModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, tagAnnotationPayloads...)
+
 	var priorTagTag *types.Set
 	if priorState != nil {
 		priorTagTag = &priorState.TagTag
@@ -296,31 +389,31 @@ func (m *QosCustomPolModel) BuildNestedDeletePayloadObject(
 	ctx context.Context,
 	diagnostics *diag.Diagnostics,
 ) map[string]any {
-	attributes := map[string]any{}
-	attributes["name"] = m.Name.ValueString()
-	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, attributes)
+	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, map[string]any{
+		"name": m.Name.ValueString(),
+	})
 }
 
-type QosCustomPolResourceModel struct {
+type QosCustomPolRootModel struct {
 	QosCustomPolModel
 
 	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ParentDN types.String `tfsdk:"parent_dn"`
 }
 
-func NewQosCustomPolResourceModelNull() QosCustomPolResourceModel {
-	return QosCustomPolResourceModel{
+func NewQosCustomPolRootModelNull() QosCustomPolRootModel {
+	return QosCustomPolRootModel{
 		QosCustomPolModel: NewQosCustomPolModelNull(),
 		ID:                types.StringNull(),
-		ParentDn:          types.StringNull(),
+		ParentDN:          types.StringNull(),
 	}
 }
 
-func (m *QosCustomPolResourceModel) SetIDFromDN(dn string) {
+func (m *QosCustomPolRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
 
-func (m *QosCustomPolResourceModel) SetFromResponse(
+func (m *QosCustomPolRootModel) SetFromResponse(
 	ctx context.Context,
 	response *container.Container,
 ) (bool, diag.Diagnostics) {
@@ -333,11 +426,11 @@ func (m *QosCustomPolResourceModel) SetFromResponse(
 
 	m.QosCustomPolModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 
-func (m *QosCustomPolResourceModel) BuildPayload(
+func (m *QosCustomPolRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *QosCustomPolModel,
 	create bool,
@@ -348,52 +441,16 @@ func (m *QosCustomPolResourceModel) BuildPayload(
 	if diagnostics.HasError() {
 		return nil, diagnostics
 	}
+
 	if markCreated {
 		payloadObject["attributes"].(map[string]any)["status"] = "created"
 	}
+
 	payloadEnvelope := map[string]any{"qosCustomPol": payloadObject}
-	jsonPayload := modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload")
-	return jsonPayload, diagnostics
+	return modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload"), diagnostics
 }
 
-func (m *QosCustomPolResourceModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
+func (m *QosCustomPolRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
-	payload := modelHelpers.NewDeletePayload(ctx, &diagnostics, "qosCustomPol", m.ID.ValueString())
-	return payload, diagnostics
-}
-
-type QosCustomPolDataSourceModel struct {
-	QosCustomPolModel
-
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
-}
-
-func NewQosCustomPolDataSourceModelNull() QosCustomPolDataSourceModel {
-	return QosCustomPolDataSourceModel{
-		QosCustomPolModel: NewQosCustomPolModelNull(),
-		ID:                types.StringNull(),
-		ParentDn:          types.StringNull(),
-	}
-}
-
-func (m *QosCustomPolDataSourceModel) SetIDFromDN(dn string) {
-	m.ID = types.StringValue(dn)
-}
-
-func (m *QosCustomPolDataSourceModel) SetFromResponse(
-	ctx context.Context,
-	response *container.Container,
-) (bool, diag.Diagnostics) {
-	fallbackModel := m.QosCustomPolModel
-	model, dn, diagnostics := QosCustomPolModelFromResponse(ctx, response, &fallbackModel)
-	found := model != nil
-	if diagnostics.HasError() || !found {
-		return found, diagnostics
-	}
-
-	m.QosCustomPolModel = *model
-	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
-	return true, diagnostics
+	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "qosCustomPol", m.ID.ValueString()), diagnostics
 }
