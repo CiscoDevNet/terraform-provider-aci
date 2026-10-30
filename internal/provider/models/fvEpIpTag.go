@@ -16,7 +16,7 @@ import (
 	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
-	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/customtypes"
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
 
@@ -45,7 +45,7 @@ func fvEpIpTagSchemaDefinition() modelHelpers.ClassSchema {
 			},
 			"ip": {
 				Type:             modelHelpers.StringProperty,
-				CustomStringType: customTypes.IPAddressStringType{},
+				CustomStringType: customtypes.IPAddressType{},
 				Required:         true,
 				RequiresReplace:  true,
 				Description:      "The IP address of the Endpoint Tag IP object.",
@@ -96,14 +96,14 @@ func FvEpIpTagDataSourceSchema() datasourceschema.Schema {
 }
 
 type FvEpIpTagModel struct {
-	Annotation    types.String                     `tfsdk:"annotation"`
-	CtxName       types.String                     `tfsdk:"vrf_name"`
-	FvEpIpTagID   types.String                     `tfsdk:"id_attribute"`
-	Ip            customTypes.IPAddressStringValue `tfsdk:"ip"`
-	Name          types.String                     `tfsdk:"name"`
-	NameAlias     types.String                     `tfsdk:"name_alias"`
-	TagAnnotation types.Set                        `tfsdk:"annotations"`
-	TagTag        types.Set                        `tfsdk:"tags"`
+	Annotation    types.String               `tfsdk:"annotation"`
+	CtxName       types.String               `tfsdk:"vrf_name"`
+	FvEpIpTagID   types.String               `tfsdk:"id_attribute"`
+	Ip            customtypes.IPAddressValue `tfsdk:"ip"`
+	Name          types.String               `tfsdk:"name"`
+	NameAlias     types.String               `tfsdk:"name_alias"`
+	TagAnnotation types.Set                  `tfsdk:"annotations"`
+	TagTag        types.Set                  `tfsdk:"tags"`
 }
 
 func FvEpIpTagModelAttributeTypes() map[string]attr.Type {
@@ -111,7 +111,7 @@ func FvEpIpTagModelAttributeTypes() map[string]attr.Type {
 		"annotation":   types.StringType,
 		"vrf_name":     types.StringType,
 		"id_attribute": types.StringType,
-		"ip":           customTypes.IPAddressStringType{},
+		"ip":           customtypes.IPAddressType{},
 		"name":         types.StringType,
 		"name_alias":   types.StringType,
 		"annotations": types.SetType{
@@ -132,7 +132,7 @@ func NewFvEpIpTagModelNull() FvEpIpTagModel {
 		Annotation:  types.StringNull(),
 		CtxName:     types.StringNull(),
 		FvEpIpTagID: types.StringNull(),
-		Ip:          customTypes.NewIPAddressStringNull(),
+		Ip:          customtypes.NewIPAddressNull(),
 		Name:        types.StringNull(),
 		NameAlias:   types.StringNull(),
 		TagAnnotation: types.SetNull(
@@ -151,7 +151,7 @@ func NewFvEpIpTagModelNull() FvEpIpTagModel {
 func (m *FvEpIpTagModel) BuildRN() string {
 	rn := "eptags/epiptag-[{ip}]-{ctxName}"
 	rn = strings.ReplaceAll(rn, "{ctxName}", m.CtxName.ValueString())
-	rn = strings.ReplaceAll(rn, "{ip}", m.Ip.NamedValueString())
+	rn = strings.ReplaceAll(rn, "{ip}", m.Ip.CanonicalString())
 	return rn
 }
 
@@ -179,7 +179,7 @@ func FvEpIpTagModelFromObject(
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ctxName", &model.CtxName)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "id", &model.FvEpIpTagID)
-	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "ip", &model.Ip, customTypes.NewIPAddressStringValue)
+	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "ip", &model.Ip, customtypes.NewIPAddressValue)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "name", &model.Name)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "nameAlias", &model.NameAlias)
 

@@ -16,9 +16,41 @@ import (
 	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
-	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/customtypes"
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+var qosDppPolBeType = customtypes.NewSemanticStringType(map[string]string{
+	"0xffffffffffffffff": "unspecified",
+})
+
+var qosDppPolBurstType = customtypes.NewSemanticStringType(map[string]string{
+	"0xffffffffffffffff": "unspecified",
+})
+
+var qosDppPolConformMarkCosType = customtypes.NewSemanticStringType(map[string]string{
+	"0xffff": "unspecified",
+})
+
+var qosDppPolConformMarkDscpType = customtypes.NewSemanticStringType(map[string]string{
+	"0xffff": "unspecified",
+})
+
+var qosDppPolExceedMarkCosType = customtypes.NewSemanticStringType(map[string]string{
+	"0xffff": "unspecified",
+})
+
+var qosDppPolExceedMarkDscpType = customtypes.NewSemanticStringType(map[string]string{
+	"0xffff": "unspecified",
+})
+
+var qosDppPolViolateMarkCosType = customtypes.NewSemanticStringType(map[string]string{
+	"0xffff": "unspecified",
+})
+
+var qosDppPolViolateMarkDscpType = customtypes.NewSemanticStringType(map[string]string{
+	"0xffff": "unspecified",
+})
 
 func qosDppPolSchemaDefinition() modelHelpers.ClassSchema {
 	return modelHelpers.ClassSchema{
@@ -43,7 +75,7 @@ func qosDppPolSchemaDefinition() modelHelpers.ClassSchema {
 			},
 			"excessive_burst": {
 				Type:             modelHelpers.StringProperty,
-				CustomStringType: customTypes.QosDppPolBeStringType{},
+				CustomStringType: qosDppPolBeType,
 				Optional:         true,
 				Computed:         true,
 				ValidValues: []string{
@@ -68,7 +100,7 @@ func qosDppPolSchemaDefinition() modelHelpers.ClassSchema {
 			},
 			"burst": {
 				Type:             modelHelpers.StringProperty,
-				CustomStringType: customTypes.QosDppPolBurstStringType{},
+				CustomStringType: qosDppPolBurstType,
 				Optional:         true,
 				Computed:         true,
 				ValidValues: []string{
@@ -104,7 +136,7 @@ func qosDppPolSchemaDefinition() modelHelpers.ClassSchema {
 			},
 			"conform_mark_cos": {
 				Type:             modelHelpers.StringProperty,
-				CustomStringType: customTypes.QosDppPolConformMarkCosStringType{},
+				CustomStringType: qosDppPolConformMarkCosType,
 				Optional:         true,
 				Computed:         true,
 				ValidValues: []string{
@@ -115,7 +147,7 @@ func qosDppPolSchemaDefinition() modelHelpers.ClassSchema {
 			},
 			"conform_mark_dscp": {
 				Type:             modelHelpers.StringProperty,
-				CustomStringType: customTypes.QosDppPolConformMarkDscpStringType{},
+				CustomStringType: qosDppPolConformMarkDscpType,
 				Optional:         true,
 				Computed:         true,
 				ValidValues: []string{
@@ -143,7 +175,7 @@ func qosDppPolSchemaDefinition() modelHelpers.ClassSchema {
 			},
 			"exceed_mark_cos": {
 				Type:             modelHelpers.StringProperty,
-				CustomStringType: customTypes.QosDppPolExceedMarkCosStringType{},
+				CustomStringType: qosDppPolExceedMarkCosType,
 				Optional:         true,
 				Computed:         true,
 				ValidValues: []string{
@@ -154,7 +186,7 @@ func qosDppPolSchemaDefinition() modelHelpers.ClassSchema {
 			},
 			"exceed_mark_dscp": {
 				Type:             modelHelpers.StringProperty,
-				CustomStringType: customTypes.QosDppPolExceedMarkDscpStringType{},
+				CustomStringType: qosDppPolExceedMarkDscpType,
 				Optional:         true,
 				Computed:         true,
 				ValidValues: []string{
@@ -266,7 +298,7 @@ func qosDppPolSchemaDefinition() modelHelpers.ClassSchema {
 			},
 			"violate_mark_cos": {
 				Type:             modelHelpers.StringProperty,
-				CustomStringType: customTypes.QosDppPolViolateMarkCosStringType{},
+				CustomStringType: qosDppPolViolateMarkCosType,
 				Optional:         true,
 				Computed:         true,
 				ValidValues: []string{
@@ -277,7 +309,7 @@ func qosDppPolSchemaDefinition() modelHelpers.ClassSchema {
 			},
 			"violate_mark_dscp": {
 				Type:             modelHelpers.StringProperty,
-				CustomStringType: customTypes.QosDppPolViolateMarkDscpStringType{},
+				CustomStringType: qosDppPolViolateMarkDscpType,
 				Optional:         true,
 				Computed:         true,
 				ValidValues: []string{
@@ -321,52 +353,52 @@ func QosDppPolDataSourceSchema() datasourceschema.Schema {
 }
 
 type QosDppPolModel struct {
-	AdminSt         types.String                                    `tfsdk:"admin_state"`
-	Annotation      types.String                                    `tfsdk:"annotation"`
-	Be              customTypes.QosDppPolBeStringValue              `tfsdk:"excessive_burst"`
-	BeUnit          types.String                                    `tfsdk:"excessive_burst_unit"`
-	Burst           customTypes.QosDppPolBurstStringValue           `tfsdk:"burst"`
-	BurstUnit       types.String                                    `tfsdk:"burst_unit"`
-	ConformAction   types.String                                    `tfsdk:"conform_action"`
-	ConformMarkCos  customTypes.QosDppPolConformMarkCosStringValue  `tfsdk:"conform_mark_cos"`
-	ConformMarkDscp customTypes.QosDppPolConformMarkDscpStringValue `tfsdk:"conform_mark_dscp"`
-	Descr           types.String                                    `tfsdk:"description"`
-	ExceedAction    types.String                                    `tfsdk:"exceed_action"`
-	ExceedMarkCos   customTypes.QosDppPolExceedMarkCosStringValue   `tfsdk:"exceed_mark_cos"`
-	ExceedMarkDscp  customTypes.QosDppPolExceedMarkDscpStringValue  `tfsdk:"exceed_mark_dscp"`
-	Mode            types.String                                    `tfsdk:"mode"`
-	Name            types.String                                    `tfsdk:"name"`
-	NameAlias       types.String                                    `tfsdk:"name_alias"`
-	OwnerKey        types.String                                    `tfsdk:"owner_key"`
-	OwnerTag        types.String                                    `tfsdk:"owner_tag"`
-	Pir             types.String                                    `tfsdk:"peak_rate"`
-	PirUnit         types.String                                    `tfsdk:"peak_rate_unit"`
-	Rate            types.String                                    `tfsdk:"rate"`
-	RateUnit        types.String                                    `tfsdk:"rate_unit"`
-	SharingMode     types.String                                    `tfsdk:"sharing_mode"`
-	Type            types.String                                    `tfsdk:"type"`
-	ViolateAction   types.String                                    `tfsdk:"violate_action"`
-	ViolateMarkCos  customTypes.QosDppPolViolateMarkCosStringValue  `tfsdk:"violate_mark_cos"`
-	ViolateMarkDscp customTypes.QosDppPolViolateMarkDscpStringValue `tfsdk:"violate_mark_dscp"`
-	TagAnnotation   types.Set                                       `tfsdk:"annotations"`
-	TagTag          types.Set                                       `tfsdk:"tags"`
+	AdminSt         types.String                    `tfsdk:"admin_state"`
+	Annotation      types.String                    `tfsdk:"annotation"`
+	Be              customtypes.SemanticStringValue `tfsdk:"excessive_burst"`
+	BeUnit          types.String                    `tfsdk:"excessive_burst_unit"`
+	Burst           customtypes.SemanticStringValue `tfsdk:"burst"`
+	BurstUnit       types.String                    `tfsdk:"burst_unit"`
+	ConformAction   types.String                    `tfsdk:"conform_action"`
+	ConformMarkCos  customtypes.SemanticStringValue `tfsdk:"conform_mark_cos"`
+	ConformMarkDscp customtypes.SemanticStringValue `tfsdk:"conform_mark_dscp"`
+	Descr           types.String                    `tfsdk:"description"`
+	ExceedAction    types.String                    `tfsdk:"exceed_action"`
+	ExceedMarkCos   customtypes.SemanticStringValue `tfsdk:"exceed_mark_cos"`
+	ExceedMarkDscp  customtypes.SemanticStringValue `tfsdk:"exceed_mark_dscp"`
+	Mode            types.String                    `tfsdk:"mode"`
+	Name            types.String                    `tfsdk:"name"`
+	NameAlias       types.String                    `tfsdk:"name_alias"`
+	OwnerKey        types.String                    `tfsdk:"owner_key"`
+	OwnerTag        types.String                    `tfsdk:"owner_tag"`
+	Pir             types.String                    `tfsdk:"peak_rate"`
+	PirUnit         types.String                    `tfsdk:"peak_rate_unit"`
+	Rate            types.String                    `tfsdk:"rate"`
+	RateUnit        types.String                    `tfsdk:"rate_unit"`
+	SharingMode     types.String                    `tfsdk:"sharing_mode"`
+	Type            types.String                    `tfsdk:"type"`
+	ViolateAction   types.String                    `tfsdk:"violate_action"`
+	ViolateMarkCos  customtypes.SemanticStringValue `tfsdk:"violate_mark_cos"`
+	ViolateMarkDscp customtypes.SemanticStringValue `tfsdk:"violate_mark_dscp"`
+	TagAnnotation   types.Set                       `tfsdk:"annotations"`
+	TagTag          types.Set                       `tfsdk:"tags"`
 }
 
 func QosDppPolModelAttributeTypes() map[string]attr.Type {
 	return map[string]attr.Type{
 		"admin_state":          types.StringType,
 		"annotation":           types.StringType,
-		"excessive_burst":      customTypes.QosDppPolBeStringType{},
+		"excessive_burst":      qosDppPolBeType,
 		"excessive_burst_unit": types.StringType,
-		"burst":                customTypes.QosDppPolBurstStringType{},
+		"burst":                qosDppPolBurstType,
 		"burst_unit":           types.StringType,
 		"conform_action":       types.StringType,
-		"conform_mark_cos":     customTypes.QosDppPolConformMarkCosStringType{},
-		"conform_mark_dscp":    customTypes.QosDppPolConformMarkDscpStringType{},
+		"conform_mark_cos":     qosDppPolConformMarkCosType,
+		"conform_mark_dscp":    qosDppPolConformMarkDscpType,
 		"description":          types.StringType,
 		"exceed_action":        types.StringType,
-		"exceed_mark_cos":      customTypes.QosDppPolExceedMarkCosStringType{},
-		"exceed_mark_dscp":     customTypes.QosDppPolExceedMarkDscpStringType{},
+		"exceed_mark_cos":      qosDppPolExceedMarkCosType,
+		"exceed_mark_dscp":     qosDppPolExceedMarkDscpType,
 		"mode":                 types.StringType,
 		"name":                 types.StringType,
 		"name_alias":           types.StringType,
@@ -379,8 +411,8 @@ func QosDppPolModelAttributeTypes() map[string]attr.Type {
 		"sharing_mode":         types.StringType,
 		"type":                 types.StringType,
 		"violate_action":       types.StringType,
-		"violate_mark_cos":     customTypes.QosDppPolViolateMarkCosStringType{},
-		"violate_mark_dscp":    customTypes.QosDppPolViolateMarkDscpStringType{},
+		"violate_mark_cos":     qosDppPolViolateMarkCosType,
+		"violate_mark_dscp":    qosDppPolViolateMarkDscpType,
 		"annotations": types.SetType{
 			ElemType: types.ObjectType{
 				AttrTypes: TagAnnotationModelAttributeTypes(),
@@ -398,17 +430,17 @@ func NewQosDppPolModelNull() QosDppPolModel {
 	return QosDppPolModel{
 		AdminSt:         types.StringNull(),
 		Annotation:      types.StringNull(),
-		Be:              customTypes.NewQosDppPolBeStringNull(),
+		Be:              qosDppPolBeType.Null(),
 		BeUnit:          types.StringNull(),
-		Burst:           customTypes.NewQosDppPolBurstStringNull(),
+		Burst:           qosDppPolBurstType.Null(),
 		BurstUnit:       types.StringNull(),
 		ConformAction:   types.StringNull(),
-		ConformMarkCos:  customTypes.NewQosDppPolConformMarkCosStringNull(),
-		ConformMarkDscp: customTypes.NewQosDppPolConformMarkDscpStringNull(),
+		ConformMarkCos:  qosDppPolConformMarkCosType.Null(),
+		ConformMarkDscp: qosDppPolConformMarkDscpType.Null(),
 		Descr:           types.StringNull(),
 		ExceedAction:    types.StringNull(),
-		ExceedMarkCos:   customTypes.NewQosDppPolExceedMarkCosStringNull(),
-		ExceedMarkDscp:  customTypes.NewQosDppPolExceedMarkDscpStringNull(),
+		ExceedMarkCos:   qosDppPolExceedMarkCosType.Null(),
+		ExceedMarkDscp:  qosDppPolExceedMarkDscpType.Null(),
 		Mode:            types.StringNull(),
 		Name:            types.StringNull(),
 		NameAlias:       types.StringNull(),
@@ -421,8 +453,8 @@ func NewQosDppPolModelNull() QosDppPolModel {
 		SharingMode:     types.StringNull(),
 		Type:            types.StringNull(),
 		ViolateAction:   types.StringNull(),
-		ViolateMarkCos:  customTypes.NewQosDppPolViolateMarkCosStringNull(),
-		ViolateMarkDscp: customTypes.NewQosDppPolViolateMarkDscpStringNull(),
+		ViolateMarkCos:  qosDppPolViolateMarkCosType.Null(),
+		ViolateMarkDscp: qosDppPolViolateMarkDscpType.Null(),
 		TagAnnotation: types.SetNull(
 			types.ObjectType{
 				AttrTypes: TagAnnotationModelAttributeTypes(),
@@ -465,17 +497,17 @@ func QosDppPolModelFromObject(
 
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "adminSt", &model.AdminSt)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
-	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "be", &model.Be, customTypes.NewQosDppPolBeStringValue)
+	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "be", &model.Be, qosDppPolBeType.Value)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "beUnit", &model.BeUnit)
-	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "burst", &model.Burst, customTypes.NewQosDppPolBurstStringValue)
+	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "burst", &model.Burst, qosDppPolBurstType.Value)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "burstUnit", &model.BurstUnit)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "conformAction", &model.ConformAction)
-	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "conformMarkCos", &model.ConformMarkCos, customTypes.NewQosDppPolConformMarkCosStringValue)
-	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "conformMarkDscp", &model.ConformMarkDscp, customTypes.NewQosDppPolConformMarkDscpStringValue)
+	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "conformMarkCos", &model.ConformMarkCos, qosDppPolConformMarkCosType.Value)
+	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "conformMarkDscp", &model.ConformMarkDscp, qosDppPolConformMarkDscpType.Value)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "descr", &model.Descr)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "exceedAction", &model.ExceedAction)
-	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "exceedMarkCos", &model.ExceedMarkCos, customTypes.NewQosDppPolExceedMarkCosStringValue)
-	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "exceedMarkDscp", &model.ExceedMarkDscp, customTypes.NewQosDppPolExceedMarkDscpStringValue)
+	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "exceedMarkCos", &model.ExceedMarkCos, qosDppPolExceedMarkCosType.Value)
+	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "exceedMarkDscp", &model.ExceedMarkDscp, qosDppPolExceedMarkDscpType.Value)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "mode", &model.Mode)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "name", &model.Name)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "nameAlias", &model.NameAlias)
@@ -488,8 +520,8 @@ func QosDppPolModelFromObject(
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "sharingMode", &model.SharingMode)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "type", &model.Type)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "violateAction", &model.ViolateAction)
-	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "violateMarkCos", &model.ViolateMarkCos, customTypes.NewQosDppPolViolateMarkCosStringValue)
-	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "violateMarkDscp", &model.ViolateMarkDscp, customTypes.NewQosDppPolViolateMarkDscpStringValue)
+	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "violateMarkCos", &model.ViolateMarkCos, qosDppPolViolateMarkCosType.Value)
+	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "violateMarkDscp", &model.ViolateMarkDscp, qosDppPolViolateMarkDscpType.Value)
 
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,

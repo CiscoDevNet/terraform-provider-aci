@@ -16,9 +16,19 @@ import (
 	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
-	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/customtypes"
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+var fvRsConsPrioType = customtypes.NewSemanticStringType(map[string]string{
+	"0": "unspecified",
+	"1": "level3",
+	"2": "level2",
+	"3": "level1",
+	"7": "level6",
+	"8": "level5",
+	"9": "level4",
+})
 
 func fvRsConsSchemaDefinition() modelHelpers.ClassSchema {
 	return modelHelpers.ClassSchema{
@@ -33,7 +43,7 @@ func fvRsConsSchemaDefinition() modelHelpers.ClassSchema {
 			},
 			"priority": {
 				Type:             modelHelpers.StringProperty,
-				CustomStringType: customTypes.FvRsConsPrioStringType{},
+				CustomStringType: fvRsConsPrioType,
 				Optional:         true,
 				Computed:         true,
 				ValidValues: []string{
@@ -87,17 +97,17 @@ func FvRsConsDataSourceSchema() datasourceschema.Schema {
 }
 
 type FvRsConsModel struct {
-	Annotation    types.String                        `tfsdk:"annotation"`
-	Prio          customTypes.FvRsConsPrioStringValue `tfsdk:"priority"`
-	TnVzBrCPName  types.String                        `tfsdk:"contract_name"`
-	TagAnnotation types.Set                           `tfsdk:"annotations"`
-	TagTag        types.Set                           `tfsdk:"tags"`
+	Annotation    types.String                    `tfsdk:"annotation"`
+	Prio          customtypes.SemanticStringValue `tfsdk:"priority"`
+	TnVzBrCPName  types.String                    `tfsdk:"contract_name"`
+	TagAnnotation types.Set                       `tfsdk:"annotations"`
+	TagTag        types.Set                       `tfsdk:"tags"`
 }
 
 func FvRsConsModelAttributeTypes() map[string]attr.Type {
 	return map[string]attr.Type{
 		"annotation":    types.StringType,
-		"priority":      customTypes.FvRsConsPrioStringType{},
+		"priority":      fvRsConsPrioType,
 		"contract_name": types.StringType,
 		"annotations": types.SetType{
 			ElemType: types.ObjectType{
@@ -115,7 +125,7 @@ func FvRsConsModelAttributeTypes() map[string]attr.Type {
 func NewFvRsConsModelNull() FvRsConsModel {
 	return FvRsConsModel{
 		Annotation:   types.StringNull(),
-		Prio:         customTypes.NewFvRsConsPrioStringNull(),
+		Prio:         fvRsConsPrioType.Null(),
 		TnVzBrCPName: types.StringNull(),
 		TagAnnotation: types.SetNull(
 			types.ObjectType{
@@ -158,7 +168,7 @@ func FvRsConsModelFromObject(
 	}
 
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
-	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "prio", &model.Prio, customTypes.NewFvRsConsPrioStringValue)
+	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "prio", &model.Prio, fvRsConsPrioType.Value)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "tnVzBrCPName", &model.TnVzBrCPName)
 
 	childObjects := modelHelpers.ChildObjectsByClass(
