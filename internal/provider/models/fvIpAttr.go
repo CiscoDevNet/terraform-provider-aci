@@ -16,7 +16,7 @@ import (
 	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
-	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/customtypes"
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
 
@@ -39,7 +39,7 @@ func fvIpAttrSchemaDefinition() modelHelpers.ClassSchema {
 			},
 			"ip": {
 				Type:             modelHelpers.StringProperty,
-				CustomStringType: customTypes.IPAddressStringType{},
+				CustomStringType: customtypes.IPAddressType{},
 				Required:         true,
 				Description:      "The device IP address of the EPG uSeg IP Attribute object.",
 			},
@@ -110,23 +110,23 @@ func FvIpAttrDataSourceSchema() datasourceschema.Schema {
 }
 
 type FvIpAttrModel struct {
-	Annotation    types.String                     `tfsdk:"annotation"`
-	Descr         types.String                     `tfsdk:"description"`
-	Ip            customTypes.IPAddressStringValue `tfsdk:"ip"`
-	Name          types.String                     `tfsdk:"name"`
-	NameAlias     types.String                     `tfsdk:"name_alias"`
-	OwnerKey      types.String                     `tfsdk:"owner_key"`
-	OwnerTag      types.String                     `tfsdk:"owner_tag"`
-	UsefvSubnet   types.String                     `tfsdk:"use_epg_subnet"`
-	TagAnnotation types.Set                        `tfsdk:"annotations"`
-	TagTag        types.Set                        `tfsdk:"tags"`
+	Annotation    types.String               `tfsdk:"annotation"`
+	Descr         types.String               `tfsdk:"description"`
+	Ip            customtypes.IPAddressValue `tfsdk:"ip"`
+	Name          types.String               `tfsdk:"name"`
+	NameAlias     types.String               `tfsdk:"name_alias"`
+	OwnerKey      types.String               `tfsdk:"owner_key"`
+	OwnerTag      types.String               `tfsdk:"owner_tag"`
+	UsefvSubnet   types.String               `tfsdk:"use_epg_subnet"`
+	TagAnnotation types.Set                  `tfsdk:"annotations"`
+	TagTag        types.Set                  `tfsdk:"tags"`
 }
 
 func FvIpAttrModelAttributeTypes() map[string]attr.Type {
 	return map[string]attr.Type{
 		"annotation":     types.StringType,
 		"description":    types.StringType,
-		"ip":             customTypes.IPAddressStringType{},
+		"ip":             customtypes.IPAddressType{},
 		"name":           types.StringType,
 		"name_alias":     types.StringType,
 		"owner_key":      types.StringType,
@@ -149,7 +149,7 @@ func NewFvIpAttrModelNull() FvIpAttrModel {
 	return FvIpAttrModel{
 		Annotation:  types.StringNull(),
 		Descr:       types.StringNull(),
-		Ip:          customTypes.NewIPAddressStringNull(),
+		Ip:          customtypes.NewIPAddressNull(),
 		Name:        types.StringNull(),
 		NameAlias:   types.StringNull(),
 		OwnerKey:    types.StringNull(),
@@ -197,7 +197,7 @@ func FvIpAttrModelFromObject(
 
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "descr", &model.Descr)
-	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "ip", &model.Ip, customTypes.NewIPAddressStringValue)
+	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "ip", &model.Ip, customtypes.NewIPAddressValue)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "name", &model.Name)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "nameAlias", &model.NameAlias)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ownerKey", &model.OwnerKey)

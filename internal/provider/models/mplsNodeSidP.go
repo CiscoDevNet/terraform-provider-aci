@@ -16,7 +16,7 @@ import (
 	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
-	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/customtypes"
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
 
@@ -39,7 +39,7 @@ func mplsNodeSidPSchemaDefinition() modelHelpers.ClassSchema {
 			},
 			"loopback_address": {
 				Type:             modelHelpers.StringProperty,
-				CustomStringType: customTypes.IPAddressStringType{},
+				CustomStringType: customtypes.IPAddressType{},
 				Optional:         true,
 				Computed:         true,
 				Description:      "The loopback address of the L3Out Node SR-MPLS Segment ID Profile object.",
@@ -95,21 +95,21 @@ func MplsNodeSidPDataSourceSchema() datasourceschema.Schema {
 }
 
 type MplsNodeSidPModel struct {
-	Annotation    types.String                     `tfsdk:"annotation"`
-	Descr         types.String                     `tfsdk:"description"`
-	LoopbackAddr  customTypes.IPAddressStringValue `tfsdk:"loopback_address"`
-	Name          types.String                     `tfsdk:"name"`
-	NameAlias     types.String                     `tfsdk:"name_alias"`
-	Sidoffset     types.String                     `tfsdk:"segment_id"`
-	TagAnnotation types.Set                        `tfsdk:"annotations"`
-	TagTag        types.Set                        `tfsdk:"tags"`
+	Annotation    types.String               `tfsdk:"annotation"`
+	Descr         types.String               `tfsdk:"description"`
+	LoopbackAddr  customtypes.IPAddressValue `tfsdk:"loopback_address"`
+	Name          types.String               `tfsdk:"name"`
+	NameAlias     types.String               `tfsdk:"name_alias"`
+	Sidoffset     types.String               `tfsdk:"segment_id"`
+	TagAnnotation types.Set                  `tfsdk:"annotations"`
+	TagTag        types.Set                  `tfsdk:"tags"`
 }
 
 func MplsNodeSidPModelAttributeTypes() map[string]attr.Type {
 	return map[string]attr.Type{
 		"annotation":       types.StringType,
 		"description":      types.StringType,
-		"loopback_address": customTypes.IPAddressStringType{},
+		"loopback_address": customtypes.IPAddressType{},
 		"name":             types.StringType,
 		"name_alias":       types.StringType,
 		"segment_id":       types.StringType,
@@ -130,7 +130,7 @@ func NewMplsNodeSidPModelNull() MplsNodeSidPModel {
 	return MplsNodeSidPModel{
 		Annotation:   types.StringNull(),
 		Descr:        types.StringNull(),
-		LoopbackAddr: customTypes.NewIPAddressStringNull(),
+		LoopbackAddr: customtypes.NewIPAddressNull(),
 		Name:         types.StringNull(),
 		NameAlias:    types.StringNull(),
 		Sidoffset:    types.StringNull(),
@@ -176,7 +176,7 @@ func MplsNodeSidPModelFromObject(
 
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "descr", &model.Descr)
-	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "loopbackAddr", &model.LoopbackAddr, customTypes.NewIPAddressStringValue)
+	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "loopbackAddr", &model.LoopbackAddr, customtypes.NewIPAddressValue)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "name", &model.Name)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "nameAlias", &model.NameAlias)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "sidoffset", &model.Sidoffset)

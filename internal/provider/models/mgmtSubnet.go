@@ -16,7 +16,7 @@ import (
 	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
-	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/customtypes"
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
 
@@ -39,7 +39,7 @@ func mgmtSubnetSchemaDefinition() modelHelpers.ClassSchema {
 			},
 			"ip": {
 				Type:             modelHelpers.StringProperty,
-				CustomStringType: customTypes.IPAddressStringType{},
+				CustomStringType: customtypes.IPAddressType{},
 				Required:         true,
 				RequiresReplace:  true,
 				Description:      "The external subnet IP address and subnet mask. This IP address is used for creating an external management entity. The subnet mask for the IP address to be imported from the outside into the fabric. The contracts associated with its parent instance profile (l3ext:InstP) are applied to the subnet.",
@@ -89,20 +89,20 @@ func MgmtSubnetDataSourceSchema() datasourceschema.Schema {
 }
 
 type MgmtSubnetModel struct {
-	Annotation    types.String                     `tfsdk:"annotation"`
-	Descr         types.String                     `tfsdk:"description"`
-	Ip            customTypes.IPAddressStringValue `tfsdk:"ip"`
-	Name          types.String                     `tfsdk:"name"`
-	NameAlias     types.String                     `tfsdk:"name_alias"`
-	TagAnnotation types.Set                        `tfsdk:"annotations"`
-	TagTag        types.Set                        `tfsdk:"tags"`
+	Annotation    types.String               `tfsdk:"annotation"`
+	Descr         types.String               `tfsdk:"description"`
+	Ip            customtypes.IPAddressValue `tfsdk:"ip"`
+	Name          types.String               `tfsdk:"name"`
+	NameAlias     types.String               `tfsdk:"name_alias"`
+	TagAnnotation types.Set                  `tfsdk:"annotations"`
+	TagTag        types.Set                  `tfsdk:"tags"`
 }
 
 func MgmtSubnetModelAttributeTypes() map[string]attr.Type {
 	return map[string]attr.Type{
 		"annotation":  types.StringType,
 		"description": types.StringType,
-		"ip":          customTypes.IPAddressStringType{},
+		"ip":          customtypes.IPAddressType{},
 		"name":        types.StringType,
 		"name_alias":  types.StringType,
 		"annotations": types.SetType{
@@ -122,7 +122,7 @@ func NewMgmtSubnetModelNull() MgmtSubnetModel {
 	return MgmtSubnetModel{
 		Annotation: types.StringNull(),
 		Descr:      types.StringNull(),
-		Ip:         customTypes.NewIPAddressStringNull(),
+		Ip:         customtypes.NewIPAddressNull(),
 		Name:       types.StringNull(),
 		NameAlias:  types.StringNull(),
 		TagAnnotation: types.SetNull(
@@ -140,7 +140,7 @@ func NewMgmtSubnetModelNull() MgmtSubnetModel {
 
 func (m *MgmtSubnetModel) BuildRN() string {
 	rn := "subnet-[{ip}]"
-	rn = strings.ReplaceAll(rn, "{ip}", m.Ip.NamedValueString())
+	rn = strings.ReplaceAll(rn, "{ip}", m.Ip.CanonicalString())
 	return rn
 }
 
@@ -167,7 +167,7 @@ func MgmtSubnetModelFromObject(
 
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "descr", &model.Descr)
-	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "ip", &model.Ip, customTypes.NewIPAddressStringValue)
+	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "ip", &model.Ip, customtypes.NewIPAddressValue)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "name", &model.Name)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "nameAlias", &model.NameAlias)
 

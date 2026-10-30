@@ -48,12 +48,13 @@ type propertyModelRenderingInput struct {
 }
 
 type propertyModelRenderingExpected struct {
-	Value         string
-	AttributeType string
-	NullValue     string
-	Constructor   string
-	CustomType    string
-	Custom        bool
+	Value                string
+	AttributeType        string
+	NullValue            string
+	Constructor          string
+	CustomStringType     string
+	SemanticTypeVariable string
+	Custom               bool
 }
 
 func TestPropertyModelRendering(t *testing.T) {
@@ -95,36 +96,37 @@ func TestPropertyModelRendering(t *testing.T) {
 			Name:  "test_ip_address",
 			Input: propertyModelRenderingInput{ValueType: IpAddress, PropertyName: "address"},
 			Expected: propertyModelRenderingExpected{
-				Value:         "customTypes.IPAddressStringValue",
-				AttributeType: "customTypes.IPAddressStringType{}",
-				NullValue:     "customTypes.NewIPAddressStringNull()",
-				Constructor:   "customTypes.NewIPAddressStringValue",
-				CustomType:    "IPAddress",
-				Custom:        true,
+				Value:            "customtypes.IPAddressValue",
+				AttributeType:    "customtypes.IPAddressType{}",
+				NullValue:        "customtypes.NewIPAddressNull()",
+				Constructor:      "customtypes.NewIPAddressValue",
+				CustomStringType: "customtypes.IPAddressType{}",
+				Custom:           true,
 			},
 		},
 		{
 			Name:  "test_semantic_equality",
 			Input: propertyModelRenderingInput{ValueType: SemanticEquality, PropertyName: "prio"},
 			Expected: propertyModelRenderingExpected{
-				Value:         "customTypes.FvApPrioStringValue",
-				AttributeType: "customTypes.FvApPrioStringType{}",
-				NullValue:     "customTypes.NewFvApPrioStringNull()",
-				Constructor:   "customTypes.NewFvApPrioStringValue",
-				CustomType:    "FvApPrio",
-				Custom:        true,
+				Value:                "customtypes.SemanticStringValue",
+				AttributeType:        "fvApPrioType",
+				NullValue:            "fvApPrioType.Null()",
+				Constructor:          "fvApPrioType.Value",
+				CustomStringType:     "fvApPrioType",
+				SemanticTypeVariable: "fvApPrioType",
+				Custom:               true,
 			},
 		},
 		{
 			Name:  "test_vmm_arp_learning",
 			Input: propertyModelRenderingInput{ValueType: VMMArpLearning, PropertyName: "arpLearning"},
 			Expected: propertyModelRenderingExpected{
-				Value:         "customTypes.VMMArpLearningStringValue",
-				AttributeType: "customTypes.VMMArpLearningStringType{}",
-				NullValue:     "customTypes.NewVMMArpLearningStringNull()",
-				Constructor:   "customTypes.NewVMMArpLearningStringValue",
-				CustomType:    "VMMArpLearning",
-				Custom:        true,
+				Value:            "customtypes.VMMArpLearningValue",
+				AttributeType:    "customtypes.VMMArpLearningType{}",
+				NullValue:        "customtypes.NewVMMArpLearningNull()",
+				Constructor:      "customtypes.NewVMMArpLearningValue",
+				CustomStringType: "customtypes.VMMArpLearningType{}",
+				Custom:           true,
 			},
 		},
 	}
@@ -139,7 +141,10 @@ func TestPropertyModelRendering(t *testing.T) {
 			assert.Equal(t, expected.AttributeType, property.ModelAttributeType(className))
 			assert.Equal(t, expected.NullValue, property.ModelNullValue(className))
 			assert.Equal(t, expected.Constructor, property.ModelStringValueConstructor(className))
-			assert.Equal(t, expected.CustomType, property.CustomTypeName(className))
+			assert.Equal(t, expected.CustomStringType, property.ModelCustomStringType(className))
+			if expected.SemanticTypeVariable != "" {
+				assert.Equal(t, expected.SemanticTypeVariable, property.SemanticStringTypeVariable(className))
+			}
 			assert.Equal(t, expected.Custom, property.UsesCustomModelType())
 		})
 	}

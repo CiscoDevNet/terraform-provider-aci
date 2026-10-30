@@ -16,7 +16,7 @@ import (
 	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
-	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/customtypes"
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
 
@@ -51,7 +51,7 @@ func fvFBRMemberSchemaDefinition() modelHelpers.ClassSchema {
 			},
 			"fallback_member": {
 				Type:             modelHelpers.StringProperty,
-				CustomStringType: customTypes.IPAddressStringType{},
+				CustomStringType: customtypes.IPAddressType{},
 				Required:         true,
 				RequiresReplace:  true,
 				Description:      "The address of the VRF Fallback Route Group Member object.",
@@ -89,13 +89,13 @@ func FvFBRMemberDataSourceSchema() datasourceschema.Schema {
 }
 
 type FvFBRMemberModel struct {
-	Annotation    types.String                     `tfsdk:"annotation"`
-	Descr         types.String                     `tfsdk:"description"`
-	Name          types.String                     `tfsdk:"name"`
-	NameAlias     types.String                     `tfsdk:"name_alias"`
-	RnhAddr       customTypes.IPAddressStringValue `tfsdk:"fallback_member"`
-	TagAnnotation types.Set                        `tfsdk:"annotations"`
-	TagTag        types.Set                        `tfsdk:"tags"`
+	Annotation    types.String               `tfsdk:"annotation"`
+	Descr         types.String               `tfsdk:"description"`
+	Name          types.String               `tfsdk:"name"`
+	NameAlias     types.String               `tfsdk:"name_alias"`
+	RnhAddr       customtypes.IPAddressValue `tfsdk:"fallback_member"`
+	TagAnnotation types.Set                  `tfsdk:"annotations"`
+	TagTag        types.Set                  `tfsdk:"tags"`
 }
 
 func FvFBRMemberModelAttributeTypes() map[string]attr.Type {
@@ -104,7 +104,7 @@ func FvFBRMemberModelAttributeTypes() map[string]attr.Type {
 		"description":     types.StringType,
 		"name":            types.StringType,
 		"name_alias":      types.StringType,
-		"fallback_member": customTypes.IPAddressStringType{},
+		"fallback_member": customtypes.IPAddressType{},
 		"annotations": types.SetType{
 			ElemType: types.ObjectType{
 				AttrTypes: TagAnnotationModelAttributeTypes(),
@@ -124,7 +124,7 @@ func NewFvFBRMemberModelNull() FvFBRMemberModel {
 		Descr:      types.StringNull(),
 		Name:       types.StringNull(),
 		NameAlias:  types.StringNull(),
-		RnhAddr:    customTypes.NewIPAddressStringNull(),
+		RnhAddr:    customtypes.NewIPAddressNull(),
 		TagAnnotation: types.SetNull(
 			types.ObjectType{
 				AttrTypes: TagAnnotationModelAttributeTypes(),
@@ -140,7 +140,7 @@ func NewFvFBRMemberModelNull() FvFBRMemberModel {
 
 func (m *FvFBRMemberModel) BuildRN() string {
 	rn := "nexthop-[{rnhAddr}]"
-	rn = strings.ReplaceAll(rn, "{rnhAddr}", m.RnhAddr.NamedValueString())
+	rn = strings.ReplaceAll(rn, "{rnhAddr}", m.RnhAddr.CanonicalString())
 	return rn
 }
 
@@ -169,7 +169,7 @@ func FvFBRMemberModelFromObject(
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "descr", &model.Descr)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "name", &model.Name)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "nameAlias", &model.NameAlias)
-	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "rnhAddr", &model.RnhAddr, customTypes.NewIPAddressStringValue)
+	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "rnhAddr", &model.RnhAddr, customtypes.NewIPAddressValue)
 
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,

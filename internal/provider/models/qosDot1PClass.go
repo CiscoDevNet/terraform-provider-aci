@@ -16,9 +16,81 @@ import (
 	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
-	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/customtypes"
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+var qosDot1PClassFromType = customtypes.NewSemanticStringType(map[string]string{
+	"0": "0",
+	"1": "1",
+	"2": "2",
+	"3": "3",
+	"4": "4",
+	"5": "5",
+	"6": "6",
+	"7": "7",
+	"8": "unspecified",
+})
+
+var qosDot1PClassPrioType = customtypes.NewSemanticStringType(map[string]string{
+	"0": "unspecified",
+	"1": "level3",
+	"2": "level2",
+	"3": "level1",
+	"7": "level6",
+	"8": "level5",
+	"9": "level4",
+})
+
+var qosDot1PClassTargetType = customtypes.NewSemanticStringType(map[string]string{
+	"0":  "CS0",
+	"10": "AF11",
+	"12": "AF12",
+	"14": "AF13",
+	"16": "CS2",
+	"18": "AF21",
+	"20": "AF22",
+	"22": "AF23",
+	"24": "CS3",
+	"26": "AF31",
+	"28": "AF32",
+	"30": "AF33",
+	"32": "CS4",
+	"34": "AF41",
+	"36": "AF42",
+	"38": "AF43",
+	"40": "CS5",
+	"44": "VA",
+	"46": "EF",
+	"48": "CS6",
+	"56": "CS7",
+	"64": "unspecified",
+	"8":  "CS1",
+})
+
+var qosDot1PClassTargetCosType = customtypes.NewSemanticStringType(map[string]string{
+	"0": "0",
+	"1": "1",
+	"2": "2",
+	"3": "3",
+	"4": "4",
+	"5": "5",
+	"6": "6",
+	"7": "7",
+	"8": "unspecified",
+})
+
+var qosDot1PClassToType = customtypes.NewSemanticStringType(map[string]string{
+	"0": "0",
+	"1": "1",
+	"2": "2",
+	"3": "3",
+	"4": "4",
+	"5": "5",
+	"6": "6",
+	"7": "7",
+	"8": "unspecified",
+})
 
 func qosDot1PClassSchemaDefinition() modelHelpers.ClassSchema {
 	return modelHelpers.ClassSchema{
@@ -39,7 +111,7 @@ func qosDot1PClassSchemaDefinition() modelHelpers.ClassSchema {
 			},
 			"from": {
 				Type:             modelHelpers.StringProperty,
-				CustomStringType: customTypes.QosDot1PClassFromStringType{},
+				CustomStringType: qosDot1PClassFromType,
 				Required:         true,
 				RequiresReplace:  true,
 				ValidValues: []string{
@@ -70,7 +142,7 @@ func qosDot1PClassSchemaDefinition() modelHelpers.ClassSchema {
 			},
 			"priority": {
 				Type:             modelHelpers.StringProperty,
-				CustomStringType: customTypes.QosDot1PClassPrioStringType{},
+				CustomStringType: qosDot1PClassPrioType,
 				Optional:         true,
 				Computed:         true,
 				ValidValues: []string{
@@ -87,7 +159,7 @@ func qosDot1PClassSchemaDefinition() modelHelpers.ClassSchema {
 			},
 			"target": {
 				Type:             modelHelpers.StringProperty,
-				CustomStringType: customTypes.QosDot1PClassTargetStringType{},
+				CustomStringType: qosDot1PClassTargetType,
 				Optional:         true,
 				Computed:         true,
 				ValidValues: []string{
@@ -120,7 +192,7 @@ func qosDot1PClassSchemaDefinition() modelHelpers.ClassSchema {
 			},
 			"target_cos": {
 				Type:             modelHelpers.StringProperty,
-				CustomStringType: customTypes.QosDot1PClassTargetCosStringType{},
+				CustomStringType: qosDot1PClassTargetCosType,
 				Optional:         true,
 				Computed:         true,
 				ValidValues: []string{
@@ -139,7 +211,7 @@ func qosDot1PClassSchemaDefinition() modelHelpers.ClassSchema {
 			},
 			"to": {
 				Type:             modelHelpers.StringProperty,
-				CustomStringType: customTypes.QosDot1PClassToStringType{},
+				CustomStringType: qosDot1PClassToType,
 				Required:         true,
 				RequiresReplace:  true,
 				ValidValues: []string{
@@ -190,30 +262,30 @@ func QosDot1PClassDataSourceSchema() datasourceschema.Schema {
 }
 
 type QosDot1PClassModel struct {
-	Annotation    types.String                                  `tfsdk:"annotation"`
-	Descr         types.String                                  `tfsdk:"description"`
-	From          customTypes.QosDot1PClassFromStringValue      `tfsdk:"from"`
-	Name          types.String                                  `tfsdk:"name"`
-	NameAlias     types.String                                  `tfsdk:"name_alias"`
-	Prio          customTypes.QosDot1PClassPrioStringValue      `tfsdk:"priority"`
-	Target        customTypes.QosDot1PClassTargetStringValue    `tfsdk:"target"`
-	TargetCos     customTypes.QosDot1PClassTargetCosStringValue `tfsdk:"target_cos"`
-	To            customTypes.QosDot1PClassToStringValue        `tfsdk:"to"`
-	TagAnnotation types.Set                                     `tfsdk:"annotations"`
-	TagTag        types.Set                                     `tfsdk:"tags"`
+	Annotation    types.String                    `tfsdk:"annotation"`
+	Descr         types.String                    `tfsdk:"description"`
+	From          customtypes.SemanticStringValue `tfsdk:"from"`
+	Name          types.String                    `tfsdk:"name"`
+	NameAlias     types.String                    `tfsdk:"name_alias"`
+	Prio          customtypes.SemanticStringValue `tfsdk:"priority"`
+	Target        customtypes.SemanticStringValue `tfsdk:"target"`
+	TargetCos     customtypes.SemanticStringValue `tfsdk:"target_cos"`
+	To            customtypes.SemanticStringValue `tfsdk:"to"`
+	TagAnnotation types.Set                       `tfsdk:"annotations"`
+	TagTag        types.Set                       `tfsdk:"tags"`
 }
 
 func QosDot1PClassModelAttributeTypes() map[string]attr.Type {
 	return map[string]attr.Type{
 		"annotation":  types.StringType,
 		"description": types.StringType,
-		"from":        customTypes.QosDot1PClassFromStringType{},
+		"from":        qosDot1PClassFromType,
 		"name":        types.StringType,
 		"name_alias":  types.StringType,
-		"priority":    customTypes.QosDot1PClassPrioStringType{},
-		"target":      customTypes.QosDot1PClassTargetStringType{},
-		"target_cos":  customTypes.QosDot1PClassTargetCosStringType{},
-		"to":          customTypes.QosDot1PClassToStringType{},
+		"priority":    qosDot1PClassPrioType,
+		"target":      qosDot1PClassTargetType,
+		"target_cos":  qosDot1PClassTargetCosType,
+		"to":          qosDot1PClassToType,
 		"annotations": types.SetType{
 			ElemType: types.ObjectType{
 				AttrTypes: TagAnnotationModelAttributeTypes(),
@@ -231,13 +303,13 @@ func NewQosDot1PClassModelNull() QosDot1PClassModel {
 	return QosDot1PClassModel{
 		Annotation: types.StringNull(),
 		Descr:      types.StringNull(),
-		From:       customTypes.NewQosDot1PClassFromStringNull(),
+		From:       qosDot1PClassFromType.Null(),
 		Name:       types.StringNull(),
 		NameAlias:  types.StringNull(),
-		Prio:       customTypes.NewQosDot1PClassPrioStringNull(),
-		Target:     customTypes.NewQosDot1PClassTargetStringNull(),
-		TargetCos:  customTypes.NewQosDot1PClassTargetCosStringNull(),
-		To:         customTypes.NewQosDot1PClassToStringNull(),
+		Prio:       qosDot1PClassPrioType.Null(),
+		Target:     qosDot1PClassTargetType.Null(),
+		TargetCos:  qosDot1PClassTargetCosType.Null(),
+		To:         qosDot1PClassToType.Null(),
 		TagAnnotation: types.SetNull(
 			types.ObjectType{
 				AttrTypes: TagAnnotationModelAttributeTypes(),
@@ -253,8 +325,8 @@ func NewQosDot1PClassModelNull() QosDot1PClassModel {
 
 func (m *QosDot1PClassModel) BuildRN() string {
 	rn := "dot1P-{from}-{to}"
-	rn = strings.ReplaceAll(rn, "{from}", m.From.NamedValueString())
-	rn = strings.ReplaceAll(rn, "{to}", m.To.NamedValueString())
+	rn = strings.ReplaceAll(rn, "{from}", m.From.CanonicalString())
+	rn = strings.ReplaceAll(rn, "{to}", m.To.CanonicalString())
 	return rn
 }
 
@@ -281,13 +353,13 @@ func QosDot1PClassModelFromObject(
 
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "descr", &model.Descr)
-	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "from", &model.From, customTypes.NewQosDot1PClassFromStringValue)
+	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "from", &model.From, qosDot1PClassFromType.Value)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "name", &model.Name)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "nameAlias", &model.NameAlias)
-	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "prio", &model.Prio, customTypes.NewQosDot1PClassPrioStringValue)
-	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "target", &model.Target, customTypes.NewQosDot1PClassTargetStringValue)
-	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "targetCos", &model.TargetCos, customTypes.NewQosDot1PClassTargetCosStringValue)
-	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "to", &model.To, customTypes.NewQosDot1PClassToStringValue)
+	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "prio", &model.Prio, qosDot1PClassPrioType.Value)
+	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "target", &model.Target, qosDot1PClassTargetType.Value)
+	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "targetCos", &model.TargetCos, qosDot1PClassTargetCosType.Value)
+	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "to", &model.To, qosDot1PClassToType.Value)
 
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,

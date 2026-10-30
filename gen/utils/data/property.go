@@ -99,15 +99,17 @@ func (p *Property) ModelFieldName(className *ClassName) string {
 // ModelValueType returns the Terraform framework value type used by the
 // generated model field.
 func (p *Property) ModelValueType(className *ClassName) string {
-	if customTypeName := p.CustomTypeName(className); customTypeName != "" {
-		return fmt.Sprintf("customTypes.%sStringValue", customTypeName)
-	}
-
 	switch p.ValueType {
 	case Set:
 		return "types.Set"
 	case Object:
 		return "types.Object"
+	case IpAddress:
+		return "customtypes.IPAddressValue"
+	case SemanticEquality:
+		return "customtypes.SemanticStringValue"
+	case VMMArpLearning:
+		return "customtypes.VMMArpLearningValue"
 	default:
 		return "types.String"
 	}
@@ -116,8 +118,8 @@ func (p *Property) ModelValueType(className *ClassName) string {
 // ModelAttributeType returns the attr.Type expression for a generated model
 // field. It is reused by parent models when constructing nested object types.
 func (p *Property) ModelAttributeType(className *ClassName) string {
-	if customTypeName := p.CustomTypeName(className); customTypeName != "" {
-		return fmt.Sprintf("customTypes.%sStringType{}", customTypeName)
+	if customStringType := p.ModelCustomStringType(className); customStringType != "" {
+		return customStringType
 	}
 
 	switch p.ValueType {
@@ -133,15 +135,17 @@ func (p *Property) ModelAttributeType(className *ClassName) string {
 // ModelNullValue returns the constructor expression used to initialize a
 // generated model field with an explicit Terraform null value.
 func (p *Property) ModelNullValue(className *ClassName) string {
-	if customTypeName := p.CustomTypeName(className); customTypeName != "" {
-		return fmt.Sprintf("customTypes.New%sStringNull()", customTypeName)
-	}
-
 	switch p.ValueType {
 	case Set:
 		return "types.SetNull(types.StringType)"
 	case Object:
 		return "types.ObjectNull(map[string]attr.Type{})"
+	case IpAddress:
+		return "customtypes.NewIPAddressNull()"
+	case SemanticEquality:
+		return fmt.Sprintf("%s.Null()", p.SemanticStringTypeVariable(className))
+	case VMMArpLearning:
+		return "customtypes.NewVMMArpLearningNull()"
 	default:
 		return "types.StringNull()"
 	}
@@ -150,15 +154,20 @@ func (p *Property) ModelNullValue(className *ClassName) string {
 // ModelStringValueConstructor returns the Terraform string value constructor
 // used when decoding this property from an APIC response.
 func (p *Property) ModelStringValueConstructor(className *ClassName) string {
-	if customTypeName := p.CustomTypeName(className); customTypeName != "" {
-		return fmt.Sprintf("customTypes.New%sStringValue", customTypeName)
+	switch p.ValueType {
+	case IpAddress:
+		return "customtypes.NewIPAddressValue"
+	case SemanticEquality:
+		return fmt.Sprintf("%s.Value", p.SemanticStringTypeVariable(className))
+	case VMMArpLearning:
+		return "customtypes.NewVMMArpLearningValue"
+	default:
+		return "types.StringValue"
 	}
-
-	return "types.StringValue"
 }
 
 // UsesCustomModelType reports whether the generated model field requires the
-// custom_types package.
+// customtypes package.
 func (p *Property) UsesCustomModelType() bool {
 	switch p.ValueType {
 	case IpAddress, SemanticEquality, VMMArpLearning:
@@ -168,20 +177,25 @@ func (p *Property) UsesCustomModelType() bool {
 	}
 }
 
-// CustomTypeName returns the shared custom string type name used by generated
-// model fields and schema attributes. An empty string denotes a framework
-// built-in value type.
-func (p *Property) CustomTypeName(className *ClassName) string {
+// ModelCustomStringType returns the custom string type expression used by a
+// generated model schema. An empty string denotes a framework built-in type.
+func (p *Property) ModelCustomStringType(className *ClassName) string {
 	switch p.ValueType {
 	case IpAddress:
-		return "IPAddress"
+		return "customtypes.IPAddressType{}"
 	case SemanticEquality:
-		return className.Capitalized() + p.ModelFieldName(className)
+		return p.SemanticStringTypeVariable(className)
 	case VMMArpLearning:
-		return "VMMArpLearning"
+		return "customtypes.VMMArpLearningType{}"
 	default:
 		return ""
 	}
+}
+
+// SemanticStringTypeVariable returns the private configured type variable for
+// a generated semantic-equality property.
+func (p *Property) SemanticStringTypeVariable(className *ClassName) string {
+	return className.String() + p.ModelFieldName(className) + "Type"
 }
 
 // StateUpgradeValue is the prior-schema representation of a property for one

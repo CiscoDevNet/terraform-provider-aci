@@ -16,7 +16,7 @@ import (
 	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
-	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/customtypes"
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
 
@@ -149,7 +149,7 @@ func fvBDSchemaDefinition() modelHelpers.ClassSchema {
 			},
 			"link_local_ipv6_address": {
 				Type:             modelHelpers.StringProperty,
-				CustomStringType: customTypes.IPAddressStringType{},
+				CustomStringType: customtypes.IPAddressType{},
 				Optional:         true,
 				Computed:         true,
 				Description:      "The override of the system generated IPv6 link-local address.",
@@ -397,53 +397,53 @@ func FvBDDataSourceSchema() datasourceschema.Schema {
 }
 
 type FvBDModel struct {
-	OptimizeWanBandwidth      types.String                     `tfsdk:"optimize_wan_bandwidth"`
-	Annotation                types.String                     `tfsdk:"annotation"`
-	ArpFlood                  types.String                     `tfsdk:"arp_flooding"`
-	Descr                     types.String                     `tfsdk:"description"`
-	EnableRogueExceptMac      types.String                     `tfsdk:"enable_rogue_exception_mac"`
-	EpClear                   types.String                     `tfsdk:"clear_remote_mac_entries"`
-	EpMoveDetectMode          types.String                     `tfsdk:"endpoint_move_detection_mode"`
-	HostBasedRouting          types.String                     `tfsdk:"advertise_host_routes"`
-	IntersiteBumTrafficAllow  types.String                     `tfsdk:"enable_intersite_bum_traffic"`
-	IntersiteL2Stretch        types.String                     `tfsdk:"intersite_l2_stretch"`
-	IpLearning                types.String                     `tfsdk:"ip_learning"`
-	Ipv6McastAllow            types.String                     `tfsdk:"pim_ipv6"`
-	LimitIpLearnToSubnets     types.String                     `tfsdk:"limit_ip_learn_to_subnets"`
-	LlAddr                    customTypes.IPAddressStringValue `tfsdk:"link_local_ipv6_address"`
-	Mac                       types.String                     `tfsdk:"custom_mac_address"`
-	McastARPDrop              types.String                     `tfsdk:"drop_arp_with_multicast_smac"`
-	McastAllow                types.String                     `tfsdk:"pim"`
-	MultiDstPktAct            types.String                     `tfsdk:"multi_destination_flooding"`
-	Name                      types.String                     `tfsdk:"name"`
-	NameAlias                 types.String                     `tfsdk:"name_alias"`
-	OwnerKey                  types.String                     `tfsdk:"owner_key"`
-	OwnerTag                  types.String                     `tfsdk:"owner_tag"`
-	PcTag                     types.String                     `tfsdk:"pc_tag"`
-	Scope                     types.String                     `tfsdk:"scope"`
-	Seg                       types.String                     `tfsdk:"segment"`
-	ServiceBdRoutingDisable   types.String                     `tfsdk:"service_bd_routing_disable"`
-	Type                      types.String                     `tfsdk:"bridge_domain_type"`
-	UnicastRoute              types.String                     `tfsdk:"unicast_routing"`
-	UnkMacUcastAct            types.String                     `tfsdk:"l2_unknown_unicast_flooding"`
-	UnkMcastAct               types.String                     `tfsdk:"l3_unknown_multicast_flooding"`
-	V6unkMcastAct             types.String                     `tfsdk:"ipv6_l3_unknown_multicast_flooding"`
-	Vmac                      types.String                     `tfsdk:"virtual_mac_address"`
-	FvAccP                    types.Object                     `tfsdk:"legacy_mode"`
-	FvRogueExceptionMac       types.Set                        `tfsdk:"rogue_coop_exceptions"`
-	FvRsABDPolMonPol          types.Object                     `tfsdk:"relation_to_monitoring_policy"`
-	FvRsBDToFhs               types.Object                     `tfsdk:"relation_to_first_hop_security_policy"`
-	FvRsBDToNdP               types.Object                     `tfsdk:"relation_to_neighbor_discovery_interface_policy"`
-	FvRsBDToNetflowMonitorPol types.Set                        `tfsdk:"relation_to_netflow_monitor_policies"`
-	FvRsBDToOut               types.Set                        `tfsdk:"relation_to_l3_outsides"`
-	FvRsBDToProfile           types.Object                     `tfsdk:"relation_to_route_control_profile"`
-	FvRsBDToRelayP            types.Object                     `tfsdk:"relation_to_dhcp_relay_policy"`
-	FvRsBdToEpRet             types.Object                     `tfsdk:"relation_to_end_point_retention_policy"`
-	FvRsCtx                   types.Object                     `tfsdk:"relation_to_vrf"`
-	FvRsIgmpsn                types.Object                     `tfsdk:"relation_to_igmp_snooping_policy"`
-	FvRsMldsn                 types.Object                     `tfsdk:"relation_to_mld_snooping_policy"`
-	TagAnnotation             types.Set                        `tfsdk:"annotations"`
-	TagTag                    types.Set                        `tfsdk:"tags"`
+	OptimizeWanBandwidth      types.String               `tfsdk:"optimize_wan_bandwidth"`
+	Annotation                types.String               `tfsdk:"annotation"`
+	ArpFlood                  types.String               `tfsdk:"arp_flooding"`
+	Descr                     types.String               `tfsdk:"description"`
+	EnableRogueExceptMac      types.String               `tfsdk:"enable_rogue_exception_mac"`
+	EpClear                   types.String               `tfsdk:"clear_remote_mac_entries"`
+	EpMoveDetectMode          types.String               `tfsdk:"endpoint_move_detection_mode"`
+	HostBasedRouting          types.String               `tfsdk:"advertise_host_routes"`
+	IntersiteBumTrafficAllow  types.String               `tfsdk:"enable_intersite_bum_traffic"`
+	IntersiteL2Stretch        types.String               `tfsdk:"intersite_l2_stretch"`
+	IpLearning                types.String               `tfsdk:"ip_learning"`
+	Ipv6McastAllow            types.String               `tfsdk:"pim_ipv6"`
+	LimitIpLearnToSubnets     types.String               `tfsdk:"limit_ip_learn_to_subnets"`
+	LlAddr                    customtypes.IPAddressValue `tfsdk:"link_local_ipv6_address"`
+	Mac                       types.String               `tfsdk:"custom_mac_address"`
+	McastARPDrop              types.String               `tfsdk:"drop_arp_with_multicast_smac"`
+	McastAllow                types.String               `tfsdk:"pim"`
+	MultiDstPktAct            types.String               `tfsdk:"multi_destination_flooding"`
+	Name                      types.String               `tfsdk:"name"`
+	NameAlias                 types.String               `tfsdk:"name_alias"`
+	OwnerKey                  types.String               `tfsdk:"owner_key"`
+	OwnerTag                  types.String               `tfsdk:"owner_tag"`
+	PcTag                     types.String               `tfsdk:"pc_tag"`
+	Scope                     types.String               `tfsdk:"scope"`
+	Seg                       types.String               `tfsdk:"segment"`
+	ServiceBdRoutingDisable   types.String               `tfsdk:"service_bd_routing_disable"`
+	Type                      types.String               `tfsdk:"bridge_domain_type"`
+	UnicastRoute              types.String               `tfsdk:"unicast_routing"`
+	UnkMacUcastAct            types.String               `tfsdk:"l2_unknown_unicast_flooding"`
+	UnkMcastAct               types.String               `tfsdk:"l3_unknown_multicast_flooding"`
+	V6unkMcastAct             types.String               `tfsdk:"ipv6_l3_unknown_multicast_flooding"`
+	Vmac                      types.String               `tfsdk:"virtual_mac_address"`
+	FvAccP                    types.Object               `tfsdk:"legacy_mode"`
+	FvRogueExceptionMac       types.Set                  `tfsdk:"rogue_coop_exceptions"`
+	FvRsABDPolMonPol          types.Object               `tfsdk:"relation_to_monitoring_policy"`
+	FvRsBDToFhs               types.Object               `tfsdk:"relation_to_first_hop_security_policy"`
+	FvRsBDToNdP               types.Object               `tfsdk:"relation_to_neighbor_discovery_interface_policy"`
+	FvRsBDToNetflowMonitorPol types.Set                  `tfsdk:"relation_to_netflow_monitor_policies"`
+	FvRsBDToOut               types.Set                  `tfsdk:"relation_to_l3_outsides"`
+	FvRsBDToProfile           types.Object               `tfsdk:"relation_to_route_control_profile"`
+	FvRsBDToRelayP            types.Object               `tfsdk:"relation_to_dhcp_relay_policy"`
+	FvRsBdToEpRet             types.Object               `tfsdk:"relation_to_end_point_retention_policy"`
+	FvRsCtx                   types.Object               `tfsdk:"relation_to_vrf"`
+	FvRsIgmpsn                types.Object               `tfsdk:"relation_to_igmp_snooping_policy"`
+	FvRsMldsn                 types.Object               `tfsdk:"relation_to_mld_snooping_policy"`
+	TagAnnotation             types.Set                  `tfsdk:"annotations"`
+	TagTag                    types.Set                  `tfsdk:"tags"`
 }
 
 func FvBDModelAttributeTypes() map[string]attr.Type {
@@ -461,7 +461,7 @@ func FvBDModelAttributeTypes() map[string]attr.Type {
 		"ip_learning":                        types.StringType,
 		"pim_ipv6":                           types.StringType,
 		"limit_ip_learn_to_subnets":          types.StringType,
-		"link_local_ipv6_address":            customTypes.IPAddressStringType{},
+		"link_local_ipv6_address":            customtypes.IPAddressType{},
 		"custom_mac_address":                 types.StringType,
 		"drop_arp_with_multicast_smac":       types.StringType,
 		"pim":                                types.StringType,
@@ -553,7 +553,7 @@ func NewFvBDModelNull() FvBDModel {
 		IpLearning:               types.StringNull(),
 		Ipv6McastAllow:           types.StringNull(),
 		LimitIpLearnToSubnets:    types.StringNull(),
-		LlAddr:                   customTypes.NewIPAddressStringNull(),
+		LlAddr:                   customtypes.NewIPAddressNull(),
 		Mac:                      types.StringNull(),
 		McastARPDrop:             types.StringNull(),
 		McastAllow:               types.StringNull(),
@@ -650,7 +650,7 @@ func FvBDModelFromObject(
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ipLearning", &model.IpLearning)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ipv6McastAllow", &model.Ipv6McastAllow)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "limitIpLearnToSubnets", &model.LimitIpLearnToSubnets)
-	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "llAddr", &model.LlAddr, customTypes.NewIPAddressStringValue)
+	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "llAddr", &model.LlAddr, customtypes.NewIPAddressValue)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "mac", &model.Mac)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "mcastARPDrop", &model.McastARPDrop)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "mcastAllow", &model.McastAllow)

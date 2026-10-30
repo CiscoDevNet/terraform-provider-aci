@@ -16,9 +16,107 @@ import (
 	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
-	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/customtypes"
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+var qosDscpClassFromType = customtypes.NewSemanticStringType(map[string]string{
+	"0":  "CS0",
+	"10": "AF11",
+	"12": "AF12",
+	"14": "AF13",
+	"16": "CS2",
+	"18": "AF21",
+	"20": "AF22",
+	"22": "AF23",
+	"24": "CS3",
+	"26": "AF31",
+	"28": "AF32",
+	"30": "AF33",
+	"32": "CS4",
+	"34": "AF41",
+	"36": "AF42",
+	"38": "AF43",
+	"40": "CS5",
+	"44": "VA",
+	"46": "EF",
+	"48": "CS6",
+	"56": "CS7",
+	"8":  "CS1",
+})
+
+var qosDscpClassPrioType = customtypes.NewSemanticStringType(map[string]string{
+	"0": "unspecified",
+	"1": "level3",
+	"2": "level2",
+	"3": "level1",
+	"7": "level6",
+	"8": "level5",
+	"9": "level4",
+})
+
+var qosDscpClassTargetType = customtypes.NewSemanticStringType(map[string]string{
+	"0":  "CS0",
+	"10": "AF11",
+	"12": "AF12",
+	"14": "AF13",
+	"16": "CS2",
+	"18": "AF21",
+	"20": "AF22",
+	"22": "AF23",
+	"24": "CS3",
+	"26": "AF31",
+	"28": "AF32",
+	"30": "AF33",
+	"32": "CS4",
+	"34": "AF41",
+	"36": "AF42",
+	"38": "AF43",
+	"40": "CS5",
+	"44": "VA",
+	"46": "EF",
+	"48": "CS6",
+	"56": "CS7",
+	"64": "unspecified",
+	"8":  "CS1",
+})
+
+var qosDscpClassTargetCosType = customtypes.NewSemanticStringType(map[string]string{
+	"0": "0",
+	"1": "1",
+	"2": "2",
+	"3": "3",
+	"4": "4",
+	"5": "5",
+	"6": "6",
+	"7": "7",
+	"8": "unspecified",
+})
+
+var qosDscpClassToType = customtypes.NewSemanticStringType(map[string]string{
+	"0":  "CS0",
+	"10": "AF11",
+	"12": "AF12",
+	"14": "AF13",
+	"16": "CS2",
+	"18": "AF21",
+	"20": "AF22",
+	"22": "AF23",
+	"24": "CS3",
+	"26": "AF31",
+	"28": "AF32",
+	"30": "AF33",
+	"32": "CS4",
+	"34": "AF41",
+	"36": "AF42",
+	"38": "AF43",
+	"40": "CS5",
+	"44": "VA",
+	"46": "EF",
+	"48": "CS6",
+	"56": "CS7",
+	"8":  "CS1",
+})
 
 func qosDscpClassSchemaDefinition() modelHelpers.ClassSchema {
 	return modelHelpers.ClassSchema{
@@ -39,7 +137,7 @@ func qosDscpClassSchemaDefinition() modelHelpers.ClassSchema {
 			},
 			"from": {
 				Type:             modelHelpers.StringProperty,
-				CustomStringType: customTypes.QosDscpClassFromStringType{},
+				CustomStringType: qosDscpClassFromType,
 				Required:         true,
 				RequiresReplace:  true,
 				ValidValues: []string{
@@ -83,7 +181,7 @@ func qosDscpClassSchemaDefinition() modelHelpers.ClassSchema {
 			},
 			"priority": {
 				Type:             modelHelpers.StringProperty,
-				CustomStringType: customTypes.QosDscpClassPrioStringType{},
+				CustomStringType: qosDscpClassPrioType,
 				Optional:         true,
 				Computed:         true,
 				ValidValues: []string{
@@ -100,7 +198,7 @@ func qosDscpClassSchemaDefinition() modelHelpers.ClassSchema {
 			},
 			"target": {
 				Type:             modelHelpers.StringProperty,
-				CustomStringType: customTypes.QosDscpClassTargetStringType{},
+				CustomStringType: qosDscpClassTargetType,
 				Optional:         true,
 				Computed:         true,
 				ValidValues: []string{
@@ -133,7 +231,7 @@ func qosDscpClassSchemaDefinition() modelHelpers.ClassSchema {
 			},
 			"target_cos": {
 				Type:             modelHelpers.StringProperty,
-				CustomStringType: customTypes.QosDscpClassTargetCosStringType{},
+				CustomStringType: qosDscpClassTargetCosType,
 				Optional:         true,
 				Computed:         true,
 				ValidValues: []string{
@@ -152,7 +250,7 @@ func qosDscpClassSchemaDefinition() modelHelpers.ClassSchema {
 			},
 			"to": {
 				Type:             modelHelpers.StringProperty,
-				CustomStringType: customTypes.QosDscpClassToStringType{},
+				CustomStringType: qosDscpClassToType,
 				Required:         true,
 				RequiresReplace:  true,
 				ValidValues: []string{
@@ -216,30 +314,30 @@ func QosDscpClassDataSourceSchema() datasourceschema.Schema {
 }
 
 type QosDscpClassModel struct {
-	Annotation    types.String                                 `tfsdk:"annotation"`
-	Descr         types.String                                 `tfsdk:"description"`
-	From          customTypes.QosDscpClassFromStringValue      `tfsdk:"from"`
-	Name          types.String                                 `tfsdk:"name"`
-	NameAlias     types.String                                 `tfsdk:"name_alias"`
-	Prio          customTypes.QosDscpClassPrioStringValue      `tfsdk:"priority"`
-	Target        customTypes.QosDscpClassTargetStringValue    `tfsdk:"target"`
-	TargetCos     customTypes.QosDscpClassTargetCosStringValue `tfsdk:"target_cos"`
-	To            customTypes.QosDscpClassToStringValue        `tfsdk:"to"`
-	TagAnnotation types.Set                                    `tfsdk:"annotations"`
-	TagTag        types.Set                                    `tfsdk:"tags"`
+	Annotation    types.String                    `tfsdk:"annotation"`
+	Descr         types.String                    `tfsdk:"description"`
+	From          customtypes.SemanticStringValue `tfsdk:"from"`
+	Name          types.String                    `tfsdk:"name"`
+	NameAlias     types.String                    `tfsdk:"name_alias"`
+	Prio          customtypes.SemanticStringValue `tfsdk:"priority"`
+	Target        customtypes.SemanticStringValue `tfsdk:"target"`
+	TargetCos     customtypes.SemanticStringValue `tfsdk:"target_cos"`
+	To            customtypes.SemanticStringValue `tfsdk:"to"`
+	TagAnnotation types.Set                       `tfsdk:"annotations"`
+	TagTag        types.Set                       `tfsdk:"tags"`
 }
 
 func QosDscpClassModelAttributeTypes() map[string]attr.Type {
 	return map[string]attr.Type{
 		"annotation":  types.StringType,
 		"description": types.StringType,
-		"from":        customTypes.QosDscpClassFromStringType{},
+		"from":        qosDscpClassFromType,
 		"name":        types.StringType,
 		"name_alias":  types.StringType,
-		"priority":    customTypes.QosDscpClassPrioStringType{},
-		"target":      customTypes.QosDscpClassTargetStringType{},
-		"target_cos":  customTypes.QosDscpClassTargetCosStringType{},
-		"to":          customTypes.QosDscpClassToStringType{},
+		"priority":    qosDscpClassPrioType,
+		"target":      qosDscpClassTargetType,
+		"target_cos":  qosDscpClassTargetCosType,
+		"to":          qosDscpClassToType,
 		"annotations": types.SetType{
 			ElemType: types.ObjectType{
 				AttrTypes: TagAnnotationModelAttributeTypes(),
@@ -257,13 +355,13 @@ func NewQosDscpClassModelNull() QosDscpClassModel {
 	return QosDscpClassModel{
 		Annotation: types.StringNull(),
 		Descr:      types.StringNull(),
-		From:       customTypes.NewQosDscpClassFromStringNull(),
+		From:       qosDscpClassFromType.Null(),
 		Name:       types.StringNull(),
 		NameAlias:  types.StringNull(),
-		Prio:       customTypes.NewQosDscpClassPrioStringNull(),
-		Target:     customTypes.NewQosDscpClassTargetStringNull(),
-		TargetCos:  customTypes.NewQosDscpClassTargetCosStringNull(),
-		To:         customTypes.NewQosDscpClassToStringNull(),
+		Prio:       qosDscpClassPrioType.Null(),
+		Target:     qosDscpClassTargetType.Null(),
+		TargetCos:  qosDscpClassTargetCosType.Null(),
+		To:         qosDscpClassToType.Null(),
 		TagAnnotation: types.SetNull(
 			types.ObjectType{
 				AttrTypes: TagAnnotationModelAttributeTypes(),
@@ -279,8 +377,8 @@ func NewQosDscpClassModelNull() QosDscpClassModel {
 
 func (m *QosDscpClassModel) BuildRN() string {
 	rn := "dcsp-{from}-{to}"
-	rn = strings.ReplaceAll(rn, "{from}", m.From.NamedValueString())
-	rn = strings.ReplaceAll(rn, "{to}", m.To.NamedValueString())
+	rn = strings.ReplaceAll(rn, "{from}", m.From.CanonicalString())
+	rn = strings.ReplaceAll(rn, "{to}", m.To.CanonicalString())
 	return rn
 }
 
@@ -307,13 +405,13 @@ func QosDscpClassModelFromObject(
 
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "descr", &model.Descr)
-	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "from", &model.From, customTypes.NewQosDscpClassFromStringValue)
+	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "from", &model.From, qosDscpClassFromType.Value)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "name", &model.Name)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "nameAlias", &model.NameAlias)
-	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "prio", &model.Prio, customTypes.NewQosDscpClassPrioStringValue)
-	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "target", &model.Target, customTypes.NewQosDscpClassTargetStringValue)
-	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "targetCos", &model.TargetCos, customTypes.NewQosDscpClassTargetCosStringValue)
-	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "to", &model.To, customTypes.NewQosDscpClassToStringValue)
+	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "prio", &model.Prio, qosDscpClassPrioType.Value)
+	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "target", &model.Target, qosDscpClassTargetType.Value)
+	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "targetCos", &model.TargetCos, qosDscpClassTargetCosType.Value)
+	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "to", &model.To, qosDscpClassToType.Value)
 
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,

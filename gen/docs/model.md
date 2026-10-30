@@ -187,6 +187,23 @@ The neutral annotation property has no schema default. Top-level resource
 construction adds `id` and `parent_dn`, then replaces annotation with the
 provider-resolved static default passed as `defaultAnnotation`.
 
+Custom string behavior used by generated models lives in the static
+`internal/customtypes` package. A semantic-equality property owns one private,
+package-level `SemanticStringType` variable in its generated class file. The
+generator constructs that type directly from the property's normalized
+`ValidValues` map, so a new semantic property does not require another custom
+type implementation. The same configured type creates schema values, model
+nulls, and values decoded from APIC responses.
+
+`SemanticStringValue.ValueString()` retains the raw Terraform or APIC value
+used in payloads. Semantic comparison and RN construction use
+`CanonicalString()`, which maps APIC wire values to their local names. IP
+address normalization and the VMM ARP-learning empty/disabled equivalence remain
+dedicated custom types because their behavior is not a normal valid-value map.
+The property-specific implementations in `internal/custom_types` remain legacy
+code used by the existing generated provider files and are not consumed by the
+new model generator.
+
 Direct resource properties use `PreserveStringStateForUnknown` or
 `PreserveSetStateForUnknown`. These modifiers retain the established behavior
 where an attribute returned as null remains null when the connected APIC
