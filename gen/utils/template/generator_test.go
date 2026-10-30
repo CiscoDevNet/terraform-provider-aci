@@ -1240,6 +1240,7 @@ func TestModelTemplateSchemaShape(t *testing.T) {
 	contents := string(formatted)
 
 	expectedSnippets := []string{
+		`registerClassVersion("fvTenant", "1.0(1e)-")`,
 		`func fvTenantSchemaDefinition() modelHelpers.ClassSchema`,
 		`ResourceDescription:   "Manages an ACI tenant."`,
 		`DataSourceDescription: "Reads an ACI tenant."`,
@@ -2701,5 +2702,9 @@ func testClass(t *testing.T, className string, artifacts ...data.ArtifactEnum) d
 	if err != nil {
 		t.Fatalf("create class name %q: %v", className, err)
 	}
-	return data.Class{Name: name, Artifacts: artifacts}
+	versions, err := data.NewVersions("1.0(1e)-")
+	if err != nil {
+		t.Fatalf("create supported versions for class %q: %v", className, err)
+	}
+	return data.Class{Name: name, Artifacts: artifacts, SupportedVersions: versions}
 }

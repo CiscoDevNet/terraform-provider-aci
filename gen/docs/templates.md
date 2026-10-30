@@ -11,8 +11,8 @@ associated with, `gen/generator.go`:
 
 | Output area | Tracked inventory | Cleanup status |
 | --- | ---: | --- |
-| `internal/provider/` | 695 files | Mixed static and generated output; active ownership is limited to manifest entries |
-| `internal/provider/models/` | 179 files | 176 class models are managed; shared model helpers are static |
+| `internal/provider/` | 702 files | Mixed static and generated output; active ownership is limited to manifest entries |
+| `internal/provider/models/` | 186 files | 176 class models are managed; shared model helpers and the class-version registry are static |
 | `internal/custom_types/` | 37 files | Legacy output outside the active generator manifest |
 | `internal/customtypes/` | 6 files | Static custom types and focused unit tests used by generated models |
 | `docs/` | 699 files | Mixed static and generated output; `index.md`, 125 class-backed resource pages, and 125 class-backed data-source pages are actively managed |
@@ -46,6 +46,9 @@ internal/provider/data_source_aci_system.go
 internal/provider/data_source_aci_system_test.go
 internal/provider/function_compare_versions.go
 internal/provider/function_compare_versions_test.go
+internal/provider/versions.go
+internal/provider/models/versions.go
+internal/provider/models/versions_test.go
 internal/customtypes/
 internal/custom_types/ipAddress.go
 internal/custom_types/arpLearning.go

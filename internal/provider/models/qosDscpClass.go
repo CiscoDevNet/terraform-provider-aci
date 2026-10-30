@@ -20,6 +20,10 @@ import (
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
 
+func init() {
+	registerClassVersion("qosDscpClass", "1.0(1e)-")
+}
+
 var qosDscpClassFromType = customtypes.NewSemanticStringType(map[string]string{
 	"0":  "CS0",
 	"10": "AF11",

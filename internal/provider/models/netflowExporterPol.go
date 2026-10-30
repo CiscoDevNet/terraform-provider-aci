@@ -20,6 +20,10 @@ import (
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
 
+func init() {
+	registerClassVersion("netflowExporterPol", "2.2(1k)-")
+}
+
 var netflowExporterPolDscpType = customtypes.NewSemanticStringType(map[string]string{
 	"0":  "CS0",
 	"10": "AF11",

@@ -20,6 +20,10 @@ import (
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
 
+func init() {
+	registerClassVersion("vzRsAnyToProv", "1.0(1e)-")
+}
+
 var vzRsAnyToProvPrioType = customtypes.NewSemanticStringType(map[string]string{
 	"0": "unspecified",
 	"1": "level3",

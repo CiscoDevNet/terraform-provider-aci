@@ -377,6 +377,15 @@ func (m *FvTenantRootModel) SetFromResponse(
 func (m *FvTenantRootModel) SetIDFromDN(dn string)
 ```
 
+Every generated class model registers its APIC class name and raw supported
+version range while the `models` package initializes. The static registry in
+`internal/provider/models/versions.go` is not generator-owned; it is populated
+by the generated model files, including child-only classes. Future generated
+adapters can use `models.ClassVersions` to avoid requesting child classes that
+are not available on the connected APIC version. Existing legacy adapters
+continue to use the centrally rendered `internal/provider/versions.go` map
+until their implementation templates are migrated.
+
 `FvTenantModelFromResponse` decodes the response envelope and returns the
 class model together with the exact DN returned by APIC. A nil model with no
 error diagnostics means that the expected class was not found. The shared
