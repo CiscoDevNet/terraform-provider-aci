@@ -20,6 +20,10 @@ import (
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
 
+func init() {
+	registerClassVersion("fvRsConsIf", "1.0(1e)-")
+}
+
 var fvRsConsIfPrioType = customtypes.NewSemanticStringType(map[string]string{
 	"0": "unspecified",
 	"1": "level3",

@@ -20,6 +20,10 @@ import (
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
 
+func init() {
+	registerClassVersion("fvBD", "1.0(1e)-")
+}
+
 func fvBDSchemaDefinition() modelHelpers.ClassSchema {
 	return modelHelpers.ClassSchema{
 		ResourceDescription:   "Manages ACI Bridge Domain",

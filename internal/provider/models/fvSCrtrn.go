@@ -19,6 +19,10 @@ import (
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
 
+func init() {
+	registerClassVersion("fvSCrtrn", "1.2(1i)-")
+}
+
 func fvSCrtrnSchemaDefinition() modelHelpers.ClassSchema {
 	return modelHelpers.ClassSchema{
 		ResourceDescription:   "Manages ACI EPG uSeg Sub Block Statement",

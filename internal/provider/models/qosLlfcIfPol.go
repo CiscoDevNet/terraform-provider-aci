@@ -19,6 +19,10 @@ import (
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
 
+func init() {
+	registerClassVersion("qosLlfcIfPol", "4.2(6d)-4.2(7w),5.1(1h)-")
+}
+
 func qosLlfcIfPolSchemaDefinition() modelHelpers.ClassSchema {
 	return modelHelpers.ClassSchema{
 		ResourceDescription:   "Manages ACI Link Level Flow Control Interface Policy",

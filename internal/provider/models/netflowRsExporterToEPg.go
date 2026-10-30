@@ -17,6 +17,10 @@ import (
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
 
+func init() {
+	registerClassVersion("netflowRsExporterToEPg", "2.2(1k)-")
+}
+
 func netflowRsExporterToEPgSchemaDefinition() modelHelpers.ClassSchema {
 	return modelHelpers.ClassSchema{
 		ResourceDescription:   "Manages ACI Relation From NetFlow Exporter To EPG",

@@ -19,6 +19,10 @@ import (
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
 
+func init() {
+	registerClassVersion("poeIfPol", "3.0(1k)-")
+}
+
 func poeIfPolSchemaDefinition() modelHelpers.ClassSchema {
 	return modelHelpers.ClassSchema{
 		ResourceDescription:   "Manages ACI PoE Interface Policy",

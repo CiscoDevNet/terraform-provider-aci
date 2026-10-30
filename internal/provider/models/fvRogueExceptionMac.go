@@ -19,6 +19,10 @@ import (
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
 
+func init() {
+	registerClassVersion("fvRogueExceptionMac", "5.2(3e)-")
+}
+
 func fvRogueExceptionMacSchemaDefinition() modelHelpers.ClassSchema {
 	return modelHelpers.ClassSchema{
 		ResourceDescription:   "Manages ACI Rogue Coop Exception",

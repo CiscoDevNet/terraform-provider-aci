@@ -20,6 +20,10 @@ import (
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
 
+func init() {
+	registerClassVersion("qosDot1PClass", "1.0(1e)-")
+}
+
 var qosDot1PClassFromType = customtypes.NewSemanticStringType(map[string]string{
 	"0": "0",
 	"1": "1",

@@ -20,6 +20,10 @@ import (
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
 
+func init() {
+	registerClassVersion("l3extInstP", "1.0(1e)-")
+}
+
 var l3extInstPPrioType = customtypes.NewSemanticStringType(map[string]string{
 	"0": "unspecified",
 	"1": "level3",
