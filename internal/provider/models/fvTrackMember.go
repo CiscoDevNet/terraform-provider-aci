@@ -16,7 +16,7 @@ import (
 	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
-	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/customtypes"
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
 
@@ -39,7 +39,7 @@ func fvTrackMemberSchemaDefinition() modelHelpers.ClassSchema {
 			},
 			"destination_ip_address": {
 				Type:             modelHelpers.StringProperty,
-				CustomStringType: customTypes.IPAddressStringType{},
+				CustomStringType: customtypes.IPAddressType{},
 				Required:         true,
 				Description:      "The destination IP address to be tracked.",
 			},
@@ -111,24 +111,24 @@ func FvTrackMemberDataSourceSchema() datasourceschema.Schema {
 }
 
 type FvTrackMemberModel struct {
-	Annotation      types.String                     `tfsdk:"annotation"`
-	Descr           types.String                     `tfsdk:"description"`
-	DstIpAddr       customTypes.IPAddressStringValue `tfsdk:"destination_ip_address"`
-	Name            types.String                     `tfsdk:"name"`
-	NameAlias       types.String                     `tfsdk:"name_alias"`
-	OwnerKey        types.String                     `tfsdk:"owner_key"`
-	OwnerTag        types.String                     `tfsdk:"owner_tag"`
-	ScopeDn         types.String                     `tfsdk:"scope"`
-	FvRsIpslaMonPol types.Object                     `tfsdk:"relation_to_monitoring_policy"`
-	TagAnnotation   types.Set                        `tfsdk:"annotations"`
-	TagTag          types.Set                        `tfsdk:"tags"`
+	Annotation      types.String               `tfsdk:"annotation"`
+	Descr           types.String               `tfsdk:"description"`
+	DstIpAddr       customtypes.IPAddressValue `tfsdk:"destination_ip_address"`
+	Name            types.String               `tfsdk:"name"`
+	NameAlias       types.String               `tfsdk:"name_alias"`
+	OwnerKey        types.String               `tfsdk:"owner_key"`
+	OwnerTag        types.String               `tfsdk:"owner_tag"`
+	ScopeDn         types.String               `tfsdk:"scope"`
+	FvRsIpslaMonPol types.Object               `tfsdk:"relation_to_monitoring_policy"`
+	TagAnnotation   types.Set                  `tfsdk:"annotations"`
+	TagTag          types.Set                  `tfsdk:"tags"`
 }
 
 func FvTrackMemberModelAttributeTypes() map[string]attr.Type {
 	return map[string]attr.Type{
 		"annotation":             types.StringType,
 		"description":            types.StringType,
-		"destination_ip_address": customTypes.IPAddressStringType{},
+		"destination_ip_address": customtypes.IPAddressType{},
 		"name":                   types.StringType,
 		"name_alias":             types.StringType,
 		"owner_key":              types.StringType,
@@ -154,7 +154,7 @@ func NewFvTrackMemberModelNull() FvTrackMemberModel {
 	return FvTrackMemberModel{
 		Annotation:      types.StringNull(),
 		Descr:           types.StringNull(),
-		DstIpAddr:       customTypes.NewIPAddressStringNull(),
+		DstIpAddr:       customtypes.NewIPAddressNull(),
 		Name:            types.StringNull(),
 		NameAlias:       types.StringNull(),
 		OwnerKey:        types.StringNull(),
@@ -203,7 +203,7 @@ func FvTrackMemberModelFromObject(
 
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "descr", &model.Descr)
-	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "dstIpAddr", &model.DstIpAddr, customTypes.NewIPAddressStringValue)
+	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "dstIpAddr", &model.DstIpAddr, customtypes.NewIPAddressValue)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "name", &model.Name)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "nameAlias", &model.NameAlias)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ownerKey", &model.OwnerKey)

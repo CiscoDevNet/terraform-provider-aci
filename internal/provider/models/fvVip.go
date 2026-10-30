@@ -16,7 +16,7 @@ import (
 	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
-	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/customtypes"
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
 
@@ -27,7 +27,7 @@ func fvVipSchemaDefinition() modelHelpers.ClassSchema {
 		Properties: map[string]modelHelpers.PropertySchema{
 			"ip": {
 				Type:             modelHelpers.StringProperty,
-				CustomStringType: customTypes.IPAddressStringType{},
+				CustomStringType: customtypes.IPAddressType{},
 				Required:         true,
 				RequiresReplace:  true,
 				Description:      "The L4-L7 Virtual IP Address for this object.",
@@ -101,20 +101,20 @@ func FvVipDataSourceSchema() datasourceschema.Schema {
 }
 
 type FvVipModel struct {
-	Addr          customTypes.IPAddressStringValue `tfsdk:"ip"`
-	Annotation    types.String                     `tfsdk:"annotation"`
-	Descr         types.String                     `tfsdk:"description"`
-	Name          types.String                     `tfsdk:"name"`
-	NameAlias     types.String                     `tfsdk:"name_alias"`
-	OwnerKey      types.String                     `tfsdk:"owner_key"`
-	OwnerTag      types.String                     `tfsdk:"owner_tag"`
-	TagAnnotation types.Set                        `tfsdk:"annotations"`
-	TagTag        types.Set                        `tfsdk:"tags"`
+	Addr          customtypes.IPAddressValue `tfsdk:"ip"`
+	Annotation    types.String               `tfsdk:"annotation"`
+	Descr         types.String               `tfsdk:"description"`
+	Name          types.String               `tfsdk:"name"`
+	NameAlias     types.String               `tfsdk:"name_alias"`
+	OwnerKey      types.String               `tfsdk:"owner_key"`
+	OwnerTag      types.String               `tfsdk:"owner_tag"`
+	TagAnnotation types.Set                  `tfsdk:"annotations"`
+	TagTag        types.Set                  `tfsdk:"tags"`
 }
 
 func FvVipModelAttributeTypes() map[string]attr.Type {
 	return map[string]attr.Type{
-		"ip":          customTypes.IPAddressStringType{},
+		"ip":          customtypes.IPAddressType{},
 		"annotation":  types.StringType,
 		"description": types.StringType,
 		"name":        types.StringType,
@@ -136,7 +136,7 @@ func FvVipModelAttributeTypes() map[string]attr.Type {
 
 func NewFvVipModelNull() FvVipModel {
 	return FvVipModel{
-		Addr:       customTypes.NewIPAddressStringNull(),
+		Addr:       customtypes.NewIPAddressNull(),
 		Annotation: types.StringNull(),
 		Descr:      types.StringNull(),
 		Name:       types.StringNull(),
@@ -158,7 +158,7 @@ func NewFvVipModelNull() FvVipModel {
 
 func (m *FvVipModel) BuildRN() string {
 	rn := "vip-[{addr}]"
-	rn = strings.ReplaceAll(rn, "{addr}", m.Addr.NamedValueString())
+	rn = strings.ReplaceAll(rn, "{addr}", m.Addr.CanonicalString())
 	return rn
 }
 
@@ -183,7 +183,7 @@ func FvVipModelFromObject(
 		return model, diagnostics
 	}
 
-	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "addr", &model.Addr, customTypes.NewIPAddressStringValue)
+	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "addr", &model.Addr, customtypes.NewIPAddressValue)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "descr", &model.Descr)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "name", &model.Name)

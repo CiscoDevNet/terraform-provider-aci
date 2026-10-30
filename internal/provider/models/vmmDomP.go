@@ -16,7 +16,7 @@ import (
 	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
-	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/customtypes"
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
 
@@ -43,7 +43,7 @@ func vmmDomPSchemaDefinition() modelHelpers.ClassSchema {
 			},
 			"arp_learning": {
 				Type:             modelHelpers.StringProperty,
-				CustomStringType: customTypes.VMMArpLearningStringType{},
+				CustomStringType: customtypes.VMMArpLearningType{},
 				Optional:         true,
 				Computed:         true,
 				ValidValues: []string{
@@ -299,43 +299,43 @@ func VmmDomPDataSourceSchema() datasourceschema.Schema {
 }
 
 type VmmDomPModel struct {
-	AccessMode              types.String                          `tfsdk:"access_mode"`
-	Annotation              types.String                          `tfsdk:"annotation"`
-	ArpLearning             customTypes.VMMArpLearningStringValue `tfsdk:"arp_learning"`
-	AveTimeOut              types.String                          `tfsdk:"ave_time_out"`
-	ConfigInfraPg           types.String                          `tfsdk:"configure_infra_port_groups"`
-	CtrlKnob                types.String                          `tfsdk:"endpoint_data_path_verification"`
-	CustomSwitchName        types.String                          `tfsdk:"custom_switch_name"`
-	Delimiter               types.String                          `tfsdk:"delimiter"`
-	EnableAVE               types.String                          `tfsdk:"enable_ave_mode"`
-	EnableTag               types.String                          `tfsdk:"enable_tag_collection"`
-	EnableVmFolder          types.String                          `tfsdk:"enable_vm_folder_data_retrieval"`
-	EncapMode               types.String                          `tfsdk:"encapsulation_mode"`
-	EnfPref                 types.String                          `tfsdk:"switching_enforcement_preference"`
-	EpInventoryType         types.String                          `tfsdk:"endpoint_inventory_type"`
-	EpRetTime               types.String                          `tfsdk:"endpoint_retention_time"`
-	HvAvailMonitor          types.String                          `tfsdk:"host_availability_assurance"`
-	McastAddr               types.String                          `tfsdk:"multicast_address"`
-	Mode                    types.String                          `tfsdk:"switch_type"`
-	Name                    types.String                          `tfsdk:"name"`
-	NameAlias               types.String                          `tfsdk:"name_alias"`
-	OwnerKey                types.String                          `tfsdk:"owner_key"`
-	OwnerTag                types.String                          `tfsdk:"owner_tag"`
-	PrefEncapMode           types.String                          `tfsdk:"default_encapsulation_mode"`
-	InfraRsVipAddrNs        types.Object                          `tfsdk:"relation_to_ip_address_pool"`
-	InfraRsVlanNs           types.Object                          `tfsdk:"relation_to_vlan_pool"`
-	TagAnnotation           types.Set                             `tfsdk:"annotations"`
-	TagTag                  types.Set                             `tfsdk:"tags"`
-	VmmRsDomMcastAddrNs     types.Object                          `tfsdk:"relation_to_multicast_pool"`
-	VmmRsPrefEnhancedLagPol types.Object                          `tfsdk:"relation_to_lacp_enhanced_lag_policy"`
-	VmmUplinkPCont          types.Object                          `tfsdk:"vmm_uplink_container"`
+	AccessMode              types.String                    `tfsdk:"access_mode"`
+	Annotation              types.String                    `tfsdk:"annotation"`
+	ArpLearning             customtypes.VMMArpLearningValue `tfsdk:"arp_learning"`
+	AveTimeOut              types.String                    `tfsdk:"ave_time_out"`
+	ConfigInfraPg           types.String                    `tfsdk:"configure_infra_port_groups"`
+	CtrlKnob                types.String                    `tfsdk:"endpoint_data_path_verification"`
+	CustomSwitchName        types.String                    `tfsdk:"custom_switch_name"`
+	Delimiter               types.String                    `tfsdk:"delimiter"`
+	EnableAVE               types.String                    `tfsdk:"enable_ave_mode"`
+	EnableTag               types.String                    `tfsdk:"enable_tag_collection"`
+	EnableVmFolder          types.String                    `tfsdk:"enable_vm_folder_data_retrieval"`
+	EncapMode               types.String                    `tfsdk:"encapsulation_mode"`
+	EnfPref                 types.String                    `tfsdk:"switching_enforcement_preference"`
+	EpInventoryType         types.String                    `tfsdk:"endpoint_inventory_type"`
+	EpRetTime               types.String                    `tfsdk:"endpoint_retention_time"`
+	HvAvailMonitor          types.String                    `tfsdk:"host_availability_assurance"`
+	McastAddr               types.String                    `tfsdk:"multicast_address"`
+	Mode                    types.String                    `tfsdk:"switch_type"`
+	Name                    types.String                    `tfsdk:"name"`
+	NameAlias               types.String                    `tfsdk:"name_alias"`
+	OwnerKey                types.String                    `tfsdk:"owner_key"`
+	OwnerTag                types.String                    `tfsdk:"owner_tag"`
+	PrefEncapMode           types.String                    `tfsdk:"default_encapsulation_mode"`
+	InfraRsVipAddrNs        types.Object                    `tfsdk:"relation_to_ip_address_pool"`
+	InfraRsVlanNs           types.Object                    `tfsdk:"relation_to_vlan_pool"`
+	TagAnnotation           types.Set                       `tfsdk:"annotations"`
+	TagTag                  types.Set                       `tfsdk:"tags"`
+	VmmRsDomMcastAddrNs     types.Object                    `tfsdk:"relation_to_multicast_pool"`
+	VmmRsPrefEnhancedLagPol types.Object                    `tfsdk:"relation_to_lacp_enhanced_lag_policy"`
+	VmmUplinkPCont          types.Object                    `tfsdk:"vmm_uplink_container"`
 }
 
 func VmmDomPModelAttributeTypes() map[string]attr.Type {
 	return map[string]attr.Type{
 		"access_mode":                      types.StringType,
 		"annotation":                       types.StringType,
-		"arp_learning":                     customTypes.VMMArpLearningStringType{},
+		"arp_learning":                     customtypes.VMMArpLearningType{},
 		"ave_time_out":                     types.StringType,
 		"configure_infra_port_groups":      types.StringType,
 		"endpoint_data_path_verification":  types.StringType,
@@ -388,7 +388,7 @@ func NewVmmDomPModelNull() VmmDomPModel {
 	return VmmDomPModel{
 		AccessMode:       types.StringNull(),
 		Annotation:       types.StringNull(),
-		ArpLearning:      customTypes.NewVMMArpLearningStringNull(),
+		ArpLearning:      customtypes.NewVMMArpLearningNull(),
 		AveTimeOut:       types.StringNull(),
 		ConfigInfraPg:    types.StringNull(),
 		CtrlKnob:         types.StringNull(),
@@ -456,7 +456,7 @@ func VmmDomPModelFromObject(
 
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "accessMode", &model.AccessMode)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
-	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "arpLearning", &model.ArpLearning, customTypes.NewVMMArpLearningStringValue)
+	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "arpLearning", &model.ArpLearning, customtypes.NewVMMArpLearningValue)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "aveTimeOut", &model.AveTimeOut)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "configInfraPg", &model.ConfigInfraPg)
 	modelHelpers.DecodeStringAttributeWithEmptyValue(ctx, &diagnostics, attributes, "ctrlKnob", "none", &model.CtrlKnob)

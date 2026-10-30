@@ -16,9 +16,108 @@ import (
 	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
-	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/customtypes"
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+var dwdmIfPolFcotChannelNumberType = customtypes.NewSemanticStringType(map[string]string{
+	"1":  "Channel1",
+	"10": "Channel10",
+	"11": "Channel11",
+	"12": "Channel12",
+	"13": "Channel13",
+	"14": "Channel14",
+	"15": "Channel15",
+	"16": "Channel16",
+	"17": "Channel17",
+	"18": "Channel18",
+	"19": "Channel19",
+	"2":  "Channel2",
+	"20": "Channel20",
+	"21": "Channel21",
+	"22": "Channel22",
+	"23": "Channel23",
+	"24": "Channel24",
+	"25": "Channel25",
+	"26": "Channel26",
+	"27": "Channel27",
+	"28": "Channel28",
+	"29": "Channel29",
+	"3":  "Channel3",
+	"30": "Channel30",
+	"31": "Channel31",
+	"32": "Channel32",
+	"33": "Channel33",
+	"34": "Channel34",
+	"35": "Channel35",
+	"36": "Channel36",
+	"37": "Channel37",
+	"38": "Channel38",
+	"39": "Channel39",
+	"4":  "Channel4",
+	"40": "Channel40",
+	"41": "Channel41",
+	"42": "Channel42",
+	"43": "Channel43",
+	"44": "Channel44",
+	"45": "Channel45",
+	"46": "Channel46",
+	"47": "Channel47",
+	"48": "Channel48",
+	"49": "Channel49",
+	"5":  "Channel5",
+	"50": "Channel50",
+	"51": "Channel51",
+	"52": "Channel52",
+	"53": "Channel53",
+	"54": "Channel54",
+	"55": "Channel55",
+	"56": "Channel56",
+	"57": "Channel57",
+	"58": "Channel58",
+	"59": "Channel59",
+	"6":  "Channel6",
+	"60": "Channel60",
+	"61": "Channel61",
+	"62": "Channel62",
+	"63": "Channel63",
+	"64": "Channel64",
+	"65": "Channel65",
+	"66": "Channel66",
+	"67": "Channel67",
+	"68": "Channel68",
+	"69": "Channel69",
+	"7":  "Channel7",
+	"70": "Channel70",
+	"71": "Channel71",
+	"72": "Channel72",
+	"73": "Channel73",
+	"74": "Channel74",
+	"75": "Channel75",
+	"76": "Channel76",
+	"77": "Channel77",
+	"78": "Channel78",
+	"79": "Channel79",
+	"8":  "Channel8",
+	"80": "Channel80",
+	"81": "Channel81",
+	"82": "Channel82",
+	"83": "Channel83",
+	"84": "Channel84",
+	"85": "Channel85",
+	"86": "Channel86",
+	"87": "Channel87",
+	"88": "Channel88",
+	"89": "Channel89",
+	"9":  "Channel9",
+	"90": "Channel90",
+	"91": "Channel91",
+	"92": "Channel92",
+	"93": "Channel93",
+	"94": "Channel94",
+	"95": "Channel95",
+	"96": "Channel96",
+})
 
 func dwdmIfPolSchemaDefinition() modelHelpers.ClassSchema {
 	return modelHelpers.ClassSchema{
@@ -39,7 +138,7 @@ func dwdmIfPolSchemaDefinition() modelHelpers.ClassSchema {
 			},
 			"channel_nummber": {
 				Type:             modelHelpers.StringProperty,
-				CustomStringType: customTypes.DwdmIfPolFcotChannelNumberStringType{},
+				CustomStringType: dwdmIfPolFcotChannelNumberType,
 				Optional:         true,
 				Computed:         true,
 				ValidValues: []string{
@@ -196,22 +295,22 @@ func DwdmIfPolDataSourceSchema() datasourceschema.Schema {
 }
 
 type DwdmIfPolModel struct {
-	Annotation        types.String                                      `tfsdk:"annotation"`
-	Descr             types.String                                      `tfsdk:"description"`
-	FcotChannelNumber customTypes.DwdmIfPolFcotChannelNumberStringValue `tfsdk:"channel_nummber"`
-	Name              types.String                                      `tfsdk:"name"`
-	NameAlias         types.String                                      `tfsdk:"name_alias"`
-	OwnerKey          types.String                                      `tfsdk:"owner_key"`
-	OwnerTag          types.String                                      `tfsdk:"owner_tag"`
-	TagAnnotation     types.Set                                         `tfsdk:"annotations"`
-	TagTag            types.Set                                         `tfsdk:"tags"`
+	Annotation        types.String                    `tfsdk:"annotation"`
+	Descr             types.String                    `tfsdk:"description"`
+	FcotChannelNumber customtypes.SemanticStringValue `tfsdk:"channel_nummber"`
+	Name              types.String                    `tfsdk:"name"`
+	NameAlias         types.String                    `tfsdk:"name_alias"`
+	OwnerKey          types.String                    `tfsdk:"owner_key"`
+	OwnerTag          types.String                    `tfsdk:"owner_tag"`
+	TagAnnotation     types.Set                       `tfsdk:"annotations"`
+	TagTag            types.Set                       `tfsdk:"tags"`
 }
 
 func DwdmIfPolModelAttributeTypes() map[string]attr.Type {
 	return map[string]attr.Type{
 		"annotation":      types.StringType,
 		"description":     types.StringType,
-		"channel_nummber": customTypes.DwdmIfPolFcotChannelNumberStringType{},
+		"channel_nummber": dwdmIfPolFcotChannelNumberType,
 		"name":            types.StringType,
 		"name_alias":      types.StringType,
 		"owner_key":       types.StringType,
@@ -233,7 +332,7 @@ func NewDwdmIfPolModelNull() DwdmIfPolModel {
 	return DwdmIfPolModel{
 		Annotation:        types.StringNull(),
 		Descr:             types.StringNull(),
-		FcotChannelNumber: customTypes.NewDwdmIfPolFcotChannelNumberStringNull(),
+		FcotChannelNumber: dwdmIfPolFcotChannelNumberType.Null(),
 		Name:              types.StringNull(),
 		NameAlias:         types.StringNull(),
 		OwnerKey:          types.StringNull(),
@@ -276,7 +375,7 @@ func DwdmIfPolModelFromObject(
 
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "descr", &model.Descr)
-	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "fcotChannelNumber", &model.FcotChannelNumber, customTypes.NewDwdmIfPolFcotChannelNumberStringValue)
+	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "fcotChannelNumber", &model.FcotChannelNumber, dwdmIfPolFcotChannelNumberType.Value)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "name", &model.Name)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "nameAlias", &model.NameAlias)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ownerKey", &model.OwnerKey)

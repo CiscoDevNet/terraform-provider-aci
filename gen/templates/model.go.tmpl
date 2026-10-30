@@ -26,10 +26,21 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	{{ if .Class.HasCustomModelTypes }}
-	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/customtypes"
 	{{- end }}
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+{{ range $property := .Class.ModelProperties }}
+{{- if eq $property.ValueType.String "semantic_equality" }}
+var {{ $property.SemanticStringTypeVariable $.Class.Name }} = customtypes.NewSemanticStringType(map[string]string{
+	{{- range $value, $validValue := $property.ValidValues }}
+	{{ printf "%q" $value }}: {{ printf "%q" $validValue.LocalName }},
+	{{- end }}
+})
+
+{{ end -}}
+{{ end }}
 
 {{ range $index, $variant := .Class.ParentDnVariants -}}
 	{{- if $index -}}
@@ -51,8 +62,8 @@ func {{ .Class.Name.String }}SchemaDefinition() modelHelpers.ClassSchema {
 			{{- range $property := .Class.ModelProperties }}
 			"{{ $property.AttributeName }}": {
 				Type: modelHelpers.{{ $property.ValueType.SchemaPropertyType }},
-				{{- with $customTypeName := $property.CustomTypeName $.Class.Name }}
-				CustomStringType: customTypes.{{ $customTypeName }}StringType{},
+				{{- with $customStringType := $property.ModelCustomStringType $.Class.Name }}
+				CustomStringType: {{ $customStringType }},
 				{{- end }}
 				{{- if eq $property.ValueType.String "set" }}
 				SetElementType: types.StringType,
@@ -206,7 +217,7 @@ func (m *{{ .Class.Name.Capitalized }}Model) BuildRN() string {
 	rn := {{ printf "%q" .Class.RnFormat }}
 	{{- range $identifier := .Class.IdentifiedBy }}
 		{{- $property := index $.Class.Properties $identifier }}
-	rn = strings.ReplaceAll(rn, {{ printf "%q" (printf "{%s}" $identifier) }}, m.{{ $property.ModelFieldName $.Class.Name }}.{{ if $property.UsesCustomModelType }}NamedValueString(){{ else }}ValueString(){{ end }})
+	rn = strings.ReplaceAll(rn, {{ printf "%q" (printf "{%s}" $identifier) }}, m.{{ $property.ModelFieldName $.Class.Name }}.{{ if $property.UsesCustomModelType }}CanonicalString(){{ else }}ValueString(){{ end }})
 	{{- end }}
 	return rn
 	{{- else }}
