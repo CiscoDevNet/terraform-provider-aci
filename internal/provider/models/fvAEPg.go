@@ -16,9 +16,19 @@ import (
 	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
-	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/customtypes"
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+var fvAEPgPrioType = customtypes.NewSemanticStringType(map[string]string{
+	"0": "unspecified",
+	"1": "level3",
+	"2": "level2",
+	"3": "level1",
+	"7": "level6",
+	"8": "level5",
+	"9": "level4",
+})
 
 func fvAEPgSchemaDefinition() modelHelpers.ClassSchema {
 	return modelHelpers.ClassSchema{
@@ -135,7 +145,7 @@ func fvAEPgSchemaDefinition() modelHelpers.ClassSchema {
 			},
 			"priority": {
 				Type:             modelHelpers.StringProperty,
-				CustomStringType: customTypes.FvAEPgPrioStringType{},
+				CustomStringType: fvAEPgPrioType,
 				Optional:         true,
 				Computed:         true,
 				ValidValues: []string{
@@ -284,41 +294,41 @@ func FvAEPgDataSourceSchema() datasourceschema.Schema {
 }
 
 type FvAEPgModel struct {
-	Annotation       types.String                      `tfsdk:"annotation"`
-	Descr            types.String                      `tfsdk:"description"`
-	ExceptionTag     types.String                      `tfsdk:"contract_exception_tag"`
-	FloodOnEncap     types.String                      `tfsdk:"flood_in_encapsulation"`
-	FwdCtrl          types.String                      `tfsdk:"forwarding_control"`
-	HasMcastSource   types.String                      `tfsdk:"has_multicast_source"`
-	IsAttrBasedEPg   types.String                      `tfsdk:"useg_epg"`
-	MatchT           types.String                      `tfsdk:"match_criteria"`
-	Name             types.String                      `tfsdk:"name"`
-	NameAlias        types.String                      `tfsdk:"name_alias"`
-	PcEnfPref        types.String                      `tfsdk:"intra_epg_isolation"`
-	PcTag            types.String                      `tfsdk:"pc_tag"`
-	PrefGrMemb       types.String                      `tfsdk:"preferred_group_member"`
-	Prio             customTypes.FvAEPgPrioStringValue `tfsdk:"priority"`
-	Scope            types.String                      `tfsdk:"scope"`
-	Shutdown         types.String                      `tfsdk:"admin_state"`
-	FvCrtrn          types.Object                      `tfsdk:"epg_useg_block_statement"`
-	FvRsAEPgMonPol   types.Object                      `tfsdk:"relation_to_monitoring_policy"`
-	FvRsAepAtt       types.Set                         `tfsdk:"relation_to_attachable_access_entity_profiles"`
-	FvRsBd           types.Object                      `tfsdk:"relation_to_bridge_domain"`
-	FvRsCons         types.Set                         `tfsdk:"relation_to_consumed_contracts"`
-	FvRsConsIf       types.Set                         `tfsdk:"relation_to_imported_contracts"`
-	FvRsCustQosPol   types.Object                      `tfsdk:"relation_to_custom_qos_policy"`
-	FvRsDomAtt       types.Set                         `tfsdk:"relation_to_domains"`
-	FvRsDppPol       types.Object                      `tfsdk:"relation_to_data_plane_policing_policy"`
-	FvRsFcPathAtt    types.Set                         `tfsdk:"relation_to_fibre_channel_paths"`
-	FvRsIntraEpg     types.Set                         `tfsdk:"relation_to_intra_epg_contracts"`
-	FvRsNodeAtt      types.Set                         `tfsdk:"relation_to_static_leafs"`
-	FvRsPathAtt      types.Set                         `tfsdk:"relation_to_static_paths"`
-	FvRsProtBy       types.Set                         `tfsdk:"relation_to_taboo_contracts"`
-	FvRsProv         types.Set                         `tfsdk:"relation_to_provided_contracts"`
-	FvRsSecInherited types.Set                         `tfsdk:"relation_to_contract_masters"`
-	FvRsTrustCtrl    types.Object                      `tfsdk:"relation_to_trust_control_policy"`
-	TagAnnotation    types.Set                         `tfsdk:"annotations"`
-	TagTag           types.Set                         `tfsdk:"tags"`
+	Annotation       types.String                    `tfsdk:"annotation"`
+	Descr            types.String                    `tfsdk:"description"`
+	ExceptionTag     types.String                    `tfsdk:"contract_exception_tag"`
+	FloodOnEncap     types.String                    `tfsdk:"flood_in_encapsulation"`
+	FwdCtrl          types.String                    `tfsdk:"forwarding_control"`
+	HasMcastSource   types.String                    `tfsdk:"has_multicast_source"`
+	IsAttrBasedEPg   types.String                    `tfsdk:"useg_epg"`
+	MatchT           types.String                    `tfsdk:"match_criteria"`
+	Name             types.String                    `tfsdk:"name"`
+	NameAlias        types.String                    `tfsdk:"name_alias"`
+	PcEnfPref        types.String                    `tfsdk:"intra_epg_isolation"`
+	PcTag            types.String                    `tfsdk:"pc_tag"`
+	PrefGrMemb       types.String                    `tfsdk:"preferred_group_member"`
+	Prio             customtypes.SemanticStringValue `tfsdk:"priority"`
+	Scope            types.String                    `tfsdk:"scope"`
+	Shutdown         types.String                    `tfsdk:"admin_state"`
+	FvCrtrn          types.Object                    `tfsdk:"epg_useg_block_statement"`
+	FvRsAEPgMonPol   types.Object                    `tfsdk:"relation_to_monitoring_policy"`
+	FvRsAepAtt       types.Set                       `tfsdk:"relation_to_attachable_access_entity_profiles"`
+	FvRsBd           types.Object                    `tfsdk:"relation_to_bridge_domain"`
+	FvRsCons         types.Set                       `tfsdk:"relation_to_consumed_contracts"`
+	FvRsConsIf       types.Set                       `tfsdk:"relation_to_imported_contracts"`
+	FvRsCustQosPol   types.Object                    `tfsdk:"relation_to_custom_qos_policy"`
+	FvRsDomAtt       types.Set                       `tfsdk:"relation_to_domains"`
+	FvRsDppPol       types.Object                    `tfsdk:"relation_to_data_plane_policing_policy"`
+	FvRsFcPathAtt    types.Set                       `tfsdk:"relation_to_fibre_channel_paths"`
+	FvRsIntraEpg     types.Set                       `tfsdk:"relation_to_intra_epg_contracts"`
+	FvRsNodeAtt      types.Set                       `tfsdk:"relation_to_static_leafs"`
+	FvRsPathAtt      types.Set                       `tfsdk:"relation_to_static_paths"`
+	FvRsProtBy       types.Set                       `tfsdk:"relation_to_taboo_contracts"`
+	FvRsProv         types.Set                       `tfsdk:"relation_to_provided_contracts"`
+	FvRsSecInherited types.Set                       `tfsdk:"relation_to_contract_masters"`
+	FvRsTrustCtrl    types.Object                    `tfsdk:"relation_to_trust_control_policy"`
+	TagAnnotation    types.Set                       `tfsdk:"annotations"`
+	TagTag           types.Set                       `tfsdk:"tags"`
 }
 
 func FvAEPgModelAttributeTypes() map[string]attr.Type {
@@ -336,7 +346,7 @@ func FvAEPgModelAttributeTypes() map[string]attr.Type {
 		"intra_epg_isolation":    types.StringType,
 		"pc_tag":                 types.StringType,
 		"preferred_group_member": types.StringType,
-		"priority":               customTypes.FvAEPgPrioStringType{},
+		"priority":               fvAEPgPrioType,
 		"scope":                  types.StringType,
 		"admin_state":            types.StringType,
 		"epg_useg_block_statement": types.ObjectType{
@@ -440,7 +450,7 @@ func NewFvAEPgModelNull() FvAEPgModel {
 		PcEnfPref:      types.StringNull(),
 		PcTag:          types.StringNull(),
 		PrefGrMemb:     types.StringNull(),
-		Prio:           customTypes.NewFvAEPgPrioStringNull(),
+		Prio:           fvAEPgPrioType.Null(),
 		Scope:          types.StringNull(),
 		Shutdown:       types.StringNull(),
 		FvCrtrn:        types.ObjectNull(FvCrtrnModelAttributeTypes()),
@@ -557,7 +567,7 @@ func FvAEPgModelFromObject(
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "pcEnfPref", &model.PcEnfPref)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "pcTag", &model.PcTag)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "prefGrMemb", &model.PrefGrMemb)
-	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "prio", &model.Prio, customTypes.NewFvAEPgPrioStringValue)
+	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "prio", &model.Prio, fvAEPgPrioType.Value)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "scope", &model.Scope)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "shutdown", &model.Shutdown)
 

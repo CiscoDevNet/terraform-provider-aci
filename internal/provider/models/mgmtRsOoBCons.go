@@ -16,9 +16,19 @@ import (
 	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
-	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/customtypes"
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+var mgmtRsOoBConsPrioType = customtypes.NewSemanticStringType(map[string]string{
+	"0": "unspecified",
+	"1": "level3",
+	"2": "level2",
+	"3": "level1",
+	"7": "level6",
+	"8": "level5",
+	"9": "level4",
+})
 
 func mgmtRsOoBConsSchemaDefinition() modelHelpers.ClassSchema {
 	return modelHelpers.ClassSchema{
@@ -33,7 +43,7 @@ func mgmtRsOoBConsSchemaDefinition() modelHelpers.ClassSchema {
 			},
 			"priority": {
 				Type:             modelHelpers.StringProperty,
-				CustomStringType: customTypes.MgmtRsOoBConsPrioStringType{},
+				CustomStringType: mgmtRsOoBConsPrioType,
 				Optional:         true,
 				Computed:         true,
 				ValidValues: []string{
@@ -87,17 +97,17 @@ func MgmtRsOoBConsDataSourceSchema() datasourceschema.Schema {
 }
 
 type MgmtRsOoBConsModel struct {
-	Annotation      types.String                             `tfsdk:"annotation"`
-	Prio            customTypes.MgmtRsOoBConsPrioStringValue `tfsdk:"priority"`
-	TnVzOOBBrCPName types.String                             `tfsdk:"out_of_band_contract_name"`
-	TagAnnotation   types.Set                                `tfsdk:"annotations"`
-	TagTag          types.Set                                `tfsdk:"tags"`
+	Annotation      types.String                    `tfsdk:"annotation"`
+	Prio            customtypes.SemanticStringValue `tfsdk:"priority"`
+	TnVzOOBBrCPName types.String                    `tfsdk:"out_of_band_contract_name"`
+	TagAnnotation   types.Set                       `tfsdk:"annotations"`
+	TagTag          types.Set                       `tfsdk:"tags"`
 }
 
 func MgmtRsOoBConsModelAttributeTypes() map[string]attr.Type {
 	return map[string]attr.Type{
 		"annotation":                types.StringType,
-		"priority":                  customTypes.MgmtRsOoBConsPrioStringType{},
+		"priority":                  mgmtRsOoBConsPrioType,
 		"out_of_band_contract_name": types.StringType,
 		"annotations": types.SetType{
 			ElemType: types.ObjectType{
@@ -115,7 +125,7 @@ func MgmtRsOoBConsModelAttributeTypes() map[string]attr.Type {
 func NewMgmtRsOoBConsModelNull() MgmtRsOoBConsModel {
 	return MgmtRsOoBConsModel{
 		Annotation:      types.StringNull(),
-		Prio:            customTypes.NewMgmtRsOoBConsPrioStringNull(),
+		Prio:            mgmtRsOoBConsPrioType.Null(),
 		TnVzOOBBrCPName: types.StringNull(),
 		TagAnnotation: types.SetNull(
 			types.ObjectType{
@@ -158,7 +168,7 @@ func MgmtRsOoBConsModelFromObject(
 	}
 
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
-	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "prio", &model.Prio, customTypes.NewMgmtRsOoBConsPrioStringValue)
+	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "prio", &model.Prio, mgmtRsOoBConsPrioType.Value)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "tnVzOOBBrCPName", &model.TnVzOOBBrCPName)
 
 	childObjects := modelHelpers.ChildObjectsByClass(

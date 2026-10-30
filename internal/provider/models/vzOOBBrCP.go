@@ -16,9 +16,45 @@ import (
 	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
-	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/customtypes"
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+var vzOOBBrCPPrioType = customtypes.NewSemanticStringType(map[string]string{
+	"0": "unspecified",
+	"1": "level3",
+	"2": "level2",
+	"3": "level1",
+	"7": "level6",
+	"8": "level5",
+	"9": "level4",
+})
+
+var vzOOBBrCPTargetDscpType = customtypes.NewSemanticStringType(map[string]string{
+	"0":  "CS0",
+	"10": "AF11",
+	"12": "AF12",
+	"14": "AF13",
+	"16": "CS2",
+	"18": "AF21",
+	"20": "AF22",
+	"22": "AF23",
+	"24": "CS3",
+	"26": "AF31",
+	"28": "AF32",
+	"30": "AF33",
+	"32": "CS4",
+	"34": "AF41",
+	"36": "AF42",
+	"38": "AF43",
+	"40": "CS5",
+	"44": "VA",
+	"46": "EF",
+	"48": "CS6",
+	"56": "CS7",
+	"64": "unspecified",
+	"8":  "CS1",
+})
 
 func vzOOBBrCPSchemaDefinition() modelHelpers.ClassSchema {
 	return modelHelpers.ClassSchema{
@@ -74,7 +110,7 @@ func vzOOBBrCPSchemaDefinition() modelHelpers.ClassSchema {
 			},
 			"priority": {
 				Type:             modelHelpers.StringProperty,
-				CustomStringType: customTypes.VzOOBBrCPPrioStringType{},
+				CustomStringType: vzOOBBrCPPrioType,
 				Optional:         true,
 				Computed:         true,
 				ValidValues: []string{
@@ -103,7 +139,7 @@ func vzOOBBrCPSchemaDefinition() modelHelpers.ClassSchema {
 			},
 			"target_dscp": {
 				Type:             modelHelpers.StringProperty,
-				CustomStringType: customTypes.VzOOBBrCPTargetDscpStringType{},
+				CustomStringType: vzOOBBrCPTargetDscpType,
 				Optional:         true,
 				Computed:         true,
 				ValidValues: []string{
@@ -163,18 +199,18 @@ func VzOOBBrCPDataSourceSchema() datasourceschema.Schema {
 }
 
 type VzOOBBrCPModel struct {
-	Annotation    types.String                               `tfsdk:"annotation"`
-	Descr         types.String                               `tfsdk:"description"`
-	Intent        types.String                               `tfsdk:"intent"`
-	Name          types.String                               `tfsdk:"name"`
-	NameAlias     types.String                               `tfsdk:"name_alias"`
-	OwnerKey      types.String                               `tfsdk:"owner_key"`
-	OwnerTag      types.String                               `tfsdk:"owner_tag"`
-	Prio          customTypes.VzOOBBrCPPrioStringValue       `tfsdk:"priority"`
-	Scope         types.String                               `tfsdk:"scope"`
-	TargetDscp    customTypes.VzOOBBrCPTargetDscpStringValue `tfsdk:"target_dscp"`
-	TagAnnotation types.Set                                  `tfsdk:"annotations"`
-	TagTag        types.Set                                  `tfsdk:"tags"`
+	Annotation    types.String                    `tfsdk:"annotation"`
+	Descr         types.String                    `tfsdk:"description"`
+	Intent        types.String                    `tfsdk:"intent"`
+	Name          types.String                    `tfsdk:"name"`
+	NameAlias     types.String                    `tfsdk:"name_alias"`
+	OwnerKey      types.String                    `tfsdk:"owner_key"`
+	OwnerTag      types.String                    `tfsdk:"owner_tag"`
+	Prio          customtypes.SemanticStringValue `tfsdk:"priority"`
+	Scope         types.String                    `tfsdk:"scope"`
+	TargetDscp    customtypes.SemanticStringValue `tfsdk:"target_dscp"`
+	TagAnnotation types.Set                       `tfsdk:"annotations"`
+	TagTag        types.Set                       `tfsdk:"tags"`
 }
 
 func VzOOBBrCPModelAttributeTypes() map[string]attr.Type {
@@ -186,9 +222,9 @@ func VzOOBBrCPModelAttributeTypes() map[string]attr.Type {
 		"name_alias":  types.StringType,
 		"owner_key":   types.StringType,
 		"owner_tag":   types.StringType,
-		"priority":    customTypes.VzOOBBrCPPrioStringType{},
+		"priority":    vzOOBBrCPPrioType,
 		"scope":       types.StringType,
-		"target_dscp": customTypes.VzOOBBrCPTargetDscpStringType{},
+		"target_dscp": vzOOBBrCPTargetDscpType,
 		"annotations": types.SetType{
 			ElemType: types.ObjectType{
 				AttrTypes: TagAnnotationModelAttributeTypes(),
@@ -211,9 +247,9 @@ func NewVzOOBBrCPModelNull() VzOOBBrCPModel {
 		NameAlias:  types.StringNull(),
 		OwnerKey:   types.StringNull(),
 		OwnerTag:   types.StringNull(),
-		Prio:       customTypes.NewVzOOBBrCPPrioStringNull(),
+		Prio:       vzOOBBrCPPrioType.Null(),
 		Scope:      types.StringNull(),
-		TargetDscp: customTypes.NewVzOOBBrCPTargetDscpStringNull(),
+		TargetDscp: vzOOBBrCPTargetDscpType.Null(),
 		TagAnnotation: types.SetNull(
 			types.ObjectType{
 				AttrTypes: TagAnnotationModelAttributeTypes(),
@@ -257,9 +293,9 @@ func VzOOBBrCPModelFromObject(
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "nameAlias", &model.NameAlias)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ownerKey", &model.OwnerKey)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ownerTag", &model.OwnerTag)
-	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "prio", &model.Prio, customTypes.NewVzOOBBrCPPrioStringValue)
+	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "prio", &model.Prio, vzOOBBrCPPrioType.Value)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "scope", &model.Scope)
-	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "targetDscp", &model.TargetDscp, customTypes.NewVzOOBBrCPTargetDscpStringValue)
+	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "targetDscp", &model.TargetDscp, vzOOBBrCPTargetDscpType.Value)
 
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,

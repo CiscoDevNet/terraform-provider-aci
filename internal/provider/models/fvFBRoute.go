@@ -16,7 +16,7 @@ import (
 	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
-	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/customtypes"
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
 
@@ -39,7 +39,7 @@ func fvFBRouteSchemaDefinition() modelHelpers.ClassSchema {
 			},
 			"prefix_address": {
 				Type:             modelHelpers.StringProperty,
-				CustomStringType: customTypes.IPAddressStringType{},
+				CustomStringType: customtypes.IPAddressType{},
 				Required:         true,
 				RequiresReplace:  true,
 				Description:      "The prefix address of the VRF Fallback Route object.",
@@ -89,20 +89,20 @@ func FvFBRouteDataSourceSchema() datasourceschema.Schema {
 }
 
 type FvFBRouteModel struct {
-	Annotation    types.String                     `tfsdk:"annotation"`
-	Descr         types.String                     `tfsdk:"description"`
-	FbrPrefix     customTypes.IPAddressStringValue `tfsdk:"prefix_address"`
-	Name          types.String                     `tfsdk:"name"`
-	NameAlias     types.String                     `tfsdk:"name_alias"`
-	TagAnnotation types.Set                        `tfsdk:"annotations"`
-	TagTag        types.Set                        `tfsdk:"tags"`
+	Annotation    types.String               `tfsdk:"annotation"`
+	Descr         types.String               `tfsdk:"description"`
+	FbrPrefix     customtypes.IPAddressValue `tfsdk:"prefix_address"`
+	Name          types.String               `tfsdk:"name"`
+	NameAlias     types.String               `tfsdk:"name_alias"`
+	TagAnnotation types.Set                  `tfsdk:"annotations"`
+	TagTag        types.Set                  `tfsdk:"tags"`
 }
 
 func FvFBRouteModelAttributeTypes() map[string]attr.Type {
 	return map[string]attr.Type{
 		"annotation":     types.StringType,
 		"description":    types.StringType,
-		"prefix_address": customTypes.IPAddressStringType{},
+		"prefix_address": customtypes.IPAddressType{},
 		"name":           types.StringType,
 		"name_alias":     types.StringType,
 		"annotations": types.SetType{
@@ -122,7 +122,7 @@ func NewFvFBRouteModelNull() FvFBRouteModel {
 	return FvFBRouteModel{
 		Annotation: types.StringNull(),
 		Descr:      types.StringNull(),
-		FbrPrefix:  customTypes.NewIPAddressStringNull(),
+		FbrPrefix:  customtypes.NewIPAddressNull(),
 		Name:       types.StringNull(),
 		NameAlias:  types.StringNull(),
 		TagAnnotation: types.SetNull(
@@ -140,7 +140,7 @@ func NewFvFBRouteModelNull() FvFBRouteModel {
 
 func (m *FvFBRouteModel) BuildRN() string {
 	rn := "pfx-[{fbrPrefix}]"
-	rn = strings.ReplaceAll(rn, "{fbrPrefix}", m.FbrPrefix.NamedValueString())
+	rn = strings.ReplaceAll(rn, "{fbrPrefix}", m.FbrPrefix.CanonicalString())
 	return rn
 }
 
@@ -167,7 +167,7 @@ func FvFBRouteModelFromObject(
 
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "descr", &model.Descr)
-	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "fbrPrefix", &model.FbrPrefix, customTypes.NewIPAddressStringValue)
+	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "fbrPrefix", &model.FbrPrefix, customtypes.NewIPAddressValue)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "name", &model.Name)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "nameAlias", &model.NameAlias)
 

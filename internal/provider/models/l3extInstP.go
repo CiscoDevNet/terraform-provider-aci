@@ -16,9 +16,45 @@ import (
 	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
-	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/customtypes"
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+var l3extInstPPrioType = customtypes.NewSemanticStringType(map[string]string{
+	"0": "unspecified",
+	"1": "level3",
+	"2": "level2",
+	"3": "level1",
+	"7": "level6",
+	"8": "level5",
+	"9": "level4",
+})
+
+var l3extInstPTargetDscpType = customtypes.NewSemanticStringType(map[string]string{
+	"0":  "CS0",
+	"10": "AF11",
+	"12": "AF12",
+	"14": "AF13",
+	"16": "CS2",
+	"18": "AF21",
+	"20": "AF22",
+	"22": "AF23",
+	"24": "CS3",
+	"26": "AF31",
+	"28": "AF32",
+	"30": "AF33",
+	"32": "CS4",
+	"34": "AF41",
+	"36": "AF42",
+	"38": "AF43",
+	"40": "CS5",
+	"44": "VA",
+	"46": "EF",
+	"48": "CS6",
+	"56": "CS7",
+	"64": "unspecified",
+	"8":  "CS1",
+})
 
 func l3extInstPSchemaDefinition() modelHelpers.ClassSchema {
 	return modelHelpers.ClassSchema{
@@ -108,7 +144,7 @@ func l3extInstPSchemaDefinition() modelHelpers.ClassSchema {
 			},
 			"priority": {
 				Type:             modelHelpers.StringProperty,
-				CustomStringType: customTypes.L3extInstPPrioStringType{},
+				CustomStringType: l3extInstPPrioType,
 				Optional:         true,
 				Computed:         true,
 				ValidValues: []string{
@@ -131,7 +167,7 @@ func l3extInstPSchemaDefinition() modelHelpers.ClassSchema {
 			},
 			"target_dscp": {
 				Type:             modelHelpers.StringProperty,
-				CustomStringType: customTypes.L3extInstPTargetDscpStringType{},
+				CustomStringType: l3extInstPTargetDscpType,
 				Optional:         true,
 				Computed:         true,
 				ValidValues: []string{
@@ -235,29 +271,29 @@ func L3extInstPDataSourceSchema() datasourceschema.Schema {
 }
 
 type L3extInstPModel struct {
-	Annotation            types.String                                `tfsdk:"annotation"`
-	Descr                 types.String                                `tfsdk:"description"`
-	ExceptionTag          types.String                                `tfsdk:"contract_exception_tag"`
-	FloodOnEncap          types.String                                `tfsdk:"flood_in_encapsulation"`
-	MatchT                types.String                                `tfsdk:"match_criteria"`
-	Name                  types.String                                `tfsdk:"name"`
-	NameAlias             types.String                                `tfsdk:"name_alias"`
-	PcEnfPref             types.String                                `tfsdk:"intra_epg_isolation"`
-	PcTag                 types.String                                `tfsdk:"pc_tag"`
-	PrefGrMemb            types.String                                `tfsdk:"preferred_group_member"`
-	Prio                  customTypes.L3extInstPPrioStringValue       `tfsdk:"priority"`
-	Scope                 types.String                                `tfsdk:"scope"`
-	TargetDscp            customTypes.L3extInstPTargetDscpStringValue `tfsdk:"target_dscp"`
-	FvRsCons              types.Set                                   `tfsdk:"relation_to_consumed_contracts"`
-	FvRsConsIf            types.Set                                   `tfsdk:"relation_to_imported_contracts"`
-	FvRsCustQosPol        types.Object                                `tfsdk:"relation_to_custom_qos_policy"`
-	FvRsIntraEpg          types.Set                                   `tfsdk:"relation_to_intra_epg_contracts"`
-	FvRsProtBy            types.Set                                   `tfsdk:"relation_to_taboo_contracts"`
-	FvRsProv              types.Set                                   `tfsdk:"relation_to_provided_contracts"`
-	FvRsSecInherited      types.Set                                   `tfsdk:"relation_to_contract_masters"`
-	L3extRsInstPToProfile types.Set                                   `tfsdk:"relation_to_route_control_profiles"`
-	TagAnnotation         types.Set                                   `tfsdk:"annotations"`
-	TagTag                types.Set                                   `tfsdk:"tags"`
+	Annotation            types.String                    `tfsdk:"annotation"`
+	Descr                 types.String                    `tfsdk:"description"`
+	ExceptionTag          types.String                    `tfsdk:"contract_exception_tag"`
+	FloodOnEncap          types.String                    `tfsdk:"flood_in_encapsulation"`
+	MatchT                types.String                    `tfsdk:"match_criteria"`
+	Name                  types.String                    `tfsdk:"name"`
+	NameAlias             types.String                    `tfsdk:"name_alias"`
+	PcEnfPref             types.String                    `tfsdk:"intra_epg_isolation"`
+	PcTag                 types.String                    `tfsdk:"pc_tag"`
+	PrefGrMemb            types.String                    `tfsdk:"preferred_group_member"`
+	Prio                  customtypes.SemanticStringValue `tfsdk:"priority"`
+	Scope                 types.String                    `tfsdk:"scope"`
+	TargetDscp            customtypes.SemanticStringValue `tfsdk:"target_dscp"`
+	FvRsCons              types.Set                       `tfsdk:"relation_to_consumed_contracts"`
+	FvRsConsIf            types.Set                       `tfsdk:"relation_to_imported_contracts"`
+	FvRsCustQosPol        types.Object                    `tfsdk:"relation_to_custom_qos_policy"`
+	FvRsIntraEpg          types.Set                       `tfsdk:"relation_to_intra_epg_contracts"`
+	FvRsProtBy            types.Set                       `tfsdk:"relation_to_taboo_contracts"`
+	FvRsProv              types.Set                       `tfsdk:"relation_to_provided_contracts"`
+	FvRsSecInherited      types.Set                       `tfsdk:"relation_to_contract_masters"`
+	L3extRsInstPToProfile types.Set                       `tfsdk:"relation_to_route_control_profiles"`
+	TagAnnotation         types.Set                       `tfsdk:"annotations"`
+	TagTag                types.Set                       `tfsdk:"tags"`
 }
 
 func L3extInstPModelAttributeTypes() map[string]attr.Type {
@@ -272,9 +308,9 @@ func L3extInstPModelAttributeTypes() map[string]attr.Type {
 		"intra_epg_isolation":    types.StringType,
 		"pc_tag":                 types.StringType,
 		"preferred_group_member": types.StringType,
-		"priority":               customTypes.L3extInstPPrioStringType{},
+		"priority":               l3extInstPPrioType,
 		"scope":                  types.StringType,
-		"target_dscp":            customTypes.L3extInstPTargetDscpStringType{},
+		"target_dscp":            l3extInstPTargetDscpType,
 		"relation_to_consumed_contracts": types.SetType{
 			ElemType: types.ObjectType{
 				AttrTypes: FvRsConsModelAttributeTypes(),
@@ -338,9 +374,9 @@ func NewL3extInstPModelNull() L3extInstPModel {
 		PcEnfPref:    types.StringNull(),
 		PcTag:        types.StringNull(),
 		PrefGrMemb:   types.StringNull(),
-		Prio:         customTypes.NewL3extInstPPrioStringNull(),
+		Prio:         l3extInstPPrioType.Null(),
 		Scope:        types.StringNull(),
-		TargetDscp:   customTypes.NewL3extInstPTargetDscpStringNull(),
+		TargetDscp:   l3extInstPTargetDscpType.Null(),
 		FvRsCons: types.SetNull(
 			types.ObjectType{
 				AttrTypes: FvRsConsModelAttributeTypes(),
@@ -427,9 +463,9 @@ func L3extInstPModelFromObject(
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "pcEnfPref", &model.PcEnfPref)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "pcTag", &model.PcTag)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "prefGrMemb", &model.PrefGrMemb)
-	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "prio", &model.Prio, customTypes.NewL3extInstPPrioStringValue)
+	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "prio", &model.Prio, l3extInstPPrioType.Value)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "scope", &model.Scope)
-	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "targetDscp", &model.TargetDscp, customTypes.NewL3extInstPTargetDscpStringValue)
+	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "targetDscp", &model.TargetDscp, l3extInstPTargetDscpType.Value)
 
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,

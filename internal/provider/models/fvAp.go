@@ -16,9 +16,19 @@ import (
 	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
-	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/customtypes"
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+var fvApPrioType = customtypes.NewSemanticStringType(map[string]string{
+	"0": "unspecified",
+	"1": "level3",
+	"2": "level2",
+	"3": "level1",
+	"7": "level6",
+	"8": "level5",
+	"9": "level4",
+})
 
 func fvApSchemaDefinition() modelHelpers.ClassSchema {
 	return modelHelpers.ClassSchema{
@@ -63,7 +73,7 @@ func fvApSchemaDefinition() modelHelpers.ClassSchema {
 			},
 			"priority": {
 				Type:             modelHelpers.StringProperty,
-				CustomStringType: customTypes.FvApPrioStringType{},
+				CustomStringType: fvApPrioType,
 				Optional:         true,
 				Computed:         true,
 				ValidValues: []string{
@@ -122,7 +132,7 @@ type FvApModel struct {
 	NameAlias     types.String                    `tfsdk:"name_alias"`
 	OwnerKey      types.String                    `tfsdk:"owner_key"`
 	OwnerTag      types.String                    `tfsdk:"owner_tag"`
-	Prio          customTypes.FvApPrioStringValue `tfsdk:"priority"`
+	Prio          customtypes.SemanticStringValue `tfsdk:"priority"`
 	FvRsApMonPol  types.Object                    `tfsdk:"relation_to_monitoring_policy"`
 	TagAnnotation types.Set                       `tfsdk:"annotations"`
 	TagTag        types.Set                       `tfsdk:"tags"`
@@ -136,7 +146,7 @@ func FvApModelAttributeTypes() map[string]attr.Type {
 		"name_alias":  types.StringType,
 		"owner_key":   types.StringType,
 		"owner_tag":   types.StringType,
-		"priority":    customTypes.FvApPrioStringType{},
+		"priority":    fvApPrioType,
 		"relation_to_monitoring_policy": types.ObjectType{
 			AttrTypes: FvRsApMonPolModelAttributeTypes(),
 		},
@@ -161,7 +171,7 @@ func NewFvApModelNull() FvApModel {
 		NameAlias:    types.StringNull(),
 		OwnerKey:     types.StringNull(),
 		OwnerTag:     types.StringNull(),
-		Prio:         customTypes.NewFvApPrioStringNull(),
+		Prio:         fvApPrioType.Null(),
 		FvRsApMonPol: types.ObjectNull(FvRsApMonPolModelAttributeTypes()),
 		TagAnnotation: types.SetNull(
 			types.ObjectType{
@@ -209,7 +219,7 @@ func FvApModelFromObject(
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "nameAlias", &model.NameAlias)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ownerKey", &model.OwnerKey)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ownerTag", &model.OwnerTag)
-	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "prio", &model.Prio, customTypes.NewFvApPrioStringValue)
+	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "prio", &model.Prio, fvApPrioType.Value)
 
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,
