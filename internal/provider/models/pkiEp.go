@@ -6,8 +6,6 @@ package models
 
 import (
 	"context"
-	"fmt"
-	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
@@ -138,14 +136,6 @@ func NewPkiEpModelNull() PkiEpModel {
 
 func (m *PkiEpModel) BuildRN() string {
 	return "pkiext"
-}
-
-func (m *PkiEpModel) BuildDN(parentDN string) string {
-	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
-}
-
-func (m *PkiEpModel) ParentDNFromDN(dn string) string {
-	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
 }
 
 func PkiEpModelFromObject(

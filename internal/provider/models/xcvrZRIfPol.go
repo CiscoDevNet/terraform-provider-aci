@@ -290,10 +290,6 @@ func (m *XcvrZRIfPolModel) BuildRN() string {
 	return rn
 }
 
-func (m *XcvrZRIfPolModel) BuildDN() string {
-	return fmt.Sprintf("uni/%s", m.BuildRN())
-}
-
 func XcvrZRIfPolModelFromObject(
 	ctx context.Context,
 	object *container.Container,
@@ -472,6 +468,10 @@ func NewXcvrZRIfPolRootModelNull() XcvrZRIfPolRootModel {
 		XcvrZRIfPolModel: NewXcvrZRIfPolModelNull(),
 		ID:               types.StringNull(),
 	}
+}
+
+func (m *XcvrZRIfPolRootModel) BuildDN() string {
+	return fmt.Sprintf("uni/%s", m.BuildRN())
 }
 
 func (m *XcvrZRIfPolRootModel) SetIDFromDN(dn string) {

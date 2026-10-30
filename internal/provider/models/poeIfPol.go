@@ -233,10 +233,6 @@ func (m *PoeIfPolModel) BuildRN() string {
 	return rn
 }
 
-func (m *PoeIfPolModel) BuildDN() string {
-	return fmt.Sprintf("uni/%s", m.BuildRN())
-}
-
 func PoeIfPolModelFromObject(
 	ctx context.Context,
 	object *container.Container,
@@ -439,6 +435,10 @@ func NewPoeIfPolRootModelNull() PoeIfPolRootModel {
 		PoeIfPolModel: NewPoeIfPolModelNull(),
 		ID:            types.StringNull(),
 	}
+}
+
+func (m *PoeIfPolRootModel) BuildDN() string {
+	return fmt.Sprintf("uni/%s", m.BuildRN())
 }
 
 func (m *PoeIfPolRootModel) SetIDFromDN(dn string) {

@@ -119,14 +119,6 @@ func (m *FvRsIntraEpgModel) BuildRN() string {
 	return rn
 }
 
-func (m *FvRsIntraEpgModel) BuildDN(parentDN string) string {
-	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
-}
-
-func (m *FvRsIntraEpgModel) ParentDNFromDN(dn string) string {
-	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
-}
-
 func FvRsIntraEpgModelFromObject(
 	ctx context.Context,
 	object *container.Container,
@@ -275,6 +267,14 @@ func NewFvRsIntraEpgRootModelNull() FvRsIntraEpgRootModel {
 	}
 }
 
+func (m *FvRsIntraEpgRootModel) BuildDN() string {
+	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
+}
+
+func (m *FvRsIntraEpgRootModel) ParentDNFromDN(dn string) string {
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
+}
+
 func (m *FvRsIntraEpgRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
@@ -292,7 +292,7 @@ func (m *FvRsIntraEpgRootModel) SetFromResponse(
 
 	m.FvRsIntraEpgModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(m.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 

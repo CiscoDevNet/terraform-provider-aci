@@ -164,10 +164,6 @@ func (m *QosNodropDscpMatchIfPolModel) BuildRN() string {
 	return rn
 }
 
-func (m *QosNodropDscpMatchIfPolModel) BuildDN() string {
-	return fmt.Sprintf("uni/%s", m.BuildRN())
-}
-
 func QosNodropDscpMatchIfPolModelFromObject(
 	ctx context.Context,
 	object *container.Container,
@@ -322,6 +318,10 @@ func NewQosNodropDscpMatchIfPolRootModelNull() QosNodropDscpMatchIfPolRootModel 
 		QosNodropDscpMatchIfPolModel: NewQosNodropDscpMatchIfPolModelNull(),
 		ID:                           types.StringNull(),
 	}
+}
+
+func (m *QosNodropDscpMatchIfPolRootModel) BuildDN() string {
+	return fmt.Sprintf("uni/%s", m.BuildRN())
 }
 
 func (m *QosNodropDscpMatchIfPolRootModel) SetIDFromDN(dn string) {

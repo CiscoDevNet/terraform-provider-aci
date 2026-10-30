@@ -151,10 +151,6 @@ func (m *InfraFexPModel) BuildRN() string {
 	return rn
 }
 
-func (m *InfraFexPModel) BuildDN() string {
-	return fmt.Sprintf("uni/%s", m.BuildRN())
-}
-
 func InfraFexPModelFromObject(
 	ctx context.Context,
 	object *container.Container,
@@ -307,6 +303,10 @@ func NewInfraFexPRootModelNull() InfraFexPRootModel {
 		InfraFexPModel: NewInfraFexPModelNull(),
 		ID:             types.StringNull(),
 	}
+}
+
+func (m *InfraFexPRootModel) BuildDN() string {
+	return fmt.Sprintf("uni/%s", m.BuildRN())
 }
 
 func (m *InfraFexPRootModel) SetIDFromDN(dn string) {

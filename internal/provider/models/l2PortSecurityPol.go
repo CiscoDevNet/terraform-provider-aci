@@ -181,10 +181,6 @@ func (m *L2PortSecurityPolModel) BuildRN() string {
 	return rn
 }
 
-func (m *L2PortSecurityPolModel) BuildDN() string {
-	return fmt.Sprintf("uni/%s", m.BuildRN())
-}
-
 func L2PortSecurityPolModelFromObject(
 	ctx context.Context,
 	object *container.Container,
@@ -343,6 +339,10 @@ func NewL2PortSecurityPolRootModelNull() L2PortSecurityPolRootModel {
 		L2PortSecurityPolModel: NewL2PortSecurityPolModelNull(),
 		ID:                     types.StringNull(),
 	}
+}
+
+func (m *L2PortSecurityPolRootModel) BuildDN() string {
+	return fmt.Sprintf("uni/%s", m.BuildRN())
 }
 
 func (m *L2PortSecurityPolRootModel) SetIDFromDN(dn string) {

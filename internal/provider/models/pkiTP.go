@@ -184,30 +184,6 @@ func (m *PkiTPModel) BuildRN() string {
 	return rn
 }
 
-func (m *PkiTPModel) BuildDN(parentDN string) string {
-	rn := m.BuildRN()
-	for _, pattern := range pkiTPParentDNVariant1Patterns {
-		if pattern.MatchString(parentDN) {
-			return fmt.Sprintf("%s/certstore/%s", parentDN, rn)
-		}
-	}
-
-	return fmt.Sprintf("%s/%s", parentDN, rn)
-}
-
-func (m *PkiTPModel) ParentDNFromDN(dn string) string {
-	rn := m.BuildRN()
-	if parentDN, found := strings.CutSuffix(dn, fmt.Sprintf("/certstore/%s", rn)); found {
-		for _, pattern := range pkiTPParentDNVariant1Patterns {
-			if pattern.MatchString(parentDN) {
-				return parentDN
-			}
-		}
-	}
-
-	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", rn))
-}
-
 func PkiTPModelFromObject(
 	ctx context.Context,
 	object *container.Container,
@@ -371,6 +347,34 @@ func NewPkiTPRootModelNull() PkiTPRootModel {
 	}
 }
 
+func (m *PkiTPRootModel) BuildDN() string {
+	parentDN := m.ParentDN.ValueString()
+	if m.ParentDN.IsNull() || m.ParentDN.IsUnknown() {
+		parentDN = "uni/userext/pkiext"
+	}
+	rn := m.BuildRN()
+	for _, pattern := range pkiTPParentDNVariant1Patterns {
+		if pattern.MatchString(parentDN) {
+			return fmt.Sprintf("%s/certstore/%s", parentDN, rn)
+		}
+	}
+
+	return fmt.Sprintf("%s/%s", parentDN, rn)
+}
+
+func (m *PkiTPRootModel) ParentDNFromDN(dn string) string {
+	rn := m.BuildRN()
+	if parentDN, found := strings.CutSuffix(dn, fmt.Sprintf("/certstore/%s", rn)); found {
+		for _, pattern := range pkiTPParentDNVariant1Patterns {
+			if pattern.MatchString(parentDN) {
+				return parentDN
+			}
+		}
+	}
+
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", rn))
+}
+
 func (m *PkiTPRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
@@ -388,7 +392,7 @@ func (m *PkiTPRootModel) SetFromResponse(
 
 	m.PkiTPModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(m.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 

@@ -6,8 +6,6 @@ package models
 
 import (
 	"context"
-	"fmt"
-	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
@@ -102,14 +100,6 @@ func NewVmmRsPrefEnhancedLagPolModelNull() VmmRsPrefEnhancedLagPolModel {
 
 func (m *VmmRsPrefEnhancedLagPolModel) BuildRN() string {
 	return "rsprefEnhancedLagPol"
-}
-
-func (m *VmmRsPrefEnhancedLagPolModel) BuildDN(parentDN string) string {
-	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
-}
-
-func (m *VmmRsPrefEnhancedLagPolModel) ParentDNFromDN(dn string) string {
-	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
 }
 
 func VmmRsPrefEnhancedLagPolModelFromObject(

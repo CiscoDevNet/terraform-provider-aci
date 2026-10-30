@@ -163,14 +163,6 @@ func (m *FvMacAttrModel) BuildRN() string {
 	return rn
 }
 
-func (m *FvMacAttrModel) BuildDN(parentDN string) string {
-	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
-}
-
-func (m *FvMacAttrModel) ParentDNFromDN(dn string) string {
-	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
-}
-
 func FvMacAttrModelFromObject(
 	ctx context.Context,
 	object *container.Container,
@@ -329,6 +321,14 @@ func NewFvMacAttrRootModelNull() FvMacAttrRootModel {
 	}
 }
 
+func (m *FvMacAttrRootModel) BuildDN() string {
+	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
+}
+
+func (m *FvMacAttrRootModel) ParentDNFromDN(dn string) string {
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
+}
+
 func (m *FvMacAttrRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
@@ -346,7 +346,7 @@ func (m *FvMacAttrRootModel) SetFromResponse(
 
 	m.FvMacAttrModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(m.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 

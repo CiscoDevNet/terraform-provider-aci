@@ -351,14 +351,6 @@ func (m *L3extConsLblModel) BuildRN() string {
 	return rn
 }
 
-func (m *L3extConsLblModel) BuildDN(parentDN string) string {
-	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
-}
-
-func (m *L3extConsLblModel) ParentDNFromDN(dn string) string {
-	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
-}
-
 func L3extConsLblModelFromObject(
 	ctx context.Context,
 	object *container.Container,
@@ -581,6 +573,14 @@ func NewL3extConsLblRootModelNull() L3extConsLblRootModel {
 	}
 }
 
+func (m *L3extConsLblRootModel) BuildDN() string {
+	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
+}
+
+func (m *L3extConsLblRootModel) ParentDNFromDN(dn string) string {
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
+}
+
 func (m *L3extConsLblRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
@@ -598,7 +598,7 @@ func (m *L3extConsLblRootModel) SetFromResponse(
 
 	m.L3extConsLblModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(m.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 

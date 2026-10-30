@@ -133,14 +133,6 @@ func (m *VzRsDenyRuleModel) BuildRN() string {
 	return rn
 }
 
-func (m *VzRsDenyRuleModel) BuildDN(parentDN string) string {
-	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
-}
-
-func (m *VzRsDenyRuleModel) ParentDNFromDN(dn string) string {
-	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
-}
-
 func VzRsDenyRuleModelFromObject(
 	ctx context.Context,
 	object *container.Container,
@@ -294,6 +286,14 @@ func NewVzRsDenyRuleRootModelNull() VzRsDenyRuleRootModel {
 	}
 }
 
+func (m *VzRsDenyRuleRootModel) BuildDN() string {
+	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
+}
+
+func (m *VzRsDenyRuleRootModel) ParentDNFromDN(dn string) string {
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
+}
+
 func (m *VzRsDenyRuleRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
@@ -311,7 +311,7 @@ func (m *VzRsDenyRuleRootModel) SetFromResponse(
 
 	m.VzRsDenyRuleModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(m.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 

@@ -153,14 +153,6 @@ func (m *FvRsAepAttModel) BuildRN() string {
 	return rn
 }
 
-func (m *FvRsAepAttModel) BuildDN(parentDN string) string {
-	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
-}
-
-func (m *FvRsAepAttModel) ParentDNFromDN(dn string) string {
-	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
-}
-
 func FvRsAepAttModelFromObject(
 	ctx context.Context,
 	object *container.Container,
@@ -313,6 +305,14 @@ func NewFvRsAepAttRootModelNull() FvRsAepAttRootModel {
 	}
 }
 
+func (m *FvRsAepAttRootModel) BuildDN() string {
+	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
+}
+
+func (m *FvRsAepAttRootModel) ParentDNFromDN(dn string) string {
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
+}
+
 func (m *FvRsAepAttRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
@@ -330,7 +330,7 @@ func (m *FvRsAepAttRootModel) SetFromResponse(
 
 	m.FvRsAepAttModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(m.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 

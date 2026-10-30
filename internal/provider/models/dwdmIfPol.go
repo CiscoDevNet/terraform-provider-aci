@@ -360,10 +360,6 @@ func (m *DwdmIfPolModel) BuildRN() string {
 	return rn
 }
 
-func (m *DwdmIfPolModel) BuildDN() string {
-	return fmt.Sprintf("uni/%s", m.BuildRN())
-}
-
 func DwdmIfPolModelFromObject(
 	ctx context.Context,
 	object *container.Container,
@@ -518,6 +514,10 @@ func NewDwdmIfPolRootModelNull() DwdmIfPolRootModel {
 		DwdmIfPolModel: NewDwdmIfPolModelNull(),
 		ID:             types.StringNull(),
 	}
+}
+
+func (m *DwdmIfPolRootModel) BuildDN() string {
+	return fmt.Sprintf("uni/%s", m.BuildRN())
 }
 
 func (m *DwdmIfPolRootModel) SetIDFromDN(dn string) {

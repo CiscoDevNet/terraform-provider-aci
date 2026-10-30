@@ -244,14 +244,6 @@ func (m *IgmpSnoopPolModel) BuildRN() string {
 	return rn
 }
 
-func (m *IgmpSnoopPolModel) BuildDN(parentDN string) string {
-	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
-}
-
-func (m *IgmpSnoopPolModel) ParentDNFromDN(dn string) string {
-	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
-}
-
 func IgmpSnoopPolModelFromObject(
 	ctx context.Context,
 	object *container.Container,
@@ -427,6 +419,14 @@ func NewIgmpSnoopPolRootModelNull() IgmpSnoopPolRootModel {
 	}
 }
 
+func (m *IgmpSnoopPolRootModel) BuildDN() string {
+	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
+}
+
+func (m *IgmpSnoopPolRootModel) ParentDNFromDN(dn string) string {
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
+}
+
 func (m *IgmpSnoopPolRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
@@ -444,7 +444,7 @@ func (m *IgmpSnoopPolRootModel) SetFromResponse(
 
 	m.IgmpSnoopPolModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(m.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 

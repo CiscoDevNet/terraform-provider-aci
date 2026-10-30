@@ -167,10 +167,6 @@ func (m *CoppIfPolModel) BuildRN() string {
 	return rn
 }
 
-func (m *CoppIfPolModel) BuildDN() string {
-	return fmt.Sprintf("uni/%s", m.BuildRN())
-}
-
 func CoppIfPolModelFromObject(
 	ctx context.Context,
 	object *container.Container,
@@ -354,6 +350,10 @@ func NewCoppIfPolRootModelNull() CoppIfPolRootModel {
 		CoppIfPolModel: NewCoppIfPolModelNull(),
 		ID:             types.StringNull(),
 	}
+}
+
+func (m *CoppIfPolRootModel) BuildDN() string {
+	return fmt.Sprintf("uni/%s", m.BuildRN())
 }
 
 func (m *CoppIfPolRootModel) SetIDFromDN(dn string) {

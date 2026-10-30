@@ -6,8 +6,6 @@ package models
 
 import (
 	"context"
-	"fmt"
-	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
@@ -102,14 +100,6 @@ func NewPoeRsPoeEpgModelNull() PoeRsPoeEpgModel {
 
 func (m *PoeRsPoeEpgModel) BuildRN() string {
 	return "rspoeEpg"
-}
-
-func (m *PoeRsPoeEpgModel) BuildDN(parentDN string) string {
-	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
-}
-
-func (m *PoeRsPoeEpgModel) ParentDNFromDN(dn string) string {
-	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
 }
 
 func PoeRsPoeEpgModelFromObject(
