@@ -17,6 +17,10 @@ import (
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
 
+func init() {
+	registerClassVersion("fvRsBDToFhs", "3.0(1k)-")
+}
+
 func fvRsBDToFhsSchemaDefinition() modelHelpers.ClassSchema {
 	return modelHelpers.ClassSchema{
 		ResourceDescription:   "Manages ACI Relation From Bridge Domain To First Hop Security Policy",

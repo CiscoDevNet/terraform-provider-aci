@@ -19,6 +19,10 @@ import (
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
 
+func init() {
+	registerClassVersion("fvRsCtxToOspfCtxPol", "1.1(1j)-")
+}
+
 func fvRsCtxToOspfCtxPolSchemaDefinition() modelHelpers.ClassSchema {
 	return modelHelpers.ClassSchema{
 		ResourceDescription:   "Manages ACI Relation From VRF To Address Family OSPF Timers",
