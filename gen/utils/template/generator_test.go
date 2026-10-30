@@ -22,7 +22,7 @@ import (
 
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils/data"
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils/test"
-	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/customtypes"
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models"
 )
 
@@ -1250,10 +1250,12 @@ func TestModelTemplateSchemaShape(t *testing.T) {
 		`Type:           modelHelpers.SetProperty`,
 		`SetElementType: types.StringType`,
 		`ValidValues: []string{`,
-		`customTypes.FvTenantPrioStringType{}`,
+		`var fvTenantPrioType = customtypes.NewSemanticStringType(map[string]string{`,
+		`"1": "level1"`,
+		`CustomStringType: fvTenantPrioType`,
 		`StringRange:`,
 		`&modelHelpers.StringRange{Min: 0, Max: 9}`,
-		`customTypes.IPAddressStringType{}`,
+		`customtypes.IPAddressType{}`,
 		`"settings": {`,
 		`Type:                 modelHelpers.ObjectProperty`,
 		`ObjectAttributeTypes: map[string]attr.Type{}`,
@@ -1470,7 +1472,7 @@ func TestGeneratedModelBuildRN(t *testing.T) {
 			Input: func() string {
 				model := models.FvEpIpTagModel{
 					CtxName: types.StringValue("vrf"),
-					Ip:      customTypes.NewIPAddressStringValue("2001:0db8::1"),
+					Ip:      customtypes.NewIPAddressValue("2001:0db8::1"),
 				}
 				return model.BuildRN()
 			},
@@ -2259,7 +2261,7 @@ func TestGeneratedModelFromObjectDecodesPropertyTypes(t *testing.T) {
 	if actual := semanticModel.Prio.ValueString(); actual != "3" {
 		t.Fatalf("semantic property raw value %q, expected 3", actual)
 	}
-	if actual := semanticModel.Prio.NamedValueString(); actual != "level1" {
+	if actual := semanticModel.Prio.CanonicalString(); actual != "level1" {
 		t.Fatalf("semantic property named value %q, expected level1", actual)
 	}
 
@@ -2271,7 +2273,7 @@ func TestGeneratedModelFromObjectDecodesPropertyTypes(t *testing.T) {
 	if diagnostics.HasError() {
 		t.Fatalf("decode IP property: %v", diagnostics)
 	}
-	if actual := ipModel.Ip.NamedValueString(); actual != "2001:db8::1" {
+	if actual := ipModel.Ip.CanonicalString(); actual != "2001:db8::1" {
 		t.Fatalf("normalized IP %q, expected %q", actual, "2001:db8::1")
 	}
 }
@@ -2346,7 +2348,7 @@ func TestGeneratedModelParentDNFromDN(t *testing.T) {
 			Input: func() string {
 				model := models.FvEpIpTagModel{
 					CtxName: types.StringValue("vrf"),
-					Ip:      customTypes.NewIPAddressStringValue("2001:db8::1"),
+					Ip:      customtypes.NewIPAddressValue("2001:db8::1"),
 				}
 				return model.ParentDNFromDN("uni/tn-tenant/eptags/epiptag-[2001:db8::1]-vrf")
 			},

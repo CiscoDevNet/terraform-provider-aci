@@ -16,9 +16,19 @@ import (
 	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
-	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/customtypes"
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+var mgmtInstPPrioType = customtypes.NewSemanticStringType(map[string]string{
+	"0": "unspecified",
+	"1": "level3",
+	"2": "level2",
+	"3": "level1",
+	"7": "level6",
+	"8": "level5",
+	"9": "level4",
+})
 
 func mgmtInstPSchemaDefinition() modelHelpers.ClassSchema {
 	return modelHelpers.ClassSchema{
@@ -51,7 +61,7 @@ func mgmtInstPSchemaDefinition() modelHelpers.ClassSchema {
 			},
 			"priority": {
 				Type:             modelHelpers.StringProperty,
-				CustomStringType: customTypes.MgmtInstPPrioStringType{},
+				CustomStringType: mgmtInstPPrioType,
 				Optional:         true,
 				Computed:         true,
 				ValidValues: []string{
@@ -100,14 +110,14 @@ func MgmtInstPDataSourceSchema() datasourceschema.Schema {
 }
 
 type MgmtInstPModel struct {
-	Annotation    types.String                         `tfsdk:"annotation"`
-	Descr         types.String                         `tfsdk:"description"`
-	Name          types.String                         `tfsdk:"name"`
-	NameAlias     types.String                         `tfsdk:"name_alias"`
-	Prio          customTypes.MgmtInstPPrioStringValue `tfsdk:"priority"`
-	MgmtRsOoBCons types.Set                            `tfsdk:"relation_to_consumed_out_of_band_contracts"`
-	TagAnnotation types.Set                            `tfsdk:"annotations"`
-	TagTag        types.Set                            `tfsdk:"tags"`
+	Annotation    types.String                    `tfsdk:"annotation"`
+	Descr         types.String                    `tfsdk:"description"`
+	Name          types.String                    `tfsdk:"name"`
+	NameAlias     types.String                    `tfsdk:"name_alias"`
+	Prio          customtypes.SemanticStringValue `tfsdk:"priority"`
+	MgmtRsOoBCons types.Set                       `tfsdk:"relation_to_consumed_out_of_band_contracts"`
+	TagAnnotation types.Set                       `tfsdk:"annotations"`
+	TagTag        types.Set                       `tfsdk:"tags"`
 }
 
 func MgmtInstPModelAttributeTypes() map[string]attr.Type {
@@ -116,7 +126,7 @@ func MgmtInstPModelAttributeTypes() map[string]attr.Type {
 		"description": types.StringType,
 		"name":        types.StringType,
 		"name_alias":  types.StringType,
-		"priority":    customTypes.MgmtInstPPrioStringType{},
+		"priority":    mgmtInstPPrioType,
 		"relation_to_consumed_out_of_band_contracts": types.SetType{
 			ElemType: types.ObjectType{
 				AttrTypes: MgmtRsOoBConsModelAttributeTypes(),
@@ -141,7 +151,7 @@ func NewMgmtInstPModelNull() MgmtInstPModel {
 		Descr:      types.StringNull(),
 		Name:       types.StringNull(),
 		NameAlias:  types.StringNull(),
-		Prio:       customTypes.NewMgmtInstPPrioStringNull(),
+		Prio:       mgmtInstPPrioType.Null(),
 		MgmtRsOoBCons: types.SetNull(
 			types.ObjectType{
 				AttrTypes: MgmtRsOoBConsModelAttributeTypes(),
@@ -187,7 +197,7 @@ func MgmtInstPModelFromObject(
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "descr", &model.Descr)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "name", &model.Name)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "nameAlias", &model.NameAlias)
-	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "prio", &model.Prio, customTypes.NewMgmtInstPPrioStringValue)
+	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "prio", &model.Prio, mgmtInstPPrioType.Value)
 
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,

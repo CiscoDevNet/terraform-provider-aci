@@ -8,7 +8,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils/test"
-	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/customtypes"
 )
 
 type singletonReconciliationInput struct {
@@ -304,16 +304,18 @@ func TestReconciliationSchemaMatchesAllIdentifiers(t *testing.T) {
 }
 
 func TestReconciliationSchemaMatchesSemanticIdentifiers(t *testing.T) {
+	fromType := customtypes.NewSemanticStringType(map[string]string{"10": "AF11"})
+	toType := customtypes.NewSemanticStringType(map[string]string{"20": "AF22"})
 	attributeTypes := map[string]attr.Type{
-		"from":  customTypes.QosDscpClassFromStringType{},
-		"to":    customTypes.QosDscpClassToStringType{},
+		"from":  fromType,
+		"to":    toType,
 		"value": types.StringType,
 	}
 	objectType := types.ObjectType{AttrTypes: attributeTypes}
 	objectValue := func(from, to string, value types.String) types.Object {
 		return types.ObjectValueMust(attributeTypes, map[string]attr.Value{
-			"from":  customTypes.NewQosDscpClassFromStringValue(from),
-			"to":    customTypes.NewQosDscpClassToStringValue(to),
+			"from":  fromType.Value(from),
+			"to":    toType.Value(to),
 			"value": value,
 		})
 	}
@@ -338,16 +340,18 @@ func TestReconciliationSchemaMatchesSemanticIdentifiers(t *testing.T) {
 }
 
 func TestReconciliationSchemaConsumesSemanticMatchOnce(t *testing.T) {
+	fromType := customtypes.NewSemanticStringType(map[string]string{"10": "AF11"})
+	toType := customtypes.NewSemanticStringType(map[string]string{"20": "AF22"})
 	attributeTypes := map[string]attr.Type{
-		"from":  customTypes.QosDscpClassFromStringType{},
-		"to":    customTypes.QosDscpClassToStringType{},
+		"from":  fromType,
+		"to":    toType,
 		"value": types.StringType,
 	}
 	objectType := types.ObjectType{AttrTypes: attributeTypes}
 	objectValue := func(from string, value types.String) types.Object {
 		return types.ObjectValueMust(attributeTypes, map[string]attr.Value{
-			"from":  customTypes.NewQosDscpClassFromStringValue(from),
-			"to":    customTypes.NewQosDscpClassToStringValue("20"),
+			"from":  fromType.Value(from),
+			"to":    toType.Value("20"),
 			"value": value,
 		})
 	}

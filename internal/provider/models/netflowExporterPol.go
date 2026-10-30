@@ -16,9 +16,46 @@ import (
 	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
-	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/customtypes"
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+var netflowExporterPolDscpType = customtypes.NewSemanticStringType(map[string]string{
+	"0":  "CS0",
+	"10": "AF11",
+	"12": "AF12",
+	"14": "AF13",
+	"16": "CS2",
+	"18": "AF21",
+	"20": "AF22",
+	"22": "AF23",
+	"24": "CS3",
+	"26": "AF31",
+	"28": "AF32",
+	"30": "AF33",
+	"32": "CS4",
+	"34": "AF41",
+	"36": "AF42",
+	"38": "AF43",
+	"40": "CS5",
+	"44": "VA",
+	"46": "EF",
+	"48": "CS6",
+	"56": "CS7",
+	"8":  "CS1",
+})
+
+var netflowExporterPolDstPortType = customtypes.NewSemanticStringType(map[string]string{
+	"0":   "unspecified",
+	"110": "pop3",
+	"20":  "ftpData",
+	"22":  "ssh",
+	"25":  "smtp",
+	"443": "https",
+	"53":  "dns",
+	"554": "rtsp",
+	"80":  "http",
+})
 
 func netflowExporterPolSchemaDefinition() modelHelpers.ClassSchema {
 	return modelHelpers.ClassSchema{
@@ -39,7 +76,7 @@ func netflowExporterPolSchemaDefinition() modelHelpers.ClassSchema {
 			},
 			"qos_dscp_value": {
 				Type:             modelHelpers.StringProperty,
-				CustomStringType: customTypes.NetflowExporterPolDscpStringType{},
+				CustomStringType: netflowExporterPolDscpType,
 				Optional:         true,
 				Computed:         true,
 				ValidValues: []string{
@@ -71,13 +108,13 @@ func netflowExporterPolSchemaDefinition() modelHelpers.ClassSchema {
 			},
 			"destination_ip_address": {
 				Type:             modelHelpers.StringProperty,
-				CustomStringType: customTypes.IPAddressStringType{},
+				CustomStringType: customtypes.IPAddressType{},
 				Required:         true,
 				Description:      "The destination IP address of the remote node.",
 			},
 			"destination_port": {
 				Type:             modelHelpers.StringProperty,
-				CustomStringType: customTypes.NetflowExporterPolDstPortStringType{},
+				CustomStringType: netflowExporterPolDstPortType,
 				Required:         true,
 				ValidValues: []string{
 					"dns",
@@ -131,7 +168,7 @@ func netflowExporterPolSchemaDefinition() modelHelpers.ClassSchema {
 			},
 			"source_ip_address": {
 				Type:             modelHelpers.StringProperty,
-				CustomStringType: customTypes.IPAddressStringType{},
+				CustomStringType: customtypes.IPAddressType{},
 				Optional:         true,
 				Computed:         true,
 				Description:      "The source IP address.",
@@ -192,37 +229,37 @@ func NetflowExporterPolDataSourceSchema() datasourceschema.Schema {
 }
 
 type NetflowExporterPolModel struct {
-	Annotation             types.String                                     `tfsdk:"annotation"`
-	Descr                  types.String                                     `tfsdk:"description"`
-	Dscp                   customTypes.NetflowExporterPolDscpStringValue    `tfsdk:"qos_dscp_value"`
-	DstAddr                customTypes.IPAddressStringValue                 `tfsdk:"destination_ip_address"`
-	DstPort                customTypes.NetflowExporterPolDstPortStringValue `tfsdk:"destination_port"`
-	Name                   types.String                                     `tfsdk:"name"`
-	NameAlias              types.String                                     `tfsdk:"name_alias"`
-	OwnerKey               types.String                                     `tfsdk:"owner_key"`
-	OwnerTag               types.String                                     `tfsdk:"owner_tag"`
-	SourceIpType           types.String                                     `tfsdk:"source_ip_type"`
-	SrcAddr                customTypes.IPAddressStringValue                 `tfsdk:"source_ip_address"`
-	Ver                    types.String                                     `tfsdk:"version"`
-	NetflowRsExporterToCtx types.Object                                     `tfsdk:"relation_to_vrf"`
-	NetflowRsExporterToEPg types.Object                                     `tfsdk:"relation_to_epg"`
-	TagAnnotation          types.Set                                        `tfsdk:"annotations"`
-	TagTag                 types.Set                                        `tfsdk:"tags"`
+	Annotation             types.String                    `tfsdk:"annotation"`
+	Descr                  types.String                    `tfsdk:"description"`
+	Dscp                   customtypes.SemanticStringValue `tfsdk:"qos_dscp_value"`
+	DstAddr                customtypes.IPAddressValue      `tfsdk:"destination_ip_address"`
+	DstPort                customtypes.SemanticStringValue `tfsdk:"destination_port"`
+	Name                   types.String                    `tfsdk:"name"`
+	NameAlias              types.String                    `tfsdk:"name_alias"`
+	OwnerKey               types.String                    `tfsdk:"owner_key"`
+	OwnerTag               types.String                    `tfsdk:"owner_tag"`
+	SourceIpType           types.String                    `tfsdk:"source_ip_type"`
+	SrcAddr                customtypes.IPAddressValue      `tfsdk:"source_ip_address"`
+	Ver                    types.String                    `tfsdk:"version"`
+	NetflowRsExporterToCtx types.Object                    `tfsdk:"relation_to_vrf"`
+	NetflowRsExporterToEPg types.Object                    `tfsdk:"relation_to_epg"`
+	TagAnnotation          types.Set                       `tfsdk:"annotations"`
+	TagTag                 types.Set                       `tfsdk:"tags"`
 }
 
 func NetflowExporterPolModelAttributeTypes() map[string]attr.Type {
 	return map[string]attr.Type{
 		"annotation":             types.StringType,
 		"description":            types.StringType,
-		"qos_dscp_value":         customTypes.NetflowExporterPolDscpStringType{},
-		"destination_ip_address": customTypes.IPAddressStringType{},
-		"destination_port":       customTypes.NetflowExporterPolDstPortStringType{},
+		"qos_dscp_value":         netflowExporterPolDscpType,
+		"destination_ip_address": customtypes.IPAddressType{},
+		"destination_port":       netflowExporterPolDstPortType,
 		"name":                   types.StringType,
 		"name_alias":             types.StringType,
 		"owner_key":              types.StringType,
 		"owner_tag":              types.StringType,
 		"source_ip_type":         types.StringType,
-		"source_ip_address":      customTypes.IPAddressStringType{},
+		"source_ip_address":      customtypes.IPAddressType{},
 		"version":                types.StringType,
 		"relation_to_vrf": types.ObjectType{
 			AttrTypes: NetflowRsExporterToCtxModelAttributeTypes(),
@@ -247,15 +284,15 @@ func NewNetflowExporterPolModelNull() NetflowExporterPolModel {
 	return NetflowExporterPolModel{
 		Annotation:             types.StringNull(),
 		Descr:                  types.StringNull(),
-		Dscp:                   customTypes.NewNetflowExporterPolDscpStringNull(),
-		DstAddr:                customTypes.NewIPAddressStringNull(),
-		DstPort:                customTypes.NewNetflowExporterPolDstPortStringNull(),
+		Dscp:                   netflowExporterPolDscpType.Null(),
+		DstAddr:                customtypes.NewIPAddressNull(),
+		DstPort:                netflowExporterPolDstPortType.Null(),
 		Name:                   types.StringNull(),
 		NameAlias:              types.StringNull(),
 		OwnerKey:               types.StringNull(),
 		OwnerTag:               types.StringNull(),
 		SourceIpType:           types.StringNull(),
-		SrcAddr:                customTypes.NewIPAddressStringNull(),
+		SrcAddr:                customtypes.NewIPAddressNull(),
 		Ver:                    types.StringNull(),
 		NetflowRsExporterToCtx: types.ObjectNull(NetflowRsExporterToCtxModelAttributeTypes()),
 		NetflowRsExporterToEPg: types.ObjectNull(NetflowRsExporterToEPgModelAttributeTypes()),
@@ -301,15 +338,15 @@ func NetflowExporterPolModelFromObject(
 
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "descr", &model.Descr)
-	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "dscp", &model.Dscp, customTypes.NewNetflowExporterPolDscpStringValue)
-	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "dstAddr", &model.DstAddr, customTypes.NewIPAddressStringValue)
-	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "dstPort", &model.DstPort, customTypes.NewNetflowExporterPolDstPortStringValue)
+	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "dscp", &model.Dscp, netflowExporterPolDscpType.Value)
+	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "dstAddr", &model.DstAddr, customtypes.NewIPAddressValue)
+	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "dstPort", &model.DstPort, netflowExporterPolDstPortType.Value)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "name", &model.Name)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "nameAlias", &model.NameAlias)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ownerKey", &model.OwnerKey)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ownerTag", &model.OwnerTag)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "sourceIpType", &model.SourceIpType)
-	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "srcAddr", &model.SrcAddr, customTypes.NewIPAddressStringValue)
+	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "srcAddr", &model.SrcAddr, customtypes.NewIPAddressValue)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ver", &model.Ver)
 
 	childObjects := modelHelpers.ChildObjectsByClass(

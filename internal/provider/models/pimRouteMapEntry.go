@@ -16,7 +16,7 @@ import (
 	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
-	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/customtypes"
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
 
@@ -49,7 +49,7 @@ func pimRouteMapEntrySchemaDefinition() modelHelpers.ClassSchema {
 			},
 			"group_ip": {
 				Type:             modelHelpers.StringProperty,
-				CustomStringType: customTypes.IPAddressStringType{},
+				CustomStringType: customtypes.IPAddressType{},
 				Optional:         true,
 				Computed:         true,
 				Description:      "The group ip of the PIM Route Map Entry object.",
@@ -74,14 +74,14 @@ func pimRouteMapEntrySchemaDefinition() modelHelpers.ClassSchema {
 			},
 			"rendezvous_point_ip": {
 				Type:             modelHelpers.StringProperty,
-				CustomStringType: customTypes.IPAddressStringType{},
+				CustomStringType: customtypes.IPAddressType{},
 				Optional:         true,
 				Computed:         true,
 				Description:      "The rendezvous point ip of the PIM Route Map Entry object.",
 			},
 			"source_ip": {
 				Type:             modelHelpers.StringProperty,
-				CustomStringType: customTypes.IPAddressStringType{},
+				CustomStringType: customtypes.IPAddressType{},
 				Optional:         true,
 				Computed:         true,
 				Description:      "The source ip of the PIM Route Map Entry object.",
@@ -119,17 +119,17 @@ func PimRouteMapEntryDataSourceSchema() datasourceschema.Schema {
 }
 
 type PimRouteMapEntryModel struct {
-	Action        types.String                     `tfsdk:"action"`
-	Annotation    types.String                     `tfsdk:"annotation"`
-	Descr         types.String                     `tfsdk:"description"`
-	Grp           customTypes.IPAddressStringValue `tfsdk:"group_ip"`
-	Name          types.String                     `tfsdk:"name"`
-	NameAlias     types.String                     `tfsdk:"name_alias"`
-	Order         types.String                     `tfsdk:"order"`
-	Rp            customTypes.IPAddressStringValue `tfsdk:"rendezvous_point_ip"`
-	Src           customTypes.IPAddressStringValue `tfsdk:"source_ip"`
-	TagAnnotation types.Set                        `tfsdk:"annotations"`
-	TagTag        types.Set                        `tfsdk:"tags"`
+	Action        types.String               `tfsdk:"action"`
+	Annotation    types.String               `tfsdk:"annotation"`
+	Descr         types.String               `tfsdk:"description"`
+	Grp           customtypes.IPAddressValue `tfsdk:"group_ip"`
+	Name          types.String               `tfsdk:"name"`
+	NameAlias     types.String               `tfsdk:"name_alias"`
+	Order         types.String               `tfsdk:"order"`
+	Rp            customtypes.IPAddressValue `tfsdk:"rendezvous_point_ip"`
+	Src           customtypes.IPAddressValue `tfsdk:"source_ip"`
+	TagAnnotation types.Set                  `tfsdk:"annotations"`
+	TagTag        types.Set                  `tfsdk:"tags"`
 }
 
 func PimRouteMapEntryModelAttributeTypes() map[string]attr.Type {
@@ -137,12 +137,12 @@ func PimRouteMapEntryModelAttributeTypes() map[string]attr.Type {
 		"action":              types.StringType,
 		"annotation":          types.StringType,
 		"description":         types.StringType,
-		"group_ip":            customTypes.IPAddressStringType{},
+		"group_ip":            customtypes.IPAddressType{},
 		"name":                types.StringType,
 		"name_alias":          types.StringType,
 		"order":               types.StringType,
-		"rendezvous_point_ip": customTypes.IPAddressStringType{},
-		"source_ip":           customTypes.IPAddressStringType{},
+		"rendezvous_point_ip": customtypes.IPAddressType{},
+		"source_ip":           customtypes.IPAddressType{},
 		"annotations": types.SetType{
 			ElemType: types.ObjectType{
 				AttrTypes: TagAnnotationModelAttributeTypes(),
@@ -161,12 +161,12 @@ func NewPimRouteMapEntryModelNull() PimRouteMapEntryModel {
 		Action:     types.StringNull(),
 		Annotation: types.StringNull(),
 		Descr:      types.StringNull(),
-		Grp:        customTypes.NewIPAddressStringNull(),
+		Grp:        customtypes.NewIPAddressNull(),
 		Name:       types.StringNull(),
 		NameAlias:  types.StringNull(),
 		Order:      types.StringNull(),
-		Rp:         customTypes.NewIPAddressStringNull(),
-		Src:        customTypes.NewIPAddressStringNull(),
+		Rp:         customtypes.NewIPAddressNull(),
+		Src:        customtypes.NewIPAddressNull(),
 		TagAnnotation: types.SetNull(
 			types.ObjectType{
 				AttrTypes: TagAnnotationModelAttributeTypes(),
@@ -210,12 +210,12 @@ func PimRouteMapEntryModelFromObject(
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "action", &model.Action)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "descr", &model.Descr)
-	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "grp", &model.Grp, customTypes.NewIPAddressStringValue)
+	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "grp", &model.Grp, customtypes.NewIPAddressValue)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "name", &model.Name)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "nameAlias", &model.NameAlias)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "order", &model.Order)
-	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "rp", &model.Rp, customTypes.NewIPAddressStringValue)
-	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "src", &model.Src, customTypes.NewIPAddressStringValue)
+	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "rp", &model.Rp, customtypes.NewIPAddressValue)
+	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "src", &model.Src, customtypes.NewIPAddressValue)
 
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,
