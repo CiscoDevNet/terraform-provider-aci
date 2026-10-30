@@ -117,8 +117,8 @@ work may add shared legacy aliases or retained unsupported attributes to the
 root model. A genuinely artifact-specific compatibility field belongs to an
 adapter-specific migration model rather than the shared generated root model.
 Null constructors initialize root fields explicitly. Class operations ignore
-them; the generated schema and adapter own their compatibility or lookup
-behavior.
+`id`; root identity operations use `parent_dn` when constructing or parsing a
+top-level DN, while payload construction ignores both fields.
 
 When an APIC class itself exposes a property named `id`, its generated Go field
 is class-prefixed (for example, `FvEpIpTagID`). Its normalized Terraform tag
@@ -325,13 +325,13 @@ child.
 
 ## 4. Class operations
 
-RN, DN, and ID are derived from model values and are exposed as generated
-methods. The reusable model does not store them as fields:
+The reusable class model constructs its RN. The root model constructs and
+parses the complete DN and stores the resulting ID:
 
 ```go
 func (m *FvTenantModel) BuildRN() string
-func (m *FvTenantModel) BuildDN() string
-func (m *FvBDModel) ParentDNFromDN(dn string) string
+func (m *FvTenantRootModel) BuildDN() string
+func (m *FvBDRootModel) ParentDNFromDN(dn string) string
 
 func (m *FvTenantModel) BuildPayloadObject(
 	ctx context.Context,
@@ -464,39 +464,42 @@ normalized named value so the RN matches the APIC representation.
 
 ### DN
 
-`BuildDN` combines the class placement and generated RN. It must support:
+The root model's `BuildDN` combines the class placement and generated RN. It
+must support:
 
 - root classes;
 - ordinary parented classes;
 - relation classes;
-- nested children;
 - multiple valid parent types.
 
-Classes with a runtime parent accept that parent DN:
+Classes with a runtime parent read it from the root model:
 
 ```go
-func (m *FvBDModel) BuildDN(parentDN string) string {
-	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
+func (m *FvBDRootModel) BuildDN() string {
+	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
 }
 ```
 
-Classes without `parent_dn` expose a zero-argument method. Their fixed parent
-DN is derived from the first segment of the metadata DN format during
-generation. Fixed paths added through `rn_prepend` remain part of the
-normalized `RnFormat`:
+Classes without `parent_dn` use a fixed parent DN derived from the first
+segment of the metadata DN format during generation. Fixed paths added through
+`rn_prepend` remain part of the normalized `RnFormat`:
 
 ```go
-func (m *FvTenantModel) BuildDN() string {
+func (m *FvTenantRootModel) BuildDN() string {
 	return fmt.Sprintf("uni/%s", m.BuildRN())
 }
 
-func (m *L2IfPolModel) BuildDN() string {
+func (m *L2IfPolRootModel) BuildDN() string {
 	return fmt.Sprintf("uni/%s", m.BuildRN())
 }
 ```
 
 For `l2IfPol`, `BuildRN` returns `infra/l2IfP-{name}`, producing the complete
 DN `uni/infra/l2IfP-{name}` without requiring callers to supply a fixed value.
+
+When `parent_dn` has a schema default, `BuildDN` uses that default if the root
+model value is null or unknown. Required parent DNs without a default are read
+directly from the root model.
 
 Classes with `ParentDnVariants` select each non-default variant using anchored
 patterns generated from the referenced `ParentClass`'s meta `dnFormats`; the
@@ -507,14 +510,13 @@ handles both the canonical default parent and an unmatched parent, matching
 the existing provider fallback.
 
 `BuildDN` does not repeat schema validation or return diagnostics. Top-level
-schemas require the placement inputs needed by the class, and nested callers
-pass an already resolved parent DN.
+schemas require the placement inputs needed by the class.
 
-Response decoding preserves the exact returned DN as the root model ID. A model
-with a runtime parent also exposes `ParentDNFromDN`. It removes the suffix
-constructed from the decoded model's `BuildRN`; parent-DN variants test their
-non-default, metadata-derived suffixes before the direct placement. This
-avoids splitting bracketed RNs whose identifying values can contain `/`.
+Response decoding preserves the exact returned DN as the root model ID. A root
+model with a runtime parent also exposes `ParentDNFromDN`. It removes the
+suffix constructed from the embedded model's `BuildRN`; parent-DN variants
+test their non-default, metadata-derived suffixes before the direct placement.
+This avoids splitting bracketed RNs whose identifying values can contain `/`.
 
 ### ID
 
@@ -526,10 +528,10 @@ schema exposes an `id` attribute.
 An independently supplied ID must not be allowed to disagree with the
 model's computed DN.
 
-Child models expose the same identity methods. Parent payload reconciliation
-uses the child RN to compare desired children with prior state. A caller that
-needs a child's complete DN can pass the already resolved parent DN to the
-child's `BuildDN` method.
+Child models expose `BuildRN` but do not expose top-level DN or ID operations.
+Parent payload reconciliation uses the child RN to compare desired children
+with prior state. Complete DN construction belongs to a root model representing
+a resource or data source.
 
 If `parent_dn` is exposed by a top-level schema, it is used as input to
 `BuildDN` and the resulting ID but is not an APIC payload attribute. If it is
@@ -623,15 +625,10 @@ the matching prior child. During response decoding, a missing singleton child
 is a known object whose fields are all null, and a missing repeated child is a
 known empty set. APIC responses never produce unknown values.
 
-Nested payload construction does not need to calculate child DNs. When a
-caller does need a nested child's DN, it passes the resolved parent DN to the
-child:
-
-```go
-childDN := child.BuildDN(parentDN)
-```
-
-The same rule applies recursively to grandchildren.
+Nested payload construction does not calculate child DNs. It composes child
+objects beneath their parent payload and uses each child's `BuildRN` only for
+identity and reconciliation. The same rule applies recursively to
+grandchildren.
 
 Every generated model also has an explicit null initializer:
 
@@ -727,8 +724,8 @@ shared root model. Nested children are decoded into `FvTenantModel`:
 Terraform plan/state
     -> req.Plan.Get / req.State.Get
     -> FvTenantRootModel
-    -> embedded FvTenantModel
-    -> BuildRN / BuildDN / BuildPayload
+    -> root BuildDN / BuildPayload
+    -> embedded FvTenantModel BuildRN / BuildPayloadObject
     -> DoRestRequest
 ```
 

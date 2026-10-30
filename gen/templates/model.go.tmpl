@@ -6,11 +6,13 @@ package models
 
 import (
 	"context"
+	{{- if or .Class.HasResourceArtifact .Class.HasDatasourceArtifact }}
 	"fmt"
+	{{- end }}
 	{{- if .Class.ParentDnVariants }}
 	"regexp"
 	{{- end }}
-	{{- if or .Class.IdentifiedBy .Class.ParentDnProperty }}
+	{{- if or .Class.IdentifiedBy (and (or .Class.HasResourceArtifact .Class.HasDatasourceArtifact) .Class.ParentDnProperty) }}
 	"strings"
 	{{- end }}
 
@@ -228,59 +230,6 @@ func (m *{{ .Class.Name.Capitalized }}Model) BuildRN() string {
 	return {{ printf "%q" .Class.RnFormat }}
 	{{- end }}
 }
-{{ if .Class.ParentDnProperty }}
-func (m *{{ .Class.Name.Capitalized }}Model) BuildDN(parentDN string) string {
-	{{- if .Class.ParentDnVariants }}
-	rn := m.BuildRN()
-	{{- range $index, $variant := .Class.ParentDnVariants }}
-		{{- if $index }}
-	for _, pattern := range {{ $.Class.Name.String }}ParentDNVariant{{ $index }}Patterns {
-		if pattern.MatchString(parentDN) {
-			{{- if $variant.RnPrepend }}
-			return fmt.Sprintf({{ printf "%q" (printf "%%s/%s/%%s" $variant.RnPrepend) }}, parentDN, rn)
-			{{- else }}
-			return fmt.Sprintf("%s/%s", parentDN, rn)
-			{{- end }}
-		}
-	}
-		{{- end }}
-	{{- end }}
-
-	return fmt.Sprintf("%s/%s", parentDN, rn)
-	{{- else }}
-	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
-	{{- end }}
-}
-
-func (m *{{ .Class.Name.Capitalized }}Model) ParentDNFromDN(dn string) string {
-	{{- if .Class.ParentDnVariants }}
-	rn := m.BuildRN()
-	{{- range $index, $variant := .Class.ParentDnVariants }}
-		{{- if $index }}
-	{{- if $variant.RnPrepend }}
-	if parentDN, found := strings.CutSuffix(dn, fmt.Sprintf({{ printf "%q" (printf "/%s/%%s" $variant.RnPrepend) }}, rn)); found {
-	{{- else }}
-	if parentDN, found := strings.CutSuffix(dn, fmt.Sprintf("/%s", rn)); found {
-	{{- end }}
-		for _, pattern := range {{ $.Class.Name.String }}ParentDNVariant{{ $index }}Patterns {
-			if pattern.MatchString(parentDN) {
-				return parentDN
-			}
-		}
-	}
-		{{- end }}
-	{{- end }}
-
-	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", rn))
-	{{- else }}
-	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
-	{{- end }}
-}
-{{- else }}
-func (m *{{ .Class.Name.Capitalized }}Model) BuildDN() string {
-	return fmt.Sprintf({{ printf "%q" (printf "%s/%%s" .Class.FixedParentDn) }}, m.BuildRN())
-}
-{{- end }}
 
 func {{ .Class.Name.Capitalized }}ModelFromObject(
 	ctx context.Context,
@@ -508,6 +457,70 @@ func New{{ .Class.Name.Capitalized }}RootModelNull() {{ .Class.Name.Capitalized 
 	}
 }
 
+{{ if .Class.ParentDnProperty -}}
+func (m *{{ .Class.Name.Capitalized }}RootModel) BuildDN() string {
+	{{- if or .Class.ParentDnHasSchemaDefault .Class.ParentDnVariants }}
+	parentDN := m.ParentDN.ValueString()
+	{{- if .Class.ParentDnHasSchemaDefault }}
+	if m.ParentDN.IsNull() || m.ParentDN.IsUnknown() {
+		parentDN = {{ printf "%q" (index .Class.ParentDnProperty.Documentation.DefaultValues 0).Value }}
+	}
+	{{- end }}
+	{{- if .Class.ParentDnVariants }}
+	rn := m.BuildRN()
+	{{- range $index, $variant := .Class.ParentDnVariants }}
+		{{- if $index }}
+	for _, pattern := range {{ $.Class.Name.String }}ParentDNVariant{{ $index }}Patterns {
+		if pattern.MatchString(parentDN) {
+			{{- if $variant.RnPrepend }}
+			return fmt.Sprintf({{ printf "%q" (printf "%%s/%s/%%s" $variant.RnPrepend) }}, parentDN, rn)
+			{{- else }}
+			return fmt.Sprintf("%s/%s", parentDN, rn)
+			{{- end }}
+		}
+	}
+		{{- end }}
+	{{- end }}
+
+	return fmt.Sprintf("%s/%s", parentDN, rn)
+	{{- else }}
+	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
+	{{- end }}
+	{{- else }}
+	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
+	{{- end }}
+}
+
+func (m *{{ .Class.Name.Capitalized }}RootModel) ParentDNFromDN(dn string) string {
+	{{- if .Class.ParentDnVariants }}
+	rn := m.BuildRN()
+	{{- range $index, $variant := .Class.ParentDnVariants }}
+		{{- if $index }}
+	{{- if $variant.RnPrepend }}
+	if parentDN, found := strings.CutSuffix(dn, fmt.Sprintf({{ printf "%q" (printf "/%s/%%s" $variant.RnPrepend) }}, rn)); found {
+	{{- else }}
+	if parentDN, found := strings.CutSuffix(dn, fmt.Sprintf("/%s", rn)); found {
+	{{- end }}
+		for _, pattern := range {{ $.Class.Name.String }}ParentDNVariant{{ $index }}Patterns {
+			if pattern.MatchString(parentDN) {
+				return parentDN
+			}
+		}
+	}
+		{{- end }}
+	{{- end }}
+
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", rn))
+	{{- else }}
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
+	{{- end }}
+}
+{{- else }}
+func (m *{{ .Class.Name.Capitalized }}RootModel) BuildDN() string {
+	return fmt.Sprintf({{ printf "%q" (printf "%s/%%s" .Class.FixedParentDn) }}, m.BuildRN())
+}
+{{- end }}
+
 func (m *{{ .Class.Name.Capitalized }}RootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
@@ -526,7 +539,7 @@ func (m *{{ .Class.Name.Capitalized }}RootModel) SetFromResponse(
 	m.{{ .Class.Name.Capitalized }}Model = *model
 	m.ID = types.StringValue(dn)
 	{{- with .Class.ParentDnProperty }}
-	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(m.ParentDNFromDN(dn))
 	{{- end }}
 	return true, diagnostics
 }

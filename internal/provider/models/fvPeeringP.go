@@ -6,8 +6,6 @@ package models
 
 import (
 	"context"
-	"fmt"
-	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
@@ -160,14 +158,6 @@ func NewFvPeeringPModelNull() FvPeeringPModel {
 
 func (m *FvPeeringPModel) BuildRN() string {
 	return "peeringP"
-}
-
-func (m *FvPeeringPModel) BuildDN(parentDN string) string {
-	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
-}
-
-func (m *FvPeeringPModel) ParentDNFromDN(dn string) string {
-	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
 }
 
 func FvPeeringPModelFromObject(

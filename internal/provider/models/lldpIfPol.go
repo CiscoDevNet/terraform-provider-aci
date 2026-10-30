@@ -190,10 +190,6 @@ func (m *LldpIfPolModel) BuildRN() string {
 	return rn
 }
 
-func (m *LldpIfPolModel) BuildDN() string {
-	return fmt.Sprintf("uni/%s", m.BuildRN())
-}
-
 func LldpIfPolModelFromObject(
 	ctx context.Context,
 	object *container.Container,
@@ -352,6 +348,10 @@ func NewLldpIfPolRootModelNull() LldpIfPolRootModel {
 		LldpIfPolModel: NewLldpIfPolModelNull(),
 		ID:             types.StringNull(),
 	}
+}
+
+func (m *LldpIfPolRootModel) BuildDN() string {
+	return fmt.Sprintf("uni/%s", m.BuildRN())
 }
 
 func (m *LldpIfPolRootModel) SetIDFromDN(dn string) {

@@ -386,14 +386,6 @@ func (m *QosDscpClassModel) BuildRN() string {
 	return rn
 }
 
-func (m *QosDscpClassModel) BuildDN(parentDN string) string {
-	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
-}
-
-func (m *QosDscpClassModel) ParentDNFromDN(dn string) string {
-	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
-}
-
 func QosDscpClassModelFromObject(
 	ctx context.Context,
 	object *container.Container,
@@ -557,6 +549,14 @@ func NewQosDscpClassRootModelNull() QosDscpClassRootModel {
 	}
 }
 
+func (m *QosDscpClassRootModel) BuildDN() string {
+	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
+}
+
+func (m *QosDscpClassRootModel) ParentDNFromDN(dn string) string {
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
+}
+
 func (m *QosDscpClassRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
@@ -574,7 +574,7 @@ func (m *QosDscpClassRootModel) SetFromResponse(
 
 	m.QosDscpClassModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(m.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 

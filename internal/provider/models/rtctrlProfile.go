@@ -181,14 +181,6 @@ func (m *RtctrlProfileModel) BuildRN() string {
 	return rn
 }
 
-func (m *RtctrlProfileModel) BuildDN(parentDN string) string {
-	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
-}
-
-func (m *RtctrlProfileModel) ParentDNFromDN(dn string) string {
-	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
-}
-
 func RtctrlProfileModelFromObject(
 	ctx context.Context,
 	object *container.Container,
@@ -349,6 +341,14 @@ func NewRtctrlProfileRootModelNull() RtctrlProfileRootModel {
 	}
 }
 
+func (m *RtctrlProfileRootModel) BuildDN() string {
+	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
+}
+
+func (m *RtctrlProfileRootModel) ParentDNFromDN(dn string) string {
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
+}
+
 func (m *RtctrlProfileRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
@@ -366,7 +366,7 @@ func (m *RtctrlProfileRootModel) SetFromResponse(
 
 	m.RtctrlProfileModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(m.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 

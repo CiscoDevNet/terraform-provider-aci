@@ -165,10 +165,6 @@ func (m *NwsFwPolModel) BuildRN() string {
 	return rn
 }
 
-func (m *NwsFwPolModel) BuildDN() string {
-	return fmt.Sprintf("uni/%s", m.BuildRN())
-}
-
 func NwsFwPolModelFromObject(
 	ctx context.Context,
 	object *container.Container,
@@ -323,6 +319,10 @@ func NewNwsFwPolRootModelNull() NwsFwPolRootModel {
 		NwsFwPolModel: NewNwsFwPolModelNull(),
 		ID:            types.StringNull(),
 	}
+}
+
+func (m *NwsFwPolRootModel) BuildDN() string {
+	return fmt.Sprintf("uni/%s", m.BuildRN())
 }
 
 func (m *NwsFwPolRootModel) SetIDFromDN(dn string) {

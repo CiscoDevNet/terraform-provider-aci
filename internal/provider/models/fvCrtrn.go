@@ -185,14 +185,6 @@ func (m *FvCrtrnModel) BuildRN() string {
 	return "crtrn"
 }
 
-func (m *FvCrtrnModel) BuildDN(parentDN string) string {
-	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
-}
-
-func (m *FvCrtrnModel) ParentDNFromDN(dn string) string {
-	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
-}
-
 func FvCrtrnModelFromObject(
 	ctx context.Context,
 	object *container.Container,
@@ -353,6 +345,14 @@ func NewFvCrtrnRootModelNull() FvCrtrnRootModel {
 	}
 }
 
+func (m *FvCrtrnRootModel) BuildDN() string {
+	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
+}
+
+func (m *FvCrtrnRootModel) ParentDNFromDN(dn string) string {
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
+}
+
 func (m *FvCrtrnRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
@@ -370,7 +370,7 @@ func (m *FvCrtrnRootModel) SetFromResponse(
 
 	m.FvCrtrnModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(m.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 

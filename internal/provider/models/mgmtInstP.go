@@ -180,10 +180,6 @@ func (m *MgmtInstPModel) BuildRN() string {
 	return rn
 }
 
-func (m *MgmtInstPModel) BuildDN() string {
-	return fmt.Sprintf("uni/%s", m.BuildRN())
-}
-
 func MgmtInstPModelFromObject(
 	ctx context.Context,
 	object *container.Container,
@@ -365,6 +361,10 @@ func NewMgmtInstPRootModelNull() MgmtInstPRootModel {
 		MgmtInstPModel: NewMgmtInstPModelNull(),
 		ID:             types.StringNull(),
 	}
+}
+
+func (m *MgmtInstPRootModel) BuildDN() string {
+	return fmt.Sprintf("uni/%s", m.BuildRN())
 }
 
 func (m *MgmtInstPRootModel) SetIDFromDN(dn string) {

@@ -214,10 +214,6 @@ func (m *CommPolModel) BuildRN() string {
 	return rn
 }
 
-func (m *CommPolModel) BuildDN() string {
-	return fmt.Sprintf("uni/%s", m.BuildRN())
-}
-
 func CommPolModelFromObject(
 	ctx context.Context,
 	object *container.Container,
@@ -562,6 +558,10 @@ func NewCommPolRootModelNull() CommPolRootModel {
 		CommPolModel: NewCommPolModelNull(),
 		ID:           types.StringNull(),
 	}
+}
+
+func (m *CommPolRootModel) BuildDN() string {
+	return fmt.Sprintf("uni/%s", m.BuildRN())
 }
 
 func (m *CommPolRootModel) SetIDFromDN(dn string) {

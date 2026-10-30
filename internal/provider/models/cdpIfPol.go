@@ -164,10 +164,6 @@ func (m *CdpIfPolModel) BuildRN() string {
 	return rn
 }
 
-func (m *CdpIfPolModel) BuildDN() string {
-	return fmt.Sprintf("uni/%s", m.BuildRN())
-}
-
 func CdpIfPolModelFromObject(
 	ctx context.Context,
 	object *container.Container,
@@ -322,6 +318,10 @@ func NewCdpIfPolRootModelNull() CdpIfPolRootModel {
 		CdpIfPolModel: NewCdpIfPolModelNull(),
 		ID:            types.StringNull(),
 	}
+}
+
+func (m *CdpIfPolRootModel) BuildDN() string {
+	return fmt.Sprintf("uni/%s", m.BuildRN())
 }
 
 func (m *CdpIfPolRootModel) SetIDFromDN(dn string) {

@@ -151,10 +151,6 @@ func (m *MonInfraPolModel) BuildRN() string {
 	return rn
 }
 
-func (m *MonInfraPolModel) BuildDN() string {
-	return fmt.Sprintf("uni/%s", m.BuildRN())
-}
-
 func MonInfraPolModelFromObject(
 	ctx context.Context,
 	object *container.Container,
@@ -307,6 +303,10 @@ func NewMonInfraPolRootModelNull() MonInfraPolRootModel {
 		MonInfraPolModel: NewMonInfraPolModelNull(),
 		ID:               types.StringNull(),
 	}
+}
+
+func (m *MonInfraPolRootModel) BuildDN() string {
+	return fmt.Sprintf("uni/%s", m.BuildRN())
 }
 
 func (m *MonInfraPolRootModel) SetIDFromDN(dn string) {

@@ -6,8 +6,6 @@ package models
 
 import (
 	"context"
-	"fmt"
-	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
@@ -102,14 +100,6 @@ func NewFvRsBDToRelayPModelNull() FvRsBDToRelayPModel {
 
 func (m *FvRsBDToRelayPModel) BuildRN() string {
 	return "rsBDToRelayP"
-}
-
-func (m *FvRsBDToRelayPModel) BuildDN(parentDN string) string {
-	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
-}
-
-func (m *FvRsBDToRelayPModel) ParentDNFromDN(dn string) string {
-	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
 }
 
 func FvRsBDToRelayPModelFromObject(

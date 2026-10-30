@@ -134,14 +134,6 @@ func (m *FvRsCtxToOspfCtxPolModel) BuildRN() string {
 	return rn
 }
 
-func (m *FvRsCtxToOspfCtxPolModel) BuildDN(parentDN string) string {
-	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
-}
-
-func (m *FvRsCtxToOspfCtxPolModel) ParentDNFromDN(dn string) string {
-	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
-}
-
 func FvRsCtxToOspfCtxPolModelFromObject(
 	ctx context.Context,
 	object *container.Container,
@@ -293,6 +285,14 @@ func NewFvRsCtxToOspfCtxPolRootModelNull() FvRsCtxToOspfCtxPolRootModel {
 	}
 }
 
+func (m *FvRsCtxToOspfCtxPolRootModel) BuildDN() string {
+	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
+}
+
+func (m *FvRsCtxToOspfCtxPolRootModel) ParentDNFromDN(dn string) string {
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
+}
+
 func (m *FvRsCtxToOspfCtxPolRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
@@ -310,7 +310,7 @@ func (m *FvRsCtxToOspfCtxPolRootModel) SetFromResponse(
 
 	m.FvRsCtxToOspfCtxPolModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(m.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 

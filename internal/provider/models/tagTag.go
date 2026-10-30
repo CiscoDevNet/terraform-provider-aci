@@ -84,14 +84,6 @@ func (m *TagTagModel) BuildRN() string {
 	return rn
 }
 
-func (m *TagTagModel) BuildDN(parentDN string) string {
-	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
-}
-
-func (m *TagTagModel) ParentDNFromDN(dn string) string {
-	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
-}
-
 func TagTagModelFromObject(
 	ctx context.Context,
 	object *container.Container,
@@ -167,6 +159,14 @@ func NewTagTagRootModelNull() TagTagRootModel {
 	}
 }
 
+func (m *TagTagRootModel) BuildDN() string {
+	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
+}
+
+func (m *TagTagRootModel) ParentDNFromDN(dn string) string {
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
+}
+
 func (m *TagTagRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
@@ -184,7 +184,7 @@ func (m *TagTagRootModel) SetFromResponse(
 
 	m.TagTagModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(m.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 

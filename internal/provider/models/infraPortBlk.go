@@ -183,14 +183,6 @@ func (m *InfraPortBlkModel) BuildRN() string {
 	return rn
 }
 
-func (m *InfraPortBlkModel) BuildDN(parentDN string) string {
-	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
-}
-
-func (m *InfraPortBlkModel) ParentDNFromDN(dn string) string {
-	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
-}
-
 func InfraPortBlkModelFromObject(
 	ctx context.Context,
 	object *container.Container,
@@ -389,6 +381,14 @@ func NewInfraPortBlkRootModelNull() InfraPortBlkRootModel {
 	}
 }
 
+func (m *InfraPortBlkRootModel) BuildDN() string {
+	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
+}
+
+func (m *InfraPortBlkRootModel) ParentDNFromDN(dn string) string {
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
+}
+
 func (m *InfraPortBlkRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
@@ -406,7 +406,7 @@ func (m *InfraPortBlkRootModel) SetFromResponse(
 
 	m.InfraPortBlkModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(m.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 

@@ -161,10 +161,6 @@ func (m *FvTenantModel) BuildRN() string {
 	return rn
 }
 
-func (m *FvTenantModel) BuildDN() string {
-	return fmt.Sprintf("uni/%s", m.BuildRN())
-}
-
 func FvTenantModelFromObject(
 	ctx context.Context,
 	object *container.Container,
@@ -355,6 +351,10 @@ func NewFvTenantRootModelNull() FvTenantRootModel {
 		FvTenantModel: NewFvTenantModelNull(),
 		ID:            types.StringNull(),
 	}
+}
+
+func (m *FvTenantRootModel) BuildDN() string {
+	return fmt.Sprintf("uni/%s", m.BuildRN())
 }
 
 func (m *FvTenantRootModel) SetIDFromDN(dn string) {

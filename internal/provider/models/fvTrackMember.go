@@ -184,14 +184,6 @@ func (m *FvTrackMemberModel) BuildRN() string {
 	return rn
 }
 
-func (m *FvTrackMemberModel) BuildDN(parentDN string) string {
-	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
-}
-
-func (m *FvTrackMemberModel) ParentDNFromDN(dn string) string {
-	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
-}
-
 func FvTrackMemberModelFromObject(
 	ctx context.Context,
 	object *container.Container,
@@ -390,6 +382,14 @@ func NewFvTrackMemberRootModelNull() FvTrackMemberRootModel {
 	}
 }
 
+func (m *FvTrackMemberRootModel) BuildDN() string {
+	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
+}
+
+func (m *FvTrackMemberRootModel) ParentDNFromDN(dn string) string {
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
+}
+
 func (m *FvTrackMemberRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
@@ -407,7 +407,7 @@ func (m *FvTrackMemberRootModel) SetFromResponse(
 
 	m.FvTrackMemberModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(m.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 

@@ -157,14 +157,6 @@ func (m *MplsNodeSidPModel) BuildRN() string {
 	return rn
 }
 
-func (m *MplsNodeSidPModel) BuildDN(parentDN string) string {
-	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
-}
-
-func (m *MplsNodeSidPModel) ParentDNFromDN(dn string) string {
-	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
-}
-
 func MplsNodeSidPModelFromObject(
 	ctx context.Context,
 	object *container.Container,
@@ -321,6 +313,14 @@ func NewMplsNodeSidPRootModelNull() MplsNodeSidPRootModel {
 	}
 }
 
+func (m *MplsNodeSidPRootModel) BuildDN() string {
+	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
+}
+
+func (m *MplsNodeSidPRootModel) ParentDNFromDN(dn string) string {
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
+}
+
 func (m *MplsNodeSidPRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
@@ -338,7 +338,7 @@ func (m *MplsNodeSidPRootModel) SetFromResponse(
 
 	m.MplsNodeSidPModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(m.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 

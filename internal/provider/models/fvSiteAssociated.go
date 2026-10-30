@@ -175,14 +175,6 @@ func (m *FvSiteAssociatedModel) BuildRN() string {
 	return "stAsc"
 }
 
-func (m *FvSiteAssociatedModel) BuildDN(parentDN string) string {
-	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
-}
-
-func (m *FvSiteAssociatedModel) ParentDNFromDN(dn string) string {
-	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
-}
-
 func FvSiteAssociatedModelFromObject(
 	ctx context.Context,
 	object *container.Container,
@@ -370,6 +362,14 @@ func NewFvSiteAssociatedRootModelNull() FvSiteAssociatedRootModel {
 	}
 }
 
+func (m *FvSiteAssociatedRootModel) BuildDN() string {
+	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
+}
+
+func (m *FvSiteAssociatedRootModel) ParentDNFromDN(dn string) string {
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
+}
+
 func (m *FvSiteAssociatedRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
@@ -387,7 +387,7 @@ func (m *FvSiteAssociatedRootModel) SetFromResponse(
 
 	m.FvSiteAssociatedModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(m.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 

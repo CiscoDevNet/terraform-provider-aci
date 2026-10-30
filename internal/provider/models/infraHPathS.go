@@ -177,14 +177,6 @@ func (m *InfraHPathSModel) BuildRN() string {
 	return rn
 }
 
-func (m *InfraHPathSModel) BuildDN(parentDN string) string {
-	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
-}
-
-func (m *InfraHPathSModel) ParentDNFromDN(dn string) string {
-	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
-}
-
 func InfraHPathSModelFromObject(
 	ctx context.Context,
 	object *container.Container,
@@ -417,6 +409,18 @@ func NewInfraHPathSRootModelNull() InfraHPathSRootModel {
 	}
 }
 
+func (m *InfraHPathSRootModel) BuildDN() string {
+	parentDN := m.ParentDN.ValueString()
+	if m.ParentDN.IsNull() || m.ParentDN.IsUnknown() {
+		parentDN = "uni/infra"
+	}
+	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
+}
+
+func (m *InfraHPathSRootModel) ParentDNFromDN(dn string) string {
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
+}
+
 func (m *InfraHPathSRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
@@ -434,7 +438,7 @@ func (m *InfraHPathSRootModel) SetFromResponse(
 
 	m.InfraHPathSModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(m.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 

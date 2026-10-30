@@ -150,14 +150,6 @@ func (m *VzRsAnyToConsIfModel) BuildRN() string {
 	return rn
 }
 
-func (m *VzRsAnyToConsIfModel) BuildDN(parentDN string) string {
-	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
-}
-
-func (m *VzRsAnyToConsIfModel) ParentDNFromDN(dn string) string {
-	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
-}
-
 func VzRsAnyToConsIfModelFromObject(
 	ctx context.Context,
 	object *container.Container,
@@ -308,6 +300,14 @@ func NewVzRsAnyToConsIfRootModelNull() VzRsAnyToConsIfRootModel {
 	}
 }
 
+func (m *VzRsAnyToConsIfRootModel) BuildDN() string {
+	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
+}
+
+func (m *VzRsAnyToConsIfRootModel) ParentDNFromDN(dn string) string {
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
+}
+
 func (m *VzRsAnyToConsIfRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
@@ -325,7 +325,7 @@ func (m *VzRsAnyToConsIfRootModel) SetFromResponse(
 
 	m.VzRsAnyToConsIfModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(m.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 

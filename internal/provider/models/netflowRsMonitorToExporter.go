@@ -119,14 +119,6 @@ func (m *NetflowRsMonitorToExporterModel) BuildRN() string {
 	return rn
 }
 
-func (m *NetflowRsMonitorToExporterModel) BuildDN(parentDN string) string {
-	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
-}
-
-func (m *NetflowRsMonitorToExporterModel) ParentDNFromDN(dn string) string {
-	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
-}
-
 func NetflowRsMonitorToExporterModelFromObject(
 	ctx context.Context,
 	object *container.Container,
@@ -275,6 +267,14 @@ func NewNetflowRsMonitorToExporterRootModelNull() NetflowRsMonitorToExporterRoot
 	}
 }
 
+func (m *NetflowRsMonitorToExporterRootModel) BuildDN() string {
+	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
+}
+
+func (m *NetflowRsMonitorToExporterRootModel) ParentDNFromDN(dn string) string {
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
+}
+
 func (m *NetflowRsMonitorToExporterRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
@@ -292,7 +292,7 @@ func (m *NetflowRsMonitorToExporterRootModel) SetFromResponse(
 
 	m.NetflowRsMonitorToExporterModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(m.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 
