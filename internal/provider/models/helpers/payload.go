@@ -3,6 +3,7 @@ package helpers
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
@@ -191,8 +192,8 @@ func NewPayloadContainer(
 	payloadBytes, err := json.Marshal(payload)
 	if err != nil {
 		diagnostics.AddError(
-			"Marshalling of "+description+" failed",
-			err.Error()+". Please report this issue to the provider developers.",
+			fmt.Sprintf("Marshalling of %s failed", description),
+			fmt.Sprintf("%s. Please report this issue to the provider developers.", err),
 		)
 		return nil
 	}
@@ -200,8 +201,8 @@ func NewPayloadContainer(
 	jsonPayload, err := container.ParseJSON(payloadBytes)
 	if err != nil {
 		diagnostics.AddError(
-			"Construction of "+description+" failed",
-			err.Error()+". Please report this issue to the provider developers.",
+			fmt.Sprintf("Construction of %s failed", description),
+			fmt.Sprintf("%s. Please report this issue to the provider developers.", err),
 		)
 		return nil
 	}
