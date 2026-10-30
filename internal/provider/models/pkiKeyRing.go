@@ -20,6 +20,10 @@ import (
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
 
+func init() {
+	registerClassVersion("pkiKeyRing", "1.0(1e)-")
+}
+
 var pkiKeyRingParentDNVariant1Patterns = []*regexp.Regexp{
 	regexp.MustCompile("^uni/tn-[^/]+$"),
 }

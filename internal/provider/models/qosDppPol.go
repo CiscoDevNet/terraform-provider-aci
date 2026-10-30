@@ -20,6 +20,10 @@ import (
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
 
+func init() {
+	registerClassVersion("qosDppPol", "1.2(2g)-")
+}
+
 var qosDppPolBeType = customtypes.NewSemanticStringType(map[string]string{
 	"0xffffffffffffffff": "unspecified",
 })

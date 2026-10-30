@@ -19,6 +19,10 @@ import (
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
 
+func init() {
+	registerClassVersion("lacpEnhancedLagPol", "3.2(10e)-3.2(10g),3.2(7f)-")
+}
+
 func lacpEnhancedLagPolSchemaDefinition() modelHelpers.ClassSchema {
 	return modelHelpers.ClassSchema{
 		ResourceDescription:   "Manages ACI LACP Enhanced Lag Policy",
