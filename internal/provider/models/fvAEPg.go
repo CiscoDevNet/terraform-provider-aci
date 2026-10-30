@@ -6,16 +6,282 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+func fvAEPgSchemaDefinition() modelHelpers.ClassSchema {
+	return modelHelpers.ClassSchema{
+		ResourceDescription:   "Manages ACI Application EPG",
+		DataSourceDescription: "Data source for ACI Application EPG",
+		Properties: map[string]modelHelpers.PropertySchema{
+			"annotation": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The annotation of the Application EPG object.",
+			},
+			"description": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The description of the Application EPG object.",
+			},
+			"contract_exception_tag": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The contract exception tag of the Application EPG object.",
+			},
+			"flood_in_encapsulation": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"disabled",
+					"enabled",
+				},
+				Description: "Flood L2 Multicast/Broadcast and Link Local Layer based on encapsulation.",
+			},
+			"forwarding_control": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"none",
+					"proxy-arp",
+				},
+				Description: "The forwarding control of the Application EPG object.",
+			},
+			"has_multicast_source": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"no",
+					"yes",
+				},
+				Description: "The Application EPG object has a multicast source.",
+			},
+			"useg_epg": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"no",
+					"yes",
+				},
+				Description: "The Application EPG object is microsegmented (uSeg).",
+			},
+			"match_criteria": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"All",
+					"AtleastOne",
+					"AtmostOne",
+					"None",
+				},
+				Description: "The provider label match criteria.",
+			},
+			"name": {
+				Type:            modelHelpers.StringProperty,
+				Required:        true,
+				RequiresReplace: true,
+				Description:     "The name of the Application EPG object.",
+			},
+			"name_alias": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The name alias of the Application EPG object.",
+			},
+			"intra_epg_isolation": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"enforced",
+					"unenforced",
+				},
+				Description: "Parameter used to determine whether communication between endpoints within the EPG is blocked.",
+			},
+			"pc_tag": {
+				Type:        modelHelpers.StringProperty,
+				Computed:    true,
+				ReadOnly:    true,
+				Description: "The classification tag used for policy enforcement and zoning.",
+			},
+			"preferred_group_member": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"exclude",
+					"include",
+				},
+				Description: "Parameter used to determine whether the EPG is part of the preferred group. Members of this group are allowed to communicate without contracts.",
+			},
+			"priority": {
+				Type:             modelHelpers.StringProperty,
+				CustomStringType: customTypes.FvAEPgPrioStringType{},
+				Optional:         true,
+				Computed:         true,
+				ValidValues: []string{
+					"level1",
+					"level2",
+					"level3",
+					"level4",
+					"level5",
+					"level6",
+					"unspecified",
+				},
+				StringRange: &modelHelpers.StringRange{Min: 0, Max: 9},
+				Description: "The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.",
+			},
+			"scope": {
+				Type:        modelHelpers.StringProperty,
+				Computed:    true,
+				ReadOnly:    true,
+				Description: "The scope ID (L3-VNI) of the Application EPG object.",
+			},
+			"admin_state": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"no",
+					"yes",
+				},
+				Description: "Withdraw AEPg Configuration from all Nodes in the Fabric.",
+			},
+		},
+		Children: map[string]modelHelpers.ChildSchema{
+			"epg_useg_block_statement": {
+				Cardinality: modelHelpers.SingleChild,
+				Description: "`epg_useg_block_statement` - (map) A map of EPG uSeg Block Statement (ACI object [fvCrtrn](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvCrtrn/overview)) which can also be configured using a separate [aci_epg_useg_block_statement](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/epg_useg_block_statement) resource.",
+				Schema:      fvCrtrnSchemaDefinition,
+			},
+			"relation_to_monitoring_policy": {
+				Cardinality: modelHelpers.SingleChild,
+				Description: "`relation_to_monitoring_policy` - (map) A map of Relation From Application EPG To Monitoring Policy (ACI object [fvRsAEPgMonPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsAEPgMonPol/overview)) pointing to Monitoring Policy (ACI Object [monEPGPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/monEPGPol/overview)) which can be configured using the [aci_monitoring_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/monitoring_policy) resource.",
+				Schema:      fvRsAEPgMonPolSchemaDefinition,
+			},
+			"relation_to_attachable_access_entity_profiles": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`relation_to_attachable_access_entity_profiles` - (list) A list of Relation From Application EPG To Attachable Access Entity Profiles (ACI object [fvRsAepAtt](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsAepAtt/overview)) pointing to Attachable Access Entity Profile (ACI Object [infraAttEntityP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraAttEntityP/overview)) which can be configured using the [aci_attachable_access_entity_profile](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/attachable_access_entity_profile) resource.",
+				Schema:      fvRsAepAttSchemaDefinition,
+			},
+			"relation_to_bridge_domain": {
+				Cardinality: modelHelpers.SingleChild,
+				Description: "`relation_to_bridge_domain` - (map) A map of Relation To Bridge Domain (ACI object [fvRsBd](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsBd/overview)) pointing to Bridge Domain (ACI Object [fvBD](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvBD/overview)) which can be configured using the [aci_bridge_domain](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bridge_domain) resource.",
+				Schema:      fvRsBdSchemaDefinition,
+			},
+			"relation_to_consumed_contracts": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`relation_to_consumed_contracts` - (list) A list of Relation To Consumed Contracts (ACI object [fvRsCons](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsCons/overview)) pointing to Contract (ACI Object [vzBrCP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzBrCP/overview)) which can be configured using the [aci_contract](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/contract) resource.",
+				Schema:      fvRsConsSchemaDefinition,
+			},
+			"relation_to_imported_contracts": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`relation_to_imported_contracts` - (list) A list of Relation To Imported Contracts (ACI object [fvRsConsIf](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsConsIf/overview)) pointing to Imported Contract (ACI Object [vzCPIf](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzCPIf/overview)) which can be configured using the [aci_imported_contract](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/imported_contract) resource.",
+				Schema:      fvRsConsIfSchemaDefinition,
+			},
+			"relation_to_custom_qos_policy": {
+				Cardinality: modelHelpers.SingleChild,
+				Description: "`relation_to_custom_qos_policy` - (map) A map of Relation To Custom QoS Policy (ACI object [fvRsCustQosPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsCustQosPol/overview)) pointing to Custom QoS Policy (ACI Object [qosCustomPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/qosCustomPol/overview)) which can be configured using the [aci_custom_qos_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/custom_qos_policy) resource.",
+				Schema:      fvRsCustQosPolSchemaDefinition,
+			},
+			"relation_to_domains": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`relation_to_domains` - (list) A list of Relation To Domains (ACI object [fvRsDomAtt](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsDomAtt/overview)).",
+				Schema:      fvRsDomAttSchemaDefinition,
+			},
+			"relation_to_data_plane_policing_policy": {
+				Cardinality: modelHelpers.SingleChild,
+				Description: "`relation_to_data_plane_policing_policy` - (map) A map of Relation To Data Plane Policing Policy (ACI object [fvRsDppPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsDppPol/overview)) pointing to Data Plane Policing Policy (ACI Object [qosDppPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/qosDppPol/overview)) which can be configured using the [aci_data_plane_policing_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/data_plane_policing_policy) resource.",
+				Schema:      fvRsDppPolSchemaDefinition,
+			},
+			"relation_to_fibre_channel_paths": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`relation_to_fibre_channel_paths` - (list) A list of Relation To Fibre Channel Paths (ACI object [fvRsFcPathAtt](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsFcPathAtt/overview)) pointing to Fabric Path Endpoint (ACI Object [fabricPathEp](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fabricPathEp/overview)).",
+				Schema:      fvRsFcPathAttSchemaDefinition,
+			},
+			"relation_to_intra_epg_contracts": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`relation_to_intra_epg_contracts` - (list) A list of Relation To Intra EPG Contracts (ACI object [fvRsIntraEpg](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsIntraEpg/overview)) pointing to Contract (ACI Object [vzBrCP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzBrCP/overview)) which can be configured using the [aci_contract](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/contract) resource.",
+				Schema:      fvRsIntraEpgSchemaDefinition,
+			},
+			"relation_to_static_leafs": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`relation_to_static_leafs` - (list) A list of Relation To Static Leafs (ACI object [fvRsNodeAtt](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsNodeAtt/overview)) pointing to Fabric Node (ACI Object [fabricNode](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fabricNode/overview)).",
+				Schema:      fvRsNodeAttSchemaDefinition,
+			},
+			"relation_to_static_paths": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`relation_to_static_paths` - (list) A list of Relation To Static Paths (ACI object [fvRsPathAtt](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsPathAtt/overview)) pointing to Fabric Path Endpoint (ACI Object [fabricPathEp](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fabricPathEp/overview)).",
+				Schema:      fvRsPathAttSchemaDefinition,
+			},
+			"relation_to_taboo_contracts": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`relation_to_taboo_contracts` - (list) A list of Relation To Taboo Contracts (ACI object [fvRsProtBy](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsProtBy/overview)) pointing to Taboo Contract (ACI Object [vzTaboo](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzTaboo/overview)) which can be configured using the [aci_taboo_contract](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/taboo_contract) resource.",
+				Schema:      fvRsProtBySchemaDefinition,
+			},
+			"relation_to_provided_contracts": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`relation_to_provided_contracts` - (list) A list of Relation To Provided Contracts (ACI object [fvRsProv](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsProv/overview)) pointing to Contract (ACI Object [vzBrCP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vzBrCP/overview)) which can be configured using the [aci_contract](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/contract) resource.",
+				Schema:      fvRsProvSchemaDefinition,
+			},
+			"relation_to_contract_masters": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`relation_to_contract_masters` - (list) A list of Relation To Contract Masters (ACI object [fvRsSecInherited](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsSecInherited/overview)).",
+				Schema:      fvRsSecInheritedSchemaDefinition,
+			},
+			"relation_to_trust_control_policy": {
+				Cardinality: modelHelpers.SingleChild,
+				Description: "`relation_to_trust_control_policy` - (map) A map of Relation To Trust Control Policy (ACI object [fvRsTrustCtrl](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsTrustCtrl/overview)) pointing to Trust Control Policy (ACI Object [fhsTrustCtrlPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fhsTrustCtrlPol/overview)) which can be configured using the [aci_trust_control_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/trust_control_policy) resource.",
+				Schema:      fvRsTrustCtrlSchemaDefinition,
+			},
+			"annotations": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.",
+				Schema:      tagAnnotationSchemaDefinition,
+			},
+			"tags": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.",
+				Schema:      tagTagSchemaDefinition,
+			},
+		},
+		Identifiers: []string{
+			"name",
+		},
+		ParentDN: &modelHelpers.ParentDNSchema{
+			AttributeName: "parent_dn",
+			Config:        modelHelpers.ParentDNAttributeConfig{},
+		},
+		AnnotationAttribute: "annotation",
+	}
+}
+
+func FvAEPgResourceSchema(defaultAnnotation string) resourceschema.Schema {
+	return fvAEPgSchemaDefinition().ResourceSchema(defaultAnnotation)
+}
+
+func FvAEPgDataSourceSchema() datasourceschema.Schema {
+	return fvAEPgSchemaDefinition().DataSourceSchema()
+}
 
 type FvAEPgModel struct {
 	Annotation       types.String                      `tfsdk:"annotation"`
@@ -254,19 +520,15 @@ func NewFvAEPgModelNull() FvAEPgModel {
 func (m *FvAEPgModel) BuildRN() string {
 	rn := "epg-{name}"
 	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
-
 	return rn
 }
 
 func (m *FvAEPgModel) BuildDN(parentDN string) string {
-	return parentDN + "/" + m.BuildRN()
+	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
 }
 
 func (m *FvAEPgModel) ParentDNFromDN(dn string) string {
-	rn := m.BuildRN()
-
-	parentDN, _ := strings.CutSuffix(dn, "/"+rn)
-	return parentDN
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
 }
 
 func FvAEPgModelFromObject(
@@ -281,6 +543,7 @@ func FvAEPgModelFromObject(
 	if !ok {
 		return model, diagnostics
 	}
+
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "descr", &model.Descr)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "exceptionTag", &model.ExceptionTag)
@@ -297,6 +560,7 @@ func FvAEPgModelFromObject(
 	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "prio", &model.Prio, customTypes.NewFvAEPgPrioStringValue)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "scope", &model.Scope)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "shutdown", &model.Shutdown)
+
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,
 		&diagnostics,
@@ -324,6 +588,7 @@ func FvAEPgModelFromObject(
 			"tagTag",
 		},
 	)
+
 	var fallbackFvCrtrn *types.Object
 	if fallbackModel != nil {
 		fallbackFvCrtrn = &fallbackModel.FvCrtrn
@@ -340,6 +605,7 @@ func FvAEPgModelFromObject(
 		FvCrtrnModelFromObject,
 		&model.FvCrtrn,
 	)
+
 	var fallbackFvRsAEPgMonPol *types.Object
 	if fallbackModel != nil {
 		fallbackFvRsAEPgMonPol = &fallbackModel.FvRsAEPgMonPol
@@ -356,6 +622,7 @@ func FvAEPgModelFromObject(
 		FvRsAEPgMonPolModelFromObject,
 		&model.FvRsAEPgMonPol,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -364,6 +631,7 @@ func FvAEPgModelFromObject(
 		FvRsAepAttModelFromObject,
 		&model.FvRsAepAtt,
 	)
+
 	var fallbackFvRsBd *types.Object
 	if fallbackModel != nil {
 		fallbackFvRsBd = &fallbackModel.FvRsBd
@@ -380,6 +648,7 @@ func FvAEPgModelFromObject(
 		FvRsBdModelFromObject,
 		&model.FvRsBd,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -388,6 +657,7 @@ func FvAEPgModelFromObject(
 		FvRsConsModelFromObject,
 		&model.FvRsCons,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -396,6 +666,7 @@ func FvAEPgModelFromObject(
 		FvRsConsIfModelFromObject,
 		&model.FvRsConsIf,
 	)
+
 	var fallbackFvRsCustQosPol *types.Object
 	if fallbackModel != nil {
 		fallbackFvRsCustQosPol = &fallbackModel.FvRsCustQosPol
@@ -412,6 +683,7 @@ func FvAEPgModelFromObject(
 		FvRsCustQosPolModelFromObject,
 		&model.FvRsCustQosPol,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -420,6 +692,7 @@ func FvAEPgModelFromObject(
 		FvRsDomAttModelFromObject,
 		&model.FvRsDomAtt,
 	)
+
 	var fallbackFvRsDppPol *types.Object
 	if fallbackModel != nil {
 		fallbackFvRsDppPol = &fallbackModel.FvRsDppPol
@@ -436,6 +709,7 @@ func FvAEPgModelFromObject(
 		FvRsDppPolModelFromObject,
 		&model.FvRsDppPol,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -444,6 +718,7 @@ func FvAEPgModelFromObject(
 		FvRsFcPathAttModelFromObject,
 		&model.FvRsFcPathAtt,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -452,6 +727,7 @@ func FvAEPgModelFromObject(
 		FvRsIntraEpgModelFromObject,
 		&model.FvRsIntraEpg,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -460,6 +736,7 @@ func FvAEPgModelFromObject(
 		FvRsNodeAttModelFromObject,
 		&model.FvRsNodeAtt,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -468,6 +745,7 @@ func FvAEPgModelFromObject(
 		FvRsPathAttModelFromObject,
 		&model.FvRsPathAtt,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -476,6 +754,7 @@ func FvAEPgModelFromObject(
 		FvRsProtByModelFromObject,
 		&model.FvRsProtBy,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -484,6 +763,7 @@ func FvAEPgModelFromObject(
 		FvRsProvModelFromObject,
 		&model.FvRsProv,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -492,6 +772,7 @@ func FvAEPgModelFromObject(
 		FvRsSecInheritedModelFromObject,
 		&model.FvRsSecInherited,
 	)
+
 	var fallbackFvRsTrustCtrl *types.Object
 	if fallbackModel != nil {
 		fallbackFvRsTrustCtrl = &fallbackModel.FvRsTrustCtrl
@@ -508,6 +789,7 @@ func FvAEPgModelFromObject(
 		FvRsTrustCtrlModelFromObject,
 		&model.FvRsTrustCtrl,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -516,6 +798,7 @@ func FvAEPgModelFromObject(
 		TagAnnotationModelFromObject,
 		&model.TagAnnotation,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -547,6 +830,7 @@ func (m *FvAEPgModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
+
 	if !modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "annotation", m.Annotation) && nested {
 		attributes["annotation"] = defaultAnnotation
 	}
@@ -563,6 +847,7 @@ func (m *FvAEPgModel) BuildPayloadObject(
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "prefGrMemb", m.PrefGrMemb)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "prio", m.Prio)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "shutdown", m.Shutdown)
+
 	var priorFvCrtrn *types.Object
 	if priorState != nil {
 		priorFvCrtrn = &priorState.FvCrtrn
@@ -582,6 +867,7 @@ func (m *FvAEPgModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, fvCrtrnPayloads...)
+
 	var priorFvRsAEPgMonPol *types.Object
 	if priorState != nil {
 		priorFvRsAEPgMonPol = &priorState.FvRsAEPgMonPol
@@ -601,6 +887,7 @@ func (m *FvAEPgModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, fvRsAEPgMonPolPayloads...)
+
 	var priorFvRsAepAtt *types.Set
 	if priorState != nil {
 		priorFvRsAepAtt = &priorState.FvRsAepAtt
@@ -621,6 +908,7 @@ func (m *FvAEPgModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, fvRsAepAttPayloads...)
+
 	var priorFvRsBd *types.Object
 	if priorState != nil {
 		priorFvRsBd = &priorState.FvRsBd
@@ -640,6 +928,7 @@ func (m *FvAEPgModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, fvRsBdPayloads...)
+
 	var priorFvRsCons *types.Set
 	if priorState != nil {
 		priorFvRsCons = &priorState.FvRsCons
@@ -660,6 +949,7 @@ func (m *FvAEPgModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, fvRsConsPayloads...)
+
 	var priorFvRsConsIf *types.Set
 	if priorState != nil {
 		priorFvRsConsIf = &priorState.FvRsConsIf
@@ -680,6 +970,7 @@ func (m *FvAEPgModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, fvRsConsIfPayloads...)
+
 	var priorFvRsCustQosPol *types.Object
 	if priorState != nil {
 		priorFvRsCustQosPol = &priorState.FvRsCustQosPol
@@ -699,6 +990,7 @@ func (m *FvAEPgModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, fvRsCustQosPolPayloads...)
+
 	var priorFvRsDomAtt *types.Set
 	if priorState != nil {
 		priorFvRsDomAtt = &priorState.FvRsDomAtt
@@ -719,6 +1011,7 @@ func (m *FvAEPgModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, fvRsDomAttPayloads...)
+
 	var priorFvRsDppPol *types.Object
 	if priorState != nil {
 		priorFvRsDppPol = &priorState.FvRsDppPol
@@ -738,6 +1031,7 @@ func (m *FvAEPgModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, fvRsDppPolPayloads...)
+
 	var priorFvRsFcPathAtt *types.Set
 	if priorState != nil {
 		priorFvRsFcPathAtt = &priorState.FvRsFcPathAtt
@@ -758,6 +1052,7 @@ func (m *FvAEPgModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, fvRsFcPathAttPayloads...)
+
 	var priorFvRsIntraEpg *types.Set
 	if priorState != nil {
 		priorFvRsIntraEpg = &priorState.FvRsIntraEpg
@@ -778,6 +1073,7 @@ func (m *FvAEPgModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, fvRsIntraEpgPayloads...)
+
 	var priorFvRsNodeAtt *types.Set
 	if priorState != nil {
 		priorFvRsNodeAtt = &priorState.FvRsNodeAtt
@@ -798,6 +1094,7 @@ func (m *FvAEPgModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, fvRsNodeAttPayloads...)
+
 	var priorFvRsPathAtt *types.Set
 	if priorState != nil {
 		priorFvRsPathAtt = &priorState.FvRsPathAtt
@@ -818,6 +1115,7 @@ func (m *FvAEPgModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, fvRsPathAttPayloads...)
+
 	var priorFvRsProtBy *types.Set
 	if priorState != nil {
 		priorFvRsProtBy = &priorState.FvRsProtBy
@@ -838,6 +1136,7 @@ func (m *FvAEPgModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, fvRsProtByPayloads...)
+
 	var priorFvRsProv *types.Set
 	if priorState != nil {
 		priorFvRsProv = &priorState.FvRsProv
@@ -858,6 +1157,7 @@ func (m *FvAEPgModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, fvRsProvPayloads...)
+
 	var priorFvRsSecInherited *types.Set
 	if priorState != nil {
 		priorFvRsSecInherited = &priorState.FvRsSecInherited
@@ -878,6 +1178,7 @@ func (m *FvAEPgModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, fvRsSecInheritedPayloads...)
+
 	var priorFvRsTrustCtrl *types.Object
 	if priorState != nil {
 		priorFvRsTrustCtrl = &priorState.FvRsTrustCtrl
@@ -897,6 +1198,7 @@ func (m *FvAEPgModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, fvRsTrustCtrlPayloads...)
+
 	var priorTagAnnotation *types.Set
 	if priorState != nil {
 		priorTagAnnotation = &priorState.TagAnnotation
@@ -917,6 +1219,7 @@ func (m *FvAEPgModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, tagAnnotationPayloads...)
+
 	var priorTagTag *types.Set
 	if priorState != nil {
 		priorTagTag = &priorState.TagTag
@@ -951,31 +1254,31 @@ func (m *FvAEPgModel) BuildNestedDeletePayloadObject(
 	ctx context.Context,
 	diagnostics *diag.Diagnostics,
 ) map[string]any {
-	attributes := map[string]any{}
-	attributes["name"] = m.Name.ValueString()
-	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, attributes)
+	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, map[string]any{
+		"name": m.Name.ValueString(),
+	})
 }
 
-type FvAEPgResourceModel struct {
+type FvAEPgRootModel struct {
 	FvAEPgModel
 
 	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ParentDN types.String `tfsdk:"parent_dn"`
 }
 
-func NewFvAEPgResourceModelNull() FvAEPgResourceModel {
-	return FvAEPgResourceModel{
+func NewFvAEPgRootModelNull() FvAEPgRootModel {
+	return FvAEPgRootModel{
 		FvAEPgModel: NewFvAEPgModelNull(),
 		ID:          types.StringNull(),
-		ParentDn:    types.StringNull(),
+		ParentDN:    types.StringNull(),
 	}
 }
 
-func (m *FvAEPgResourceModel) SetIDFromDN(dn string) {
+func (m *FvAEPgRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
 
-func (m *FvAEPgResourceModel) SetFromResponse(
+func (m *FvAEPgRootModel) SetFromResponse(
 	ctx context.Context,
 	response *container.Container,
 ) (bool, diag.Diagnostics) {
@@ -988,11 +1291,11 @@ func (m *FvAEPgResourceModel) SetFromResponse(
 
 	m.FvAEPgModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 
-func (m *FvAEPgResourceModel) BuildPayload(
+func (m *FvAEPgRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *FvAEPgModel,
 	create bool,
@@ -1003,52 +1306,16 @@ func (m *FvAEPgResourceModel) BuildPayload(
 	if diagnostics.HasError() {
 		return nil, diagnostics
 	}
+
 	if markCreated {
 		payloadObject["attributes"].(map[string]any)["status"] = "created"
 	}
+
 	payloadEnvelope := map[string]any{"fvAEPg": payloadObject}
-	jsonPayload := modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload")
-	return jsonPayload, diagnostics
+	return modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload"), diagnostics
 }
 
-func (m *FvAEPgResourceModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
+func (m *FvAEPgRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
-	payload := modelHelpers.NewDeletePayload(ctx, &diagnostics, "fvAEPg", m.ID.ValueString())
-	return payload, diagnostics
-}
-
-type FvAEPgDataSourceModel struct {
-	FvAEPgModel
-
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
-}
-
-func NewFvAEPgDataSourceModelNull() FvAEPgDataSourceModel {
-	return FvAEPgDataSourceModel{
-		FvAEPgModel: NewFvAEPgModelNull(),
-		ID:          types.StringNull(),
-		ParentDn:    types.StringNull(),
-	}
-}
-
-func (m *FvAEPgDataSourceModel) SetIDFromDN(dn string) {
-	m.ID = types.StringValue(dn)
-}
-
-func (m *FvAEPgDataSourceModel) SetFromResponse(
-	ctx context.Context,
-	response *container.Container,
-) (bool, diag.Diagnostics) {
-	fallbackModel := m.FvAEPgModel
-	model, dn, diagnostics := FvAEPgModelFromResponse(ctx, response, &fallbackModel)
-	found := model != nil
-	if diagnostics.HasError() || !found {
-		return found, diagnostics
-	}
-
-	m.FvAEPgModel = *model
-	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
-	return true, diagnostics
+	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "fvAEPg", m.ID.ValueString()), diagnostics
 }

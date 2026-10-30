@@ -6,6 +6,7 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
@@ -15,6 +16,183 @@ import (
 
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+func commHttpSchemaDefinition() modelHelpers.ClassSchema {
+	return modelHelpers.ClassSchema{
+		ResourceDescription:   "Manages ACI HTTP Service",
+		DataSourceDescription: "Data source for ACI HTTP Service",
+		Properties: map[string]modelHelpers.PropertySchema{
+			"allow_credentials": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"disabled",
+					"enabled",
+				},
+				Description: "Determines if credentials are allowed in HTTP responses.",
+			},
+			"allow_origins": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "Determines which origins can access the resource. For example, inputting http://127.0.0.1:8000 would allow access from a source device with that IP address and port.",
+			},
+			"admin_state": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"disabled",
+					"enabled",
+				},
+				Description: "The administrative state of the HTTP Service.",
+			},
+			"annotation": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The annotation of the HTTP Service object.",
+			},
+			"cli_only_mode": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"disabled",
+					"enabled",
+				},
+				Description: "Determines if CLI-only mode is enabled.",
+			},
+			"description": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The description of the HTTP Service object.",
+			},
+			"global_throttle_rate": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The maximum amount of API calls allowed per unit time.",
+			},
+			"global_throttle_state": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"disabled",
+					"enabled",
+				},
+				Description: "The throttle state for all clients without specific identifier in their headers.",
+			},
+			"global_throttle_unit": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The unit of measurement for rate limiting.",
+			},
+			"max_request_status_count": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The maximum number of request status objects to keep.",
+			},
+			"name": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The name of the HTTP Service object.",
+			},
+			"name_alias": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The name alias of the HTTP Service object.",
+			},
+			"node_exporter": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"disabled",
+					"enabled",
+				},
+				Description: "The node exporter service status.",
+			},
+			"port": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The port used by the HTTP communication service.",
+			},
+			"redirect_state": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"disabled",
+					"enabled",
+					"tested",
+				},
+				Description: "The state of HTTP communication service.",
+			},
+			"server_header": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"disabled",
+					"enabled",
+				},
+				Description: "Determines if the server header is included in responses.",
+			},
+			"login_throttle_rate": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The maximum login/refresh allowed per second.",
+			},
+			"login_throttle_state": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"disabled",
+					"enabled",
+				},
+				Description: "The state of login and refresh throttling.",
+			},
+			"visore_access": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"disabled",
+					"enabled",
+				},
+				Description: "Grants permissions for accessing the Visore tool, also known as Object Store Browser, in Cisco ACI.",
+			},
+		},
+		Children: map[string]modelHelpers.ChildSchema{
+			"annotations": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.",
+				Schema:      tagAnnotationSchemaDefinition,
+			},
+			"tags": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.",
+				Schema:      tagTagSchemaDefinition,
+			},
+		},
+		ParentDN: &modelHelpers.ParentDNSchema{
+			AttributeName: "parent_dn",
+			Config:        modelHelpers.ParentDNAttributeConfig{},
+		},
+		AnnotationAttribute: "annotation",
+	}
+}
 
 type CommHttpModel struct {
 	AccessControlAllowCredential types.String `tfsdk:"allow_credentials"`
@@ -113,14 +291,11 @@ func (m *CommHttpModel) BuildRN() string {
 }
 
 func (m *CommHttpModel) BuildDN(parentDN string) string {
-	return parentDN + "/" + m.BuildRN()
+	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
 }
 
 func (m *CommHttpModel) ParentDNFromDN(dn string) string {
-	rn := m.BuildRN()
-
-	parentDN, _ := strings.CutSuffix(dn, "/"+rn)
-	return parentDN
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
 }
 
 func CommHttpModelFromObject(
@@ -135,6 +310,7 @@ func CommHttpModelFromObject(
 	if !ok {
 		return model, diagnostics
 	}
+
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "accessControlAllowCredential", &model.AccessControlAllowCredential)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "accessControlAllowOrigins", &model.AccessControlAllowOrigins)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "adminSt", &model.AdminSt)
@@ -154,6 +330,7 @@ func CommHttpModelFromObject(
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "throttleRate", &model.ThrottleRate)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "throttleSt", &model.ThrottleSt)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "visoreAccess", &model.VisoreAccess)
+
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,
 		&diagnostics,
@@ -164,6 +341,7 @@ func CommHttpModelFromObject(
 			"tagTag",
 		},
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -172,6 +350,7 @@ func CommHttpModelFromObject(
 		TagAnnotationModelFromObject,
 		&model.TagAnnotation,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -193,6 +372,7 @@ func (m *CommHttpModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
+
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "accessControlAllowCredential", m.AccessControlAllowCredential)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "accessControlAllowOrigins", m.AccessControlAllowOrigins)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "adminSt", m.AdminSt)
@@ -214,6 +394,7 @@ func (m *CommHttpModel) BuildPayloadObject(
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "throttleRate", m.ThrottleRate)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "throttleSt", m.ThrottleSt)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "visoreAccess", m.VisoreAccess)
+
 	var priorTagAnnotation *types.Set
 	if priorState != nil {
 		priorTagAnnotation = &priorState.TagAnnotation
@@ -234,6 +415,7 @@ func (m *CommHttpModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, tagAnnotationPayloads...)
+
 	var priorTagTag *types.Set
 	if priorState != nil {
 		priorTagTag = &priorState.TagTag

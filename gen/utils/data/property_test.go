@@ -52,6 +52,7 @@ type propertyModelRenderingExpected struct {
 	AttributeType string
 	NullValue     string
 	Constructor   string
+	CustomType    string
 	Custom        bool
 }
 
@@ -98,6 +99,7 @@ func TestPropertyModelRendering(t *testing.T) {
 				AttributeType: "customTypes.IPAddressStringType{}",
 				NullValue:     "customTypes.NewIPAddressStringNull()",
 				Constructor:   "customTypes.NewIPAddressStringValue",
+				CustomType:    "IPAddress",
 				Custom:        true,
 			},
 		},
@@ -109,6 +111,7 @@ func TestPropertyModelRendering(t *testing.T) {
 				AttributeType: "customTypes.FvApPrioStringType{}",
 				NullValue:     "customTypes.NewFvApPrioStringNull()",
 				Constructor:   "customTypes.NewFvApPrioStringValue",
+				CustomType:    "FvApPrio",
 				Custom:        true,
 			},
 		},
@@ -120,6 +123,7 @@ func TestPropertyModelRendering(t *testing.T) {
 				AttributeType: "customTypes.VMMArpLearningStringType{}",
 				NullValue:     "customTypes.NewVMMArpLearningStringNull()",
 				Constructor:   "customTypes.NewVMMArpLearningStringValue",
+				CustomType:    "VMMArpLearning",
 				Custom:        true,
 			},
 		},
@@ -135,6 +139,7 @@ func TestPropertyModelRendering(t *testing.T) {
 			assert.Equal(t, expected.AttributeType, property.ModelAttributeType(className))
 			assert.Equal(t, expected.NullValue, property.ModelNullValue(className))
 			assert.Equal(t, expected.Constructor, property.ModelStringValueConstructor(className))
+			assert.Equal(t, expected.CustomType, property.CustomTypeName(className))
 			assert.Equal(t, expected.Custom, property.UsesCustomModelType())
 		})
 	}
@@ -573,7 +578,9 @@ func TestSetReadOnly(t *testing.T) {
 }
 
 type setComputedInput struct {
-	Required bool
+	Required  bool
+	ReadOnly  bool
+	Sensitive bool
 }
 
 func TestSetComputed(t *testing.T) {
@@ -595,6 +602,21 @@ func TestSetComputed(t *testing.T) {
 			},
 			Expected: false,
 		},
+		{
+			Name: "test_sensitive_optional_is_not_computed",
+			Input: setComputedInput{
+				Sensitive: true,
+			},
+			Expected: false,
+		},
+		{
+			Name: "test_sensitive_read_only_is_computed",
+			Input: setComputedInput{
+				ReadOnly:  true,
+				Sensitive: true,
+			},
+			Expected: true,
+		},
 	}
 
 	for _, testCase := range testCases {
@@ -606,6 +628,8 @@ func TestSetComputed(t *testing.T) {
 			property := &Property{
 				PropertyName: "testProp",
 				Required:     input.Required,
+				ReadOnly:     input.ReadOnly,
+				Sensitive:    input.Sensitive,
 			}
 
 			property.setComputed()

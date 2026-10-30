@@ -6,15 +6,92 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+func infraAttEntityPSchemaDefinition() modelHelpers.ClassSchema {
+	return modelHelpers.ClassSchema{
+		ResourceDescription:   "Manages ACI Attachable Access Entity Profile",
+		DataSourceDescription: "Data source for ACI Attachable Access Entity Profile",
+		Properties: map[string]modelHelpers.PropertySchema{
+			"annotation": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The annotation of the Attachable Access Entity Profile object.",
+			},
+			"description": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The description of the Attachable Access Entity Profile object.",
+			},
+			"name": {
+				Type:            modelHelpers.StringProperty,
+				Required:        true,
+				RequiresReplace: true,
+				Description:     "The name of the Attachable Access Entity Profile object.",
+			},
+			"name_alias": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The name alias of the Attachable Access Entity Profile object.",
+			},
+			"owner_key": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The key for enabling clients to own their data for entity correlation.",
+			},
+			"owner_tag": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "A tag for enabling clients to add their own data. For example, to indicate who created this object.",
+			},
+		},
+		Children: map[string]modelHelpers.ChildSchema{
+			"relation_to_domains": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`relation_to_domains` - (list) A list of Relation From Attachable Access Entity Profile To Domains (ACI object [infraRsDomP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraRsDomP/overview)).",
+				Schema:      infraRsDomPSchemaDefinition,
+			},
+			"annotations": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.",
+				Schema:      tagAnnotationSchemaDefinition,
+			},
+			"tags": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.",
+				Schema:      tagTagSchemaDefinition,
+			},
+		},
+		Identifiers: []string{
+			"name",
+		},
+		AnnotationAttribute: "annotation",
+	}
+}
+
+func InfraAttEntityPResourceSchema(defaultAnnotation string) resourceschema.Schema {
+	return infraAttEntityPSchemaDefinition().ResourceSchema(defaultAnnotation)
+}
+
+func InfraAttEntityPDataSourceSchema() datasourceschema.Schema {
+	return infraAttEntityPSchemaDefinition().DataSourceSchema()
+}
 
 type InfraAttEntityPModel struct {
 	Annotation    types.String `tfsdk:"annotation"`
@@ -83,12 +160,11 @@ func NewInfraAttEntityPModelNull() InfraAttEntityPModel {
 func (m *InfraAttEntityPModel) BuildRN() string {
 	rn := "infra/attentp-{name}"
 	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
-
 	return rn
 }
 
 func (m *InfraAttEntityPModel) BuildDN() string {
-	return "uni/" + m.BuildRN()
+	return fmt.Sprintf("uni/%s", m.BuildRN())
 }
 
 func InfraAttEntityPModelFromObject(
@@ -103,12 +179,14 @@ func InfraAttEntityPModelFromObject(
 	if !ok {
 		return model, diagnostics
 	}
+
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "descr", &model.Descr)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "name", &model.Name)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "nameAlias", &model.NameAlias)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ownerKey", &model.OwnerKey)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ownerTag", &model.OwnerTag)
+
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,
 		&diagnostics,
@@ -120,6 +198,7 @@ func InfraAttEntityPModelFromObject(
 			"tagTag",
 		},
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -128,6 +207,7 @@ func InfraAttEntityPModelFromObject(
 		InfraRsDomPModelFromObject,
 		&model.InfraRsDomP,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -136,6 +216,7 @@ func InfraAttEntityPModelFromObject(
 		TagAnnotationModelFromObject,
 		&model.TagAnnotation,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -167,6 +248,7 @@ func (m *InfraAttEntityPModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
+
 	if !modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "annotation", m.Annotation) && nested {
 		attributes["annotation"] = defaultAnnotation
 	}
@@ -175,6 +257,7 @@ func (m *InfraAttEntityPModel) BuildPayloadObject(
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "nameAlias", m.NameAlias)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "ownerKey", m.OwnerKey)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "ownerTag", m.OwnerTag)
+
 	var priorInfraRsDomP *types.Set
 	if priorState != nil {
 		priorInfraRsDomP = &priorState.InfraRsDomP
@@ -195,6 +278,7 @@ func (m *InfraAttEntityPModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, infraRsDomPPayloads...)
+
 	var priorTagAnnotation *types.Set
 	if priorState != nil {
 		priorTagAnnotation = &priorState.TagAnnotation
@@ -215,6 +299,7 @@ func (m *InfraAttEntityPModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, tagAnnotationPayloads...)
+
 	var priorTagTag *types.Set
 	if priorState != nil {
 		priorTagTag = &priorState.TagTag
@@ -249,29 +334,29 @@ func (m *InfraAttEntityPModel) BuildNestedDeletePayloadObject(
 	ctx context.Context,
 	diagnostics *diag.Diagnostics,
 ) map[string]any {
-	attributes := map[string]any{}
-	attributes["name"] = m.Name.ValueString()
-	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, attributes)
+	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, map[string]any{
+		"name": m.Name.ValueString(),
+	})
 }
 
-type InfraAttEntityPResourceModel struct {
+type InfraAttEntityPRootModel struct {
 	InfraAttEntityPModel
 
 	ID types.String `tfsdk:"id"`
 }
 
-func NewInfraAttEntityPResourceModelNull() InfraAttEntityPResourceModel {
-	return InfraAttEntityPResourceModel{
+func NewInfraAttEntityPRootModelNull() InfraAttEntityPRootModel {
+	return InfraAttEntityPRootModel{
 		InfraAttEntityPModel: NewInfraAttEntityPModelNull(),
 		ID:                   types.StringNull(),
 	}
 }
 
-func (m *InfraAttEntityPResourceModel) SetIDFromDN(dn string) {
+func (m *InfraAttEntityPRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
 
-func (m *InfraAttEntityPResourceModel) SetFromResponse(
+func (m *InfraAttEntityPRootModel) SetFromResponse(
 	ctx context.Context,
 	response *container.Container,
 ) (bool, diag.Diagnostics) {
@@ -287,7 +372,7 @@ func (m *InfraAttEntityPResourceModel) SetFromResponse(
 	return true, diagnostics
 }
 
-func (m *InfraAttEntityPResourceModel) BuildPayload(
+func (m *InfraAttEntityPRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *InfraAttEntityPModel,
 	create bool,
@@ -298,49 +383,16 @@ func (m *InfraAttEntityPResourceModel) BuildPayload(
 	if diagnostics.HasError() {
 		return nil, diagnostics
 	}
+
 	if markCreated {
 		payloadObject["attributes"].(map[string]any)["status"] = "created"
 	}
+
 	payloadEnvelope := map[string]any{"infraAttEntityP": payloadObject}
-	jsonPayload := modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload")
-	return jsonPayload, diagnostics
+	return modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload"), diagnostics
 }
 
-func (m *InfraAttEntityPResourceModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
+func (m *InfraAttEntityPRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
-	payload := modelHelpers.NewDeletePayload(ctx, &diagnostics, "infraAttEntityP", m.ID.ValueString())
-	return payload, diagnostics
-}
-
-type InfraAttEntityPDataSourceModel struct {
-	InfraAttEntityPModel
-
-	ID types.String `tfsdk:"id"`
-}
-
-func NewInfraAttEntityPDataSourceModelNull() InfraAttEntityPDataSourceModel {
-	return InfraAttEntityPDataSourceModel{
-		InfraAttEntityPModel: NewInfraAttEntityPModelNull(),
-		ID:                   types.StringNull(),
-	}
-}
-
-func (m *InfraAttEntityPDataSourceModel) SetIDFromDN(dn string) {
-	m.ID = types.StringValue(dn)
-}
-
-func (m *InfraAttEntityPDataSourceModel) SetFromResponse(
-	ctx context.Context,
-	response *container.Container,
-) (bool, diag.Diagnostics) {
-	fallbackModel := m.InfraAttEntityPModel
-	model, dn, diagnostics := InfraAttEntityPModelFromResponse(ctx, response, &fallbackModel)
-	found := model != nil
-	if diagnostics.HasError() || !found {
-		return found, diagnostics
-	}
-
-	m.InfraAttEntityPModel = *model
-	m.ID = types.StringValue(dn)
-	return true, diagnostics
+	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "infraAttEntityP", m.ID.ValueString()), diagnostics
 }

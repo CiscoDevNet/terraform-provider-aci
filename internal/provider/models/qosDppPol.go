@@ -6,16 +6,319 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+func qosDppPolSchemaDefinition() modelHelpers.ClassSchema {
+	return modelHelpers.ClassSchema{
+		ResourceDescription:   "Manages ACI Data Plane Policing Policy",
+		DataSourceDescription: "Data source for ACI Data Plane Policing Policy",
+		Properties: map[string]modelHelpers.PropertySchema{
+			"admin_state": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"disabled",
+					"enabled",
+				},
+				Description: "The administrative state of the Data Plane Policing Policy object.",
+			},
+			"annotation": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The annotation of the Data Plane Policing Policy object.",
+			},
+			"excessive_burst": {
+				Type:             modelHelpers.StringProperty,
+				CustomStringType: customTypes.QosDppPolBeStringType{},
+				Optional:         true,
+				Computed:         true,
+				ValidValues: []string{
+					"unspecified",
+				},
+				StringRange: &modelHelpers.StringRange{Min: 0, Max: 549755813760},
+				Description: "The excessive burst size of the Data Plane Policing Policy object. Only applicable for 2R3C policer.",
+			},
+			"excessive_burst_unit": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"giga",
+					"kilo",
+					"mega",
+					"msec",
+					"unspecified",
+					"usec",
+				},
+				Description: "The excessive burst size unit of the Data Plane Policing Policy object. Only applicable for 2R3C policer.",
+			},
+			"burst": {
+				Type:             modelHelpers.StringProperty,
+				CustomStringType: customTypes.QosDppPolBurstStringType{},
+				Optional:         true,
+				Computed:         true,
+				ValidValues: []string{
+					"unspecified",
+				},
+				StringRange: &modelHelpers.StringRange{Min: 0, Max: 549755813760},
+				Description: "The burst size of the Data Plane Policing Policy object.",
+			},
+			"burst_unit": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"giga",
+					"kilo",
+					"mega",
+					"msec",
+					"unspecified",
+					"usec",
+				},
+				Description: "The burst size unit of the Data Plane Policing Policy object.",
+			},
+			"conform_action": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"drop",
+					"mark",
+					"transmit",
+				},
+				Description: "The conform action of the Data Plane Policing Policy object.",
+			},
+			"conform_mark_cos": {
+				Type:             modelHelpers.StringProperty,
+				CustomStringType: customTypes.QosDppPolConformMarkCosStringType{},
+				Optional:         true,
+				Computed:         true,
+				ValidValues: []string{
+					"unspecified",
+				},
+				StringRange: &modelHelpers.StringRange{Min: 0, Max: 7},
+				Description: "The conform mark class of service (CoS) of the Data Plane Policing Policy object.",
+			},
+			"conform_mark_dscp": {
+				Type:             modelHelpers.StringProperty,
+				CustomStringType: customTypes.QosDppPolConformMarkDscpStringType{},
+				Optional:         true,
+				Computed:         true,
+				ValidValues: []string{
+					"unspecified",
+				},
+				StringRange: &modelHelpers.StringRange{Min: 0, Max: 63},
+				Description: "The conform mark differentiated services code point (DSCP) of the Data Plane Policing Policy object.",
+			},
+			"description": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The description of the Data Plane Policing Policy object.",
+			},
+			"exceed_action": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"drop",
+					"mark",
+					"transmit",
+				},
+				Description: "The exceed action of the Data Plane Policing Policy object.",
+			},
+			"exceed_mark_cos": {
+				Type:             modelHelpers.StringProperty,
+				CustomStringType: customTypes.QosDppPolExceedMarkCosStringType{},
+				Optional:         true,
+				Computed:         true,
+				ValidValues: []string{
+					"unspecified",
+				},
+				StringRange: &modelHelpers.StringRange{Min: 0, Max: 7},
+				Description: "The exceed mark class of service (CoS) of the Data Plane Policing Policy object.",
+			},
+			"exceed_mark_dscp": {
+				Type:             modelHelpers.StringProperty,
+				CustomStringType: customTypes.QosDppPolExceedMarkDscpStringType{},
+				Optional:         true,
+				Computed:         true,
+				ValidValues: []string{
+					"unspecified",
+				},
+				StringRange: &modelHelpers.StringRange{Min: 0, Max: 63},
+				Description: "The exceed mark differentiated services code point (DSCP) of the Data Plane Policing Policy object.",
+			},
+			"mode": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"bit",
+					"packet",
+				},
+				Description: "Policer mode - bytes or packet policer.",
+			},
+			"name": {
+				Type:            modelHelpers.StringProperty,
+				Required:        true,
+				RequiresReplace: true,
+				Description:     "The name of the Data Plane Policing Policy object.",
+			},
+			"name_alias": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The name alias of the Data Plane Policing Policy object.",
+			},
+			"owner_key": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The key for enabling clients to own their data for entity correlation.",
+			},
+			"owner_tag": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "A tag for enabling clients to add their own data. For example, to indicate who created this object.",
+			},
+			"peak_rate": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The peak information rate (PIR) of the Data Plane Policing Policy object. Only applicable for 2R3C policer.",
+			},
+			"peak_rate_unit": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"giga",
+					"kilo",
+					"mega",
+					"unspecified",
+				},
+				Description: "The peak information rate (PIR) unit of the Data Plane Policing Policy object. Only applicable for 2R3C policer.",
+			},
+			"rate": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The rate of the Data Plane Policing Policy object.",
+			},
+			"rate_unit": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"giga",
+					"kilo",
+					"mega",
+					"unspecified",
+				},
+				Description: "The rate unit of the Data Plane Policing Policy object.",
+			},
+			"sharing_mode": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"dedicated",
+					"shared",
+				},
+				Description: "The sharing mode of the Data Plane Policing Policy object.",
+			},
+			"type": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"1R2C",
+					"2R3C",
+				},
+				Description: "The type of the Data Plane Policing Policy object.",
+			},
+			"violate_action": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"drop",
+					"mark",
+					"transmit",
+				},
+				Description: "The violate action of the Data Plane Policing Policy object.",
+			},
+			"violate_mark_cos": {
+				Type:             modelHelpers.StringProperty,
+				CustomStringType: customTypes.QosDppPolViolateMarkCosStringType{},
+				Optional:         true,
+				Computed:         true,
+				ValidValues: []string{
+					"unspecified",
+				},
+				StringRange: &modelHelpers.StringRange{Min: 0, Max: 7},
+				Description: "The violate mark class of service (CoS) of the Data Plane Policing Policy object.",
+			},
+			"violate_mark_dscp": {
+				Type:             modelHelpers.StringProperty,
+				CustomStringType: customTypes.QosDppPolViolateMarkDscpStringType{},
+				Optional:         true,
+				Computed:         true,
+				ValidValues: []string{
+					"unspecified",
+				},
+				StringRange: &modelHelpers.StringRange{Min: 0, Max: 63},
+				Description: "The violate mark differentiated services code point (DSCP) of the Data Plane Policing Policy object.",
+			},
+		},
+		Children: map[string]modelHelpers.ChildSchema{
+			"annotations": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.",
+				Schema:      tagAnnotationSchemaDefinition,
+			},
+			"tags": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.",
+				Schema:      tagTagSchemaDefinition,
+			},
+		},
+		Identifiers: []string{
+			"name",
+		},
+		ParentDN: &modelHelpers.ParentDNSchema{
+			AttributeName: "parent_dn",
+			Config: modelHelpers.ParentDNAttributeConfig{
+				DefaultValue: "uni/infra",
+			},
+		},
+		AnnotationAttribute: "annotation",
+	}
+}
+
+func QosDppPolResourceSchema(defaultAnnotation string) resourceschema.Schema {
+	return qosDppPolSchemaDefinition().ResourceSchema(defaultAnnotation)
+}
+
+func QosDppPolDataSourceSchema() datasourceschema.Schema {
+	return qosDppPolSchemaDefinition().DataSourceSchema()
+}
 
 type QosDppPolModel struct {
 	AdminSt         types.String                                    `tfsdk:"admin_state"`
@@ -136,19 +439,15 @@ func NewQosDppPolModelNull() QosDppPolModel {
 func (m *QosDppPolModel) BuildRN() string {
 	rn := "qosdpppol-{name}"
 	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
-
 	return rn
 }
 
 func (m *QosDppPolModel) BuildDN(parentDN string) string {
-	return parentDN + "/" + m.BuildRN()
+	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
 }
 
 func (m *QosDppPolModel) ParentDNFromDN(dn string) string {
-	rn := m.BuildRN()
-
-	parentDN, _ := strings.CutSuffix(dn, "/"+rn)
-	return parentDN
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
 }
 
 func QosDppPolModelFromObject(
@@ -163,6 +462,7 @@ func QosDppPolModelFromObject(
 	if !ok {
 		return model, diagnostics
 	}
+
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "adminSt", &model.AdminSt)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
 	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "be", &model.Be, customTypes.NewQosDppPolBeStringValue)
@@ -190,6 +490,7 @@ func QosDppPolModelFromObject(
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "violateAction", &model.ViolateAction)
 	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "violateMarkCos", &model.ViolateMarkCos, customTypes.NewQosDppPolViolateMarkCosStringValue)
 	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "violateMarkDscp", &model.ViolateMarkDscp, customTypes.NewQosDppPolViolateMarkDscpStringValue)
+
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,
 		&diagnostics,
@@ -200,6 +501,7 @@ func QosDppPolModelFromObject(
 			"tagTag",
 		},
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -208,6 +510,7 @@ func QosDppPolModelFromObject(
 		TagAnnotationModelFromObject,
 		&model.TagAnnotation,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -239,6 +542,7 @@ func (m *QosDppPolModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
+
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "adminSt", m.AdminSt)
 	if !modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "annotation", m.Annotation) && nested {
 		attributes["annotation"] = defaultAnnotation
@@ -268,6 +572,7 @@ func (m *QosDppPolModel) BuildPayloadObject(
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "violateAction", m.ViolateAction)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "violateMarkCos", m.ViolateMarkCos)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "violateMarkDscp", m.ViolateMarkDscp)
+
 	var priorTagAnnotation *types.Set
 	if priorState != nil {
 		priorTagAnnotation = &priorState.TagAnnotation
@@ -288,6 +593,7 @@ func (m *QosDppPolModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, tagAnnotationPayloads...)
+
 	var priorTagTag *types.Set
 	if priorState != nil {
 		priorTagTag = &priorState.TagTag
@@ -322,31 +628,31 @@ func (m *QosDppPolModel) BuildNestedDeletePayloadObject(
 	ctx context.Context,
 	diagnostics *diag.Diagnostics,
 ) map[string]any {
-	attributes := map[string]any{}
-	attributes["name"] = m.Name.ValueString()
-	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, attributes)
+	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, map[string]any{
+		"name": m.Name.ValueString(),
+	})
 }
 
-type QosDppPolResourceModel struct {
+type QosDppPolRootModel struct {
 	QosDppPolModel
 
 	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ParentDN types.String `tfsdk:"parent_dn"`
 }
 
-func NewQosDppPolResourceModelNull() QosDppPolResourceModel {
-	return QosDppPolResourceModel{
+func NewQosDppPolRootModelNull() QosDppPolRootModel {
+	return QosDppPolRootModel{
 		QosDppPolModel: NewQosDppPolModelNull(),
 		ID:             types.StringNull(),
-		ParentDn:       types.StringNull(),
+		ParentDN:       types.StringNull(),
 	}
 }
 
-func (m *QosDppPolResourceModel) SetIDFromDN(dn string) {
+func (m *QosDppPolRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
 
-func (m *QosDppPolResourceModel) SetFromResponse(
+func (m *QosDppPolRootModel) SetFromResponse(
 	ctx context.Context,
 	response *container.Container,
 ) (bool, diag.Diagnostics) {
@@ -359,11 +665,11 @@ func (m *QosDppPolResourceModel) SetFromResponse(
 
 	m.QosDppPolModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 
-func (m *QosDppPolResourceModel) BuildPayload(
+func (m *QosDppPolRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *QosDppPolModel,
 	create bool,
@@ -374,52 +680,16 @@ func (m *QosDppPolResourceModel) BuildPayload(
 	if diagnostics.HasError() {
 		return nil, diagnostics
 	}
+
 	if markCreated {
 		payloadObject["attributes"].(map[string]any)["status"] = "created"
 	}
+
 	payloadEnvelope := map[string]any{"qosDppPol": payloadObject}
-	jsonPayload := modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload")
-	return jsonPayload, diagnostics
+	return modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload"), diagnostics
 }
 
-func (m *QosDppPolResourceModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
+func (m *QosDppPolRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
-	payload := modelHelpers.NewDeletePayload(ctx, &diagnostics, "qosDppPol", m.ID.ValueString())
-	return payload, diagnostics
-}
-
-type QosDppPolDataSourceModel struct {
-	QosDppPolModel
-
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
-}
-
-func NewQosDppPolDataSourceModelNull() QosDppPolDataSourceModel {
-	return QosDppPolDataSourceModel{
-		QosDppPolModel: NewQosDppPolModelNull(),
-		ID:             types.StringNull(),
-		ParentDn:       types.StringNull(),
-	}
-}
-
-func (m *QosDppPolDataSourceModel) SetIDFromDN(dn string) {
-	m.ID = types.StringValue(dn)
-}
-
-func (m *QosDppPolDataSourceModel) SetFromResponse(
-	ctx context.Context,
-	response *container.Container,
-) (bool, diag.Diagnostics) {
-	fallbackModel := m.QosDppPolModel
-	model, dn, diagnostics := QosDppPolModelFromResponse(ctx, response, &fallbackModel)
-	found := model != nil
-	if diagnostics.HasError() || !found {
-		return found, diagnostics
-	}
-
-	m.QosDppPolModel = *model
-	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
-	return true, diagnostics
+	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "qosDppPol", m.ID.ValueString()), diagnostics
 }

@@ -6,15 +6,121 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+func coppProtoClassPSchemaDefinition() modelHelpers.ClassSchema {
+	return modelHelpers.ClassSchema{
+		ResourceDescription:   "Manages ACI CoPP Interface Protocol Policy",
+		DataSourceDescription: "Data source for ACI CoPP Interface Protocol Policy",
+		Properties: map[string]modelHelpers.PropertySchema{
+			"annotation": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The annotation of the CoPP Interface Protocol Policy object.",
+			},
+			"burst": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The burst size of the CoPP Interface Protocol Policy object.",
+			},
+			"description": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The description of the CoPP Interface Protocol Policy object.",
+			},
+			"match_protocols": {
+				Type:           modelHelpers.SetProperty,
+				SetElementType: types.StringType,
+				Optional:       true,
+				Computed:       true,
+				ValidValues: []string{
+					"arp",
+					"bfd",
+					"bgp",
+					"cdp",
+					"icmp",
+					"lacp",
+					"lldp",
+					"ospf",
+					"stp",
+				},
+				Description: "The protocols to match in the CoPP Interface Protocol Policy object.",
+			},
+			"name": {
+				Type:            modelHelpers.StringProperty,
+				Required:        true,
+				RequiresReplace: true,
+				Description:     "The name of the CoPP Interface Protocol Policy object.",
+			},
+			"name_alias": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The name alias of the CoPP Interface Protocol Policy object.",
+			},
+			"owner_key": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The key for enabling clients to own their data for entity correlation.",
+			},
+			"owner_tag": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "A tag for enabling clients to add their own data. For example, to indicate who created this object.",
+			},
+			"rate": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The rate of the CoPP Interface Protocol Policy object.",
+			},
+		},
+		Children: map[string]modelHelpers.ChildSchema{
+			"annotations": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.",
+				Schema:      tagAnnotationSchemaDefinition,
+			},
+			"tags": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.",
+				Schema:      tagTagSchemaDefinition,
+			},
+		},
+		Identifiers: []string{
+			"name",
+		},
+		ParentDN: &modelHelpers.ParentDNSchema{
+			AttributeName: "parent_dn",
+			Config:        modelHelpers.ParentDNAttributeConfig{},
+		},
+		AnnotationAttribute: "annotation",
+	}
+}
+
+func CoppProtoClassPResourceSchema(defaultAnnotation string) resourceschema.Schema {
+	return coppProtoClassPSchemaDefinition().ResourceSchema(defaultAnnotation)
+}
+
+func CoppProtoClassPDataSourceSchema() datasourceschema.Schema {
+	return coppProtoClassPSchemaDefinition().DataSourceSchema()
+}
 
 type CoppProtoClassPModel struct {
 	Annotation    types.String `tfsdk:"annotation"`
@@ -81,19 +187,15 @@ func NewCoppProtoClassPModelNull() CoppProtoClassPModel {
 func (m *CoppProtoClassPModel) BuildRN() string {
 	rn := "protoclassp-{name}"
 	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
-
 	return rn
 }
 
 func (m *CoppProtoClassPModel) BuildDN(parentDN string) string {
-	return parentDN + "/" + m.BuildRN()
+	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
 }
 
 func (m *CoppProtoClassPModel) ParentDNFromDN(dn string) string {
-	rn := m.BuildRN()
-
-	parentDN, _ := strings.CutSuffix(dn, "/"+rn)
-	return parentDN
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
 }
 
 func CoppProtoClassPModelFromObject(
@@ -108,6 +210,7 @@ func CoppProtoClassPModelFromObject(
 	if !ok {
 		return model, diagnostics
 	}
+
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "burst", &model.Burst)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "descr", &model.Descr)
@@ -117,6 +220,7 @@ func CoppProtoClassPModelFromObject(
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ownerKey", &model.OwnerKey)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ownerTag", &model.OwnerTag)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "rate", &model.Rate)
+
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,
 		&diagnostics,
@@ -127,6 +231,7 @@ func CoppProtoClassPModelFromObject(
 			"tagTag",
 		},
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -135,6 +240,7 @@ func CoppProtoClassPModelFromObject(
 		TagAnnotationModelFromObject,
 		&model.TagAnnotation,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -166,6 +272,7 @@ func (m *CoppProtoClassPModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
+
 	if !modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "annotation", m.Annotation) && nested {
 		attributes["annotation"] = defaultAnnotation
 	}
@@ -180,6 +287,7 @@ func (m *CoppProtoClassPModel) BuildPayloadObject(
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "ownerKey", m.OwnerKey)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "ownerTag", m.OwnerTag)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "rate", m.Rate)
+
 	var priorTagAnnotation *types.Set
 	if priorState != nil {
 		priorTagAnnotation = &priorState.TagAnnotation
@@ -200,6 +308,7 @@ func (m *CoppProtoClassPModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, tagAnnotationPayloads...)
+
 	var priorTagTag *types.Set
 	if priorState != nil {
 		priorTagTag = &priorState.TagTag
@@ -234,31 +343,31 @@ func (m *CoppProtoClassPModel) BuildNestedDeletePayloadObject(
 	ctx context.Context,
 	diagnostics *diag.Diagnostics,
 ) map[string]any {
-	attributes := map[string]any{}
-	attributes["name"] = m.Name.ValueString()
-	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, attributes)
+	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, map[string]any{
+		"name": m.Name.ValueString(),
+	})
 }
 
-type CoppProtoClassPResourceModel struct {
+type CoppProtoClassPRootModel struct {
 	CoppProtoClassPModel
 
 	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ParentDN types.String `tfsdk:"parent_dn"`
 }
 
-func NewCoppProtoClassPResourceModelNull() CoppProtoClassPResourceModel {
-	return CoppProtoClassPResourceModel{
+func NewCoppProtoClassPRootModelNull() CoppProtoClassPRootModel {
+	return CoppProtoClassPRootModel{
 		CoppProtoClassPModel: NewCoppProtoClassPModelNull(),
 		ID:                   types.StringNull(),
-		ParentDn:             types.StringNull(),
+		ParentDN:             types.StringNull(),
 	}
 }
 
-func (m *CoppProtoClassPResourceModel) SetIDFromDN(dn string) {
+func (m *CoppProtoClassPRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
 
-func (m *CoppProtoClassPResourceModel) SetFromResponse(
+func (m *CoppProtoClassPRootModel) SetFromResponse(
 	ctx context.Context,
 	response *container.Container,
 ) (bool, diag.Diagnostics) {
@@ -271,11 +380,11 @@ func (m *CoppProtoClassPResourceModel) SetFromResponse(
 
 	m.CoppProtoClassPModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 
-func (m *CoppProtoClassPResourceModel) BuildPayload(
+func (m *CoppProtoClassPRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *CoppProtoClassPModel,
 	create bool,
@@ -286,52 +395,16 @@ func (m *CoppProtoClassPResourceModel) BuildPayload(
 	if diagnostics.HasError() {
 		return nil, diagnostics
 	}
+
 	if markCreated {
 		payloadObject["attributes"].(map[string]any)["status"] = "created"
 	}
+
 	payloadEnvelope := map[string]any{"coppProtoClassP": payloadObject}
-	jsonPayload := modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload")
-	return jsonPayload, diagnostics
+	return modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload"), diagnostics
 }
 
-func (m *CoppProtoClassPResourceModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
+func (m *CoppProtoClassPRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
-	payload := modelHelpers.NewDeletePayload(ctx, &diagnostics, "coppProtoClassP", m.ID.ValueString())
-	return payload, diagnostics
-}
-
-type CoppProtoClassPDataSourceModel struct {
-	CoppProtoClassPModel
-
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
-}
-
-func NewCoppProtoClassPDataSourceModelNull() CoppProtoClassPDataSourceModel {
-	return CoppProtoClassPDataSourceModel{
-		CoppProtoClassPModel: NewCoppProtoClassPModelNull(),
-		ID:                   types.StringNull(),
-		ParentDn:             types.StringNull(),
-	}
-}
-
-func (m *CoppProtoClassPDataSourceModel) SetIDFromDN(dn string) {
-	m.ID = types.StringValue(dn)
-}
-
-func (m *CoppProtoClassPDataSourceModel) SetFromResponse(
-	ctx context.Context,
-	response *container.Container,
-) (bool, diag.Diagnostics) {
-	fallbackModel := m.CoppProtoClassPModel
-	model, dn, diagnostics := CoppProtoClassPModelFromResponse(ctx, response, &fallbackModel)
-	found := model != nil
-	if diagnostics.HasError() || !found {
-		return found, diagnostics
-	}
-
-	m.CoppProtoClassPModel = *model
-	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
-	return true, diagnostics
+	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "coppProtoClassP", m.ID.ValueString()), diagnostics
 }

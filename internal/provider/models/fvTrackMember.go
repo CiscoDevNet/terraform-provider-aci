@@ -6,16 +6,109 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+func fvTrackMemberSchemaDefinition() modelHelpers.ClassSchema {
+	return modelHelpers.ClassSchema{
+		ResourceDescription:   "Manages ACI IP SLA Track Member",
+		DataSourceDescription: "Data source for ACI IP SLA Track Member",
+		Properties: map[string]modelHelpers.PropertySchema{
+			"annotation": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The annotation of the IP SLA Track Member object.",
+			},
+			"description": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The description of the IP SLA Track Member object.",
+			},
+			"destination_ip_address": {
+				Type:             modelHelpers.StringProperty,
+				CustomStringType: customTypes.IPAddressStringType{},
+				Required:         true,
+				Description:      "The destination IP address to be tracked.",
+			},
+			"name": {
+				Type:            modelHelpers.StringProperty,
+				Required:        true,
+				RequiresReplace: true,
+				Description:     "The name of the IP SLA Track Member object.",
+			},
+			"name_alias": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The name alias of the IP SLA Track Member object.",
+			},
+			"owner_key": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The key for enabling clients to own their data for entity correlation.",
+			},
+			"owner_tag": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "A tag for enabling clients to add their own data. For example, to indicate who created this object.",
+			},
+			"scope": {
+				Type:        modelHelpers.StringProperty,
+				Required:    true,
+				Description: "The distinguished name (DN) of the scope (Bridge Domain or L3Out) of the IP SLA Track Member. For a Bridge Domain this attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bridge_domain) with 'aci_bridge_domain.example.id' or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/bridge_domain) with 'data.aci_bridge_domain.example.id'. For a L3out this attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/l3_outside) with 'aci_l3_outside.example.id' or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/l3_outside) with 'data.aci_l3_outside.example.id'.",
+			},
+		},
+		Children: map[string]modelHelpers.ChildSchema{
+			"relation_to_monitoring_policy": {
+				Cardinality: modelHelpers.SingleChild,
+				Required:    true,
+				Description: "`relation_to_monitoring_policy` - (map) A map of Relation To IP SLA Monitoring Policy (ACI object [fvRsIpslaMonPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsIpslaMonPol/overview)) pointing to IP SLA Monitoring Policy (ACI Object [fvIPSLAMonitoringPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvIPSLAMonitoringPol/overview)) which can be configured using the [aci_ip_sla_monitoring_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/ip_sla_monitoring_policy) resource.",
+				Schema:      fvRsIpslaMonPolSchemaDefinition,
+			},
+			"annotations": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.",
+				Schema:      tagAnnotationSchemaDefinition,
+			},
+			"tags": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.",
+				Schema:      tagTagSchemaDefinition,
+			},
+		},
+		Identifiers: []string{
+			"name",
+		},
+		ParentDN: &modelHelpers.ParentDNSchema{
+			AttributeName: "parent_dn",
+			Config:        modelHelpers.ParentDNAttributeConfig{},
+		},
+		AnnotationAttribute: "annotation",
+	}
+}
+
+func FvTrackMemberResourceSchema(defaultAnnotation string) resourceschema.Schema {
+	return fvTrackMemberSchemaDefinition().ResourceSchema(defaultAnnotation)
+}
+
+func FvTrackMemberDataSourceSchema() datasourceschema.Schema {
+	return fvTrackMemberSchemaDefinition().DataSourceSchema()
+}
 
 type FvTrackMemberModel struct {
 	Annotation      types.String                     `tfsdk:"annotation"`
@@ -84,19 +177,15 @@ func NewFvTrackMemberModelNull() FvTrackMemberModel {
 func (m *FvTrackMemberModel) BuildRN() string {
 	rn := "trackmember-{name}"
 	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
-
 	return rn
 }
 
 func (m *FvTrackMemberModel) BuildDN(parentDN string) string {
-	return parentDN + "/" + m.BuildRN()
+	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
 }
 
 func (m *FvTrackMemberModel) ParentDNFromDN(dn string) string {
-	rn := m.BuildRN()
-
-	parentDN, _ := strings.CutSuffix(dn, "/"+rn)
-	return parentDN
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
 }
 
 func FvTrackMemberModelFromObject(
@@ -111,6 +200,7 @@ func FvTrackMemberModelFromObject(
 	if !ok {
 		return model, diagnostics
 	}
+
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "descr", &model.Descr)
 	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "dstIpAddr", &model.DstIpAddr, customTypes.NewIPAddressStringValue)
@@ -119,6 +209,7 @@ func FvTrackMemberModelFromObject(
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ownerKey", &model.OwnerKey)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ownerTag", &model.OwnerTag)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "scopeDn", &model.ScopeDn)
+
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,
 		&diagnostics,
@@ -130,6 +221,7 @@ func FvTrackMemberModelFromObject(
 			"tagTag",
 		},
 	)
+
 	var fallbackFvRsIpslaMonPol *types.Object
 	if fallbackModel != nil {
 		fallbackFvRsIpslaMonPol = &fallbackModel.FvRsIpslaMonPol
@@ -146,6 +238,7 @@ func FvTrackMemberModelFromObject(
 		FvRsIpslaMonPolModelFromObject,
 		&model.FvRsIpslaMonPol,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -154,6 +247,7 @@ func FvTrackMemberModelFromObject(
 		TagAnnotationModelFromObject,
 		&model.TagAnnotation,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -185,6 +279,7 @@ func (m *FvTrackMemberModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
+
 	if !modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "annotation", m.Annotation) && nested {
 		attributes["annotation"] = defaultAnnotation
 	}
@@ -195,6 +290,7 @@ func (m *FvTrackMemberModel) BuildPayloadObject(
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "ownerKey", m.OwnerKey)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "ownerTag", m.OwnerTag)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "scopeDn", m.ScopeDn)
+
 	var priorFvRsIpslaMonPol *types.Object
 	if priorState != nil {
 		priorFvRsIpslaMonPol = &priorState.FvRsIpslaMonPol
@@ -214,6 +310,7 @@ func (m *FvTrackMemberModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, fvRsIpslaMonPolPayloads...)
+
 	var priorTagAnnotation *types.Set
 	if priorState != nil {
 		priorTagAnnotation = &priorState.TagAnnotation
@@ -234,6 +331,7 @@ func (m *FvTrackMemberModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, tagAnnotationPayloads...)
+
 	var priorTagTag *types.Set
 	if priorState != nil {
 		priorTagTag = &priorState.TagTag
@@ -268,31 +366,31 @@ func (m *FvTrackMemberModel) BuildNestedDeletePayloadObject(
 	ctx context.Context,
 	diagnostics *diag.Diagnostics,
 ) map[string]any {
-	attributes := map[string]any{}
-	attributes["name"] = m.Name.ValueString()
-	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, attributes)
+	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, map[string]any{
+		"name": m.Name.ValueString(),
+	})
 }
 
-type FvTrackMemberResourceModel struct {
+type FvTrackMemberRootModel struct {
 	FvTrackMemberModel
 
 	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ParentDN types.String `tfsdk:"parent_dn"`
 }
 
-func NewFvTrackMemberResourceModelNull() FvTrackMemberResourceModel {
-	return FvTrackMemberResourceModel{
+func NewFvTrackMemberRootModelNull() FvTrackMemberRootModel {
+	return FvTrackMemberRootModel{
 		FvTrackMemberModel: NewFvTrackMemberModelNull(),
 		ID:                 types.StringNull(),
-		ParentDn:           types.StringNull(),
+		ParentDN:           types.StringNull(),
 	}
 }
 
-func (m *FvTrackMemberResourceModel) SetIDFromDN(dn string) {
+func (m *FvTrackMemberRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
 
-func (m *FvTrackMemberResourceModel) SetFromResponse(
+func (m *FvTrackMemberRootModel) SetFromResponse(
 	ctx context.Context,
 	response *container.Container,
 ) (bool, diag.Diagnostics) {
@@ -305,11 +403,11 @@ func (m *FvTrackMemberResourceModel) SetFromResponse(
 
 	m.FvTrackMemberModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 
-func (m *FvTrackMemberResourceModel) BuildPayload(
+func (m *FvTrackMemberRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *FvTrackMemberModel,
 	create bool,
@@ -320,52 +418,16 @@ func (m *FvTrackMemberResourceModel) BuildPayload(
 	if diagnostics.HasError() {
 		return nil, diagnostics
 	}
+
 	if markCreated {
 		payloadObject["attributes"].(map[string]any)["status"] = "created"
 	}
+
 	payloadEnvelope := map[string]any{"fvTrackMember": payloadObject}
-	jsonPayload := modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload")
-	return jsonPayload, diagnostics
+	return modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload"), diagnostics
 }
 
-func (m *FvTrackMemberResourceModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
+func (m *FvTrackMemberRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
-	payload := modelHelpers.NewDeletePayload(ctx, &diagnostics, "fvTrackMember", m.ID.ValueString())
-	return payload, diagnostics
-}
-
-type FvTrackMemberDataSourceModel struct {
-	FvTrackMemberModel
-
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
-}
-
-func NewFvTrackMemberDataSourceModelNull() FvTrackMemberDataSourceModel {
-	return FvTrackMemberDataSourceModel{
-		FvTrackMemberModel: NewFvTrackMemberModelNull(),
-		ID:                 types.StringNull(),
-		ParentDn:           types.StringNull(),
-	}
-}
-
-func (m *FvTrackMemberDataSourceModel) SetIDFromDN(dn string) {
-	m.ID = types.StringValue(dn)
-}
-
-func (m *FvTrackMemberDataSourceModel) SetFromResponse(
-	ctx context.Context,
-	response *container.Container,
-) (bool, diag.Diagnostics) {
-	fallbackModel := m.FvTrackMemberModel
-	model, dn, diagnostics := FvTrackMemberModelFromResponse(ctx, response, &fallbackModel)
-	found := model != nil
-	if diagnostics.HasError() || !found {
-		return found, diagnostics
-	}
-
-	m.FvTrackMemberModel = *model
-	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
-	return true, diagnostics
+	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "fvTrackMember", m.ID.ValueString()), diagnostics
 }

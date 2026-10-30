@@ -6,15 +6,122 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+func commPolSchemaDefinition() modelHelpers.ClassSchema {
+	return modelHelpers.ClassSchema{
+		ResourceDescription:   "Manages ACI Management Access Policy",
+		DataSourceDescription: "Data source for ACI Management Access Policy",
+		Properties: map[string]modelHelpers.PropertySchema{
+			"annotation": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The annotation of the Management Access Policy object.",
+			},
+			"description": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The description of the Management Access Policy object.",
+			},
+			"name": {
+				Type:            modelHelpers.StringProperty,
+				Required:        true,
+				RequiresReplace: true,
+				Description:     "The name of the Management Access Policy object.",
+			},
+			"name_alias": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The name alias of the Management Access Policy object.",
+			},
+			"owner_key": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The key for enabling clients to own their data for entity correlation.",
+			},
+			"owner_tag": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "A tag for enabling clients to add their own data. For example, to indicate who created this object.",
+			},
+			"strict_security_on_apic_oob_subnet": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"no",
+					"yes",
+				},
+				Description: "Removes implicit access permissions from any APIC out-of-band (OOB) subnet IP address.",
+			},
+		},
+		Children: map[string]modelHelpers.ChildSchema{
+			"http_service": {
+				Cardinality: modelHelpers.SingleChild,
+				Description: "`http_service` - (map) A map of HTTP Service (ACI object [commHttp](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/commHttp/overview)).",
+				Schema:      commHttpSchemaDefinition,
+			},
+			"http_ssl_configuration": {
+				Cardinality: modelHelpers.SingleChild,
+				Description: "`http_ssl_configuration` - (map) A map of HTTPS Service (ACI object [commHttps](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/commHttps/overview)).",
+				Schema:      commHttpsSchemaDefinition,
+			},
+			"ssh_access_via_web": {
+				Cardinality: modelHelpers.SingleChild,
+				Description: "`ssh_access_via_web` - (map) A map of SSH access via WEB (ACI object [commShellinabox](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/commShellinabox/overview)).",
+				Schema:      commShellinaboxSchemaDefinition,
+			},
+			"ssh_service": {
+				Cardinality: modelHelpers.SingleChild,
+				Description: "`ssh_service` - (map) A map of SSH Service (ACI object [commSsh](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/commSsh/overview)).",
+				Schema:      commSshSchemaDefinition,
+			},
+			"telnet_service": {
+				Cardinality: modelHelpers.SingleChild,
+				Description: "`telnet_service` - (map) A map of Telnet Service (ACI object [commTelnet](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/commTelnet/overview)).",
+				Schema:      commTelnetSchemaDefinition,
+			},
+			"annotations": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.",
+				Schema:      tagAnnotationSchemaDefinition,
+			},
+			"tags": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.",
+				Schema:      tagTagSchemaDefinition,
+			},
+		},
+		Identifiers: []string{
+			"name",
+		},
+		AnnotationAttribute: "annotation",
+	}
+}
+
+func CommPolResourceSchema(defaultAnnotation string) resourceschema.Schema {
+	return commPolSchemaDefinition().ResourceSchema(defaultAnnotation)
+}
+
+func CommPolDataSourceSchema() datasourceschema.Schema {
+	return commPolSchemaDefinition().DataSourceSchema()
+}
 
 type CommPolModel struct {
 	Annotation                    types.String `tfsdk:"annotation"`
@@ -100,12 +207,11 @@ func NewCommPolModelNull() CommPolModel {
 func (m *CommPolModel) BuildRN() string {
 	rn := "fabric/comm-{name}"
 	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
-
 	return rn
 }
 
 func (m *CommPolModel) BuildDN() string {
-	return "uni/" + m.BuildRN()
+	return fmt.Sprintf("uni/%s", m.BuildRN())
 }
 
 func CommPolModelFromObject(
@@ -120,6 +226,7 @@ func CommPolModelFromObject(
 	if !ok {
 		return model, diagnostics
 	}
+
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "descr", &model.Descr)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "name", &model.Name)
@@ -127,6 +234,7 @@ func CommPolModelFromObject(
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ownerKey", &model.OwnerKey)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ownerTag", &model.OwnerTag)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "strictSecurityOnApicOOBSubnet", &model.StrictSecurityOnApicOOBSubnet)
+
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,
 		&diagnostics,
@@ -142,6 +250,7 @@ func CommPolModelFromObject(
 			"tagTag",
 		},
 	)
+
 	var fallbackCommHttp *types.Object
 	if fallbackModel != nil {
 		fallbackCommHttp = &fallbackModel.CommHttp
@@ -158,6 +267,7 @@ func CommPolModelFromObject(
 		CommHttpModelFromObject,
 		&model.CommHttp,
 	)
+
 	var fallbackCommHttps *types.Object
 	if fallbackModel != nil {
 		fallbackCommHttps = &fallbackModel.CommHttps
@@ -174,6 +284,7 @@ func CommPolModelFromObject(
 		CommHttpsModelFromObject,
 		&model.CommHttps,
 	)
+
 	var fallbackCommShellinabox *types.Object
 	if fallbackModel != nil {
 		fallbackCommShellinabox = &fallbackModel.CommShellinabox
@@ -190,6 +301,7 @@ func CommPolModelFromObject(
 		CommShellinaboxModelFromObject,
 		&model.CommShellinabox,
 	)
+
 	var fallbackCommSsh *types.Object
 	if fallbackModel != nil {
 		fallbackCommSsh = &fallbackModel.CommSsh
@@ -206,6 +318,7 @@ func CommPolModelFromObject(
 		CommSshModelFromObject,
 		&model.CommSsh,
 	)
+
 	var fallbackCommTelnet *types.Object
 	if fallbackModel != nil {
 		fallbackCommTelnet = &fallbackModel.CommTelnet
@@ -222,6 +335,7 @@ func CommPolModelFromObject(
 		CommTelnetModelFromObject,
 		&model.CommTelnet,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -230,6 +344,7 @@ func CommPolModelFromObject(
 		TagAnnotationModelFromObject,
 		&model.TagAnnotation,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -261,6 +376,7 @@ func (m *CommPolModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
+
 	if !modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "annotation", m.Annotation) && nested {
 		attributes["annotation"] = defaultAnnotation
 	}
@@ -270,6 +386,7 @@ func (m *CommPolModel) BuildPayloadObject(
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "ownerKey", m.OwnerKey)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "ownerTag", m.OwnerTag)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "strictSecurityOnApicOOBSubnet", m.StrictSecurityOnApicOOBSubnet)
+
 	var priorCommHttp *types.Object
 	if priorState != nil {
 		priorCommHttp = &priorState.CommHttp
@@ -289,6 +406,7 @@ func (m *CommPolModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, commHttpPayloads...)
+
 	var priorCommHttps *types.Object
 	if priorState != nil {
 		priorCommHttps = &priorState.CommHttps
@@ -308,6 +426,7 @@ func (m *CommPolModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, commHttpsPayloads...)
+
 	var priorCommShellinabox *types.Object
 	if priorState != nil {
 		priorCommShellinabox = &priorState.CommShellinabox
@@ -327,6 +446,7 @@ func (m *CommPolModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, commShellinaboxPayloads...)
+
 	var priorCommSsh *types.Object
 	if priorState != nil {
 		priorCommSsh = &priorState.CommSsh
@@ -346,6 +466,7 @@ func (m *CommPolModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, commSshPayloads...)
+
 	var priorCommTelnet *types.Object
 	if priorState != nil {
 		priorCommTelnet = &priorState.CommTelnet
@@ -365,6 +486,7 @@ func (m *CommPolModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, commTelnetPayloads...)
+
 	var priorTagAnnotation *types.Set
 	if priorState != nil {
 		priorTagAnnotation = &priorState.TagAnnotation
@@ -385,6 +507,7 @@ func (m *CommPolModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, tagAnnotationPayloads...)
+
 	var priorTagTag *types.Set
 	if priorState != nil {
 		priorTagTag = &priorState.TagTag
@@ -419,29 +542,29 @@ func (m *CommPolModel) BuildNestedDeletePayloadObject(
 	ctx context.Context,
 	diagnostics *diag.Diagnostics,
 ) map[string]any {
-	attributes := map[string]any{}
-	attributes["name"] = m.Name.ValueString()
-	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, attributes)
+	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, map[string]any{
+		"name": m.Name.ValueString(),
+	})
 }
 
-type CommPolResourceModel struct {
+type CommPolRootModel struct {
 	CommPolModel
 
 	ID types.String `tfsdk:"id"`
 }
 
-func NewCommPolResourceModelNull() CommPolResourceModel {
-	return CommPolResourceModel{
+func NewCommPolRootModelNull() CommPolRootModel {
+	return CommPolRootModel{
 		CommPolModel: NewCommPolModelNull(),
 		ID:           types.StringNull(),
 	}
 }
 
-func (m *CommPolResourceModel) SetIDFromDN(dn string) {
+func (m *CommPolRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
 
-func (m *CommPolResourceModel) SetFromResponse(
+func (m *CommPolRootModel) SetFromResponse(
 	ctx context.Context,
 	response *container.Container,
 ) (bool, diag.Diagnostics) {
@@ -457,7 +580,7 @@ func (m *CommPolResourceModel) SetFromResponse(
 	return true, diagnostics
 }
 
-func (m *CommPolResourceModel) BuildPayload(
+func (m *CommPolRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *CommPolModel,
 	create bool,
@@ -468,49 +591,16 @@ func (m *CommPolResourceModel) BuildPayload(
 	if diagnostics.HasError() {
 		return nil, diagnostics
 	}
+
 	if markCreated {
 		payloadObject["attributes"].(map[string]any)["status"] = "created"
 	}
+
 	payloadEnvelope := map[string]any{"commPol": payloadObject}
-	jsonPayload := modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload")
-	return jsonPayload, diagnostics
+	return modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload"), diagnostics
 }
 
-func (m *CommPolResourceModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
+func (m *CommPolRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
-	payload := modelHelpers.NewDeletePayload(ctx, &diagnostics, "commPol", m.ID.ValueString())
-	return payload, diagnostics
-}
-
-type CommPolDataSourceModel struct {
-	CommPolModel
-
-	ID types.String `tfsdk:"id"`
-}
-
-func NewCommPolDataSourceModelNull() CommPolDataSourceModel {
-	return CommPolDataSourceModel{
-		CommPolModel: NewCommPolModelNull(),
-		ID:           types.StringNull(),
-	}
-}
-
-func (m *CommPolDataSourceModel) SetIDFromDN(dn string) {
-	m.ID = types.StringValue(dn)
-}
-
-func (m *CommPolDataSourceModel) SetFromResponse(
-	ctx context.Context,
-	response *container.Container,
-) (bool, diag.Diagnostics) {
-	fallbackModel := m.CommPolModel
-	model, dn, diagnostics := CommPolModelFromResponse(ctx, response, &fallbackModel)
-	found := model != nil
-	if diagnostics.HasError() || !found {
-		return found, diagnostics
-	}
-
-	m.CommPolModel = *model
-	m.ID = types.StringValue(dn)
-	return true, diagnostics
+	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "commPol", m.ID.ValueString()), diagnostics
 }

@@ -6,15 +6,117 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+func fvnsAddrInstSchemaDefinition() modelHelpers.ClassSchema {
+	return modelHelpers.ClassSchema{
+		ResourceDescription:   "Manages ACI IP Address Pool",
+		DataSourceDescription: "Data source for ACI IP Address Pool",
+		Properties: map[string]modelHelpers.PropertySchema{
+			"gateway_address": {
+				Type:        modelHelpers.StringProperty,
+				Required:    true,
+				Description: "The gateway address of the IP Address Pool object.",
+			},
+			"address_type": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"regular",
+					"vip_range",
+				},
+				Description: "The gateway address type of the IP Address Pool object.",
+			},
+			"annotation": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The annotation of the IP Address Pool object.",
+			},
+			"description": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The description of the IP Address Pool object.",
+			},
+			"name": {
+				Type:            modelHelpers.StringProperty,
+				Required:        true,
+				RequiresReplace: true,
+				Description:     "The name of the IP Address Pool object.",
+			},
+			"name_alias": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The name alias of the IP Address Pool object.",
+			},
+			"owner_key": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The key for enabling clients to own their data for entity correlation.",
+			},
+			"owner_tag": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "A tag for enabling clients to add their own data. For example, to indicate who created this object.",
+			},
+			"skip_gateway_validation": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"no",
+					"yes",
+				},
+				Description: "Skip gateway validation for the IP Address Pool object.",
+			},
+		},
+		Children: map[string]modelHelpers.ChildSchema{
+			"ip_address_blocks": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`ip_address_blocks` - (list) A list of IP Address Blocks (ACI object [fvnsUcastAddrBlk](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvnsUcastAddrBlk/overview)) which can also be configured using a separate [aci_ip_address_block](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/ip_address_block) resource.",
+				Schema:      fvnsUcastAddrBlkSchemaDefinition,
+			},
+			"annotations": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.",
+				Schema:      tagAnnotationSchemaDefinition,
+			},
+			"tags": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.",
+				Schema:      tagTagSchemaDefinition,
+			},
+		},
+		Identifiers: []string{
+			"name",
+		},
+		AnnotationAttribute: "annotation",
+	}
+}
+
+func FvnsAddrInstResourceSchema(defaultAnnotation string) resourceschema.Schema {
+	return fvnsAddrInstSchemaDefinition().ResourceSchema(defaultAnnotation)
+}
+
+func FvnsAddrInstDataSourceSchema() datasourceschema.Schema {
+	return fvnsAddrInstSchemaDefinition().DataSourceSchema()
+}
 
 type FvnsAddrInstModel struct {
 	Addr             types.String `tfsdk:"gateway_address"`
@@ -92,12 +194,11 @@ func NewFvnsAddrInstModelNull() FvnsAddrInstModel {
 func (m *FvnsAddrInstModel) BuildRN() string {
 	rn := "tn-mgmt/addrinst-{name}"
 	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
-
 	return rn
 }
 
 func (m *FvnsAddrInstModel) BuildDN() string {
-	return "uni/" + m.BuildRN()
+	return fmt.Sprintf("uni/%s", m.BuildRN())
 }
 
 func FvnsAddrInstModelFromObject(
@@ -112,6 +213,7 @@ func FvnsAddrInstModelFromObject(
 	if !ok {
 		return model, diagnostics
 	}
+
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "addr", &model.Addr)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "addrType", &model.AddrType)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
@@ -121,6 +223,7 @@ func FvnsAddrInstModelFromObject(
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ownerKey", &model.OwnerKey)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ownerTag", &model.OwnerTag)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "skipGwVal", &model.SkipGwVal)
+
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,
 		&diagnostics,
@@ -132,6 +235,7 @@ func FvnsAddrInstModelFromObject(
 			"tagTag",
 		},
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -140,6 +244,7 @@ func FvnsAddrInstModelFromObject(
 		FvnsUcastAddrBlkModelFromObject,
 		&model.FvnsUcastAddrBlk,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -148,6 +253,7 @@ func FvnsAddrInstModelFromObject(
 		TagAnnotationModelFromObject,
 		&model.TagAnnotation,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -179,6 +285,7 @@ func (m *FvnsAddrInstModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
+
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "addr", m.Addr)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "addrType", m.AddrType)
 	if !modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "annotation", m.Annotation) && nested {
@@ -190,6 +297,7 @@ func (m *FvnsAddrInstModel) BuildPayloadObject(
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "ownerKey", m.OwnerKey)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "ownerTag", m.OwnerTag)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "skipGwVal", m.SkipGwVal)
+
 	var priorFvnsUcastAddrBlk *types.Set
 	if priorState != nil {
 		priorFvnsUcastAddrBlk = &priorState.FvnsUcastAddrBlk
@@ -210,6 +318,7 @@ func (m *FvnsAddrInstModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, fvnsUcastAddrBlkPayloads...)
+
 	var priorTagAnnotation *types.Set
 	if priorState != nil {
 		priorTagAnnotation = &priorState.TagAnnotation
@@ -230,6 +339,7 @@ func (m *FvnsAddrInstModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, tagAnnotationPayloads...)
+
 	var priorTagTag *types.Set
 	if priorState != nil {
 		priorTagTag = &priorState.TagTag
@@ -264,29 +374,29 @@ func (m *FvnsAddrInstModel) BuildNestedDeletePayloadObject(
 	ctx context.Context,
 	diagnostics *diag.Diagnostics,
 ) map[string]any {
-	attributes := map[string]any{}
-	attributes["name"] = m.Name.ValueString()
-	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, attributes)
+	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, map[string]any{
+		"name": m.Name.ValueString(),
+	})
 }
 
-type FvnsAddrInstResourceModel struct {
+type FvnsAddrInstRootModel struct {
 	FvnsAddrInstModel
 
 	ID types.String `tfsdk:"id"`
 }
 
-func NewFvnsAddrInstResourceModelNull() FvnsAddrInstResourceModel {
-	return FvnsAddrInstResourceModel{
+func NewFvnsAddrInstRootModelNull() FvnsAddrInstRootModel {
+	return FvnsAddrInstRootModel{
 		FvnsAddrInstModel: NewFvnsAddrInstModelNull(),
 		ID:                types.StringNull(),
 	}
 }
 
-func (m *FvnsAddrInstResourceModel) SetIDFromDN(dn string) {
+func (m *FvnsAddrInstRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
 
-func (m *FvnsAddrInstResourceModel) SetFromResponse(
+func (m *FvnsAddrInstRootModel) SetFromResponse(
 	ctx context.Context,
 	response *container.Container,
 ) (bool, diag.Diagnostics) {
@@ -302,7 +412,7 @@ func (m *FvnsAddrInstResourceModel) SetFromResponse(
 	return true, diagnostics
 }
 
-func (m *FvnsAddrInstResourceModel) BuildPayload(
+func (m *FvnsAddrInstRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *FvnsAddrInstModel,
 	create bool,
@@ -313,49 +423,16 @@ func (m *FvnsAddrInstResourceModel) BuildPayload(
 	if diagnostics.HasError() {
 		return nil, diagnostics
 	}
+
 	if markCreated {
 		payloadObject["attributes"].(map[string]any)["status"] = "created"
 	}
+
 	payloadEnvelope := map[string]any{"fvnsAddrInst": payloadObject}
-	jsonPayload := modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload")
-	return jsonPayload, diagnostics
+	return modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload"), diagnostics
 }
 
-func (m *FvnsAddrInstResourceModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
+func (m *FvnsAddrInstRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
-	payload := modelHelpers.NewDeletePayload(ctx, &diagnostics, "fvnsAddrInst", m.ID.ValueString())
-	return payload, diagnostics
-}
-
-type FvnsAddrInstDataSourceModel struct {
-	FvnsAddrInstModel
-
-	ID types.String `tfsdk:"id"`
-}
-
-func NewFvnsAddrInstDataSourceModelNull() FvnsAddrInstDataSourceModel {
-	return FvnsAddrInstDataSourceModel{
-		FvnsAddrInstModel: NewFvnsAddrInstModelNull(),
-		ID:                types.StringNull(),
-	}
-}
-
-func (m *FvnsAddrInstDataSourceModel) SetIDFromDN(dn string) {
-	m.ID = types.StringValue(dn)
-}
-
-func (m *FvnsAddrInstDataSourceModel) SetFromResponse(
-	ctx context.Context,
-	response *container.Container,
-) (bool, diag.Diagnostics) {
-	fallbackModel := m.FvnsAddrInstModel
-	model, dn, diagnostics := FvnsAddrInstModelFromResponse(ctx, response, &fallbackModel)
-	found := model != nil
-	if diagnostics.HasError() || !found {
-		return found, diagnostics
-	}
-
-	m.FvnsAddrInstModel = *model
-	m.ID = types.StringValue(dn)
-	return true, diagnostics
+	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "fvnsAddrInst", m.ID.ValueString()), diagnostics
 }

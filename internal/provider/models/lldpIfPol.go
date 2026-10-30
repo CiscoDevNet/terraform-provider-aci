@@ -6,15 +6,117 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+func lldpIfPolSchemaDefinition() modelHelpers.ClassSchema {
+	return modelHelpers.ClassSchema{
+		ResourceDescription:   "Manages ACI LLDP Interface Policy",
+		DataSourceDescription: "Data source for ACI LLDP Interface Policy",
+		Properties: map[string]modelHelpers.PropertySchema{
+			"receive_state": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"disabled",
+					"enabled",
+				},
+				Description: "The receive (rx) state of the LLDP Interface Policy object.",
+			},
+			"transmit_state": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"disabled",
+					"enabled",
+				},
+				Description: "The transmit (tx) state of the LLDP Interface Policy object.",
+			},
+			"annotation": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The annotation of the LLDP Interface Policy object.",
+			},
+			"description": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The description of the LLDP Interface Policy object.",
+			},
+			"name": {
+				Type:            modelHelpers.StringProperty,
+				Required:        true,
+				RequiresReplace: true,
+				Description:     "The name of the LLDP Interface Policy object.",
+			},
+			"name_alias": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The name alias of the LLDP Interface Policy object.",
+			},
+			"owner_key": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The key for enabling clients to own their data for entity correlation.",
+			},
+			"owner_tag": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "A tag for enabling clients to add their own data. For example, to indicate who created this object.",
+			},
+			"dcbxp_version": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"CEE",
+					"IEEE",
+				},
+				Description: "The Data Center Bridging Exchange Protocol (DCBXP) version of the LLDP Interface Policy object. Changing the DCBX version may prevent the port parameters from converging. The link may need to be reset for the change to take effect.",
+			},
+		},
+		Children: map[string]modelHelpers.ChildSchema{
+			"annotations": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.",
+				Schema:      tagAnnotationSchemaDefinition,
+			},
+			"tags": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.",
+				Schema:      tagTagSchemaDefinition,
+			},
+		},
+		Identifiers: []string{
+			"name",
+		},
+		AnnotationAttribute: "annotation",
+	}
+}
+
+func LldpIfPolResourceSchema(defaultAnnotation string) resourceschema.Schema {
+	return lldpIfPolSchemaDefinition().ResourceSchema(defaultAnnotation)
+}
+
+func LldpIfPolDataSourceSchema() datasourceschema.Schema {
+	return lldpIfPolSchemaDefinition().DataSourceSchema()
+}
 
 type LldpIfPolModel struct {
 	AdminRxSt     types.String `tfsdk:"receive_state"`
@@ -81,12 +183,11 @@ func NewLldpIfPolModelNull() LldpIfPolModel {
 func (m *LldpIfPolModel) BuildRN() string {
 	rn := "infra/lldpIfP-{name}"
 	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
-
 	return rn
 }
 
 func (m *LldpIfPolModel) BuildDN() string {
-	return "uni/" + m.BuildRN()
+	return fmt.Sprintf("uni/%s", m.BuildRN())
 }
 
 func LldpIfPolModelFromObject(
@@ -101,6 +202,7 @@ func LldpIfPolModelFromObject(
 	if !ok {
 		return model, diagnostics
 	}
+
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "adminRxSt", &model.AdminRxSt)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "adminTxSt", &model.AdminTxSt)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
@@ -110,6 +212,7 @@ func LldpIfPolModelFromObject(
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ownerKey", &model.OwnerKey)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ownerTag", &model.OwnerTag)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "portDCBXPVer", &model.PortDCBXPVer)
+
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,
 		&diagnostics,
@@ -120,6 +223,7 @@ func LldpIfPolModelFromObject(
 			"tagTag",
 		},
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -128,6 +232,7 @@ func LldpIfPolModelFromObject(
 		TagAnnotationModelFromObject,
 		&model.TagAnnotation,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -159,6 +264,7 @@ func (m *LldpIfPolModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
+
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "adminRxSt", m.AdminRxSt)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "adminTxSt", m.AdminTxSt)
 	if !modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "annotation", m.Annotation) && nested {
@@ -170,6 +276,7 @@ func (m *LldpIfPolModel) BuildPayloadObject(
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "ownerKey", m.OwnerKey)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "ownerTag", m.OwnerTag)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "portDCBXPVer", m.PortDCBXPVer)
+
 	var priorTagAnnotation *types.Set
 	if priorState != nil {
 		priorTagAnnotation = &priorState.TagAnnotation
@@ -190,6 +297,7 @@ func (m *LldpIfPolModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, tagAnnotationPayloads...)
+
 	var priorTagTag *types.Set
 	if priorState != nil {
 		priorTagTag = &priorState.TagTag
@@ -224,29 +332,29 @@ func (m *LldpIfPolModel) BuildNestedDeletePayloadObject(
 	ctx context.Context,
 	diagnostics *diag.Diagnostics,
 ) map[string]any {
-	attributes := map[string]any{}
-	attributes["name"] = m.Name.ValueString()
-	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, attributes)
+	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, map[string]any{
+		"name": m.Name.ValueString(),
+	})
 }
 
-type LldpIfPolResourceModel struct {
+type LldpIfPolRootModel struct {
 	LldpIfPolModel
 
 	ID types.String `tfsdk:"id"`
 }
 
-func NewLldpIfPolResourceModelNull() LldpIfPolResourceModel {
-	return LldpIfPolResourceModel{
+func NewLldpIfPolRootModelNull() LldpIfPolRootModel {
+	return LldpIfPolRootModel{
 		LldpIfPolModel: NewLldpIfPolModelNull(),
 		ID:             types.StringNull(),
 	}
 }
 
-func (m *LldpIfPolResourceModel) SetIDFromDN(dn string) {
+func (m *LldpIfPolRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
 
-func (m *LldpIfPolResourceModel) SetFromResponse(
+func (m *LldpIfPolRootModel) SetFromResponse(
 	ctx context.Context,
 	response *container.Container,
 ) (bool, diag.Diagnostics) {
@@ -262,7 +370,7 @@ func (m *LldpIfPolResourceModel) SetFromResponse(
 	return true, diagnostics
 }
 
-func (m *LldpIfPolResourceModel) BuildPayload(
+func (m *LldpIfPolRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *LldpIfPolModel,
 	create bool,
@@ -273,49 +381,16 @@ func (m *LldpIfPolResourceModel) BuildPayload(
 	if diagnostics.HasError() {
 		return nil, diagnostics
 	}
+
 	if markCreated {
 		payloadObject["attributes"].(map[string]any)["status"] = "created"
 	}
+
 	payloadEnvelope := map[string]any{"lldpIfPol": payloadObject}
-	jsonPayload := modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload")
-	return jsonPayload, diagnostics
+	return modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload"), diagnostics
 }
 
-func (m *LldpIfPolResourceModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
+func (m *LldpIfPolRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
-	payload := modelHelpers.NewDeletePayload(ctx, &diagnostics, "lldpIfPol", m.ID.ValueString())
-	return payload, diagnostics
-}
-
-type LldpIfPolDataSourceModel struct {
-	LldpIfPolModel
-
-	ID types.String `tfsdk:"id"`
-}
-
-func NewLldpIfPolDataSourceModelNull() LldpIfPolDataSourceModel {
-	return LldpIfPolDataSourceModel{
-		LldpIfPolModel: NewLldpIfPolModelNull(),
-		ID:             types.StringNull(),
-	}
-}
-
-func (m *LldpIfPolDataSourceModel) SetIDFromDN(dn string) {
-	m.ID = types.StringValue(dn)
-}
-
-func (m *LldpIfPolDataSourceModel) SetFromResponse(
-	ctx context.Context,
-	response *container.Container,
-) (bool, diag.Diagnostics) {
-	fallbackModel := m.LldpIfPolModel
-	model, dn, diagnostics := LldpIfPolModelFromResponse(ctx, response, &fallbackModel)
-	found := model != nil
-	if diagnostics.HasError() || !found {
-		return found, diagnostics
-	}
-
-	m.LldpIfPolModel = *model
-	m.ID = types.StringValue(dn)
-	return true, diagnostics
+	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "lldpIfPol", m.ID.ValueString()), diagnostics
 }

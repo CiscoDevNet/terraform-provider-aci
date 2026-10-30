@@ -6,15 +6,172 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+func ndIfPolSchemaDefinition() modelHelpers.ClassSchema {
+	return modelHelpers.ClassSchema{
+		ResourceDescription:   "Manages ACI Neighbor Discovery Interface Policy",
+		DataSourceDescription: "Data source for ACI Neighbor Discovery Interface Policy",
+		Properties: map[string]modelHelpers.PropertySchema{
+			"annotation": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The annotation of the Neighbor Discovery Interface Policy object.",
+			},
+			"controller_state": {
+				Type:           modelHelpers.SetProperty,
+				SetElementType: types.StringType,
+				Optional:       true,
+				Computed:       true,
+				ValidValues: []string{
+					"managed-cfg",
+					"other-cfg",
+					"suppress-ra",
+					"suppress-ra-mtu",
+					"unsolicit-na-glean",
+					"unspecified",
+				},
+				Description: "The controls for the Neighbor Discovery Interface Policy object.",
+			},
+			"description": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The description of the Neighbor Discovery Interface Policy object.",
+			},
+			"hop_limit": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The hop limit of the Neighbor Discovery Interface Policy object.",
+			},
+			"mtu": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The maximum transmission unit (MTU) of the Neighbor Discovery Interface Policy object.",
+			},
+			"name": {
+				Type:            modelHelpers.StringProperty,
+				Required:        true,
+				RequiresReplace: true,
+				Description:     "The name of the Neighbor Discovery Interface Policy object.",
+			},
+			"name_alias": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The name alias of the Neighbor Discovery Interface Policy object.",
+			},
+			"neighbor_solicitation_interval": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The interval (milliseconds) for sending neighbor solicitation (NS) messages.",
+			},
+			"neighbor_solicitation_retries": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The retransmission count for sending neighbor solicitation (NS) messages.",
+			},
+			"nud_retry_base": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The retransmission base value for neighbor unreachability detection (NUD).",
+			},
+			"nud_retry_interval": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The retransmission interval (milliseconds) for neighbor unreachability detection (NUD).",
+			},
+			"nud_retry_max_attempts": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The maximum number of retransmission attempts for neighbor unreachability detection (NUD).",
+			},
+			"owner_key": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The key for enabling clients to own their data for entity correlation.",
+			},
+			"owner_tag": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "A tag for enabling clients to add their own data. For example, to indicate who created this object.",
+			},
+			"router_advertisement_interval": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The interval (seconds) for sending route advertisement messages.",
+			},
+			"router_advertisement_lifetime": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The default router lifetime (seconds).",
+			},
+			"reachable_time": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The time (milliseconds) for which a neighbor is considered reachable after receiving reachability confirmation.",
+			},
+			"retransmit_timer": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The retransmission time (milliseconds) for sending neighbor solicitation messages.",
+			},
+		},
+		Children: map[string]modelHelpers.ChildSchema{
+			"annotations": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.",
+				Schema:      tagAnnotationSchemaDefinition,
+			},
+			"tags": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.",
+				Schema:      tagTagSchemaDefinition,
+			},
+		},
+		Identifiers: []string{
+			"name",
+		},
+		ParentDN: &modelHelpers.ParentDNSchema{
+			AttributeName: "parent_dn",
+			Config:        modelHelpers.ParentDNAttributeConfig{},
+		},
+		AnnotationAttribute: "annotation",
+	}
+}
+
+func NdIfPolResourceSchema(defaultAnnotation string) resourceschema.Schema {
+	return ndIfPolSchemaDefinition().ResourceSchema(defaultAnnotation)
+}
+
+func NdIfPolDataSourceSchema() datasourceschema.Schema {
+	return ndIfPolSchemaDefinition().DataSourceSchema()
+}
 
 type NdIfPolModel struct {
 	Annotation          types.String `tfsdk:"annotation"`
@@ -108,19 +265,15 @@ func NewNdIfPolModelNull() NdIfPolModel {
 func (m *NdIfPolModel) BuildRN() string {
 	rn := "ndifpol-{name}"
 	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
-
 	return rn
 }
 
 func (m *NdIfPolModel) BuildDN(parentDN string) string {
-	return parentDN + "/" + m.BuildRN()
+	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
 }
 
 func (m *NdIfPolModel) ParentDNFromDN(dn string) string {
-	rn := m.BuildRN()
-
-	parentDN, _ := strings.CutSuffix(dn, "/"+rn)
-	return parentDN
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
 }
 
 func NdIfPolModelFromObject(
@@ -135,6 +288,7 @@ func NdIfPolModelFromObject(
 	if !ok {
 		return model, diagnostics
 	}
+
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
 	modelHelpers.DecodeStringSetAttribute(ctx, &diagnostics, attributes, "ctrl", &model.Ctrl)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "descr", &model.Descr)
@@ -153,6 +307,7 @@ func NdIfPolModelFromObject(
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "raLifetime", &model.RaLifetime)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "reachableTime", &model.ReachableTime)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "retransTimer", &model.RetransTimer)
+
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,
 		&diagnostics,
@@ -163,6 +318,7 @@ func NdIfPolModelFromObject(
 			"tagTag",
 		},
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -171,6 +327,7 @@ func NdIfPolModelFromObject(
 		TagAnnotationModelFromObject,
 		&model.TagAnnotation,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -202,6 +359,7 @@ func (m *NdIfPolModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
+
 	if !modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "annotation", m.Annotation) && nested {
 		attributes["annotation"] = defaultAnnotation
 	}
@@ -225,6 +383,7 @@ func (m *NdIfPolModel) BuildPayloadObject(
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "raLifetime", m.RaLifetime)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "reachableTime", m.ReachableTime)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "retransTimer", m.RetransTimer)
+
 	var priorTagAnnotation *types.Set
 	if priorState != nil {
 		priorTagAnnotation = &priorState.TagAnnotation
@@ -245,6 +404,7 @@ func (m *NdIfPolModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, tagAnnotationPayloads...)
+
 	var priorTagTag *types.Set
 	if priorState != nil {
 		priorTagTag = &priorState.TagTag
@@ -279,31 +439,31 @@ func (m *NdIfPolModel) BuildNestedDeletePayloadObject(
 	ctx context.Context,
 	diagnostics *diag.Diagnostics,
 ) map[string]any {
-	attributes := map[string]any{}
-	attributes["name"] = m.Name.ValueString()
-	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, attributes)
+	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, map[string]any{
+		"name": m.Name.ValueString(),
+	})
 }
 
-type NdIfPolResourceModel struct {
+type NdIfPolRootModel struct {
 	NdIfPolModel
 
 	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ParentDN types.String `tfsdk:"parent_dn"`
 }
 
-func NewNdIfPolResourceModelNull() NdIfPolResourceModel {
-	return NdIfPolResourceModel{
+func NewNdIfPolRootModelNull() NdIfPolRootModel {
+	return NdIfPolRootModel{
 		NdIfPolModel: NewNdIfPolModelNull(),
 		ID:           types.StringNull(),
-		ParentDn:     types.StringNull(),
+		ParentDN:     types.StringNull(),
 	}
 }
 
-func (m *NdIfPolResourceModel) SetIDFromDN(dn string) {
+func (m *NdIfPolRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
 
-func (m *NdIfPolResourceModel) SetFromResponse(
+func (m *NdIfPolRootModel) SetFromResponse(
 	ctx context.Context,
 	response *container.Container,
 ) (bool, diag.Diagnostics) {
@@ -316,11 +476,11 @@ func (m *NdIfPolResourceModel) SetFromResponse(
 
 	m.NdIfPolModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 
-func (m *NdIfPolResourceModel) BuildPayload(
+func (m *NdIfPolRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *NdIfPolModel,
 	create bool,
@@ -331,52 +491,16 @@ func (m *NdIfPolResourceModel) BuildPayload(
 	if diagnostics.HasError() {
 		return nil, diagnostics
 	}
+
 	if markCreated {
 		payloadObject["attributes"].(map[string]any)["status"] = "created"
 	}
+
 	payloadEnvelope := map[string]any{"ndIfPol": payloadObject}
-	jsonPayload := modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload")
-	return jsonPayload, diagnostics
+	return modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload"), diagnostics
 }
 
-func (m *NdIfPolResourceModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
+func (m *NdIfPolRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
-	payload := modelHelpers.NewDeletePayload(ctx, &diagnostics, "ndIfPol", m.ID.ValueString())
-	return payload, diagnostics
-}
-
-type NdIfPolDataSourceModel struct {
-	NdIfPolModel
-
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
-}
-
-func NewNdIfPolDataSourceModelNull() NdIfPolDataSourceModel {
-	return NdIfPolDataSourceModel{
-		NdIfPolModel: NewNdIfPolModelNull(),
-		ID:           types.StringNull(),
-		ParentDn:     types.StringNull(),
-	}
-}
-
-func (m *NdIfPolDataSourceModel) SetIDFromDN(dn string) {
-	m.ID = types.StringValue(dn)
-}
-
-func (m *NdIfPolDataSourceModel) SetFromResponse(
-	ctx context.Context,
-	response *container.Container,
-) (bool, diag.Diagnostics) {
-	fallbackModel := m.NdIfPolModel
-	model, dn, diagnostics := NdIfPolModelFromResponse(ctx, response, &fallbackModel)
-	found := model != nil
-	if diagnostics.HasError() || !found {
-		return found, diagnostics
-	}
-
-	m.NdIfPolModel = *model
-	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
-	return true, diagnostics
+	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "ndIfPol", m.ID.ValueString()), diagnostics
 }

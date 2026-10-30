@@ -6,19 +6,176 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"regexp"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
 
-var pkiKeyRingParentDnVariant1Patterns = []*regexp.Regexp{
+var pkiKeyRingParentDNVariant1Patterns = []*regexp.Regexp{
 	regexp.MustCompile("^uni/tn-[^/]+$"),
+}
+
+func pkiKeyRingSchemaDefinition() modelHelpers.ClassSchema {
+	return modelHelpers.ClassSchema{
+		ResourceDescription:   "Manages ACI Key Ring",
+		DataSourceDescription: "Data source for ACI Key Ring",
+		Properties: map[string]modelHelpers.PropertySchema{
+			"admin_state": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"completed",
+					"created",
+					"reqCreated",
+					"started",
+					"tpSet",
+				},
+				Description: "The current administrative state of the certificate request process.",
+			},
+			"annotation": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The annotation of the Key Ring object.",
+			},
+			"certificate": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "A certificate contains a device's public key along with signed information verifying the identity of the device.",
+			},
+			"description": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The description of the Key Ring object.",
+			},
+			"elliptic_curve": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"none",
+					"prime256v1",
+					"secp384r1",
+					"secp521r1",
+				},
+				Description: "The elliptic curve used by the provided key.",
+			},
+			"key": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Sensitive:   true,
+				Description: "The private key of the certificate. This sensitive value is excluded from the resource's lifecycle configuration and is not tracked by Terraform.",
+			},
+			"key_type": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"ECC",
+					"RSA",
+					"indeterminate",
+				},
+				Description: "The type used by the provided key.",
+			},
+			"modulus": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"mod1024",
+					"mod1536",
+					"mod2048",
+					"mod3072",
+					"mod4096",
+					"mod512",
+					"none",
+				},
+				Description: "The length of the encryption keys. A longer key length increases the difficulty of breaking the key.",
+			},
+			"name": {
+				Type:            modelHelpers.StringProperty,
+				Required:        true,
+				RequiresReplace: true,
+				Description:     "The name of the Key Ring object.",
+			},
+			"name_alias": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The name alias of the Key Ring object.",
+			},
+			"owner_key": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The key for enabling clients to own their data for entity correlation.",
+			},
+			"owner_tag": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "A tag for enabling clients to add their own data. For example, to indicate who created this object.",
+			},
+			"regenerate": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"no",
+					"yes",
+				},
+				Description: "Forces regeneration of the keypair. Each PKI device holds a pair of asymmetric Rivest-Shamir-Adleman (RSA) or Elliptic Curve Cryptography (ECC) encryption keys, one kept private and one made public, stored in an internal key ring.",
+			},
+			"certificate_authority": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The certificate of the Certificate Authority (CA) that issued the certificate provided in the 'certificate' attribute. The CA can be a root CA, an intermediate CA, or a trust anchor in a chain of trust leading to a root CA. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/certificate_authority) with `aci_certificate_authority.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/certificate_authority) with `data.aci_certificate_authority.example.name`.",
+			},
+		},
+		Children: map[string]modelHelpers.ChildSchema{
+			"annotations": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.",
+				Schema:      tagAnnotationSchemaDefinition,
+			},
+			"tags": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.",
+				Schema:      tagTagSchemaDefinition,
+			},
+		},
+		Identifiers: []string{
+			"name",
+		},
+		ParentDN: &modelHelpers.ParentDNSchema{
+			AttributeName: "parent_dn",
+			Config: modelHelpers.ParentDNAttributeConfig{
+				DefaultValue: "uni/userext/pkiext",
+			},
+		},
+		AnnotationAttribute: "annotation",
+	}
+}
+
+func PkiKeyRingResourceSchema(defaultAnnotation string) resourceschema.Schema {
+	return pkiKeyRingSchemaDefinition().ResourceSchema(defaultAnnotation)
+}
+
+func PkiKeyRingDataSourceSchema() datasourceschema.Schema {
+	return pkiKeyRingSchemaDefinition().DataSourceSchema()
 }
 
 type PkiKeyRingModel struct {
@@ -101,33 +258,31 @@ func NewPkiKeyRingModelNull() PkiKeyRingModel {
 func (m *PkiKeyRingModel) BuildRN() string {
 	rn := "keyring-{name}"
 	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
-
 	return rn
 }
 
 func (m *PkiKeyRingModel) BuildDN(parentDN string) string {
 	rn := m.BuildRN()
-	for _, pattern := range pkiKeyRingParentDnVariant1Patterns {
+	for _, pattern := range pkiKeyRingParentDNVariant1Patterns {
 		if pattern.MatchString(parentDN) {
-			return parentDN + "/certstore/" + rn
+			return fmt.Sprintf("%s/certstore/%s", parentDN, rn)
 		}
 	}
 
-	return parentDN + "/" + rn
+	return fmt.Sprintf("%s/%s", parentDN, rn)
 }
 
 func (m *PkiKeyRingModel) ParentDNFromDN(dn string) string {
 	rn := m.BuildRN()
-	if parentDN, found := strings.CutSuffix(dn, "/certstore/"+rn); found {
-		for _, pattern := range pkiKeyRingParentDnVariant1Patterns {
+	if parentDN, found := strings.CutSuffix(dn, fmt.Sprintf("/certstore/%s", rn)); found {
+		for _, pattern := range pkiKeyRingParentDNVariant1Patterns {
 			if pattern.MatchString(parentDN) {
 				return parentDN
 			}
 		}
 	}
 
-	parentDN, _ := strings.CutSuffix(dn, "/"+rn)
-	return parentDN
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", rn))
 }
 
 func PkiKeyRingModelFromObject(
@@ -142,12 +297,13 @@ func PkiKeyRingModelFromObject(
 	if !ok {
 		return model, diagnostics
 	}
+
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "adminState", &model.AdminState)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "cert", &model.Cert)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "descr", &model.Descr)
 	modelHelpers.DecodeStringAttributeWithEmptyValue(ctx, &diagnostics, attributes, "eccCurve", "none", &model.EccCurve)
-	if !modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "key", &model.Key) && fallbackModel != nil {
+	if fallbackModel != nil {
 		model.Key = fallbackModel.Key
 	}
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "keyType", &model.KeyType)
@@ -158,6 +314,7 @@ func PkiKeyRingModelFromObject(
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ownerTag", &model.OwnerTag)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "regen", &model.Regen)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "tp", &model.Tp)
+
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,
 		&diagnostics,
@@ -168,6 +325,7 @@ func PkiKeyRingModelFromObject(
 			"tagTag",
 		},
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -176,6 +334,7 @@ func PkiKeyRingModelFromObject(
 		TagAnnotationModelFromObject,
 		&model.TagAnnotation,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -207,6 +366,7 @@ func (m *PkiKeyRingModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
+
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "adminState", m.AdminState)
 	if !modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "annotation", m.Annotation) && nested {
 		attributes["annotation"] = defaultAnnotation
@@ -223,6 +383,7 @@ func (m *PkiKeyRingModel) BuildPayloadObject(
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "ownerTag", m.OwnerTag)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "regen", m.Regen)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "tp", m.Tp)
+
 	var priorTagAnnotation *types.Set
 	if priorState != nil {
 		priorTagAnnotation = &priorState.TagAnnotation
@@ -243,6 +404,7 @@ func (m *PkiKeyRingModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, tagAnnotationPayloads...)
+
 	var priorTagTag *types.Set
 	if priorState != nil {
 		priorTagTag = &priorState.TagTag
@@ -277,31 +439,31 @@ func (m *PkiKeyRingModel) BuildNestedDeletePayloadObject(
 	ctx context.Context,
 	diagnostics *diag.Diagnostics,
 ) map[string]any {
-	attributes := map[string]any{}
-	attributes["name"] = m.Name.ValueString()
-	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, attributes)
+	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, map[string]any{
+		"name": m.Name.ValueString(),
+	})
 }
 
-type PkiKeyRingResourceModel struct {
+type PkiKeyRingRootModel struct {
 	PkiKeyRingModel
 
 	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ParentDN types.String `tfsdk:"parent_dn"`
 }
 
-func NewPkiKeyRingResourceModelNull() PkiKeyRingResourceModel {
-	return PkiKeyRingResourceModel{
+func NewPkiKeyRingRootModelNull() PkiKeyRingRootModel {
+	return PkiKeyRingRootModel{
 		PkiKeyRingModel: NewPkiKeyRingModelNull(),
 		ID:              types.StringNull(),
-		ParentDn:        types.StringNull(),
+		ParentDN:        types.StringNull(),
 	}
 }
 
-func (m *PkiKeyRingResourceModel) SetIDFromDN(dn string) {
+func (m *PkiKeyRingRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
 
-func (m *PkiKeyRingResourceModel) SetFromResponse(
+func (m *PkiKeyRingRootModel) SetFromResponse(
 	ctx context.Context,
 	response *container.Container,
 ) (bool, diag.Diagnostics) {
@@ -314,17 +476,18 @@ func (m *PkiKeyRingResourceModel) SetFromResponse(
 
 	m.PkiKeyRingModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 
-func (m *PkiKeyRingResourceModel) buildPayloadEnvelope(payloadObject map[string]any, create bool) map[string]any {
+func (m *PkiKeyRingRootModel) buildPayloadEnvelope(payloadObject map[string]any, create bool) map[string]any {
 	directEnvelope := map[string]any{"pkiKeyRing": payloadObject}
 	if !create {
 		return directEnvelope
 	}
-	for _, pattern := range pkiKeyRingParentDnVariant1Patterns {
-		if pattern.MatchString(m.ParentDn.ValueString()) {
+
+	for _, pattern := range pkiKeyRingParentDNVariant1Patterns {
+		if pattern.MatchString(m.ParentDN.ValueString()) {
 			return map[string]any{
 				"cloudCertStore": map[string]any{
 					"attributes": map[string]any{},
@@ -339,7 +502,7 @@ func (m *PkiKeyRingResourceModel) buildPayloadEnvelope(payloadObject map[string]
 	return directEnvelope
 }
 
-func (m *PkiKeyRingResourceModel) BuildPayload(
+func (m *PkiKeyRingRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *PkiKeyRingModel,
 	create bool,
@@ -350,52 +513,16 @@ func (m *PkiKeyRingResourceModel) BuildPayload(
 	if diagnostics.HasError() {
 		return nil, diagnostics
 	}
+
 	if markCreated {
 		payloadObject["attributes"].(map[string]any)["status"] = "created"
 	}
+
 	payloadEnvelope := m.buildPayloadEnvelope(payloadObject, create)
-	jsonPayload := modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload")
-	return jsonPayload, diagnostics
+	return modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload"), diagnostics
 }
 
-func (m *PkiKeyRingResourceModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
+func (m *PkiKeyRingRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
-	payload := modelHelpers.NewDeletePayload(ctx, &diagnostics, "pkiKeyRing", m.ID.ValueString())
-	return payload, diagnostics
-}
-
-type PkiKeyRingDataSourceModel struct {
-	PkiKeyRingModel
-
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
-}
-
-func NewPkiKeyRingDataSourceModelNull() PkiKeyRingDataSourceModel {
-	return PkiKeyRingDataSourceModel{
-		PkiKeyRingModel: NewPkiKeyRingModelNull(),
-		ID:              types.StringNull(),
-		ParentDn:        types.StringNull(),
-	}
-}
-
-func (m *PkiKeyRingDataSourceModel) SetIDFromDN(dn string) {
-	m.ID = types.StringValue(dn)
-}
-
-func (m *PkiKeyRingDataSourceModel) SetFromResponse(
-	ctx context.Context,
-	response *container.Container,
-) (bool, diag.Diagnostics) {
-	fallbackModel := m.PkiKeyRingModel
-	model, dn, diagnostics := PkiKeyRingModelFromResponse(ctx, response, &fallbackModel)
-	found := model != nil
-	if diagnostics.HasError() || !found {
-		return found, diagnostics
-	}
-
-	m.PkiKeyRingModel = *model
-	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
-	return true, diagnostics
+	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "pkiKeyRing", m.ID.ValueString()), diagnostics
 }

@@ -6,15 +6,120 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+func qosSdIfPolSchemaDefinition() modelHelpers.ClassSchema {
+	return modelHelpers.ClassSchema{
+		ResourceDescription:   "Manages ACI Slow Drain Interface Policy",
+		DataSourceDescription: "Data source for ACI Slow Drain Interface Policy",
+		Properties: map[string]modelHelpers.PropertySchema{
+			"annotation": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The annotation of the Slow Drain Interface Policy object.",
+			},
+			"congestion_clear_action": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"err-disable",
+					"log",
+					"off",
+				},
+				Description: "The congestion clear action of the Slow Drain Interface Policy object.",
+			},
+			"congestion_detect_multiplier": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The congestion detect multiplier of the Slow Drain Interface Policy object. The value must be in the range 1 - 10000.",
+			},
+			"description": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The description of the Slow Drain Interface Policy object.",
+			},
+			"flush_admin_state": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"disabled",
+					"enabled",
+				},
+				Description: "The flush administrative state of the Slow Drain Interface Policy object.",
+			},
+			"flush_timeout": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The flush timeout (milliseconds) of the Slow Drain Interface Policy object. The value must be in the range 100 - 1000.",
+			},
+			"name": {
+				Type:            modelHelpers.StringProperty,
+				Required:        true,
+				RequiresReplace: true,
+				Description:     "The name of the Slow Drain Interface Policy object.",
+			},
+			"name_alias": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The name alias of the Slow Drain Interface Policy object.",
+			},
+			"owner_key": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The key for enabling clients to own their data for entity correlation.",
+			},
+			"owner_tag": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "A tag for enabling clients to add their own data. For example, to indicate who created this object.",
+			},
+		},
+		Children: map[string]modelHelpers.ChildSchema{
+			"annotations": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.",
+				Schema:      tagAnnotationSchemaDefinition,
+			},
+			"tags": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.",
+				Schema:      tagTagSchemaDefinition,
+			},
+		},
+		Identifiers: []string{
+			"name",
+		},
+		AnnotationAttribute: "annotation",
+	}
+}
+
+func QosSdIfPolResourceSchema(defaultAnnotation string) resourceschema.Schema {
+	return qosSdIfPolSchemaDefinition().ResourceSchema(defaultAnnotation)
+}
+
+func QosSdIfPolDataSourceSchema() datasourceschema.Schema {
+	return qosSdIfPolSchemaDefinition().DataSourceSchema()
+}
 
 type QosSdIfPolModel struct {
 	Annotation      types.String `tfsdk:"annotation"`
@@ -84,12 +189,11 @@ func NewQosSdIfPolModelNull() QosSdIfPolModel {
 func (m *QosSdIfPolModel) BuildRN() string {
 	rn := "infra/qossdpol-{name}"
 	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
-
 	return rn
 }
 
 func (m *QosSdIfPolModel) BuildDN() string {
-	return "uni/" + m.BuildRN()
+	return fmt.Sprintf("uni/%s", m.BuildRN())
 }
 
 func QosSdIfPolModelFromObject(
@@ -104,6 +208,7 @@ func QosSdIfPolModelFromObject(
 	if !ok {
 		return model, diagnostics
 	}
+
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "congClearAction", &model.CongClearAction)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "congDetectMult", &model.CongDetectMult)
@@ -114,6 +219,7 @@ func QosSdIfPolModelFromObject(
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "nameAlias", &model.NameAlias)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ownerKey", &model.OwnerKey)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ownerTag", &model.OwnerTag)
+
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,
 		&diagnostics,
@@ -124,6 +230,7 @@ func QosSdIfPolModelFromObject(
 			"tagTag",
 		},
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -132,6 +239,7 @@ func QosSdIfPolModelFromObject(
 		TagAnnotationModelFromObject,
 		&model.TagAnnotation,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -163,6 +271,7 @@ func (m *QosSdIfPolModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
+
 	if !modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "annotation", m.Annotation) && nested {
 		attributes["annotation"] = defaultAnnotation
 	}
@@ -175,6 +284,7 @@ func (m *QosSdIfPolModel) BuildPayloadObject(
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "nameAlias", m.NameAlias)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "ownerKey", m.OwnerKey)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "ownerTag", m.OwnerTag)
+
 	var priorTagAnnotation *types.Set
 	if priorState != nil {
 		priorTagAnnotation = &priorState.TagAnnotation
@@ -195,6 +305,7 @@ func (m *QosSdIfPolModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, tagAnnotationPayloads...)
+
 	var priorTagTag *types.Set
 	if priorState != nil {
 		priorTagTag = &priorState.TagTag
@@ -229,29 +340,29 @@ func (m *QosSdIfPolModel) BuildNestedDeletePayloadObject(
 	ctx context.Context,
 	diagnostics *diag.Diagnostics,
 ) map[string]any {
-	attributes := map[string]any{}
-	attributes["name"] = m.Name.ValueString()
-	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, attributes)
+	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, map[string]any{
+		"name": m.Name.ValueString(),
+	})
 }
 
-type QosSdIfPolResourceModel struct {
+type QosSdIfPolRootModel struct {
 	QosSdIfPolModel
 
 	ID types.String `tfsdk:"id"`
 }
 
-func NewQosSdIfPolResourceModelNull() QosSdIfPolResourceModel {
-	return QosSdIfPolResourceModel{
+func NewQosSdIfPolRootModelNull() QosSdIfPolRootModel {
+	return QosSdIfPolRootModel{
 		QosSdIfPolModel: NewQosSdIfPolModelNull(),
 		ID:              types.StringNull(),
 	}
 }
 
-func (m *QosSdIfPolResourceModel) SetIDFromDN(dn string) {
+func (m *QosSdIfPolRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
 
-func (m *QosSdIfPolResourceModel) SetFromResponse(
+func (m *QosSdIfPolRootModel) SetFromResponse(
 	ctx context.Context,
 	response *container.Container,
 ) (bool, diag.Diagnostics) {
@@ -267,7 +378,7 @@ func (m *QosSdIfPolResourceModel) SetFromResponse(
 	return true, diagnostics
 }
 
-func (m *QosSdIfPolResourceModel) BuildPayload(
+func (m *QosSdIfPolRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *QosSdIfPolModel,
 	create bool,
@@ -278,49 +389,16 @@ func (m *QosSdIfPolResourceModel) BuildPayload(
 	if diagnostics.HasError() {
 		return nil, diagnostics
 	}
+
 	if markCreated {
 		payloadObject["attributes"].(map[string]any)["status"] = "created"
 	}
+
 	payloadEnvelope := map[string]any{"qosSdIfPol": payloadObject}
-	jsonPayload := modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload")
-	return jsonPayload, diagnostics
+	return modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload"), diagnostics
 }
 
-func (m *QosSdIfPolResourceModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
+func (m *QosSdIfPolRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
-	payload := modelHelpers.NewDeletePayload(ctx, &diagnostics, "qosSdIfPol", m.ID.ValueString())
-	return payload, diagnostics
-}
-
-type QosSdIfPolDataSourceModel struct {
-	QosSdIfPolModel
-
-	ID types.String `tfsdk:"id"`
-}
-
-func NewQosSdIfPolDataSourceModelNull() QosSdIfPolDataSourceModel {
-	return QosSdIfPolDataSourceModel{
-		QosSdIfPolModel: NewQosSdIfPolModelNull(),
-		ID:              types.StringNull(),
-	}
-}
-
-func (m *QosSdIfPolDataSourceModel) SetIDFromDN(dn string) {
-	m.ID = types.StringValue(dn)
-}
-
-func (m *QosSdIfPolDataSourceModel) SetFromResponse(
-	ctx context.Context,
-	response *container.Container,
-) (bool, diag.Diagnostics) {
-	fallbackModel := m.QosSdIfPolModel
-	model, dn, diagnostics := QosSdIfPolModelFromResponse(ctx, response, &fallbackModel)
-	found := model != nil
-	if diagnostics.HasError() || !found {
-		return found, diagnostics
-	}
-
-	m.QosSdIfPolModel = *model
-	m.ID = types.StringValue(dn)
-	return true, diagnostics
+	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "qosSdIfPol", m.ID.ValueString()), diagnostics
 }

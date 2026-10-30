@@ -6,6 +6,7 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
@@ -15,6 +16,141 @@ import (
 
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+func commSshSchemaDefinition() modelHelpers.ClassSchema {
+	return modelHelpers.ClassSchema{
+		ResourceDescription:   "Manages ACI SSH Service",
+		DataSourceDescription: "Data source for ACI SSH Service",
+		Properties: map[string]modelHelpers.PropertySchema{
+			"admin_state": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"disabled",
+					"enabled",
+				},
+				Description: "The administrative state of the SSH Service object.",
+			},
+			"annotation": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The annotation of the SSH Service object.",
+			},
+			"description": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The description of the SSH Service object.",
+			},
+			"host_key_algorithms": {
+				Type:           modelHelpers.SetProperty,
+				SetElementType: types.StringType,
+				Optional:       true,
+				Computed:       true,
+				ValidValues: []string{
+					"rsa-sha2-256",
+					"rsa-sha2-512",
+					"ssh-ed25519",
+				},
+				Description: "The supported algorithms for the host key.",
+			},
+			"kex_algorithms": {
+				Type:           modelHelpers.SetProperty,
+				SetElementType: types.StringType,
+				Optional:       true,
+				Computed:       true,
+				ValidValues: []string{
+					"curve25519-sha256",
+					"curve25519-sha256@libssh.org",
+					"diffie-hellman-group1-sha1",
+					"diffie-hellman-group14-sha1",
+					"diffie-hellman-group14-sha256",
+					"diffie-hellman-group16-sha512",
+					"ecdh-sha2-nistp256",
+					"ecdh-sha2-nistp384",
+					"ecdh-sha2-nistp521",
+				},
+				Description: "The supported algorithms for key exchange.",
+			},
+			"name": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The name of the SSH Service object.",
+			},
+			"name_alias": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The name alias of the SSH Service object.",
+			},
+			"password_authentication_state": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"disabled",
+					"enabled",
+				},
+				Description: "Determines the state of password-based authentication to control administrator access to the management interfaces of the ACI fabric.",
+			},
+			"port": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The port used by the SSH service.",
+			},
+			"ssh_ciphers": {
+				Type:           modelHelpers.SetProperty,
+				SetElementType: types.StringType,
+				Optional:       true,
+				Computed:       true,
+				ValidValues: []string{
+					"aes128-ctr",
+					"aes128-gcm@openssh.com",
+					"aes192-ctr",
+					"aes256-ctr",
+					"aes256-gcm@openssh.com",
+					"chacha20-poly1305@openssh.com",
+				},
+				Description: "The ciphers supported by the SSH service.",
+			},
+			"ssh_macs": {
+				Type:           modelHelpers.SetProperty,
+				SetElementType: types.StringType,
+				Optional:       true,
+				Computed:       true,
+				ValidValues: []string{
+					"hmac-sha1",
+					"hmac-sha2-256",
+					"hmac-sha2-256-etm@openssh.com",
+					"hmac-sha2-512",
+					"hmac-sha2-512-etm@openssh.com",
+				},
+				Description: "The message authentication codes (MACs) supported by the SSH service.",
+			},
+		},
+		Children: map[string]modelHelpers.ChildSchema{
+			"annotations": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.",
+				Schema:      tagAnnotationSchemaDefinition,
+			},
+			"tags": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.",
+				Schema:      tagTagSchemaDefinition,
+			},
+		},
+		ParentDN: &modelHelpers.ParentDNSchema{
+			AttributeName: "parent_dn",
+			Config:        modelHelpers.ParentDNAttributeConfig{},
+		},
+		AnnotationAttribute: "annotation",
+	}
+}
 
 type CommSshModel struct {
 	AdminSt       types.String `tfsdk:"admin_state"`
@@ -89,14 +225,11 @@ func (m *CommSshModel) BuildRN() string {
 }
 
 func (m *CommSshModel) BuildDN(parentDN string) string {
-	return parentDN + "/" + m.BuildRN()
+	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
 }
 
 func (m *CommSshModel) ParentDNFromDN(dn string) string {
-	rn := m.BuildRN()
-
-	parentDN, _ := strings.CutSuffix(dn, "/"+rn)
-	return parentDN
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
 }
 
 func CommSshModelFromObject(
@@ -111,6 +244,7 @@ func CommSshModelFromObject(
 	if !ok {
 		return model, diagnostics
 	}
+
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "adminSt", &model.AdminSt)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "descr", &model.Descr)
@@ -122,6 +256,7 @@ func CommSshModelFromObject(
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "port", &model.Port)
 	modelHelpers.DecodeStringSetAttribute(ctx, &diagnostics, attributes, "sshCiphers", &model.SshCiphers)
 	modelHelpers.DecodeStringSetAttribute(ctx, &diagnostics, attributes, "sshMacs", &model.SshMacs)
+
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,
 		&diagnostics,
@@ -132,6 +267,7 @@ func CommSshModelFromObject(
 			"tagTag",
 		},
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -140,6 +276,7 @@ func CommSshModelFromObject(
 		TagAnnotationModelFromObject,
 		&model.TagAnnotation,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -161,6 +298,7 @@ func (m *CommSshModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
+
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "adminSt", m.AdminSt)
 	if !modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "annotation", m.Annotation) && nested {
 		attributes["annotation"] = defaultAnnotation
@@ -186,6 +324,7 @@ func (m *CommSshModel) BuildPayloadObject(
 	if diagnostics.HasError() {
 		return nil, diagnostics
 	}
+
 	var priorTagAnnotation *types.Set
 	if priorState != nil {
 		priorTagAnnotation = &priorState.TagAnnotation
@@ -206,6 +345,7 @@ func (m *CommSshModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, tagAnnotationPayloads...)
+
 	var priorTagTag *types.Set
 	if priorState != nil {
 		priorTagTag = &priorState.TagTag
