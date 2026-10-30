@@ -19,6 +19,10 @@ import (
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
 
+func init() {
+	registerClassVersion("xcvrZRPIfPol", "5.2(6e)-5.3(2f),6.0(2h)-")
+}
+
 func xcvrZRPIfPolSchemaDefinition() modelHelpers.ClassSchema {
 	return modelHelpers.ClassSchema{
 		ResourceDescription:   "Manages ACI ZRP (ZR+) Transceiver Interface Policy",

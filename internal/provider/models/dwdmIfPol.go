@@ -20,6 +20,10 @@ import (
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
 
+func init() {
+	registerClassVersion("dwdmIfPol", "3.1(1i)-")
+}
+
 var dwdmIfPolFcotChannelNumberType = customtypes.NewSemanticStringType(map[string]string{
 	"1":  "Channel1",
 	"10": "Channel10",

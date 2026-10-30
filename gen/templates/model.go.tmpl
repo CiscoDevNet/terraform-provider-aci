@@ -31,6 +31,10 @@ import (
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
 
+func init() {
+	registerClassVersion({{ printf "%q" .Class.Name.String }}, {{ printf "%q" .Class.SupportedVersions.Raw }})
+}
+
 {{ range $property := .Class.ModelProperties }}
 {{- if eq $property.ValueType.String "semantic_equality" }}
 var {{ $property.SemanticStringTypeVariable $.Class.Name }} = customtypes.NewSemanticStringType(map[string]string{
