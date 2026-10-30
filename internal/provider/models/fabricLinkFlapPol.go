@@ -169,10 +169,6 @@ func (m *FabricLinkFlapPolModel) BuildRN() string {
 	return rn
 }
 
-func (m *FabricLinkFlapPolModel) BuildDN() string {
-	return fmt.Sprintf("uni/%s", m.BuildRN())
-}
-
 func FabricLinkFlapPolModelFromObject(
 	ctx context.Context,
 	object *container.Container,
@@ -329,6 +325,10 @@ func NewFabricLinkFlapPolRootModelNull() FabricLinkFlapPolRootModel {
 		FabricLinkFlapPolModel: NewFabricLinkFlapPolModelNull(),
 		ID:                     types.StringNull(),
 	}
+}
+
+func (m *FabricLinkFlapPolRootModel) BuildDN() string {
+	return fmt.Sprintf("uni/%s", m.BuildRN())
 }
 
 func (m *FabricLinkFlapPolRootModel) SetIDFromDN(dn string) {

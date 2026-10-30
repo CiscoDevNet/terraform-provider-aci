@@ -273,10 +273,6 @@ func (m *VzOOBBrCPModel) BuildRN() string {
 	return rn
 }
 
-func (m *VzOOBBrCPModel) BuildDN() string {
-	return fmt.Sprintf("uni/%s", m.BuildRN())
-}
-
 func VzOOBBrCPModelFromObject(
 	ctx context.Context,
 	object *container.Container,
@@ -437,6 +433,10 @@ func NewVzOOBBrCPRootModelNull() VzOOBBrCPRootModel {
 		VzOOBBrCPModel: NewVzOOBBrCPModelNull(),
 		ID:             types.StringNull(),
 	}
+}
+
+func (m *VzOOBBrCPRootModel) BuildDN() string {
+	return fmt.Sprintf("uni/%s", m.BuildRN())
 }
 
 func (m *VzOOBBrCPRootModel) SetIDFromDN(dn string) {

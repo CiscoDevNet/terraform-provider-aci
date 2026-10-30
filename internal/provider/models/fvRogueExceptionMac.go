@@ -146,14 +146,6 @@ func (m *FvRogueExceptionMacModel) BuildRN() string {
 	return rn
 }
 
-func (m *FvRogueExceptionMacModel) BuildDN(parentDN string) string {
-	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
-}
-
-func (m *FvRogueExceptionMacModel) ParentDNFromDN(dn string) string {
-	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
-}
-
 func FvRogueExceptionMacModelFromObject(
 	ctx context.Context,
 	object *container.Container,
@@ -308,6 +300,14 @@ func NewFvRogueExceptionMacRootModelNull() FvRogueExceptionMacRootModel {
 	}
 }
 
+func (m *FvRogueExceptionMacRootModel) BuildDN() string {
+	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
+}
+
+func (m *FvRogueExceptionMacRootModel) ParentDNFromDN(dn string) string {
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
+}
+
 func (m *FvRogueExceptionMacRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
@@ -325,7 +325,7 @@ func (m *FvRogueExceptionMacRootModel) SetFromResponse(
 
 	m.FvRogueExceptionMacModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(m.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 

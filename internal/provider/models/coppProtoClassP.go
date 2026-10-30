@@ -194,14 +194,6 @@ func (m *CoppProtoClassPModel) BuildRN() string {
 	return rn
 }
 
-func (m *CoppProtoClassPModel) BuildDN(parentDN string) string {
-	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
-}
-
-func (m *CoppProtoClassPModel) ParentDNFromDN(dn string) string {
-	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
-}
-
 func CoppProtoClassPModelFromObject(
 	ctx context.Context,
 	object *container.Container,
@@ -367,6 +359,14 @@ func NewCoppProtoClassPRootModelNull() CoppProtoClassPRootModel {
 	}
 }
 
+func (m *CoppProtoClassPRootModel) BuildDN() string {
+	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
+}
+
+func (m *CoppProtoClassPRootModel) ParentDNFromDN(dn string) string {
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
+}
+
 func (m *CoppProtoClassPRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
@@ -384,7 +384,7 @@ func (m *CoppProtoClassPRootModel) SetFromResponse(
 
 	m.CoppProtoClassPModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(m.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 

@@ -6,8 +6,6 @@ package models
 
 import (
 	"context"
-	"fmt"
-	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
@@ -133,14 +131,6 @@ func NewCommShellinaboxModelNull() CommShellinaboxModel {
 
 func (m *CommShellinaboxModel) BuildRN() string {
 	return "shellinabox"
-}
-
-func (m *CommShellinaboxModel) BuildDN(parentDN string) string {
-	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
-}
-
-func (m *CommShellinaboxModel) ParentDNFromDN(dn string) string {
-	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
 }
 
 func CommShellinaboxModelFromObject(

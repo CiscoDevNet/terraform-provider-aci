@@ -6,8 +6,6 @@ package models
 
 import (
 	"context"
-	"fmt"
-	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
@@ -102,14 +100,6 @@ func NewFvRsBDToFhsModelNull() FvRsBDToFhsModel {
 
 func (m *FvRsBDToFhsModel) BuildRN() string {
 	return "rsBDToFhs"
-}
-
-func (m *FvRsBDToFhsModel) BuildDN(parentDN string) string {
-	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
-}
-
-func (m *FvRsBDToFhsModel) ParentDNFromDN(dn string) string {
-	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
 }
 
 func FvRsBDToFhsModelFromObject(

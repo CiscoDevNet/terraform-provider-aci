@@ -201,10 +201,6 @@ func (m *FvnsAddrInstModel) BuildRN() string {
 	return rn
 }
 
-func (m *FvnsAddrInstModel) BuildDN() string {
-	return fmt.Sprintf("uni/%s", m.BuildRN())
-}
-
 func FvnsAddrInstModelFromObject(
 	ctx context.Context,
 	object *container.Container,
@@ -394,6 +390,10 @@ func NewFvnsAddrInstRootModelNull() FvnsAddrInstRootModel {
 		FvnsAddrInstModel: NewFvnsAddrInstModelNull(),
 		ID:                types.StringNull(),
 	}
+}
+
+func (m *FvnsAddrInstRootModel) BuildDN() string {
+	return fmt.Sprintf("uni/%s", m.BuildRN())
 }
 
 func (m *FvnsAddrInstRootModel) SetIDFromDN(dn string) {

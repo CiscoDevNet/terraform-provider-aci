@@ -194,14 +194,6 @@ func (m *FvFabricExtConnPModel) BuildRN() string {
 	return rn
 }
 
-func (m *FvFabricExtConnPModel) BuildDN(parentDN string) string {
-	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
-}
-
-func (m *FvFabricExtConnPModel) ParentDNFromDN(dn string) string {
-	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
-}
-
 func FvFabricExtConnPModelFromObject(
 	ctx context.Context,
 	object *container.Container,
@@ -402,6 +394,18 @@ func NewFvFabricExtConnPRootModelNull() FvFabricExtConnPRootModel {
 	}
 }
 
+func (m *FvFabricExtConnPRootModel) BuildDN() string {
+	parentDN := m.ParentDN.ValueString()
+	if m.ParentDN.IsNull() || m.ParentDN.IsUnknown() {
+		parentDN = "uni/tn-infra"
+	}
+	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
+}
+
+func (m *FvFabricExtConnPRootModel) ParentDNFromDN(dn string) string {
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
+}
+
 func (m *FvFabricExtConnPRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
@@ -419,7 +423,7 @@ func (m *FvFabricExtConnPRootModel) SetFromResponse(
 
 	m.FvFabricExtConnPModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(m.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 

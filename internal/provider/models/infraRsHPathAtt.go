@@ -6,7 +6,6 @@ package models
 
 import (
 	"context"
-	"fmt"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
@@ -107,14 +106,6 @@ func (m *InfraRsHPathAttModel) BuildRN() string {
 	rn := "rsHPathAtt-[{tDn}]"
 	rn = strings.ReplaceAll(rn, "{tDn}", m.TDn.ValueString())
 	return rn
-}
-
-func (m *InfraRsHPathAttModel) BuildDN(parentDN string) string {
-	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
-}
-
-func (m *InfraRsHPathAttModel) ParentDNFromDN(dn string) string {
-	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
 }
 
 func InfraRsHPathAttModelFromObject(

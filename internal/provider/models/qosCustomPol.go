@@ -187,14 +187,6 @@ func (m *QosCustomPolModel) BuildRN() string {
 	return rn
 }
 
-func (m *QosCustomPolModel) BuildDN(parentDN string) string {
-	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
-}
-
-func (m *QosCustomPolModel) ParentDNFromDN(dn string) string {
-	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
-}
-
 func QosCustomPolModelFromObject(
 	ctx context.Context,
 	object *container.Container,
@@ -413,6 +405,14 @@ func NewQosCustomPolRootModelNull() QosCustomPolRootModel {
 	}
 }
 
+func (m *QosCustomPolRootModel) BuildDN() string {
+	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
+}
+
+func (m *QosCustomPolRootModel) ParentDNFromDN(dn string) string {
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
+}
+
 func (m *QosCustomPolRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
@@ -430,7 +430,7 @@ func (m *QosCustomPolRootModel) SetFromResponse(
 
 	m.QosCustomPolModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(m.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 

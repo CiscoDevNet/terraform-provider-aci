@@ -157,14 +157,6 @@ func (m *FvnsUcastAddrBlkModel) BuildRN() string {
 	return rn
 }
 
-func (m *FvnsUcastAddrBlkModel) BuildDN(parentDN string) string {
-	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
-}
-
-func (m *FvnsUcastAddrBlkModel) ParentDNFromDN(dn string) string {
-	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
-}
-
 func FvnsUcastAddrBlkModelFromObject(
 	ctx context.Context,
 	object *container.Container,
@@ -322,6 +314,14 @@ func NewFvnsUcastAddrBlkRootModelNull() FvnsUcastAddrBlkRootModel {
 	}
 }
 
+func (m *FvnsUcastAddrBlkRootModel) BuildDN() string {
+	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
+}
+
+func (m *FvnsUcastAddrBlkRootModel) ParentDNFromDN(dn string) string {
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
+}
+
 func (m *FvnsUcastAddrBlkRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
@@ -339,7 +339,7 @@ func (m *FvnsUcastAddrBlkRootModel) SetFromResponse(
 
 	m.FvnsUcastAddrBlkModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(m.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 

@@ -119,14 +119,6 @@ func (m *InfraRsDomPModel) BuildRN() string {
 	return rn
 }
 
-func (m *InfraRsDomPModel) BuildDN(parentDN string) string {
-	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
-}
-
-func (m *InfraRsDomPModel) ParentDNFromDN(dn string) string {
-	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
-}
-
 func InfraRsDomPModelFromObject(
 	ctx context.Context,
 	object *container.Container,
@@ -275,6 +267,14 @@ func NewInfraRsDomPRootModelNull() InfraRsDomPRootModel {
 	}
 }
 
+func (m *InfraRsDomPRootModel) BuildDN() string {
+	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
+}
+
+func (m *InfraRsDomPRootModel) ParentDNFromDN(dn string) string {
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
+}
+
 func (m *InfraRsDomPRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
@@ -292,7 +292,7 @@ func (m *InfraRsDomPRootModel) SetFromResponse(
 
 	m.InfraRsDomPModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(m.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 

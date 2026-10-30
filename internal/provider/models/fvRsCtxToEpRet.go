@@ -6,8 +6,6 @@ package models
 
 import (
 	"context"
-	"fmt"
-	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
@@ -102,14 +100,6 @@ func NewFvRsCtxToEpRetModelNull() FvRsCtxToEpRetModel {
 
 func (m *FvRsCtxToEpRetModel) BuildRN() string {
 	return "rsctxToEpRet"
-}
-
-func (m *FvRsCtxToEpRetModel) BuildDN(parentDN string) string {
-	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
-}
-
-func (m *FvRsCtxToEpRetModel) ParentDNFromDN(dn string) string {
-	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
 }
 
 func FvRsCtxToEpRetModelFromObject(

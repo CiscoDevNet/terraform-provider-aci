@@ -155,14 +155,6 @@ func (m *VzTabooModel) BuildRN() string {
 	return rn
 }
 
-func (m *VzTabooModel) BuildDN(parentDN string) string {
-	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
-}
-
-func (m *VzTabooModel) ParentDNFromDN(dn string) string {
-	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
-}
-
 func VzTabooModelFromObject(
 	ctx context.Context,
 	object *container.Container,
@@ -319,6 +311,14 @@ func NewVzTabooRootModelNull() VzTabooRootModel {
 	}
 }
 
+func (m *VzTabooRootModel) BuildDN() string {
+	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
+}
+
+func (m *VzTabooRootModel) ParentDNFromDN(dn string) string {
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
+}
+
 func (m *VzTabooRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
@@ -336,7 +336,7 @@ func (m *VzTabooRootModel) SetFromResponse(
 
 	m.VzTabooModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(m.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 

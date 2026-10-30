@@ -167,10 +167,6 @@ func (m *InfraAttEntityPModel) BuildRN() string {
 	return rn
 }
 
-func (m *InfraAttEntityPModel) BuildDN() string {
-	return fmt.Sprintf("uni/%s", m.BuildRN())
-}
-
 func InfraAttEntityPModelFromObject(
 	ctx context.Context,
 	object *container.Container,
@@ -354,6 +350,10 @@ func NewInfraAttEntityPRootModelNull() InfraAttEntityPRootModel {
 		InfraAttEntityPModel: NewInfraAttEntityPModelNull(),
 		ID:                   types.StringNull(),
 	}
+}
+
+func (m *InfraAttEntityPRootModel) BuildDN() string {
+	return fmt.Sprintf("uni/%s", m.BuildRN())
 }
 
 func (m *InfraAttEntityPRootModel) SetIDFromDN(dn string) {

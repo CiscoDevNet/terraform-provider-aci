@@ -437,14 +437,6 @@ func (m *VmmDomPModel) BuildRN() string {
 	return rn
 }
 
-func (m *VmmDomPModel) BuildDN(parentDN string) string {
-	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
-}
-
-func (m *VmmDomPModel) ParentDNFromDN(dn string) string {
-	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
-}
-
 func VmmDomPModelFromObject(
 	ctx context.Context,
 	object *container.Container,
@@ -825,6 +817,14 @@ func NewVmmDomPRootModelNull() VmmDomPRootModel {
 	}
 }
 
+func (m *VmmDomPRootModel) BuildDN() string {
+	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
+}
+
+func (m *VmmDomPRootModel) ParentDNFromDN(dn string) string {
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
+}
+
 func (m *VmmDomPRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
@@ -842,7 +842,7 @@ func (m *VmmDomPRootModel) SetFromResponse(
 
 	m.VmmDomPModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(m.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 
