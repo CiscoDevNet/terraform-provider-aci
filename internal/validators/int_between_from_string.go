@@ -12,6 +12,8 @@ import (
 
 var _ validator.String = InBetweenFromStringValidator{}
 
+// InBetweenFromStringValidator validates numeric values represented by
+// Terraform strings against an inclusive range.
 type InBetweenFromStringValidator struct {
 	min, max float64
 }
@@ -44,6 +46,8 @@ func (v InBetweenFromStringValidator) ValidateString(ctx context.Context, reques
 	}
 }
 
+// InBetweenFromString returns a string validator for an inclusive numeric
+// range, or nil when the range is invalid.
 func InBetweenFromString(min, max float64) validator.String {
 	if min > max {
 		return nil
