@@ -6,15 +6,189 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+func xcvrZRPIfPolSchemaDefinition() modelHelpers.ClassSchema {
+	return modelHelpers.ClassSchema{
+		ResourceDescription:   "Manages ACI ZRP (ZR+) Transceiver Interface Policy",
+		DataSourceDescription: "Data source for ACI ZRP (ZR+) Transceiver Interface Policy",
+		Properties: map[string]modelHelpers.PropertySchema{
+			"admin_state": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"disabled",
+					"enabled",
+				},
+				Description: "The administrative state of the ZRP (ZR+) Transceiver Interface Policy object.",
+			},
+			"annotation": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The annotation of the ZRP (ZR+) Transceiver Interface Policy object.",
+			},
+			"maximum_chromatic_dispersion": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The maximum chromatic dispersion of the ZRP (ZR+) Transceiver Interface Policy object. The difference with 'minimum_chromatic_dispersion' must be greater than 1000. The value must be in the range -50999 - 52000 when 'fec_mode' is 'oFEC' else the value must be in range -1399 - 2400.",
+			},
+			"minimum_chromatic_dispersion": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The minimum chromatic dispersion of the ZRP (ZR+) Transceiver Interface Policy object. The difference with 'maximum_chromatic_dispersion' must be greater than 1000. The value must be in the range -52000 - 50999 when 'fec_mode' is 'oFEC' else the value must be in range -2400 - 1399.",
+			},
+			"dac_rate": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"1x1",
+					"1x1.25",
+				},
+				Description: "The Digital-to-Analog Converter (DAC) rate of the ZRP (ZR+) Transceiver Interface Policy object.",
+			},
+			"description": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The description of the ZRP (ZR+) Transceiver Interface Policy object.",
+			},
+			"dwdm_carrier_grid": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"100MHzFrequency",
+					"50GHzFrequency",
+					"50GHzITUchannel",
+					"50GHzWavelength",
+				},
+				Description: "The Dense Wavelength Division Multiplexing (DWDM) carrier grid selector of the ZRP (ZR+) Transceiver Interface Policy object.",
+			},
+			"fec_mode": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"cFEC",
+					"oFEC",
+				},
+				Description: "The Forward Error Correction (FEC) mode of the ZRP (ZR+) Transceiver Interface Policy object. The value 'cFEC' must have a DAC rate of '1x1', and the value 'oFEC' must have a DAC rate of '1x1.25'.",
+			},
+			"frequency_100_mhz": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The 100 megahertz (MHz) frequency of the ZRP (ZR+) Transceiver Interface Policy object. The value must be in the range 1911500 - 1961375.",
+			},
+			"frequency_50_ghz": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The 50 gigahertz (GHz) frequency of the ZRP (ZR+) Transceiver Interface Policy object. The value must be in the range 19115 - 19610.",
+			},
+			"itu_channel_50_ghz": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The 50 gigahertz (GHz) International Telecommunication Union (ITU) channel of the ZRP (ZR+) Transceiver Interface Policy object. The value must be in the range 1 - 100.",
+			},
+			"modulation": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"16QAM",
+				},
+				Description: "The modulation of the ZRP (ZR+) Transceiver Interface Policy object.",
+			},
+			"muxponder_mode": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"1x400",
+				},
+				Description: "The muxponder mode of the ZRP (ZR+) Transceiver Interface Policy object.",
+			},
+			"name": {
+				Type:            modelHelpers.StringProperty,
+				Required:        true,
+				RequiresReplace: true,
+				Description:     "The name of the ZRP (ZR+) Transceiver Interface Policy object.",
+			},
+			"name_alias": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The name alias of the ZRP (ZR+) Transceiver Interface Policy object.",
+			},
+			"owner_key": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The key for enabling clients to own their data for entity correlation.",
+			},
+			"owner_tag": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "A tag for enabling clients to add their own data. For example, to indicate who created this object.",
+			},
+			"transmit_power": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The transmit power of the ZRP (ZR+) Transceiver Interface Policy object. The value must be in the range -190 - 50.",
+			},
+			"wavelength_50_ghz": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The 50 gigahertz (GHz) wavelength of the ZRP (ZR+) Transceiver Interface Policy object. The value must be in the range 1528773 - 1568362.",
+			},
+		},
+		Children: map[string]modelHelpers.ChildSchema{
+			"annotations": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.",
+				Schema:      tagAnnotationSchemaDefinition,
+			},
+			"tags": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.",
+				Schema:      tagTagSchemaDefinition,
+			},
+		},
+		Identifiers: []string{
+			"name",
+		},
+		AnnotationAttribute: "annotation",
+	}
+}
+
+func XcvrZRPIfPolResourceSchema(defaultAnnotation string) resourceschema.Schema {
+	return xcvrZRPIfPolSchemaDefinition().ResourceSchema(defaultAnnotation)
+}
+
+func XcvrZRPIfPolDataSourceSchema() datasourceschema.Schema {
+	return xcvrZRPIfPolSchemaDefinition().DataSourceSchema()
+}
 
 type XcvrZRPIfPolModel struct {
 	AdminSt         types.String `tfsdk:"admin_state"`
@@ -111,12 +285,11 @@ func NewXcvrZRPIfPolModelNull() XcvrZRPIfPolModel {
 func (m *XcvrZRPIfPolModel) BuildRN() string {
 	rn := "infra/zrp-{name}"
 	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
-
 	return rn
 }
 
 func (m *XcvrZRPIfPolModel) BuildDN() string {
-	return "uni/" + m.BuildRN()
+	return fmt.Sprintf("uni/%s", m.BuildRN())
 }
 
 func XcvrZRPIfPolModelFromObject(
@@ -131,6 +304,7 @@ func XcvrZRPIfPolModelFromObject(
 	if !ok {
 		return model, diagnostics
 	}
+
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "adminSt", &model.AdminSt)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "cdMax", &model.CdMax)
@@ -150,6 +324,7 @@ func XcvrZRPIfPolModelFromObject(
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ownerTag", &model.OwnerTag)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "transmitPower", &model.TransmitPower)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "wavelength50GHz", &model.Wavelength50GHz)
+
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,
 		&diagnostics,
@@ -160,6 +335,7 @@ func XcvrZRPIfPolModelFromObject(
 			"tagTag",
 		},
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -168,6 +344,7 @@ func XcvrZRPIfPolModelFromObject(
 		TagAnnotationModelFromObject,
 		&model.TagAnnotation,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -199,6 +376,7 @@ func (m *XcvrZRPIfPolModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
+
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "adminSt", m.AdminSt)
 	if !modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "annotation", m.Annotation) && nested {
 		attributes["annotation"] = defaultAnnotation
@@ -220,6 +398,7 @@ func (m *XcvrZRPIfPolModel) BuildPayloadObject(
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "ownerTag", m.OwnerTag)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "transmitPower", m.TransmitPower)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "wavelength50GHz", m.Wavelength50GHz)
+
 	var priorTagAnnotation *types.Set
 	if priorState != nil {
 		priorTagAnnotation = &priorState.TagAnnotation
@@ -240,6 +419,7 @@ func (m *XcvrZRPIfPolModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, tagAnnotationPayloads...)
+
 	var priorTagTag *types.Set
 	if priorState != nil {
 		priorTagTag = &priorState.TagTag
@@ -274,29 +454,29 @@ func (m *XcvrZRPIfPolModel) BuildNestedDeletePayloadObject(
 	ctx context.Context,
 	diagnostics *diag.Diagnostics,
 ) map[string]any {
-	attributes := map[string]any{}
-	attributes["name"] = m.Name.ValueString()
-	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, attributes)
+	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, map[string]any{
+		"name": m.Name.ValueString(),
+	})
 }
 
-type XcvrZRPIfPolResourceModel struct {
+type XcvrZRPIfPolRootModel struct {
 	XcvrZRPIfPolModel
 
 	ID types.String `tfsdk:"id"`
 }
 
-func NewXcvrZRPIfPolResourceModelNull() XcvrZRPIfPolResourceModel {
-	return XcvrZRPIfPolResourceModel{
+func NewXcvrZRPIfPolRootModelNull() XcvrZRPIfPolRootModel {
+	return XcvrZRPIfPolRootModel{
 		XcvrZRPIfPolModel: NewXcvrZRPIfPolModelNull(),
 		ID:                types.StringNull(),
 	}
 }
 
-func (m *XcvrZRPIfPolResourceModel) SetIDFromDN(dn string) {
+func (m *XcvrZRPIfPolRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
 
-func (m *XcvrZRPIfPolResourceModel) SetFromResponse(
+func (m *XcvrZRPIfPolRootModel) SetFromResponse(
 	ctx context.Context,
 	response *container.Container,
 ) (bool, diag.Diagnostics) {
@@ -312,7 +492,7 @@ func (m *XcvrZRPIfPolResourceModel) SetFromResponse(
 	return true, diagnostics
 }
 
-func (m *XcvrZRPIfPolResourceModel) BuildPayload(
+func (m *XcvrZRPIfPolRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *XcvrZRPIfPolModel,
 	create bool,
@@ -323,49 +503,16 @@ func (m *XcvrZRPIfPolResourceModel) BuildPayload(
 	if diagnostics.HasError() {
 		return nil, diagnostics
 	}
+
 	if markCreated {
 		payloadObject["attributes"].(map[string]any)["status"] = "created"
 	}
+
 	payloadEnvelope := map[string]any{"xcvrZRPIfPol": payloadObject}
-	jsonPayload := modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload")
-	return jsonPayload, diagnostics
+	return modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload"), diagnostics
 }
 
-func (m *XcvrZRPIfPolResourceModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
+func (m *XcvrZRPIfPolRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
-	payload := modelHelpers.NewDeletePayload(ctx, &diagnostics, "xcvrZRPIfPol", m.ID.ValueString())
-	return payload, diagnostics
-}
-
-type XcvrZRPIfPolDataSourceModel struct {
-	XcvrZRPIfPolModel
-
-	ID types.String `tfsdk:"id"`
-}
-
-func NewXcvrZRPIfPolDataSourceModelNull() XcvrZRPIfPolDataSourceModel {
-	return XcvrZRPIfPolDataSourceModel{
-		XcvrZRPIfPolModel: NewXcvrZRPIfPolModelNull(),
-		ID:                types.StringNull(),
-	}
-}
-
-func (m *XcvrZRPIfPolDataSourceModel) SetIDFromDN(dn string) {
-	m.ID = types.StringValue(dn)
-}
-
-func (m *XcvrZRPIfPolDataSourceModel) SetFromResponse(
-	ctx context.Context,
-	response *container.Container,
-) (bool, diag.Diagnostics) {
-	fallbackModel := m.XcvrZRPIfPolModel
-	model, dn, diagnostics := XcvrZRPIfPolModelFromResponse(ctx, response, &fallbackModel)
-	found := model != nil
-	if diagnostics.HasError() || !found {
-		return found, diagnostics
-	}
-
-	m.XcvrZRPIfPolModel = *model
-	m.ID = types.StringValue(dn)
-	return true, diagnostics
+	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "xcvrZRPIfPol", m.ID.ValueString()), diagnostics
 }

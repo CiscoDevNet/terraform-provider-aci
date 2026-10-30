@@ -6,15 +6,108 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+func l2PortSecurityPolSchemaDefinition() modelHelpers.ClassSchema {
+	return modelHelpers.ClassSchema{
+		ResourceDescription:   "Manages ACI Port Security Interface Policy",
+		DataSourceDescription: "Data source for ACI Port Security Interface Policy",
+		Properties: map[string]modelHelpers.PropertySchema{
+			"annotation": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The annotation of the Port Security Interface Policy object.",
+			},
+			"description": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The description of the Port Security Interface Policy object.",
+			},
+			"maximum_endpoints": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The maximum endpoints for the Port Security Interface Policy object. The value must be in the range 0 - 12000.",
+			},
+			"name": {
+				Type:            modelHelpers.StringProperty,
+				Required:        true,
+				RequiresReplace: true,
+				Description:     "The name of the Port Security Interface Policy object.",
+			},
+			"name_alias": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The name alias of the Port Security Interface Policy object.",
+			},
+			"owner_key": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The key for enabling clients to own their data for entity correlation.",
+			},
+			"owner_tag": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "A tag for enabling clients to add their own data. For example, to indicate who created this object.",
+			},
+			"timeout": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The timeout of the Port Security Interface Policy object. The value must be in the range 60 - 3600.",
+			},
+			"violation_action": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"protect",
+				},
+				Description: "The violation action of the Port Security Interface Policy object.",
+			},
+		},
+		Children: map[string]modelHelpers.ChildSchema{
+			"annotations": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.",
+				Schema:      tagAnnotationSchemaDefinition,
+			},
+			"tags": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.",
+				Schema:      tagTagSchemaDefinition,
+			},
+		},
+		Identifiers: []string{
+			"name",
+		},
+		AnnotationAttribute: "annotation",
+	}
+}
+
+func L2PortSecurityPolResourceSchema(defaultAnnotation string) resourceschema.Schema {
+	return l2PortSecurityPolSchemaDefinition().ResourceSchema(defaultAnnotation)
+}
+
+func L2PortSecurityPolDataSourceSchema() datasourceschema.Schema {
+	return l2PortSecurityPolSchemaDefinition().DataSourceSchema()
+}
 
 type L2PortSecurityPolModel struct {
 	Annotation    types.String `tfsdk:"annotation"`
@@ -81,12 +174,11 @@ func NewL2PortSecurityPolModelNull() L2PortSecurityPolModel {
 func (m *L2PortSecurityPolModel) BuildRN() string {
 	rn := "infra/portsecurityP-{name}"
 	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
-
 	return rn
 }
 
 func (m *L2PortSecurityPolModel) BuildDN() string {
-	return "uni/" + m.BuildRN()
+	return fmt.Sprintf("uni/%s", m.BuildRN())
 }
 
 func L2PortSecurityPolModelFromObject(
@@ -101,6 +193,7 @@ func L2PortSecurityPolModelFromObject(
 	if !ok {
 		return model, diagnostics
 	}
+
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "descr", &model.Descr)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "maximum", &model.Maximum)
@@ -110,6 +203,7 @@ func L2PortSecurityPolModelFromObject(
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ownerTag", &model.OwnerTag)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "timeout", &model.Timeout)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "violation", &model.Violation)
+
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,
 		&diagnostics,
@@ -120,6 +214,7 @@ func L2PortSecurityPolModelFromObject(
 			"tagTag",
 		},
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -128,6 +223,7 @@ func L2PortSecurityPolModelFromObject(
 		TagAnnotationModelFromObject,
 		&model.TagAnnotation,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -159,6 +255,7 @@ func (m *L2PortSecurityPolModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
+
 	if !modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "annotation", m.Annotation) && nested {
 		attributes["annotation"] = defaultAnnotation
 	}
@@ -170,6 +267,7 @@ func (m *L2PortSecurityPolModel) BuildPayloadObject(
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "ownerTag", m.OwnerTag)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "timeout", m.Timeout)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "violation", m.Violation)
+
 	var priorTagAnnotation *types.Set
 	if priorState != nil {
 		priorTagAnnotation = &priorState.TagAnnotation
@@ -190,6 +288,7 @@ func (m *L2PortSecurityPolModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, tagAnnotationPayloads...)
+
 	var priorTagTag *types.Set
 	if priorState != nil {
 		priorTagTag = &priorState.TagTag
@@ -224,29 +323,29 @@ func (m *L2PortSecurityPolModel) BuildNestedDeletePayloadObject(
 	ctx context.Context,
 	diagnostics *diag.Diagnostics,
 ) map[string]any {
-	attributes := map[string]any{}
-	attributes["name"] = m.Name.ValueString()
-	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, attributes)
+	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, map[string]any{
+		"name": m.Name.ValueString(),
+	})
 }
 
-type L2PortSecurityPolResourceModel struct {
+type L2PortSecurityPolRootModel struct {
 	L2PortSecurityPolModel
 
 	ID types.String `tfsdk:"id"`
 }
 
-func NewL2PortSecurityPolResourceModelNull() L2PortSecurityPolResourceModel {
-	return L2PortSecurityPolResourceModel{
+func NewL2PortSecurityPolRootModelNull() L2PortSecurityPolRootModel {
+	return L2PortSecurityPolRootModel{
 		L2PortSecurityPolModel: NewL2PortSecurityPolModelNull(),
 		ID:                     types.StringNull(),
 	}
 }
 
-func (m *L2PortSecurityPolResourceModel) SetIDFromDN(dn string) {
+func (m *L2PortSecurityPolRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
 
-func (m *L2PortSecurityPolResourceModel) SetFromResponse(
+func (m *L2PortSecurityPolRootModel) SetFromResponse(
 	ctx context.Context,
 	response *container.Container,
 ) (bool, diag.Diagnostics) {
@@ -262,7 +361,7 @@ func (m *L2PortSecurityPolResourceModel) SetFromResponse(
 	return true, diagnostics
 }
 
-func (m *L2PortSecurityPolResourceModel) BuildPayload(
+func (m *L2PortSecurityPolRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *L2PortSecurityPolModel,
 	create bool,
@@ -273,49 +372,16 @@ func (m *L2PortSecurityPolResourceModel) BuildPayload(
 	if diagnostics.HasError() {
 		return nil, diagnostics
 	}
+
 	if markCreated {
 		payloadObject["attributes"].(map[string]any)["status"] = "created"
 	}
+
 	payloadEnvelope := map[string]any{"l2PortSecurityPol": payloadObject}
-	jsonPayload := modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload")
-	return jsonPayload, diagnostics
+	return modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload"), diagnostics
 }
 
-func (m *L2PortSecurityPolResourceModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
+func (m *L2PortSecurityPolRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
-	payload := modelHelpers.NewDeletePayload(ctx, &diagnostics, "l2PortSecurityPol", m.ID.ValueString())
-	return payload, diagnostics
-}
-
-type L2PortSecurityPolDataSourceModel struct {
-	L2PortSecurityPolModel
-
-	ID types.String `tfsdk:"id"`
-}
-
-func NewL2PortSecurityPolDataSourceModelNull() L2PortSecurityPolDataSourceModel {
-	return L2PortSecurityPolDataSourceModel{
-		L2PortSecurityPolModel: NewL2PortSecurityPolModelNull(),
-		ID:                     types.StringNull(),
-	}
-}
-
-func (m *L2PortSecurityPolDataSourceModel) SetIDFromDN(dn string) {
-	m.ID = types.StringValue(dn)
-}
-
-func (m *L2PortSecurityPolDataSourceModel) SetFromResponse(
-	ctx context.Context,
-	response *container.Container,
-) (bool, diag.Diagnostics) {
-	fallbackModel := m.L2PortSecurityPolModel
-	model, dn, diagnostics := L2PortSecurityPolModelFromResponse(ctx, response, &fallbackModel)
-	found := model != nil
-	if diagnostics.HasError() || !found {
-		return found, diagnostics
-	}
-
-	m.L2PortSecurityPolModel = *model
-	m.ID = types.StringValue(dn)
-	return true, diagnostics
+	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "l2PortSecurityPol", m.ID.ValueString()), diagnostics
 }

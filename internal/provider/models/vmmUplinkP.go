@@ -6,15 +6,78 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+func vmmUplinkPSchemaDefinition() modelHelpers.ClassSchema {
+	return modelHelpers.ClassSchema{
+		ResourceDescription:   "Manages ACI VMM Uplink Policy",
+		DataSourceDescription: "Data source for ACI VMM Uplink Policy",
+		Properties: map[string]modelHelpers.PropertySchema{
+			"annotation": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The annotation of the VMM Uplink Policy object.",
+			},
+			"name_alias": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The name alias of the VMM Uplink Policy object.",
+			},
+			"uplink_id": {
+				Type:            modelHelpers.StringProperty,
+				Required:        true,
+				RequiresReplace: true,
+				Description:     "The uplink identifier of the VMM Uplink Policy object.",
+			},
+			"uplink_name": {
+				Type:        modelHelpers.StringProperty,
+				Required:    true,
+				Description: "The uplink name of the VMM Uplink Policy object.",
+			},
+		},
+		Children: map[string]modelHelpers.ChildSchema{
+			"annotations": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.",
+				Schema:      tagAnnotationSchemaDefinition,
+			},
+			"tags": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.",
+				Schema:      tagTagSchemaDefinition,
+			},
+		},
+		Identifiers: []string{
+			"uplink_id",
+		},
+		ParentDN: &modelHelpers.ParentDNSchema{
+			AttributeName: "parent_dn",
+			Config:        modelHelpers.ParentDNAttributeConfig{},
+		},
+		AnnotationAttribute: "annotation",
+	}
+}
+
+func VmmUplinkPResourceSchema(defaultAnnotation string) resourceschema.Schema {
+	return vmmUplinkPSchemaDefinition().ResourceSchema(defaultAnnotation)
+}
+
+func VmmUplinkPDataSourceSchema() datasourceschema.Schema {
+	return vmmUplinkPSchemaDefinition().DataSourceSchema()
+}
 
 type VmmUplinkPModel struct {
 	Annotation    types.String `tfsdk:"annotation"`
@@ -66,19 +129,15 @@ func NewVmmUplinkPModelNull() VmmUplinkPModel {
 func (m *VmmUplinkPModel) BuildRN() string {
 	rn := "uplinkp-{uplinkId}"
 	rn = strings.ReplaceAll(rn, "{uplinkId}", m.UplinkId.ValueString())
-
 	return rn
 }
 
 func (m *VmmUplinkPModel) BuildDN(parentDN string) string {
-	return parentDN + "/" + m.BuildRN()
+	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
 }
 
 func (m *VmmUplinkPModel) ParentDNFromDN(dn string) string {
-	rn := m.BuildRN()
-
-	parentDN, _ := strings.CutSuffix(dn, "/"+rn)
-	return parentDN
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
 }
 
 func VmmUplinkPModelFromObject(
@@ -93,10 +152,12 @@ func VmmUplinkPModelFromObject(
 	if !ok {
 		return model, diagnostics
 	}
+
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "nameAlias", &model.NameAlias)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "uplinkId", &model.UplinkId)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "uplinkName", &model.UplinkName)
+
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,
 		&diagnostics,
@@ -107,6 +168,7 @@ func VmmUplinkPModelFromObject(
 			"tagTag",
 		},
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -115,6 +177,7 @@ func VmmUplinkPModelFromObject(
 		TagAnnotationModelFromObject,
 		&model.TagAnnotation,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -146,12 +209,14 @@ func (m *VmmUplinkPModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
+
 	if !modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "annotation", m.Annotation) && nested {
 		attributes["annotation"] = defaultAnnotation
 	}
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "nameAlias", m.NameAlias)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "uplinkId", m.UplinkId)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "uplinkName", m.UplinkName)
+
 	var priorTagAnnotation *types.Set
 	if priorState != nil {
 		priorTagAnnotation = &priorState.TagAnnotation
@@ -172,6 +237,7 @@ func (m *VmmUplinkPModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, tagAnnotationPayloads...)
+
 	var priorTagTag *types.Set
 	if priorState != nil {
 		priorTagTag = &priorState.TagTag
@@ -206,31 +272,31 @@ func (m *VmmUplinkPModel) BuildNestedDeletePayloadObject(
 	ctx context.Context,
 	diagnostics *diag.Diagnostics,
 ) map[string]any {
-	attributes := map[string]any{}
-	attributes["uplinkId"] = m.UplinkId.ValueString()
-	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, attributes)
+	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, map[string]any{
+		"uplinkId": m.UplinkId.ValueString(),
+	})
 }
 
-type VmmUplinkPResourceModel struct {
+type VmmUplinkPRootModel struct {
 	VmmUplinkPModel
 
 	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ParentDN types.String `tfsdk:"parent_dn"`
 }
 
-func NewVmmUplinkPResourceModelNull() VmmUplinkPResourceModel {
-	return VmmUplinkPResourceModel{
+func NewVmmUplinkPRootModelNull() VmmUplinkPRootModel {
+	return VmmUplinkPRootModel{
 		VmmUplinkPModel: NewVmmUplinkPModelNull(),
 		ID:              types.StringNull(),
-		ParentDn:        types.StringNull(),
+		ParentDN:        types.StringNull(),
 	}
 }
 
-func (m *VmmUplinkPResourceModel) SetIDFromDN(dn string) {
+func (m *VmmUplinkPRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
 
-func (m *VmmUplinkPResourceModel) SetFromResponse(
+func (m *VmmUplinkPRootModel) SetFromResponse(
 	ctx context.Context,
 	response *container.Container,
 ) (bool, diag.Diagnostics) {
@@ -243,11 +309,11 @@ func (m *VmmUplinkPResourceModel) SetFromResponse(
 
 	m.VmmUplinkPModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 
-func (m *VmmUplinkPResourceModel) BuildPayload(
+func (m *VmmUplinkPRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *VmmUplinkPModel,
 	create bool,
@@ -258,52 +324,16 @@ func (m *VmmUplinkPResourceModel) BuildPayload(
 	if diagnostics.HasError() {
 		return nil, diagnostics
 	}
+
 	if markCreated {
 		payloadObject["attributes"].(map[string]any)["status"] = "created"
 	}
+
 	payloadEnvelope := map[string]any{"vmmUplinkP": payloadObject}
-	jsonPayload := modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload")
-	return jsonPayload, diagnostics
+	return modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload"), diagnostics
 }
 
-func (m *VmmUplinkPResourceModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
+func (m *VmmUplinkPRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
-	payload := modelHelpers.NewDeletePayload(ctx, &diagnostics, "vmmUplinkP", m.ID.ValueString())
-	return payload, diagnostics
-}
-
-type VmmUplinkPDataSourceModel struct {
-	VmmUplinkPModel
-
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
-}
-
-func NewVmmUplinkPDataSourceModelNull() VmmUplinkPDataSourceModel {
-	return VmmUplinkPDataSourceModel{
-		VmmUplinkPModel: NewVmmUplinkPModelNull(),
-		ID:              types.StringNull(),
-		ParentDn:        types.StringNull(),
-	}
-}
-
-func (m *VmmUplinkPDataSourceModel) SetIDFromDN(dn string) {
-	m.ID = types.StringValue(dn)
-}
-
-func (m *VmmUplinkPDataSourceModel) SetFromResponse(
-	ctx context.Context,
-	response *container.Container,
-) (bool, diag.Diagnostics) {
-	fallbackModel := m.VmmUplinkPModel
-	model, dn, diagnostics := VmmUplinkPModelFromResponse(ctx, response, &fallbackModel)
-	found := model != nil
-	if diagnostics.HasError() || !found {
-		return found, diagnostics
-	}
-
-	m.VmmUplinkPModel = *model
-	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
-	return true, diagnostics
+	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "vmmUplinkP", m.ID.ValueString()), diagnostics
 }

@@ -6,6 +6,7 @@ package models
 
 import (
 	"context"
+	"fmt"
 	{{- if .Class.ParentDnVariants }}
 	"regexp"
 	{{- end }}
@@ -15,7 +16,13 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	{{- if .Class.HasDatasourceArtifact }}
+	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
+	{{- end }}
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	{{- if .Class.HasResourceArtifact }}
+	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	{{- end }}
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	{{ if .Class.HasCustomModelTypes }}
@@ -27,7 +34,7 @@ import (
 {{ range $index, $variant := .Class.ParentDnVariants -}}
 	{{- if $index -}}
 		{{- $parentClass := index $.DataStore.Classes $variant.ParentClass.String }}
-var {{ $.Class.Name.String }}ParentDnVariant{{ $index }}Patterns = []*regexp.Regexp{
+var {{ $.Class.Name.String }}ParentDNVariant{{ $index }}Patterns = []*regexp.Regexp{
 	{{- range $pattern := $parentClass.DnFormatPatterns }}
 	regexp.MustCompile({{ printf "%q" $pattern }}),
 	{{- end }}
@@ -36,6 +43,112 @@ var {{ $.Class.Name.String }}ParentDnVariant{{ $index }}Patterns = []*regexp.Reg
 	{{- end }}
 {{- end }}
 
+func {{ .Class.Name.String }}SchemaDefinition() modelHelpers.ClassSchema {
+	return modelHelpers.ClassSchema{
+		ResourceDescription:   {{ printf "%q" .Class.Documentation.ResourceDescription }},
+		DataSourceDescription: {{ printf "%q" .Class.Documentation.DatasourceDescription }},
+		Properties: map[string]modelHelpers.PropertySchema{
+			{{- range $property := .Class.ModelProperties }}
+			"{{ $property.AttributeName }}": {
+				Type: modelHelpers.{{ $property.ValueType.SchemaPropertyType }},
+				{{- with $customTypeName := $property.CustomTypeName $.Class.Name }}
+				CustomStringType: customTypes.{{ $customTypeName }}StringType{},
+				{{- end }}
+				{{- if eq $property.ValueType.String "set" }}
+				SetElementType: types.StringType,
+				{{- else if eq $property.ValueType.String "object" }}
+				ObjectAttributeTypes: map[string]attr.Type{},
+				{{- end }}
+				{{- if $property.Required }}
+				Required: true,
+				{{- end }}
+				{{- if $property.Optional }}
+				Optional: true,
+				{{- end }}
+				{{- if $property.Computed }}
+				Computed: true,
+				{{- end }}
+				{{- if $property.ReadOnly }}
+				ReadOnly: true,
+				{{- end }}
+				{{- if $property.Sensitive }}
+				Sensitive: true,
+				{{- end }}
+				{{- if $property.RequiresReplace }}
+				RequiresReplace: true,
+				{{- end }}
+				{{- if $property.ValidValues }}
+				ValidValues: []string{
+					{{- range $property.ValidValues.LocalNamesList }}
+					{{ printf "%q" . }},
+					{{- end }}
+				},
+				{{- end }}
+				{{- if and (eq $property.ValueType.String "semantic_equality") $property.ValidValues $property.Validators }}
+				{{- with index $property.Validators 0 }}
+				StringRange: &modelHelpers.StringRange{Min: {{ .Min }}, Max: {{ .Max }}},
+				{{- end }}
+				{{- end }}
+				Description: {{ printf "%q" $property.Documentation.Description }},
+			},
+			{{- end }}
+		},
+		Children: map[string]modelHelpers.ChildSchema{
+			{{- range $childName := .Class.Children }}
+				{{- $child := index $.DataStore.Classes $childName.String }}
+			"{{ $child.ResourceNameNested }}": {
+				Cardinality: modelHelpers.{{ if $child.IsSingleNestedWhenDefinedAsChild }}SingleChild{{ else }}SetChild{{ end }},
+				{{- if $child.RequiredAsChild }}
+				Required: true,
+				{{- end }}
+				Description: {{ printf "%q" $child.Documentation.DescriptionWhenDefinedAsChild }},
+				Schema: {{ $child.Name.String }}SchemaDefinition,
+			},
+			{{- end }}
+		},
+		{{- if .Class.IdentifiedBy }}
+		Identifiers: []string{
+			{{- range $identifier := .Class.IdentifiedBy }}
+				{{- $property := index $.Class.Properties $identifier }}
+			{{ printf "%q" $property.AttributeName }},
+			{{- end }}
+		},
+		{{- end }}
+		{{- with $parentDn := .Class.ParentDnProperty }}
+		ParentDN: &modelHelpers.ParentDNSchema{
+			AttributeName: {{ printf "%q" $parentDn.AttributeName }},
+			Config: modelHelpers.ParentDNAttributeConfig{
+				{{- if $.Class.ParentDnHasSchemaDefault }}
+				DefaultValue: {{ printf "%q" (index $parentDn.Documentation.DefaultValues 0).Value }},
+				{{- end }}
+				{{- if $parentDn.ValidValues }}
+				ValidValues: []string{
+					{{- range $parentDn.ValidValues.LocalNamesList }}
+					{{ printf "%q" . }},
+					{{- end }}
+				},
+				{{- end }}
+			},
+		},
+		{{- end }}
+		{{- with $annotation := index .Class.Properties "annotation" }}
+		AnnotationAttribute: {{ printf "%q" $annotation.AttributeName }},
+		{{- end }}
+	}
+}
+
+{{ if .Class.HasResourceArtifact -}}
+func {{ .Class.Name.Capitalized }}ResourceSchema(defaultAnnotation string) resourceschema.Schema {
+	return {{ .Class.Name.String }}SchemaDefinition().ResourceSchema(defaultAnnotation)
+}
+
+{{ end -}}
+{{ if .Class.HasDatasourceArtifact -}}
+func {{ .Class.Name.Capitalized }}DataSourceSchema() datasourceschema.Schema {
+	return {{ .Class.Name.String }}SchemaDefinition().DataSourceSchema()
+}
+
+{{ end -}}
 type {{ .Class.Name.Capitalized }}Model struct {
 	{{- range $property := .Class.ModelProperties }}
 	{{ $property.ModelFieldName $.Class.Name }} {{ $property.ModelValueType $.Class.Name }} `tfsdk:"{{ $property.AttributeName }}"`
@@ -95,7 +208,6 @@ func (m *{{ .Class.Name.Capitalized }}Model) BuildRN() string {
 		{{- $property := index $.Class.Properties $identifier }}
 	rn = strings.ReplaceAll(rn, {{ printf "%q" (printf "{%s}" $identifier) }}, m.{{ $property.ModelFieldName $.Class.Name }}.{{ if $property.UsesCustomModelType }}NamedValueString(){{ else }}ValueString(){{ end }})
 	{{- end }}
-
 	return rn
 	{{- else }}
 	return {{ printf "%q" .Class.RnFormat }}
@@ -107,35 +219,35 @@ func (m *{{ .Class.Name.Capitalized }}Model) BuildDN(parentDN string) string {
 	rn := m.BuildRN()
 	{{- range $index, $variant := .Class.ParentDnVariants }}
 		{{- if $index }}
-	for _, pattern := range {{ $.Class.Name.String }}ParentDnVariant{{ $index }}Patterns {
+	for _, pattern := range {{ $.Class.Name.String }}ParentDNVariant{{ $index }}Patterns {
 		if pattern.MatchString(parentDN) {
 			{{- if $variant.RnPrepend }}
-			return parentDN + {{ printf "%q" (printf "/%s/" $variant.RnPrepend) }} + rn
+			return fmt.Sprintf({{ printf "%q" (printf "%%s/%s/%%s" $variant.RnPrepend) }}, parentDN, rn)
 			{{- else }}
-			return parentDN + "/" + rn
+			return fmt.Sprintf("%s/%s", parentDN, rn)
 			{{- end }}
 		}
 	}
 		{{- end }}
 	{{- end }}
 
-	return parentDN + "/" + rn
+	return fmt.Sprintf("%s/%s", parentDN, rn)
 	{{- else }}
-	return parentDN + "/" + m.BuildRN()
+	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
 	{{- end }}
 }
 
 func (m *{{ .Class.Name.Capitalized }}Model) ParentDNFromDN(dn string) string {
-	rn := m.BuildRN()
 	{{- if .Class.ParentDnVariants }}
+	rn := m.BuildRN()
 	{{- range $index, $variant := .Class.ParentDnVariants }}
 		{{- if $index }}
 	{{- if $variant.RnPrepend }}
-	if parentDN, found := strings.CutSuffix(dn, {{ printf "%q" (printf "/%s/" $variant.RnPrepend) }}+rn); found {
+	if parentDN, found := strings.CutSuffix(dn, fmt.Sprintf({{ printf "%q" (printf "/%s/%%s" $variant.RnPrepend) }}, rn)); found {
 	{{- else }}
-	if parentDN, found := strings.CutSuffix(dn, "/"+rn); found {
+	if parentDN, found := strings.CutSuffix(dn, fmt.Sprintf("/%s", rn)); found {
 	{{- end }}
-		for _, pattern := range {{ $.Class.Name.String }}ParentDnVariant{{ $index }}Patterns {
+		for _, pattern := range {{ $.Class.Name.String }}ParentDNVariant{{ $index }}Patterns {
 			if pattern.MatchString(parentDN) {
 				return parentDN
 			}
@@ -143,14 +255,15 @@ func (m *{{ .Class.Name.Capitalized }}Model) ParentDNFromDN(dn string) string {
 	}
 		{{- end }}
 	{{- end }}
-	{{- end }}
 
-	parentDN, _ := strings.CutSuffix(dn, "/"+rn)
-	return parentDN
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", rn))
+	{{- else }}
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
+	{{- end }}
 }
 {{- else }}
 func (m *{{ .Class.Name.Capitalized }}Model) BuildDN() string {
-	return {{ printf "%q" (printf "%s/" .Class.FixedParentDn) }} + m.BuildRN()
+	return fmt.Sprintf({{ printf "%q" (printf "%s/%%s" .Class.FixedParentDn) }}, m.BuildRN())
 }
 {{- end }}
 
@@ -167,17 +280,9 @@ func {{ .Class.Name.Capitalized }}ModelFromObject(
 		return model, diagnostics
 	}
 
-	{{- range $property := .Class.ModelProperties }}
-	{{- if $property.Sensitive }}
-		{{- if eq $property.ValueType.String "set" }}
-	if !modelHelpers.DecodeStringSetAttribute(ctx, &diagnostics, attributes, {{ printf "%q" $property.PropertyName }}, &model.{{ $property.ModelFieldName $.Class.Name }}) && fallbackModel != nil {
-		{{- else if $property.UsesCustomModelType }}
-	if !modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, {{ printf "%q" $property.PropertyName }}, &model.{{ $property.ModelFieldName $.Class.Name }}, {{ $property.ModelStringValueConstructor $.Class.Name }}) && fallbackModel != nil {
-		{{- else if $property.ValidValues.HasLocalName "none" }}
-	if !modelHelpers.DecodeStringAttributeWithEmptyValue(ctx, &diagnostics, attributes, {{ printf "%q" $property.PropertyName }}, "none", &model.{{ $property.ModelFieldName $.Class.Name }}) && fallbackModel != nil {
-		{{- else }}
-	if !modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, {{ printf "%q" $property.PropertyName }}, &model.{{ $property.ModelFieldName $.Class.Name }}) && fallbackModel != nil {
-		{{- end }}
+	{{ range $property := .Class.ModelProperties -}}
+	{{- if and $property.Sensitive (not $property.ReadOnly) }}
+	if fallbackModel != nil {
 			model.{{ $property.ModelFieldName $.Class.Name }} = fallbackModel.{{ $property.ModelFieldName $.Class.Name }}
 	}
 	{{- else }}
@@ -193,7 +298,7 @@ func {{ .Class.Name.Capitalized }}ModelFromObject(
 	{{- end }}
 	{{- end }}
 
-	{{- if .Class.Children }}
+	{{ if .Class.Children -}}
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,
 		&diagnostics,
@@ -207,9 +312,12 @@ func {{ .Class.Name.Capitalized }}ModelFromObject(
 		},
 	)
 
-	{{- range $childName := .Class.Children }}
+	{{ range $childIndex, $childName := .Class.Children -}}
 		{{- $child := index $.DataStore.Classes $childName.String }}
-		{{- if $child.IsSingleNestedWhenDefinedAsChild }}
+		{{- if $childIndex }}
+
+		{{ end -}}
+		{{ if $child.IsSingleNestedWhenDefinedAsChild -}}
 	var fallback{{ $child.Name.Capitalized }} *types.Object
 	if fallbackModel != nil {
 		fallback{{ $child.Name.Capitalized }} = &fallbackModel.{{ $child.Name.Capitalized }}
@@ -264,7 +372,7 @@ func (m *{{ .Class.Name.Capitalized }}Model) BuildPayloadObject(
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
 
-	{{- range $property := .Class.PayloadProperties }}
+	{{ range $property := .Class.PayloadProperties -}}
 	{{- if eq $property.ValueType.String "set" }}
 	modelHelpers.AddPayloadStringSetAttribute(ctx, &diagnostics, attributes, {{ printf "%q" $property.PropertyName }}, m.{{ $property.ModelFieldName $.Class.Name }})
 	if diagnostics.HasError() {
@@ -281,9 +389,12 @@ func (m *{{ .Class.Name.Capitalized }}Model) BuildPayloadObject(
 	{{- end }}
 	{{- end }}
 
-	{{- range $childName := .Class.Children }}
+	{{ range $childIndex, $childName := .Class.Children -}}
 		{{- $child := index $.DataStore.Classes $childName.String }}
-		{{- if $child.IsSingleNestedWhenDefinedAsChild }}
+		{{- if $childIndex }}
+
+		{{ end -}}
+		{{ if $child.IsSingleNestedWhenDefinedAsChild -}}
 	var prior{{ $child.Name.Capitalized }} *types.Object
 	if priorState != nil {
 		prior{{ $child.Name.Capitalized }} = &priorState.{{ $child.Name.Capitalized }}
@@ -353,40 +464,40 @@ func (m *{{ .Class.Name.Capitalized }}Model) BuildNestedDeletePayloadObject(
 	ctx context.Context,
 	diagnostics *diag.Diagnostics,
 ) map[string]any {
-	attributes := map[string]any{}
-	{{- range $identifier := .Class.IdentifiedBy }}
+	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, map[string]any{
+		{{- range $identifier := .Class.IdentifiedBy }}
 		{{- $property := index $.Class.Properties $identifier }}
-	attributes[{{ printf "%q" $property.PropertyName }}] = m.{{ $property.ModelFieldName $.Class.Name }}.ValueString()
-	{{- end }}
-	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, attributes)
+		{{ printf "%q" $property.PropertyName }}: m.{{ $property.ModelFieldName $.Class.Name }}.ValueString(),
+		{{- end }}
+	})
 }
 
 {{ end -}}
-{{ if .Class.HasResourceArtifact }}
-type {{ .Class.Name.Capitalized }}ResourceModel struct {
+{{ if or .Class.HasResourceArtifact .Class.HasDatasourceArtifact }}
+type {{ .Class.Name.Capitalized }}RootModel struct {
 	{{ .Class.Name.Capitalized }}Model
 
 	ID types.String `tfsdk:"id"`
 	{{- with .Class.ParentDnProperty }}
-	{{ .ModelFieldName $.Class.Name }} types.String `tfsdk:"{{ .AttributeName }}"`
+	ParentDN types.String `tfsdk:"{{ .AttributeName }}"`
 	{{- end }}
 }
 
-func New{{ .Class.Name.Capitalized }}ResourceModelNull() {{ .Class.Name.Capitalized }}ResourceModel {
-	return {{ .Class.Name.Capitalized }}ResourceModel{
+func New{{ .Class.Name.Capitalized }}RootModelNull() {{ .Class.Name.Capitalized }}RootModel {
+	return {{ .Class.Name.Capitalized }}RootModel{
 		{{ .Class.Name.Capitalized }}Model: New{{ .Class.Name.Capitalized }}ModelNull(),
 		ID: types.StringNull(),
 		{{- with .Class.ParentDnProperty }}
-		{{ .ModelFieldName $.Class.Name }}: types.StringNull(),
+		ParentDN: types.StringNull(),
 		{{- end }}
 	}
 }
 
-func (m *{{ .Class.Name.Capitalized }}ResourceModel) SetIDFromDN(dn string) {
+func (m *{{ .Class.Name.Capitalized }}RootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
 
-func (m *{{ .Class.Name.Capitalized }}ResourceModel) SetFromResponse(
+func (m *{{ .Class.Name.Capitalized }}RootModel) SetFromResponse(
 	ctx context.Context,
 	response *container.Container,
 ) (bool, diag.Diagnostics) {
@@ -400,22 +511,23 @@ func (m *{{ .Class.Name.Capitalized }}ResourceModel) SetFromResponse(
 	m.{{ .Class.Name.Capitalized }}Model = *model
 	m.ID = types.StringValue(dn)
 	{{- with .Class.ParentDnProperty }}
-	m.{{ .ModelFieldName $.Class.Name }} = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
 	{{- end }}
 	return true, diagnostics
 }
 
+{{ if .Class.HasResourceArtifact }}
 {{ if .Class.ParentDnVariants -}}
-func (m *{{ .Class.Name.Capitalized }}ResourceModel) buildPayloadEnvelope(payloadObject map[string]any, create bool) map[string]any {
+func (m *{{ .Class.Name.Capitalized }}RootModel) buildPayloadEnvelope(payloadObject map[string]any, create bool) map[string]any {
 	directEnvelope := map[string]any{ {{- printf "%q" .Class.Name.String -}}: payloadObject}
 	if !create {
 		return directEnvelope
 	}
 
-	{{- range $index, $variant := .Class.ParentDnVariants }}
+	{{ range $index, $variant := .Class.ParentDnVariants -}}
 		{{- if $index }}
-	for _, pattern := range {{ $.Class.Name.String }}ParentDnVariant{{ $index }}Patterns {
-		if pattern.MatchString(m.{{ with $.Class.ParentDnProperty }}{{ .ModelFieldName $.Class.Name }}{{ end }}.ValueString()) {
+	for _, pattern := range {{ $.Class.Name.String }}ParentDNVariant{{ $index }}Patterns {
+		if pattern.MatchString(m.ParentDN.ValueString()) {
 			{{- if $variant.WrapperClass }}
 			return map[string]any{
 				{{ printf "%q" $variant.WrapperClass.String }}: map[string]any{
@@ -437,7 +549,7 @@ func (m *{{ .Class.Name.Capitalized }}ResourceModel) buildPayloadEnvelope(payloa
 }
 
 {{ end -}}
-func (m *{{ .Class.Name.Capitalized }}ResourceModel) BuildPayload(
+func (m *{{ .Class.Name.Capitalized }}RootModel) BuildPayload(
 	ctx context.Context,
 	priorState *{{ .Class.Name.Capitalized }}Model,
 	create bool,
@@ -448,67 +560,24 @@ func (m *{{ .Class.Name.Capitalized }}ResourceModel) BuildPayload(
 	if diagnostics.HasError() {
 		return nil, diagnostics
 	}
+
 	if markCreated {
 		payloadObject["attributes"].(map[string]any)["status"] = "created"
 	}
 
-	{{- if .Class.ParentDnVariants }}
+	{{ if .Class.ParentDnVariants -}}
 	payloadEnvelope := m.buildPayloadEnvelope(payloadObject, create)
 	{{- else }}
 	payloadEnvelope := map[string]any{ {{- printf "%q" .Class.Name.String -}}: payloadObject}
 	{{- end }}
-	jsonPayload := modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload")
-	return jsonPayload, diagnostics
+	return modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload"), diagnostics
 }
 
 {{ if .Class.AllowDelete -}}
-func (m *{{ .Class.Name.Capitalized }}ResourceModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
+func (m *{{ .Class.Name.Capitalized }}RootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
-	payload := modelHelpers.NewDeletePayload(ctx, &diagnostics, {{ printf "%q" .Class.Name.String }}, m.ID.ValueString())
-	return payload, diagnostics
+	return modelHelpers.NewDeletePayload(ctx, &diagnostics, {{ printf "%q" .Class.Name.String }}, m.ID.ValueString()), diagnostics
 }
 {{ end }}
 {{ end }}
-{{ if .Class.HasDatasourceArtifact }}
-type {{ .Class.Name.Capitalized }}DataSourceModel struct {
-	{{ .Class.Name.Capitalized }}Model
-
-	ID types.String `tfsdk:"id"`
-	{{- with .Class.ParentDnProperty }}
-	{{ .ModelFieldName $.Class.Name }} types.String `tfsdk:"{{ .AttributeName }}"`
-	{{- end }}
-}
-
-func New{{ .Class.Name.Capitalized }}DataSourceModelNull() {{ .Class.Name.Capitalized }}DataSourceModel {
-	return {{ .Class.Name.Capitalized }}DataSourceModel{
-		{{ .Class.Name.Capitalized }}Model: New{{ .Class.Name.Capitalized }}ModelNull(),
-		ID: types.StringNull(),
-		{{- with .Class.ParentDnProperty }}
-		{{ .ModelFieldName $.Class.Name }}: types.StringNull(),
-		{{- end }}
-	}
-}
-
-func (m *{{ .Class.Name.Capitalized }}DataSourceModel) SetIDFromDN(dn string) {
-	m.ID = types.StringValue(dn)
-}
-
-func (m *{{ .Class.Name.Capitalized }}DataSourceModel) SetFromResponse(
-	ctx context.Context,
-	response *container.Container,
-) (bool, diag.Diagnostics) {
-	fallbackModel := m.{{ .Class.Name.Capitalized }}Model
-	model, dn, diagnostics := {{ .Class.Name.Capitalized }}ModelFromResponse(ctx, response, &fallbackModel)
-	found := model != nil
-	if diagnostics.HasError() || !found {
-		return found, diagnostics
-	}
-
-	m.{{ .Class.Name.Capitalized }}Model = *model
-	m.ID = types.StringValue(dn)
-	{{- with .Class.ParentDnProperty }}
-	m.{{ .ModelFieldName $.Class.Name }} = types.StringValue(model.ParentDNFromDN(dn))
-	{{- end }}
-	return true, diagnostics
-}
 {{ end }}

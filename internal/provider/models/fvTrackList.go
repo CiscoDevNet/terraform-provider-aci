@@ -6,15 +6,130 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+func fvTrackListSchemaDefinition() modelHelpers.ClassSchema {
+	return modelHelpers.ClassSchema{
+		ResourceDescription:   "Manages ACI IP SLA Track List",
+		DataSourceDescription: "Data source for ACI IP SLA Track List",
+		Properties: map[string]modelHelpers.PropertySchema{
+			"annotation": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The annotation of the IP SLA Track List object.",
+			},
+			"description": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The description of the IP SLA Track List object.",
+			},
+			"name": {
+				Type:            modelHelpers.StringProperty,
+				Required:        true,
+				RequiresReplace: true,
+				Description:     "The name of the IP SLA Track List object.",
+			},
+			"name_alias": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The name alias of the IP SLA Track List object.",
+			},
+			"owner_key": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The key for enabling clients to own their data for entity correlation.",
+			},
+			"owner_tag": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "A tag for enabling clients to add their own data. For example, to indicate who created this object.",
+			},
+			"percentage_down": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The down percentage assigned to the IP SLA Track List determines whether a route is considered available or unavailable. This attribute is applicable only when the track type is 'percentage'.",
+			},
+			"percentage_up": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The up percentage assigned to the IP SLA Track List determines whether a route is considered available or unavailable. The percentage up must be greater than the percentage down. This attribute is applicable only when the track type is 'percentage'.",
+			},
+			"type": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"percentage",
+					"weight",
+				},
+				Description: "The type of the IP SLA Track List. Choose 'percentage' if you want the route availability to be based on the percentage of track members that are up or down. Choose 'weight' if the route availability is based on a weight value that is assigned to each track member.",
+			},
+			"weight_down": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The down weight assigned to the IP SLA Track List determines whether a route is considered available or unavailable. This attribute is applicable only when the track type is 'weight'.",
+			},
+			"weight_up": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The up weight assigned to the IP SLA Track List determines whether a route is considered available or unavailable. The up weight must be greater than the down weight. This attribute is applicable only when the track type is 'weight'.",
+			},
+		},
+		Children: map[string]modelHelpers.ChildSchema{
+			"relation_to_ip_sla_track_members": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`relation_to_ip_sla_track_members` - (list) A list of Relation To IP SLA Track Members (ACI object [fvRsOtmListMember](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsOtmListMember/overview)) pointing to IP SLA Track Member (ACI Object [fvTrackMember](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvTrackMember/overview)) which can be configured using the [aci_ip_sla_track_member](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/ip_sla_track_member) resource.",
+				Schema:      fvRsOtmListMemberSchemaDefinition,
+			},
+			"annotations": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.",
+				Schema:      tagAnnotationSchemaDefinition,
+			},
+			"tags": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.",
+				Schema:      tagTagSchemaDefinition,
+			},
+		},
+		Identifiers: []string{
+			"name",
+		},
+		ParentDN: &modelHelpers.ParentDNSchema{
+			AttributeName: "parent_dn",
+			Config:        modelHelpers.ParentDNAttributeConfig{},
+		},
+		AnnotationAttribute: "annotation",
+	}
+}
+
+func FvTrackListResourceSchema(defaultAnnotation string) resourceschema.Schema {
+	return fvTrackListSchemaDefinition().ResourceSchema(defaultAnnotation)
+}
+
+func FvTrackListDataSourceSchema() datasourceschema.Schema {
+	return fvTrackListSchemaDefinition().DataSourceSchema()
+}
 
 type FvTrackListModel struct {
 	Annotation        types.String `tfsdk:"annotation"`
@@ -98,19 +213,15 @@ func NewFvTrackListModelNull() FvTrackListModel {
 func (m *FvTrackListModel) BuildRN() string {
 	rn := "tracklist-{name}"
 	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
-
 	return rn
 }
 
 func (m *FvTrackListModel) BuildDN(parentDN string) string {
-	return parentDN + "/" + m.BuildRN()
+	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
 }
 
 func (m *FvTrackListModel) ParentDNFromDN(dn string) string {
-	rn := m.BuildRN()
-
-	parentDN, _ := strings.CutSuffix(dn, "/"+rn)
-	return parentDN
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
 }
 
 func FvTrackListModelFromObject(
@@ -125,6 +236,7 @@ func FvTrackListModelFromObject(
 	if !ok {
 		return model, diagnostics
 	}
+
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "descr", &model.Descr)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "name", &model.Name)
@@ -136,6 +248,7 @@ func FvTrackListModelFromObject(
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "type", &model.Type)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "weightDown", &model.WeightDown)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "weightUp", &model.WeightUp)
+
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,
 		&diagnostics,
@@ -147,6 +260,7 @@ func FvTrackListModelFromObject(
 			"tagTag",
 		},
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -155,6 +269,7 @@ func FvTrackListModelFromObject(
 		FvRsOtmListMemberModelFromObject,
 		&model.FvRsOtmListMember,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -163,6 +278,7 @@ func FvTrackListModelFromObject(
 		TagAnnotationModelFromObject,
 		&model.TagAnnotation,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -194,6 +310,7 @@ func (m *FvTrackListModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
+
 	if !modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "annotation", m.Annotation) && nested {
 		attributes["annotation"] = defaultAnnotation
 	}
@@ -207,6 +324,7 @@ func (m *FvTrackListModel) BuildPayloadObject(
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "type", m.Type)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "weightDown", m.WeightDown)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "weightUp", m.WeightUp)
+
 	var priorFvRsOtmListMember *types.Set
 	if priorState != nil {
 		priorFvRsOtmListMember = &priorState.FvRsOtmListMember
@@ -227,6 +345,7 @@ func (m *FvTrackListModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, fvRsOtmListMemberPayloads...)
+
 	var priorTagAnnotation *types.Set
 	if priorState != nil {
 		priorTagAnnotation = &priorState.TagAnnotation
@@ -247,6 +366,7 @@ func (m *FvTrackListModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, tagAnnotationPayloads...)
+
 	var priorTagTag *types.Set
 	if priorState != nil {
 		priorTagTag = &priorState.TagTag
@@ -281,31 +401,31 @@ func (m *FvTrackListModel) BuildNestedDeletePayloadObject(
 	ctx context.Context,
 	diagnostics *diag.Diagnostics,
 ) map[string]any {
-	attributes := map[string]any{}
-	attributes["name"] = m.Name.ValueString()
-	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, attributes)
+	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, map[string]any{
+		"name": m.Name.ValueString(),
+	})
 }
 
-type FvTrackListResourceModel struct {
+type FvTrackListRootModel struct {
 	FvTrackListModel
 
 	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ParentDN types.String `tfsdk:"parent_dn"`
 }
 
-func NewFvTrackListResourceModelNull() FvTrackListResourceModel {
-	return FvTrackListResourceModel{
+func NewFvTrackListRootModelNull() FvTrackListRootModel {
+	return FvTrackListRootModel{
 		FvTrackListModel: NewFvTrackListModelNull(),
 		ID:               types.StringNull(),
-		ParentDn:         types.StringNull(),
+		ParentDN:         types.StringNull(),
 	}
 }
 
-func (m *FvTrackListResourceModel) SetIDFromDN(dn string) {
+func (m *FvTrackListRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
 
-func (m *FvTrackListResourceModel) SetFromResponse(
+func (m *FvTrackListRootModel) SetFromResponse(
 	ctx context.Context,
 	response *container.Container,
 ) (bool, diag.Diagnostics) {
@@ -318,11 +438,11 @@ func (m *FvTrackListResourceModel) SetFromResponse(
 
 	m.FvTrackListModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 
-func (m *FvTrackListResourceModel) BuildPayload(
+func (m *FvTrackListRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *FvTrackListModel,
 	create bool,
@@ -333,52 +453,16 @@ func (m *FvTrackListResourceModel) BuildPayload(
 	if diagnostics.HasError() {
 		return nil, diagnostics
 	}
+
 	if markCreated {
 		payloadObject["attributes"].(map[string]any)["status"] = "created"
 	}
+
 	payloadEnvelope := map[string]any{"fvTrackList": payloadObject}
-	jsonPayload := modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload")
-	return jsonPayload, diagnostics
+	return modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload"), diagnostics
 }
 
-func (m *FvTrackListResourceModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
+func (m *FvTrackListRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
-	payload := modelHelpers.NewDeletePayload(ctx, &diagnostics, "fvTrackList", m.ID.ValueString())
-	return payload, diagnostics
-}
-
-type FvTrackListDataSourceModel struct {
-	FvTrackListModel
-
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
-}
-
-func NewFvTrackListDataSourceModelNull() FvTrackListDataSourceModel {
-	return FvTrackListDataSourceModel{
-		FvTrackListModel: NewFvTrackListModelNull(),
-		ID:               types.StringNull(),
-		ParentDn:         types.StringNull(),
-	}
-}
-
-func (m *FvTrackListDataSourceModel) SetIDFromDN(dn string) {
-	m.ID = types.StringValue(dn)
-}
-
-func (m *FvTrackListDataSourceModel) SetFromResponse(
-	ctx context.Context,
-	response *container.Container,
-) (bool, diag.Diagnostics) {
-	fallbackModel := m.FvTrackListModel
-	model, dn, diagnostics := FvTrackListModelFromResponse(ctx, response, &fallbackModel)
-	found := model != nil
-	if diagnostics.HasError() || !found {
-		return found, diagnostics
-	}
-
-	m.FvTrackListModel = *model
-	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
-	return true, diagnostics
+	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "fvTrackList", m.ID.ValueString()), diagnostics
 }

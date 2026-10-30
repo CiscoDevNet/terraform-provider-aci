@@ -6,16 +6,297 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+func vmmDomPSchemaDefinition() modelHelpers.ClassSchema {
+	return modelHelpers.ClassSchema{
+		ResourceDescription:   "Manages ACI VMM Domain",
+		DataSourceDescription: "Data source for ACI VMM Domain",
+		Properties: map[string]modelHelpers.PropertySchema{
+			"access_mode": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"read-only",
+					"read-write",
+				},
+				Description: "The access mode of the VMM Domain object.",
+			},
+			"annotation": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The annotation of the VMM Domain object.",
+			},
+			"arp_learning": {
+				Type:             modelHelpers.StringProperty,
+				CustomStringType: customTypes.VMMArpLearningStringType{},
+				Optional:         true,
+				Computed:         true,
+				ValidValues: []string{
+					"disabled",
+					"enabled",
+				},
+				Description: "Enable ARP learning for the the VMM Domain object, this attribute is only applicable for Application Virtual Switch (AVS).",
+			},
+			"ave_time_out": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The timeout in seconds that the Cisco ACI Virtual Edge (AVE), the virtual switch for ACI, can remain in a non-working state before vCenter takes action.",
+			},
+			"configure_infra_port_groups": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"no",
+					"yes",
+				},
+				Description: "Configure port groups for the virtual APIC.",
+			},
+			"endpoint_data_path_verification": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"epDpVerify",
+					"none",
+				},
+				Description: "This mechanism allows disabling endpoint verification, prevents the un-deployment of an EPG while processing an endpoint detach when the fabric is still receiving traffic for the endpoint.",
+			},
+			"custom_switch_name": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The custom vSwitch name.",
+			},
+			"delimiter": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The delimiter of the VMM Domain object.",
+			},
+			"enable_ave_mode": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"no",
+					"yes",
+				},
+				Description: "Enable Cisco ACI Virtual Edge (AVE) mode on the VMM Domain object.",
+			},
+			"enable_tag_collection": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"no",
+					"yes",
+				},
+				Description: "Enable Tag data retrieval for the VMM Domain object.",
+			},
+			"enable_vm_folder_data_retrieval": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"no",
+					"yes",
+				},
+				Description: "Enable VM Folder data retrieval for the VMM Domain object.",
+			},
+			"encapsulation_mode": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"ivxlan",
+					"unknown",
+					"vlan",
+					"vxlan",
+				},
+				Description: "The encapsulation mode of the VMM Domain object. When default_encapsulation_mode is not specified, the encapsulation_mode is automatically set based on the encapsulation blocks associated with the domain.",
+			},
+			"switching_enforcement_preference": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"hw",
+					"sw",
+					"unknown",
+				},
+				Description: "The switching enforcement preference of the VMM Domain object. This determines whether switching is done within the virtual switch (Local Switching) or whether all switched traffic must go through the fabric (No Local Switching).",
+			},
+			"endpoint_inventory_type": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"none",
+					"on-link",
+				},
+				Description: "The endpoint inventory type of the VMM Domain object. When set to on-link type the inventory will contain all endpoints that share a fabric uplink.",
+			},
+			"endpoint_retention_time": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The endpoint retention time of the VMM Domain object.",
+			},
+			"host_availability_assurance": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"no",
+					"yes",
+				},
+				Description: "Enable host availability assurance, which creates a vSphere Proactive HA provider object that resides in VMware vCenter. The object enables VMware vCenter to quarantine a host with a nonworking Cisco Application Centric Infrastructure Virtual Edge and move its VMs.",
+			},
+			"multicast_address": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The multicast address of the VMM Domain object.",
+			},
+			"switch_type": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"cf",
+					"default",
+					"k8s",
+					"n1kv",
+					"nsx",
+					"nutanix_pc",
+					"nutanix_pe",
+					"openshift",
+					"ovs",
+					"rancher",
+					"rhev",
+					"unknown",
+				},
+				Description: "The switch type of the VMM Domain object.",
+			},
+			"name": {
+				Type:            modelHelpers.StringProperty,
+				Required:        true,
+				RequiresReplace: true,
+				Description:     "The name of the VMM Domain object.",
+			},
+			"name_alias": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The name alias of the VMM Domain object.",
+			},
+			"owner_key": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The key for enabling clients to own their data for entity correlation.",
+			},
+			"owner_tag": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "A tag for enabling clients to add their own data. For example, to indicate who created this object.",
+			},
+			"default_encapsulation_mode": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"unspecified",
+					"vlan",
+					"vxlan",
+				},
+				Description: "The default encapsulation mode of the VMM Domain object.",
+			},
+		},
+		Children: map[string]modelHelpers.ChildSchema{
+			"relation_to_ip_address_pool": {
+				Cardinality: modelHelpers.SingleChild,
+				Description: "`relation_to_ip_address_pool` - (map) A map of Relation To IP Address Pool (ACI object [infraRsVipAddrNs](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraRsVipAddrNs/overview)) pointing to IP Address Pool (ACI Object [fvnsAddrInst](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvnsAddrInst/overview)) which can be configured using the [aci_ip_address_pool](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/ip_address_pool) resource.",
+				Schema:      infraRsVipAddrNsSchemaDefinition,
+			},
+			"relation_to_vlan_pool": {
+				Cardinality: modelHelpers.SingleChild,
+				Description: "`relation_to_vlan_pool` - (map) A map of Relation To Vlan Pool (ACI object [infraRsVlanNs](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/infraRsVlanNs/overview)) pointing to Vlan Pool (ACI Object [fvnsVlanInstP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvnsVlanInstP/overview)) which can be configured using the [aci_vlan_pool](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vlan_pool) resource.",
+				Schema:      infraRsVlanNsSchemaDefinition,
+			},
+			"annotations": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.",
+				Schema:      tagAnnotationSchemaDefinition,
+			},
+			"tags": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.",
+				Schema:      tagTagSchemaDefinition,
+			},
+			"relation_to_multicast_pool": {
+				Cardinality: modelHelpers.SingleChild,
+				Description: "`relation_to_multicast_pool` - (map) A map of Relation To Multicast Pool (ACI object [vmmRsDomMcastAddrNs](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vmmRsDomMcastAddrNs/overview)) pointing to Multicast Pool (ACI Object [fvnsMcastAddrInstP](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvnsMcastAddrInstP/overview)) which can be configured using the [aci_multicast_pool](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/multicast_pool) resource.",
+				Schema:      vmmRsDomMcastAddrNsSchemaDefinition,
+			},
+			"relation_to_lacp_enhanced_lag_policy": {
+				Cardinality: modelHelpers.SingleChild,
+				Description: "`relation_to_lacp_enhanced_lag_policy` - (map) A map of Relation To LACP Enhanced Lag Policy (ACI object [vmmRsPrefEnhancedLagPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vmmRsPrefEnhancedLagPol/overview)) pointing to LACP Enhanced Lag Policy (ACI Object [lacpEnhancedLagPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/lacpEnhancedLagPol/overview)) which can be configured using the [aci_lacp_enhanced_lag_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/lacp_enhanced_lag_policy) resource.",
+				Schema:      vmmRsPrefEnhancedLagPolSchemaDefinition,
+			},
+			"vmm_uplink_container": {
+				Cardinality: modelHelpers.SingleChild,
+				Description: "`vmm_uplink_container` - (map) A map of VMM Uplink Container (ACI object [vmmUplinkPCont](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/vmmUplinkPCont/overview)) which can also be configured using a separate [aci_vmm_uplink_container](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/vmm_uplink_container) resource.",
+				Schema:      vmmUplinkPContSchemaDefinition,
+			},
+		},
+		Identifiers: []string{
+			"name",
+		},
+		ParentDN: &modelHelpers.ParentDNSchema{
+			AttributeName: "parent_dn",
+			Config: modelHelpers.ParentDNAttributeConfig{
+				ValidValues: []string{
+					"uni/vmmp-CloudFoundry",
+					"uni/vmmp-Kubernetes",
+					"uni/vmmp-Microsoft",
+					"uni/vmmp-Nutanix",
+					"uni/vmmp-OpenShift",
+					"uni/vmmp-OpenStack",
+					"uni/vmmp-Redhat",
+					"uni/vmmp-VMware",
+				},
+			},
+		},
+		AnnotationAttribute: "annotation",
+	}
+}
+
+func VmmDomPResourceSchema(defaultAnnotation string) resourceschema.Schema {
+	return vmmDomPSchemaDefinition().ResourceSchema(defaultAnnotation)
+}
+
+func VmmDomPDataSourceSchema() datasourceschema.Schema {
+	return vmmDomPSchemaDefinition().DataSourceSchema()
+}
 
 type VmmDomPModel struct {
 	AccessMode              types.String                          `tfsdk:"access_mode"`
@@ -149,19 +430,15 @@ func NewVmmDomPModelNull() VmmDomPModel {
 func (m *VmmDomPModel) BuildRN() string {
 	rn := "dom-{name}"
 	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
-
 	return rn
 }
 
 func (m *VmmDomPModel) BuildDN(parentDN string) string {
-	return parentDN + "/" + m.BuildRN()
+	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
 }
 
 func (m *VmmDomPModel) ParentDNFromDN(dn string) string {
-	rn := m.BuildRN()
-
-	parentDN, _ := strings.CutSuffix(dn, "/"+rn)
-	return parentDN
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
 }
 
 func VmmDomPModelFromObject(
@@ -176,6 +453,7 @@ func VmmDomPModelFromObject(
 	if !ok {
 		return model, diagnostics
 	}
+
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "accessMode", &model.AccessMode)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
 	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "arpLearning", &model.ArpLearning, customTypes.NewVMMArpLearningStringValue)
@@ -199,6 +477,7 @@ func VmmDomPModelFromObject(
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ownerKey", &model.OwnerKey)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ownerTag", &model.OwnerTag)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "prefEncapMode", &model.PrefEncapMode)
+
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,
 		&diagnostics,
@@ -214,6 +493,7 @@ func VmmDomPModelFromObject(
 			"vmmUplinkPCont",
 		},
 	)
+
 	var fallbackInfraRsVipAddrNs *types.Object
 	if fallbackModel != nil {
 		fallbackInfraRsVipAddrNs = &fallbackModel.InfraRsVipAddrNs
@@ -230,6 +510,7 @@ func VmmDomPModelFromObject(
 		InfraRsVipAddrNsModelFromObject,
 		&model.InfraRsVipAddrNs,
 	)
+
 	var fallbackInfraRsVlanNs *types.Object
 	if fallbackModel != nil {
 		fallbackInfraRsVlanNs = &fallbackModel.InfraRsVlanNs
@@ -246,6 +527,7 @@ func VmmDomPModelFromObject(
 		InfraRsVlanNsModelFromObject,
 		&model.InfraRsVlanNs,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -254,6 +536,7 @@ func VmmDomPModelFromObject(
 		TagAnnotationModelFromObject,
 		&model.TagAnnotation,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -262,6 +545,7 @@ func VmmDomPModelFromObject(
 		TagTagModelFromObject,
 		&model.TagTag,
 	)
+
 	var fallbackVmmRsDomMcastAddrNs *types.Object
 	if fallbackModel != nil {
 		fallbackVmmRsDomMcastAddrNs = &fallbackModel.VmmRsDomMcastAddrNs
@@ -278,6 +562,7 @@ func VmmDomPModelFromObject(
 		VmmRsDomMcastAddrNsModelFromObject,
 		&model.VmmRsDomMcastAddrNs,
 	)
+
 	var fallbackVmmRsPrefEnhancedLagPol *types.Object
 	if fallbackModel != nil {
 		fallbackVmmRsPrefEnhancedLagPol = &fallbackModel.VmmRsPrefEnhancedLagPol
@@ -294,6 +579,7 @@ func VmmDomPModelFromObject(
 		VmmRsPrefEnhancedLagPolModelFromObject,
 		&model.VmmRsPrefEnhancedLagPol,
 	)
+
 	var fallbackVmmUplinkPCont *types.Object
 	if fallbackModel != nil {
 		fallbackVmmUplinkPCont = &fallbackModel.VmmUplinkPCont
@@ -333,6 +619,7 @@ func (m *VmmDomPModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
+
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "accessMode", m.AccessMode)
 	if !modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "annotation", m.Annotation) && nested {
 		attributes["annotation"] = defaultAnnotation
@@ -358,6 +645,7 @@ func (m *VmmDomPModel) BuildPayloadObject(
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "ownerKey", m.OwnerKey)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "ownerTag", m.OwnerTag)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "prefEncapMode", m.PrefEncapMode)
+
 	var priorInfraRsVipAddrNs *types.Object
 	if priorState != nil {
 		priorInfraRsVipAddrNs = &priorState.InfraRsVipAddrNs
@@ -377,6 +665,7 @@ func (m *VmmDomPModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, infraRsVipAddrNsPayloads...)
+
 	var priorInfraRsVlanNs *types.Object
 	if priorState != nil {
 		priorInfraRsVlanNs = &priorState.InfraRsVlanNs
@@ -396,6 +685,7 @@ func (m *VmmDomPModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, infraRsVlanNsPayloads...)
+
 	var priorTagAnnotation *types.Set
 	if priorState != nil {
 		priorTagAnnotation = &priorState.TagAnnotation
@@ -416,6 +706,7 @@ func (m *VmmDomPModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, tagAnnotationPayloads...)
+
 	var priorTagTag *types.Set
 	if priorState != nil {
 		priorTagTag = &priorState.TagTag
@@ -436,6 +727,7 @@ func (m *VmmDomPModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, tagTagPayloads...)
+
 	var priorVmmRsDomMcastAddrNs *types.Object
 	if priorState != nil {
 		priorVmmRsDomMcastAddrNs = &priorState.VmmRsDomMcastAddrNs
@@ -455,6 +747,7 @@ func (m *VmmDomPModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, vmmRsDomMcastAddrNsPayloads...)
+
 	var priorVmmRsPrefEnhancedLagPol *types.Object
 	if priorState != nil {
 		priorVmmRsPrefEnhancedLagPol = &priorState.VmmRsPrefEnhancedLagPol
@@ -474,6 +767,7 @@ func (m *VmmDomPModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, vmmRsPrefEnhancedLagPolPayloads...)
+
 	var priorVmmUplinkPCont *types.Object
 	if priorState != nil {
 		priorVmmUplinkPCont = &priorState.VmmUplinkPCont
@@ -507,31 +801,31 @@ func (m *VmmDomPModel) BuildNestedDeletePayloadObject(
 	ctx context.Context,
 	diagnostics *diag.Diagnostics,
 ) map[string]any {
-	attributes := map[string]any{}
-	attributes["name"] = m.Name.ValueString()
-	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, attributes)
+	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, map[string]any{
+		"name": m.Name.ValueString(),
+	})
 }
 
-type VmmDomPResourceModel struct {
+type VmmDomPRootModel struct {
 	VmmDomPModel
 
 	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ParentDN types.String `tfsdk:"parent_dn"`
 }
 
-func NewVmmDomPResourceModelNull() VmmDomPResourceModel {
-	return VmmDomPResourceModel{
+func NewVmmDomPRootModelNull() VmmDomPRootModel {
+	return VmmDomPRootModel{
 		VmmDomPModel: NewVmmDomPModelNull(),
 		ID:           types.StringNull(),
-		ParentDn:     types.StringNull(),
+		ParentDN:     types.StringNull(),
 	}
 }
 
-func (m *VmmDomPResourceModel) SetIDFromDN(dn string) {
+func (m *VmmDomPRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
 
-func (m *VmmDomPResourceModel) SetFromResponse(
+func (m *VmmDomPRootModel) SetFromResponse(
 	ctx context.Context,
 	response *container.Container,
 ) (bool, diag.Diagnostics) {
@@ -544,11 +838,11 @@ func (m *VmmDomPResourceModel) SetFromResponse(
 
 	m.VmmDomPModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 
-func (m *VmmDomPResourceModel) BuildPayload(
+func (m *VmmDomPRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *VmmDomPModel,
 	create bool,
@@ -559,52 +853,16 @@ func (m *VmmDomPResourceModel) BuildPayload(
 	if diagnostics.HasError() {
 		return nil, diagnostics
 	}
+
 	if markCreated {
 		payloadObject["attributes"].(map[string]any)["status"] = "created"
 	}
+
 	payloadEnvelope := map[string]any{"vmmDomP": payloadObject}
-	jsonPayload := modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload")
-	return jsonPayload, diagnostics
+	return modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload"), diagnostics
 }
 
-func (m *VmmDomPResourceModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
+func (m *VmmDomPRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
-	payload := modelHelpers.NewDeletePayload(ctx, &diagnostics, "vmmDomP", m.ID.ValueString())
-	return payload, diagnostics
-}
-
-type VmmDomPDataSourceModel struct {
-	VmmDomPModel
-
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
-}
-
-func NewVmmDomPDataSourceModelNull() VmmDomPDataSourceModel {
-	return VmmDomPDataSourceModel{
-		VmmDomPModel: NewVmmDomPModelNull(),
-		ID:           types.StringNull(),
-		ParentDn:     types.StringNull(),
-	}
-}
-
-func (m *VmmDomPDataSourceModel) SetIDFromDN(dn string) {
-	m.ID = types.StringValue(dn)
-}
-
-func (m *VmmDomPDataSourceModel) SetFromResponse(
-	ctx context.Context,
-	response *container.Container,
-) (bool, diag.Diagnostics) {
-	fallbackModel := m.VmmDomPModel
-	model, dn, diagnostics := VmmDomPModelFromResponse(ctx, response, &fallbackModel)
-	found := model != nil
-	if diagnostics.HasError() || !found {
-		return found, diagnostics
-	}
-
-	m.VmmDomPModel = *model
-	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
-	return true, diagnostics
+	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "vmmDomP", m.ID.ValueString()), diagnostics
 }

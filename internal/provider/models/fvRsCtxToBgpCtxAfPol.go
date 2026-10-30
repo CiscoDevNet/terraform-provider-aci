@@ -6,15 +6,78 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+func fvRsCtxToBgpCtxAfPolSchemaDefinition() modelHelpers.ClassSchema {
+	return modelHelpers.ClassSchema{
+		ResourceDescription:   "Manages ACI Relation From VRF To BGP Address Family Context",
+		DataSourceDescription: "Data source for ACI Relation From VRF To BGP Address Family Context",
+		Properties: map[string]modelHelpers.PropertySchema{
+			"address_family": {
+				Type:            modelHelpers.StringProperty,
+				Required:        true,
+				RequiresReplace: true,
+				ValidValues: []string{
+					"ipv4-ucast",
+					"ipv6-ucast",
+				},
+				Description: "The type of address family for the Relation From VRF To BGP Address Family Context.",
+			},
+			"annotation": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The annotation of the Relation From VRF To BGP Address Family Context object.",
+			},
+			"bgp_address_family_context_name": {
+				Type:            modelHelpers.StringProperty,
+				Required:        true,
+				RequiresReplace: true,
+				Description:     "The name of the BGP Address Family Context. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/bgp_address_family_context) with `aci_bgp_address_family_context.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/bgp_address_family_context) with `data.aci_bgp_address_family_context.example.name`.",
+			},
+		},
+		Children: map[string]modelHelpers.ChildSchema{
+			"annotations": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.",
+				Schema:      tagAnnotationSchemaDefinition,
+			},
+			"tags": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.",
+				Schema:      tagTagSchemaDefinition,
+			},
+		},
+		Identifiers: []string{
+			"address_family",
+			"bgp_address_family_context_name",
+		},
+		ParentDN: &modelHelpers.ParentDNSchema{
+			AttributeName: "parent_dn",
+			Config:        modelHelpers.ParentDNAttributeConfig{},
+		},
+		AnnotationAttribute: "annotation",
+	}
+}
+
+func FvRsCtxToBgpCtxAfPolResourceSchema(defaultAnnotation string) resourceschema.Schema {
+	return fvRsCtxToBgpCtxAfPolSchemaDefinition().ResourceSchema(defaultAnnotation)
+}
+
+func FvRsCtxToBgpCtxAfPolDataSourceSchema() datasourceschema.Schema {
+	return fvRsCtxToBgpCtxAfPolSchemaDefinition().DataSourceSchema()
+}
 
 type FvRsCtxToBgpCtxAfPolModel struct {
 	Af                types.String `tfsdk:"address_family"`
@@ -64,19 +127,15 @@ func (m *FvRsCtxToBgpCtxAfPolModel) BuildRN() string {
 	rn := "rsctxToBgpCtxAfPol-[{tnBgpCtxAfPolName}]-{af}"
 	rn = strings.ReplaceAll(rn, "{af}", m.Af.ValueString())
 	rn = strings.ReplaceAll(rn, "{tnBgpCtxAfPolName}", m.TnBgpCtxAfPolName.ValueString())
-
 	return rn
 }
 
 func (m *FvRsCtxToBgpCtxAfPolModel) BuildDN(parentDN string) string {
-	return parentDN + "/" + m.BuildRN()
+	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
 }
 
 func (m *FvRsCtxToBgpCtxAfPolModel) ParentDNFromDN(dn string) string {
-	rn := m.BuildRN()
-
-	parentDN, _ := strings.CutSuffix(dn, "/"+rn)
-	return parentDN
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
 }
 
 func FvRsCtxToBgpCtxAfPolModelFromObject(
@@ -91,9 +150,11 @@ func FvRsCtxToBgpCtxAfPolModelFromObject(
 	if !ok {
 		return model, diagnostics
 	}
+
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "af", &model.Af)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "tnBgpCtxAfPolName", &model.TnBgpCtxAfPolName)
+
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,
 		&diagnostics,
@@ -104,6 +165,7 @@ func FvRsCtxToBgpCtxAfPolModelFromObject(
 			"tagTag",
 		},
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -112,6 +174,7 @@ func FvRsCtxToBgpCtxAfPolModelFromObject(
 		TagAnnotationModelFromObject,
 		&model.TagAnnotation,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -143,11 +206,13 @@ func (m *FvRsCtxToBgpCtxAfPolModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
+
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "af", m.Af)
 	if !modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "annotation", m.Annotation) && nested {
 		attributes["annotation"] = defaultAnnotation
 	}
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "tnBgpCtxAfPolName", m.TnBgpCtxAfPolName)
+
 	var priorTagAnnotation *types.Set
 	if priorState != nil {
 		priorTagAnnotation = &priorState.TagAnnotation
@@ -168,6 +233,7 @@ func (m *FvRsCtxToBgpCtxAfPolModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, tagAnnotationPayloads...)
+
 	var priorTagTag *types.Set
 	if priorState != nil {
 		priorTagTag = &priorState.TagTag
@@ -202,32 +268,32 @@ func (m *FvRsCtxToBgpCtxAfPolModel) BuildNestedDeletePayloadObject(
 	ctx context.Context,
 	diagnostics *diag.Diagnostics,
 ) map[string]any {
-	attributes := map[string]any{}
-	attributes["af"] = m.Af.ValueString()
-	attributes["tnBgpCtxAfPolName"] = m.TnBgpCtxAfPolName.ValueString()
-	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, attributes)
+	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, map[string]any{
+		"af":                m.Af.ValueString(),
+		"tnBgpCtxAfPolName": m.TnBgpCtxAfPolName.ValueString(),
+	})
 }
 
-type FvRsCtxToBgpCtxAfPolResourceModel struct {
+type FvRsCtxToBgpCtxAfPolRootModel struct {
 	FvRsCtxToBgpCtxAfPolModel
 
 	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ParentDN types.String `tfsdk:"parent_dn"`
 }
 
-func NewFvRsCtxToBgpCtxAfPolResourceModelNull() FvRsCtxToBgpCtxAfPolResourceModel {
-	return FvRsCtxToBgpCtxAfPolResourceModel{
+func NewFvRsCtxToBgpCtxAfPolRootModelNull() FvRsCtxToBgpCtxAfPolRootModel {
+	return FvRsCtxToBgpCtxAfPolRootModel{
 		FvRsCtxToBgpCtxAfPolModel: NewFvRsCtxToBgpCtxAfPolModelNull(),
 		ID:                        types.StringNull(),
-		ParentDn:                  types.StringNull(),
+		ParentDN:                  types.StringNull(),
 	}
 }
 
-func (m *FvRsCtxToBgpCtxAfPolResourceModel) SetIDFromDN(dn string) {
+func (m *FvRsCtxToBgpCtxAfPolRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
 
-func (m *FvRsCtxToBgpCtxAfPolResourceModel) SetFromResponse(
+func (m *FvRsCtxToBgpCtxAfPolRootModel) SetFromResponse(
 	ctx context.Context,
 	response *container.Container,
 ) (bool, diag.Diagnostics) {
@@ -240,11 +306,11 @@ func (m *FvRsCtxToBgpCtxAfPolResourceModel) SetFromResponse(
 
 	m.FvRsCtxToBgpCtxAfPolModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 
-func (m *FvRsCtxToBgpCtxAfPolResourceModel) BuildPayload(
+func (m *FvRsCtxToBgpCtxAfPolRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *FvRsCtxToBgpCtxAfPolModel,
 	create bool,
@@ -255,52 +321,16 @@ func (m *FvRsCtxToBgpCtxAfPolResourceModel) BuildPayload(
 	if diagnostics.HasError() {
 		return nil, diagnostics
 	}
+
 	if markCreated {
 		payloadObject["attributes"].(map[string]any)["status"] = "created"
 	}
+
 	payloadEnvelope := map[string]any{"fvRsCtxToBgpCtxAfPol": payloadObject}
-	jsonPayload := modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload")
-	return jsonPayload, diagnostics
+	return modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload"), diagnostics
 }
 
-func (m *FvRsCtxToBgpCtxAfPolResourceModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
+func (m *FvRsCtxToBgpCtxAfPolRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
-	payload := modelHelpers.NewDeletePayload(ctx, &diagnostics, "fvRsCtxToBgpCtxAfPol", m.ID.ValueString())
-	return payload, diagnostics
-}
-
-type FvRsCtxToBgpCtxAfPolDataSourceModel struct {
-	FvRsCtxToBgpCtxAfPolModel
-
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
-}
-
-func NewFvRsCtxToBgpCtxAfPolDataSourceModelNull() FvRsCtxToBgpCtxAfPolDataSourceModel {
-	return FvRsCtxToBgpCtxAfPolDataSourceModel{
-		FvRsCtxToBgpCtxAfPolModel: NewFvRsCtxToBgpCtxAfPolModelNull(),
-		ID:                        types.StringNull(),
-		ParentDn:                  types.StringNull(),
-	}
-}
-
-func (m *FvRsCtxToBgpCtxAfPolDataSourceModel) SetIDFromDN(dn string) {
-	m.ID = types.StringValue(dn)
-}
-
-func (m *FvRsCtxToBgpCtxAfPolDataSourceModel) SetFromResponse(
-	ctx context.Context,
-	response *container.Container,
-) (bool, diag.Diagnostics) {
-	fallbackModel := m.FvRsCtxToBgpCtxAfPolModel
-	model, dn, diagnostics := FvRsCtxToBgpCtxAfPolModelFromResponse(ctx, response, &fallbackModel)
-	found := model != nil
-	if diagnostics.HasError() || !found {
-		return found, diagnostics
-	}
-
-	m.FvRsCtxToBgpCtxAfPolModel = *model
-	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
-	return true, diagnostics
+	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "fvRsCtxToBgpCtxAfPol", m.ID.ValueString()), diagnostics
 }

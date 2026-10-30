@@ -6,16 +6,161 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+func vzOOBBrCPSchemaDefinition() modelHelpers.ClassSchema {
+	return modelHelpers.ClassSchema{
+		ResourceDescription:   "Manages ACI Out Of Band Contract",
+		DataSourceDescription: "Data source for ACI Out Of Band Contract",
+		Properties: map[string]modelHelpers.PropertySchema{
+			"annotation": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The annotation of the Out Of Band Contract object.",
+			},
+			"description": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The description of the Out Of Band Contract object.",
+			},
+			"intent": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"estimate_add",
+					"estimate_delete",
+					"install",
+				},
+				Description: "The Install Rules or Estimate Number of Rules.",
+			},
+			"name": {
+				Type:            modelHelpers.StringProperty,
+				Required:        true,
+				RequiresReplace: true,
+				Description:     "The name of the Out Of Band Contract object.",
+			},
+			"name_alias": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The name alias of the Out Of Band Contract object.",
+			},
+			"owner_key": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The key for enabling clients to own their data for entity correlation.",
+			},
+			"owner_tag": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "A tag for enabling clients to add their own data. For example, to indicate who created this object.",
+			},
+			"priority": {
+				Type:             modelHelpers.StringProperty,
+				CustomStringType: customTypes.VzOOBBrCPPrioStringType{},
+				Optional:         true,
+				Computed:         true,
+				ValidValues: []string{
+					"level1",
+					"level2",
+					"level3",
+					"level4",
+					"level5",
+					"level6",
+					"unspecified",
+				},
+				StringRange: &modelHelpers.StringRange{Min: 0, Max: 9},
+				Description: "The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.",
+			},
+			"scope": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"application-profile",
+					"context",
+					"global",
+					"tenant",
+				},
+				Description: "Represents the scope of this contract. If the scope is set as application-profile, the epg can only communicate with epgs in the same application-profile.",
+			},
+			"target_dscp": {
+				Type:             modelHelpers.StringProperty,
+				CustomStringType: customTypes.VzOOBBrCPTargetDscpStringType{},
+				Optional:         true,
+				Computed:         true,
+				ValidValues: []string{
+					"AF11",
+					"AF12",
+					"AF13",
+					"AF21",
+					"AF22",
+					"AF23",
+					"AF31",
+					"AF32",
+					"AF33",
+					"AF41",
+					"AF42",
+					"AF43",
+					"CS0",
+					"CS1",
+					"CS2",
+					"CS3",
+					"CS4",
+					"CS5",
+					"CS6",
+					"CS7",
+					"EF",
+					"VA",
+					"unspecified",
+				},
+				StringRange: &modelHelpers.StringRange{Min: 0, Max: 64},
+				Description: "The target DSCP value of the Out Of Band Contract object.",
+			},
+		},
+		Children: map[string]modelHelpers.ChildSchema{
+			"annotations": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.",
+				Schema:      tagAnnotationSchemaDefinition,
+			},
+			"tags": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.",
+				Schema:      tagTagSchemaDefinition,
+			},
+		},
+		Identifiers: []string{
+			"name",
+		},
+		AnnotationAttribute: "annotation",
+	}
+}
+
+func VzOOBBrCPResourceSchema(defaultAnnotation string) resourceschema.Schema {
+	return vzOOBBrCPSchemaDefinition().ResourceSchema(defaultAnnotation)
+}
+
+func VzOOBBrCPDataSourceSchema() datasourceschema.Schema {
+	return vzOOBBrCPSchemaDefinition().DataSourceSchema()
+}
 
 type VzOOBBrCPModel struct {
 	Annotation    types.String                               `tfsdk:"annotation"`
@@ -85,12 +230,11 @@ func NewVzOOBBrCPModelNull() VzOOBBrCPModel {
 func (m *VzOOBBrCPModel) BuildRN() string {
 	rn := "tn-mgmt/oobbrc-{name}"
 	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
-
 	return rn
 }
 
 func (m *VzOOBBrCPModel) BuildDN() string {
-	return "uni/" + m.BuildRN()
+	return fmt.Sprintf("uni/%s", m.BuildRN())
 }
 
 func VzOOBBrCPModelFromObject(
@@ -105,6 +249,7 @@ func VzOOBBrCPModelFromObject(
 	if !ok {
 		return model, diagnostics
 	}
+
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "descr", &model.Descr)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "intent", &model.Intent)
@@ -115,6 +260,7 @@ func VzOOBBrCPModelFromObject(
 	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "prio", &model.Prio, customTypes.NewVzOOBBrCPPrioStringValue)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "scope", &model.Scope)
 	modelHelpers.DecodeCustomStringAttribute(ctx, &diagnostics, attributes, "targetDscp", &model.TargetDscp, customTypes.NewVzOOBBrCPTargetDscpStringValue)
+
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,
 		&diagnostics,
@@ -125,6 +271,7 @@ func VzOOBBrCPModelFromObject(
 			"tagTag",
 		},
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -133,6 +280,7 @@ func VzOOBBrCPModelFromObject(
 		TagAnnotationModelFromObject,
 		&model.TagAnnotation,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -164,6 +312,7 @@ func (m *VzOOBBrCPModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
+
 	if !modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "annotation", m.Annotation) && nested {
 		attributes["annotation"] = defaultAnnotation
 	}
@@ -176,6 +325,7 @@ func (m *VzOOBBrCPModel) BuildPayloadObject(
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "prio", m.Prio)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "scope", m.Scope)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "targetDscp", m.TargetDscp)
+
 	var priorTagAnnotation *types.Set
 	if priorState != nil {
 		priorTagAnnotation = &priorState.TagAnnotation
@@ -196,6 +346,7 @@ func (m *VzOOBBrCPModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, tagAnnotationPayloads...)
+
 	var priorTagTag *types.Set
 	if priorState != nil {
 		priorTagTag = &priorState.TagTag
@@ -230,29 +381,29 @@ func (m *VzOOBBrCPModel) BuildNestedDeletePayloadObject(
 	ctx context.Context,
 	diagnostics *diag.Diagnostics,
 ) map[string]any {
-	attributes := map[string]any{}
-	attributes["name"] = m.Name.ValueString()
-	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, attributes)
+	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, map[string]any{
+		"name": m.Name.ValueString(),
+	})
 }
 
-type VzOOBBrCPResourceModel struct {
+type VzOOBBrCPRootModel struct {
 	VzOOBBrCPModel
 
 	ID types.String `tfsdk:"id"`
 }
 
-func NewVzOOBBrCPResourceModelNull() VzOOBBrCPResourceModel {
-	return VzOOBBrCPResourceModel{
+func NewVzOOBBrCPRootModelNull() VzOOBBrCPRootModel {
+	return VzOOBBrCPRootModel{
 		VzOOBBrCPModel: NewVzOOBBrCPModelNull(),
 		ID:             types.StringNull(),
 	}
 }
 
-func (m *VzOOBBrCPResourceModel) SetIDFromDN(dn string) {
+func (m *VzOOBBrCPRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
 
-func (m *VzOOBBrCPResourceModel) SetFromResponse(
+func (m *VzOOBBrCPRootModel) SetFromResponse(
 	ctx context.Context,
 	response *container.Container,
 ) (bool, diag.Diagnostics) {
@@ -268,7 +419,7 @@ func (m *VzOOBBrCPResourceModel) SetFromResponse(
 	return true, diagnostics
 }
 
-func (m *VzOOBBrCPResourceModel) BuildPayload(
+func (m *VzOOBBrCPRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *VzOOBBrCPModel,
 	create bool,
@@ -279,49 +430,16 @@ func (m *VzOOBBrCPResourceModel) BuildPayload(
 	if diagnostics.HasError() {
 		return nil, diagnostics
 	}
+
 	if markCreated {
 		payloadObject["attributes"].(map[string]any)["status"] = "created"
 	}
+
 	payloadEnvelope := map[string]any{"vzOOBBrCP": payloadObject}
-	jsonPayload := modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload")
-	return jsonPayload, diagnostics
+	return modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload"), diagnostics
 }
 
-func (m *VzOOBBrCPResourceModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
+func (m *VzOOBBrCPRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
-	payload := modelHelpers.NewDeletePayload(ctx, &diagnostics, "vzOOBBrCP", m.ID.ValueString())
-	return payload, diagnostics
-}
-
-type VzOOBBrCPDataSourceModel struct {
-	VzOOBBrCPModel
-
-	ID types.String `tfsdk:"id"`
-}
-
-func NewVzOOBBrCPDataSourceModelNull() VzOOBBrCPDataSourceModel {
-	return VzOOBBrCPDataSourceModel{
-		VzOOBBrCPModel: NewVzOOBBrCPModelNull(),
-		ID:             types.StringNull(),
-	}
-}
-
-func (m *VzOOBBrCPDataSourceModel) SetIDFromDN(dn string) {
-	m.ID = types.StringValue(dn)
-}
-
-func (m *VzOOBBrCPDataSourceModel) SetFromResponse(
-	ctx context.Context,
-	response *container.Container,
-) (bool, diag.Diagnostics) {
-	fallbackModel := m.VzOOBBrCPModel
-	model, dn, diagnostics := VzOOBBrCPModelFromResponse(ctx, response, &fallbackModel)
-	found := model != nil
-	if diagnostics.HasError() || !found {
-		return found, diagnostics
-	}
-
-	m.VzOOBBrCPModel = *model
-	m.ID = types.StringValue(dn)
-	return true, diagnostics
+	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "vzOOBBrCP", m.ID.ValueString()), diagnostics
 }
