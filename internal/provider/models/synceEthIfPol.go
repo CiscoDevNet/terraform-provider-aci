@@ -505,10 +505,6 @@ func (m *SynceEthIfPolModel) BuildRN() string {
 	return rn
 }
 
-func (m *SynceEthIfPolModel) BuildDN() string {
-	return fmt.Sprintf("uni/%s", m.BuildRN())
-}
-
 func SynceEthIfPolModelFromObject(
 	ctx context.Context,
 	object *container.Container,
@@ -685,6 +681,10 @@ func NewSynceEthIfPolRootModelNull() SynceEthIfPolRootModel {
 		SynceEthIfPolModel: NewSynceEthIfPolModelNull(),
 		ID:                 types.StringNull(),
 	}
+}
+
+func (m *SynceEthIfPolRootModel) BuildDN() string {
+	return fmt.Sprintf("uni/%s", m.BuildRN())
 }
 
 func (m *SynceEthIfPolRootModel) SetIDFromDN(dn string) {

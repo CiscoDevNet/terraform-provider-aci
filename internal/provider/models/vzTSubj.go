@@ -153,14 +153,6 @@ func (m *VzTSubjModel) BuildRN() string {
 	return rn
 }
 
-func (m *VzTSubjModel) BuildDN(parentDN string) string {
-	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
-}
-
-func (m *VzTSubjModel) ParentDNFromDN(dn string) string {
-	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
-}
-
 func VzTSubjModelFromObject(
 	ctx context.Context,
 	object *container.Container,
@@ -344,6 +336,14 @@ func NewVzTSubjRootModelNull() VzTSubjRootModel {
 	}
 }
 
+func (m *VzTSubjRootModel) BuildDN() string {
+	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
+}
+
+func (m *VzTSubjRootModel) ParentDNFromDN(dn string) string {
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
+}
+
 func (m *VzTSubjRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
@@ -361,7 +361,7 @@ func (m *VzTSubjRootModel) SetFromResponse(
 
 	m.VzTSubjModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(m.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 

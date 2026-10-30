@@ -169,10 +169,6 @@ func (m *L2InstPolModel) BuildRN() string {
 	return rn
 }
 
-func (m *L2InstPolModel) BuildDN() string {
-	return fmt.Sprintf("uni/%s", m.BuildRN())
-}
-
 func L2InstPolModelFromObject(
 	ctx context.Context,
 	object *container.Container,
@@ -329,6 +325,10 @@ func NewL2InstPolRootModelNull() L2InstPolRootModel {
 		L2InstPolModel: NewL2InstPolModelNull(),
 		ID:             types.StringNull(),
 	}
+}
+
+func (m *L2InstPolRootModel) BuildDN() string {
+	return fmt.Sprintf("uni/%s", m.BuildRN())
 }
 
 func (m *L2InstPolRootModel) SetIDFromDN(dn string) {

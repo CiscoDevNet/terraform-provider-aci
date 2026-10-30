@@ -164,14 +164,6 @@ func (m *FvIdGroupAttrModel) BuildRN() string {
 	return rn
 }
 
-func (m *FvIdGroupAttrModel) BuildDN(parentDN string) string {
-	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
-}
-
-func (m *FvIdGroupAttrModel) ParentDNFromDN(dn string) string {
-	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
-}
-
 func FvIdGroupAttrModelFromObject(
 	ctx context.Context,
 	object *container.Container,
@@ -330,6 +322,14 @@ func NewFvIdGroupAttrRootModelNull() FvIdGroupAttrRootModel {
 	}
 }
 
+func (m *FvIdGroupAttrRootModel) BuildDN() string {
+	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
+}
+
+func (m *FvIdGroupAttrRootModel) ParentDNFromDN(dn string) string {
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
+}
+
 func (m *FvIdGroupAttrRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
@@ -347,7 +347,7 @@ func (m *FvIdGroupAttrRootModel) SetFromResponse(
 
 	m.FvIdGroupAttrModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(m.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 

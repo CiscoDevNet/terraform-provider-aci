@@ -190,14 +190,6 @@ func (m *PimRouteMapEntryModel) BuildRN() string {
 	return rn
 }
 
-func (m *PimRouteMapEntryModel) BuildDN(parentDN string) string {
-	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
-}
-
-func (m *PimRouteMapEntryModel) ParentDNFromDN(dn string) string {
-	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
-}
-
 func PimRouteMapEntryModelFromObject(
 	ctx context.Context,
 	object *container.Container,
@@ -360,6 +352,14 @@ func NewPimRouteMapEntryRootModelNull() PimRouteMapEntryRootModel {
 	}
 }
 
+func (m *PimRouteMapEntryRootModel) BuildDN() string {
+	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
+}
+
+func (m *PimRouteMapEntryRootModel) ParentDNFromDN(dn string) string {
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
+}
+
 func (m *PimRouteMapEntryRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
@@ -377,7 +377,7 @@ func (m *PimRouteMapEntryRootModel) SetFromResponse(
 
 	m.PimRouteMapEntryModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(m.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 

@@ -151,10 +151,6 @@ func (m *InfraAccPortPModel) BuildRN() string {
 	return rn
 }
 
-func (m *InfraAccPortPModel) BuildDN() string {
-	return fmt.Sprintf("uni/%s", m.BuildRN())
-}
-
 func InfraAccPortPModelFromObject(
 	ctx context.Context,
 	object *container.Container,
@@ -307,6 +303,10 @@ func NewInfraAccPortPRootModelNull() InfraAccPortPRootModel {
 		InfraAccPortPModel: NewInfraAccPortPModelNull(),
 		ID:                 types.StringNull(),
 	}
+}
+
+func (m *InfraAccPortPRootModel) BuildDN() string {
+	return fmt.Sprintf("uni/%s", m.BuildRN())
 }
 
 func (m *InfraAccPortPRootModel) SetIDFromDN(dn string) {

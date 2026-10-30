@@ -252,10 +252,6 @@ func (m *FabricHIfPolModel) BuildRN() string {
 	return rn
 }
 
-func (m *FabricHIfPolModel) BuildDN() string {
-	return fmt.Sprintf("uni/%s", m.BuildRN())
-}
-
 func FabricHIfPolModelFromObject(
 	ctx context.Context,
 	object *container.Container,
@@ -422,6 +418,10 @@ func NewFabricHIfPolRootModelNull() FabricHIfPolRootModel {
 		FabricHIfPolModel: NewFabricHIfPolModelNull(),
 		ID:                types.StringNull(),
 	}
+}
+
+func (m *FabricHIfPolRootModel) BuildDN() string {
+	return fmt.Sprintf("uni/%s", m.BuildRN())
 }
 
 func (m *FabricHIfPolRootModel) SetIDFromDN(dn string) {

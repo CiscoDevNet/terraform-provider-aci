@@ -155,14 +155,6 @@ func (m *PimRouteMapPolModel) BuildRN() string {
 	return rn
 }
 
-func (m *PimRouteMapPolModel) BuildDN(parentDN string) string {
-	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
-}
-
-func (m *PimRouteMapPolModel) ParentDNFromDN(dn string) string {
-	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
-}
-
 func PimRouteMapPolModelFromObject(
 	ctx context.Context,
 	object *container.Container,
@@ -319,6 +311,14 @@ func NewPimRouteMapPolRootModelNull() PimRouteMapPolRootModel {
 	}
 }
 
+func (m *PimRouteMapPolRootModel) BuildDN() string {
+	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
+}
+
+func (m *PimRouteMapPolRootModel) ParentDNFromDN(dn string) string {
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
+}
+
 func (m *PimRouteMapPolRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
@@ -336,7 +336,7 @@ func (m *PimRouteMapPolRootModel) SetFromResponse(
 
 	m.PimRouteMapPolModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(m.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 

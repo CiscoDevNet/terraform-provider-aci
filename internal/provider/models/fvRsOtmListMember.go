@@ -128,14 +128,6 @@ func (m *FvRsOtmListMemberModel) BuildRN() string {
 	return rn
 }
 
-func (m *FvRsOtmListMemberModel) BuildDN(parentDN string) string {
-	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
-}
-
-func (m *FvRsOtmListMemberModel) ParentDNFromDN(dn string) string {
-	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
-}
-
 func FvRsOtmListMemberModelFromObject(
 	ctx context.Context,
 	object *container.Container,
@@ -286,6 +278,14 @@ func NewFvRsOtmListMemberRootModelNull() FvRsOtmListMemberRootModel {
 	}
 }
 
+func (m *FvRsOtmListMemberRootModel) BuildDN() string {
+	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
+}
+
+func (m *FvRsOtmListMemberRootModel) ParentDNFromDN(dn string) string {
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
+}
+
 func (m *FvRsOtmListMemberRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
@@ -303,7 +303,7 @@ func (m *FvRsOtmListMemberRootModel) SetFromResponse(
 
 	m.FvRsOtmListMemberModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(m.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 

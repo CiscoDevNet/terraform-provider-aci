@@ -196,10 +196,6 @@ func (m *QosSdIfPolModel) BuildRN() string {
 	return rn
 }
 
-func (m *QosSdIfPolModel) BuildDN() string {
-	return fmt.Sprintf("uni/%s", m.BuildRN())
-}
-
 func QosSdIfPolModelFromObject(
 	ctx context.Context,
 	object *container.Container,
@@ -360,6 +356,10 @@ func NewQosSdIfPolRootModelNull() QosSdIfPolRootModel {
 		QosSdIfPolModel: NewQosSdIfPolModelNull(),
 		ID:              types.StringNull(),
 	}
+}
+
+func (m *QosSdIfPolRootModel) BuildDN() string {
+	return fmt.Sprintf("uni/%s", m.BuildRN())
 }
 
 func (m *QosSdIfPolRootModel) SetIDFromDN(dn string) {

@@ -119,14 +119,6 @@ func (m *L3extRsOutToFBRGroupModel) BuildRN() string {
 	return rn
 }
 
-func (m *L3extRsOutToFBRGroupModel) BuildDN(parentDN string) string {
-	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
-}
-
-func (m *L3extRsOutToFBRGroupModel) ParentDNFromDN(dn string) string {
-	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
-}
-
 func L3extRsOutToFBRGroupModelFromObject(
 	ctx context.Context,
 	object *container.Container,
@@ -275,6 +267,14 @@ func NewL3extRsOutToFBRGroupRootModelNull() L3extRsOutToFBRGroupRootModel {
 	}
 }
 
+func (m *L3extRsOutToFBRGroupRootModel) BuildDN() string {
+	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
+}
+
+func (m *L3extRsOutToFBRGroupRootModel) ParentDNFromDN(dn string) string {
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
+}
+
 func (m *L3extRsOutToFBRGroupRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
@@ -292,7 +292,7 @@ func (m *L3extRsOutToFBRGroupRootModel) SetFromResponse(
 
 	m.L3extRsOutToFBRGroupModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(m.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 

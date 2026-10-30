@@ -1089,8 +1089,8 @@ func TestModelTemplateArtifacts(t *testing.T) {
 			if !strings.Contains(contents, "type FvTenantModel struct") {
 				t.Fatal("shared model was not rendered")
 			}
-			if !strings.Contains(contents, "func (m *FvTenantModel) BuildDN() string") {
-				t.Fatal("shared model DN builder was not rendered")
+			if strings.Contains(contents, "func (m *FvTenantModel) BuildDN(") {
+				t.Fatal("shared model rendered a top-level DN builder")
 			}
 			if !strings.Contains(contents, "func (m *FvTenantModel) BuildPayloadObject(") {
 				t.Fatal("shared model payload object builder was not rendered")
@@ -1113,6 +1113,10 @@ func TestModelTemplateArtifacts(t *testing.T) {
 			rootType := "type FvTenantRootModel struct"
 			if actual := strings.Contains(contents, rootType); actual != rootExpected {
 				t.Fatalf("root model presence %t, expected %t", actual, rootExpected)
+			}
+			rootDNBuilder := "func (m *FvTenantRootModel) BuildDN() string"
+			if actual := strings.Contains(contents, rootDNBuilder); actual != rootExpected {
+				t.Fatalf("root DN builder presence %t, expected %t", actual, rootExpected)
 			}
 			rootIDSetter := "func (m *FvTenantRootModel) SetIDFromDN(dn string)"
 			if actual := strings.Contains(contents, rootIDSetter); actual != rootExpected {
@@ -1493,14 +1497,15 @@ func TestGeneratedModelBuildRN(t *testing.T) {
 	}
 }
 
-func TestGeneratedModelBuildDN(t *testing.T) {
+func TestGeneratedRootModelBuildDN(t *testing.T) {
 	t.Parallel()
 
 	testCases := []test.TestCase{
 		{
 			Name: "test_root_class",
 			Input: func() string {
-				model := models.FvTenantModel{Name: types.StringValue("example")}
+				model := models.NewFvTenantRootModelNull()
+				model.Name = types.StringValue("example")
 				return model.BuildDN()
 			},
 			Expected: "uni/tn-example",
@@ -1508,7 +1513,8 @@ func TestGeneratedModelBuildDN(t *testing.T) {
 		{
 			Name: "test_fixed_infra_path_class",
 			Input: func() string {
-				model := models.L2IfPolModel{Name: types.StringValue("example")}
+				model := models.NewL2IfPolRootModelNull()
+				model.Name = types.StringValue("example")
 				return model.BuildDN()
 			},
 			Expected: "uni/infra/l2IfP-example",
@@ -1516,40 +1522,68 @@ func TestGeneratedModelBuildDN(t *testing.T) {
 		{
 			Name: "test_runtime_parent_class",
 			Input: func() string {
-				model := models.FvBDModel{Name: types.StringValue("example")}
-				return model.BuildDN("uni/tn-tenant")
+				model := models.NewFvBDRootModelNull()
+				model.Name = types.StringValue("example")
+				model.ParentDN = types.StringValue("uni/tn-tenant")
+				return model.BuildDN()
 			},
 			Expected: "uni/tn-tenant/BD-example",
 		},
 		{
+			Name: "test_schema_default_parent_dn",
+			Input: func() string {
+				model := models.NewInfraHPathSRootModelNull()
+				model.Name = types.StringValue("example")
+				return model.BuildDN()
+			},
+			Expected: "uni/infra/hpaths-example",
+		},
+		{
 			Name: "test_default_parent_dn_uses_direct_placement_fallback",
 			Input: func() string {
-				model := models.PkiKeyRingModel{Name: types.StringValue("example")}
-				return model.BuildDN("uni/userext/pkiext")
+				model := models.NewPkiKeyRingRootModelNull()
+				model.Name = types.StringValue("example")
+				return model.BuildDN()
+			},
+			Expected: "uni/userext/pkiext/keyring-example",
+		},
+		{
+			Name: "test_unknown_parent_dn_uses_schema_default",
+			Input: func() string {
+				model := models.NewPkiKeyRingRootModelNull()
+				model.Name = types.StringValue("example")
+				model.ParentDN = types.StringUnknown()
+				return model.BuildDN()
 			},
 			Expected: "uni/userext/pkiext/keyring-example",
 		},
 		{
 			Name: "test_metadata_derived_parent_dn_variant",
 			Input: func() string {
-				model := models.PkiKeyRingModel{Name: types.StringValue("example")}
-				return model.BuildDN("uni/tn-tenant")
+				model := models.NewPkiKeyRingRootModelNull()
+				model.Name = types.StringValue("example")
+				model.ParentDN = types.StringValue("uni/tn-tenant")
+				return model.BuildDN()
 			},
 			Expected: "uni/tn-tenant/certstore/keyring-example",
 		},
 		{
 			Name: "test_unmatched_parent_dn_falls_back_to_direct_placement",
 			Input: func() string {
-				model := models.PkiKeyRingModel{Name: types.StringValue("example")}
-				return model.BuildDN("uni/infra")
+				model := models.NewPkiKeyRingRootModelNull()
+				model.Name = types.StringValue("example")
+				model.ParentDN = types.StringValue("uni/infra")
+				return model.BuildDN()
 			},
 			Expected: "uni/infra/keyring-example",
 		},
 		{
 			Name: "test_second_variant_class_uses_the_same_parent_metadata",
 			Input: func() string {
-				model := models.PkiTPModel{Name: types.StringValue("example")}
-				return model.BuildDN("uni/tn-tenant")
+				model := models.NewPkiTPRootModelNull()
+				model.Name = types.StringValue("example")
+				model.ParentDN = types.StringValue("uni/tn-tenant")
+				return model.BuildDN()
 			},
 			Expected: "uni/tn-tenant/certstore/tp-example",
 		},
@@ -2332,14 +2366,15 @@ func TestGeneratedModelFromObjectPreservesNestedSensitiveFallback(t *testing.T) 
 	}
 }
 
-func TestGeneratedModelParentDNFromDN(t *testing.T) {
+func TestGeneratedRootModelParentDNFromDN(t *testing.T) {
 	t.Parallel()
 
 	testCases := []test.TestCase{
 		{
 			Name: "test_ordinary_runtime_parent",
 			Input: func() string {
-				model := models.FvBDModel{Name: types.StringValue("example")}
+				model := models.NewFvBDRootModelNull()
+				model.Name = types.StringValue("example")
 				return model.ParentDNFromDN("uni/tn-tenant/BD-example")
 			},
 			Expected: "uni/tn-tenant",
@@ -2347,10 +2382,9 @@ func TestGeneratedModelParentDNFromDN(t *testing.T) {
 		{
 			Name: "test_rn_containing_a_fixed_path",
 			Input: func() string {
-				model := models.FvEpIpTagModel{
-					CtxName: types.StringValue("vrf"),
-					Ip:      customtypes.NewIPAddressValue("2001:db8::1"),
-				}
+				model := models.NewFvEpIpTagRootModelNull()
+				model.CtxName = types.StringValue("vrf")
+				model.Ip = customtypes.NewIPAddressValue("2001:db8::1")
 				return model.ParentDNFromDN("uni/tn-tenant/eptags/epiptag-[2001:db8::1]-vrf")
 			},
 			Expected: "uni/tn-tenant",
@@ -2358,7 +2392,8 @@ func TestGeneratedModelParentDNFromDN(t *testing.T) {
 		{
 			Name: "test_bracketed_rn_value_containing_slashes",
 			Input: func() string {
-				model := models.FvRsDomAttModel{TDn: types.StringValue("uni/vmmp-VMware/dom-example")}
+				model := models.NewFvRsDomAttRootModelNull()
+				model.TDn = types.StringValue("uni/vmmp-VMware/dom-example")
 				return model.ParentDNFromDN("uni/tn-tenant/ap-app/epg-epg/rsdomAtt-[uni/vmmp-VMware/dom-example]")
 			},
 			Expected: "uni/tn-tenant/ap-app/epg-epg",
@@ -2366,7 +2401,8 @@ func TestGeneratedModelParentDNFromDN(t *testing.T) {
 		{
 			Name: "test_default_pki_parent",
 			Input: func() string {
-				model := models.PkiKeyRingModel{Name: types.StringValue("example")}
+				model := models.NewPkiKeyRingRootModelNull()
+				model.Name = types.StringValue("example")
 				return model.ParentDNFromDN("uni/userext/pkiext/keyring-example")
 			},
 			Expected: "uni/userext/pkiext",
@@ -2374,7 +2410,8 @@ func TestGeneratedModelParentDNFromDN(t *testing.T) {
 		{
 			Name: "test_metadata_derived_pki_parent_variant",
 			Input: func() string {
-				model := models.PkiKeyRingModel{Name: types.StringValue("example")}
+				model := models.NewPkiKeyRingRootModelNull()
+				model.Name = types.StringValue("example")
 				return model.ParentDNFromDN("uni/tn-tenant/certstore/keyring-example")
 			},
 			Expected: "uni/tn-tenant",

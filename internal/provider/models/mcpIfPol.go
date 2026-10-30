@@ -244,10 +244,6 @@ func (m *McpIfPolModel) BuildRN() string {
 	return rn
 }
 
-func (m *McpIfPolModel) BuildDN() string {
-	return fmt.Sprintf("uni/%s", m.BuildRN())
-}
-
 func McpIfPolModelFromObject(
 	ctx context.Context,
 	object *container.Container,
@@ -418,6 +414,10 @@ func NewMcpIfPolRootModelNull() McpIfPolRootModel {
 		McpIfPolModel: NewMcpIfPolModelNull(),
 		ID:            types.StringNull(),
 	}
+}
+
+func (m *McpIfPolRootModel) BuildDN() string {
+	return fmt.Sprintf("uni/%s", m.BuildRN())
 }
 
 func (m *McpIfPolRootModel) SetIDFromDN(dn string) {

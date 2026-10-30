@@ -148,14 +148,6 @@ func (m *MgmtSubnetModel) BuildRN() string {
 	return rn
 }
 
-func (m *MgmtSubnetModel) BuildDN(parentDN string) string {
-	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
-}
-
-func (m *MgmtSubnetModel) ParentDNFromDN(dn string) string {
-	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
-}
-
 func MgmtSubnetModelFromObject(
 	ctx context.Context,
 	object *container.Container,
@@ -310,6 +302,14 @@ func NewMgmtSubnetRootModelNull() MgmtSubnetRootModel {
 	}
 }
 
+func (m *MgmtSubnetRootModel) BuildDN() string {
+	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
+}
+
+func (m *MgmtSubnetRootModel) ParentDNFromDN(dn string) string {
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
+}
+
 func (m *MgmtSubnetRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
@@ -327,7 +327,7 @@ func (m *MgmtSubnetRootModel) SetFromResponse(
 
 	m.MgmtSubnetModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(m.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 

@@ -138,14 +138,6 @@ func (m *VmmUplinkPContModel) BuildRN() string {
 	return "uplinkpcont"
 }
 
-func (m *VmmUplinkPContModel) BuildDN(parentDN string) string {
-	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
-}
-
-func (m *VmmUplinkPContModel) ParentDNFromDN(dn string) string {
-	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
-}
-
 func VmmUplinkPContModelFromObject(
 	ctx context.Context,
 	object *container.Container,
@@ -325,6 +317,14 @@ func NewVmmUplinkPContRootModelNull() VmmUplinkPContRootModel {
 	}
 }
 
+func (m *VmmUplinkPContRootModel) BuildDN() string {
+	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
+}
+
+func (m *VmmUplinkPContRootModel) ParentDNFromDN(dn string) string {
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
+}
+
 func (m *VmmUplinkPContRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
@@ -342,7 +342,7 @@ func (m *VmmUplinkPContRootModel) SetFromResponse(
 
 	m.VmmUplinkPContModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(m.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 

@@ -183,14 +183,6 @@ func (m *NetflowMonitorPolModel) BuildRN() string {
 	return rn
 }
 
-func (m *NetflowMonitorPolModel) BuildDN(parentDN string) string {
-	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
-}
-
-func (m *NetflowMonitorPolModel) ParentDNFromDN(dn string) string {
-	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
-}
-
 func NetflowMonitorPolModelFromObject(
 	ctx context.Context,
 	object *container.Container,
@@ -416,6 +408,18 @@ func NewNetflowMonitorPolRootModelNull() NetflowMonitorPolRootModel {
 	}
 }
 
+func (m *NetflowMonitorPolRootModel) BuildDN() string {
+	parentDN := m.ParentDN.ValueString()
+	if m.ParentDN.IsNull() || m.ParentDN.IsUnknown() {
+		parentDN = "uni/infra"
+	}
+	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
+}
+
+func (m *NetflowMonitorPolRootModel) ParentDNFromDN(dn string) string {
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
+}
+
 func (m *NetflowMonitorPolRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
@@ -433,7 +437,7 @@ func (m *NetflowMonitorPolRootModel) SetFromResponse(
 
 	m.NetflowMonitorPolModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(m.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 

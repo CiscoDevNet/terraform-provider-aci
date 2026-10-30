@@ -478,14 +478,6 @@ func (m *QosDppPolModel) BuildRN() string {
 	return rn
 }
 
-func (m *QosDppPolModel) BuildDN(parentDN string) string {
-	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
-}
-
-func (m *QosDppPolModel) ParentDNFromDN(dn string) string {
-	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
-}
-
 func QosDppPolModelFromObject(
 	ctx context.Context,
 	object *container.Container,
@@ -684,6 +676,18 @@ func NewQosDppPolRootModelNull() QosDppPolRootModel {
 	}
 }
 
+func (m *QosDppPolRootModel) BuildDN() string {
+	parentDN := m.ParentDN.ValueString()
+	if m.ParentDN.IsNull() || m.ParentDN.IsUnknown() {
+		parentDN = "uni/infra"
+	}
+	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
+}
+
+func (m *QosDppPolRootModel) ParentDNFromDN(dn string) string {
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
+}
+
 func (m *QosDppPolRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
@@ -701,7 +705,7 @@ func (m *QosDppPolRootModel) SetFromResponse(
 
 	m.QosDppPolModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(m.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 
