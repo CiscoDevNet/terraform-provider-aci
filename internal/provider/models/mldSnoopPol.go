@@ -6,15 +6,155 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+func mldSnoopPolSchemaDefinition() modelHelpers.ClassSchema {
+	return modelHelpers.ClassSchema{
+		ResourceDescription:   "Manages ACI MLD Snooping Policy",
+		DataSourceDescription: "Data source for ACI MLD Snooping Policy",
+		Properties: map[string]modelHelpers.PropertySchema{
+			"admin_state": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"disabled",
+					"enabled",
+				},
+				Description: "The administrative state of the MLD Snooping Policy object.",
+			},
+			"annotation": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The annotation of the MLD Snooping Policy object.",
+			},
+			"control": {
+				Type:           modelHelpers.SetProperty,
+				SetElementType: types.StringType,
+				Optional:       true,
+				Computed:       true,
+				ValidValues: []string{
+					"fast-leave",
+					"opt-flood",
+					"querier",
+					"routing",
+				},
+				Description: "The controls for the MLD Snooping Policy object.",
+			},
+			"description": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The description of the MLD Snooping Policy object.",
+			},
+			"last_member_interval": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The last member interval (seconds) of the MLD Snooping Policy object. The group state is removed when no host responds before the timeout.",
+			},
+			"name": {
+				Type:            modelHelpers.StringProperty,
+				Required:        true,
+				RequiresReplace: true,
+				Description:     "The name of the MLD Snooping Policy object.",
+			},
+			"name_alias": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The name alias of the MLD Snooping Policy object.",
+			},
+			"owner_key": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The key for enabling clients to own their data for entity correlation.",
+			},
+			"owner_tag": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "A tag for enabling clients to add their own data. For example, to indicate who created this object.",
+			},
+			"query_interval": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The query interval (seconds) of the MLD Snooping Policy object.",
+			},
+			"response_interval": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The response interval (seconds) of the MLD Snooping Policy object.",
+			},
+			"start_query_count": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The start query count of the MLD Snooping Policy object.",
+			},
+			"start_query_interval": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The query interval (seconds) of the MLD Snooping Policy object at start-up.",
+			},
+			"version": {
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
+				ValidValues: []string{
+					"unspecified",
+					"v1",
+					"v2",
+				},
+				Description: "The MLD version.",
+			},
+		},
+		Children: map[string]modelHelpers.ChildSchema{
+			"annotations": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.",
+				Schema:      tagAnnotationSchemaDefinition,
+			},
+			"tags": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.",
+				Schema:      tagTagSchemaDefinition,
+			},
+		},
+		Identifiers: []string{
+			"name",
+		},
+		ParentDN: &modelHelpers.ParentDNSchema{
+			AttributeName: "parent_dn",
+			Config:        modelHelpers.ParentDNAttributeConfig{},
+		},
+		AnnotationAttribute: "annotation",
+	}
+}
+
+func MldSnoopPolResourceSchema(defaultAnnotation string) resourceschema.Schema {
+	return mldSnoopPolSchemaDefinition().ResourceSchema(defaultAnnotation)
+}
+
+func MldSnoopPolDataSourceSchema() datasourceschema.Schema {
+	return mldSnoopPolSchemaDefinition().DataSourceSchema()
+}
 
 type MldSnoopPolModel struct {
 	AdminSt         types.String `tfsdk:"admin_state"`
@@ -96,19 +236,15 @@ func NewMldSnoopPolModelNull() MldSnoopPolModel {
 func (m *MldSnoopPolModel) BuildRN() string {
 	rn := "mldsnoopPol-{name}"
 	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
-
 	return rn
 }
 
 func (m *MldSnoopPolModel) BuildDN(parentDN string) string {
-	return parentDN + "/" + m.BuildRN()
+	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
 }
 
 func (m *MldSnoopPolModel) ParentDNFromDN(dn string) string {
-	rn := m.BuildRN()
-
-	parentDN, _ := strings.CutSuffix(dn, "/"+rn)
-	return parentDN
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
 }
 
 func MldSnoopPolModelFromObject(
@@ -123,6 +259,7 @@ func MldSnoopPolModelFromObject(
 	if !ok {
 		return model, diagnostics
 	}
+
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "adminSt", &model.AdminSt)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
 	modelHelpers.DecodeStringSetAttribute(ctx, &diagnostics, attributes, "ctrl", &model.Ctrl)
@@ -137,6 +274,7 @@ func MldSnoopPolModelFromObject(
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "startQueryCnt", &model.StartQueryCnt)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "startQueryIntvl", &model.StartQueryIntvl)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ver", &model.Ver)
+
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,
 		&diagnostics,
@@ -147,6 +285,7 @@ func MldSnoopPolModelFromObject(
 			"tagTag",
 		},
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -155,6 +294,7 @@ func MldSnoopPolModelFromObject(
 		TagAnnotationModelFromObject,
 		&model.TagAnnotation,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -186,6 +326,7 @@ func (m *MldSnoopPolModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
+
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "adminSt", m.AdminSt)
 	if !modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "annotation", m.Annotation) && nested {
 		attributes["annotation"] = defaultAnnotation
@@ -205,6 +346,7 @@ func (m *MldSnoopPolModel) BuildPayloadObject(
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "startQueryCnt", m.StartQueryCnt)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "startQueryIntvl", m.StartQueryIntvl)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "ver", m.Ver)
+
 	var priorTagAnnotation *types.Set
 	if priorState != nil {
 		priorTagAnnotation = &priorState.TagAnnotation
@@ -225,6 +367,7 @@ func (m *MldSnoopPolModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, tagAnnotationPayloads...)
+
 	var priorTagTag *types.Set
 	if priorState != nil {
 		priorTagTag = &priorState.TagTag
@@ -259,31 +402,31 @@ func (m *MldSnoopPolModel) BuildNestedDeletePayloadObject(
 	ctx context.Context,
 	diagnostics *diag.Diagnostics,
 ) map[string]any {
-	attributes := map[string]any{}
-	attributes["name"] = m.Name.ValueString()
-	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, attributes)
+	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, map[string]any{
+		"name": m.Name.ValueString(),
+	})
 }
 
-type MldSnoopPolResourceModel struct {
+type MldSnoopPolRootModel struct {
 	MldSnoopPolModel
 
 	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ParentDN types.String `tfsdk:"parent_dn"`
 }
 
-func NewMldSnoopPolResourceModelNull() MldSnoopPolResourceModel {
-	return MldSnoopPolResourceModel{
+func NewMldSnoopPolRootModelNull() MldSnoopPolRootModel {
+	return MldSnoopPolRootModel{
 		MldSnoopPolModel: NewMldSnoopPolModelNull(),
 		ID:               types.StringNull(),
-		ParentDn:         types.StringNull(),
+		ParentDN:         types.StringNull(),
 	}
 }
 
-func (m *MldSnoopPolResourceModel) SetIDFromDN(dn string) {
+func (m *MldSnoopPolRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
 
-func (m *MldSnoopPolResourceModel) SetFromResponse(
+func (m *MldSnoopPolRootModel) SetFromResponse(
 	ctx context.Context,
 	response *container.Container,
 ) (bool, diag.Diagnostics) {
@@ -296,11 +439,11 @@ func (m *MldSnoopPolResourceModel) SetFromResponse(
 
 	m.MldSnoopPolModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 
-func (m *MldSnoopPolResourceModel) BuildPayload(
+func (m *MldSnoopPolRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *MldSnoopPolModel,
 	create bool,
@@ -311,52 +454,16 @@ func (m *MldSnoopPolResourceModel) BuildPayload(
 	if diagnostics.HasError() {
 		return nil, diagnostics
 	}
+
 	if markCreated {
 		payloadObject["attributes"].(map[string]any)["status"] = "created"
 	}
+
 	payloadEnvelope := map[string]any{"mldSnoopPol": payloadObject}
-	jsonPayload := modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload")
-	return jsonPayload, diagnostics
+	return modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload"), diagnostics
 }
 
-func (m *MldSnoopPolResourceModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
+func (m *MldSnoopPolRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
-	payload := modelHelpers.NewDeletePayload(ctx, &diagnostics, "mldSnoopPol", m.ID.ValueString())
-	return payload, diagnostics
-}
-
-type MldSnoopPolDataSourceModel struct {
-	MldSnoopPolModel
-
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
-}
-
-func NewMldSnoopPolDataSourceModelNull() MldSnoopPolDataSourceModel {
-	return MldSnoopPolDataSourceModel{
-		MldSnoopPolModel: NewMldSnoopPolModelNull(),
-		ID:               types.StringNull(),
-		ParentDn:         types.StringNull(),
-	}
-}
-
-func (m *MldSnoopPolDataSourceModel) SetIDFromDN(dn string) {
-	m.ID = types.StringValue(dn)
-}
-
-func (m *MldSnoopPolDataSourceModel) SetFromResponse(
-	ctx context.Context,
-	response *container.Container,
-) (bool, diag.Diagnostics) {
-	fallbackModel := m.MldSnoopPolModel
-	model, dn, diagnostics := MldSnoopPolModelFromResponse(ctx, response, &fallbackModel)
-	found := model != nil
-	if diagnostics.HasError() || !found {
-		return found, diagnostics
-	}
-
-	m.MldSnoopPolModel = *model
-	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
-	return true, diagnostics
+	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "mldSnoopPol", m.ID.ValueString()), diagnostics
 }

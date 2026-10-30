@@ -6,15 +6,92 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+func fvTenantSchemaDefinition() modelHelpers.ClassSchema {
+	return modelHelpers.ClassSchema{
+		ResourceDescription:   "Manages ACI Tenant",
+		DataSourceDescription: "Data source for ACI Tenant",
+		Properties: map[string]modelHelpers.PropertySchema{
+			"annotation": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The annotation of the Tenant object.",
+			},
+			"description": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The description of the Tenant object.",
+			},
+			"name": {
+				Type:            modelHelpers.StringProperty,
+				Required:        true,
+				RequiresReplace: true,
+				Description:     "The name of the Tenant object.",
+			},
+			"name_alias": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The name alias of the Tenant object.",
+			},
+			"owner_key": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The key for enabling clients to own their data for entity correlation.",
+			},
+			"owner_tag": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "A tag for enabling clients to add their own data. For example, to indicate who created this object.",
+			},
+		},
+		Children: map[string]modelHelpers.ChildSchema{
+			"relation_to_monitoring_policy": {
+				Cardinality: modelHelpers.SingleChild,
+				Description: "`relation_to_monitoring_policy` - (map) A map of Relation From Tenant To Monitoring Policy (ACI object [fvRsTenantMonPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/fvRsTenantMonPol/overview)) pointing to Monitoring Policy (ACI Object [monEPGPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/monEPGPol/overview)) which can be configured using the [aci_monitoring_policy](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/monitoring_policy) resource.",
+				Schema:      fvRsTenantMonPolSchemaDefinition,
+			},
+			"annotations": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.",
+				Schema:      tagAnnotationSchemaDefinition,
+			},
+			"tags": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.",
+				Schema:      tagTagSchemaDefinition,
+			},
+		},
+		Identifiers: []string{
+			"name",
+		},
+		AnnotationAttribute: "annotation",
+	}
+}
+
+func FvTenantResourceSchema(defaultAnnotation string) resourceschema.Schema {
+	return fvTenantSchemaDefinition().ResourceSchema(defaultAnnotation)
+}
+
+func FvTenantDataSourceSchema() datasourceschema.Schema {
+	return fvTenantSchemaDefinition().DataSourceSchema()
+}
 
 type FvTenantModel struct {
 	Annotation       types.String `tfsdk:"annotation"`
@@ -77,12 +154,11 @@ func NewFvTenantModelNull() FvTenantModel {
 func (m *FvTenantModel) BuildRN() string {
 	rn := "tn-{name}"
 	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
-
 	return rn
 }
 
 func (m *FvTenantModel) BuildDN() string {
-	return "uni/" + m.BuildRN()
+	return fmt.Sprintf("uni/%s", m.BuildRN())
 }
 
 func FvTenantModelFromObject(
@@ -97,12 +173,14 @@ func FvTenantModelFromObject(
 	if !ok {
 		return model, diagnostics
 	}
+
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "descr", &model.Descr)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "name", &model.Name)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "nameAlias", &model.NameAlias)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ownerKey", &model.OwnerKey)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ownerTag", &model.OwnerTag)
+
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,
 		&diagnostics,
@@ -114,6 +192,7 @@ func FvTenantModelFromObject(
 			"tagTag",
 		},
 	)
+
 	var fallbackFvRsTenantMonPol *types.Object
 	if fallbackModel != nil {
 		fallbackFvRsTenantMonPol = &fallbackModel.FvRsTenantMonPol
@@ -130,6 +209,7 @@ func FvTenantModelFromObject(
 		FvRsTenantMonPolModelFromObject,
 		&model.FvRsTenantMonPol,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -138,6 +218,7 @@ func FvTenantModelFromObject(
 		TagAnnotationModelFromObject,
 		&model.TagAnnotation,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -169,6 +250,7 @@ func (m *FvTenantModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
+
 	if !modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "annotation", m.Annotation) && nested {
 		attributes["annotation"] = defaultAnnotation
 	}
@@ -177,6 +259,7 @@ func (m *FvTenantModel) BuildPayloadObject(
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "nameAlias", m.NameAlias)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "ownerKey", m.OwnerKey)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "ownerTag", m.OwnerTag)
+
 	var priorFvRsTenantMonPol *types.Object
 	if priorState != nil {
 		priorFvRsTenantMonPol = &priorState.FvRsTenantMonPol
@@ -196,6 +279,7 @@ func (m *FvTenantModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, fvRsTenantMonPolPayloads...)
+
 	var priorTagAnnotation *types.Set
 	if priorState != nil {
 		priorTagAnnotation = &priorState.TagAnnotation
@@ -216,6 +300,7 @@ func (m *FvTenantModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, tagAnnotationPayloads...)
+
 	var priorTagTag *types.Set
 	if priorState != nil {
 		priorTagTag = &priorState.TagTag
@@ -250,29 +335,29 @@ func (m *FvTenantModel) BuildNestedDeletePayloadObject(
 	ctx context.Context,
 	diagnostics *diag.Diagnostics,
 ) map[string]any {
-	attributes := map[string]any{}
-	attributes["name"] = m.Name.ValueString()
-	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, attributes)
+	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, map[string]any{
+		"name": m.Name.ValueString(),
+	})
 }
 
-type FvTenantResourceModel struct {
+type FvTenantRootModel struct {
 	FvTenantModel
 
 	ID types.String `tfsdk:"id"`
 }
 
-func NewFvTenantResourceModelNull() FvTenantResourceModel {
-	return FvTenantResourceModel{
+func NewFvTenantRootModelNull() FvTenantRootModel {
+	return FvTenantRootModel{
 		FvTenantModel: NewFvTenantModelNull(),
 		ID:            types.StringNull(),
 	}
 }
 
-func (m *FvTenantResourceModel) SetIDFromDN(dn string) {
+func (m *FvTenantRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
 
-func (m *FvTenantResourceModel) SetFromResponse(
+func (m *FvTenantRootModel) SetFromResponse(
 	ctx context.Context,
 	response *container.Container,
 ) (bool, diag.Diagnostics) {
@@ -288,7 +373,7 @@ func (m *FvTenantResourceModel) SetFromResponse(
 	return true, diagnostics
 }
 
-func (m *FvTenantResourceModel) BuildPayload(
+func (m *FvTenantRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *FvTenantModel,
 	create bool,
@@ -299,49 +384,16 @@ func (m *FvTenantResourceModel) BuildPayload(
 	if diagnostics.HasError() {
 		return nil, diagnostics
 	}
+
 	if markCreated {
 		payloadObject["attributes"].(map[string]any)["status"] = "created"
 	}
+
 	payloadEnvelope := map[string]any{"fvTenant": payloadObject}
-	jsonPayload := modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload")
-	return jsonPayload, diagnostics
+	return modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload"), diagnostics
 }
 
-func (m *FvTenantResourceModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
+func (m *FvTenantRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
-	payload := modelHelpers.NewDeletePayload(ctx, &diagnostics, "fvTenant", m.ID.ValueString())
-	return payload, diagnostics
-}
-
-type FvTenantDataSourceModel struct {
-	FvTenantModel
-
-	ID types.String `tfsdk:"id"`
-}
-
-func NewFvTenantDataSourceModelNull() FvTenantDataSourceModel {
-	return FvTenantDataSourceModel{
-		FvTenantModel: NewFvTenantModelNull(),
-		ID:            types.StringNull(),
-	}
-}
-
-func (m *FvTenantDataSourceModel) SetIDFromDN(dn string) {
-	m.ID = types.StringValue(dn)
-}
-
-func (m *FvTenantDataSourceModel) SetFromResponse(
-	ctx context.Context,
-	response *container.Container,
-) (bool, diag.Diagnostics) {
-	fallbackModel := m.FvTenantModel
-	model, dn, diagnostics := FvTenantModelFromResponse(ctx, response, &fallbackModel)
-	found := model != nil
-	if diagnostics.HasError() || !found {
-		return found, diagnostics
-	}
-
-	m.FvTenantModel = *model
-	m.ID = types.StringValue(dn)
-	return true, diagnostics
+	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "fvTenant", m.ID.ValueString()), diagnostics
 }

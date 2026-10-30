@@ -6,15 +6,67 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+func infraRsDomPSchemaDefinition() modelHelpers.ClassSchema {
+	return modelHelpers.ClassSchema{
+		ResourceDescription:   "Manages ACI Relation From Attachable Access Entity Profile To Domain",
+		DataSourceDescription: "Data source for ACI Relation From Attachable Access Entity Profile To Domain",
+		Properties: map[string]modelHelpers.PropertySchema{
+			"annotation": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The annotation of the Relation From Attachable Access Entity Profile To Domain object.",
+			},
+			"target_dn": {
+				Type:            modelHelpers.StringProperty,
+				Required:        true,
+				RequiresReplace: true,
+				Description:     "The distinguished name of the target Domain object.",
+			},
+		},
+		Children: map[string]modelHelpers.ChildSchema{
+			"annotations": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.",
+				Schema:      tagAnnotationSchemaDefinition,
+			},
+			"tags": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.",
+				Schema:      tagTagSchemaDefinition,
+			},
+		},
+		Identifiers: []string{
+			"target_dn",
+		},
+		ParentDN: &modelHelpers.ParentDNSchema{
+			AttributeName: "parent_dn",
+			Config:        modelHelpers.ParentDNAttributeConfig{},
+		},
+		AnnotationAttribute: "annotation",
+	}
+}
+
+func InfraRsDomPResourceSchema(defaultAnnotation string) resourceschema.Schema {
+	return infraRsDomPSchemaDefinition().ResourceSchema(defaultAnnotation)
+}
+
+func InfraRsDomPDataSourceSchema() datasourceschema.Schema {
+	return infraRsDomPSchemaDefinition().DataSourceSchema()
+}
 
 type InfraRsDomPModel struct {
 	Annotation    types.String `tfsdk:"annotation"`
@@ -60,19 +112,15 @@ func NewInfraRsDomPModelNull() InfraRsDomPModel {
 func (m *InfraRsDomPModel) BuildRN() string {
 	rn := "rsdomP-[{tDn}]"
 	rn = strings.ReplaceAll(rn, "{tDn}", m.TDn.ValueString())
-
 	return rn
 }
 
 func (m *InfraRsDomPModel) BuildDN(parentDN string) string {
-	return parentDN + "/" + m.BuildRN()
+	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
 }
 
 func (m *InfraRsDomPModel) ParentDNFromDN(dn string) string {
-	rn := m.BuildRN()
-
-	parentDN, _ := strings.CutSuffix(dn, "/"+rn)
-	return parentDN
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
 }
 
 func InfraRsDomPModelFromObject(
@@ -87,8 +135,10 @@ func InfraRsDomPModelFromObject(
 	if !ok {
 		return model, diagnostics
 	}
+
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "tDn", &model.TDn)
+
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,
 		&diagnostics,
@@ -99,6 +149,7 @@ func InfraRsDomPModelFromObject(
 			"tagTag",
 		},
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -107,6 +158,7 @@ func InfraRsDomPModelFromObject(
 		TagAnnotationModelFromObject,
 		&model.TagAnnotation,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -138,10 +190,12 @@ func (m *InfraRsDomPModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
+
 	if !modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "annotation", m.Annotation) && nested {
 		attributes["annotation"] = defaultAnnotation
 	}
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "tDn", m.TDn)
+
 	var priorTagAnnotation *types.Set
 	if priorState != nil {
 		priorTagAnnotation = &priorState.TagAnnotation
@@ -162,6 +216,7 @@ func (m *InfraRsDomPModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, tagAnnotationPayloads...)
+
 	var priorTagTag *types.Set
 	if priorState != nil {
 		priorTagTag = &priorState.TagTag
@@ -196,31 +251,31 @@ func (m *InfraRsDomPModel) BuildNestedDeletePayloadObject(
 	ctx context.Context,
 	diagnostics *diag.Diagnostics,
 ) map[string]any {
-	attributes := map[string]any{}
-	attributes["tDn"] = m.TDn.ValueString()
-	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, attributes)
+	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, map[string]any{
+		"tDn": m.TDn.ValueString(),
+	})
 }
 
-type InfraRsDomPResourceModel struct {
+type InfraRsDomPRootModel struct {
 	InfraRsDomPModel
 
 	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ParentDN types.String `tfsdk:"parent_dn"`
 }
 
-func NewInfraRsDomPResourceModelNull() InfraRsDomPResourceModel {
-	return InfraRsDomPResourceModel{
+func NewInfraRsDomPRootModelNull() InfraRsDomPRootModel {
+	return InfraRsDomPRootModel{
 		InfraRsDomPModel: NewInfraRsDomPModelNull(),
 		ID:               types.StringNull(),
-		ParentDn:         types.StringNull(),
+		ParentDN:         types.StringNull(),
 	}
 }
 
-func (m *InfraRsDomPResourceModel) SetIDFromDN(dn string) {
+func (m *InfraRsDomPRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
 
-func (m *InfraRsDomPResourceModel) SetFromResponse(
+func (m *InfraRsDomPRootModel) SetFromResponse(
 	ctx context.Context,
 	response *container.Container,
 ) (bool, diag.Diagnostics) {
@@ -233,11 +288,11 @@ func (m *InfraRsDomPResourceModel) SetFromResponse(
 
 	m.InfraRsDomPModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 
-func (m *InfraRsDomPResourceModel) BuildPayload(
+func (m *InfraRsDomPRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *InfraRsDomPModel,
 	create bool,
@@ -248,52 +303,16 @@ func (m *InfraRsDomPResourceModel) BuildPayload(
 	if diagnostics.HasError() {
 		return nil, diagnostics
 	}
+
 	if markCreated {
 		payloadObject["attributes"].(map[string]any)["status"] = "created"
 	}
+
 	payloadEnvelope := map[string]any{"infraRsDomP": payloadObject}
-	jsonPayload := modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload")
-	return jsonPayload, diagnostics
+	return modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload"), diagnostics
 }
 
-func (m *InfraRsDomPResourceModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
+func (m *InfraRsDomPRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
-	payload := modelHelpers.NewDeletePayload(ctx, &diagnostics, "infraRsDomP", m.ID.ValueString())
-	return payload, diagnostics
-}
-
-type InfraRsDomPDataSourceModel struct {
-	InfraRsDomPModel
-
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
-}
-
-func NewInfraRsDomPDataSourceModelNull() InfraRsDomPDataSourceModel {
-	return InfraRsDomPDataSourceModel{
-		InfraRsDomPModel: NewInfraRsDomPModelNull(),
-		ID:               types.StringNull(),
-		ParentDn:         types.StringNull(),
-	}
-}
-
-func (m *InfraRsDomPDataSourceModel) SetIDFromDN(dn string) {
-	m.ID = types.StringValue(dn)
-}
-
-func (m *InfraRsDomPDataSourceModel) SetFromResponse(
-	ctx context.Context,
-	response *container.Container,
-) (bool, diag.Diagnostics) {
-	fallbackModel := m.InfraRsDomPModel
-	model, dn, diagnostics := InfraRsDomPModelFromResponse(ctx, response, &fallbackModel)
-	found := model != nil
-	if diagnostics.HasError() || !found {
-		return found, diagnostics
-	}
-
-	m.InfraRsDomPModel = *model
-	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
-	return true, diagnostics
+	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "infraRsDomP", m.ID.ValueString()), diagnostics
 }

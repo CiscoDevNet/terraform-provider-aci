@@ -14,6 +14,9 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
+	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 
@@ -1033,8 +1036,8 @@ layout: "aci"
 }
 
 type modelTemplateArtifactsExpected struct {
-	ResourceModel   bool
-	DataSourceModel bool
+	ResourceArtifact   bool
+	DataSourceArtifact bool
 }
 
 func TestModelTemplateArtifacts(t *testing.T) {
@@ -1046,12 +1049,12 @@ func TestModelTemplateArtifacts(t *testing.T) {
 		{
 			Name:     "test_resource_only",
 			Input:    []data.ArtifactEnum{data.ResourceArtifact},
-			Expected: modelTemplateArtifactsExpected{ResourceModel: true},
+			Expected: modelTemplateArtifactsExpected{ResourceArtifact: true},
 		},
 		{
 			Name:     "test_datasource_only",
 			Input:    []data.ArtifactEnum{data.DatasourceArtifact},
-			Expected: modelTemplateArtifactsExpected{DataSourceModel: true},
+			Expected: modelTemplateArtifactsExpected{DataSourceArtifact: true},
 		},
 		{
 			Name: "test_resource_and_datasource",
@@ -1059,7 +1062,7 @@ func TestModelTemplateArtifacts(t *testing.T) {
 				data.ResourceArtifact,
 				data.DatasourceArtifact,
 			},
-			Expected: modelTemplateArtifactsExpected{ResourceModel: true, DataSourceModel: true},
+			Expected: modelTemplateArtifactsExpected{ResourceArtifact: true, DataSourceArtifact: true},
 		},
 	}
 
@@ -1098,35 +1101,334 @@ func TestModelTemplateArtifacts(t *testing.T) {
 			if !strings.Contains(contents, "func FvTenantModelFromObject(") {
 				t.Fatal("shared model object decoder was not rendered")
 			}
+			if !strings.Contains(contents, "func fvTenantSchemaDefinition() modelHelpers.ClassSchema") {
+				t.Fatal("shared class schema definition was not rendered")
+			}
 			responseDecoder := "func FvTenantModelFromResponse("
-			if actual := strings.Contains(contents, responseDecoder); actual != (expected.ResourceModel || expected.DataSourceModel) {
-				t.Fatalf("response decoder presence %t, expected %t", actual, expected.ResourceModel || expected.DataSourceModel)
+			if actual := strings.Contains(contents, responseDecoder); actual != (expected.ResourceArtifact || expected.DataSourceArtifact) {
+				t.Fatalf("response decoder presence %t, expected %t", actual, expected.ResourceArtifact || expected.DataSourceArtifact)
 			}
 
-			resourceType := "type FvTenantResourceModel struct"
-			if actual := strings.Contains(contents, resourceType); actual != expected.ResourceModel {
-				t.Fatalf("resource model presence %t, expected %t", actual, expected.ResourceModel)
+			rootExpected := expected.ResourceArtifact || expected.DataSourceArtifact
+			rootType := "type FvTenantRootModel struct"
+			if actual := strings.Contains(contents, rootType); actual != rootExpected {
+				t.Fatalf("root model presence %t, expected %t", actual, rootExpected)
 			}
-			resourceIDSetter := "func (m *FvTenantResourceModel) SetIDFromDN(dn string)"
-			if actual := strings.Contains(contents, resourceIDSetter); actual != expected.ResourceModel {
-				t.Fatalf("resource ID setter presence %t, expected %t", actual, expected.ResourceModel)
+			rootIDSetter := "func (m *FvTenantRootModel) SetIDFromDN(dn string)"
+			if actual := strings.Contains(contents, rootIDSetter); actual != rootExpected {
+				t.Fatalf("root ID setter presence %t, expected %t", actual, rootExpected)
 			}
-			resourceResponseSetter := "func (m *FvTenantResourceModel) SetFromResponse("
-			if actual := strings.Contains(contents, resourceResponseSetter); actual != expected.ResourceModel {
-				t.Fatalf("resource response setter presence %t, expected %t", actual, expected.ResourceModel)
+			rootResponseSetter := "func (m *FvTenantRootModel) SetFromResponse("
+			if actual := strings.Contains(contents, rootResponseSetter); actual != rootExpected {
+				t.Fatalf("root response setter presence %t, expected %t", actual, rootExpected)
+			}
+			rootPayloadBuilder := "func (m *FvTenantRootModel) BuildPayload("
+			if actual := strings.Contains(contents, rootPayloadBuilder); actual != expected.ResourceArtifact {
+				t.Fatalf("root payload builder presence %t, expected %t", actual, expected.ResourceArtifact)
+			}
+			resourceSchema := "func FvTenantResourceSchema(defaultAnnotation string) resourceschema.Schema"
+			if actual := strings.Contains(contents, resourceSchema); actual != expected.ResourceArtifact {
+				t.Fatalf("resource schema presence %t, expected %t", actual, expected.ResourceArtifact)
 			}
 
-			dataSourceType := "type FvTenantDataSourceModel struct"
-			if actual := strings.Contains(contents, dataSourceType); actual != expected.DataSourceModel {
-				t.Fatalf("data source model presence %t, expected %t", actual, expected.DataSourceModel)
+			if strings.Contains(contents, "FvTenantResourceModel") || strings.Contains(contents, "FvTenantDataSourceModel") {
+				t.Fatal("artifact-specific top-level model was rendered")
 			}
-			dataSourceIDSetter := "func (m *FvTenantDataSourceModel) SetIDFromDN(dn string)"
-			if actual := strings.Contains(contents, dataSourceIDSetter); actual != expected.DataSourceModel {
-				t.Fatalf("data source ID setter presence %t, expected %t", actual, expected.DataSourceModel)
+			dataSourceSchema := "func FvTenantDataSourceSchema() datasourceschema.Schema"
+			if actual := strings.Contains(contents, dataSourceSchema); actual != expected.DataSourceArtifact {
+				t.Fatalf("data-source schema presence %t, expected %t", actual, expected.DataSourceArtifact)
 			}
-			dataSourceResponseSetter := "func (m *FvTenantDataSourceModel) SetFromResponse("
-			if actual := strings.Contains(contents, dataSourceResponseSetter); actual != expected.DataSourceModel {
-				t.Fatalf("data source response setter presence %t, expected %t", actual, expected.DataSourceModel)
+		})
+	}
+}
+
+func TestModelTemplateSchemaShape(t *testing.T) {
+	singleChild := testClass(t, "fvRsTenantMonPol")
+	singleChild.ResourceNameNested = "relation_to_monitoring_policy"
+	singleChild.IsSingleNestedWhenDefinedAsChild = true
+	singleChild.Documentation.DescriptionWhenDefinedAsChild = "The monitoring-policy relation."
+
+	repeatedChild := testClass(t, "tagAnnotation")
+	repeatedChild.ResourceNameNested = "annotations"
+	repeatedChild.Documentation.DescriptionWhenDefinedAsChild = "A list of annotations."
+
+	class := testClass(t, "fvTenant", data.ResourceArtifact, data.DatasourceArtifact)
+	class.ResourceName = "tenant"
+	class.RnFormat = "tn-{name}"
+	class.IdentifiedBy = []string{"name"}
+	class.Children = []*data.ClassName{singleChild.Name, repeatedChild.Name}
+	class.PropertiesAll = []string{"parentDn", "annotation", "name", "roles", "priority", "address", "settings"}
+	class.Properties = map[string]*data.Property{
+		"parentDn": {
+			AttributeName: "parent_dn",
+			PropertyName:  "parentDn",
+			ValueType:     data.String,
+			Documentation: data.PropertyDocumentation{DefaultValues: []data.DefaultValue{{Value: "uni"}}},
+			ValidValues:   data.ValidValues{"uni": {LocalName: "uni"}},
+		},
+		"annotation": {
+			AttributeName: "annotation",
+			PropertyName:  "annotation",
+			ValueType:     data.String,
+			Optional:      true,
+			Computed:      true,
+			Documentation: data.PropertyDocumentation{Description: "The annotation."},
+		},
+		"name": {
+			AttributeName:   "name",
+			PropertyName:    "name",
+			ValueType:       data.String,
+			Required:        true,
+			RequiresReplace: true,
+			ValidValues:     data.ValidValues{"example": {LocalName: "example"}},
+			Documentation:   data.PropertyDocumentation{Description: "The name."},
+		},
+		"roles": {
+			AttributeName: "roles",
+			PropertyName:  "roles",
+			ValueType:     data.Set,
+			Optional:      true,
+			Computed:      true,
+			ValidValues:   data.ValidValues{"admin": {LocalName: "admin"}},
+			Documentation: data.PropertyDocumentation{Description: "The roles."},
+		},
+		"priority": {
+			AttributeName: "priority",
+			PropertyName:  "prio",
+			ValueType:     data.SemanticEquality,
+			Optional:      true,
+			Computed:      true,
+			ValidValues:   data.ValidValues{"1": {LocalName: "level1"}},
+			Validators:    []data.Validator{{Min: 0, Max: 9}},
+			Documentation: data.PropertyDocumentation{Description: "The priority."},
+		},
+		"address": {
+			AttributeName: "address",
+			PropertyName:  "address",
+			ValueType:     data.IpAddress,
+			Optional:      true,
+			Computed:      true,
+			Documentation: data.PropertyDocumentation{Description: "The address."},
+		},
+		"settings": {
+			AttributeName: "settings",
+			PropertyName:  "settings",
+			ValueType:     data.Object,
+			ReadOnly:      true,
+			Computed:      true,
+			Documentation: data.PropertyDocumentation{Description: "The settings."},
+		},
+	}
+	class.Documentation.ResourceDescription = "Manages an ACI tenant."
+	class.Documentation.DatasourceDescription = "Reads an ACI tenant."
+
+	dataStore := &data.DataStore{Classes: map[string]data.Class{
+		"fvTenant":         class,
+		"fvRsTenantMonPol": singleChild,
+		"tagAnnotation":    repeatedChild,
+	}}
+	generator := loadActiveGenerator(t, dataStore)
+
+	var rendered bytes.Buffer
+	if err := generator.templates[modelTemplateName].Execute(&rendered, TemplateContext{Class: &class, DataStore: dataStore}); err != nil {
+		t.Fatalf("execute model template: %v", err)
+	}
+	formatted, err := formatRenderedTemplate("fvTenant.go", rendered.Bytes())
+	if err != nil {
+		t.Fatalf("format model template: %v", err)
+	}
+	contents := string(formatted)
+
+	expectedSnippets := []string{
+		`func fvTenantSchemaDefinition() modelHelpers.ClassSchema`,
+		`ResourceDescription:   "Manages an ACI tenant."`,
+		`DataSourceDescription: "Reads an ACI tenant."`,
+		`"name": {`,
+		`Type:            modelHelpers.StringProperty`,
+		`RequiresReplace: true`,
+		`"roles": {`,
+		`Type:           modelHelpers.SetProperty`,
+		`SetElementType: types.StringType`,
+		`ValidValues: []string{`,
+		`customTypes.FvTenantPrioStringType{}`,
+		`StringRange:`,
+		`&modelHelpers.StringRange{Min: 0, Max: 9}`,
+		`customTypes.IPAddressStringType{}`,
+		`"settings": {`,
+		`Type:                 modelHelpers.ObjectProperty`,
+		`ObjectAttributeTypes: map[string]attr.Type{}`,
+		`"relation_to_monitoring_policy": {`,
+		`Cardinality: modelHelpers.SingleChild`,
+		`Schema:      fvRsTenantMonPolSchemaDefinition`,
+		`"annotations": {`,
+		`Cardinality: modelHelpers.SetChild`,
+		`Schema:      tagAnnotationSchemaDefinition`,
+		`Identifiers: []string{`,
+		`ParentDN: &modelHelpers.ParentDNSchema{`,
+		`DefaultValue: "uni"`,
+		`AnnotationAttribute: "annotation"`,
+		`func FvTenantResourceSchema(defaultAnnotation string) resourceschema.Schema`,
+		`return fvTenantSchemaDefinition().ResourceSchema(defaultAnnotation)`,
+		`func FvTenantDataSourceSchema() datasourceschema.Schema`,
+		`return fvTenantSchemaDefinition().DataSourceSchema()`,
+	}
+	for _, snippet := range expectedSnippets {
+		if !strings.Contains(contents, snippet) {
+			t.Fatalf("rendered model schema does not contain %q", snippet)
+		}
+	}
+}
+
+func TestGeneratedSensitivePropertySchemas(t *testing.T) {
+	testCases := []test.TestCase{
+		{
+			Name:  "test_key_ring_resource",
+			Input: models.PkiKeyRingResourceSchema("").Attributes["key"],
+		},
+		{
+			Name:  "test_vmm_credential_resource",
+			Input: models.VmmUsrAccPResourceSchema("").Attributes["password"],
+		},
+		{
+			Name:  "test_fabric_external_connection_child",
+			Input: models.FvFabricExtConnPResourceSchema("").Attributes["peering_profile"].(resourceschema.SingleNestedAttribute).Attributes["password"],
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			attribute := testCase.Input.(resourceschema.StringAttribute)
+			if !attribute.Optional || attribute.Computed || !attribute.Sensitive {
+				t.Fatalf("unexpected sensitive resource attribute: %#v", attribute)
+			}
+		})
+	}
+
+	dataSourceAttribute := models.PkiKeyRingDataSourceSchema().Attributes["key"].(datasourceschema.StringAttribute)
+	if !dataSourceAttribute.Computed || !dataSourceAttribute.Sensitive {
+		t.Fatalf("unexpected sensitive data-source attribute: %#v", dataSourceAttribute)
+	}
+}
+
+type optionalSingletonSchemaInput struct {
+	Schema           resourceschema.Schema
+	ChildAttribute   string
+	RequiredProperty string
+}
+
+func TestGeneratedOptionalSingletonSchema(t *testing.T) {
+	testCases := []test.TestCase{
+		{
+			Name: "test_access_interface_override",
+			Input: optionalSingletonSchemaInput{
+				Schema:           models.InfraHPathSResourceSchema(""),
+				ChildAttribute:   "relation_to_host_path",
+				RequiredProperty: "target_dn",
+			},
+		},
+		{
+			Name: "test_bridge_domain",
+			Input: optionalSingletonSchemaInput{
+				Schema:           models.FvBDResourceSchema(""),
+				ChildAttribute:   "legacy_mode",
+				RequiredProperty: "encapsulation",
+			},
+		},
+		{
+			Name: "test_vmm_domain",
+			Input: optionalSingletonSchemaInput{
+				Schema:           models.VmmDomPResourceSchema(""),
+				ChildAttribute:   "vmm_uplink_container",
+				RequiredProperty: "number_of_uplinks",
+			},
+		},
+		{
+			Name: "test_vrf_fallback_route_group",
+			Input: optionalSingletonSchemaInput{
+				Schema:           models.FvFBRGroupResourceSchema(""),
+				ChildAttribute:   "vrf_fallback_route",
+				RequiredProperty: "prefix_address",
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			input := testCase.Input.(optionalSingletonSchemaInput)
+			if diagnostics := input.Schema.ValidateImplementation(context.Background()); diagnostics.HasError() {
+				t.Fatalf("invalid schema: %v", diagnostics)
+			}
+
+			child := input.Schema.Attributes[input.ChildAttribute].(resourceschema.SingleNestedAttribute)
+			if len(child.Validators) != 1 {
+				t.Fatalf("object validator count %d, expected 1", len(child.Validators))
+			}
+			property := child.Attributes[input.RequiredProperty].(resourceschema.StringAttribute)
+			if property.Required || !property.Optional || !property.Computed {
+				t.Fatalf("unexpected required child property flags: %#v", property)
+			}
+		})
+	}
+}
+
+func TestGeneratedReadOnlyRootRequiredPropertySchema(t *testing.T) {
+	resourceSchema := models.FvAEPgResourceSchema("")
+	name := resourceSchema.Attributes["name"].(resourceschema.StringAttribute)
+	if name.Required || !name.Optional || !name.Computed || len(name.Validators) == 0 {
+		t.Fatalf("unexpected read-only-root name schema: %#v", name)
+	}
+
+	annotations := resourceSchema.Attributes["annotations"].(resourceschema.SetNestedAttribute)
+	annotationKey := annotations.NestedObject.Attributes["key"].(resourceschema.StringAttribute)
+	if annotationKey.Required || !annotationKey.Optional || !annotationKey.Computed || len(annotationKey.Validators) == 0 {
+		t.Fatalf("unexpected read-only-root set child schema: %#v", annotationKey)
+	}
+}
+
+func TestGeneratedDirectRequiredPropertySchema(t *testing.T) {
+	resourceSchema := models.FvApResourceSchema("")
+	name := resourceSchema.Attributes["name"].(resourceschema.StringAttribute)
+	if !name.Required || name.Optional || name.Computed {
+		t.Fatalf("unexpected direct name schema: %#v", name)
+	}
+
+	annotations := resourceSchema.Attributes["annotations"].(resourceschema.SetNestedAttribute)
+	annotationKey := annotations.NestedObject.Attributes["key"].(resourceschema.StringAttribute)
+	if !annotationKey.Required || annotationKey.Optional || annotationKey.Computed {
+		t.Fatalf("unexpected direct set child schema: %#v", annotationKey)
+	}
+}
+
+func TestGeneratedRootModelMatchesResourceAndDataSourceSchemas(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+	resourceType := models.FvTenantResourceSchema("orchestrator:terraform").Type()
+	dataSourceType := models.FvTenantDataSourceSchema().Type()
+	if !resourceType.Equal(dataSourceType) {
+		t.Fatal("resource and data-source schemas do not have the same Terraform value type")
+	}
+
+	model := models.NewFvTenantRootModelNull()
+	testCases := []test.TestCase{
+		{Name: "test_resource_schema", Input: resourceType},
+		{Name: "test_data_source_schema", Input: dataSourceType},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+
+			var value types.Object
+			diagnostics := tfsdk.ValueFrom(ctx, model, testCase.Input.(attr.Type), &value)
+			if diagnostics.HasError() {
+				t.Fatalf("convert root model using generated schema: %v", diagnostics)
+			}
+
+			var decoded models.FvTenantRootModel
+			diagnostics = tfsdk.ValueAs(ctx, value, &decoded)
+			if diagnostics.HasError() {
+				t.Fatalf("decode generated schema value into root model: %v", diagnostics)
 			}
 		})
 	}
@@ -1265,16 +1567,10 @@ func TestGeneratedModelBuildDN(t *testing.T) {
 func TestGeneratedTopLevelModelSetIDFromDN(t *testing.T) {
 	t.Parallel()
 
-	resourceModel := models.FvTenantResourceModel{}
-	resourceModel.SetIDFromDN("uni/tn-resource")
-	if actual := resourceModel.ID.ValueString(); actual != "uni/tn-resource" {
-		t.Fatalf("resource ID %q, expected %q", actual, "uni/tn-resource")
-	}
-
-	dataSourceModel := models.FvTenantDataSourceModel{}
-	dataSourceModel.SetIDFromDN("uni/tn-datasource")
-	if actual := dataSourceModel.ID.ValueString(); actual != "uni/tn-datasource" {
-		t.Fatalf("data source ID %q, expected %q", actual, "uni/tn-datasource")
+	model := models.FvTenantRootModel{}
+	model.SetIDFromDN("uni/tn-example")
+	if actual := model.ID.ValueString(); actual != "uni/tn-example" {
+		t.Fatalf("root model ID %q, expected %q", actual, "uni/tn-example")
 	}
 }
 
@@ -1282,7 +1578,7 @@ func TestGeneratedModelBuildPayload(t *testing.T) {
 	t.Parallel()
 
 	ctx := context.Background()
-	model := models.NewFvTenantResourceModelNull()
+	model := models.NewFvTenantRootModelNull()
 	model.Name = types.StringValue("example")
 
 	payload, diagnostics := model.BuildPayload(ctx, nil, true, true, "orchestrator:terraform")
@@ -1314,7 +1610,7 @@ func TestGeneratedModelBuildPayload(t *testing.T) {
 func TestGeneratedModelBuildDeletePayload(t *testing.T) {
 	t.Parallel()
 
-	model := models.NewFvTenantResourceModelNull()
+	model := models.NewFvTenantRootModelNull()
 	model.ID = types.StringValue("uni/tn-example")
 	payload, diagnostics := model.BuildDeletePayload(context.Background())
 	if diagnostics.HasError() {
@@ -1329,8 +1625,8 @@ func TestGeneratedModelBuildDeletePayload(t *testing.T) {
 		}
 	}`)
 
-	if _, exists := reflect.TypeOf(&models.VzAnyResourceModel{}).MethodByName("BuildDeletePayload"); exists {
-		t.Fatal("non-deletable vzAny resource model exposes BuildDeletePayload")
+	if _, exists := reflect.TypeOf(&models.VzAnyRootModel{}).MethodByName("BuildDeletePayload"); exists {
+		t.Fatal("non-deletable vzAny root model exposes BuildDeletePayload")
 	}
 }
 
@@ -1350,7 +1646,7 @@ func TestGeneratedModelBuildPayloadReconcilesRepeatedChildren(t *testing.T) {
 		[]models.TagAnnotationModel{priorAnnotation},
 	)
 
-	model := models.NewFvTenantResourceModelNull()
+	model := models.NewFvTenantRootModelNull()
 	model.Name = types.StringValue("example")
 	model.TagAnnotation = mustModelSet(
 		t,
@@ -1402,7 +1698,7 @@ func TestGeneratedModelBuildPayloadHandlesSingletonChildren(t *testing.T) {
 	monitoringPolicy := models.NewFvRsTenantMonPolModelNull()
 	monitoringPolicy.TnMonEPGPolName = types.StringValue("monitoring")
 
-	model := models.NewFvTenantResourceModelNull()
+	model := models.NewFvTenantRootModelNull()
 	model.Name = types.StringValue("example")
 	model.FvRsTenantMonPol = mustModelObject(
 		t,
@@ -1465,7 +1761,7 @@ func TestGeneratedModelBuildPayloadDeletesSingletonChild(t *testing.T) {
 		priorChild,
 	)
 
-	model := models.NewFhsBDPolResourceModelNull()
+	model := models.NewFhsBDPolRootModelNull()
 	model.FhsRaGuardPol = mustModelObject(
 		t,
 		ctx,
@@ -1507,7 +1803,7 @@ func TestGeneratedModelBuildPayloadRejectsIpslaRelationshipDeletion(t *testing.T
 		priorChild,
 	)
 
-	model := models.NewFvTrackMemberResourceModelNull()
+	model := models.NewFvTrackMemberRootModelNull()
 	model.FvRsIpslaMonPol = mustModelObject(
 		t,
 		ctx,
@@ -1528,7 +1824,7 @@ func TestGeneratedModelBuildPayloadSerializesBitmask(t *testing.T) {
 	t.Parallel()
 
 	ctx := context.Background()
-	model := models.NewNdIfPolResourceModelNull()
+	model := models.NewNdIfPolRootModelNull()
 	model.Name = types.StringValue("example")
 	model.Ctrl = types.SetValueMust(types.StringType, []attr.Value{
 		types.StringValue("router-advertisement"),
@@ -1549,13 +1845,13 @@ func TestGeneratedModelBuildPayloadSerializesBitmask(t *testing.T) {
 	}`)
 }
 
-func TestGeneratedModelBuildPayloadWrapsParentDnVariantOnCreate(t *testing.T) {
+func TestGeneratedModelBuildPayloadWrapsParentDNVariantOnCreate(t *testing.T) {
 	t.Parallel()
 
 	ctx := context.Background()
-	model := models.NewPkiKeyRingResourceModelNull()
+	model := models.NewPkiKeyRingRootModelNull()
 	model.Name = types.StringValue("example")
-	model.ParentDn = types.StringValue("uni/tn-tenant")
+	model.ParentDN = types.StringValue("uni/tn-tenant")
 
 	payload, diagnostics := model.BuildPayload(ctx, nil, true, true, "orchestrator:terraform")
 	if diagnostics.HasError() {
@@ -1606,7 +1902,7 @@ func TestGeneratedModelBuildPayloadRecursesThroughNestedChildren(t *testing.T) {
 		keyRing,
 	)
 
-	model := models.NewCommPolResourceModelNull()
+	model := models.NewCommPolRootModelNull()
 	model.Name = types.StringValue("default")
 	model.CommHttps = mustModelObject(
 		t,
@@ -1647,20 +1943,17 @@ func TestGeneratedModelBuildPayloadRecursesThroughNestedChildren(t *testing.T) {
 	}`)
 }
 
-func TestGeneratedTopLevelModelParentDnShape(t *testing.T) {
+func TestGeneratedTopLevelModelParentDNShape(t *testing.T) {
 	t.Parallel()
 
-	if _, ok := reflect.TypeOf(models.L2IfPolResourceModel{}).FieldByName("ParentDn"); ok {
-		t.Fatal("fixed-path l2IfPol resource model unexpectedly exposes ParentDn")
+	if _, ok := reflect.TypeOf(models.L2IfPolRootModel{}).FieldByName("ParentDN"); ok {
+		t.Fatal("fixed-path l2IfPol root model unexpectedly exposes ParentDN")
 	}
-	if _, ok := reflect.TypeOf(models.L2IfPolDataSourceModel{}).FieldByName("ParentDn"); ok {
-		t.Fatal("fixed-path l2IfPol data source model unexpectedly exposes ParentDn")
+	if _, ok := reflect.TypeOf(models.FvBDRootModel{}).FieldByName("ParentDN"); !ok {
+		t.Fatal("runtime-parent fvBD root model does not expose ParentDN")
 	}
-	if _, ok := reflect.TypeOf(models.FvBDResourceModel{}).FieldByName("ParentDn"); !ok {
-		t.Fatal("runtime-parent fvBD resource model does not expose ParentDn")
-	}
-	if _, ok := reflect.TypeOf(models.FvEpIpTagResourceModel{}).FieldByName("ParentDn"); !ok {
-		t.Fatal("replacement-parent fvEpIpTag resource model does not expose ParentDn")
+	if _, ok := reflect.TypeOf(models.FvEpIpTagRootModel{}).FieldByName("ParentDN"); !ok {
+		t.Fatal("replacement-parent fvEpIpTag root model does not expose ParentDN")
 	}
 }
 
@@ -1791,23 +2084,23 @@ func TestGeneratedModelSetFromResponseDecodesChildren(t *testing.T) {
 		}]
 	}`)
 
-	resourceModel := models.NewFvTenantResourceModelNull()
-	found, diagnostics := resourceModel.SetFromResponse(ctx, response)
+	rootModel := models.NewFvTenantRootModelNull()
+	found, diagnostics := rootModel.SetFromResponse(ctx, response)
 	if diagnostics.HasError() {
 		t.Fatalf("decode tenant response: %v", diagnostics)
 	}
 	if !found {
 		t.Fatal("tenant was not reported as found")
 	}
-	if actual := resourceModel.ID.ValueString(); actual != "uni/tn-example" {
-		t.Fatalf("resource ID %q, expected %q", actual, "uni/tn-example")
+	if actual := rootModel.ID.ValueString(); actual != "uni/tn-example" {
+		t.Fatalf("root model ID %q, expected %q", actual, "uni/tn-example")
 	}
-	if actual := resourceModel.Name.ValueString(); actual != "example" {
+	if actual := rootModel.Name.ValueString(); actual != "example" {
 		t.Fatalf("tenant name %q, expected %q", actual, "example")
 	}
 
 	monitoringPolicy := models.NewFvRsTenantMonPolModelNull()
-	childDiagnostics := resourceModel.FvRsTenantMonPol.As(ctx, &monitoringPolicy, basetypes.ObjectAsOptions{})
+	childDiagnostics := rootModel.FvRsTenantMonPol.As(ctx, &monitoringPolicy, basetypes.ObjectAsOptions{})
 	if childDiagnostics.HasError() {
 		t.Fatalf("decode singleton child: %v", childDiagnostics)
 	}
@@ -1816,23 +2109,23 @@ func TestGeneratedModelSetFromResponseDecodesChildren(t *testing.T) {
 	}
 
 	var annotations []models.TagAnnotationModel
-	childDiagnostics = resourceModel.TagAnnotation.ElementsAs(ctx, &annotations, false)
+	childDiagnostics = rootModel.TagAnnotation.ElementsAs(ctx, &annotations, false)
 	if childDiagnostics.HasError() {
 		t.Fatalf("decode repeated children: %v", childDiagnostics)
 	}
 	if len(annotations) != 1 || annotations[0].Key.ValueString() != "owner" || annotations[0].Value.ValueString() != "terraform" {
 		t.Fatalf("unexpected annotations: %#v", annotations)
 	}
-	if resourceModel.TagTag.IsNull() || resourceModel.TagTag.IsUnknown() || len(resourceModel.TagTag.Elements()) != 0 {
-		t.Fatalf("missing repeated child was not decoded as a known empty set: %s", resourceModel.TagTag.String())
+	if rootModel.TagTag.IsNull() || rootModel.TagTag.IsUnknown() || len(rootModel.TagTag.Elements()) != 0 {
+		t.Fatalf("missing repeated child was not decoded as a known empty set: %s", rootModel.TagTag.String())
 	}
 
 	notFoundResponse := mustAPICContainer(t, `{"imdata": []}`)
-	found, diagnostics = resourceModel.SetFromResponse(ctx, notFoundResponse)
+	found, diagnostics = rootModel.SetFromResponse(ctx, notFoundResponse)
 	if diagnostics.HasError() || found {
 		t.Fatalf("empty response returned found=%t, diagnostics=%v", found, diagnostics)
 	}
-	if actual := resourceModel.Name.ValueString(); actual != "example" {
+	if actual := rootModel.Name.ValueString(); actual != "example" {
 		t.Fatalf("not-found response changed the existing model name to %q", actual)
 	}
 }
@@ -1854,22 +2147,13 @@ func TestGeneratedTopLevelModelSetFromResponseSetsIdentity(t *testing.T) {
 		}]
 	}`)
 
-	resourceModel := models.NewFvEpIpTagResourceModelNull()
-	found, diagnostics := resourceModel.SetFromResponse(ctx, response)
+	rootModel := models.NewFvEpIpTagRootModelNull()
+	found, diagnostics := rootModel.SetFromResponse(ctx, response)
 	if diagnostics.HasError() || !found {
-		t.Fatalf("set resource response returned found=%t, diagnostics=%v", found, diagnostics)
+		t.Fatalf("set root response returned found=%t, diagnostics=%v", found, diagnostics)
 	}
-	if resourceModel.ID.ValueString() != dn || resourceModel.ParentDn.ValueString() != "uni/tn-tenant" {
-		t.Fatalf("resource identity ID=%q parent_dn=%q", resourceModel.ID.ValueString(), resourceModel.ParentDn.ValueString())
-	}
-
-	dataSourceModel := models.NewFvEpIpTagDataSourceModelNull()
-	found, diagnostics = dataSourceModel.SetFromResponse(ctx, response)
-	if diagnostics.HasError() || !found {
-		t.Fatalf("set data source response returned found=%t, diagnostics=%v", found, diagnostics)
-	}
-	if dataSourceModel.ID.ValueString() != dn || dataSourceModel.ParentDn.ValueString() != "uni/tn-tenant" {
-		t.Fatalf("data source identity ID=%q parent_dn=%q", dataSourceModel.ID.ValueString(), dataSourceModel.ParentDn.ValueString())
+	if rootModel.ID.ValueString() != dn || rootModel.ParentDN.ValueString() != "uni/tn-tenant" {
+		t.Fatalf("root identity ID=%q parent_dn=%q", rootModel.ID.ValueString(), rootModel.ParentDN.ValueString())
 	}
 }
 
@@ -2031,8 +2315,17 @@ func TestGeneratedModelFromObjectPreservesNestedSensitiveFallback(t *testing.T) 
 		mustAPICContainer(t, `{"attributes": {"password": "returned"}}`),
 		&fallbackChild,
 	)
-	if diagnostics.HasError() || returnedSensitive.Password.ValueString() != "returned" {
-		t.Fatalf("returned sensitive value did not override fallback: %q; diagnostics=%v", returnedSensitive.Password.ValueString(), diagnostics)
+	if diagnostics.HasError() || returnedSensitive.Password.ValueString() != "secret" {
+		t.Fatalf("returned sensitive value replaced fallback: %q; diagnostics=%v", returnedSensitive.Password.ValueString(), diagnostics)
+	}
+
+	withoutFallback, diagnostics := models.FvPeeringPModelFromObject(
+		ctx,
+		mustAPICContainer(t, `{"attributes": {"password": "returned"}}`),
+		nil,
+	)
+	if diagnostics.HasError() || !withoutFallback.Password.IsNull() {
+		t.Fatalf("sensitive value without fallback is not null: %q; diagnostics=%v", withoutFallback.Password.ValueString(), diagnostics)
 	}
 }
 

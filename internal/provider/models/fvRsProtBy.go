@@ -6,15 +6,67 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+func fvRsProtBySchemaDefinition() modelHelpers.ClassSchema {
+	return modelHelpers.ClassSchema{
+		ResourceDescription:   "Manages ACI Relation To Taboo Contract",
+		DataSourceDescription: "Data source for ACI Relation To Taboo Contract",
+		Properties: map[string]modelHelpers.PropertySchema{
+			"annotation": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The annotation of the Relation To Taboo Contract object.",
+			},
+			"taboo_contract_name": {
+				Type:            modelHelpers.StringProperty,
+				Required:        true,
+				RequiresReplace: true,
+				Description:     "A contract for denying specific classes of traffic. Taboo rules are applied in the hardware before applying the rules of regular contracts. Without a contract, the default forwarding policy is to not allow any communication between EPGs. This attribute can be referenced from a [resource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/taboo_contract) with `aci_taboo_contract.example.name` or from a [datasource](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/data-sources/taboo_contract) with `data.aci_taboo_contract.example.name`.",
+			},
+		},
+		Children: map[string]modelHelpers.ChildSchema{
+			"annotations": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.",
+				Schema:      tagAnnotationSchemaDefinition,
+			},
+			"tags": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.",
+				Schema:      tagTagSchemaDefinition,
+			},
+		},
+		Identifiers: []string{
+			"taboo_contract_name",
+		},
+		ParentDN: &modelHelpers.ParentDNSchema{
+			AttributeName: "parent_dn",
+			Config:        modelHelpers.ParentDNAttributeConfig{},
+		},
+		AnnotationAttribute: "annotation",
+	}
+}
+
+func FvRsProtByResourceSchema(defaultAnnotation string) resourceschema.Schema {
+	return fvRsProtBySchemaDefinition().ResourceSchema(defaultAnnotation)
+}
+
+func FvRsProtByDataSourceSchema() datasourceschema.Schema {
+	return fvRsProtBySchemaDefinition().DataSourceSchema()
+}
 
 type FvRsProtByModel struct {
 	Annotation    types.String `tfsdk:"annotation"`
@@ -60,19 +112,15 @@ func NewFvRsProtByModelNull() FvRsProtByModel {
 func (m *FvRsProtByModel) BuildRN() string {
 	rn := "rsprotBy-{tnVzTabooName}"
 	rn = strings.ReplaceAll(rn, "{tnVzTabooName}", m.TnVzTabooName.ValueString())
-
 	return rn
 }
 
 func (m *FvRsProtByModel) BuildDN(parentDN string) string {
-	return parentDN + "/" + m.BuildRN()
+	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
 }
 
 func (m *FvRsProtByModel) ParentDNFromDN(dn string) string {
-	rn := m.BuildRN()
-
-	parentDN, _ := strings.CutSuffix(dn, "/"+rn)
-	return parentDN
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
 }
 
 func FvRsProtByModelFromObject(
@@ -87,8 +135,10 @@ func FvRsProtByModelFromObject(
 	if !ok {
 		return model, diagnostics
 	}
+
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "tnVzTabooName", &model.TnVzTabooName)
+
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,
 		&diagnostics,
@@ -99,6 +149,7 @@ func FvRsProtByModelFromObject(
 			"tagTag",
 		},
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -107,6 +158,7 @@ func FvRsProtByModelFromObject(
 		TagAnnotationModelFromObject,
 		&model.TagAnnotation,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -138,10 +190,12 @@ func (m *FvRsProtByModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
+
 	if !modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "annotation", m.Annotation) && nested {
 		attributes["annotation"] = defaultAnnotation
 	}
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "tnVzTabooName", m.TnVzTabooName)
+
 	var priorTagAnnotation *types.Set
 	if priorState != nil {
 		priorTagAnnotation = &priorState.TagAnnotation
@@ -162,6 +216,7 @@ func (m *FvRsProtByModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, tagAnnotationPayloads...)
+
 	var priorTagTag *types.Set
 	if priorState != nil {
 		priorTagTag = &priorState.TagTag
@@ -196,31 +251,31 @@ func (m *FvRsProtByModel) BuildNestedDeletePayloadObject(
 	ctx context.Context,
 	diagnostics *diag.Diagnostics,
 ) map[string]any {
-	attributes := map[string]any{}
-	attributes["tnVzTabooName"] = m.TnVzTabooName.ValueString()
-	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, attributes)
+	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, map[string]any{
+		"tnVzTabooName": m.TnVzTabooName.ValueString(),
+	})
 }
 
-type FvRsProtByResourceModel struct {
+type FvRsProtByRootModel struct {
 	FvRsProtByModel
 
 	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ParentDN types.String `tfsdk:"parent_dn"`
 }
 
-func NewFvRsProtByResourceModelNull() FvRsProtByResourceModel {
-	return FvRsProtByResourceModel{
+func NewFvRsProtByRootModelNull() FvRsProtByRootModel {
+	return FvRsProtByRootModel{
 		FvRsProtByModel: NewFvRsProtByModelNull(),
 		ID:              types.StringNull(),
-		ParentDn:        types.StringNull(),
+		ParentDN:        types.StringNull(),
 	}
 }
 
-func (m *FvRsProtByResourceModel) SetIDFromDN(dn string) {
+func (m *FvRsProtByRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
 
-func (m *FvRsProtByResourceModel) SetFromResponse(
+func (m *FvRsProtByRootModel) SetFromResponse(
 	ctx context.Context,
 	response *container.Container,
 ) (bool, diag.Diagnostics) {
@@ -233,11 +288,11 @@ func (m *FvRsProtByResourceModel) SetFromResponse(
 
 	m.FvRsProtByModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 
-func (m *FvRsProtByResourceModel) BuildPayload(
+func (m *FvRsProtByRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *FvRsProtByModel,
 	create bool,
@@ -248,52 +303,16 @@ func (m *FvRsProtByResourceModel) BuildPayload(
 	if diagnostics.HasError() {
 		return nil, diagnostics
 	}
+
 	if markCreated {
 		payloadObject["attributes"].(map[string]any)["status"] = "created"
 	}
+
 	payloadEnvelope := map[string]any{"fvRsProtBy": payloadObject}
-	jsonPayload := modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload")
-	return jsonPayload, diagnostics
+	return modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload"), diagnostics
 }
 
-func (m *FvRsProtByResourceModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
+func (m *FvRsProtByRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
-	payload := modelHelpers.NewDeletePayload(ctx, &diagnostics, "fvRsProtBy", m.ID.ValueString())
-	return payload, diagnostics
-}
-
-type FvRsProtByDataSourceModel struct {
-	FvRsProtByModel
-
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
-}
-
-func NewFvRsProtByDataSourceModelNull() FvRsProtByDataSourceModel {
-	return FvRsProtByDataSourceModel{
-		FvRsProtByModel: NewFvRsProtByModelNull(),
-		ID:              types.StringNull(),
-		ParentDn:        types.StringNull(),
-	}
-}
-
-func (m *FvRsProtByDataSourceModel) SetIDFromDN(dn string) {
-	m.ID = types.StringValue(dn)
-}
-
-func (m *FvRsProtByDataSourceModel) SetFromResponse(
-	ctx context.Context,
-	response *container.Container,
-) (bool, diag.Diagnostics) {
-	fallbackModel := m.FvRsProtByModel
-	model, dn, diagnostics := FvRsProtByModelFromResponse(ctx, response, &fallbackModel)
-	found := model != nil
-	if diagnostics.HasError() || !found {
-		return found, diagnostics
-	}
-
-	m.FvRsProtByModel = *model
-	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
-	return true, diagnostics
+	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "fvRsProtBy", m.ID.ValueString()), diagnostics
 }

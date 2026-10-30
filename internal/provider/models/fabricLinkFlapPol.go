@@ -6,15 +6,99 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+func fabricLinkFlapPolSchemaDefinition() modelHelpers.ClassSchema {
+	return modelHelpers.ClassSchema{
+		ResourceDescription:   "Manages ACI Link Flap Interface Policy",
+		DataSourceDescription: "Data source for ACI Link Flap Interface Policy",
+		Properties: map[string]modelHelpers.PropertySchema{
+			"annotation": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The annotation of the Link Flap Interface Policy object.",
+			},
+			"description": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The description of the Link Flap Interface Policy object.",
+			},
+			"maximum_flaps": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The maximum amount of link flaps allowed before the port goes into error disabled mode. The value must be in the range 2 - 30.",
+			},
+			"allowed_time_for_flaps": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The duration in seconds to reach the maximum amount of link flaps before the port goes into error disabled mode. The value must be in the range 5 - 420.",
+			},
+			"name": {
+				Type:            modelHelpers.StringProperty,
+				Required:        true,
+				RequiresReplace: true,
+				Description:     "The name of the Link Flap Interface Policy object.",
+			},
+			"name_alias": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The name alias of the Link Flap Interface Policy object.",
+			},
+			"owner_key": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The key for enabling clients to own their data for entity correlation.",
+			},
+			"owner_tag": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "A tag for enabling clients to add their own data. For example, to indicate who created this object.",
+			},
+		},
+		Children: map[string]modelHelpers.ChildSchema{
+			"annotations": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.",
+				Schema:      tagAnnotationSchemaDefinition,
+			},
+			"tags": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.",
+				Schema:      tagTagSchemaDefinition,
+			},
+		},
+		Identifiers: []string{
+			"name",
+		},
+		AnnotationAttribute: "annotation",
+	}
+}
+
+func FabricLinkFlapPolResourceSchema(defaultAnnotation string) resourceschema.Schema {
+	return fabricLinkFlapPolSchemaDefinition().ResourceSchema(defaultAnnotation)
+}
+
+func FabricLinkFlapPolDataSourceSchema() datasourceschema.Schema {
+	return fabricLinkFlapPolSchemaDefinition().DataSourceSchema()
+}
 
 type FabricLinkFlapPolModel struct {
 	Annotation           types.String `tfsdk:"annotation"`
@@ -78,12 +162,11 @@ func NewFabricLinkFlapPolModelNull() FabricLinkFlapPolModel {
 func (m *FabricLinkFlapPolModel) BuildRN() string {
 	rn := "infra/linkflappol-{name}"
 	rn = strings.ReplaceAll(rn, "{name}", m.Name.ValueString())
-
 	return rn
 }
 
 func (m *FabricLinkFlapPolModel) BuildDN() string {
-	return "uni/" + m.BuildRN()
+	return fmt.Sprintf("uni/%s", m.BuildRN())
 }
 
 func FabricLinkFlapPolModelFromObject(
@@ -98,6 +181,7 @@ func FabricLinkFlapPolModelFromObject(
 	if !ok {
 		return model, diagnostics
 	}
+
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "descr", &model.Descr)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "linkFlapErrorMax", &model.LinkFlapErrorMax)
@@ -106,6 +190,7 @@ func FabricLinkFlapPolModelFromObject(
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "nameAlias", &model.NameAlias)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ownerKey", &model.OwnerKey)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ownerTag", &model.OwnerTag)
+
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,
 		&diagnostics,
@@ -116,6 +201,7 @@ func FabricLinkFlapPolModelFromObject(
 			"tagTag",
 		},
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -124,6 +210,7 @@ func FabricLinkFlapPolModelFromObject(
 		TagAnnotationModelFromObject,
 		&model.TagAnnotation,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -155,6 +242,7 @@ func (m *FabricLinkFlapPolModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
+
 	if !modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "annotation", m.Annotation) && nested {
 		attributes["annotation"] = defaultAnnotation
 	}
@@ -165,6 +253,7 @@ func (m *FabricLinkFlapPolModel) BuildPayloadObject(
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "nameAlias", m.NameAlias)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "ownerKey", m.OwnerKey)
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "ownerTag", m.OwnerTag)
+
 	var priorTagAnnotation *types.Set
 	if priorState != nil {
 		priorTagAnnotation = &priorState.TagAnnotation
@@ -185,6 +274,7 @@ func (m *FabricLinkFlapPolModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, tagAnnotationPayloads...)
+
 	var priorTagTag *types.Set
 	if priorState != nil {
 		priorTagTag = &priorState.TagTag
@@ -219,29 +309,29 @@ func (m *FabricLinkFlapPolModel) BuildNestedDeletePayloadObject(
 	ctx context.Context,
 	diagnostics *diag.Diagnostics,
 ) map[string]any {
-	attributes := map[string]any{}
-	attributes["name"] = m.Name.ValueString()
-	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, attributes)
+	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, map[string]any{
+		"name": m.Name.ValueString(),
+	})
 }
 
-type FabricLinkFlapPolResourceModel struct {
+type FabricLinkFlapPolRootModel struct {
 	FabricLinkFlapPolModel
 
 	ID types.String `tfsdk:"id"`
 }
 
-func NewFabricLinkFlapPolResourceModelNull() FabricLinkFlapPolResourceModel {
-	return FabricLinkFlapPolResourceModel{
+func NewFabricLinkFlapPolRootModelNull() FabricLinkFlapPolRootModel {
+	return FabricLinkFlapPolRootModel{
 		FabricLinkFlapPolModel: NewFabricLinkFlapPolModelNull(),
 		ID:                     types.StringNull(),
 	}
 }
 
-func (m *FabricLinkFlapPolResourceModel) SetIDFromDN(dn string) {
+func (m *FabricLinkFlapPolRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
 
-func (m *FabricLinkFlapPolResourceModel) SetFromResponse(
+func (m *FabricLinkFlapPolRootModel) SetFromResponse(
 	ctx context.Context,
 	response *container.Container,
 ) (bool, diag.Diagnostics) {
@@ -257,7 +347,7 @@ func (m *FabricLinkFlapPolResourceModel) SetFromResponse(
 	return true, diagnostics
 }
 
-func (m *FabricLinkFlapPolResourceModel) BuildPayload(
+func (m *FabricLinkFlapPolRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *FabricLinkFlapPolModel,
 	create bool,
@@ -268,49 +358,16 @@ func (m *FabricLinkFlapPolResourceModel) BuildPayload(
 	if diagnostics.HasError() {
 		return nil, diagnostics
 	}
+
 	if markCreated {
 		payloadObject["attributes"].(map[string]any)["status"] = "created"
 	}
+
 	payloadEnvelope := map[string]any{"fabricLinkFlapPol": payloadObject}
-	jsonPayload := modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload")
-	return jsonPayload, diagnostics
+	return modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload"), diagnostics
 }
 
-func (m *FabricLinkFlapPolResourceModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
+func (m *FabricLinkFlapPolRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
-	payload := modelHelpers.NewDeletePayload(ctx, &diagnostics, "fabricLinkFlapPol", m.ID.ValueString())
-	return payload, diagnostics
-}
-
-type FabricLinkFlapPolDataSourceModel struct {
-	FabricLinkFlapPolModel
-
-	ID types.String `tfsdk:"id"`
-}
-
-func NewFabricLinkFlapPolDataSourceModelNull() FabricLinkFlapPolDataSourceModel {
-	return FabricLinkFlapPolDataSourceModel{
-		FabricLinkFlapPolModel: NewFabricLinkFlapPolModelNull(),
-		ID:                     types.StringNull(),
-	}
-}
-
-func (m *FabricLinkFlapPolDataSourceModel) SetIDFromDN(dn string) {
-	m.ID = types.StringValue(dn)
-}
-
-func (m *FabricLinkFlapPolDataSourceModel) SetFromResponse(
-	ctx context.Context,
-	response *container.Container,
-) (bool, diag.Diagnostics) {
-	fallbackModel := m.FabricLinkFlapPolModel
-	model, dn, diagnostics := FabricLinkFlapPolModelFromResponse(ctx, response, &fallbackModel)
-	found := model != nil
-	if diagnostics.HasError() || !found {
-		return found, diagnostics
-	}
-
-	m.FabricLinkFlapPolModel = *model
-	m.ID = types.StringValue(dn)
-	return true, diagnostics
+	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "fabricLinkFlapPol", m.ID.ValueString()), diagnostics
 }

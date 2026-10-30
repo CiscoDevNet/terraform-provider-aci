@@ -6,15 +6,67 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+func l3extRsOutToFBRGroupSchemaDefinition() modelHelpers.ClassSchema {
+	return modelHelpers.ClassSchema{
+		ResourceDescription:   "Manages ACI Relation To VRF Fallback Route Group",
+		DataSourceDescription: "Data source for ACI Relation To VRF Fallback Route Group",
+		Properties: map[string]modelHelpers.PropertySchema{
+			"annotation": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The annotation of the Relation To VRF Fallback Route Group object.",
+			},
+			"target_dn": {
+				Type:            modelHelpers.StringProperty,
+				Required:        true,
+				RequiresReplace: true,
+				Description:     "The distinguished name of the VRF Fallback Route Group object.",
+			},
+		},
+		Children: map[string]modelHelpers.ChildSchema{
+			"annotations": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.",
+				Schema:      tagAnnotationSchemaDefinition,
+			},
+			"tags": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.",
+				Schema:      tagTagSchemaDefinition,
+			},
+		},
+		Identifiers: []string{
+			"target_dn",
+		},
+		ParentDN: &modelHelpers.ParentDNSchema{
+			AttributeName: "parent_dn",
+			Config:        modelHelpers.ParentDNAttributeConfig{},
+		},
+		AnnotationAttribute: "annotation",
+	}
+}
+
+func L3extRsOutToFBRGroupResourceSchema(defaultAnnotation string) resourceschema.Schema {
+	return l3extRsOutToFBRGroupSchemaDefinition().ResourceSchema(defaultAnnotation)
+}
+
+func L3extRsOutToFBRGroupDataSourceSchema() datasourceschema.Schema {
+	return l3extRsOutToFBRGroupSchemaDefinition().DataSourceSchema()
+}
 
 type L3extRsOutToFBRGroupModel struct {
 	Annotation    types.String `tfsdk:"annotation"`
@@ -60,19 +112,15 @@ func NewL3extRsOutToFBRGroupModelNull() L3extRsOutToFBRGroupModel {
 func (m *L3extRsOutToFBRGroupModel) BuildRN() string {
 	rn := "rsoutToFBRGroup-[{tDn}]"
 	rn = strings.ReplaceAll(rn, "{tDn}", m.TDn.ValueString())
-
 	return rn
 }
 
 func (m *L3extRsOutToFBRGroupModel) BuildDN(parentDN string) string {
-	return parentDN + "/" + m.BuildRN()
+	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
 }
 
 func (m *L3extRsOutToFBRGroupModel) ParentDNFromDN(dn string) string {
-	rn := m.BuildRN()
-
-	parentDN, _ := strings.CutSuffix(dn, "/"+rn)
-	return parentDN
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
 }
 
 func L3extRsOutToFBRGroupModelFromObject(
@@ -87,8 +135,10 @@ func L3extRsOutToFBRGroupModelFromObject(
 	if !ok {
 		return model, diagnostics
 	}
+
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "tDn", &model.TDn)
+
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,
 		&diagnostics,
@@ -99,6 +149,7 @@ func L3extRsOutToFBRGroupModelFromObject(
 			"tagTag",
 		},
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -107,6 +158,7 @@ func L3extRsOutToFBRGroupModelFromObject(
 		TagAnnotationModelFromObject,
 		&model.TagAnnotation,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -138,10 +190,12 @@ func (m *L3extRsOutToFBRGroupModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
+
 	if !modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "annotation", m.Annotation) && nested {
 		attributes["annotation"] = defaultAnnotation
 	}
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "tDn", m.TDn)
+
 	var priorTagAnnotation *types.Set
 	if priorState != nil {
 		priorTagAnnotation = &priorState.TagAnnotation
@@ -162,6 +216,7 @@ func (m *L3extRsOutToFBRGroupModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, tagAnnotationPayloads...)
+
 	var priorTagTag *types.Set
 	if priorState != nil {
 		priorTagTag = &priorState.TagTag
@@ -196,31 +251,31 @@ func (m *L3extRsOutToFBRGroupModel) BuildNestedDeletePayloadObject(
 	ctx context.Context,
 	diagnostics *diag.Diagnostics,
 ) map[string]any {
-	attributes := map[string]any{}
-	attributes["tDn"] = m.TDn.ValueString()
-	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, attributes)
+	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, map[string]any{
+		"tDn": m.TDn.ValueString(),
+	})
 }
 
-type L3extRsOutToFBRGroupResourceModel struct {
+type L3extRsOutToFBRGroupRootModel struct {
 	L3extRsOutToFBRGroupModel
 
 	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ParentDN types.String `tfsdk:"parent_dn"`
 }
 
-func NewL3extRsOutToFBRGroupResourceModelNull() L3extRsOutToFBRGroupResourceModel {
-	return L3extRsOutToFBRGroupResourceModel{
+func NewL3extRsOutToFBRGroupRootModelNull() L3extRsOutToFBRGroupRootModel {
+	return L3extRsOutToFBRGroupRootModel{
 		L3extRsOutToFBRGroupModel: NewL3extRsOutToFBRGroupModelNull(),
 		ID:                        types.StringNull(),
-		ParentDn:                  types.StringNull(),
+		ParentDN:                  types.StringNull(),
 	}
 }
 
-func (m *L3extRsOutToFBRGroupResourceModel) SetIDFromDN(dn string) {
+func (m *L3extRsOutToFBRGroupRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
 
-func (m *L3extRsOutToFBRGroupResourceModel) SetFromResponse(
+func (m *L3extRsOutToFBRGroupRootModel) SetFromResponse(
 	ctx context.Context,
 	response *container.Container,
 ) (bool, diag.Diagnostics) {
@@ -233,11 +288,11 @@ func (m *L3extRsOutToFBRGroupResourceModel) SetFromResponse(
 
 	m.L3extRsOutToFBRGroupModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 
-func (m *L3extRsOutToFBRGroupResourceModel) BuildPayload(
+func (m *L3extRsOutToFBRGroupRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *L3extRsOutToFBRGroupModel,
 	create bool,
@@ -248,52 +303,16 @@ func (m *L3extRsOutToFBRGroupResourceModel) BuildPayload(
 	if diagnostics.HasError() {
 		return nil, diagnostics
 	}
+
 	if markCreated {
 		payloadObject["attributes"].(map[string]any)["status"] = "created"
 	}
+
 	payloadEnvelope := map[string]any{"l3extRsOutToFBRGroup": payloadObject}
-	jsonPayload := modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload")
-	return jsonPayload, diagnostics
+	return modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload"), diagnostics
 }
 
-func (m *L3extRsOutToFBRGroupResourceModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
+func (m *L3extRsOutToFBRGroupRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
-	payload := modelHelpers.NewDeletePayload(ctx, &diagnostics, "l3extRsOutToFBRGroup", m.ID.ValueString())
-	return payload, diagnostics
-}
-
-type L3extRsOutToFBRGroupDataSourceModel struct {
-	L3extRsOutToFBRGroupModel
-
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
-}
-
-func NewL3extRsOutToFBRGroupDataSourceModelNull() L3extRsOutToFBRGroupDataSourceModel {
-	return L3extRsOutToFBRGroupDataSourceModel{
-		L3extRsOutToFBRGroupModel: NewL3extRsOutToFBRGroupModelNull(),
-		ID:                        types.StringNull(),
-		ParentDn:                  types.StringNull(),
-	}
-}
-
-func (m *L3extRsOutToFBRGroupDataSourceModel) SetIDFromDN(dn string) {
-	m.ID = types.StringValue(dn)
-}
-
-func (m *L3extRsOutToFBRGroupDataSourceModel) SetFromResponse(
-	ctx context.Context,
-	response *container.Container,
-) (bool, diag.Diagnostics) {
-	fallbackModel := m.L3extRsOutToFBRGroupModel
-	model, dn, diagnostics := L3extRsOutToFBRGroupModelFromResponse(ctx, response, &fallbackModel)
-	found := model != nil
-	if diagnostics.HasError() || !found {
-		return found, diagnostics
-	}
-
-	m.L3extRsOutToFBRGroupModel = *model
-	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
-	return true, diagnostics
+	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "l3extRsOutToFBRGroup", m.ID.ValueString()), diagnostics
 }

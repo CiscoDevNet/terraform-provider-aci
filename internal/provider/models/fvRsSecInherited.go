@@ -6,15 +6,67 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
 )
+
+func fvRsSecInheritedSchemaDefinition() modelHelpers.ClassSchema {
+	return modelHelpers.ClassSchema{
+		ResourceDescription:   "Manages ACI Relation To Contract Master",
+		DataSourceDescription: "Data source for ACI Relation To Contract Master",
+		Properties: map[string]modelHelpers.PropertySchema{
+			"annotation": {
+				Type:        modelHelpers.StringProperty,
+				Optional:    true,
+				Computed:    true,
+				Description: "The annotation of the Relation To Contract Master object.",
+			},
+			"target_dn": {
+				Type:            modelHelpers.StringProperty,
+				Required:        true,
+				RequiresReplace: true,
+				Description:     "The distinguished name (DN) of the target object.",
+			},
+		},
+		Children: map[string]modelHelpers.ChildSchema{
+			"annotations": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`annotations` - (list) A list of Annotations (ACI object [tagAnnotation](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagAnnotation/overview)) which can also be configured using a separate [aci_annotation](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/annotation) resource.",
+				Schema:      tagAnnotationSchemaDefinition,
+			},
+			"tags": {
+				Cardinality: modelHelpers.SetChild,
+				Description: "`tags` - (list) A list of Tags (ACI object [tagTag](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/tagTag/overview)) which can also be configured using a separate [aci_tag](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/tag) resource.",
+				Schema:      tagTagSchemaDefinition,
+			},
+		},
+		Identifiers: []string{
+			"target_dn",
+		},
+		ParentDN: &modelHelpers.ParentDNSchema{
+			AttributeName: "parent_dn",
+			Config:        modelHelpers.ParentDNAttributeConfig{},
+		},
+		AnnotationAttribute: "annotation",
+	}
+}
+
+func FvRsSecInheritedResourceSchema(defaultAnnotation string) resourceschema.Schema {
+	return fvRsSecInheritedSchemaDefinition().ResourceSchema(defaultAnnotation)
+}
+
+func FvRsSecInheritedDataSourceSchema() datasourceschema.Schema {
+	return fvRsSecInheritedSchemaDefinition().DataSourceSchema()
+}
 
 type FvRsSecInheritedModel struct {
 	Annotation    types.String `tfsdk:"annotation"`
@@ -60,19 +112,15 @@ func NewFvRsSecInheritedModelNull() FvRsSecInheritedModel {
 func (m *FvRsSecInheritedModel) BuildRN() string {
 	rn := "rssecInherited-[{tDn}]"
 	rn = strings.ReplaceAll(rn, "{tDn}", m.TDn.ValueString())
-
 	return rn
 }
 
 func (m *FvRsSecInheritedModel) BuildDN(parentDN string) string {
-	return parentDN + "/" + m.BuildRN()
+	return fmt.Sprintf("%s/%s", parentDN, m.BuildRN())
 }
 
 func (m *FvRsSecInheritedModel) ParentDNFromDN(dn string) string {
-	rn := m.BuildRN()
-
-	parentDN, _ := strings.CutSuffix(dn, "/"+rn)
-	return parentDN
+	return strings.TrimSuffix(dn, fmt.Sprintf("/%s", m.BuildRN()))
 }
 
 func FvRsSecInheritedModelFromObject(
@@ -87,8 +135,10 @@ func FvRsSecInheritedModelFromObject(
 	if !ok {
 		return model, diagnostics
 	}
+
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "annotation", &model.Annotation)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "tDn", &model.TDn)
+
 	childObjects := modelHelpers.ChildObjectsByClass(
 		ctx,
 		&diagnostics,
@@ -99,6 +149,7 @@ func FvRsSecInheritedModelFromObject(
 			"tagTag",
 		},
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -107,6 +158,7 @@ func FvRsSecInheritedModelFromObject(
 		TagAnnotationModelFromObject,
 		&model.TagAnnotation,
 	)
+
 	modelHelpers.DecodeRepeatedChildren(
 		ctx,
 		&diagnostics,
@@ -138,10 +190,12 @@ func (m *FvRsSecInheritedModel) BuildPayloadObject(
 	var diagnostics diag.Diagnostics
 	attributes := map[string]any{}
 	children := make([]map[string]any, 0)
+
 	if !modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "annotation", m.Annotation) && nested {
 		attributes["annotation"] = defaultAnnotation
 	}
 	modelHelpers.AddPayloadStringAttribute(ctx, &diagnostics, attributes, "tDn", m.TDn)
+
 	var priorTagAnnotation *types.Set
 	if priorState != nil {
 		priorTagAnnotation = &priorState.TagAnnotation
@@ -162,6 +216,7 @@ func (m *FvRsSecInheritedModel) BuildPayloadObject(
 		return nil, diagnostics
 	}
 	children = append(children, tagAnnotationPayloads...)
+
 	var priorTagTag *types.Set
 	if priorState != nil {
 		priorTagTag = &priorState.TagTag
@@ -196,31 +251,31 @@ func (m *FvRsSecInheritedModel) BuildNestedDeletePayloadObject(
 	ctx context.Context,
 	diagnostics *diag.Diagnostics,
 ) map[string]any {
-	attributes := map[string]any{}
-	attributes["tDn"] = m.TDn.ValueString()
-	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, attributes)
+	return modelHelpers.NewNestedDeletePayloadObject(ctx, diagnostics, map[string]any{
+		"tDn": m.TDn.ValueString(),
+	})
 }
 
-type FvRsSecInheritedResourceModel struct {
+type FvRsSecInheritedRootModel struct {
 	FvRsSecInheritedModel
 
 	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
+	ParentDN types.String `tfsdk:"parent_dn"`
 }
 
-func NewFvRsSecInheritedResourceModelNull() FvRsSecInheritedResourceModel {
-	return FvRsSecInheritedResourceModel{
+func NewFvRsSecInheritedRootModelNull() FvRsSecInheritedRootModel {
+	return FvRsSecInheritedRootModel{
 		FvRsSecInheritedModel: NewFvRsSecInheritedModelNull(),
 		ID:                    types.StringNull(),
-		ParentDn:              types.StringNull(),
+		ParentDN:              types.StringNull(),
 	}
 }
 
-func (m *FvRsSecInheritedResourceModel) SetIDFromDN(dn string) {
+func (m *FvRsSecInheritedRootModel) SetIDFromDN(dn string) {
 	m.ID = types.StringValue(dn)
 }
 
-func (m *FvRsSecInheritedResourceModel) SetFromResponse(
+func (m *FvRsSecInheritedRootModel) SetFromResponse(
 	ctx context.Context,
 	response *container.Container,
 ) (bool, diag.Diagnostics) {
@@ -233,11 +288,11 @@ func (m *FvRsSecInheritedResourceModel) SetFromResponse(
 
 	m.FvRsSecInheritedModel = *model
 	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
+	m.ParentDN = types.StringValue(model.ParentDNFromDN(dn))
 	return true, diagnostics
 }
 
-func (m *FvRsSecInheritedResourceModel) BuildPayload(
+func (m *FvRsSecInheritedRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *FvRsSecInheritedModel,
 	create bool,
@@ -248,52 +303,16 @@ func (m *FvRsSecInheritedResourceModel) BuildPayload(
 	if diagnostics.HasError() {
 		return nil, diagnostics
 	}
+
 	if markCreated {
 		payloadObject["attributes"].(map[string]any)["status"] = "created"
 	}
+
 	payloadEnvelope := map[string]any{"fvRsSecInherited": payloadObject}
-	jsonPayload := modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload")
-	return jsonPayload, diagnostics
+	return modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload"), diagnostics
 }
 
-func (m *FvRsSecInheritedResourceModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
+func (m *FvRsSecInheritedRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
-	payload := modelHelpers.NewDeletePayload(ctx, &diagnostics, "fvRsSecInherited", m.ID.ValueString())
-	return payload, diagnostics
-}
-
-type FvRsSecInheritedDataSourceModel struct {
-	FvRsSecInheritedModel
-
-	ID       types.String `tfsdk:"id"`
-	ParentDn types.String `tfsdk:"parent_dn"`
-}
-
-func NewFvRsSecInheritedDataSourceModelNull() FvRsSecInheritedDataSourceModel {
-	return FvRsSecInheritedDataSourceModel{
-		FvRsSecInheritedModel: NewFvRsSecInheritedModelNull(),
-		ID:                    types.StringNull(),
-		ParentDn:              types.StringNull(),
-	}
-}
-
-func (m *FvRsSecInheritedDataSourceModel) SetIDFromDN(dn string) {
-	m.ID = types.StringValue(dn)
-}
-
-func (m *FvRsSecInheritedDataSourceModel) SetFromResponse(
-	ctx context.Context,
-	response *container.Container,
-) (bool, diag.Diagnostics) {
-	fallbackModel := m.FvRsSecInheritedModel
-	model, dn, diagnostics := FvRsSecInheritedModelFromResponse(ctx, response, &fallbackModel)
-	found := model != nil
-	if diagnostics.HasError() || !found {
-		return found, diagnostics
-	}
-
-	m.FvRsSecInheritedModel = *model
-	m.ID = types.StringValue(dn)
-	m.ParentDn = types.StringValue(model.ParentDNFromDN(dn))
-	return true, diagnostics
+	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "fvRsSecInherited", m.ID.ValueString()), diagnostics
 }
