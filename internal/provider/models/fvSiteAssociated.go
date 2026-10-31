@@ -362,6 +362,14 @@ func NewFvSiteAssociatedRootModelNull() FvSiteAssociatedRootModel {
 	}
 }
 
+func (*FvSiteAssociatedRootModel) SupportedSubtreeClasses(apicVersion string) []string {
+	return supportedSubtreeClasses(apicVersion, []string{
+		"fvRemoteId",
+		"tagAnnotation",
+		"tagTag",
+	})
+}
+
 func (m *FvSiteAssociatedRootModel) BuildDN() string {
 	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
 }

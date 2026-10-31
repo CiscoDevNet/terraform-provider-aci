@@ -267,6 +267,13 @@ func NewL3extRsOutToFBRGroupRootModelNull() L3extRsOutToFBRGroupRootModel {
 	}
 }
 
+func (*L3extRsOutToFBRGroupRootModel) SupportedSubtreeClasses(apicVersion string) []string {
+	return supportedSubtreeClasses(apicVersion, []string{
+		"tagAnnotation",
+		"tagTag",
+	})
+}
+
 func (m *L3extRsOutToFBRGroupRootModel) BuildDN() string {
 	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
 }

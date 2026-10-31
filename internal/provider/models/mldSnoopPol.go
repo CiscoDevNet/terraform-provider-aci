@@ -418,6 +418,13 @@ func NewMldSnoopPolRootModelNull() MldSnoopPolRootModel {
 	}
 }
 
+func (*MldSnoopPolRootModel) SupportedSubtreeClasses(apicVersion string) []string {
+	return supportedSubtreeClasses(apicVersion, []string{
+		"tagAnnotation",
+		"tagTag",
+	})
+}
+
 func (m *MldSnoopPolRootModel) BuildDN() string {
 	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
 }

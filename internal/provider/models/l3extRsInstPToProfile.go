@@ -285,6 +285,13 @@ func NewL3extRsInstPToProfileRootModelNull() L3extRsInstPToProfileRootModel {
 	}
 }
 
+func (*L3extRsInstPToProfileRootModel) SupportedSubtreeClasses(apicVersion string) []string {
+	return supportedSubtreeClasses(apicVersion, []string{
+		"tagAnnotation",
+		"tagTag",
+	})
+}
+
 func (m *L3extRsInstPToProfileRootModel) BuildDN() string {
 	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
 }

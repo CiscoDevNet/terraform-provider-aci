@@ -326,6 +326,13 @@ func NewFvSCrtrnRootModelNull() FvSCrtrnRootModel {
 	}
 }
 
+func (*FvSCrtrnRootModel) SupportedSubtreeClasses(apicVersion string) []string {
+	return supportedSubtreeClasses(apicVersion, []string{
+		"tagAnnotation",
+		"tagTag",
+	})
+}
+
 func (m *FvSCrtrnRootModel) BuildDN() string {
 	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
 }

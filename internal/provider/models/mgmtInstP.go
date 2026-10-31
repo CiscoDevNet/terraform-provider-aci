@@ -363,6 +363,14 @@ func NewMgmtInstPRootModelNull() MgmtInstPRootModel {
 	}
 }
 
+func (*MgmtInstPRootModel) SupportedSubtreeClasses(apicVersion string) []string {
+	return supportedSubtreeClasses(apicVersion, []string{
+		"mgmtRsOoBCons",
+		"tagAnnotation",
+		"tagTag",
+	})
+}
+
 func (m *MgmtInstPRootModel) BuildDN() string {
 	return fmt.Sprintf("uni/%s", m.BuildRN())
 }

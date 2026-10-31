@@ -286,6 +286,13 @@ func NewL3extRsRedistributePolRootModelNull() L3extRsRedistributePolRootModel {
 	}
 }
 
+func (*L3extRsRedistributePolRootModel) SupportedSubtreeClasses(apicVersion string) []string {
+	return supportedSubtreeClasses(apicVersion, []string{
+		"tagAnnotation",
+		"tagTag",
+	})
+}
+
 func (m *L3extRsRedistributePolRootModel) BuildDN() string {
 	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
 }

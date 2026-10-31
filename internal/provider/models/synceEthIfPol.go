@@ -683,6 +683,13 @@ func NewSynceEthIfPolRootModelNull() SynceEthIfPolRootModel {
 	}
 }
 
+func (*SynceEthIfPolRootModel) SupportedSubtreeClasses(apicVersion string) []string {
+	return supportedSubtreeClasses(apicVersion, []string{
+		"tagAnnotation",
+		"tagTag",
+	})
+}
+
 func (m *SynceEthIfPolRootModel) BuildDN() string {
 	return fmt.Sprintf("uni/%s", m.BuildRN())
 }

@@ -317,6 +317,13 @@ func NewVzRsAnyToProvRootModelNull() VzRsAnyToProvRootModel {
 	}
 }
 
+func (*VzRsAnyToProvRootModel) SupportedSubtreeClasses(apicVersion string) []string {
+	return supportedSubtreeClasses(apicVersion, []string{
+		"tagAnnotation",
+		"tagTag",
+	})
+}
+
 func (m *VzRsAnyToProvRootModel) BuildDN() string {
 	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
 }

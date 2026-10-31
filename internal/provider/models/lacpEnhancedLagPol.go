@@ -337,6 +337,13 @@ func NewLacpEnhancedLagPolRootModelNull() LacpEnhancedLagPolRootModel {
 	}
 }
 
+func (*LacpEnhancedLagPolRootModel) SupportedSubtreeClasses(apicVersion string) []string {
+	return supportedSubtreeClasses(apicVersion, []string{
+		"tagAnnotation",
+		"tagTag",
+	})
+}
+
 func (m *LacpEnhancedLagPolRootModel) BuildDN() string {
 	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
 }

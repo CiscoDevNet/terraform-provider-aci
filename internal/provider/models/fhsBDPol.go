@@ -408,6 +408,14 @@ func NewFhsBDPolRootModelNull() FhsBDPolRootModel {
 	}
 }
 
+func (*FhsBDPolRootModel) SupportedSubtreeClasses(apicVersion string) []string {
+	return supportedSubtreeClasses(apicVersion, []string{
+		"fhsRaGuardPol",
+		"tagAnnotation",
+		"tagTag",
+	})
+}
+
 func (m *FhsBDPolRootModel) BuildDN() string {
 	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
 }

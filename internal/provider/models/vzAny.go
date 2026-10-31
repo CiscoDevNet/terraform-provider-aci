@@ -448,6 +448,16 @@ func NewVzAnyRootModelNull() VzAnyRootModel {
 	}
 }
 
+func (*VzAnyRootModel) SupportedSubtreeClasses(apicVersion string) []string {
+	return supportedSubtreeClasses(apicVersion, []string{
+		"tagAnnotation",
+		"tagTag",
+		"vzRsAnyToCons",
+		"vzRsAnyToConsIf",
+		"vzRsAnyToProv",
+	})
+}
+
 func (m *VzAnyRootModel) BuildDN() string {
 	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
 }
