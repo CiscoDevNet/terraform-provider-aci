@@ -9,10 +9,10 @@ import (
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
-
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
-	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
+
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
@@ -37,225 +37,9 @@ func (d *FvRsDomAttDataSource) Metadata(ctx context.Context, req datasource.Meta
 	tflog.Debug(ctx, "End metadata of datasource: aci_relation_to_domain")
 }
 
-func (d *FvRsDomAttDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
+func (d *FvRsDomAttDataSource) Schema(ctx context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	tflog.Debug(ctx, "Start schema of datasource: aci_relation_to_domain")
-	resp.Schema = schema.Schema{
-		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "The relation_to_domain datasource for the 'fvRsDomAtt' class",
-
-		Attributes: map[string]schema.Attribute{
-			"id": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the Relation To Domain object.",
-			},
-			"parent_dn": schema.StringAttribute{
-				Required:            true,
-				MarkdownDescription: "The distinguished name (DN) of the parent object.",
-			},
-			"annotation": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The annotation of the Relation To Domain object.`,
-			},
-			"binding_type": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The binding type of the Relation To Domain object.`,
-			},
-			"class_preference": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The class preference of the Relation To Domain object. Set 'useg' to allow microsegmentation.`,
-			},
-			"custom_epg_name": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The display name of the user configured port-group.`,
-			},
-			"delimiter": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The delimiter of the Relation To Domain object.`,
-			},
-			"encapsulation": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The encapsulation of the Relation To Domain object. The encapsulation refers to the EPG VLAN when class preference is set to 'encap', or to the Secondary VLAN when class preference is set to 'useg'.`,
-			},
-			"encapsulation_mode": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The encapsulation mode of the Relation To Domain object.`,
-			},
-			"epg_cos": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The class of service (CoS) of the Relation To Domain object.`,
-			},
-			"epg_cos_pref": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The class of service (CoS) preference of the Relation To Domain object.`,
-			},
-			"deployment_immediacy": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The deployment immediacy of the Relation To Domain object. Specifies when the policy is pushed into the hardware policy content-addressable memory (CAM).`,
-			},
-			"ipam_dhcp_override": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The IP address management (IPAM) DHCP override of the Relation To Domain object. Only applicable for Nutanix domains.`,
-			},
-			"ipam_enabled": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The IP address management (IPAM) enabled status of the Relation To Domain object. Only applicable for Nutanix domains.`,
-			},
-			"ipam_gateway": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The IP address management (IPAM) gateway of the Relation To Domain object. Only applicable for Nutanix domains.`,
-			},
-			"lag_policy_name": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The link aggregation group (LAG) policy name of the Relation To Domain object.`,
-			},
-			"netflow_direction": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The NetFlow monitoring direction of the Relation To Domain object.`,
-			},
-			"enable_netflow": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The NetFlow enabled status for the Relation To Domain object.`,
-			},
-			"number_of_ports": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The number of ports of the Relation To Domain object.`,
-			},
-			"port_allocation": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `Port allocation for ports.`,
-			},
-			"primary_encapsulation": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The primary encapsulation of the Relation To Domain object. This is used when the class preference is set to 'useg'.`,
-			},
-			"primary_encapsulation_inner": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The primary inner encapsulation of the Relation To Domain object. This is used for the portgroup at the VMWare Distributed Virtual Switch (DVS). This VLAN is internal to the DVS and is used for communication between the other VMs and the AVE VM at a host. Traffic is not forwarded to the fabric over the VLAN. Only applicable for Cisco ACI Virtual Edge (AVE) domains.`,
-			},
-			"resolution_immediacy": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The resolution immediacy of the Relation To Domain object. Specifies if policies are resolved immmediately or when needed.`,
-			},
-			"secondary_encapsulation_inner": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The secondary inner encapsulation of the Relation To Domain object. This is used for the portgroup at the VMWare Distributed Virtual Switch (DVS). This VLAN is internal to the DVS and is used for communication between the other VMs and the AVE VM at a host. Traffic is not forwarded to the fabric over the VLAN. Only applicable for Cisco ACI Virtual Edge (AVE) domains.`,
-			},
-			"switching_mode": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The switching mode of the Relation To Domain object.`,
-			},
-			"target_dn": schema.StringAttribute{
-				Required:            true,
-				MarkdownDescription: `The distinguished name of the target Domain object.`,
-			},
-			"untagged": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The untagged status of the Relation To Domain object.`,
-			},
-			"uplink_order_container": schema.SingleNestedAttribute{
-				MarkdownDescription: `Uplink Failover Order Container Mo`,
-				Computed:            true,
-				Attributes: map[string]schema.Attribute{
-					"active_uplinks": schema.StringAttribute{
-						Computed:            true,
-						MarkdownDescription: `The active uplink IDs of the Uplink Order Container object. When defined the value cannot be set back to empty.`,
-					},
-					"annotation": schema.StringAttribute{
-						Computed:            true,
-						MarkdownDescription: `The annotation of the Uplink Order Container object.`,
-					},
-					"description": schema.StringAttribute{
-						Computed:            true,
-						MarkdownDescription: `The description of the Uplink Order Container object.`,
-					},
-					"name": schema.StringAttribute{
-						Computed:            true,
-						MarkdownDescription: `The name of the Uplink Order Container object.`,
-					},
-					"name_alias": schema.StringAttribute{
-						Computed:            true,
-						MarkdownDescription: `The name alias of the Uplink Order Container object.`,
-					},
-					"owner_key": schema.StringAttribute{
-						Computed:            true,
-						MarkdownDescription: `The key for enabling clients to own their data for entity correlation.`,
-					},
-					"owner_tag": schema.StringAttribute{
-						Computed:            true,
-						MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
-					},
-					"standby_uplinks": schema.StringAttribute{
-						Computed:            true,
-						MarkdownDescription: `The passive uplink IDs of the Uplink Order Container object.`,
-					},
-					"annotations": schema.SetNestedAttribute{
-						MarkdownDescription: ``,
-						Computed:            true,
-						NestedObject: schema.NestedAttributeObject{
-							Attributes: map[string]schema.Attribute{
-								"key": schema.StringAttribute{
-									Computed:            true,
-									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-								},
-								"value": schema.StringAttribute{
-									Computed:            true,
-									MarkdownDescription: `The value of the property.`,
-								},
-							},
-						},
-					},
-					"tags": schema.SetNestedAttribute{
-						MarkdownDescription: ``,
-						Computed:            true,
-						NestedObject: schema.NestedAttributeObject{
-							Attributes: map[string]schema.Attribute{
-								"key": schema.StringAttribute{
-									Computed:            true,
-									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-								},
-								"value": schema.StringAttribute{
-									Computed:            true,
-									MarkdownDescription: `The value of the property.`,
-								},
-							},
-						},
-					},
-				},
-			},
-			"annotations": schema.SetNestedAttribute{
-				MarkdownDescription: ``,
-				Computed:            true,
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"key": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-						},
-						"value": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The value of the property.`,
-						},
-					},
-				},
-			},
-			"tags": schema.SetNestedAttribute{
-				MarkdownDescription: ``,
-				Computed:            true,
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"key": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-						},
-						"value": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The value of the property.`,
-						},
-					},
-				},
-			},
-		},
-	}
+	resp.Schema = models.FvRsDomAttDataSourceSchema()
 	tflog.Debug(ctx, "End schema of datasource: aci_relation_to_domain")
 }
 
@@ -266,50 +50,54 @@ func (d *FvRsDomAttDataSource) Configure(ctx context.Context, req datasource.Con
 		return
 	}
 
-	client, ok := req.ProviderData.(*client.Client)
-
+	aciClient, ok := req.ProviderData.(*client.Client)
 	if !ok {
 		resp.Diagnostics.AddError(
 			"Unexpected Data Source Configure Type",
 			fmt.Sprintf("Expected *client.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
-
 		return
 	}
 
-	d.client = client
+	d.client = aciClient
 	tflog.Debug(ctx, "End configure of datasource: aci_relation_to_domain")
 }
 
 func (d *FvRsDomAttDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
 	tflog.Debug(ctx, "Start read of datasource: aci_relation_to_domain")
-	var data *FvRsDomAttResourceModel
 
-	// Read Terraform configuration data into the model
+	var data models.FvRsDomAttRootModel
 	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
-
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	setFvRsDomAttId(ctx, data)
+	dn := data.BuildDN()
+	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_relation_to_domain with id '%s'", dn))
 
-	// Create a copy of the Id for when not found during getAndSetFvRsDomAttAttributes
-	cachedId := data.Id.ValueString()
+	response := getManagedObject(ctx, &resp.Diagnostics, d.client, dn, data.SupportedSubtreeClasses(apicVersion))
+	if resp.Diagnostics.HasError() {
+		return
+	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_relation_to_domain with id '%s'", data.Id.ValueString()))
+	found, diagnostics := data.SetFromResponse(ctx, response)
+	resp.Diagnostics.Append(diagnostics...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 
-	getAndSetFvRsDomAttAttributes(ctx, &resp.Diagnostics, d.client, data)
-
-	if data.Id.IsNull() {
+	if !found {
 		resp.Diagnostics.AddError(
 			"Failed to read aci_relation_to_domain data source",
-			fmt.Sprintf("The aci_relation_to_domain data source with id '%s' has not been found", cachedId),
+			fmt.Sprintf("The aci_relation_to_domain data source with id '%s' has not been found", dn),
 		)
 		return
 	}
 
-	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, fmt.Sprintf("End read of datasource aci_relation_to_domain with id '%s'", data.Id.ValueString()))
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	tflog.Debug(ctx, fmt.Sprintf("End read of datasource aci_relation_to_domain with id '%s'", data.ID.ValueString()))
 }

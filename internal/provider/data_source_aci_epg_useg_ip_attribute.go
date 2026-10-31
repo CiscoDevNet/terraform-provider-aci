@@ -8,12 +8,11 @@ import (
 	"context"
 	"fmt"
 
-	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
-
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
-	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
+
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
@@ -38,88 +37,9 @@ func (d *FvIpAttrDataSource) Metadata(ctx context.Context, req datasource.Metada
 	tflog.Debug(ctx, "End metadata of datasource: aci_epg_useg_ip_attribute")
 }
 
-func (d *FvIpAttrDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
+func (d *FvIpAttrDataSource) Schema(ctx context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	tflog.Debug(ctx, "Start schema of datasource: aci_epg_useg_ip_attribute")
-	resp.Schema = schema.Schema{
-		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "The epg_useg_ip_attribute datasource for the 'fvIpAttr' class",
-
-		Attributes: map[string]schema.Attribute{
-			"id": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the EPG uSeg IP Attribute object.",
-			},
-			"parent_dn": schema.StringAttribute{
-				Required:            true,
-				MarkdownDescription: "The distinguished name (DN) of the parent object.",
-			},
-			"annotation": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The annotation of the EPG uSeg IP Attribute object.`,
-			},
-			"description": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The description of the EPG uSeg IP Attribute object.`,
-			},
-			"ip": schema.StringAttribute{
-				CustomType:          customTypes.IPAddressStringType{},
-				Computed:            true,
-				MarkdownDescription: `The device IP address of the EPG uSeg IP Attribute object.`,
-			},
-			"name": schema.StringAttribute{
-				Required:            true,
-				MarkdownDescription: `The name of the EPG uSeg IP Attribute object.`,
-			},
-			"name_alias": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The name alias of the EPG uSeg IP Attribute object.`,
-			},
-			"owner_key": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The key for enabling clients to own their data for entity correlation.`,
-			},
-			"owner_tag": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
-			},
-			"use_epg_subnet": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `Parameter used to determine whether a previously configured subnet address should be used as the IP filter.`,
-			},
-			"annotations": schema.SetNestedAttribute{
-				MarkdownDescription: ``,
-				Computed:            true,
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"key": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-						},
-						"value": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The value of the property.`,
-						},
-					},
-				},
-			},
-			"tags": schema.SetNestedAttribute{
-				MarkdownDescription: ``,
-				Computed:            true,
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"key": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-						},
-						"value": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The value of the property.`,
-						},
-					},
-				},
-			},
-		},
-	}
+	resp.Schema = models.FvIpAttrDataSourceSchema()
 	tflog.Debug(ctx, "End schema of datasource: aci_epg_useg_ip_attribute")
 }
 
@@ -130,50 +50,54 @@ func (d *FvIpAttrDataSource) Configure(ctx context.Context, req datasource.Confi
 		return
 	}
 
-	client, ok := req.ProviderData.(*client.Client)
-
+	aciClient, ok := req.ProviderData.(*client.Client)
 	if !ok {
 		resp.Diagnostics.AddError(
 			"Unexpected Data Source Configure Type",
 			fmt.Sprintf("Expected *client.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
-
 		return
 	}
 
-	d.client = client
+	d.client = aciClient
 	tflog.Debug(ctx, "End configure of datasource: aci_epg_useg_ip_attribute")
 }
 
 func (d *FvIpAttrDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
 	tflog.Debug(ctx, "Start read of datasource: aci_epg_useg_ip_attribute")
-	var data *FvIpAttrResourceModel
 
-	// Read Terraform configuration data into the model
+	var data models.FvIpAttrRootModel
 	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
-
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	setFvIpAttrId(ctx, data)
+	dn := data.BuildDN()
+	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_epg_useg_ip_attribute with id '%s'", dn))
 
-	// Create a copy of the Id for when not found during getAndSetFvIpAttrAttributes
-	cachedId := data.Id.ValueString()
+	response := getManagedObject(ctx, &resp.Diagnostics, d.client, dn, data.SupportedSubtreeClasses(apicVersion))
+	if resp.Diagnostics.HasError() {
+		return
+	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_epg_useg_ip_attribute with id '%s'", data.Id.ValueString()))
+	found, diagnostics := data.SetFromResponse(ctx, response)
+	resp.Diagnostics.Append(diagnostics...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 
-	getAndSetFvIpAttrAttributes(ctx, &resp.Diagnostics, d.client, data)
-
-	if data.Id.IsNull() {
+	if !found {
 		resp.Diagnostics.AddError(
 			"Failed to read aci_epg_useg_ip_attribute data source",
-			fmt.Sprintf("The aci_epg_useg_ip_attribute data source with id '%s' has not been found", cachedId),
+			fmt.Sprintf("The aci_epg_useg_ip_attribute data source with id '%s' has not been found", dn),
 		)
 		return
 	}
 
-	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, fmt.Sprintf("End read of datasource aci_epg_useg_ip_attribute with id '%s'", data.Id.ValueString()))
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	tflog.Debug(ctx, fmt.Sprintf("End read of datasource aci_epg_useg_ip_attribute with id '%s'", data.ID.ValueString()))
 }

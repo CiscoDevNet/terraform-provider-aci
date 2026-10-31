@@ -8,13 +8,11 @@ import (
 	"context"
 	"fmt"
 
-	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
-
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
-	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
+
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
@@ -39,171 +37,9 @@ func (d *QosDppPolDataSource) Metadata(ctx context.Context, req datasource.Metad
 	tflog.Debug(ctx, "End metadata of datasource: aci_data_plane_policing_policy")
 }
 
-func (d *QosDppPolDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
+func (d *QosDppPolDataSource) Schema(ctx context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	tflog.Debug(ctx, "Start schema of datasource: aci_data_plane_policing_policy")
-	resp.Schema = schema.Schema{
-		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "The data_plane_policing_policy datasource for the 'qosDppPol' class",
-
-		Attributes: map[string]schema.Attribute{
-			"id": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the Data Plane Policing Policy object.",
-			},
-			"parent_dn": schema.StringAttribute{
-				Optional:            true,
-				MarkdownDescription: "The distinguished name (DN) of the parent object.",
-			},
-			"admin_state": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The administrative state of the Data Plane Policing Policy object.`,
-			},
-			"annotation": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The annotation of the Data Plane Policing Policy object.`,
-			},
-			"excessive_burst": schema.StringAttribute{
-				CustomType:          customTypes.QosDppPolBeStringType{},
-				Computed:            true,
-				MarkdownDescription: `The excessive burst size of the Data Plane Policing Policy object. Only applicable for 2R3C policer.`,
-			},
-			"excessive_burst_unit": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The excessive burst size unit of the Data Plane Policing Policy object. Only applicable for 2R3C policer.`,
-			},
-			"burst": schema.StringAttribute{
-				CustomType:          customTypes.QosDppPolBurstStringType{},
-				Computed:            true,
-				MarkdownDescription: `The burst size of the Data Plane Policing Policy object.`,
-			},
-			"burst_unit": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The burst size unit of the Data Plane Policing Policy object.`,
-			},
-			"conform_action": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The conform action of the Data Plane Policing Policy object.`,
-			},
-			"conform_mark_cos": schema.StringAttribute{
-				CustomType:          customTypes.QosDppPolConformMarkCosStringType{},
-				Computed:            true,
-				MarkdownDescription: `The conform mark class of service (CoS) of the Data Plane Policing Policy object.`,
-			},
-			"conform_mark_dscp": schema.StringAttribute{
-				CustomType:          customTypes.QosDppPolConformMarkDscpStringType{},
-				Computed:            true,
-				MarkdownDescription: `The conform mark differentiated services code point (DSCP) of the Data Plane Policing Policy object.`,
-			},
-			"description": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The description of the Data Plane Policing Policy object.`,
-			},
-			"exceed_action": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The exceed action of the Data Plane Policing Policy object.`,
-			},
-			"exceed_mark_cos": schema.StringAttribute{
-				CustomType:          customTypes.QosDppPolExceedMarkCosStringType{},
-				Computed:            true,
-				MarkdownDescription: `The exceed mark class of service (CoS) of the Data Plane Policing Policy object.`,
-			},
-			"exceed_mark_dscp": schema.StringAttribute{
-				CustomType:          customTypes.QosDppPolExceedMarkDscpStringType{},
-				Computed:            true,
-				MarkdownDescription: `The exceed mark differentiated services code point (DSCP) of the Data Plane Policing Policy object.`,
-			},
-			"mode": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `Policer mode - bytes or packet policer.`,
-			},
-			"name": schema.StringAttribute{
-				Required:            true,
-				MarkdownDescription: `The name of the Data Plane Policing Policy object.`,
-			},
-			"name_alias": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The name alias of the Data Plane Policing Policy object.`,
-			},
-			"owner_key": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The key for enabling clients to own their data for entity correlation.`,
-			},
-			"owner_tag": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
-			},
-			"peak_rate": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The peak information rate (PIR) of the Data Plane Policing Policy object. Only applicable for 2R3C policer.`,
-			},
-			"peak_rate_unit": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The peak information rate (PIR) unit of the Data Plane Policing Policy object. Only applicable for 2R3C policer.`,
-			},
-			"rate": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The rate of the Data Plane Policing Policy object.`,
-			},
-			"rate_unit": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The rate unit of the Data Plane Policing Policy object.`,
-			},
-			"sharing_mode": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The sharing mode of the Data Plane Policing Policy object.`,
-			},
-			"type": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The type of the Data Plane Policing Policy object.`,
-			},
-			"violate_action": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The violate action of the Data Plane Policing Policy object.`,
-			},
-			"violate_mark_cos": schema.StringAttribute{
-				CustomType:          customTypes.QosDppPolViolateMarkCosStringType{},
-				Computed:            true,
-				MarkdownDescription: `The violate mark class of service (CoS) of the Data Plane Policing Policy object.`,
-			},
-			"violate_mark_dscp": schema.StringAttribute{
-				CustomType:          customTypes.QosDppPolViolateMarkDscpStringType{},
-				Computed:            true,
-				MarkdownDescription: `The violate mark differentiated services code point (DSCP) of the Data Plane Policing Policy object.`,
-			},
-			"annotations": schema.SetNestedAttribute{
-				MarkdownDescription: ``,
-				Computed:            true,
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"key": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-						},
-						"value": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The value of the property.`,
-						},
-					},
-				},
-			},
-			"tags": schema.SetNestedAttribute{
-				MarkdownDescription: ``,
-				Computed:            true,
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"key": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-						},
-						"value": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The value of the property.`,
-						},
-					},
-				},
-			},
-		},
-	}
+	resp.Schema = models.QosDppPolDataSourceSchema()
 	tflog.Debug(ctx, "End schema of datasource: aci_data_plane_policing_policy")
 }
 
@@ -214,54 +50,54 @@ func (d *QosDppPolDataSource) Configure(ctx context.Context, req datasource.Conf
 		return
 	}
 
-	client, ok := req.ProviderData.(*client.Client)
-
+	aciClient, ok := req.ProviderData.(*client.Client)
 	if !ok {
 		resp.Diagnostics.AddError(
 			"Unexpected Data Source Configure Type",
 			fmt.Sprintf("Expected *client.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
-
 		return
 	}
 
-	d.client = client
+	d.client = aciClient
 	tflog.Debug(ctx, "End configure of datasource: aci_data_plane_policing_policy")
 }
 
 func (d *QosDppPolDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
 	tflog.Debug(ctx, "Start read of datasource: aci_data_plane_policing_policy")
-	var data *QosDppPolResourceModel
 
-	// Read Terraform configuration data into the model
+	var data models.QosDppPolRootModel
 	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
-
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	if data.ParentDn.IsNull() || data.ParentDn.IsUnknown() {
-		data.ParentDn = basetypes.NewStringValue("uni/infra")
+	dn := data.BuildDN()
+	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_data_plane_policing_policy with id '%s'", dn))
+
+	response := getManagedObject(ctx, &resp.Diagnostics, d.client, dn, data.SupportedSubtreeClasses(apicVersion))
+	if resp.Diagnostics.HasError() {
+		return
 	}
 
-	setQosDppPolId(ctx, data)
+	found, diagnostics := data.SetFromResponse(ctx, response)
+	resp.Diagnostics.Append(diagnostics...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 
-	// Create a copy of the Id for when not found during getAndSetQosDppPolAttributes
-	cachedId := data.Id.ValueString()
-
-	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_data_plane_policing_policy with id '%s'", data.Id.ValueString()))
-
-	getAndSetQosDppPolAttributes(ctx, &resp.Diagnostics, d.client, data)
-
-	if data.Id.IsNull() {
+	if !found {
 		resp.Diagnostics.AddError(
 			"Failed to read aci_data_plane_policing_policy data source",
-			fmt.Sprintf("The aci_data_plane_policing_policy data source with id '%s' has not been found", cachedId),
+			fmt.Sprintf("The aci_data_plane_policing_policy data source with id '%s' has not been found", dn),
 		)
 		return
 	}
 
-	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, fmt.Sprintf("End read of datasource aci_data_plane_policing_policy with id '%s'", data.Id.ValueString()))
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	tflog.Debug(ctx, fmt.Sprintf("End read of datasource aci_data_plane_policing_policy with id '%s'", data.ID.ValueString()))
 }
