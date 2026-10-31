@@ -9,11 +9,10 @@ import (
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
-
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
-	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
+
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
@@ -38,173 +37,9 @@ func (d *NetflowMonitorPolDataSource) Metadata(ctx context.Context, req datasour
 	tflog.Debug(ctx, "End metadata of datasource: aci_netflow_monitor_policy")
 }
 
-func (d *NetflowMonitorPolDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
+func (d *NetflowMonitorPolDataSource) Schema(ctx context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	tflog.Debug(ctx, "Start schema of datasource: aci_netflow_monitor_policy")
-	resp.Schema = schema.Schema{
-		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "The netflow_monitor_policy datasource for the 'netflowMonitorPol' class",
-
-		Attributes: map[string]schema.Attribute{
-			"id": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the NetFlow Monitor Policy object.",
-			},
-			"parent_dn": schema.StringAttribute{
-				Optional:            true,
-				MarkdownDescription: "The distinguished name (DN) of the parent object.",
-			},
-			"annotation": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The annotation of the NetFlow Monitor Policy object.`,
-			},
-			"description": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The description of the NetFlow Monitor Policy object.`,
-			},
-			"name": schema.StringAttribute{
-				Required:            true,
-				MarkdownDescription: `The name of the NetFlow Monitor Policy object.`,
-			},
-			"name_alias": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The name alias of the NetFlow Monitor Policy object.`,
-			},
-			"owner_key": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The key for enabling clients to own their data for entity correlation.`,
-			},
-			"owner_tag": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
-			},
-			"relation_to_netflow_exporters": schema.SetNestedAttribute{
-				MarkdownDescription: ``,
-				Computed:            true,
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"annotation": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The annotation of the Relation To NetFlow Exporter object.`,
-						},
-						"netflow_exporter_policy_name": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `Name.`,
-						},
-						"annotations": schema.SetNestedAttribute{
-							MarkdownDescription: ``,
-							Computed:            true,
-							NestedObject: schema.NestedAttributeObject{
-								Attributes: map[string]schema.Attribute{
-									"key": schema.StringAttribute{
-										Computed:            true,
-										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-									},
-									"value": schema.StringAttribute{
-										Computed:            true,
-										MarkdownDescription: `The value of the property.`,
-									},
-								},
-							},
-						},
-						"tags": schema.SetNestedAttribute{
-							MarkdownDescription: ``,
-							Computed:            true,
-							NestedObject: schema.NestedAttributeObject{
-								Attributes: map[string]schema.Attribute{
-									"key": schema.StringAttribute{
-										Computed:            true,
-										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-									},
-									"value": schema.StringAttribute{
-										Computed:            true,
-										MarkdownDescription: `The value of the property.`,
-									},
-								},
-							},
-						},
-					},
-				},
-			},
-			"relation_to_netflow_record": schema.SingleNestedAttribute{
-				MarkdownDescription: ``,
-				Computed:            true,
-				Attributes: map[string]schema.Attribute{
-					"annotation": schema.StringAttribute{
-						Computed:            true,
-						MarkdownDescription: `The annotation of the Relation To NetFlow Record object.`,
-					},
-					"netflow_record_policy_name": schema.StringAttribute{
-						Computed:            true,
-						MarkdownDescription: `Name.`,
-					},
-					"annotations": schema.SetNestedAttribute{
-						MarkdownDescription: ``,
-						Computed:            true,
-						NestedObject: schema.NestedAttributeObject{
-							Attributes: map[string]schema.Attribute{
-								"key": schema.StringAttribute{
-									Computed:            true,
-									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-								},
-								"value": schema.StringAttribute{
-									Computed:            true,
-									MarkdownDescription: `The value of the property.`,
-								},
-							},
-						},
-					},
-					"tags": schema.SetNestedAttribute{
-						MarkdownDescription: ``,
-						Computed:            true,
-						NestedObject: schema.NestedAttributeObject{
-							Attributes: map[string]schema.Attribute{
-								"key": schema.StringAttribute{
-									Computed:            true,
-									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-								},
-								"value": schema.StringAttribute{
-									Computed:            true,
-									MarkdownDescription: `The value of the property.`,
-								},
-							},
-						},
-					},
-				},
-			},
-			"annotations": schema.SetNestedAttribute{
-				MarkdownDescription: ``,
-				Computed:            true,
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"key": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-						},
-						"value": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The value of the property.`,
-						},
-					},
-				},
-			},
-			"tags": schema.SetNestedAttribute{
-				MarkdownDescription: ``,
-				Computed:            true,
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"key": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-						},
-						"value": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The value of the property.`,
-						},
-					},
-				},
-			},
-		},
-	}
+	resp.Schema = models.NetflowMonitorPolDataSourceSchema()
 	tflog.Debug(ctx, "End schema of datasource: aci_netflow_monitor_policy")
 }
 
@@ -215,54 +50,54 @@ func (d *NetflowMonitorPolDataSource) Configure(ctx context.Context, req datasou
 		return
 	}
 
-	client, ok := req.ProviderData.(*client.Client)
-
+	aciClient, ok := req.ProviderData.(*client.Client)
 	if !ok {
 		resp.Diagnostics.AddError(
 			"Unexpected Data Source Configure Type",
 			fmt.Sprintf("Expected *client.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
-
 		return
 	}
 
-	d.client = client
+	d.client = aciClient
 	tflog.Debug(ctx, "End configure of datasource: aci_netflow_monitor_policy")
 }
 
 func (d *NetflowMonitorPolDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
 	tflog.Debug(ctx, "Start read of datasource: aci_netflow_monitor_policy")
-	var data *NetflowMonitorPolResourceModel
 
-	// Read Terraform configuration data into the model
+	var data models.NetflowMonitorPolRootModel
 	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
-
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	if data.ParentDn.IsNull() || data.ParentDn.IsUnknown() {
-		data.ParentDn = basetypes.NewStringValue("uni/infra")
+	dn := data.BuildDN()
+	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_netflow_monitor_policy with id '%s'", dn))
+
+	response := getManagedObject(ctx, &resp.Diagnostics, d.client, dn, data.SupportedSubtreeClasses(apicVersion))
+	if resp.Diagnostics.HasError() {
+		return
 	}
 
-	setNetflowMonitorPolId(ctx, data)
+	found, diagnostics := data.SetFromResponse(ctx, response)
+	resp.Diagnostics.Append(diagnostics...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 
-	// Create a copy of the Id for when not found during getAndSetNetflowMonitorPolAttributes
-	cachedId := data.Id.ValueString()
-
-	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_netflow_monitor_policy with id '%s'", data.Id.ValueString()))
-
-	getAndSetNetflowMonitorPolAttributes(ctx, &resp.Diagnostics, d.client, data)
-
-	if data.Id.IsNull() {
+	if !found {
 		resp.Diagnostics.AddError(
 			"Failed to read aci_netflow_monitor_policy data source",
-			fmt.Sprintf("The aci_netflow_monitor_policy data source with id '%s' has not been found", cachedId),
+			fmt.Sprintf("The aci_netflow_monitor_policy data source with id '%s' has not been found", dn),
 		)
 		return
 	}
 
-	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, fmt.Sprintf("End read of datasource aci_netflow_monitor_policy with id '%s'", data.Id.ValueString()))
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	tflog.Debug(ctx, fmt.Sprintf("End read of datasource aci_netflow_monitor_policy with id '%s'", data.ID.ValueString()))
 }

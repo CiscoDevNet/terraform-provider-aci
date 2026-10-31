@@ -9,10 +9,10 @@ import (
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
-
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
-	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
+
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
@@ -37,111 +37,9 @@ func (d *McpIfPolDataSource) Metadata(ctx context.Context, req datasource.Metada
 	tflog.Debug(ctx, "End metadata of datasource: aci_mcp_interface_policy")
 }
 
-func (d *McpIfPolDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
+func (d *McpIfPolDataSource) Schema(ctx context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	tflog.Debug(ctx, "Start schema of datasource: aci_mcp_interface_policy")
-	resp.Schema = schema.Schema{
-		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "The mcp_interface_policy datasource for the 'mcpIfPol' class",
-
-		Attributes: map[string]schema.Attribute{
-			"id": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the MCP Interface Policy object.",
-			},
-			"admin_state": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The administrative state of the MCP Interface Policy object.`,
-			},
-			"annotation": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The annotation of the MCP Interface Policy object.`,
-			},
-			"description": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The description of the MCP Interface Policy object.`,
-			},
-			"grace_period_seconds": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The grace period in seconds for the MCP Interface Policy object. This attribute is only applicable when 'strict_mode' is 'on'. The value must be in the range 0 - 300.`,
-			},
-			"grace_period_milliseconds": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The grace period in milliseconds for the MCP Interface Policy object. This attribute is only applicable when 'strict_mode' is 'on'. The value must be in the range 0 - 999.`,
-			},
-			"maximum_number_of_vlan": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The maximum amount of VLANs for the MCP Interface Policy object. The value must be in the range 1 - 2000 when 'strict_mode' is 'off', else the value must be in range 1 - 256.`,
-			},
-			"strict_mode": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `Enable strict mode for the MCP Interface Policy object.`,
-			},
-			"mcp_pdu_per_vlan": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `Send MCP PDU packets per VLAN for the MCP Interface Policy object.`,
-			},
-			"name": schema.StringAttribute{
-				Required:            true,
-				MarkdownDescription: `The name of the MCP Interface Policy object.`,
-			},
-			"name_alias": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The name alias of the MCP Interface Policy object.`,
-			},
-			"owner_key": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The key for enabling clients to own their data for entity correlation.`,
-			},
-			"owner_tag": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
-			},
-			"initial_delay_time": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The initial delay time in seconds for the MCP Interface Policy object. This allows for MCP to wait before sending Bridge Protocol Data Units (BPDUs) which gives Spanning Tree Protocol (STP) on the external network time to converge. This attribute is only applicable when 'strict_mode' is 'on'. The value must be in the range 0 - 1800.`,
-			},
-			"transmission_frequency_seconds": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The transmission frequency in seconds for the MCP Interface Policy object. This attribute is only applicable when 'strict_mode' is 'on'. The value must be in the range 0 - 300.`,
-			},
-			"transmission_frequency_milliseconds": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The transmission frequency in milliseconds for the MCP Interface Policy object. This attribute is only applicable when 'strict_mode' is 'on'. The value must be in the range 0 - 999.`,
-			},
-			"annotations": schema.SetNestedAttribute{
-				MarkdownDescription: ``,
-				Computed:            true,
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"key": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-						},
-						"value": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The value of the property.`,
-						},
-					},
-				},
-			},
-			"tags": schema.SetNestedAttribute{
-				MarkdownDescription: ``,
-				Computed:            true,
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"key": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-						},
-						"value": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The value of the property.`,
-						},
-					},
-				},
-			},
-		},
-	}
+	resp.Schema = models.McpIfPolDataSourceSchema()
 	tflog.Debug(ctx, "End schema of datasource: aci_mcp_interface_policy")
 }
 
@@ -152,50 +50,54 @@ func (d *McpIfPolDataSource) Configure(ctx context.Context, req datasource.Confi
 		return
 	}
 
-	client, ok := req.ProviderData.(*client.Client)
-
+	aciClient, ok := req.ProviderData.(*client.Client)
 	if !ok {
 		resp.Diagnostics.AddError(
 			"Unexpected Data Source Configure Type",
 			fmt.Sprintf("Expected *client.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
-
 		return
 	}
 
-	d.client = client
+	d.client = aciClient
 	tflog.Debug(ctx, "End configure of datasource: aci_mcp_interface_policy")
 }
 
 func (d *McpIfPolDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
 	tflog.Debug(ctx, "Start read of datasource: aci_mcp_interface_policy")
-	var data *McpIfPolResourceModel
 
-	// Read Terraform configuration data into the model
+	var data models.McpIfPolRootModel
 	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
-
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	setMcpIfPolId(ctx, data)
+	dn := data.BuildDN()
+	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_mcp_interface_policy with id '%s'", dn))
 
-	// Create a copy of the Id for when not found during getAndSetMcpIfPolAttributes
-	cachedId := data.Id.ValueString()
+	response := getManagedObject(ctx, &resp.Diagnostics, d.client, dn, data.SupportedSubtreeClasses(apicVersion))
+	if resp.Diagnostics.HasError() {
+		return
+	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_mcp_interface_policy with id '%s'", data.Id.ValueString()))
+	found, diagnostics := data.SetFromResponse(ctx, response)
+	resp.Diagnostics.Append(diagnostics...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 
-	getAndSetMcpIfPolAttributes(ctx, &resp.Diagnostics, d.client, data)
-
-	if data.Id.IsNull() {
+	if !found {
 		resp.Diagnostics.AddError(
 			"Failed to read aci_mcp_interface_policy data source",
-			fmt.Sprintf("The aci_mcp_interface_policy data source with id '%s' has not been found", cachedId),
+			fmt.Sprintf("The aci_mcp_interface_policy data source with id '%s' has not been found", dn),
 		)
 		return
 	}
 
-	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, fmt.Sprintf("End read of datasource aci_mcp_interface_policy with id '%s'", data.Id.ValueString()))
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	tflog.Debug(ctx, fmt.Sprintf("End read of datasource aci_mcp_interface_policy with id '%s'", data.ID.ValueString()))
 }

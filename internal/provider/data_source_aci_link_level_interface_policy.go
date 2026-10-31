@@ -9,10 +9,10 @@ import (
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
-
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
-	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
+
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
@@ -37,103 +37,9 @@ func (d *FabricHIfPolDataSource) Metadata(ctx context.Context, req datasource.Me
 	tflog.Debug(ctx, "End metadata of datasource: aci_link_level_interface_policy")
 }
 
-func (d *FabricHIfPolDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
+func (d *FabricHIfPolDataSource) Schema(ctx context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	tflog.Debug(ctx, "Start schema of datasource: aci_link_level_interface_policy")
-	resp.Schema = schema.Schema{
-		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "The link_level_interface_policy datasource for the 'fabricHIfPol' class",
-
-		Attributes: map[string]schema.Attribute{
-			"id": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the Link Level Interface Policy object.",
-			},
-			"annotation": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The annotation of the Link Level Interface Policy object.`,
-			},
-			"auto_negotiation": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The auto-negotiation mode of the Link Level Interface Policy object. Auto-negotiation is an optional function of the IEEE 802.3u Fast Ethernet standard that enables devices to automatically exchange information over a link about speed and duplex abilities.`,
-			},
-			"description": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The description of the Link Level Interface Policy object.`,
-			},
-			"port_delay": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The port delay (milliseconds) applied when the interface is coming up for the the Link Level Interface Policy object. The value must be in the range 0 - 10000.`,
-			},
-			"emi_retrain": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The Electromagnetic Interference (EMI) retrain state the Link Level Interface Policy object.`,
-			},
-			"fec_mode": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The Forwarding Error Correction (FEC) mode of the Link Level Interface Policy object.`,
-			},
-			"link_debounce": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The link debounce interval (milliseconds) of the Link Level Interface Policy object. Setting a value greater than 0 enables the debounce timer on physical interface ports. A value of 0 disables the debounce timer. The value must be in the range 0 - 5000.`,
-			},
-			"name": schema.StringAttribute{
-				Required:            true,
-				MarkdownDescription: `The name of the Link Level Interface Policy object.`,
-			},
-			"name_alias": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The name alias of the Link Level Interface Policy object.`,
-			},
-			"owner_key": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The key for enabling clients to own their data for entity correlation.`,
-			},
-			"owner_tag": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
-			},
-			"physical_media_type": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The physical media type of the Link Level Interface Policy object.`,
-			},
-			"speed": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The speed of the Link Level Interface Policy object. The data transfer rate for the port should match the destination to which the port is linked.`,
-			},
-			"annotations": schema.SetNestedAttribute{
-				MarkdownDescription: ``,
-				Computed:            true,
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"key": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-						},
-						"value": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The value of the property.`,
-						},
-					},
-				},
-			},
-			"tags": schema.SetNestedAttribute{
-				MarkdownDescription: ``,
-				Computed:            true,
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"key": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-						},
-						"value": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The value of the property.`,
-						},
-					},
-				},
-			},
-		},
-	}
+	resp.Schema = models.FabricHIfPolDataSourceSchema()
 	tflog.Debug(ctx, "End schema of datasource: aci_link_level_interface_policy")
 }
 
@@ -144,50 +50,54 @@ func (d *FabricHIfPolDataSource) Configure(ctx context.Context, req datasource.C
 		return
 	}
 
-	client, ok := req.ProviderData.(*client.Client)
-
+	aciClient, ok := req.ProviderData.(*client.Client)
 	if !ok {
 		resp.Diagnostics.AddError(
 			"Unexpected Data Source Configure Type",
 			fmt.Sprintf("Expected *client.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
-
 		return
 	}
 
-	d.client = client
+	d.client = aciClient
 	tflog.Debug(ctx, "End configure of datasource: aci_link_level_interface_policy")
 }
 
 func (d *FabricHIfPolDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
 	tflog.Debug(ctx, "Start read of datasource: aci_link_level_interface_policy")
-	var data *FabricHIfPolResourceModel
 
-	// Read Terraform configuration data into the model
+	var data models.FabricHIfPolRootModel
 	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
-
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	setFabricHIfPolId(ctx, data)
+	dn := data.BuildDN()
+	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_link_level_interface_policy with id '%s'", dn))
 
-	// Create a copy of the Id for when not found during getAndSetFabricHIfPolAttributes
-	cachedId := data.Id.ValueString()
+	response := getManagedObject(ctx, &resp.Diagnostics, d.client, dn, data.SupportedSubtreeClasses(apicVersion))
+	if resp.Diagnostics.HasError() {
+		return
+	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_link_level_interface_policy with id '%s'", data.Id.ValueString()))
+	found, diagnostics := data.SetFromResponse(ctx, response)
+	resp.Diagnostics.Append(diagnostics...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 
-	getAndSetFabricHIfPolAttributes(ctx, &resp.Diagnostics, d.client, data)
-
-	if data.Id.IsNull() {
+	if !found {
 		resp.Diagnostics.AddError(
 			"Failed to read aci_link_level_interface_policy data source",
-			fmt.Sprintf("The aci_link_level_interface_policy data source with id '%s' has not been found", cachedId),
+			fmt.Sprintf("The aci_link_level_interface_policy data source with id '%s' has not been found", dn),
 		)
 		return
 	}
 
-	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, fmt.Sprintf("End read of datasource aci_link_level_interface_policy with id '%s'", data.Id.ValueString()))
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	tflog.Debug(ctx, fmt.Sprintf("End read of datasource aci_link_level_interface_policy with id '%s'", data.ID.ValueString()))
 }

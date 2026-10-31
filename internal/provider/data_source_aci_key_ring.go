@@ -9,11 +9,10 @@ import (
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
-
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
-	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
+
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
@@ -38,111 +37,9 @@ func (d *PkiKeyRingDataSource) Metadata(ctx context.Context, req datasource.Meta
 	tflog.Debug(ctx, "End metadata of datasource: aci_key_ring")
 }
 
-func (d *PkiKeyRingDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
+func (d *PkiKeyRingDataSource) Schema(ctx context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	tflog.Debug(ctx, "Start schema of datasource: aci_key_ring")
-	resp.Schema = schema.Schema{
-		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "The key_ring datasource for the 'pkiKeyRing' class",
-
-		Attributes: map[string]schema.Attribute{
-			"id": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the Key Ring object.",
-			},
-			"parent_dn": schema.StringAttribute{
-				Optional:            true,
-				MarkdownDescription: "The distinguished name (DN) of the parent object.",
-			},
-			"admin_state": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The current administrative state of the certificate request process.`,
-			},
-			"annotation": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The annotation of the Key Ring object.`,
-			},
-			"certificate": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `A certificate contains a device's public key along with signed information verifying the identity of the device.`,
-			},
-			"description": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The description of the Key Ring object.`,
-			},
-			"elliptic_curve": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The elliptic curve used by the provided key.`,
-			},
-			"key": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The private key of the certificate. This sensitive value is excluded from the resource's lifecycle configuration and is not tracked by Terraform.`,
-			},
-			"key_type": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The type used by the provided key.`,
-			},
-			"modulus": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The length of the encryption keys. A longer key length increases the difficulty of breaking the key.`,
-			},
-			"name": schema.StringAttribute{
-				Required:            true,
-				MarkdownDescription: `The name of the Key Ring object.`,
-			},
-			"name_alias": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The name alias of the Key Ring object.`,
-			},
-			"owner_key": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The key for enabling clients to own their data for entity correlation.`,
-			},
-			"owner_tag": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
-			},
-			"regenerate": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `Forces regeneration of the keypair. Each PKI device holds a pair of asymmetric Rivest-Shamir-Adleman (RSA) or Elliptic Curve Cryptography (ECC) encryption keys, one kept private and one made public, stored in an internal key ring.`,
-			},
-			"certificate_authority": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The certificate of the Certificate Authority (CA) that issued the certificate provided in the 'certificate' attribute. The CA can be a root CA, an intermediate CA, or a trust anchor in a chain of trust leading to a root CA.`,
-			},
-			"annotations": schema.SetNestedAttribute{
-				MarkdownDescription: ``,
-				Computed:            true,
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"key": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-						},
-						"value": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The value of the property.`,
-						},
-					},
-				},
-			},
-			"tags": schema.SetNestedAttribute{
-				MarkdownDescription: ``,
-				Computed:            true,
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"key": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-						},
-						"value": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The value of the property.`,
-						},
-					},
-				},
-			},
-		},
-	}
+	resp.Schema = models.PkiKeyRingDataSourceSchema()
 	tflog.Debug(ctx, "End schema of datasource: aci_key_ring")
 }
 
@@ -153,54 +50,54 @@ func (d *PkiKeyRingDataSource) Configure(ctx context.Context, req datasource.Con
 		return
 	}
 
-	client, ok := req.ProviderData.(*client.Client)
-
+	aciClient, ok := req.ProviderData.(*client.Client)
 	if !ok {
 		resp.Diagnostics.AddError(
 			"Unexpected Data Source Configure Type",
 			fmt.Sprintf("Expected *client.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
-
 		return
 	}
 
-	d.client = client
+	d.client = aciClient
 	tflog.Debug(ctx, "End configure of datasource: aci_key_ring")
 }
 
 func (d *PkiKeyRingDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
 	tflog.Debug(ctx, "Start read of datasource: aci_key_ring")
-	var data *PkiKeyRingResourceModel
 
-	// Read Terraform configuration data into the model
+	var data models.PkiKeyRingRootModel
 	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
-
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	if data.ParentDn.IsNull() || data.ParentDn.IsUnknown() {
-		data.ParentDn = basetypes.NewStringValue("uni/userext/pkiext")
+	dn := data.BuildDN()
+	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_key_ring with id '%s'", dn))
+
+	response := getManagedObject(ctx, &resp.Diagnostics, d.client, dn, data.SupportedSubtreeClasses(apicVersion))
+	if resp.Diagnostics.HasError() {
+		return
 	}
 
-	setPkiKeyRingId(ctx, data)
+	found, diagnostics := data.SetFromResponse(ctx, response)
+	resp.Diagnostics.Append(diagnostics...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 
-	// Create a copy of the Id for when not found during getAndSetPkiKeyRingAttributes
-	cachedId := data.Id.ValueString()
-
-	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_key_ring with id '%s'", data.Id.ValueString()))
-
-	getAndSetPkiKeyRingAttributes(ctx, &resp.Diagnostics, d.client, data)
-
-	if data.Id.IsNull() {
+	if !found {
 		resp.Diagnostics.AddError(
 			"Failed to read aci_key_ring data source",
-			fmt.Sprintf("The aci_key_ring data source with id '%s' has not been found", cachedId),
+			fmt.Sprintf("The aci_key_ring data source with id '%s' has not been found", dn),
 		)
 		return
 	}
 
-	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, fmt.Sprintf("End read of datasource aci_key_ring with id '%s'", data.Id.ValueString()))
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	tflog.Debug(ctx, fmt.Sprintf("End read of datasource aci_key_ring with id '%s'", data.ID.ValueString()))
 }

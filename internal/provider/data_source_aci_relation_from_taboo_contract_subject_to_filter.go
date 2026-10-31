@@ -9,11 +9,10 @@ import (
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
-
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
-	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
+
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
@@ -38,68 +37,9 @@ func (d *VzRsDenyRuleDataSource) Metadata(ctx context.Context, req datasource.Me
 	tflog.Debug(ctx, "End metadata of datasource: aci_relation_from_taboo_contract_subject_to_filter")
 }
 
-func (d *VzRsDenyRuleDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
+func (d *VzRsDenyRuleDataSource) Schema(ctx context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	tflog.Debug(ctx, "Start schema of datasource: aci_relation_from_taboo_contract_subject_to_filter")
-	resp.Schema = schema.Schema{
-		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "The relation_from_taboo_contract_subject_to_filter datasource for the 'vzRsDenyRule' class",
-
-		Attributes: map[string]schema.Attribute{
-			"id": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the Relation From Taboo Contract Subject To Filter object.",
-			},
-			"parent_dn": schema.StringAttribute{
-				Required:            true,
-				MarkdownDescription: "The distinguished name (DN) of the parent object.",
-			},
-			"annotation": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The annotation of the Relation From Taboo Contract Subject To Filter object.`,
-			},
-			"directives": schema.SetAttribute{
-				Computed:            true,
-				MarkdownDescription: `The directives of the Relation From Taboo Contract Subject To Filter object. Use the 'no_stats' option for Policy Compression, which allows for the utilization of fewer TCAM resources. Use the 'log' option to log packets and provide information about traffic that is hitting the rule of interest. See the [contract configuration options](https://www.cisco.com/c/en/us/solutions/collateral/data-center-virtualization/application-centric-infrastructure/white-paper-c11-743951.html#Contractconfigurationoptions) in the Cisco ACI Contract Guide White Paper for more information.`,
-				ElementType:         types.StringType,
-			},
-			"filter_name": schema.StringAttribute{
-				Required:            true,
-				MarkdownDescription: `The name of the filter object.`,
-			},
-			"annotations": schema.SetNestedAttribute{
-				MarkdownDescription: ``,
-				Computed:            true,
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"key": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-						},
-						"value": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The value of the property.`,
-						},
-					},
-				},
-			},
-			"tags": schema.SetNestedAttribute{
-				MarkdownDescription: ``,
-				Computed:            true,
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"key": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-						},
-						"value": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The value of the property.`,
-						},
-					},
-				},
-			},
-		},
-	}
+	resp.Schema = models.VzRsDenyRuleDataSourceSchema()
 	tflog.Debug(ctx, "End schema of datasource: aci_relation_from_taboo_contract_subject_to_filter")
 }
 
@@ -110,50 +50,54 @@ func (d *VzRsDenyRuleDataSource) Configure(ctx context.Context, req datasource.C
 		return
 	}
 
-	client, ok := req.ProviderData.(*client.Client)
-
+	aciClient, ok := req.ProviderData.(*client.Client)
 	if !ok {
 		resp.Diagnostics.AddError(
 			"Unexpected Data Source Configure Type",
 			fmt.Sprintf("Expected *client.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
-
 		return
 	}
 
-	d.client = client
+	d.client = aciClient
 	tflog.Debug(ctx, "End configure of datasource: aci_relation_from_taboo_contract_subject_to_filter")
 }
 
 func (d *VzRsDenyRuleDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
 	tflog.Debug(ctx, "Start read of datasource: aci_relation_from_taboo_contract_subject_to_filter")
-	var data *VzRsDenyRuleResourceModel
 
-	// Read Terraform configuration data into the model
+	var data models.VzRsDenyRuleRootModel
 	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
-
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	setVzRsDenyRuleId(ctx, data)
+	dn := data.BuildDN()
+	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_relation_from_taboo_contract_subject_to_filter with id '%s'", dn))
 
-	// Create a copy of the Id for when not found during getAndSetVzRsDenyRuleAttributes
-	cachedId := data.Id.ValueString()
+	response := getManagedObject(ctx, &resp.Diagnostics, d.client, dn, data.SupportedSubtreeClasses(apicVersion))
+	if resp.Diagnostics.HasError() {
+		return
+	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_relation_from_taboo_contract_subject_to_filter with id '%s'", data.Id.ValueString()))
+	found, diagnostics := data.SetFromResponse(ctx, response)
+	resp.Diagnostics.Append(diagnostics...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 
-	getAndSetVzRsDenyRuleAttributes(ctx, &resp.Diagnostics, d.client, data)
-
-	if data.Id.IsNull() {
+	if !found {
 		resp.Diagnostics.AddError(
 			"Failed to read aci_relation_from_taboo_contract_subject_to_filter data source",
-			fmt.Sprintf("The aci_relation_from_taboo_contract_subject_to_filter data source with id '%s' has not been found", cachedId),
+			fmt.Sprintf("The aci_relation_from_taboo_contract_subject_to_filter data source with id '%s' has not been found", dn),
 		)
 		return
 	}
 
-	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, fmt.Sprintf("End read of datasource aci_relation_from_taboo_contract_subject_to_filter with id '%s'", data.Id.ValueString()))
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	tflog.Debug(ctx, fmt.Sprintf("End read of datasource aci_relation_from_taboo_contract_subject_to_filter with id '%s'", data.ID.ValueString()))
 }
