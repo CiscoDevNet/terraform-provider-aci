@@ -305,6 +305,13 @@ func NewInfraAccPortPRootModelNull() InfraAccPortPRootModel {
 	}
 }
 
+func (*InfraAccPortPRootModel) SupportedSubtreeClasses(apicVersion string) []string {
+	return supportedSubtreeClasses(apicVersion, []string{
+		"tagAnnotation",
+		"tagTag",
+	})
+}
+
 func (m *InfraAccPortPRootModel) BuildDN() string {
 	return fmt.Sprintf("uni/%s", m.BuildRN())
 }

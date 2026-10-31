@@ -1280,6 +1280,31 @@ func NewFvAEPgRootModelNull() FvAEPgRootModel {
 	}
 }
 
+func (*FvAEPgRootModel) SupportedSubtreeClasses(apicVersion string) []string {
+	return supportedSubtreeClasses(apicVersion, []string{
+		"fvCrtrn",
+		"fvRsAEPgMonPol",
+		"fvRsAepAtt",
+		"fvRsBd",
+		"fvRsCons",
+		"fvRsConsIf",
+		"fvRsCustQosPol",
+		"fvRsDomAtt",
+		"fvRsDppPol",
+		"fvRsFcPathAtt",
+		"fvRsIntraEpg",
+		"fvRsNodeAtt",
+		"fvRsPathAtt",
+		"fvRsProtBy",
+		"fvRsProv",
+		"fvRsSecInherited",
+		"fvRsTrustCtrl",
+		"fvUplinkOrderCont",
+		"tagAnnotation",
+		"tagTag",
+	})
+}
+
 func (m *FvAEPgRootModel) BuildDN() string {
 	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
 }

@@ -817,6 +817,19 @@ func NewVmmDomPRootModelNull() VmmDomPRootModel {
 	}
 }
 
+func (*VmmDomPRootModel) SupportedSubtreeClasses(apicVersion string) []string {
+	return supportedSubtreeClasses(apicVersion, []string{
+		"infraRsVipAddrNs",
+		"infraRsVlanNs",
+		"tagAnnotation",
+		"tagTag",
+		"vmmRsDomMcastAddrNs",
+		"vmmRsPrefEnhancedLagPol",
+		"vmmUplinkP",
+		"vmmUplinkPCont",
+	})
+}
+
 func (m *VmmDomPRootModel) BuildDN() string {
 	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
 }

@@ -820,6 +820,22 @@ func NewFvCtxRootModelNull() FvCtxRootModel {
 	}
 }
 
+func (*FvCtxRootModel) SupportedSubtreeClasses(apicVersion string) []string {
+	return supportedSubtreeClasses(apicVersion, []string{
+		"fvRsBgpCtxPol",
+		"fvRsCtxMonPol",
+		"fvRsCtxToBgpCtxAfPol",
+		"fvRsCtxToEigrpCtxAfPol",
+		"fvRsCtxToEpRet",
+		"fvRsCtxToExtRouteTagPol",
+		"fvRsCtxToOspfCtxPol",
+		"fvRsCtxToSDWanVpn",
+		"fvRsOspfCtxPol",
+		"tagAnnotation",
+		"tagTag",
+	})
+}
+
 func (m *FvCtxRootModel) BuildDN() string {
 	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
 }

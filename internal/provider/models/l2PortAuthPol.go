@@ -385,6 +385,14 @@ func NewL2PortAuthPolRootModelNull() L2PortAuthPolRootModel {
 	}
 }
 
+func (*L2PortAuthPolRootModel) SupportedSubtreeClasses(apicVersion string) []string {
+	return supportedSubtreeClasses(apicVersion, []string{
+		"l2PortAuthCfgPol",
+		"tagAnnotation",
+		"tagTag",
+	})
+}
+
 func (m *L2PortAuthPolRootModel) BuildDN() string {
 	return fmt.Sprintf("uni/%s", m.BuildRN())
 }

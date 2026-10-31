@@ -392,6 +392,14 @@ func NewFvnsAddrInstRootModelNull() FvnsAddrInstRootModel {
 	}
 }
 
+func (*FvnsAddrInstRootModel) SupportedSubtreeClasses(apicVersion string) []string {
+	return supportedSubtreeClasses(apicVersion, []string{
+		"fvnsUcastAddrBlk",
+		"tagAnnotation",
+		"tagTag",
+	})
+}
+
 func (m *FvnsAddrInstRootModel) BuildDN() string {
 	return fmt.Sprintf("uni/%s", m.BuildRN())
 }

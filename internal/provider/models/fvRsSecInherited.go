@@ -267,6 +267,13 @@ func NewFvRsSecInheritedRootModelNull() FvRsSecInheritedRootModel {
 	}
 }
 
+func (*FvRsSecInheritedRootModel) SupportedSubtreeClasses(apicVersion string) []string {
+	return supportedSubtreeClasses(apicVersion, []string{
+		"tagAnnotation",
+		"tagTag",
+	})
+}
+
 func (m *FvRsSecInheritedRootModel) BuildDN() string {
 	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
 }

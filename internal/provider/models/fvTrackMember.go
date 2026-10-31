@@ -382,6 +382,14 @@ func NewFvTrackMemberRootModelNull() FvTrackMemberRootModel {
 	}
 }
 
+func (*FvTrackMemberRootModel) SupportedSubtreeClasses(apicVersion string) []string {
+	return supportedSubtreeClasses(apicVersion, []string{
+		"fvRsIpslaMonPol",
+		"tagAnnotation",
+		"tagTag",
+	})
+}
+
 func (m *FvTrackMemberRootModel) BuildDN() string {
 	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
 }

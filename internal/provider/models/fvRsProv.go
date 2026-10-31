@@ -317,6 +317,13 @@ func NewFvRsProvRootModelNull() FvRsProvRootModel {
 	}
 }
 
+func (*FvRsProvRootModel) SupportedSubtreeClasses(apicVersion string) []string {
+	return supportedSubtreeClasses(apicVersion, []string{
+		"tagAnnotation",
+		"tagTag",
+	})
+}
+
 func (m *FvRsProvRootModel) BuildDN() string {
 	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
 }

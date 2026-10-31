@@ -405,6 +405,15 @@ func NewQosCustomPolRootModelNull() QosCustomPolRootModel {
 	}
 }
 
+func (*QosCustomPolRootModel) SupportedSubtreeClasses(apicVersion string) []string {
+	return supportedSubtreeClasses(apicVersion, []string{
+		"qosDot1PClass",
+		"qosDscpClass",
+		"tagAnnotation",
+		"tagTag",
+	})
+}
+
 func (m *QosCustomPolRootModel) BuildDN() string {
 	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
 }

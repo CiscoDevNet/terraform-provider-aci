@@ -417,6 +417,14 @@ func NewFvTrackListRootModelNull() FvTrackListRootModel {
 	}
 }
 
+func (*FvTrackListRootModel) SupportedSubtreeClasses(apicVersion string) []string {
+	return supportedSubtreeClasses(apicVersion, []string{
+		"fvRsOtmListMember",
+		"tagAnnotation",
+		"tagTag",
+	})
+}
+
 func (m *FvTrackListRootModel) BuildDN() string {
 	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
 }

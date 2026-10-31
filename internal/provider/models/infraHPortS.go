@@ -377,6 +377,14 @@ func NewInfraHPortSRootModelNull() InfraHPortSRootModel {
 	}
 }
 
+func (*InfraHPortSRootModel) SupportedSubtreeClasses(apicVersion string) []string {
+	return supportedSubtreeClasses(apicVersion, []string{
+		"infraRsAccBaseGrp",
+		"tagAnnotation",
+		"tagTag",
+	})
+}
+
 func (m *InfraHPortSRootModel) BuildDN() string {
 	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
 }

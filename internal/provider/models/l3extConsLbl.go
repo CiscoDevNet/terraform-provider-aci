@@ -573,6 +573,15 @@ func NewL3extConsLblRootModelNull() L3extConsLblRootModel {
 	}
 }
 
+func (*L3extConsLblRootModel) SupportedSubtreeClasses(apicVersion string) []string {
+	return supportedSubtreeClasses(apicVersion, []string{
+		"l3extRsLblToInstP",
+		"l3extRsLblToProfile",
+		"tagAnnotation",
+		"tagTag",
+	})
+}
+
 func (m *L3extConsLblRootModel) BuildDN() string {
 	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
 }
