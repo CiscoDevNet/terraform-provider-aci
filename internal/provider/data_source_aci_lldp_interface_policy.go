@@ -9,10 +9,10 @@ import (
 	"fmt"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
-
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
-	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
+
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
@@ -37,98 +37,9 @@ func (d *LldpIfPolDataSource) Metadata(ctx context.Context, req datasource.Metad
 	tflog.Debug(ctx, "End metadata of datasource: aci_lldp_interface_policy")
 }
 
-func (d *LldpIfPolDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
+func (d *LldpIfPolDataSource) Schema(ctx context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	tflog.Debug(ctx, "Start schema of datasource: aci_lldp_interface_policy")
-	resp.Schema = schema.Schema{
-		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "The lldp_interface_policy datasource for the 'lldpIfPol' class",
-
-		Attributes: map[string]schema.Attribute{
-			// Deprecated attributes
-			"admin_rx_st": schema.StringAttribute{
-				Computed:           true,
-				DeprecationMessage: "Attribute 'admin_rx_st' is deprecated, please refer to 'receive_state' instead. The attribute will be removed in the next major version of the provider.",
-			},
-			"admin_tx_st": schema.StringAttribute{
-				Computed:           true,
-				DeprecationMessage: "Attribute 'admin_tx_st' is deprecated, please refer to 'transmit_state' instead. The attribute will be removed in the next major version of the provider.",
-			},
-			// End of deprecated attributes
-			"id": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the LLDP Interface Policy object.",
-			},
-			"receive_state": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The receive (rx) state of the LLDP Interface Policy object.`,
-			},
-			"transmit_state": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The transmit (tx) state of the LLDP Interface Policy object.`,
-			},
-			"annotation": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The annotation of the LLDP Interface Policy object.`,
-			},
-			"description": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The description of the LLDP Interface Policy object.`,
-			},
-			"name": schema.StringAttribute{
-				Required:            true,
-				MarkdownDescription: `The name of the LLDP Interface Policy object.`,
-			},
-			"name_alias": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The name alias of the LLDP Interface Policy object.`,
-			},
-			"owner_key": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The key for enabling clients to own their data for entity correlation.`,
-			},
-			"owner_tag": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
-			},
-			"dcbxp_version": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The Data Center Bridging Exchange Protocol (DCBXP) version of the LLDP Interface Policy object. Changing the DCBX version may prevent the port parameters from converging. The link may need to be reset for the change to take effect.`,
-			},
-			"annotations": schema.SetNestedAttribute{
-				MarkdownDescription: ``,
-				Computed:            true,
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"key": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-						},
-						"value": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The value of the property.`,
-						},
-					},
-				},
-			},
-			"tags": schema.SetNestedAttribute{
-				MarkdownDescription: ``,
-				Computed:            true,
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"key": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-						},
-						"value": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The value of the property.`,
-						},
-					},
-				},
-			},
-		},
-		Blocks: map[string]schema.Block{},
-	}
+	resp.Schema = models.LldpIfPolDataSourceSchema()
 	tflog.Debug(ctx, "End schema of datasource: aci_lldp_interface_policy")
 }
 
@@ -139,50 +50,54 @@ func (d *LldpIfPolDataSource) Configure(ctx context.Context, req datasource.Conf
 		return
 	}
 
-	client, ok := req.ProviderData.(*client.Client)
-
+	aciClient, ok := req.ProviderData.(*client.Client)
 	if !ok {
 		resp.Diagnostics.AddError(
 			"Unexpected Data Source Configure Type",
 			fmt.Sprintf("Expected *client.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
-
 		return
 	}
 
-	d.client = client
+	d.client = aciClient
 	tflog.Debug(ctx, "End configure of datasource: aci_lldp_interface_policy")
 }
 
 func (d *LldpIfPolDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
 	tflog.Debug(ctx, "Start read of datasource: aci_lldp_interface_policy")
-	var data *LldpIfPolResourceModel
 
-	// Read Terraform configuration data into the model
+	var data models.LldpIfPolRootModel
 	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
-
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	setLldpIfPolId(ctx, data)
+	dn := data.BuildDN()
+	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_lldp_interface_policy with id '%s'", dn))
 
-	// Create a copy of the Id for when not found during getAndSetLldpIfPolAttributes
-	cachedId := data.Id.ValueString()
+	response := getManagedObject(ctx, &resp.Diagnostics, d.client, dn, data.SupportedSubtreeClasses(apicVersion))
+	if resp.Diagnostics.HasError() {
+		return
+	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_lldp_interface_policy with id '%s'", data.Id.ValueString()))
+	found, diagnostics := data.SetFromResponse(ctx, response)
+	resp.Diagnostics.Append(diagnostics...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 
-	getAndSetLldpIfPolAttributes(ctx, &resp.Diagnostics, d.client, data)
-
-	if data.Id.IsNull() {
+	if !found {
 		resp.Diagnostics.AddError(
 			"Failed to read aci_lldp_interface_policy data source",
-			fmt.Sprintf("The aci_lldp_interface_policy data source with id '%s' has not been found", cachedId),
+			fmt.Sprintf("The aci_lldp_interface_policy data source with id '%s' has not been found", dn),
 		)
 		return
 	}
 
-	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, fmt.Sprintf("End read of datasource aci_lldp_interface_policy with id '%s'", data.Id.ValueString()))
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	tflog.Debug(ctx, fmt.Sprintf("End read of datasource aci_lldp_interface_policy with id '%s'", data.ID.ValueString()))
 }

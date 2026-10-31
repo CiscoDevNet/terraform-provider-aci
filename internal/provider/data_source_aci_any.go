@@ -8,13 +8,11 @@ import (
 	"context"
 	"fmt"
 
-	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
-
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
-	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
+
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
@@ -39,272 +37,9 @@ func (d *VzAnyDataSource) Metadata(ctx context.Context, req datasource.MetadataR
 	tflog.Debug(ctx, "End metadata of datasource: aci_any")
 }
 
-func (d *VzAnyDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
+func (d *VzAnyDataSource) Schema(ctx context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	tflog.Debug(ctx, "Start schema of datasource: aci_any")
-	resp.Schema = schema.Schema{
-		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "The any datasource for the 'vzAny' class",
-
-		Attributes: map[string]schema.Attribute{
-			// Deprecated attributes
-			"match_t": schema.StringAttribute{
-				Computed:           true,
-				DeprecationMessage: "Attribute 'match_t' is deprecated, please refer to 'match_criteria' instead. The attribute will be removed in the next major version of the provider.",
-			},
-			"vrf_dn": schema.StringAttribute{
-				Computed:           true,
-				DeprecationMessage: "Attribute 'vrf_dn' is deprecated, please refer to 'parent_dn' instead. The attribute will be removed in the next major version of the provider.",
-			},
-			"pref_gr_memb": schema.StringAttribute{
-				Computed:           true,
-				DeprecationMessage: "Attribute 'pref_gr_memb' is deprecated, please refer to 'preferred_group_member' instead. The attribute will be removed in the next major version of the provider.",
-			},
-			"relation_vz_rs_any_to_cons": schema.SetAttribute{
-				Computed:           true,
-				ElementType:        types.StringType,
-				DeprecationMessage: "Attribute 'relation_vz_rs_any_to_cons' is deprecated, please refer to 'relation_to_consumer_contracts' instead. The attribute will be removed in the next major version of the provider.",
-			},
-			"relation_vz_rs_any_to_cons_if": schema.SetAttribute{
-				Computed:           true,
-				ElementType:        types.StringType,
-				DeprecationMessage: "Attribute 'relation_vz_rs_any_to_cons_if' is deprecated, please refer to 'relation_to_contract_interfaces' instead. The attribute will be removed in the next major version of the provider.",
-			},
-			"relation_vz_rs_any_to_prov": schema.SetAttribute{
-				Computed:           true,
-				ElementType:        types.StringType,
-				DeprecationMessage: "Attribute 'relation_vz_rs_any_to_prov' is deprecated, please refer to 'relation_to_provider_contracts' instead. The attribute will be removed in the next major version of the provider.",
-			},
-			// End of deprecated attributes
-			"id": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the Any object.",
-			},
-			"parent_dn": schema.StringAttribute{
-				Required:            true,
-				MarkdownDescription: "The distinguished name (DN) of the parent object.",
-			},
-			"annotation": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The annotation of the Any object.`,
-			},
-			"description": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The description of the Any object.`,
-			},
-			"match_criteria": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The provider label match criteria.`,
-			},
-			"name": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The name of the Any object.`,
-			},
-			"name_alias": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The name alias of the Any object.`,
-			},
-			"preferred_group_member": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `Parameter used to determine whether the EPG is part of the preferred group. Members of this group are allowed to communicate without contracts.`,
-			},
-			"annotations": schema.SetNestedAttribute{
-				MarkdownDescription: ``,
-				Computed:            true,
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"key": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-						},
-						"value": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The value of the property.`,
-						},
-					},
-				},
-			},
-			"tags": schema.SetNestedAttribute{
-				MarkdownDescription: ``,
-				Computed:            true,
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"key": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-						},
-						"value": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The value of the property.`,
-						},
-					},
-				},
-			},
-			"relation_to_consumer_contracts": schema.SetNestedAttribute{
-				MarkdownDescription: `A source relation to the binary contract profile.`,
-				Computed:            true,
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"annotation": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The annotation of the Relation From Any To Consumer Contract object.`,
-						},
-						"priority": schema.StringAttribute{
-							CustomType:          customTypes.VzRsAnyToConsPrioStringType{},
-							Computed:            true,
-							MarkdownDescription: `The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.`,
-						},
-						"contract_name": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The name of the Contract object.`,
-						},
-						"annotations": schema.SetNestedAttribute{
-							MarkdownDescription: ``,
-							Computed:            true,
-							NestedObject: schema.NestedAttributeObject{
-								Attributes: map[string]schema.Attribute{
-									"key": schema.StringAttribute{
-										Computed:            true,
-										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-									},
-									"value": schema.StringAttribute{
-										Computed:            true,
-										MarkdownDescription: `The value of the property.`,
-									},
-								},
-							},
-						},
-						"tags": schema.SetNestedAttribute{
-							MarkdownDescription: ``,
-							Computed:            true,
-							NestedObject: schema.NestedAttributeObject{
-								Attributes: map[string]schema.Attribute{
-									"key": schema.StringAttribute{
-										Computed:            true,
-										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-									},
-									"value": schema.StringAttribute{
-										Computed:            true,
-										MarkdownDescription: `The value of the property.`,
-									},
-								},
-							},
-						},
-					},
-				},
-			},
-			"relation_to_contract_interfaces": schema.SetNestedAttribute{
-				MarkdownDescription: `A source relation to a contract interface. A contract interface can be used as a contract consumption interface when a consumer consumes the contract by associating it to a consumption interface provided by the provider in the consumer's domain. A consumer can associate with the contract consumption interface when it is provided by the provider in the consumer's domain. Note that a contract consumption interface represents one or more subjects defined under the contract. By associating to an interface, an endpoint group starts consuming all the subjects represented by the interface. Also note that a contract can be defined under one tenant, but its interfaces can be defined in other tenants. A contract's interface will be used by the entities (endpoint groups) present in other tenants to participate in that contract. By this flexibility, tenants we will be able to participate in a single contract, which is defined at some third place. A contract interface is parented by a tenant. Note that this relation is an internal object.`,
-				Computed:            true,
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"annotation": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The annotation of the Relation From Any To Contract Interface object.`,
-						},
-						"priority": schema.StringAttribute{
-							CustomType:          customTypes.VzRsAnyToConsIfPrioStringType{},
-							Computed:            true,
-							MarkdownDescription: `The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.`,
-						},
-						"imported_contract_name": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The name of the imported Contract object.`,
-						},
-						"annotations": schema.SetNestedAttribute{
-							MarkdownDescription: ``,
-							Computed:            true,
-							NestedObject: schema.NestedAttributeObject{
-								Attributes: map[string]schema.Attribute{
-									"key": schema.StringAttribute{
-										Computed:            true,
-										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-									},
-									"value": schema.StringAttribute{
-										Computed:            true,
-										MarkdownDescription: `The value of the property.`,
-									},
-								},
-							},
-						},
-						"tags": schema.SetNestedAttribute{
-							MarkdownDescription: ``,
-							Computed:            true,
-							NestedObject: schema.NestedAttributeObject{
-								Attributes: map[string]schema.Attribute{
-									"key": schema.StringAttribute{
-										Computed:            true,
-										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-									},
-									"value": schema.StringAttribute{
-										Computed:            true,
-										MarkdownDescription: `The value of the property.`,
-									},
-								},
-							},
-						},
-					},
-				},
-			},
-			"relation_to_provider_contracts": schema.SetNestedAttribute{
-				MarkdownDescription: `A source relation to a binary contract profile.`,
-				Computed:            true,
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"annotation": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The annotation of the Relation From Any To Provider Contract object.`,
-						},
-						"match_criteria": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The provider label match criteria.`,
-						},
-						"priority": schema.StringAttribute{
-							CustomType:          customTypes.VzRsAnyToProvPrioStringType{},
-							Computed:            true,
-							MarkdownDescription: `The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.`,
-						},
-						"contract_name": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The name of the Contract object.`,
-						},
-						"annotations": schema.SetNestedAttribute{
-							MarkdownDescription: ``,
-							Computed:            true,
-							NestedObject: schema.NestedAttributeObject{
-								Attributes: map[string]schema.Attribute{
-									"key": schema.StringAttribute{
-										Computed:            true,
-										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-									},
-									"value": schema.StringAttribute{
-										Computed:            true,
-										MarkdownDescription: `The value of the property.`,
-									},
-								},
-							},
-						},
-						"tags": schema.SetNestedAttribute{
-							MarkdownDescription: ``,
-							Computed:            true,
-							NestedObject: schema.NestedAttributeObject{
-								Attributes: map[string]schema.Attribute{
-									"key": schema.StringAttribute{
-										Computed:            true,
-										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-									},
-									"value": schema.StringAttribute{
-										Computed:            true,
-										MarkdownDescription: `The value of the property.`,
-									},
-								},
-							},
-						},
-					},
-				},
-			},
-		},
-		Blocks: map[string]schema.Block{},
-	}
+	resp.Schema = models.VzAnyDataSourceSchema()
 	tflog.Debug(ctx, "End schema of datasource: aci_any")
 }
 
@@ -315,50 +50,54 @@ func (d *VzAnyDataSource) Configure(ctx context.Context, req datasource.Configur
 		return
 	}
 
-	client, ok := req.ProviderData.(*client.Client)
-
+	aciClient, ok := req.ProviderData.(*client.Client)
 	if !ok {
 		resp.Diagnostics.AddError(
 			"Unexpected Data Source Configure Type",
 			fmt.Sprintf("Expected *client.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
-
 		return
 	}
 
-	d.client = client
+	d.client = aciClient
 	tflog.Debug(ctx, "End configure of datasource: aci_any")
 }
 
 func (d *VzAnyDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
 	tflog.Debug(ctx, "Start read of datasource: aci_any")
-	var data *VzAnyResourceModel
 
-	// Read Terraform configuration data into the model
+	var data models.VzAnyRootModel
 	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
-
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	setVzAnyId(ctx, data)
+	dn := data.BuildDN()
+	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_any with id '%s'", dn))
 
-	// Create a copy of the Id for when not found during getAndSetVzAnyAttributes
-	cachedId := data.Id.ValueString()
+	response := getManagedObject(ctx, &resp.Diagnostics, d.client, dn, data.SupportedSubtreeClasses(apicVersion))
+	if resp.Diagnostics.HasError() {
+		return
+	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_any with id '%s'", data.Id.ValueString()))
+	found, diagnostics := data.SetFromResponse(ctx, response)
+	resp.Diagnostics.Append(diagnostics...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 
-	getAndSetVzAnyAttributes(ctx, &resp.Diagnostics, d.client, data)
-
-	if data.Id.IsNull() {
+	if !found {
 		resp.Diagnostics.AddError(
 			"Failed to read aci_any data source",
-			fmt.Sprintf("The aci_any data source with id '%s' has not been found", cachedId),
+			fmt.Sprintf("The aci_any data source with id '%s' has not been found", dn),
 		)
 		return
 	}
 
-	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, fmt.Sprintf("End read of datasource aci_any with id '%s'", data.Id.ValueString()))
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	tflog.Debug(ctx, fmt.Sprintf("End read of datasource aci_any with id '%s'", data.ID.ValueString()))
 }
