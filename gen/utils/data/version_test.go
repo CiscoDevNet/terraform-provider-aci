@@ -4,14 +4,14 @@ import (
 	"testing"
 
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils/test"
-	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider"
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/apicversion"
 	"github.com/stretchr/testify/assert"
 )
 
 type newVersionRangeExpected struct {
 	Raw             string
-	Min             *provider.Version
-	Max             *provider.Version
+	Min             *apicversion.Version
+	Max             *apicversion.Version
 	IsSingleVersion bool
 	String          string
 	Error           bool
@@ -28,8 +28,8 @@ func TestNewVersionRange(t *testing.T) {
 			Input: "4.2(7f)",
 			Expected: newVersionRangeExpected{
 				Raw:             "4.2(7f)",
-				Min:             &provider.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
-				Max:             &provider.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
+				Min:             &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
+				Max:             &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
 				IsSingleVersion: true,
 				String:          "4.2(7f)",
 			},
@@ -39,8 +39,8 @@ func TestNewVersionRange(t *testing.T) {
 			Input: "4.2(7)",
 			Expected: newVersionRangeExpected{
 				Raw:             "4.2(7)",
-				Min:             &provider.Version{Major: 4, Minor: 2, Patch: 7, Tag: 0},
-				Max:             &provider.Version{Major: 4, Minor: 2, Patch: 7, Tag: 0},
+				Min:             &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: 0},
+				Max:             &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: 0},
 				IsSingleVersion: true,
 				String:          "4.2(7)",
 			},
@@ -50,8 +50,8 @@ func TestNewVersionRange(t *testing.T) {
 			Input: "4.2(7f)-4.2(7w)",
 			Expected: newVersionRangeExpected{
 				Raw:             "4.2(7f)-4.2(7w)",
-				Min:             &provider.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
-				Max:             &provider.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('w')},
+				Min:             &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
+				Max:             &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('w')},
 				IsSingleVersion: false,
 				String:          "4.2(7f) to 4.2(7w)",
 			},
@@ -61,7 +61,7 @@ func TestNewVersionRange(t *testing.T) {
 			Input: "4.2(7f)-",
 			Expected: newVersionRangeExpected{
 				Raw:             "4.2(7f)-",
-				Min:             &provider.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
+				Min:             &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
 				Max:             nil,
 				IsSingleVersion: false,
 				String:          "4.2(7f) and later",
@@ -73,7 +73,7 @@ func TestNewVersionRange(t *testing.T) {
 			Expected: newVersionRangeExpected{
 				Raw:             "-4.2(7w)",
 				Min:             nil,
-				Max:             &provider.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('w')},
+				Max:             &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('w')},
 				IsSingleVersion: false,
 				String:          "up to 4.2(7w)",
 			},
@@ -148,8 +148,8 @@ func TestNewVersions(t *testing.T) {
 				RangeValues: []newVersionRangeExpected{
 					{
 						Raw:             "4.2(7f)",
-						Min:             &provider.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
-						Max:             &provider.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
+						Min:             &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
+						Max:             &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
 						IsSingleVersion: true,
 						String:          "4.2(7f)",
 					},
@@ -166,7 +166,7 @@ func TestNewVersions(t *testing.T) {
 				RangeValues: []newVersionRangeExpected{
 					{
 						Raw:             "4.2(7f)-",
-						Min:             &provider.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
+						Min:             &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
 						Max:             nil,
 						IsSingleVersion: false,
 						String:          "4.2(7f) and later",
@@ -184,14 +184,14 @@ func TestNewVersions(t *testing.T) {
 				RangeValues: []newVersionRangeExpected{
 					{
 						Raw:             "3.2(10e)-3.2(10g)",
-						Min:             &provider.Version{Major: 3, Minor: 2, Patch: 10, Tag: int('e')},
-						Max:             &provider.Version{Major: 3, Minor: 2, Patch: 10, Tag: int('g')},
+						Min:             &apicversion.Version{Major: 3, Minor: 2, Patch: 10, Tag: int('e')},
+						Max:             &apicversion.Version{Major: 3, Minor: 2, Patch: 10, Tag: int('g')},
 						IsSingleVersion: false,
 						String:          "3.2(10e) to 3.2(10g)",
 					},
 					{
 						Raw:             "4.2(7f)-",
-						Min:             &provider.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
+						Min:             &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
 						Max:             nil,
 						IsSingleVersion: false,
 						String:          "4.2(7f) and later",
@@ -209,14 +209,14 @@ func TestNewVersions(t *testing.T) {
 				RangeValues: []newVersionRangeExpected{
 					{
 						Raw:             "3.2(10e)-3.2(10g)",
-						Min:             &provider.Version{Major: 3, Minor: 2, Patch: 10, Tag: int('e')},
-						Max:             &provider.Version{Major: 3, Minor: 2, Patch: 10, Tag: int('g')},
+						Min:             &apicversion.Version{Major: 3, Minor: 2, Patch: 10, Tag: int('e')},
+						Max:             &apicversion.Version{Major: 3, Minor: 2, Patch: 10, Tag: int('g')},
 						IsSingleVersion: false,
 						String:          "3.2(10e) to 3.2(10g)",
 					},
 					{
 						Raw:             "5.2(1g)-",
-						Min:             &provider.Version{Major: 5, Minor: 2, Patch: 1, Tag: int('g')},
+						Min:             &apicversion.Version{Major: 5, Minor: 2, Patch: 1, Tag: int('g')},
 						Max:             nil,
 						IsSingleVersion: false,
 						String:          "5.2(1g) and later",
@@ -234,21 +234,21 @@ func TestNewVersions(t *testing.T) {
 				RangeValues: []newVersionRangeExpected{
 					{
 						Raw:             "3.0(1a)-3.0(1z)",
-						Min:             &provider.Version{Major: 3, Minor: 0, Patch: 1, Tag: int('a')},
-						Max:             &provider.Version{Major: 3, Minor: 0, Patch: 1, Tag: int('z')},
+						Min:             &apicversion.Version{Major: 3, Minor: 0, Patch: 1, Tag: int('a')},
+						Max:             &apicversion.Version{Major: 3, Minor: 0, Patch: 1, Tag: int('z')},
 						IsSingleVersion: false,
 						String:          "3.0(1a) to 3.0(1z)",
 					},
 					{
 						Raw:             "4.0(1a)-4.0(1z)",
-						Min:             &provider.Version{Major: 4, Minor: 0, Patch: 1, Tag: int('a')},
-						Max:             &provider.Version{Major: 4, Minor: 0, Patch: 1, Tag: int('z')},
+						Min:             &apicversion.Version{Major: 4, Minor: 0, Patch: 1, Tag: int('a')},
+						Max:             &apicversion.Version{Major: 4, Minor: 0, Patch: 1, Tag: int('z')},
 						IsSingleVersion: false,
 						String:          "4.0(1a) to 4.0(1z)",
 					},
 					{
 						Raw:             "5.0(1a)-",
-						Min:             &provider.Version{Major: 5, Minor: 0, Patch: 1, Tag: int('a')},
+						Min:             &apicversion.Version{Major: 5, Minor: 0, Patch: 1, Tag: int('a')},
 						Max:             nil,
 						IsSingleVersion: false,
 						String:          "5.0(1a) and later",
@@ -383,8 +383,8 @@ type sortVersionsExpected struct {
 }
 
 type sortVersionsInput struct {
-	A          *provider.Version
-	B          *provider.Version
+	A          *apicversion.Version
+	B          *apicversion.Version
 	IsMinBound bool
 }
 
@@ -415,7 +415,7 @@ func TestSortVersions(t *testing.T) {
 			Name: "test_a_nil_min_bound",
 			Input: sortVersionsInput{
 				A:          nil,
-				B:          &provider.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
+				B:          &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
 				IsMinBound: true,
 			},
 			Expected: sortVersionsExpected{Result: -1},
@@ -424,7 +424,7 @@ func TestSortVersions(t *testing.T) {
 			Name: "test_a_nil_max_bound",
 			Input: sortVersionsInput{
 				A:          nil,
-				B:          &provider.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
+				B:          &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
 				IsMinBound: false,
 			},
 			Expected: sortVersionsExpected{Result: 1},
@@ -432,7 +432,7 @@ func TestSortVersions(t *testing.T) {
 		{
 			Name: "test_b_nil_min_bound",
 			Input: sortVersionsInput{
-				A:          &provider.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
+				A:          &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
 				B:          nil,
 				IsMinBound: true,
 			},
@@ -441,7 +441,7 @@ func TestSortVersions(t *testing.T) {
 		{
 			Name: "test_b_nil_max_bound",
 			Input: sortVersionsInput{
-				A:          &provider.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
+				A:          &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
 				B:          nil,
 				IsMinBound: false,
 			},
@@ -450,8 +450,8 @@ func TestSortVersions(t *testing.T) {
 		{
 			Name: "test_equal_versions",
 			Input: sortVersionsInput{
-				A:          &provider.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
-				B:          &provider.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
+				A:          &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
+				B:          &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
 				IsMinBound: true,
 			},
 			Expected: sortVersionsExpected{Result: 0},
@@ -459,8 +459,8 @@ func TestSortVersions(t *testing.T) {
 		{
 			Name: "test_a_less_than_b_major",
 			Input: sortVersionsInput{
-				A:          &provider.Version{Major: 3, Minor: 2, Patch: 7, Tag: int('f')},
-				B:          &provider.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
+				A:          &apicversion.Version{Major: 3, Minor: 2, Patch: 7, Tag: int('f')},
+				B:          &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
 				IsMinBound: true,
 			},
 			Expected: sortVersionsExpected{Result: -1},
@@ -468,8 +468,8 @@ func TestSortVersions(t *testing.T) {
 		{
 			Name: "test_a_greater_than_b_major",
 			Input: sortVersionsInput{
-				A:          &provider.Version{Major: 5, Minor: 2, Patch: 7, Tag: int('f')},
-				B:          &provider.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
+				A:          &apicversion.Version{Major: 5, Minor: 2, Patch: 7, Tag: int('f')},
+				B:          &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
 				IsMinBound: true,
 			},
 			Expected: sortVersionsExpected{Result: 1},
@@ -477,8 +477,8 @@ func TestSortVersions(t *testing.T) {
 		{
 			Name: "test_a_less_than_b_minor",
 			Input: sortVersionsInput{
-				A:          &provider.Version{Major: 4, Minor: 1, Patch: 7, Tag: int('f')},
-				B:          &provider.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
+				A:          &apicversion.Version{Major: 4, Minor: 1, Patch: 7, Tag: int('f')},
+				B:          &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
 				IsMinBound: true,
 			},
 			Expected: sortVersionsExpected{Result: -1},
@@ -486,8 +486,8 @@ func TestSortVersions(t *testing.T) {
 		{
 			Name: "test_a_less_than_b_patch",
 			Input: sortVersionsInput{
-				A:          &provider.Version{Major: 4, Minor: 2, Patch: 6, Tag: int('f')},
-				B:          &provider.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
+				A:          &apicversion.Version{Major: 4, Minor: 2, Patch: 6, Tag: int('f')},
+				B:          &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
 				IsMinBound: true,
 			},
 			Expected: sortVersionsExpected{Result: -1},
@@ -495,8 +495,8 @@ func TestSortVersions(t *testing.T) {
 		{
 			Name: "test_a_less_than_b_tag",
 			Input: sortVersionsInput{
-				A:          &provider.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('e')},
-				B:          &provider.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
+				A:          &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('e')},
+				B:          &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
 				IsMinBound: true,
 			},
 			Expected: sortVersionsExpected{Result: -1},
@@ -533,12 +533,12 @@ func TestSortVersionRanges(t *testing.T) {
 			Name: "test_equal_ranges",
 			Input: sortVersionRangesInput{
 				A: VersionRange{
-					min: &provider.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
-					max: &provider.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('w')},
+					min: &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
+					max: &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('w')},
 				},
 				B: VersionRange{
-					min: &provider.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
-					max: &provider.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('w')},
+					min: &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
+					max: &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('w')},
 				},
 			},
 			Expected: sortVersionRangesExpected{Result: 0},
@@ -547,12 +547,12 @@ func TestSortVersionRanges(t *testing.T) {
 			Name: "test_a_min_less_than_b_min",
 			Input: sortVersionRangesInput{
 				A: VersionRange{
-					min: &provider.Version{Major: 3, Minor: 2, Patch: 7, Tag: int('f')},
-					max: &provider.Version{Major: 3, Minor: 2, Patch: 7, Tag: int('w')},
+					min: &apicversion.Version{Major: 3, Minor: 2, Patch: 7, Tag: int('f')},
+					max: &apicversion.Version{Major: 3, Minor: 2, Patch: 7, Tag: int('w')},
 				},
 				B: VersionRange{
-					min: &provider.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
-					max: &provider.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('w')},
+					min: &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
+					max: &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('w')},
 				},
 			},
 			Expected: sortVersionRangesExpected{Result: -1},
@@ -561,12 +561,12 @@ func TestSortVersionRanges(t *testing.T) {
 			Name: "test_same_min_a_max_less_than_b_max",
 			Input: sortVersionRangesInput{
 				A: VersionRange{
-					min: &provider.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
-					max: &provider.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('g')},
+					min: &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
+					max: &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('g')},
 				},
 				B: VersionRange{
-					min: &provider.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
-					max: &provider.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('w')},
+					min: &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
+					max: &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('w')},
 				},
 			},
 			Expected: sortVersionRangesExpected{Result: -1},
@@ -575,12 +575,12 @@ func TestSortVersionRanges(t *testing.T) {
 			Name: "test_same_min_a_unbounded_max",
 			Input: sortVersionRangesInput{
 				A: VersionRange{
-					min: &provider.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
+					min: &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
 					max: nil,
 				},
 				B: VersionRange{
-					min: &provider.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
-					max: &provider.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('w')},
+					min: &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
+					max: &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('w')},
 				},
 			},
 			Expected: sortVersionRangesExpected{Result: 1},
@@ -590,11 +590,11 @@ func TestSortVersionRanges(t *testing.T) {
 			Input: sortVersionRangesInput{
 				A: VersionRange{
 					min: nil,
-					max: &provider.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('w')},
+					max: &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('w')},
 				},
 				B: VersionRange{
-					min: &provider.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
-					max: &provider.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('w')},
+					min: &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
+					max: &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('w')},
 				},
 			},
 			Expected: sortVersionRangesExpected{Result: -1},
@@ -623,18 +623,18 @@ func TestVersionsSort(t *testing.T) {
 		ranges: []VersionRange{
 			{
 				raw: "5.0(1a)-",
-				min: &provider.Version{Major: 5, Minor: 0, Patch: 1, Tag: int('a')},
+				min: &apicversion.Version{Major: 5, Minor: 0, Patch: 1, Tag: int('a')},
 				max: nil,
 			},
 			{
 				raw: "3.0(1a)-3.0(1z)",
-				min: &provider.Version{Major: 3, Minor: 0, Patch: 1, Tag: int('a')},
-				max: &provider.Version{Major: 3, Minor: 0, Patch: 1, Tag: int('z')},
+				min: &apicversion.Version{Major: 3, Minor: 0, Patch: 1, Tag: int('a')},
+				max: &apicversion.Version{Major: 3, Minor: 0, Patch: 1, Tag: int('z')},
 			},
 			{
 				raw: "4.0(1a)-4.0(1z)",
-				min: &provider.Version{Major: 4, Minor: 0, Patch: 1, Tag: int('a')},
-				max: &provider.Version{Major: 4, Minor: 0, Patch: 1, Tag: int('z')},
+				min: &apicversion.Version{Major: 4, Minor: 0, Patch: 1, Tag: int('a')},
+				max: &apicversion.Version{Major: 4, Minor: 0, Patch: 1, Tag: int('z')},
 			},
 		},
 	}
@@ -656,31 +656,31 @@ func TestVersionRangeString(t *testing.T) {
 		{
 			Name: "test_single_version",
 			Input: VersionRange{
-				min: &provider.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
-				max: &provider.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
+				min: &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
+				max: &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
 			},
 			Expected: "4.2(7f)",
 		},
 		{
 			Name: "test_single_version_no_tag",
 			Input: VersionRange{
-				min: &provider.Version{Major: 4, Minor: 2, Patch: 7, Tag: 0},
-				max: &provider.Version{Major: 4, Minor: 2, Patch: 7, Tag: 0},
+				min: &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: 0},
+				max: &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: 0},
 			},
 			Expected: "4.2(7)",
 		},
 		{
 			Name: "test_bounded_range",
 			Input: VersionRange{
-				min: &provider.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
-				max: &provider.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('w')},
+				min: &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
+				max: &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('w')},
 			},
 			Expected: "4.2(7f) to 4.2(7w)",
 		},
 		{
 			Name: "test_unbounded_upper",
 			Input: VersionRange{
-				min: &provider.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
+				min: &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('f')},
 				max: nil,
 			},
 			Expected: "4.2(7f) and later",
@@ -689,7 +689,7 @@ func TestVersionRangeString(t *testing.T) {
 			Name: "test_unbounded_lower",
 			Input: VersionRange{
 				min: nil,
-				max: &provider.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('w')},
+				max: &apicversion.Version{Major: 4, Minor: 2, Patch: 7, Tag: int('w')},
 			},
 			Expected: "up to 4.2(7w)",
 		},
