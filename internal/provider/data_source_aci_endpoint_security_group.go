@@ -8,13 +8,11 @@ import (
 	"context"
 	"fmt"
 
-	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
-
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
-	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
+
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
@@ -39,497 +37,9 @@ func (d *FvESgDataSource) Metadata(ctx context.Context, req datasource.MetadataR
 	tflog.Debug(ctx, "End metadata of datasource: aci_endpoint_security_group")
 }
 
-func (d *FvESgDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
+func (d *FvESgDataSource) Schema(ctx context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	tflog.Debug(ctx, "Start schema of datasource: aci_endpoint_security_group")
-	resp.Schema = schema.Schema{
-		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "The endpoint_security_group datasource for the 'fvESg' class",
-
-		Attributes: map[string]schema.Attribute{
-			// Deprecated attributes
-			"match_t": schema.StringAttribute{
-				Computed:           true,
-				DeprecationMessage: "Attribute 'match_t' is deprecated, please refer to 'match_criteria' instead. The attribute will be removed in the next major version of the provider.",
-			},
-			"application_profile_dn": schema.StringAttribute{
-				Computed:           true,
-				DeprecationMessage: "Attribute 'application_profile_dn' is deprecated, please refer to 'parent_dn' instead. The attribute will be removed in the next major version of the provider.",
-			},
-			"pc_enf_pref": schema.StringAttribute{
-				Computed:           true,
-				DeprecationMessage: "Attribute 'pc_enf_pref' is deprecated, please refer to 'intra_esg_isolation' instead. The attribute will be removed in the next major version of the provider.",
-			},
-			"pref_gr_memb": schema.StringAttribute{
-				Computed:           true,
-				DeprecationMessage: "Attribute 'pref_gr_memb' is deprecated, please refer to 'preferred_group_member' instead. The attribute will be removed in the next major version of the provider.",
-			},
-			"relation_fv_rs_cust_qos_pol": schema.StringAttribute{
-				Computed:           true,
-				DeprecationMessage: "Attribute `relation_fv_rs_cust_qos_pol` is deprecated. The attribute will be removed in the next major version of the provider.",
-			},
-			"relation_fv_rs_prot_by": schema.SetAttribute{
-				Computed:           true,
-				ElementType:        types.StringType,
-				DeprecationMessage: "Attribute `relation_fv_rs_prot_by` is deprecated. The attribute will be removed in the next major version of the provider.",
-			},
-			"relation_fv_rs_sec_inherited": schema.SetAttribute{
-				Computed:           true,
-				ElementType:        types.StringType,
-				DeprecationMessage: "Attribute 'relation_fv_rs_sec_inherited' is deprecated, please refer to 'relation_to_contract_masters' instead. The attribute will be removed in the next major version of the provider.",
-			},
-			"relation_fv_rs_intra_epg": schema.SetAttribute{
-				Computed:           true,
-				ElementType:        types.StringType,
-				DeprecationMessage: "Attribute 'relation_fv_rs_intra_epg' is deprecated, please refer to 'relation_to_intra_epg_contracts' instead. The attribute will be removed in the next major version of the provider.",
-			},
-			"relation_fv_rs_scope": schema.StringAttribute{
-				Computed:           true,
-				DeprecationMessage: "Attribute 'relation_fv_rs_scope' is deprecated, please refer to 'relation_to_vrf' instead. The attribute will be removed in the next major version of the provider.",
-			},
-			// End of deprecated attributes
-			"id": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the Endpoint Security Group object.",
-			},
-			"parent_dn": schema.StringAttribute{
-				Required:            true,
-				MarkdownDescription: "The distinguished name (DN) of the parent object.",
-			},
-			"annotation": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The annotation of the Endpoint Security Group object.`,
-			},
-			"description": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The description of the Endpoint Security Group object.`,
-			},
-			"exception_tag": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `Contract Exception Tag.`,
-			},
-			"match_criteria": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The provider label match criteria.`,
-			},
-			"name": schema.StringAttribute{
-				Required:            true,
-				MarkdownDescription: `The name of the Endpoint Security Group object.`,
-			},
-			"name_alias": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The name alias of the Endpoint Security Group object.`,
-			},
-			"intra_esg_isolation": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `Parameter used to determine whether communication between endpoints within the ESG is blocked.`,
-			},
-			"pc_tag": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The classification tag used for policy enforcement and zoning.`,
-			},
-			"preferred_group_member": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `Parameter used to determine whether the ESG is part of the preferred group. Members of this group are allowed to communicate without contracts.`,
-			},
-			"scope": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `The scope ID (L3-VNI) of the Endpoint Security Group object.`,
-			},
-			"admin_state": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: `Withdraw the ESG configuration from all nodes in the fabric.`,
-			},
-			"relation_to_consumed_contracts": schema.SetNestedAttribute{
-				MarkdownDescription: `The Consumer contract profile information.`,
-				Computed:            true,
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"annotation": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The annotation of the Relation To Consumed Contract object.`,
-						},
-						"priority": schema.StringAttribute{
-							CustomType:          customTypes.FvRsConsPrioStringType{},
-							Computed:            true,
-							MarkdownDescription: `The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.`,
-						},
-						"contract_name": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The consumer contract name.`,
-						},
-						"annotations": schema.SetNestedAttribute{
-							MarkdownDescription: ``,
-							Computed:            true,
-							NestedObject: schema.NestedAttributeObject{
-								Attributes: map[string]schema.Attribute{
-									"key": schema.StringAttribute{
-										Computed:            true,
-										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-									},
-									"value": schema.StringAttribute{
-										Computed:            true,
-										MarkdownDescription: `The value of the property.`,
-									},
-								},
-							},
-						},
-						"tags": schema.SetNestedAttribute{
-							MarkdownDescription: ``,
-							Computed:            true,
-							NestedObject: schema.NestedAttributeObject{
-								Attributes: map[string]schema.Attribute{
-									"key": schema.StringAttribute{
-										Computed:            true,
-										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-									},
-									"value": schema.StringAttribute{
-										Computed:            true,
-										MarkdownDescription: `The value of the property.`,
-									},
-								},
-							},
-						},
-					},
-				},
-			},
-			"relation_to_imported_contracts": schema.SetNestedAttribute{
-				MarkdownDescription: `A contract for which the EPG will be a consumer.`,
-				Computed:            true,
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"annotation": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The annotation of the Relation To Imported Contract object.`,
-						},
-						"priority": schema.StringAttribute{
-							CustomType:          customTypes.FvRsConsIfPrioStringType{},
-							Computed:            true,
-							MarkdownDescription: `The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.`,
-						},
-						"imported_contract_name": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The contract interface name.`,
-						},
-						"annotations": schema.SetNestedAttribute{
-							MarkdownDescription: ``,
-							Computed:            true,
-							NestedObject: schema.NestedAttributeObject{
-								Attributes: map[string]schema.Attribute{
-									"key": schema.StringAttribute{
-										Computed:            true,
-										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-									},
-									"value": schema.StringAttribute{
-										Computed:            true,
-										MarkdownDescription: `The value of the property.`,
-									},
-								},
-							},
-						},
-						"tags": schema.SetNestedAttribute{
-							MarkdownDescription: ``,
-							Computed:            true,
-							NestedObject: schema.NestedAttributeObject{
-								Attributes: map[string]schema.Attribute{
-									"key": schema.StringAttribute{
-										Computed:            true,
-										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-									},
-									"value": schema.StringAttribute{
-										Computed:            true,
-										MarkdownDescription: `The value of the property.`,
-									},
-								},
-							},
-						},
-					},
-				},
-			},
-			"relation_to_intra_epg_contracts": schema.SetNestedAttribute{
-				MarkdownDescription: `Intra EPg contract:
-                      Represents that the EPg is moving from "allow all within epg" mode
-                      to a "deny all within epg" mode.
-                      The only type of traffic allowed between EPs in this EPg is the one
-                      specified by contracts EPg associates to with this relation.`,
-				Computed: true,
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"annotation": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The annotation of the Relation To Intra EPG Contract object.`,
-						},
-						"contract_name": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The contract name.`,
-						},
-						"annotations": schema.SetNestedAttribute{
-							MarkdownDescription: ``,
-							Computed:            true,
-							NestedObject: schema.NestedAttributeObject{
-								Attributes: map[string]schema.Attribute{
-									"key": schema.StringAttribute{
-										Computed:            true,
-										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-									},
-									"value": schema.StringAttribute{
-										Computed:            true,
-										MarkdownDescription: `The value of the property.`,
-									},
-								},
-							},
-						},
-						"tags": schema.SetNestedAttribute{
-							MarkdownDescription: ``,
-							Computed:            true,
-							NestedObject: schema.NestedAttributeObject{
-								Attributes: map[string]schema.Attribute{
-									"key": schema.StringAttribute{
-										Computed:            true,
-										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-									},
-									"value": schema.StringAttribute{
-										Computed:            true,
-										MarkdownDescription: `The value of the property.`,
-									},
-								},
-							},
-						},
-					},
-				},
-			},
-			"relation_to_provided_contracts": schema.SetNestedAttribute{
-				MarkdownDescription: `A contract for which the EPG will be a provider.`,
-				Computed:            true,
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"annotation": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The annotation of the Relation To Provided Contract object.`,
-						},
-						"match_criteria": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The provider label match criteria.`,
-						},
-						"priority": schema.StringAttribute{
-							CustomType:          customTypes.FvRsProvPrioStringType{},
-							Computed:            true,
-							MarkdownDescription: `The Quality of Service (QoS) priority class ID. QoS refers to the capability of a network to provide better service to selected network traffic over various technologies. The primary goal of QoS is to provide priority including dedicated bandwidth, controlled jitter and latency (required by some real-time and interactive traffic), and improved loss characteristics. You can configure the bandwidth of each QoS level using QoS profiles.`,
-						},
-						"contract_name": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The provider contract name.`,
-						},
-						"annotations": schema.SetNestedAttribute{
-							MarkdownDescription: ``,
-							Computed:            true,
-							NestedObject: schema.NestedAttributeObject{
-								Attributes: map[string]schema.Attribute{
-									"key": schema.StringAttribute{
-										Computed:            true,
-										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-									},
-									"value": schema.StringAttribute{
-										Computed:            true,
-										MarkdownDescription: `The value of the property.`,
-									},
-								},
-							},
-						},
-						"tags": schema.SetNestedAttribute{
-							MarkdownDescription: ``,
-							Computed:            true,
-							NestedObject: schema.NestedAttributeObject{
-								Attributes: map[string]schema.Attribute{
-									"key": schema.StringAttribute{
-										Computed:            true,
-										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-									},
-									"value": schema.StringAttribute{
-										Computed:            true,
-										MarkdownDescription: `The value of the property.`,
-									},
-								},
-							},
-						},
-					},
-				},
-			},
-			"relation_to_vrf": schema.SingleNestedAttribute{
-				MarkdownDescription: ``,
-				Computed:            true,
-				Attributes: map[string]schema.Attribute{
-					"annotation": schema.StringAttribute{
-						Computed:            true,
-						MarkdownDescription: `The annotation of the Relation To VRF object.`,
-					},
-					"vrf_name": schema.StringAttribute{
-						Computed:            true,
-						MarkdownDescription: `The name of the VRF object.`,
-					},
-					"annotations": schema.SetNestedAttribute{
-						MarkdownDescription: ``,
-						Computed:            true,
-						NestedObject: schema.NestedAttributeObject{
-							Attributes: map[string]schema.Attribute{
-								"key": schema.StringAttribute{
-									Computed:            true,
-									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-								},
-								"value": schema.StringAttribute{
-									Computed:            true,
-									MarkdownDescription: `The value of the property.`,
-								},
-							},
-						},
-					},
-					"tags": schema.SetNestedAttribute{
-						MarkdownDescription: ``,
-						Computed:            true,
-						NestedObject: schema.NestedAttributeObject{
-							Attributes: map[string]schema.Attribute{
-								"key": schema.StringAttribute{
-									Computed:            true,
-									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-								},
-								"value": schema.StringAttribute{
-									Computed:            true,
-									MarkdownDescription: `The value of the property.`,
-								},
-							},
-						},
-					},
-				},
-			},
-			"relation_to_contract_masters": schema.SetNestedAttribute{
-				MarkdownDescription: `Represents that the EPg is inheriting security configuration from another EPg`,
-				Computed:            true,
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"annotation": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The annotation of the Relation To Contract Master object.`,
-						},
-						"target_dn": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The distinguished name of the target.`,
-						},
-						"annotations": schema.SetNestedAttribute{
-							MarkdownDescription: ``,
-							Computed:            true,
-							NestedObject: schema.NestedAttributeObject{
-								Attributes: map[string]schema.Attribute{
-									"key": schema.StringAttribute{
-										Computed:            true,
-										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-									},
-									"value": schema.StringAttribute{
-										Computed:            true,
-										MarkdownDescription: `The value of the property.`,
-									},
-								},
-							},
-						},
-						"tags": schema.SetNestedAttribute{
-							MarkdownDescription: ``,
-							Computed:            true,
-							NestedObject: schema.NestedAttributeObject{
-								Attributes: map[string]schema.Attribute{
-									"key": schema.StringAttribute{
-										Computed:            true,
-										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-									},
-									"value": schema.StringAttribute{
-										Computed:            true,
-										MarkdownDescription: `The value of the property.`,
-									},
-								},
-							},
-						},
-					},
-				},
-			},
-			"annotations": schema.SetNestedAttribute{
-				MarkdownDescription: ``,
-				Computed:            true,
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"key": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-						},
-						"value": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The value of the property.`,
-						},
-					},
-				},
-			},
-			"tags": schema.SetNestedAttribute{
-				MarkdownDescription: ``,
-				Computed:            true,
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"key": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-						},
-						"value": schema.StringAttribute{
-							Computed:            true,
-							MarkdownDescription: `The value of the property.`,
-						},
-					},
-				},
-			},
-		},
-		Blocks: map[string]schema.Block{
-			"relation_fv_rs_cons": schema.SetNestedBlock{
-				NestedObject: schema.NestedBlockObject{
-					Attributes: map[string]schema.Attribute{
-						"target_dn": schema.StringAttribute{
-							Computed:           true,
-							DeprecationMessage: "Attribute 'target_dn' will be deprecated soon, please refer to 'relation_to_consumed_contracts.contract_name' instead",
-						},
-						"prio": schema.StringAttribute{
-							Computed:           true,
-							DeprecationMessage: "Attribute 'prio' will be deprecated soon, please refer to 'relation_to_consumed_contracts.priority' instead",
-						},
-					},
-				},
-			},
-			"relation_fv_rs_cons_if": schema.SetNestedBlock{
-				NestedObject: schema.NestedBlockObject{
-					Attributes: map[string]schema.Attribute{
-						"target_dn": schema.StringAttribute{
-							Computed:           true,
-							DeprecationMessage: "Attribute 'target_dn' will be deprecated soon, please refer to 'relation_to_imported_contracts.imported_contract_name' instead",
-						},
-						"prio": schema.StringAttribute{
-							Computed:           true,
-							DeprecationMessage: "Attribute 'prio' will be deprecated soon, please refer to 'relation_to_imported_contracts.priority' instead",
-						},
-					},
-				},
-			},
-			"relation_fv_rs_prov": schema.SetNestedBlock{
-				NestedObject: schema.NestedBlockObject{
-					Attributes: map[string]schema.Attribute{
-						"target_dn": schema.StringAttribute{
-							Computed:           true,
-							DeprecationMessage: "Attribute 'target_dn' will be deprecated soon, please refer to 'relation_to_provided_contracts.contract_name' instead",
-						},
-						"match_t": schema.StringAttribute{
-							Computed:           true,
-							DeprecationMessage: "Attribute 'match_t' will be deprecated soon, please refer to 'relation_to_provided_contracts.match_criteria' instead",
-						},
-						"prio": schema.StringAttribute{
-							Computed:           true,
-							DeprecationMessage: "Attribute 'prio' will be deprecated soon, please refer to 'relation_to_provided_contracts.priority' instead",
-						},
-					},
-				},
-			},
-		},
-	}
+	resp.Schema = models.FvESgDataSourceSchema()
 	tflog.Debug(ctx, "End schema of datasource: aci_endpoint_security_group")
 }
 
@@ -540,50 +50,54 @@ func (d *FvESgDataSource) Configure(ctx context.Context, req datasource.Configur
 		return
 	}
 
-	client, ok := req.ProviderData.(*client.Client)
-
+	aciClient, ok := req.ProviderData.(*client.Client)
 	if !ok {
 		resp.Diagnostics.AddError(
 			"Unexpected Data Source Configure Type",
 			fmt.Sprintf("Expected *client.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
-
 		return
 	}
 
-	d.client = client
+	d.client = aciClient
 	tflog.Debug(ctx, "End configure of datasource: aci_endpoint_security_group")
 }
 
 func (d *FvESgDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
 	tflog.Debug(ctx, "Start read of datasource: aci_endpoint_security_group")
-	var data *FvESgResourceModel
 
-	// Read Terraform configuration data into the model
+	var data models.FvESgRootModel
 	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
-
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	setFvESgId(ctx, data)
+	dn := data.BuildDN()
+	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_endpoint_security_group with id '%s'", dn))
 
-	// Create a copy of the Id for when not found during getAndSetFvESgAttributes
-	cachedId := data.Id.ValueString()
+	response := getManagedObject(ctx, &resp.Diagnostics, d.client, dn, data.SupportedSubtreeClasses(apicVersion))
+	if resp.Diagnostics.HasError() {
+		return
+	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_endpoint_security_group with id '%s'", data.Id.ValueString()))
+	found, diagnostics := data.SetFromResponse(ctx, response)
+	resp.Diagnostics.Append(diagnostics...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 
-	getAndSetFvESgAttributes(ctx, &resp.Diagnostics, d.client, data)
-
-	if data.Id.IsNull() {
+	if !found {
 		resp.Diagnostics.AddError(
 			"Failed to read aci_endpoint_security_group data source",
-			fmt.Sprintf("The aci_endpoint_security_group data source with id '%s' has not been found", cachedId),
+			fmt.Sprintf("The aci_endpoint_security_group data source with id '%s' has not been found", dn),
 		)
 		return
 	}
 
-	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, fmt.Sprintf("End read of datasource aci_endpoint_security_group with id '%s'", data.Id.ValueString()))
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	tflog.Debug(ctx, fmt.Sprintf("End read of datasource aci_endpoint_security_group with id '%s'", data.ID.ValueString()))
 }

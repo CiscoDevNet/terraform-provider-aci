@@ -153,6 +153,19 @@ func DoRestRequest(ctx context.Context, diags *diag.Diagnostics, client *client.
 	return DoRestRequestEscapeHtml(ctx, diags, client, path, method, payload, true)
 }
 
+func getManagedObject(ctx context.Context, diagnostics *diag.Diagnostics, aciClient *client.Client, dn string, subtreeClasses []string) *container.Container {
+	path := fmt.Sprintf("api/mo/%s.json", dn)
+	if len(subtreeClasses) > 0 {
+		path = fmt.Sprintf(
+			"%s?rsp-subtree=full&rsp-subtree-class=%s",
+			path,
+			strings.Join(subtreeClasses, ","),
+		)
+	}
+
+	return DoRestRequest(ctx, diagnostics, aciClient, path, http.MethodGet, nil)
+}
+
 func GetDeleteJsonPayload(ctx context.Context, diags *diag.Diagnostics, className, dn string) *container.Container {
 
 	jsonString := fmt.Sprintf(`{"%s":{"attributes":{"dn": "%s","status": "deleted"}}}`, className, dn)

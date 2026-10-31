@@ -34,11 +34,12 @@ type ExampleContext struct {
 type Class struct {
 	// This is used to prevent the deletion of the class if it is not allowed on APIC.
 	AllowDelete bool
-	// Available top-level artifact kinds for this class. Current public-example
-	// and class-documentation jobs honor the selection; a class's base model
-	// is generated for every loaded class. Resource and datasource implementation
-	// jobs will honor it when those templates are migrated. Provider registration
-	// is currently static.
+	// Available top-level artifact kinds for this class. Current public-example,
+	// class-documentation, and datasource-implementation jobs honor the selection;
+	// a class's base model is generated for every loaded class. Resource
+	// implementation jobs will honor it when that template is migrated. Datasource
+	// registration is generated with each implementation, while resource
+	// registration remains in the legacy implementations.
 	// Resolved from ClassDefinition.Artifacts
 	// with the following semantics:
 	//   - YAML field omitted entirely (nil slice in ClassDefinition): auto-derive

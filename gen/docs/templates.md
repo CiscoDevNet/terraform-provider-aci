@@ -11,7 +11,7 @@ associated with, `gen/generator.go`:
 
 | Output area | Tracked inventory | Cleanup status |
 | --- | ---: | --- |
-| `internal/provider/` | 702 files | Mixed static and generated output; active ownership is limited to manifest entries |
+| `internal/provider/` | 702 files | Mixed static and generated output; the 125 class-backed data-source implementations are actively managed |
 | `internal/provider/models/` | 186 files | 176 class models are managed; shared model helpers and the class-version registry are static |
 | `internal/apicversion/` | 2 files | Static APIC version parsing, comparison, and focused unit tests |
 | `internal/custom_types/` | 37 files | Legacy output outside the active generator manifest |
@@ -172,6 +172,14 @@ datasource artifact. The handwritten `docs/data-sources/rest_managed.md` and
 `docs/data-sources/system.md` pages remain static because `aci_rest_managed` and
 `aci_system` have no metadata-backed classes in the active generator.
 
+`datasource.go.tmpl` owns the implementation for every loaded class with a
+datasource artifact. Each generated adapter registers itself, delegates schema
+construction and APIC response decoding to its generated root model, and uses
+the shared provider transport helper to retrieve the requested DN with the
+model's APIC-version-compatible subtree classes. The handwritten
+`data_source_aci_rest_managed.go` and `data_source_aci_system.go` implementations
+remain static and outside the managed-files manifest.
+
 `resource.md.tmpl` owns the documentation page for every loaded class with a
 resource artifact. Resource pages without a metadata-backed class remain
 static and outside the managed-files manifest. The template embeds the same
@@ -187,10 +195,10 @@ schema receives those values through temporary string-backed attributes so it
 can coexist with the SDKv2 schema; Terraform configurations and public
 documentation retain the original value forms.
 
-The current resource and data-source implementations register their factories
-with the provider registry from per-file `init` functions. Replacement
-implementation templates must retain that self-registration behavior in each
-generated artifact.
+The current resource implementations and generated data-source implementations
+register their factories with the provider registry from per-file `init`
+functions. Future replacement resource templates must retain that
+self-registration behavior in each generated artifact.
 
 Each active template declares its output location centrally, so the generator
 can account for every expected file. Each active template must also emit a

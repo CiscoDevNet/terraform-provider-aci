@@ -63,6 +63,7 @@ func TestGeneratorLoadsActiveTemplates(t *testing.T) {
 	generator := loadActiveGenerator(t, &data.DataStore{})
 	for _, templateName := range []string{
 		modelTemplateName,
+		datasourceTemplateName,
 		indexTemplateName,
 		providerExampleTemplateName,
 		resourceExampleTemplateName,
@@ -180,6 +181,43 @@ func TestBuildModelRenderJobs(t *testing.T) {
 		if job.Context.Class == nil || job.Context.DataStore != dataStore {
 			t.Fatalf("incomplete template context: %#v", job.Context)
 		}
+	}
+}
+
+func TestBuildDatasourceRenderJobs(t *testing.T) {
+	childClass := testClass(t, "fvRsTenantMonPol")
+	childClass.ResourceName = "relation_to_monitoring_policy"
+	resourceClass := testClass(t, "fvBD", data.ResourceArtifact)
+	resourceClass.ResourceName = "bridge_domain"
+	datasourceClass := testClass(t, "fvCtx", data.DatasourceArtifact)
+	datasourceClass.ResourceName = "vrf"
+	bothClass := testClass(t, "fvTenant", data.ResourceArtifact, data.DatasourceArtifact)
+	bothClass.ResourceName = "tenant"
+	dataStore := &data.DataStore{Classes: map[string]data.Class{
+		"fvBD":             resourceClass,
+		"fvCtx":            datasourceClass,
+		"fvRsTenantMonPol": childClass,
+		"fvTenant":         bothClass,
+	}}
+	generator := &Generator{dataStore: dataStore}
+
+	jobs := generator.buildDatasourceRenderJobs()
+	expectedPaths := []string{
+		"internal/provider/data_source_aci_vrf.go",
+		"internal/provider/data_source_aci_tenant.go",
+	}
+	actualPaths := make([]string, 0, len(jobs))
+	for _, job := range jobs {
+		actualPaths = append(actualPaths, job.OutputPath)
+		if job.TemplateName != datasourceTemplateName {
+			t.Fatalf("unexpected template name %q", job.TemplateName)
+		}
+		if job.Context.Class == nil || job.Context.DataStore != dataStore {
+			t.Fatalf("incomplete template context: %#v", job.Context)
+		}
+	}
+	if !reflect.DeepEqual(actualPaths, expectedPaths) {
+		t.Fatalf("datasource output paths %#v, expected %#v", actualPaths, expectedPaths)
 	}
 }
 
@@ -468,21 +506,22 @@ func TestBuildRenderJobsIncludesAnnotationOnlyAfterRefresh(t *testing.T) {
 	generator := &Generator{dataStore: dataStore, providerExample: `provider "aci" {}`}
 
 	jobs := generator.buildRenderJobs()
-	if len(jobs) != 8 ||
+	if len(jobs) != 9 ||
 		jobs[0].TemplateName != modelTemplateName ||
-		jobs[1].TemplateName != indexTemplateName ||
-		jobs[2].TemplateName != providerExampleTemplateName ||
+		jobs[1].TemplateName != datasourceTemplateName ||
+		jobs[2].TemplateName != indexTemplateName ||
 		jobs[3].TemplateName != providerExampleTemplateName ||
-		jobs[4].TemplateName != resourceExampleTemplateName ||
-		jobs[5].TemplateName != datasourceExampleTemplateName ||
-		jobs[6].TemplateName != resourceDocumentationTemplateName ||
-		jobs[7].TemplateName != datasourceDocumentationTemplateName {
+		jobs[4].TemplateName != providerExampleTemplateName ||
+		jobs[5].TemplateName != resourceExampleTemplateName ||
+		jobs[6].TemplateName != datasourceExampleTemplateName ||
+		jobs[7].TemplateName != resourceDocumentationTemplateName ||
+		jobs[8].TemplateName != datasourceDocumentationTemplateName {
 		t.Fatalf("unexpected ordinary render jobs: %#v", jobs)
 	}
 
 	dataStore.UnsupportedAnnotationClasses = []string{}
 	jobs = generator.buildRenderJobs()
-	if len(jobs) != 9 || jobs[8].TemplateName != annotationUnsupportedTemplateName || !jobs[8].RefreshOnly {
+	if len(jobs) != 10 || jobs[9].TemplateName != annotationUnsupportedTemplateName || !jobs[9].RefreshOnly {
 		t.Fatalf("unexpected refresh render jobs: %#v", jobs)
 	}
 }
@@ -490,6 +529,7 @@ func TestBuildRenderJobsIncludesAnnotationOnlyAfterRefresh(t *testing.T) {
 func TestFormatTemplateRenderSummaries(t *testing.T) {
 	jobs := []renderJob{
 		{TemplateName: modelTemplateName},
+		{TemplateName: datasourceTemplateName},
 		{TemplateName: annotationUnsupportedTemplateName},
 		{TemplateName: indexTemplateName},
 		{TemplateName: modelTemplateName},
@@ -503,6 +543,7 @@ func TestFormatTemplateRenderSummaries(t *testing.T) {
 	}
 	expected := []string{
 		"Rendered 1 file using template annotation_unsupported.go.tmpl.",
+		"Rendered 1 file using template datasource.go.tmpl.",
 		"Rendered 1 file using template datasource.md.tmpl.",
 		"Rendered 1 file using template datasource_example.tf.tmpl.",
 		"Rendered 1 file using template index.md.tmpl.",
