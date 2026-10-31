@@ -5,7 +5,7 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider"
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/apicversion"
 )
 
 type VersionRange struct {
@@ -14,11 +14,11 @@ type VersionRange struct {
 	// The minimum version of the range.
 	// The version is in the format "4.2(7f)".
 	// When nil, there is no lower bound.
-	min *provider.Version
+	min *apicversion.Version
 	// The maximum version of the range.
 	// The version is in the format "4.2(7w)".
 	// When nil, there is no upper bound (unlimited).
-	max *provider.Version
+	max *apicversion.Version
 }
 
 func (vr *VersionRange) Raw() string {
@@ -26,12 +26,12 @@ func (vr *VersionRange) Raw() string {
 	return vr.raw
 }
 
-func (vr *VersionRange) Min() *provider.Version {
+func (vr *VersionRange) Min() *apicversion.Version {
 	// Min returns the minimum version of the range, or nil if there is no lower bound.
 	return vr.min
 }
 
-func (vr *VersionRange) Max() *provider.Version {
+func (vr *VersionRange) Max() *apicversion.Version {
 	// Max returns the maximum version of the range, or nil if there is no upper bound.
 	return vr.max
 }
@@ -80,10 +80,10 @@ func NewVersionRange(metaVersionRange string) (*VersionRange, error) {
 	return versionRange, nil
 }
 
-func parseVersionBounds(metaVersionRange string) (*provider.Version, *provider.Version, error) {
+func parseVersionBounds(metaVersionRange string) (*apicversion.Version, *apicversion.Version, error) {
 	// parseVersionBounds extracts min and max versions from a version range string.
 	// Returns (minVersion, maxVersion, error).
-	var minVersion, maxVersion *provider.Version
+	var minVersion, maxVersion *apicversion.Version
 
 	if strings.Contains(metaVersionRange, "-") {
 		// SplitN with n=2 ensures we only split on the first dash.
@@ -94,7 +94,7 @@ func parseVersionBounds(metaVersionRange string) (*provider.Version, *provider.V
 
 		// Parse minimum version if present
 		if minMetaVersion != "" {
-			minVersionResult := provider.ParseVersion(minMetaVersion)
+			minVersionResult := apicversion.ParseVersion(minMetaVersion)
 			if minVersionResult.Error != "" {
 				return nil, nil, fmt.Errorf("invalid minimum version '%s': %s", minMetaVersion, minVersionResult.Error)
 			}
@@ -103,14 +103,14 @@ func parseVersionBounds(metaVersionRange string) (*provider.Version, *provider.V
 
 		// Parse maximum version if present
 		if maxMetaVersion != "" {
-			maxVersionResult := provider.ParseVersion(maxMetaVersion)
+			maxVersionResult := apicversion.ParseVersion(maxMetaVersion)
 			if maxVersionResult.Error != "" {
 				return nil, nil, fmt.Errorf("invalid maximum version '%s': %s", maxMetaVersion, maxVersionResult.Error)
 			}
 			maxVersion = maxVersionResult.Version
 		}
 	} else {
-		versionResult := provider.ParseVersion(metaVersionRange)
+		versionResult := apicversion.ParseVersion(metaVersionRange)
 		if versionResult.Error != "" {
 			return nil, nil, fmt.Errorf("invalid version '%s': %s", metaVersionRange, versionResult.Error)
 		}
@@ -185,14 +185,14 @@ func versionRangeCovers(versionRange, otherRange VersionRange) bool {
 		if versionRange.min != nil {
 			return false
 		}
-	} else if versionRange.min != nil && provider.IsVersionGreater(*versionRange.min, *otherRange.min) {
+	} else if versionRange.min != nil && apicversion.IsVersionGreater(*versionRange.min, *otherRange.min) {
 		return false
 	}
 
 	if otherRange.max == nil {
 		return versionRange.max == nil
 	}
-	return versionRange.max == nil || !provider.IsVersionLesser(*versionRange.max, *otherRange.max)
+	return versionRange.max == nil || !apicversion.IsVersionLesser(*versionRange.max, *otherRange.max)
 }
 
 func (v *Versions) Sort() {
@@ -216,7 +216,7 @@ func sortVersionRanges(a, b VersionRange) int {
 	return sortVersions(a.max, b.max, false)
 }
 
-func sortVersions(a, b *provider.Version, isMinBound bool) int {
+func sortVersions(a, b *apicversion.Version, isMinBound bool) int {
 	// sortVersions compares two version pointers for sorting.
 	// isMinBound determines how nil values are ordered:
 	//   - true (min bound): nil sorts first, representing "no lower bound" (earliest)
@@ -236,9 +236,9 @@ func sortVersions(a, b *provider.Version, isMinBound bool) int {
 		return 1
 	case bIsNil:
 		return -1
-	case provider.IsVersionEqual(*a, *b):
+	case apicversion.IsVersionEqual(*a, *b):
 		return 0
-	case provider.IsVersionLesser(*a, *b):
+	case apicversion.IsVersionLesser(*a, *b):
 		return -1
 	default:
 		return 1
