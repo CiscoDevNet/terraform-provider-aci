@@ -470,6 +470,13 @@ func NewXcvrZRIfPolRootModelNull() XcvrZRIfPolRootModel {
 	}
 }
 
+func (*XcvrZRIfPolRootModel) SupportedSubtreeClasses(apicVersion string) []string {
+	return supportedSubtreeClasses(apicVersion, []string{
+		"tagAnnotation",
+		"tagTag",
+	})
+}
+
 func (m *XcvrZRIfPolRootModel) BuildDN() string {
 	return fmt.Sprintf("uni/%s", m.BuildRN())
 }

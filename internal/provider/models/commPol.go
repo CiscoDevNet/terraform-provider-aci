@@ -560,6 +560,20 @@ func NewCommPolRootModelNull() CommPolRootModel {
 	}
 }
 
+func (*CommPolRootModel) SupportedSubtreeClasses(apicVersion string) []string {
+	return supportedSubtreeClasses(apicVersion, []string{
+		"commHttp",
+		"commHttps",
+		"commRsClientCertCA",
+		"commRsKeyRing",
+		"commShellinabox",
+		"commSsh",
+		"commTelnet",
+		"tagAnnotation",
+		"tagTag",
+	})
+}
+
 func (m *CommPolRootModel) BuildDN() string {
 	return fmt.Sprintf("uni/%s", m.BuildRN())
 }

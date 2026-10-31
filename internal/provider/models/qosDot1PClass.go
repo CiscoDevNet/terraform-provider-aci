@@ -497,6 +497,13 @@ func NewQosDot1PClassRootModelNull() QosDot1PClassRootModel {
 	}
 }
 
+func (*QosDot1PClassRootModel) SupportedSubtreeClasses(apicVersion string) []string {
+	return supportedSubtreeClasses(apicVersion, []string{
+		"tagAnnotation",
+		"tagTag",
+	})
+}
+
 func (m *QosDot1PClassRootModel) BuildDN() string {
 	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
 }

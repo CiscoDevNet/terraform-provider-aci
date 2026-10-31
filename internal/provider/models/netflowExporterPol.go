@@ -563,6 +563,15 @@ func NewNetflowExporterPolRootModelNull() NetflowExporterPolRootModel {
 	}
 }
 
+func (*NetflowExporterPolRootModel) SupportedSubtreeClasses(apicVersion string) []string {
+	return supportedSubtreeClasses(apicVersion, []string{
+		"netflowRsExporterToCtx",
+		"netflowRsExporterToEPg",
+		"tagAnnotation",
+		"tagTag",
+	})
+}
+
 func (m *NetflowExporterPolRootModel) BuildDN() string {
 	parentDN := m.ParentDN.ValueString()
 	if m.ParentDN.IsNull() || m.ParentDN.IsUnknown() {

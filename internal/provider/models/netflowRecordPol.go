@@ -369,6 +369,13 @@ func NewNetflowRecordPolRootModelNull() NetflowRecordPolRootModel {
 	}
 }
 
+func (*NetflowRecordPolRootModel) SupportedSubtreeClasses(apicVersion string) []string {
+	return supportedSubtreeClasses(apicVersion, []string{
+		"tagAnnotation",
+		"tagTag",
+	})
+}
+
 func (m *NetflowRecordPolRootModel) BuildDN() string {
 	parentDN := m.ParentDN.ValueString()
 	if m.ParentDN.IsNull() || m.ParentDN.IsUnknown() {

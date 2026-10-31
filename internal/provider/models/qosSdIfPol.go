@@ -358,6 +358,13 @@ func NewQosSdIfPolRootModelNull() QosSdIfPolRootModel {
 	}
 }
 
+func (*QosSdIfPolRootModel) SupportedSubtreeClasses(apicVersion string) []string {
+	return supportedSubtreeClasses(apicVersion, []string{
+		"tagAnnotation",
+		"tagTag",
+	})
+}
+
 func (m *QosSdIfPolRootModel) BuildDN() string {
 	return fmt.Sprintf("uni/%s", m.BuildRN())
 }

@@ -394,6 +394,14 @@ func NewFvFabricExtConnPRootModelNull() FvFabricExtConnPRootModel {
 	}
 }
 
+func (*FvFabricExtConnPRootModel) SupportedSubtreeClasses(apicVersion string) []string {
+	return supportedSubtreeClasses(apicVersion, []string{
+		"fvPeeringP",
+		"tagAnnotation",
+		"tagTag",
+	})
+}
+
 func (m *FvFabricExtConnPRootModel) BuildDN() string {
 	parentDN := m.ParentDN.ValueString()
 	if m.ParentDN.IsNull() || m.ParentDN.IsUnknown() {

@@ -353,6 +353,14 @@ func NewFvTenantRootModelNull() FvTenantRootModel {
 	}
 }
 
+func (*FvTenantRootModel) SupportedSubtreeClasses(apicVersion string) []string {
+	return supportedSubtreeClasses(apicVersion, []string{
+		"fvRsTenantMonPol",
+		"tagAnnotation",
+		"tagTag",
+	})
+}
+
 func (m *FvTenantRootModel) BuildDN() string {
 	return fmt.Sprintf("uni/%s", m.BuildRN())
 }

@@ -384,6 +384,15 @@ func NewFvFBRGroupRootModelNull() FvFBRGroupRootModel {
 	}
 }
 
+func (*FvFBRGroupRootModel) SupportedSubtreeClasses(apicVersion string) []string {
+	return supportedSubtreeClasses(apicVersion, []string{
+		"fvFBRMember",
+		"fvFBRoute",
+		"tagAnnotation",
+		"tagTag",
+	})
+}
+
 func (m *FvFBRGroupRootModel) BuildDN() string {
 	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
 }

@@ -439,6 +439,13 @@ func NewPkiKeyRingRootModelNull() PkiKeyRingRootModel {
 	}
 }
 
+func (*PkiKeyRingRootModel) SupportedSubtreeClasses(apicVersion string) []string {
+	return supportedSubtreeClasses(apicVersion, []string{
+		"tagAnnotation",
+		"tagTag",
+	})
+}
+
 func (m *PkiKeyRingRootModel) BuildDN() string {
 	parentDN := m.ParentDN.ValueString()
 	if m.ParentDN.IsNull() || m.ParentDN.IsUnknown() {

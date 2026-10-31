@@ -352,6 +352,14 @@ func NewCoppIfPolRootModelNull() CoppIfPolRootModel {
 	}
 }
 
+func (*CoppIfPolRootModel) SupportedSubtreeClasses(apicVersion string) []string {
+	return supportedSubtreeClasses(apicVersion, []string{
+		"coppProtoClassP",
+		"tagAnnotation",
+		"tagTag",
+	})
+}
+
 func (m *CoppIfPolRootModel) BuildDN() string {
 	return fmt.Sprintf("uni/%s", m.BuildRN())
 }

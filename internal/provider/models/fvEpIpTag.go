@@ -316,6 +316,13 @@ func NewFvEpIpTagRootModelNull() FvEpIpTagRootModel {
 	}
 }
 
+func (*FvEpIpTagRootModel) SupportedSubtreeClasses(apicVersion string) []string {
+	return supportedSubtreeClasses(apicVersion, []string{
+		"tagAnnotation",
+		"tagTag",
+	})
+}
+
 func (m *FvEpIpTagRootModel) BuildDN() string {
 	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
 }

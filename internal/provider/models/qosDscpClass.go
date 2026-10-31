@@ -549,6 +549,13 @@ func NewQosDscpClassRootModelNull() QosDscpClassRootModel {
 	}
 }
 
+func (*QosDscpClassRootModel) SupportedSubtreeClasses(apicVersion string) []string {
+	return supportedSubtreeClasses(apicVersion, []string{
+		"tagAnnotation",
+		"tagTag",
+	})
+}
+
 func (m *QosDscpClassRootModel) BuildDN() string {
 	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
 }

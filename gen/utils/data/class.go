@@ -552,6 +552,32 @@ func (c *Class) HasDatasourceArtifact() bool {
 	return slices.Contains(c.Artifacts, DatasourceArtifact)
 }
 
+// SubtreeClassNames returns every descendant class that must be included in an
+// APIC subtree request. The runtime filters the generated list for the connected
+// APIC version.
+func (c *Class) SubtreeClassNames(ds *DataStore) []string {
+	childClassNames := make([]string, 0)
+	visited := map[string]bool{c.Name.String(): true}
+
+	var collect func(Class)
+	collect = func(class Class) {
+		for _, childClassName := range class.Children {
+			name := childClassName.String()
+			if visited[name] {
+				continue
+			}
+
+			visited[name] = true
+			childClassNames = append(childClassNames, name)
+			collect(ds.Classes[name])
+		}
+	}
+
+	collect(*c)
+	slices.Sort(childClassNames)
+	return childClassNames
+}
+
 // ModelProperties returns the ordered schema-backed APIC properties owned by
 // the reusable class model. parentDn belongs to top-level wrappers and is not
 // an APIC payload property.

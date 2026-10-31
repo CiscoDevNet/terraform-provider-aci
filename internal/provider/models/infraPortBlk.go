@@ -381,6 +381,14 @@ func NewInfraPortBlkRootModelNull() InfraPortBlkRootModel {
 	}
 }
 
+func (*InfraPortBlkRootModel) SupportedSubtreeClasses(apicVersion string) []string {
+	return supportedSubtreeClasses(apicVersion, []string{
+		"infraRsAccBndlSubgrp",
+		"tagAnnotation",
+		"tagTag",
+	})
+}
+
 func (m *InfraPortBlkRootModel) BuildDN() string {
 	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
 }

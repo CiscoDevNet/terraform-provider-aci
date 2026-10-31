@@ -324,6 +324,13 @@ func NewStpIfPolRootModelNull() StpIfPolRootModel {
 	}
 }
 
+func (*StpIfPolRootModel) SupportedSubtreeClasses(apicVersion string) []string {
+	return supportedSubtreeClasses(apicVersion, []string{
+		"tagAnnotation",
+		"tagTag",
+	})
+}
+
 func (m *StpIfPolRootModel) BuildDN() string {
 	return fmt.Sprintf("uni/%s", m.BuildRN())
 }

@@ -159,6 +159,10 @@ func NewTagAnnotationRootModelNull() TagAnnotationRootModel {
 	}
 }
 
+func (*TagAnnotationRootModel) SupportedSubtreeClasses(apicVersion string) []string {
+	return supportedSubtreeClasses(apicVersion, []string{})
+}
+
 func (m *TagAnnotationRootModel) BuildDN() string {
 	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
 }

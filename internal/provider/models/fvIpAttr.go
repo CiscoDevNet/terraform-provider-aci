@@ -338,6 +338,13 @@ func NewFvIpAttrRootModelNull() FvIpAttrRootModel {
 	}
 }
 
+func (*FvIpAttrRootModel) SupportedSubtreeClasses(apicVersion string) []string {
+	return supportedSubtreeClasses(apicVersion, []string{
+		"tagAnnotation",
+		"tagTag",
+	})
+}
+
 func (m *FvIpAttrRootModel) BuildDN() string {
 	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
 }

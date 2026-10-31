@@ -30,6 +30,61 @@ func classNamesToStrings(names []*ClassName) []string {
 	return result
 }
 
+type subtreeClassNamesInput struct {
+	RootClassName string
+	Classes       map[string]Class
+}
+
+func TestSubtreeClassNames(t *testing.T) {
+	t.Parallel()
+
+	testCases := []test.TestCase{
+		{
+			Name: "test_recursive_children_are_sorted_and_deduplicated",
+			Input: subtreeClassNamesInput{
+				RootClassName: "fvRoot",
+				Classes: map[string]Class{
+					"fvRoot": {
+						Name:     testClassName("fvRoot"),
+						Children: []*ClassName{testClassName("fvChildB"), testClassName("fvChildA")},
+					},
+					"fvChildA": {
+						Name:     testClassName("fvChildA"),
+						Children: []*ClassName{testClassName("fvGrandchild")},
+					},
+					"fvChildB": {
+						Name:     testClassName("fvChildB"),
+						Children: []*ClassName{testClassName("fvGrandchild")},
+					},
+					"fvGrandchild": {Name: testClassName("fvGrandchild")},
+				},
+			},
+			Expected: []string{"fvChildA", "fvChildB", "fvGrandchild"},
+		},
+		{
+			Name: "test_class_without_children",
+			Input: subtreeClassNamesInput{
+				RootClassName: "fvRoot",
+				Classes: map[string]Class{
+					"fvRoot": {Name: testClassName("fvRoot")},
+				},
+			},
+			Expected: []string{},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.(subtreeClassNamesInput)
+			dataStore := &DataStore{Classes: input.Classes}
+			rootClass := dataStore.Classes[input.RootClassName]
+			actual := rootClass.SubtreeClassNames(dataStore)
+			assert.Equal(t, testCase.Expected, actual, test.MessageEqual(testCase.Expected, actual, testCase.Name))
+		})
+	}
+}
+
 func TestSetResourceNameFromLabelNoRelationWithIdentifier(t *testing.T) {
 	t.Parallel()
 	ds := initializeDataStoreTest(t)
