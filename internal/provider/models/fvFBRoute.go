@@ -302,6 +302,13 @@ func NewFvFBRouteRootModelNull() FvFBRouteRootModel {
 	}
 }
 
+func (*FvFBRouteRootModel) SupportedSubtreeClasses(apicVersion string) []string {
+	return supportedSubtreeClasses(apicVersion, []string{
+		"tagAnnotation",
+		"tagTag",
+	})
+}
+
 func (m *FvFBRouteRootModel) BuildDN() string {
 	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
 }

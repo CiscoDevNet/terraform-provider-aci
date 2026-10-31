@@ -267,6 +267,13 @@ func NewL3extRsLblToInstPRootModelNull() L3extRsLblToInstPRootModel {
 	}
 }
 
+func (*L3extRsLblToInstPRootModel) SupportedSubtreeClasses(apicVersion string) []string {
+	return supportedSubtreeClasses(apicVersion, []string{
+		"tagAnnotation",
+		"tagTag",
+	})
+}
+
 func (m *L3extRsLblToInstPRootModel) BuildDN() string {
 	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
 }

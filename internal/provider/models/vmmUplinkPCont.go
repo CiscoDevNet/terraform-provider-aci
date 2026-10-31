@@ -317,6 +317,14 @@ func NewVmmUplinkPContRootModelNull() VmmUplinkPContRootModel {
 	}
 }
 
+func (*VmmUplinkPContRootModel) SupportedSubtreeClasses(apicVersion string) []string {
+	return supportedSubtreeClasses(apicVersion, []string{
+		"tagAnnotation",
+		"tagTag",
+		"vmmUplinkP",
+	})
+}
+
 func (m *VmmUplinkPContRootModel) BuildDN() string {
 	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
 }

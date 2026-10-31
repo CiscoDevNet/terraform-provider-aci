@@ -267,6 +267,13 @@ func NewInfraRsDomPRootModelNull() InfraRsDomPRootModel {
 	}
 }
 
+func (*InfraRsDomPRootModel) SupportedSubtreeClasses(apicVersion string) []string {
+	return supportedSubtreeClasses(apicVersion, []string{
+		"tagAnnotation",
+		"tagTag",
+	})
+}
+
 func (m *InfraRsDomPRootModel) BuildDN() string {
 	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
 }

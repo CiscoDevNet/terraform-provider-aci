@@ -665,6 +665,19 @@ func NewFvESgRootModelNull() FvESgRootModel {
 	}
 }
 
+func (*FvESgRootModel) SupportedSubtreeClasses(apicVersion string) []string {
+	return supportedSubtreeClasses(apicVersion, []string{
+		"fvRsCons",
+		"fvRsConsIf",
+		"fvRsIntraEpg",
+		"fvRsProv",
+		"fvRsScope",
+		"fvRsSecInherited",
+		"tagAnnotation",
+		"tagTag",
+	})
+}
+
 func (m *FvESgRootModel) BuildDN() string {
 	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
 }

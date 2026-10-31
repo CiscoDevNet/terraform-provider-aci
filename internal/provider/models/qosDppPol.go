@@ -676,6 +676,13 @@ func NewQosDppPolRootModelNull() QosDppPolRootModel {
 	}
 }
 
+func (*QosDppPolRootModel) SupportedSubtreeClasses(apicVersion string) []string {
+	return supportedSubtreeClasses(apicVersion, []string{
+		"tagAnnotation",
+		"tagTag",
+	})
+}
+
 func (m *QosDppPolRootModel) BuildDN() string {
 	parentDN := m.ParentDN.ValueString()
 	if m.ParentDN.IsNull() || m.ParentDN.IsUnknown() {

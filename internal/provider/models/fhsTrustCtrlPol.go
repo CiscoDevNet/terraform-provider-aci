@@ -401,6 +401,13 @@ func NewFhsTrustCtrlPolRootModelNull() FhsTrustCtrlPolRootModel {
 	}
 }
 
+func (*FhsTrustCtrlPolRootModel) SupportedSubtreeClasses(apicVersion string) []string {
+	return supportedSubtreeClasses(apicVersion, []string{
+		"tagAnnotation",
+		"tagTag",
+	})
+}
+
 func (m *FhsTrustCtrlPolRootModel) BuildDN() string {
 	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
 }

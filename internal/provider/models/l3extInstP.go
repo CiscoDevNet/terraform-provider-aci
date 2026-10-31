@@ -859,6 +859,21 @@ func NewL3extInstPRootModelNull() L3extInstPRootModel {
 	}
 }
 
+func (*L3extInstPRootModel) SupportedSubtreeClasses(apicVersion string) []string {
+	return supportedSubtreeClasses(apicVersion, []string{
+		"fvRsCons",
+		"fvRsConsIf",
+		"fvRsCustQosPol",
+		"fvRsIntraEpg",
+		"fvRsProtBy",
+		"fvRsProv",
+		"fvRsSecInherited",
+		"l3extRsInstPToProfile",
+		"tagAnnotation",
+		"tagTag",
+	})
+}
+
 func (m *L3extInstPRootModel) BuildDN() string {
 	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
 }

@@ -408,6 +408,15 @@ func NewNetflowMonitorPolRootModelNull() NetflowMonitorPolRootModel {
 	}
 }
 
+func (*NetflowMonitorPolRootModel) SupportedSubtreeClasses(apicVersion string) []string {
+	return supportedSubtreeClasses(apicVersion, []string{
+		"netflowRsMonitorToExporter",
+		"netflowRsMonitorToRecord",
+		"tagAnnotation",
+		"tagTag",
+	})
+}
+
 func (m *NetflowMonitorPolRootModel) BuildDN() string {
 	parentDN := m.ParentDN.ValueString()
 	if m.ParentDN.IsNull() || m.ParentDN.IsUnknown() {

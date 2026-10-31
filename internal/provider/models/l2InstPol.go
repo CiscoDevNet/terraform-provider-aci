@@ -327,6 +327,13 @@ func NewL2InstPolRootModelNull() L2InstPolRootModel {
 	}
 }
 
+func (*L2InstPolRootModel) SupportedSubtreeClasses(apicVersion string) []string {
+	return supportedSubtreeClasses(apicVersion, []string{
+		"tagAnnotation",
+		"tagTag",
+	})
+}
+
 func (m *L2InstPolRootModel) BuildDN() string {
 	return fmt.Sprintf("uni/%s", m.BuildRN())
 }

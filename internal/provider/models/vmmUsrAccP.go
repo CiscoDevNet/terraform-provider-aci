@@ -335,6 +335,13 @@ func NewVmmUsrAccPRootModelNull() VmmUsrAccPRootModel {
 	}
 }
 
+func (*VmmUsrAccPRootModel) SupportedSubtreeClasses(apicVersion string) []string {
+	return supportedSubtreeClasses(apicVersion, []string{
+		"tagAnnotation",
+		"tagTag",
+	})
+}
+
 func (m *VmmUsrAccPRootModel) BuildDN() string {
 	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
 }

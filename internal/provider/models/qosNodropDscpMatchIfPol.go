@@ -320,6 +320,13 @@ func NewQosNodropDscpMatchIfPolRootModelNull() QosNodropDscpMatchIfPolRootModel 
 	}
 }
 
+func (*QosNodropDscpMatchIfPolRootModel) SupportedSubtreeClasses(apicVersion string) []string {
+	return supportedSubtreeClasses(apicVersion, []string{
+		"tagAnnotation",
+		"tagTag",
+	})
+}
+
 func (m *QosNodropDscpMatchIfPolRootModel) BuildDN() string {
 	return fmt.Sprintf("uni/%s", m.BuildRN())
 }

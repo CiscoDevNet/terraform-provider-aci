@@ -352,6 +352,14 @@ func NewInfraAttEntityPRootModelNull() InfraAttEntityPRootModel {
 	}
 }
 
+func (*InfraAttEntityPRootModel) SupportedSubtreeClasses(apicVersion string) []string {
+	return supportedSubtreeClasses(apicVersion, []string{
+		"infraRsDomP",
+		"tagAnnotation",
+		"tagTag",
+	})
+}
+
 func (m *InfraAttEntityPRootModel) BuildDN() string {
 	return fmt.Sprintf("uni/%s", m.BuildRN())
 }

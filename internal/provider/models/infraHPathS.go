@@ -409,6 +409,15 @@ func NewInfraHPathSRootModelNull() InfraHPathSRootModel {
 	}
 }
 
+func (*InfraHPathSRootModel) SupportedSubtreeClasses(apicVersion string) []string {
+	return supportedSubtreeClasses(apicVersion, []string{
+		"infraRsHPathAtt",
+		"infraRsPathToAccBaseGrp",
+		"tagAnnotation",
+		"tagTag",
+	})
+}
+
 func (m *InfraHPathSRootModel) BuildDN() string {
 	parentDN := m.ParentDN.ValueString()
 	if m.ParentDN.IsNull() || m.ParentDN.IsUnknown() {

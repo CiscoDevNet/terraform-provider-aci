@@ -302,6 +302,13 @@ func NewMgmtSubnetRootModelNull() MgmtSubnetRootModel {
 	}
 }
 
+func (*MgmtSubnetRootModel) SupportedSubtreeClasses(apicVersion string) []string {
+	return supportedSubtreeClasses(apicVersion, []string{
+		"tagAnnotation",
+		"tagTag",
+	})
+}
+
 func (m *MgmtSubnetRootModel) BuildDN() string {
 	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
 }

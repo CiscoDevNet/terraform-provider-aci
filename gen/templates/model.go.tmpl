@@ -457,6 +457,14 @@ func New{{ .Class.Name.Capitalized }}RootModelNull() {{ .Class.Name.Capitalized 
 	}
 }
 
+func (*{{ .Class.Name.Capitalized }}RootModel) SupportedSubtreeClasses(apicVersion string) []string {
+	return supportedSubtreeClasses(apicVersion, []string{
+		{{- range (.Class.SubtreeClassNames .DataStore) }}
+		{{ printf "%q" . }},
+		{{- end }}
+	})
+}
+
 {{ if .Class.ParentDnProperty -}}
 func (m *{{ .Class.Name.Capitalized }}RootModel) BuildDN() string {
 	{{- if or .Class.ParentDnHasSchemaDefault .Class.ParentDnVariants }}

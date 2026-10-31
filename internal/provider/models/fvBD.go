@@ -1298,6 +1298,26 @@ func NewFvBDRootModelNull() FvBDRootModel {
 	}
 }
 
+func (*FvBDRootModel) SupportedSubtreeClasses(apicVersion string) []string {
+	return supportedSubtreeClasses(apicVersion, []string{
+		"fvAccP",
+		"fvRogueExceptionMac",
+		"fvRsABDPolMonPol",
+		"fvRsBDToFhs",
+		"fvRsBDToNdP",
+		"fvRsBDToNetflowMonitorPol",
+		"fvRsBDToOut",
+		"fvRsBDToProfile",
+		"fvRsBDToRelayP",
+		"fvRsBdToEpRet",
+		"fvRsCtx",
+		"fvRsIgmpsn",
+		"fvRsMldsn",
+		"tagAnnotation",
+		"tagTag",
+	})
+}
+
 func (m *FvBDRootModel) BuildDN() string {
 	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
 }

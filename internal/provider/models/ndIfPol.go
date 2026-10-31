@@ -455,6 +455,13 @@ func NewNdIfPolRootModelNull() NdIfPolRootModel {
 	}
 }
 
+func (*NdIfPolRootModel) SupportedSubtreeClasses(apicVersion string) []string {
+	return supportedSubtreeClasses(apicVersion, []string{
+		"tagAnnotation",
+		"tagTag",
+	})
+}
+
 func (m *NdIfPolRootModel) BuildDN() string {
 	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
 }

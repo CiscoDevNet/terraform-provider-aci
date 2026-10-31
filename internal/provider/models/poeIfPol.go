@@ -437,6 +437,14 @@ func NewPoeIfPolRootModelNull() PoeIfPolRootModel {
 	}
 }
 
+func (*PoeIfPolRootModel) SupportedSubtreeClasses(apicVersion string) []string {
+	return supportedSubtreeClasses(apicVersion, []string{
+		"poeRsPoeEpg",
+		"tagAnnotation",
+		"tagTag",
+	})
+}
+
 func (m *PoeIfPolRootModel) BuildDN() string {
 	return fmt.Sprintf("uni/%s", m.BuildRN())
 }

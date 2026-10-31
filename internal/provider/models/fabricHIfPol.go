@@ -420,6 +420,13 @@ func NewFabricHIfPolRootModelNull() FabricHIfPolRootModel {
 	}
 }
 
+func (*FabricHIfPolRootModel) SupportedSubtreeClasses(apicVersion string) []string {
+	return supportedSubtreeClasses(apicVersion, []string{
+		"tagAnnotation",
+		"tagTag",
+	})
+}
+
 func (m *FabricHIfPolRootModel) BuildDN() string {
 	return fmt.Sprintf("uni/%s", m.BuildRN())
 }

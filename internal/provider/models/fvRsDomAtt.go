@@ -632,6 +632,14 @@ func NewFvRsDomAttRootModelNull() FvRsDomAttRootModel {
 	}
 }
 
+func (*FvRsDomAttRootModel) SupportedSubtreeClasses(apicVersion string) []string {
+	return supportedSubtreeClasses(apicVersion, []string{
+		"fvUplinkOrderCont",
+		"tagAnnotation",
+		"tagTag",
+	})
+}
+
 func (m *FvRsDomAttRootModel) BuildDN() string {
 	return fmt.Sprintf("%s/%s", m.ParentDN.ValueString(), m.BuildRN())
 }

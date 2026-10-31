@@ -327,6 +327,13 @@ func NewFabricLinkFlapPolRootModelNull() FabricLinkFlapPolRootModel {
 	}
 }
 
+func (*FabricLinkFlapPolRootModel) SupportedSubtreeClasses(apicVersion string) []string {
+	return supportedSubtreeClasses(apicVersion, []string{
+		"tagAnnotation",
+		"tagTag",
+	})
+}
+
 func (m *FabricLinkFlapPolRootModel) BuildDN() string {
 	return fmt.Sprintf("uni/%s", m.BuildRN())
 }
