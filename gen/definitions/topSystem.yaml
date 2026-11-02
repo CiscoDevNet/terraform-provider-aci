@@ -1,14 +1,35 @@
+artifacts:
+- datasource
 documentation:
   dn_formats:
   - topology/pod-{id}/node-{id}/sys
   sub_category: Fabric Inventory
+  ui_locations:
+  - Generic
+exclude_parents:
+- fabricNode
+- topRoot
+identified_by:
+- id
+- podId
+migration_source: from_sdkv2
 properties:
   address:
     restriction: read_only
   bootstrapState:
     restriction: read_only
+  childAction:
+    deprecated: true
+    restriction: read_only
+    value_type: string
   clusterTimeDiff:
     restriction: read_only
+  configIssues:
+    deprecated: true
+    remove_valid_values:
+    - none
+    restriction: read_only
+    value_type: string
   controlPlaneMTU:
     restriction: read_only
   currentTime:
@@ -33,7 +54,13 @@ properties:
   id:
     attribute_name: system_id
     documentation:
-      description: The identifier of the system object.
+      description: The `id` attribute of the parent APIC `fabricNode` class.
+    restriction: required
+    test_config:
+      create:
+      - config_value: "1"
+      default:
+      - config_value: "1"
   inbMgmtAddr:
     attribute_name: inband_management_address
     documentation:
@@ -72,6 +99,10 @@ properties:
     documentation:
       description: The last reset reason for this system.
     restriction: read_only
+  lcOwn:
+    deprecated: true
+    restriction: read_only
+    value_type: string
   modTs:
     restriction: read_only
   mode:
@@ -124,7 +155,14 @@ properties:
   podId:
     attribute_name: pod_id
     documentation:
-      description: The pod identifier.
+      description: The `id` attribute of the parent APIC `fabricPod` class.
+    documentation_property_name: id
+    restriction: required
+    test_config:
+      create:
+      - config_value: "1"
+      default:
+      - config_value: "1"
   remoteNetworkId:
     documentation:
       description: The remote network ID.
@@ -176,6 +214,10 @@ properties:
     documentation:
       description: The operational state of this system.
     restriction: read_only
+  status:
+    deprecated: true
+    restriction: read_only
+    value_type: string
   systemUpTime:
     attribute_name: system_uptime
     restriction: read_only
@@ -197,3 +239,49 @@ properties:
     documentation:
       description: The virtual mode of this system.
     restriction: read_only
+rn_prepend: pod-{podId}/node-{id}
+state_upgrades:
+- attributes:
+    bootstrapState:
+      legacy_attribute: boot_strap_tate
+    etepAddr:
+      legacy_attribute: etep_addr
+    inbMgmtAddr:
+      legacy_attribute: inb_mgmt_addr
+    inbMgmtAddr6:
+      legacy_attribute: inb_mgmt_addr6
+    inbMgmtAddr6Mask:
+      legacy_attribute: inb_mgmt_addr6_mask
+    inbMgmtAddrMask:
+      legacy_attribute: inb_mgmt_addr_mask
+    inbMgmtGateway:
+      legacy_attribute: inb_mgmt_gateway
+    inbMgmtGateway6:
+      legacy_attribute: inb_mgmt_gateway6
+    monPolDn:
+      legacy_attribute: mon_pol_dn
+    oobMgmtAddr:
+      legacy_attribute: oob_mgmt_addr
+    oobMgmtAddr6:
+      legacy_attribute: oob_mgmt_addr6
+    oobMgmtAddr6Mask:
+      legacy_attribute: oob_mgmt_addr6_mask
+    oobMgmtAddrMask:
+      legacy_attribute: oob_mgmt_addr_mask
+    oobMgmtGateway:
+      legacy_attribute: oob_mgmt_gateway
+    oobMgmtGateway6:
+      legacy_attribute: oob_mgmt_gateway6
+    rlAutoMode:
+      legacy_attribute: rl_auto_mode
+    rlGroupId:
+      legacy_attribute: rl_group_id
+    rlOperPodId:
+      legacy_attribute: rl_oper_pod_id
+    rlRoutableMode:
+      legacy_attribute: rl_routable_mode
+    rldirectMode:
+      legacy_attribute: rldirect_mode
+    unicastXrEpLearnDisable:
+      legacy_attribute: unicast_xr_ep_learn_disable
+  prior_schema_version: 1

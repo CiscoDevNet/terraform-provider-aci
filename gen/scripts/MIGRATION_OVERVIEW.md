@@ -72,6 +72,7 @@ Value or shape needs transformation. Notes describe what each transform does.
 | `overwrites` | 101 | `property.attribute_name` | Old key uses snake_case attribute names (`bd_enforced_enable: bd_enforcement`); new key is the meta camelCase name (`bdEnforcedEnable`) under `properties.<metaName>.attribute_name`. |
 | `default_values` | 34 | `property.default_values` | Shape change: old format is `metaPropName: value`; new format is `properties.<metaName>.default_values: { value: versionRange }`. Empty version range string applies to all versions. |
 | `resource_required` | 17 | `property.restriction: required` | Each list entry becomes one property with `restriction: required`. |
+| `datasource_required` (top-level list) | 1 (`topSystem`) | `class.identified_by` + `property.restriction: required` | Resolve each public Terraform attribute name through the overwrite registry to its meta property, add that property to `identified_by`, and mark it required. The `topSystem` canonical correction supplies stable `"1"` test/example values for both identifiers. |
 | `ignores` | 15 | `property.restriction: exclude` (or `global.exclude_properties`) | Class-scoped excludes go to per-property `restriction`; cross-class excludes belong in the new global. |
 | `read_only_properties` | 6 | `property.restriction: read_only` | List of meta property names → individual `restriction` entries. |
 | `remove_valid_values` | 12 | `property.remove_valid_values` | Shape change: old format is `metaPropName: [values]` at the top of the file; new format is `properties.<metaName>.remove_valid_values: [values]`. |
@@ -364,7 +365,6 @@ The remaining POSTPONE keys depend on a downstream test, documentation, or custo
 | Old key | Files | Revisit when |
 |---|---:|---|
 | `class_version_tests` | 1 (`commPol`) | The test templates are rewritten. If the regenerated `commPol` test still needs an independent version filter, ADD `ClassTestConfigDefinition.supported_versions string` (parsed via the existing `Versions` helper). Otherwise drop the key. |
-| `datasource_required` (top-level list) | 1 (`topSystem`) | Resolving this requires migrated datasource templates and normalized metadata for `topSystem` — see §8.2. Definition-only classes are available for name lookups but deliberately do not enter `DataStore.Classes`, so they do not create model or example render jobs. The live datasource remains the hand-written [internal/provider/data_source_aci_system.go](../../internal/provider/data_source_aci_system.go). |
 | `ignore_custom_type_docs` | 6 (`fvAEPg`, `fvRsCons`, `fvRsConsIf`, `fvRsProv`, `mgmtInstP`, `mgmtRsOoBCons`) | The renderer’s rule for `SemanticEquality` valid-values + range docs is decided — see §8.3. Until then, keep the override; once a uniform rule lands the entries collapse to DERIVE (or, less likely, REUSE under a renamed flag). |
 | `custom_test_dependency_name` | 1 (`vnsLDevIf`, value `ImportedVnsLDevVipWithFvTenant`) | The test renderer is built and proves it can emit a separate-tenant target subtree via the existing `test_config.dependencies` mechanism — see §8.5. Until then, the hand-written companion HCL in [internal/provider/test_constants.go](../../internal/provider/test_constants.go) stays untouched. |
 
@@ -382,19 +382,11 @@ The other 10 nested `custom_type` entries are IpAddress values; their author-cho
 
 ### 8.2 `topSystem` / datasource-only artifact context
 
-`aci_system` is the only public datasource without a matching resource. There is no `gen/meta/topSystem.json`, so the class never enters the active DataStore and cannot receive normal class-scoped render jobs. The hand-written [internal/provider/data_source_aci_system.go](../../internal/provider/data_source_aci_system.go), its test, `docs/data-sources/system.md`, and both files in its example directory survive regeneration because manifest cleanup removes only exact managed paths. The `Required: true` behavior of `system_id` and `pod_id` remains hand-coded in the datasource.
+`aci_system` is the only public datasource without a matching resource. The tracked `gen/meta/topSystem.json` now lets the class enter the active DataStore and receive the ordinary model, datasource, example, and documentation render jobs. Its canonical definition pins `artifacts: [datasource]`, so no resource artifact is inferred.
 
-[gen/definitions/properties/topSystem.yaml](../definitions/properties/topSystem.yaml) was authored alongside the manual plugin-framework migration of `aci_system`. The migration script reads it and emits `gen/definitions/topSystem.yaml`, but logs and omits the top-level `datasource_required:` list. The active DataStore cannot consume that emitted definition without corresponding class metadata.
+[gen/definitions/properties/topSystem.yaml](../definitions/properties/topSystem.yaml) was authored alongside the manual plugin-framework migration of `aci_system`. The migration script now resolves its top-level `datasource_required:` list into `identified_by: [id, podId]` and `restriction: required` on both properties. A canonical correction excludes the metadata parents, prepends `pod-{podId}/node-{id}` to the `sys` RN, and thereby preserves the established `topology/pod-<pod>/node-<system>/sys` lookup without exposing `parent_dn`.
 
-The mechanism for the new pipeline is decided and partially implemented: `ClassDefinition.artifacts []ArtifactEnum` (see §4.2) controls model wrappers and active example/documentation jobs for every metadata-backed class, while definition-only classes use it only to resolve the availability of existing provider artifacts in cross-class documentation. `topSystem` therefore needs normalized metadata (or an equivalent normalized class source) before `artifacts: [datasource]` can select a datasource render job. The `Required: true` migration on `system_id`/`pod_id` then collapses into the existing per-property `restriction: required`; no new enum axis is needed on `PropertyDefinition`.
-
-What remains is the class-input and datasource-template build-out:
-
-- Introduce a standard metadata source for `topSystem` (or an explicitly normalized synthetic class) so the emitted definition can enter the DataStore.
-- Migrate the datasource schema, implementation, and test templates. Class-backed datasource documentation is already generated; the manifest preserves the handwritten system page until normalized `topSystem` data lets that job claim its path.
-- Walk through the `topSystem.yaml` content (`documentation` / `overwrites` / `read_only_properties` fold into the standard schema, `datasource_required` collapses into per-property `restriction: required`) before replacing the manual files.
-
-Deprecation path: this entry retires when `topSystem` enters the DataStore and its datasource is fully expressible through the standard templates.
+The four same-name provider-deprecated properties (`childAction`, `configIssues`, `lcOwn`, and `status`) remain current computed string attributes. The renamed SDKv2 aliases are deliberately not added to the current model during this phase; their mappings are recorded only under the `prior_schema_version: 1` `state_upgrades` entry for the later legacy-attribute implementation.
 
 ### 8.3 `ignore_custom_type_docs` / `SemanticEquality` valid-values rendering context
 
@@ -543,7 +535,7 @@ The acceptance-test renderer may eventually iterate every mapped parent-target s
 
 ## 9. Migration-script work plan
 
-The current [migrate_class_definitions.go](migrate_class_definitions.go) is built out across §§1–7 for both class-level and property-level YAML (the `knownLegacyKeys` allowlist mirrors the §10 audit one-for-one and every entry is `implemented: true`); unresolved §8 POSTPONE entries are dropped during migration with a per-file log line. The normalized example-value and parent-target mapping work described in §§8.4 and 8.6 is implemented. What remains is the downstream acceptance-test and custom-type work for the entries still listed in §8.
+The current [migrate_class_definitions.go](migrate_class_definitions.go) is built out across §§1–7 for both class-level and property-level YAML (the `knownLegacyKeys` allowlist mirrors the §10 audit one-for-one and every entry is `implemented: true`); unresolved §8 POSTPONE entries are dropped during migration with a per-file log line. The normalized datasource-identifier, example-value, and parent-target mapping work described in §§8.2, 8.4, and 8.6 is implemented. What remains is the downstream acceptance-test and custom-type work for the entries still listed in §8.
 
 Script inputs are the legacy YAML files under [gen/definitions/classes/](../definitions/classes/) and [gen/definitions/properties/](../definitions/properties/). Those directories and the one-shot SDKv2 schema dump [gen/definitions/schema-git-commit-e21fb3e5.json](../definitions/schema-git-commit-e21fb3e5.json) remain unchanged from `develop`. The current script does not consume the JSON; it is retained for future state-upgrade compatibility work. The active loader is non-recursive, so it reads only flat canonical YAML files and ignores the two legacy directories.
 
@@ -648,7 +640,7 @@ All ten steps below are implemented in [migrate_class_definitions.go](migrate_cl
 6. **§5 REUSE** — apply the remaps: redundant `static_custom_type: ip_address` drops after a meta-flag assertion, while the named `vmm_arp_learning` value maps explicitly; `max_one_class_allowed` → `is_single_nested_when_defined_as_child`; duplicate `parent_example_dn` drops after its value is preserved in normalized `parentDn` data; `remove_from_contains` → `exclude_children`.
 7. **§6 DERIVE** — drop the derivable datasource and identifier keys with a one-line comment per file. Preserve nested `test_values.resource_required` as the property's Default scenario before dropping the old wrapper. Required and identifying properties already use Default in both public examples, preserving the legacy full-example fallback without duplicating it in `example_config.full`. For `datasource_required` nested, emit a warning when a key isn’t in the renamed `IdentifiedBy` or its value diverges from that required-only scenario. For `datasource_non_existing` nested, emit a warning when a key isn’t in the renamed `IdentifiedBy` or its value is not a non-matching transform. `resource_identifier` remains derivable from meta `rnFormat`.
 8. **§7 CONST** — drop both keys from `classes/global.yaml`.
-9. **§8 resolution / POSTPONE** — migrate `example_value_overwrite` to dependency or property semantic references. Drop the four still-deferred entries (`class_version_tests`, `datasource_required` top-level, `ignore_custom_type_docs`, `custom_test_dependency_name`) with a per-file log and retain their rationale in §8.
+9. **§8 resolution / POSTPONE** — migrate `example_value_overwrite` to dependency or property semantic references and migrate top-level `datasource_required` into datasource identifiers. Drop the three still-deferred entries (`class_version_tests`, `ignore_custom_type_docs`, `custom_test_dependency_name`) with a per-file log and retain their rationale in §8.
 10. **One-off cleanup** — drop the redundant `include: true` from `fvFBRoute` during migration. The class has `IdentifiedBy = ["fbrPrefix"]` and `RnFormat = "pfx-..."`, so the `provider.go.tmpl` registry conditional `or (and .IdentifiedBy (not (and .MaxOneClassAllowed (hasPrefix .RnFormat "rs")))) .Include` is already satisfied by the first branch.
 
 Coverage today: the loader's `UnmarshalStrict` returns clean against every emitted YAML in the corpus; the L1 unknown-key tally is empty and the L2 per-section totals match the disposition catalog.
@@ -659,7 +651,6 @@ None block the migration script. The walk-through resolved every key in §4–§
 
 | POSTPONE entry | Blocked on | Owner area |
 |---|---|---|
-| `datasource_required` top-level (§8.2) | `topSystem` receives a standard metadata source and the datasource schema/implementation/test/docs templates are migrated. Manifest ownership already preserves the handwritten files. | Data model / datasource templates. |
 | `ignore_custom_type_docs` (§8.3) | Docs renderer picks a uniform rule for `SemanticEquality` valid-values + validator-range output (uniform suppress, localname=wire DERIVE, or per-property ADD). | Docs renderer / editorial. |
 | `custom_test_dependency_name` (§8.5) | Test renderer emits distinct HCL labels per `TestDependency.Reference` so a target dependency can carry its own tenant subtree. | Test renderer. |
 | `class_version_tests` (§8 table only) | Test templates are rewritten; re-evaluate whether `commPol` still needs an independent version filter. | Test templates. |

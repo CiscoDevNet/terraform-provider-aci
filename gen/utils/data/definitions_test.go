@@ -2,6 +2,9 @@ package data
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
+	"runtime"
 	"testing"
 
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils/test"
@@ -636,6 +639,62 @@ state_upgrades:
 	v3 := parsedDefinition.StateUpgrades[1]
 	assert.Equal(t, 3, v3.PriorSchemaVersion, "second entry's prior_schema_version must round-trip independently")
 	assert.Equal(t, "description", v3.Attributes["descr"].LegacyAttribute)
+}
+
+// TestTopSystemMigrationDefinition protects the datasource's documented DN and
+// complete deferred legacy-alias mapping.
+func TestTopSystemMigrationDefinition(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	_, currentFile, _, ok := runtime.Caller(0)
+	if !ok {
+		t.Fatal("determine definitions test path")
+	}
+	definitionPath := filepath.Join(filepath.Dir(currentFile), "..", "..", "definitions", "topSystem.yaml")
+	contents, err := os.ReadFile(definitionPath)
+	if err != nil {
+		t.Fatalf("read topSystem definition: %v", err)
+	}
+	definition, err := parseClassDefinition(contents)
+	if err != nil {
+		t.Fatalf("parse topSystem definition: %v", err)
+	}
+
+	assert.Equal(t, []string{"topology/pod-{id}/node-{id}/sys"}, definition.Documentation.DnFormats)
+	assert.Equal(t, FromSDKv2, definition.MigrationSource)
+	assert.Equal(t, "The `id` attribute of the parent APIC `fabricNode` class.", definition.Properties["id"].Documentation.Description)
+	assert.Equal(t, "id", definition.Properties["podId"].DocumentationPropertyName)
+	assert.Equal(t, "The `id` attribute of the parent APIC `fabricPod` class.", definition.Properties["podId"].Documentation.Description)
+	if !assert.Len(t, definition.StateUpgrades, 1) {
+		return
+	}
+
+	upgrade := definition.StateUpgrades[0]
+	assert.Equal(t, 1, upgrade.PriorSchemaVersion)
+	assert.Equal(t, map[string]AttributeUpgradeDefinition{
+		"bootstrapState":          {LegacyAttribute: "boot_strap_tate"},
+		"etepAddr":                {LegacyAttribute: "etep_addr"},
+		"inbMgmtAddr":             {LegacyAttribute: "inb_mgmt_addr"},
+		"inbMgmtAddr6":            {LegacyAttribute: "inb_mgmt_addr6"},
+		"inbMgmtAddr6Mask":        {LegacyAttribute: "inb_mgmt_addr6_mask"},
+		"inbMgmtAddrMask":         {LegacyAttribute: "inb_mgmt_addr_mask"},
+		"inbMgmtGateway":          {LegacyAttribute: "inb_mgmt_gateway"},
+		"inbMgmtGateway6":         {LegacyAttribute: "inb_mgmt_gateway6"},
+		"monPolDn":                {LegacyAttribute: "mon_pol_dn"},
+		"oobMgmtAddr":             {LegacyAttribute: "oob_mgmt_addr"},
+		"oobMgmtAddr6":            {LegacyAttribute: "oob_mgmt_addr6"},
+		"oobMgmtAddr6Mask":        {LegacyAttribute: "oob_mgmt_addr6_mask"},
+		"oobMgmtAddrMask":         {LegacyAttribute: "oob_mgmt_addr_mask"},
+		"oobMgmtGateway":          {LegacyAttribute: "oob_mgmt_gateway"},
+		"oobMgmtGateway6":         {LegacyAttribute: "oob_mgmt_gateway6"},
+		"rlAutoMode":              {LegacyAttribute: "rl_auto_mode"},
+		"rlGroupId":               {LegacyAttribute: "rl_group_id"},
+		"rlOperPodId":             {LegacyAttribute: "rl_oper_pod_id"},
+		"rlRoutableMode":          {LegacyAttribute: "rl_routable_mode"},
+		"rldirectMode":            {LegacyAttribute: "rldirect_mode"},
+		"unicastXrEpLearnDisable": {LegacyAttribute: "unicast_xr_ep_learn_disable"},
+	}, upgrade.Attributes)
 }
 
 // TestParseClassDefinition_StateUpgradesInvalidEnumValues confirms strict
