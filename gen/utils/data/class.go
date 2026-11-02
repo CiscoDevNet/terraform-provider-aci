@@ -867,9 +867,11 @@ func (c *Class) setProperties(ds *DataStore) error {
 				continue
 			}
 
-			// Include configurable properties (default behavior from meta file).
-			// Include non-configurable properties only when the restriction is ReadOnly.
-			if details["isConfigurable"] == true || propertyDefinition.Restriction == ReadOnly {
+			// Include configurable properties by default. An explicit definition
+			// restriction also opts a non-configurable property into the Terraform
+			// schema, for example an APIC read-only value used as a datasource
+			// lookup identifier.
+			if details["isConfigurable"] == true || propertyDefinition.Restriction != UndefinedRestriction {
 				property, err := NewProperty(name, details, propertyDefinition, ds.GlobalMetaDefinition)
 				if err != nil {
 					return err

@@ -189,6 +189,7 @@ var knownLegacyKeys = map[string]keyInfo{
 	"prop:remove_valid_values":       {sectionSemantic, true},
 	"prop:add_valid_values":          {sectionSemantic, true},
 	"prop:ignore_properties_in_test": {sectionSemantic, true},
+	"prop:datasource_required":       {sectionSemantic, true},
 
 	// S2 semantic
 	"prop:test_values": {sectionSemantic, true}, // C20 (bucket merge)
@@ -207,7 +208,6 @@ var knownLegacyKeys = map[string]keyInfo{
 	"prop:ignore_custom_type_docs":     {sectionPostpone, true}, // section 8.3
 	"prop:example_value_overwrite":     {sectionSemantic, true}, // section 8.4
 	"prop:custom_test_dependency_name": {sectionPostpone, true}, // section 8.5
-	"prop:datasource_required":         {sectionPostpone, true}, // section 8.2 (topSystem top-level only)
 }
 
 // legacyNestedResourceNameOverwrites identifies legacy overwrite
@@ -1798,9 +1798,26 @@ func migrateProperties(file, className string, legacy map[string]any, tally *key
 		case "example_value_overwrite":
 			migrateExampleValueOverwrite(file, className, val, out)
 
+		case "datasource_required":
+			// The only top-level datasource_required input is topSystem. Resolve
+			// its public Terraform names back to metadata properties, then use
+			// those properties as required datasource identifiers.
+			for _, attributeName := range asStringSlice(val) {
+				metaName, ok := metaReg.resolveMetaName(className, attributeName)
+				if !ok {
+					fmt.Printf("WARN: %s: datasource_required attribute %q has no meta resolution\n", file, attributeName)
+					continue
+				}
+				if !contains(out.IdentifiedBy, metaName) {
+					out.IdentifiedBy = append(out.IdentifiedBy, metaName)
+				}
+				property := upsertProperty(out, metaName)
+				setRestriction(file, metaName, &property, data.Required, "datasource_required")
+				out.Properties[metaName] = property
+			}
+
 		case "ignore_custom_type_docs",
-			"custom_test_dependency_name",
-			"datasource_required":
+			"custom_test_dependency_name":
 			// S8 POSTPONE: no slot in canonical struct yet; drop with a
 			// per-file warning so the loss is visible during migration.
 			fmt.Printf("POSTPONE: %s: %s dropped (no canonical slot; restore after section 8 lands)\n", file, key)
@@ -2042,6 +2059,85 @@ func applyCanonicalDefinitionCorrections(className string, out *data.ClassDefini
 		// while generic relation naming would infer relation_to_key_ring. Keep the
 		// current provider schema name explicit until a deliberate breaking change.
 		out.ResourceNameNested = "key_ring"
+	case "topSystem":
+		// topSystem is a datasource-only lookup whose APIC metadata has no
+		// identifiedBy entries and describes its placement through fabricNode
+		// and topRoot. The public datasource instead addresses the fixed topology
+		// root with system and pod identifiers.
+		out.Artifacts = []data.ArtifactEnum{data.DatasourceArtifact}
+		out.Documentation.UiLocations = []string{"Generic"}
+		out.ExcludeParents = []string{"fabricNode", "topRoot"}
+		out.RnPrepend = "pod-{podId}/node-{id}"
+
+		identifiers := []struct {
+			propertyName              string
+			documentationPropertyName string
+			description               string
+		}{
+			{
+				propertyName: "id",
+				description:  "The `id` attribute of the parent APIC `fabricNode` class.",
+			},
+			{
+				propertyName:              "podId",
+				documentationPropertyName: "id",
+				description:               "The `id` attribute of the parent APIC `fabricPod` class.",
+			},
+		}
+		for _, identifier := range identifiers {
+			property := upsertProperty(out, identifier.propertyName)
+			property.DocumentationPropertyName = identifier.documentationPropertyName
+			property.Documentation.Description = identifier.description
+			property.TestConfig.Create = testValueScenario(data.TestValueEntryDefinition{ConfigValue: "1"})
+			property.TestConfig.Default = testValueScenario(data.TestValueEntryDefinition{ConfigValue: "1"})
+			out.Properties[identifier.propertyName] = property
+		}
+
+		// These are current APIC properties rather than renamed legacy aliases.
+		// Preserve the existing datasource's computed string schema while
+		// marking the attributes as provider-deprecated.
+		for _, propertyName := range []string{"childAction", "configIssues", "lcOwn", "status"} {
+			property := upsertProperty(out, propertyName)
+			property.Deprecated = true
+			property.Restriction = data.ReadOnly
+			property.ValueType = data.String
+			out.Properties[propertyName] = property
+		}
+		// APIC represents configIssues "none" as an empty string. Keep that raw
+		// value instead of applying the generic empty-value normalization.
+		configIssues := upsertProperty(out, "configIssues")
+		configIssues.RemoveValidValues = append(configIssues.RemoveValidValues, "none")
+		out.Properties["configIssues"] = configIssues
+
+		// Record the prior SDKv2 datasource shape without exposing the renamed
+		// aliases in generated models during the current migration phase.
+		out.MigrationSource = data.FromSDKv2
+		out.StateUpgrades = []data.StateUpgradeDefinition{{
+			PriorSchemaVersion: 1,
+			Attributes: map[string]data.AttributeUpgradeDefinition{
+				"bootstrapState":          {LegacyAttribute: "boot_strap_tate"},
+				"etepAddr":                {LegacyAttribute: "etep_addr"},
+				"inbMgmtAddr":             {LegacyAttribute: "inb_mgmt_addr"},
+				"inbMgmtAddr6":            {LegacyAttribute: "inb_mgmt_addr6"},
+				"inbMgmtAddr6Mask":        {LegacyAttribute: "inb_mgmt_addr6_mask"},
+				"inbMgmtAddrMask":         {LegacyAttribute: "inb_mgmt_addr_mask"},
+				"inbMgmtGateway":          {LegacyAttribute: "inb_mgmt_gateway"},
+				"inbMgmtGateway6":         {LegacyAttribute: "inb_mgmt_gateway6"},
+				"monPolDn":                {LegacyAttribute: "mon_pol_dn"},
+				"oobMgmtAddr":             {LegacyAttribute: "oob_mgmt_addr"},
+				"oobMgmtAddr6":            {LegacyAttribute: "oob_mgmt_addr6"},
+				"oobMgmtAddr6Mask":        {LegacyAttribute: "oob_mgmt_addr6_mask"},
+				"oobMgmtAddrMask":         {LegacyAttribute: "oob_mgmt_addr_mask"},
+				"oobMgmtGateway":          {LegacyAttribute: "oob_mgmt_gateway"},
+				"oobMgmtGateway6":         {LegacyAttribute: "oob_mgmt_gateway6"},
+				"rlAutoMode":              {LegacyAttribute: "rl_auto_mode"},
+				"rlGroupId":               {LegacyAttribute: "rl_group_id"},
+				"rlOperPodId":             {LegacyAttribute: "rl_oper_pod_id"},
+				"rlRoutableMode":          {LegacyAttribute: "rl_routable_mode"},
+				"rldirectMode":            {LegacyAttribute: "rldirect_mode"},
+				"unicastXrEpLearnDisable": {LegacyAttribute: "unicast_xr_ep_learn_disable"},
+			},
+		}}
 	}
 }
 
@@ -3084,6 +3180,12 @@ func projectProperty(p data.PropertyDefinition) map[string]any {
 	if p.AttributeName != "" {
 		out["attribute_name"] = p.AttributeName
 	}
+	if p.DocumentationPropertyName != "" {
+		out["documentation_property_name"] = p.DocumentationPropertyName
+	}
+	if p.Deprecated {
+		out["deprecated"] = p.Deprecated
+	}
 	if p.Restriction != data.UndefinedRestriction {
 		out["restriction"] = p.Restriction.String()
 	}
@@ -3303,7 +3405,7 @@ func hasMigratedData(c data.ClassDefinition) bool {
 	if len(c.RelationInfo.ToClasses) > 0 || c.RelationInfo.FromClass != "" || c.RelationInfo.Disabled || c.RelationInfo.Type != data.UndefinedRelationshipType {
 		return true
 	}
-	if len(c.ExcludeChildren) > 0 || len(c.ExcludeParents) > 0 || len(c.IncludeChildren) > 0 || len(c.IncludeParents) > 0 {
+	if len(c.ExcludeChildren) > 0 || len(c.ExcludeParents) > 0 || len(c.IdentifiedBy) > 0 || len(c.IncludeChildren) > 0 || len(c.IncludeParents) > 0 {
 		return true
 	}
 	if c.Artifacts != nil || len(c.ExampleFiles) > 0 || c.ExampleParentClass != "" || len(c.ParentDnVariants) > 0 {
@@ -3376,6 +3478,9 @@ func marshalView(c data.ClassDefinition) map[string]any {
 	}
 	if len(c.ExcludeParents) > 0 {
 		out["exclude_parents"] = c.ExcludeParents
+	}
+	if len(c.IdentifiedBy) > 0 {
+		out["identified_by"] = c.IdentifiedBy
 	}
 	if len(c.IncludeChildren) > 0 {
 		out["include_children"] = c.IncludeChildren
