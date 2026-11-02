@@ -21,7 +21,10 @@ import (
 	aciValidators "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/validators"
 )
 
-const distinguishedNameDescription = "The distinguished name (DN) of the object."
+const (
+	distinguishedNameDescription = "The distinguished name (DN) of the object."
+	deprecatedPropertyMessage    = "This attribute is deprecated and will be removed in a future provider release."
+)
 
 // ParentDNAttributeConfig defines the optional default and accepted values for
 // a top-level parent_dn attribute.
@@ -57,6 +60,7 @@ type PropertySchema struct {
 	Required             bool
 	Optional             bool
 	Computed             bool
+	Deprecated           bool
 	ReadOnly             bool
 	Sensitive            bool
 	RequiresReplace      bool
@@ -148,6 +152,7 @@ func (p PropertySchema) resourceAttribute(context resourceSchemaContext) resourc
 			Required:            required,
 			Optional:            optional,
 			Computed:            computed,
+			DeprecationMessage:  p.deprecationMessage(),
 			Sensitive:           p.Sensitive,
 			Validators:          p.setValidators(),
 			MarkdownDescription: p.Description,
@@ -162,6 +167,7 @@ func (p PropertySchema) resourceAttribute(context resourceSchemaContext) resourc
 			Required:            required,
 			Optional:            optional,
 			Computed:            computed,
+			DeprecationMessage:  p.deprecationMessage(),
 			Sensitive:           p.Sensitive,
 			MarkdownDescription: p.Description,
 		}
@@ -177,6 +183,7 @@ func (p PropertySchema) resourceAttribute(context resourceSchemaContext) resourc
 			Required:            required,
 			Optional:            optional,
 			Computed:            computed,
+			DeprecationMessage:  p.deprecationMessage(),
 			Sensitive:           p.Sensitive,
 			Validators:          p.resourceStringValidators(context.requiredPropertyRendering),
 			MarkdownDescription: p.Description,
@@ -186,6 +193,13 @@ func (p PropertySchema) resourceAttribute(context resourceSchemaContext) resourc
 		}
 		return attribute
 	}
+}
+
+func (p PropertySchema) deprecationMessage() string {
+	if !p.Deprecated {
+		return ""
+	}
+	return deprecatedPropertyMessage
 }
 
 // ResourceAttribute constructs a direct resource schema attribute. Class
@@ -207,6 +221,7 @@ func (p PropertySchema) DataSourceAttribute(required bool) datasourceschema.Attr
 			ElementType:         p.SetElementType,
 			Required:            required,
 			Computed:            !required,
+			DeprecationMessage:  p.deprecationMessage(),
 			Sensitive:           p.Sensitive,
 			MarkdownDescription: p.Description,
 		}
@@ -219,6 +234,7 @@ func (p PropertySchema) DataSourceAttribute(required bool) datasourceschema.Attr
 			AttributeTypes:      p.ObjectAttributeTypes,
 			Required:            required,
 			Computed:            !required,
+			DeprecationMessage:  p.deprecationMessage(),
 			Sensitive:           p.Sensitive,
 			MarkdownDescription: p.Description,
 		}
@@ -227,6 +243,7 @@ func (p PropertySchema) DataSourceAttribute(required bool) datasourceschema.Attr
 			CustomType:          p.CustomStringType,
 			Required:            required,
 			Computed:            !required,
+			DeprecationMessage:  p.deprecationMessage(),
 			Sensitive:           p.Sensitive,
 			MarkdownDescription: p.Description,
 		}
