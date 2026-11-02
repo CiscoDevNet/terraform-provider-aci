@@ -147,6 +147,55 @@ func TestPropertySchemaDataSourceAttribute(t *testing.T) {
 	}
 }
 
+func TestPropertySchemaDeprecationMessage(t *testing.T) {
+	testCases := []test.TestCase{
+		{Name: "test_string", Input: StringProperty},
+		{Name: "test_set", Input: SetProperty},
+		{Name: "test_object", Input: ObjectProperty},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			propertyType := testCase.Input.(PropertyType)
+			property := PropertySchema{
+				Type:                 propertyType,
+				Computed:             true,
+				Deprecated:           true,
+				SetElementType:       types.StringType,
+				ObjectAttributeTypes: map[string]attr.Type{},
+			}
+
+			var resourceMessage string
+			switch attribute := property.ResourceAttribute(false).(type) {
+			case resourceschema.StringAttribute:
+				resourceMessage = attribute.DeprecationMessage
+			case resourceschema.SetAttribute:
+				resourceMessage = attribute.DeprecationMessage
+			case resourceschema.ObjectAttribute:
+				resourceMessage = attribute.DeprecationMessage
+			default:
+				t.Fatalf("unexpected resource attribute type %T", attribute)
+			}
+
+			var dataSourceMessage string
+			switch attribute := property.DataSourceAttribute(false).(type) {
+			case datasourceschema.StringAttribute:
+				dataSourceMessage = attribute.DeprecationMessage
+			case datasourceschema.SetAttribute:
+				dataSourceMessage = attribute.DeprecationMessage
+			case datasourceschema.ObjectAttribute:
+				dataSourceMessage = attribute.DeprecationMessage
+			default:
+				t.Fatalf("unexpected data-source attribute type %T", attribute)
+			}
+
+			if resourceMessage != deprecatedPropertyMessage || dataSourceMessage != deprecatedPropertyMessage {
+				t.Fatalf("unexpected deprecation messages: resource=%q data-source=%q", resourceMessage, dataSourceMessage)
+			}
+		})
+	}
+}
+
 func childClassSchemaForTest() ClassSchema {
 	return ClassSchema{
 		Properties: map[string]PropertySchema{
