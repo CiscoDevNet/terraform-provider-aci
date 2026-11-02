@@ -85,6 +85,9 @@ func {{ .Class.Name.String }}SchemaDefinition() modelHelpers.ClassSchema {
 				{{- if $property.Computed }}
 				Computed: true,
 				{{- end }}
+				{{- if $property.Deprecated }}
+				Deprecated: true,
+				{{- end }}
 				{{- if $property.ReadOnly }}
 				ReadOnly: true,
 				{{- end }}
