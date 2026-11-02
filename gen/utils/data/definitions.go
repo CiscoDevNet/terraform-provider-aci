@@ -145,6 +145,9 @@ type ArtifactDocumentationDefinition struct {
 type PropertyDefinition struct {
 	// Overrides the default attribute name derived from the meta property name in snake_case notation.
 	AttributeName string `yaml:"attribute_name"`
+	// Overrides the APIC property name displayed in generated documentation without
+	// changing the property used for payload construction or response decoding.
+	DocumentationPropertyName string `yaml:"documentation_property_name"`
 	// Indicates that the property is deprecated. A deprecation warning will be included in the schemas.
 	// When true, this overrides the meta `isDeprecated` flag with logical OR semantics: definition can flip true on top of meta but cannot force-off.
 	Deprecated bool `yaml:"deprecated"`

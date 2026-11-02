@@ -37,6 +37,16 @@ type PropertyDocumentation struct {
 	SupportedVersions string
 }
 
+// DocumentationPropertyName returns the APIC property name shown beside the
+// Terraform attribute in generated documentation.
+func (p *Property) DocumentationPropertyName() string {
+	if p.propertyDefinition.DocumentationPropertyName != "" {
+		return p.propertyDefinition.DocumentationPropertyName
+	}
+
+	return p.PropertyName
+}
+
 // ResourceDocumentationDefaultValues returns the defaults displayed in resource documentation.
 // The annotation default is provider-driven and is therefore not available in APIC metadata.
 func (p *Property) ResourceDocumentationDefaultValues() []DefaultValue {

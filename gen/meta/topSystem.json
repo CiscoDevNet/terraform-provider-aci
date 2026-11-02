@@ -1,0 +1,3908 @@
+{
+        "top:System": {
+            "contains": {
+                "aaa:CtrlrFipsState": "",
+                "aaa:FipsState": "",
+                "ac:Entity": "",
+                "acl:Entity": "",
+                "aclcap:Prov": "",
+                "action:LCont": "",
+                "actrl:Entity": "",
+                "actrlcap:Prov": "",
+                "aentp:Entity": "",
+                "aib:Entity": "",
+                "analytics:Entity": "",
+                "analytics:HwTelemetry": "",
+                "apphosting:AppHosting": "",
+                "apphosting:AppmgrStat": "",
+                "arp:Entity": "",
+                "bd:EnforceExpCont": "",
+                "bfd:Entity": "",
+                "bgp:Entity": "",
+                "bgp:Tbgp": "",
+                "bgp:Tcbgp2": "",
+                "cap:Cat": "",
+                "cdp:Entity": "",
+                "cert:Entity": "",
+                "cloud:Controller": "",
+                "cloudsec:Entity": "",
+                "cnw:AggrIf": "",
+                "cnw:PhysIf": "",
+                "comm:RLTepInfo": "",
+                "comm:SshInst": "",
+                "comm:TelnetInst": "",
+                "compat:SuppFw": "",
+                "configprofile:Catalog": "",
+                "coop:Entity": "",
+                "copp:Entity": "",
+                "cpinfra:Entity": "",
+                "datetime:ClkPol": "",
+                "datetime:Ntpq": "",
+                "dhcp:Entity": "",
+                "dmemotltest:DmeMotlRoot": "",
+                "dns:Entity": "",
+                "dot1x:Entity": "",
+                "dot1x:Nic": "",
+                "dpp:Entity": "",
+                "eigrp:Entity": "",
+                "eqpt:Ch": "",
+                "eqpt:Entity": "",
+                "eqpt:ExtCh": "",
+                "eqpt:FeatureEx": "",
+                "eqpt:ReloadSwitch": "",
+                "eqptcapacity:Entity": "",
+                "eqptdiag:Entity": "",
+                "ethpm:Entity": "",
+                "fabrgm:Entity": "",
+                "fabric:Decommission": "",
+                "fabric:LeafNodeRole": "",
+                "fabric:MMUpgrader": "",
+                "fabric:NodeHealth15min": "",
+                "fabric:NodeHealth1d": "",
+                "fabric:NodeHealth1h": "",
+                "fabric:NodeHealth1mo": "",
+                "fabric:NodeHealth1qtr": "",
+                "fabric:NodeHealth1w": "",
+                "fabric:NodeHealth1year": "",
+                "fabric:NodeHealth5min": "",
+                "fabric:NodeHealthHist15min": "",
+                "fabric:NodeHealthHist1d": "",
+                "fabric:NodeHealthHist1h": "",
+                "fabric:NodeHealthHist1mo": "",
+                "fabric:NodeHealthHist1qtr": "",
+                "fabric:NodeHealthHist1w": "",
+                "fabric:NodeHealthHist1year": "",
+                "fabric:NodeHealthHist5min": "",
+                "fabric:RemoteLeafNodeRole": "",
+                "fabric:SpineNodeRole": "",
+                "fabric:SystemInfo": "",
+                "fault:Counts": "",
+                "fault:Inst": "",
+                "fc:Entity": "",
+                "fcoe:Entity": "",
+                "fcpm:Entity": "",
+                "fhs:Entity": "",
+                "firmware:CatFwStatusCont": "",
+                "firmware:CtrlrFwStatusCont": "",
+                "firmware:FwStatusCont": "",
+                "fv:EpNs": "",
+                "fv:FltCounter15min": "",
+                "fv:FltCounter1d": "",
+                "fv:FltCounter1h": "",
+                "fv:FltCounter1mo": "",
+                "fv:FltCounter1qtr": "",
+                "fv:FltCounter1w": "",
+                "fv:FltCounter1year": "",
+                "fv:FltCounter5min": "",
+                "fv:FltCounterHist15min": "",
+                "fv:FltCounterHist1d": "",
+                "fv:FltCounterHist1h": "",
+                "fv:FltCounterHist1mo": "",
+                "fv:FltCounterHist1qtr": "",
+                "fv:FltCounterHist1w": "",
+                "fv:FltCounterHist1year": "",
+                "fv:FltCounterHist5min": "",
+                "fv:IfConnOper": "",
+                "fv:IfMtuOper": "",
+                "fv:ImplicitStaleEpCont": "",
+                "fv:StaleTunEpCont": "",
+                "glean:Entity": "",
+                "health:Inst": "",
+                "hsrp:Entity": "",
+                "icmpv4:Entity": "",
+                "icmpv6:Entity": "",
+                "igmp:Entity": "",
+                "igmpsnoop:Entity": "",
+                "im:Entity": "",
+                "infrasec:Entity": "",
+                "ipagectrl:Entity": "",
+                "ipsec:Entity": "",
+                "ipv4:Entity": "",
+                "ipv6:Entity": "",
+                "isis:Entity": "",
+                "l1:PhysIf": "",
+                "l1cap:Prov": "",
+                "l2:BrIf": "",
+                "l2:ExtIf": "",
+                "l2:InbandIf": "",
+                "l2cap:Prov": "",
+                "l3:Ctx": "",
+                "l3:CtxSubstitute": "",
+                "l3:Inst": "",
+                "l3:MixedModeCont": "",
+                "l3cap:Prov": "",
+                "l3vm:Entity": "",
+                "lacp:Entity": "",
+                "leqpt:LooseNode": "",
+                "license:Entity": "",
+                "lldp:Entity": "",
+                "macsec:Entity": "",
+                "mcp:Entity": "",
+                "mgmt:MgmtIf": "",
+                "mld:Entity": "",
+                "mldsnoop:Entity": "",
+                "mock:MockRoot": "",
+                "monitor:Entity": "",
+                "mp:Localfabric": "",
+                "mp:Site": "",
+                "mpls:Entity": "",
+                "mrib:Entity": "",
+                "multidomain:InternalCtxInfo": "",
+                "multidomain:MultiDomainIps": "",
+                "multidomain:MultiDomainVnids": "",
+                "nat:Entity": "",
+                "nd:Entity": "",
+                "npv:Entity": "",
+                "nw:ConnGrp": "",
+                "nw:Vdc": "",
+                "opflex:ODevCmdReq": "",
+                "opflex:ODevCmdResp": "",
+                "opflex:ODevRefCont": "",
+                "opflex:OeHupTrigger": "",
+                "opflex:PodInfo": "",
+                "opflex:VtepRefCont": "",
+                "opflexp:HupTrigger": "",
+                "opflexp:PolicyResolveReq": "",
+                "opflexp:Reference": "",
+                "opflexp:ReportedEpReg": "",
+                "opflexp:ReportedRouteReg": "",
+                "ospf:Entity": "",
+                "ospfv3:Entity": "",
+                "patching:Entity": "",
+                "pc:AggrIf": "",
+                "pc:Entity": "",
+                "pc:FcEntity": "",
+                "pcons:BootStrapTracking": "",
+                "pie:PIE": "",
+                "pim6:Entity": "",
+                "pim:Capability": "",
+                "pim:Entity": "",
+                "pki:FabricSelfCACertsModified": "",
+                "platformmgr:PlmgrTrig": "",
+                "poe:Entity": "",
+                "poe:Nic": "",
+                "proc:Container": "",
+                "proc:Entity": "",
+                "proc:Job": "",
+                "proc:Memory": "",
+                "proc:Platform": "",
+                "proc:System": "",
+                "ptp:Entity": "",
+                "qosm:Entity": "",
+                "radius:Entity": "",
+                "regress:If": "",
+                "rlpodred:RlPodRedPolicy": "",
+                "rlpodred:RlSwitchoverPod": "",
+                "rpm:Entity": "",
+                "rpm:Mmode": "",
+                "satm:Entity": "",
+                "segrt:Entity": "",
+                "sla:Entity": "",
+                "slowdrain:Entity": "",
+                "smm:Entity": "",
+                "snmp:Entity": "",
+                "span:Acct": "",
+                "span:Entity": "",
+                "span:RetryCont": "",
+                "statspref:Cont": "",
+                "stp:Entity": "",
+                "sts:Entity": "",
+                "svccopy:Entity": "",
+                "svcredir:Entity": "",
+                "synce:Entity": "",
+                "synthetic:SwTLTestObj": "",
+                "sysdebug:CoreFileRepository": "",
+                "sysdebug:Ep": "",
+                "sysdebug:TechSupFileRepository": "",
+                "syslog:Acct": "",
+                "sysmgr:Entity": "",
+                "telemetry:CapabilityCont": "",
+                "telemetry:Entity": "",
+                "telemetry:Inst": "",
+                "top:RsMonPolSystemPolCons": "",
+                "top:RsNeighFw": "",
+                "top:RsProtGFw": "",
+                "top:RsSysBfdIpv4PolCons": "",
+                "top:RsSysBfdIpv6PolCons": "",
+                "top:RsSysCdpInstPolCons": "",
+                "top:RsSysErrDisRecoverPolCons": "",
+                "top:RsSysFastLinkFailoverInstPolCons": "",
+                "top:RsSysFcFabricPolCons": "",
+                "top:RsSysFcInstPolCons": "",
+                "top:RsSysFlashConfigPolCons": "",
+                "top:RsSysFwdScaleProfPolCons": "",
+                "top:RsSysIaclProfilePolCons": "",
+                "top:RsSysL2NodePolAuthCons": "",
+                "top:RsSysLldpInstPolCons": "",
+                "top:RsSysMcpInstPolCons": "",
+                "top:RsSysMstInstPolCons": "",
+                "top:RsSysNetflowNodePolCons": "",
+                "top:RsSysPoeInstPolCons": "",
+                "top:RsSysPsuInstPolCons": "",
+                "top:RsSysPtpInstPolCons": "",
+                "top:RsSysSynceInstPolCons": "",
+                "top:RsSysUsbConfigProfilePolCons": "",
+                "top:RsSystemRack": "",
+                "top:RtExporterToTopSystem": "",
+                "top:RtFwinstlsrc": "",
+                "top:RtTrDst": "",
+                "top:RtTrSrc": "",
+                "top:RtTsSrc": "",
+                "topoctrl:Entity": "",
+                "track:Entity": "",
+                "tunnel:If": "",
+                "twamp:Entity": "",
+                "udld:Entity": "",
+                "unifiedports:Entity": "",
+                "uribv4:Entity": "",
+                "uribv6:Entity": "",
+                "usrcallhome:Record": "",
+                "usrsyslog:Record": "",
+                "usrtacacs:Record": "",
+                "veth:Entity": "",
+                "vlanmgr:Entity": "",
+                "vpc:Entity": "",
+                "vsanmgr:Entity": "",
+                "wwn:Entity": ""
+            },
+            "rnMap": {
+                "CDfabricNodeHealth15min": "fabric:NodeHealth15min",
+                "CDfabricNodeHealth1d": "fabric:NodeHealth1d",
+                "CDfabricNodeHealth1h": "fabric:NodeHealth1h",
+                "CDfabricNodeHealth1mo": "fabric:NodeHealth1mo",
+                "CDfabricNodeHealth1qtr": "fabric:NodeHealth1qtr",
+                "CDfabricNodeHealth1w": "fabric:NodeHealth1w",
+                "CDfabricNodeHealth1year": "fabric:NodeHealth1year",
+                "CDfabricNodeHealth5min": "fabric:NodeHealth5min",
+                "CDfvFltCounter15min": "fv:FltCounter15min",
+                "CDfvFltCounter1d": "fv:FltCounter1d",
+                "CDfvFltCounter1h": "fv:FltCounter1h",
+                "CDfvFltCounter1mo": "fv:FltCounter1mo",
+                "CDfvFltCounter1qtr": "fv:FltCounter1qtr",
+                "CDfvFltCounter1w": "fv:FltCounter1w",
+                "CDfvFltCounter1year": "fv:FltCounter1year",
+                "CDfvFltCounter5min": "fv:FltCounter5min",
+                "EnfExpCont": "bd:EnforceExpCont",
+                "HDfabricNodeHealth15min-": "fabric:NodeHealthHist15min",
+                "HDfabricNodeHealth1d-": "fabric:NodeHealthHist1d",
+                "HDfabricNodeHealth1h-": "fabric:NodeHealthHist1h",
+                "HDfabricNodeHealth1mo-": "fabric:NodeHealthHist1mo",
+                "HDfabricNodeHealth1qtr-": "fabric:NodeHealthHist1qtr",
+                "HDfabricNodeHealth1w-": "fabric:NodeHealthHist1w",
+                "HDfabricNodeHealth1year-": "fabric:NodeHealthHist1year",
+                "HDfabricNodeHealth5min-": "fabric:NodeHealthHist5min",
+                "HDfvFltCounter15min-": "fv:FltCounterHist15min",
+                "HDfvFltCounter1d-": "fv:FltCounterHist1d",
+                "HDfvFltCounter1h-": "fv:FltCounterHist1h",
+                "HDfvFltCounter1mo-": "fv:FltCounterHist1mo",
+                "HDfvFltCounter1qtr-": "fv:FltCounterHist1qtr",
+                "HDfvFltCounter1w-": "fv:FltCounterHist1w",
+                "HDfvFltCounter1year-": "fv:FltCounterHist1year",
+                "HDfvFltCounter5min-": "fv:FltCounterHist5min",
+                "If-": "fv:IfMtuOper",
+                "LeafNodeRole": "fabric:LeafNodeRole",
+                "MultiDomainVnids-": "multidomain:MultiDomainVnids",
+                "RemoteLeafNodeRole": "fabric:RemoteLeafNodeRole",
+                "RlTepInfo": "comm:RLTepInfo",
+                "SpineNodeRole": "fabric:SpineNodeRole",
+                "StaleTunEpCont": "fv:StaleTunEpCont",
+                "ac": "ac:Entity",
+                "acct": "span:Acct",
+                "acl": "acl:Entity",
+                "aclcapprov-": "aclcap:Prov",
+                "action": "action:LCont",
+                "actrl": "actrl:Entity",
+                "actrlcapprov-": "actrlcap:Prov",
+                "aentp": "aentp:Entity",
+                "aggr-": "pc:AggrIf",
+                "aib": "aib:Entity",
+                "analytics": "analytics:Entity",
+                "apphosting": "apphosting:AppHosting",
+                "appmgrstat": "apphosting:AppmgrStat",
+                "arp": "arp:Entity",
+                "bfd": "bfd:Entity",
+                "bgp": "bgp:Entity",
+                "bgptrap": "bgp:Tbgp",
+                "bootstraptracking": "pcons:BootStrapTracking",
+                "br-": "l2:BrIf",
+                "caggr-": "cnw:AggrIf",
+                "capabilities": "cap:Cat",
+                "catfwstatuscont": "firmware:CatFwStatusCont",
+                "cbgp2trap": "bgp:Tcbgp2",
+                "cdp": "cdp:Entity",
+                "cert": "cert:Entity",
+                "certmod": "pki:FabricSelfCACertsModified",
+                "ch": "eqpt:Ch",
+                "cloudsec": "cloudsec:Entity",
+                "cntr-": "proc:Container",
+                "configProfile": "configprofile:Catalog",
+                "conng": "nw:ConnGrp",
+                "controller": "cloud:Controller",
+                "coop": "coop:Entity",
+                "copp": "copp:Entity",
+                "corefiles": "sysdebug:CoreFileRepository",
+                "cphys-": "cnw:PhysIf",
+                "cpinfra": "cpinfra:Entity",
+                "ctrlrfipsstate": "aaa:CtrlrFipsState",
+                "ctrlrfwstatuscont": "firmware:CtrlrFwStatusCont",
+                "ctx-": "l3:Ctx",
+                "ctxsubstitute-": "l3:CtxSubstitute",
+                "decommission": "fabric:Decommission",
+                "dhcp": "dhcp:Entity",
+                "diag": "eqptdiag:Entity",
+                "dme_motl_root": "dmemotltest:DmeMotlRoot",
+                "dns": "dns:Entity",
+                "dot1x": "dot1x:Entity",
+                "dot1xnic-": "dot1x:Nic",
+                "dpp": "dpp:Entity",
+                "eigrp": "eigrp:Entity",
+                "epns": "fv:EpNs",
+                "eqptcapacity": "eqptcapacity:Entity",
+                "ethpm": "ethpm:Entity",
+                "ext-": "l2:ExtIf",
+                "extch-": "eqpt:ExtCh",
+                "fabrgm": "fabrgm:Entity",
+                "fault-": "fault:Inst",
+                "fc": "fc:Entity",
+                "fcoe": "fcoe:Entity",
+                "fcpc": "pc:FcEntity",
+                "fcpm": "fcpm:Entity",
+                "featureExclusion": "eqpt:FeatureEx",
+                "fhs": "fhs:Entity",
+                "fipsstate": "aaa:FipsState",
+                "fltCnts": "fault:Counts",
+                "fwstatuscont": "firmware:FwStatusCont",
+                "glean": "glean:Entity",
+                "health": "health:Inst",
+                "hsrp": "hsrp:Entity",
+                "huptrigger": "opflexp:HupTrigger",
+                "hwtelemetry": "analytics:HwTelemetry",
+                "icmpv4": "icmpv4:Entity",
+                "icmpv6": "icmpv6:Entity",
+                "ifconnOper-": "fv:IfConnOper",
+                "igmp": "igmp:Entity",
+                "igmpsnoop": "igmpsnoop:Entity",
+                "im": "im:Entity",
+                "impSEpCont": "fv:ImplicitStaleEpCont",
+                "inb-": "l2:InbandIf",
+                "infrasec": "infrasec:Entity",
+                "inst-": "l3:Inst",
+                "ipagectrl": "ipagectrl:Entity",
+                "ipsec": "ipsec:Entity",
+                "ipv4": "ipv4:Entity",
+                "ipv6": "ipv6:Entity",
+                "isis": "isis:Entity",
+                "job-": "proc:Job",
+                "l1capprov-": "l1cap:Prov",
+                "l2capprov-": "l2cap:Prov",
+                "l3capprov-": "l3cap:Prov",
+                "l3vm": "l3vm:Entity",
+                "lacp": "lacp:Entity",
+                "license": "license:Entity",
+                "lldp": "lldp:Entity",
+                "localfab-": "mp:Localfabric",
+                "lsnode-": "leqpt:LooseNode",
+                "macsec": "macsec:Entity",
+                "mcp": "mcp:Entity",
+                "mdpIntCtxInfo-": "multidomain:InternalCtxInfo",
+                "mgmt-": "mgmt:MgmtIf",
+                "mixedModeCont": "l3:MixedModeCont",
+                "mld": "mld:Entity",
+                "mldsnoop": "mldsnoop:Entity",
+                "mmode": "rpm:Mmode",
+                "mockroot": "mock:MockRoot",
+                "monitor": "monitor:Entity",
+                "mpls": "mpls:Entity",
+                "mrib": "mrib:Entity",
+                "multiDomainIps": "multidomain:MultiDomainIps",
+                "nat": "nat:Entity",
+                "nd": "nd:Entity",
+                "nircapabilities": "telemetry:CapabilityCont",
+                "npv": "npv:Entity",
+                "ntpq-": "datetime:Ntpq",
+                "odcreq-": "opflex:ODevCmdReq",
+                "odcresp-": "opflex:ODevCmdResp",
+                "odevrefcont": "opflex:ODevRefCont",
+                "oehuptrigger": "opflex:OeHupTrigger",
+                "ops": "eqpt:Entity",
+                "ospf": "ospf:Entity",
+                "ospfv3": "ospfv3:Entity",
+                "patching": "patching:Entity",
+                "pc": "pc:Entity",
+                "phys-": "l1:PhysIf",
+                "pie": "pie:PIE",
+                "pim": "pim:Entity",
+                "pim6": "pim6:Entity",
+                "pimcap": "pim:Capability",
+                "platform-": "proc:Platform",
+                "platformmgr": "platformmgr:PlmgrTrig",
+                "podinfo": "opflex:PodInfo",
+                "poe": "poe:Entity",
+                "poenic-": "poe:Nic",
+                "policyresolvereq": "opflexp:PolicyResolveReq",
+                "proc": "proc:Entity",
+                "procmem": "proc:Memory",
+                "procsys": "proc:System",
+                "ptp": "ptp:Entity",
+                "qosm": "qosm:Entity",
+                "radius": "radius:Entity",
+                "ref": "opflexp:Reference",
+                "regr-": "regress:If",
+                "reloadSwitch": "eqpt:ReloadSwitch",
+                "reportedepreg": "opflexp:ReportedEpReg",
+                "reportedroutereg": "opflexp:ReportedRouteReg",
+                "retry": "span:RetryCont",
+                "rlpodredpolicy": "rlpodred:RlPodRedPolicy",
+                "rlswitchoverpod": "rlpodred:RlSwitchoverPod",
+                "rpm": "rpm:Entity",
+                "rsmonPolSystemPolCons": "top:RsMonPolSystemPolCons",
+                "rsneighFw-": "top:RsNeighFw",
+                "rsprotGFw-": "top:RsProtGFw",
+                "rssysBfdIpv4PolCons": "top:RsSysBfdIpv4PolCons",
+                "rssysBfdIpv6PolCons": "top:RsSysBfdIpv6PolCons",
+                "rssysCdpInstPolCons": "top:RsSysCdpInstPolCons",
+                "rssysErrDisRecoverPolCons": "top:RsSysErrDisRecoverPolCons",
+                "rssysFastLinkFailoverInstPolCons": "top:RsSysFastLinkFailoverInstPolCons",
+                "rssysFcFabricPolCons": "top:RsSysFcFabricPolCons",
+                "rssysFcInstPolCons": "top:RsSysFcInstPolCons",
+                "rssysFlashConfigPolCons": "top:RsSysFlashConfigPolCons",
+                "rssysFwdScaleProfPolCons": "top:RsSysFwdScaleProfPolCons",
+                "rssysIaclProfilePolCons": "top:RsSysIaclProfilePolCons",
+                "rssysL2NodePolAuthCons": "top:RsSysL2NodePolAuthCons",
+                "rssysLldpInstPolCons": "top:RsSysLldpInstPolCons",
+                "rssysMcpInstPolCons": "top:RsSysMcpInstPolCons",
+                "rssysMstInstPolCons": "top:RsSysMstInstPolCons",
+                "rssysNetflowNodePolCons": "top:RsSysNetflowNodePolCons",
+                "rssysPoeInstPolCons": "top:RsSysPoeInstPolCons",
+                "rssysPsuInstPolCons": "top:RsSysPsuInstPolCons",
+                "rssysPtpInstPolCons": "top:RsSysPtpInstPolCons",
+                "rssysSynceInstPolCons": "top:RsSysSynceInstPolCons",
+                "rssysUsbConfigProfilePolCons": "top:RsSysUsbConfigProfilePolCons",
+                "rssystemRack-": "top:RsSystemRack",
+                "rtdbgexpTsSrc-": "top:RtTsSrc",
+                "rtmaintFwinstlsrc-": "top:RtFwinstlsrc",
+                "rtnetflowExporterToTopSystem-": "top:RtExporterToTopSystem",
+                "rttraceroutepTrDst-": "top:RtTrDst",
+                "rttraceroutepTrSrc-": "top:RtTrSrc",
+                "satm": "satm:Entity",
+                "sectl-": "synthetic:SwTLTestObj",
+                "segrt": "segrt:Entity",
+                "sfw-": "compat:SuppFw",
+                "si": "fabric:SystemInfo",
+                "site-": "mp:Site",
+                "sla": "sla:Entity",
+                "slowdrain": "slowdrain:Entity",
+                "smm": "smm:Entity",
+                "snmp": "snmp:Entity",
+                "span": "span:Entity",
+                "sshinst": "comm:SshInst",
+                "statsprefcont": "statspref:Cont",
+                "stp": "stp:Entity",
+                "sts": "sts:Entity",
+                "svccopy": "svccopy:Entity",
+                "svcredir": "svcredir:Entity",
+                "synce": "synce:Entity",
+                "sysdebug": "sysdebug:Ep",
+                "syslogacct": "syslog:Acct",
+                "sysmgr": "sysmgr:Entity",
+                "techsupportfiles": "sysdebug:TechSupFileRepository",
+                "teleentity": "telemetry:Entity",
+                "telemetry": "telemetry:Inst",
+                "telnetinst": "comm:TelnetInst",
+                "time": "datetime:ClkPol",
+                "topoctrl": "topoctrl:Entity",
+                "track": "track:Entity",
+                "tunnel-": "tunnel:If",
+                "twamp": "twamp:Entity",
+                "udld": "udld:Entity",
+                "unifiedports": "unifiedports:Entity",
+                "upgrader": "fabric:MMUpgrader",
+                "uribv4": "uribv4:Entity",
+                "uribv6": "uribv6:Entity",
+                "usrcallhome": "usrcallhome:Record",
+                "usrsyslog": "usrsyslog:Record",
+                "usrtacacs": "usrtacacs:Record",
+                "vdc-": "nw:Vdc",
+                "veth": "veth:Entity",
+                "vlanmgr": "vlanmgr:Entity",
+                "vpc": "vpc:Entity",
+                "vsanmgr": "vsanmgr:Entity",
+                "vteprefcont": "opflex:VtepRefCont",
+                "wwn": "wwn:Entity"
+            },
+            "identifiedBy": [
+
+            ],
+            "rnFormat": "sys",
+            "containedBy": {
+                "fabric:Node": "",
+                "top:Root": ""
+            },
+            "superClasses": [
+                "naming:NamedObject"
+            ],
+            "subClasses": {
+
+            },
+            "relationFrom": {
+                "top:RtExporterToTopSystem": "netflow:AExporterPol",
+                "top:RtFwinstlsrc": "maint:MaintPOnD",
+                "top:RtTrDst": "traceroutep:TrNode",
+                "top:RtTrSrc": "traceroutep:TrNode",
+                "top:RtTsSrc": "dbgexp:TechSupOnDBase"
+            },
+            "relationTo": {
+                "top:RsMonPolSystemPolCons": "mon:Pol",
+                "top:RsNeighFw": "compat:Fw",
+                "top:RsProtGFw": "compat:Fw",
+                "top:RsSysBfdIpv4PolCons": "bfd:Ipv4InstPol",
+                "top:RsSysBfdIpv6PolCons": "bfd:Ipv6InstPol",
+                "top:RsSysCdpInstPolCons": "cdp:InstPol",
+                "top:RsSysErrDisRecoverPolCons": "edr:ErrDisRecoverPol",
+                "top:RsSysFastLinkFailoverInstPolCons": "topoctrl:FastLinkFailoverInstPol",
+                "top:RsSysFcFabricPolCons": "fc:FabricPol",
+                "top:RsSysFcInstPolCons": "fc:InstPol",
+                "top:RsSysFlashConfigPolCons": "equipment:FlashConfigPol",
+                "top:RsSysFwdScaleProfPolCons": "topoctrl:FwdScaleProfilePol",
+                "top:RsSysIaclProfilePolCons": "iacl:AProfile",
+                "top:RsSysL2NodePolAuthCons": "l2:NodeAuthPol",
+                "top:RsSysLldpInstPolCons": "lldp:InstPol",
+                "top:RsSysMcpInstPolCons": "mcp:InstPol",
+                "top:RsSysMstInstPolCons": "stp:InstPol",
+                "top:RsSysNetflowNodePolCons": "netflow:NodePol",
+                "top:RsSysPoeInstPolCons": "poe:InstPol",
+                "top:RsSysPsuInstPolCons": "psu:InstPol",
+                "top:RsSysPtpInstPolCons": "ptp:InstPol",
+                "top:RsSysSynceInstPolCons": "synce:InstPol",
+                "top:RsSysUsbConfigProfilePolCons": "topoctrl:UsbConfigProfilePol",
+                "top:RsSystemRack": "geo:Rack"
+            },
+            "dnFormats": [
+                "topology/pod-{id}/node-{id}/sys",
+                "sys"
+            ],
+            "writeAccess": [
+
+            ],
+            "readAccess": [
+                "aaa",
+                "access-connectivity",
+                "access-equipment",
+                "access-protocol",
+                "access-qos",
+                "admin",
+                "fabric-connectivity",
+                "fabric-equipment",
+                "fabric-protocol",
+                "nw-svc-policy",
+                "ops",
+                "tenant-connectivity",
+                "tenant-epg",
+                "tenant-ext-connectivity",
+                "tenant-ext-protocol",
+                "tenant-network-profile",
+                "tenant-protocol",
+                "tenant-qos",
+                "tenant-security",
+                "vmm-policy"
+            ],
+            "faults": {
+                "F4101": "fltTopSystemCimcAddrSetFailure",
+                "F2736": "fltTopSystemDuplicateIBMgmtIPV4",
+                "F2738": "fltTopSystemDuplicateIBMgmtIPV6",
+                "F2735": "fltTopSystemDuplicateOOBMgmtIPV4",
+                "F2737": "fltTopSystemDuplicateOOBMgmtIPV6",
+                "F1509": "fltTopSystemInvalidIBMgmtEncap",
+                "F2573": "fltTopSystemOobMgmtIPInUse",
+                "F4100": "fltTopSystemRouteTableModifyFail",
+                "F4591": "fltTopSystemVcpuMemoryModified"
+            },
+            "events": {
+                "E4204936": "special|systemSyslogMsg|top:System",
+                "E4208898": "special|excessRecords|top:System"
+            },
+            "stats": {
+                "fabric:NodeHealth15min": {
+                    "comment": [
+                         "A class that represents the most current statistics for node health in a 15 minute sampling interval.  This class updates every 5 minutes."
+                    ]
+                },
+                "fabric:NodeHealth1d": {
+                    "comment": [
+                         "A class that represents the most current statistics for node health in a 1 day sampling interval.  This class updates every hour."
+                    ]
+                },
+                "fabric:NodeHealth1h": {
+                    "comment": [
+                         "A class that represents the most current statistics for node health in a 1 hour sampling interval.  This class updates every 15 minutes."
+                    ]
+                },
+                "fabric:NodeHealth1mo": {
+                    "comment": [
+                         "A class that represents the most current statistics for node health in a 1 month sampling interval.  This class updates every day."
+                    ]
+                },
+                "fabric:NodeHealth1qtr": {
+                    "comment": [
+                         "A class that represents the most current statistics for node health in a 1 quarter sampling interval.  This class updates every day."
+                    ]
+                },
+                "fabric:NodeHealth1w": {
+                    "comment": [
+                         "A class that represents the most current statistics for node health in a 1 week sampling interval.  This class updates every day."
+                    ]
+                },
+                "fabric:NodeHealth1year": {
+                    "comment": [
+                         "A class that represents the most current statistics for node health in a 1 year sampling interval.  This class updates every day."
+                    ]
+                },
+                "fabric:NodeHealth5min": {
+                    "comment": [
+                         "A class that represents the most current statistics for node health in a 5 minute sampling interval.  This class updates every 10 seconds."
+                    ]
+                },
+                "fabric:NodeHealthHist15min": {
+                    "comment": [
+                         "A class that represents historical statistics for node health in a 15 minute sampling interval.  This class updates every 5 minutes."
+                    ]
+                },
+                "fabric:NodeHealthHist1d": {
+                    "comment": [
+                         "A class that represents historical statistics for node health in a 1 day sampling interval.  This class updates every hour."
+                    ]
+                },
+                "fabric:NodeHealthHist1h": {
+                    "comment": [
+                         "A class that represents historical statistics for node health in a 1 hour sampling interval.  This class updates every 15 minutes."
+                    ]
+                },
+                "fabric:NodeHealthHist1mo": {
+                    "comment": [
+                         "A class that represents historical statistics for node health in a 1 month sampling interval.  This class updates every day."
+                    ]
+                },
+                "fabric:NodeHealthHist1qtr": {
+                    "comment": [
+                         "A class that represents historical statistics for node health in a 1 quarter sampling interval.  This class updates every day."
+                    ]
+                },
+                "fabric:NodeHealthHist1w": {
+                    "comment": [
+                         "A class that represents historical statistics for node health in a 1 week sampling interval.  This class updates every day."
+                    ]
+                },
+                "fabric:NodeHealthHist1year": {
+                    "comment": [
+                         "A class that represents historical statistics for node health in a 1 year sampling interval.  This class updates every day."
+                    ]
+                },
+                "fabric:NodeHealthHist5min": {
+                    "comment": [
+                         "A class that represents historical statistics for node health in a 5 minute sampling interval.  This class updates every 10 seconds."
+                    ]
+                },
+                "fv:FltCounter15min": {
+                    "comment": [
+                         "A class that represents the most current statistics for  Fault  Counter in a 15 minute sampling interval.  This class updates every 5 minutes."
+                    ]
+                },
+                "fv:FltCounter1d": {
+                    "comment": [
+                         "A class that represents the most current statistics for  Fault  Counter in a 1 day sampling interval.  This class updates every hour."
+                    ]
+                },
+                "fv:FltCounter1h": {
+                    "comment": [
+                         "A class that represents the most current statistics for  Fault  Counter in a 1 hour sampling interval.  This class updates every 15 minutes."
+                    ]
+                },
+                "fv:FltCounter1mo": {
+                    "comment": [
+                         "A class that represents the most current statistics for  Fault  Counter in a 1 month sampling interval.  This class updates every day."
+                    ]
+                },
+                "fv:FltCounter1qtr": {
+                    "comment": [
+                         "A class that represents the most current statistics for  Fault  Counter in a 1 quarter sampling interval.  This class updates every day."
+                    ]
+                },
+                "fv:FltCounter1w": {
+                    "comment": [
+                         "A class that represents the most current statistics for  Fault  Counter in a 1 week sampling interval.  This class updates every day."
+                    ]
+                },
+                "fv:FltCounter1year": {
+                    "comment": [
+                         "A class that represents the most current statistics for  Fault  Counter in a 1 year sampling interval.  This class updates every day."
+                    ]
+                },
+                "fv:FltCounter5min": {
+                    "comment": [
+                         "A class that represents the most current statistics for  Fault  Counter in a 5 minute sampling interval.  This class updates every 10 seconds."
+                    ]
+                },
+                "fv:FltCounterHist15min": {
+                    "comment": [
+                         "A class that represents historical statistics for  Fault  Counter in a 15 minute sampling interval.  This class updates every 5 minutes."
+                    ]
+                },
+                "fv:FltCounterHist1d": {
+                    "comment": [
+                         "A class that represents historical statistics for  Fault  Counter in a 1 day sampling interval.  This class updates every hour."
+                    ]
+                },
+                "fv:FltCounterHist1h": {
+                    "comment": [
+                         "A class that represents historical statistics for  Fault  Counter in a 1 hour sampling interval.  This class updates every 15 minutes."
+                    ]
+                },
+                "fv:FltCounterHist1mo": {
+                    "comment": [
+                         "A class that represents historical statistics for  Fault  Counter in a 1 month sampling interval.  This class updates every day."
+                    ]
+                },
+                "fv:FltCounterHist1qtr": {
+                    "comment": [
+                         "A class that represents historical statistics for  Fault  Counter in a 1 quarter sampling interval.  This class updates every day."
+                    ]
+                },
+                "fv:FltCounterHist1w": {
+                    "comment": [
+                         "A class that represents historical statistics for  Fault  Counter in a 1 week sampling interval.  This class updates every day."
+                    ]
+                },
+                "fv:FltCounterHist1year": {
+                    "comment": [
+                         "A class that represents historical statistics for  Fault  Counter in a 1 year sampling interval.  This class updates every day."
+                    ]
+                },
+                "fv:FltCounterHist5min": {
+                    "comment": [
+                         "A class that represents historical statistics for  Fault  Counter in a 5 minute sampling interval.  This class updates every 10 seconds."
+                    ]
+                }
+            },
+            "versions": "1.0(1e)-",
+            "isAbstract": false,
+            "isConfigurable": false,
+            "isContextRoot": true,
+            "isNxosConverged": false,
+            "isDeprecated": false,
+            "isHidden": false,
+            "isEncrypted": false,
+            "isExportable": false,
+            "isPersistent": true,
+            "isSubjectToQuota": false,
+            "isObservable": true,
+            "hasStats": true,
+            "isStat": false,
+            "isFaultable": true,
+            "isDomainable": false,
+            "isHealthScorable": true,
+            "shouldCollectHealthStats": false,
+            "healthCollectionSource": "faults",
+            "hasEventRules": true,
+            "abstractionLayer": "concrete",
+            "apicNxProcessing": false,
+            "monitoringPolicySource": "Explicit",
+            "isCreatableDeletable": "never",
+            "platformFlavors": [
+
+            ],
+            "classId": "3",
+            "className": "System",
+            "classPkg": "top",
+            "featureTag": "",
+            "moCategory": "Regular",
+            "label": "System",
+            "comment": [
+                "The APIC uses a policy model to combine data into a health score. Health scores can be aggregated for a variety of areas such as for the infrastructure, applications, or services. The category health score is calculated using a Lp -Norm formula. The health score penalty equals 100 minus the health score. The health score penalty represents the overall health score penalties of a set of MOs that belong to a given category and are children or direct relatives of the MO for which a health score is being calculated."
+            ],
+            "properties": {
+                "address": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "The IP address of the system."
+                    ],
+                    "isConfigurable": true,
+                    "propGlobalId": "15",
+                    "propLocalId": "15",
+                    "label": "Address",
+                    "baseType": "address:IPv4",
+                    "modelType": "address:IPv4",
+                    "needsPropDelimiters": false,
+                    "uitype": "string",
+                    "createOnly": false,
+                    "readWrite": true,
+                    "readOnly": false,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validateAsIPv4": true,
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "bootstrapState": {
+                    "versions": "2.0(1m)-",
+                    "comment": [
+                         "Bootstrap state of this system"
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "26219",
+                    "propLocalId": "6217",
+                    "label": "bootstrapState",
+                    "baseType": "scalar:Enum8",
+                    "modelType": "top:BootstrapSt",
+                    "needsPropDelimiters": false,
+                    "uitype": "enum",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "none", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "},
+                         { "value": "2", "localName": "done",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "Done"
+                             ],
+                             "label": "Done "},
+                         { "value": "1", "localName": "downloading-bootstrap-config",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "Downloading bootstrap config"
+                             ],
+                             "label": "Downloading Boostrap Config "},
+                         { "value": "0", "localName": "none",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "Not completed"
+                             ],
+                             "label": "None "}
+                    ],
+                    "default": "none",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "childAction": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "Delete or ignore. For internal use only."
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "4",
+                    "propLocalId": "5",
+                    "label": "childAction",
+                    "baseType": "scalar:Bitmask32",
+                    "modelType": "mo:ModificationChildAction",
+                    "needsPropDelimiters": false,
+                    "uitype": "bitmask",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "16384", "localName": "deleteAll",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Delete All "},
+                         { "value": "8192", "localName": "deleteNonPresent",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Delete Non Present "},
+                         { "value": "4096", "localName": "ignore",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Ignore "}
+                    ],
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "clusterTimeDiff": {
+                    "versions": "4.2(4o)-",
+                    "comment": [
+                         "Difference in cluster time from local time for this system"
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "61199",
+                    "propLocalId": "13393",
+                    "label": "Cluster Time Deviation from Local Time",
+                    "baseType": "scalar:Sint64",
+                    "modelType": "infra:TimeDiffMs",
+                    "needsPropDelimiters": false,
+                    "uitype": "auto",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "0", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "}
+                    ],
+                    "default": "0",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "configIssues": {
+                    "versions": "1.0(2j)-",
+                    "comment": [
+                         "Bitmask representation of the configuration issues found during the endpoint group deployment."
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "16803",
+                    "propLocalId": "153",
+                    "label": "configIssues",
+                    "baseType": "scalar:Bitmask32",
+                    "modelType": "top:ConfigIssues",
+                    "needsPropDelimiters": false,
+                    "uitype": "bitmask",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "0x80", "localName": "cimc-addr-set-failure",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "Setting CIMC address failure"
+                             ],
+                             "label": "cimc-addr-set-failure "},
+                         { "value": "none", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "},
+                         { "value": "0x01", "localName": "duplicate-ibmgmt-ipv4",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "Duplicate In band Management IPV4"
+                             ],
+                             "label": "duplicate-ibmgmt-ipv4 "},
+                         { "value": "0x10", "localName": "duplicate-ibmgmt-ipv6",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "Duplicate In band Management IPV6"
+                             ],
+                             "label": "duplicate-ibmgmt-ipv6 "},
+                         { "value": "0x02", "localName": "duplicate-oobmgmt-ipv4",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "Duplicate Out of band Management IPV4"
+                             ],
+                             "label": "duplicate-oobmgmt-ipv4 "},
+                         { "value": "0x20", "localName": "duplicate-oobmgmt-ipv6",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "Duplicate Out of band Management IPV6"
+                             ],
+                             "label": "duplicate-oobmgmt-ipv6 "},
+                         { "value": "0x04", "localName": "invalid-ibmgmt-encap",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "Invalid/missing In band Management Encap"
+                             ],
+                             "label": "invalid-ibmgmt-encap "},
+                         { "value": "0x0", "localName": "none",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "No issues"
+                             ],
+                             "label": "None "},
+                         { "value": "0x08", "localName": "oobmgmt-ip-in-use",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "Out of band Management IP in use"
+                             ],
+                             "label": "oobmgmt-ip-in-use "},
+                         { "value": "0x40", "localName": "route-table-modify-fail",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "Route addition or deletion failure"
+                             ],
+                             "label": "route-table-modify-fail "},
+                         { "value": "0x100", "localName": "vcpu-memory-modified",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "Setting vcpu/memory modified"
+                             ],
+                             "label": "vcpu-memory-modified "}
+                    ],
+                    "default": "none",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "controlPlaneMTU": {
+                    "versions": "2.2(2e)-",
+                    "comment": [
+                         "MTU for control plane (SUP-originated) packets"
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "31099",
+                    "propLocalId": "7821",
+                    "label": "Control Plane MTU",
+                    "baseType": "scalar:Uint32",
+                    "modelType": "top:Mtu",
+                    "needsPropDelimiters": false,
+                    "uitype": "auto",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "9000", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "}
+                    ],
+                    "default": "9000",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "currentTime": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "The current time on this system."
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "19",
+                    "propLocalId": "19",
+                    "label": "Current Time",
+                    "baseType": "scalar:Date",
+                    "modelType": "scalar:Date",
+                    "needsPropDelimiters": false,
+                    "uitype": "auto",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "dn": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "A tag or metadata is a non-hierarchical keyword or term assigned to the fabric module."
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "1",
+                    "propLocalId": "2",
+                    "label": "dn",
+                    "baseType": "reference:BinRef",
+                    "modelType": "reference:BinRef",
+                    "needsPropDelimiters": true,
+                    "uitype": "auto",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "enforceSubnetCheck": {
+                    "versions": "2.2(2q)-2.2(4r),3.0(2h)-",
+                    "comment": [
+                         "Enforce subnet check on all VRFs"
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "35374",
+                    "propLocalId": "8246",
+                    "label": "Enforce subnet check on all VRFs",
+                    "baseType": "scalar:Bool",
+                    "modelType": "scalar:Bool",
+                    "needsPropDelimiters": false,
+                    "uitype": "auto",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "false", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "},
+                         { "value": "false", "localName": "no",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "No "},
+                         { "value": "true", "localName": "yes",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Yes "}
+                    ],
+                    "default": "no",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "etepAddr": {
+                    "versions": "2.0(1m)-",
+                    "comment": [
+                         "The External TEP IP address of this PoD"
+                    ],
+                    "isConfigurable": true,
+                    "propGlobalId": "20625",
+                    "propLocalId": "5312",
+                    "label": "External Tunnel Endpoint Address",
+                    "baseType": "address:IPv4",
+                    "modelType": "address:IPv4",
+                    "needsPropDelimiters": false,
+                    "uitype": "string",
+                    "createOnly": false,
+                    "readWrite": true,
+                    "readOnly": false,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validateAsIPv4": true,
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "fabricDomain": {
+                    "versions": "2.0(1m)-",
+                    "comment": [
+                         "Fabric domain of this node"
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "21363",
+                    "propLocalId": "5454",
+                    "label": "Fabric Domain",
+                    "baseType": "string:Basic",
+                    "modelType": "string:Basic",
+                    "needsPropDelimiters": false,
+                    "uitype": "auto",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "fabricId": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "The latest system health score. Use the navigation bar at the top right of the table to select which health level to view."
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "24",
+                    "propLocalId": "24",
+                    "label": "fabricId",
+                    "baseType": "scalar:UByte",
+                    "modelType": "top:FabricId",
+                    "needsPropDelimiters": false,
+                    "uitype": "auto",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "1", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "}
+                    ],
+                    "default": "1",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "fabricMAC": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         ""
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "25",
+                    "propLocalId": "25",
+                    "label": "fabricMAC",
+                    "baseType": "address:MAC",
+                    "modelType": "top:fabricMacAddr",
+                    "needsPropDelimiters": false,
+                    "uitype": "auto",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "280487012409856", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "}
+                    ],
+                    "default": "280487012409856",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "id": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "The unique system ID."
+                    ],
+                    "isConfigurable": true,
+                    "propGlobalId": "12",
+                    "propLocalId": "12",
+                    "label": "ID",
+                    "baseType": "scalar:Uint32",
+                    "modelType": "scalar:Uint32",
+                    "needsPropDelimiters": false,
+                    "uitype": "number",
+                    "createOnly": false,
+                    "readWrite": true,
+                    "readOnly": false,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "inbMgmtAddr": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "The in-band management IPv4 address."
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "17",
+                    "propLocalId": "17",
+                    "label": "In-band Management IP Address",
+                    "baseType": "address:IPv4",
+                    "modelType": "address:IPv4",
+                    "needsPropDelimiters": false,
+                    "uitype": "auto",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "inbMgmtAddr6": {
+                    "versions": "1.2(2g)-",
+                    "comment": [
+                         "In-band management IPv6 address"
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "23250",
+                    "propLocalId": "5734",
+                    "label": "In-band Management IPv6 Address",
+                    "baseType": "address:Ip",
+                    "modelType": "address:Ip",
+                    "needsPropDelimiters": true,
+                    "uitype": "auto",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "::", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "}
+                    ],
+                    "default": "::",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "inbMgmtAddr6Mask": {
+                    "versions": "3.0(1k)-",
+                    "comment": [
+                         "In-band management IPv6 address Mask"
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "34327",
+                    "propLocalId": "8130",
+                    "label": "In-band Management IPv6 Address Mask",
+                    "baseType": "scalar:Uint32",
+                    "modelType": "scalar:Uint32",
+                    "needsPropDelimiters": false,
+                    "uitype": "auto",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "inbMgmtAddrMask": {
+                    "versions": "3.0(1k)-",
+                    "comment": [
+                         "In-band management IP address Mask"
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "34326",
+                    "propLocalId": "8129",
+                    "label": "In-band Management IP Address Mask",
+                    "baseType": "scalar:Uint32",
+                    "modelType": "scalar:Uint32",
+                    "needsPropDelimiters": false,
+                    "uitype": "auto",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "inbMgmtGateway": {
+                    "versions": "3.0(1k)-",
+                    "comment": [
+                         "In-band management IP Gateway"
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "34328",
+                    "propLocalId": "8131",
+                    "label": "In-band Management IP Gateway",
+                    "baseType": "address:IPv4",
+                    "modelType": "address:IPv4",
+                    "needsPropDelimiters": false,
+                    "uitype": "auto",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "inbMgmtGateway6": {
+                    "versions": "3.0(1k)-",
+                    "comment": [
+                         "In-band management IPv6 Gateway"
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "34329",
+                    "propLocalId": "8132",
+                    "label": "In-band Management IPv6 Gateway",
+                    "baseType": "address:Ip",
+                    "modelType": "address:Ip",
+                    "needsPropDelimiters": true,
+                    "uitype": "auto",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "::", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "}
+                    ],
+                    "default": "::",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "lastRebootTime": {
+                    "versions": "3.2(10e)-3.2(10g),3.2(8d)-3.2(9h),4.1(2g)-",
+                    "comment": [
+                         "LastRebootTime for this system"
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "54139",
+                    "propLocalId": "12355",
+                    "label": "lastRebootTime",
+                    "baseType": "scalar:Date",
+                    "modelType": "scalar:Date",
+                    "needsPropDelimiters": false,
+                    "uitype": "auto",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "lastResetReason": {
+                    "versions": "3.2(10e)-3.2(10g),3.2(8d)-3.2(9h),4.1(2g)-",
+                    "comment": [
+                         "LastResetReason for this system"
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "54138",
+                    "propLocalId": "12354",
+                    "label": "lastResetReason",
+                    "baseType": "scalar:Enum8",
+                    "modelType": "syshist:RstRsn",
+                    "needsPropDelimiters": false,
+                    "uitype": "enum",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "159", "localName": "act2-authen-fail",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Reset due to ACT2 authentication failure "},
+                         { "value": "130", "localName": "app-init-reload",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Reload Initiated by application "},
+                         { "value": "22", "localName": "asic",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Reset performed due to component Error "},
+                         { "value": "160", "localName": "asic-mem-err",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Multiple uncorrectable ASIC memory errors detected "},
+                         { "value": "94", "localName": "bad-bus-volt",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Reset due to bad system bus voltage "},
+                         { "value": "95", "localName": "bad-intermediate-bus-volt",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Reset due to bad intermediate bus voltage "},
+                         { "value": "93", "localName": "bad-volt",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Reset due to Bad Voltage "},
+                         { "value": "169", "localName": "bios-boot-fail",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "BIOS boot fail and BIOS failed to set BIOS boot timer "},
+                         { "value": "170", "localName": "bios-check-fail",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "BIOS secure boot check fail "},
+                         { "value": "27", "localName": "boot-err",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Reset (powered-down) because module does not boot "},
+                         { "value": "30", "localName": "bootflash-corrupt",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Reset (powered-down) because bootflash access failed "},
+                         { "value": "163", "localName": "buffer-stuck-reset",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Buffer Stuck Reset "},
+                         { "value": "113", "localName": "card-incompat",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Module not supported in this chassis "},
+                         { "value": "105", "localName": "chassis-rst",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Chassis reset by Sup "},
+                         { "value": "157", "localName": "cli-soft-reload",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Reset due to soft reload via CLI "},
+                         { "value": "12", "localName": "clock",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "System Reset due to Clock failure "},
+                         { "value": "37", "localName": "clock-switchover",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "VegasLC Reset due to Clock SwitchOver "},
+                         { "value": "180", "localName": "cold-reboot",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "System cold rebooted "},
+                         { "value": "131", "localName": "cpu-caterr-signal",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "CPU CATERR Signal Asserted "},
+                         { "value": "167", "localName": "cpu-crc-err",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "CPU Processor CRC Error "},
+                         { "value": "166", "localName": "cpu-hot-err",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "CPU Processor HOT Error "},
+                         { "value": "168", "localName": "cpu-thermal-dimm-err",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "CPU Processor Thermal DIMM Error "},
+                         { "value": "165", "localName": "cpu-thermal-trip-err",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "CPU Thermal TRIP Error "},
+                         { "value": "156", "localName": "crash-soft-reload",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Reset due to soft reload via Crash "},
+                         { "value": "174", "localName": "decommissioned",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Reloading because of decommissioning of switch "},
+                         { "value": "126", "localName": "deep-sleep",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Preparing to enter deep sleep mode "},
+                         { "value": "unknown", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "},
+                         { "value": "162", "localName": "diag-fail",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Reset due to critical failure detected by Online diagnostic "},
+                         { "value": "150", "localName": "dme-reset",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Dme clean config reset "},
+                         { "value": "97", "localName": "eem-pwr-dwn",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Powered-down due to EEM event policy trigger "},
+                         { "value": "99", "localName": "ejector",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "All the ejectors are OPEN "},
+                         { "value": "143", "localName": "enhanced-virtualization-disabled",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "switch mode enhanced-virtualization disabled "},
+                         { "value": "142", "localName": "enhanced-virtualization-enabled",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "switch mode enhanced-virtualization enabled "},
+                         { "value": "25", "localName": "eobc",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Reset triggered due to bad backplane communication channel "},
+                         { "value": "146", "localName": "epc-fail",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Reset triggered due to bad (EPC) packet communication channel "},
+                         { "value": "33", "localName": "epld",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Power Down/UP epld upgrade process "},
+                         { "value": "125", "localName": "epld-upg-nw-crd-mode",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Power Down/UP epld upgrade process "},
+                         { "value": "145", "localName": "fabric-mode",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Powered down due to fabric configured in FRM mode "},
+                         { "value": "151", "localName": "fan-airflow-err",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Powered-down due to fan air flow policy trigger "},
+                         { "value": "177", "localName": "fanlet-fail",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Power down due to fanlet failures "},
+                         { "value": "133", "localName": "fast-reload",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Reset due to fast-reload "},
+                         { "value": "140", "localName": "firmware-upgrade",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Reload due to Firmware upgrade "},
+                         { "value": "16", "localName": "ha-reset",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Reset triggered due to HA policy of Reset "},
+                         { "value": "15", "localName": "ha-switchover",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Reset triggered due to HA policy of Switchover "},
+                         { "value": "13", "localName": "halt",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Kernel Halt "},
+                         { "value": "137", "localName": "hg-link-down",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Reloaded since a HG link went down on this LC "},
+                         { "value": "21", "localName": "hw",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Reset triggered due to Hardware Error "},
+                         { "value": "114", "localName": "idprom-err",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Bootup error accessing module IDPROM "},
+                         { "value": "43", "localName": "incompat-config",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Reset (powered-down) because of incompatible configuration "},
+                         { "value": "89", "localName": "ins-seq-fail-pwr-dwn",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Reset (powered-down) due to insertion sequence failed "},
+                         { "value": "31", "localName": "installer",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Reset by installer "},
+                         { "value": "38", "localName": "insufficient-resource",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Reset (powered-down) because of insufficient resources (DI) "},
+                         { "value": "155", "localName": "interop-mode-change",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Reload due to interop-mode change "},
+                         { "value": "88", "localName": "issu-restart",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Reset due to upgrade "},
+                         { "value": "172", "localName": "klm-fail",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "KLM load failure "},
+                         { "value": "173", "localName": "last-fc-remove",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Reloading linecard on removal of last fabric card "},
+                         { "value": "176", "localName": "last-sc-remove",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Reloading linecard and fabric card on removal of last SC "},
+                         { "value": "136", "localName": "lc-breakout",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Reloaded since breakout was configured/deconfigured on the LC "},
+                         { "value": "77", "localName": "lcm-async-notice-fail",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Stop async notice failed "},
+                         { "value": "47", "localName": "lcm-boot-srg-timeout",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "SRG info response timeout "},
+                         { "value": "48", "localName": "lcm-coredump",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Core dump initiation "},
+                         { "value": "49", "localName": "lcm-disruptive-upg",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Disruptive upgrade "},
+                         { "value": "45", "localName": "lcm-ha-restart",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "HA System restart "},
+                         { "value": "46", "localName": "lcm-haswitchover-done",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "HA-Switchover done "},
+                         { "value": "68", "localName": "lcm-hitfull-img-check",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Hitful image compatibility check "},
+                         { "value": "51", "localName": "lcm-hitless-mod-rem",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Hitless module removal "},
+                         { "value": "53", "localName": "lcm-hitless-proc-notice",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Catastrophic error from LC "},
+                         { "value": "52", "localName": "lcm-hitless-pwr-dwn",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Hitless power down "},
+                         { "value": "54", "localName": "lcm-hitless-reg-fail",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Hitless registration failed "},
+                         { "value": "55", "localName": "lcm-hitless-timeout",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Hitless upgrade timeout "},
+                         { "value": "59", "localName": "lcm-hitless-upg-fail",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Hitless upgrade failed "},
+                         { "value": "69", "localName": "lcm-img-check-pwr-cycle",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Image compatibility check (action:powercycle) "},
+                         { "value": "70", "localName": "lcm-img-check-pwr-dwn",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Image compatibility check (action:powerdown) "},
+                         { "value": "71", "localName": "lcm-img-check-switch-over",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Switchover : Image compatibility check "},
+                         { "value": "56", "localName": "lcm-img-upg-timeout",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Line card image upgrade (failure) "},
+                         { "value": "57", "localName": "lcm-img-upgsuccess",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Line card image upgrade (success) "},
+                         { "value": "50", "localName": "lcm-lc-fail",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Line card failure "},
+                         { "value": "58", "localName": "lcm-lc-ins-seq-fail",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "LC insertion sequence failure "},
+                         { "value": "60", "localName": "lcm-lc-no-resp",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Line card not responding "},
+                         { "value": "61", "localName": "lcm-lc-reg-more3",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Line card 3+ registration "},
+                         { "value": "62", "localName": "lcm-lc-reg-timeout",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Line card registration timeout "},
+                         { "value": "74", "localName": "lcm-lc-rem",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Module is removed "},
+                         { "value": "72", "localName": "lcm-power-down",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Module is powered down or power cycled "},
+                         { "value": "66", "localName": "lcm-proc-notice",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Line card catastrophic error "},
+                         { "value": "63", "localName": "lcm-runtime-diag-fail",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Runtime diagnostic failure "},
+                         { "value": "64", "localName": "lcm-runtime-diag-timeout",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Runtime diagnostic timeout "},
+                         { "value": "67", "localName": "lcm-save-state-fail",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Save state response (failure) "},
+                         { "value": "65", "localName": "lcm-seeprom-timeout",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Line card SEEPROM contents response timeout "},
+                         { "value": "80", "localName": "lcm-srg-incompat",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Upgraded SRG incompatible "},
+                         { "value": "76", "localName": "lcm-srg-timeout",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "SRG infor response timeout "},
+                         { "value": "73", "localName": "lcm-sup-rem",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Supervisor card is removed or power cycled "},
+                         { "value": "78", "localName": "lcm-switchover-fail",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Switchover failed "},
+                         { "value": "79", "localName": "lcm-timeout",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Addon image response timeout "},
+                         { "value": "44", "localName": "lcm-unknown",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "lcm reason codes"
+                             ],
+                             "label": "Unknown reason "},
+                         { "value": "75", "localName": "lcm-unknown-mod",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Unknown line card insertion "},
+                         { "value": "182", "localName": "maintenance-mode",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Reset due to switch in Maintenance Mode "},
+                         { "value": "120", "localName": "max-bring-up-exceed",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "failure(powered-down) since maximum number of bringups were exceeded "},
+                         { "value": "107", "localName": "max-switchover",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Reset (powered-down) since maximum number of swovers were exceeded "},
+                         { "value": "20", "localName": "mgmt-app",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Reset Requested by management application "},
+                         { "value": "178", "localName": "mis-card-insert",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Mismatch FC/lC card insertion "},
+                         { "value": "152", "localName": "mo-sync-fail",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "standby reset due to failure on large MOs sync "},
+                         { "value": "148", "localName": "mod-authen-fail",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Reset (powered down) due to module authentication failure "},
+                         { "value": "149", "localName": "mod-authen-start-fail",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Reset (powered down) due to module authentication start failure "},
+                         { "value": "4", "localName": "mod-err",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Reset Requested due to Fatal Module Error "},
+                         { "value": "111", "localName": "mod-fail",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Module Failed "},
+                         { "value": "119", "localName": "mod-fail-pwr-up",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Unable to power up card (Power-OK not set) "},
+                         { "value": "112", "localName": "mod-pwr-cycle",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Module PowerCycled "},
+                         { "value": "29", "localName": "netboot-err",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Reset (powered-down) because netboot failed "},
+                         { "value": "28", "localName": "no-bootflash",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Reset (powered-down) because there is no bootflash "},
+                         { "value": "135", "localName": "no-fm",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Powered down due to absence of fabric module "},
+                         { "value": "144", "localName": "no-fm-connect",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Powered down due to no connectivity to fabric modules "},
+                         { "value": "175", "localName": "no-good-fan",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Reloading because there is no good fan present "},
+                         { "value": "117", "localName": "no-plugin",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "plugin absent/ not loaded "},
+                         { "value": "134", "localName": "no-sc",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Powered down due to absence of system-controller module "},
+                         { "value": "92", "localName": "no-sup",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Reset due to no sup "},
+                         { "value": "164", "localName": "non-disruptive-reload",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Reload due to non-disruptive system reload "},
+                         { "value": "153", "localName": "non-disruptive-upgrade",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Reset due to non-disruptive upgrade "},
+                         { "value": "86", "localName": "outofservice",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Out of service "},
+                         { "value": "19", "localName": "panic",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Kernel Panic "},
+                         { "value": "132", "localName": "patch-install",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Reset due to patch install "},
+                         { "value": "18", "localName": "pfm-power-dwn",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Power down triggered due to Platform manager event "},
+                         { "value": "17", "localName": "pfm-rtime",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Power down triggered due to Platform manager runtime error "},
+                         { "value": "104", "localName": "policy-fan",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Powered-down due to fan policy trigger "},
+                         { "value": "103", "localName": "policy-reset",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Policy trigger initiated reset: "},
+                         { "value": "139", "localName": "power-err",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Reset due to Power error "},
+                         { "value": "96", "localName": "psp",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Reset due to CMP "},
+                         { "value": "101", "localName": "push-button",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "linecard reset by push button "},
+                         { "value": "5", "localName": "pwr-cfg",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Configured Power down "},
+                         { "value": "1", "localName": "reboot",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "Kernel Reboot"
+                             ],
+                             "label": "Kernel Reboot "},
+                         { "value": "23", "localName": "redun-channel",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Reset triggered due to bad redundancy channel "},
+                         { "value": "14", "localName": "redundancy",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Reset Requested by Redundancy "},
+                         { "value": "9", "localName": "reload",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Reset Requested by CLI command reload "},
+                         { "value": "183", "localName": "removed-from-controller",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Reset due to switch removed from Controller "},
+                         { "value": "187", "localName": "reset-due-to-secure-erase",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "System power-cycled due to Secure Erase "},
+                         { "value": "184", "localName": "reset-no-boot-usb",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Reset due to no boot from usb policy "},
+                         { "value": "161", "localName": "serdes-firmware-fail",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Reset due to loading serdes firmware failure "},
+                         { "value": "34", "localName": "sigkill-fail",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Reset triggered due to failure to respond to SIGKILL "},
+                         { "value": "138", "localName": "slot-id-parity-err",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Reset due to FPGA Slot ID parity error "},
+                         { "value": "158", "localName": "soft-reload-fail",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Reset due to soft reload attempt failure "},
+                         { "value": "10", "localName": "sprom-upd",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Reset Requested due to SPROM update "},
+                         { "value": "179", "localName": "ssd-firmware-upgrade",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "System power-cycled due to SSD firmware upgrade "},
+                         { "value": "181", "localName": "ssd-op-reload",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "SSD Over-provisioning reload "},
+                         { "value": "87", "localName": "sup-dev-err",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Supervisor Device Error "},
+                         { "value": "118", "localName": "sw-card-id-unknown",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Unknown card (Could not get software-card-id) "},
+                         { "value": "108", "localName": "switchover-timeout",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Reset since switchover timeout "},
+                         { "value": "11", "localName": "sys-cfg-dwn",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "System Reset due to Element Manager "},
+                         { "value": "35", "localName": "sys-gen-fail",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Reset triggered by System Manager for generic failure "},
+                         { "value": "24", "localName": "sys-health",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Reset due to bad HW detected by System Health "},
+                         { "value": "100", "localName": "sys-rst",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "System reset by active sup (by writing to PMFPGA regs) "},
+                         { "value": "3", "localName": "sysmgr",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "Sysmgr reset"
+                             ],
+                             "label": "Reset Requested due to Fatal System Error "},
+                         { "value": "109", "localName": "sysmgr-timeout",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Reset of standby by active sup due to sysmgr timeout "},
+                         { "value": "154", "localName": "tcam-change",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Reload due to change in TCAM service-template "},
+                         { "value": "6", "localName": "temp-alaram",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Power down due to temperature sensor policy trigger "},
+                         { "value": "0", "localName": "unknown",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "Unknown"
+                             ],
+                             "label": "Unknown "},
+                         { "value": "110", "localName": "unknown-mod",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Unsupported/Unknown Module "},
+                         { "value": "115", "localName": "unspecified",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Non-specific deadend error, check platform int error "},
+                         { "value": "141", "localName": "unsupp-dist-arbit-mode",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Powered-down since linecard/spine/supervisor does not support distributed arbitration mode "},
+                         { "value": "8", "localName": "upg-err",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Reset Requested due to Fatal Upgrade Error "},
+                         { "value": "98", "localName": "usd-fail",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Reset due to USD Failure "},
+                         { "value": "7", "localName": "user-switchover",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Reset triggered due to Switchover Request by User "},
+                         { "value": "147", "localName": "vdc-offline",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Reset (powered-down) because all VDCs for module need to be online "},
+                         { "value": "171", "localName": "warm-reset",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Reload due to warm reset "},
+                         { "value": "2", "localName": "watchdog",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "Watchdog"
+                             ],
+                             "label": "Watchdog Timeout "}
+                    ],
+                    "default": "unknown",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "lcOwn": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "A value that indicates how this object was created. For internal use only."
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "9",
+                    "propLocalId": "9",
+                    "label": "lcOwn",
+                    "baseType": "scalar:Enum8",
+                    "modelType": "mo:Owner",
+                    "needsPropDelimiters": false,
+                    "uitype": "enum",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "local", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "},
+                         { "value": "4", "localName": "implicit",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Implicit "},
+                         { "value": "0", "localName": "local",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Local "},
+                         { "value": "1", "localName": "policy",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Policy "},
+                         { "value": "2", "localName": "replica",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Replica "},
+                         { "value": "3", "localName": "resolveOnBehalf",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Resolved On Behalf "}
+                    ],
+                    "default": "local",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "modTs": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "The time when this object was last modified."
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "7",
+                    "propLocalId": "7",
+                    "label": "modTs",
+                    "baseType": "scalar:Date",
+                    "modelType": "mo:TStamp",
+                    "needsPropDelimiters": false,
+                    "uitype": "auto",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "never", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "},
+                         { "value": "0", "localName": "never",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Never "}
+                    ],
+                    "default": "never",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "mode": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "Specifies if this system is configured in standalone mode or HA pair"
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "14",
+                    "propLocalId": "14",
+                    "label": "Mode",
+                    "baseType": "scalar:Enum8",
+                    "modelType": "top:Mode",
+                    "needsPropDelimiters": false,
+                    "uitype": "enum",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "2", "localName": "cluster",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "Specifies this system is configured as an HA pair"
+                             ],
+                             "label": "Cluster "},
+                         { "value": "unspecified", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "},
+                         { "value": "1", "localName": "stand-alone",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "Specifies this system is configured in standalone, non HA mode"
+                             ],
+                             "label": "Standalone "},
+                         { "value": "0", "localName": "unspecified",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Unspecified "}
+                    ],
+                    "default": "unspecified",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "monPolDn": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "The monitoring policy attached to this observable object."
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "13769",
+                    "propLocalId": "228",
+                    "label": "Monitoring Policy",
+                    "baseType": "reference:BinRef",
+                    "modelType": "reference:BinRef",
+                    "needsPropDelimiters": true,
+                    "uitype": "auto",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "name": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "The system name."
+                    ],
+                    "isConfigurable": true,
+                    "propGlobalId": "13",
+                    "propLocalId": "13",
+                    "label": "Name",
+                    "baseType": "string:Basic",
+                    "modelType": "naming:Name",
+                    "needsPropDelimiters": false,
+                    "uitype": "string",
+                    "createOnly": false,
+                    "readWrite": true,
+                    "readOnly": false,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": true,
+                    "isLike": false,
+                    "validators": [
+                         {"regex" : "^[a-zA-Z][a-zA-Z0-9-]{0,29}$", "type": "include"}
+                    ],
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "nameAlias": {
+                    "versions": "2.2(1k)-",
+                    "isConfigurable": true,
+                    "propGlobalId": "28417",
+                    "propLocalId": "6719",
+                    "label": "Display Name",
+                    "baseType": "string:Basic",
+                    "modelType": "naming:NameAlias",
+                    "needsPropDelimiters": false,
+                    "uitype": "string",
+                    "createOnly": false,
+                    "readWrite": true,
+                    "readOnly": false,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validators": [
+                         {"min" : 0, "max": 63,
+                             "regexs": [
+                                 {"regex" : "^[a-zA-Z0-9_.-]+$", "type": "include"}
+                             ]
+                         }
+                    ],
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "nodeType": {
+                    "versions": "3.1(1i)-",
+                    "comment": [
+                         "Role of this system"
+                    ],
+                    "isConfigurable": true,
+                    "propGlobalId": "34407",
+                    "propLocalId": "5606",
+                    "label": "NodeType",
+                    "baseType": "scalar:Enum8",
+                    "modelType": "top:NodeType",
+                    "needsPropDelimiters": false,
+                    "uitype": "enum",
+                    "createOnly": false,
+                    "readWrite": true,
+                    "readOnly": false,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "4", "localName": "border-gateway",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "border-gateway-leaf"
+                             ],
+                             "label": "border-gateway "},
+                         { "value": "unspecified", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "},
+                         { "value": "1", "localName": "remote-leaf-wan",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "remotel-eaf-wan"
+                             ],
+                             "label": "Remote leaf "},
+                         { "value": "3", "localName": "tier-2-leaf",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "tier-2-leaf"
+                             ],
+                             "label": "Tier 2 Leaf "},
+                         { "value": "0", "localName": "unspecified",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Unspecified "},
+                         { "value": "2", "localName": "virtual",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "virtual-controler"
+                             ],
+                             "label": "Virtual Controller "}
+                    ],
+                    "default": "unspecified",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "oobMgmtAddr": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "The out-of-band management IPv4 address."
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "16",
+                    "propLocalId": "16",
+                    "label": "Out-of-band Management IP Address",
+                    "baseType": "address:IPv4",
+                    "modelType": "address:IPv4",
+                    "needsPropDelimiters": false,
+                    "uitype": "auto",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "oobMgmtAddr6": {
+                    "versions": "1.2(2g)-",
+                    "comment": [
+                         "Out-of-band management IPv6 address"
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "23249",
+                    "propLocalId": "5733",
+                    "label": "Out-of-band Management IPv6 Address",
+                    "baseType": "address:Ip",
+                    "modelType": "address:Ip",
+                    "needsPropDelimiters": true,
+                    "uitype": "auto",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "::", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "}
+                    ],
+                    "default": "::",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "oobMgmtAddr6Mask": {
+                    "versions": "3.0(1k)-",
+                    "comment": [
+                         "Out-of-band management IPv6 address Mask"
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "34323",
+                    "propLocalId": "8126",
+                    "label": "Out-of-band Management IPv6 Address Mask",
+                    "baseType": "scalar:Uint32",
+                    "modelType": "scalar:Uint32",
+                    "needsPropDelimiters": false,
+                    "uitype": "auto",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "oobMgmtAddrMask": {
+                    "versions": "3.0(1k)-",
+                    "comment": [
+                         "Out-of-band management IP address Mask"
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "34322",
+                    "propLocalId": "8125",
+                    "label": "Out-of-band Management IP Address Mask",
+                    "baseType": "scalar:Uint32",
+                    "modelType": "scalar:Uint32",
+                    "needsPropDelimiters": false,
+                    "uitype": "auto",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "oobMgmtGateway": {
+                    "versions": "3.0(1k)-",
+                    "comment": [
+                         "Out-of-band management IP Gateway"
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "34324",
+                    "propLocalId": "8127",
+                    "label": "Out-of-band Management IP Gateway",
+                    "baseType": "address:IPv4",
+                    "modelType": "address:IPv4",
+                    "needsPropDelimiters": false,
+                    "uitype": "auto",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "oobMgmtGateway6": {
+                    "versions": "3.0(1k)-",
+                    "comment": [
+                         "Out-of-band management IPv6 Gateway"
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "34325",
+                    "propLocalId": "8128",
+                    "label": "Out-of-band Management IPv6 Address",
+                    "baseType": "address:Ip",
+                    "modelType": "address:Ip",
+                    "needsPropDelimiters": true,
+                    "uitype": "auto",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "::", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "}
+                    ],
+                    "default": "::",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "podId": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "POD Idenitfier"
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "23",
+                    "propLocalId": "23",
+                    "label": "podId",
+                    "baseType": "scalar:UByte",
+                    "modelType": "top:PodId",
+                    "needsPropDelimiters": false,
+                    "uitype": "auto",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "1", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "}
+                    ],
+                    "default": "1",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "remoteNetworkId": {
+                    "versions": "2.0(1m)-",
+                    "comment": [
+                         "Remote Network ID"
+                    ],
+                    "isConfigurable": true,
+                    "propGlobalId": "20624",
+                    "propLocalId": "5311",
+                    "label": "Remote Network ID",
+                    "baseType": "scalar:Uint32",
+                    "modelType": "top:RemoteNetworkId",
+                    "needsPropDelimiters": false,
+                    "uitype": "number",
+                    "createOnly": false,
+                    "readWrite": true,
+                    "readOnly": false,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "0", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "}
+                    ],
+                    "default": 0,
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "remoteNode": {
+                    "versions": "2.0(1m)-",
+                    "comment": [
+                         "Remote system"
+                    ],
+                    "isConfigurable": true,
+                    "propGlobalId": "20623",
+                    "propLocalId": "5310",
+                    "label": "Remote",
+                    "baseType": "scalar:Bool",
+                    "modelType": "scalar:Bool",
+                    "needsPropDelimiters": false,
+                    "uitype": "boolean",
+                    "createOnly": false,
+                    "readWrite": true,
+                    "readOnly": false,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "false", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "},
+                         { "value": "false", "localName": "no",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "No "},
+                         { "value": "true", "localName": "yes",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Yes "}
+                    ],
+                    "default": "false",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "rlAutoMode": {
+                    "comment": [
+                         "Remote Leaf Auto Mode"
+                    ],
+                    "isConfigurable": true,
+                    "propGlobalId": "70458",
+                    "propLocalId": "15460",
+                    "label": "RlAutoMode",
+                    "baseType": "scalar:Bool",
+                    "modelType": "scalar:Bool",
+                    "needsPropDelimiters": false,
+                    "uitype": "boolean",
+                    "createOnly": false,
+                    "readWrite": true,
+                    "readOnly": false,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "false", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "},
+                         { "value": "false", "localName": "no",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "No "},
+                         { "value": "true", "localName": "yes",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Yes "}
+                    ],
+                    "default": "false",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "rlGroupId": {
+                    "comment": [
+                         "Remote Leaf Site Identifier"
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "70150",
+                    "propLocalId": "15418",
+                    "label": "rlGroupId",
+                    "baseType": "scalar:Uint16",
+                    "modelType": "fabric:SiteId",
+                    "needsPropDelimiters": false,
+                    "uitype": "auto",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "0", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "}
+                    ],
+                    "default": "0",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "rlOperPodId": {
+                    "versions": "4.2(1i)-",
+                    "comment": [
+                         "Operational POD Idenitfier for RL Pod Redundancy"
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "54436",
+                    "propLocalId": "12380",
+                    "label": "rlOperPodId",
+                    "baseType": "scalar:UByte",
+                    "modelType": "scalar:UByte",
+                    "needsPropDelimiters": false,
+                    "uitype": "auto",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "rlRoutableMode": {
+                    "versions": "4.1(2g)-",
+                    "comment": [
+                         "Is RemoteLeaf Routable"
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "53306",
+                    "propLocalId": "12276",
+                    "label": "Is RL Routable",
+                    "baseType": "scalar:Bool",
+                    "modelType": "scalar:Bool",
+                    "needsPropDelimiters": false,
+                    "uitype": "auto",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "false", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "},
+                         { "value": "false", "localName": "no",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "No "},
+                         { "value": "true", "localName": "yes",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Yes "}
+                    ],
+                    "default": "no",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "rldirectMode": {
+                    "versions": "4.1(1i)-",
+                    "comment": [
+                         "Remote Leaf Direct Mode"
+                    ],
+                    "isConfigurable": true,
+                    "propGlobalId": "49951",
+                    "propLocalId": "11708",
+                    "label": "RlDirectMode",
+                    "baseType": "scalar:Bool",
+                    "modelType": "scalar:Bool",
+                    "needsPropDelimiters": false,
+                    "uitype": "boolean",
+                    "createOnly": false,
+                    "readWrite": true,
+                    "readOnly": false,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "false", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "},
+                         { "value": "false", "localName": "no",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "No "},
+                         { "value": "true", "localName": "yes",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Yes "}
+                    ],
+                    "default": "false",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "rn": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "Identifies an object from its siblings within the context of its parent object. The distinguished name contains a sequence of relative names."
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "2",
+                    "propLocalId": "3",
+                    "label": "rn",
+                    "baseType": "reference:BinRN",
+                    "modelType": "reference:BinRN",
+                    "needsPropDelimiters": true,
+                    "uitype": "auto",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "role": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "The system role type."
+                    ],
+                    "isConfigurable": true,
+                    "propGlobalId": "18",
+                    "propLocalId": "18",
+                    "label": "Role",
+                    "baseType": "scalar:Enum8",
+                    "modelType": "top:NodeRole",
+                    "needsPropDelimiters": false,
+                    "uitype": "enum",
+                    "createOnly": false,
+                    "readWrite": true,
+                    "readOnly": false,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "1", "localName": "controller",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "Controller"
+                             ],
+                             "label": "Controller "},
+                         { "value": "unsupported", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "},
+                         { "value": "2", "localName": "leaf",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "Leaf"
+                             ],
+                             "label": "Leaf "},
+                         { "value": "6", "localName": "protection-chain",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "Protection chain IP"
+                             ],
+                             "label": "Protection Chain "},
+                         { "value": "3", "localName": "spine",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "Spine"
+                             ],
+                             "label": "Spine "},
+                         { "value": "0", "localName": "unsupported",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Unknown "},
+                         { "value": "5", "localName": "vip",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "VPC IP address"
+                             ],
+                             "label": "VIP "},
+                         { "value": "4", "localName": "vleaf",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "vLeaf"
+                             ],
+                             "label": "VLeaf "}
+                    ],
+                    "default": "unsupported",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "serial": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "Serial Number of the system"
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "22",
+                    "propLocalId": "22",
+                    "label": "serial",
+                    "baseType": "string:Basic",
+                    "modelType": "eqpt:Serial",
+                    "needsPropDelimiters": false,
+                    "uitype": "auto",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "serverType": {
+                    "versions": "4.0(1h)-",
+                    "isConfigurable": true,
+                    "propGlobalId": "44455",
+                    "propLocalId": "9789",
+                    "label": "DhcpServerType",
+                    "baseType": "scalar:Enum8",
+                    "modelType": "top:DhcpServerType",
+                    "needsPropDelimiters": false,
+                    "uitype": "enum",
+                    "createOnly": false,
+                    "readWrite": true,
+                    "readOnly": false,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": false,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "unspecified", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "},
+                         { "value": "1", "localName": "primary",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "primary dhcp server"
+                             ],
+                             "label": "Primary "},
+                         { "value": "2", "localName": "secondary",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "secondary dhcp server"
+                             ],
+                             "label": "Secondary "},
+                         { "value": "0", "localName": "unspecified",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Unspecified "}
+                    ],
+                    "default": "unspecified",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "siteId": {
+                    "versions": "3.0(1k)-",
+                    "comment": [
+                         "Site Identifier"
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "29954",
+                    "propLocalId": "6712",
+                    "label": "siteId",
+                    "baseType": "scalar:Uint16",
+                    "modelType": "fabric:SiteId",
+                    "needsPropDelimiters": false,
+                    "uitype": "auto",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "0", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "}
+                    ],
+                    "default": "0",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "state": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "Operational state of this system"
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "26",
+                    "propLocalId": "26",
+                    "label": "state",
+                    "baseType": "scalar:Enum8",
+                    "modelType": "top:SystemSt",
+                    "needsPropDelimiters": false,
+                    "uitype": "enum",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "out-of-service", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "},
+                         { "value": "5", "localName": "downloading-boot-script",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "Downloading boot script"
+                             ],
+                             "label": "Downloading Boot Script "},
+                         { "value": "6", "localName": "downloading-firmware",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "Downloading firmware"
+                             ],
+                             "label": "Downloading Firmware "},
+                         { "value": "2", "localName": "in-service",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "In service"
+                             ],
+                             "label": "In Service "},
+                         { "value": "1", "localName": "invalid-ver",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "Invalid version"
+                             ],
+                             "label": "Invalid Ver. "},
+                         { "value": "0", "localName": "out-of-service",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "Out of service"
+                             ],
+                             "label": "Out Of Service "},
+                         { "value": "4", "localName": "requesting-tep",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "Requesting IP"
+                             ],
+                             "label": "Requesting TEP "}
+                    ],
+                    "default": "out-of-service",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "status": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "The upgrade status. This property is for internal use only."
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "3",
+                    "propLocalId": "4",
+                    "label": "status",
+                    "baseType": "scalar:Bitmask32",
+                    "modelType": "mo:ModificationStatus",
+                    "needsPropDelimiters": false,
+                    "uitype": "bitmask",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "2", "localName": "created",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "In a setter method: specifies that an object should be created. An error is returned if the object already exists.  \nIn the return value of a setter method: indicates that an object has been created.  \n"
+                             ],
+                             "label": "Created "},
+                         { "value": "8", "localName": "deleted",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "In a setter method: specifies that an object should be deleted.  \nIn the return value of a setter method: indicates that an object has been deleted.\n"
+                             ],
+                             "label": "Deleted "},
+                         { "value": "4", "localName": "modified",
+                             "platformFlavors": [
+
+                             ],
+                             "comment": [
+                                 "In a setter method: specifies that an object should be modified  \nIn the return value of a setter method: indicates that an object has been modified.\n"
+                             ],
+                             "label": "Modified "}
+                    ],
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "systemUpTime": {
+                    "versions": "1.0(1e)-",
+                    "comment": [
+                         "The time (in seconds) since the system was booted."
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "21",
+                    "propLocalId": "21",
+                    "label": "System Up Time",
+                    "baseType": "scalar:Time",
+                    "modelType": "scalar:Time",
+                    "needsPropDelimiters": false,
+                    "uitype": "auto",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "tepPool": {
+                    "versions": "2.2(4p)-2.2(4r),3.0(1k)-",
+                    "comment": [
+                         "TepPool for this system"
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "32651",
+                    "propLocalId": "5459",
+                    "label": "tepPool",
+                    "baseType": "address:Ip",
+                    "modelType": "address:Ip",
+                    "needsPropDelimiters": true,
+                    "uitype": "auto",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "unicastXrEpLearnDisable": {
+                    "versions": "2.2(2e)-",
+                    "comment": [
+                         "Disable xrLeanrs"
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "33382",
+                    "propLocalId": "7959",
+                    "label": "Disable xrLeanrs",
+                    "baseType": "scalar:Bool",
+                    "modelType": "scalar:Bool",
+                    "needsPropDelimiters": false,
+                    "uitype": "auto",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "false", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "},
+                         { "value": "false", "localName": "no",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "No "},
+                         { "value": "true", "localName": "yes",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Yes "}
+                    ],
+                    "default": "no",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "version": {
+                    "versions": "3.2(10e)-3.2(10g),3.2(8d)-3.2(9h),4.1(2g)-",
+                    "comment": [
+                         "version for this system"
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "54140",
+                    "propLocalId": "167",
+                    "label": "version",
+                    "baseType": "string:Basic",
+                    "modelType": "cap:Version",
+                    "needsPropDelimiters": false,
+                    "uitype": "auto",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                },
+                "virtualMode": {
+                    "versions": "4.0(1h)-",
+                    "comment": [
+                         "Virtual mode of system"
+                    ],
+                    "isConfigurable": false,
+                    "propGlobalId": "44456",
+                    "propLocalId": "9790",
+                    "label": "VirtualMode",
+                    "baseType": "scalar:Bool",
+                    "modelType": "scalar:Bool",
+                    "needsPropDelimiters": false,
+                    "uitype": "boolean",
+                    "createOnly": false,
+                    "readWrite": false,
+                    "readOnly": true,
+                    "isNaming": false,
+                    "secure": false,
+                    "implicit": true,
+                    "mandatory": false,
+                    "isOverride": false,
+                    "isLike": false,
+                    "validValues": [
+                         { "value": "false", "localName": "defaultValue",
+                             "platformFlavors": [
+
+                             ],
+                             "label": " "},
+                         { "value": "false", "localName": "no",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "No "},
+                         { "value": "true", "localName": "yes",
+                             "platformFlavors": [
+
+                             ],
+                             "label": "Yes "}
+                    ],
+                    "default": "false",
+                    "platformFlavors": [
+
+                    ],
+                    "isNxosConverged": false,
+                    "isDeprecated": false,
+                    "isHidden": false
+                }
+            }
+        }
+}

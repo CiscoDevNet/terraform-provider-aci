@@ -120,7 +120,7 @@ All examples for the {{ .Class.Documentation.Label }} resource can be found in t
   {{- "\n" }}
   {{- end -}}
   {{- range $property := $requiredProperties }}
-* `{{ $property.AttributeName }}` ({{ $property.PropertyName }}) - ({{ $property.ValueType.DocumentationType }}) {{ $property.Documentation.Description }}{{ with $property.Documentation.SupportedVersions }} This attribute is supported in ACI versions: {{ . }}{{ end }}
+* `{{ $property.AttributeName }}` ({{ $property.DocumentationPropertyName }}) - ({{ $property.ValueType.DocumentationType }}) {{ $property.Documentation.Description }}{{ with $property.Documentation.SupportedVersions }} This attribute is supported in ACI versions: {{ . }}{{ end }}
     {{- $validValues := $property.ValidValues.LocalNamesList }}
     {{- if eq $property.ValueType.String "semantic_equality" }}
   - Valid Values:
@@ -148,7 +148,7 @@ All examples for the {{ .Class.Documentation.Label }} resource can be found in t
 
 * `id` - (string) The distinguished name (DN) of the {{ $class.Documentation.Label }} object.
 {{ range $property := $readOnlyProperties -}}
-* `{{ $property.AttributeName }}` ({{ $property.PropertyName }}) - ({{ $property.ValueType.DocumentationType }}) {{ $property.Documentation.Description }}{{ with $property.Documentation.SupportedVersions }} This attribute is supported in ACI versions: {{ . }}{{ end }}
+* `{{ $property.AttributeName }}` ({{ $property.DocumentationPropertyName }}) - ({{ $property.ValueType.DocumentationType }}) {{ $property.Documentation.Description }}{{ with $property.Documentation.SupportedVersions }} This attribute is supported in ACI versions: {{ . }}{{ end }}
   {{- range $property.ResourceDocumentationDefaultValues }}
   - Default: `{{ $property.ValueType.DocumentationLiteral .Value }}`{{ with .Versions }} for ACI versions {{ .String }}{{ end }}
   {{- end }}
@@ -202,7 +202,7 @@ All examples for the {{ .Class.Documentation.Label }} resource can be found in t
   {{- "\n" }}
   {{- end -}}
   {{- range $property := $optionalProperties }}
-* `{{ $property.AttributeName }}` ({{ $property.PropertyName }}) - ({{ $property.ValueType.DocumentationType }}) {{ $property.Documentation.Description }}{{ with $property.Documentation.SupportedVersions }} This attribute is supported in ACI versions: {{ . }}{{ end }}
+* `{{ $property.AttributeName }}` ({{ $property.DocumentationPropertyName }}) - ({{ $property.ValueType.DocumentationType }}) {{ $property.Documentation.Description }}{{ with $property.Documentation.SupportedVersions }} This attribute is supported in ACI versions: {{ . }}{{ end }}
     {{- range $property.ResourceDocumentationDefaultValues }}
   - Default: `{{ $property.ValueType.DocumentationLiteral .Value }}`{{ with .Versions }} for ACI versions {{ .String }}{{ end }}
     {{- end }}
@@ -270,7 +270,7 @@ import {
 {{ $childIndent }}  #### Required ####
 {{- "\n" -}}
     {{- range $property := $requiredProperties }}
-{{ $propertyIndent }}* `{{ $property.AttributeName }}` ({{ $property.PropertyName }}) - ({{ $property.ValueType.DocumentationType }}) {{ $property.Documentation.Description }}{{ with $property.Documentation.SupportedVersions }} This attribute is supported in ACI versions: {{ . }}{{ end }}
+{{ $propertyIndent }}* `{{ $property.AttributeName }}` ({{ $property.DocumentationPropertyName }}) - ({{ $property.ValueType.DocumentationType }}) {{ $property.Documentation.Description }}{{ with $property.Documentation.SupportedVersions }} This attribute is supported in ACI versions: {{ . }}{{ end }}
       {{- $validValues := $property.ValidValues.LocalNamesList }}
       {{- if eq $property.ValueType.String "semantic_equality" }}
 {{ $propertyIndent }}  - Valid Values:
@@ -294,7 +294,7 @@ import {
 {{ $childIndent }}  #### Read-Only ####
 {{- "\n" -}}
     {{- range $property := $readOnlyProperties }}
-{{ $propertyIndent }}* `{{ $property.AttributeName }}` ({{ $property.PropertyName }}) - ({{ $property.ValueType.DocumentationType }}) {{ $property.Documentation.Description }}{{ with $property.Documentation.SupportedVersions }} This attribute is supported in ACI versions: {{ . }}{{ end }}
+{{ $propertyIndent }}* `{{ $property.AttributeName }}` ({{ $property.DocumentationPropertyName }}) - ({{ $property.ValueType.DocumentationType }}) {{ $property.Documentation.Description }}{{ with $property.Documentation.SupportedVersions }} This attribute is supported in ACI versions: {{ . }}{{ end }}
       {{- range $property.ResourceDocumentationDefaultValues }}
 {{ $propertyIndent }}  - Default: `{{ $property.ValueType.DocumentationLiteral .Value }}`{{ with .Versions }} for ACI versions {{ .String }}{{ end }}
       {{- end }}
@@ -310,7 +310,7 @@ import {
 {{ $childIndent }}  #### Optional ####
 {{- "\n" -}}
     {{- range $property := $optionalProperties }}
-{{ $propertyIndent }}* `{{ $property.AttributeName }}` ({{ $property.PropertyName }}) - ({{ $property.ValueType.DocumentationType }}) {{ $property.Documentation.Description }}{{ with $property.Documentation.SupportedVersions }} This attribute is supported in ACI versions: {{ . }}{{ end }}
+{{ $propertyIndent }}* `{{ $property.AttributeName }}` ({{ $property.DocumentationPropertyName }}) - ({{ $property.ValueType.DocumentationType }}) {{ $property.Documentation.Description }}{{ with $property.Documentation.SupportedVersions }} This attribute is supported in ACI versions: {{ . }}{{ end }}
       {{- range $property.ResourceDocumentationDefaultValues }}
 {{ $propertyIndent }}  - Default: `{{ $property.ValueType.DocumentationLiteral .Value }}`{{ with .Versions }} for ACI versions {{ .String }}{{ end }}
       {{- end }}
