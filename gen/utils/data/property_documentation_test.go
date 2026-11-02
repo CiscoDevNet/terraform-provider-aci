@@ -15,6 +15,34 @@ type setPropertyDescriptionInput struct {
 	MetaLabel             string
 }
 
+func TestDocumentationPropertyName(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+
+	testCases := []test.TestCase{
+		{
+			Name:     "test_meta_property_name",
+			Input:    &Property{PropertyName: "podId"},
+			Expected: "podId",
+		},
+		{
+			Name: "test_definition_override",
+			Input: &Property{
+				PropertyName:       "podId",
+				propertyDefinition: PropertyDefinition{DocumentationPropertyName: "id"},
+			},
+			Expected: "id",
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			assert.Equal(t, testCase.Expected, testCase.Input.(*Property).DocumentationPropertyName())
+		})
+	}
+}
+
 func TestSetPropertyDescription(t *testing.T) {
 	t.Parallel()
 	test.InitializeTest(t)

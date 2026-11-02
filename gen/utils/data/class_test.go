@@ -3301,6 +3301,38 @@ func TestSetProperties(t *testing.T) {
 			},
 		},
 		{
+			Name: "test_non_configurable_with_required_restriction",
+			Input: setPropertiesInput{
+				MetaFileContent: map[string]any{
+					"properties": map[string]any{
+						"podId": map[string]any{
+							"isConfigurable": false,
+							"isNaming":       false,
+						},
+					},
+				},
+				ClassDefinition: ClassDefinition{
+					Properties: map[string]PropertyDefinition{
+						"podId": {Restriction: Required},
+					},
+				},
+			},
+			Expected: setPropertiesExpected{
+				PropertiesAll:      []string{"podId"},
+				PropertiesRequired: []string{"podId"},
+				PropertiesOptional: []string{},
+				PropertiesReadOnly: []string{},
+				PropertyDetails: map[string]struct {
+					AttributeName string
+					Required      bool
+					Optional      bool
+					ReadOnly      bool
+				}{
+					"podId": {AttributeName: "pod_id", Required: true},
+				},
+			},
+		},
+		{
 			Name: "test_configurable_with_exclude_restriction",
 			Input: setPropertiesInput{
 				MetaFileContent: map[string]any{

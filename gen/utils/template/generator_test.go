@@ -1447,6 +1447,78 @@ func TestGeneratedDirectRequiredPropertySchema(t *testing.T) {
 	}
 }
 
+func TestGeneratedTopSystemDataSourceSchema(t *testing.T) {
+	schema := models.TopSystemDataSourceSchema()
+	if diagnostics := schema.ValidateImplementation(context.Background()); diagnostics.HasError() {
+		t.Fatalf("invalid topSystem data-source schema: %v", diagnostics)
+	}
+
+	if _, exists := schema.Attributes["parent_dn"]; exists {
+		t.Fatal("topSystem data-source schema unexpectedly contains parent_dn")
+	}
+	for _, attributeName := range []string{"system_id", "pod_id"} {
+		attribute, ok := schema.Attributes[attributeName].(datasourceschema.StringAttribute)
+		if !ok || !attribute.Required || attribute.Computed {
+			t.Fatalf("unexpected topSystem identifier %q: %#v", attributeName, schema.Attributes[attributeName])
+		}
+	}
+	for _, attributeName := range []string{"child_action", "config_issues", "lc_own", "status"} {
+		attribute, ok := schema.Attributes[attributeName].(datasourceschema.StringAttribute)
+		if !ok || !attribute.Computed || attribute.Required || attribute.DeprecationMessage == "" {
+			t.Fatalf("unexpected deprecated topSystem attribute %q: %#v", attributeName, schema.Attributes[attributeName])
+		}
+	}
+
+	legacyAttributes := []string{
+		"boot_strap_tate",
+		"etep_addr",
+		"inb_mgmt_addr",
+		"inb_mgmt_addr6",
+		"inb_mgmt_addr6_mask",
+		"inb_mgmt_addr_mask",
+		"inb_mgmt_gateway",
+		"inb_mgmt_gateway6",
+		"mon_pol_dn",
+		"oob_mgmt_addr",
+		"oob_mgmt_addr6",
+		"oob_mgmt_addr6_mask",
+		"oob_mgmt_addr_mask",
+		"oob_mgmt_gateway",
+		"oob_mgmt_gateway6",
+		"rl_auto_mode",
+		"rl_group_id",
+		"rl_oper_pod_id",
+		"rl_routable_mode",
+		"rldirect_mode",
+		"unicast_xr_ep_learn_disable",
+	}
+	for _, attributeName := range legacyAttributes {
+		if _, exists := schema.Attributes[attributeName]; exists {
+			t.Fatalf("deferred topSystem legacy attribute %q is exposed in the generated schema", attributeName)
+		}
+	}
+}
+
+func TestGeneratedTopSystemDataSourceDocumentation(t *testing.T) {
+	_, currentFile, _, ok := runtime.Caller(0)
+	if !ok {
+		t.Fatal("determine generator test path")
+	}
+	documentationPath := filepath.Join(filepath.Dir(currentFile), "..", "..", "..", "docs", "data-sources", "system.md")
+	contents, err := os.ReadFile(documentationPath)
+	if err != nil {
+		t.Fatalf("read generated system documentation: %v", err)
+	}
+	for _, expected := range []string{
+		"* `system_id` (id) - (string) The `id` attribute of the parent APIC `fabricNode` class.",
+		"* `pod_id` (id) - (string) The `id` attribute of the parent APIC `fabricPod` class.",
+	} {
+		if !strings.Contains(string(contents), expected) {
+			t.Fatalf("generated system documentation does not contain %q", expected)
+		}
+	}
+}
+
 func TestGeneratedRootModelMatchesResourceAndDataSourceSchemas(t *testing.T) {
 	t.Parallel()
 
@@ -1559,6 +1631,16 @@ func TestGeneratedRootModelBuildDN(t *testing.T) {
 				return model.BuildDN()
 			},
 			Expected: "uni/infra/l2IfP-example",
+		},
+		{
+			Name: "test_top_system_identifiers",
+			Input: func() string {
+				model := models.NewTopSystemRootModelNull()
+				model.TopSystemID = types.StringValue("1")
+				model.PodId = types.StringValue("1")
+				return model.BuildDN()
+			},
+			Expected: "topology/pod-1/node-1/sys",
 		},
 		{
 			Name: "test_runtime_parent_class",

@@ -113,6 +113,7 @@
       "spine_access_port_selector.md",
       "spine_interface_profile.md",
       "synce_interface_policy.md",
+      "system.md",
       "taboo_contract.md",
       "taboo_contract_subject.md",
       "tag.md",
@@ -690,6 +691,10 @@
       "provider.tf"
     ],
     "examples/data-sources/aci_synce_interface_policy": [
+      "data-source.tf",
+      "provider.tf"
+    ],
+    "examples/data-sources/aci_system": [
       "data-source.tf",
       "provider.tf"
     ],
@@ -1493,6 +1498,7 @@
       "data_source_aci_spine_access_port_selector.go",
       "data_source_aci_spine_interface_profile.go",
       "data_source_aci_synce_interface_policy.go",
+      "data_source_aci_system.go",
       "data_source_aci_taboo_contract.go",
       "data_source_aci_taboo_contract_subject.go",
       "data_source_aci_tag.go",
@@ -1670,6 +1676,7 @@
       "synceEthIfPol.go",
       "tagAnnotation.go",
       "tagTag.go",
+      "topSystem.go",
       "vmmDomP.go",
       "vmmRsDomMcastAddrNs.go",
       "vmmRsPrefEnhancedLagPol.go",
