@@ -1,4 +1,4 @@
-// Copyright (c) HashiCorp, Inc.
+// Copyright IBM Corp. 2020, 2026
 // SPDX-License-Identifier: MPL-2.0
 
 package tf6muxserver
@@ -14,7 +14,7 @@ import (
 
 // GetProviderSchema merges the schemas returned by the
 // tfprotov6.ProviderServers associated with muxServer into a single schema.
-// Resources, data sources, ephemeral resources, list resources, actions, and functions must be returned
+// Resources, data sources, ephemeral resources, list resources, actions, functions, and state stores must be returned
 // from only one server. Provider and ProviderMeta schemas must be identical between all servers.
 func (s *muxServer) GetProviderSchema(ctx context.Context, req *tfprotov6.GetProviderSchemaRequest) (*tfprotov6.GetProviderSchemaResponse, error) {
 	rpc := "GetProviderSchema"
@@ -31,6 +31,7 @@ func (s *muxServer) GetProviderSchema(ctx context.Context, req *tfprotov6.GetPro
 		EphemeralResourceSchemas: make(map[string]*tfprotov6.Schema),
 		Functions:                make(map[string]*tfprotov6.Function),
 		ResourceSchemas:          make(map[string]*tfprotov6.Schema),
+		StateStoreSchemas:        make(map[string]*tfprotov6.Schema),
 		ServerCapabilities:       serverCapabilities,
 	}
 
@@ -141,6 +142,17 @@ func (s *muxServer) GetProviderSchema(ctx context.Context, req *tfprotov6.GetPro
 
 			s.listResources[listResourceType] = server
 			resp.ListResourceSchemas[listResourceType] = schema
+		}
+
+		for stateStoreType, schema := range serverResp.StateStoreSchemas {
+			if _, ok := resp.StateStoreSchemas[stateStoreType]; ok {
+				resp.Diagnostics = append(resp.Diagnostics, stateStoreDuplicateError(stateStoreType))
+
+				continue
+			}
+
+			s.stateStores[stateStoreType] = server
+			resp.StateStoreSchemas[stateStoreType] = schema
 		}
 	}
 
