@@ -1,4 +1,4 @@
-// Copyright (c) HashiCorp, Inc.
+// Copyright IBM Corp. 2020, 2026
 // SPDX-License-Identifier: MPL-2.0
 
 package tf6muxserver
@@ -34,6 +34,9 @@ type muxServer struct {
 
 	// Routing for functions
 	functions map[string]tfprotov6.ProviderServer
+
+	// Routing for state stores
+	stateStores map[string]tfprotov6.ProviderServer
 
 	// Routing for resource types
 	resources map[string]tfprotov6.ProviderServer
@@ -240,6 +243,41 @@ func (s *muxServer) getFunctionServer(ctx context.Context, name string) (tfproto
 	return server, s.serverDiscoveryDiagnostics, nil
 }
 
+func (s *muxServer) getStateStoreServer(ctx context.Context, typeName string) (tfprotov6.ProviderServer, []*tfprotov6.Diagnostic, error) {
+	s.serverDiscoveryMutex.RLock()
+	server, ok := s.stateStores[typeName]
+	discoveryComplete := s.serverDiscoveryComplete
+	s.serverDiscoveryMutex.RUnlock()
+
+	if discoveryComplete {
+		if ok {
+			return server, s.serverDiscoveryDiagnostics, nil
+		}
+
+		return nil, []*tfprotov6.Diagnostic{
+			stateStoreMissingError(typeName),
+		}, nil
+	}
+
+	err := s.serverDiscovery(ctx)
+
+	if err != nil || diagnosticsHasError(s.serverDiscoveryDiagnostics) {
+		return nil, s.serverDiscoveryDiagnostics, err
+	}
+
+	s.serverDiscoveryMutex.RLock()
+	server, ok = s.stateStores[typeName]
+	s.serverDiscoveryMutex.RUnlock()
+
+	if !ok {
+		return nil, []*tfprotov6.Diagnostic{
+			stateStoreMissingError(typeName),
+		}, nil
+	}
+
+	return server, s.serverDiscoveryDiagnostics, nil
+}
+
 func (s *muxServer) getResourceServer(ctx context.Context, typeName string) (tfprotov6.ProviderServer, []*tfprotov6.Diagnostic, error) {
 	s.serverDiscoveryMutex.RLock()
 	server, ok := s.resources[typeName]
@@ -357,6 +395,16 @@ func (s *muxServer) serverDiscovery(ctx context.Context) error {
 				s.functions[serverFunction.Name] = server
 			}
 
+			for _, serverStateStore := range metadataResp.StateStores {
+				if _, ok := s.stateStores[serverStateStore.TypeName]; ok {
+					s.serverDiscoveryDiagnostics = append(s.serverDiscoveryDiagnostics, stateStoreDuplicateError(serverStateStore.TypeName))
+
+					continue
+				}
+
+				s.stateStores[serverStateStore.TypeName] = server
+			}
+
 			for _, serverResource := range metadataResp.Resources {
 				if _, ok := s.resources[serverResource.TypeName]; ok {
 					s.serverDiscoveryDiagnostics = append(s.serverDiscoveryDiagnostics, resourceDuplicateError(serverResource.TypeName))
@@ -439,6 +487,16 @@ func (s *muxServer) serverDiscovery(ctx context.Context) error {
 			s.functions[name] = server
 		}
 
+		for typeName := range providerSchemaResp.StateStoreSchemas {
+			if _, ok := s.stateStores[typeName]; ok {
+				s.serverDiscoveryDiagnostics = append(s.serverDiscoveryDiagnostics, stateStoreDuplicateError(typeName))
+
+				continue
+			}
+
+			s.stateStores[typeName] = server
+		}
+
 		for typeName := range providerSchemaResp.ResourceSchemas {
 			if _, ok := s.resources[typeName]; ok {
 				s.serverDiscoveryDiagnostics = append(s.serverDiscoveryDiagnostics, resourceDuplicateError(typeName))
@@ -470,6 +528,7 @@ func (s *muxServer) serverDiscovery(ctx context.Context) error {
 //   - Only one provider implements each ephemeral resource
 //   - Only one provider implements each list resource
 //   - Only one provider implements each resource identity
+//   - Only one provider implements each state store
 func NewMuxServer(_ context.Context, servers ...func() tfprotov6.ProviderServer) (*muxServer, error) {
 	result := muxServer{
 		actions:              make(map[string]tfprotov6.ProviderServer),
@@ -477,6 +536,7 @@ func NewMuxServer(_ context.Context, servers ...func() tfprotov6.ProviderServer)
 		ephemeralResources:   make(map[string]tfprotov6.ProviderServer),
 		listResources:        make(map[string]tfprotov6.ProviderServer),
 		functions:            make(map[string]tfprotov6.ProviderServer),
+		stateStores:          make(map[string]tfprotov6.ProviderServer),
 		resources:            make(map[string]tfprotov6.ProviderServer),
 		resourceCapabilities: make(map[string]*tfprotov6.ServerCapabilities),
 		servers:              make([]tfprotov6.ProviderServer, 0, len(servers)),

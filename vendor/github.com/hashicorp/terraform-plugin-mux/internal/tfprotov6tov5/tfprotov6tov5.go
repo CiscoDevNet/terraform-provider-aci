@@ -1,4 +1,4 @@
-// Copyright (c) HashiCorp, Inc.
+// Copyright IBM Corp. 2020, 2026
 // SPDX-License-Identifier: MPL-2.0
 
 package tfprotov6tov5
@@ -810,16 +810,17 @@ func SchemaAttribute(in *tfprotov6.SchemaAttribute) (*tfprotov5.SchemaAttribute,
 	}
 
 	return &tfprotov5.SchemaAttribute{
-		Computed:        in.Computed,
-		Deprecated:      in.Deprecated,
-		Description:     in.Description,
-		DescriptionKind: StringKind(in.DescriptionKind),
-		Name:            in.Name,
-		Optional:        in.Optional,
-		Required:        in.Required,
-		Sensitive:       in.Sensitive,
-		Type:            in.Type,
-		WriteOnly:       in.WriteOnly,
+		Computed:           in.Computed,
+		Deprecated:         in.Deprecated,
+		DeprecationMessage: in.DeprecationMessage,
+		Description:        in.Description,
+		DescriptionKind:    StringKind(in.DescriptionKind),
+		Name:               in.Name,
+		Optional:           in.Optional,
+		Required:           in.Required,
+		Sensitive:          in.Sensitive,
+		Type:               in.Type,
+		WriteOnly:          in.WriteOnly,
 	}, nil
 }
 
@@ -861,12 +862,13 @@ func SchemaBlock(in *tfprotov6.SchemaBlock) (*tfprotov5.SchemaBlock, error) {
 	}
 
 	return &tfprotov5.SchemaBlock{
-		Attributes:      attrs,
-		BlockTypes:      nestedBlocks,
-		Deprecated:      in.Deprecated,
-		Description:     in.Description,
-		DescriptionKind: StringKind(in.DescriptionKind),
-		Version:         in.Version,
+		Attributes:         attrs,
+		BlockTypes:         nestedBlocks,
+		Deprecated:         in.Deprecated,
+		DeprecationMessage: in.DeprecationMessage,
+		Description:        in.Description,
+		DescriptionKind:    StringKind(in.DescriptionKind),
+		Version:            in.Version,
 	}, nil
 }
 
@@ -1276,4 +1278,26 @@ func InvokeActionEvent(in tfprotov6.InvokeActionEvent) tfprotov5.InvokeActionEve
 	// it implies that a new event type was introduced and needs to be implemented
 	// as a new case above.
 	panic(fmt.Sprintf("unimplemented tfprotov6.InvokeActionEventType type: %T", in.Type))
+}
+
+func GenerateResourceConfigRequest(in *tfprotov6.GenerateResourceConfigRequest) *tfprotov5.GenerateResourceConfigRequest {
+	if in == nil {
+		return nil
+	}
+
+	return &tfprotov5.GenerateResourceConfigRequest{
+		TypeName: in.TypeName,
+		State:    DynamicValue(in.State),
+	}
+}
+
+func GenerateResourceConfigResponse(in *tfprotov6.GenerateResourceConfigResponse) *tfprotov5.GenerateResourceConfigResponse {
+	if in == nil {
+		return nil
+	}
+
+	return &tfprotov5.GenerateResourceConfigResponse{
+		Config:      DynamicValue(in.Config),
+		Diagnostics: Diagnostics(in.Diagnostics),
+	}
 }

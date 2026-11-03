@@ -1,4 +1,4 @@
-// Copyright (c) HashiCorp, Inc.
+// Copyright IBM Corp. 2020, 2026
 // SPDX-License-Identifier: MPL-2.0
 
 package tf6muxserver
@@ -14,7 +14,7 @@ import (
 
 // GetMetadata merges the metadata returned by the
 // tfprotov6.ProviderServers associated with muxServer into a single response.
-// Resources, data sources, ephemeral resources, list resources, actions, and functions must be returned
+// Resources, data sources, ephemeral resources, list resources, actions, functions, and state stores must be returned
 // from only one server or an error diagnostic is returned.
 func (s *muxServer) GetMetadata(ctx context.Context, req *tfprotov6.GetMetadataRequest) (*tfprotov6.GetMetadataResponse, error) {
 	rpc := "GetMetadata"
@@ -31,6 +31,7 @@ func (s *muxServer) GetMetadata(ctx context.Context, req *tfprotov6.GetMetadataR
 		ListResources:      make([]tfprotov6.ListResourceMetadata, 0),
 		Functions:          make([]tfprotov6.FunctionMetadata, 0),
 		Resources:          make([]tfprotov6.ResourceMetadata, 0),
+		StateStores:        make([]tfprotov6.StateStoreMetadata, 0),
 		ServerCapabilities: serverCapabilities,
 	}
 
@@ -101,6 +102,17 @@ func (s *muxServer) GetMetadata(ctx context.Context, req *tfprotov6.GetMetadataR
 			resp.Functions = append(resp.Functions, function)
 		}
 
+		for _, stateStore := range serverResp.StateStores {
+			if stateStoreMetadataContainsTypeName(resp.StateStores, stateStore.TypeName) {
+				resp.Diagnostics = append(resp.Diagnostics, stateStoreDuplicateError(stateStore.TypeName))
+
+				continue
+			}
+
+			s.stateStores[stateStore.TypeName] = server
+			resp.StateStores = append(resp.StateStores, stateStore)
+		}
+
 		for _, resource := range serverResp.Resources {
 			if resourceMetadataContainsTypeName(resp.Resources, resource.TypeName) {
 				resp.Diagnostics = append(resp.Diagnostics, resourceDuplicateError(resource.TypeName))
@@ -160,6 +172,16 @@ func listResourceMetadataContainsTypeName(metadatas []tfprotov6.ListResourceMeta
 func functionMetadataContainsName(metadatas []tfprotov6.FunctionMetadata, name string) bool {
 	for _, metadata := range metadatas {
 		if name == metadata.Name {
+			return true
+		}
+	}
+
+	return false
+}
+
+func stateStoreMetadataContainsTypeName(metadatas []tfprotov6.StateStoreMetadata, typeName string) bool {
+	for _, metadata := range metadatas {
+		if typeName == metadata.TypeName {
 			return true
 		}
 	}
