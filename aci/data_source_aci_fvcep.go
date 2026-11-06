@@ -320,22 +320,22 @@ func dataSourceAciClientEndPointRead(d *schema.ResourceData, m interface{}) erro
 	var queryString string
 	if mac, ok := d.GetOk("mac"); ok {
 		if queryString != "" {
-			queryString = fmt.Sprintf("%s,eq(fvCEp.mac, \"%s\")", queryString, mac.(string))
+			queryString = fmt.Sprintf("%s,eq(fvCEp.mac,\"%s\")", queryString, mac.(string))
 		} else {
-			queryString = fmt.Sprintf("eq(fvCEp.mac, \"%s\")", mac.(string))
+			queryString = fmt.Sprintf("eq(fvCEp.mac,\"%s\")", mac.(string))
 		}
 	}
 
 	if ip, ok := d.GetOk("ip"); ok {
-		fvIpDns, err := getRemotefvIpParentDn(aciClient, fmt.Sprintf("eq(fvIp.addr, \"%s\")", ip.(string)))
+		fvIpDns, err := getRemotefvIpParentDn(aciClient, fmt.Sprintf("eq(fvIp.addr,\"%s\")", ip.(string)))
 		if err != nil {
 			return err
 		}
 		if len(fvIpDns) != 0 {
 			macPattern := regexp.MustCompile("cep-(.+)/")
-			tempQueryString := fmt.Sprintf("eq(fvCEp.mac, \"%s\")", macPattern.FindStringSubmatch(fvIpDns[0])[1])
+			tempQueryString := fmt.Sprintf("eq(fvCEp.mac,\"%s\")", macPattern.FindStringSubmatch(fvIpDns[0])[1])
 			for i := 1; i < len(fvIpDns); i++ {
-				tempQueryString = fmt.Sprintf("%s,eq(fvCEp.mac, \"%s\")", tempQueryString, macPattern.FindStringSubmatch(fvIpDns[i])[1])
+				tempQueryString = fmt.Sprintf("%s,eq(fvCEp.mac,\"%s\")", tempQueryString, macPattern.FindStringSubmatch(fvIpDns[i])[1])
 			}
 			if queryString != "" {
 				queryString = fmt.Sprintf("%s,%s", queryString, tempQueryString)
@@ -355,25 +355,25 @@ func dataSourceAciClientEndPointRead(d *schema.ResourceData, m interface{}) erro
 
 	if name, ok := d.GetOk("name"); ok {
 		if queryString != "" {
-			queryString = fmt.Sprintf("%s,eq(fvCEp.name, \"%s\")", queryString, name.(string))
+			queryString = fmt.Sprintf("%s,eq(fvCEp.name,\"%s\")", queryString, name.(string))
 		} else {
-			queryString = fmt.Sprintf("eq(fvCEp.name, \"%s\")", name.(string))
+			queryString = fmt.Sprintf("eq(fvCEp.name,\"%s\")", name.(string))
 		}
 	}
 
 	if vlan, ok := d.GetOk("vlan"); ok {
 		if queryString != "" {
-			queryString = fmt.Sprintf("%s,eq(fvCEp.encap, \"vlan-%s\")", queryString, vlan.(string))
+			queryString = fmt.Sprintf("%s,eq(fvCEp.encap,\"vlan-%s\")", queryString, vlan.(string))
 		} else {
-			queryString = fmt.Sprintf("eq(fvCEp.encap, \"vlan-%s\")", vlan.(string))
+			queryString = fmt.Sprintf("eq(fvCEp.encap,\"vlan-%s\")", vlan.(string))
 		}
 	}
 
 	if filterDn, ok := d.GetOk("filter_dn"); ok {
 		if queryString != "" {
-			queryString = fmt.Sprintf("%s,wcard(fvCEp.dn, \"%s\")", queryString, filterDn.(string))
+			queryString = fmt.Sprintf("%s,wcard(fvCEp.dn,\"%s\")", queryString, filterDn.(string))
 		} else {
-			queryString = fmt.Sprintf("wcard(fvCEp.dn, \"%s\")", filterDn.(string))
+			queryString = fmt.Sprintf("wcard(fvCEp.dn,\"%s\")", filterDn.(string))
 		}
 	}
 
