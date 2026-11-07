@@ -39,8 +39,8 @@ properties:
     test_config:
       create:
       - config_value: netfow_exporter
-      default:
-      - config_value: netfow_exporter
+      datasource_missing:
+      - config_value: netfow_exporter_non_existing
   parentDn:
     default_values:
       uni/infra: ""
@@ -53,9 +53,9 @@ properties:
       description: The source IP address.
     test_config:
       create:
-      - config_value: 203.0.113.11/24
+      - config_value: 203.0.113.11/20
       default:
-      - config_value: 192.0.2.1/24
+      - config_value: 192.0.2.1/20
       update:
       - config_value: 2001:db8::1/116
   ver:

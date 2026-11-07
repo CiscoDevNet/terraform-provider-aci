@@ -35,5 +35,9 @@ test_config:
   - class_name: fvBD
     dependencies:
     - class_name: fvTenant
-    reference: aci_bridge_domain.test.id
+    role: parent
+  - class_name: fvBD
+    dependencies:
+    - class_name: fvTenant
+    reference: aci_bridge_domain.test_2.id
     role: parent

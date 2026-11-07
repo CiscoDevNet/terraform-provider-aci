@@ -1,3 +1,7 @@
+# Test limitation: hostkeyAlgos is excluded from acceptance tests.
+# This is a legacy exclusion whose original reason was not recorded.
+# TODO: Reassess coverage with the existing string-set handling after the generator refactor.
+
 properties:
   adminSt:
     attribute_name: admin_state

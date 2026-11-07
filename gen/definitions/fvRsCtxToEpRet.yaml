@@ -7,7 +7,8 @@ test_config:
   dependencies:
   - class_name: fvEpRetPol
     config_overrides:
-      name: end_point_retention_policy_name_1
+      name: name_1
+      tenant_dn: aci_tenant.test.id
     dependencies:
     - class_name: fvTenant
     reference: aci_end_point_retention_policy.test_end_point_retention_policy_0.id

@@ -7,8 +7,8 @@ properties:
     test_config:
       create:
       - config_value: ipv4-ucast
-      default:
-      - config_value: ipv4-ucast
+      datasource_missing:
+      - config_value: ipv6-ucast
   tnBgpCtxAfPolName:
     documentation:
       description: The name of the BGP Address Family Context.
@@ -17,7 +17,8 @@ test_config:
   dependencies:
   - class_name: bgpCtxAfPol
     config_overrides:
-      name: bgp_address_family_context_name_1
+      name: name_1
+      tenant_dn: aci_tenant.test.id
     dependencies:
     - class_name: fvTenant
     reference: aci_bgp_address_family_context.test_bgp_address_family_context_0.id

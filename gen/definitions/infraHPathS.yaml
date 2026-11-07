@@ -6,8 +6,10 @@ documentation:
 properties:
   name:
     test_config:
-      default:
+      create:
       - config_value: host_path_selector
+      datasource_missing:
+      - config_value: host_path_selector_non_existing
   parentDn:
     default_values:
       uni/infra: ""

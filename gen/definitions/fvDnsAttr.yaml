@@ -11,6 +11,8 @@ properties:
       - value: example.com
   name:
     test_config:
-      default:
+      create:
       - config_value: dns_attribute
+      datasource_missing:
+      - config_value: dns_attribute_non_existing
 resource_name: epg_useg_dns_attribute

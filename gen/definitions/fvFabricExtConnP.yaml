@@ -9,8 +9,10 @@ properties:
       description: A unique identifier of the fabric, associated with the Fabric External
         Connection Policy object
     test_config:
-      default:
+      create:
       - config_value: "1"
+      datasource_missing:
+      - config_value: "2"
   parentDn:
     default_values:
       uni/tn-infra: ""

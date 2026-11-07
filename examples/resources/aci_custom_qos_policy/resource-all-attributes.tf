@@ -38,13 +38,13 @@ resource "aci_custom_qos_policy" "full_example" {
     {
       annotation  = "example_annotation"
       description = "Example DSCP to Priority Map"
-      from        = "CS1"
+      from        = "AF11"
       name        = "dscp_to_priority_map"
       name_alias  = "example_name_alias"
       priority    = "level1"
       target      = "AF11"
       target_cos  = "0"
-      to          = "CS5"
+      to          = "AF11"
       annotations = [
         {
           key   = "example_key"

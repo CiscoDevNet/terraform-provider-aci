@@ -23,7 +23,7 @@ properties:
       - config_value: "1"
   mac:
     test_config:
-      default:
+      create:
       - config_value: "00:00:00:00:00:01"
 resource_name: endpoint_tag_mac
 rn_prepend: eptags

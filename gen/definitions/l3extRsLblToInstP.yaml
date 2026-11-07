@@ -18,28 +18,38 @@ properties:
       - reference:
           class_name: l3extInstP
           resource_name: external_network_instance_profile
+    test_config:
+      datasource_missing:
+      - config_value: uni/tn-name_1/out-name_1/instP-name_1_not_existing
 resource_name: relation_from_l3out_consumer_label_to_external_epg
 test_config:
   dependencies:
   - class_name: l3extConsLbl
     dependencies:
     - class_name: l3extOut
-    reference: aci_l3out_consumer_label.test.id
+      config_overrides:
+        name: name_1
+        relation_l3ext_rs_ectx: aci_vrf.test.id
+        tenant_dn: aci_tenant.test.id
+      dependencies:
+      - class_name: fvTenant
+      - class_name: fvCtx
+        config_overrides:
+          parent_dn: aci_tenant.test.id
+        dependencies:
+        - class_name: fvTenant
+      reference: aci_l3_outside.test.id
     role: parent
     target_classes:
     - l3extInstP
   - class_name: l3extInstP
-    config_overrides:
-      name: inst_profile_1
     dependencies:
     - class_name: l3extOut
-    reference: uni/tn-test_name/out-test_l3_outside/instP-inst_profile_1
-    reference_type: static
+      reference: aci_l3_outside.test.id
     role: target
-  embedded_instances:
-  - properties:
-      target_dn:
-      - config_value: uni/tn-test_name/out-test_l3_outside/instP-inst_profile_1
-  - properties:
-      target_dn:
-      - config_value: uni/tn-test_name/out-test_l3_outside/instP-inst_profile_2
+  - class_name: l3extInstP
+    dependencies:
+    - class_name: l3extOut
+      reference: aci_l3_outside.test.id
+    reference: aci_external_epg.test_2.id
+    role: target

@@ -7,6 +7,9 @@ properties:
   tDn:
     documentation:
       description: The distinguished name of the target Domain object.
+    test_config:
+      datasource_missing:
+      - config_value: uni/phys-physical_domain_3
 relation_info:
   to_classes:
   - vmmDomP
@@ -18,11 +21,11 @@ test_config:
   dependencies:
   - class_name: physDomP
     config_overrides:
-      name: physical_domain_0
+      name: name_1
     reference: aci_physical_domain.test_physical_domain_0.id
     role: target
   - class_name: physDomP
     config_overrides:
-      name: physical_domain_1
+      name: name_2
     reference: aci_physical_domain.test_physical_domain_1.id
     role: target

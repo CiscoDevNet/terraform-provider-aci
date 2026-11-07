@@ -32,8 +32,10 @@ properties:
       minimum:
       - value: netflow_record
     test_config:
-      default:
+      create:
       - config_value: netfow_record
+      datasource_missing:
+      - config_value: netfow_record_non_existing
   parentDn:
     default_values:
       uni/infra: ""

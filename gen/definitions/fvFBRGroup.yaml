@@ -8,6 +8,8 @@ include_children:
 properties:
   name:
     test_config:
-      default:
+      create:
       - config_value: fallback_route_group
+      datasource_missing:
+      - config_value: fallback_route_group_non_existing
 resource_name: vrf_fallback_route_group

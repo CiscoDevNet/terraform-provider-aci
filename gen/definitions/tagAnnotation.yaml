@@ -21,6 +21,4 @@ properties:
     documentation:
       description: The key used to uniquely identify this configuration object.
   value:
-    default_values:
-      test_value: ""
     restriction: required

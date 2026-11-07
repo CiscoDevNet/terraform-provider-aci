@@ -7,6 +7,8 @@ properties:
     test_config:
       create:
       - config_value: CS1
+      datasource_missing:
+      - config_value: AF31
       default:
       - config_value: AF11
   target:
@@ -17,6 +19,20 @@ properties:
     test_config:
       create:
       - config_value: CS5
+      datasource_missing:
+      - config_value: AF42
       default:
       - config_value: AF22
 resource_name: dscp_to_priority_map
+test_config:
+  embedded_instances:
+  - properties:
+      from:
+      - config_value: AF11
+      to:
+      - config_value: AF11
+  - properties:
+      from:
+      - config_value: AF12
+      to:
+      - config_value: AF12
