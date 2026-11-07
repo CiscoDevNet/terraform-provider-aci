@@ -1,6 +1,7 @@
 properties:
-  tDn:
-    test_config:
-      create:
-      - config_value: uni/userext/pkiext/tp-test_name
+  tDn: {}
 resource_name_nested: certificate_authority
+test_config:
+  dependencies:
+  - class_name: pkiTP
+    role: target

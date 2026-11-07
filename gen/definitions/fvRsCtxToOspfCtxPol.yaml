@@ -7,14 +7,15 @@ properties:
     test_config:
       create:
       - config_value: ipv4-ucast
-      default:
-      - config_value: ipv4-ucast
+      datasource_missing:
+      - config_value: ipv6-ucast
 resource_name: relation_from_vrf_to_address_family_ospf_timers
 test_config:
   dependencies:
   - class_name: ospfCtxPol
     config_overrides:
-      name: ospf_timers_name_1
+      name: name_1
+      tenant_dn: aci_tenant.test.id
     dependencies:
     - class_name: fvTenant
     reference: aci_ospf_timers.test_ospf_timers_0.id

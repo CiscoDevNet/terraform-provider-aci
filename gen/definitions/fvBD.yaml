@@ -1,3 +1,8 @@
+# Test limitation: enableRogueExceptMac is excluded from acceptance tests.
+# This is a legacy exclusion whose original reason was not recorded.
+# Metadata already records support from 6.0(2h); the exclusion applies to every version.
+# TODO: Reassess coverage using metadata version gates after the generator refactor.
+
 documentation:
   include_children:
   - fvSiteAssociated
@@ -129,10 +134,18 @@ properties:
     attribute_name: bridge_domain_type
     documentation:
       description: The domain type of the %s object.
+    test_config:
+      create:
+      - config_value: regular
+      update:
+      - config_value: fc
   unicastRoute:
     attribute_name: unicast_routing
     documentation:
       description: Enables L3 routing and endpoint IP learning for the %s object.
+    test_config:
+      create:
+      - config_value: "yes"
   unkMacUcastAct:
     attribute_name: l2_unknown_unicast_flooding
     test_config:

@@ -7,6 +7,9 @@ properties:
   tDn:
     documentation:
       description: The distinguished name (DN) of the IP SLA Track Member.
+    test_config:
+      datasource_missing:
+      - config_value: uni/tn-test_tenant/trackmember-track_member_name_1_not_existing
   weight:
     default_values:
       "10": ""

@@ -49,7 +49,7 @@ resource "aci_mcp_interface_policy" "full_example" {
   annotation                          = "example_annotation"
   description                         = "Example MCP Interface Policy"
   grace_period_seconds                = "3"
-  grace_period_milliseconds           = "138"
+  grace_period_milliseconds           = "100"
   maximum_number_of_vlan              = "129"
   strict_mode                         = "on"
   mcp_pdu_per_vlan                    = "off"

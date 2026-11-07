@@ -11,6 +11,6 @@ test_config:
   dependencies:
   - class_name: infraAccPortGrp
     config_overrides:
-      name: leaf_access_port_policy_group_1
+      name: name_1
     reference: aci_leaf_access_port_policy_group.test_leaf_access_port_policy_group_0.id
     role: target

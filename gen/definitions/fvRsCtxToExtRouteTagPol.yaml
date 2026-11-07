@@ -12,7 +12,8 @@ test_config:
   dependencies:
   - class_name: l3extRouteTagPol
     config_overrides:
-      name: l3out_route_tag_policy_name_1
+      name: name_1
+      tenant_dn: aci_tenant.test.id
     dependencies:
     - class_name: fvTenant
     reference: aci_l3out_route_tag_policy.test_l3out_route_tag_policy_0.id

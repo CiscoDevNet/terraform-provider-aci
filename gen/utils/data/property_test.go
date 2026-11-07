@@ -2020,14 +2020,16 @@ type setTestValuesInput struct {
 }
 
 type setTestValuesExpected struct {
-	IgnoreInTest   bool
-	TestValuesNil  bool
-	CreateValues   []string
-	UpdateValues   []string
-	DefaultInclude []bool
-	DefaultAssert  []string
-	CreateTypes    []ValueRenderTypeEnum
-	ForceNewValues []string
+	IgnoreInTest            bool
+	IgnoreInDataSourceTest  bool
+	TestValuesNil           bool
+	CreateValues            []string
+	DataSourceMissingValues []string
+	UpdateValues            []string
+	DefaultInclude          []bool
+	DefaultAssert           []string
+	CreateTypes             []ValueRenderTypeEnum
+	ForceNewValues          []string
 }
 
 func TestSetTestValues(t *testing.T) {
@@ -2069,6 +2071,9 @@ func TestSetTestValues(t *testing.T) {
 				PropertyName: "testProp",
 				PropertyDefinition: PropertyDefinition{
 					TestConfig: TestConfigDefinition{
+						DataSourceMissing: testValueScenarioDefinition(
+							TestValueEntryDefinition{ConfigValue: "missing_val", ConfigInclude: &boolTrue},
+						),
 						Create: testValueScenarioDefinition(
 							TestValueEntryDefinition{ConfigValue: "create_val", ConfigInclude: &boolTrue, AssertValue: "assert_val", ValueType: StringValue},
 						),
@@ -2081,15 +2086,18 @@ func TestSetTestValues(t *testing.T) {
 						ForceNew: testValueScenarioDefinition(
 							TestValueEntryDefinition{ConfigValue: "force_new_val", ConfigInclude: &boolTrue},
 						),
+						IgnoreInDataSourceTest: true,
 					},
 				},
 			},
 			Expected: setTestValuesExpected{
-				CreateValues:   []string{"create_val"},
-				UpdateValues:   []string{"update_val"},
-				DefaultInclude: []bool{false},
-				DefaultAssert:  []string{"default_val"},
-				ForceNewValues: []string{"force_new_val"},
+				IgnoreInDataSourceTest:  true,
+				CreateValues:            []string{"create_val"},
+				DataSourceMissingValues: []string{"missing_val"},
+				UpdateValues:            []string{"update_val"},
+				DefaultInclude:          []bool{false},
+				DefaultAssert:           []string{"default_val"},
+				ForceNewValues:          []string{"force_new_val"},
 			},
 		},
 		{
@@ -2174,7 +2182,7 @@ func TestSetTestValues(t *testing.T) {
 				CreateValues:   []string{"name_1"},
 				UpdateValues:   []string{"name_2"},
 				DefaultInclude: []bool{true},
-				DefaultAssert:  []string{"test_name"},
+				DefaultAssert:  []string{"name_1"},
 				ForceNewValues: []string{"name_1"},
 			},
 		},
@@ -2187,11 +2195,11 @@ func TestSetTestValues(t *testing.T) {
 				Optional:      true,
 			},
 			Expected: setTestValuesExpected{
-				CreateValues:   []string{"annotation"},
+				CreateValues:   []string{"annotation_1"},
 				UpdateValues:   []string{"annotation_2"},
 				DefaultInclude: []bool{false},
 				DefaultAssert:  []string{""},
-				ForceNewValues: []string{"annotation"},
+				ForceNewValues: []string{"annotation_1"},
 			},
 		},
 		{
@@ -2275,6 +2283,7 @@ func TestSetTestValues(t *testing.T) {
 			property.setTestValues()
 
 			assert.Equal(t, expected.IgnoreInTest, property.IgnoreInTest, test.MessageEqual(expected.IgnoreInTest, property.IgnoreInTest, testCase.Name))
+			assert.Equal(t, expected.IgnoreInDataSourceTest, property.IgnoreInDataSourceTest, test.MessageEqual(expected.IgnoreInDataSourceTest, property.IgnoreInDataSourceTest, testCase.Name))
 
 			if expected.TestValuesNil {
 				assert.Nil(t, property.TestValues, testCase.Name+": TestValues should be nil")
@@ -2287,6 +2296,13 @@ func TestSetTestValues(t *testing.T) {
 				assert.Len(t, property.TestValues.Create.Entries, len(expected.CreateValues), testCase.Name+": Create length mismatch")
 				for i, v := range expected.CreateValues {
 					assert.Equal(t, v, property.TestValues.Create.Entries[i].ConfigValue, test.MessageEqual(v, property.TestValues.Create.Entries[i].ConfigValue, testCase.Name))
+				}
+			}
+
+			if expected.DataSourceMissingValues != nil {
+				assert.Len(t, property.TestValues.DataSourceMissing.Entries, len(expected.DataSourceMissingValues), testCase.Name+": DataSourceMissing length mismatch")
+				for i, v := range expected.DataSourceMissingValues {
+					assert.Equal(t, v, property.TestValues.DataSourceMissing.Entries[i].ConfigValue, test.MessageEqual(v, property.TestValues.DataSourceMissing.Entries[i].ConfigValue, testCase.Name))
 				}
 			}
 

@@ -7,6 +7,8 @@ properties:
     test_config:
       create:
       - config_value: "4"
+      datasource_missing:
+      - config_value: "6"
       default:
       - config_value: "1"
   target:
@@ -21,6 +23,8 @@ properties:
     test_config:
       create:
       - config_value: "5"
+      datasource_missing:
+      - config_value: "7"
       default:
       - config_value: "2"
 resource_name: dot1p_classifier

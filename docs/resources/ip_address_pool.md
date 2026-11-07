@@ -33,7 +33,7 @@ The configuration snippet below creates a IP Address Pool with only required att
 ```hcl
 
 resource "aci_ip_address_pool" "example" {
-  gateway_address = "10.0.0.1/24"
+  gateway_address = "192.0.2.1/24"
   name            = "ip_address_pool"
 }
 
@@ -46,7 +46,7 @@ The configuration snippet below shows all possible attributes of the IP Address 
 ```hcl
 
 resource "aci_ip_address_pool" "full_example" {
-  gateway_address         = "10.0.0.1/24"
+  gateway_address         = "192.0.2.1/24"
   address_type            = "regular"
   annotation              = "example_annotation"
   description             = "Example IP Address Pool"
@@ -59,10 +59,10 @@ resource "aci_ip_address_pool" "full_example" {
     {
       annotation  = "example_annotation"
       description = "Example IP Address Block"
-      from        = "10.0.0.2"
+      from        = "192.0.2.2"
       name        = "ip_address_block"
       name_alias  = "example_name_alias"
-      to          = "10.0.0.5"
+      to          = "192.0.2.5"
       annotations = [
         {
           key   = "example_key"

@@ -10,8 +10,10 @@ properties:
       minimum:
       - value: netflow_monitor
     test_config:
-      default:
+      create:
       - config_value: netfow_monitor
+      datasource_missing:
+      - config_value: netfow_monitor_non_existing
   parentDn:
     default_values:
       uni/infra: ""

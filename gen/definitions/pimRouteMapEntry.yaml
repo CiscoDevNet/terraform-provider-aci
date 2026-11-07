@@ -19,8 +19,10 @@ properties:
       - config_value: ff0e::0101/128
   order:
     test_config:
-      default:
+      create:
       - config_value: "1"
+      datasource_missing:
+      - config_value: "2"
   rp:
     attribute_name: rendezvous_point_ip
     default_values:

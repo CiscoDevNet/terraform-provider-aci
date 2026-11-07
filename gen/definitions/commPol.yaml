@@ -1,3 +1,7 @@
+# Test limitation: strictSecurityOnApicOOBSubnet is excluded from acceptance tests.
+# This is a legacy exclusion whose original reason was not recorded.
+# TODO: Reassess coverage after the generator refactor; metadata marks it configurable.
+
 documentation:
   sub_category: Fabric Policies
   ui_locations:

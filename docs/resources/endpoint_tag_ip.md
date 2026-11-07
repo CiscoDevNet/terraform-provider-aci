@@ -35,7 +35,7 @@ The configuration snippet below creates a Endpoint Tag IP with only required att
 resource "aci_endpoint_tag_ip" "example" {
   parent_dn = aci_tenant.example.id
   vrf_name  = aci_vrf.example.name
-  ip        = "10.0.0.2"
+  ip        = "192.0.2.2"
 }
 
 ```
@@ -51,7 +51,7 @@ resource "aci_endpoint_tag_ip" "full_example" {
   annotation   = "example_annotation"
   vrf_name     = aci_vrf.example.name
   id_attribute = "1"
-  ip           = "10.0.0.2"
+  ip           = "192.0.2.2"
   name         = "endpoint_tag_ip"
   name_alias   = "example_name_alias"
   annotations = [

@@ -8,6 +8,6 @@ test_config:
   dependencies:
   - class_name: infraSpAccPortGrp
     config_overrides:
-      name: spine_port_policy_group_1
+      name: name_1
     reference: aci_spine_port_policy_group.test_spine_port_policy_group_0.id
     role: target

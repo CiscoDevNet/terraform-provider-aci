@@ -7,8 +7,8 @@ properties:
     test_config:
       create:
       - config_value: ipv4-ucast
-      default:
-      - config_value: ipv4-ucast
+      datasource_missing:
+      - config_value: ipv6-ucast
   tnEigrpCtxAfPolName:
     documentation:
       description: The name of the EIGRP Address Family Context.

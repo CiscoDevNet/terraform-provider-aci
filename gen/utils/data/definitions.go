@@ -305,10 +305,26 @@ func (s TestValueScenarioDefinition) MarshalYAML() (any, error) {
 	return s.Entries, nil
 }
 
+// TestPrefixDefinition controls the shared prefix generated for one test fixture.
+type TestPrefixDefinition struct {
+	Characters string `yaml:"characters"`
+	Length     int    `yaml:"length"`
+}
+
+// TestPrefixOverrideDefinition distinguishes automatic prefixing from an explicit override.
+type TestPrefixOverrideDefinition struct {
+	Enabled *bool `yaml:"enabled"`
+}
+
 // TestConfigDefinition groups test-related overrides for a property definition.
 type TestConfigDefinition struct {
+	Prefix TestPrefixOverrideDefinition `yaml:"prefix"`
 	// Values for the "all attributes" create step. Each entry becomes a TestValueEntry.
 	Create TestValueScenarioDefinition `yaml:"create"`
+	// Values used only by a datasource lookup that is expected not to find an
+	// object. This preserves valid, class-specific negative lookup inputs without
+	// reusing them as resource update values.
+	DataSourceMissing TestValueScenarioDefinition `yaml:"datasource_missing"`
 	// Values for the "required-only" step. Typically auto-derived; explicit overrides here.
 	Default TestValueScenarioDefinition `yaml:"default"`
 	// Values for the update step. Each entry becomes a TestValueEntry.
@@ -323,6 +339,9 @@ type TestConfigDefinition struct {
 	Legacy TestValueScenarioDefinition `yaml:"legacy"`
 	// When true, the property is excluded from generated tests entirely.
 	IgnoreInTest bool `yaml:"ignore_in_test"`
+	// When true, the property remains available to resource tests but is omitted
+	// from generated datasource setup and assertions.
+	IgnoreInDataSourceTest bool `yaml:"ignore_in_datasource_test"`
 }
 
 // ValidatorDefinition mirrors the YAML/JSON shape of a single validator entry (min/max plus optional regex statements).
@@ -470,6 +489,7 @@ type ClassDefinition struct {
 // Role is required at the top level (tells resource-under-test how to consume this dep).
 // Role must be empty at nested levels (pure prerequisites). Validated based on depth.
 type TestDependencyDefinition struct {
+	Prefix TestPrefixOverrideDefinition `yaml:"prefix"`
 	// The class name of the dependency resource. Always required.
 	ClassName string `yaml:"class_name"`
 	// The reference value: either a static DN string or a Terraform resource/datasource attribute path.
@@ -485,10 +505,15 @@ type TestDependencyDefinition struct {
 	TargetClasses []string `yaml:"target_classes"`
 	// Recursive dependencies: resources that THIS dependency needs to exist first.
 	Dependencies []TestDependencyDefinition `yaml:"dependencies"`
-	// Optional property overrides for the dependency resource's HCL configuration.
+	// OrderOnly makes this nested dependency an explicit Terraform depends_on
+	// edge when its value cannot safely be referenced during planning.
+	OrderOnly bool `yaml:"order_only"`
+	// Property overrides for the dependency resource's HCL configuration. Optional
+	// for loaded framework classes; complete input is required for definition-only
+	// legacy resources because no normalized schema/test values are available.
 	ConfigOverrides map[string]string `yaml:"config_overrides"`
 	// Children of THIS dependency resource (i.e. nested blocks within the dependency's HCL),
-	// keyed by child class name. Overrides auto-derived child test values for the dependency.
+	// keyed by child class name. Only explicitly listed dependency children are rendered.
 	Children map[string]ChildTestOverrideDefinition `yaml:"children"`
 }
 
@@ -515,6 +540,7 @@ type ChildTestInstanceOverrideDefinition struct {
 // ClassTestConfigDefinition groups all test-related configuration for a class.
 // Consistent with PropertyDefinition.TestConfig — both use the `test_config` YAML key.
 type ClassTestConfigDefinition struct {
+	Prefix TestPrefixDefinition `yaml:"prefix"`
 	// When true, Dependencies fully replaces all auto-resolved dependencies.
 	// When false (default), Dependencies are merged on top of auto-resolved dependencies.
 	ReplaceAutoResolved bool `yaml:"replace_auto_resolved"`
@@ -537,6 +563,9 @@ type ClassTestConfigDefinition struct {
 	// Tells the future resource-test renderer to omit ImportStateVerify equality
 	// checking while retaining the import smoke test.
 	IgnoreImportStateVerify bool `yaml:"ignore_import_state_verify"`
+	// DataSourceExpectNonEmptyPlan preserves known legacy fixtures where reading
+	// an independently managed child causes its parent resource to retain a diff.
+	DataSourceExpectNonEmptyPlan bool `yaml:"datasource_expect_non_empty_plan"`
 }
 
 // StateUpgradeDefinition describes a single prior-schema version's state upgrade.

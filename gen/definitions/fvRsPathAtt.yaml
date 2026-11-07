@@ -27,13 +27,16 @@ properties:
     test_config:
       create:
       - config_value: vlan-203
+  tDn:
+    test_config:
+      datasource_missing:
+      - config_value: topology/pod-2/paths-201/pathep-[eth1/1]
 resource_name: relation_to_static_path
 test_config:
   dependencies:
   - class_name: fvAEPg
     dependencies:
     - class_name: fvAp
-    reference: aci_application_epg.test.id
     role: parent
     target_classes:
     - fabricPathEp

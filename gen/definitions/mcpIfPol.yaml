@@ -24,7 +24,6 @@ properties:
         0 - 999.
     test_config:
       create:
-      - config_value: "138"
       - config_value: "100"
   maxPduPerVlanLimit:
     attribute_name: maximum_number_of_vlan

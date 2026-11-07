@@ -38,8 +38,8 @@ The configuration snippet below creates a IP Address Block with only required at
 
 resource "aci_ip_address_block" "example" {
   parent_dn = aci_ip_address_pool.example.id
-  from      = "10.0.0.2"
-  to        = "10.0.0.5"
+  from      = "192.0.2.2"
+  to        = "192.0.2.5"
 }
 
 ```
@@ -54,10 +54,10 @@ resource "aci_ip_address_block" "full_example" {
   parent_dn   = aci_ip_address_pool.example.id
   annotation  = "example_annotation"
   description = "Example IP Address Block"
-  from        = "10.0.0.2"
+  from        = "192.0.2.2"
   name        = "ip_address_block"
   name_alias  = "example_name_alias"
-  to          = "10.0.0.5"
+  to          = "192.0.2.5"
   annotations = [
     {
       key   = "example_key"

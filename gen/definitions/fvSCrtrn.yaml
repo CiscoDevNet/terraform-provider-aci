@@ -17,14 +17,17 @@ properties:
       - config_value: all
   name:
     test_config:
-      default:
+      create:
       - config_value: sub_criterion
+      datasource_missing:
+      - config_value: sub_criterion_non_existing
 resource_name: epg_useg_sub_block_statement
 test_config:
   dependencies:
   - class_name: fvSCrtrn
+    config_overrides:
+      name: parent_name_1
+      parent_dn: '{{aci_epg_useg_block_statement.test.id}}'
     dependencies:
     - class_name: fvCrtrn
-    reference: epg_useg_sub_block_statement.test.id
-    reference_type: static
     role: parent

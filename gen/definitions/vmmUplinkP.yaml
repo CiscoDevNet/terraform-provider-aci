@@ -12,7 +12,11 @@ properties:
       description: The uplink identifier of the %s object.
     restriction: required
     test_config:
-      default:
+      create:
+      - config_value: "1"
+      datasource_missing:
+      - config_value: "2"
+      update:
       - config_value: "1"
   uplinkName:
     documentation:
@@ -25,8 +29,6 @@ properties:
     restriction: required
     test_config:
       create:
-      - config_value: uplink_name_2
-      default:
       - config_value: uplink_name_1
       update:
       - config_value: uplink_name_2
@@ -36,7 +38,11 @@ test_config:
   embedded_instances:
   - properties:
       uplink_id:
-      - config_value: "2"
+      - config_value: "1"
+      uplink_name:
+      - config_value: uplink_name_1
   - properties:
       uplink_id:
-      - config_value: "1"
+      - config_value: "2"
+      uplink_name:
+      - config_value: uplink_name_2

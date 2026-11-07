@@ -1,3 +1,7 @@
+# Test limitation: ipamDhcpOverride, ipamEnabled and ipamGateway require a Nutanix domain.
+# Current relation fixtures use VMware, so these properties remain excluded.
+# TODO: Add suitable Nutanix coverage after the generator refactor.
+
 documentation:
   sub_category: Application Management
   ui_locations:
@@ -47,7 +51,7 @@ properties:
         Only applicable for Nutanix domains.
     example_config:
       full:
-      - value: 10.0.0.2
+      - value: 192.0.2.2
     test_config:
       ignore_in_test: true
     value_type: string
@@ -68,7 +72,7 @@ properties:
         applicable for Nutanix domains.
     example_config:
       full:
-      - value: 10.0.0.1
+      - value: 192.0.2.1
     test_config:
       ignore_in_test: true
     value_type: string
@@ -133,9 +137,15 @@ properties:
     example_config:
       full:
       - value: native
+    test_config:
+      create:
+      - config_value: native
   tDn:
     documentation:
       description: The distinguished name of the target Domain object.
+    test_config:
+      datasource_missing:
+      - config_value: uni/vmmp-VMware/dom-domain_1_not_existing
   untagged:
     default_values:
       "no": ""
@@ -155,7 +165,6 @@ test_config:
   - class_name: fvAEPg
     dependencies:
     - class_name: fvAp
-    reference: aci_application_epg.test.id
     role: parent
     target_classes:
     - vmmDomP
@@ -167,3 +176,10 @@ test_config:
     reference: uni/vmmp-VMware/dom-domain_2
     reference_type: static
     role: target
+  embedded_instances:
+  - properties:
+      switching_mode:
+      - config_value: native
+  - properties:
+      untagged:
+      - config_value: "no"
