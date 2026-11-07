@@ -11,14 +11,15 @@ associated with, `gen/generator.go`:
 
 | Output area | Tracked inventory | Cleanup status |
 | --- | ---: | --- |
-| `internal/provider/` | 702 files | Mixed static and generated output; the 125 class-backed data-source implementations are actively managed |
-| `internal/provider/models/` | 186 files | 176 class models are managed; shared model helpers and the class-version registry are static |
+| `internal/provider/` | 829 files | Mixed static and generated output; 126 class-backed data-source implementations and 126 data-source acceptance tests are actively managed |
+| `internal/provider/models/` | 187 files | 177 class models are managed; shared model helpers and the class-version registry are static |
 | `internal/apicversion/` | 2 files | Static APIC version parsing, comparison, and focused unit tests |
+| `internal/acceptancetest/` | 14 files | Static worker runner, Markdown reporting, event parsing, process management, fixture-prefix helpers, and focused unit tests |
 | `internal/custom_types/` | 37 files | Legacy output outside the active generator manifest |
 | `internal/customtypes/` | 6 files | Static custom types and focused unit tests used by generated models |
-| `docs/` | 699 files | Mixed static and generated output; `index.md`, 125 class-backed resource pages, and 125 class-backed data-source pages are actively managed |
+| `docs/` | 699 files | Mixed static and generated output; `index.md`, 125 class-backed resource pages, and 126 class-backed data-source pages are actively managed |
 | `examples/resources/` | 376 files | All 125 `provider.tf` and 125 `resource.tf` files, 123 distinct `resource-all-attributes.tf` files, and 3 copied PEM files are managed |
-| `examples/data-sources/` | 252 files | The 125 class `provider.tf` and 125 `data-source.tf` files are managed; both system example files are static |
+| `examples/data-sources/` | 252 files | All 126 class-backed `provider.tf` and 126 `data-source.tf` files are managed |
 | `gen/testvars/` | 125 files | Legacy output outside the active generator manifest |
 | `legacy-docs/` | 447 files (4 retain a generated marker) | Not managed by the active generator |
 
@@ -43,7 +44,6 @@ internal/provider/resource_aci_rest_managed_test.go
 internal/provider/data_source_aci_rest_managed.go
 internal/provider/data_source_aci_rest_managed_test.go
 internal/provider/annotation_unsupported.go
-internal/provider/data_source_aci_system.go
 internal/provider/data_source_aci_system_test.go
 internal/provider/function_compare_versions.go
 internal/provider/function_compare_versions_test.go
@@ -51,14 +51,12 @@ internal/provider/versions.go
 internal/provider/models/versions.go
 internal/provider/models/versions_test.go
 internal/apicversion/
+internal/acceptancetest/
 internal/customtypes/
 internal/custom_types/ipAddress.go
 internal/custom_types/arpLearning.go
 docs/data-sources/rest_managed.md
-docs/data-sources/system.md
 examples/provider/provider.tf
-examples/data-sources/aci_system/data-source.tf
-examples/data-sources/aci_system/provider.tf
 ```
 
 `provider.go`, the provider registry files, and
@@ -168,17 +166,17 @@ template context. This keeps the documented example identical to the example
 users can copy from the repository.
 
 `datasource.md.tmpl` owns the documentation page for every loaded class with a
-datasource artifact. The handwritten `docs/data-sources/rest_managed.md` and
-`docs/data-sources/system.md` pages remain static because `aci_rest_managed` and
-`aci_system` have no metadata-backed classes in the active generator.
+datasource artifact, including `topSystem` (`aci_system`). The handwritten
+`docs/data-sources/rest_managed.md` page remains static because `aci_rest_managed`
+has no metadata-backed class in the active generator.
 
 `datasource.go.tmpl` owns the implementation for every loaded class with a
 datasource artifact. Each generated adapter registers itself, delegates schema
 construction and APIC response decoding to its generated root model, and uses
 the shared provider transport helper to retrieve the requested DN with the
 model's APIC-version-compatible subtree classes. The handwritten
-`data_source_aci_rest_managed.go` and `data_source_aci_system.go` implementations
-remain static and outside the managed-files manifest.
+`data_source_aci_rest_managed.go` implementation remains static and outside the
+managed-files manifest.
 
 `resource.md.tmpl` owns the documentation page for every loaded class with a
 resource artifact. Resource pages without a metadata-backed class remain
@@ -244,10 +242,9 @@ file. `resource_example_all_attributes.tf.tmpl` owns a corresponding
 the minimum example. Both templates call `Example.ResourceHCL`, which is also
 used by `resource.md.tmpl`, so the embedded and standalone resource blocks are
 rendered from one implementation. `datasource_example.tf.tmpl` owns every generated
-`examples/data-sources/aci_*/data-source.tf` except the static system example.
+`examples/data-sources/aci_*/data-source.tf`.
 `provider_example.tf.tmpl` owns the provider file beside each of those
-class-backed resource and data-source examples. The provider file beside the
-static system example remains unmanaged.
+class-backed resource and data-source examples.
 
 Before rendering, `DataStore.setExampleData` builds the complete class-scoped
 artifacts:
@@ -301,3 +298,33 @@ None of them looks up dependencies, inspects property metadata, infers reference
 chooses test values, or contains class-specific helpers. Terraform formatting is
 applied after rendering, so the model controls content while the templates control
 block layout.
+
+`datasource_test.go.tmpl` owns
+`internal/provider/data_source_aci_<resource_name>_acceptance_test.go` for every
+datasource artifact not marked with `test_config.ignore_tests: [datasource]`.
+The template only lays out the Go acceptance test. `Class` methods render the
+self-contained Terraform configurations and recursive state assertions:
+
+- dependencies backed by loaded framework classes use required/default test
+  values and recursively follow only the references those values require;
+- definition-only legacy dependencies use complete `config_overrides` and
+  explicitly declared prerequisite dependencies;
+- every non-static dependency is rendered with `count`; HCL references use
+  `[0]`, state assertions use `.0`, and dependencies whose class support does
+  not cover the subject's APIC range receive a conditional version count;
+- the object under test uses the full `TestValues.Create` configuration,
+  including normalized children;
+- property and child configuration that is unavailable on part of the class's
+  APIC range is guarded with `provider::aci::compare_versions(...)` and resolves
+  to `null` outside that range;
+- the existing-object lookup uses `parent_dn` and identifying properties and
+  depends on the subject resource when one exists;
+- a missing-object lookup changes a valid identifier, or uses a second valid
+  parent for a constant-RN class;
+- assertions cover direct properties and every configured child level, skip
+  sensitive values, compare semantic references to their source attributes,
+  and retain APIC-version gates.
+
+Generator unit tests parse every rendered datasource configuration and verify
+that every Terraform resource/data-source reference is declared in that same
+configuration. These checks do not execute acceptance tests or contact APIC.
