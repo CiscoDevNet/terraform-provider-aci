@@ -23,14 +23,17 @@ type Property struct {
 	// The deprecated APIC versions for the property.
 	// Used to indicate versions where the property is deprecated but still functional.
 	// Driven by the meta `deprecatedSince` value with an optional definition override.
+	// Currently retained only; not rendered in attribute documentation or used by version gates.
 	DeprecatedVersions *Versions
 	// Documentation specific information for the property.
 	Documentation PropertyDocumentation
 	// Hidden indicates that the property is no longer accepted by the APIC API.
 	// Driven by the meta `isHidden` flag with an optional definition override (logical OR).
+	// Currently retained only; does not filter schemas, attribute documentation, or test coverage.
 	Hidden bool
 	// The hidden APIC versions for the property.
 	// Driven by the meta `hiddenSince` value with an optional definition override.
+	// Currently retained only; does not narrow SupportedVersions.
 	HiddenVersions *Versions
 	// State upgrade specific information for the property.
 	// Maps prior schema version to the prior-schema representation of this attribute,
@@ -63,6 +66,11 @@ type Property struct {
 	// For properties that are untestable regardless of version (e.g., server-generated values).
 	// Version-gating is handled separately via SupportedVersions.
 	IgnoreInTest bool
+	// Indicates if the property should be omitted only from generated datasource
+	// setup and assertions while remaining available to resource tests.
+	IgnoreInDataSourceTest bool
+	// PrefixEnabled is a test-only naming override; public examples use the canonical values.
+	PrefixEnabled *bool
 	// Test specific information for the property.
 	// This is used to generate the test cases and examples for the property.
 	// Nil means no test values have been resolved for this property.
@@ -263,6 +271,25 @@ func (s TestValueScenario) clone() TestValueScenario {
 	return TestValueScenario{Defined: s.Defined, Entries: entries}
 }
 
+func (scenario TestValueScenario) includedEntries() []TestValueEntry {
+	entries := make([]TestValueEntry, 0, len(scenario.Entries))
+	for _, entry := range scenario.Entries {
+		if entry.ConfigInclude {
+			entries = append(entries, entry)
+		}
+	}
+	return entries
+}
+
+func (scenario TestValueScenario) firstIncludedEntry() (TestValueEntry, bool) {
+	for _, entry := range scenario.Entries {
+		if entry.ConfigInclude {
+			return entry, true
+		}
+	}
+	return TestValueEntry{}, false
+}
+
 // PropertyReference is the resolved form of PropertyReferenceDefinition.
 type PropertyReference struct {
 	Classes              []*ClassName
@@ -278,6 +305,10 @@ type TestValues struct {
 	// Create is the value(s) for the "all attributes" create step (Step 1).
 	// ConfigInclude=true for all properties that should appear in the HCL config.
 	Create TestValueScenario
+	// DataSourceMissing is used only for a negative datasource lookup. It is
+	// independent from Update because a valid missing identifier is not
+	// necessarily a valid resource update value.
+	DataSourceMissing TestValueScenario
 	// Update is the changed value(s) for the update step (Step 2).
 	// ConfigInclude=true for all properties that should appear in the HCL config.
 	Update TestValueScenario
@@ -695,6 +726,8 @@ func (p *Property) setTestValues() {
 		genLogger.Debugf("Property '%s' marked as IgnoreInTest.", p.PropertyName)
 		return
 	}
+	p.IgnoreInDataSourceTest = p.propertyDefinition.TestConfig.IgnoreInDataSourceTest
+	p.PrefixEnabled = p.propertyDefinition.TestConfig.Prefix.Enabled
 
 	// Reference properties: explicit YAML wins; otherwise dependency
 	// resolution populates TestValues later (setParentDn / setTargetDn).
@@ -715,7 +748,7 @@ func (p *Property) setTestValues() {
 	if p.TestValues == nil {
 		// Read-only with no explicit overrides stays nil to match the
 		// "no test config" sentinel downstream consumers expect.
-		if !explicit.Create.Defined && !explicit.Update.Defined &&
+		if !explicit.Create.Defined && !explicit.DataSourceMissing.Defined && !explicit.Update.Defined &&
 			!explicit.Default.Defined && !explicit.ForceNew.Defined {
 			genLogger.Debugf("Property '%s' has no auto-derive and no explicit test config; TestValues left nil.", p.PropertyName)
 			return
@@ -724,6 +757,9 @@ func (p *Property) setTestValues() {
 	}
 	if explicit.Create.Defined {
 		p.TestValues.Create = explicit.Create
+	}
+	if explicit.DataSourceMissing.Defined {
+		p.TestValues.DataSourceMissing = explicit.DataSourceMissing
 	}
 	if explicit.Update.Defined {
 		p.TestValues.Update = explicit.Update
@@ -750,6 +786,10 @@ func (p *Property) hasTestConfigDefinition() bool {
 	// Returns true when at least one standard test step is present, including an
 	// explicitly empty set scenario.
 	genLogger.Tracef("Checking for explicit test config definition for property '%s'.", p.PropertyName)
+	return p.hasLifecycleTestConfigDefinition() || p.propertyDefinition.TestConfig.DataSourceMissing.Defined
+}
+
+func (p *Property) hasLifecycleTestConfigDefinition() bool {
 	testConfig := p.propertyDefinition.TestConfig
 	return testConfig.Create.Defined || testConfig.Update.Defined || testConfig.Default.Defined || testConfig.ForceNew.Defined
 }
@@ -761,6 +801,7 @@ func (p *Property) convertTestConfigDefinition() *TestValues {
 	testValues := &TestValues{}
 
 	testValues.Create = convertTestValueScenario(testConfig.Create)
+	testValues.DataSourceMissing = convertTestValueScenario(testConfig.DataSourceMissing)
 	testValues.Update = convertTestValueScenario(testConfig.Update)
 	testValues.Default = convertTestValueScenario(testConfig.Default)
 	testValues.ForceNew = convertTestValueScenario(testConfig.ForceNew)
@@ -926,9 +967,6 @@ func (p *Property) generateStringValues() ([]TestValueEntry, []TestValueEntry) {
 	updateValue := ""
 	rangeValues := p.numericRange()
 	switch {
-	case p.PropertyName == "annotation":
-		createValue = "annotation"
-		updateValue = "annotation_2"
 	case p.ValueType == IpAddress:
 		// These values feed both future acceptance tests and public examples, so use
 		// IANA documentation ranges instead of arbitrary publicly routable addresses.
@@ -984,16 +1022,10 @@ func (p *Property) generateDefault(create []TestValueEntry) []TestValueEntry {
 		// Required properties remain in HCL config during the required-only step.
 		defaults := make([]TestValueEntry, 0, len(create))
 		for _, c := range create {
-			configValue := c.ConfigValue
-			assertValue := c.AssertValue
-			if p.useGeneratedRequiredName() {
-				configValue = "test_" + utils.Underscore(p.PropertyName)
-				assertValue = configValue
-			}
 			defaults = append(defaults, TestValueEntry{
-				ConfigValue:   configValue,
+				ConfigValue:   c.ConfigValue,
 				ConfigInclude: true,
-				AssertValue:   assertValue,
+				AssertValue:   c.AssertValue,
 				ValueType:     c.ValueType,
 				Versions:      c.Versions,
 			})
@@ -1024,14 +1056,6 @@ func (p *Property) generateDefault(create []TestValueEntry) []TestValueEntry {
 	}
 	genLogger.Tracef("Successfully generated default test values for property '%s'.", p.PropertyName)
 	return defaults
-}
-
-func (p *Property) useGeneratedRequiredName() bool {
-	if p.ValueType != String || len(p.ValidValues) > 0 {
-		return false
-	}
-	uiType, _ := p.metaDetails["uitype"].(string)
-	return uiType != "number"
 }
 
 func (p *Property) generateForceNew(create []TestValueEntry) []TestValueEntry {
@@ -1449,6 +1473,10 @@ func (p *Property) setValueType() error {
 
 func (p *Property) setSupportedVersions() error {
 	// Determine the supported APIC versions for the property.
+	// TODO: After the generator refactor, use Hidden/HiddenVersions for support and
+	// test version gates, and expose hidden/deprecated metadata in attribute documentation.
+	// deprecatedSince, isHidden, and hiddenSince are parsed separately but do not affect
+	// this range, generated test configuration, or assertions. Deprecation alone does not end support.
 	genLogger.Debugf("Setting SupportedVersions for property '%s'.", p.PropertyName)
 
 	// Initialize with versions from PropertyDefinition, if not defined set the versions from meta file.

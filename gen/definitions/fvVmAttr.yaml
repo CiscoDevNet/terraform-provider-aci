@@ -18,8 +18,10 @@ properties:
       - config_value: label_name
   name:
     test_config:
-      default:
+      create:
       - config_value: vm_attribute
+      datasource_missing:
+      - config_value: vm_attribute_non_existing
   operator:
     default_values:
       equals: ""
@@ -56,8 +58,8 @@ resource_name: epg_useg_vm_attribute
 test_config:
   dependencies:
   - class_name: fvSCrtrn
+    config_overrides:
+      parent_dn: '{{aci_epg_useg_block_statement.test.id}}'
     dependencies:
     - class_name: fvCrtrn
-    reference: epg_useg_sub_block_statement.test.id
-    reference_type: static
     role: parent

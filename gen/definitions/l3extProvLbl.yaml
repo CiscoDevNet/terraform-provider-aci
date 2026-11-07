@@ -10,8 +10,8 @@ properties:
     test_config:
       create:
       - config_value: prov_label
-      default:
-      - config_value: prov_label
+      datasource_missing:
+      - config_value: prov_label_non_existing
   tag:
     default_values:
       yellow-green: ""
@@ -22,9 +22,22 @@ resource_name: l3out_provider_label
 test_config:
   dependencies:
   - class_name: l3extOut
+    config_overrides:
+      name: name_1
+      relation_l3ext_rs_ectx: aci_vrf.test.id
+      tenant_dn: data.aci_tenant.test.id
     dependencies:
     - class_name: fvTenant
-      reference: infra
-      reference_type: static
+      config_overrides:
+        name: infra
+      reference: data.aci_tenant.test.id
+      reference_type: data_source
+    - class_name: fvCtx
+      config_overrides:
+        parent_dn: data.aci_tenant.test.id
+      dependencies:
+      - class_name: fvTenant
+        reference: data.aci_tenant.test.id
+        reference_type: data_source
     reference: aci_l3_outside.test.id
     role: parent

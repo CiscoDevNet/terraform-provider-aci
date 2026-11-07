@@ -23,8 +23,10 @@ properties:
       minimum:
       - value: ip_attribute
     test_config:
-      default:
+      create:
       - config_value: "131"
+      datasource_missing:
+      - config_value: 131_non_existing
   usefvSubnet:
     attribute_name: use_epg_subnet
     default_values:

@@ -11,6 +11,6 @@ test_config:
   - class_name: fvnsVlanInstP
     config_overrides:
       alloc_mode: dynamic
-      name: vlan_pool_name_1
+      name: name_1
     reference: aci_vlan_pool.test_vlan_pool_1.id
     role: target

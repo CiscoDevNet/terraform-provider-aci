@@ -11,27 +11,31 @@ properties:
   from:
     test_config:
       create:
-      - config_value: 10.0.0.6
+      - config_value: 192.0.2.6
+      datasource_missing:
+      - config_value: 192.0.4.2
       default:
-      - config_value: 10.0.0.2
+      - config_value: 192.0.2.2
     value_type: string
   to:
     test_config:
       create:
-      - config_value: 10.0.0.13
+      - config_value: 192.0.2.13
+      datasource_missing:
+      - config_value: 192.0.4.4
       default:
-      - config_value: 10.0.0.5
+      - config_value: 192.0.2.5
     value_type: string
 resource_name: ip_address_block
 test_config:
   embedded_instances:
   - properties:
       from:
-      - config_value: 10.0.0.2
+      - config_value: 192.0.2.2
       to:
-      - config_value: 10.0.0.5
+      - config_value: 192.0.2.5
   - properties:
       from:
-      - config_value: 10.0.0.6
+      - config_value: 192.0.2.6
       to:
-      - config_value: 10.0.0.13
+      - config_value: 192.0.2.13

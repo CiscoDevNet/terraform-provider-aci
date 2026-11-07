@@ -8,7 +8,8 @@ test_config:
   dependencies:
   - class_name: dhcpRelayP
     config_overrides:
-      name: dhcp_relay_policy_name_1
+      name: name_1
+      tenant_dn: aci_tenant.test.id
     dependencies:
     - class_name: fvTenant
     reference: aci_dhcp_relay_policy.test_dhcp_relay_policy_0.id

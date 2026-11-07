@@ -169,7 +169,7 @@ resource "aci_vmm_domain" "full_example" {
       {
         annotation  = "example_annotation"
         name_alias  = "example_name_alias"
-        uplink_id   = "2"
+        uplink_id   = "1"
         uplink_name = "primary_uplink"
         annotations = [
           {

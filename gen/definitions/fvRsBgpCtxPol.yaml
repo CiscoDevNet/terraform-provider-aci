@@ -11,7 +11,8 @@ test_config:
   dependencies:
   - class_name: bgpCtxPol
     config_overrides:
-      name: bgp_timers_name_1
+      name: name_1
+      tenant_dn: aci_tenant.test.id
     dependencies:
     - class_name: fvTenant
     reference: aci_bgp_timers.test_bgp_timers_0.id

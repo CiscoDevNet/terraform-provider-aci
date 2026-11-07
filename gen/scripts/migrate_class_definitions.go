@@ -55,7 +55,9 @@ import (
 	"net"
 	"os"
 	"path/filepath"
+	"reflect"
 	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils"
@@ -204,10 +206,10 @@ var knownLegacyKeys = map[string]keyInfo{
 	// S6 DERIVE (verify-and-drop; meta auto-derives ip_address from validateAsIPv4OrIPv6)
 	"prop:static_custom_type": {sectionDerive, true},
 
-	// S8 POSTPONE - drop with per-file warning, no slot in canonical struct yet
+	// S8 template and test rework
 	"prop:ignore_custom_type_docs":     {sectionPostpone, true}, // section 8.3
 	"prop:example_value_overwrite":     {sectionSemantic, true}, // section 8.4
-	"prop:custom_test_dependency_name": {sectionPostpone, true}, // section 8.5
+	"prop:custom_test_dependency_name": {sectionReuse, true},    // section 8.5
 }
 
 // legacyNestedResourceNameOverwrites identifies legacy overwrite
@@ -265,11 +267,57 @@ var definitionOnlyResourceNames = map[string]string{
 	"vnsLDevVip":          "l4_l7_device",
 }
 
+// Migration rewrites canonical YAML and discards authored comments. Emit these
+// temporary test limitations with the definitions so their reasons survive reruns
+// without changing the immutable legacy inputs or adding loader fields.
+var canonicalTestLimitationComments = map[string]string{
+	"commPol": `# Test limitation: strictSecurityOnApicOOBSubnet is excluded from acceptance tests.
+# This is a legacy exclusion whose original reason was not recorded.
+# TODO: Reassess coverage after the generator refactor; metadata marks it configurable.
+
+`,
+	"commSsh": `# Test limitation: hostkeyAlgos is excluded from acceptance tests.
+# This is a legacy exclusion whose original reason was not recorded.
+# TODO: Reassess coverage with the existing string-set handling after the generator refactor.
+
+`,
+	"fvBD": `# Test limitation: enableRogueExceptMac is excluded from acceptance tests.
+# This is a legacy exclusion whose original reason was not recorded.
+# Metadata already records support from 6.0(2h); the exclusion applies to every version.
+# TODO: Reassess coverage using metadata version gates after the generator refactor.
+
+`,
+	"fvRsDomAtt": `# Test limitation: ipamDhcpOverride, ipamEnabled and ipamGateway require a Nutanix domain.
+# Current relation fixtures use VMware, so these properties remain excluded.
+# TODO: Add suitable Nutanix coverage after the generator refactor.
+
+`,
+	"pkiTP": `# Test limitation: certUsage is excluded from acceptance tests.
+# This is a legacy exclusion whose original reason was not recorded.
+# Metadata marks it configurable but readWrite is false; create/update behavior needs validation.
+# TODO: Reassess create/update behavior and response values after the generator refactor.
+
+`,
+	"vmmDomP": `# Datasource test limitation: arpLearning can be returned as "" instead of "disabled".
+# Its custom type preserves the raw value while treating these values as semantically equal.
+# Exact datasource assertions do not perform that semantic comparison.
+# TODO: Reassess datasource coverage and assertions after the generator refactor.
+
+`,
+	"topSystem": `# Datasource test limitations: childAction, configIssues, nameAlias and status may be empty or omitted.
+# rlAutoMode and rlGroupId may be omitted when querying controllers rather than remote leaves.
+# All six remain in the schema but are excluded from computed-value assertions.
+# TODO: Reassess empty/omitted response assertions and remote-leaf coverage after the generator refactor.
+
+`,
+}
+
 // legacyClassNameCorrections normalizes known spelling mistakes while reading
 // the immutable legacy corpus. Corrections belong in the migration, never in
 // gen/definitions/classes or gen/definitions/properties.
 var legacyClassNameCorrections = map[string]string{
-	"VmmDomP": "vmmDomP",
+	"VmmDomP":      "vmmDomP",
+	"infraZHPortS": "infraSHPortS",
 }
 
 // expectedLegacyResourceNameOverwrites freezes the contents of the obsolete
@@ -835,6 +883,8 @@ type metaRegistry struct {
 	// (default attribute_name = utils.Underscore(metaName)) and by the
 	// tn-property friendly-name fallback for named-relation classes.
 	ClassMetaProperties map[string][]string
+	// Configurable naming properties are required even without a definition override.
+	ClassRequiredProperties map[string][]string
 	// ClassIdentifiedBy: className -> meta identifiedBy slice from
 	// gen/meta/<className>.json. Drives the legacy `include: true`
 	// redundancy check: a non-empty IdentifiedBy already satisfies the
@@ -911,6 +961,7 @@ type metaRegistry struct {
 func newMetaRegistry(metaDir, classesDir, globalDefPath, propertiesDir string) (*metaRegistry, error) {
 	reg := &metaRegistry{
 		ClassMetaProperties:     map[string][]string{},
+		ClassRequiredProperties: map[string][]string{},
 		ClassIdentifiedBy:       map[string][]string{},
 		GlobalAttributeInverter: map[string]string{},
 		ClassOverwriteInverters: map[string]map[string]string{},
@@ -967,6 +1018,9 @@ func newMetaRegistry(metaDir, classesDir, globalDefPath, propertiesDir string) (
 				}
 				if raw, ok := propMap["default"]; ok && raw != nil {
 					defaults[name] = fmt.Sprintf("%v", raw)
+				}
+				if propMap["isConfigurable"] == true && propMap["isNaming"] == true {
+					reg.ClassRequiredProperties[className] = append(reg.ClassRequiredProperties[className], name)
 				}
 			}
 			if len(defaults) > 0 {
@@ -1816,11 +1870,15 @@ func migrateProperties(file, className string, legacy map[string]any, tally *key
 				out.Properties[metaName] = property
 			}
 
-		case "ignore_custom_type_docs",
-			"custom_test_dependency_name":
+		case "ignore_custom_type_docs":
 			// S8 POSTPONE: no slot in canonical struct yet; drop with a
 			// per-file warning so the loss is visible during migration.
 			fmt.Printf("POSTPONE: %s: %s dropped (no canonical slot; restore after section 8 lands)\n", file, key)
+
+		case "custom_test_dependency_name":
+			// S8 REUSE: the canonical correction reconstructs the named
+			// companion fixture as a structural test dependency graph.
+			fmt.Printf("REUSE: %s: %s represented by canonical test_config.dependencies\n", file, key)
 
 		case "test_values":
 			migrateTestValues(file, className, val, out)
@@ -1917,6 +1975,19 @@ func applyCanonicalDefinitionCorrections(className string, out *data.ClassDefini
 		setCanonicalPropertyReference(out, "ctxName", []string{"fvCtx"}, "fvCtx", "name")
 	case "pkiKeyRing":
 		setCanonicalPropertyReference(out, "tp", []string{"pkiTP"}, "pkiTP", "name")
+		for dependencyIndex := range out.TestConfig.Dependencies {
+			dependency := &out.TestConfig.Dependencies[dependencyIndex]
+			if dependency.ClassName != "pkiTP" || dependency.Reference == "" {
+				continue
+			}
+			property := upsertProperty(out, "tp")
+			property.TestConfig.Create = testValueScenario(data.TestValueEntryDefinition{
+				ConfigValue: strings.TrimSuffix(dependency.Reference, ".id") + ".name",
+				ValueType:   data.ReferenceValue,
+			})
+			out.Properties["tp"] = property
+			break
+		}
 		setCanonicalExampleFull(out, "cert", data.ExampleValueEntryDefinition{Value: `file("${path.module}/certificate.pem")`, ValueType: data.ExpressionValue})
 		setCanonicalExampleFull(out, "key", data.ExampleValueEntryDefinition{Value: `file("${path.module}/private_key.pem")`, ValueType: data.ExpressionValue})
 		out.ExampleFiles = []string{"certificate.pem", "private_key.pem"}
@@ -1944,9 +2015,39 @@ func applyCanonicalDefinitionCorrections(className string, out *data.ClassDefini
 		entry := data.ExampleValueEntryDefinition{Value: "primary_uplink"}
 		setCanonicalExampleMinimum(out, "uplinkName", entry)
 		setCanonicalExampleFull(out, "uplinkName", entry)
+		property := upsertProperty(out, "uplinkName")
+		property.TestConfig.Create = testValueScenario(data.TestValueEntryDefinition{ConfigValue: "uplink_name_1"})
+		property.TestConfig.Update = testValueScenario(data.TestValueEntryDefinition{ConfigValue: "uplink_name_2"})
+		out.Properties["uplinkName"] = property
+		out.TestConfig.EmbeddedInstances = []data.ChildTestInstanceOverrideDefinition{
+			{Properties: map[string]data.TestValueScenarioDefinition{
+				"uplink_id":   testValueScenario(data.TestValueEntryDefinition{ConfigValue: "1"}),
+				"uplink_name": testValueScenario(data.TestValueEntryDefinition{ConfigValue: "uplink_name_1"}),
+			}},
+			{Properties: map[string]data.TestValueScenarioDefinition{
+				"uplink_id":   testValueScenario(data.TestValueEntryDefinition{ConfigValue: "2"}),
+				"uplink_name": testValueScenario(data.TestValueEntryDefinition{ConfigValue: "uplink_name_2"}),
+			}},
+		}
 	case "fvRsDomAtt":
 		setCanonicalPropertyReference(out, "lagPolicyName", []string{"lacpEnhancedLagPol"}, "lacpEnhancedLagPol", "name")
 		setCanonicalExampleFull(out, "switchingMode", data.ExampleValueEntryDefinition{Value: "native"})
+		// Uplink ordering cannot be configured on an EPG using AVE switching.
+		// Use native mode for both the standalone relation test and nested copies.
+		property := upsertProperty(out, "switchingMode")
+		property.TestConfig.Create = testValueScenario(data.TestValueEntryDefinition{ConfigValue: "native"})
+		out.Properties["switchingMode"] = property
+	case "qosDscpClass":
+		out.TestConfig.EmbeddedInstances = []data.ChildTestInstanceOverrideDefinition{
+			{Properties: map[string]data.TestValueScenarioDefinition{
+				"from": testValueScenario(data.TestValueEntryDefinition{ConfigValue: "AF11"}),
+				"to":   testValueScenario(data.TestValueEntryDefinition{ConfigValue: "AF11"}),
+			}},
+			{Properties: map[string]data.TestValueScenarioDefinition{
+				"from": testValueScenario(data.TestValueEntryDefinition{ConfigValue: "AF12"}),
+				"to":   testValueScenario(data.TestValueEntryDefinition{ConfigValue: "AF12"}),
+			}},
+		}
 	case "fvRsCtxToSDWanVpn":
 		setCanonicalExampleMinimum(out, "tDn", data.ExampleValueEntryDefinition{Value: "uni/tn-example_tenant/sdwanvpncont/sdwanvpnentry-example_wan_vpn"})
 	}
@@ -1977,6 +2078,34 @@ func applyCanonicalDefinitionCorrections(className string, out *data.ClassDefini
 		property := upsertProperty(out, "rt")
 		property.Restriction = data.UndefinedRestriction
 		out.Properties["rt"] = property
+	case "fvBD":
+		property := upsertProperty(out, "type")
+		property.TestConfig.Create = testValueScenario(data.TestValueEntryDefinition{ConfigValue: "regular"})
+		property.TestConfig.Update = testValueScenario(data.TestValueEntryDefinition{ConfigValue: "fc"})
+		out.Properties["type"] = property
+		// The full fixture includes First Hop Security, which requires an L3 BD.
+		property = upsertProperty(out, "unicastRoute")
+		property.TestConfig.Create = testValueScenario(data.TestValueEntryDefinition{ConfigValue: "yes"})
+		out.Properties["unicastRoute"] = property
+	case "fvSiteAssociated":
+		// Keep a second BD without stAsc for the datasource's missing-object
+		// lookup while using the same parent class as the existing-object fixture.
+		for _, dependency := range out.TestConfig.Dependencies {
+			if dependency.ClassName != "fvBD" || dependency.Role != data.Parent {
+				continue
+			}
+			secondParent := cloneTestDependencyDefinition(dependency)
+			secondParent.Reference = "aci_bridge_domain.test_2.id"
+			secondParent.ReferenceType = data.ResourceReference
+			out.TestConfig.Dependencies = append(out.TestConfig.Dependencies, secondParent)
+			break
+		}
+	case "mcpIfPol":
+		// Some APIC versions round 138 ms down to 100 ms while others retain it.
+		// Configure the aligned value so the fixture has the same readback on both.
+		property := upsertProperty(out, "gracePeriodMsec")
+		property.TestConfig.Create = testValueScenario(data.TestValueEntryDefinition{ConfigValue: "100"})
+		out.Properties["gracePeriodMsec"] = property
 	case "fvRsIpslaMonPol":
 		out.AllowDelete = "never"
 		// The test target is a static DN and fvIPSLAMonitoringPol has no local
@@ -1986,6 +2115,36 @@ func applyCanonicalDefinitionCorrections(className string, out *data.ClassDefini
 		})
 	case "tagAnnotation", "tagTag":
 		out.Documentation.SubCategory = "Generic"
+		property := upsertProperty(out, "value")
+		property.DefaultValues = nil
+		property.TestConfig.Default = data.TestValueScenarioDefinition{}
+		out.Properties["value"] = property
+	case "fvSCrtrn", "fvVmAttr":
+		for dependencyIndex := range out.TestConfig.Dependencies {
+			dependency := &out.TestConfig.Dependencies[dependencyIndex]
+			if dependency.ClassName != "fvSCrtrn" {
+				continue
+			}
+			dependency.Reference = "aci_epg_useg_sub_block_statement.test.id"
+			dependency.ReferenceType = data.ResourceReference
+			// This instance sits below the block statement. Reusing fvSCrtrn's
+			// own parent scenario would make the dependency refer to itself.
+			if dependency.ConfigOverrides == nil {
+				dependency.ConfigOverrides = make(map[string]string)
+			}
+			dependency.ConfigOverrides["parent_dn"] = "{{aci_epg_useg_block_statement.test.id}}"
+		}
+	case "l3extRsInstPToProfile":
+		// Preserve the export/import pair exercised by the legacy parent test.
+		// The standalone relation keeps its own Create scenario.
+		out.TestConfig.EmbeddedInstances = []data.ChildTestInstanceOverrideDefinition{
+			{Properties: map[string]data.TestValueScenarioDefinition{
+				"direction": testValueScenario(data.TestValueEntryDefinition{ConfigValue: "export"}),
+			}},
+			{Properties: map[string]data.TestValueScenarioDefinition{
+				"direction": testValueScenario(data.TestValueEntryDefinition{ConfigValue: "import"}),
+			}},
+		}
 	case "fvRsBDToOut":
 		appendCanonicalTargetDependencies(out, "l3extOut", "l3_outside")
 	case "fvRsBDToProfile":
@@ -1994,8 +2153,10 @@ func applyCanonicalDefinitionCorrections(className string, out *data.ClassDefini
 		// tn<Class>Name shape lets the datastore infer the example class and
 		// name attribute from the referenced class.
 		setCanonicalPropertyReference(out, "tnL3extOutName", []string{"l3extOut"}, "", "")
-	case "fvRsIntraEpg", "fvRsProv":
-		appendCanonicalTargetDependencies(out, "vzBrCP", "contract")
+	case "fvRsCons", "fvRsIntraEpg", "fvRsProv":
+		// These relations share the same two contracts. Canonical source references let
+		// the parent fixture reuse them instead of managing the same APIC DN twice.
+		replaceCanonicalRelationTargets(out, "vzBrCP", "contract", "fvTenant", "tenant")
 	case "fvRsOspfCtxPol":
 		appendCanonicalTargetDependencies(out, "ospfCtxPol", "ospf_timers")
 	case "fvRsTenantMonPol":
@@ -2008,6 +2169,10 @@ func applyCanonicalDefinitionCorrections(className string, out *data.ClassDefini
 		setCanonicalExampleMinimum(out, "parentDn", data.ExampleValueEntryDefinition{
 			Reference: &data.ExampleReferenceDefinition{ClassName: "l3extOut"},
 		})
+		appendCanonicalLegacyParentDependencies(out, "l3extOut", "l3_outside")
+		if className == "l3extRsRedistributePol" {
+			out.TestConfig.DataSourceExpectNonEmptyPlan = true
+		}
 	case "l3extRsLblToInstP":
 		// l3extInstP normalizes to the plugin-framework aci_external_epg name;
 		// preserve the established SDKv2 alias used by this public example.
@@ -2017,6 +2182,12 @@ func applyCanonicalDefinitionCorrections(className string, out *data.ClassDefini
 				ResourceName: "external_network_instance_profile",
 			},
 		})
+		replaceCanonicalRelationTargets(out, "l3extInstP", "external_epg", "l3extOut", "l3_outside")
+		// Target dependencies supply both embedded instances; discard legacy static DNs.
+		out.TestConfig.EmbeddedInstances = nil
+	case "l3extRsLblToProfile":
+		replaceCanonicalRelationTargets(out, "rtctrlProfile", "route_control_profile", "fvTenant", "tenant")
+		out.TestConfig.EmbeddedInstances = nil
 	case "mplsNodeSidP":
 		for dependencyIndex := range out.TestConfig.Dependencies {
 			dependency := &out.TestConfig.Dependencies[dependencyIndex]
@@ -2032,10 +2203,87 @@ func applyCanonicalDefinitionCorrections(className string, out *data.ClassDefini
 				dependency.TargetClasses = []string{"fvAEPg"}
 			}
 		}
+	case "netflowRsMonitorToExporter":
+		for dependencyIndex := range out.TestConfig.Dependencies {
+			dependency := &out.TestConfig.Dependencies[dependencyIndex]
+			if dependency.ClassName == "netflowMonitorPol" {
+				dependency.Reference = "aci_netflow_monitor_policy.test.id"
+				dependency.ReferenceType = data.ResourceReference
+			}
+		}
+	case "vzRsDenyRule":
+		appendSecondCanonicalTargetDependency(out, "vzFilter", "filter")
+	case "vzRsAnyToCons", "vzRsAnyToProv":
+		appendSecondCanonicalTargetDependency(out, "vzBrCP", "contract")
+	case "vzAny":
+		// APIC creates /any for every existing VRF, so use a missing VRF DN
+		// rather than looking for an absent singleton below a second live VRF.
+		property := upsertProperty(out, "parentDn")
+		property.TestConfig.DataSourceMissing = testValueScenario(data.TestValueEntryDefinition{ConfigValue: "uni/tn-name_1/ctx-name_non_existing"})
+		out.Properties["parentDn"] = property
+	case "commRsClientCertCA":
+		certificateAuthorityReference := "aci_certificate_authority.test.id"
+		// The target dependency replaces the legacy literal DN in Create.
+		property := upsertProperty(out, "tDn")
+		property.TestConfig.Create = data.TestValueScenarioDefinition{}
+		out.Properties["tDn"] = property
+		out.TestConfig.Dependencies = append(out.TestConfig.Dependencies, data.TestDependencyDefinition{
+			ClassName:     "pkiTP",
+			Reference:     certificateAuthorityReference,
+			ReferenceType: data.ResourceReference,
+			Role:          data.Target,
+		})
 	case "vnsLDevIf":
+		logicalDeviceReference := "aci_l4_l7_device.test_imported_device.id"
+		importedDeviceTenantReference := "aci_tenant.test_tenant_imported_device.id"
+		physicalDomainReference := "uni/phys-name_1"
+		physicalDomainDependencyReference := "aci_physical_domain.test.id"
+
 		property := upsertProperty(out, "ldev")
 		property.Documentation.Description += ". The referenced Logical Device must belong to a different tenant from the Imported Logical Device."
+		logicalDeviceValue := data.TestValueEntryDefinition{
+			ConfigValue: logicalDeviceReference,
+			ValueType:   data.ReferenceValue,
+		}
+		property.TestConfig.Create = testValueScenario(logicalDeviceValue)
+		property.TestConfig.Default = testValueScenario(logicalDeviceValue)
 		out.Properties["ldev"] = property
+
+		out.TestConfig.Dependencies = append(out.TestConfig.Dependencies, data.TestDependencyDefinition{
+			ClassName:     "vnsLDevVip",
+			Reference:     logicalDeviceReference,
+			ReferenceType: data.ResourceReference,
+			Role:          data.Target,
+			ConfigOverrides: map[string]string{
+				"active":                               "no",
+				"context_aware":                        "single-Context",
+				"device_type":                          "PHYSICAL",
+				"function_type":                        "GoTo",
+				"is_copy":                              "no",
+				"mode":                                 "legacy-Mode",
+				"name":                                 "test_imported_device",
+				"promiscuous_mode":                     "no",
+				"relation_vns_rs_al_dev_to_phys_dom_p": physicalDomainReference,
+				"service_type":                         "OTHERS",
+				"tenant_dn":                            importedDeviceTenantReference,
+			},
+			Dependencies: []data.TestDependencyDefinition{
+				{
+					ClassName:     "fvTenant",
+					Reference:     importedDeviceTenantReference,
+					ReferenceType: data.ResourceReference,
+				},
+				{
+					ClassName:     "physDomP",
+					Reference:     physicalDomainDependencyReference,
+					ReferenceType: data.ResourceReference,
+					OrderOnly:     true,
+					ConfigOverrides: map[string]string{
+						"name": "test",
+					},
+				},
+			},
+		})
 	case "vnsLDevVip":
 		// The legacy resource and datasource use the singular Terraform name but
 		// retain their established plural documentation filename.
@@ -2049,6 +2297,13 @@ func applyCanonicalDefinitionCorrections(className string, out *data.ClassDefini
 		property := upsertProperty(out, "globalThrottleUnit")
 		property.ValueType = data.String
 		out.Properties["globalThrottleUnit"] = property
+		for dependencyIndex := range out.TestConfig.Dependencies {
+			dependency := &out.TestConfig.Dependencies[dependencyIndex]
+			if dependency.ClassName == "pkiTP" {
+				dependency.Reference = "aci_certificate_authority.test.id"
+				dependency.ReferenceType = data.ResourceReference
+			}
+		}
 	case "infraRsHPathAtt":
 		// The legacy provider exposes infraRsHPathAtt only as relation_to_host_path
 		// nested beneath infraHPathS. Its tDn identifier would otherwise make the
@@ -2103,6 +2358,14 @@ func applyCanonicalDefinitionCorrections(className string, out *data.ClassDefini
 			property.ValueType = data.String
 			out.Properties[propertyName] = property
 		}
+		for _, propertyName := range []string{"childAction", "configIssues", "nameAlias", "status"} {
+			setCanonicalDataSourceTestIgnore(out, propertyName)
+		}
+		// Controller responses can omit these remote-leaf fields. Keep them in
+		// the datasource schema without requiring them on the controller fixture.
+		for _, propertyName := range []string{"rlAutoMode", "rlGroupId"} {
+			setCanonicalDataSourceTestIgnore(out, propertyName)
+		}
 		// APIC represents configIssues "none" as an empty string. Keep that raw
 		// value instead of applying the generic empty-value normalization.
 		configIssues := upsertProperty(out, "configIssues")
@@ -2139,6 +2402,120 @@ func applyCanonicalDefinitionCorrections(className string, out *data.ClassDefini
 			},
 		}}
 	}
+
+	// The legacy datasource tests appended _not_existing to these named targets.
+	// Preserve valid missing DNs explicitly because the new renderer does not alter DN identifiers.
+	if missingTargetDN := map[string]string{
+		"fvRsDomAtt":           "uni/vmmp-VMware/dom-domain_1_not_existing",
+		"fvRsOtmListMember":    "uni/tn-test_tenant/trackmember-track_member_name_1_not_existing",
+		"fvRsSecInherited":     "uni/tn-name_1/ap-name_1/epg-name_2_not_existing",
+		"l3extRsLblToInstP":    "uni/tn-name_1/out-name_1/instP-name_1_not_existing",
+		"l3extRsOutToFBRGroup": "uni/tn-name_1/ctx-name_1/fbrg-name_1_not_existing",
+	}[className]; missingTargetDN != "" {
+		property := upsertProperty(out, "tDn")
+		property.TestConfig.DataSourceMissing = testValueScenario(data.TestValueEntryDefinition{ConfigValue: missingTargetDN})
+		out.Properties["tDn"] = property
+	}
+
+	completeLegacyTestDependencyConfigurations(out.TestConfig.Dependencies)
+	normalizeCanonicalTestDependencyFixtures(className, out.TestConfig.Dependencies)
+	omitDerivedTestConfiguration(className, out)
+}
+
+func omitDerivedTestConfiguration(className string, out *data.ClassDefinition) {
+	// Run after corrections so required defaults can inherit the final Create value.
+	identifiers, metadataBacked := metaReg.ClassIdentifiedBy[className]
+	if out.IdentifiedBy != nil {
+		identifiers = out.IdentifiedBy
+	}
+	for name, property := range out.Properties {
+		config := &property.TestConfig
+		required := property.Restriction == data.Required || name == "parentDn" || contains(metaReg.ClassRequiredProperties[className], name)
+		if required && len(config.Create.Entries) > 0 && config.Default.Defined && reflect.DeepEqual(config.Create.Entries, config.Default.Entries) {
+			config.Default = data.TestValueScenarioDefinition{}
+		}
+		if config.DataSourceMissing.Defined {
+			// Non-identifiers are not used for missing-object lookups. Matching Create
+			// is ignored by the renderer; matching Update already has a fallback.
+			usesDN := name == "parentDn" || name == "tDn" || property.Reference.ExampleAttributeName == "id"
+			unused := metadataBacked && name != "parentDn" && !contains(identifiers, name)
+			sameCreate := config.Create.Defined && reflect.DeepEqual(config.DataSourceMissing.Entries, config.Create.Entries)
+			sameUpdate := !usesDN && config.Update.Defined && reflect.DeepEqual(config.DataSourceMissing.Entries, config.Update.Entries)
+			if unused || sameCreate || sameUpdate {
+				config.DataSourceMissing = data.TestValueScenarioDefinition{}
+			}
+		}
+		out.Properties[name] = property
+	}
+
+	// A repeated nested reference reuses the first DAG node. Keep its identity,
+	// rather than repeating configuration that the loader never consumes.
+	seen := make(map[string]bool)
+	var omitRepeated func([]data.TestDependencyDefinition, int)
+	omitRepeated = func(dependencies []data.TestDependencyDefinition, depth int) {
+		for index := range dependencies {
+			dependency := &dependencies[index]
+			if dependency.Reference != "" && dependency.ReferenceType != data.StaticReference {
+				if depth > 0 && seen[dependency.Reference] {
+					*dependency = data.TestDependencyDefinition{
+						ClassName:     dependency.ClassName,
+						Reference:     dependency.Reference,
+						ReferenceType: dependency.ReferenceType,
+						Role:          dependency.Role,
+					}
+					continue
+				}
+				seen[dependency.Reference] = true
+			}
+			omitRepeated(dependency.Dependencies, depth+1)
+		}
+	}
+	omitRepeated(out.TestConfig.Dependencies, 0)
+}
+
+func normalizeCanonicalTestDependencyFixtures(ownerClass string, dependencies []data.TestDependencyDefinition) {
+	type dependencyKey struct {
+		className string
+		reference string
+	}
+
+	instances := make(map[dependencyKey]int)
+	counters := make(map[string]int)
+	var normalize func([]data.TestDependencyDefinition)
+	normalize = func(dependencies []data.TestDependencyDefinition) {
+		for dependencyIndex := range dependencies {
+			dependency := &dependencies[dependencyIndex]
+			if dependency.ReferenceType != data.StaticReference && dependency.ConfigOverrides["name"] != "infra" {
+				if _, metadataBacked := metaReg.ClassMetaProperties[dependency.ClassName]; metadataBacked {
+					if dependency.ClassName == ownerClass {
+						role := dependency.Role.String()
+						if role == "" {
+							role = "dependency"
+						}
+						counterKey := dependency.ClassName + ":" + role
+						counters[counterKey]++
+						if dependency.ConfigOverrides == nil {
+							dependency.ConfigOverrides = make(map[string]string)
+						}
+						dependency.ConfigOverrides["name"] = fmt.Sprintf("%s_name_%d", role, counters[counterKey])
+					} else {
+						delete(dependency.ConfigOverrides, "name")
+					}
+				} else if dependency.ConfigOverrides["name"] != "" {
+					key := dependencyKey{className: dependency.ClassName, reference: dependency.Reference}
+					instance, exists := instances[key]
+					if !exists {
+						counters[dependency.ClassName]++
+						instance = counters[dependency.ClassName]
+						instances[key] = instance
+					}
+					dependency.ConfigOverrides["name"] = fmt.Sprintf("name_%d", instance)
+				}
+			}
+			normalize(dependency.Dependencies)
+		}
+	}
+	normalize(dependencies)
 }
 
 func applyDefinitionOnlyResourceName(className string, out *data.ClassDefinition) {
@@ -2162,6 +2539,274 @@ func appendCanonicalTargetDependencies(out *data.ClassDefinition, className, res
 			Role:          data.Target,
 		},
 	)
+}
+
+func appendSecondCanonicalTargetDependency(out *data.ClassDefinition, className, resourceName string) {
+	for _, dependency := range out.TestConfig.Dependencies {
+		if dependency.Role != data.Target || dependency.ClassName != className {
+			continue
+		}
+		clone := cloneTestDependencyDefinition(dependency)
+		clone.Reference = fmt.Sprintf("aci_%s.test_2.id", resourceName)
+		clone.ReferenceType = data.ResourceReference
+		if clone.ConfigOverrides != nil {
+			clone.ConfigOverrides["name"] = "name_2"
+		}
+		out.TestConfig.Dependencies = append(out.TestConfig.Dependencies, clone)
+		return
+	}
+}
+
+func replaceCanonicalRelationTargets(out *data.ClassDefinition, className, resourceName, parentClassName, parentResourceName string) {
+	var base data.TestDependencyDefinition
+	filtered := make([]data.TestDependencyDefinition, 0, len(out.TestConfig.Dependencies)+2)
+	for _, dependency := range out.TestConfig.Dependencies {
+		if dependency.Role == data.Target && dependency.ClassName == className {
+			if base.ClassName == "" {
+				base = cloneTestDependencyDefinition(dependency)
+			}
+			continue
+		}
+		filtered = append(filtered, dependency)
+	}
+	if base.ClassName == "" {
+		base = data.TestDependencyDefinition{ClassName: className, Role: data.Target}
+		if parentClassName != "" {
+			base.Dependencies = []data.TestDependencyDefinition{{
+				ClassName:     parentClassName,
+				Reference:     fmt.Sprintf("aci_%s.test.id", parentResourceName),
+				ReferenceType: data.ResourceReference,
+			}}
+		}
+	}
+	for instance := 1; instance <= 2; instance++ {
+		dependency := cloneTestDependencyDefinition(base)
+		instanceName := "test"
+		if instance > 1 {
+			instanceName = fmt.Sprintf("test_%d", instance)
+		}
+		dependency.Reference = fmt.Sprintf("aci_%s.%s.id", resourceName, instanceName)
+		dependency.ReferenceType = data.ResourceReference
+		if dependency.ConfigOverrides != nil {
+			dependency.ConfigOverrides["name"] = fmt.Sprintf("name_%d", instance)
+		}
+		filtered = append(filtered, dependency)
+	}
+	out.TestConfig.Dependencies = filtered
+}
+
+func cloneTestDependencyDefinition(source data.TestDependencyDefinition) data.TestDependencyDefinition {
+	clone := source
+	clone.TargetClasses = append([]string(nil), source.TargetClasses...)
+	clone.Dependencies = make([]data.TestDependencyDefinition, len(source.Dependencies))
+	for index, dependency := range source.Dependencies {
+		clone.Dependencies[index] = cloneTestDependencyDefinition(dependency)
+	}
+	if source.ConfigOverrides != nil {
+		clone.ConfigOverrides = make(map[string]string, len(source.ConfigOverrides))
+		for name, value := range source.ConfigOverrides {
+			clone.ConfigOverrides[name] = value
+		}
+	}
+	return clone
+}
+
+func setCanonicalDataSourceTestIgnore(out *data.ClassDefinition, propertyName string) {
+	property := upsertProperty(out, propertyName)
+	property.TestConfig.IgnoreInDataSourceTest = true
+	out.Properties[propertyName] = property
+}
+
+func appendCanonicalLegacyParentDependencies(out *data.ClassDefinition, className, resourceName string) {
+	for _, dependency := range out.TestConfig.Dependencies {
+		if dependency.ClassName == className && dependency.Role == data.Parent {
+			return
+		}
+	}
+	for _, instanceName := range []string{"test", "test_2"} {
+		out.TestConfig.Dependencies = append(out.TestConfig.Dependencies, data.TestDependencyDefinition{
+			ClassName:     className,
+			Reference:     fmt.Sprintf("aci_%s.%s.id", resourceName, instanceName),
+			ReferenceType: data.ResourceReference,
+			Role:          data.Parent,
+		})
+	}
+}
+
+func completeLegacyTestDependencyConfigurations(dependencies []data.TestDependencyDefinition) {
+	for dependencyIndex := range dependencies {
+		dependency := &dependencies[dependencyIndex]
+		switch dependency.ClassName {
+		case "l3extOut":
+			setLegacyDependencyReference(dependency, "l3_outside")
+			tenantDependency := findOrAppendLegacyDependency(dependency, data.TestDependencyDefinition{
+				ClassName:     "fvTenant",
+				Reference:     "aci_tenant.test.id",
+				ReferenceType: data.ResourceReference,
+			})
+			if tenantDependency.Reference == "infra" {
+				tenantDependency.Reference = "data.aci_tenant.test.id"
+				tenantDependency.ReferenceType = data.DataSourceReference
+				setLegacyDependencyConfig(tenantDependency, "name", "infra")
+			}
+			if tenantDependency.Reference == "" {
+				tenantDependency.Reference = "aci_tenant.test.id"
+				tenantDependency.ReferenceType = data.ResourceReference
+			}
+			tenantReference := dependency.ConfigOverrides["tenant_dn"]
+			if tenantReference == "" {
+				tenantReference = tenantDependency.Reference
+			}
+			setLegacyDependencyConfig(dependency, "tenant_dn", tenantReference)
+			setLegacyDependencyConfig(dependency, "name", legacyDependencyName(dependency.Reference, "test_l3_outside"))
+			vrfReference := dependency.ConfigOverrides["relation_l3ext_rs_ectx"]
+			if vrfReference == "" {
+				vrfReference = "aci_vrf.test.id"
+			}
+			setLegacyDependencyConfig(dependency, "relation_l3ext_rs_ectx", vrfReference)
+			nestedTenantDependency := data.TestDependencyDefinition{
+				ClassName:     "fvTenant",
+				Reference:     tenantDependency.Reference,
+				ReferenceType: tenantDependency.ReferenceType,
+			}
+			if tenantName := tenantDependency.ConfigOverrides["name"]; tenantName != "" {
+				nestedTenantDependency.ConfigOverrides = map[string]string{"name": tenantName}
+			}
+			findOrAppendLegacyDependency(dependency, data.TestDependencyDefinition{
+				ClassName:     "fvCtx",
+				Reference:     vrfReference,
+				ReferenceType: data.ResourceReference,
+				ConfigOverrides: map[string]string{
+					"parent_dn": tenantReference,
+					"name":      "test_vrf",
+				},
+				Dependencies: []data.TestDependencyDefinition{nestedTenantDependency},
+			})
+		case "l3extLNodeP":
+			setLegacyDependencyReference(dependency, "logical_node_profile")
+			setLegacyDependencyConfig(dependency, "l3_outside_dn", "aci_l3_outside.test.id")
+			setLegacyDependencyConfig(dependency, "name", legacyDependencyName(dependency.Reference, "logical_node_profile"))
+			appendLegacyDependency(dependency, data.TestDependencyDefinition{
+				ClassName:     "l3extOut",
+				Reference:     "aci_l3_outside.test.id",
+				ReferenceType: data.ResourceReference,
+			})
+		case "l3extRsNodeL3OutAtt":
+			setLegacyDependencyReference(dependency, "logical_node_to_fabric_node")
+			setLegacyDependencyConfig(dependency, "logical_node_profile_dn", "aci_logical_node_profile.test.id")
+			setLegacyDependencyConfig(dependency, "tdn", "topology/pod-2/node-2011")
+			setLegacyDependencyConfig(dependency, "rtr_id", "192.0.2.1")
+			appendLegacyDependency(dependency, data.TestDependencyDefinition{
+				ClassName:     "l3extLNodeP",
+				Reference:     "aci_logical_node_profile.test.id",
+				ReferenceType: data.ResourceReference,
+			})
+		case "l3extLoopBackIfP":
+			setLegacyDependencyReference(dependency, "l3out_loopback_interface_profile")
+			setLegacyDependencyConfig(dependency, "fabric_node_dn", "aci_logical_node_to_fabric_node.test.id")
+			setLegacyDependencyConfig(dependency, "addr", "192.0.2.5")
+			appendLegacyDependency(dependency, data.TestDependencyDefinition{
+				ClassName:     "l3extRsNodeL3OutAtt",
+				Reference:     "aci_logical_node_to_fabric_node.test.id",
+				ReferenceType: data.ResourceReference,
+			})
+		case "vmmVSwitchPolicyCont":
+			setLegacyDependencyReference(dependency, "vswitch_policy")
+			setLegacyDependencyConfig(dependency, "vmm_domain_dn", "aci_vmm_domain.test.id")
+			appendLegacyDependency(dependency, data.TestDependencyDefinition{
+				ClassName:     "vmmDomP",
+				Reference:     "aci_vmm_domain.test.id",
+				ReferenceType: data.ResourceReference,
+			})
+		case "vzBrCP":
+			setLegacyDependencyReference(dependency, "contract")
+			setLegacyDependencyConfig(dependency, "tenant_dn", "aci_tenant.test.id")
+			setLegacyDependencyConfig(dependency, "name", legacyDependencyName(dependency.Reference, "test_contract"))
+			appendLegacyDependency(dependency, data.TestDependencyDefinition{
+				ClassName:     "fvTenant",
+				Reference:     "aci_tenant.test.id",
+				ReferenceType: data.ResourceReference,
+			})
+		case "ospfCtxPol":
+			setLegacyDependencyReference(dependency, "ospf_timers")
+			setLegacyDependencyConfig(dependency, "tenant_dn", "aci_tenant.test.id")
+			setLegacyDependencyConfig(dependency, "name", legacyDependencyName(dependency.Reference, "test_ospf_timers"))
+			appendLegacyDependency(dependency, data.TestDependencyDefinition{
+				ClassName:     "fvTenant",
+				Reference:     "aci_tenant.test.id",
+				ReferenceType: data.ResourceReference,
+			})
+		case "bgpCtxPol":
+			setLegacyDependencyReference(dependency, "bgp_timers")
+			setLegacyDependencyConfig(dependency, "tenant_dn", "aci_tenant.test.id")
+			setLegacyDependencyConfig(dependency, "name", legacyDependencyName(dependency.Reference, "test_bgp_timers"))
+			appendLegacyDependency(dependency, data.TestDependencyDefinition{
+				ClassName:     "fvTenant",
+				Reference:     "aci_tenant.test.id",
+				ReferenceType: data.ResourceReference,
+			})
+		}
+
+		completeLegacyTestDependencyConfigurations(dependency.Dependencies)
+	}
+}
+
+func setLegacyDependencyReference(dependency *data.TestDependencyDefinition, resourceName string) {
+	if dependency.Reference == "" {
+		dependency.Reference = fmt.Sprintf("aci_%s.test.id", resourceName)
+		dependency.ReferenceType = data.ResourceReference
+	}
+}
+
+func setLegacyDependencyConfig(dependency *data.TestDependencyDefinition, attributeName, value string) {
+	if dependency.ConfigOverrides == nil {
+		dependency.ConfigOverrides = map[string]string{}
+	}
+	if dependency.ConfigOverrides[attributeName] == "" {
+		dependency.ConfigOverrides[attributeName] = value
+	}
+}
+
+func appendLegacyDependency(dependency *data.TestDependencyDefinition, nested data.TestDependencyDefinition) {
+	for _, existing := range dependency.Dependencies {
+		if existing.Reference == nested.Reference || existing.ClassName == nested.ClassName {
+			return
+		}
+	}
+	dependency.Dependencies = append(dependency.Dependencies, nested)
+}
+
+func findOrAppendLegacyDependency(dependency *data.TestDependencyDefinition, nested data.TestDependencyDefinition) *data.TestDependencyDefinition {
+	for dependencyIndex := range dependency.Dependencies {
+		existing := &dependency.Dependencies[dependencyIndex]
+		if existing.Reference == nested.Reference || existing.ClassName == nested.ClassName {
+			mergeLegacyDependencyDefinition(existing, nested)
+			return existing
+		}
+	}
+	dependency.Dependencies = append(dependency.Dependencies, nested)
+	return &dependency.Dependencies[len(dependency.Dependencies)-1]
+}
+
+func mergeLegacyDependencyDefinition(existing *data.TestDependencyDefinition, additional data.TestDependencyDefinition) {
+	if existing.Reference == "" {
+		existing.Reference = additional.Reference
+		existing.ReferenceType = additional.ReferenceType
+	}
+	for attributeName, value := range additional.ConfigOverrides {
+		setLegacyDependencyConfig(existing, attributeName, value)
+	}
+	for _, nested := range additional.Dependencies {
+		findOrAppendLegacyDependency(existing, nested)
+	}
+}
+
+func legacyDependencyName(reference, baseName string) string {
+	parts := strings.Split(reference, ".")
+	if len(parts) >= 3 && parts[1] == "test_2" {
+		return baseName + "_2"
+	}
+	return baseName
 }
 
 func setCanonicalPropertyReference(out *data.ClassDefinition, propertyName string, classes []string, exampleClass, exampleAttribute string) {
@@ -2224,7 +2869,7 @@ func buildOverwritesInverter(legacy map[string]any, metaProps []string) map[stri
 var canonicalTestAddressValues = map[string]string{
 	"1.1.1.0/24":    "192.0.2.0/24",
 	"1.1.1.1":       "192.0.2.1",
-	"1.1.1.1/10":    "192.0.2.1/24",
+	"1.1.1.1/10":    "192.0.2.1/20",
 	"1.1.1.1/30":    "192.0.2.1/30",
 	"1.1.1.3":       "192.0.2.3",
 	"1.1.1.4":       "192.0.2.4",
@@ -2236,7 +2881,16 @@ var canonicalTestAddressValues = map[string]string{
 	"2.2.2.3/24":    "198.51.100.3/24",
 	"2.2.2.4":       "198.51.100.4",
 	"2.2.2.4/24":    "198.51.100.4/24",
-	"11.11.11.1/11": "203.0.113.11/24",
+	"10.0.0.1/24":   "192.0.2.1/24",
+	"10.0.0.1":      "192.0.2.1",
+	"10.0.0.2":      "192.0.2.2",
+	"10.0.0.5":      "192.0.2.5",
+	"10.0.0.6":      "192.0.2.6",
+	"10.0.0.13":     "192.0.2.13",
+	"10.0.1.2":      "192.0.3.2",
+	"10.0.2.2":      "192.0.4.2",
+	"10.0.2.4":      "192.0.4.4",
+	"11.11.11.1/11": "203.0.113.11/20",
 	"12.12.12.1":    "203.0.113.12",
 	"131.107.1.200": "203.0.113.200",
 }
@@ -2260,7 +2914,12 @@ func legacyValueToHCL(v any) string {
 	case nil:
 		return ""
 	case string:
-		return canonicalTestAddressValue(x)
+		value := canonicalTestAddressValue(x)
+		if strings.Contains(value, "-----BEGIN ") {
+			value = strings.ReplaceAll(value, `\\n`, "\n")
+			value = strings.ReplaceAll(value, `\n`, "\n")
+		}
+		return value
 	case bool:
 		if x {
 			return "true"
@@ -2370,13 +3029,13 @@ func migrateTestValues(file, className string, val any, out *data.ClassDefinitio
 				}
 				switch bucket {
 				case "all":
-					appendTestValueScenario(&prop.TestConfig.Create, scenario)
+					mergeLegacyTestValueScenario(file, bucket, snakeKey, metaName, &prop, &prop.TestConfig.Create, scenario)
 				case "default":
-					appendTestValueScenario(&prop.TestConfig.Default, scenario)
+					mergeLegacyTestValueScenario(file, bucket, snakeKey, metaName, &prop, &prop.TestConfig.Default, scenario)
 				case "update":
-					appendTestValueScenario(&prop.TestConfig.Update, scenario)
+					mergeLegacyTestValueScenario(file, bucket, snakeKey, metaName, &prop, &prop.TestConfig.Update, scenario)
 				case "force_new":
-					appendTestValueScenario(&prop.TestConfig.ForceNew, scenario)
+					mergeLegacyTestValueScenario(file, bucket, snakeKey, metaName, &prop, &prop.TestConfig.ForceNew, scenario)
 				}
 				out.Properties[metaName] = prop
 			}
@@ -2422,10 +3081,30 @@ func migrateTestValues(file, className string, val any, out *data.ClassDefinitio
 			}
 
 		case "datasource_required", "datasource_non_existing":
-			// DERIVE per section 6: IdentifiedBy + Default bucket drive
-			// the datasource lookup config and the non-existing branch;
-			// no migration of these nested keys today.
-			continue
+			entries, ok := entry.(map[any]any)
+			if !ok {
+				fmt.Printf("WARN: %s: test_values.%s is not a map: %T\n", file, bucket, entry)
+				continue
+			}
+			for _, snakeKey := range sortedAnyMapStringKeys(entries) {
+				metaName, _ := metaReg.resolveMetaName(className, snakeKey)
+				if metaName == "" {
+					continue
+				}
+				prop := upsertProperty(out, metaName)
+				if _, isSet := entries[snakeKey].([]any); isSet {
+					prop.ValueType = data.Set
+				}
+				scenario := legacyTestValueScenario(entries[snakeKey])
+				if bucket == "datasource_required" {
+					if !prop.TestConfig.Create.Defined {
+						prop.TestConfig.Create = scenario
+					}
+				} else {
+					prop.TestConfig.DataSourceMissing = scenario
+				}
+				out.Properties[metaName] = prop
+			}
 
 		case "resource_required":
 			entries, ok := entry.(map[any]any)
@@ -2445,6 +3124,9 @@ func migrateTestValues(file, className string, val any, out *data.ClassDefinitio
 				scenario := legacyTestValueScenario(entries[snakeKey])
 				prop.TestConfig.Default = scenario
 				prop.TestConfig.Default.Preserve = true
+				if !prop.TestConfig.Create.Defined {
+					prop.TestConfig.Create = scenario
+				}
 				out.Properties[metaName] = prop
 			}
 
@@ -2470,15 +3152,61 @@ func migrateTestValues(file, className string, val any, out *data.ClassDefinitio
 			}
 
 		default:
-			// child_*, ignore_in_*, and any future nested key. Today
-			// v2.19.0 carries no data here; log so the gap is visible if
-			// the corpus ever ships an entry.
-			if strings.HasPrefix(bucket, "child_") || strings.HasPrefix(bucket, "ignore_in_") {
+			if strings.HasPrefix(bucket, "child_") {
+				instanceNumber, err := strconv.Atoi(strings.TrimPrefix(bucket, "child_"))
+				properties, ok := entry.(map[any]any)
+				if err != nil || instanceNumber < 1 || !ok {
+					fmt.Printf("WARN: %s: test_values.%s is not a valid child instance map\n", file, bucket)
+					continue
+				}
+				for len(out.TestConfig.EmbeddedInstances) < instanceNumber {
+					out.TestConfig.EmbeddedInstances = append(out.TestConfig.EmbeddedInstances, data.ChildTestInstanceOverrideDefinition{})
+				}
+				instance := &out.TestConfig.EmbeddedInstances[instanceNumber-1]
+				if instance.Properties == nil {
+					instance.Properties = make(map[string]data.TestValueScenarioDefinition)
+				}
+				for _, attributeName := range sortedAnyMapStringKeys(properties) {
+					instance.Properties[attributeName] = legacyTestValueScenario(properties[attributeName])
+				}
+				continue
+			}
+			if bucket == "ignore_in_datasource" {
+				for _, attributeName := range asStringSlice(entry) {
+					metaName, _ := metaReg.resolveMetaName(className, attributeName)
+					property := upsertProperty(out, metaName)
+					property.TestConfig.IgnoreInDataSourceTest = true
+					out.Properties[metaName] = property
+				}
+				continue
+			}
+			if strings.HasPrefix(bucket, "ignore_in_") {
 				continue
 			}
 			fmt.Printf("WARN: %s: test_values.%s ignored (unknown bucket)\n", file, bucket)
 		}
 	}
+}
+
+func mergeLegacyTestValueScenario(file, bucket, sourceName, metaName string, property *data.PropertyDefinition, destination *data.TestValueScenarioDefinition, scenario data.TestValueScenarioDefinition) {
+	if !destination.Defined {
+		*destination = scenario
+		return
+	}
+	if property.ValueType == data.Set {
+		appendTestValueScenario(destination, scenario)
+		return
+	}
+
+	preferredName := property.AttributeName
+	if preferredName == "" {
+		preferredName = utils.Underscore(metaName)
+	}
+	if sourceName != preferredName {
+		fmt.Printf("DROP: %s: test_values.%s[%s] resolves to scalar property %s already supplied by preferred attribute %s\n", file, bucket, sourceName, metaName, preferredName)
+		return
+	}
+	*destination = scenario
 }
 
 // classifyReference picks a ReferenceTypeEnum for a parent_dn / target_dn
@@ -2970,11 +3698,13 @@ func migrateParents(file, selfClass string, val any, out *data.ClassDefinition) 
 //	parent_dependency       -> recursive single-level Dependencies[] entry.
 //	relation_resource_name  -> dropped (canonical struct derives the HCL
 //	                             resource name from class_name).
-//	overwrite_parent_dn_key -> dropped (canonical schema infers the
-//	                             parent_dn attribute name on the target).
+//	overwrite_parent_dn_key -> ConfigOverrides entry for definition-only
+//	                             targets whose configuration cannot be derived
+//	                             from loaded class metadata.
 //	target_dn_overwrite_docs -> dropped (public reference derives from target).
 //	shared_classes          -> dropped (no canonical slot; 3 files).
-//	parent_dependency_dn_ref -> dropped (canonical struct derives; 2 files).
+//	parent_dependency_dn_ref -> recursive dependency Reference, falling back
+//	                             to the canonical resource reference when empty.
 //
 // Auto-resolution filtering: entries whose shape exactly matches what the
 // loader's resolveTargetDependencies + buildDependency would synthesise
@@ -3122,11 +3852,31 @@ func migrateTargets(file, selfClass string, val any, out *data.ClassDefinition) 
 			dep.ConfigOverrides = stringifyConfigOverrides(file, "targets."+className, props)
 		}
 		if pdep, ok := entry["parent_dependency"].(string); ok && pdep != "" {
-			dep.Dependencies = []data.TestDependencyDefinition{{ClassName: pdep}}
+			parentReference, _ := entry["parent_dependency_dn_ref"].(string)
+			if parentReference == "" {
+				if parentResourceName := resourceNameForClass(pdep); parentResourceName != "" {
+					parentReference = fmt.Sprintf("aci_%s.test.id", parentResourceName)
+				}
+			}
+			parentDependency := data.TestDependencyDefinition{ClassName: pdep}
+			if parentReference != "" {
+				parentDependency.Reference = parentReference
+				parentDependency.ReferenceType = classifyReference(parentReference)
+			}
+			dep.Dependencies = []data.TestDependencyDefinition{parentDependency}
+
+			if !canAutoResolveResourceDependency(className) {
+				if parentAttributeName, ok := entry["overwrite_parent_dn_key"].(string); ok && parentAttributeName != "" && parentReference != "" {
+					if dep.ConfigOverrides == nil {
+						dep.ConfigOverrides = map[string]string{}
+					}
+					dep.ConfigOverrides[parentAttributeName] = parentReference
+				}
+			}
 		}
 		// The remaining sub-keys (relation_resource_name,
-		// overwrite_parent_dn_key, shared_classes, parent_dependency_dn_ref) intentionally have no
-		// canonical slot — see the function doc for the rationale.
+		// shared_classes) intentionally have no canonical slot — see the
+		// function doc for the rationale.
 		out.TestConfig.Dependencies = append(out.TestConfig.Dependencies, dep)
 	}
 }
@@ -3135,7 +3885,14 @@ func migrateTargets(file, selfClass string, val any, out *data.ClassDefinition) 
 // map, omitting zero-value fields and recursing through Dependencies.
 // Enums are hand-emitted via String() (yaml.v2-no-MarshalText pattern).
 func projectTestDependency(d data.TestDependencyDefinition) map[string]any {
+	// Metadata-backed resource references already have a canonical loader default.
+	if d.ReferenceType == data.ResourceReference && canAutoResolveResourceDependency(d.ClassName) && isCanonicalAutoRef(d.ClassName, d.Reference) {
+		d.Reference = ""
+	}
 	m := map[string]any{}
+	if d.Prefix.Enabled != nil {
+		m["prefix"] = map[string]any{"enabled": *d.Prefix.Enabled}
+	}
 	if d.ClassName != "" {
 		m["class_name"] = d.ClassName
 	}
@@ -3150,6 +3907,9 @@ func projectTestDependency(d data.TestDependencyDefinition) map[string]any {
 	}
 	if len(d.TargetClasses) > 0 {
 		m["target_classes"] = d.TargetClasses
+	}
+	if d.OrderOnly {
+		m["order_only"] = d.OrderOnly
 	}
 	if len(d.ConfigOverrides) > 0 {
 		m["config_overrides"] = d.ConfigOverrides
@@ -3270,8 +4030,14 @@ func projectExampleEntries(entries []data.ExampleValueEntryDefinition) []map[str
 // implemented).
 func projectTestConfig(tc data.TestConfigDefinition) map[string]any {
 	out := map[string]any{}
+	if tc.Prefix.Enabled != nil {
+		out["prefix"] = map[string]any{"enabled": *tc.Prefix.Enabled}
+	}
 	if tc.Create.Defined {
 		out["create"] = projectTestEntries(tc.Create.Entries)
+	}
+	if tc.DataSourceMissing.Defined {
+		out["datasource_missing"] = projectTestEntries(tc.DataSourceMissing.Entries)
 	}
 	if tc.Default.Defined {
 		out["default"] = projectTestEntries(tc.Default.Entries)
@@ -3287,6 +4053,9 @@ func projectTestConfig(tc data.TestConfigDefinition) map[string]any {
 	}
 	if tc.IgnoreInTest {
 		out["ignore_in_test"] = tc.IgnoreInTest
+	}
+	if tc.IgnoreInDataSourceTest {
+		out["ignore_in_datasource_test"] = tc.IgnoreInDataSourceTest
 	}
 	return out
 }
@@ -3411,7 +4180,7 @@ func hasMigratedData(c data.ClassDefinition) bool {
 	if c.Artifacts != nil || len(c.ExampleFiles) > 0 || c.ExampleParentClass != "" || len(c.ParentDnVariants) > 0 {
 		return true
 	}
-	if len(c.TestConfig.IgnoreTests) > 0 || c.TestConfig.IgnoreImportStateVerify || len(c.TestConfig.Dependencies) > 0 || len(c.TestConfig.EmbeddedInstances) > 0 || c.TestConfig.ReplaceAutoResolved {
+	if len(c.TestConfig.IgnoreTests) > 0 || c.TestConfig.IgnoreImportStateVerify || c.TestConfig.DataSourceExpectNonEmptyPlan || len(c.TestConfig.Dependencies) > 0 || len(c.TestConfig.EmbeddedInstances) > 0 || c.TestConfig.ReplaceAutoResolved || c.TestConfig.Prefix.Characters != "" || c.TestConfig.Prefix.Length != 0 {
 		return true
 	}
 	documentation := c.Documentation
@@ -3542,6 +4311,16 @@ func marshalView(c data.ClassDefinition) map[string]any {
 		out["parent_dn_variants"] = variants
 	}
 	testCfg := map[string]any{}
+	prefix := map[string]any{}
+	if c.TestConfig.Prefix.Characters != "" {
+		prefix["characters"] = c.TestConfig.Prefix.Characters
+	}
+	if c.TestConfig.Prefix.Length != 0 {
+		prefix["length"] = c.TestConfig.Prefix.Length
+	}
+	if len(prefix) > 0 {
+		testCfg["prefix"] = prefix
+	}
 	if len(c.TestConfig.IgnoreTests) > 0 {
 		names := make([]string, len(c.TestConfig.IgnoreTests))
 		for i, e := range c.TestConfig.IgnoreTests {
@@ -3551,6 +4330,9 @@ func marshalView(c data.ClassDefinition) map[string]any {
 	}
 	if c.TestConfig.IgnoreImportStateVerify {
 		testCfg["ignore_import_state_verify"] = c.TestConfig.IgnoreImportStateVerify
+	}
+	if c.TestConfig.DataSourceExpectNonEmptyPlan {
+		testCfg["datasource_expect_non_empty_plan"] = c.TestConfig.DataSourceExpectNonEmptyPlan
 	}
 	if c.TestConfig.ReplaceAutoResolved {
 		testCfg["replace_auto_resolved"] = c.TestConfig.ReplaceAutoResolved
@@ -3825,6 +4607,7 @@ func main() {
 			continue
 		}
 
+		out = append([]byte(canonicalTestLimitationComments[className]), out...)
 		outputPath := filepath.Join(outputDir, className+".yaml")
 		if err := os.WriteFile(outputPath, out, 0644); err != nil {
 			fmt.Fprintf(os.Stderr, "Error writing %s: %v\n", outputPath, err)
@@ -3871,6 +4654,7 @@ func main() {
 			continue
 		}
 		className := strings.TrimSuffix(base, ".yaml")
+		out = append([]byte(canonicalTestLimitationComments[className]), out...)
 		outputPath := filepath.Join(outputDir, className+".yaml")
 		if err := os.WriteFile(outputPath, out, 0644); err != nil {
 			fmt.Fprintf(os.Stderr, "Error writing %s: %v\n", outputPath, err)
@@ -3901,6 +4685,7 @@ func main() {
 			failed++
 			continue
 		}
+		out = append([]byte(canonicalTestLimitationComments[className]), out...)
 		outputPath := filepath.Join(outputDir, className+".yaml")
 		if err := os.WriteFile(outputPath, out, 0644); err != nil {
 			fmt.Fprintf(os.Stderr, "Error writing %s: %v\n", outputPath, err)

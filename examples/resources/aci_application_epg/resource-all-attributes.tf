@@ -159,9 +159,9 @@ resource "aci_application_epg" "full_example" {
       epg_cos                       = "Cos0"
       epg_cos_pref                  = "disabled"
       deployment_immediacy          = "immediate"
-      ipam_dhcp_override            = "10.0.0.2"
+      ipam_dhcp_override            = "192.0.2.2"
       ipam_enabled                  = "yes"
-      ipam_gateway                  = "10.0.0.1"
+      ipam_gateway                  = "192.0.2.1"
       lag_policy_name               = aci_lacp_enhanced_lag_policy.example.name
       netflow_direction             = "both"
       enable_netflow                = "disabled"

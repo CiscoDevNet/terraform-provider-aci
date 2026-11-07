@@ -5,5 +5,5 @@ resource "aci_netflow_exporter_policy" "example" {
   destination_ip_address = "198.51.100.1"
   destination_port       = "https"
   name                   = "netflow_exporter"
-  source_ip_address      = "192.0.2.1/24"
+  source_ip_address      = "192.0.2.1/20"
 }

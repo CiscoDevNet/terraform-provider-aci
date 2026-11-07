@@ -44,6 +44,8 @@ properties:
     test_config:
       create:
       - config_value: "1"
+      datasource_missing:
+      - config_value: "2"
       default:
       - config_value: "0"
 resource_name: remote_site
@@ -52,7 +54,6 @@ test_config:
   - class_name: fvSiteAssociated
     dependencies:
     - class_name: fvBD
-    reference: aci_associated_site.test.id
     role: parent
   embedded_instances:
   - properties:

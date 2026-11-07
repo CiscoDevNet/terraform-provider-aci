@@ -8,8 +8,8 @@ properties:
     test_config:
       create:
       - config_value: "00:00:00:00:00:01"
-      default:
-      - config_value: "00:00:00:00:00:01"
+      datasource_missing:
+      - config_value: "00:00:00:00:00:02"
 resource_name: rogue_coop_exception
 test_config:
   embedded_instances:

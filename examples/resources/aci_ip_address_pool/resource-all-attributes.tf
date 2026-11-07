@@ -2,7 +2,7 @@
 # In order to regenerate this file execute `go generate` from the repository root.
 # More details can be found in the [README](https://github.com/CiscoDevNet/terraform-provider-aci/blob/main/README.md).
 resource "aci_ip_address_pool" "full_example" {
-  gateway_address         = "10.0.0.1/24"
+  gateway_address         = "192.0.2.1/24"
   address_type            = "regular"
   annotation              = "example_annotation"
   description             = "Example IP Address Pool"
@@ -15,10 +15,10 @@ resource "aci_ip_address_pool" "full_example" {
     {
       annotation  = "example_annotation"
       description = "Example IP Address Block"
-      from        = "10.0.0.2"
+      from        = "192.0.2.2"
       name        = "ip_address_block"
       name_alias  = "example_name_alias"
-      to          = "10.0.0.5"
+      to          = "192.0.2.5"
       annotations = [
         {
           key   = "example_key"

@@ -6,8 +6,18 @@ resource_name: relation_to_ospf_timers
 test_config:
   dependencies:
   - class_name: ospfCtxPol
+    config_overrides:
+      name: name_1
+      tenant_dn: aci_tenant.test.id
+    dependencies:
+    - class_name: fvTenant
     reference: aci_ospf_timers.test.id
     role: target
   - class_name: ospfCtxPol
+    config_overrides:
+      name: name_2
+      tenant_dn: aci_tenant.test.id
+    dependencies:
+    - class_name: fvTenant
     reference: aci_ospf_timers.test_2.id
     role: target

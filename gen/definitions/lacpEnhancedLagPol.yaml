@@ -20,6 +20,8 @@ resource_name: lacp_enhanced_lag_policy
 test_config:
   dependencies:
   - class_name: vmmVSwitchPolicyCont
+    config_overrides:
+      vmm_domain_dn: aci_vmm_domain.test.id
     dependencies:
     - class_name: vmmDomP
     reference: aci_vswitch_policy.test.id

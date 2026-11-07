@@ -53,8 +53,7 @@ state_upgrades:
   prior_schema_version: 1
 test_config:
   dependencies:
-  - class_name: infraZHPortS
+  - class_name: infraSHPortS
     dependencies:
     - class_name: infraSpAccPortP
-    reference: aci_spine_access_port_selector.test.id
     role: parent

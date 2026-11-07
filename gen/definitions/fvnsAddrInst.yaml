@@ -14,11 +14,9 @@ properties:
     restriction: required
     test_config:
       create:
-      - config_value: 10.0.0.1/24
-      default:
-      - config_value: 10.0.0.1/24
+      - config_value: 192.0.2.1/24
       update:
-      - config_value: 10.0.0.1/24
+      - config_value: 192.0.2.1/24
     value_type: string
   addrType:
     attribute_name: address_type

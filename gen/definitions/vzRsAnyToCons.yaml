@@ -13,8 +13,17 @@ test_config:
   dependencies:
   - class_name: vzBrCP
     config_overrides:
-      name: contract_name_0
+      name: name_1
+      tenant_dn: aci_tenant.test.id
     dependencies:
     - class_name: fvTenant
     reference: aci_contract.test_contract_0.id
+    role: target
+  - class_name: vzBrCP
+    config_overrides:
+      name: name_2
+      tenant_dn: aci_tenant.test.id
+    dependencies:
+    - class_name: fvTenant
+    reference: aci_contract.test_2.id
     role: target
