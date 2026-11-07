@@ -17,7 +17,6 @@ require (
 	github.com/hashicorp/terraform-plugin-testing v1.15.0
 	github.com/stretchr/testify v1.10.0
 	github.com/zclconf/go-cty v1.19.0
-	golang.org/x/exp v0.0.0-20250408133849-7e4ce0ab07d0
 	golang.org/x/text v0.43.0
 	golang.org/x/tools v0.51.0
 	gopkg.in/yaml.v2 v2.4.0
