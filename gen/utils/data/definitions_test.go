@@ -479,6 +479,53 @@ func TestParseClassDefinition_RequiresReplacePointerSemantics(t *testing.T) {
 
 // TestParseClassDefinition_EmptyYAML verifies that an empty payload decodes
 // to a zero-value ClassDefinition without error.
+func TestParseClassDefinition_TestPrefix(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+	testCases := []test.TestCase{
+		{Name: "test_automatic", Input: "", Expected: (*bool)(nil)},
+		{Name: "test_enabled", Input: "prefix: {enabled: true}", Expected: true},
+		{Name: "test_excluded", Input: "prefix: {enabled: false}", Expected: false},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			definition, err := parseClassDefinition([]byte(fmt.Sprintf(`
+test_config:
+  prefix:
+    characters: abcdef
+    length: 12
+  dependencies:
+  - class_name: fvTenant
+    %s
+properties:
+  name:
+    test_config:
+      %s
+`, testCase.Input, testCase.Input)))
+			if !assert.NoError(t, err) {
+				return
+			}
+			assert.Equal(t, TestPrefixDefinition{Characters: "abcdef", Length: 12}, definition.TestConfig.Prefix)
+			for _, enabled := range []*bool{definition.TestConfig.Dependencies[0].Prefix.Enabled, definition.Properties["name"].TestConfig.Prefix.Enabled} {
+				if expected, ok := testCase.Expected.(bool); ok {
+					if assert.NotNil(t, enabled) {
+						assert.Equal(t, expected, *enabled)
+					}
+				} else {
+					assert.Nil(t, enabled)
+				}
+			}
+			class := Class{ClassDefinition: definition}
+			class.setTestConfig()
+			assert.Equal(t, definition.TestConfig.Prefix, class.TestConfig.Prefix)
+			property := Property{PropertyName: "name", AttributeName: "name", ValueType: String, propertyDefinition: definition.Properties["name"]}
+			property.setTestValues()
+			assert.Equal(t, definition.Properties["name"].TestConfig.Prefix.Enabled, property.PrefixEnabled)
+		})
+	}
+}
+
 func TestParseClassDefinition_EmptyYAML(t *testing.T) {
 	t.Parallel()
 	test.InitializeTest(t)

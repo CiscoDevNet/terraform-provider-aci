@@ -13,8 +13,10 @@ properties:
     documentation:
       description: The address of the %s object.
     test_config:
-      default:
+      create:
       - config_value: 198.51.100.3
+      datasource_missing:
+      - config_value: 198.51.100.4
       update:
       - config_value: fe80::0001
 resource_name: vrf_fallback_route_group_member

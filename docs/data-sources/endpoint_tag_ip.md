@@ -33,7 +33,7 @@ Data source for ACI Endpoint Tag IP
 data "aci_endpoint_tag_ip" "example" {
   parent_dn = aci_tenant.example.id
   vrf_name  = aci_vrf.example.name
-  ip        = "10.0.0.2"
+  ip        = "192.0.2.2"
 }
 
 ```

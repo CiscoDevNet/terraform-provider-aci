@@ -21,6 +21,8 @@ properties:
       minimum:
       - value: mac_attribute
     test_config:
-      default:
+      create:
       - config_value: mac_attr
+      datasource_missing:
+      - config_value: mac_attr_non_existing
 resource_name: epg_useg_mac_attribute

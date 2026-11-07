@@ -1,3 +1,8 @@
+# Datasource test limitations: childAction, configIssues, nameAlias and status may be empty or omitted.
+# rlAutoMode and rlGroupId may be omitted when querying controllers rather than remote leaves.
+# All six remain in the schema but are excluded from computed-value assertions.
+# TODO: Reassess empty/omitted response assertions and remote-leaf coverage after the generator refactor.
+
 artifacts:
 - datasource
 documentation:
@@ -21,6 +26,8 @@ properties:
   childAction:
     deprecated: true
     restriction: read_only
+    test_config:
+      ignore_in_datasource_test: true
     value_type: string
   clusterTimeDiff:
     restriction: read_only
@@ -29,6 +36,8 @@ properties:
     remove_valid_values:
     - none
     restriction: read_only
+    test_config:
+      ignore_in_datasource_test: true
     value_type: string
   controlPlaneMTU:
     restriction: read_only
@@ -58,8 +67,6 @@ properties:
     restriction: required
     test_config:
       create:
-      - config_value: "1"
-      default:
       - config_value: "1"
   inbMgmtAddr:
     attribute_name: inband_management_address
@@ -118,6 +125,8 @@ properties:
     documentation:
       description: The name alias of the system object.
     restriction: read_only
+    test_config:
+      ignore_in_datasource_test: true
   nodeType:
     documentation:
       description: The role of this system.
@@ -161,8 +170,6 @@ properties:
     test_config:
       create:
       - config_value: "1"
-      default:
-      - config_value: "1"
   remoteNetworkId:
     documentation:
       description: The remote network ID.
@@ -176,11 +183,15 @@ properties:
     documentation:
       description: The remote leaf auto mode.
     restriction: read_only
+    test_config:
+      ignore_in_datasource_test: true
   rlGroupId:
     attribute_name: remote_leaf_group_id
     documentation:
       description: The remote leaf site identifier.
     restriction: read_only
+    test_config:
+      ignore_in_datasource_test: true
   rlOperPodId:
     attribute_name: remote_leaf_operational_pod_id
     documentation:
@@ -217,6 +228,8 @@ properties:
   status:
     deprecated: true
     restriction: read_only
+    test_config:
+      ignore_in_datasource_test: true
     value_type: string
   systemUpTime:
     attribute_name: system_uptime

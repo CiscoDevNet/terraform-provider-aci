@@ -7,6 +7,10 @@ documentation:
   - Tenants -> Networking -> VRFs -> EPG|ESG Collection for VRF
 migration_source: from_sdkv2
 properties:
+  parentDn:
+    test_config:
+      datasource_missing:
+      - config_value: uni/tn-name_1/ctx-name_non_existing
   prefGrMemb:
     attribute_name: preferred_group_member
     documentation:

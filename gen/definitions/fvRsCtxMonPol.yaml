@@ -7,7 +7,8 @@ test_config:
   dependencies:
   - class_name: monEPGPol
     config_overrides:
-      name: monitoring_policy_name_1
+      name: name_1
+      tenant_dn: aci_tenant.test.id
     dependencies:
     - class_name: fvTenant
     reference: aci_monitoring_policy.test_monitoring_policy_0.id

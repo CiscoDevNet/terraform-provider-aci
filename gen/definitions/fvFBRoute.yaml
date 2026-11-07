@@ -14,8 +14,10 @@ properties:
     documentation:
       description: The prefix address of the %s object.
     test_config:
-      default:
+      create:
       - config_value: 198.51.100.3/24
+      datasource_missing:
+      - config_value: 198.51.100.4/24
       update:
       - config_value: 2001:0db8::01/64
 resource_name: vrf_fallback_route

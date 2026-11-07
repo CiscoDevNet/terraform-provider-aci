@@ -2,6 +2,6 @@
 # In order to regenerate this file execute `go generate` from the repository root.
 # More details can be found in the [README](https://github.com/CiscoDevNet/terraform-provider-aci/blob/main/README.md).
 resource "aci_ip_address_pool" "example" {
-  gateway_address = "10.0.0.1/24"
+  gateway_address = "192.0.2.1/24"
   name            = "ip_address_pool"
 }

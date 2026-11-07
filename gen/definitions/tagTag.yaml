@@ -21,16 +21,12 @@ properties:
     documentation:
       description: The key used to uniquely identify this configuration object.
   value:
-    default_values:
-      test_value: ""
     restriction: required
 state_upgrades:
 - prior_schema_version: 1
 test_config:
   dependencies:
   - class_name: fvAEPg
-    reference: aci_application_epg.test.id
     role: parent
   - class_name: fvTenant
-    reference: aci_tenant.test.id
     role: parent

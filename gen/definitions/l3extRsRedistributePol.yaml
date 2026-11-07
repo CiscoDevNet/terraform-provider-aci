@@ -15,6 +15,33 @@ properties:
     test_config:
       create:
       - config_value: direct
-      default:
-      - config_value: direct
+      datasource_missing:
+      - config_value: static
 resource_name: l3out_redistribute_policy
+test_config:
+  datasource_expect_non_empty_plan: true
+  dependencies:
+  - class_name: l3extOut
+    config_overrides:
+      name: name_1
+      relation_l3ext_rs_ectx: aci_vrf.test.id
+      tenant_dn: aci_tenant.test.id
+    dependencies:
+    - class_name: fvTenant
+    - class_name: fvCtx
+      config_overrides:
+        parent_dn: aci_tenant.test.id
+      dependencies:
+      - class_name: fvTenant
+    reference: aci_l3_outside.test.id
+    role: parent
+  - class_name: l3extOut
+    config_overrides:
+      name: name_2
+      relation_l3ext_rs_ectx: aci_vrf.test.id
+      tenant_dn: aci_tenant.test.id
+    dependencies:
+    - class_name: fvTenant
+    - class_name: fvCtx
+    reference: aci_l3_outside.test_2.id
+    role: parent

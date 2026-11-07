@@ -154,6 +154,8 @@ type Class struct {
 // ClassTestConfig groups resolved per-class gates retained for the future test
 // templates. The current model and public-example templates do not consume them.
 type ClassTestConfig struct {
+	// Prefix controls generation of the token shared by this class's test fixture.
+	Prefix TestPrefixDefinition
 	// IgnoreTests lists the test buckets future test renderers should skip.
 	// Distinct from Class.Artifacts, which selects generated artifact kinds.
 	// nil/empty means no skips.
@@ -161,6 +163,9 @@ type ClassTestConfig struct {
 	// IgnoreImportStateVerify tells the future resource-test renderer to omit the
 	// ImportStateVerify equality assertion while retaining the import smoke test.
 	IgnoreImportStateVerify bool
+	// DataSourceExpectNonEmptyPlan allows a known parent/standalone-child state
+	// ownership conflict to retain a plan after the read step.
+	DataSourceExpectNonEmptyPlan bool
 }
 
 type Relation struct {
@@ -184,10 +189,19 @@ type Relation struct {
 // TestDependency describes a prerequisite resource needed for tests (parent or target).
 // Dependencies are recursive: a dependency can itself require other resources to exist.
 type TestDependency struct {
+	// PrefixEnabled overrides prefixing only for this dependency instance.
+	PrefixEnabled *bool
 	// The class of the dependency resource.
 	Class *ClassName
+	// SourceReference retains the definition or auto-resolution identity used to
+	// deduplicate dependencies while Reference carries the canonical test address.
+	// It is never rendered.
+	SourceReference string
 	// The reference value: either a static DN string or a Terraform resource/datasource attribute path.
 	Reference string
+	// TestInstance is the one-based occurrence of this Terraform object type and
+	// role in the owning class's test configuration.
+	TestInstance int
 	// How to interpret the Reference field.
 	ReferenceType ReferenceTypeEnum
 	// The role of this dependency relative to the resource-under-test.
@@ -200,14 +214,20 @@ type TestDependency struct {
 	// Recursive dependencies: resources that THIS dependency needs to exist first.
 	// These are order-only prerequisites — they have no Role (always UndefinedRole).
 	Dependencies []*TestDependency
+	// OrderOnly renders this prerequisite as an explicit Terraform depends_on
+	// edge rather than consuming an unknown value during planning.
+	OrderOnly bool
 	// Optional property overrides for the dependency resource's HCL configuration.
-	// When empty, the dependency is rendered using its class's own TestValues.Create.
-	// When populated, the specified properties override the auto-derived values.
+	// Loaded framework classes otherwise use their required TestValues.Default entries.
+	// Definition-only legacy classes require this map to contain their complete HCL input.
 	ConfigOverrides map[string]string
 	// Optional child block overrides for the dependency resource's HCL nested blocks.
-	// When empty, the dependency is rendered using its class's own TestChildren.
-	// When populated, the specified children override the auto-derived nested blocks.
+	// Dependencies remain minimal when this map is empty; populated entries are the
+	// only child blocks rendered for that dependency.
 	Children map[string]*TestChild
+	// Generated names may change when a dependency is imported into another fixture;
+	// explicit definition overrides must retain their authored values.
+	nameGenerated bool
 }
 
 // TestChildInstance holds the property values and nested children for a single child instance.
@@ -745,14 +765,16 @@ func (c Class) NestedModelValueType() string {
 	return "types.Set"
 }
 
-// setTestConfig is a one-line passthrough that copies the two test-render gates
+// setTestConfig copies the test-render gates
 // from ClassDefinition.TestConfig onto the resolved Class.TestConfig. Templates
 // read the resolved struct so they never reach into ClassDefinition directly.
 func (c *Class) setTestConfig() {
 	genLogger.Debugf("Setting TestConfig gates for class '%s'.", c.Name)
 
 	c.TestConfig.IgnoreTests = c.ClassDefinition.TestConfig.IgnoreTests
+	c.TestConfig.Prefix = c.ClassDefinition.TestConfig.Prefix
 	c.TestConfig.IgnoreImportStateVerify = c.ClassDefinition.TestConfig.IgnoreImportStateVerify
+	c.TestConfig.DataSourceExpectNonEmptyPlan = c.ClassDefinition.TestConfig.DataSourceExpectNonEmptyPlan
 
 	genLogger.Debugf("Successfully set TestConfig gates for class '%s'. IgnoreTests: %v, IgnoreImportStateVerify: %t", c.Name, c.TestConfig.IgnoreTests, c.TestConfig.IgnoreImportStateVerify)
 }
@@ -1256,6 +1278,10 @@ func (c *Class) setParentDnVariants() error {
 
 func (c *Class) setSupportedVersions() error {
 	// Determine the supported APIC versions for the class.
+	// TODO: After the generator refactor, account for hidden-version boundaries in
+	// support and test version gates. deprecatedSince, isHidden, and hiddenSince already
+	// feed ClassDocumentation.setDeprecationWarning, but do not narrow this range.
+	// Deprecation alone does not end support.
 	genLogger.Debugf("Setting SupportedVersions for class '%s'.", c.Name)
 
 	// Initialize with versions from ClassDefinition, if not defined set the versions from meta file.
@@ -1362,7 +1388,38 @@ func (c *Class) setTestDependencies(ds *DataStore) {
 
 	// Resolve placeholders in ConfigOverrides against the full DAG.
 	c.resolveConfigOverridePlaceholders(testDependencies)
+	c.orderTestDependencies()
+	c.canonicalizeTestDependencies()
 	genLogger.Debugf("Successfully set TestDependencies for class '%s'. Top-level: %d, total in DAG: %d", c.Name, len(c.TestDependencies), len(testDependencies))
+}
+
+func (c *Class) orderTestDependencies() {
+	ordered := make([]*TestDependency, 0, len(c.TestDependencies))
+	added := make(map[*TestDependency]bool, len(c.TestDependencies))
+	appendMatching := func(role TestDependencyRoleEnum, className *ClassName) {
+		for _, dependency := range c.TestDependencies {
+			if added[dependency] || dependency.Role != role || className != nil && !dependency.Class.Equal(className) {
+				continue
+			}
+			ordered = append(ordered, dependency)
+			added[dependency] = true
+		}
+	}
+
+	for _, parent := range c.Parents {
+		appendMatching(Parent, parent)
+	}
+	appendMatching(Parent, nil)
+	for _, target := range c.Relation.ToClasses {
+		appendMatching(Target, target)
+	}
+	appendMatching(Target, nil)
+	for _, dependency := range c.TestDependencies {
+		if !added[dependency] {
+			ordered = append(ordered, dependency)
+		}
+	}
+	c.TestDependencies = ordered
 }
 
 func (c *Class) getTestDependenciesFromDefinitions(testDependencyDefinitions []TestDependencyDefinition, ds *DataStore, testDependencies map[string]*TestDependency, depth int) []*TestDependency {
@@ -1428,10 +1485,13 @@ func (c *Class) getTestDependenciesFromDefinitions(testDependencyDefinitions []T
 		}
 
 		testDependency := &TestDependency{
+			PrefixEnabled:   testDependencyDefinition.Prefix.Enabled,
 			Class:           className,
+			SourceReference: reference,
 			Reference:       reference,
 			ReferenceType:   referenceType,
 			Role:            testDependencyDefinition.Role,
+			OrderOnly:       testDependencyDefinition.OrderOnly,
 			ConfigOverrides: testDependencyDefinition.ConfigOverrides,
 		}
 		for _, targetClassName := range testDependencyDefinition.TargetClasses {
@@ -1489,6 +1549,16 @@ func (c *Class) resolveParentDependencies(ds *DataStore, testDependencies map[st
 	// First resolvable parent class gets 2 instances (for ForceNew testing),
 	// second resolvable parent class gets 1.
 	genLogger.Tracef("Resolving parent dependencies for class '%s'.", c.Name)
+	if c.ParentDnHasSchemaDefault() {
+		genLogger.Tracef("Class '%s': parent_dn has a schema default; skipping parent auto-resolution.", c.Name)
+		return nil
+	}
+	if slices.ContainsFunc(c.TestDependencies, func(dependency *TestDependency) bool {
+		return dependency.Role == Parent
+	}) {
+		genLogger.Tracef("Class '%s': explicit Parent dependencies are authoritative; skipping parent auto-resolution.", c.Name)
+		return nil
+	}
 	var result []*TestDependency
 
 	resolvedParentCount := 0
@@ -1568,10 +1638,11 @@ func (c *Class) buildDependency(className *ClassName, reference string, refType 
 	}
 
 	testDependency := &TestDependency{
-		Class:         className,
-		Reference:     reference,
-		ReferenceType: refType,
-		Role:          role,
+		Class:           className,
+		SourceReference: reference,
+		Reference:       reference,
+		ReferenceType:   refType,
+		Role:            role,
 	}
 	testDependencies[reference] = testDependency
 
@@ -1683,7 +1754,7 @@ func (c *Class) setParentDn() {
 	}
 
 	// Only auto-wire if no explicit TestConfig was provided for this property.
-	if parentDn.hasTestConfigDefinition() {
+	if parentDn.hasLifecycleTestConfigDefinition() {
 		return
 	}
 
@@ -1704,10 +1775,15 @@ func (c *Class) setParentDn() {
 
 	// Wire Create, Update, and Default from the first parent reference.
 	primaryEntry := testValueEntryForDependency(parents[0])
+	dataSourceMissing := TestValueScenario{}
+	if parentDn.TestValues != nil {
+		dataSourceMissing = parentDn.TestValues.DataSourceMissing
+	}
 	parentDn.TestValues = &TestValues{
-		Create:  newTestValueScenario([]TestValueEntry{primaryEntry}),
-		Update:  newTestValueScenario([]TestValueEntry{primaryEntry}),
-		Default: newTestValueScenario([]TestValueEntry{primaryEntry}),
+		Create:            newTestValueScenario([]TestValueEntry{primaryEntry}),
+		Update:            newTestValueScenario([]TestValueEntry{primaryEntry}),
+		Default:           newTestValueScenario([]TestValueEntry{primaryEntry}),
+		DataSourceMissing: dataSourceMissing,
 	}
 
 	// Wire ForceNew from the second parent reference (triggers destroy+recreate).
@@ -1740,7 +1816,7 @@ func (c *Class) setTargetDn() {
 	}
 
 	// Only auto-wire if no explicit TestConfig was provided for this property.
-	if tDn.hasTestConfigDefinition() {
+	if tDn.hasLifecycleTestConfigDefinition() {
 		return
 	}
 
@@ -1757,11 +1833,16 @@ func (c *Class) setTargetDn() {
 
 	createEntry := testValueEntryForDependency(createTarget)
 	updateEntry := testValueEntryForDependency(updateTarget)
+	dataSourceMissing := TestValueScenario{}
+	if tDn.TestValues != nil {
+		dataSourceMissing = tDn.TestValues.DataSourceMissing
+	}
 	tDn.TestValues = &TestValues{
-		Create:   newTestValueScenario([]TestValueEntry{createEntry}),
-		Update:   newTestValueScenario([]TestValueEntry{updateEntry}),
-		Default:  newTestValueScenario([]TestValueEntry{createEntry}),
-		ForceNew: newTestValueScenario([]TestValueEntry{createEntry}),
+		Create:            newTestValueScenario([]TestValueEntry{createEntry}),
+		DataSourceMissing: dataSourceMissing,
+		Update:            newTestValueScenario([]TestValueEntry{updateEntry}),
+		Default:           newTestValueScenario([]TestValueEntry{createEntry}),
+		ForceNew:          newTestValueScenario([]TestValueEntry{createEntry}),
 	}
 	genLogger.Tracef("Successfully set targetDn test values for class '%s'.", c.Name)
 }
@@ -1797,7 +1878,7 @@ func (c *Class) setTargetNameProperty(ds *DataStore) {
 	}
 
 	// Skip when an explicit TestConfig already drives the property.
-	if property.hasTestConfigDefinition() {
+	if property.hasLifecycleTestConfigDefinition() {
 		return
 	}
 
@@ -1836,11 +1917,16 @@ func (c *Class) setTargetNameProperty(ds *DataStore) {
 	updateEntry.ConfigValue = targetReferenceToName(updateEntry.ConfigValue)
 	updateEntry.AssertValue = targetReferenceToName(updateEntry.AssertValue)
 
+	dataSourceMissing := TestValueScenario{}
+	if property.TestValues != nil {
+		dataSourceMissing = property.TestValues.DataSourceMissing
+	}
 	property.TestValues = &TestValues{
-		Create:   newTestValueScenario([]TestValueEntry{createEntry}),
-		Update:   newTestValueScenario([]TestValueEntry{updateEntry}),
-		Default:  newTestValueScenario([]TestValueEntry{createEntry}),
-		ForceNew: newTestValueScenario([]TestValueEntry{createEntry}),
+		Create:            newTestValueScenario([]TestValueEntry{createEntry}),
+		DataSourceMissing: dataSourceMissing,
+		Update:            newTestValueScenario([]TestValueEntry{updateEntry}),
+		Default:           newTestValueScenario([]TestValueEntry{createEntry}),
+		ForceNew:          newTestValueScenario([]TestValueEntry{createEntry}),
 	}
 	genLogger.Tracef("Successfully set target-name test values for class '%s'.", c.Name)
 }
@@ -2030,6 +2116,7 @@ func (c *Class) buildTestChild(ds *DataStore, childClass *Class, childClassName 
 	}
 	for i := 0; i < instanceCount; i++ {
 		instance := buildChildInstance(childClass, i)
+		c.setCompatibleChildTarget(childClass, &instance, i)
 		instance.Children = c.buildTestChildren(ds, childClass.Children, visited)
 		testChild.Instances = append(testChild.Instances, instance)
 	}
@@ -2043,14 +2130,51 @@ func (c *Class) buildTestChild(ds *DataStore, childClass *Class, childClassName 
 	return testChild
 }
 
+func (c *Class) setCompatibleChildTarget(childClass *Class, instance *TestChildInstance, instanceIndex int) {
+	var compatibleTargetClasses []*ClassName
+	for _, dependency := range childClass.TestDependencies {
+		if dependency.Role == Parent && dependency.Class.Equal(c.Name) {
+			compatibleTargetClasses = dependency.TargetClasses
+			break
+		}
+	}
+	if len(compatibleTargetClasses) == 0 {
+		return
+	}
+
+	var targets []*TestDependency
+	for _, dependency := range childClass.TestDependencies {
+		if dependency.Role != Target || !slices.ContainsFunc(compatibleTargetClasses, dependency.Class.Equal) {
+			continue
+		}
+		targets = append(targets, dependency)
+	}
+	if len(targets) == 0 {
+		return
+	}
+
+	target := targets[min(instanceIndex, len(targets)-1)]
+	entry := testValueEntryForDependency(target)
+	var property *Property
+	switch childClass.Relation.Type {
+	case Explicit:
+		property = childClass.Properties["tDn"]
+	case Named:
+		property = childClass.Properties[target.Class.namedRelationPropertyName()]
+		entry.ConfigValue = targetReferenceToName(entry.ConfigValue)
+		entry.AssertValue = targetReferenceToName(entry.AssertValue)
+	}
+	if property == nil {
+		return
+	}
+	instance.Properties[property.AttributeName] = newTestValueScenario([]TestValueEntry{entry})
+}
+
 func buildChildInstance(childClass *Class, instanceIndex int) TestChildInstance {
 	// Create a TestChildInstance from a child class's properties.
-	// instanceIndex 0 takes the Create bucket value, instanceIndex > 0 takes the Update bucket
-	// value (falling back to Create when Update is undefined).
-	// Auto-derived string values are guaranteed distinct between Create (`<attr>_1`) and Update
-	// (`<attr>_2`) by generateStringValues, so list-type children with naming attributes resolve
-	// to distinct APIC Dns without further mangling. Reference-typed identifiers are already
-	// disambiguated upstream (e.g. aci_contract.test.name vs aci_contract.test_2.name).
+	// The first instance uses Create. A later instance uses Update for identity,
+	// while non-identifying properties prefer explicit or documented APIC defaults
+	// over synthetic free-form Update values.
 	instance := TestChildInstance{
 		Properties: make(map[string]TestValueScenario),
 	}
@@ -2072,15 +2196,33 @@ func buildChildInstance(childClass *Class, instanceIndex int) TestChildInstance 
 			continue
 		}
 
-		switch {
-		case property.TestValues.Update.Defined:
-			instance.Properties[property.AttributeName] = property.TestValues.Update.clone()
-		case property.TestValues.Create.Defined:
-			instance.Properties[property.AttributeName] = property.TestValues.Create.clone()
-		}
+		instance.Properties[property.AttributeName] = secondChildPropertyScenario(childClass, property)
 	}
 
 	return instance
+}
+
+func secondChildPropertyScenario(childClass *Class, property *Property) TestValueScenario {
+	if childClass.IsIdentifyingProperty(property.PropertyName) && property.TestValues.Update.Defined {
+		return property.TestValues.Update.clone()
+	}
+	if property.propertyDefinition.TestConfig.Default.Defined && slices.ContainsFunc(property.TestValues.Default.Entries, func(entry TestValueEntry) bool {
+		return entry.ConfigInclude
+	}) {
+		return property.TestValues.Default.clone()
+	}
+	if len(property.Documentation.DefaultValues) > 0 && property.TestValues.Default.Defined {
+		scenario := property.TestValues.Default.clone()
+		for index := range scenario.Entries {
+			scenario.Entries[index].ConfigValue = scenario.Entries[index].AssertValue
+			scenario.Entries[index].ConfigInclude = true
+		}
+		return scenario
+	}
+	if property.TestValues.Update.Defined {
+		return property.TestValues.Update.clone()
+	}
+	return property.TestValues.Create.clone()
 }
 
 func (c *Class) applyChildOverrides(ds *DataStore) {
@@ -2217,21 +2359,34 @@ func (c *Class) collectFromTestChildren(ds *DataStore, testChildren []*TestChild
 		if !exists {
 			continue
 		}
-		for _, instance := range testChild.Instances {
-			for _, scenario := range instance.Properties {
-				for _, entry := range scenario.Entries {
+		for instanceIndex := range testChild.Instances {
+			instance := &testChild.Instances[instanceIndex]
+			for propertyName, scenario := range instance.Properties {
+				for entryIndex := range scenario.Entries {
+					entry := &scenario.Entries[entryIndex]
 					if entry.ValueType != ReferenceValue {
 						continue
 					}
-					// Skip when this reference is already present anywhere in our dependency DAG.
-					if c.findDependencyByRefRecursive(c.TestDependencies, entry.ConfigValue) != nil {
-						continue
+					reference := entry.ConfigValue
+					if placeholderReference, ok := parsePlaceholder(reference); ok {
+						reference = placeholderReference
 					}
 					// Search the child class's full TestDependencies DAG (not just top-level) for the reference.
-					if found := c.findDependencyByRefRecursive(childClass.TestDependencies, entry.ConfigValue); found != nil {
-						c.TestDependencies = append(c.TestDependencies, found)
+					found := c.findDependencyByObjectReferenceRecursive(childClass.TestDependencies, reference)
+					if found == nil {
+						continue
+					}
+					imported, aliases := c.importTestDependency(found)
+					if imported != nil {
+						entry.ConfigValue = rewriteTestReference(reference, referenceValueType(reference), aliases)
+						assertReference := entry.AssertValue
+						if placeholderReference, ok := parsePlaceholder(assertReference); ok {
+							assertReference = placeholderReference
+						}
+						entry.AssertValue = rewriteTestReference(assertReference, referenceValueType(assertReference), aliases)
 					}
 				}
+				instance.Properties[propertyName] = scenario
 			}
 			// Recurse into per-instance nested children so grandchild references are collected too.
 			if len(instance.Children) > 0 {
@@ -2239,6 +2394,100 @@ func (c *Class) collectFromTestChildren(ds *DataStore, testChildren []*TestChild
 			}
 		}
 	}
+}
+
+func (c *Class) importTestDependency(source *TestDependency) (*TestDependency, map[string]terraformTestAddress) {
+	allocator := newSeededTestReferenceAllocator(c)
+	existingBySource := make(map[string]*TestDependency)
+	visited := make(map[*TestDependency]bool)
+	var collectExisting func([]*TestDependency)
+	collectExisting = func(dependencies []*TestDependency) {
+		for _, dependency := range dependencies {
+			if dependency == nil || visited[dependency] {
+				continue
+			}
+			visited[dependency] = true
+			existingBySource[dependency.sourceKey()] = dependency
+			collectExisting(dependency.Dependencies)
+		}
+	}
+	collectExisting(c.TestDependencies)
+
+	clones := make(map[*TestDependency]*TestDependency)
+	var importDependency func(*TestDependency) (*TestDependency, bool)
+	importDependency = func(dependency *TestDependency) (*TestDependency, bool) {
+		if dependency == nil {
+			return nil, false
+		}
+		if existing, ok := existingBySource[dependency.sourceKey()]; ok {
+			if currentAddress, parsed := parseTestDependencyReference(dependency.Reference, dependency.ReferenceType); parsed {
+				if existingAddress, existingParsed := parseTerraformTestReference(existing.Reference); existingParsed {
+					existingAddress.Attribute = ""
+					allocator.aliases[currentAddress.String()] = existingAddress
+				}
+			}
+			return existing, false
+		}
+		if clone, ok := clones[dependency]; ok {
+			return clone, false
+		}
+
+		clone := dependency.clone()
+		clone.Dependencies = nil
+		clones[dependency] = clone
+		allocator.allocate(clone)
+		c.setSameResourceDependencyName(clone)
+		existingBySource[clone.sourceKey()] = clone
+		for _, prerequisite := range dependency.Dependencies {
+			importedPrerequisite, _ := importDependency(prerequisite)
+			if importedPrerequisite != nil {
+				clone.Dependencies = append(clone.Dependencies, importedPrerequisite)
+			}
+		}
+		return clone, true
+	}
+
+	imported, created := importDependency(source)
+	if created {
+		c.TestDependencies = append(c.TestDependencies, imported)
+		// Existing prerequisites already use this fixture's references. Only new
+		// nodes should receive aliases from the imported dependency graph.
+		for _, clone := range clones {
+			clone.rewriteReferences(allocator.aliases)
+		}
+	}
+	return imported, allocator.aliases
+}
+
+func (c *Class) setSameResourceDependencyName(dependency *TestDependency) {
+	nameProperty := c.Properties["name"]
+	if dependency == nil || nameProperty == nil || nameProperty.ReadOnly || nameProperty.IgnoreInTest {
+		return
+	}
+	address, ok := parseTerraformTestReference(dependency.Reference)
+	if !ok || address.BlockType != "resource" || address.Type != "aci_"+c.ResourceName || dependency.TestInstance == 0 {
+		return
+	}
+	suffix := fmt.Sprintf("_%d", dependency.TestInstance)
+	prefix := strings.TrimSuffix(address.Name, suffix)
+	if prefix == address.Name {
+		return
+	}
+	if _, overridden := testPropertyOverride(nameProperty, dependency.ConfigOverrides); overridden && !dependency.nameGenerated {
+		return
+	}
+	if dependency.ConfigOverrides == nil {
+		dependency.ConfigOverrides = make(map[string]string)
+	}
+	dependency.ConfigOverrides[nameProperty.AttributeName] = fmt.Sprintf("%s_name_%d", prefix, dependency.TestInstance)
+	dependency.nameGenerated = true
+}
+
+func (c *Class) findDependencyByObjectReferenceRecursive(testDependencies []*TestDependency, reference string) *TestDependency {
+	if dependency := findTestDependencyByObjectReference(testDependencies, reference); dependency != nil {
+		return dependency
+	}
+	return c.findDependencyByRefRecursive(testDependencies, reference)
 }
 
 func (c *Class) resolvePlaceholdersInChildren() {

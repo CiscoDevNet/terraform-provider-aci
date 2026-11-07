@@ -11,6 +11,8 @@ properties:
     test_config:
       create:
       - config_value: ce
+      datasource_missing:
+      - config_value: ipv6
       default:
       - config_value: ipv4
   tnNetflowMonitorPolName:

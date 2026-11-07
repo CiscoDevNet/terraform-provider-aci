@@ -3,6 +3,10 @@ documentation:
   ui_locations:
   - Tenants -> Application Profiles -> Application EPGs -> Fibre Channel (Paths)
 properties:
+  tDn:
+    test_config:
+      datasource_missing:
+      - config_value: topology/pod-2/paths-201/pathep-[eth1/1]
   vsan:
     default_values:
       unknown: ""
@@ -20,7 +24,6 @@ test_config:
   - class_name: fvAEPg
     dependencies:
     - class_name: fvAp
-    reference: aci_application_epg.test.id
     role: parent
     target_classes:
     - fabricPathEp

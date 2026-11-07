@@ -17,13 +17,16 @@ properties:
   mode:
     documentation:
       description: The static association mode with the path of the %s object.
+  tDn:
+    test_config:
+      datasource_missing:
+      - config_value: topology/pod-2/paths-201/pathep-[eth1/1]
 resource_name: relation_to_static_leaf
 test_config:
   dependencies:
   - class_name: fvAEPg
     dependencies:
     - class_name: fvAp
-    reference: aci_application_epg.test.id
     role: parent
     target_classes:
     - fabricNode

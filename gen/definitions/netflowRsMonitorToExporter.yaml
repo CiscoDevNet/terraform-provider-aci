@@ -9,5 +9,4 @@ test_config:
   - class_name: netflowMonitorPol
     dependencies:
     - class_name: fvTenant
-    reference: aci_netlfow_monitor_policy.test.id
     role: parent

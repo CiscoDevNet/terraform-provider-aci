@@ -12,7 +12,7 @@ resource "aci_netflow_exporter_policy" "full_example" {
   owner_key              = "example_owner_key"
   owner_tag              = "example_owner_tag"
   source_ip_type         = "custom-src-ip"
-  source_ip_address      = "203.0.113.11/24"
+  source_ip_address      = "203.0.113.11/20"
   version                = "v9"
   relation_to_vrf = {
     annotation = "example_annotation"

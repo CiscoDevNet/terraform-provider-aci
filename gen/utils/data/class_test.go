@@ -1062,8 +1062,9 @@ type setTestConfigInput struct {
 }
 
 type setTestConfigExpected struct {
-	IgnoreTests             []IgnoreTestEnum
-	IgnoreImportStateVerify bool
+	IgnoreTests                  []IgnoreTestEnum
+	IgnoreImportStateVerify      bool
+	DataSourceExpectNonEmptyPlan bool
 }
 
 func TestSetTestConfig(t *testing.T) {
@@ -1144,6 +1145,19 @@ func TestSetTestConfig(t *testing.T) {
 				IgnoreImportStateVerify: true,
 			},
 		},
+		{
+			Name: "test_datasource_expect_non_empty_plan",
+			Input: setTestConfigInput{
+				ClassDefinition: ClassDefinition{
+					TestConfig: ClassTestConfigDefinition{
+						DataSourceExpectNonEmptyPlan: true,
+					},
+				},
+			},
+			Expected: setTestConfigExpected{
+				DataSourceExpectNonEmptyPlan: true,
+			},
+		},
 	}
 
 	for _, testCase := range testCases {
@@ -1159,6 +1173,7 @@ func TestSetTestConfig(t *testing.T) {
 
 			assert.Equal(t, expected.IgnoreTests, class.TestConfig.IgnoreTests, test.MessageEqual(expected.IgnoreTests, class.TestConfig.IgnoreTests, testCase.Name))
 			assert.Equal(t, expected.IgnoreImportStateVerify, class.TestConfig.IgnoreImportStateVerify, test.MessageEqual(expected.IgnoreImportStateVerify, class.TestConfig.IgnoreImportStateVerify, testCase.Name))
+			assert.Equal(t, expected.DataSourceExpectNonEmptyPlan, class.TestConfig.DataSourceExpectNonEmptyPlan, test.MessageEqual(expected.DataSourceExpectNonEmptyPlan, class.TestConfig.DataSourceExpectNonEmptyPlan, testCase.Name))
 		})
 	}
 }
@@ -3670,6 +3685,36 @@ func TestDefinitionOnlyParentIsNotAutoResolved(t *testing.T) {
 	assert.NoError(t, ds.ctx.Diagnostics.Error())
 }
 
+func TestParentWithSchemaDefaultIsNotAutoResolved(t *testing.T) {
+	t.Parallel()
+
+	parent := testClassName("fvTenant")
+	class := Class{
+		Name:    testClassName("exampleClass"),
+		Parents: []*ClassName{parent},
+		Properties: map[string]*Property{
+			"parentDn": {
+				PropertyName: "parentDn",
+				Documentation: PropertyDocumentation{
+					DefaultValues: []DefaultValue{{Value: "uni/tn-infra"}},
+				},
+			},
+		},
+	}
+	ds := &DataStore{
+		Classes: map[string]Class{
+			parent.String(): {
+				Name:         parent,
+				ResourceName: "tenant",
+				Artifacts:    []ArtifactEnum{ResourceArtifact},
+			},
+		},
+		ctx: NewContext(),
+	}
+
+	assert.Empty(t, class.resolveParentDependencies(ds, map[string]*TestDependency{}))
+}
+
 func TestDefinitionOnlyTargetRequiresExplicitDependency(t *testing.T) {
 	t.Parallel()
 
@@ -3736,7 +3781,7 @@ func TestSetTestDependencies(t *testing.T) {
 			Expected: setTestDependenciesExpected{
 				DependencyCount: 2,
 				Dependencies: []expectedDependency{
-					{Role: Parent, Reference: "aci_tenant.test.id", ReferenceType: ResourceReference},
+					{Role: Parent, Reference: "aci_tenant.test_1.id", ReferenceType: ResourceReference},
 					{Role: Parent, Reference: "aci_tenant.test_2.id", ReferenceType: ResourceReference},
 				},
 			},
@@ -3764,7 +3809,7 @@ func TestSetTestDependencies(t *testing.T) {
 			Expected: setTestDependenciesExpected{
 				DependencyCount: 2,
 				Dependencies: []expectedDependency{
-					{Role: Target, Reference: "aci_bridge_domain.test.id", ReferenceType: ResourceReference},
+					{Role: Target, Reference: "aci_bridge_domain.test_1.id", ReferenceType: ResourceReference},
 					{Role: Target, Reference: "aci_bridge_domain.test_2.id", ReferenceType: ResourceReference},
 				},
 			},
@@ -3794,8 +3839,8 @@ func TestSetTestDependencies(t *testing.T) {
 			Expected: setTestDependenciesExpected{
 				DependencyCount: 2,
 				Dependencies: []expectedDependency{
-					{Role: Parent, Reference: "aci_application_profile.test.id", ReferenceType: ResourceReference, NestedCount: 1, NestedRefs: []string{"aci_tenant.test.id"}},
-					{Role: Parent, Reference: "aci_application_profile.test_2.id", ReferenceType: ResourceReference, NestedCount: 1, NestedRefs: []string{"aci_tenant.test.id"}},
+					{Role: Parent, Reference: "aci_application_profile.test_1.id", ReferenceType: ResourceReference, NestedCount: 1, NestedRefs: []string{"aci_tenant.test_1.id"}},
+					{Role: Parent, Reference: "aci_application_profile.test_2.id", ReferenceType: ResourceReference, NestedCount: 1, NestedRefs: []string{"aci_tenant.test_1.id"}},
 				},
 			},
 		},
@@ -3831,7 +3876,7 @@ func TestSetTestDependencies(t *testing.T) {
 			Expected: setTestDependenciesExpected{
 				DependencyCount: 1,
 				Dependencies: []expectedDependency{
-					{Role: Parent, Reference: "aci_tenant.test.id", ReferenceType: ResourceReference, Class: "fvTenant"},
+					{Role: Parent, Reference: "aci_tenant.test_1.id", ReferenceType: ResourceReference, Class: "fvTenant"},
 				},
 			},
 		},
@@ -3930,8 +3975,8 @@ func TestSetTestDependencies(t *testing.T) {
 			Expected: setTestDependenciesExpected{
 				DependencyCount: 2,
 				Dependencies: []expectedDependency{
-					{Role: Parent, Reference: "aci_tenant.test.id", ReferenceType: ResourceReference},
-					{Role: Target, Reference: "aci_bridge_domain.test.id", ReferenceType: ResourceReference, ConfigOverrides: map[string]string{"tenant_dn": "aci_tenant.test.id"}},
+					{Role: Parent, Reference: "aci_tenant.test_1.id", ReferenceType: ResourceReference},
+					{Role: Target, Reference: "aci_bridge_domain.test_1.id", ReferenceType: ResourceReference, ConfigOverrides: map[string]string{"tenant_dn": "aci_tenant.test_1.id"}},
 				},
 			},
 		},
@@ -3976,11 +4021,10 @@ func TestSetTestDependencies(t *testing.T) {
 			Expected: setTestDependenciesExpected{
 				DependencyCount: 3,
 				Dependencies: []expectedDependency{
-					// Explicit definitions are processed first.
-					{Role: Target, Reference: "aci_bridge_domain.extra.id", ReferenceType: ResourceReference, Class: "fvBD"},
-					// Auto-resolved remainder fills in parents.
-					{Role: Parent, Reference: "aci_application_profile.test.id", ReferenceType: ResourceReference},
+					// Parent placement order is canonical regardless of definition order.
+					{Role: Parent, Reference: "aci_application_profile.test_1.id", ReferenceType: ResourceReference},
 					{Role: Parent, Reference: "aci_application_profile.test_2.id", ReferenceType: ResourceReference},
+					{Role: Target, Reference: "aci_bridge_domain.test_1.id", ReferenceType: ResourceReference, Class: "fvBD"},
 				},
 			},
 		},
@@ -4013,11 +4057,10 @@ func TestSetTestDependencies(t *testing.T) {
 				},
 			},
 			Expected: setTestDependenciesExpected{
-				// Explicit defines aci_tenant.test.id first; auto-resolve adds aci_tenant.test_2.id.
-				DependencyCount: 2,
+				// An explicit Parent is authoritative, so no additional parent is inferred.
+				DependencyCount: 1,
 				Dependencies: []expectedDependency{
-					{Role: Parent, Reference: "aci_tenant.test.id", ReferenceType: ResourceReference},
-					{Role: Parent, Reference: "aci_tenant.test_2.id", ReferenceType: ResourceReference},
+					{Role: Parent, Reference: "aci_tenant.test_1.id", ReferenceType: ResourceReference},
 				},
 			},
 		},
@@ -4354,7 +4397,7 @@ func TestConfigOverridePlaceholderWhitespace(t *testing.T) {
 
 	// ConfigOverrides placeholder with whitespace should resolve correctly.
 	assert.Len(t, class.TestDependencies, 2)
-	assert.Equal(t, "aci_tenant.test.id", class.TestDependencies[1].ConfigOverrides["tenant_dn"])
+	assert.Equal(t, "aci_tenant.test_1.id", class.TestDependencies[1].ConfigOverrides["tenant_dn"])
 }
 
 // collectAllDeps recursively collects all TestDependency nodes with the given reference.
@@ -5031,6 +5074,38 @@ type expectedTestChildProperty struct {
 	ValueType   ValueRenderTypeEnum
 }
 
+func TestSetCompatibleChildTargetUsesOwningParentMapping(t *testing.T) {
+	t.Parallel()
+
+	endpointSecurityGroup := testClassName("fvESg")
+	applicationEPG := testClassName("fvAEPg")
+	owner := Class{Name: endpointSecurityGroup}
+	child := Class{
+		Name:     testClassName("fvRsSecInherited"),
+		Relation: Relation{Type: Explicit},
+		Properties: map[string]*Property{
+			"tDn": {PropertyName: "tDn", AttributeName: "target_dn"},
+		},
+		TestDependencies: []*TestDependency{
+			{Class: applicationEPG, Role: Parent, TargetClasses: []*ClassName{applicationEPG}},
+			{Class: endpointSecurityGroup, Role: Parent, TargetClasses: []*ClassName{endpointSecurityGroup}},
+			{Class: applicationEPG, Reference: "aci_application_epg.test_1.id", ReferenceType: ResourceReference, Role: Target},
+			{Class: endpointSecurityGroup, Reference: "aci_endpoint_security_group.test_1.id", ReferenceType: ResourceReference, Role: Target},
+			{Class: endpointSecurityGroup, Reference: "aci_endpoint_security_group.test_2.id", ReferenceType: ResourceReference, Role: Target},
+		},
+	}
+	instance := TestChildInstance{Properties: map[string]TestValueScenario{}}
+
+	owner.setCompatibleChildTarget(&child, &instance, 1)
+
+	scenario, ok := instance.Properties["target_dn"]
+	if !assert.True(t, ok) || !assert.Len(t, scenario.Entries, 1) {
+		return
+	}
+	assert.Equal(t, "aci_endpoint_security_group.test_2.id", scenario.Entries[0].ConfigValue)
+	assert.Equal(t, ReferenceValue, scenario.Entries[0].ValueType)
+}
+
 func TestSetChildTestValues(t *testing.T) {
 	t.Parallel()
 	test.InitializeTest(t)
@@ -5618,7 +5693,7 @@ func TestSetChildTestValues(t *testing.T) {
 						ClassName:     "fvRsBd",
 						InstanceCount: 1,
 						Instances: []expectedTestChildInstance{
-							{Properties: map[string]expectedTestChildProperty{"target_dn": {ConfigValue: "aci_bridge_domain.deep.id", ValueType: ReferenceValue}}},
+							{Properties: map[string]expectedTestChildProperty{"target_dn": {ConfigValue: "aci_bridge_domain.test_1.id", ValueType: ReferenceValue}}},
 						},
 					},
 				},
@@ -6344,19 +6419,19 @@ func TestSetTestDependencies_ParentCycleProtection(t *testing.T) {
 	// Must terminate (no stack overflow / hang).
 	classA.setTestDependencies(ds)
 
-	// First parent of A is B → two top-level Parent deps: aci_b.test.id and aci_b.test_2.id.
+	// First parent of A is B → two canonical top-level Parent dependencies.
 	assert.Len(t, classA.TestDependencies, 2)
 	for _, testDependency := range classA.TestDependencies {
 		assert.Equal(t, Parent, testDependency.Role)
 		assert.Equal(t, "fvB", testDependency.Class.String())
 	}
 	// Each B-dep recurses into A's parent (B) which dedupes against the map.
-	// aci_b.test.id has Dependencies=[aci_a.test.id]; that nested aci_a.test.id
-	// in turn points back at the already-built aci_b.test.id node (same pointer)
+	// aci_b.test_1.id has Dependencies=[aci_a.dependency_1.id]; that nested A dependency
+	// in turn points back at the already-built aci_b.test_1.id node (same pointer)
 	// rather than building a fresh one — proving the cycle terminated.
 	assert.Len(t, classA.TestDependencies[0].Dependencies, 1)
 	nestedDependencyA := classA.TestDependencies[0].Dependencies[0]
-	assert.Equal(t, "aci_a.test.id", nestedDependencyA.Reference)
+	assert.Equal(t, "aci_a.dependency_1.id", nestedDependencyA.Reference)
 	if assert.Len(t, nestedDependencyA.Dependencies, 1) {
 		assert.Same(t, classA.TestDependencies[0], nestedDependencyA.Dependencies[0],
 			"cycle must short-circuit by returning the already-built dependency pointer")

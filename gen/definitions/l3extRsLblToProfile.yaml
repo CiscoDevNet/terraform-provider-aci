@@ -17,6 +17,8 @@ properties:
     test_config:
       create:
       - config_value: export
+      datasource_missing:
+      - config_value: import
       default:
       - config_value: import
   tDn:
@@ -28,22 +30,27 @@ test_config:
   - class_name: l3extConsLbl
     dependencies:
     - class_name: l3extOut
-    reference: aci_l3out_consumer_label.test.id
+      config_overrides:
+        name: name_1
+        relation_l3ext_rs_ectx: aci_vrf.test.id
+        tenant_dn: aci_tenant.test.id
+      dependencies:
+      - class_name: fvTenant
+      - class_name: fvCtx
+        config_overrides:
+          parent_dn: aci_tenant.test.id
+        dependencies:
+        - class_name: fvTenant
+      reference: aci_l3_outside.test.id
     role: parent
     target_classes:
     - rtctrlProfile
   - class_name: rtctrlProfile
-    config_overrides:
-      name: rt_ctrl_profile_1
     dependencies:
     - class_name: fvTenant
-    reference: uni/tn-test_name/prof-rt_ctrl_profile_1
-    reference_type: static
     role: target
-  embedded_instances:
-  - properties:
-      target_dn:
-      - config_value: uni/tn-test_name/prof-rt_ctrl_profile_1
-  - properties:
-      target_dn:
-      - config_value: uni/tn-test_name/prof-rt_ctrl_profile_2
+  - class_name: rtctrlProfile
+    dependencies:
+    - class_name: fvTenant
+    reference: aci_route_control_profile.test_2.id
+    role: target
