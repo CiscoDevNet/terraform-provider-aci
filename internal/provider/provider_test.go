@@ -11,6 +11,7 @@ import (
 	"testing"
 
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/aci"
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/acceptancetest"
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
@@ -22,8 +23,34 @@ import (
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
 )
 
+const testAccConfig = `
+variable "apic_version" {
+  type = string
+}
+
+variable "test_prefix" {
+  type = string
+}
+`
+
+var testAccRunner acceptancetest.Runner
+
+func TestMain(m *testing.M) {
+	exitCode := m.Run()
+	// Finalize only in the parent process; unused runners and worker processes have no report to write.
+	if err := testAccRunner.Finish(); err != nil {
+		fmt.Fprintf(os.Stderr, "Write acceptance-test report: %v\n", err)
+		if exitCode == 0 {
+			exitCode = 1
+		}
+	}
+	os.Exit(exitCode)
+}
+
 var testAccProtoV6ProviderFactories = map[string]func() (tfprotov6.ProviderServer, error){
 	"aci": func() (tfprotov6.ProviderServer, error) {
+		// The harness recreates provider servers for each Terraform command, repeating
+		// client initialization. See gen/docs/test_configuration.md#provider-authentication-limitation.
 		ctx := context.Background()
 
 		upgradedSdkServer, err := tf5to6server.UpgradeServer(
@@ -57,8 +84,11 @@ var testAccProtoV6ProviderFactoriesFunction = map[string]func() (tfprotov6.Provi
 }
 
 var (
-	aciClientTest     *client.Client
-	aciClientTestOnce sync.Once
+	aciClientTest       *client.Client
+	aciClientTestOnce   sync.Once
+	apicVersionTest     string
+	apicVersionTestErr  error
+	apicVersionTestOnce sync.Once
 )
 
 func getACIClientTest(t *testing.T) *client.Client {
@@ -92,39 +122,47 @@ func getACIClientTest(t *testing.T) *client.Client {
 	return aciClientTest
 }
 
+func getAPICVersionTest(t *testing.T) string {
+	t.Helper()
+	aciClient := getACIClientTest(t)
+	// The test client targets one APIC endpoint for the process, so every test
+	// configuration and assertion can reuse the same controller-version lookup.
+	apicVersionTestOnce.Do(func() {
+		infoController, err := aciClient.GetViaURL("/api/node/class/firmwareCtrlrRunning.json")
+		if err != nil {
+			apicVersionTestErr = err
+			return
+		}
+		apicVersionTest = extractControllerVersion(infoController)
+	})
+	if apicVersionTestErr != nil {
+		t.Fatalf("Error fetching APIC controller information: %v", apicVersionTestErr)
+	}
+	return apicVersionTest
+}
+
 func testAccPreCheck(t *testing.T, testType string, testApplicableFromVersion string) {
 	// globalAnnotation is explicitly set here, as the provider initialization in acceptance tests differs from the standard initialization process.
 	setGlobalAnnotation(basetypes.NewStringNull(), "ACI_ANNOTATION")
 
 	if testType == "cloud" {
-		t.Skip("[WARNING] Test skipped because it is not supported on an on-prem APIC")
+		acceptancetest.Skip(t, "This class is not supported on an on-prem APIC")
 	}
 
-	infoController, err := getACIClientTest(t).GetViaURL("/api/node/class/firmwareCtrlrRunning.json")
-	if err != nil {
-		t.Fatalf("Error fetching APIC controller information: %v", err)
-	}
-
-	apicVersion := extractControllerVersion(infoController)
+	apicVersion := getAPICVersionTest(t)
 
 	comparisonResult, err := CompareVersionsRange(apicVersion, testApplicableFromVersion, "inside")
 	if err != nil {
-		t.Skipf("[ERROR] Test skipped because the version '%s' couldn't be checked, error: %s", testApplicableFromVersion, err)
+		acceptancetest.Skip(t, fmt.Sprintf("The supported range %q could not be checked: %s", testApplicableFromVersion, err))
 	} else if !comparisonResult {
-		t.Skipf("[WARNING] Test skipped because the version '%s' is not supported on APIC version: %s", testApplicableFromVersion, apicVersion)
+		acceptancetest.Skip(t, fmt.Sprintf("APIC %s is outside the supported range: %s", apicVersion, testApplicableFromVersion))
 	}
 
 }
 
 func composeAggregateTestCheckFuncWithVersion(t *testing.T, propertyVersion string, operator string, checks ...resource.TestCheckFunc) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
-		rs, ok := s.RootModule().Resources["data.aci_system.version"]
-
-		if !ok {
-			return fmt.Errorf("data source aci_system was not found in the test configuration")
-		}
-
-		apicVersion := rs.Primary.Attributes["version"]
+		apicVersion := getAPICVersionTest(t)
 
 		var result []error
 

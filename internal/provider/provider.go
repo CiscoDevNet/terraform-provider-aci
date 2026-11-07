@@ -192,6 +192,10 @@ func (p *AciProvider) Configure(ctx context.Context, req provider.ConfigureReque
 		)
 	}
 
+	// aci-go-client's GetClient compares URL pointers, so repeated calls recreate
+	// clients and may trigger extra logins. Consider moving client ownership into
+	// the provider, removing the dependency and reusing sessions by full connection
+	// configuration. See gen/docs/test_configuration.md#provider-authentication-limitation.
 	var aciClient *client.Client
 	if password != "" {
 		aciClient = client.GetClient(url, username, client.Password(password), client.Insecure(isInsecure), client.ProxyUrl(proxyUrl), client.ProxyCreds(proxyCreds), client.ValidateRelationDn(validateRelationDn), client.MaxRetries(maxRetries))

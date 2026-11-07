@@ -19,6 +19,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
+	"github.com/stretchr/testify/assert"
 
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils/data"
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils/test"
@@ -64,6 +65,7 @@ func TestGeneratorLoadsActiveTemplates(t *testing.T) {
 	for _, templateName := range []string{
 		modelTemplateName,
 		datasourceTemplateName,
+		datasourceTestTemplateName,
 		indexTemplateName,
 		providerExampleTemplateName,
 		resourceExampleTemplateName,
@@ -219,6 +221,41 @@ func TestBuildDatasourceRenderJobs(t *testing.T) {
 	if !reflect.DeepEqual(actualPaths, expectedPaths) {
 		t.Fatalf("datasource output paths %#v, expected %#v", actualPaths, expectedPaths)
 	}
+}
+
+func TestBuildDatasourceTestRenderJobs(t *testing.T) {
+	test.InitializeTest(t)
+
+	resourceClass := testClass(t, "fvBD", data.ResourceArtifact)
+	resourceClass.ResourceName = "bridge_domain"
+	datasourceClass := testClass(t, "fvCtx", data.DatasourceArtifact)
+	datasourceClass.ResourceName = "vrf"
+	bothClass := testClass(t, "fvTenant", data.ResourceArtifact, data.DatasourceArtifact)
+	bothClass.ResourceName = "tenant"
+	ignoredClass := testClass(t, "topSystem", data.DatasourceArtifact)
+	ignoredClass.ResourceName = "system"
+	ignoredClass.TestConfig.IgnoreTests = []data.IgnoreTestEnum{data.DatasourceIgnoreTest}
+	dataStore := &data.DataStore{Classes: map[string]data.Class{
+		"fvBD":      resourceClass,
+		"fvCtx":     datasourceClass,
+		"fvTenant":  bothClass,
+		"topSystem": ignoredClass,
+	}}
+	generator := &Generator{dataStore: dataStore}
+
+	jobs := generator.buildDatasourceTestRenderJobs()
+	expectedPaths := []string{
+		"internal/provider/data_source_aci_vrf_acceptance_test.go",
+		"internal/provider/data_source_aci_tenant_acceptance_test.go",
+	}
+	actualPaths := make([]string, 0, len(jobs))
+	for _, job := range jobs {
+		actualPaths = append(actualPaths, job.OutputPath)
+		assert.Equal(t, datasourceTestTemplateName, job.TemplateName)
+		assert.NotNil(t, job.Context.Class)
+		assert.Same(t, dataStore, job.Context.DataStore)
+	}
+	assert.Equal(t, expectedPaths, actualPaths)
 }
 
 func TestBuildProviderExampleRenderJobs(t *testing.T) {
@@ -506,22 +543,23 @@ func TestBuildRenderJobsIncludesAnnotationOnlyAfterRefresh(t *testing.T) {
 	generator := &Generator{dataStore: dataStore, providerExample: `provider "aci" {}`}
 
 	jobs := generator.buildRenderJobs()
-	if len(jobs) != 9 ||
+	if len(jobs) != 10 ||
 		jobs[0].TemplateName != modelTemplateName ||
 		jobs[1].TemplateName != datasourceTemplateName ||
-		jobs[2].TemplateName != indexTemplateName ||
-		jobs[3].TemplateName != providerExampleTemplateName ||
+		jobs[2].TemplateName != datasourceTestTemplateName ||
+		jobs[3].TemplateName != indexTemplateName ||
 		jobs[4].TemplateName != providerExampleTemplateName ||
-		jobs[5].TemplateName != resourceExampleTemplateName ||
-		jobs[6].TemplateName != datasourceExampleTemplateName ||
-		jobs[7].TemplateName != resourceDocumentationTemplateName ||
-		jobs[8].TemplateName != datasourceDocumentationTemplateName {
+		jobs[5].TemplateName != providerExampleTemplateName ||
+		jobs[6].TemplateName != resourceExampleTemplateName ||
+		jobs[7].TemplateName != datasourceExampleTemplateName ||
+		jobs[8].TemplateName != resourceDocumentationTemplateName ||
+		jobs[9].TemplateName != datasourceDocumentationTemplateName {
 		t.Fatalf("unexpected ordinary render jobs: %#v", jobs)
 	}
 
 	dataStore.UnsupportedAnnotationClasses = []string{}
 	jobs = generator.buildRenderJobs()
-	if len(jobs) != 10 || jobs[9].TemplateName != annotationUnsupportedTemplateName || !jobs[9].RefreshOnly {
+	if len(jobs) != 11 || jobs[10].TemplateName != annotationUnsupportedTemplateName || !jobs[10].RefreshOnly {
 		t.Fatalf("unexpected refresh render jobs: %#v", jobs)
 	}
 }
@@ -530,6 +568,7 @@ func TestFormatTemplateRenderSummaries(t *testing.T) {
 	jobs := []renderJob{
 		{TemplateName: modelTemplateName},
 		{TemplateName: datasourceTemplateName},
+		{TemplateName: datasourceTestTemplateName},
 		{TemplateName: annotationUnsupportedTemplateName},
 		{TemplateName: indexTemplateName},
 		{TemplateName: modelTemplateName},
@@ -546,6 +585,7 @@ func TestFormatTemplateRenderSummaries(t *testing.T) {
 		"Rendered 1 file using template datasource.go.tmpl.",
 		"Rendered 1 file using template datasource.md.tmpl.",
 		"Rendered 1 file using template datasource_example.tf.tmpl.",
+		"Rendered 1 file using template datasource_test.go.tmpl.",
 		"Rendered 1 file using template index.md.tmpl.",
 		"Rendered 2 files using template model.go.tmpl.",
 		"Rendered 2 files using template provider_example.tf.tmpl.",
@@ -576,6 +616,178 @@ func TestAnnotationUnsupportedTemplate(t *testing.T) {
 			t.Fatalf("rendered annotation output does not contain class %q", className)
 		}
 	}
+}
+
+func TestDatasourceTestTemplate(t *testing.T) {
+	test.InitializeTest(t)
+
+	class := testClass(t, "fvTenant", data.ResourceArtifact, data.DatasourceArtifact)
+	class.ResourceName = "tenant"
+	class.Documentation.Label = "Tenant"
+	class.IdentifiedBy = []string{"name"}
+	class.TestConfig.DataSourceExpectNonEmptyPlan = true
+	class.TestConfig.Prefix = data.TestPrefixDefinition{Characters: "abcdef", Length: 12}
+	class.Properties = map[string]*data.Property{
+		"name": {
+			PropertyName:  "name",
+			AttributeName: "name",
+			ValueType:     data.String,
+			TestValues: &data.TestValues{
+				Create: data.TestValueScenario{Defined: true, Entries: []data.TestValueEntry{{
+					ConfigValue:   "tenant_1",
+					ConfigInclude: true,
+					AssertValue:   "tenant_1",
+					ValueType:     data.StringValue,
+				}}},
+				Update: data.TestValueScenario{Defined: true, Entries: []data.TestValueEntry{{
+					ConfigValue:   "tenant_2",
+					ConfigInclude: true,
+					AssertValue:   "tenant_2",
+					ValueType:     data.StringValue,
+				}}},
+				Default: data.TestValueScenario{Defined: true, Entries: []data.TestValueEntry{{
+					ConfigValue:   "tenant_1",
+					ConfigInclude: true,
+					AssertValue:   "tenant_1",
+					ValueType:     data.StringValue,
+				}}},
+			},
+		},
+	}
+	class.PropertiesAll = []string{"name"}
+	dataStore := &data.DataStore{Classes: map[string]data.Class{class.Name.String(): class}}
+	generator := loadActiveGenerator(t, dataStore)
+
+	dependencyClass := testClass(t, "physDomP")
+	testCases := []test.TestCase{
+		{
+			Name:     "test_without_dependency_resources",
+			Input:    []*data.TestDependency(nil),
+			Expected: "const testAccDataSourceFvTenantDependencies = testAccConfig\n",
+		},
+		{
+			Name: "test_with_dependency_resources",
+			Input: []*data.TestDependency{{
+				Class:           dependencyClass.Name,
+				Reference:       "aci_physical_domain.test_1.id",
+				ReferenceType:   data.ResourceReference,
+				Role:            data.Parent,
+				ConfigOverrides: map[string]string{"name": "name_1"},
+			}},
+			Expected: "const testAccDataSourceFvTenantDependencies = testAccConfig + `",
+		},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			class := class
+			class.TestDependencies = testCase.Input.([]*data.TestDependency)
+			var rendered bytes.Buffer
+			err := generator.templates[datasourceTestTemplateName].Execute(&rendered, TemplateContext{Class: &class, DataStore: dataStore})
+			if !assert.NoError(t, err) {
+				return
+			}
+			formatted, err := formatRenderedTemplate("data_source_aci_tenant_acceptance_test.go", rendered.Bytes())
+			if !assert.NoError(t, err) {
+				return
+			}
+			for _, expected := range []string{
+				"func TestAccDataSourceFvTenantGenerated(t *testing.T)",
+				"if testAccRunner.RunInSubprocess(t) {",
+				"variables := config.Variables{}",
+				`variables["apic_version"] = config.StringVariable(getAPICVersionTest(t))`,
+				`variables["test_prefix"] = config.StringVariable(acceptancetest.Prefix(t, acceptancetest.PrefixOptions{`,
+				`acceptancetest.PrefixOptions{Characters: "abcdef", Length: 12}`,
+				`name = format("%s-%s", var.test_prefix, "tenant_2")`,
+				`t.Log("Test: Tenant Data Source - Read Existing Object")`,
+				`t.Log("Test: Tenant Data Source - Read Missing Object (Expect Error)")`,
+				"ExpectNonEmptyPlan: true",
+				`resource.TestCheckResourceAttrPair("data.aci_tenant.test", "name", "aci_tenant.test_1", "name")`,
+				testCase.Expected.(string),
+				"const testAccDataSourceFvTenantExisting = testAccDataSourceFvTenantDependencies + `",
+				"const testAccDataSourceFvTenantMissing = testAccDataSourceFvTenantDependencies + `",
+			} {
+				assert.Contains(t, string(formatted), expected)
+			}
+			assert.Equal(t, 2, bytes.Count(formatted, []byte("ConfigVariables:")))
+		})
+	}
+}
+
+func TestDatasourceTestTemplateGroupedReferences(t *testing.T) {
+	test.InitializeTest(t)
+
+	class := testClass(t, "fvTenant", data.ResourceArtifact, data.DatasourceArtifact)
+	class.ResourceName = "tenant"
+	class.Documentation.Label = "Tenant"
+	class.IdentifiedBy = []string{"name"}
+	class.PropertiesAll = []string{"name"}
+	class.Properties = map[string]*data.Property{
+		"name": {PropertyName: "name", AttributeName: "name", ValueType: data.String, Required: true, TestValues: &data.TestValues{
+			Create: data.TestValueScenario{Defined: true, Entries: []data.TestValueEntry{{ConfigValue: "tenant_1", AssertValue: "tenant_1", ConfigInclude: true}}},
+		}},
+	}
+	child := testClass(t, "vzRsAnyToCons")
+	child.ResourceNameNested = "contracts"
+	child.IdentifiedBy = []string{"tnVzBrCPName"}
+	child.PropertiesAll = []string{"tnVzBrCPName", "prio", "members"}
+	child.Properties = map[string]*data.Property{
+		"tnVzBrCPName": {PropertyName: "tnVzBrCPName", AttributeName: "contract_name", ValueType: data.String},
+		"prio":         {PropertyName: "prio", AttributeName: "priority", ValueType: data.String},
+		"members":      {PropertyName: "members", AttributeName: "members", ValueType: data.Set},
+	}
+	grandchild := testClass(t, "tagAnnotation")
+	grandchild.ResourceNameNested = "annotations"
+	grandchild.IdentifiedBy = []string{"key"}
+	grandchild.PropertiesAll = []string{"key", "value"}
+	grandchild.Properties = map[string]*data.Property{
+		"key":   {PropertyName: "key", AttributeName: "key", ValueType: data.String},
+		"value": {PropertyName: "value", AttributeName: "value", ValueType: data.String},
+	}
+	class.TestChildren = []*data.TestChild{{Class: child.Name, Instances: []data.TestChildInstance{{Properties: map[string]data.TestValueScenario{
+		"contract_name": {Defined: true, Entries: []data.TestValueEntry{{ConfigValue: "aci_contract.test_1.name", AssertValue: "aci_contract.test_1.name", ConfigInclude: true, ValueType: data.ReferenceValue}}},
+		"priority":      {Defined: true, Entries: []data.TestValueEntry{{ConfigValue: "level1", AssertValue: "level1", ConfigInclude: true}}},
+		"members": {Defined: true, Entries: []data.TestValueEntry{
+			{ConfigValue: "literal_member", AssertValue: "literal_member", ConfigInclude: true},
+			{ConfigValue: "aci_contract.test_1.name", AssertValue: "aci_contract.test_1.name", ConfigInclude: true, ValueType: data.ReferenceValue},
+		}},
+	}}}}}
+	class.TestChildren[0].Instances[0].Children = []*data.TestChild{{Class: grandchild.Name, Instances: []data.TestChildInstance{{Properties: map[string]data.TestValueScenario{
+		"key":   {Defined: true, Entries: []data.TestValueEntry{{ConfigValue: "key_1", AssertValue: "key_1", ConfigInclude: true}}},
+		"value": {Defined: true, Entries: []data.TestValueEntry{{ConfigValue: "value_1", AssertValue: "value_1", ConfigInclude: true}}},
+	}}}}}
+	contract := testClass(t, "vzBrCP")
+	class.TestDependencies = []*data.TestDependency{{
+		Class: contract.Name, Reference: "aci_contract.test_1.id", ReferenceType: data.ResourceReference,
+		Role: data.Target, ConfigOverrides: map[string]string{"name": "contract_1"},
+	}}
+	store := &data.DataStore{Classes: map[string]data.Class{class.Name.String(): class, child.Name.String(): child, grandchild.Name.String(): grandchild}}
+	generator := loadActiveGenerator(t, store)
+	var rendered bytes.Buffer
+	err := generator.templates[datasourceTestTemplateName].Execute(&rendered, TemplateContext{Class: &class, DataStore: store})
+	if !assert.NoError(t, err) {
+		return
+	}
+	formatted, err := formatRenderedTemplate("data_source_aci_tenant_acceptance_test.go", rendered.Bytes())
+	if !assert.NoError(t, err) {
+		return
+	}
+	for _, expected := range []string{
+		`acceptancetest.CheckNestedSetElement("data.aci_tenant.test", "contracts.*", map[string]acceptancetest.AttributeValue{`,
+		`"contract_name": {PairAddress: "aci_contract.test_1.0", PairAttribute: "name"}`,
+		`{ExpectedValue: "level1"}`,
+		`"annotations.#": {ExpectedValue: "1"}`,
+		`acceptancetest.CheckNestedSetElement("data.aci_tenant.test", "contracts.*.annotations.*", map[string]acceptancetest.AttributeValue{`,
+		`acceptancetest.ParentSetElement{`,
+		`Path: "contracts.*"`,
+		`acceptancetest.CheckSetElement("data.aci_tenant.test", "contracts.*.members.*", acceptancetest.AttributeValue{`,
+		`ExpectedValue: "literal_member"`,
+		`"members.#"`,
+	} {
+		assert.Contains(t, string(formatted), expected)
+	}
+	assert.NotContains(t, string(formatted), `resource.TestCheckTypeSetElemAttrPair("data.aci_tenant.test", "contracts.*.contract_name"`)
+	assert.NotContains(t, string(formatted), `resource.TestCheckTypeSetElemAttr("data.aci_tenant.test", "contracts.*.members.*"`)
+	assert.NotContains(t, string(formatted), `resource.TestCheckTypeSetElemAttrPair("data.aci_tenant.test", "contracts.*.members.*"`)
 }
 
 func TestDatasourceDocumentationTemplate(t *testing.T) {
