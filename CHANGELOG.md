@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.21.0 (November 10, 2026)
+
+IMPROVEMENTS:
+
+- Upgrade Go version to 1.26.10.
+- Upgrade provider dependencies to address known vulnerabilities.
+
+BUG FIXES:
+
+- Fix migration type issue of `ll_addr` in `aci_bridge_domain` resource.
+
 ## 2.20.0 (June 23, 2026)
 
 IMPROVEMENTS:
