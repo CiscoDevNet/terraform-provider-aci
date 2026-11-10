@@ -96,6 +96,8 @@ NOTE: either 'password' OR 'private_key' and 'cert_name' must be provided for th
 
 ### Optional
 
+- `apic_version` (String) APIC software version for the target fabric. Use `major.minor(patch)` format with an optional lowercase letter after the patch number, for example `6.2(2e)`. If neither this attribute nor `ACI_APIC_VERSION` is provided, the provider makes a single request to the `topSystem` managed objects during configuration to determine the version.
+  - Environment variable: `ACI_APIC_VERSION`
 - `cert_name` (String) Certificate name for the User in Cisco ACI.
   - Environment variable: `ACI_CERT_NAME`
 - `insecure` (Boolean) Allow insecure HTTPS client.
