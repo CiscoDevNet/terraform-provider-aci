@@ -29,6 +29,11 @@ func Provider() *schema.Provider {
 				Optional:    true,
 				Description: "URL of the Cisco ACI web interface. This can also be set as the ACI_URL environment variable.",
 			},
+			"apic_version": &schema.Schema{
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "APIC software version for the target fabric. Use major.minor(patch) format with an optional lowercase letter after the patch number, for example '6.2(2e)'. This can also be set as the ACI_APIC_VERSION environment variable. If neither is provided, the provider makes a single request to the topSystem managed objects during configuration to determine the version.",
+			},
 			"insecure": &schema.Schema{
 				Type:        schema.TypeString,
 				Optional:    true,
