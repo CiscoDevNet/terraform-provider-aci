@@ -96,8 +96,13 @@ NOTE: either 'password' OR 'private_key' and 'cert_name' must be provided for th
 
 ### Optional
 
-- `apic_version` (String) APIC software version for the target fabric. Use `major.minor(patch)` format with an optional lowercase letter after the patch number, for example `6.2(2e)`. If neither this attribute nor `ACI_APIC_VERSION` is provided, the provider makes a single request to the `topSystem` managed objects during configuration to determine the version.
+- `apic_version` (String) APIC software version for the target fabric.
   - Environment variable: `ACI_APIC_VERSION`
+
+  -> By default, the provider determines the APIC version with a single request to `topSystem` during configuration. If your account cannot read `topSystem`, for example due to tenant-scoped RBAC, set `apic_version` or `ACI_APIC_VERSION` using `major.minor(patch)` format with an optional lowercase letter after the patch number, such as `6.2(2e)`.
+
+  ~> The configured version should match the APIC version running on the target fabric. An incorrect version can cause read requests to include unsupported child classes or exclude supported ones, potentially resulting in API errors or inconsistent Terraform state.
+
 - `cert_name` (String) Certificate name for the User in Cisco ACI.
   - Environment variable: `ACI_CERT_NAME`
 - `insecure` (Boolean) Allow insecure HTTPS client.
