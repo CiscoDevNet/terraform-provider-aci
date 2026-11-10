@@ -32,7 +32,7 @@ func Provider() *schema.Provider {
 			"apic_version": &schema.Schema{
 				Type:        schema.TypeString,
 				Optional:    true,
-				Description: "APIC software version for the target fabric. Use major.minor(patch) format with an optional lowercase letter after the patch number, for example '6.2(2e)'. This can also be set as the ACI_APIC_VERSION environment variable. If neither is provided, the provider makes a single request to the topSystem managed objects during configuration to determine the version.",
+				Description: "APIC software version for the target fabric. This can also be set as the ACI_APIC_VERSION environment variable.",
 			},
 			"insecure": &schema.Schema{
 				Type:        schema.TypeString,
