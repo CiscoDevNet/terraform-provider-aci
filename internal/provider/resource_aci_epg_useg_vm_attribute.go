@@ -30,10 +30,15 @@ import (
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &FvVmAttrResource{}
+var _ resource.ResourceWithIdentity = &FvVmAttrResource{}
 var _ resource.ResourceWithImportState = &FvVmAttrResource{}
 
 func NewFvVmAttrResource() resource.Resource {
 	return &FvVmAttrResource{}
+}
+
+func (r FvVmAttrResource) IdentitySchema(_ context.Context, _ resource.IdentitySchemaRequest, resp *resource.IdentitySchemaResponse) {
+	resp.IdentitySchema = getIdentitySchema()
 }
 
 // FvVmAttrResource defines the resource implementation.
@@ -425,6 +430,7 @@ func (r *FvVmAttrResource) Create(ctx context.Context, req resource.CreateReques
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_epg_useg_vm_attribute with id '%s'", data.Id.ValueString()))
 }
 
@@ -449,6 +455,7 @@ func (r *FvVmAttrResource) Read(ctx context.Context, req resource.ReadRequest, r
 		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
 	} else {
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+		resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_epg_useg_vm_attribute with id '%s'", data.Id.ValueString()))
@@ -491,6 +498,7 @@ func (r *FvVmAttrResource) Update(ctx context.Context, req resource.UpdateReques
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_epg_useg_vm_attribute with id '%s'", data.Id.ValueString()))
 }
 
@@ -519,10 +527,11 @@ func (r *FvVmAttrResource) Delete(ctx context.Context, req resource.DeleteReques
 
 func (r *FvVmAttrResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_epg_useg_vm_attribute")
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	resource.ImportStatePassthroughWithIdentity(ctx, path.Root("id"), path.Root("id"), req, resp)
 
 	var stateData *FvVmAttrResourceModel
 	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: stateData.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_epg_useg_vm_attribute with id '%s'", stateData.Id.ValueString()))
 
 	tflog.Debug(ctx, "End import of state resource: aci_epg_useg_vm_attribute")
@@ -532,11 +541,17 @@ func getAndSetFvVmAttrAttributes(ctx context.Context, diags *diag.Diagnostics, c
 	childClasses := getChildClassesForGetRequest([]string{"tagAnnotation", "tagTag"})
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), strings.Join(childClasses, ",")), "GET", nil)
 
-	readData := getEmptyFvVmAttrResourceModel()
-
 	if diags.HasError() {
 		return
 	}
+
+	setFvVmAttrAttributes(ctx, diags, data, requestData)
+}
+
+func setFvVmAttrAttributes(ctx context.Context, diags *diag.Diagnostics, data *FvVmAttrResourceModel, requestData *container.Container) {
+
+	readData := getEmptyFvVmAttrResourceModel()
+
 	if requestData.Search("imdata").Search("fvVmAttr").Data() != nil {
 		classReadInfo := requestData.Search("imdata").Search("fvVmAttr").Data().([]interface{})
 		if len(classReadInfo) == 1 {
