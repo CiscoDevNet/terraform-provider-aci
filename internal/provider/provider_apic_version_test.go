@@ -2,6 +2,7 @@ package provider
 
 import (
 	"context"
+	"crypto/rand"
 	"fmt"
 	"os"
 	"regexp"
@@ -11,11 +12,12 @@ import (
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/ciscoecosystem/aci-go-client/v2/models"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-testing/config"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
-const testAccProviderVersionName = "tf_acc_apic_version"
+var testAccProviderVersionName = acctest.RandomWithPrefix("tf_apicver")
 
 func TestAccProviderAPICVersion(t *testing.T) {
 	var version string
@@ -208,7 +210,9 @@ func testAccProviderVersionPreCheck(t *testing.T) string {
 		t.Skipf("annotations and tags require APIC 3.2(1l) or later; got %s", version)
 	}
 
-	password := "V7!qR2#nL9@xT4"
+	// rand.Text uses only uppercase letters and digits. The prefix also supplies
+	// lowercase letters and punctuation for APIC password policies.
+	password := fmt.Sprintf("Tf1!%s", rand.Text())
 	testAccCreateProviderVersionFixtures(t, admin, password)
 
 	previousVersion := apicVersion
@@ -366,7 +370,7 @@ func testAccCreateProviderVersionFixtures(t *testing.T, admin *client.Client, pa
 	tenantDN := fmt.Sprintf("uni/tn-%s", name)
 	userDN := fmt.Sprintf("uni/userext/user-%s", name)
 
-	// Fixed fixture names must not overwrite existing objects.
+	// Fixture names must not overwrite existing objects.
 	for _, dn := range []string{domainDN, tenantDN, userDN} {
 		response := testAccProviderVersionGet(t, admin, dn)
 		count, err := response.ArrayCount("imdata")
