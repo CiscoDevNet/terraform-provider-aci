@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"regexp"
 	"slices"
 	"strconv"
 	"strings"
@@ -34,6 +35,11 @@ var globalAnnotation string
 var apicVersion string
 var globalAllowExistingOnCreate bool
 
+// Keep strict validation for static input separate from ParseVersion's regex.
+// Its unanchored matching accepts surrounding text, and tightening it could
+// break existing callers that rely on that behavior.
+var apicVersionRegex = regexp.MustCompile(`^\d+\.\d+\(\d+[a-z]?\)$`)
+
 // Ensure AciProvider satisfies various provider interfaces.
 var _ provider.Provider = &AciProvider{}
 var _ provider.ProviderWithFunctions = &AciProvider{}
@@ -45,13 +51,14 @@ type AciProvider struct {
 
 // AciProviderModel describes the provider data model.
 type AciProviderModel struct {
-	Username   types.String `tfsdk:"username"`
-	Password   types.String `tfsdk:"password"`
-	URL        types.String `tfsdk:"url"`
-	PrivateKey types.String `tfsdk:"private_key"`
-	Certname   types.String `tfsdk:"cert_name"`
-	ProxyUrl   types.String `tfsdk:"proxy_url"`
-	ProxyCreds types.String `tfsdk:"proxy_creds"`
+	Username    types.String `tfsdk:"username"`
+	Password    types.String `tfsdk:"password"`
+	URL         types.String `tfsdk:"url"`
+	ApicVersion types.String `tfsdk:"apic_version"`
+	PrivateKey  types.String `tfsdk:"private_key"`
+	Certname    types.String `tfsdk:"cert_name"`
+	ProxyUrl    types.String `tfsdk:"proxy_url"`
+	ProxyCreds  types.String `tfsdk:"proxy_creds"`
 	// IsInsecure         types.Bool   `tfsdk:"insecure"`
 	// ValidateRelationDn types.Bool   `tfsdk:"validate_relation_dn"`
 	// MaxRetries         types.Int64  `tfsdk:"retries"`
@@ -81,6 +88,10 @@ func (p *AciProvider) Schema(ctx context.Context, req provider.SchemaRequest, re
 			},
 			"url": schema.StringAttribute{
 				Description: "URL of the Cisco ACI web interface. This can also be set as the ACI_URL environment variable.",
+				Optional:    true,
+			},
+			"apic_version": schema.StringAttribute{
+				Description: "APIC software version for the target fabric. This can also be set as the ACI_APIC_VERSION environment variable.",
 				Optional:    true,
 			},
 			"private_key": schema.StringAttribute{
@@ -152,6 +163,7 @@ func (p *AciProvider) Configure(ctx context.Context, req provider.ConfigureReque
 	username := getStringAttribute(data.Username, "ACI_USERNAME")
 	password := getStringAttribute(data.Password, "ACI_PASSWORD")
 	url := getStringAttribute(data.URL, "ACI_URL")
+	apicVersionOverride := getStringAttribute(data.ApicVersion, "ACI_APIC_VERSION")
 	privateKey := getStringAttribute(data.PrivateKey, "ACI_PRIVATE_KEY")
 	certName := getStringAttribute(data.Certname, "ACI_CERT_NAME")
 	proxyUrl := getStringAttribute(data.ProxyUrl, "ACI_PROXY_URL")
@@ -161,6 +173,14 @@ func (p *AciProvider) Configure(ctx context.Context, req provider.ConfigureReque
 	maxRetries := stringToInt(resp, "retries", getStringAttribute(data.MaxRetries, "ACI_RETRIES"), 2)
 	setGlobalAnnotation(data.Annotation, "ACI_ANNOTATION")
 	setGlobalAllowExistingOnCreate(resp, data.AllowExistingOnCreate, "ACI_ALLOW_EXISTING_ON_CREATE")
+
+	if apicVersionOverride != "" && !apicVersionRegex.MatchString(apicVersionOverride) {
+		resp.Diagnostics.AddError(
+			"Invalid APIC version",
+			fmt.Sprintf("APIC version '%s' must match the format major.minor(patch), for example '6.0(1h)'", apicVersionOverride),
+		)
+		return
+	}
 
 	if username == "" {
 		resp.Diagnostics.AddError(
@@ -203,7 +223,14 @@ func (p *AciProvider) Configure(ctx context.Context, req provider.ConfigureReque
 		aciClient = client.GetClient(url, username, client.PrivateKey(privateKey), client.AdminCert(certName), client.Insecure(isInsecure), client.ProxyUrl(proxyUrl), client.ProxyCreds(proxyCreds), client.ValidateRelationDn(validateRelationDn), client.MaxRetries(maxRetries))
 	}
 
-	apicVersion = getVersionAPIC(ctx, &resp.Diagnostics, aciClient)
+	// Skip version discovery when configured. This version filters child classes
+	// in GETs for generated Plugin Framework resources and data sources;
+	// aci_rest_managed reads configured children without this filtering.
+	if apicVersionOverride != "" {
+		apicVersion = apicVersionOverride
+	} else {
+		apicVersion = getVersionAPIC(ctx, &resp.Diagnostics, aciClient)
+	}
 
 	resp.DataSourceData = aciClient
 	resp.ResourceData = aciClient
