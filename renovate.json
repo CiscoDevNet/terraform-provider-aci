@@ -1,0 +1,38 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "baseBranches": ["develop"],
+  "gitAuthor": "dcne-automation <193842815+dcne-automation@users.noreply.github.com>",
+  "semanticCommits": "disabled",
+  "commitMessagePrefix": "[ignore]",
+  "postUpdateOptions": ["gomodTidy"],
+  "minimumReleaseAge": "3 days",
+  "prConcurrentLimit": 5,
+  "prHourlyLimit": 0,
+  "labels": ["dependencies"],
+  "packageRules": [
+    {
+      "description": "Group all Terraform plugin toolchain packages into a single PR so the muxed provider always compiles",
+      "matchManagers": ["gomod"],
+      "matchPackageNames": ["/^github\\.com/hashicorp/terraform-plugin-/"],
+      "groupName": "terraform-plugin toolchain"
+    },
+    {
+      "description": "Bump the go directive to the latest Go release instead of treating it as a satisfied minimum",
+      "matchManagers": ["gomod"],
+      "matchDepTypes": ["golang"],
+      "rangeStrategy": "bump"
+    },
+    {
+      "matchManagers": ["github-actions"],
+      "groupName": "github actions",
+      "separateMajorMinor": false
+    },
+    {
+      "description": "Python in workflows is not a provider dependency",
+      "matchManagers": ["github-actions"],
+      "matchDepNames": ["python"],
+      "enabled": false
+    }
+  ]
+}
