@@ -91,6 +91,8 @@ properties:
     test_config:
       create:
       - config_value: "1500"
+      update:
+      - config_value: "1200"
   reachableTime:
     default_values:
       "0": ""
@@ -110,4 +112,6 @@ properties:
     test_config:
       create:
       - config_value: "2"
+      update:
+      - config_value: "1"
 resource_name: neighbor_discovery_interface_policy

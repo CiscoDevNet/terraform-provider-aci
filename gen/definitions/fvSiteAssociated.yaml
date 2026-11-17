@@ -27,6 +27,8 @@ properties:
     test_config:
       create:
       - config_value: "0"
+      update:
+      - config_value: "0"
   siteStretched:
     restriction: exclude
 resource_name: associated_site

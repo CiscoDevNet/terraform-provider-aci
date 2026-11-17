@@ -26,6 +26,9 @@ properties:
       - config_value: dst-ip
       - config_value: src-ip
       default: []
+      update:
+      - config_value: dst-ipv6
+      - config_value: src-ipv6
     value_type: set
   name:
     example_config:

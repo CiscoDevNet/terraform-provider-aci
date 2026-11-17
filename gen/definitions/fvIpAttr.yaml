@@ -13,11 +13,9 @@ properties:
     restriction: required
     test_config:
       create:
-      - config_value: 0.0.0.0
-      default:
       - config_value: 203.0.113.200
       update:
-      - config_value: fe80::0002
+      - config_value: fe80::2
   name:
     example_config:
       minimum:

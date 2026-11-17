@@ -80,7 +80,7 @@ func TestAccDataSourceVmmDomPGenerated(t *testing.T) {
 						resource.TestCheckResourceAttr("data.aci_vmm_domain.test", "host_availability_assurance", "no"),
 					),
 					resource.TestCheckResourceAttr("data.aci_vmm_domain.test", "multicast_address", "224.0.1.0"),
-					resource.TestCheckResourceAttr("data.aci_vmm_domain.test", "switch_type", "cf"),
+					resource.TestCheckResourceAttr("data.aci_vmm_domain.test", "switch_type", "default"),
 					resource.TestCheckResourceAttrPair("data.aci_vmm_domain.test", "name", "aci_vmm_domain.test_1", "name"),
 					composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
 						resource.TestCheckResourceAttr("data.aci_vmm_domain.test", "name_alias", "name_alias_1"),
@@ -404,7 +404,7 @@ resource "aci_vmm_domain" "test_1" {
   endpoint_retention_time          = provider::aci::compare_versions(var.apic_version, "inside", "3.0(1k)-") ? "0" : null
   host_availability_assurance      = provider::aci::compare_versions(var.apic_version, "inside", "3.2(10e)-3.2(10g),3.2(3n)-") ? "no" : null
   multicast_address                = "224.0.1.0"
-  switch_type                      = "cf"
+  switch_type                      = "default"
   name                             = format("%s-%s", var.test_prefix, "name_1")
   name_alias                       = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
   owner_key                        = "owner_key_1"

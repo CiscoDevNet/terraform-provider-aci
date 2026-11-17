@@ -15,7 +15,7 @@ import (
 )
 
 func TestAccDataSourceInfraHPathSGenerated(t *testing.T) {
-	if testAccRunner.RunInSubprocess(t) {
+	if testAccRunner.RunSeriallyInSubprocess(t) {
 		return
 	}
 

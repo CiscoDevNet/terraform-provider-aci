@@ -2,6 +2,7 @@ package data
 
 import (
 	"fmt"
+	"maps"
 	"path/filepath"
 	"runtime"
 	"slices"
@@ -28,6 +29,65 @@ type dataSourceDependencyRenderingExpected struct {
 	Contains    []string
 	NotContains []string
 	Error       string
+}
+
+func TestDependencyIgnoredChanges(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+	type input struct {
+		Loaded        bool
+		IgnoreChanges []string
+		ReferenceType ReferenceTypeEnum
+	}
+	testCases := []test.TestCase{
+		{Name: "test_legacy_parent", Input: input{IgnoreChanges: []string{"relation_l3extrs_redistribute_pol"}}, Expected: true},
+		{Name: "test_loaded_parent", Input: input{Loaded: true, IgnoreChanges: []string{"relation_l3extrs_redistribute_pol"}}, Expected: true},
+		{Name: "test_without_override", Input: input{}, Expected: false},
+		{Name: "test_datasource_has_no_lifecycle", Input: input{ReferenceType: DataSourceReference, IgnoreChanges: []string{"relation_l3extrs_redistribute_pol"}}, Expected: false},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			input := testCase.Input.(input)
+			definition := ClassDefinition{TestConfig: ClassTestConfigDefinition{Dependencies: []TestDependencyDefinition{{
+				ClassName: "l3extOut", Reference: "aci_l3_outside.test.id", ReferenceType: input.ReferenceType, Role: Parent,
+				IgnoreChanges: input.IgnoreChanges, ConfigOverrides: map[string]string{"name": "name_1"},
+			}}}}
+			if input.ReferenceType == DataSourceReference {
+				definition.TestConfig.Dependencies[0].Reference = "data.aci_l3_outside.test.id"
+			}
+			root := dataSourceTestClass("exampleRoot", "example_root", ResourceArtifact, DatasourceArtifact)
+			root.ClassDefinition = definition
+			store := &DataStore{ctx: NewContext(), Classes: map[string]Class{}, ClassDefinitions: map[string]ClassDefinition{"l3extOut": {ResourceName: "l3_outside"}}}
+			if input.Loaded {
+				parent := dataSourceTestClass("l3extOut", "l3_outside", ResourceArtifact)
+				parent.PropertiesAll = []string{"name"}
+				parent.Properties = map[string]*Property{"name": dataSourceTestProperty("name", "name", dataSourceTestValues("name_1", "name_2", "name_1", true))}
+				store.Classes["l3extOut"] = parent
+			}
+			root.TestDependencies = root.getTestDependenciesFromDefinitions(definition.TestConfig.Dependencies, store, map[string]*TestDependency{}, 0)
+			if !assert.NoError(t, store.ctx.Diagnostics.Error()) || !assert.Len(t, root.TestDependencies, 1) {
+				return
+			}
+			assert.Equal(t, input.IgnoreChanges, root.TestDependencies[0].IgnoreChanges)
+			for _, resourceTest := range []bool{false, true} {
+				renderer := newTestConfigurationRenderer(&root, store)
+				renderer.resourceTest = resourceTest
+				configuration, err := renderer.dependenciesHCL()
+				if !assert.NoError(t, err) {
+					continue
+				}
+				assert.NoError(t, validateDataSourceTestConfiguration(configuration, nil))
+				if testCase.Expected.(bool) {
+					assert.Contains(t, configuration, "lifecycle {")
+					assert.Contains(t, configuration, "ignore_changes = [relation_l3extrs_redistribute_pol]")
+					assert.Contains(t, configuration, "standalone resources manage them")
+				} else {
+					assert.NotContains(t, configuration, "lifecycle {")
+				}
+			}
+		})
+	}
 }
 
 func TestDataSourceTestPropertyOverrides(t *testing.T) {
@@ -1135,6 +1195,10 @@ func validateDataSourceTestConfiguration(configuration string, assertions []Test
 			}
 		}
 		for _, block := range current.Blocks {
+			// Removed targets refer to prior state and deliberately have no resource block here.
+			if block.Type == "removed" {
+				continue
+			}
 			blockOwner := owner
 			if len(block.Labels) == 2 && (block.Type == "resource" || block.Type == "data") {
 				blockOwner = strings.Join(block.Labels, ".")
@@ -1211,6 +1275,16 @@ func TestDataSourceTestConfigurationSelfReferences(t *testing.T) {
 }
 resource "aci_epg_useg_sub_block_statement" "test_1" {
   parent_dn = aci_epg_useg_sub_block_statement.parent_1[0].id
+}`,
+			Expected: "",
+		},
+		{
+			Name: "test_removed_target_refers_to_prior_state",
+			Input: `removed {
+  from = aci_tenant.existing_on_create
+  lifecycle {
+    destroy = false
+  }
 }`,
 			Expected: "",
 		},
@@ -1306,4 +1380,575 @@ func dataSourceTestScenario(configValue, assertValue string, valueType ValueRend
 		AssertValue:   assertValue,
 		ValueType:     valueType,
 	}})
+}
+
+type resourceScenarioExpected struct {
+	Contains    []string
+	NotContains []string
+	Action      string
+	IDChanges   bool
+	PlanOnly    bool
+}
+
+func TestResourceTestCreateOnlyProperties(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+	class, store := resourceScenarioFixture()
+	class.Properties["descr"].CreateOnly = true
+	child := store.Classes["tagAnnotation"]
+	child.Properties["value"].CreateOnly = true
+	store.Classes["tagAnnotation"] = child
+	scenarios, err := class.ResourceTestScenarios(store)
+	if !assert.NoError(t, err) {
+		return
+	}
+	testCases := []test.TestCase{
+		{Name: "Minimum"}, {Name: "Full"}, {Name: "Update"}, {Name: "OmitOptional"}, {Name: "Reset"}, {Name: "UpdateChildren"},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			index := slices.IndexFunc(scenarios, func(s ResourceTestScenario) bool { return s.Name == testCase.Name })
+			if assert.NotEqual(t, -1, index) {
+				text := strings.Join(strings.Fields(scenarios[index].Configuration), " ")
+				assert.Contains(t, text, `description = "description_1"`)
+				assert.NotContains(t, text, `description = "description_2"`)
+				if testCase.Name == "UpdateChildren" {
+					assert.Contains(t, text, `value = "value_1"`)
+				}
+			}
+		})
+	}
+}
+
+func TestResourceTestScenarioPresence(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+	type input struct {
+		Include  []string
+		Exclude  []string
+		Step     string
+		Present  bool
+		Expected string
+		Required bool
+	}
+	testCases := []test.TestCase{
+		{Name: "test_include_minimum", Input: input{Include: []string{"minimum"}, Step: "Minimum", Present: true, Expected: "description_1"}},
+		{Name: "test_include_omitted", Input: input{Include: []string{"omit_optional"}, Step: "OmitOptional", Present: true, Expected: "description_2"}},
+		{Name: "test_include_required_reset", Input: input{Include: []string{"reset"}, Step: "Reset", Present: true, Required: true}},
+		{Name: "test_exclude_update_retains_state", Input: input{Exclude: []string{"update"}, Step: "Update", Expected: "description_1"}},
+		{Name: "test_repeat_exclusion", Input: input{Exclude: []string{"update"}, Step: "UpdateUnchanged", Expected: "description_1"}},
+		{Name: "test_exclude_full_default", Input: input{Exclude: []string{"full"}, Step: "Full", Expected: ""}},
+		{Name: "test_exclude_full_repeat", Input: input{Exclude: []string{"full"}, Step: "FullUnchanged", Expected: ""}},
+		{Name: "test_exclude_reset_retains_state", Input: input{Exclude: []string{"reset"}, Step: "Reset", Expected: "description_2"}},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			value := testCase.Input.(input)
+			class, store := resourceScenarioFixture()
+			property := class.Properties["descr"]
+			property.Required = value.Required
+			property.propertyDefinition.TestConfig.IncludeIn = value.Include
+			property.propertyDefinition.TestConfig.ExcludeFrom = value.Exclude
+			scenarios, err := class.ResourceTestScenarios(store)
+			if !assert.NoError(t, err) {
+				return
+			}
+			index := slices.IndexFunc(scenarios, func(s ResourceTestScenario) bool { return s.Name == value.Step })
+			if !assert.NotEqual(t, -1, index) {
+				return
+			}
+			scenario := scenarios[index]
+			configuration := strings.Join(strings.Fields(scenario.Configuration), " ")
+			assert.Equal(t, value.Present, strings.Contains(configuration, "description ="))
+			assert.True(t, slices.ContainsFunc(scenario.Assertions, func(a TestAssertion) bool {
+				return a.AttributePath == "description" && a.ExpectedValue == value.Expected
+			}))
+		})
+	}
+}
+
+func TestResourceTestExplicitSensitiveReset(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+	type input struct {
+		Include, Explicit bool
+		Expected          string
+	}
+	testCases := []test.TestCase{
+		{Name: "test_explicit_reset", Input: input{Include: true, Explicit: true, Expected: ""}},
+		{Name: "test_no_inclusion", Input: input{Explicit: true, Expected: "password_2"}},
+		{Name: "test_no_explicit_value", Input: input{Include: true, Expected: "password_2"}},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			value := testCase.Input.(input)
+			class, store := resourceScenarioFixture()
+			property := dataSourceTestProperty("password", "password", dataSourceTestValues("password_1", "password_2", "", false))
+			property.Sensitive = true
+			property.propertyDefinition.TestConfig.Default.Defined = value.Explicit
+			if value.Include {
+				property.propertyDefinition.TestConfig.IncludeIn = []string{"reset"}
+			}
+			class.PropertiesAll = append(class.PropertiesAll, "password")
+			class.Properties["password"] = property
+			scenarios, err := class.ResourceTestScenarios(store)
+			if !assert.NoError(t, err) {
+				return
+			}
+			index := slices.IndexFunc(scenarios, func(s ResourceTestScenario) bool { return s.Name == "Reset" })
+			if assert.NotEqual(t, -1, index) {
+				configuration := strings.Join(strings.Fields(scenarios[index].Configuration), " ")
+				assert.Contains(t, configuration, `password = "`+value.Expected+`"`)
+			}
+		})
+	}
+}
+
+func TestResourceTestScenarios(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+	class, store := resourceScenarioFixture()
+	original := class.resourceTestCopy()
+	scenarios, err := class.ResourceTestScenarios(store)
+	if !assert.NoError(t, err) {
+		return
+	}
+	assert.Equal(t, original, class.resourceTestCopy(), "scenario projection must not mutate canonical test values")
+	testCases := []test.TestCase{
+		{Name: "Minimum", Expected: resourceScenarioExpected{Contains: []string{`name = "name_1"`, `parent_dn = aci_parent.test_1[0].id`}, NotContains: []string{"description", "labels", "annotations", "monitoring"}, Action: "Create"}},
+		{Name: "Full", Expected: resourceScenarioExpected{Contains: []string{`description = "description_1"`, `labels`, `annotations`, `resource_only = "resource_only_1"`}}},
+		{Name: "FullUnchanged", Expected: resourceScenarioExpected{PlanOnly: true}},
+		{Name: "Update", Expected: resourceScenarioExpected{Contains: []string{`name = "name_1"`, `description = "description_2"`}, NotContains: []string{`name = "name_2"`, "aci_parent.test_2[0].id"}, Action: "Update"}},
+		{Name: "OmitOptional", Expected: resourceScenarioExpected{Contains: []string{`name = "name_1"`}, NotContains: []string{"description", "labels", "annotation ="}}},
+		{Name: "Reset", Expected: resourceScenarioExpected{Contains: []string{`description = ""`, `labels`, `[]`}, Action: "Update"}},
+		{Name: "ClearChildren", Expected: resourceScenarioExpected{Contains: []string{`annotations = []`, `monitoring`}, Action: "Update"}},
+		{Name: "UpdateChildren", Expected: resourceScenarioExpected{Contains: []string{`key   = "key_1"`, `value = "value_2"`}, Action: "Update"}},
+		{Name: "RemoveChild", Expected: resourceScenarioExpected{NotContains: []string{`key   = "key_2"`}, Action: "Update"}},
+		{Name: "ChangeChildIdentifier", Expected: resourceScenarioExpected{Contains: []string{`key   = "key_2"`}, NotContains: []string{`key   = "key_1"`}, Action: "Update"}},
+		{Name: "OmitChildren", Expected: resourceScenarioExpected{NotContains: []string{"annotations", "monitoring"}}},
+		{Name: "ReorderChildren", Expected: resourceScenarioExpected{PlanOnly: true}},
+		{Name: "ExternalDeletion", Expected: resourceScenarioExpected{Action: "Create", PlanOnly: true}},
+		{Name: "ReplaceIdentifier", Expected: resourceScenarioExpected{Contains: []string{`name = "name_2"`}, Action: "Replace", IDChanges: true}},
+		{Name: "ReplaceParent", Expected: resourceScenarioExpected{Contains: []string{`aci_parent.test_2[0].id`}, Action: "Replace", IDChanges: true}},
+		{Name: "Destroy", Expected: resourceScenarioExpected{Action: "Destroy"}},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			index := slices.IndexFunc(scenarios, func(scenario ResourceTestScenario) bool { return scenario.Name == testCase.Name })
+			if !assert.NotEqual(t, -1, index) {
+				return
+			}
+			scenario := scenarios[index]
+			expected := testCase.Expected.(resourceScenarioExpected)
+			// Ignore alignment added by hclwrite when checking lifecycle values.
+			configuration := strings.Join(strings.Fields(scenario.Configuration), " ")
+			for _, value := range expected.Contains {
+				assert.Contains(t, configuration, strings.Join(strings.Fields(value), " "))
+			}
+			for _, value := range expected.NotContains {
+				assert.NotContains(t, configuration, strings.Join(strings.Fields(value), " "))
+			}
+			assert.Equal(t, expected.Action, scenario.Action)
+			assert.Equal(t, expected.IDChanges, scenario.IDChanges)
+			assert.Equal(t, expected.PlanOnly, scenario.PlanOnly)
+		})
+	}
+	assert.True(t, slices.ContainsFunc(scenarios, func(scenario ResourceTestScenario) bool { return scenario.Import }))
+	importIndex := slices.IndexFunc(scenarios, func(scenario ResourceTestScenario) bool { return scenario.Import })
+	resetIndex := slices.IndexFunc(scenarios, func(scenario ResourceTestScenario) bool { return scenario.Name == "Reset" })
+	childrenIndex := slices.IndexFunc(scenarios, func(scenario ResourceTestScenario) bool { return scenario.Name == "ClearChildren" })
+	assert.Greater(t, importIndex, resetIndex, "import compares state persisted by the update/reset applies")
+	assert.Less(t, importIndex, childrenIndex, "import precedes child lifecycle changes, matching the legacy ordering")
+	assert.True(t, slices.ContainsFunc(scenarios, func(scenario ResourceTestScenario) bool {
+		return scenario.ExpectError == "ExampleMonitor object defined by monitoring cannot be deleted"
+	}))
+	for _, name := range []string{"OmitOptional", "OmitChildren", "ClearChildren", "ChangeChildIdentifier"} {
+		index := slices.IndexFunc(scenarios, func(scenario ResourceTestScenario) bool { return scenario.Name == name })
+		if !assert.NotEqual(t, -1, index) {
+			continue
+		}
+		assertions := scenarios[index].Assertions
+		if name == "OmitOptional" {
+			assert.True(t, slices.ContainsFunc(assertions, func(a TestAssertion) bool {
+				return a.AttributePath == "description" && a.ExpectedValue == "description_2"
+			}))
+			assert.True(t, slices.ContainsFunc(assertions, func(a TestAssertion) bool {
+				return a.AttributePath == "annotation" && a.ExpectedExpression == "globalAnnotation"
+			}))
+		}
+		if name == "OmitChildren" || name == "ClearChildren" {
+			count := 2
+			if name == "ClearChildren" {
+				count = 0
+			}
+			assert.True(t, slices.ContainsFunc(assertions, func(a TestAssertion) bool {
+				return a.AttributePath == "annotations" && a.IsSetCount() && a.ExpectedCount == count
+			}))
+		}
+	}
+}
+
+func TestResourceTestExistingObjects(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+	class, store := resourceScenarioFixture()
+	enabled := true
+	class.Properties["name"].PrefixEnabled = &enabled
+	class.Properties["descr"].CreateOnly = true
+	class.Properties["resourceOnly"].propertyDefinition.TestConfig.IncludeIn = []string{"minimum"}
+	class.Properties["resourceOnly"].SupportedVersions, _ = NewVersions("6.0(1a)-")
+	monitor := store.Classes["exampleMonitor"]
+	monitor.RequiredAsChild = true
+	store.Classes[monitor.Name.String()] = monitor
+	class.TestChildren[1].Instances[0].Children = []*TestChild{class.TestChildren[0].clone()}
+	original := class.resourceTestCopy()
+	scenarios, err := class.ResourceTestScenarios(store)
+	if !assert.NoError(t, err) || !assert.GreaterOrEqual(t, len(scenarios), 5) {
+		return
+	}
+	assert.Equal(t, original, class.resourceTestCopy())
+	assert.Equal(t, []string{"Minimum", "RejectExisting", "AllowExisting", "ForgetExisting", "Full"}, []string{scenarios[0].Name, scenarios[1].Name, scenarios[2].Name, scenarios[3].Name, scenarios[4].Name})
+	minimum, diagnostics := hclsyntax.ParseConfig([]byte(scenarios[0].Configuration), "minimum.tf", hcl.InitialPos)
+	if !assert.False(t, diagnostics.HasErrors(), diagnostics.Error()) {
+		return
+	}
+	minimumBody := minimum.Body.(*hclsyntax.Body).Blocks[0].Body.SrcRange.SliceBytes([]byte(scenarios[0].Configuration))
+	assert.Contains(t, string(minimumBody), "var.test_prefix")
+	assert.Contains(t, string(minimumBody), "parent_dn")
+	assert.Contains(t, string(minimumBody), "description_1")
+	assert.Contains(t, string(minimumBody), "monitoring = {")
+	assert.Contains(t, string(minimumBody), "6.0(1a)-")
+	assert.NotContains(t, string(minimumBody), "labels")
+
+	type expected struct {
+		AllowExisting bool
+		Forget        bool
+		Error         string
+		Action        string
+	}
+	testCases := []test.TestCase{
+		{Name: "RejectExisting", Expected: expected{Error: "Object Already Exists"}},
+		{Name: "AllowExisting", Expected: expected{AllowExisting: true, Action: "Create"}},
+		{Name: "ForgetExisting", Expected: expected{AllowExisting: true, Forget: true}},
+	}
+	for index, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			scenario := scenarios[index+1]
+			want := testCase.Expected.(expected)
+			assert.Equal(t, want.Error, scenario.ExpectError)
+			assert.Equal(t, want.Action, scenario.Action)
+			assert.Equal(t, !want.Forget, scenario.ExistingObject)
+			assert.Equal(t, want.Forget, scenario.ForgetExisting)
+			assert.Empty(t, scenario.Assertions, "these steps use small identity/state checks")
+			file, diagnostics := hclsyntax.ParseConfig([]byte(scenario.Configuration), "existing.tf", hcl.InitialPos)
+			if !assert.False(t, diagnostics.HasErrors(), diagnostics.Error()) {
+				return
+			}
+			resources, providers, removed := 0, 0, 0
+			for _, block := range file.Body.(*hclsyntax.Body).Blocks {
+				switch block.Type {
+				case "resource":
+					resources++
+					assert.Equal(t, "aci_example", block.Labels[0])
+					assert.Contains(t, []string{"test_1", "existing_on_create"}, block.Labels[1])
+					assert.Equal(t, string(minimumBody), string(block.Body.SrcRange.SliceBytes([]byte(scenario.Configuration))))
+				case "provider":
+					providers++
+					assert.Equal(t, []string{"aci"}, block.Labels)
+					value, diagnostics := block.Body.Attributes["allow_existing_on_create"].Expr.Value(nil)
+					assert.False(t, diagnostics.HasErrors(), diagnostics.Error())
+					assert.True(t, value.RawEquals(cty.BoolVal(want.AllowExisting)))
+				case "removed":
+					removed++
+					traversal, diagnostics := hcl.AbsTraversalForExpr(block.Body.Attributes["from"].Expr)
+					assert.False(t, diagnostics.HasErrors(), diagnostics.Error())
+					assert.Equal(t, "aci_example.existing_on_create", dataSourceTestTraversalAddress(traversal))
+					if assert.Len(t, block.Body.Blocks, 1) {
+						assert.Equal(t, "lifecycle", block.Body.Blocks[0].Type)
+						value, diagnostics := block.Body.Blocks[0].Body.Attributes["destroy"].Expr.Value(nil)
+						assert.False(t, diagnostics.HasErrors(), diagnostics.Error())
+						assert.True(t, value.RawEquals(cty.False))
+					}
+				}
+			}
+			assert.Equal(t, 1, providers)
+			if want.Forget {
+				assert.Equal(t, 1, resources)
+				assert.Equal(t, 1, removed)
+			} else {
+				assert.Equal(t, 2, resources)
+				assert.Zero(t, removed)
+			}
+		})
+	}
+}
+
+func TestResourceTestMinimumRequiredChildren(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+	class, store := resourceScenarioFixture()
+	monitor := store.Classes["exampleMonitor"]
+	monitor.RequiredAsChild = true
+	store.Classes[monitor.Name.String()] = monitor
+	detail := store.Classes["tagAnnotation"]
+	detail.Name = testClassName("requiredDetail")
+	detail.ResourceNameNested = "required_details"
+	detail.RequiredAsChild = true
+	store.Classes[detail.Name.String()] = detail
+	required := class.TestChildren[0].clone()
+	required.Class = detail.Name
+	class.TestChildren[1].Instances[0].Children = []*TestChild{required, class.TestChildren[0].clone()}
+	original := class.resourceTestCopy()
+
+	scenarios, err := class.ResourceTestScenarios(store)
+	if !assert.NoError(t, err) {
+		return
+	}
+	minimum := scenarios[0]
+	assert.Equal(t, "Minimum", minimum.Name)
+	assert.Contains(t, minimum.Configuration, "monitoring = {")
+	assert.Contains(t, minimum.Configuration, "required_details = [")
+	assert.NotContains(t, minimum.Configuration, "annotations")
+	assert.True(t, slices.ContainsFunc(minimum.Assertions, func(assertion TestAssertion) bool {
+		return assertion.AttributePath == "monitoring.required_details" && assertion.IsSetCount() && assertion.ExpectedCount == 2
+	}))
+	assert.Equal(t, original, class.resourceTestCopy())
+}
+
+func TestResourceTestRequiredChildScenarios(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+	testCases := []test.TestCase{
+		{Name: "test_non_deletable_required_child", Input: false},
+		{Name: "test_deletable_required_child", Input: true},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			class, store := resourceScenarioFixture()
+			monitor := store.Classes["exampleMonitor"]
+			monitor.RequiredAsChild = true
+			monitor.AllowDelete = testCase.Input.(bool)
+			store.Classes[monitor.Name.String()] = monitor
+			scenarios, err := class.ResourceTestScenarios(store)
+			if !assert.NoError(t, err) {
+				return
+			}
+			for _, name := range []string{"ClearChildren", "OmitChildren"} {
+				index := slices.IndexFunc(scenarios, func(scenario ResourceTestScenario) bool { return scenario.Name == name })
+				if assert.NotEqual(t, -1, index) {
+					assert.Contains(t, scenarios[index].Configuration, "monitoring = {")
+				}
+			}
+			index := slices.IndexFunc(scenarios, func(scenario ResourceTestScenario) bool { return scenario.Name == "RejectDeleteExampleMonitor" })
+			if assert.NotEqual(t, -1, index) {
+				assert.NotContains(t, scenarios[index].Configuration, "monitoring =")
+				assert.Equal(t, `The argument "monitoring" is required`, scenarios[index].ExpectError)
+				assert.Contains(t, scenarios[index+1].Configuration, "monitoring = {")
+			}
+		})
+	}
+}
+
+func TestResourceTestChildIdentifierPreservesDescendants(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+	testCases := []test.TestCase{
+		{Name: "test_children", Input: 1},
+		{Name: "test_deep_children", Input: 3},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			class, store := resourceScenarioFixture()
+			child := class.TestChildren[0].clone()
+			for _, name := range []string{"exampleLayerOne", "exampleLayerTwo", "exampleLayerThree"}[:testCase.Input.(int)] {
+				parent := store.Classes["tagAnnotation"]
+				parent.Name = testClassName(name)
+				parent.ResourceNameNested = name
+				store.Classes[name] = parent
+				instances := []TestChildInstance{buildChildInstance(&parent, 0), buildChildInstance(&parent, 1)}
+				for index := range instances {
+					instances[index].Children = []*TestChild{child.clone()}
+				}
+				child = &TestChild{Class: parent.Name, Instances: instances}
+			}
+			class.TestChildren = []*TestChild{child}
+			original := class.resourceTestCopy()
+			changed := class.resourceTestCopy()
+			builder := resourceTestBuilder{class: &class, dataStore: store}
+			builder.changeChildren(&changed, "trim")
+			builder.changeChildren(&changed, "identifier")
+			if assert.Len(t, changed.TestChildren[0].Instances, 1) {
+				assert.Equal(t, child.Instances[1], changed.TestChildren[0].Instances[0])
+			}
+			assert.Equal(t, original, class.resourceTestCopy())
+		})
+	}
+}
+
+func TestResourceTestApplicability(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+	testCases := []test.TestCase{
+		{Name: "test_non_deletable_root", Input: false, Expected: false},
+		{Name: "test_deletable_root", Input: true, Expected: true},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			class := dataSourceTestClass("constantRoot", "constant", ResourceArtifact)
+			class.AllowDelete = testCase.Input.(bool)
+			scenarios, err := class.ResourceTestScenarios(&DataStore{})
+			if !assert.NoError(t, err) {
+				return
+			}
+			assert.Equal(t, testCase.Expected, slices.ContainsFunc(scenarios, func(scenario ResourceTestScenario) bool { return scenario.ExternalDelete }))
+			assert.False(t, slices.ContainsFunc(scenarios, func(scenario ResourceTestScenario) bool { return scenario.IDChanges || scenario.Action == "Update" }))
+		})
+	}
+}
+
+func TestResourceTestChangedVersionsAndSingletonClear(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+	class, store := resourceScenarioFixture()
+	monitor := store.Classes["exampleMonitor"]
+	monitor.AllowDelete = true
+	monitor.SupportedVersions, _ = NewVersions("5.0(1a)-")
+	store.Classes["exampleMonitor"] = monitor
+	for name, property := range class.Properties {
+		if name != "name" && name != "parentDn" {
+			property.SupportedVersions, _ = NewVersions("6.0(1a)-")
+		}
+	}
+	scenarios, err := class.ResourceTestScenarios(store)
+	if !assert.NoError(t, err) {
+		return
+	}
+	testCases := []test.TestCase{
+		{Name: "Update", Expected: [][]string{{"6.0(1a)-"}}},
+		{Name: "Reset", Expected: [][]string{{"6.0(1a)-"}}},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			index := slices.IndexFunc(scenarios, func(scenario ResourceTestScenario) bool { return scenario.Name == testCase.Name })
+			if assert.NotEqual(t, -1, index) {
+				assert.Equal(t, testCase.Expected, scenarios[index].ChangeVersions)
+			}
+		})
+	}
+	index := slices.IndexFunc(scenarios, func(scenario ResourceTestScenario) bool { return scenario.Name == "ClearChildren" })
+	if assert.NotEqual(t, -1, index) {
+		assert.Contains(t, scenarios[index].Configuration, `? {} : null`)
+		assert.True(t, slices.ContainsFunc(scenarios[index].Assertions, func(a TestAssertion) bool { return a.AttributePath == "monitoring" && a.IsAttributeAbsent() }))
+	}
+}
+
+func TestResourceTestDependencyUnion(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+	class, store := resourceScenarioFixture()
+	configuration, err := class.ResourceTestDependenciesHCL(store)
+	assert.NoError(t, err)
+	assert.Contains(t, configuration, `resource "aci_parent" "test_1"`)
+	assert.Contains(t, configuration, `resource "aci_parent" "test_2"`)
+	class.Properties["name"].PrefixEnabled = nil
+	assertions := class.resourceTestAssertions(store)
+	assert.False(t, slices.ContainsFunc(assertions, func(a TestAssertion) bool { return a.PairAddress == "aci_example.test_1" }), "resource expectations must not compare the resource to itself")
+	assert.True(t, slices.ContainsFunc(assertions, func(a TestAssertion) bool {
+		return a.AttributePath == "resource_only" && a.ExpectedValue == "resource_only_1"
+	}))
+}
+
+func resourceScenarioFixture() (Class, *DataStore) {
+	disabled := false
+	class := dataSourceTestClass("exampleRoot", "example", ResourceArtifact)
+	class.AllowDelete = true
+	class.IdentifiedBy = []string{"name"}
+	class.PropertiesAll = []string{"annotation", "descr", "labels", "name", "parentDn", "resourceOnly"}
+	class.Properties = map[string]*Property{
+		"annotation":   dataSourceTestProperty("annotation", "annotation", dataSourceTestValues("annotation_1", "annotation_2", "", false)),
+		"descr":        dataSourceTestProperty("descr", "description", dataSourceTestValues("description_1", "description_2", "", false)),
+		"labels":       dataSourceTestProperty("labels", "labels", dataSourceTestValues("label_1", "label_2", "", false)),
+		"name":         dataSourceTestProperty("name", "name", dataSourceTestValues("name_1", "name_2", "name_1", true)),
+		"parentDn":     dataSourceTestProperty("parentDn", "parent_dn", dataSourceTestReferenceValues("aci_parent.test_1.id", "aci_parent.test_1.id", "aci_parent.test_2.id")),
+		"resourceOnly": dataSourceTestProperty("resourceOnly", "resource_only", dataSourceTestValues("resource_only_1", "resource_only_2", "", false)),
+	}
+	for _, property := range class.Properties {
+		property.Computed = true
+	}
+	class.Properties["name"].Required = true
+	class.Properties["name"].RequiresReplace = true
+	class.Properties["name"].PrefixEnabled = &disabled
+	class.Properties["parentDn"].Required = true
+	class.Properties["parentDn"].RequiresReplace = true
+	class.Properties["labels"].ValueType = Set
+	class.Properties["labels"].TestValues.Default = newTestValueScenario(nil)
+	class.Properties["resourceOnly"].IgnoreInDataSourceTest = true
+	class.Properties["descr"].propertyDefinition.TestConfig.Default.Defined = true
+	class.Properties["labels"].propertyDefinition.TestConfig.Default.Defined = true
+	parent := dataSourceTestClass("exampleParent", "parent", ResourceArtifact)
+	parent.AllowDelete = true
+	parent.IdentifiedBy = []string{"name"}
+	parent.PropertiesAll = []string{"name"}
+	parent.Properties = map[string]*Property{"name": dataSourceTestProperty("name", "name", dataSourceTestValues("parent_1", "parent_2", "parent_1", true))}
+	for _, reference := range []string{"aci_parent.test_1.id", "aci_parent.test_2.id"} {
+		class.TestDependencies = append(class.TestDependencies, &TestDependency{Class: parent.Name, Reference: reference, ReferenceType: ResourceReference, Role: Parent})
+	}
+	child := dataSourceTestClass("tagAnnotation", "annotation")
+	child.AllowDelete = true
+	child.ResourceNameNested = "annotations"
+	child.IdentifiedBy = []string{"key"}
+	child.PropertiesAll = []string{"key", "value"}
+	child.Properties = map[string]*Property{
+		"key":   dataSourceTestProperty("key", "key", dataSourceTestValues("key_1", "key_2", "key_1", true)),
+		"value": dataSourceTestProperty("value", "value", dataSourceTestValues("value_1", "value_2", "", false)),
+	}
+	monitor := dataSourceTestClass("exampleMonitor", "monitor")
+	monitor.IsSingleNestedWhenDefinedAsChild = true
+	monitor.ResourceNameNested = "monitoring"
+	monitor.PropertiesAll = []string{"name"}
+	monitor.Properties = map[string]*Property{"name": dataSourceTestProperty("name", "name", dataSourceTestValues("monitor_1", "monitor_2", "monitor_1", true))}
+	class.TestChildren = []*TestChild{{Class: child.Name, Instances: []TestChildInstance{buildChildInstance(&child, 0), buildChildInstance(&child, 1)}}, {Class: monitor.Name, Instances: []TestChildInstance{buildChildInstance(&monitor, 0)}}}
+	store := &DataStore{Classes: map[string]Class{class.Name.String(): class, parent.Name.String(): parent, child.Name.String(): child, monitor.Name.String(): monitor}}
+	return class, store
+}
+
+func TestAllResourceTestConfigurationsAreSelfContained(t *testing.T) {
+	test.InitializeTest(t)
+	_, file, _, _ := runtime.Caller(0)
+	t.Chdir(filepath.Clean(filepath.Join(filepath.Dir(file), "..", "..", "..")))
+	ctx := NewContext()
+	store, err := NewDataStore(ctx)
+	if !assert.NoError(t, err) || !assert.NoError(t, ctx.Diagnostics.Error()) {
+		return
+	}
+	for _, name := range slices.Sorted(maps.Keys(store.Classes)) {
+		class := store.Classes[name]
+		if !class.HasResourceArtifact() || slices.Contains(class.TestConfig.IgnoreTests, ResourceIgnoreTest) {
+			continue
+		}
+		t.Run(name, func(t *testing.T) {
+			dependencies, err := class.ResourceTestDependenciesHCL(store)
+			if !assert.NoError(t, err) {
+				return
+			}
+			assert.NoError(t, validateDataSourceTestDependencyCounts(dependencies))
+			scenarios, err := class.ResourceTestScenarios(store)
+			if !assert.NoError(t, err) {
+				return
+			}
+			for _, scenario := range scenarios {
+				t.Run(scenario.Name, func(t *testing.T) {
+					assert.NoError(t, validateDataSourceTestConfiguration(dependencies+"\n"+scenario.Configuration, scenario.Assertions))
+				})
+			}
+		})
+	}
 }

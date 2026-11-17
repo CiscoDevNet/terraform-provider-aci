@@ -18,6 +18,8 @@ properties:
       - config_value: 203.0.113.12
       default:
       - config_value: 198.51.100.1
+      include_in:
+      - reset
       update:
       - config_value: 2001:db8::2
   dstPort:
@@ -47,6 +49,9 @@ properties:
   sourceIpType:
     documentation:
       description: The type of the source IP address for the %s object.
+    test_config:
+      update:
+      - config_value: custom-src-ip
   srcAddr:
     attribute_name: source_ip_address
     documentation:
@@ -56,6 +61,8 @@ properties:
       - config_value: 203.0.113.11/20
       default:
       - config_value: 192.0.2.1/20
+      include_in:
+      - minimum
       update:
       - config_value: 2001:db8::1/116
   ver:
@@ -64,6 +71,8 @@ properties:
       description: The NetFlow Exporter Version of the %s object.
     test_config:
       create:
+      - config_value: v9
+      update:
       - config_value: v9
 resource_name: netflow_exporter_policy
 test_config:

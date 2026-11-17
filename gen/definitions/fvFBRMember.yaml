@@ -18,7 +18,7 @@ properties:
       datasource_missing:
       - config_value: 198.51.100.4
       update:
-      - config_value: fe80::0001
+      - config_value: fe80::1
 resource_name: vrf_fallback_route_group_member
 test_config:
   embedded_instances:

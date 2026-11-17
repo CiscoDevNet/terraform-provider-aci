@@ -13,6 +13,8 @@ properties:
       - config_value: "1"
       datasource_missing:
       - config_value: "2"
+      update:
+      - config_value: "1"
   parentDn:
     default_values:
       uni/tn-infra: ""
@@ -22,11 +24,14 @@ properties:
       description: A global route target used to define communities for route leaking
         or redistribution in multi-pod or multi-site deployments to manage routing
         policies across fabrics.
+    example_config:
+      minimum:
+      - value: extended:as2-nn4:5:16
     test_config:
       create:
       - config_value: extended:as2-nn4:5:16
       default:
-      - config_value: extended:as2-nn4:5:16
+      - config_value: unknown:unknown:0:0
       update:
       - config_value: extended:as2-nn4:5:16
   siteId:
@@ -36,4 +41,11 @@ properties:
     test_config:
       create:
       - config_value: "0"
+      default:
+      - assert_strategy: presence_only
+        assert_value: "0"
+        config_include: false
+        config_value: ""
 resource_name: fabric_external_connection_policy
+test_config:
+  run_serially: true

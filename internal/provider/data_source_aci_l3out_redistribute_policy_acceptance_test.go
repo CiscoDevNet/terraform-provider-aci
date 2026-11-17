@@ -32,9 +32,8 @@ func TestAccDataSourceL3extRsRedistributePolGenerated(t *testing.T) {
 				PreConfig: func() {
 					t.Log("Test: L3Out Redistribute Policy Data Source - Read Existing Object")
 				},
-				Config:             testAccDataSourceL3extRsRedistributePolExisting,
-				ConfigVariables:    variables,
-				ExpectNonEmptyPlan: true,
+				Config:          testAccDataSourceL3extRsRedistributePolExisting,
+				ConfigVariables: variables,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttrSet("data.aci_l3out_redistribute_policy.test", "id"),
 					resource.TestCheckResourceAttr("data.aci_l3out_redistribute_policy.test", "annotation", "annotation_1"),
@@ -88,6 +87,11 @@ resource "aci_l3_outside" "test_1" {
   name                   = "name_1"
   relation_l3ext_rs_ectx = aci_vrf.test_1[0].id
   tenant_dn              = aci_tenant.test_1[0].id
+  lifecycle {
+    # This dependency reads these attributes into state, but standalone resources manage them.
+    # Ignore the dependency's copy to avoid competing configuration changes after refresh.
+    ignore_changes = [relation_l3extrs_redistribute_pol]
+  }
 }
 resource "aci_route_control_profile" "test_1" {
   count     = 1

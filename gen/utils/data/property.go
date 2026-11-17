@@ -246,6 +246,8 @@ type TestValueEntry struct {
 	// When empty, defaults to ConfigValue. Used when the server normalizes the value
 	// (e.g. IP zero-padding: config "fe80::1" -> state "fe80::0001").
 	AssertValue string
+	// AssertStrategy selects value comparison or a non-empty presence check.
+	AssertStrategy AssertStrategyEnum
 	// ValueType controls HCL rendering: StringValue is quoted; ReferenceValue and
 	// ExpressionValue are unquoted.
 	ValueType ValueRenderTypeEnum
@@ -848,10 +850,11 @@ func convertTestValueEntries(testValueEntryDefinitions []TestValueEntryDefinitio
 	result := make([]TestValueEntry, 0, len(testValueEntryDefinitions))
 	for _, testValueEntryDefinition := range testValueEntryDefinitions {
 		testValueEntry := TestValueEntry{
-			ConfigValue:   testValueEntryDefinition.ConfigValue,
-			ConfigInclude: true,
-			AssertValue:   testValueEntryDefinition.ConfigValue,
-			ValueType:     testValueEntryDefinition.ValueType,
+			ConfigValue:    testValueEntryDefinition.ConfigValue,
+			ConfigInclude:  true,
+			AssertValue:    testValueEntryDefinition.ConfigValue,
+			AssertStrategy: testValueEntryDefinition.AssertStrategy,
+			ValueType:      testValueEntryDefinition.ValueType,
 		}
 		if testValueEntryDefinition.ConfigInclude != nil {
 			testValueEntry.ConfigInclude = *testValueEntryDefinition.ConfigInclude
@@ -1039,11 +1042,12 @@ func (p *Property) generateDefault(create []TestValueEntry) []TestValueEntry {
 		defaults := make([]TestValueEntry, 0, len(create))
 		for _, c := range create {
 			defaults = append(defaults, TestValueEntry{
-				ConfigValue:   c.ConfigValue,
-				ConfigInclude: true,
-				AssertValue:   c.AssertValue,
-				ValueType:     c.ValueType,
-				Versions:      c.Versions,
+				ConfigValue:    c.ConfigValue,
+				ConfigInclude:  true,
+				AssertValue:    c.AssertValue,
+				AssertStrategy: c.AssertStrategy,
+				ValueType:      c.ValueType,
+				Versions:       c.Versions,
 			})
 		}
 		genLogger.Tracef("Successfully generated default test values for property '%s'.", p.PropertyName)
@@ -1087,10 +1091,11 @@ func (p *Property) generateForceNew(create []TestValueEntry) []TestValueEntry {
 	forceNew := make([]TestValueEntry, 0, len(create))
 	for _, c := range create {
 		forceNew = append(forceNew, TestValueEntry{
-			ConfigValue:   c.ConfigValue,
-			ConfigInclude: c.ConfigInclude,
-			AssertValue:   c.AssertValue,
-			ValueType:     c.ValueType,
+			ConfigValue:    c.ConfigValue,
+			ConfigInclude:  c.ConfigInclude,
+			AssertValue:    c.AssertValue,
+			AssertStrategy: c.AssertStrategy,
+			ValueType:      c.ValueType,
 		})
 	}
 	genLogger.Tracef("Successfully generated force new test values for property '%s'.", p.PropertyName)
@@ -1139,11 +1144,12 @@ func (p *Property) setLegacyTestValues() {
 	entries := make([]TestValueEntry, 0, len(p.TestValues.Create.Entries))
 	for _, c := range p.TestValues.Create.Entries {
 		entries = append(entries, TestValueEntry{
-			ConfigValue:   c.ConfigValue,
-			ConfigInclude: c.ConfigInclude,
-			AssertValue:   c.AssertValue,
-			ValueType:     c.ValueType,
-			Versions:      c.Versions,
+			ConfigValue:    c.ConfigValue,
+			ConfigInclude:  c.ConfigInclude,
+			AssertValue:    c.AssertValue,
+			AssertStrategy: c.AssertStrategy,
+			ValueType:      c.ValueType,
+			Versions:       c.Versions,
 		})
 	}
 	p.TestValues.Legacy = newTestValueScenario(entries)

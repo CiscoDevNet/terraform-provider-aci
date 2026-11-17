@@ -27,6 +27,8 @@ properties:
     test_config:
       create:
       - config_value: fsync-ql-o2-g2-eec2
+      update:
+      - config_value: fsync-ql-o1-eec1
   qlrcvhval:
     attribute_name: quality_receive_highest_value
     documentation:
@@ -35,6 +37,8 @@ properties:
         input value depends on the choice of 'quality_level_options'.
     test_config:
       create:
+      - config_value: fsync-ql-common-none
+      update:
       - config_value: fsync-ql-common-none
   qlrcvlval:
     attribute_name: quality_receive_lowest_value
@@ -45,6 +49,8 @@ properties:
     test_config:
       create:
       - config_value: fsync-ql-common-none
+      update:
+      - config_value: fsync-ql-common-none
   qltxexactval:
     attribute_name: quality_transmit_exact_value
     documentation:
@@ -54,6 +60,8 @@ properties:
     test_config:
       create:
       - config_value: fsync-ql-o2-g2-eec2
+      update:
+      - config_value: fsync-ql-o1-eec1
   qltxhval:
     attribute_name: quality_transmit_highest_value
     documentation:
@@ -63,6 +71,8 @@ properties:
     test_config:
       create:
       - config_value: fsync-ql-common-none
+      update:
+      - config_value: fsync-ql-common-none
   qltxlval:
     attribute_name: quality_transmit_lowest_value
     documentation:
@@ -71,6 +81,8 @@ properties:
         input value depends on the choice of 'quality_level_options'.
     test_config:
       create:
+      - config_value: fsync-ql-common-none
+      update:
       - config_value: fsync-ql-common-none
   selinput:
     attribute_name: selection_input

@@ -7,6 +7,7 @@ package provider
 import (
 	"regexp"
 	"testing"
+	"time"
 
 	"github.com/hashicorp/terraform-plugin-testing/config"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
@@ -15,9 +16,11 @@ import (
 )
 
 func TestAccDataSourceCommPolGenerated(t *testing.T) {
-	if testAccRunner.RunInSubprocess(t) {
+	if testAccRunner.RunSeriallyInSubprocess(t) {
 		return
 	}
+
+	acceptancetest.DelayAfterTest(t, 15*time.Second)
 
 	variables := config.Variables{}
 	resource.Test(t, resource.TestCase{

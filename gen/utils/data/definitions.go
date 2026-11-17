@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 
 	"gopkg.in/yaml.v2"
@@ -272,6 +273,8 @@ type TestValueEntryDefinition struct {
 	ConfigInclude *bool `yaml:"config_include"`
 	// Expected value in state after apply. Empty = same as ConfigValue.
 	AssertValue string `yaml:"assert_value"`
+	// Selects value comparison (default) or a non-empty presence check.
+	AssertStrategy AssertStrategyEnum `yaml:"assert_strategy"`
 	// Controls HCL rendering: "string" (default, quoted), "reference" (unquoted expression).
 	ValueType ValueRenderTypeEnum `yaml:"value_type"`
 }
@@ -320,6 +323,9 @@ type TestPrefixOverrideDefinition struct {
 // TestConfigDefinition groups test-related overrides for a property definition.
 type TestConfigDefinition struct {
 	Prefix TestPrefixOverrideDefinition `yaml:"prefix"`
+	// Scenario names use snake_case. These override configuration presence, not assertions.
+	IncludeIn   []string `yaml:"include_in"`
+	ExcludeFrom []string `yaml:"exclude_from"`
 	// Values for the "all attributes" create step. Each entry becomes a TestValueEntry.
 	Create TestValueScenarioDefinition `yaml:"create"`
 	// Values used only by a datasource lookup that is expected not to find an
@@ -343,6 +349,21 @@ type TestConfigDefinition struct {
 	// When true, the property remains available to resource tests but is omitted
 	// from generated datasource setup and assertions.
 	IgnoreInDataSourceTest bool `yaml:"ignore_in_datasource_test"`
+}
+
+func (d *TestConfigDefinition) UnmarshalYAML(unmarshal func(any) error) error {
+	type definition TestConfigDefinition
+	var value definition
+	if err := unmarshal(&value); err != nil {
+		return err
+	}
+	for _, scenario := range value.IncludeIn {
+		if slices.Contains(value.ExcludeFrom, scenario) {
+			return fmt.Errorf("test scenario %q appears in both include_in and exclude_from", scenario)
+		}
+	}
+	*d = TestConfigDefinition(value)
+	return nil
 }
 
 // ValidatorDefinition mirrors the YAML/JSON shape of a single validator entry (min/max plus optional regex statements).
@@ -509,6 +530,8 @@ type TestDependencyDefinition struct {
 	// OrderOnly makes this nested dependency an explicit Terraform depends_on
 	// edge when its value cannot safely be referenced during planning.
 	OrderOnly bool `yaml:"order_only"`
+	// Attributes managed by standalone resources in this test, rather than this dependency.
+	IgnoreChanges []string `yaml:"ignore_changes"`
 	// Property overrides for the dependency resource's HCL configuration. Optional
 	// for loaded framework classes; complete input is required for definition-only
 	// legacy resources because no normalized schema/test values are available.
@@ -542,6 +565,10 @@ type ChildTestInstanceOverrideDefinition struct {
 // Consistent with PropertyDefinition.TestConfig — both use the `test_config` YAML key.
 type ClassTestConfigDefinition struct {
 	Prefix TestPrefixDefinition `yaml:"prefix"`
+	// RunSerially prevents overlap with other generated tests when fixtures change shared APIC settings.
+	RunSerially bool `yaml:"run_serially"`
+	// PostTestDelaySeconds allows shared APIC settings to settle after Terraform cleanup.
+	PostTestDelaySeconds int `yaml:"post_test_delay_seconds"`
 	// When true, Dependencies fully replaces all auto-resolved dependencies.
 	// When false (default), Dependencies are merged on top of auto-resolved dependencies.
 	ReplaceAutoResolved bool `yaml:"replace_auto_resolved"`

@@ -31,7 +31,7 @@ properties:
       create:
       - config_value: uplink_name_1
       update:
-      - config_value: uplink_name_2
+      - config_value: uplink_name_3
 resource_name: vmm_uplink_policy
 resource_name_nested: uplink_policies
 test_config:

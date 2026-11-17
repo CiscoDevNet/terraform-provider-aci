@@ -97,7 +97,7 @@ resource "aci_tenant" "test_1" {
 }
 resource "aci_tenant" "test_3" {
   count = 1
-  name  = format("%s-%s", var.test_prefix, "name_2")
+  name  = format("%s-%s", var.test_prefix, "export_tenant_1")
 }
 resource "aci_physical_domain" "test_1" {
   count = 1

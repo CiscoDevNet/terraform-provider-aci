@@ -14,11 +14,12 @@ example_parent_class: fvAEPg
 resource_name: relation_to_taboo_contract
 test_config:
   dependencies:
-  - class_name: fvESg
+  - class_name: fvAEPg
     dependencies:
     - class_name: fvAp
     role: parent
   - class_name: fvAEPg
     dependencies:
     - class_name: fvAp
+    reference: aci_application_epg.test_2.id
     role: parent

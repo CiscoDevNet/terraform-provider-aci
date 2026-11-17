@@ -1062,6 +1062,8 @@ type setTestConfigInput struct {
 }
 
 type setTestConfigExpected struct {
+	RunSerially                  bool
+	PostTestDelaySeconds         int
 	IgnoreTests                  []IgnoreTestEnum
 	IgnoreImportStateVerify      bool
 	DataSourceExpectNonEmptyPlan bool
@@ -1158,6 +1160,20 @@ func TestSetTestConfig(t *testing.T) {
 				DataSourceExpectNonEmptyPlan: true,
 			},
 		},
+		{
+			Name: "test_run_serially",
+			Input: setTestConfigInput{ClassDefinition: ClassDefinition{
+				TestConfig: ClassTestConfigDefinition{RunSerially: true},
+			}},
+			Expected: setTestConfigExpected{RunSerially: true},
+		},
+		{
+			Name: "test_post_test_delay",
+			Input: setTestConfigInput{ClassDefinition: ClassDefinition{
+				TestConfig: ClassTestConfigDefinition{PostTestDelaySeconds: 15},
+			}},
+			Expected: setTestConfigExpected{PostTestDelaySeconds: 15},
+		},
 	}
 
 	for _, testCase := range testCases {
@@ -1171,6 +1187,8 @@ func TestSetTestConfig(t *testing.T) {
 
 			class.setTestConfig()
 
+			assert.Equal(t, expected.RunSerially, class.TestConfig.RunSerially)
+			assert.Equal(t, expected.PostTestDelaySeconds, class.TestConfig.PostTestDelaySeconds)
 			assert.Equal(t, expected.IgnoreTests, class.TestConfig.IgnoreTests, test.MessageEqual(expected.IgnoreTests, class.TestConfig.IgnoreTests, testCase.Name))
 			assert.Equal(t, expected.IgnoreImportStateVerify, class.TestConfig.IgnoreImportStateVerify, test.MessageEqual(expected.IgnoreImportStateVerify, class.TestConfig.IgnoreImportStateVerify, testCase.Name))
 			assert.Equal(t, expected.DataSourceExpectNonEmptyPlan, class.TestConfig.DataSourceExpectNonEmptyPlan, test.MessageEqual(expected.DataSourceExpectNonEmptyPlan, class.TestConfig.DataSourceExpectNonEmptyPlan, testCase.Name))

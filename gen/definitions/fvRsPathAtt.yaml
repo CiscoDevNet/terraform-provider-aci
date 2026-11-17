@@ -27,6 +27,8 @@ properties:
     test_config:
       create:
       - config_value: vlan-203
+      update:
+      - config_value: unknown
   tDn:
     test_config:
       datasource_missing:

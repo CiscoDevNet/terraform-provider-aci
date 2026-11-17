@@ -2303,6 +2303,12 @@ resource "aci_application_profile" "test_1" {
   name      = "name_1"
   parent_dn = aci_tenant.test_1[0].id
 }
+resource "aci_bridge_domain" "test_1" {
+  count     = 1
+  pim       = provider::aci::compare_versions(var.apic_version, "inside", "2.0(1m)-") ? "yes" : null
+  name      = "name_1"
+  parent_dn = aci_tenant.test_1[0].id
+}
 resource "aci_monitoring_policy" "test_1" {
   count     = 1
   name      = "name_1"
@@ -2315,11 +2321,6 @@ resource "aci_attachable_access_entity_profile" "test_1" {
 resource "aci_attachable_access_entity_profile" "test_2" {
   count = 1
   name  = format("%s-%s", var.test_prefix, "name_2")
-}
-resource "aci_bridge_domain" "test_1" {
-  count     = 1
-  name      = "name_1"
-  parent_dn = aci_tenant.test_1[0].id
 }
 resource "aci_contract" "test_1" {
   count     = 1
@@ -2362,12 +2363,12 @@ resource "aci_taboo_contract" "test_2" {
 }
 resource "aci_application_epg" "target_1" {
   count     = 1
-  name      = "target_name_1"
+  name      = "contract_master_1"
   parent_dn = aci_application_profile.test_1[0].id
 }
 resource "aci_application_epg" "target_2" {
   count     = 1
-  name      = "target_name_2"
+  name      = "contract_master_2"
   parent_dn = aci_application_profile.test_1[0].id
 }
 resource "aci_trust_control_policy" "test_1" {

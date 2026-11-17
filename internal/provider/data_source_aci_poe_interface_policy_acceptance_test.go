@@ -141,7 +141,7 @@ resource "aci_tenant" "test_1" {
 }
 resource "aci_application_profile" "test_1" {
   count     = 1
-  name      = format("%s-%s", var.test_prefix, "name_1")
+  name      = "name_1"
   parent_dn = aci_tenant.test_1[0].id
 }
 resource "aci_application_epg" "test_1" {

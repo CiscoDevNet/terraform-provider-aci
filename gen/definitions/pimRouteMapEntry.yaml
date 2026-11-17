@@ -21,7 +21,7 @@ properties:
     test_config:
       create:
       - config_value: "1"
-      datasource_missing:
+      update:
       - config_value: "2"
   rp:
     attribute_name: rendezvous_point_ip

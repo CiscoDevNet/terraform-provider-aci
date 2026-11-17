@@ -67,11 +67,15 @@ test_config:
     reference: aci_endpoint_security_group.test_endpoint_security_group_1.id
     role: target
   - class_name: fvAEPg
+    config_overrides:
+      name: contract_master_1
     dependencies:
     - class_name: fvAp
     reference: aci_application_epg.test_application_epg_0.id
     role: target
   - class_name: fvAEPg
+    config_overrides:
+      name: contract_master_2
     dependencies:
     - class_name: fvAp
     reference: aci_application_epg.test_application_epg_1.id

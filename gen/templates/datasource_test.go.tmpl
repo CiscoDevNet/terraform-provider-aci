@@ -14,6 +14,9 @@ import (
 	"regexp"
 {{- end }}
 	"testing"
+{{- if $class.TestConfig.PostTestDelaySeconds }}
+	"time"
+{{- end }}
 
 	"github.com/hashicorp/terraform-plugin-testing/config"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
@@ -22,9 +25,17 @@ import (
 )
 
 func TestAccDataSource{{ $class.Name.Capitalized }}Generated(t *testing.T) {
+{{- if $class.TestConfig.RunSerially }}
+	if testAccRunner.RunSeriallyInSubprocess(t) {
+{{- else }}
 	if testAccRunner.RunInSubprocess(t) {
+{{- end }}
 		return
 	}
+{{- if $class.TestConfig.PostTestDelaySeconds }}
+
+	acceptancetest.DelayAfterTest(t, {{ $class.TestConfig.PostTestDelaySeconds }}*time.Second)
+{{- end }}
 
 	variables := config.Variables{}
 	resource.Test(t, resource.TestCase{
@@ -58,7 +69,15 @@ func TestAccDataSource{{ $class.Name.Capitalized }}Generated(t *testing.T) {
 {{- range $versions := $assertion.Versions }}
 					composeAggregateTestCheckFuncWithVersion(t, {{ printf "%q" $versions }}, "inside",
 {{- end }}
-{{- if $assertion.IsAttributeSet }}
+{{- if and $assertion.IsAttributeSet $assertion.Parents }}
+						acceptancetest.CheckPresent({{ printf "%q" $dataSourceAddress }}, {{ printf "%q" $assertion.AttributePath }}
+{{- range $parent := $assertion.Parents }}, acceptancetest.ParentSetElement{Path: {{ printf "%q" $parent.AttributePath }}, Values: map[string]acceptancetest.AttributeValue{
+{{- range $value := $parent.Values }}
+							{{ printf "%q" $value.AttributePath }}: {ExpectedValue: {{ printf "%q" $value.ExpectedValue }}, PairAddress: {{ printf "%q" $value.PairAddress }}, PairAttribute: {{ printf "%q" $value.PairAttribute }}},
+{{- end }}
+						}}
+{{- end }}),
+{{- else if $assertion.IsAttributeSet }}
 						resource.TestCheckResourceAttrSet({{ printf "%q" $dataSourceAddress }}, {{ printf "%q" $assertion.AttributePath }}),
 {{- else if $assertion.IsAttributeValue }}
 						resource.TestCheckResourceAttr({{ printf "%q" $dataSourceAddress }}, {{ printf "%q" $assertion.AttributePath }}, {{ printf "%q" $assertion.ExpectedValue }}),

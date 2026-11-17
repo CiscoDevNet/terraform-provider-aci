@@ -43,6 +43,10 @@ properties:
     documentation:
       description: The exceed mark differentiated services code point (DSCP) of the
         %s object.
+  mode:
+    test_config:
+      update:
+      - config_value: bit
   parentDn:
     default_values:
       uni/infra: ""

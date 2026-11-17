@@ -12,4 +12,6 @@ properties:
       - config_value: adepg/authsvr-common-sg1-ISE_1/grpcont/dom-cisco.com/grp-Eng
       datasource_missing:
       - config_value: adepg/authsvr-common-sg1-ISE_1/grpcont/dom-cisco.com/grp-Eng_non_existing
+      update:
+      - config_value: adepg/authsvr-common-sg1-ISE_1/grpcont/dom-cisco.com/grp-Eng_2
 resource_name: epg_useg_ad_group_attribute
