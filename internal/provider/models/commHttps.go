@@ -82,10 +82,9 @@ func commHttpsSchemaDefinition() modelHelpers.ClassSchema {
 				Description: "The description of the HTTPS Service object.",
 			},
 			"dh_parameter": {
-				Type:       modelHelpers.StringProperty,
-				Optional:   true,
-				Computed:   true,
-				Deprecated: true,
+				Type:     modelHelpers.StringProperty,
+				Optional: true,
+				Computed: true,
 				ValidValues: []string{
 					"1024",
 					"2048",

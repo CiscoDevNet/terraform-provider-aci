@@ -145,12 +145,13 @@ type ArtifactDocumentationDefinition struct {
 type PropertyDefinition struct {
 	// Overrides the default attribute name derived from the meta property name in snake_case notation.
 	AttributeName string `yaml:"attribute_name"`
+	// Overrides the inferred resource Computed flag; nil retains the inferred behavior.
+	Computed *bool `yaml:"computed"`
 	// Overrides the APIC property name displayed in generated documentation without
 	// changing the property used for payload construction or response decoding.
 	DocumentationPropertyName string `yaml:"documentation_property_name"`
-	// Indicates that the property is deprecated. A deprecation warning will be included in the schemas.
-	// When true, this overrides the meta `isDeprecated` flag with logical OR semantics: definition can flip true on top of meta but cannot force-off.
-	Deprecated bool `yaml:"deprecated"`
+	// Overrides the meta isDeprecated flag; nil retains metadata behavior and false suppresses the schema warning.
+	Deprecated *bool `yaml:"deprecated"`
 	// The deprecated APIC versions for the property. Format: "1.0(1e)-" or "4.2(7f)-4.2(7w),5.2(1g)-".
 	// Used to indicate versions where the property is deprecated but still functional.
 	// When non-empty, this overrides the meta `deprecatedSince` value.
@@ -167,7 +168,7 @@ type PropertyDefinition struct {
 	// (isConfigurable+isNaming → required, isConfigurable → optional).
 	Restriction RestrictionEnum `yaml:"restriction"`
 	// Overrides the RequiresReplace behavior for the property.
-	// When non-nil, takes precedence over the meta-derived `isNaming` logic.
+	// When non-nil, takes precedence over the meta-derived isNaming or createOnly logic.
 	// Use true to force replacement on change; false to suppress even for naming properties.
 	RequiresReplace *bool `yaml:"requires_replace"`
 	// Overrides the sensitive flag for the property.

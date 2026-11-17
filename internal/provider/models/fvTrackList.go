@@ -77,9 +77,10 @@ func fvTrackListSchemaDefinition() modelHelpers.ClassSchema {
 				Description: "The up percentage assigned to the IP SLA Track List determines whether a route is considered available or unavailable. The percentage up must be greater than the percentage down. This attribute is applicable only when the track type is 'percentage'.",
 			},
 			"type": {
-				Type:     modelHelpers.StringProperty,
-				Optional: true,
-				Computed: true,
+				Type:            modelHelpers.StringProperty,
+				Optional:        true,
+				Computed:        true,
+				RequiresReplace: true,
 				ValidValues: []string{
 					"percentage",
 					"weight",

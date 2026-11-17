@@ -67,6 +67,7 @@ func vmmUsrAccPSchemaDefinition() modelHelpers.ClassSchema {
 			"password": {
 				Type:        modelHelpers.StringProperty,
 				Optional:    true,
+				Computed:    true,
 				Sensitive:   true,
 				Description: "The password of the VMM Credential object. This sensitive value is excluded from the resource's lifecycle configuration and is not tracked by Terraform.",
 			},
@@ -192,7 +193,7 @@ func VmmUsrAccPModelFromObject(
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "nameAlias", &model.NameAlias)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ownerKey", &model.OwnerKey)
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "ownerTag", &model.OwnerTag)
-	if fallbackModel != nil {
+	if fallbackModel != nil && !fallbackModel.Pwd.IsUnknown() {
 		model.Pwd = fallbackModel.Pwd
 	}
 	modelHelpers.DecodeStringAttribute(ctx, &diagnostics, attributes, "usr", &model.Usr)

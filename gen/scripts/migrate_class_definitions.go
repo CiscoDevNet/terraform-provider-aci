@@ -268,9 +268,20 @@ var definitionOnlyResourceNames = map[string]string{
 }
 
 // Migration rewrites canonical YAML and discards authored comments. Emit these
-// temporary test limitations with the definitions so their reasons survive reruns
+// compatibility decisions and test limitations with the definitions so their reasons survive reruns
 // without changing the immutable legacy inputs or adding loader fields.
-var canonicalTestLimitationComments = map[string]string{
+var canonicalDefinitionComments = map[string]string{
+	"vmmUsrAccP": `# Compatibility: pwd keeps the legacy Optional+Computed schema so a configured
+# password remains in state when it is later omitted from configuration.
+# TODO: Standardize secret handling after the redesign; removing Computed would
+# change omission behavior and must be treated as a breaking compatibility change.
+
+`,
+	"commHttps": `# Compatibility: dhParam keeps its tested API/state behavior without a provider
+# deprecation warning. APIC 6.2(2e) metadata records deprecatedSince: 6.0(2).
+# TODO: Reassess warnings with refreshed metadata and version-aware deprecation handling.
+
+`,
 	"commPol": `# Test limitation: strictSecurityOnApicOOBSubnet is excluded from acceptance tests.
 # This is a legacy exclusion whose original reason was not recorded.
 # TODO: Reassess coverage after the generator refactor; metadata marks it configurable.
@@ -295,6 +306,8 @@ var canonicalTestLimitationComments = map[string]string{
 	"pkiTP": `# Test limitation: certUsage is excluded from acceptance tests.
 # This is a legacy exclusion whose original reason was not recorded.
 # Metadata marks it configurable but readWrite is false; create/update behavior needs validation.
+# Compatibility: requires_replace is false because the legacy set schema did not
+# enforce createOnly replacement. Reassess this separately with APIC validation.
 # TODO: Reassess create/update behavior and response values after the generator refactor.
 
 `,
@@ -1938,6 +1951,14 @@ func migrateExampleValueOverwrite(file, className string, value any, out *data.C
 // reconstructed faithfully from the legacy definition vocabulary. Keeping
 // them here ensures every migration run reproduces the canonical definitions.
 func applyCanonicalDefinitionCorrections(className string, out *data.ClassDefinition) {
+	if className == "fvAEPg" {
+		// APIC rejects changing uSeg mode in place despite the meta marking this property writable.
+		property := upsertProperty(out, "isAttrBasedEPg")
+		requiresReplace := true
+		property.RequiresReplace = &requiresReplace
+		out.Properties["isAttrBasedEPg"] = property
+	}
+
 	// These APIC properties carry validateAsIPv4OrIPv6 metadata, but the current
 	// provider intentionally exposes plain Terraform strings rather than the IP
 	// semantic-equality custom type. Preserve that public model until a schema
@@ -1991,7 +2012,18 @@ func applyCanonicalDefinitionCorrections(className string, out *data.ClassDefini
 		setCanonicalExampleFull(out, "cert", data.ExampleValueEntryDefinition{Value: `file("${path.module}/certificate.pem")`, ValueType: data.ExpressionValue})
 		setCanonicalExampleFull(out, "key", data.ExampleValueEntryDefinition{Value: `file("${path.module}/private_key.pem")`, ValueType: data.ExpressionValue})
 		out.ExampleFiles = []string{"certificate.pem", "private_key.pem"}
+	case "vmmUsrAccP":
+		// Retain the legacy password value after configuration omits it.
+		property := upsertProperty(out, "pwd")
+		computed := true
+		property.Computed = &computed
+		out.Properties["pwd"] = property
 	case "pkiTP":
+		// The legacy set schema did not require replacement for this create-only property.
+		property := upsertProperty(out, "certUsage")
+		requiresReplace := false
+		property.RequiresReplace = &requiresReplace
+		out.Properties["certUsage"] = property
 		setCanonicalExampleMinimum(out, "certChain", data.ExampleValueEntryDefinition{Value: `file("${path.module}/certificate.pem")`, ValueType: data.ExpressionValue})
 		out.ExampleFiles = []string{"certificate.pem"}
 	case "fvMacAttr":
@@ -2289,12 +2321,17 @@ func applyCanonicalDefinitionCorrections(className string, out *data.ClassDefini
 		// retain their established plural documentation filename.
 		out.Documentation.RegistryPath = "l4_l7_devices"
 	case "commHttps":
+		// Defer APIC deprecation warnings until metadata versions are handled explicitly.
+		property := upsertProperty(out, "dhParam")
+		deprecated := false
+		property.Deprecated = &deprecated
+		out.Properties["dhParam"] = property
 		// APIC metadata provides globalThrottleUnit with both validValues and a
 		// regex validator, so generic normalization infers semantic_equality.
 		// Its accepted values (r/s and r/m) are already the literal APIC wire
 		// values; there is no alias representation requiring semantic comparison.
 		// Preserve the current provider's plain string schema explicitly.
-		property := upsertProperty(out, "globalThrottleUnit")
+		property = upsertProperty(out, "globalThrottleUnit")
 		property.ValueType = data.String
 		out.Properties["globalThrottleUnit"] = property
 		for dependencyIndex := range out.TestConfig.Dependencies {
@@ -2353,7 +2390,8 @@ func applyCanonicalDefinitionCorrections(className string, out *data.ClassDefini
 		// marking the attributes as provider-deprecated.
 		for _, propertyName := range []string{"childAction", "configIssues", "lcOwn", "status"} {
 			property := upsertProperty(out, propertyName)
-			property.Deprecated = true
+			deprecated := true
+			property.Deprecated = &deprecated
 			property.Restriction = data.ReadOnly
 			property.ValueType = data.String
 			out.Properties[propertyName] = property
@@ -3943,11 +3981,17 @@ func projectProperty(p data.PropertyDefinition) map[string]any {
 	if p.DocumentationPropertyName != "" {
 		out["documentation_property_name"] = p.DocumentationPropertyName
 	}
-	if p.Deprecated {
-		out["deprecated"] = p.Deprecated
+	if p.Computed != nil {
+		out["computed"] = *p.Computed
+	}
+	if p.Deprecated != nil {
+		out["deprecated"] = *p.Deprecated
 	}
 	if p.Restriction != data.UndefinedRestriction {
 		out["restriction"] = p.Restriction.String()
+	}
+	if p.RequiresReplace != nil {
+		out["requires_replace"] = *p.RequiresReplace
 	}
 	if p.ValueType != data.UndefinedValueType {
 		out["value_type"] = p.ValueType.String()
@@ -4607,7 +4651,7 @@ func main() {
 			continue
 		}
 
-		out = append([]byte(canonicalTestLimitationComments[className]), out...)
+		out = append([]byte(canonicalDefinitionComments[className]), out...)
 		outputPath := filepath.Join(outputDir, className+".yaml")
 		if err := os.WriteFile(outputPath, out, 0644); err != nil {
 			fmt.Fprintf(os.Stderr, "Error writing %s: %v\n", outputPath, err)
@@ -4654,7 +4698,7 @@ func main() {
 			continue
 		}
 		className := strings.TrimSuffix(base, ".yaml")
-		out = append([]byte(canonicalTestLimitationComments[className]), out...)
+		out = append([]byte(canonicalDefinitionComments[className]), out...)
 		outputPath := filepath.Join(outputDir, className+".yaml")
 		if err := os.WriteFile(outputPath, out, 0644); err != nil {
 			fmt.Fprintf(os.Stderr, "Error writing %s: %v\n", outputPath, err)
@@ -4685,7 +4729,7 @@ func main() {
 			failed++
 			continue
 		}
-		out = append([]byte(canonicalTestLimitationComments[className]), out...)
+		out = append([]byte(canonicalDefinitionComments[className]), out...)
 		outputPath := filepath.Join(outputDir, className+".yaml")
 		if err := os.WriteFile(outputPath, out, 0644); err != nil {
 			fmt.Fprintf(os.Stderr, "Error writing %s: %v\n", outputPath, err)

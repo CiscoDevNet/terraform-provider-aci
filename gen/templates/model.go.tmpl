@@ -249,7 +249,7 @@ func {{ .Class.Name.Capitalized }}ModelFromObject(
 
 	{{ range $property := .Class.ModelProperties -}}
 	{{- if and $property.Sensitive (not $property.ReadOnly) }}
-	if fallbackModel != nil {
+	if fallbackModel != nil{{ if $property.Computed }} && !fallbackModel.{{ $property.ModelFieldName $.Class.Name }}.IsUnknown(){{ end }} {
 			model.{{ $property.ModelFieldName $.Class.Name }} = fallbackModel.{{ $property.ModelFieldName $.Class.Name }}
 	}
 	{{- else }}

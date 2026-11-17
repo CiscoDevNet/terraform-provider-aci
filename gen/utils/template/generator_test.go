@@ -1542,23 +1542,26 @@ func TestModelTemplateSchemaShape(t *testing.T) {
 func TestGeneratedSensitivePropertySchemas(t *testing.T) {
 	testCases := []test.TestCase{
 		{
-			Name:  "test_key_ring_resource",
-			Input: models.PkiKeyRingResourceSchema("").Attributes["key"],
+			Name:     "test_key_ring_resource",
+			Input:    models.PkiKeyRingResourceSchema("").Attributes["key"],
+			Expected: false,
 		},
 		{
-			Name:  "test_vmm_credential_resource",
-			Input: models.VmmUsrAccPResourceSchema("").Attributes["password"],
+			Name:     "test_vmm_credential_resource",
+			Input:    models.VmmUsrAccPResourceSchema("").Attributes["password"],
+			Expected: true,
 		},
 		{
-			Name:  "test_fabric_external_connection_child",
-			Input: models.FvFabricExtConnPResourceSchema("").Attributes["peering_profile"].(resourceschema.SingleNestedAttribute).Attributes["password"],
+			Name:     "test_fabric_external_connection_child",
+			Input:    models.FvFabricExtConnPResourceSchema("").Attributes["peering_profile"].(resourceschema.SingleNestedAttribute).Attributes["password"],
+			Expected: false,
 		},
 	}
 
 	for _, testCase := range testCases {
 		t.Run(testCase.Name, func(t *testing.T) {
 			attribute := testCase.Input.(resourceschema.StringAttribute)
-			if !attribute.Optional || attribute.Computed || !attribute.Sensitive {
+			if !attribute.Optional || attribute.Computed != testCase.Expected.(bool) || !attribute.Sensitive {
 				t.Fatalf("unexpected sensitive resource attribute: %#v", attribute)
 			}
 		})
@@ -1567,6 +1570,26 @@ func TestGeneratedSensitivePropertySchemas(t *testing.T) {
 	dataSourceAttribute := models.PkiKeyRingDataSourceSchema().Attributes["key"].(datasourceschema.StringAttribute)
 	if !dataSourceAttribute.Computed || !dataSourceAttribute.Sensitive {
 		t.Fatalf("unexpected sensitive data-source attribute: %#v", dataSourceAttribute)
+	}
+}
+
+func TestGeneratedComputedSecretFallback(t *testing.T) {
+	t.Parallel()
+
+	testCases := []test.TestCase{
+		{Name: "test_known_password", Input: types.StringValue("secret"), Expected: types.StringValue("secret")},
+		{Name: "test_unconfigured_password", Input: types.StringNull(), Expected: types.StringNull()},
+		{Name: "test_unknown_password", Input: types.StringUnknown(), Expected: types.StringNull()},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			fallback := models.NewVmmUsrAccPModelNull()
+			fallback.Pwd = testCase.Input.(types.String)
+			model, diagnostics := models.VmmUsrAccPModelFromObject(context.Background(), mustAPICContainer(t, `{"attributes":{"name":"example","pwd":"returned"}}`), &fallback)
+			assert.False(t, diagnostics.HasError(), diagnostics)
+			assert.Equal(t, testCase.Expected.(types.String), model.Pwd)
+		})
 	}
 }
 

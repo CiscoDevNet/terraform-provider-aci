@@ -1,6 +1,8 @@
 # Test limitation: certUsage is excluded from acceptance tests.
 # This is a legacy exclusion whose original reason was not recorded.
 # Metadata marks it configurable but readWrite is false; create/update behavior needs validation.
+# Compatibility: requires_replace is false because the legacy set schema did not
+# enforce createOnly replacement. Reassess this separately with APIC validation.
 # TODO: Reassess create/update behavior and response values after the generator refactor.
 
 documentation:
@@ -77,6 +79,7 @@ properties:
     example_config:
       full:
       - value: WebSvcOrAuth
+    requires_replace: false
     test_config:
       create:
       - config_value: WebSvcOrAuth
