@@ -16,9 +16,11 @@ type Property struct {
 	AttributeName string
 	// Indicates if the property is computed in the resource schemas.
 	Computed bool
+	// APIC create-only values require replacement and stay fixed throughout generated in-place test scenarios.
+	CreateOnly bool
 	// Indicates if the property is deprecated in the resource and datasource schemas.
 	// Deprecated properties include a warning the resource and datasource schemas.
-	// Driven by the meta `isDeprecated` flag with an optional definition override (logical OR).
+	// Driven by the meta isDeprecated flag with an optional definition override.
 	Deprecated bool
 	// The deprecated APIC versions for the property.
 	// Used to indicate versions where the property is deprecated but still functional.
@@ -52,7 +54,7 @@ type Property struct {
 	// Exposed as a separate bool because it directly maps to a Terraform schema construct, which makes templating easier.
 	Required bool
 	// Indicates if changing the property forces resource replacement (destroy + recreate).
-	// Driven by meta `isNaming` with an optional definition override (*bool for tri-state).
+	// Driven by meta isNaming or createOnly with an optional definition override (*bool for tri-state).
 	RequiresReplace bool
 	// Indicates if the property is sensitive in the resource and datasource schemas.
 	// Exposed as a separate bool because it directly maps to a Terraform schema construct, which makes templating easier.
@@ -451,6 +453,8 @@ func (p *Property) setPropertyData() error {
 
 	p.setRequired()
 
+	p.setCreateOnly()
+
 	p.setRequiresReplace()
 
 	// setOptional is called after setRequired because it depends on p.Required.
@@ -559,11 +563,14 @@ func (p *Property) setAttributeName() {
 
 func (p *Property) setComputed() {
 	// Determine if the property is computed.
-	// Configurable sensitive properties are retained from the prior model when
-	// APIC omits them and therefore remain optional rather than computed.
+	// Sensitive inputs are optional unless an override preserves legacy computed behavior.
 	genLogger.Debugf("Setting Computed for property '%s'.", p.PropertyName)
 
-	p.Computed = p.ReadOnly || (!p.Required && !p.Sensitive)
+	if p.propertyDefinition.Computed != nil {
+		p.Computed = *p.propertyDefinition.Computed
+	} else {
+		p.Computed = p.ReadOnly || (!p.Required && !p.Sensitive)
+	}
 
 	genLogger.Debugf("Successfully set Computed '%t' for property '%s'.", p.Computed, p.PropertyName)
 }
@@ -572,8 +579,8 @@ func (p *Property) setDeprecated() {
 	// Determine if the property is deprecated.
 	genLogger.Debugf("Setting Deprecated for property '%s'.", p.PropertyName)
 
-	if p.propertyDefinition.Deprecated {
-		p.Deprecated = true
+	if p.propertyDefinition.Deprecated != nil {
+		p.Deprecated = *p.propertyDefinition.Deprecated
 	} else if metaDeprecated, ok := p.metaDetails["isDeprecated"].(bool); ok {
 		p.Deprecated = metaDeprecated
 	}
@@ -683,15 +690,24 @@ func (p *Property) setRequired() {
 	genLogger.Debugf("Successfully set Required '%t' for property '%s'.", p.Required, p.PropertyName)
 }
 
+func (p *Property) setCreateOnly() {
+	// Resolve create-only behavior before schema and test normalization use it.
+	genLogger.Debugf("Setting CreateOnly for property '%s'.", p.PropertyName)
+
+	p.CreateOnly, _ = p.metaDetails["createOnly"].(bool)
+
+	genLogger.Debugf("Successfully set CreateOnly '%t' for property '%s'.", p.CreateOnly, p.PropertyName)
+}
+
 func (p *Property) setRequiresReplace() {
 	// Determine if changing the property forces resource replacement.
-	// Priority: definition override > meta isNaming.
+	// Priority: definition override > meta isNaming or createOnly.
 	genLogger.Debugf("Setting RequiresReplace for property '%s'.", p.PropertyName)
 
 	if p.propertyDefinition.RequiresReplace != nil {
 		p.RequiresReplace = *p.propertyDefinition.RequiresReplace
-	} else if p.metaDetails["isNaming"] == true {
-		p.RequiresReplace = true
+	} else {
+		p.RequiresReplace = p.metaDetails["isNaming"] == true || p.CreateOnly
 	}
 
 	genLogger.Debugf("Successfully set RequiresReplace '%t' for property '%s'.", p.RequiresReplace, p.PropertyName)

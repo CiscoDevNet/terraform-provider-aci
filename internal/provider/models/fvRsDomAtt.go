@@ -63,10 +63,11 @@ func fvRsDomAttSchemaDefinition() modelHelpers.ClassSchema {
 				Description: "The display name of the user configured port-group.",
 			},
 			"delimiter": {
-				Type:        modelHelpers.StringProperty,
-				Optional:    true,
-				Computed:    true,
-				Description: "The delimiter of the Relation To Domain object.",
+				Type:            modelHelpers.StringProperty,
+				Optional:        true,
+				Computed:        true,
+				RequiresReplace: true,
+				Description:     "The delimiter of the Relation To Domain object.",
 			},
 			"encapsulation": {
 				Type:        modelHelpers.StringProperty,

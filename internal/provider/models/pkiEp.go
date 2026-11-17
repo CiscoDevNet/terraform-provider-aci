@@ -37,10 +37,11 @@ func pkiEpSchemaDefinition() modelHelpers.ClassSchema {
 				Description: "The description of the Public Key Management object.",
 			},
 			"name": {
-				Type:        modelHelpers.StringProperty,
-				Optional:    true,
-				Computed:    true,
-				Description: "The name of the Public Key Management object.",
+				Type:            modelHelpers.StringProperty,
+				Optional:        true,
+				Computed:        true,
+				RequiresReplace: true,
+				Description:     "The name of the Public Key Management object.",
 			},
 			"name_alias": {
 				Type:        modelHelpers.StringProperty,

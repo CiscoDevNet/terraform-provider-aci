@@ -88,9 +88,10 @@ func fvAEPgSchemaDefinition() modelHelpers.ClassSchema {
 				Description: "The Application EPG object has a multicast source.",
 			},
 			"useg_epg": {
-				Type:     modelHelpers.StringProperty,
-				Optional: true,
-				Computed: true,
+				Type:            modelHelpers.StringProperty,
+				Optional:        true,
+				Computed:        true,
+				RequiresReplace: true,
 				ValidValues: []string{
 					"no",
 					"yes",

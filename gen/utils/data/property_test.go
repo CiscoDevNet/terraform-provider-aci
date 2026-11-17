@@ -386,6 +386,16 @@ func TestSetRequiresReplace(t *testing.T) {
 			Expected: false,
 		},
 		{
+			Name:     "test_create_only_requires_replace",
+			Input:    setRequiresReplaceInput{MetaDetails: map[string]any{"isNaming": false, "createOnly": true}},
+			Expected: true,
+		},
+		{
+			Name:     "test_definition_override_false_suppresses_create_only",
+			Input:    setRequiresReplaceInput{MetaDetails: map[string]any{"createOnly": true}, PropertyDefinition: PropertyDefinition{RequiresReplace: &boolFalse}},
+			Expected: false,
+		},
+		{
 			Name: "test_definition_override_true",
 			Input: setRequiresReplaceInput{
 				MetaDetails:        map[string]any{"isNaming": false},
@@ -423,6 +433,7 @@ func TestSetRequiresReplace(t *testing.T) {
 				propertyDefinition: input.PropertyDefinition,
 			}
 
+			property.setCreateOnly()
 			property.setRequiresReplace()
 
 			assert.Equal(t, expected, property.RequiresReplace, test.MessageEqual(expected, property.RequiresReplace, testCase.Name))
@@ -583,9 +594,10 @@ func TestSetReadOnly(t *testing.T) {
 }
 
 type setComputedInput struct {
-	Required  bool
-	ReadOnly  bool
-	Sensitive bool
+	Required           bool
+	ReadOnly           bool
+	Sensitive          bool
+	PropertyDefinition PropertyDefinition
 }
 
 func TestSetComputed(t *testing.T) {
@@ -622,6 +634,16 @@ func TestSetComputed(t *testing.T) {
 			},
 			Expected: true,
 		},
+		{
+			Name:     "test_override_true_preserves_sensitive_computed",
+			Input:    setComputedInput{Sensitive: true, PropertyDefinition: PropertyDefinition{Computed: boolPtr(true)}},
+			Expected: true,
+		},
+		{
+			Name:     "test_override_false_suppresses_inferred_computed",
+			Input:    setComputedInput{PropertyDefinition: PropertyDefinition{Computed: boolPtr(false)}},
+			Expected: false,
+		},
 	}
 
 	for _, testCase := range testCases {
@@ -631,10 +653,11 @@ func TestSetComputed(t *testing.T) {
 			expected := testCase.Expected.(bool)
 
 			property := &Property{
-				PropertyName: "testProp",
-				Required:     input.Required,
-				ReadOnly:     input.ReadOnly,
-				Sensitive:    input.Sensitive,
+				PropertyName:       "testProp",
+				Required:           input.Required,
+				ReadOnly:           input.ReadOnly,
+				Sensitive:          input.Sensitive,
+				propertyDefinition: input.PropertyDefinition,
 			}
 
 			property.setComputed()
@@ -747,18 +770,18 @@ func TestPropertySetDeprecated(t *testing.T) {
 		},
 		{
 			Name:     "test_override_true_meta_missing",
-			Input:    setPropertyDeprecatedInput{PropertyDefinition: PropertyDefinition{Deprecated: true}},
+			Input:    setPropertyDeprecatedInput{PropertyDefinition: PropertyDefinition{Deprecated: boolPtr(true)}},
 			Expected: true,
 		},
 		{
 			Name:     "test_override_true_meta_false",
-			Input:    setPropertyDeprecatedInput{PropertyDefinition: PropertyDefinition{Deprecated: true}, MetaDetails: map[string]any{"isDeprecated": false}},
+			Input:    setPropertyDeprecatedInput{PropertyDefinition: PropertyDefinition{Deprecated: boolPtr(true)}, MetaDetails: map[string]any{"isDeprecated": false}},
 			Expected: true,
 		},
 		{
 			Name:     "test_override_false_meta_true",
-			Input:    setPropertyDeprecatedInput{PropertyDefinition: PropertyDefinition{Deprecated: false}, MetaDetails: map[string]any{"isDeprecated": true}},
-			Expected: true,
+			Input:    setPropertyDeprecatedInput{PropertyDefinition: PropertyDefinition{Deprecated: boolPtr(false)}, MetaDetails: map[string]any{"isDeprecated": true}},
+			Expected: false,
 		},
 	}
 
@@ -2817,6 +2840,24 @@ func TestSetLegacyTestValues(t *testing.T) {
 					}
 				}
 			}
+		})
+	}
+}
+
+func TestPropertySetCreateOnly(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+	testCases := []test.TestCase{
+		{Name: "test_create_only", Input: map[string]any{"createOnly": true}, Expected: true},
+		{Name: "test_mutable", Input: map[string]any{"createOnly": false}, Expected: false},
+		{Name: "test_missing", Input: map[string]any{}, Expected: false},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			property := Property{PropertyName: "descr", metaDetails: testCase.Input.(map[string]any)}
+			property.setCreateOnly()
+			assert.Equal(t, testCase.Expected, property.CreateOnly)
 		})
 	}
 }

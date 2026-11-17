@@ -89,10 +89,11 @@ func vmmDomPSchemaDefinition() modelHelpers.ClassSchema {
 				Description: "The custom vSwitch name.",
 			},
 			"delimiter": {
-				Type:        modelHelpers.StringProperty,
-				Optional:    true,
-				Computed:    true,
-				Description: "The delimiter of the VMM Domain object.",
+				Type:            modelHelpers.StringProperty,
+				Optional:        true,
+				Computed:        true,
+				RequiresReplace: true,
+				Description:     "The delimiter of the VMM Domain object.",
 			},
 			"enable_ave_mode": {
 				Type:     modelHelpers.StringProperty,
