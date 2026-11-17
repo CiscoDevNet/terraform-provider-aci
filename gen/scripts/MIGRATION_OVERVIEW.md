@@ -373,13 +373,13 @@ The remaining POSTPONE keys depend on a downstream test, documentation, or custo
 
 ### 8.1 `vmmDomP.arpLearning` migration — resolved; generic consolidation deferred
 
-`vmm_arp_learning` is the only non-`ip_address` value across all 11 `static_custom_type` files (14 entries). It is implemented today as a hand-written [custom_types/arpLearning.go](../../internal/custom_types/arpLearning.go) that satisfies `basetypes.StringValuableWithSemanticEquals` with a side-table (`"" ≡ "disabled"`), making it a *variant* of the existing `SemanticEquality` value type rather than an unrelated kind of custom type.
+`vmm_arp_learning` is the only non-`ip_address` value across all 12 `static_custom_type` files (15 entries). It is implemented in [customtypes/vmm_arp_learning.go](../../internal/customtypes/vmm_arp_learning.go), which satisfies `basetypes.StringValuableWithSemanticEquals` with the equivalence `"" ≡ "disabled"`, making it a *variant* of the existing `SemanticEquality` value type rather than an unrelated kind of custom type.
 
 The framework’s auto-derived `SemanticEquality` (triggered in [setValueType](../utils/data/property.go) precedence rule 4 when a property has both `ValidValues` and `Validators`) handles the uniform case where wire and human forms map 1:1 via `validValues`. `vmmDomP.arpLearning` falls outside that contract because its equality reads an additional side-table that the meta does not express — the wire value `"disabled"` aliases to the localName `defaultValue` while `0x0`/`0x1` map to `disabled`/`enabled`, and the empty string normalises to `disabled`. The custom type also overrides the meta `uitype: bitmask` (which would auto-derive to `Set`) to render as a single string, captured today through `type_overwrites: arpLearning: string` alongside the `static_custom_type` entry.
 
-The migration is explicit: `static_custom_type: vmm_arp_learning` becomes `value_type: vmm_arp_learning`, and the existing `arpLearning.go` continues to implement the semantics. The ordinary Create/Default scenarios retain the legacy `disabled` value; the old dedicated `test_values.custom_type` bucket adds no distinct coverage and is dropped.
+The migration is explicit: `static_custom_type: vmm_arp_learning` becomes `value_type: vmm_arp_learning`, and the dedicated `VMMArpLearningType` preserves the semantics. The ordinary Create/Default scenarios retain the legacy `disabled` value; the old dedicated `test_values.custom_type` bucket adds no distinct coverage and is dropped.
 
-The separate future question is whether all such named semantic-equality variants should use a generic generated mechanism. If that consolidation lands, the `vmm_arp_learning` enum case and bespoke `customtypes/arpLearning.go` can be replaced together without changing this migration's observable provider behavior.
+The separate future question is whether all such named semantic-equality variants should use a generic generated mechanism. If that consolidation lands, the `vmm_arp_learning` enum case and `customtypes/vmm_arp_learning.go` can be replaced together without changing this migration's observable provider behavior.
 
 The other 10 nested `custom_type` entries are IpAddress values; their author-chosen IP values fold into the standard scenarios.
 

@@ -49,7 +49,7 @@ boundary, split between generated schemas and resource/data-source adapters:
 - REST transport and API error handling.
 
 The generated data-source adapter obtains its configuration through the
-Terraform Plugin Framework. The future generated resource adapter will obtain
+Terraform Plugin Framework. The generated resource adapter obtains
 the plan or state in the same way. Neither adapter manually maps a generic
 property map into the model.
 
@@ -64,9 +64,10 @@ Implementation status: the active model template emits the shared class
 model, shared root model, null constructors, attribute type maps,
 RN/DN/ID handling, payload construction, deletion, response decoding, a neutral
 class schema definition, top-level schema functions, and version-aware subtree
-class selection. The active data-source template emits the class-backed
-data-source adapters. Resource adapters and migration schema behavior remain
-later phases.
+class selection. The active resource and data-source templates emit the
+class-backed adapters. Deprecated aliases, frozen attributes, state migration,
+and resource identity support remain later phases. The resource acceptance-test
+template exercises the current lifecycle through the same generated models.
 
 Only schema-backed attributes belong in the struct. Each field has a matching
 `tfsdk` tag and a Terraform framework type:
@@ -202,16 +203,20 @@ used in payloads. Semantic comparison and RN construction use
 `CanonicalString()`, which maps APIC wire values to their local names. IP
 address normalization and the VMM ARP-learning empty/disabled equivalence remain
 dedicated custom types because their behavior is not a normal valid-value map.
-The property-specific implementations in `internal/custom_types` remain legacy
-code used by the existing generated provider files and are not consumed by the
-new model generator.
 
 Direct resource properties use `PreserveStringStateForUnknown` or
 `PreserveSetStateForUnknown`. These modifiers retain the established behavior
 where an attribute returned as null remains null when the connected APIC
-version does not support it. The current generated resources continue to use
-their legacy modifier names through compatibility entry points until their
-adapters are migrated.
+version does not support it. Generated resource adapters use these modifiers
+through the model's resource schema.
+
+Property definitions may override the inferred `computed`, `deprecated`, and
+`requires_replace` flags with explicit `true` or `false`; omission keeps the
+normal inference. Replacement is inferred from metadata `isNaming` or
+`createOnly`. Compatibility overrides preserve VMM Credential password
+retention, the legacy Certificate Authority set behavior, and HTTPS DH parameter
+handling while version-aware deprecation is deferred. Their reasons and follow-up
+work are recorded in the generated definitions and [change overview](redesign_changes.md).
 
 Each direct child attribute owns planning for its complete subtree. A singleton
 child uses `ReconcileSingletonChild`: an omitted child retains prior state, an
@@ -232,8 +237,8 @@ static default; the equivalent data-source attribute is optional without a
 schema default because its read operation resolves the placement.
 
 Neither `FvTenantModel` nor `FvTenantRootModel` owns a `Schema()` method. The
-generated data-source adapter calls its generated top-level schema function;
-the future resource adapter will do the same for its resource schema. These
+generated resource and data-source adapters call their generated top-level
+schema functions. These
 functions add `id`, `parent_dn`, and data-source lookup inputs around attributes
 constructed from the class schema definition. Deprecated aliases, frozen
 attributes, resource schema versions, and state upgrades are deferred to the
@@ -388,9 +393,8 @@ by the generated model files, including child-only classes. Every generated
 root model exposes its complete recursive APIC subtree class list through
 `SupportedSubtreeClasses`. The method filters that list against the registered
 support ranges using the shared `internal/apicversion` package while preserving
-deterministic class order. Existing legacy resource adapters continue to use
-the centrally rendered `internal/provider/versions.go` map until their
-implementation template is migrated.
+deterministic class order. Both generated adapter types use this method when
+requesting APIC subtrees.
 
 `FvTenantModelFromResponse` decodes the response envelope and returns the
 class model together with the exact DN returned by APIC. A nil model with no
@@ -543,6 +547,12 @@ If `parent_dn` is exposed by a top-level schema, it is used as input to
 `BuildDN` and the resulting ID but is not an APIC payload attribute. If it is
 returned by APIC, the root model is populated from the response DN.
 
+Resource root models with parent-DN variants additionally expose
+`BuildPayloadDN()`. A matching wrapped placement returns its container DN for
+Create and Update POST requests, using the existing parent patterns and
+`rn_prepend`. Direct placements return `BuildDN()`. The full object DN remains
+the resource ID and the Read/Delete destination.
+
 ## 6. Payload construction
 
 The existing REST helper accepts `*container.Container`, so that remains the
@@ -574,9 +584,15 @@ separate input because parent-DN variants can require a wrapper only for a
 create request. `defaultAnnotation` supplies the existing annotation fallback
 for nested children and is not applied to the top-level object.
 
-On create, `priorState` is nil unless the existing create behavior has first
-read an APIC object to use as a reconciliation baseline. On update,
-`priorState` is the model decoded from `req.State.Get`.
+On create, the resource adapter reads the APIC object before writing and passes
+its class model as the reconciliation baseline. If no object exists, that
+baseline is the null-initialized class model. On update, `priorState` is the
+model decoded from `req.State.Get`.
+
+After a successful Create POST, the adapter saves the known ID before reading
+the object back. If that read fails, Terraform still has the DN needed to track
+and clean up the created object. A successful read replaces this minimal state
+with the complete decoded model.
 
 Set equality alone is insufficient for deletion matching. The generated
 code compares children by their APIC identity, not by slice position. A child
@@ -719,13 +735,14 @@ values expose `none` as a local name. An absent attribute remains null.
 
 API transport and API error handling remain at the provider boundary. The
 generated data-source adapter owns its data-source-specific not-found
-diagnostic; the legacy resource adapter continues to own resource-specific
-lifecycle handling.
+diagnostic. The generated resource adapter removes a missing object from state
+during Read and reports an error if an object cannot be read back after Create
+or Update.
 
 ## 9. Terraform adapter boundary
 
-The generated data-source implementation uses its generated schema and shared
-root model. The future resource implementation will use the same boundary.
+The generated resource and data-source implementations use their generated
+schemas and shared root model.
 Nested children are decoded into `FvTenantModel`:
 
 ```text
@@ -737,8 +754,8 @@ Terraform config/plan/state
     -> DoRestRequest
 ```
 
-After a GET response, the data-source adapter performs the reverse; the future
-resource adapter will use the same model operations:
+After a GET response, both adapters perform the reverse using the same model
+operations:
 
 ```text
 DoRestRequest
@@ -750,7 +767,7 @@ DoRestRequest
 
 Terraform-only behavior such as plan modifiers and current computed/default
 state values stays in generated schemas and schema helpers. Legacy-alias
-mapping and state upgrades remain migration behavior owned by the future
+mapping and state upgrades remain deferred migration behavior for the
 resource adapter and migration schema definition. The root model stores any
 values needed at that boundary, but those values do not become APIC class
 behavior. This must not require a second APIC behavior model or a runtime model
