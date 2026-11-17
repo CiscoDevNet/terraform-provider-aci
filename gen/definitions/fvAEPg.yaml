@@ -38,6 +38,7 @@ properties:
       "no": ""
     documentation:
       description: The %s object is microsegmented (uSeg).
+    requires_replace: true
   pcEnfPref:
     attribute_name: intra_epg_isolation
     documentation:

@@ -35,10 +35,11 @@ func vnsLDevIfSchemaDefinition() modelHelpers.ClassSchema {
 				Description: "The annotation of the Imported Logical Device object.",
 			},
 			"description": {
-				Type:        modelHelpers.StringProperty,
-				Optional:    true,
-				Computed:    true,
-				Description: "The description of the Imported Logical Device object.",
+				Type:            modelHelpers.StringProperty,
+				Optional:        true,
+				Computed:        true,
+				RequiresReplace: true,
+				Description:     "The description of the Imported Logical Device object.",
 			},
 			"logical_device": {
 				Type:            modelHelpers.StringProperty,

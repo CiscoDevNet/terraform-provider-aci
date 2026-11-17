@@ -1,3 +1,8 @@
+# Compatibility: pwd keeps the legacy Optional+Computed schema so a configured
+# password remains in state when it is later omitted from configuration.
+# TODO: Standardize secret handling after the redesign; removing Computed would
+# change omission behavior and must be treated as a breaking compatibility change.
+
 documentation:
   sub_category: Virtual Networking
   ui_locations:
@@ -6,6 +11,7 @@ migration_source: from_sdkv2
 properties:
   pwd:
     attribute_name: password
+    computed: true
     documentation:
       description: The password of the %s object. This sensitive value is excluded
         from the resource's lifecycle configuration and is not tracked by Terraform.

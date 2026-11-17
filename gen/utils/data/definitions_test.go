@@ -447,31 +447,34 @@ properties:
 	assert.Nil(t, name.Update.Entries)
 }
 
-// TestParseClassDefinition_RequiresReplacePointerSemantics mirrors the
-// ConfigInclude check for the top-level *bool requires_replace override.
-func TestParseClassDefinition_RequiresReplacePointerSemantics(t *testing.T) {
+func TestParseClassDefinition_PropertyBooleanOverrides(t *testing.T) {
 	t.Parallel()
 	test.InitializeTest(t)
 
 	testCases := []test.TestCase{
-		{Name: "omitted", Input: "properties:\n  name:\n    restriction: required\n", Expected: (*bool)(nil)},
-		{Name: "true", Input: "properties:\n  name:\n    requires_replace: true\n", Expected: boolPtr(true)},
-		{Name: "false", Input: "properties:\n  name:\n    requires_replace: false\n", Expected: boolPtr(false)},
+		{Name: "omitted", Input: "", Expected: (*bool)(nil)},
+		{Name: "true", Input: "true", Expected: boolPtr(true)},
+		{Name: "false", Input: "false", Expected: boolPtr(false)},
 	}
 
-	for _, testCase := range testCases {
-		t.Run(testCase.Name, func(t *testing.T) {
+	for _, field := range []string{"computed", "deprecated", "requires_replace"} {
+		t.Run(field, func(t *testing.T) {
 			t.Parallel()
-			parsedDefinition, err := parseClassDefinition([]byte(testCase.Input.(string)))
-			assert.NoError(t, err, test.MessageUnexpectedError(err))
-			expected := testCase.Expected.(*bool)
-			actual := parsedDefinition.Properties["name"].RequiresReplace
-			if expected == nil {
-				assert.Nil(t, actual, testCase.Name)
-			} else {
-				if assert.NotNil(t, actual, testCase.Name) {
-					assert.Equal(t, *expected, *actual, testCase.Name)
-				}
+			for _, testCase := range testCases {
+				t.Run(testCase.Name, func(t *testing.T) {
+					t.Parallel()
+					yamlText := "properties:\n  name:\n    restriction: optional\n"
+					if value := testCase.Input.(string); value != "" {
+						yamlText += fmt.Sprintf("    %s: %s\n", field, value)
+					}
+					definition, err := parseClassDefinition([]byte(yamlText))
+					if !assert.NoError(t, err, test.MessageUnexpectedError(err)) {
+						return
+					}
+					property := definition.Properties["name"]
+					actual := map[string]*bool{"computed": property.Computed, "deprecated": property.Deprecated, "requires_replace": property.RequiresReplace}[field]
+					assert.Equal(t, testCase.Expected.(*bool), actual, testCase.Name)
+				})
 			}
 		})
 	}
