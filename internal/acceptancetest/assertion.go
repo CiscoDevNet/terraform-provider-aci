@@ -1,11 +1,13 @@
 package acceptancetest
 
 import (
+	"context"
 	"fmt"
 	"maps"
 	"slices"
 	"strings"
 
+	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
 )
@@ -15,6 +17,89 @@ type AttributeValue struct {
 	ExpectedValue string
 	PairAddress   string
 	PairAttribute string
+	PairFormat    string
+}
+
+func CheckSemanticStringAttribute(address, path, expected string, valueType basetypes.StringTypable) resource.TestCheckFunc {
+	return func(state *terraform.State) error {
+		// Empty is a known value; checking attribute presence must not reject it.
+		root := state.RootModule()
+		if root == nil || root.Resources[address] == nil || root.Resources[address].Primary == nil {
+			return fmt.Errorf("resource %q is missing from state", address)
+		}
+		actual, exists := root.Resources[address].Primary.Attributes[path]
+		if !exists {
+			return fmt.Errorf("%s: attribute %q is missing from state", address, path)
+		}
+		ctx := context.Background()
+		actualValue, diagnostics := valueType.ValueFromString(ctx, basetypes.NewStringValue(actual))
+		if diagnostics.HasError() {
+			return fmt.Errorf("%s.%s: convert actual value: %v", address, path, diagnostics)
+		}
+		expectedValue, diagnostics := valueType.ValueFromString(ctx, basetypes.NewStringValue(expected))
+		if diagnostics.HasError() {
+			return fmt.Errorf("%s.%s: convert expected value: %v", address, path, diagnostics)
+		}
+		semantic, ok := actualValue.(basetypes.StringValuableWithSemanticEquals)
+		if !ok {
+			return fmt.Errorf("%s.%s: type %T does not support string semantic equality", address, path, valueType)
+		}
+		equal, diagnostics := semantic.StringSemanticEquals(ctx, expectedValue)
+		if diagnostics.HasError() {
+			return fmt.Errorf("%s.%s: compare semantic values: %v", address, path, diagnostics)
+		}
+		if !equal {
+			return fmt.Errorf("%s.%s: expected semantic value %q, got %q", address, path, expected, actual)
+		}
+		return nil
+	}
+}
+
+// CheckAttribute checks a literal or a formatted reference against a scalar attribute.
+func CheckAttribute(address, path string, value AttributeValue) resource.TestCheckFunc {
+	return func(state *terraform.State) error {
+		check := nestedSetCheck{address: address, state: state}
+		resolved, err := check.resolveValues(map[string]AttributeValue{"value": value})
+		if err != nil {
+			return err
+		}
+		return resource.TestCheckResourceAttr(address, path, resolved["value"])(state)
+	}
+}
+
+// CheckPresent checks a non-empty value within its identified parent objects.
+func CheckPresent(address, path string, parents ...ParentSetElement) resource.TestCheckFunc {
+	return func(state *terraform.State) error {
+		check := nestedSetCheck{address: address, state: state}
+		return check.checkWithinParents(path, parents, func(scopedPath string) resource.TestCheckFunc {
+			return resource.TestCheckResourceAttrSet(address, scopedPath)
+		})
+	}
+}
+
+// CheckAbsent verifies that a singleton has no values or populated descendants.
+func CheckAbsent(address, path string, parents ...ParentSetElement) resource.TestCheckFunc {
+	return func(state *terraform.State) error {
+		check := nestedSetCheck{address: address, state: state}
+		return check.checkWithinParents(path, parents, func(scopedPath string) resource.TestCheckFunc {
+			return func(state *terraform.State) error {
+				root := state.RootModule()
+				if root == nil || root.Resources[address] == nil || root.Resources[address].Primary == nil {
+					return fmt.Errorf("resource %q is missing from state", address)
+				}
+				for name, value := range root.Resources[address].Primary.Attributes {
+					if name == scopedPath || strings.HasPrefix(name, scopedPath+".") {
+						// Objects with all-null attributes retain their field count in flattened state.
+						if strings.HasSuffix(name, ".%") || strings.HasSuffix(name, ".#") && value == "0" {
+							continue
+						}
+						return fmt.Errorf("%s.%s should be absent, found %s=%q", address, scopedPath, name, value)
+					}
+				}
+				return nil
+			}
+		})
+	}
 }
 
 // ParentSetElement identifies one enclosing set element before checking its descendants.
@@ -71,6 +156,9 @@ func (c nestedSetCheck) resolveValues(values map[string]AttributeValue) (map[str
 		})
 		if err := check(c.state); err != nil {
 			return nil, fmt.Errorf("resolve %s.%s for %s.%s: %w", value.PairAddress, value.PairAttribute, c.address, name, err)
+		}
+		if value.PairFormat != "" {
+			resolved[name] = fmt.Sprintf(value.PairFormat, resolved[name])
 		}
 	}
 	return resolved, nil

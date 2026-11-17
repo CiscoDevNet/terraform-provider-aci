@@ -22,6 +22,22 @@ func Skip(t *testing.T, reason string) {
 	t.Skip(skipPrefix + reason)
 }
 
+// DelayAfterTest registers a final wait after the test's other cleanup callbacks.
+func DelayAfterTest(t *testing.T, delay time.Duration) {
+	t.Helper()
+	if delay <= 0 {
+		return
+	}
+	// Register before the Terraform harness so its cleanup runs first, in LIFO order.
+	t.Cleanup(func() {
+		if t.Skipped() {
+			return
+		}
+		t.Logf("Waiting %s after cleanup for shared APIC settings to stabilize", delay)
+		time.Sleep(delay)
+	})
+}
+
 // Runner owns worker processes and logs for one acceptance-test package.
 // Its zero value is ready for use and must not be copied after first use.
 type Runner struct {
@@ -37,6 +53,18 @@ type Runner struct {
 // enabled. A true return means the caller must return without running its body.
 func (run *Runner) RunInSubprocess(t *testing.T) bool {
 	t.Helper()
+	return run.runInSubprocess(t, false)
+}
+
+// RunSeriallyInSubprocess retains worker isolation and reporting without joining
+// the parallel group. Go runs this test without overlap with parallel tests in the package.
+func (run *Runner) RunSeriallyInSubprocess(t *testing.T) bool {
+	t.Helper()
+	return run.runInSubprocess(t, true)
+}
+
+func (run *Runner) runInSubprocess(t *testing.T, runSerially bool) bool {
+	t.Helper()
 	if os.Getenv("TF_ACC") == "" || os.Getenv("ACI_TEST_PARALLEL") != "1" || os.Getenv("ACI_TEST_WORKER") != "" {
 		return false
 	}
@@ -46,8 +74,10 @@ func (run *Runner) RunInSubprocess(t *testing.T) bool {
 	if err != nil {
 		t.Fatalf("Prepare acceptance-test logs: %v", err)
 	}
-	// Go's scheduler limits active workers using the parent test command's -parallel setting.
-	t.Parallel()
+	// Serial tests finish before Go releases the parallel group; both modes retain worker logs.
+	if !runSerially {
+		t.Parallel()
+	}
 	result := workerResult{Action: "fail", LogPath: child.LogPath}
 	if err := ctx.Err(); err != nil {
 		result.Error = fmt.Sprintf("Not started: test run stopped (%v)", err)
