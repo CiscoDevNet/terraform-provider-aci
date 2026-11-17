@@ -8,12 +8,12 @@ This document describes the test data model used by the ACI provider code genera
 
 ## 1. Overview
 
-The generator gathers per-property and per-class **test data** describing the values, dependencies, and child blocks needed to exercise a resource. Once that data is normalized, `setExampleData` derives separate renderer-facing example values and complete minimum-resource, all-attributes-resource, and datasource artifacts. The example templates consume only those resolved artifacts. The datasource acceptance-test template consumes the normalized Create scenario, dependency graph, lookup values, and recursive property/child assertions. A future resource acceptance-test template will consume the remaining lifecycle scenarios; those planned steps are tracked in Section 9.
+The generator gathers per-property and per-class **test data** describing the values, dependencies, and child blocks needed to exercise a resource. Once that data is normalized, `setExampleData` derives separate renderer-facing example values and complete minimum-resource, all-attributes-resource, and datasource artifacts. The example templates consume only those resolved artifacts. The datasource acceptance-test template consumes the normalized Create scenario, dependency graph, lookup values, and recursive property/child assertions. The resource acceptance-test template derives its lifecycle steps from the same normalized values and dependencies; coverage is described in Section 9.
 
 At the normalized lifecycle-data layer, each entry has two independent effects:
 
 - If `ConfigInclude == true` → render `ConfigValue` in HCL config.
-- Always assert `AssertValue` in state checks.
+- `AssertStrategy` selects value comparison (the default) or a non-empty presence check.
 
 Public examples do not consume those fields directly. `setExampleData` first projects them into renderer-facing `ExampleValue` objects and may replace test-only literals with semantic resource references.
 
@@ -30,6 +30,7 @@ type TestValueEntry struct {
     ConfigValue   string
     ConfigInclude bool
     AssertValue   string
+    AssertStrategy AssertStrategyEnum
     ValueType     ValueRenderTypeEnum
     Versions      *Versions
 }
@@ -169,6 +170,7 @@ properties:
         - config_value: "my_description"
           config_include: true    # default when omitted
           assert_value: ""        # default: same as config_value
+          assert_strategy: value # default; presence_only checks only for a non-empty value
           value_type: "string"    # default; "reference" or "expression" render unquoted
       update:
         - config_value: "updated_description"
@@ -182,6 +184,7 @@ properties:
 
 - `config_include`: pointer-based — `nil` defaults to `true`.
 - `assert_value`: empty string defaults to `config_value`.
+- `assert_strategy`: `"value"` (default, existing value/reference/semantic comparison) or `"presence_only"` (a non-empty state value). It applies to each test-value entry in any scenario. Cloned scenarios retain the strategy, including resets derived from Default; an independently authored entry defaults to `value`. For set properties, member presence checks retain the existing element-count assertions and omit comparison of the selected member's value. Nested checks remain scoped to the identified parent objects. This setting does not change HCL inputs, provider behavior, or Terraform's consistency checks.
 - `value_type`: `"string"` (default, quoted), `"reference"` (a semantic Terraform address), or `"expression"` (another unquoted HCL expression).
 - `legacy`: optional. Overrides Legacy bucket auto-derivation (see §2.4). Required when the legacy alias declares a `legacy_type` different from the current attribute's type, because auto-derive cannot guess the prior HCL shape.
 
@@ -401,6 +404,22 @@ test_config:
           reference: "aci_tenant.test.id"
           reference_type: "resource"
 ```
+
+When a dependency exposes an attribute also managed by a standalone resource in
+the same test, its definition can explicitly leave that attribute to the
+standalone resource:
+
+```yaml
+ignore_changes:
+- relation_l3extrs_redistribute_pol
+```
+
+The renderer places this list in a Terraform `lifecycle` block and adds a
+comment explaining the ownership split. It applies only to the dependency
+fixture. It does not suppress assertions or plan checks on the standalone
+resource. This is an explicit definition setting, not something inferred from
+APIC metadata: metadata describes ACI containment, not Terraform configuration
+ownership. Persistent source corrections belong in the migration script.
 
 For a polymorphic relation, a Parent dependency can additionally declare `target_classes: [fvAEPg]`. This retains the legacy parent-to-target association and lets class-scoped renderers choose a compatible target without encoding the selection in the template.
 
@@ -665,7 +684,7 @@ Custom files share the same package and can reference generated test helpers (pr
 
 ---
 
-## 9. Generated and Future Test Scenarios
+## 9. Generated Test Scenarios
 
 `datasource_test.go.tmpl` currently generates one self-contained acceptance-test file for each datasource artifact unless the class opts out with `test_config.ignore_tests: [datasource]`. Each generated test contains:
 
@@ -680,6 +699,147 @@ Custom files share the same package and can reference generated test helpers (pr
   `test_prefix`, with all resource
   dependency and subject configuration local to the generated test file.
 
+### Resource lifecycle
+
+`resource_test.go.tmpl` generates one `TestAccResource<Class>Generated` test
+per resource artifact, unless `ignore_tests` contains `resource`. Configuration
+constants remain outside the test function and all dependency resources are
+local to that file. The renderer projects copies of canonical test data, so
+resource scenarios do not change datasource fixtures, examples, or models.
+
+| Scenario | Expected behavior |
+| --- | --- |
+| Minimum create | Required inputs and children, exact DN, parent, provider annotation, and APIC defaults |
+| Existing-object rejection | A second Terraform address with identical minimum inputs fails with `Object Already Exists` when `allow_existing_on_create = false` |
+| Existing-object adoption | With `allow_existing_on_create = true`, the second address adopts the same APIC object and ID; the original ID stays unchanged |
+| Temporary-address cleanup | Forget the adopted address without deleting its APIC object; the original resource stays managed with the same ID |
+| Full configuration | Supported direct attributes and recursively configured children; stable ID |
+| Repeat configuration | Empty plan after full configuration and a mutable update |
+| Mutable update | An update action with stable top-level identifiers and ID |
+| Omit optional inputs | Optional/computed values retain state; annotation follows the provider default |
+| Explicit reset | Documented or authored valid defaults are sent explicitly, separately from omission |
+| Child lifecycle | Clear deletable children, add, update, remove an instance, and change child identifiers while retaining the parent's ID |
+| Child ordering and omission | Reordering sets gives an empty plan; optional children can be omitted while required children remain configured |
+| Required children | Omitting a required child fails schema validation; restoring the full configuration has an empty plan |
+| Non-deletable children | Each configured non-deletable child, including descendants, rejects explicit removal; reapplying the full configuration has an empty plan |
+| Identifier replacement | A distinct RequiresReplace identifier produces replacement and a different DN |
+| Parent replacement | A distinct alternate parent and compatible relation target produce replacement and a different DN |
+| DN import | Import reconstructs the current schema; existing verification opt-outs and sensitive attribute exclusions apply |
+| External deletion | Deletable objects disappear during refresh, produce a create plan, and can be recreated |
+| Destroy | Deletable objects disappear from APIC; non-deletable roots leave state while remaining on APIC until their parent is removed |
+
+Steps requiring an actual change are omitted when no distinct fixture values
+exist. Changes supported only on some APIC versions receive step gates as well
+as the normal attribute/child HCL and assertion gates. Identifier replacement
+is separate from ordinary Update values: naming inputs remain stable during
+in-place updates. Child identifier changes reuse the second canonical child
+instance to retain correlated and parent-compatible values.
+
+Import runs after the update/reset applies and before child lifecycle changes,
+matching the legacy ordering. Those applies persist refreshed computed values,
+including APIC's asynchronously allocated `pc_tag`, before import compares state.
+The earlier repeat step remains an empty-plan check.
+
+The three existing-object steps run immediately after minimum creation. They
+reuse that exact configuration, including minimum overrides, required children,
+create-only inputs, version gates, and prefixes. The duplicate uses the local
+label `existing_on_create` and the same dependencies. Each step configures the
+provider flag explicitly. Cleanup uses a `removed` block with `destroy = false`
+and requires Terraform 1.7 or later. The original `test_1` resource remains
+managed throughout, and the full lifecycle resumes after cleanup.
+
+The rejection normally occurs in `ModifyPlan`, including its apply-time call
+after a parent DN becomes known. These steps do not separately force the
+`Create` rejection guard, which protects against an object appearing between
+the final planning lookup and the creation lookup.
+
+APIC `createOnly` metadata keeps an attribute's Create value configured from
+minimum creation through in-place updates, omission, and reset, including
+children. This is test-fixture behavior; it does not change schema replacement
+rules.
+
+Property `test_config.include_in` and `exclude_from` accept snake_case scenario
+names such as `minimum`, `update`, `omit_optional`, and `reset`. They override
+configuration presence without skipping assertions. The same scenario cannot
+appear in both lists. Repeat steps inherit the preceding scenario's overrides.
+An included reset uses the authored Default value; sensitive values are cleared
+only when both `include_in: [reset]` and an explicit Default are present.
+
+For parent replacement, referenced fixtures directly beneath the original
+parent are also prepared beneath the replacement parent. The replacement
+scenario uses those targets while earlier scenarios retain their original
+references. All fixtures are declared once in the shared dependency
+configuration; targets under other parents keep their existing placement.
+References between replacement fixtures are remapped together, so a replacement
+L3Out uses the VRF beneath the replacement tenant.
+
+Omitting a set leaves it out of HCL; an explicit empty set renders `[]`.
+Clearing a singleton renders `{}`. Normal child clearing retains required and non-deletable
+objects and clears their deletable descendants. Explicit-reset values come
+from documented defaults or an authored Default override; inferred empty
+strings are not assumed to be valid reset values. The root annotation reset
+uses the established `orchestrator:terraform` value.
+
+Resource assertions evaluate runtime prefixes after PreCheck and compare them
+to independently constructed values. Reference assertions resolve dependency
+attributes, including formatted DNs, rather than comparing a resource's
+attributes to itself.
+VMM ARP-learning assertions use the model custom type's semantic equality:
+APIC's empty value and `disabled` are equivalent, while a missing attribute
+still fails the check.
+
+Legacy/deprecated attributes, state upgrades, and resource identity are not part
+of these tests.
+The legacy resource and datasource test files remain unchanged.
+
+With the normal ACI acceptance-test environment set, the generated resource
+suite can be run using the existing parallel worker runner:
+
+```bash
+TF_ACC=1 ACI_TEST_PARALLEL=1 GOWORK=off go test ./internal/provider \
+  -run '^TestAccResource.*Generated$' -parallel=2 -count=1 -timeout=6h
+```
+
+On machines with limited memory, compile the generated resource and datasource
+tests once, then run that binary. The normal package command still compiles
+every test file, including legacy tests, even when `-run` selects only generated
+tests. The following shell commands exclude legacy test files from the build
+and disable inlining for this test package. This does not change release builds.
+Run them from the repository root with the normal ACI acceptance-test
+environment set:
+
+```bash
+mkdir -p test-logs
+(
+  cd internal/provider || exit 1
+  set --
+  for source in *.go; do
+    case "$source" in
+      *_test.go) ;;
+      *) set -- "$@" "$source" ;;
+    esac
+  done
+  set -- "$@" provider_test.go resource_acceptance_test.go \
+    data_source_aci_*_acceptance_test.go resource_aci_*_acceptance_test.go
+
+  GOWORK=off GOMAXPROCS=1 GOGC=5 GOMEMLIMIT=4GiB \
+    go test -c -p=1 -gcflags=command-line-arguments=-l \
+    -o ../../test-logs/generated-acceptance.test "$@" || exit 1
+
+  TF_ACC=1 ACI_TEST_PARALLEL=1 GOMAXPROCS=2 GOGC=5 GOMEMLIMIT=6GiB \
+    ../../test-logs/generated-acceptance.test \
+    -test.run='^TestAcc(Resource|DataSource).*Generated$' \
+    -test.parallel=2 -test.count=1 -test.timeout=8h -test.v
+)
+```
+
+These settings allowed the combined generated suite to compile and run in the
+test container with approximately 10 GiB of VM memory. `GOMEMLIMIT` is a soft Go
+runtime limit, not a hard limit on total compiler or process memory. Keep the
+compiled binary for the same checkout, operating system, and architecture;
+rebuild it after changing code or generated tests. Per-test logs and the summary
+report use the normal acceptance runner.
+
 ### Fixture isolation
 
 `PreCheck` generates one random `test_prefix` for the whole test case and passes
@@ -692,9 +852,9 @@ numeric, or enum identifiers. The same subnet address can therefore be tested
 under independently created tenants without changing the address itself.
 
 This is a rendering projection: normalized `TestValues`, public examples, and
-model generation retain their canonical values. Scalar runtime expressions are
+model generation retain their canonical values. Datasource scalar runtime expressions are
 checked against the created resource's state rather than against expression
-text. Existing references continue to use the counted dependency addresses.
+text. Resource tests independently check the generated prefix and expected value. Existing references continue to use the counted dependency addresses.
 
 The class definition can customize the shared prefix, and individual property
 or dependency definitions can override automatic prefix application:
@@ -755,6 +915,46 @@ flow, including cleanup, with independent provider/logger globals. The internal
 `ACI_TEST_WORKER` marker prevents recursive workers. Without `ACI_TEST_PARALLEL=1`,
 the generated tests run directly as before; legacy tests do not opt into this
 helper.
+
+Classes whose fixtures change shared APIC settings can opt out of parallel execution:
+
+```yaml
+test_config:
+  run_serially: true
+```
+
+This applies to the class's generated resource and datasource tests. Their parent
+runner skips `t.Parallel()`, so Go runs them before the parallel group in the same
+package invocation. They retain subprocess isolation, detailed logs, and summary
+reporting. Other generated tests continue to use the command's `-parallel` limit.
+Fabric External Connection Policy uses this setting because its site-ID changes
+conflict with Associated Site fixtures even when those fixtures use separate tenants.
+Access Interface Override also uses it because its resource and datasource fixtures
+target the same physical port, and APIC permits only one override per path.
+It does not serialize tests launched by separate `go test` commands.
+
+Certificate Authority, Key Ring, and Management Access Policy fixtures can interrupt
+APIC HTTPS when they change certificate authorities. These classes also configure
+a delay after Terraform cleanup:
+
+```yaml
+test_config:
+  run_serially: true
+  post_test_delay_seconds: 15
+```
+
+The delay defaults to zero. Generated tests register `acceptancetest.DelayAfterTest`
+before the Terraform harness so it runs after the harness's cleanup, including when
+a test fails. Skipped tests do not wait. The parent runner waits for this final
+cleanup before starting another serial test or releasing the parallel group.
+The 15-second window covers the observed delayed HTTPS interruptions 5–8 seconds
+after certificate cleanup; an immediate successful request can precede that reload.
+
+Import verification compares raw attribute strings and does not invoke framework
+custom-type semantic equality. IP fixtures used by these steps therefore use
+canonical IPv6 spelling, such as `fe80::2` and `2001:db8::1`. Alternate spellings
+remain covered by the IP custom-type unit tests. Fixture corrections belong in
+the migration script so rebuilding definitions preserves them.
 
 The runtime helpers live in `internal/acceptancetest`. `provider_test.go` owns
 one zero-value `acceptancetest.Runner`; generated tests return when its
@@ -836,6 +1036,12 @@ separates different fixtures in one suite; concurrently launching the same suite
 against a fixed shared policy, such as the fabric external connection policy,
 can still address the same object.
 
+Some fabric constraints span different tenant DNs. The generated Application
+EPG resource and datasource fixtures both deploy VLAN 101 on node 102; running
+them together can fail APIC's static-deployment validation despite distinct
+tenant prefixes. Run those two cases sequentially with `-parallel=1` until
+their node/VLAN fixtures have separate allocations.
+
 #### Provider authentication limitation
 
 The testing framework creates fresh provider servers for each Terraform command,
@@ -875,88 +1081,72 @@ its settings match. Local verification should cover identical-configuration
 reuse, isolation of differing configurations, and concurrent client creation.
 Each worker and separate Terraform process would still authenticate independently.
 
-### Future resource scenarios
+### Deferred coverage
 
-The resource acceptance-test template is not implemented yet. Its baseline scenarios remain:
+The Management Access Policy fixture keeps the HTTPS key-ring reference at
+APIC's built-in `default` ring. It does not provision an alternate ring, so a
+key-ring switch needs a dedicated fixture; a generated placeholder is not a
+valid reference. Other HTTPS child attributes still exercise updates.
 
-- **Create step** — apply a config built from each property's `TestValues.Create` bucket (plus all auto-resolved/explicit dependencies and child blocks); assert state matches `AssertValue` for every entry with `ConfigInclude=true`, and assert server-default `AssertValue` for entries with `ConfigInclude=false`.
-- **Update step** — re-apply with values from `TestValues.Update`; assert in-place update succeeds and state matches the new `AssertValue`s. For properties where Create == Update, assert no diff.
-- **Required-only / Default step** — apply a config built from `TestValues.Default` (only required props in HCL; optional props omitted); assert optional props carry their server-default `AssertValue` in state.
-- **ForceNew / parent-switch step** — apply a config that swaps `parent_dn` to
-  the second Parent-role dependency from `TestValues.ForceNew`; assert
-  destroy+recreate of the resource-under-test. Relation `tDn` remains on its
-  Create target in this step.
-- **Import step** — `ImportState`/`ImportStateVerify` after one of the above apply steps; assert imported state matches applied state.
-- **Data source step** — apply the resource then read it via `data.aci_<name>`; assert every attribute (including children) matches the resource's state.
-- **Cleanup** — final destroy step (typically implicit via the test framework, but the template must not leave orphan dependencies).
+The `l3extRsRedistributePol` fixtures explicitly ignore
+`relation_l3extrs_redistribute_pol` on their SDKv2 L3Out parents. The parent's
+Read function discovers this separately managed relationship, while its schema
+marks the inline set optional without computed behavior. Omitting it from the
+parent configuration can therefore produce a removal plan. Both newly generated
+resource and datasource tests retain strict plan checks; only the parent's copy
+is ignored. The preserved legacy tests still use their original non-empty-plan
+exception and fixtures.
 
-### Import testing gaps
-- Import with non-default attribute values (legacy generated tests import after
-  their reset/default step)
-- Import after child modifications (partial child presence)
-- Verify `parent_dn` reconstruction correctness explicitly (legacy generated
-  tests cover it only indirectly through `ImportStateVerify`)
+This ownership conflict is identified from the provider schema and Read code.
+The generated resource lifecycle passed on APIC `6.2(2e)` with this fixture
+override while retaining strict plan checks. Once the parent implementation
+changes, recheck whether this definition override is still needed.
 
-### Child lifecycle gaps
-- Child attribute updates (changing a value within an existing child block between steps, not add/remove)
-- Incremental child addition (adding children one at a time, not all at once)
-- Child ordering stability verification (reorder set-typed children, verify no diff)
+The current resource scenarios intentionally exclude:
 
-### Custom type / semantic equivalence gaps
-- Custom type update (change from one non-canonical form to another)
-- Custom type in children (nested block attributes with custom types)
-- Custom type import verification (import state matches normalized form)
+- legacy aliases, frozen attributes, conflicts with current attributes, and state upgrades;
+- resource identity import;
+- extra target or parent types beyond the selected lifecycle fixtures;
+- dedicated invalid-input and semantic-equivalence spelling scenarios.
 
-### Legacy attribute gaps
+The full Application EPG fixture keeps `flood_in_encapsulation` disabled because
+enabled flooding conflicts with its intra-EPG contracts. It also keeps the
+domain relation's `delimiter` at `"@"` during child updates because APIC marks
+that attribute create-only. A separate enabled-flooding scenario and create-only
+schema/child-replacement handling are deferred; the fixture still asserts both
+configured values. Criterion updates retain `scope-bd`, as in the legacy fixture,
+because the simulator rejects `scope-vrf`. Domain updates keep `untagged = "no"`
+alongside the selected uSeg class preference; independently switching both
+attributes would produce an invalid combination.
 
-The `TestValues.Legacy` data bucket is now populated (auto-derived from `Create` when types match, or supplied via `test_config.legacy` when they diverge — see §2.4). The remaining gaps live in the template layer that consumes it:
+Associated Site fixtures retain the local `site_id` value `"0"`, as in the
+legacy test. The standalone simulator rejects changing the parent's local site
+ID, so these runs do not exercise a local-site-ID update.
 
-- Render a scenario that applies a config under the legacy alias and asserts the current-name state attribute receives the same value (Functioning aliases) or stays at the prior value with no device write (Frozen aliases).
-- Legacy-to-new attribute migration in a single test (set via legacy → read via new attribute).
-- Conflicting legacy + new attribute error validation (`ConflictsWith` enforcement on Functioning aliases).
-- Removed-alias migration coverage: state with the removed name upgrades cleanly to the current schema (driven by `state_upgrades`, no Legacy bucket involvement).
+Data Plane Policing updates keep `mode = "bit"` while exercising the 2R3C type
+and marking actions. Packet mode requires a different combination of type,
+actions, and sharing mode; a separate compatible packet-mode scenario is deferred.
 
-### Step rendering / template scope
+Fabric External Connection Policy fixtures retain fabric ID `"1"`, the only
+local fabric ID accepted by the standalone simulator. Fabric-ID replacement is
+therefore not exercised. Site-ID updates and community reset remain covered;
+the omitted/reset community reads back as `unknown:unknown:0:0`.
 
-The data model in this document gathers test data per scenario; concrete step ordering and assertions live in the (future) test templates layer. Items below belong to that layer:
+Key Ring updates reuse the supplied matching RSA certificate, private key, and
+CA reference, with RSA-compatible modulus and curve and regeneration disabled.
+The CA remains an HCL reference so Terraform retains the teardown dependency.
+ECC, regeneration, and rotation with another certificate/key pair require
+separate fixtures and are not exercised by this RSA lifecycle run.
+The coordinated reset clears the certificate, private key, and CA reference
+together while requesting `admin_state = "started"`, matching the legacy reset.
+The definition includes those explicit empty reset values through
+`test_config.include_in: [reset]`.
 
-- Concrete step ordering: all-attributes create → update → required-only → parent switch → import → cleanup.
-- Parent-switch step rendering: consumes the `ForceNew` bucket (second Parent-role entry from `TestDependencies`) and asserts destroy+recreate.
-- Multi-parent type compatibility scenario when a class has 2+ parent types (renders the second Parent class with a single `.test.id` instance and verifies the resource applies under it).
-- Explicit plan-shape assertion that a replace-trigger step shows
-  destroy+create (legacy generated tests infer this only from apply success).
-- RequiresReplace coverage strategy:
-  - Implicit coverage when a property's Create and Update values differ (Terraform auto-plans replace as part of the update step). Free-form string properties normally satisfy this because §2.4 auto-derives distinct `"<attr>_1"` / `"<attr>_2"` values.
-  - **Gap to address:** RequiresReplace properties whose `test_config` override pins Create == Update, or whose `ValidValues` only contain a single member. The (future) template Update step should detect these and either widen the value set or emit an explicit replace-trigger scenario.
-
-### Generator code follow-ups (not template scope)
-
-- **Silent-skip diagnostics for dropped parents:** Both parents encountered after two resolvable parent classes and parents without a resource artifact are dropped with only a Trace-level log. Consider emitting a Warning-level diagnostic in either case so coverage gaps are visible to whoever runs the generator.
-- **Multi-target lifecycle data only selects the first two `Target`-role entries via `tDn` Create/Update.** For relations with 3+ concrete targets (e.g., `fvRsDomAtt`'s four domain types), further explicit dependencies remain available in `TestDependencies` but are not assigned to a lifecycle bucket. The future resource acceptance-test renderer must decide whether to emit an additional scenario per remaining target.
-
-### ForceNew / parent_dn
-- Multi-parent type compatibility (verify resource works under different parent types within same test)
-
-### Attribute update
-- Value-to-value update (All_v1 → All_v2 with different non-default values;
-  legacy generated tests use All → Min → Reset)
-- Target DN change for relation resources (update `target_dn` to different target)
-- Individual attribute toggling (isolate single attribute change to detect side effects)
-
-### Error validation
-- Invalid attribute values (expect specific error messages)
-- Version constraint violations (use attribute on unsupported version)
-- Invalid `parent_dn` format
-- Conflicting attributes (mutually exclusive validators)
-
-### Sensitive/password attributes
-- Explicit sensitive value persistence assertion (verify config value survives Read)
-- Sensitive attribute update (change password between steps)
-- Import with sensitive attributes (verify `ImportStateVerifyIgnore` is correct)
-
-### Plan accuracy
-- `PlanOnly: true` steps to verify diff prediction without apply
-- Empty plan after no-op apply (verify no spurious diffs)
+Sensitive values explicitly provided by a resource configuration are asserted
+against the configured expectation. Unconfigured optional, non-computed values
+are checked as absent. Import verification excludes sensitive attributes because
+APIC cannot reconstruct write-only values from a DN alone. Datasource assertions
+continue to exclude sensitive values.
 
 ### Generator tooling / CI hygiene
 
