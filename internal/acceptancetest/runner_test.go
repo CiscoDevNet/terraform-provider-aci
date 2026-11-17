@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"sync"
 	"testing"
@@ -18,6 +19,28 @@ type acceptanceGuardInput struct {
 	Acceptance string
 	Parallel   string
 	Worker     string
+}
+
+func TestDelayAfterTest(t *testing.T) {
+	test.InitializeTest(t)
+
+	testCases := []test.TestCase{
+		{Name: "test_zero_delay", Input: time.Duration(0)},
+		{Name: "test_delay_follows_other_cleanup", Input: 20 * time.Millisecond},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			delay := testCase.Input.(time.Duration)
+			var cleanedUp time.Time
+			t.Run("fixture", func(t *testing.T) {
+				DelayAfterTest(t, delay)
+				t.Cleanup(func() { cleanedUp = time.Now() })
+			})
+			if assert.False(t, cleanedUp.IsZero()) {
+				assert.GreaterOrEqual(t, time.Since(cleanedUp), delay)
+			}
+		})
+	}
 }
 
 func TestAcceptanceSubprocessGuards(t *testing.T) {
@@ -36,8 +59,94 @@ func TestAcceptanceSubprocessGuards(t *testing.T) {
 			t.Setenv("ACI_TEST_WORKER", input.Worker)
 			var runner Runner
 			assert.False(t, runner.RunInSubprocess(t))
+			assert.False(t, runner.RunSeriallyInSubprocess(t))
 		})
 	}
+}
+
+func TestAcceptanceRunnerScheduling(t *testing.T) {
+	test.InitializeTest(t)
+
+	directory := t.TempDir()
+	executable, err := os.Executable()
+	if !assert.NoError(t, err) {
+		return
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer cancel()
+	// A separate test process can opt into parallel workers without changing the unit suite's environment.
+	command := exec.CommandContext(ctx, executable, "-test.run=^TestAcceptanceRunnerSchedulingFixture$", "-test.v", "-test.parallel=2", "-test.timeout=15s")
+	command.Env = childEnvironment("TF_ACC=1", "ACI_TEST_PARALLEL=1", "ACI_TEST_WORKER=", "ACI_TEST_SCHEDULING_DIRECTORY="+directory, "ACI_TEST_LOG_DIR="+filepath.Join(directory, "logs"))
+	configureAcceptanceProcess(command)
+	command.Cancel = func() error { return stopAcceptanceProcess(command) }
+	command.WaitDelay = 2 * time.Second
+	output, err := command.CombinedOutput()
+	if !assert.NoError(t, err, string(output)) {
+		return
+	}
+	reports, err := filepath.Glob(filepath.Join(directory, "logs", "*", "summary.md"))
+	if assert.NoError(t, err) && assert.Len(t, reports, 1) {
+		contents, err := os.ReadFile(reports[0])
+		if assert.NoError(t, err) {
+			assert.Contains(t, string(contents), "**4 of 4** test invocations")
+			assert.Contains(t, string(contents), "**3 passed**, **0 failed**, and **1 skipped**")
+		}
+	}
+}
+
+func TestAcceptanceRunnerSchedulingFixture(t *testing.T) {
+	// These workers exercise scheduling and reports locally; they never contact APIC.
+	directory := os.Getenv("ACI_TEST_SCHEDULING_DIRECTORY")
+	if directory == "" {
+		t.Skip("local scheduling fixture")
+	}
+	runner := Runner{}
+	serialFinished := filepath.Join(directory, "serial_finished")
+	testCases := []test.TestCase{
+		{Name: "parallel_before", Input: false, Expected: "parallel_after"},
+		{Name: "serial", Input: true},
+		{Name: "serial_skipped", Input: true},
+		{Name: "parallel_after", Input: false, Expected: "parallel_before"},
+	}
+	t.Run("cases", func(t *testing.T) {
+		for _, testCase := range testCases {
+			runSerially := testCase.Input.(bool)
+			t.Run(testCase.Name, func(t *testing.T) {
+				if runSerially {
+					if runner.RunSeriallyInSubprocess(t) {
+						return
+					}
+					if testCase.Name == "serial_skipped" {
+						// A missing skip guard would exceed the outer process timeout.
+						DelayAfterTest(t, time.Hour)
+						Skip(t, "local skipped fixture")
+					}
+					DelayAfterTest(t, 20*time.Millisecond)
+					t.Cleanup(func() {
+						assert.NoError(t, os.WriteFile(serialFinished, nil, 0600))
+					})
+					return
+				}
+				if runner.RunInSubprocess(t) {
+					return
+				}
+				assert.FileExists(t, serialFinished)
+				if !assert.NoError(t, os.WriteFile(filepath.Join(directory, testCase.Name), nil, 0600)) {
+					return
+				}
+				// Both parallel workers must be active together; sequential execution cannot satisfy this barrier.
+				assert.Eventually(t, func() bool {
+					_, err := os.Stat(filepath.Join(directory, testCase.Expected.(string)))
+					return err == nil
+				}, 5*time.Second, 10*time.Millisecond)
+			})
+			if runSerially && os.Getenv("ACI_TEST_WORKER") == "" {
+				// Unlike t.Parallel, a serial invocation must finish before t.Run returns to its parent.
+				assert.FileExists(t, serialFinished)
+			}
+		}
+	})
+	assert.NoError(t, runner.Finish())
 }
 
 func TestAcceptanceSummary(t *testing.T) {
