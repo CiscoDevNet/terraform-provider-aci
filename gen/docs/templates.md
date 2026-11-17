@@ -11,11 +11,10 @@ associated with, `gen/generator.go`:
 
 | Output area | Tracked inventory | Cleanup status |
 | --- | ---: | --- |
-| `internal/provider/` | 829 files | Mixed static and generated output; 126 class-backed data-source implementations and 126 data-source acceptance tests are actively managed |
+| `internal/provider/` | 955 files | Mixed static and generated output; 125 resource implementations, 126 data-source implementations, 125 resource acceptance tests, and 126 data-source acceptance tests are actively managed |
 | `internal/provider/models/` | 187 files | 177 class models are managed; shared model helpers and the class-version registry are static |
 | `internal/apicversion/` | 2 files | Static APIC version parsing, comparison, and focused unit tests |
-| `internal/acceptancetest/` | 14 files | Static worker runner, Markdown reporting, event parsing, process management, fixture-prefix helpers, and focused unit tests |
-| `internal/custom_types/` | 37 files | Legacy output outside the active generator manifest |
+| `internal/acceptancetest/` | 16 files | Static worker runner, Markdown reporting, event parsing, process management, fixture-prefix helpers, and focused unit tests |
 | `internal/customtypes/` | 6 files | Static custom types and focused unit tests used by generated models |
 | `docs/` | 699 files | Mixed static and generated output; `index.md`, 125 class-backed resource pages, and 126 class-backed data-source pages are actively managed |
 | `examples/resources/` | 376 files | All 125 `provider.tf` and 125 `resource.tf` files, 123 distinct `resource-all-attributes.tf` files, and 3 copied PEM files are managed |
@@ -35,6 +34,7 @@ manifest. Normal generator cleanup does not inspect or remove them:
 ```text
 internal/provider/provider.go
 internal/provider/provider_test.go
+internal/provider/resource_acceptance_test.go
 internal/provider/provider_registry.go
 internal/provider/provider_registry_test.go
 internal/provider/utils.go
@@ -53,8 +53,6 @@ internal/provider/models/versions_test.go
 internal/apicversion/
 internal/acceptancetest/
 internal/customtypes/
-internal/custom_types/ipAddress.go
-internal/custom_types/arpLearning.go
 docs/data-sources/rest_managed.md
 examples/provider/provider.tf
 ```
@@ -177,6 +175,26 @@ the shared provider transport helper to retrieve the requested DN with the
 model's APIC-version-compatible subtree classes. The handwritten
 `data_source_aci_rest_managed.go` implementation remains static and outside the
 managed-files manifest.
+
+`resource.go.tmpl` owns the implementation for every loaded class with a
+resource artifact. Each adapter registers itself and delegates schema,
+DN/payload construction, response decoding, and version-aware subtree selection
+to its generated model. The adapter owns CRUD orchestration, DN-based import,
+and the provider's `allow_existing_on_create` behavior. When creation is
+planned with a known DN and the flag is disabled, ModifyPlan checks whether the
+object already exists; Create checks again after resolving the DN. Non-deletable
+classes retain their state-only deletion warning. The handwritten
+`resource_aci_rest_managed.go` remains outside the managed-files manifest.
+
+Create records the known ID after a successful POST so a failed read-back does
+not leave an untracked object. Classes with parent-DN variants use the model's
+`BuildPayloadDN()` for Create/Update requests; Read and Delete use the full ID.
+
+Resource adapters currently expose the normalized current schema. Deprecated
+aliases, frozen attributes, state upgrades, and resource identity are deferred.
+Generated resource acceptance tests cover the current lifecycle. Existing legacy
+resource test files and templates are preserved unchanged for the later
+compatibility work.
 
 `resource.md.tmpl` owns the documentation page for every loaded class with a
 resource artifact. Resource pages without a metadata-backed class remain
@@ -328,3 +346,33 @@ self-contained Terraform configurations and recursive state assertions:
 Generator unit tests parse every rendered datasource configuration and verify
 that every Terraform resource/data-source reference is declared in that same
 configuration. These checks do not execute acceptance tests or contact APIC.
+
+
+`resource_test.go.tmpl` owns
+`internal/provider/resource_aci_<resource_name>_acceptance_test.go` for each
+resource artifact unless `test_config.ignore_tests` contains `resource`.
+`Class.ResourceTestScenarios` derives applicable lifecycle steps from the
+existing Create, Default, Update, ForceNew, dependency, and child data. The
+resource projection imports additional child-update prerequisites using the
+existing dependency importer; canonical datastore values remain unchanged.
+Each file contains its complete dependency configuration and local scenario
+constants, with the same counted references, APIC-version gates, fixture
+prefix, subprocess runner, and step descriptions used by datasource tests.
+
+The scenarios cover minimum/default configuration, existing-object rejection
+and adoption, full configuration, empty plans,
+in-place updates, omission versus explicit reset, recursive child lifecycle,
+non-deletable child diagnostics, identifier/parent replacement, DN import,
+external deletion and recreation, and destruction. Only classes marked
+`AllowDelete` receive external deletion checks. Non-deletable roots are
+removed from state while their APIC objects remain beneath their owning
+parents. Import verification retains the class-level opt-out and sensitive
+attribute exclusions. Legacy acceptance files remain outside the manifest.
+Existing-object checks reuse the minimum fixture under `existing_on_create`.
+A `removed` block with `destroy = false` forgets that temporary state entry while
+the original resource stays managed; these tests require Terraform 1.7 or later.
+
+Local tests parse every resource scenario's HCL and validate its configuration
+and assertion references, including recursively configured children. Compilation
+checks cover every generated file without executing acceptance tests. Deprecated
+aliases, state migration, and resource identity remain separate work.
