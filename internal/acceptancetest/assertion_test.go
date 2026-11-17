@@ -4,11 +4,82 @@ import (
 	"maps"
 	"testing"
 
+	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
+	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils/test"
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/customtypes"
 )
+
+func TestCheckPresent(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+	type input struct {
+		Path       string
+		Attributes map[string]string
+		Parents    []ParentSetElement
+	}
+	testCases := []test.TestCase{
+		{Name: "test_default_site", Input: input{Path: "site_id", Attributes: map[string]string{"site_id": "0"}}},
+		{Name: "test_mso_site", Input: input{Path: "site_id", Attributes: map[string]string{"site_id": "4"}}},
+		{Name: "test_missing", Input: input{Path: "site_id"}, Expected: true},
+		{Name: "test_empty", Input: input{Path: "site_id", Attributes: map[string]string{"site_id": ""}}, Expected: true},
+		{Name: "test_scoped_child", Input: input{Path: "children.*.value", Attributes: map[string]string{"children.101.key": "key_1", "children.101.value": "server_value"}, Parents: []ParentSetElement{{Path: "children.*", Values: map[string]AttributeValue{"key": {ExpectedValue: "key_1"}}}}}},
+		{Name: "test_other_child_cannot_satisfy_presence", Input: input{Path: "children.*.value", Attributes: map[string]string{"children.101.key": "key_1", "children.202.key": "key_2", "children.202.value": "server_value"}, Parents: []ParentSetElement{{Path: "children.*", Values: map[string]AttributeValue{"key": {ExpectedValue: "key_1"}}}}}, Expected: true},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			value := testCase.Input.(input)
+			state := nestedSetCheckState(nestedSetCheckInput{Attributes: value.Attributes})
+			err := CheckPresent("data.aci_example.test", value.Path, value.Parents...)(state)
+			if failed, _ := testCase.Expected.(bool); failed {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+		})
+	}
+}
+
+func TestCheckSemanticStringAttribute(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+	type input struct {
+		Attributes map[string]string
+		Address    string
+		ValueType  basetypes.StringTypable
+	}
+	testCases := []test.TestCase{
+		{Name: "test_empty_equals_disabled", Input: input{Attributes: map[string]string{"arp_learning": ""}}},
+		{Name: "test_disabled_equals_disabled", Input: input{Attributes: map[string]string{"arp_learning": "disabled"}}},
+		{Name: "test_enabled_differs", Input: input{Attributes: map[string]string{"arp_learning": "enabled"}}, Expected: "expected semantic value"},
+		{Name: "test_missing_attribute", Input: input{Attributes: map[string]string{}}, Expected: "missing from state"},
+		{Name: "test_missing_resource", Input: input{Address: "aci_missing.test"}, Expected: "missing from state"},
+		{Name: "test_type_without_semantic_equality", Input: input{Attributes: map[string]string{"arp_learning": "disabled"}, ValueType: basetypes.StringType{}}, Expected: "does not support string semantic equality"},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			value := testCase.Input.(input)
+			if value.Address == "" {
+				value.Address = "data.aci_example.test"
+			}
+			if value.ValueType == nil {
+				value.ValueType = customtypes.VMMArpLearningType{}
+			}
+			state := nestedSetCheckState(nestedSetCheckInput{Attributes: value.Attributes})
+			err := CheckSemanticStringAttribute(value.Address, "arp_learning", "disabled", value.ValueType)(state)
+			if expected, _ := testCase.Expected.(string); expected != "" {
+				assert.ErrorContains(t, err, expected)
+			} else {
+				assert.NoError(t, err)
+			}
+		})
+	}
+}
 
 type nestedSetCheckInput struct {
 	Path       string
@@ -17,6 +88,61 @@ type nestedSetCheckInput struct {
 	Values     map[string]AttributeValue
 	Value      AttributeValue
 	Parents    []ParentSetElement
+}
+
+func TestCheckAttributeAndAbsent(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+	state := nestedSetCheckState(nestedSetCheckInput{
+		Attributes: map[string]string{"target_dn": "uni/tn-prefixed/ap-example", "children.#": "1", "children.101.name": "child_1", "children.101.details.%": "0"},
+		Sources:    map[string]map[string]string{"aci_tenant.test_1.0": {"name": "prefixed"}},
+	})
+	parents := []ParentSetElement{{Path: "children.*", Values: map[string]AttributeValue{"name": {ExpectedValue: "child_1"}}}}
+	testCases := []test.TestCase{
+		{Name: "test_formatted_reference", Input: CheckAttribute("data.aci_example.test", "target_dn", AttributeValue{PairAddress: "aci_tenant.test_1.0", PairAttribute: "name", PairFormat: "uni/tn-%s/ap-example"})},
+		{Name: "test_wrong_formatted_reference", Input: CheckAttribute("data.aci_example.test", "target_dn", AttributeValue{PairAddress: "aci_tenant.test_1.0", PairAttribute: "name", PairFormat: "uni/tn-%s/ap-other"}), Expected: true},
+		{Name: "test_absent_singleton", Input: CheckAbsent("data.aci_example.test", "details")},
+		{Name: "test_present_singleton", Input: CheckAbsent("data.aci_example.test", "children"), Expected: true},
+		{Name: "test_empty_singleton_in_set", Input: CheckAbsent("data.aci_example.test", "children.*.details", parents...)},
+		{Name: "test_wrong_parent", Input: CheckAbsent("data.aci_example.test", "children.*.details", ParentSetElement{Path: "children.*", Values: map[string]AttributeValue{"name": {ExpectedValue: "child_2"}}}), Expected: true},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			err := testCase.Input.(resource.TestCheckFunc)(state)
+			if fail, _ := testCase.Expected.(bool); fail {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+		})
+	}
+}
+
+func TestCheckAbsentEmptyObjects(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+	testCases := []test.TestCase{
+		{Name: "test_absent", Input: map[string]string{}},
+		{Name: "test_all_null_singleton", Input: map[string]string{"details.%": "4"}},
+		{Name: "test_nested_empty_containers", Input: map[string]string{"details.%": "4", "details.nested.%": "2", "details.tags.#": "0"}},
+		{Name: "test_populated_scalar", Input: map[string]string{"details.%": "4", "details.target_dn": "uni/tn-example"}, Expected: true},
+		{Name: "test_explicit_empty_string", Input: map[string]string{"details.%": "4", "details.target_dn": ""}, Expected: true},
+		{Name: "test_populated_nested_scalar", Input: map[string]string{"details.%": "4", "details.nested.%": "2", "details.nested.name": "example"}, Expected: true},
+		{Name: "test_populated_set", Input: map[string]string{"details.%": "4", "details.tags.#": "1"}, Expected: true},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			state := nestedSetCheckState(nestedSetCheckInput{Attributes: testCase.Input.(map[string]string)})
+			err := CheckAbsent("data.aci_example.test", "details")(state)
+			if fail, _ := testCase.Expected.(bool); fail {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+		})
+	}
 }
 
 func TestCheckSetElement(t *testing.T) {
