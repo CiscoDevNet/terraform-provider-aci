@@ -4,6 +4,9 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"go/ast"
+	"go/parser"
+	"go/token"
 	"io"
 	"net/http"
 	"os"
@@ -72,6 +75,7 @@ func TestGeneratorLoadsActiveTemplates(t *testing.T) {
 	for _, templateName := range []string{
 		modelTemplateName,
 		resourceTemplateName,
+		resourceTestTemplateName,
 		datasourceTemplateName,
 		datasourceTestTemplateName,
 		indexTemplateName,
@@ -276,6 +280,23 @@ func TestBuildDatasourceTestRenderJobs(t *testing.T) {
 		assert.Same(t, dataStore, job.Context.DataStore)
 	}
 	assert.Equal(t, expectedPaths, actualPaths)
+}
+
+func TestBuildResourceTestRenderJobs(t *testing.T) {
+	test.InitializeTest(t)
+	class := testClass(t, "fvTenant", data.ResourceArtifact, data.DatasourceArtifact)
+	class.ResourceName = "tenant"
+	ignored := testClass(t, "fvBD", data.ResourceArtifact)
+	ignored.TestConfig.IgnoreTests = []data.IgnoreTestEnum{data.ResourceIgnoreTest}
+	datasourceOnly := testClass(t, "topSystem", data.DatasourceArtifact)
+	store := &data.DataStore{Classes: map[string]data.Class{"fvTenant": class, "fvBD": ignored, "topSystem": datasourceOnly}}
+	generator := &Generator{dataStore: store}
+	jobs := generator.buildResourceTestRenderJobs()
+	if assert.Len(t, jobs, 1) {
+		assert.Equal(t, "internal/provider/resource_aci_tenant_acceptance_test.go", jobs[0].OutputPath)
+		assert.Equal(t, resourceTestTemplateName, jobs[0].TemplateName)
+		assert.Same(t, store, jobs[0].Context.DataStore)
+	}
 }
 
 func TestBuildProviderExampleRenderJobs(t *testing.T) {
@@ -563,7 +584,7 @@ func TestBuildRenderJobsIncludesAnnotationOnlyAfterRefresh(t *testing.T) {
 	generator := &Generator{dataStore: dataStore, providerExample: `provider "aci" {}`}
 
 	jobs := generator.buildRenderJobs()
-	expected := []string{modelTemplateName, resourceTemplateName, datasourceTemplateName,
+	expected := []string{modelTemplateName, resourceTemplateName, resourceTestTemplateName, datasourceTemplateName,
 		datasourceTestTemplateName, indexTemplateName, providerExampleTemplateName, providerExampleTemplateName,
 		resourceExampleTemplateName, datasourceExampleTemplateName, resourceDocumentationTemplateName, datasourceDocumentationTemplateName}
 	actual := make([]string, 0, len(jobs))
@@ -632,6 +653,194 @@ func TestAnnotationUnsupportedTemplate(t *testing.T) {
 		if !strings.Contains(contents, `"`+className+`"`) {
 			t.Fatalf("rendered annotation output does not contain class %q", className)
 		}
+	}
+}
+
+func TestAcceptanceTestTemplateScheduling(t *testing.T) {
+	test.InitializeTest(t)
+
+	class := testClass(t, "fvTenant", data.ResourceArtifact, data.DatasourceArtifact)
+	class.ResourceName = "tenant"
+	class.PropertiesAll = []string{"name"}
+	class.IdentifiedBy = []string{"name"}
+	class.Properties = map[string]*data.Property{
+		"name": {PropertyName: "name", AttributeName: "name", ValueType: data.String, Required: true, TestValues: &data.TestValues{
+			Create: data.TestValueScenario{Defined: true, Entries: []data.TestValueEntry{{ConfigValue: "name_1", AssertValue: "name_1", ConfigInclude: true}}},
+		}},
+	}
+	store := &data.DataStore{Classes: map[string]data.Class{class.Name.String(): class}}
+	generator := loadActiveGenerator(t, store)
+	testCases := []test.TestCase{
+		{Name: "test_default_parallel", Input: data.ClassTestConfig{}, Expected: "RunInSubprocess"},
+		{Name: "test_run_serially", Input: data.ClassTestConfig{RunSerially: true}, Expected: "RunSeriallyInSubprocess"},
+		{Name: "test_serial_with_cleanup_delay", Input: data.ClassTestConfig{RunSerially: true, PostTestDelaySeconds: 15}, Expected: "RunSeriallyInSubprocess"},
+		{Name: "test_parallel_with_cleanup_delay", Input: data.ClassTestConfig{PostTestDelaySeconds: 15}, Expected: "RunInSubprocess"},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			class := class
+			class.TestConfig = testCase.Input.(data.ClassTestConfig)
+			for _, name := range []string{resourceTestTemplateName, datasourceTestTemplateName} {
+				var rendered bytes.Buffer
+				if !assert.NoError(t, generator.templates[name].Execute(&rendered, TemplateContext{Class: &class, DataStore: store})) {
+					continue
+				}
+				_, err := parser.ParseFile(token.NewFileSet(), "acceptance_test.go", rendered.Bytes(), 0)
+				assert.NoError(t, err)
+				assert.Contains(t, rendered.String(), "if testAccRunner."+testCase.Expected.(string)+"(t) {")
+				if class.TestConfig.PostTestDelaySeconds == 0 {
+					assert.NotContains(t, rendered.String(), "DelayAfterTest")
+				} else {
+					assert.Contains(t, rendered.String(), "acceptancetest.DelayAfterTest(t, 15*time.Second)")
+					assert.Less(t, strings.Index(rendered.String(), "DelayAfterTest(t,"), strings.Index(rendered.String(), "resource.Test(t,"))
+				}
+			}
+		})
+	}
+}
+
+func TestAcceptanceTestTemplatePresenceStrategy(t *testing.T) {
+	test.InitializeTest(t)
+	class := testClass(t, "fvTenant", data.ResourceArtifact, data.DatasourceArtifact)
+	class.ResourceName = "tenant"
+	class.PropertiesAll = []string{"name"}
+	class.IdentifiedBy = []string{"name"}
+	class.Properties = map[string]*data.Property{
+		"name": {PropertyName: "name", AttributeName: "name", ValueType: data.String, Required: true, TestValues: &data.TestValues{
+			Create: data.TestValueScenario{Defined: true, Entries: []data.TestValueEntry{{ConfigValue: "name_1", AssertValue: "name_1", ConfigInclude: true}}},
+		}},
+	}
+	child := testClass(t, "tagAnnotation")
+	child.ResourceNameNested = "annotations"
+	child.IdentifiedBy = []string{"key"}
+	child.PropertiesAll = []string{"key", "value"}
+	child.Properties = map[string]*data.Property{
+		"key":   {PropertyName: "key", AttributeName: "key", ValueType: data.String},
+		"value": {PropertyName: "value", AttributeName: "value", ValueType: data.String},
+	}
+	class.TestChildren = []*data.TestChild{{Class: child.Name, Instances: []data.TestChildInstance{{Properties: map[string]data.TestValueScenario{
+		"key":   {Defined: true, Entries: []data.TestValueEntry{{ConfigValue: "key_1", AssertValue: "key_1", ConfigInclude: true}}},
+		"value": {Defined: true, Entries: []data.TestValueEntry{{ConfigValue: "value_1", AssertValue: "value_1", ConfigInclude: true, AssertStrategy: data.AssertPresenceOnly}}},
+	}}}}}
+	store := &data.DataStore{Classes: map[string]data.Class{class.Name.String(): class, child.Name.String(): child}}
+	generator := loadActiveGenerator(t, store)
+	testCases := []test.TestCase{
+		{Name: "test_resource", Input: resourceTestTemplateName},
+		{Name: "test_datasource", Input: datasourceTestTemplateName},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			var rendered bytes.Buffer
+			if !assert.NoError(t, generator.templates[testCase.Input.(string)].Execute(&rendered, TemplateContext{Class: &class, DataStore: store})) {
+				return
+			}
+			_, err := parser.ParseFile(token.NewFileSet(), "acceptance_test.go", rendered.Bytes(), 0)
+			assert.NoError(t, err)
+			assert.Contains(t, rendered.String(), "acceptancetest.CheckPresent(")
+			assert.Contains(t, rendered.String(), `"annotations.*.value"`)
+		})
+	}
+}
+
+func TestResourceTestTemplateSteps(t *testing.T) {
+	test.InitializeTest(t)
+
+	class := testClass(t, "fvTenant", data.ResourceArtifact)
+	class.ResourceName = "tenant"
+	class.AllowDelete = true
+	class.IdentifiedBy = []string{"name"}
+	class.PropertiesAll = []string{"name"}
+	class.Properties = map[string]*data.Property{
+		"name": {PropertyName: "name", AttributeName: "name", ValueType: data.String, Required: true, RequiresReplace: true, TestValues: &data.TestValues{
+			Create: data.TestValueScenario{Defined: true, Entries: []data.TestValueEntry{{ConfigValue: "name_1", AssertValue: "name_1", ConfigInclude: true}}},
+			Update: data.TestValueScenario{Defined: true, Entries: []data.TestValueEntry{{ConfigValue: "name_2", AssertValue: "name_2", ConfigInclude: true}}},
+		}},
+	}
+	store := &data.DataStore{Classes: map[string]data.Class{class.Name.String(): class}}
+	scenarios, err := class.ResourceTestScenarios(store)
+	if !assert.NoError(t, err) {
+		return
+	}
+	generator := loadActiveGenerator(t, store)
+	var rendered bytes.Buffer
+	if !assert.NoError(t, generator.templates[resourceTestTemplateName].Execute(&rendered, TemplateContext{Class: &class, DataStore: store})) {
+		return
+	}
+	file, err := parser.ParseFile(token.NewFileSet(), "resource_aci_tenant_acceptance_test.go", rendered.Bytes(), 0)
+	if !assert.NoError(t, err) {
+		return
+	}
+
+	steps, imports, externalDeletionChecks := 0, 0, 0
+	existingObjectSteps := make(map[string]string)
+	ast.Inspect(file, func(node ast.Node) bool {
+		literal, ok := node.(*ast.CompositeLit)
+		if !ok {
+			return true
+		}
+		array, ok := literal.Type.(*ast.ArrayType)
+		if !ok {
+			return true
+		}
+		element, ok := array.Elt.(*ast.SelectorExpr)
+		if !ok || element.Sel.Name != "TestStep" {
+			return true
+		}
+		for _, entry := range literal.Elts {
+			step := entry.(*ast.CompositeLit)
+			fields := map[string]ast.Expr{}
+			for _, entry := range step.Elts {
+				field := entry.(*ast.KeyValueExpr)
+				fields[field.Key.(*ast.Ident).Name] = field.Value
+			}
+			// Import reuses the previous configuration, but needs its own variable map.
+			variables, ok := fields["ConfigVariables"].(*ast.Ident)
+			if assert.True(t, ok, "step %d must receive ConfigVariables (import: %t)", steps+1, fields["ImportState"] != nil) {
+				assert.Equal(t, "variables", variables.Name)
+			}
+			if fields["ImportState"] != nil {
+				imports++
+			}
+			if steps < len(scenarios) && (scenarios[steps].ExistingObject || scenarios[steps].ForgetExisting) {
+				existingObjectSteps[scenarios[steps].Name] = rendered.String()[step.Pos()-1 : step.End()-1]
+			}
+			if steps < len(scenarios) && scenarios[steps].ExternalDelete {
+				// The non-refresh plan still contains the deleted object; recreation appears after refresh.
+				checks, ok := fields["ConfigPlanChecks"].(*ast.CompositeLit)
+				if assert.True(t, ok) && assert.Len(t, checks.Elts, 1) {
+					phase := checks.Elts[0].(*ast.KeyValueExpr).Key.(*ast.Ident).Name
+					assert.Equal(t, "PostApplyPostRefresh", phase)
+				}
+				externalDeletionChecks++
+			}
+			steps++
+		}
+		return false
+	})
+	assert.Equal(t, len(scenarios), steps)
+	assert.Equal(t, 1, imports)
+	assert.Equal(t, 1, externalDeletionChecks)
+	testCases := []test.TestCase{
+		{Name: "RejectExisting", Expected: []string{`ExpectError: regexp.MustCompile("Object Already Exists")`}},
+		{Name: "AllowExisting", Expected: []string{
+			`plancheck.ExpectResourceAction("aci_tenant.existing_on_create", plancheck.ResourceActionCreate)`,
+			`identity.CheckID("aci_tenant.test_1", false)`,
+			`resource.TestCheckResourceAttrPair("aci_tenant.existing_on_create", "id", "aci_tenant.test_1", "id")`,
+		}},
+		{Name: "ForgetExisting", Expected: []string{
+			`identity.CheckID("aci_tenant.test_1", false)`,
+			`identity.CheckRemoved("aci_tenant.existing_on_create")`,
+			`testResourcePresence(identity.ID, true)`,
+		}},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			step := existingObjectSteps[testCase.Name]
+			for _, check := range testCase.Expected.([]string) {
+				assert.Contains(t, step, check)
+			}
+			assert.NotContains(t, step, "testCheckResourceDN", "these steps must not repeat the full attribute assertions")
+		})
 	}
 }
 
@@ -1976,6 +2185,147 @@ func TestGeneratedRootModelBuildDN(t *testing.T) {
 	}
 }
 
+func TestGeneratedRootModelBuildPayloadDN(t *testing.T) {
+	test.InitializeTest(t)
+	t.Parallel()
+
+	testCases := []test.TestCase{
+		{
+			Name:     "test_default_system_parent",
+			Input:    types.StringNull(),
+			Expected: []string{"uni/userext/pkiext/keyring-example", "uni/userext/pkiext/tp-example"},
+		},
+		{
+			Name:     "test_explicit_system_parent",
+			Input:    types.StringValue("uni/userext/pkiext"),
+			Expected: []string{"uni/userext/pkiext/keyring-example", "uni/userext/pkiext/tp-example"},
+		},
+		{
+			Name:     "test_wrapped_tenant_parent",
+			Input:    types.StringValue("uni/tn-example"),
+			Expected: []string{"uni/tn-example/certstore", "uni/tn-example/certstore"},
+		},
+		{
+			Name:     "test_unknown_parent_uses_system_default",
+			Input:    types.StringUnknown(),
+			Expected: []string{"uni/userext/pkiext/keyring-example", "uni/userext/pkiext/tp-example"},
+		},
+		{
+			Name:     "test_unmatched_parent_uses_direct_placement",
+			Input:    types.StringValue("uni/infra"),
+			Expected: []string{"uni/infra/keyring-example", "uni/infra/tp-example"},
+		},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+
+			keyRing := models.NewPkiKeyRingRootModelNull()
+			keyRing.Name = types.StringValue("example")
+			keyRing.ParentDN = testCase.Input.(types.String)
+			keyRing.SetIDFromDN(keyRing.BuildDN())
+			authority := models.NewPkiTPRootModelNull()
+			authority.Name = types.StringValue("example")
+			authority.ParentDN = testCase.Input.(types.String)
+			authority.SetIDFromDN(authority.BuildDN())
+
+			// Selecting the POST destination must preserve each object's full ID.
+			identifiers := []types.String{keyRing.ID, authority.ID}
+			actual := []string{keyRing.BuildPayloadDN(), authority.BuildPayloadDN()}
+			assert.Equal(t, testCase.Expected, actual)
+			assert.Equal(t, identifiers, []types.String{keyRing.ID, authority.ID})
+		})
+	}
+}
+
+type generatedResourceReadbackResponse struct {
+	StatusCode int
+	Body       string
+}
+
+func TestGeneratedResourceCreatePreservesIDOnReadbackFailure(t *testing.T) {
+	test.InitializeTest(t)
+	t.Parallel()
+
+	testCases := []test.TestCase{
+		{
+			Name: "test_failed_read_request",
+			Input: generatedResourceReadbackResponse{
+				StatusCode: http.StatusBadRequest,
+				Body:       `{"imdata":[{"error":{"attributes":{"code":"999","text":"read-back failed"}}}]}`,
+			},
+		},
+		{
+			Name: "test_malformed_read_response",
+			Input: generatedResourceReadbackResponse{
+				StatusCode: http.StatusOK,
+				Body:       `{"imdata":{}}`,
+			},
+		},
+		{
+			Name: "test_object_not_found_after_creation",
+			Input: generatedResourceReadbackResponse{
+				StatusCode: http.StatusOK,
+				Body:       `{"imdata":[],"totalCount":"0"}`,
+			},
+		},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+
+			ctx := context.Background()
+			readback := testCase.Input.(generatedResourceReadbackResponse)
+			writes := 0
+			transport := test.RoundTripFunc(func(request *http.Request) (*http.Response, error) {
+				assert.Equal(t, "/api/mo/uni/tn-example.json", request.URL.Path)
+				statusCode := http.StatusOK
+				body := `{"imdata":[],"totalCount":"0"}`
+				if request.Method == http.MethodPost {
+					writes++
+				} else if writes > 0 {
+					statusCode = readback.StatusCode
+					body = readback.Body
+				}
+				return &http.Response{
+					StatusCode: statusCode,
+					Header:     make(http.Header),
+					Body:       io.NopCloser(strings.NewReader(body)),
+					Request:    request,
+				}, nil
+			})
+			aciClient := client.NewClient("https://apic.invalid", "test", client.Password("test"), client.HttpClient(&http.Client{Transport: transport}), client.SkipLoggingPayload(true))
+			aciClient.AuthToken = &client.Auth{Token: "test-token", Expiry: time.Now().Add(time.Hour)}
+			adapter := provider.NewFvTenantResource()
+			configure := resource.ConfigureResponse{}
+			adapter.(resource.ResourceWithConfigure).Configure(ctx, resource.ConfigureRequest{ProviderData: aciClient}, &configure)
+			assert.False(t, configure.Diagnostics.HasError(), "%v", configure.Diagnostics)
+
+			model := models.NewFvTenantRootModelNull()
+			model.Name = types.StringValue("example")
+			model.ID = types.StringUnknown()
+			schema := models.FvTenantResourceSchema("")
+			plan := tfsdk.Plan{Schema: schema}
+			if diagnostics := plan.Set(ctx, &model); diagnostics.HasError() {
+				t.Fatalf("construct resource plan: %v", diagnostics)
+			}
+			response := resource.CreateResponse{State: tfsdk.State{
+				Schema: schema,
+				Raw:    tftypes.NewValue(schema.Type().TerraformType(ctx), nil),
+			}}
+			adapter.Create(ctx, resource.CreateRequest{Plan: plan}, &response)
+
+			assert.Equal(t, 1, writes)
+			assert.True(t, response.Diagnostics.HasError())
+			assert.True(t, response.State.Raw.IsFullyKnown())
+			if diagnostics := response.State.Get(ctx, &model); diagnostics.HasError() {
+				t.Fatalf("decode retained resource state: %v", diagnostics)
+			}
+			assert.Equal(t, "uni/tn-example", model.ID.ValueString())
+		})
+	}
+}
+
 func TestGeneratedTopLevelModelSetIDFromDN(t *testing.T) {
 	t.Parallel()
 
@@ -3119,145 +3469,4 @@ func testClass(t *testing.T, className string, artifacts ...data.ArtifactEnum) d
 		t.Fatalf("create supported versions for class %q: %v", className, err)
 	}
 	return data.Class{Name: name, Artifacts: artifacts, SupportedVersions: versions}
-}
-
-func TestGeneratedRootModelBuildPayloadDN(t *testing.T) {
-	test.InitializeTest(t)
-	t.Parallel()
-
-	testCases := []test.TestCase{
-		{
-			Name:     "test_default_system_parent",
-			Input:    types.StringNull(),
-			Expected: []string{"uni/userext/pkiext/keyring-example", "uni/userext/pkiext/tp-example"},
-		},
-		{
-			Name:     "test_explicit_system_parent",
-			Input:    types.StringValue("uni/userext/pkiext"),
-			Expected: []string{"uni/userext/pkiext/keyring-example", "uni/userext/pkiext/tp-example"},
-		},
-		{
-			Name:     "test_wrapped_tenant_parent",
-			Input:    types.StringValue("uni/tn-example"),
-			Expected: []string{"uni/tn-example/certstore", "uni/tn-example/certstore"},
-		},
-		{
-			Name:     "test_unknown_parent_uses_system_default",
-			Input:    types.StringUnknown(),
-			Expected: []string{"uni/userext/pkiext/keyring-example", "uni/userext/pkiext/tp-example"},
-		},
-		{
-			Name:     "test_unmatched_parent_uses_direct_placement",
-			Input:    types.StringValue("uni/infra"),
-			Expected: []string{"uni/infra/keyring-example", "uni/infra/tp-example"},
-		},
-	}
-	for _, testCase := range testCases {
-		t.Run(testCase.Name, func(t *testing.T) {
-			t.Parallel()
-
-			keyRing := models.NewPkiKeyRingRootModelNull()
-			keyRing.Name = types.StringValue("example")
-			keyRing.ParentDN = testCase.Input.(types.String)
-			keyRing.SetIDFromDN(keyRing.BuildDN())
-			authority := models.NewPkiTPRootModelNull()
-			authority.Name = types.StringValue("example")
-			authority.ParentDN = testCase.Input.(types.String)
-			authority.SetIDFromDN(authority.BuildDN())
-
-			// Selecting the POST destination must preserve each object's full ID.
-			identifiers := []types.String{keyRing.ID, authority.ID}
-			actual := []string{keyRing.BuildPayloadDN(), authority.BuildPayloadDN()}
-			assert.Equal(t, testCase.Expected, actual)
-			assert.Equal(t, identifiers, []types.String{keyRing.ID, authority.ID})
-		})
-	}
-}
-
-func TestGeneratedResourceCreatePreservesIDOnReadbackFailure(t *testing.T) {
-	test.InitializeTest(t)
-	t.Parallel()
-
-	testCases := []test.TestCase{
-		{
-			Name: "test_failed_read_request",
-			Input: generatedResourceReadbackResponse{
-				StatusCode: http.StatusBadRequest,
-				Body:       `{"imdata":[{"error":{"attributes":{"code":"999","text":"read-back failed"}}}]}`,
-			},
-		},
-		{
-			Name: "test_malformed_read_response",
-			Input: generatedResourceReadbackResponse{
-				StatusCode: http.StatusOK,
-				Body:       `{"imdata":{}}`,
-			},
-		},
-		{
-			Name: "test_object_not_found_after_creation",
-			Input: generatedResourceReadbackResponse{
-				StatusCode: http.StatusOK,
-				Body:       `{"imdata":[],"totalCount":"0"}`,
-			},
-		},
-	}
-	for _, testCase := range testCases {
-		t.Run(testCase.Name, func(t *testing.T) {
-			t.Parallel()
-
-			ctx := context.Background()
-			readback := testCase.Input.(generatedResourceReadbackResponse)
-			writes := 0
-			transport := test.RoundTripFunc(func(request *http.Request) (*http.Response, error) {
-				assert.Equal(t, "/api/mo/uni/tn-example.json", request.URL.Path)
-				statusCode := http.StatusOK
-				body := `{"imdata":[],"totalCount":"0"}`
-				if request.Method == http.MethodPost {
-					writes++
-				} else if writes > 0 {
-					statusCode = readback.StatusCode
-					body = readback.Body
-				}
-				return &http.Response{
-					StatusCode: statusCode,
-					Header:     make(http.Header),
-					Body:       io.NopCloser(strings.NewReader(body)),
-					Request:    request,
-				}, nil
-			})
-			aciClient := client.NewClient("https://apic.invalid", "test", client.Password("test"), client.HttpClient(&http.Client{Transport: transport}), client.SkipLoggingPayload(true))
-			aciClient.AuthToken = &client.Auth{Token: "test-token", Expiry: time.Now().Add(time.Hour)}
-			adapter := provider.NewFvTenantResource()
-			configure := resource.ConfigureResponse{}
-			adapter.(resource.ResourceWithConfigure).Configure(ctx, resource.ConfigureRequest{ProviderData: aciClient}, &configure)
-			assert.False(t, configure.Diagnostics.HasError(), "%v", configure.Diagnostics)
-
-			model := models.NewFvTenantRootModelNull()
-			model.Name = types.StringValue("example")
-			model.ID = types.StringUnknown()
-			schema := models.FvTenantResourceSchema("")
-			plan := tfsdk.Plan{Schema: schema}
-			if diagnostics := plan.Set(ctx, &model); diagnostics.HasError() {
-				t.Fatalf("construct resource plan: %v", diagnostics)
-			}
-			response := resource.CreateResponse{State: tfsdk.State{
-				Schema: schema,
-				Raw:    tftypes.NewValue(schema.Type().TerraformType(ctx), nil),
-			}}
-			adapter.Create(ctx, resource.CreateRequest{Plan: plan}, &response)
-
-			assert.Equal(t, 1, writes)
-			assert.True(t, response.Diagnostics.HasError())
-			assert.True(t, response.State.Raw.IsFullyKnown())
-			if diagnostics := response.State.Get(ctx, &model); diagnostics.HasError() {
-				t.Fatalf("decode retained resource state: %v", diagnostics)
-			}
-			assert.Equal(t, "uni/tn-example", model.ID.ValueString())
-		})
-	}
-}
-
-type generatedResourceReadbackResponse struct {
-	StatusCode int
-	Body       string
 }

@@ -33,6 +33,7 @@ const (
 	modelTemplateName          = "model.go.tmpl"
 	modelOutputDirectory       = "internal/provider/models"
 	resourceTemplateName       = "resource.go.tmpl"
+	resourceTestTemplateName   = "resource_test.go.tmpl"
 	resourceOutputDirectory    = "internal/provider"
 	datasourceTemplateName     = "datasource.go.tmpl"
 	datasourceOutputDirectory  = "internal/provider"
@@ -230,6 +231,7 @@ func (g *Generator) Generate() error {
 func (g *Generator) buildRenderJobs() []renderJob {
 	jobs := g.buildModelRenderJobs()
 	jobs = append(jobs, g.buildResourceRenderJobs()...)
+	jobs = append(jobs, g.buildResourceTestRenderJobs()...)
 	jobs = append(jobs, g.buildDatasourceRenderJobs()...)
 	jobs = append(jobs, g.buildDatasourceTestRenderJobs()...)
 	jobs = append(jobs, g.buildIndexRenderJob())
@@ -480,6 +482,22 @@ func (g *Generator) buildDatasourceTestRenderJobs() []renderJob {
 		})
 	}
 
+	return jobs
+}
+
+func (g *Generator) buildResourceTestRenderJobs() []renderJob {
+	var jobs []renderJob
+	for _, name := range g.sortedClassNames() {
+		class := g.dataStore.Classes[name]
+		if !class.HasResourceArtifact() || slices.Contains(class.TestConfig.IgnoreTests, data.ResourceIgnoreTest) {
+			continue
+		}
+		jobs = append(jobs, renderJob{
+			TemplateName: resourceTestTemplateName,
+			OutputPath:   pathpkg.Join(resourceOutputDirectory, "resource_aci_"+class.ResourceName+"_acceptance_test.go"),
+			Context:      TemplateContext{Class: &class, DataStore: g.dataStore},
+		})
+	}
 	return jobs
 }
 
