@@ -12,6 +12,9 @@ properties:
   bindingType:
     documentation:
       description: The binding type of the %s object.
+    test_config:
+      exclude_from:
+      - reset
   classPref:
     documentation:
       description: The class preference of the %s object. Set 'useg' to allow microsegmentation.
@@ -26,6 +29,8 @@ properties:
     test_config:
       create:
       - config_value: '@'
+      update:
+      - config_value: '@'
   encap:
     default_values:
       unknown: ""
@@ -36,6 +41,8 @@ properties:
     test_config:
       create:
       - config_value: vlan-100
+      update:
+      - config_value: unknown
   encapMode:
     documentation:
       description: The encapsulation mode of the %s object.
@@ -98,6 +105,8 @@ properties:
     test_config:
       create:
       - config_value: "1"
+      update:
+      - config_value: "0"
   primaryEncap:
     default_values:
       unknown: ""
@@ -107,6 +116,8 @@ properties:
     test_config:
       create:
       - config_value: vlan-200
+      update:
+      - config_value: unknown
   primaryEncapInner:
     default_values:
       unknown: ""
@@ -119,6 +130,8 @@ properties:
     test_config:
       create:
       - config_value: vlan-300
+      update:
+      - config_value: unknown
   secondaryEncapInner:
     default_values:
       unknown: ""
@@ -131,6 +144,8 @@ properties:
     test_config:
       create:
       - config_value: vlan-400
+      update:
+      - config_value: unknown
   switchingMode:
     documentation:
       description: The switching mode of the %s object.
@@ -151,6 +166,9 @@ properties:
       "no": ""
     documentation:
       description: The untagged status of the %s object.
+    test_config:
+      update:
+      - config_value: "no"
   vnetOnly:
     restriction: exclude
 relation_info:

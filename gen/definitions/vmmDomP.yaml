@@ -12,6 +12,9 @@ properties:
   accessMode:
     documentation:
       description: The access mode of the %s object.
+    test_config:
+      include_in:
+      - minimum
   arpLearning:
     default_values:
       disabled: ""
@@ -24,6 +27,8 @@ properties:
       default:
       - config_value: disabled
       ignore_in_datasource_test: true
+      update:
+      - config_value: disabled
     value_type: vmm_arp_learning
   aveTimeOut:
     documentation:
@@ -50,6 +55,8 @@ properties:
       description: The custom vSwitch name.
     test_config:
       create:
+      - config_value: ""
+      update:
       - config_value: ""
   delimiter:
     default_values:
@@ -115,11 +122,21 @@ properties:
     test_config:
       create:
       - config_value: 224.0.1.0
+      update:
+      - config_value: 224.0.1.1
     value_type: string
   mode:
     attribute_name: switch_type
     documentation:
       description: The switch type of the %s object.
+    example_config:
+      full:
+      - value: cf
+    test_config:
+      create:
+      - config_value: default
+      update:
+      - config_value: default
   parentDn:
     add_valid_values:
     - uni/vmmp-VMware

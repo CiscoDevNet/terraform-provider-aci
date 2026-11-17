@@ -27,6 +27,8 @@ properties:
     test_config:
       create:
       - config_value: "140"
+      update:
+      - config_value: "130"
   rspIntvl:
     attribute_name: response_interval
     default_values:

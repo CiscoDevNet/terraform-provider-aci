@@ -27,9 +27,14 @@ properties:
     test_config:
       create:
       - config_value: "1"
+      update:
+      - config_value: "0"
   scope:
     default_values:
       scope-bd: ""
     documentation:
       description: The scope of the %s object.
+    test_config:
+      update:
+      - config_value: scope-bd
 resource_name: epg_useg_block_statement

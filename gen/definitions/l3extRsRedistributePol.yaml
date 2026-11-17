@@ -19,7 +19,6 @@ properties:
       - config_value: static
 resource_name: l3out_redistribute_policy
 test_config:
-  datasource_expect_non_empty_plan: true
   dependencies:
   - class_name: l3extOut
     config_overrides:
@@ -33,6 +32,8 @@ test_config:
         parent_dn: aci_tenant.test.id
       dependencies:
       - class_name: fvTenant
+    ignore_changes:
+    - relation_l3extrs_redistribute_pol
     reference: aci_l3_outside.test.id
     role: parent
   - class_name: l3extOut
@@ -43,5 +44,7 @@ test_config:
     dependencies:
     - class_name: fvTenant
     - class_name: fvCtx
+    ignore_changes:
+    - relation_l3extrs_redistribute_pol
     reference: aci_l3_outside.test_2.id
     role: parent

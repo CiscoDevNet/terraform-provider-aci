@@ -1,6 +1,8 @@
 package data
 
 import (
+	"fmt"
+	"maps"
 	"slices"
 	"strconv"
 	"strings"
@@ -30,19 +32,23 @@ const (
 	testAssertionSetElementValue
 	testAssertionSetElementPair
 	testAssertionNestedSetElement
+	testAssertionAttributeAbsent
 )
 
 // TestAssertion is one ordered state assertion for a generated acceptance test.
 type TestAssertion struct {
-	assertionType testAssertionType
-	AttributePath string
-	ExpectedValue string
-	ExpectedCount int
-	PairAddress   string
-	PairAttribute string
-	NestedValues  []TestAssertionValue
-	Parents       []TestAssertionParent
-	Versions      []string
+	assertionType      testAssertionType
+	AttributePath      string
+	ExpectedValue      string
+	ExpectedExpression string
+	SemanticStringType string
+	ExpectedCount      int
+	PairAddress        string
+	PairAttribute      string
+	PairFormat         string
+	NestedValues       []TestAssertionValue
+	Parents            []TestAssertionParent
+	Versions           []string
 }
 
 func (a TestAssertion) IsAttributeSet() bool {
@@ -73,6 +79,10 @@ func (a TestAssertion) IsNestedSetElement() bool {
 	return a.assertionType == testAssertionNestedSetElement
 }
 
+func (a TestAssertion) IsAttributeAbsent() bool {
+	return a.assertionType == testAssertionAttributeAbsent
+}
+
 // DataSourceTestAssertions returns deterministic checks for the data source's
 // direct properties and configured child hierarchy.
 func (c *Class) DataSourceTestAssertions(ds *DataStore) []TestAssertion {
@@ -87,7 +97,7 @@ func (c *Class) DataSourceTestAssertions(ds *DataStore) []TestAssertion {
 		if property.TestValues != nil && property.ValueType != Set && property.ValueType != Object {
 			if entry, included := property.TestValues.Create.firstIncludedEntry(); included {
 				rendered := renderer.testPropertyScenario(c, property, newTestValueScenario([]TestValueEntry{entry})).Entries[0]
-				runtimeValue = rendered.ValueType == ExpressionValue && (entry.ValueType != ExpressionValue || entry.AssertValue == entry.ConfigValue)
+				runtimeValue = entry.AssertStrategy == AssertValueStrategy && rendered.ValueType == ExpressionValue && (entry.ValueType != ExpressionValue || entry.AssertValue == entry.ConfigValue)
 			}
 		}
 		if c.HasResourceArtifact() && runtimeValue {
@@ -102,7 +112,7 @@ func (c *Class) DataSourceTestAssertions(ds *DataStore) []TestAssertion {
 		}
 		assertions = append(assertions, testPropertyAssertions(c.SupportedVersions, property.AttributeName, property, property.TestValues, nil)...)
 	}
-	assertions = append(assertions, testChildAssertions(ds, c, c.TestChildren, "", nil, nil)...)
+	assertions = append(assertions, testChildAssertions(ds, c, c.TestChildren, "", nil, nil, DatasourceArtifact)...)
 	return renderer.renderCountedDependencyAssertions(assertions)
 }
 
@@ -140,6 +150,9 @@ func testPropertyAssertions(ownerVersions *Versions, attributePath string, prope
 }
 
 func testAttributeAssertion(attributePath string, entry TestValueEntry, versions []string) TestAssertion {
+	if entry.AssertStrategy == AssertPresenceOnly {
+		return TestAssertion{assertionType: testAssertionAttributeSet, AttributePath: attributePath, ExpectedValue: entry.AssertValue, Versions: versions}
+	}
 	if entry.ValueType == ReferenceValue {
 		if address, ok := parseTerraformTestReference(entry.AssertValue); ok {
 			return TestAssertion{
@@ -155,6 +168,9 @@ func testAttributeAssertion(attributePath string, entry TestValueEntry, versions
 }
 
 func testSetElementAssertion(attributePath string, entry TestValueEntry, versions []string) TestAssertion {
+	if entry.AssertStrategy == AssertPresenceOnly {
+		return TestAssertion{assertionType: testAssertionAttributeSet, AttributePath: strings.TrimSuffix(attributePath, ".*") + ".#", Versions: versions}
+	}
 	if entry.ValueType == ReferenceValue {
 		if address, ok := parseTerraformTestReference(entry.AssertValue); ok {
 			return TestAssertion{
@@ -218,10 +234,10 @@ func (a nestedTestAssertion) assertions() []TestAssertion {
 	return assertions
 }
 
-func testChildAssertions(ds *DataStore, parentClass *Class, children []*TestChild, pathPrefix string, inheritedVersions []string, parents []TestAssertionParent) []TestAssertion {
+func testChildAssertions(ds *DataStore, parentClass *Class, children []*TestChild, pathPrefix string, inheritedVersions []string, parents []TestAssertionParent, artifact ArtifactEnum) []TestAssertion {
 	var assertions []TestAssertion
 	for _, child := range children {
-		if child == nil || len(child.Instances) == 0 {
+		if child == nil || len(child.Instances) == 0 && artifact != ResourceArtifact {
 			continue
 		}
 		childClass, ok := ds.Classes[child.Class.String()]
@@ -231,7 +247,11 @@ func testChildAssertions(ds *DataStore, parentClass *Class, children []*TestChil
 		childPath := joinTestAttributePath(pathPrefix, childClass.ResourceNameNested)
 		childVersions := testAssertionVersions(inheritedVersions, parentClass.SupportedVersions, childClass.SupportedVersions)
 		if childClass.IsSingleNestedWhenDefinedAsChild {
-			assertions = append(assertions, testSingleChildAssertions(ds, &childClass, child.Instances[0], childPath, childVersions, parents)...)
+			if len(child.Instances) == 0 {
+				assertions = append(assertions, TestAssertion{assertionType: testAssertionAttributeAbsent, AttributePath: childPath, Parents: parents, Versions: childVersions})
+				continue
+			}
+			assertions = append(assertions, testSingleChildAssertions(ds, &childClass, child.Instances[0], childPath, childVersions, parents, artifact)...)
 			continue
 		}
 
@@ -258,21 +278,21 @@ func testChildAssertions(ds *DataStore, parentClass *Class, children []*TestChil
 			})
 		}
 		for _, instance := range child.Instances {
-			assertions = append(assertions, testRepeatedChildInstanceAssertions(ds, &childClass, instance, childPath+".*", childVersions, parents)...)
+			assertions = append(assertions, testRepeatedChildInstanceAssertions(ds, &childClass, instance, childPath+".*", childVersions, parents, artifact)...)
 		}
 	}
 	return assertions
 }
 
-func testSingleChildAssertions(ds *DataStore, childClass *Class, instance TestChildInstance, childPath string, versions []string, parents []TestAssertionParent) []TestAssertion {
+func testSingleChildAssertions(ds *DataStore, childClass *Class, instance TestChildInstance, childPath string, versions []string, parents []TestAssertionParent, artifact ArtifactEnum) []TestAssertion {
 	if len(parents) > 0 {
-		return testSingleChildWithinSetAssertions(ds, childClass, instance, childPath, versions, parents)
+		return testSingleChildWithinSetAssertions(ds, childClass, instance, childPath, versions, parents, artifact)
 	}
 
 	var assertions []TestAssertion
 	for _, propertyName := range childClass.PropertiesAll {
 		property := childClass.Properties[propertyName]
-		if property == nil || property.PropertyName == "parentDn" || property.IgnoreInTest || property.IgnoreInDataSourceTest || property.Sensitive {
+		if property == nil || property.PropertyName == "parentDn" || property.IgnoreInTest || artifact == DatasourceArtifact && (property.IgnoreInDataSourceTest || property.Sensitive) {
 			continue
 		}
 		scenario, exists := instance.Properties[property.AttributeName]
@@ -285,34 +305,34 @@ func testSingleChildAssertions(ds *DataStore, childClass *Class, instance TestCh
 		}
 		assertions = append(assertions, testPropertyAssertions(childClass.SupportedVersions, joinTestAttributePath(childPath, property.AttributeName), property, values, versions)...)
 	}
-	assertions = append(assertions, testChildAssertions(ds, childClass, instance.Children, childPath, versions, parents)...)
+	assertions = append(assertions, testChildAssertions(ds, childClass, instance.Children, childPath, versions, parents, artifact)...)
 	return assertions
 }
 
-func testSingleChildWithinSetAssertions(ds *DataStore, childClass *Class, instance TestChildInstance, childPath string, versions []string, parents []TestAssertionParent) []TestAssertion {
+func testSingleChildWithinSetAssertions(ds *DataStore, childClass *Class, instance TestChildInstance, childPath string, versions []string, parents []TestAssertionParent, artifact ArtifactEnum) []TestAssertion {
 	parent := parents[len(parents)-1]
 	relativePrefix := strings.TrimPrefix(childPath, parent.AttributePath+".")
 	nested := nestedTestAssertion{AttributePath: parent.AttributePath, Identity: parent.Values, Parents: parents[:len(parents)-1]}
-	assertions := nested.collectProperties(childClass, instance, childPath, relativePrefix, versions)
+	assertions := nested.collectProperties(childClass, instance, childPath, relativePrefix, versions, artifact)
 	assertions = append(nested.assertions(), assertions...)
-	assertions = append(assertions, testChildAssertions(ds, childClass, instance.Children, childPath, versions, parents)...)
+	assertions = append(assertions, testChildAssertions(ds, childClass, instance.Children, childPath, versions, parents, artifact)...)
 	return assertions
 }
 
-func testRepeatedChildInstanceAssertions(ds *DataStore, childClass *Class, instance TestChildInstance, childPath string, versions []string, parents []TestAssertionParent) []TestAssertion {
+func testRepeatedChildInstanceAssertions(ds *DataStore, childClass *Class, instance TestChildInstance, childPath string, versions []string, parents []TestAssertionParent, artifact ArtifactEnum) []TestAssertion {
 	nested := nestedTestAssertion{AttributePath: childPath, Parents: parents}
-	assertions := nested.collectProperties(childClass, instance, childPath, "", versions)
+	assertions := nested.collectProperties(childClass, instance, childPath, "", versions, artifact)
 	assertions = append(nested.assertions(), assertions...)
 	childParents := append(slices.Clone(parents), TestAssertionParent{AttributePath: childPath, Values: nested.Identity})
-	assertions = append(assertions, testChildAssertions(ds, childClass, instance.Children, childPath, versions, childParents)...)
+	assertions = append(assertions, testChildAssertions(ds, childClass, instance.Children, childPath, versions, childParents, artifact)...)
 	return assertions
 }
 
-func (a *nestedTestAssertion) collectProperties(childClass *Class, instance TestChildInstance, childPath, relativePrefix string, versions []string) []TestAssertion {
+func (a *nestedTestAssertion) collectProperties(childClass *Class, instance TestChildInstance, childPath, relativePrefix string, versions []string, artifact ArtifactEnum) []TestAssertion {
 	var assertions []TestAssertion
 	for _, propertyName := range childClass.PropertiesAll {
 		property := childClass.Properties[propertyName]
-		if property == nil || property.PropertyName == "parentDn" || property.IgnoreInTest || property.IgnoreInDataSourceTest || property.Sensitive || property.ReadOnly {
+		if property == nil || property.PropertyName == "parentDn" || property.IgnoreInTest || artifact == DatasourceArtifact && (property.IgnoreInDataSourceTest || property.Sensitive) || property.ReadOnly {
 			continue
 		}
 		scenario, exists := instance.Properties[property.AttributeName]
@@ -339,7 +359,13 @@ func (a *nestedTestAssertion) collectProperties(childClass *Class, instance Test
 				PairAddress:   scalar.PairAddress,
 				PairAttribute: scalar.PairAttribute,
 			}
-			a.addValue(propertyVersions, value)
+			if scalar.IsAttributeSet() {
+				// Check presence separately while retaining this child's identity and ancestor scope.
+				scalar.AttributePath = fullPath
+				assertions = append(assertions, scalar)
+			} else {
+				a.addValue(propertyVersions, value)
+			}
 			// A singleton retains the enclosing set identity; repeated children add their own identifiers.
 			if !childClass.IsSingleNestedWhenDefinedAsChild && childClass.IsIdentifyingProperty(property.PropertyName) {
 				a.Identity = append(a.Identity, value)
@@ -419,4 +445,111 @@ func dependencyVersionsCoveredByAssertion(dependencyVersions *Versions, assertio
 		versions, err := NewVersions(raw)
 		return err == nil && dependencyVersions.Covers(versions)
 	})
+}
+
+func (a TestAssertion) ExpectedGo() string {
+	if a.ExpectedExpression != "" {
+		return a.ExpectedExpression
+	}
+	return fmt.Sprintf("%q", a.ExpectedValue)
+}
+
+func (v TestAssertionValue) ExpectedGo() string {
+	return fmt.Sprintf("%q", v.ExpectedValue)
+}
+
+func (a TestAssertion) UsesFormatting() bool {
+	return strings.Contains(a.ExpectedExpression, "fmt.")
+}
+
+func (c *Class) resourceTestAssertions(ds *DataStore) []TestAssertion {
+	renderer := newTestConfigurationRenderer(c, ds)
+	renderer.resourceTest = true
+	var assertions []TestAssertion
+	for _, name := range c.PropertiesAll {
+		property := c.Properties[name]
+		if property == nil || property.IgnoreInTest {
+			continue
+		}
+		if property.ReadOnly || property.TestValues == nil {
+			assertions = append(assertions, testPropertyAssertions(c.SupportedVersions, property.AttributeName, property, nil, nil)...)
+			continue
+		}
+		scenario := property.TestValues.Create
+		if !scenario.Defined && (!property.Computed || property.Sensitive) {
+			assertions = append(assertions, TestAssertion{assertionType: testAssertionAttributeAbsent, AttributePath: property.AttributeName, Versions: testAssertionVersions(nil, c.SupportedVersions, property.SupportedVersions)})
+			continue
+		}
+		if property.ValueType == Set {
+			assertions = append(assertions, testPropertyAssertions(c.SupportedVersions, property.AttributeName, property, &TestValues{Create: scenario}, nil)...)
+			continue
+		}
+		for _, entry := range scenario.includedEntries() {
+			versions := testAssertionVersions(nil, c.SupportedVersions, property.SupportedVersions)
+			versions = testAssertionVersions(versions, property.SupportedVersions, entry.Versions)
+			assertion := testAttributeAssertion(property.AttributeName, entry, versions)
+			if entry.AssertStrategy == AssertPresenceOnly {
+				assertions = append(assertions, assertion)
+				continue
+			}
+			if assertion.IsAttributeValue() && property.ValueType == VMMArpLearning {
+				assertion.SemanticStringType = property.ModelCustomStringType(c.Name)
+			}
+			if name == "annotation" && entry.ConfigValue == "" && entry.AssertValue == "" {
+				assertion.ExpectedExpression = "globalAnnotation"
+			} else if renderer.shouldPrefixProperty(c, property) && entry.ValueType == StringValue {
+				assertion.ExpectedExpression = fmt.Sprintf("fmt.Sprintf(\"%%s-%%s\", testPrefix, %q)", entry.AssertValue)
+			} else if entry.ValueType == ExpressionValue && entry.AssertValue == entry.ConfigValue {
+				// An expression without an explicit expected value has no independent literal assertion.
+				assertion.assertionType = testAssertionAttributeSet
+			} else if entry.ValueType == StringValue && strings.HasPrefix(entry.ConfigValue, "uni/") {
+				if format, reference, ok := renderer.prefixedLiteralDNParts(entry); ok {
+					if address, parsed := parseTerraformTestReference(reference); parsed {
+						assertion.assertionType = testAssertionAttributePair
+						assertion.PairAddress = strings.TrimSuffix(address.String(), "[0]")
+						assertion.PairAttribute = address.Attribute
+						assertion.PairFormat = format
+					}
+				}
+			}
+			assertions = append(assertions, assertion)
+		}
+	}
+	assertions = append(assertions, testChildAssertions(ds, c, c.TestChildren, "", nil, nil, ResourceArtifact)...)
+	return renderer.renderCountedDependencyAssertions(assertions)
+}
+
+func (c *Class) ResourceTestImportIgnore(ds *DataStore) []string {
+	var ignored []string
+	var collect func(*Class, string, map[string]bool)
+	collect = func(class *Class, prefix string, visiting map[string]bool) {
+		if visiting[class.Name.String()] {
+			return
+		}
+		visiting = maps.Clone(visiting)
+		visiting[class.Name.String()] = true
+		for _, name := range class.PropertiesAll {
+			if property := class.Properties[name]; property != nil && property.Sensitive {
+				ignored = append(ignored, joinTestAttributePath(prefix, property.AttributeName))
+			}
+		}
+		for _, name := range class.Children {
+			if child, ok := ds.Classes[name.String()]; ok {
+				collect(&child, joinTestAttributePath(prefix, child.ResourceNameNested), visiting)
+			}
+		}
+	}
+	collect(c, "", map[string]bool{})
+	return ignored
+}
+
+func (ds *DataStore) ResourceTestNonDeletableTypes() []string {
+	var names []string
+	for _, class := range ds.Classes {
+		if class.HasResourceArtifact() && !class.AllowDelete {
+			names = append(names, "aci_"+class.ResourceName)
+		}
+	}
+	slices.Sort(names)
+	return names
 }

@@ -24,7 +24,7 @@ import (
 //   The default is declared as the iota zero of the enum itself. NO Undefined
 //   sentinel exists. Consumers use the zero value directly with no fixup.
 //   Members: PlatformTypeEnum, LegacyStatusEnum, ReferenceTypeEnum,
-//   ValueRenderTypeEnum.
+//   ValueRenderTypeEnum, AssertStrategyEnum.
 //
 // ─── Category 2: No default; absence is a real runtime state ─────────────────
 //   The iota zero IS an `UndefinedXxx` sentinel. Consumers either propagate it
@@ -230,6 +230,34 @@ func referenceValueRenderType(referenceType ReferenceTypeEnum) ValueRenderTypeEn
 		return StringValue
 	}
 	return ReferenceValue
+}
+
+// AssertStrategyEnum selects how a test-value entry is checked in state.
+// The zero value preserves the existing value comparison when YAML omits it.
+type AssertStrategyEnum int
+
+const (
+	AssertValueStrategy AssertStrategyEnum = iota
+	AssertPresenceOnly
+)
+
+func (a AssertStrategyEnum) String() string {
+	if a == AssertPresenceOnly {
+		return "presence_only"
+	}
+	return "value"
+}
+
+func (a *AssertStrategyEnum) UnmarshalText(text []byte) error {
+	switch string(text) {
+	case "value":
+		*a = AssertValueStrategy
+	case "presence_only":
+		*a = AssertPresenceOnly
+	default:
+		return fmt.Errorf("unknown assert_strategy %q (expected one of: value, presence_only)", string(text))
+	}
+	return nil
 }
 
 // ════════════════════════════════════════════════════════════════════════════

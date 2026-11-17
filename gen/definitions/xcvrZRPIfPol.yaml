@@ -20,6 +20,8 @@ properties:
     test_config:
       create:
       - config_value: "-50989"
+      update:
+      - config_value: "1000"
   cdMin:
     attribute_name: minimum_chromatic_dispersion
     documentation:
@@ -30,6 +32,8 @@ properties:
     test_config:
       create:
       - config_value: "-51999"
+      update:
+      - config_value: "-500"
   dacRate:
     documentation:
       description: The Digital-to-Analog Converter (DAC) rate of the %s object.
@@ -60,6 +64,8 @@ properties:
     test_config:
       create:
       - config_value: "19369"
+      update:
+      - config_value: "19120"
   frequency100MHz:
     attribute_name: frequency_100_mhz
     default_values:
@@ -92,6 +98,8 @@ properties:
     test_config:
       create:
       - config_value: "-120"
+      update:
+      - config_value: "10"
   wavelength50GHz:
     attribute_name: wavelength_50_ghz
     default_values:

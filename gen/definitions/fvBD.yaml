@@ -105,6 +105,8 @@ properties:
     test_config:
       create:
       - config_value: 00:22:BD:F8:19:FE
+      update:
+      - config_value: 00:22:BD:F8:19:FD
   mcastARPDrop:
     attribute_name: drop_arp_with_multicast_smac
     default_values:
@@ -138,7 +140,7 @@ properties:
       create:
       - config_value: regular
       update:
-      - config_value: fc
+      - config_value: regular
   unicastRoute:
     attribute_name: unicast_routing
     documentation:
@@ -169,6 +171,8 @@ properties:
     test_config:
       create:
       - config_value: 00:22:BD:F8:19:FB
+      update:
+      - config_value: 00:22:BD:F8:19:FC
 resource_name: bridge_domain
 state_upgrades:
 - attributes:

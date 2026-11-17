@@ -102,7 +102,7 @@ resource "aci_application_epg" "test_1" {
 }
 resource "aci_application_epg" "test_2" {
   count     = 1
-  name      = "name_2"
+  name      = "contract_master_1"
   parent_dn = aci_application_profile.test_1[0].id
 }
 `

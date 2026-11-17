@@ -2,6 +2,9 @@ package data
 
 import (
 	"fmt"
+	"path/filepath"
+	"runtime"
+	"slices"
 	"testing"
 
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils/test"
@@ -52,6 +55,20 @@ func TestCollectChildDrivenDependenciesMatchesTerraformObject(t *testing.T) {
 			assert.Equal(t, testCase.Expected.(string), parent.TestChildren[0].Instances[0].Properties["contract_name"].Entries[0].ConfigValue)
 		})
 	}
+}
+
+func TestImportTestDependencyPreservesIgnoredChanges(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+	root := dataSourceTestClass("exampleRoot", "example_root")
+	source := &TestDependency{
+		Class: testClassName("l3extOut"), Reference: "aci_l3_outside.test.id", ReferenceType: ResourceReference,
+		IgnoreChanges: []string{"relation_l3extrs_redistribute_pol"},
+	}
+	imported, _ := root.importTestDependency(source)
+	assert.Equal(t, source.IgnoreChanges, imported.IgnoreChanges)
+	imported.IgnoreChanges[0] = "other_attribute"
+	assert.Equal(t, []string{"relation_l3extrs_redistribute_pol"}, source.IgnoreChanges, "imported fixtures must own their ignore list")
 }
 
 func TestCanonicalSameResourceDependencyNames(t *testing.T) {
@@ -243,4 +260,131 @@ func TestImportTestDependencyPreservesExistingPrerequisites(t *testing.T) {
 			assert.Equal(t, testCase.Expected, testCase.Input)
 		})
 	}
+}
+
+func TestResourceTestParentReplacementTargets(t *testing.T) {
+	test.InitializeTest(t)
+	_, file, _, _ := runtime.Caller(0)
+	t.Chdir(filepath.Clean(filepath.Join(filepath.Dir(file), "..", "..", "..")))
+	ctx := NewContext()
+	store, err := NewDataStore(ctx)
+	if !assert.NoError(t, err) || !assert.NoError(t, ctx.Diagnostics.Error()) {
+		return
+	}
+	class := store.Classes["l3extConsLbl"]
+	originalChildren := class.resourceTestCopy().TestChildren
+	prepared := class.prepareResourceTest(store)
+	replacement := prepared.resourceTestCopy()
+	replacement.Properties["parentDn"].TestValues.Create = replacement.Properties["parentDn"].TestValues.ForceNew.clone()
+	builder := resourceTestBuilder{class: &prepared, dataStore: store}
+	builder.compatibleParentTargets(&replacement)
+	renderer := newTestConfigurationRenderer(&replacement, store)
+	parent := renderer.primaryParentDependency()
+	if !assert.NotNil(t, parent) {
+		return
+	}
+	dependencies, err := class.ResourceTestDependenciesHCL(store)
+	if !assert.NoError(t, err) {
+		return
+	}
+	targets := 0
+	names := make(map[string]bool)
+	for _, child := range replacement.TestChildren {
+		if child.Class.String() != "l3extRsLblToInstP" {
+			continue
+		}
+		for _, instance := range child.Instances {
+			entry, ok := instance.Properties["target_dn"].firstIncludedEntry()
+			if !assert.True(t, ok) {
+				continue
+			}
+			dependency := renderer.findDependency(entry.ConfigValue)
+			if !assert.NotNil(t, dependency) {
+				continue
+			}
+			targetClass := store.Classes[dependency.Class.String()]
+			targetParent := renderer.parentDependency(&targetClass, dependency)
+			if assert.NotNil(t, targetParent) {
+				assert.Equal(t, parent.Reference, targetParent.Reference)
+			}
+			address, _ := parseTerraformTestReference(dependency.Reference)
+			assert.Contains(t, dependencies, `resource "aci_external_epg" "`+address.Name+`"`)
+			assert.NotEmpty(t, dependency.ConfigOverrides["name"])
+			names[dependency.ConfigOverrides["name"]] = true
+			targets++
+		}
+	}
+	assert.Equal(t, 2, targets)
+	assert.Len(t, names, 2)
+	assert.Equal(t, originalChildren, class.resourceTestCopy().TestChildren)
+	// Tenant-scoped route-control profiles keep their existing references when the L3Out changes.
+	profiles := 0
+	for index, child := range replacement.TestChildren {
+		if child.Class.String() == "l3extRsLblToProfile" {
+			assert.Equal(t, originalChildren[index], child)
+			profiles++
+		}
+	}
+	assert.Equal(t, 1, profiles)
+}
+
+func TestResourceTestReplacementDependencyReferences(t *testing.T) {
+	test.InitializeTest(t)
+	_, file, _, _ := runtime.Caller(0)
+	t.Chdir(filepath.Clean(filepath.Join(filepath.Dir(file), "..", "..", "..")))
+	ctx := NewContext()
+	store, err := NewDataStore(ctx)
+	if !assert.NoError(t, err) || !assert.NoError(t, ctx.Diagnostics.Error()) {
+		return
+	}
+	class := store.Classes["fvBD"]
+	prepared := class.prepareResourceTest(store)
+	original := prepared.resourceTestCopy()
+	replacement := prepared.resourceTestCopy()
+	replacement.Properties["parentDn"].TestValues.Create = replacement.Properties["parentDn"].TestValues.ForceNew.clone()
+	builder := resourceTestBuilder{class: &prepared, dataStore: store}
+	builder.compatibleParentTargets(&replacement)
+	renderer := newTestConfigurationRenderer(&replacement, store)
+	var vrfReference string
+	for _, child := range replacement.TestChildren {
+		if child.Class.String() == "fvRsCtx" {
+			for _, value := range child.Instances[0].Properties {
+				entry, ok := value.firstIncludedEntry()
+				if ok && entry.ValueType == ReferenceValue {
+					vrfReference = entry.ConfigValue
+				}
+			}
+		}
+	}
+	if !assert.NotEmpty(t, vrfReference) {
+		return
+	}
+	vrf := renderer.findDependency(vrfReference)
+	if !assert.NotNil(t, vrf) {
+		return
+	}
+	count := 0
+	for _, child := range replacement.TestChildren {
+		if child.Class.String() != "fvRsBDToOut" {
+			continue
+		}
+		for _, instance := range child.Instances {
+			for _, value := range instance.Properties {
+				entry, ok := value.firstIncludedEntry()
+				if !ok || entry.ValueType != ReferenceValue {
+					continue
+				}
+				dependency := renderer.findDependency(entry.ConfigValue)
+				if !assert.NotNil(t, dependency) {
+					continue
+				}
+				assert.Contains(t, dependency.ConfigOverrides, "relation_l3ext_rs_ectx")
+				assert.Equal(t, vrf.Reference, dependency.ConfigOverrides["relation_l3ext_rs_ectx"])
+				assert.True(t, slices.Contains(dependency.Dependencies, vrf), "replacement L3Out must depend on the replacement VRF")
+				count++
+			}
+		}
+	}
+	assert.Equal(t, 2, count)
+	assert.Equal(t, original, prepared.resourceTestCopy(), "original fixtures must remain unchanged")
 }

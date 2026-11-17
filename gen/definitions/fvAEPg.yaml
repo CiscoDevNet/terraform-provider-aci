@@ -16,6 +16,9 @@ properties:
     attribute_name: flood_in_encapsulation
     documentation:
       description: Flood L2 Multicast/Broadcast and Link Local Layer based on encapsulation.
+    test_config:
+      update:
+      - config_value: disabled
   fwdCtrl:
     attribute_name: forwarding_control
     default_values:
@@ -149,3 +152,14 @@ state_upgrades:
         tnFhsTrustCtrlPolName:
           legacy_attribute: relation_fv_rs_trust_ctrl
   prior_schema_version: 1
+test_config:
+  dependencies:
+  - class_name: fvBD
+    config_overrides:
+      pim: "yes"
+    role: target
+  - class_name: fvBD
+    config_overrides:
+      pim: "yes"
+    reference: aci_bridge_domain.test_2.id
+    role: target

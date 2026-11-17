@@ -40,7 +40,7 @@ func TestAccDataSourceFvIpAttrGenerated(t *testing.T) {
 						resource.TestCheckResourceAttr("data.aci_epg_useg_ip_attribute.test", "annotation", "annotation_1"),
 					),
 					resource.TestCheckResourceAttr("data.aci_epg_useg_ip_attribute.test", "description", "description_1"),
-					resource.TestCheckResourceAttr("data.aci_epg_useg_ip_attribute.test", "ip", "0.0.0.0"),
+					resource.TestCheckResourceAttr("data.aci_epg_useg_ip_attribute.test", "ip", "203.0.113.200"),
 					resource.TestCheckResourceAttr("data.aci_epg_useg_ip_attribute.test", "name", "131"),
 					composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
 						resource.TestCheckResourceAttr("data.aci_epg_useg_ip_attribute.test", "name_alias", "name_alias_1"),
@@ -120,7 +120,7 @@ const testAccDataSourceFvIpAttrExisting = testAccDataSourceFvIpAttrDependencies 
 resource "aci_epg_useg_ip_attribute" "test_1" {
   annotation     = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
   description    = "description_1"
-  ip             = "0.0.0.0"
+  ip             = "203.0.113.200"
   name           = "131"
   name_alias     = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
   owner_key      = "owner_key_1"

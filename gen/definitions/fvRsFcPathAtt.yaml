@@ -15,6 +15,8 @@ properties:
     test_config:
       create:
       - config_value: vsan-10
+      update:
+      - config_value: unknown
   vsanMode:
     documentation:
       description: The virtual storage area network (VSAN) mode of the %s object.

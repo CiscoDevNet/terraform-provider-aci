@@ -25,6 +25,8 @@ properties:
     test_config:
       create:
       - config_value: vlan-200
+      update:
+      - config_value: unknown
   tnInfraAttEntityPName:
     documentation:
       description: The name of the Attachable Access Entity Profile object

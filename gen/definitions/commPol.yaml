@@ -20,3 +20,6 @@ properties:
       ignore_in_test: true
 resource_name: management_access_policy
 rn_prepend: fabric
+test_config:
+  post_test_delay_seconds: 15
+  run_serially: true

@@ -40,6 +40,8 @@ properties:
     test_config:
       create:
       - config_value: vlan-200
+      update:
+      - config_value: vlan-201
   policeAct:
     attribute_name: policing_action
     documentation:

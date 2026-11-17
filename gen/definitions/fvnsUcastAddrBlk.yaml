@@ -16,6 +16,8 @@ properties:
       - config_value: 192.0.4.2
       default:
       - config_value: 192.0.2.2
+      update:
+      - config_value: 192.0.2.2
     value_type: string
   to:
     test_config:
@@ -24,6 +26,8 @@ properties:
       datasource_missing:
       - config_value: 192.0.4.4
       default:
+      - config_value: 192.0.2.5
+      update:
       - config_value: 192.0.2.5
     value_type: string
 resource_name: ip_address_block

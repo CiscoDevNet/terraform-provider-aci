@@ -1957,6 +1957,21 @@ func applyCanonicalDefinitionCorrections(className string, out *data.ClassDefini
 		requiresReplace := true
 		property.RequiresReplace = &requiresReplace
 		out.Properties["isAttrBasedEPg"] = property
+		// Flood-in-encapsulation conflicts with this fixture's intra-EPG contracts.
+		// Keep it disabled; enabled flooding needs a separate fixture and remains deferred.
+		property = upsertProperty(out, "floodOnEncap")
+		property.TestConfig.Update = testValueScenario(data.TestValueEntryDefinition{ConfigValue: "disabled"})
+		out.Properties["floodOnEncap"] = property
+		// Enabling the EPG's multicast-source flag requires PIM on either referenced bridge domain.
+		for _, reference := range []string{"aci_bridge_domain.test.id", "aci_bridge_domain.test_2.id"} {
+			out.TestConfig.Dependencies = append(out.TestConfig.Dependencies, data.TestDependencyDefinition{
+				ClassName:       "fvBD",
+				Reference:       reference,
+				ReferenceType:   data.ResourceReference,
+				Role:            data.Target,
+				ConfigOverrides: map[string]string{"pim": "yes"},
+			})
+		}
 	}
 
 	// These APIC properties carry validateAsIPv4OrIPv6 metadata, but the current
@@ -1972,6 +1987,79 @@ func applyCanonicalDefinitionCorrections(className string, out *data.ClassDefini
 	for _, propertyName := range plainStringIPProperties[className] {
 		property := upsertProperty(out, propertyName)
 		property.ValueType = data.String
+		out.Properties[propertyName] = property
+	}
+
+	// These fixtures need APIC-specific formats and compatible property combinations.
+	// Reuse legacy reset values or valid numeric uplink IDs instead of generic values.
+	fixtureUpdateValues := map[string]map[string]string{
+		// Rate units must match the APIC r/[ms] format; exercise minutes on update.
+		"commHttp": {"globalThrottleUnit": "r/m"},
+		// The HTTPS fixture uses APIC's built-in key ring; no alternate ring is provisioned.
+		"commRsKeyRing": {"tnPkiKeyRingName": "default"},
+		// Endpoint tag IDs are Uint64; replacement identifiers need canonical IPv6 and a non-zero MAC.
+		"fvEpIpTag":  {"id": "2", "ip": "fe80::1"},
+		"fvEpMacTag": {"id": "2", "mac": "00:00:00:00:00:02"},
+		// Keep the IPv6 prefix identifier in the canonical spelling returned in APIC DNs.
+		"fvFBRoute":   {"fbrPrefix": "2001:db8::1/64"},
+		"fvFBRMember": {"rnhAddr": "fe80::1"},
+		// Identity-group selectors need the AD-group DN structure when replacing the identifier.
+		"fvIdGroupAttr": {"selector": "adepg/authsvr-common-sg1-ISE_1/grpcont/dom-cisco.com/grp-Eng_2"},
+		// BD-based remote sites use no VRF tag; keep the numeric tag from the legacy reset fixture.
+		"fvRemoteId": {"remoteCtxPcTag": "any", "remotePcTag": "16387"},
+		// Rogue exceptions require a real non-zero MAC, not the inferred mac_2 placeholder.
+		"fvRogueExceptionMac": {"mac": "00:00:00:00:00:02"},
+		"fvRsAepAtt":          {"primaryEncap": "unknown"},
+		"fvRsDomAtt": {
+			// APIC marks delimiter create-only; keep the fixture fixed until replacement handling is implemented.
+			"delimiter":           "@",
+			"encap":               "unknown",
+			"numPorts":            "0",
+			"primaryEncap":        "unknown",
+			"primaryEncapInner":   "unknown",
+			"secondaryEncapInner": "unknown",
+			// The update also selects uSeg class preference, which rejects untagged VLAN mode.
+			"untagged": "no",
+		},
+		"fvRsFcPathAtt": {"vsan": "unknown"},
+		"fvRsPathAtt":   {"primaryEncap": "unknown"},
+		// The standalone simulator rejects changing the parent's local site ID.
+		"fvSiteAssociated":  {"siteId": "0"},
+		"fvUplinkOrderCont": {"active": "2", "standby": "4"},
+		// Use APIC's canonical IPv6 spelling for the identifier and strict DN assertion.
+		"fvVip": {"addr": "2001:db8::1"},
+		// String-typed address bounds need the valid alternate range from the legacy fixture.
+		"fvnsUcastAddrBlk": {"from": "192.0.2.2", "to": "192.0.2.5"},
+		// Stay above response interval 2 and distinct from reset value 125 so both changes are exercised.
+		"igmpSnoopPol": {"queryIntvl": "130"},
+		// Use canonical IPv6 spelling for the replacement ID; APIC compresses 0db8 to db8 in the DN.
+		"mgmtSubnet": {"ip": "2001:db8::/32"},
+		// MLD has the same response-before-query constraint as IGMP.
+		"mldSnoopPol": {"queryIntvl": "130"},
+		// SID offsets are Uint32 even though the provider exposes strings.
+		"mplsNodeSidP": {"sidoffset": "2"},
+		// Use a numeric retransmit timer and keep the router lifetime above its advertisement interval.
+		"ndIfPol": {"raLifetime": "1200", "retransTimer": "1"},
+		// The supplied RSA identity is not an ECC/regeneration fixture.
+		"pkiKeyRing": {"adminState": "completed", "eccCurve": "none", "modulus": "mod2048", "regen": "no"},
+		// Route-map entry order is Uint16 even without a metadata range.
+		"pimRouteMapEntry": {"order": "2"},
+		// Voice VLANs use the APIC vlan-<number> format.
+		"poeIfPol": {"poeVoiceVlan": "vlan-201"},
+		// Packet mode rejects the 2R3C type and marking actions exercised by the update fixture.
+		"qosDppPol": {"mode": "bit"},
+		// Exercise exact QL in option 1; exact and low/high forms cannot be combined.
+		"synceEthIfPol": {
+			"qlrcvexactval": "fsync-ql-o1-eec1", "qlrcvhval": "fsync-ql-common-none", "qlrcvlval": "fsync-ql-common-none",
+			"qltxexactval": "fsync-ql-o1-eec1", "qltxhval": "fsync-ql-common-none", "qltxlval": "fsync-ql-common-none",
+		},
+		// Bundled signed-range metadata loses the negative bound; use valid power and separated dispersion limits.
+		"xcvrZRIfPol":  {"cdMax": "1000", "cdMin": "-500", "frequency50GHz": "19120", "transmitPower": "10"},
+		"xcvrZRPIfPol": {"cdMax": "1000", "cdMin": "-500", "frequency50GHz": "19120", "transmitPower": "10"},
+	}
+	for propertyName, value := range fixtureUpdateValues[className] {
+		property := upsertProperty(out, propertyName)
+		property.TestConfig.Update = testValueScenario(data.TestValueEntryDefinition{ConfigValue: value})
 		out.Properties[propertyName] = property
 	}
 
@@ -1996,6 +2084,20 @@ func applyCanonicalDefinitionCorrections(className string, out *data.ClassDefini
 		setCanonicalPropertyReference(out, "ctxName", []string{"fvCtx"}, "fvCtx", "name")
 	case "pkiKeyRing":
 		setCanonicalPropertyReference(out, "tp", []string{"pkiTP"}, "pkiTP", "name")
+		// Reset the installed identity together before requesting the initial started state.
+		for _, name := range []string{"cert", "key", "tp"} {
+			property := upsertProperty(out, name)
+			configInclude := false
+			property.TestConfig.Default = testValueScenario(data.TestValueEntryDefinition{ConfigValue: "", ConfigInclude: &configInclude})
+			property.TestConfig.IncludeIn = []string{"reset"}
+			out.Properties[name] = property
+		}
+		// Keep the matching RSA certificate/key pair; generic strings are not valid rotation inputs.
+		for _, name := range []string{"cert", "key"} {
+			property := upsertProperty(out, name)
+			property.TestConfig.Update = property.TestConfig.Create
+			out.Properties[name] = property
+		}
 		for dependencyIndex := range out.TestConfig.Dependencies {
 			dependency := &out.TestConfig.Dependencies[dependencyIndex]
 			if dependency.ClassName != "pkiTP" || dependency.Reference == "" {
@@ -2006,6 +2108,8 @@ func applyCanonicalDefinitionCorrections(className string, out *data.ClassDefini
 				ConfigValue: strings.TrimSuffix(dependency.Reference, ".id") + ".name",
 				ValueType:   data.ReferenceValue,
 			})
+			// Retain the reference during updates so Terraform preserves trust-point teardown ordering.
+			property.TestConfig.Update = property.TestConfig.Create
 			out.Properties["tp"] = property
 			break
 		}
@@ -2030,6 +2134,17 @@ func applyCanonicalDefinitionCorrections(className string, out *data.ClassDefini
 		setCanonicalExampleMinimum(out, "name", data.ExampleValueEntryDefinition{Value: "mac_attribute"})
 	case "fvIpAttr":
 		setCanonicalExampleMinimum(out, "name", data.ExampleValueEntryDefinition{Value: "ip_attribute"})
+		// Minimum configurations omit usefvSubnet, so the address must also be valid unicast.
+		property := upsertProperty(out, "ip")
+		property.TestConfig.Create = testValueScenario(data.TestValueEntryDefinition{ConfigValue: "203.0.113.200"})
+		// Import verification compares exact strings, so use APIC's canonical IPv6 spelling.
+		property.TestConfig.Update = testValueScenario(data.TestValueEntryDefinition{ConfigValue: "fe80::2"})
+		out.Properties["ip"] = property
+	case "fvTrackMember":
+		// The IP custom type preserves configured spelling; import reads APIC's canonical value.
+		property := upsertProperty(out, "dstIpAddr")
+		property.TestConfig.Update = testValueScenario(data.TestValueEntryDefinition{ConfigValue: "2001:db8::1"})
+		out.Properties["dstIpAddr"] = property
 	case "fvVmAttr":
 		setCanonicalExampleMinimum(out, "value", data.ExampleValueEntryDefinition{Value: "example_vm"})
 		setCanonicalExampleFull(out, "value", data.ExampleValueEntryDefinition{Value: "example.com"})
@@ -2037,19 +2152,68 @@ func applyCanonicalDefinitionCorrections(className string, out *data.ClassDefini
 		setCanonicalExampleFull(out, "filter", data.ExampleValueEntryDefinition{Value: "example.com"})
 	case "netflowExporterPol":
 		setCanonicalExampleMinimum(out, "name", data.ExampleValueEntryDefinition{Value: "netflow_exporter"})
+		// The default custom-src-ip mode requires an address even in the minimum fixture.
+		property := upsertProperty(out, "srcAddr")
+		property.TestConfig.IncludeIn = []string{"minimum"}
+		out.Properties["srcAddr"] = property
+		// Other source modes reject the explicit address used throughout this fixture.
+		property = upsertProperty(out, "sourceIpType")
+		property.TestConfig.Update = testValueScenario(data.TestValueEntryDefinition{ConfigValue: "custom-src-ip"})
+		out.Properties["sourceIpType"] = property
+		// The controller rejects the metadata's older exporter version during updates.
+		property = upsertProperty(out, "ver")
+		property.TestConfig.Update = testValueScenario(data.TestValueEntryDefinition{ConfigValue: "v9"})
+		out.Properties["ver"] = property
+		// Reset both addresses together after the IPv6 update; APIC rejects mixed families.
+		property = upsertProperty(out, "dstAddr")
+		property.TestConfig.IncludeIn = []string{"reset"}
+		out.Properties["dstAddr"] = property
 	case "netflowMonitorPol":
 		setCanonicalExampleMinimum(out, "name", data.ExampleValueEntryDefinition{Value: "netflow_monitor"})
 	case "netflowRecordPol":
 		setCanonicalExampleMinimum(out, "name", data.ExampleValueEntryDefinition{Value: "netflow_record"})
+		// APIC forbids mixing IPv4, IPv6 and MAC match fields in one record.
+		property := upsertProperty(out, "match")
+		property.TestConfig.Update = testValueScenario(
+			data.TestValueEntryDefinition{ConfigValue: "dst-ipv6"},
+			data.TestValueEntryDefinition{ConfigValue: "src-ipv6"},
+		)
+		out.Properties["match"] = property
 	case "l3extProvLbl":
 		setCanonicalExampleMinimum(out, "name", data.ExampleValueEntryDefinition{Value: "provider_label"})
+	case "vmmDomP":
+		// VMware/default mode permits the AVE and Health Monitoring update values.
+		// Domain mode cannot change in place, so retain it throughout the lifecycle.
+		property := upsertProperty(out, "mode")
+		property.TestConfig.Create = testValueScenario(data.TestValueEntryDefinition{ConfigValue: "default"})
+		property.TestConfig.Update = property.TestConfig.Create
+		out.Properties["mode"] = property
+		// Keep the existing public example independent from this acceptance fixture correction.
+		setCanonicalExampleFull(out, "mode", data.ExampleValueEntryDefinition{Value: "cf"})
+		// Choose read-only access at creation; APIC rejects read-write to read-only changes.
+		property = upsertProperty(out, "accessMode")
+		property.TestConfig.IncludeIn = []string{"minimum"}
+		out.Properties["accessMode"] = property
+		// This property intentionally uses a plain string, so provide a valid multicast update.
+		property = upsertProperty(out, "mcastAddr")
+		property.TestConfig.Update = testValueScenario(data.TestValueEntryDefinition{ConfigValue: "224.0.1.1"})
+		out.Properties["mcastAddr"] = property
+		// ARP learning requires AVS and blocks this fixture's transition to AVE.
+		property = upsertProperty(out, "arpLearning")
+		property.TestConfig.Update = testValueScenario(data.TestValueEntryDefinition{ConfigValue: "disabled"})
+		out.Properties["arpLearning"] = property
+		// Custom switch names are Nutanix-only; VMware keeps the empty value asserted.
+		property = upsertProperty(out, "customSwitchName")
+		property.TestConfig.Update = testValueScenario(data.TestValueEntryDefinition{ConfigValue: ""})
+		out.Properties["customSwitchName"] = property
 	case "vmmUplinkP":
 		entry := data.ExampleValueEntryDefinition{Value: "primary_uplink"}
 		setCanonicalExampleMinimum(out, "uplinkName", entry)
 		setCanonicalExampleFull(out, "uplinkName", entry)
 		property := upsertProperty(out, "uplinkName")
 		property.TestConfig.Create = testValueScenario(data.TestValueEntryDefinition{ConfigValue: "uplink_name_1"})
-		property.TestConfig.Update = testValueScenario(data.TestValueEntryDefinition{ConfigValue: "uplink_name_2"})
+		// The second embedded uplink already owns uplink_name_2 when the first is updated.
+		property.TestConfig.Update = testValueScenario(data.TestValueEntryDefinition{ConfigValue: "uplink_name_3"})
 		out.Properties["uplinkName"] = property
 		out.TestConfig.EmbeddedInstances = []data.ChildTestInstanceOverrideDefinition{
 			{Properties: map[string]data.TestValueScenarioDefinition{
@@ -2063,10 +2227,14 @@ func applyCanonicalDefinitionCorrections(className string, out *data.ClassDefini
 		}
 	case "fvRsDomAtt":
 		setCanonicalPropertyReference(out, "lagPolicyName", []string{"lacpEnhancedLagPol"}, "lacpEnhancedLagPol", "name")
+		// APIC rejects returning an established binding to its unspecified default.
+		property := upsertProperty(out, "bindingType")
+		property.TestConfig.ExcludeFrom = []string{"reset"}
+		out.Properties["bindingType"] = property
 		setCanonicalExampleFull(out, "switchingMode", data.ExampleValueEntryDefinition{Value: "native"})
 		// Uplink ordering cannot be configured on an EPG using AVE switching.
 		// Use native mode for both the standalone relation test and nested copies.
-		property := upsertProperty(out, "switchingMode")
+		property = upsertProperty(out, "switchingMode")
 		property.TestConfig.Create = testValueScenario(data.TestValueEntryDefinition{ConfigValue: "native"})
 		out.Properties["switchingMode"] = property
 	case "qosDscpClass":
@@ -2102,23 +2270,63 @@ func applyCanonicalDefinitionCorrections(className string, out *data.ClassDefini
 		// The current provider exposes this definition-only class only as a
 		// datasource.
 		out.Artifacts = []data.ArtifactEnum{data.DatasourceArtifact}
+	case "infraHPathS":
+		// Resource and datasource fixtures claim the same physical path despite using distinct override names.
+		out.TestConfig.RunSerially = true
+	case "pkiTP", "pkiKeyRing", "commPol":
+		// These fixtures change certificate authorities, interrupting APIC HTTPS even with distinct names.
+		// Reloads can begin after cleanup returns, so retain isolation during the recovery window.
+		out.TestConfig.RunSerially = true
+		out.TestConfig.PostTestDelaySeconds = 15
 	case "fvFabricExtConnP":
+		// Changing the fabric's site ID conflicts with Associated Site fixtures in other tenants.
+		out.TestConfig.RunSerially = true
+		// MSO can populate an existing profile's site ID before the minimum configuration is applied.
+		property := upsertProperty(out, "siteId")
+		configInclude := false
+		property.TestConfig.Default = testValueScenario(data.TestValueEntryDefinition{
+			ConfigInclude:  &configInclude,
+			AssertValue:    "0",
+			AssertStrategy: data.AssertPresenceOnly,
+		})
+		out.Properties["siteId"] = property
 		// Legacy resource_required made rt available to minimum test and example
 		// configurations, but the current provider schema exposes community as
 		// optional and computed. Preserve that public behavior; its migrated test
 		// scenarios continue to supply the value where needed.
-		property := upsertProperty(out, "rt")
+		property = upsertProperty(out, "rt")
 		property.Restriction = data.UndefinedRestriction
+		// Omitted/reset community reads back as unknown; the legacy default was a configured value.
+		property.TestConfig.Default = testValueScenario(data.TestValueEntryDefinition{ConfigValue: "unknown:unknown:0:0"})
 		out.Properties["rt"] = property
+		// The example deliberately configures a community rather than illustrating the unset/reset value.
+		setCanonicalExampleMinimum(out, "rt", data.ExampleValueEntryDefinition{Value: "extended:as2-nn4:5:16"})
+		// The standalone simulator only accepts its local fabric ID, so replacement cannot use another ID.
+		property = upsertProperty(out, "id")
+		property.TestConfig.Update = testValueScenario(data.TestValueEntryDefinition{ConfigValue: "1"})
+		out.Properties["id"] = property
 	case "fvBD":
-		property := upsertProperty(out, "type")
+		// Metadata does not constrain this string to MAC syntax, but APIC validates it.
+		property := upsertProperty(out, "mac")
+		property.TestConfig.Update = testValueScenario(data.TestValueEntryDefinition{ConfigValue: "00:22:BD:F8:19:FD"})
+		out.Properties["mac"] = property
+		property = upsertProperty(out, "vmac")
+		property.TestConfig.Update = testValueScenario(data.TestValueEntryDefinition{ConfigValue: "00:22:BD:F8:19:FC"})
+		out.Properties["vmac"] = property
+		property = upsertProperty(out, "type")
 		property.TestConfig.Create = testValueScenario(data.TestValueEntryDefinition{ConfigValue: "regular"})
-		property.TestConfig.Update = testValueScenario(data.TestValueEntryDefinition{ConfigValue: "fc"})
+		// FC mode is incompatible with the legacy-mode child retained by this fixture.
+		property.TestConfig.Update = property.TestConfig.Create
 		out.Properties["type"] = property
 		// The full fixture includes First Hop Security, which requires an L3 BD.
 		property = upsertProperty(out, "unicastRoute")
 		property.TestConfig.Create = testValueScenario(data.TestValueEntryDefinition{ConfigValue: "yes"})
 		out.Properties["unicastRoute"] = property
+	case "fvRemoteId":
+		// BD-based associations reject the implicit any pcTag during initial creation.
+		property := upsertProperty(out, "remotePcTag")
+		property.TestConfig.IncludeIn = []string{"minimum"}
+		out.Properties["remotePcTag"] = property
 	case "fvSiteAssociated":
 		// Keep a second BD without stAsc for the datasource's missing-object
 		// lookup while using the same parent class as the existing-object fixture.
@@ -2145,6 +2353,15 @@ func applyCanonicalDefinitionCorrections(className string, out *data.ClassDefini
 		setCanonicalExampleMinimum(out, "tDn", data.ExampleValueEntryDefinition{
 			Reference: &data.ExampleReferenceDefinition{ClassName: "fvIPSLAMonitoringPol"},
 		})
+	case "fvCrtrn":
+		// Precedence is Uint32 without a metadata range; reuse the valid legacy reset value for updates.
+		property := upsertProperty(out, "prec")
+		property.TestConfig.Update = testValueScenario(data.TestValueEntryDefinition{ConfigValue: "0"})
+		out.Properties["prec"] = property
+		// APIC rejects VRF scope for this fixture; retain the BD scope exercised by the legacy test.
+		property = upsertProperty(out, "scope")
+		property.TestConfig.Update = testValueScenario(data.TestValueEntryDefinition{ConfigValue: "scope-bd"})
+		out.Properties["scope"] = property
 	case "tagAnnotation", "tagTag":
 		out.Documentation.SubCategory = "Generic"
 		property := upsertProperty(out, "value")
@@ -2203,7 +2420,13 @@ func applyCanonicalDefinitionCorrections(className string, out *data.ClassDefini
 		})
 		appendCanonicalLegacyParentDependencies(out, "l3extOut", "l3_outside")
 		if className == "l3extRsRedistributePol" {
-			out.TestConfig.DataSourceExpectNonEmptyPlan = true
+			// The SDKv2 parent reads this separately managed relation into state; leave configuration ownership to the standalone resource.
+			for index := range out.TestConfig.Dependencies {
+				dependency := &out.TestConfig.Dependencies[index]
+				if dependency.ClassName == "l3extOut" && dependency.Role == data.Parent {
+					dependency.IgnoreChanges = []string{"relation_l3extrs_redistribute_pol"}
+				}
+			}
 		}
 	case "l3extRsLblToInstP":
 		// l3extInstP normalizes to the plugin-framework aci_external_epg name;
@@ -2279,6 +2502,11 @@ func applyCanonicalDefinitionCorrections(className string, out *data.ClassDefini
 		}
 		property.TestConfig.Create = testValueScenario(logicalDeviceValue)
 		property.TestConfig.Default = testValueScenario(logicalDeviceValue)
+		// Identifier replacement must import another real device, not a generated string.
+		property.TestConfig.Update = testValueScenario(data.TestValueEntryDefinition{
+			ConfigValue: "aci_l4_l7_device.test_2.id",
+			ValueType:   data.ReferenceValue,
+		})
 		out.Properties["ldev"] = property
 
 		out.TestConfig.Dependencies = append(out.TestConfig.Dependencies, data.TestDependencyDefinition{
@@ -2316,6 +2544,7 @@ func applyCanonicalDefinitionCorrections(className string, out *data.ClassDefini
 				},
 			},
 		})
+		appendSecondCanonicalTargetDependency(out, "vnsLDevVip", "l4_l7_device")
 	case "vnsLDevVip":
 		// The legacy resource and datasource use the singular Terraform name but
 		// retain their established plural documentation filename.
@@ -2351,6 +2580,16 @@ func applyCanonicalDefinitionCorrections(className string, out *data.ClassDefini
 		// while generic relation naming would infer relation_to_key_ring. Keep the
 		// current provider schema name explicit until a deliberate breaking change.
 		out.ResourceNameNested = "key_ring"
+	case "poeRsPoeEpg":
+		// Legacy targets describe the EPG's parent chain, not three valid relation targets.
+		// Infer two EPG targets with their tenant/application-profile prerequisites instead.
+		out.TestConfig.Dependencies = nil
+	case "fvRsProtBy":
+		// APIC rejects taboo contracts below ESGs; exercise replacement between two supported EPG parents.
+		out.TestConfig.Dependencies = []data.TestDependencyDefinition{
+			{ClassName: "fvAEPg", Reference: "aci_application_epg.test.id", ReferenceType: data.ResourceReference, Role: data.Parent, Dependencies: []data.TestDependencyDefinition{{ClassName: "fvAp"}}},
+			{ClassName: "fvAEPg", Reference: "aci_application_epg.test_2.id", ReferenceType: data.ResourceReference, Role: data.Parent, Dependencies: []data.TestDependencyDefinition{{ClassName: "fvAp"}}},
+		}
 	case "topSystem":
 		// topSystem is a datasource-only lookup whose APIC metadata has no
 		// identifiedBy entries and describes its placement through fabricNode
@@ -2457,6 +2696,36 @@ func applyCanonicalDefinitionCorrections(className string, out *data.ClassDefini
 
 	completeLegacyTestDependencyConfigurations(out.TestConfig.Dependencies)
 	normalizeCanonicalTestDependencyFixtures(className, out.TestConfig.Dependencies)
+	if className == "vnsLDevIf" {
+		// Keep the exporting tenant distinct from both automatically named import parents.
+		for index := range out.TestConfig.Dependencies {
+			for nestedIndex := range out.TestConfig.Dependencies[index].Dependencies {
+				dependency := &out.TestConfig.Dependencies[index].Dependencies[nestedIndex]
+				if dependency.Reference != "aci_tenant.test_tenant_imported_device.id" {
+					continue
+				}
+				if dependency.ConfigOverrides == nil {
+					dependency.ConfigOverrides = map[string]string{}
+				}
+				dependency.ConfigOverrides["name"] = "export_tenant_1"
+			}
+		}
+	}
+	if className == "fvRsSecInherited" {
+		// Apply after generic legacy-name cleanup: parent and target objects need distinct names.
+		targetCount := 0
+		for index := range out.TestConfig.Dependencies {
+			dependency := &out.TestConfig.Dependencies[index]
+			if dependency.Role != data.Target || dependency.ClassName != "fvAEPg" {
+				continue
+			}
+			targetCount++
+			if dependency.ConfigOverrides == nil {
+				dependency.ConfigOverrides = map[string]string{}
+			}
+			dependency.ConfigOverrides["name"] = fmt.Sprintf("contract_master_%d", targetCount)
+		}
+	}
 	omitDerivedTestConfiguration(className, out)
 }
 
@@ -3949,6 +4218,9 @@ func projectTestDependency(d data.TestDependencyDefinition) map[string]any {
 	if d.OrderOnly {
 		m["order_only"] = d.OrderOnly
 	}
+	if len(d.IgnoreChanges) > 0 {
+		m["ignore_changes"] = d.IgnoreChanges
+	}
 	if len(d.ConfigOverrides) > 0 {
 		m["config_overrides"] = d.ConfigOverrides
 	}
@@ -4068,12 +4340,15 @@ func projectExampleEntries(entries []data.ExampleValueEntryDefinition) []map[str
 }
 
 // projectTestConfig builds the YAML test_config block for a property,
-// omitting empty buckets. Each TestValueEntryDefinition becomes a single
-// `config_value: <string>` map (other entry fields are zero today; the
-// renderer fleshes them out when the higher-fidelity buckets are
-// implemented).
+// omitting undefined buckets and default-valued entry settings.
 func projectTestConfig(tc data.TestConfigDefinition) map[string]any {
 	out := map[string]any{}
+	if len(tc.IncludeIn) > 0 {
+		out["include_in"] = tc.IncludeIn
+	}
+	if len(tc.ExcludeFrom) > 0 {
+		out["exclude_from"] = tc.ExcludeFrom
+	}
 	if tc.Prefix.Enabled != nil {
 		out["prefix"] = map[string]any{"enabled": *tc.Prefix.Enabled}
 	}
@@ -4136,6 +4411,9 @@ func projectTestEntries(entries []data.TestValueEntryDefinition) []map[string]an
 		}
 		if e.AssertValue != "" {
 			m["assert_value"] = e.AssertValue
+		}
+		if e.AssertStrategy != data.AssertValueStrategy {
+			m["assert_strategy"] = e.AssertStrategy.String()
 		}
 		// StringValue is the iota zero / default; only emit when overridden.
 		if e.ValueType != data.StringValue {
@@ -4224,7 +4502,7 @@ func hasMigratedData(c data.ClassDefinition) bool {
 	if c.Artifacts != nil || len(c.ExampleFiles) > 0 || c.ExampleParentClass != "" || len(c.ParentDnVariants) > 0 {
 		return true
 	}
-	if len(c.TestConfig.IgnoreTests) > 0 || c.TestConfig.IgnoreImportStateVerify || c.TestConfig.DataSourceExpectNonEmptyPlan || len(c.TestConfig.Dependencies) > 0 || len(c.TestConfig.EmbeddedInstances) > 0 || c.TestConfig.ReplaceAutoResolved || c.TestConfig.Prefix.Characters != "" || c.TestConfig.Prefix.Length != 0 {
+	if len(c.TestConfig.IgnoreTests) > 0 || c.TestConfig.IgnoreImportStateVerify || c.TestConfig.DataSourceExpectNonEmptyPlan || c.TestConfig.RunSerially || c.TestConfig.PostTestDelaySeconds != 0 || len(c.TestConfig.Dependencies) > 0 || len(c.TestConfig.EmbeddedInstances) > 0 || c.TestConfig.ReplaceAutoResolved || c.TestConfig.Prefix.Characters != "" || c.TestConfig.Prefix.Length != 0 {
 		return true
 	}
 	documentation := c.Documentation
@@ -4377,6 +4655,12 @@ func marshalView(c data.ClassDefinition) map[string]any {
 	}
 	if c.TestConfig.DataSourceExpectNonEmptyPlan {
 		testCfg["datasource_expect_non_empty_plan"] = c.TestConfig.DataSourceExpectNonEmptyPlan
+	}
+	if c.TestConfig.RunSerially {
+		testCfg["run_serially"] = true
+	}
+	if c.TestConfig.PostTestDelaySeconds != 0 {
+		testCfg["post_test_delay_seconds"] = c.TestConfig.PostTestDelaySeconds
 	}
 	if c.TestConfig.ReplaceAutoResolved {
 		testCfg["replace_auto_resolved"] = c.TestConfig.ReplaceAutoResolved

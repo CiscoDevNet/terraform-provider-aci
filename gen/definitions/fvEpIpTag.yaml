@@ -19,6 +19,8 @@ properties:
     test_config:
       create:
       - config_value: "1"
+      update:
+      - config_value: "2"
   ip:
     documentation:
       description: The IP address of the %s object.
@@ -28,6 +30,6 @@ properties:
       datasource_missing:
       - config_value: 192.0.3.2
       update:
-      - config_value: fe80::0001
+      - config_value: fe80::1
 resource_name: endpoint_tag_ip
 rn_prepend: eptags

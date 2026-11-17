@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"maps"
 	"net/netip"
+	"reflect"
+	"regexp"
 	"slices"
 	"strconv"
 	"strings"
@@ -12,6 +14,8 @@ import (
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 	"github.com/hashicorp/hcl/v2/hclwrite"
 	"github.com/zclconf/go-cty/cty"
+
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils"
 )
 
 // DataSourceTestDependenciesHCL renders every resource needed by the selected
@@ -33,10 +37,178 @@ func (c *Class) DataSourceTestMissingHCL(ds *DataStore) (string, error) {
 	return newTestConfigurationRenderer(c, ds).missingDataSourceHCL()
 }
 
+// ResourceTestScenario is one step in the generated resource's lifecycle.
+type ResourceTestScenario struct {
+	Name           string
+	Description    string
+	Configuration  string
+	Assertions     []TestAssertion
+	Action         string
+	ChangeVersions [][]string
+	PlanOnly       bool
+	Import         bool
+	ExternalDelete bool
+	Remove         bool
+	IDChanges      bool
+	ExpectError    string
+	ExistingObject bool
+	ForgetExisting bool
+}
+
+type resourceTestBuilder struct {
+	class     *Class
+	dataStore *DataStore
+	scenarios []ResourceTestScenario
+	state     *Class
+}
+
+func (c *Class) ResourceTestDependenciesHCL(ds *DataStore) (string, error) {
+	class := c.prepareResourceTest(ds)
+	renderer := newTestConfigurationRenderer(&class, ds)
+	renderer.resourceTest = true
+	return renderer.dependenciesHCL()
+}
+
+func (c *Class) ResourceTestScenarios(ds *DataStore) ([]ResourceTestScenario, error) {
+	// Project the existing buckets without changing canonical values used by other artifacts.
+	class := c.prepareResourceTest(ds)
+	c = &class
+	builder := resourceTestBuilder{class: c, dataStore: ds}
+	minimum := c.resourceTestCopy()
+	minimum.TestChildren = builder.minimumChildren(minimum.TestChildren)
+	expected := minimum.resourceTestCopy()
+	for _, name := range c.PropertiesAll {
+		property := minimum.Properties[name]
+		if property.TestValues == nil || property.ReadOnly {
+			continue
+		}
+		if !property.Required && !property.CreateOnly && !property.resourceIncludedIn("minimum") && !c.IsIdentifyingProperty(name) {
+			property.TestValues.Create = TestValueScenario{}
+			expected.Properties[name].TestValues.Create = resourceDefaultExpectation(property)
+		}
+	}
+	minimumConfiguration, minimumExpected := builder.projectScenario("Minimum", &minimum, &expected)
+	if err := builder.addScenario("Minimum", "Create Minimum Object and Verify Defaults", minimumConfiguration, minimumExpected, "Create"); err != nil {
+		return nil, err
+	}
+	if err := builder.existingObject(minimumConfiguration); err != nil {
+		return nil, err
+	}
+	current := c.resourceTestCopy()
+	if err := builder.add("Full", "Apply Full Configuration", &current, &current, ""); err != nil {
+		return nil, err
+	}
+	current = builder.state.resourceTestCopy()
+	if err := builder.unchanged("FullUnchanged", "Repeat Full Configuration (Expect Empty Plan)", &current); err != nil {
+		return nil, err
+	}
+	updated := current.resourceTestCopy()
+	for _, name := range c.PropertiesAll {
+		property := updated.Properties[name]
+		if resourceMutableProperty(&updated, property) && property.TestValues.Update.Defined {
+			property.TestValues.Create = property.TestValues.Update.clone()
+		}
+	}
+	if changed, err := builder.change("Update", "Update Mutable Attributes in Place", &updated, "Update"); err != nil {
+		return nil, err
+	} else if changed {
+		current = updated
+		if err := builder.unchanged("UpdateUnchanged", "Repeat Updated Configuration (Expect Empty Plan)", &current); err != nil {
+			return nil, err
+		}
+	}
+
+	omitted := current.resourceTestCopy()
+	expected = current.resourceTestCopy()
+	for _, name := range c.PropertiesAll {
+		property := omitted.Properties[name]
+		if !property.Required && !property.resourceIncludedIn("omit_optional") && resourceMutableProperty(&omitted, property) {
+			property.TestValues.Create = TestValueScenario{}
+			if name == "annotation" {
+				expected.Properties[name].TestValues.Create = resourceDefaultExpectation(property)
+			} else if !property.Computed {
+				expected.Properties[name].TestValues.Create = TestValueScenario{}
+			}
+		}
+	}
+	if err := builder.add("OmitOptional", "Omit Optional Attributes and Verify Retained Values", &omitted, &expected, ""); err != nil {
+		return nil, err
+	}
+	// Reapply explicit values before resets so expected state does not depend on an omitted annotation.
+	if err := builder.add("RestoreOptional", "Restore Explicit Optional Attributes", &current, &current, ""); err != nil {
+		return nil, err
+	}
+	reset := current.resourceTestCopy()
+	for _, name := range c.PropertiesAll {
+		property := reset.Properties[name]
+		if resourceMutableProperty(&reset, property) && !property.Required && (!property.Sensitive || property.resourceIncludedIn("reset") && property.propertyDefinition.TestConfig.Default.Defined) {
+			if scenario, ok := property.resourceResetScenario(); ok {
+				property.TestValues.Create = scenario
+			}
+		}
+	}
+	if changed, err := builder.change("Reset", "Explicitly Reset Optional Attributes", &reset, "Update"); err != nil {
+		return nil, err
+	} else if changed {
+		current = reset
+	}
+
+	// Follow the legacy ordering so apply steps persist computed allocations before import comparison.
+	if err := builder.add("Import", "Import by Distinguished Name", &current, &current, ""); err != nil {
+		return nil, err
+	}
+	builder.last().Import = true
+
+	if err := builder.children(&current); err != nil {
+		return nil, err
+	}
+	if c.AllowDelete {
+		if err := builder.add("ExternalDeletion", "Delete Remotely and Verify Terraform Plans Recreation", &current, &current, "Create"); err != nil {
+			return nil, err
+		}
+		builder.last().ExternalDelete = true
+		builder.last().PlanOnly = true
+		if err := builder.add("Recreate", "Recreate the Externally Deleted Object", &current, &current, "Create"); err != nil {
+			return nil, err
+		}
+	}
+
+	replaced := current.resourceTestCopy()
+	for _, name := range c.IdentifiedBy {
+		property := replaced.Properties[name]
+		if property != nil && property.RequiresReplace && property.TestValues != nil && property.TestValues.Update.Defined {
+			property.TestValues.Create = property.TestValues.Update.clone()
+		}
+	}
+	builder.compatibleParentTargets(&replaced)
+	if changed, err := builder.change("ReplaceIdentifier", "Replace After Changing an Identifier", &replaced, "Replace"); err != nil {
+		return nil, err
+	} else if changed {
+		builder.last().IDChanges = true
+		current = replaced
+	}
+	if parent := current.ParentDnProperty(); parent != nil && parent.RequiresReplace && parent.TestValues != nil {
+		replaced = current.resourceTestCopy()
+		replaced.Properties["parentDn"].TestValues.Create = parent.TestValues.ForceNew.clone()
+		builder.compatibleParentTargets(&replaced)
+		if changed, err := builder.change("ReplaceParent", "Replace Under an Alternate Parent", &replaced, "Replace"); err != nil {
+			return nil, err
+		} else if changed {
+			builder.last().IDChanges = true
+		}
+	}
+	if err := builder.add("Destroy", "Remove Resource and Verify Deletion Behavior", nil, nil, "Destroy"); err != nil {
+		return nil, err
+	}
+	builder.last().Remove = true
+	return builder.scenarios, nil
+}
+
 type testConfigurationRenderer struct {
-	class      *Class
-	dataStore  *DataStore
-	dependency *TestDependency
+	class        *Class
+	dataStore    *DataStore
+	dependency   *TestDependency
+	resourceTest bool
 }
 
 type testResourceScenario int
@@ -178,47 +350,56 @@ func (r testConfigurationRenderer) testPropertyScenario(class *Class, property *
 		}
 		scenario.Entries[index] = r.prefixedLiteralDN(entry)
 	}
+	if r.resourceTest {
+		scenario = r.resourceReferenceScenario(class, scenario)
+	}
 	return scenario
 }
 
 func (r testConfigurationRenderer) prefixedLiteralDN(entry TestValueEntry) TestValueEntry {
-	if entry.ValueType != StringValue || !strings.HasPrefix(entry.ConfigValue, "uni/") {
-		return entry
+	format, reference, matched := r.prefixedLiteralDNParts(entry)
+	if matched {
+		entry.ConfigValue = fmt.Sprintf("format(%q, %s)", format, reference)
+		entry.ValueType = ExpressionValue
 	}
-	// Rewrite only exact DN prefixes belonging to named roots this fixture creates.
-	// Fixed infrastructure DNs and external static targets remain untouched.
+	return entry
+}
+
+func (r testConfigurationRenderer) prefixedLiteralDNParts(entry TestValueEntry) (string, string, bool) {
+	if entry.ValueType != StringValue || !strings.HasPrefix(entry.ConfigValue, "uni/") {
+		return "", "", false
+	}
+	// Configuration and independent resource assertions must follow the same prerequisite graph.
 	visited := make(map[*TestDependency]bool)
-	var rewrite func([]*TestDependency) bool
-	rewrite = func(dependencies []*TestDependency) bool {
+	var find func([]*TestDependency) (string, string, bool)
+	find = func(dependencies []*TestDependency) (string, string, bool) {
 		for _, dependency := range dependencies {
 			if dependency == nil || visited[dependency] {
 				continue
 			}
 			visited[dependency] = true
-			if projected, matched := r.prefixedDependencyDN(entry, dependency); matched {
-				entry = projected
-				return true
+			if format, reference, matched := r.prefixedDependencyDNParts(entry, dependency); matched {
+				return format, reference, true
 			}
-			if rewrite(dependency.Dependencies) {
-				return true
+			if format, reference, matched := find(dependency.Dependencies); matched {
+				return format, reference, true
 			}
 		}
-		return false
+		return "", "", false
 	}
-	rewrite(r.selectedDependencies())
-	return entry
+	return find(r.selectedDependencies())
 }
 
-func (r testConfigurationRenderer) prefixedDependencyDN(entry TestValueEntry, dependency *TestDependency) (TestValueEntry, bool) {
+func (r testConfigurationRenderer) prefixedDependencyDNParts(entry TestValueEntry, dependency *TestDependency) (string, string, bool) {
 	class, loaded := r.dataStore.Classes[dependency.Class.String()]
 	if !loaded || len(class.IdentifiedBy) != 1 {
-		return entry, false
+		return "", "", false
 	}
 	dependencyRenderer := r
 	dependencyRenderer.dependency = dependency
 	name := class.Properties["name"]
 	if name == nil || name.TestValues == nil || !dependencyRenderer.shouldPrefixProperty(&class, name) {
-		return entry, false
+		return "", "", false
 	}
 	scenario := dependencyTestResourceScenario
 	if dependency.TestInstance > 1 {
@@ -233,16 +414,14 @@ func (r testConfigurationRenderer) prefixedDependencyDN(entry TestValueEntry, de
 	parentDN := strings.TrimSuffix(class.FixedParentDn(), "/")
 	root := fmt.Sprintf("%s/%s", parentDN, strings.ReplaceAll(class.RnFormat, "{name}", value.ConfigValue))
 	if !included || value.ValueType != StringValue || entry.ConfigValue != root && !strings.HasPrefix(entry.ConfigValue, root+"/") {
-		return entry, false
+		return "", "", false
 	}
 	address, ok := parseTerraformTestReference(dependency.Reference)
 	if !ok {
-		return entry, false
+		return "", "", false
 	}
 	format := fmt.Sprintf("%s/%s%s", parentDN, strings.ReplaceAll(class.RnFormat, "{name}", "%s"), strings.TrimPrefix(entry.ConfigValue, root))
-	entry.ConfigValue = fmt.Sprintf("format(%q, %s)", format, countedTestDependencyReference(address.withAttribute("name")))
-	entry.ValueType = ExpressionValue
-	return entry, true
+	return format, countedTestDependencyReference(address.withAttribute("name")), true
 }
 
 func (r testConfigurationRenderer) dependenciesHCL() (string, error) {
@@ -350,7 +529,7 @@ func (r testConfigurationRenderer) classBlockReferences(class *Class, blockType 
 
 	for _, propertyName := range class.PropertiesAll {
 		property := class.Properties[propertyName]
-		if property == nil || property.ReadOnly || property.IgnoreInTest || property.IgnoreInDataSourceTest {
+		if property == nil || property.ReadOnly || property.IgnoreInTest || !r.resourceTest && property.IgnoreInDataSourceTest {
 			continue
 		}
 		if blockType == "data" && property.PropertyName != "parentDn" && !class.IsIdentifyingProperty(property.PropertyName) {
@@ -416,8 +595,20 @@ func (r testConfigurationRenderer) writeLegacyTestDependency(contents *strings.B
 		entry = r.prefixedLiteralDN(entry)
 		fmt.Fprintf(contents, "%s = %s\n", attributeName, testValueHCL(entry))
 	}
+	writeTestDependencyLifecycle(contents, dependency)
 	contents.WriteString("}\n")
 	return nil
+}
+
+func writeTestDependencyLifecycle(contents *strings.Builder, dependency *TestDependency) {
+	if dependency == nil || dependency.ReferenceType != ResourceReference || len(dependency.IgnoreChanges) == 0 {
+		return
+	}
+	contents.WriteString("lifecycle {\n")
+	contents.WriteString("# This dependency reads these attributes into state, but standalone resources manage them.\n")
+	contents.WriteString("# Ignore the dependency's copy to avoid competing configuration changes after refresh.\n")
+	fmt.Fprintf(contents, "ignore_changes = [%s]\n", strings.Join(dependency.IgnoreChanges, ", "))
+	contents.WriteString("}\n")
 }
 
 func (r testConfigurationRenderer) writeClassBlock(
@@ -448,7 +639,7 @@ func (r testConfigurationRenderer) writeClassBlock(
 	usedOverrides := make(map[string]bool, len(overrides))
 	for _, propertyName := range class.PropertiesAll {
 		property := class.Properties[propertyName]
-		if property == nil || property.ReadOnly || property.IgnoreInTest || property.IgnoreInDataSourceTest {
+		if property == nil || property.ReadOnly || property.IgnoreInTest || !r.resourceTest && property.IgnoreInDataSourceTest {
 			continue
 		}
 		if override, ok := testPropertyOverride(property, overrides); ok {
@@ -478,6 +669,7 @@ func (r testConfigurationRenderer) writeClassBlock(
 	if err := r.writeTestChildren(contents, class, children); err != nil {
 		return err
 	}
+	writeTestDependencyLifecycle(contents, r.dependency)
 	contents.WriteString("}\n")
 	return nil
 }
@@ -516,7 +708,7 @@ func testResourcePropertyScenario(class *Class, property *Property, resourceScen
 
 func (r testConfigurationRenderer) writeTestChildren(contents *strings.Builder, parentClass *Class, children []*TestChild) error {
 	for _, child := range children {
-		if child == nil || len(child.Instances) == 0 {
+		if child == nil || len(child.Instances) == 0 && !r.resourceTest {
 			continue
 		}
 		childClass, ok := r.dataStore.Classes[child.Class.String()]
@@ -531,6 +723,18 @@ func (r testConfigurationRenderer) writeTestChildren(contents *strings.Builder, 
 		fmt.Fprintf(contents, "%s = ", childClass.ResourceNameNested)
 		if versions != "" {
 			fmt.Fprintf(contents, "%s ? ", testVersionExpression(versions))
+		}
+		if len(child.Instances) == 0 {
+			if childClass.IsSingleNestedWhenDefinedAsChild {
+				contents.WriteString("{}")
+			} else {
+				contents.WriteString("[]")
+			}
+			if versions != "" {
+				contents.WriteString(" : null")
+			}
+			contents.WriteString("\n")
+			continue
 		}
 		if childClass.IsSingleNestedWhenDefinedAsChild {
 			contents.WriteString("{\n")
@@ -565,12 +769,15 @@ func (r testConfigurationRenderer) writeTestChildren(contents *strings.Builder, 
 func (r testConfigurationRenderer) writeTestChildInstance(contents *strings.Builder, class *Class, instance TestChildInstance) error {
 	for _, propertyName := range class.PropertiesAll {
 		property := class.Properties[propertyName]
-		if property == nil || property.PropertyName == "parentDn" || property.ReadOnly || property.IgnoreInTest || property.IgnoreInDataSourceTest {
+		if property == nil || property.PropertyName == "parentDn" || property.ReadOnly || property.IgnoreInTest || !r.resourceTest && property.IgnoreInDataSourceTest {
 			continue
 		}
 		scenario, ok := instance.Properties[property.AttributeName]
 		if !ok {
 			continue
+		}
+		if r.resourceTest {
+			scenario = r.resourceReferenceScenario(class, scenario)
 		}
 		writeTestAttribute(contents, property.AttributeName, property.ValueType, scenario, testConfigurationVersions(class.SupportedVersions, property.SupportedVersions))
 	}
@@ -852,12 +1059,34 @@ func (r testConfigurationRenderer) configurationReferences() []string {
 	}
 	for _, propertyName := range r.class.PropertiesAll {
 		property := r.class.Properties[propertyName]
-		if property == nil || property.TestValues == nil || property.ReadOnly || property.IgnoreInTest || property.IgnoreInDataSourceTest {
+		if property == nil || property.TestValues == nil || property.ReadOnly || property.IgnoreInTest || !r.resourceTest && property.IgnoreInDataSourceTest {
 			continue
 		}
 		appendScenarioReferences(property.TestValues.Create)
+		if r.resourceTest {
+			appendScenarioReferences(property.TestValues.Update)
+			appendScenarioReferences(property.TestValues.Default)
+			appendScenarioReferences(property.TestValues.ForceNew)
+		}
 	}
 	r.collectTestChildReferences(r.class.TestChildren, &references)
+	if r.resourceTest {
+		r.collectResourceChildUpdateReferences(r.class.TestChildren, &references)
+		if parent := r.class.ParentDnProperty(); parent != nil && parent.TestValues != nil {
+			// Include the compatible target chosen for the alternate parent, rather than every unused target fixture.
+			replacement := r.class.resourceTestCopy()
+			replacement.Properties["parentDn"].TestValues.Create = parent.TestValues.ForceNew.clone()
+			builder := resourceTestBuilder{class: r.class, dataStore: r.dataStore}
+			builder.compatibleParentTargets(&replacement)
+			for _, name := range replacement.PropertiesAll {
+				if property := replacement.Properties[name]; property.TestValues != nil {
+					appendScenarioReferences(property.TestValues.Create)
+				}
+			}
+			r.collectTestChildReferences(replacement.TestChildren, &references)
+		}
+		return references
+	}
 	if _, missingScenario, ok := r.missingIdentifierScenario(); ok {
 		appendScenarioReferences(missingScenario)
 	} else if len(r.class.IdentifiedBy) == 0 && r.class.HasResourceArtifact() {
@@ -1021,4 +1250,550 @@ func formatTestHCL(contents string) (string, error) {
 		return "", fmt.Errorf("generated test configuration contains a backtick and cannot be embedded in a Go raw string")
 	}
 	return strings.TrimSpace(string(formatted)), nil
+}
+
+func (c *Class) resourceTestCopy() Class {
+	copy := *c
+	copy.TestDependencies = slices.Clone(c.TestDependencies)
+	copy.Properties = make(map[string]*Property, len(c.Properties))
+	for name, property := range c.Properties {
+		p := *property
+		if property.TestValues != nil {
+			values := *property.TestValues
+			values.Create = values.Create.clone()
+			p.TestValues = &values
+		}
+		copy.Properties[name] = &p
+	}
+	copy.TestChildren = make([]*TestChild, len(c.TestChildren))
+	for index, child := range c.TestChildren {
+		copy.TestChildren[index] = child.clone()
+	}
+	return copy
+}
+
+func resourceMutableProperty(class *Class, property *Property) bool {
+	return property != nil && property.TestValues != nil && !property.ReadOnly && !property.IgnoreInTest && !property.CreateOnly && !property.RequiresReplace && !class.IsIdentifyingProperty(property.PropertyName) && property.PropertyName != "parentDn"
+}
+
+func resourceDefaultExpectation(property *Property) TestValueScenario {
+	// APIC cannot supply an initial secret, even when its schema preserves known values after omission.
+	if property.Sensitive {
+		return TestValueScenario{}
+	}
+	scenario := property.TestValues.Default.clone()
+	if property.ValueType == Set {
+		scenario.Entries = slices.DeleteFunc(scenario.Entries, func(entry TestValueEntry) bool { return entry.AssertValue == "" })
+	}
+	for index := range scenario.Entries {
+		scenario.Entries[index].ConfigInclude = true
+	}
+	return scenario
+}
+
+func (p *Property) resourceResetScenario() (TestValueScenario, bool) {
+	// Only use documented or explicitly configured defaults; inferred empty strings can violate APIC validation.
+	if len(p.Documentation.DefaultValues) == 0 && !p.propertyDefinition.TestConfig.Default.Defined && p.PropertyName != "annotation" {
+		return TestValueScenario{}, false
+	}
+	scenario := resourceDefaultExpectation(p)
+	if p.Sensitive && p.resourceIncludedIn("reset") && p.propertyDefinition.TestConfig.Default.Defined {
+		// Clearing a secret requires an explicitly authored reset value and inclusion.
+		scenario = p.TestValues.Default.clone()
+		for index := range scenario.Entries {
+			scenario.Entries[index].ConfigInclude = true
+		}
+	}
+	if p.PropertyName == "annotation" {
+		return newTestValueScenario([]TestValueEntry{{ConfigValue: "orchestrator:terraform", AssertValue: "orchestrator:terraform", ConfigInclude: true, ValueType: StringValue}}), true
+	}
+	for index := range scenario.Entries {
+		entry := &scenario.Entries[index]
+		if entry.ValueType != StringValue || len(p.ValidValues) > 0 && !slices.Contains(p.ValidValues.LocalNamesList(), entry.AssertValue) {
+			return TestValueScenario{}, false
+		}
+		entry.ConfigValue = entry.AssertValue
+	}
+	return scenario, scenario.Defined
+}
+
+func (b *resourceTestBuilder) last() *ResourceTestScenario {
+	return &b.scenarios[len(b.scenarios)-1]
+}
+
+func (b *resourceTestBuilder) existingObject(minimum *Class) error {
+	// Keep the original minimum resource managed while testing a second address for the same APIC object.
+	minimumHCL := b.last().Configuration
+	renderer := newTestConfigurationRenderer(minimum, b.dataStore)
+	renderer.resourceTest = true
+	address := renderer.subjectResourceAddress()
+	address.Name = "existing_on_create"
+	var duplicate strings.Builder
+	if err := renderer.writeClassBlock(&duplicate, address, minimum, fullTestResourceScenario, nil, minimum.TestChildren, "", nil); err != nil {
+		return err
+	}
+	for _, scenario := range []ResourceTestScenario{
+		{Name: "RejectExisting", Description: "Reject Existing Object", ExistingObject: true, ExpectError: "Object Already Exists"},
+		{Name: "AllowExisting", Description: "Allow Existing Object", ExistingObject: true, Action: "Create"},
+		{Name: "ForgetExisting", Description: "Forget Temporary State Entry", ForgetExisting: true},
+	} {
+		var contents strings.Builder
+		contents.WriteString(minimumHCL)
+		fmt.Fprintf(&contents, "\n\nprovider \"aci\" {\nallow_existing_on_create = %t\n}\n", scenario.ExpectError == "")
+		if scenario.ForgetExisting {
+			// Forget the duplicate state entry without deleting the object still owned by test_1.
+			fmt.Fprintf(&contents, "\nremoved {\nfrom = %s\nlifecycle {\ndestroy = false\n}\n}\n", address.String())
+		} else {
+			contents.WriteString("\n")
+			contents.WriteString(duplicate.String())
+		}
+		formatted, err := formatTestHCL(contents.String())
+		if err != nil {
+			return err
+		}
+		scenario.Configuration = formatted
+		b.scenarios = append(b.scenarios, scenario)
+	}
+	return nil
+}
+
+func (b *resourceTestBuilder) add(name, description string, configuration, expected *Class, action string) error {
+	configuration, expected = b.projectScenario(name, configuration, expected)
+	return b.addScenario(name, description, configuration, expected, action)
+}
+
+func (b *resourceTestBuilder) addScenario(name, description string, configuration, expected *Class, action string) error {
+	scenario := ResourceTestScenario{Name: name, Description: description, Action: action}
+	if configuration != nil {
+		renderer := newTestConfigurationRenderer(configuration, b.dataStore)
+		renderer.resourceTest = true
+		var contents strings.Builder
+		if err := renderer.writeClassBlock(&contents, renderer.subjectResourceAddress(), configuration, fullTestResourceScenario, nil, configuration.TestChildren, "", nil); err != nil {
+			return fmt.Errorf("resource test %s/%s: %w", b.class.Name, name, err)
+		}
+		formatted, err := formatTestHCL(contents.String())
+		if err != nil {
+			return err
+		}
+		scenario.Configuration = formatted
+		scenario.Assertions = expected.resourceTestAssertions(b.dataStore)
+	}
+	b.scenarios = append(b.scenarios, scenario)
+	b.state = expected
+	return nil
+}
+
+func (b *resourceTestBuilder) unchanged(name, description string, current *Class) error {
+	if err := b.add(name, description, current, current, ""); err != nil {
+		return err
+	}
+	b.last().PlanOnly = true
+	return nil
+}
+
+func (b *resourceTestBuilder) change(name, description string, after *Class, action string) (bool, error) {
+	configuration, expected := b.projectScenario(name, after, after)
+	versions := resourceTestChanges(b.state, expected, b.dataStore)
+	if len(versions) == 0 {
+		return false, nil
+	}
+	if action == "Replace" {
+		// Every new identifying reference must exist before a replacement can be attempted.
+		var requiredVersions []string
+		renderer := newTestConfigurationRenderer(after, b.dataStore)
+		for _, name := range after.PropertiesAll {
+			property := after.Properties[name]
+			if property.TestValues == nil || !property.RequiresReplace {
+				continue
+			}
+			for _, entry := range property.TestValues.Create.includedEntries() {
+				if entry.ValueType == ReferenceValue {
+					if dependency := renderer.findDependency(entry.ConfigValue); dependency != nil {
+						if dependencyClass, ok := b.dataStore.Classes[dependency.Class.String()]; ok {
+							requiredVersions = testAssertionVersions(requiredVersions, after.SupportedVersions, dependencyClass.SupportedVersions)
+						}
+					}
+				}
+			}
+		}
+		for _, group := range versions {
+			for _, value := range group {
+				if !slices.Contains(requiredVersions, value) {
+					requiredVersions = append(requiredVersions, value)
+				}
+			}
+		}
+		versions = [][]string{requiredVersions}
+	}
+	if err := b.addScenario(name, description, configuration, expected, action); err != nil {
+		return false, err
+	}
+	// Later steps start from expected state, including retained values after omission.
+	*after = *expected
+	if !slices.ContainsFunc(versions, func(group []string) bool { return len(group) == 0 }) {
+		b.last().ChangeVersions = versions
+	}
+	return true, nil
+}
+
+func (p *Property) resourceIncludedIn(scenario string) bool {
+	return slices.Contains(p.propertyDefinition.TestConfig.IncludeIn, scenario)
+}
+
+func (p *Property) resourceScenarioPresence(scenario string) (include, exclude bool) {
+	include = p.resourceIncludedIn(scenario)
+	exclude = slices.Contains(p.propertyDefinition.TestConfig.ExcludeFrom, scenario)
+	if !include && !exclude && strings.HasSuffix(scenario, "_unchanged") {
+		// A repeat checks the preceding configuration, including its presence overrides.
+		return p.resourceScenarioPresence(strings.TrimSuffix(scenario, "_unchanged"))
+	}
+	return include, exclude
+}
+
+func (b *resourceTestBuilder) projectScenario(name string, configuration, expected *Class) (*Class, *Class) {
+	if configuration == nil {
+		return nil, expected
+	}
+	configured := configuration.resourceTestCopy()
+	wanted := expected.resourceTestCopy()
+	scenario := utils.Underscore(name)
+	apply := func(property *Property, value, expectation, previous TestValueScenario) (TestValueScenario, TestValueScenario) {
+		include, exclude := property.resourceScenarioPresence(scenario)
+		if exclude {
+			expectation = TestValueScenario{}
+			if property.Computed {
+				expectation = previous.clone()
+				if !expectation.Defined {
+					expectation = resourceDefaultExpectation(property)
+				}
+			}
+			return TestValueScenario{}, expectation
+		}
+		if !include {
+			return value, expectation
+		}
+		if scenario == "reset" && !property.CreateOnly {
+			if reset, ok := property.resourceResetScenario(); ok {
+				return reset, reset.clone()
+			}
+		}
+		if !value.Defined {
+			value = expectation.clone()
+			if !value.Defined {
+				value = property.TestValues.Create.clone()
+			}
+			for index := range value.Entries {
+				value.Entries[index].ConfigInclude = true
+			}
+		}
+		return value, value.clone()
+	}
+	for _, propertyName := range configured.PropertiesAll {
+		property := configured.Properties[propertyName]
+		if property == nil || property.ReadOnly || property.TestValues == nil {
+			continue
+		}
+		previous := TestValueScenario{}
+		if b.state != nil {
+			if old := b.state.Properties[propertyName]; old != nil && old.TestValues != nil {
+				previous = old.TestValues.Create
+			}
+		}
+		property.TestValues.Create, wanted.Properties[propertyName].TestValues.Create = apply(property, property.TestValues.Create, wanted.Properties[propertyName].TestValues.Create, previous)
+	}
+	var children func([]*TestChild, []*TestChild, []*TestChild)
+	children = func(configured, wanted, previous []*TestChild) {
+		for _, child := range configured {
+			childClass := b.dataStore.Classes[child.Class.String()]
+			expectedChild := findResourceTestChild(wanted, child.Class)
+			oldChild := findResourceTestChild(previous, child.Class)
+			for index := range child.Instances {
+				instance := &child.Instances[index]
+				expectedInstance := &expectedChild.Instances[index]
+				var old *TestChildInstance
+				if oldChild != nil {
+					for oldIndex := range oldChild.Instances {
+						candidate := &oldChild.Instances[oldIndex]
+						if slices.ContainsFunc(childClass.IdentifiedBy, func(name string) bool {
+							attribute := childClass.Properties[name].AttributeName
+							return !reflect.DeepEqual(candidate.Properties[attribute], instance.Properties[attribute])
+						}) {
+							continue
+						}
+						old = candidate
+						break
+					}
+				}
+				for _, name := range childClass.PropertiesAll {
+					property := childClass.Properties[name]
+					if property == nil || property.ReadOnly || property.TestValues == nil {
+						continue
+					}
+					before := TestValueScenario{}
+					if old != nil {
+						before = old.Properties[property.AttributeName]
+					}
+					instance.Properties[property.AttributeName], expectedInstance.Properties[property.AttributeName] = apply(property, instance.Properties[property.AttributeName], expectedInstance.Properties[property.AttributeName], before)
+				}
+				var oldChildren []*TestChild
+				if old != nil {
+					oldChildren = old.Children
+				}
+				children(instance.Children, expectedInstance.Children, oldChildren)
+			}
+		}
+	}
+	var previousChildren []*TestChild
+	if b.state != nil {
+		previousChildren = b.state.TestChildren
+	}
+	children(configured.TestChildren, wanted.TestChildren, previousChildren)
+	return &configured, &wanted
+}
+
+func (b *resourceTestBuilder) minimumChildren(children []*TestChild) []*TestChild {
+	// Required children and their required descendants belong in the minimum configuration.
+	var required []*TestChild
+	for _, child := range children {
+		childClass, ok := b.dataStore.Classes[child.Class.String()]
+		if !ok || !childClass.RequiredAsChild {
+			continue
+		}
+		for index := range child.Instances {
+			child.Instances[index].Children = b.minimumChildren(child.Instances[index].Children)
+		}
+		required = append(required, child)
+	}
+	return required
+}
+
+func (b *resourceTestBuilder) children(current *Class) error {
+	if len(current.TestChildren) == 0 {
+		return nil
+	}
+	full := current.resourceTestCopy()
+	cleared := current.resourceTestCopy()
+	b.changeChildren(&cleared, "clear")
+	if _, err := b.change("ClearChildren", "Explicitly Clear Deletable Children", &cleared, "Update"); err != nil {
+		return err
+	}
+	if _, err := b.change("AddChildren", "Add Children and Verify Descendants", &full, "Update"); err != nil {
+		return err
+	}
+	updated := full.resourceTestCopy()
+	b.changeChildren(&updated, "update")
+	if _, err := b.change("UpdateChildren", "Update Child Attributes Without Replacing the Parent", &updated, "Update"); err != nil {
+		return err
+	}
+	trimmed := updated.resourceTestCopy()
+	b.changeChildren(&trimmed, "trim")
+	if _, err := b.change("RemoveChild", "Remove One Child Instance", &trimmed, "Update"); err != nil {
+		return err
+	}
+	reidentified := trimmed.resourceTestCopy()
+	b.changeChildren(&reidentified, "identifier")
+	if _, err := b.change("ChangeChildIdentifier", "Change Child Identifiers Without Replacing the Parent", &reidentified, "Update"); err != nil {
+		return err
+	}
+	if err := b.add("RestoreChildren", "Restore Full Child Configuration", &full, &full, ""); err != nil {
+		return err
+	}
+	reordered := full.resourceTestCopy()
+	b.changeChildren(&reordered, "reorder")
+	if err := b.unchanged("ReorderChildren", "Reorder Child Sets (Expect Empty Plan)", &reordered); err != nil {
+		return err
+	}
+	omitted := full.resourceTestCopy()
+	omitted.TestChildren = b.minimumChildren(omitted.TestChildren)
+	if err := b.add("OmitChildren", "Omit Children and Verify Retained State", &omitted, &full, ""); err != nil {
+		return err
+	}
+	if err := b.rejectChildRemovals(&full); err != nil {
+		return err
+	}
+	*current = full
+	return nil
+}
+
+func (b *resourceTestBuilder) rejectChildRemovals(full *Class) error {
+	// Remove one object at a time, including descendants, then verify the failed update left the full configuration intact.
+	invalid := full.resourceTestCopy()
+	var visit func(*[]*TestChild, string, []string) error
+	visit = func(children *[]*TestChild, path string, inherited []string) error {
+		for childIndex, child := range *children {
+			childClass, ok := b.dataStore.Classes[child.Class.String()]
+			if !ok || slices.Contains(childClass.TestConfig.IgnoreTests, ChildIgnoreTest) || len(child.Instances) == 0 {
+				continue
+			}
+			versions := testAssertionVersions(inherited, b.class.SupportedVersions, childClass.SupportedVersions)
+			if childClass.RequiredAsChild || !childClass.AllowDelete {
+				name := "RejectDelete" + path + childClass.Name.Capitalized()
+				instances := child.Instances
+				originalChildren := *children
+				child.Instances = nil
+				description := "Reject Removal of Non-deletable " + childClass.Documentation.Label
+				if childClass.RequiredAsChild {
+					// Omit the required argument so schema validation catches removal before payload construction.
+					*children = slices.Concat(originalChildren[:childIndex], originalChildren[childIndex+1:])
+					description = "Reject Omission of Required " + childClass.Documentation.Label
+				}
+				err := b.add(name, description, &invalid, full, "")
+				*children = originalChildren
+				child.Instances = instances
+				if err != nil {
+					return err
+				}
+				b.last().ExpectError = fmt.Sprintf("%s object defined by %s cannot be deleted", childClass.Name.Capitalized(), childClass.ResourceNameNested)
+				if childClass.RequiredAsChild {
+					b.last().ExpectError = regexp.QuoteMeta(fmt.Sprintf("The argument %q is required", childClass.ResourceNameNested))
+				}
+				if len(versions) > 0 {
+					b.last().ChangeVersions = [][]string{versions}
+				}
+				if err := b.unchanged(name+"Unchanged", "Verify Rejected Removal Left the Object Unchanged", full); err != nil {
+					return err
+				}
+			}
+			for index := range child.Instances {
+				if err := visit(&child.Instances[index].Children, fmt.Sprintf("%s%s%d", path, childClass.Name.Capitalized(), index+1), versions); err != nil {
+					return err
+				}
+			}
+		}
+		return nil
+	}
+	return visit(&invalid.TestChildren, "", nil)
+}
+
+func (b *resourceTestBuilder) changeChildren(class *Class, operation string) {
+	var change func([]*TestChild, []*TestChild)
+	change = func(children, canonical []*TestChild) {
+		for _, child := range children {
+			childClass, ok := b.dataStore.Classes[child.Class.String()]
+			if !ok || slices.Contains(childClass.TestConfig.IgnoreTests, ChildIgnoreTest) {
+				continue
+			}
+			original := findResourceTestChild(canonical, child.Class)
+			if operation == "clear" && childClass.AllowDelete && !childClass.RequiredAsChild {
+				child.Instances = nil
+				continue
+			}
+			if operation == "trim" && childClass.AllowDelete && len(child.Instances) > 1 {
+				child.Instances = child.Instances[:1]
+			}
+			if operation == "reorder" && !childClass.IsSingleNestedWhenDefinedAsChild {
+				slices.Reverse(child.Instances)
+			}
+			for index := range child.Instances {
+				instance := &child.Instances[index]
+				if index == 0 && operation == "update" {
+					for _, name := range childClass.PropertiesAll {
+						property := childClass.Properties[name]
+						if resourceMutableProperty(&childClass, property) && property.TestValues.Update.Defined {
+							instance.Properties[property.AttributeName] = class.resourceChildUpdateScenario(&childClass, property)
+						}
+					}
+				}
+				if operation == "identifier" && childClass.AllowDelete && !childClass.IsSingleNestedWhenDefinedAsChild {
+					// Preserve the replacement's canonical descendants so their identifiers remain distinct.
+					if original != nil && len(original.Instances) > 1 {
+						*instance = original.clone().Instances[1]
+						continue
+					}
+				}
+				if original != nil && index < len(original.Instances) {
+					change(instance.Children, original.Instances[index].Children)
+				}
+			}
+		}
+	}
+	change(class.TestChildren, b.class.TestChildren)
+}
+
+func findResourceTestChild(children []*TestChild, name *ClassName) *TestChild {
+	for _, child := range children {
+		if child.Class.Equal(name) {
+			return child
+		}
+	}
+	return nil
+}
+
+func resourceTestChanges(before, after *Class, ds *DataStore) [][]string {
+	var groups [][]string
+	add := func(versions []string) {
+		if !slices.ContainsFunc(groups, func(group []string) bool { return slices.Equal(group, versions) }) {
+			groups = append(groups, versions)
+		}
+	}
+	for _, name := range before.PropertiesAll {
+		property := before.Properties[name]
+		other := after.Properties[name]
+		if property == nil || property.ReadOnly || property.IgnoreInTest || property.TestValues == nil || other.TestValues == nil {
+			continue
+		}
+		if !reflect.DeepEqual(property.TestValues.Create, other.TestValues.Create) {
+			add(testAssertionVersions(nil, before.SupportedVersions, property.SupportedVersions))
+		}
+	}
+	var compareChildren func([]*TestChild, []*TestChild, []string)
+	compareChildren = func(previous, next []*TestChild, inherited []string) {
+		for _, child := range next {
+			childClass, ok := ds.Classes[child.Class.String()]
+			if !ok || slices.Contains(childClass.TestConfig.IgnoreTests, ChildIgnoreTest) {
+				continue
+			}
+			old := findResourceTestChild(previous, child.Class)
+			versions := testAssertionVersions(inherited, before.SupportedVersions, childClass.SupportedVersions)
+			if old == nil || len(old.Instances) != len(child.Instances) {
+				add(versions)
+				continue
+			}
+			for index, instance := range child.Instances {
+				for _, name := range childClass.PropertiesAll {
+					property := childClass.Properties[name]
+					if property == nil || property.ReadOnly || property.IgnoreInTest {
+						continue
+					}
+					if !reflect.DeepEqual(old.Instances[index].Properties[property.AttributeName], instance.Properties[property.AttributeName]) {
+						add(testAssertionVersions(versions, childClass.SupportedVersions, property.SupportedVersions))
+					}
+				}
+				compareChildren(old.Instances[index].Children, instance.Children, versions)
+			}
+		}
+	}
+	compareChildren(before.TestChildren, after.TestChildren, nil)
+	return groups
+}
+
+func (c *Class) prepareResourceTest(ds *DataStore) Class {
+	class := c.resourceTestCopy()
+	var collect func([]*TestChild)
+	collect = func(children []*TestChild) {
+		for _, child := range children {
+			childClass, ok := ds.Classes[child.Class.String()]
+			if !ok || slices.Contains(childClass.TestConfig.IgnoreTests, ChildIgnoreTest) {
+				continue
+			}
+			for _, name := range childClass.PropertiesAll {
+				if property := childClass.Properties[name]; resourceMutableProperty(&childClass, property) {
+					class.resourceChildUpdateScenario(&childClass, property)
+				}
+			}
+			for _, instance := range child.Instances {
+				collect(instance.Children)
+			}
+		}
+	}
+	collect(class.TestChildren)
+	if parent := class.ParentDnProperty(); parent != nil && parent.TestValues != nil {
+		replacement := class.resourceTestCopy()
+		replacement.Properties["parentDn"].TestValues.Create = parent.TestValues.ForceNew.clone()
+		builder := resourceTestBuilder{class: &class, dataStore: ds}
+		builder.compatibleParentTargets(&replacement)
+		// Prepare replacement targets once so all scenarios share the same dependency configuration.
+		class.TestDependencies = replacement.TestDependencies
+	}
+	return class
 }

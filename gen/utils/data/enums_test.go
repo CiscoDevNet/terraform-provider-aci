@@ -120,6 +120,33 @@ func TestValueRenderTypeEnum(t *testing.T) {
 	assert.Error(t, test.UnmarshalTextErr[ValueRenderTypeEnum]("garbage"))
 }
 
+func TestAssertStrategyEnum(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+	testCases := []test.TestCase{
+		{Name: "test_value", Input: "value", Expected: AssertValueStrategy},
+		{Name: "test_presence_only", Input: "presence_only", Expected: AssertPresenceOnly},
+		{Name: "test_empty", Input: ""},
+		{Name: "test_unknown", Input: "presence"},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			var strategy AssertStrategyEnum
+			err := strategy.UnmarshalText([]byte(testCase.Input.(string)))
+			if testCase.Expected == nil {
+				assert.Error(t, err)
+				return
+			}
+			assert.NoError(t, err)
+			assert.Equal(t, testCase.Expected.(AssertStrategyEnum), strategy)
+			assert.Equal(t, testCase.Input, strategy.String())
+		})
+	}
+	var zero AssertStrategyEnum
+	assert.Equal(t, AssertValueStrategy, zero)
+}
+
 func TestValueTypeEnum(t *testing.T) {
 	t.Parallel()
 	test.InitializeTest(t)
