@@ -151,16 +151,20 @@ type Class struct {
 	TestConfig ClassTestConfig
 }
 
-// ClassTestConfig groups resolved per-class gates retained for the future test
-// templates. The current model and public-example templates do not consume them.
+// ClassTestConfig groups resolved per-class acceptance-test gates.
+// Model and public-example templates do not consume them.
 type ClassTestConfig struct {
 	// Prefix controls generation of the token shared by this class's test fixture.
 	Prefix TestPrefixDefinition
-	// IgnoreTests lists the test buckets future test renderers should skip.
+	// RunSerially keeps tests that change shared APIC settings outside the parallel group.
+	RunSerially bool
+	// PostTestDelaySeconds keeps the test active while shared APIC settings settle after cleanup.
+	PostTestDelaySeconds int
+	// IgnoreTests lists the test buckets acceptance-test renderers should skip.
 	// Distinct from Class.Artifacts, which selects generated artifact kinds.
 	// nil/empty means no skips.
 	IgnoreTests []IgnoreTestEnum
-	// IgnoreImportStateVerify tells the future resource-test renderer to omit the
+	// IgnoreImportStateVerify tells the resource-test renderer to omit the
 	// ImportStateVerify equality assertion while retaining the import smoke test.
 	IgnoreImportStateVerify bool
 	// DataSourceExpectNonEmptyPlan allows a known parent/standalone-child state
@@ -217,6 +221,8 @@ type TestDependency struct {
 	// OrderOnly renders this prerequisite as an explicit Terraform depends_on
 	// edge rather than consuming an unknown value during planning.
 	OrderOnly bool
+	// Attributes owned by standalone resources; rendered only in dependency lifecycle blocks.
+	IgnoreChanges []string
 	// Optional property overrides for the dependency resource's HCL configuration.
 	// Loaded framework classes otherwise use their required TestValues.Default entries.
 	// Definition-only legacy classes require this map to contain their complete HCL input.
@@ -746,7 +752,7 @@ func isBracketedDnPlaceholder(literalPrefix, remainingFormat string) bool {
 }
 
 // HasCustomModelTypes reports whether this class's own properties require the
-// custom_types package in its generated model file.
+// customtypes package in its generated model file.
 func (c Class) HasCustomModelTypes() bool {
 	for _, property := range c.ModelProperties() {
 		if property.UsesCustomModelType() {
@@ -773,10 +779,12 @@ func (c *Class) setTestConfig() {
 
 	c.TestConfig.IgnoreTests = c.ClassDefinition.TestConfig.IgnoreTests
 	c.TestConfig.Prefix = c.ClassDefinition.TestConfig.Prefix
+	c.TestConfig.RunSerially = c.ClassDefinition.TestConfig.RunSerially
+	c.TestConfig.PostTestDelaySeconds = c.ClassDefinition.TestConfig.PostTestDelaySeconds
 	c.TestConfig.IgnoreImportStateVerify = c.ClassDefinition.TestConfig.IgnoreImportStateVerify
 	c.TestConfig.DataSourceExpectNonEmptyPlan = c.ClassDefinition.TestConfig.DataSourceExpectNonEmptyPlan
 
-	genLogger.Debugf("Successfully set TestConfig gates for class '%s'. IgnoreTests: %v, IgnoreImportStateVerify: %t", c.Name, c.TestConfig.IgnoreTests, c.TestConfig.IgnoreImportStateVerify)
+	genLogger.Debugf("Successfully set TestConfig gates for class '%s'. IgnoreTests: %v, IgnoreImportStateVerify: %t, RunSerially: %t, PostTestDelaySeconds: %d", c.Name, c.TestConfig.IgnoreTests, c.TestConfig.IgnoreImportStateVerify, c.TestConfig.RunSerially, c.TestConfig.PostTestDelaySeconds)
 }
 
 func (c *Class) setParents(ds *DataStore) error {
@@ -1492,6 +1500,7 @@ func (c *Class) getTestDependenciesFromDefinitions(testDependencyDefinitions []T
 			ReferenceType:   referenceType,
 			Role:            testDependencyDefinition.Role,
 			OrderOnly:       testDependencyDefinition.OrderOnly,
+			IgnoreChanges:   slices.Clone(testDependencyDefinition.IgnoreChanges),
 			ConfigOverrides: testDependencyDefinition.ConfigOverrides,
 		}
 		for _, targetClassName := range testDependencyDefinition.TargetClasses {

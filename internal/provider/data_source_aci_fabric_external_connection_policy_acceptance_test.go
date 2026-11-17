@@ -15,7 +15,7 @@ import (
 )
 
 func TestAccDataSourceFvFabricExtConnPGenerated(t *testing.T) {
-	if testAccRunner.RunInSubprocess(t) {
+	if testAccRunner.RunSeriallyInSubprocess(t) {
 		return
 	}
 

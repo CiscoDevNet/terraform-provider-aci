@@ -2420,10 +2420,11 @@ func TestSetReference(t *testing.T) {
 }
 
 type convertTestValueEntriesExpected struct {
-	Nil           bool
-	Length        int
-	ConfigInclude []bool
-	AssertValues  []string
+	Nil              bool
+	Length           int
+	ConfigInclude    []bool
+	AssertValues     []string
+	AssertStrategies []AssertStrategyEnum
 }
 
 func TestConvertTestValueEntries(t *testing.T) {
@@ -2445,6 +2446,17 @@ func TestConvertTestValueEntries(t *testing.T) {
 			Input: []TestValueEntryDefinition{},
 			Expected: convertTestValueEntriesExpected{
 				Nil: true,
+			},
+		},
+		{
+			Name: "test_assert_strategies",
+			Input: []TestValueEntryDefinition{
+				{ConfigValue: "0", AssertStrategy: AssertPresenceOnly},
+				{ConfigValue: "1"},
+			},
+			Expected: convertTestValueEntriesExpected{
+				Length:           2,
+				AssertStrategies: []AssertStrategyEnum{AssertPresenceOnly, AssertValueStrategy},
 			},
 		},
 		{
@@ -2496,6 +2508,30 @@ func TestConvertTestValueEntries(t *testing.T) {
 				for i, v := range expected.AssertValues {
 					assert.Equal(t, v, result[i].AssertValue, test.MessageEqual(v, result[i].AssertValue, testCase.Name))
 				}
+			}
+			for i, strategy := range expected.AssertStrategies {
+				assert.Equal(t, strategy, result[i].AssertStrategy)
+			}
+		})
+	}
+}
+
+func TestDerivedTestValueAssertStrategy(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+	property := &Property{PropertyName: "name", Required: true}
+	create := []TestValueEntry{{ConfigValue: "name_1", ConfigInclude: true, AssertValue: "name_1", AssertStrategy: AssertPresenceOnly}}
+	testCases := []test.TestCase{
+		{Name: "test_required_default", Input: property.generateDefault(create)},
+		{Name: "test_force_new", Input: property.generateForceNew(create)},
+		{Name: "test_scenario_clone", Input: newTestValueScenario(create).clone().Entries},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			entries := testCase.Input.([]TestValueEntry)
+			if assert.Len(t, entries, 1) {
+				assert.Equal(t, AssertPresenceOnly, entries[0].AssertStrategy)
 			}
 		})
 	}

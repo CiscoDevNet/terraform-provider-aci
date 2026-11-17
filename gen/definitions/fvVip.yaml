@@ -13,4 +13,4 @@ properties:
       datasource_missing:
       - config_value: 192.0.2.3
       update:
-      - config_value: 2001:0db8::01
+      - config_value: 2001:db8::1

@@ -24,6 +24,8 @@ properties:
     test_config:
       create:
       - config_value: any
+      update:
+      - config_value: any
   remotePcTag:
     documentation:
       description: The policy class tag (pcTag) of the remote object.
@@ -33,6 +35,10 @@ properties:
       create:
       - config_value: "16386"
       default:
+      - config_value: "16387"
+      include_in:
+      - minimum
+      update:
       - config_value: "16387"
   siteId:
     attribute_name: site_id

@@ -132,6 +132,8 @@ properties:
   arpLearning:
     value_type: vmm_arp_learning
 test_config:
+  run_serially: true
+  post_test_delay_seconds: 15
   replace_auto_resolved: true
   ignore_tests:
     - child
@@ -141,6 +143,8 @@ test_config:
       reference: aci_tenant.test.id
       reference_type: resource
       role: parent
+      ignore_changes:
+        - relation_l3extrs_redistribute_pol
       target_classes:
         - fvBD
 `)
@@ -194,12 +198,15 @@ test_config:
 	assert.Equal(t, VMMArpLearning, arpLearningProp.ValueType)
 
 	assert.True(t, parsedDefinition.TestConfig.ReplaceAutoResolved)
+	assert.True(t, parsedDefinition.TestConfig.RunSerially)
+	assert.Equal(t, 15, parsedDefinition.TestConfig.PostTestDelaySeconds)
 	assert.Equal(t, []IgnoreTestEnum{ChildIgnoreTest}, parsedDefinition.TestConfig.IgnoreTests)
 	assert.True(t, parsedDefinition.TestConfig.IgnoreImportStateVerify)
 	assert.Len(t, parsedDefinition.TestConfig.Dependencies, 1)
 	assert.Equal(t, "fvTenant", parsedDefinition.TestConfig.Dependencies[0].ClassName)
 	assert.Equal(t, ResourceReference, parsedDefinition.TestConfig.Dependencies[0].ReferenceType)
 	assert.Equal(t, Parent, parsedDefinition.TestConfig.Dependencies[0].Role)
+	assert.Equal(t, []string{"relation_l3extrs_redistribute_pol"}, parsedDefinition.TestConfig.Dependencies[0].IgnoreChanges)
 	assert.Equal(t, []string{"fvBD"}, parsedDefinition.TestConfig.Dependencies[0].TargetClasses)
 }
 
@@ -420,6 +427,31 @@ properties:
 	}
 	if assert.NotNil(t, entries[2].ConfigInclude) {
 		assert.False(t, *entries[2].ConfigInclude, "explicit false must survive as *bool=false, not nil")
+	}
+}
+
+func TestParseClassDefinition_AssertStrategy(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+	testCases := []test.TestCase{
+		{Name: "test_omitted", Input: "", Expected: AssertValueStrategy},
+		{Name: "test_value", Input: "\n          assert_strategy: value", Expected: AssertValueStrategy},
+		{Name: "test_presence_only", Input: "\n          assert_strategy: presence_only", Expected: AssertPresenceOnly},
+		{Name: "test_unknown", Input: "\n          assert_strategy: presence"},
+		{Name: "test_empty", Input: "\n          assert_strategy: \"\""},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			definition, err := parseClassDefinition([]byte("properties:\n  siteId:\n    test_config:\n      update:\n        - config_value: \"1\"" + testCase.Input.(string)))
+			if testCase.Expected == nil {
+				assert.Error(t, err)
+				return
+			}
+			if assert.NoError(t, err) {
+				assert.Equal(t, testCase.Expected.(AssertStrategyEnum), definition.Properties["siteId"].TestConfig.Update.Entries[0].AssertStrategy)
+			}
+		})
 	}
 }
 
@@ -1142,6 +1174,27 @@ func TestAttributeUpgradeDefinition_HasInnerLegacyAttribute(t *testing.T) {
 		t.Run(testCase.Name, func(t *testing.T) {
 			t.Parallel()
 			assert.Equal(t, testCase.Expected, testCase.Input.(AttributeUpgradeDefinition).hasInnerLegacyAttribute())
+		})
+	}
+}
+
+func TestTestConfigScenarioPresence(t *testing.T) {
+	t.Parallel()
+	testCases := []test.TestCase{
+		{Name: "test_include", Input: "include_in: [minimum, reset]"},
+		{Name: "test_exclude", Input: "exclude_from: [update]"},
+		{Name: "test_distinct_scenarios", Input: "include_in: [minimum]\n      exclude_from: [update]"},
+		{Name: "test_conflicting_scenario", Input: "include_in: [reset]\n      exclude_from: [reset]", Expected: "appears in both include_in and exclude_from"},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			_, err := parseClassDefinition([]byte("properties:\n  descr:\n    test_config:\n      " + testCase.Input.(string) + "\n"))
+			if expected, _ := testCase.Expected.(string); expected != "" {
+				assert.ErrorContains(t, err, expected)
+			} else {
+				assert.NoError(t, err)
+			}
 		})
 	}
 }

@@ -20,3 +20,4 @@ test_config:
     reference: uni/infra
     reference_type: static
     role: parent
+  run_serially: true

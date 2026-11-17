@@ -3,6 +3,7 @@ package data
 import (
 	"fmt"
 	"maps"
+	"slices"
 	"strings"
 )
 
@@ -281,6 +282,7 @@ func (source *TestDependency) clone() *TestDependency {
 		ReferenceType:   source.ReferenceType,
 		Role:            source.Role,
 		OrderOnly:       source.OrderOnly,
+		IgnoreChanges:   append([]string(nil), source.IgnoreChanges...),
 		TargetClasses:   append([]*ClassName(nil), source.TargetClasses...),
 		nameGenerated:   source.nameGenerated,
 	}
@@ -368,4 +370,210 @@ func findTestDependencyByObjectReference(dependencies []*TestDependency, referen
 		return nil
 	}
 	return find(dependencies)
+}
+
+func (r testConfigurationRenderer) collectResourceChildUpdateReferences(children []*TestChild, references *[]string) {
+	for _, child := range children {
+		childClass, ok := r.dataStore.Classes[child.Class.String()]
+		if !ok || slices.Contains(childClass.TestConfig.IgnoreTests, ChildIgnoreTest) {
+			continue
+		}
+		for _, name := range childClass.PropertiesAll {
+			property := childClass.Properties[name]
+			if !resourceMutableProperty(&childClass, property) {
+				continue
+			}
+			for _, entry := range r.class.resourceChildUpdateScenario(&childClass, property).includedEntries() {
+				if entry.ValueType == ReferenceValue && !slices.Contains(*references, entry.ConfigValue) {
+					*references = append(*references, entry.ConfigValue)
+				}
+			}
+		}
+		for _, instance := range child.Instances {
+			r.collectResourceChildUpdateReferences(instance.Children, references)
+		}
+	}
+}
+
+func (b *resourceTestBuilder) compatibleParentTargets(class *Class) {
+	renderer := newTestConfigurationRenderer(class, b.dataStore)
+	parent := renderer.primaryParentDependency()
+	if parent == nil {
+		return
+	}
+	for _, name := range class.PropertiesAll {
+		property := class.Properties[name]
+		if property == nil || property.TestValues == nil || name == "parentDn" {
+			continue
+		}
+		entry, ok := property.TestValues.Create.firstIncludedEntry()
+		if !ok || entry.ValueType != ReferenceValue {
+			continue
+		}
+		dependency := renderer.findDependency(entry.ConfigValue)
+		if dependency == nil || dependency.Role != Target || slices.ContainsFunc(parent.TargetClasses, dependency.Class.Equal) {
+			continue
+		}
+		for _, target := range class.TestDependencies {
+			if target.Role == Target && slices.ContainsFunc(parent.TargetClasses, target.Class.Equal) {
+				entry = testValueEntryForDependency(target)
+				if class.Relation.Type == Named {
+					entry.ConfigValue = targetReferenceToName(entry.ConfigValue)
+					entry.AssertValue = targetReferenceToName(entry.AssertValue)
+				}
+				property.TestValues.Create = newTestValueScenario([]TestValueEntry{entry})
+				break
+			}
+		}
+	}
+	b.reparentTestTargets(class, parent)
+}
+
+func (b *resourceTestBuilder) reparentTestTargets(class *Class, parent *TestDependency) {
+	renderer := newTestConfigurationRenderer(class, b.dataStore)
+	previous := newTestConfigurationRenderer(b.class, b.dataStore).primaryParentDependency()
+	if previous == nil || previous.Reference == parent.Reference {
+		return
+	}
+	oldParent, oldOK := parseTerraformTestReference(previous.Reference)
+	newParent, newOK := parseTerraformTestReference(parent.Reference)
+	if !oldOK || !newOK {
+		return
+	}
+	parentAliases := map[string]terraformTestAddress{oldParent.String(): newParent}
+	aliases := make(map[string]terraformTestAddress)
+	var importedTargets []*TestDependency
+	bind := func(scenario TestValueScenario) {
+		for _, entry := range scenario.includedEntries() {
+			if entry.ValueType != ReferenceValue {
+				continue
+			}
+			dependency := renderer.findDependency(entry.ConfigValue)
+			if dependency == nil || dependency.ReferenceType != ResourceReference {
+				continue
+			}
+			targetClass, loaded := b.dataStore.Classes[dependency.Class.String()]
+			var targetSchema *Class
+			if loaded {
+				targetSchema = &targetClass
+			}
+			targetParent := renderer.parentDependency(targetSchema, dependency)
+			if targetParent == nil || targetParent.Reference != previous.Reference {
+				continue
+			}
+			// Targets sharing the old fixture parent follow its replacement; other placements are preserved.
+			address, _ := parseTerraformTestReference(dependency.Reference)
+			sourceAddress := address
+			sourceAddress.Name = fmt.Sprintf("%s_parent_%s", address.Name, newParent.Name)
+			clone := dependency.clone()
+			clone.SourceReference = sourceAddress.withAttribute(address.Attribute)
+			clone.Reference = clone.SourceReference
+			clone.Dependencies = append([]*TestDependency(nil), dependency.Dependencies...)
+			clone.Dependencies = slices.DeleteFunc(clone.Dependencies, func(prerequisite *TestDependency) bool {
+				return prerequisite.Reference == previous.Reference || prerequisite.Reference == parent.Reference
+			})
+			clone.Dependencies = append(clone.Dependencies, parent)
+			if clone.ConfigOverrides == nil {
+				clone.ConfigOverrides = make(map[string]string)
+			}
+			if loaded {
+				if property := targetClass.ParentDnProperty(); property != nil {
+					clone.ConfigOverrides[property.AttributeName] = parent.Reference
+				}
+				resourceScenario := dependencyTestResourceScenario
+				if dependency.TestInstance > 1 {
+					resourceScenario = alternateDependencyTestResourceScenario
+				}
+				// New fixture addresses must retain distinct naming values from the original instances.
+				for _, name := range targetClass.IdentifiedBy {
+					property := targetClass.Properties[name]
+					if property == nil || property.TestValues == nil {
+						continue
+					}
+					if _, overridden := testPropertyOverride(property, clone.ConfigOverrides); overridden {
+						continue
+					}
+					if value, ok := testResourcePropertyScenario(&targetClass, property, resourceScenario).firstIncludedEntry(); ok {
+						clone.ConfigOverrides[property.AttributeName] = value.ConfigValue
+					}
+				}
+			}
+			clone.rewriteReferences(parentAliases)
+			imported, _ := class.importTestDependency(clone)
+			importedTargets = append(importedTargets, imported)
+			importedAddress, _ := parseTerraformTestReference(imported.Reference)
+			aliases[address.String()] = importedAddress
+		}
+	}
+	for _, name := range class.PropertiesAll {
+		if property := class.Properties[name]; property != nil && name != "parentDn" && property.TestValues != nil {
+			bind(property.TestValues.Create)
+		}
+	}
+	var visit func([]*TestChild)
+	visit = func(children []*TestChild) {
+		for _, child := range children {
+			for _, instance := range child.Instances {
+				for _, name := range slices.Sorted(maps.Keys(instance.Properties)) {
+					bind(instance.Properties[name])
+				}
+				visit(instance.Children)
+			}
+		}
+	}
+	visit(class.TestChildren)
+	// A target may refer to another target visited later, such as an L3Out's VRF.
+	// Rewrite only replacement nodes after the complete alias map is available.
+	for _, dependency := range importedTargets {
+		dependency.rewriteReferences(aliases)
+		for index, prerequisite := range dependency.Dependencies {
+			reference := rewriteTestReference(prerequisite.Reference, prerequisite.ReferenceType, aliases)
+			if reference != prerequisite.Reference {
+				dependency.Dependencies[index] = renderer.findDependency(reference)
+			}
+		}
+	}
+	for _, property := range class.Properties {
+		if property.TestValues != nil {
+			property.TestValues.Create.rewriteReferences(aliases)
+		}
+	}
+	rewriteTestChildReferences(class.TestChildren, aliases)
+}
+
+func (c *Class) resourceChildUpdateScenario(childClass *Class, property *Property) TestValueScenario {
+	scenario := property.TestValues.Update.clone()
+	for index := range scenario.Entries {
+		entry := &scenario.Entries[index]
+		if entry.ValueType != ReferenceValue {
+			continue
+		}
+		if source := findTestDependencyByObjectReference(childClass.TestDependencies, entry.ConfigValue); source != nil {
+			_, aliases := c.importTestDependency(source)
+			entry.ConfigValue = rewriteTestReference(entry.ConfigValue, referenceValueType(entry.ConfigValue), aliases)
+			entry.AssertValue = rewriteTestReference(entry.AssertValue, referenceValueType(entry.AssertValue), aliases)
+		}
+	}
+	return scenario
+}
+
+func (r testConfigurationRenderer) resourceReferenceScenario(class *Class, scenario TestValueScenario) TestValueScenario {
+	scenario = scenario.clone()
+	for index := range scenario.Entries {
+		entry := &scenario.Entries[index]
+		if entry.ValueType != ReferenceValue {
+			continue
+		}
+		dependency := r.findDependency(entry.ConfigValue)
+		if dependency == nil {
+			continue
+		}
+		if target, ok := r.dataStore.Classes[dependency.Class.String()]; ok {
+			if versions := testConfigurationVersions(class.SupportedVersions, target.SupportedVersions); versions != "" {
+				entry.ConfigValue = fmt.Sprintf("%s ? %s : null", testVersionExpression(versions), testValueHCL(*entry))
+				entry.ValueType = ExpressionValue
+			}
+		}
+	}
+	return scenario
 }

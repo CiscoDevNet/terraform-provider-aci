@@ -91,3 +91,6 @@ properties:
   parentDn:
     default_values:
       uni/userext/pkiext: ""
+test_config:
+  post_test_delay_seconds: 15
+  run_serially: true

@@ -8,6 +8,8 @@ properties:
     test_config:
       create:
       - config_value: 1,2
+      update:
+      - config_value: "2"
   standby:
     attribute_name: standby_uplinks
     documentation:
@@ -15,3 +17,5 @@ properties:
     test_config:
       create:
       - config_value: 3,4
+      update:
+      - config_value: "4"

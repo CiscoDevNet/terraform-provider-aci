@@ -24,6 +24,9 @@ properties:
         value_type: reference
       datasource_missing:
       - config_value: uni/tn-test_tenant_imported_device/lDevVip-test_imported_device
+      update:
+      - config_value: aci_l4_l7_device.test_2.id
+        value_type: reference
 resource_name: imported_logical_device
 test_config:
   dependencies:
@@ -42,6 +45,8 @@ test_config:
       tenant_dn: aci_tenant.test_tenant_imported_device.id
     dependencies:
     - class_name: fvTenant
+      config_overrides:
+        name: export_tenant_1
       reference: aci_tenant.test_tenant_imported_device.id
     - class_name: physDomP
       config_overrides:
@@ -49,4 +54,24 @@ test_config:
       order_only: true
       reference: aci_physical_domain.test.id
     reference: aci_l4_l7_device.test_imported_device.id
+    role: target
+  - class_name: vnsLDevVip
+    config_overrides:
+      active: "no"
+      context_aware: single-Context
+      device_type: PHYSICAL
+      function_type: GoTo
+      is_copy: "no"
+      mode: legacy-Mode
+      name: name_2
+      promiscuous_mode: "no"
+      relation_vns_rs_al_dev_to_phys_dom_p: uni/phys-name_1
+      service_type: OTHERS
+      tenant_dn: aci_tenant.test_tenant_imported_device.id
+    dependencies:
+    - class_name: fvTenant
+      reference: aci_tenant.test_tenant_imported_device.id
+    - class_name: physDomP
+      reference: aci_physical_domain.test.id
+    reference: aci_l4_l7_device.test_2.id
     role: target

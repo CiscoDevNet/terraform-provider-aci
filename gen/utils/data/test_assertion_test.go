@@ -9,6 +9,41 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestTestValueAssertionStrategy(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+	versions := []string{"3.0(1k)-"}
+	testCases := []test.TestCase{
+		{Name: "test_literal_value", Input: TestValueEntry{AssertValue: "0"}, Expected: testAssertionAttributeValue},
+		{Name: "test_literal_presence", Input: TestValueEntry{AssertValue: "0", AssertStrategy: AssertPresenceOnly}, Expected: testAssertionAttributeSet},
+		{Name: "test_reference_value", Input: TestValueEntry{AssertValue: "aci_tenant.test_1.id", ValueType: ReferenceValue}, Expected: testAssertionAttributePair},
+		{Name: "test_reference_presence", Input: TestValueEntry{AssertValue: "aci_tenant.test_1.id", ValueType: ReferenceValue, AssertStrategy: AssertPresenceOnly}, Expected: testAssertionAttributeSet},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			actual := testAttributeAssertion("site_id", testCase.Input.(TestValueEntry), versions)
+			assert.Equal(t, testCase.Expected.(testAssertionType), actual.assertionType)
+			assert.Equal(t, versions, actual.Versions)
+		})
+	}
+}
+
+func TestNestedPresenceAssertionScope(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+	class, store := resourceScenarioFixture()
+	child := &class.TestChildren[0].Instances[0]
+	scenario := child.Properties["value"]
+	scenario.Entries[0].AssertStrategy = AssertPresenceOnly
+	child.Properties["value"] = scenario
+	assertions := class.resourceTestAssertions(store)
+	index := slices.IndexFunc(assertions, func(a TestAssertion) bool { return a.IsAttributeSet() && a.AttributePath == "annotations.*.value" })
+	if assert.NotEqual(t, -1, index) {
+		assert.Equal(t, []TestAssertionParent{{AttributePath: "annotations.*", Values: []TestAssertionValue{{AttributePath: "key", ExpectedValue: "key_1"}}}}, assertions[index].Parents)
+	}
+}
+
 func TestDependencyVersionsCoveredByAssertion(t *testing.T) {
 	t.Parallel()
 	test.InitializeTest(t)
@@ -470,5 +505,144 @@ func TestPrimitiveSetAssertionParents(t *testing.T) {
 				assert.Equal(t, "id", memberAssertions[0].PairAttribute)
 			}
 		})
+	}
+}
+
+func TestResourceTestScenarioAssertStrategies(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+	class, store := resourceScenarioFixture()
+	property := class.Properties["descr"]
+	property.TestValues.Default.Entries[0].AssertStrategy = AssertPresenceOnly
+	scenarios, err := class.ResourceTestScenarios(store)
+	if !assert.NoError(t, err) {
+		return
+	}
+	testCases := []test.TestCase{
+		{Name: "Minimum", Expected: testAssertionAttributeSet},
+		{Name: "Full", Expected: testAssertionAttributeValue},
+		{Name: "Update", Expected: testAssertionAttributeValue},
+		{Name: "OmitOptional", Expected: testAssertionAttributeValue},
+		{Name: "Reset", Expected: testAssertionAttributeSet},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			index := slices.IndexFunc(scenarios, func(s ResourceTestScenario) bool { return s.Name == testCase.Name })
+			if !assert.NotEqual(t, -1, index) {
+				return
+			}
+			assertions := scenarios[index].Assertions
+			index = slices.IndexFunc(assertions, func(a TestAssertion) bool { return a.AttributePath == "description" })
+			if assert.NotEqual(t, -1, index) {
+				assert.Equal(t, testCase.Expected.(testAssertionType), assertions[index].assertionType)
+			}
+		})
+	}
+}
+
+func TestResourceTestSensitiveAssertions(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+	testCases := []test.TestCase{
+		{Name: "test_optional_secret", Input: false, Expected: TestAssertion{assertionType: testAssertionAttributeAbsent, AttributePath: "password"}},
+		{Name: "test_computed_secret", Input: true, Expected: TestAssertion{assertionType: testAssertionAttributeValue, AttributePath: "password", ExpectedValue: "password_2"}},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			class, store := resourceScenarioFixture()
+			class.PropertiesAll = append(class.PropertiesAll, "password")
+			class.Properties["password"] = dataSourceTestProperty("password", "password", dataSourceTestValues("password_1", "password_2", "", false))
+			class.Properties["password"].Sensitive = true
+			class.Properties["password"].Computed = testCase.Input.(bool)
+			scenarios, err := class.ResourceTestScenarios(store)
+			if !assert.NoError(t, err) {
+				return
+			}
+			checks := []test.TestCase{
+				{Name: "Minimum", Expected: TestAssertion{assertionType: testAssertionAttributeAbsent, AttributePath: "password"}},
+				{Name: "Full", Expected: TestAssertion{assertionType: testAssertionAttributeValue, AttributePath: "password", ExpectedValue: "password_1"}},
+				{Name: "Update", Expected: TestAssertion{assertionType: testAssertionAttributeValue, AttributePath: "password", ExpectedValue: "password_2"}},
+				{Name: "OmitOptional", Expected: testCase.Expected},
+			}
+			for _, check := range checks {
+				t.Run(check.Name, func(t *testing.T) {
+					t.Parallel()
+					index := slices.IndexFunc(scenarios, func(scenario ResourceTestScenario) bool { return scenario.Name == check.Name })
+					if assert.NotEqual(t, -1, index) {
+						assert.Contains(t, scenarios[index].Assertions, check.Expected.(TestAssertion))
+						if check.Name == "Minimum" || check.Name == "OmitOptional" {
+							assert.NotRegexp(t, `(?m)^\s*password\s*=`, scenarios[index].Configuration)
+						}
+					}
+				})
+			}
+			assert.Contains(t, class.ResourceTestImportIgnore(store), "password")
+		})
+	}
+}
+
+func TestResourceTestRuntimeExpectations(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+	tenant := dataSourceTestClass("fvTenant", "tenant", ResourceArtifact)
+	tenant.IdentifiedBy = []string{"name"}
+	tenant.RnFormat = "tn-{name}"
+	tenant.MetaFileContent = map[string]any{"dnFormats": []any{"uni/tn-{name}"}}
+	tenant.PropertiesAll = []string{"name"}
+	tenant.Properties = map[string]*Property{"name": dataSourceTestProperty("name", "name", dataSourceTestValues("tenant_1", "tenant_2", "tenant_1", true))}
+	root := dataSourceTestClass("exampleRoot", "example_root", ResourceArtifact)
+	root.PropertiesAll = []string{"target"}
+	root.Properties = map[string]*Property{"target": dataSourceTestProperty("target", "target_dn", dataSourceTestValues("uni/tn-tenant_1/ap-example", "uni/tn-tenant_1/ap-other", "", false))}
+	root.Properties["target"].Reference = &PropertyReference{Classes: []*ClassName{tenant.Name}}
+	root.TestDependencies = []*TestDependency{{Class: tenant.Name, Reference: "aci_tenant.test_1.id", ReferenceType: ResourceReference, Role: Target, TestInstance: 1}}
+	store := &DataStore{Classes: map[string]Class{"fvTenant": tenant, "exampleRoot": root}}
+	target := dataSourceTestClass("exampleTarget", "target", ResourceArtifact)
+	target.IdentifiedBy = []string{"name"}
+	target.RnFormat = "target-{name}"
+	target.MetaFileContent = map[string]any{"dnFormats": []any{"uni/target-{name}"}}
+	target.PropertiesAll = []string{"name"}
+	target.Properties = map[string]*Property{"name": dataSourceTestProperty("name", "name", dataSourceTestValues("target_1", "target_2", "target_1", true))}
+	store.Classes["exampleTarget"] = target
+	nested := root.resourceTestCopy()
+	nested.Properties["target"].Reference = &PropertyReference{Classes: []*ClassName{target.Name}}
+	nested.TestDependencies = []*TestDependency{{Class: target.Name, Reference: "aci_target.test_1.id", ReferenceType: ResourceReference, Role: Target, Dependencies: root.TestDependencies}}
+	testCases := []test.TestCase{
+		{Name: "test_prefixed_name", Input: tenant, Expected: TestAssertion{assertionType: testAssertionAttributeValue, AttributePath: "name", ExpectedValue: "tenant_1", ExpectedExpression: `fmt.Sprintf("%s-%s", testPrefix, "tenant_1")`}},
+		{Name: "test_formatted_dependency_dn", Input: root, Expected: TestAssertion{assertionType: testAssertionAttributePair, AttributePath: "target_dn", ExpectedValue: "uni/tn-tenant_1/ap-example", PairAddress: "aci_tenant.test_1.0", PairAttribute: "name", PairFormat: "uni/tn-%s/ap-example"}},
+		{Name: "test_formatted_prerequisite_dn", Input: nested, Expected: TestAssertion{assertionType: testAssertionAttributePair, AttributePath: "target_dn", ExpectedValue: "uni/tn-tenant_1/ap-example", PairAddress: "aci_tenant.test_1.0", PairAttribute: "name", PairFormat: "uni/tn-%s/ap-example"}},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			class := testCase.Input.(Class)
+			assertions := class.resourceTestAssertions(store)
+			assert.Contains(t, assertions, testCase.Expected.(TestAssertion))
+		})
+	}
+}
+
+func TestResourceTestSemanticStringAssertions(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+	class, store := resourceScenarioFixture()
+	property := class.Properties["descr"]
+	property.AttributeName = "arp_learning"
+	property.ValueType = VMMArpLearning
+	property.TestValues = dataSourceTestValues("enabled", "disabled", "disabled", false)
+	scenarios, err := class.ResourceTestScenarios(store)
+	if !assert.NoError(t, err) {
+		return
+	}
+	minimum := scenarios[0]
+	assert.NotContains(t, minimum.Configuration, "arp_learning")
+	assert.True(t, slices.ContainsFunc(minimum.Assertions, func(a TestAssertion) bool {
+		return a.AttributePath == "arp_learning" && a.ExpectedValue == "disabled" && a.SemanticStringType == "customtypes.VMMArpLearningType{}"
+	}))
+	for _, assertion := range minimum.Assertions {
+		if assertion.AttributePath != "arp_learning" {
+			assert.Empty(t, assertion.SemanticStringType)
+		}
 	}
 }

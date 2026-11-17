@@ -14,7 +14,7 @@ properties:
       default:
       - config_value: 192.0.2.1
       update:
-      - config_value: 2001:0db8::01
+      - config_value: 2001:db8::1
   scopeDn:
     attribute_name: scope
     documentation:
