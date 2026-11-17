@@ -403,6 +403,17 @@ func (m *PkiTPRootModel) SetFromResponse(
 	return true, diagnostics
 }
 
+func (m *PkiTPRootModel) BuildPayloadDN() string {
+	// Wrapped objects are posted to their container; their ID remains the full object DN.
+	for _, pattern := range pkiTPParentDNVariant1Patterns {
+		if pattern.MatchString(m.ParentDN.ValueString()) {
+			return fmt.Sprintf("%s/certstore", m.ParentDN.ValueString())
+		}
+	}
+
+	return m.BuildDN()
+}
+
 func (m *PkiTPRootModel) buildPayloadEnvelope(payloadObject map[string]any, create bool) map[string]any {
 	directEnvelope := map[string]any{"pkiTP": payloadObject}
 	if !create {

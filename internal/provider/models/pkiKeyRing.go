@@ -495,6 +495,17 @@ func (m *PkiKeyRingRootModel) SetFromResponse(
 	return true, diagnostics
 }
 
+func (m *PkiKeyRingRootModel) BuildPayloadDN() string {
+	// Wrapped objects are posted to their container; their ID remains the full object DN.
+	for _, pattern := range pkiKeyRingParentDNVariant1Patterns {
+		if pattern.MatchString(m.ParentDN.ValueString()) {
+			return fmt.Sprintf("%s/certstore", m.ParentDN.ValueString())
+		}
+	}
+
+	return m.BuildDN()
+}
+
 func (m *PkiKeyRingRootModel) buildPayloadEnvelope(payloadObject map[string]any, create bool) map[string]any {
 	directEnvelope := map[string]any{"pkiKeyRing": payloadObject}
 	if !create {

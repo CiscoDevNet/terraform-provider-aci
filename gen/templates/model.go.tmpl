@@ -557,6 +557,25 @@ func (m *{{ .Class.Name.Capitalized }}RootModel) SetFromResponse(
 
 {{ if .Class.HasResourceArtifact }}
 {{ if .Class.ParentDnVariants -}}
+func (m *{{ .Class.Name.Capitalized }}RootModel) BuildPayloadDN() string {
+	// Wrapped objects are posted to their container; their ID remains the full object DN.
+	{{- range $index, $variant := .Class.ParentDnVariants }}
+		{{- if and $index $variant.WrapperClass }}
+	for _, pattern := range {{ $.Class.Name.String }}ParentDNVariant{{ $index }}Patterns {
+		if pattern.MatchString(m.ParentDN.ValueString()) {
+			{{- if $variant.RnPrepend }}
+			return fmt.Sprintf({{ printf "%q" (printf "%%s/%s" $variant.RnPrepend) }}, m.ParentDN.ValueString())
+			{{- else }}
+			return m.ParentDN.ValueString()
+			{{- end }}
+		}
+	}
+		{{- end }}
+	{{- end }}
+
+	return m.BuildDN()
+}
+
 func (m *{{ .Class.Name.Capitalized }}RootModel) buildPayloadEnvelope(payloadObject map[string]any, create bool) map[string]any {
 	directEnvelope := map[string]any{ {{- printf "%q" .Class.Name.String -}}: payloadObject}
 	if !create {

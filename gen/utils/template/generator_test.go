@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"io"
+	"net/http"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -11,19 +13,24 @@ import (
 	"strings"
 	"testing"
 	texttemplate "text/template"
+	"time"
 
+	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource"
 	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
+	"github.com/hashicorp/terraform-plugin-go/tftypes"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils/data"
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils/test"
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/customtypes"
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider"
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models"
 )
 
@@ -64,6 +71,7 @@ func TestGeneratorLoadsActiveTemplates(t *testing.T) {
 	generator := loadActiveGenerator(t, &data.DataStore{})
 	for _, templateName := range []string{
 		modelTemplateName,
+		resourceTemplateName,
 		datasourceTemplateName,
 		datasourceTestTemplateName,
 		indexTemplateName,
@@ -186,7 +194,8 @@ func TestBuildModelRenderJobs(t *testing.T) {
 	}
 }
 
-func TestBuildDatasourceRenderJobs(t *testing.T) {
+func TestBuildClassImplementationRenderJobs(t *testing.T) {
+	test.InitializeTest(t)
 	childClass := testClass(t, "fvRsTenantMonPol")
 	childClass.ResourceName = "relation_to_monitoring_policy"
 	resourceClass := testClass(t, "fvBD", data.ResourceArtifact)
@@ -203,23 +212,34 @@ func TestBuildDatasourceRenderJobs(t *testing.T) {
 	}}
 	generator := &Generator{dataStore: dataStore}
 
-	jobs := generator.buildDatasourceRenderJobs()
-	expectedPaths := []string{
-		"internal/provider/data_source_aci_vrf.go",
-		"internal/provider/data_source_aci_tenant.go",
+	testCases := []test.TestCase{
+		{
+			Name:  "test_resource_artifacts",
+			Input: generator.buildResourceRenderJobs,
+			Expected: map[string][]string{resourceTemplateName: {
+				"internal/provider/resource_aci_bridge_domain.go",
+				"internal/provider/resource_aci_tenant.go",
+			}},
+		},
+		{
+			Name:  "test_datasource_artifacts",
+			Input: generator.buildDatasourceRenderJobs,
+			Expected: map[string][]string{datasourceTemplateName: {
+				"internal/provider/data_source_aci_vrf.go",
+				"internal/provider/data_source_aci_tenant.go",
+			}},
+		},
 	}
-	actualPaths := make([]string, 0, len(jobs))
-	for _, job := range jobs {
-		actualPaths = append(actualPaths, job.OutputPath)
-		if job.TemplateName != datasourceTemplateName {
-			t.Fatalf("unexpected template name %q", job.TemplateName)
-		}
-		if job.Context.Class == nil || job.Context.DataStore != dataStore {
-			t.Fatalf("incomplete template context: %#v", job.Context)
-		}
-	}
-	if !reflect.DeepEqual(actualPaths, expectedPaths) {
-		t.Fatalf("datasource output paths %#v, expected %#v", actualPaths, expectedPaths)
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			actual := make(map[string][]string)
+			for _, job := range testCase.Input.(func() []renderJob)() {
+				actual[job.TemplateName] = append(actual[job.TemplateName], job.OutputPath)
+				assert.NotNil(t, job.Context.Class)
+				assert.Same(t, dataStore, job.Context.DataStore)
+			}
+			assert.Equal(t, testCase.Expected, actual)
+		})
 	}
 }
 
@@ -543,25 +563,22 @@ func TestBuildRenderJobsIncludesAnnotationOnlyAfterRefresh(t *testing.T) {
 	generator := &Generator{dataStore: dataStore, providerExample: `provider "aci" {}`}
 
 	jobs := generator.buildRenderJobs()
-	if len(jobs) != 10 ||
-		jobs[0].TemplateName != modelTemplateName ||
-		jobs[1].TemplateName != datasourceTemplateName ||
-		jobs[2].TemplateName != datasourceTestTemplateName ||
-		jobs[3].TemplateName != indexTemplateName ||
-		jobs[4].TemplateName != providerExampleTemplateName ||
-		jobs[5].TemplateName != providerExampleTemplateName ||
-		jobs[6].TemplateName != resourceExampleTemplateName ||
-		jobs[7].TemplateName != datasourceExampleTemplateName ||
-		jobs[8].TemplateName != resourceDocumentationTemplateName ||
-		jobs[9].TemplateName != datasourceDocumentationTemplateName {
-		t.Fatalf("unexpected ordinary render jobs: %#v", jobs)
+	expected := []string{modelTemplateName, resourceTemplateName, datasourceTemplateName,
+		datasourceTestTemplateName, indexTemplateName, providerExampleTemplateName, providerExampleTemplateName,
+		resourceExampleTemplateName, datasourceExampleTemplateName, resourceDocumentationTemplateName, datasourceDocumentationTemplateName}
+	actual := make([]string, 0, len(jobs))
+	for _, job := range jobs {
+		actual = append(actual, job.TemplateName)
 	}
+	assert.Equal(t, expected, actual)
 
 	dataStore.UnsupportedAnnotationClasses = []string{}
 	jobs = generator.buildRenderJobs()
-	if len(jobs) != 11 || jobs[10].TemplateName != annotationUnsupportedTemplateName || !jobs[10].RefreshOnly {
-		t.Fatalf("unexpected refresh render jobs: %#v", jobs)
+	if assert.Len(t, jobs, len(expected)+1) {
+		assert.Equal(t, annotationUnsupportedTemplateName, jobs[len(expected)].TemplateName)
+		assert.True(t, jobs[len(expected)].RefreshOnly)
 	}
+
 }
 
 func TestFormatTemplateRenderSummaries(t *testing.T) {
@@ -3102,4 +3119,145 @@ func testClass(t *testing.T, className string, artifacts ...data.ArtifactEnum) d
 		t.Fatalf("create supported versions for class %q: %v", className, err)
 	}
 	return data.Class{Name: name, Artifacts: artifacts, SupportedVersions: versions}
+}
+
+func TestGeneratedRootModelBuildPayloadDN(t *testing.T) {
+	test.InitializeTest(t)
+	t.Parallel()
+
+	testCases := []test.TestCase{
+		{
+			Name:     "test_default_system_parent",
+			Input:    types.StringNull(),
+			Expected: []string{"uni/userext/pkiext/keyring-example", "uni/userext/pkiext/tp-example"},
+		},
+		{
+			Name:     "test_explicit_system_parent",
+			Input:    types.StringValue("uni/userext/pkiext"),
+			Expected: []string{"uni/userext/pkiext/keyring-example", "uni/userext/pkiext/tp-example"},
+		},
+		{
+			Name:     "test_wrapped_tenant_parent",
+			Input:    types.StringValue("uni/tn-example"),
+			Expected: []string{"uni/tn-example/certstore", "uni/tn-example/certstore"},
+		},
+		{
+			Name:     "test_unknown_parent_uses_system_default",
+			Input:    types.StringUnknown(),
+			Expected: []string{"uni/userext/pkiext/keyring-example", "uni/userext/pkiext/tp-example"},
+		},
+		{
+			Name:     "test_unmatched_parent_uses_direct_placement",
+			Input:    types.StringValue("uni/infra"),
+			Expected: []string{"uni/infra/keyring-example", "uni/infra/tp-example"},
+		},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+
+			keyRing := models.NewPkiKeyRingRootModelNull()
+			keyRing.Name = types.StringValue("example")
+			keyRing.ParentDN = testCase.Input.(types.String)
+			keyRing.SetIDFromDN(keyRing.BuildDN())
+			authority := models.NewPkiTPRootModelNull()
+			authority.Name = types.StringValue("example")
+			authority.ParentDN = testCase.Input.(types.String)
+			authority.SetIDFromDN(authority.BuildDN())
+
+			// Selecting the POST destination must preserve each object's full ID.
+			identifiers := []types.String{keyRing.ID, authority.ID}
+			actual := []string{keyRing.BuildPayloadDN(), authority.BuildPayloadDN()}
+			assert.Equal(t, testCase.Expected, actual)
+			assert.Equal(t, identifiers, []types.String{keyRing.ID, authority.ID})
+		})
+	}
+}
+
+func TestGeneratedResourceCreatePreservesIDOnReadbackFailure(t *testing.T) {
+	test.InitializeTest(t)
+	t.Parallel()
+
+	testCases := []test.TestCase{
+		{
+			Name: "test_failed_read_request",
+			Input: generatedResourceReadbackResponse{
+				StatusCode: http.StatusBadRequest,
+				Body:       `{"imdata":[{"error":{"attributes":{"code":"999","text":"read-back failed"}}}]}`,
+			},
+		},
+		{
+			Name: "test_malformed_read_response",
+			Input: generatedResourceReadbackResponse{
+				StatusCode: http.StatusOK,
+				Body:       `{"imdata":{}}`,
+			},
+		},
+		{
+			Name: "test_object_not_found_after_creation",
+			Input: generatedResourceReadbackResponse{
+				StatusCode: http.StatusOK,
+				Body:       `{"imdata":[],"totalCount":"0"}`,
+			},
+		},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+
+			ctx := context.Background()
+			readback := testCase.Input.(generatedResourceReadbackResponse)
+			writes := 0
+			transport := test.RoundTripFunc(func(request *http.Request) (*http.Response, error) {
+				assert.Equal(t, "/api/mo/uni/tn-example.json", request.URL.Path)
+				statusCode := http.StatusOK
+				body := `{"imdata":[],"totalCount":"0"}`
+				if request.Method == http.MethodPost {
+					writes++
+				} else if writes > 0 {
+					statusCode = readback.StatusCode
+					body = readback.Body
+				}
+				return &http.Response{
+					StatusCode: statusCode,
+					Header:     make(http.Header),
+					Body:       io.NopCloser(strings.NewReader(body)),
+					Request:    request,
+				}, nil
+			})
+			aciClient := client.NewClient("https://apic.invalid", "test", client.Password("test"), client.HttpClient(&http.Client{Transport: transport}), client.SkipLoggingPayload(true))
+			aciClient.AuthToken = &client.Auth{Token: "test-token", Expiry: time.Now().Add(time.Hour)}
+			adapter := provider.NewFvTenantResource()
+			configure := resource.ConfigureResponse{}
+			adapter.(resource.ResourceWithConfigure).Configure(ctx, resource.ConfigureRequest{ProviderData: aciClient}, &configure)
+			assert.False(t, configure.Diagnostics.HasError(), "%v", configure.Diagnostics)
+
+			model := models.NewFvTenantRootModelNull()
+			model.Name = types.StringValue("example")
+			model.ID = types.StringUnknown()
+			schema := models.FvTenantResourceSchema("")
+			plan := tfsdk.Plan{Schema: schema}
+			if diagnostics := plan.Set(ctx, &model); diagnostics.HasError() {
+				t.Fatalf("construct resource plan: %v", diagnostics)
+			}
+			response := resource.CreateResponse{State: tfsdk.State{
+				Schema: schema,
+				Raw:    tftypes.NewValue(schema.Type().TerraformType(ctx), nil),
+			}}
+			adapter.Create(ctx, resource.CreateRequest{Plan: plan}, &response)
+
+			assert.Equal(t, 1, writes)
+			assert.True(t, response.Diagnostics.HasError())
+			assert.True(t, response.State.Raw.IsFullyKnown())
+			if diagnostics := response.State.Get(ctx, &model); diagnostics.HasError() {
+				t.Fatalf("decode retained resource state: %v", diagnostics)
+			}
+			assert.Equal(t, "uni/tn-example", model.ID.ValueString())
+		})
+	}
+}
+
+type generatedResourceReadbackResponse struct {
+	StatusCode int
+	Body       string
 }

@@ -6,31 +6,20 @@ package provider
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
-	"github.com/ciscoecosystem/aci-go-client/v2/container"
-	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
-	"github.com/hashicorp/terraform-plugin-framework/attr"
-	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectplanmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/setplanmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
-	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
+
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &FvRsDomAttResource{}
+var _ resource.ResourceWithConfigure = &FvRsDomAttResource{}
+var _ resource.ResourceWithModifyPlan = &FvRsDomAttResource{}
 var _ resource.ResourceWithImportState = &FvRsDomAttResource{}
 
 func NewFvRsDomAttResource() resource.Resource {
@@ -46,739 +35,15 @@ type FvRsDomAttResource struct {
 	client *client.Client
 }
 
-// FvRsDomAttResourceModel describes the resource data model.
-type FvRsDomAttResourceModel struct {
-	Id                  types.String `tfsdk:"id"`
-	ParentDn            types.String `tfsdk:"parent_dn"`
-	Annotation          types.String `tfsdk:"annotation"`
-	BindingType         types.String `tfsdk:"binding_type"`
-	ClassPref           types.String `tfsdk:"class_preference"`
-	CustomEpgName       types.String `tfsdk:"custom_epg_name"`
-	Delimiter           types.String `tfsdk:"delimiter"`
-	Encap               types.String `tfsdk:"encapsulation"`
-	EncapMode           types.String `tfsdk:"encapsulation_mode"`
-	EpgCos              types.String `tfsdk:"epg_cos"`
-	EpgCosPref          types.String `tfsdk:"epg_cos_pref"`
-	InstrImedcy         types.String `tfsdk:"deployment_immediacy"`
-	IpamDhcpOverride    types.String `tfsdk:"ipam_dhcp_override"`
-	IpamEnabled         types.String `tfsdk:"ipam_enabled"`
-	IpamGateway         types.String `tfsdk:"ipam_gateway"`
-	LagPolicyName       types.String `tfsdk:"lag_policy_name"`
-	NetflowDir          types.String `tfsdk:"netflow_direction"`
-	NetflowPref         types.String `tfsdk:"enable_netflow"`
-	NumPorts            types.String `tfsdk:"number_of_ports"`
-	PortAllocation      types.String `tfsdk:"port_allocation"`
-	PrimaryEncap        types.String `tfsdk:"primary_encapsulation"`
-	PrimaryEncapInner   types.String `tfsdk:"primary_encapsulation_inner"`
-	ResImedcy           types.String `tfsdk:"resolution_immediacy"`
-	SecondaryEncapInner types.String `tfsdk:"secondary_encapsulation_inner"`
-	SwitchingMode       types.String `tfsdk:"switching_mode"`
-	TDn                 types.String `tfsdk:"target_dn"`
-	Untagged            types.String `tfsdk:"untagged"`
-	FvUplinkOrderCont   types.Object `tfsdk:"uplink_order_container"`
-	TagAnnotation       types.Set    `tfsdk:"annotations"`
-	TagTag              types.Set    `tfsdk:"tags"`
-}
-
-func getEmptyFvRsDomAttResourceModel() *FvRsDomAttResourceModel {
-	return &FvRsDomAttResourceModel{
-		Id:                  basetypes.NewStringNull(),
-		ParentDn:            basetypes.NewStringNull(),
-		Annotation:          basetypes.NewStringNull(),
-		BindingType:         basetypes.NewStringNull(),
-		ClassPref:           basetypes.NewStringNull(),
-		CustomEpgName:       basetypes.NewStringNull(),
-		Delimiter:           basetypes.NewStringNull(),
-		Encap:               basetypes.NewStringNull(),
-		EncapMode:           basetypes.NewStringNull(),
-		EpgCos:              basetypes.NewStringNull(),
-		EpgCosPref:          basetypes.NewStringNull(),
-		InstrImedcy:         basetypes.NewStringNull(),
-		IpamDhcpOverride:    basetypes.NewStringNull(),
-		IpamEnabled:         basetypes.NewStringNull(),
-		IpamGateway:         basetypes.NewStringNull(),
-		LagPolicyName:       basetypes.NewStringNull(),
-		NetflowDir:          basetypes.NewStringNull(),
-		NetflowPref:         basetypes.NewStringNull(),
-		NumPorts:            basetypes.NewStringNull(),
-		PortAllocation:      basetypes.NewStringNull(),
-		PrimaryEncap:        basetypes.NewStringNull(),
-		PrimaryEncapInner:   basetypes.NewStringNull(),
-		ResImedcy:           basetypes.NewStringNull(),
-		SecondaryEncapInner: basetypes.NewStringNull(),
-		SwitchingMode:       basetypes.NewStringNull(),
-		TDn:                 basetypes.NewStringNull(),
-		Untagged:            basetypes.NewStringNull(),
-		FvUplinkOrderCont: types.ObjectNull(map[string]attr.Type{
-			"active_uplinks":  types.StringType,
-			"annotation":      types.StringType,
-			"description":     types.StringType,
-			"name":            types.StringType,
-			"name_alias":      types.StringType,
-			"owner_key":       types.StringType,
-			"owner_tag":       types.StringType,
-			"standby_uplinks": types.StringType,
-			"annotations":     types.SetType{ElemType: TagAnnotationFvUplinkOrderContFvRsDomAttType},
-			"tags":            types.SetType{ElemType: TagTagFvUplinkOrderContFvRsDomAttType},
-		}),
-		TagAnnotation: types.SetNull(types.ObjectType{
-			AttrTypes: map[string]attr.Type{
-				"key":   types.StringType,
-				"value": types.StringType,
-			},
-		}),
-		TagTag: types.SetNull(types.ObjectType{
-			AttrTypes: map[string]attr.Type{
-				"key":   types.StringType,
-				"value": types.StringType,
-			},
-		}),
-	}
-}
-
-// FvUplinkOrderContFvRsDomAttResourceModel describes the resource data model for the children without relation ships.
-type FvUplinkOrderContFvRsDomAttResourceModel struct {
-	Active        types.String `tfsdk:"active_uplinks"`
-	Annotation    types.String `tfsdk:"annotation"`
-	Descr         types.String `tfsdk:"description"`
-	Name          types.String `tfsdk:"name"`
-	NameAlias     types.String `tfsdk:"name_alias"`
-	OwnerKey      types.String `tfsdk:"owner_key"`
-	OwnerTag      types.String `tfsdk:"owner_tag"`
-	Standby       types.String `tfsdk:"standby_uplinks"`
-	TagAnnotation types.Set    `tfsdk:"annotations"`
-	TagTag        types.Set    `tfsdk:"tags"`
-}
-
-func getEmptyFvUplinkOrderContFvRsDomAttResourceModel() FvUplinkOrderContFvRsDomAttResourceModel {
-	return FvUplinkOrderContFvRsDomAttResourceModel{
-		Active:     basetypes.NewStringNull(),
-		Annotation: basetypes.NewStringNull(),
-		Descr:      basetypes.NewStringNull(),
-		Name:       basetypes.NewStringNull(),
-		NameAlias:  basetypes.NewStringNull(),
-		OwnerKey:   basetypes.NewStringNull(),
-		OwnerTag:   basetypes.NewStringNull(),
-		Standby:    basetypes.NewStringNull(),
-		TagAnnotation: types.SetNull(types.ObjectType{
-			AttrTypes: map[string]attr.Type{
-				"key":   types.StringType,
-				"value": types.StringType,
-			},
-		}),
-		TagTag: types.SetNull(types.ObjectType{
-			AttrTypes: map[string]attr.Type{
-				"key":   types.StringType,
-				"value": types.StringType,
-			},
-		}),
-	}
-}
-
-var FvUplinkOrderContFvRsDomAttType = map[string]attr.Type{
-	"active_uplinks":  types.StringType,
-	"annotation":      types.StringType,
-	"description":     types.StringType,
-	"name":            types.StringType,
-	"name_alias":      types.StringType,
-	"owner_key":       types.StringType,
-	"owner_tag":       types.StringType,
-	"standby_uplinks": types.StringType,
-	"annotations":     types.SetType{ElemType: TagAnnotationFvUplinkOrderContFvRsDomAttType},
-	"tags":            types.SetType{ElemType: TagTagFvUplinkOrderContFvRsDomAttType},
-}
-
-// TagAnnotationFvUplinkOrderContFvRsDomAttResourceModel describes the resource data model for the children without relation ships.
-type TagAnnotationFvUplinkOrderContFvRsDomAttResourceModel struct {
-	Key   types.String `tfsdk:"key"`
-	Value types.String `tfsdk:"value"`
-}
-
-func getEmptyTagAnnotationFvUplinkOrderContFvRsDomAttResourceModel() TagAnnotationFvUplinkOrderContFvRsDomAttResourceModel {
-	return TagAnnotationFvUplinkOrderContFvRsDomAttResourceModel{
-		Key:   basetypes.NewStringNull(),
-		Value: basetypes.NewStringNull(),
-	}
-}
-
-var TagAnnotationFvUplinkOrderContFvRsDomAttType = types.ObjectType{
-	AttrTypes: map[string]attr.Type{
-		"key":   types.StringType,
-		"value": types.StringType,
-	},
-}
-
-// TagTagFvUplinkOrderContFvRsDomAttResourceModel describes the resource data model for the children without relation ships.
-type TagTagFvUplinkOrderContFvRsDomAttResourceModel struct {
-	Key   types.String `tfsdk:"key"`
-	Value types.String `tfsdk:"value"`
-}
-
-func getEmptyTagTagFvUplinkOrderContFvRsDomAttResourceModel() TagTagFvUplinkOrderContFvRsDomAttResourceModel {
-	return TagTagFvUplinkOrderContFvRsDomAttResourceModel{
-		Key:   basetypes.NewStringNull(),
-		Value: basetypes.NewStringNull(),
-	}
-}
-
-var TagTagFvUplinkOrderContFvRsDomAttType = types.ObjectType{
-	AttrTypes: map[string]attr.Type{
-		"key":   types.StringType,
-		"value": types.StringType,
-	},
-}
-
-// TagAnnotationFvRsDomAttResourceModel describes the resource data model for the children without relation ships.
-type TagAnnotationFvRsDomAttResourceModel struct {
-	Key   types.String `tfsdk:"key"`
-	Value types.String `tfsdk:"value"`
-}
-
-func getEmptyTagAnnotationFvRsDomAttResourceModel() TagAnnotationFvRsDomAttResourceModel {
-	return TagAnnotationFvRsDomAttResourceModel{
-		Key:   basetypes.NewStringNull(),
-		Value: basetypes.NewStringNull(),
-	}
-}
-
-var TagAnnotationFvRsDomAttType = types.ObjectType{
-	AttrTypes: map[string]attr.Type{
-		"key":   types.StringType,
-		"value": types.StringType,
-	},
-}
-
-// TagTagFvRsDomAttResourceModel describes the resource data model for the children without relation ships.
-type TagTagFvRsDomAttResourceModel struct {
-	Key   types.String `tfsdk:"key"`
-	Value types.String `tfsdk:"value"`
-}
-
-func getEmptyTagTagFvRsDomAttResourceModel() TagTagFvRsDomAttResourceModel {
-	return TagTagFvRsDomAttResourceModel{
-		Key:   basetypes.NewStringNull(),
-		Value: basetypes.NewStringNull(),
-	}
-}
-
-var TagTagFvRsDomAttType = types.ObjectType{
-	AttrTypes: map[string]attr.Type{
-		"key":   types.StringType,
-		"value": types.StringType,
-	},
-}
-
-type FvRsDomAttIdentifier struct {
-	TDn types.String
-}
-
-func (r *FvRsDomAttResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
-	if !req.Plan.Raw.IsNull() {
-		var planData, stateData, configData *FvRsDomAttResourceModel
-		resp.Diagnostics.Append(req.Plan.Get(ctx, &planData)...)
-		resp.Diagnostics.Append(req.State.Get(ctx, &stateData)...)
-		resp.Diagnostics.Append(req.Config.Get(ctx, &configData)...)
-
-		if resp.Diagnostics.HasError() {
-			return
-		}
-
-		if (planData.Id.IsUnknown() || planData.Id.IsNull()) && !planData.ParentDn.IsUnknown() && !planData.TDn.IsUnknown() {
-			setFvRsDomAttId(ctx, planData)
-		}
-
-		if stateData == nil && !globalAllowExistingOnCreate && !planData.Id.IsUnknown() && !planData.Id.IsNull() {
-			CheckDn(ctx, &resp.Diagnostics, r.client, "fvRsDomAtt", planData.Id.ValueString())
-			if resp.Diagnostics.HasError() {
-				return
-			}
-		}
-
-		if !configData.FvUplinkOrderCont.IsNull() && stateData != nil {
-			if IsEmptySingleNestedAttribute(configData.FvUplinkOrderCont.Attributes()) {
-				FvUplinkOrderContObject, _ := types.ObjectValueFrom(ctx, FvUplinkOrderContFvRsDomAttType, getEmptyFvUplinkOrderContFvRsDomAttResourceModel())
-				planData.FvUplinkOrderCont = FvUplinkOrderContObject
-			}
-		}
-
-		resp.Diagnostics.Append(resp.Plan.Set(ctx, &planData)...)
-	}
-}
-
 func (r *FvRsDomAttResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	tflog.Debug(ctx, "Start metadata of resource: aci_relation_to_domain")
 	resp.TypeName = req.ProviderTypeName + "_relation_to_domain"
 	tflog.Debug(ctx, "End metadata of resource: aci_relation_to_domain")
 }
 
-func (r *FvRsDomAttResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *FvRsDomAttResource) Schema(ctx context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	tflog.Debug(ctx, "Start schema of resource: aci_relation_to_domain")
-	resp.Schema = schema.Schema{
-		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "The relation_to_domain resource for the 'fvRsDomAtt' class",
-
-		Attributes: map[string]schema.Attribute{
-			"id": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the Relation To Domain object.",
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-				},
-			},
-			"parent_dn": schema.StringAttribute{
-				Required:            true,
-				MarkdownDescription: "The distinguished name (DN) of the parent object.",
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					stringplanmodifier.RequiresReplace(),
-				},
-			},
-			"annotation": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				Default:             stringdefault.StaticString(globalAnnotation),
-				MarkdownDescription: `The annotation of the Relation To Domain object.`,
-			},
-			"binding_type": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				Validators: []validator.String{
-					stringvalidator.OneOf("dynamicBinding", "ephemeral", "none", "staticBinding"),
-				},
-				MarkdownDescription: `The binding type of the Relation To Domain object.`,
-			},
-			"class_preference": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				Validators: []validator.String{
-					stringvalidator.OneOf("encap", "useg"),
-				},
-				MarkdownDescription: `The class preference of the Relation To Domain object. Set 'useg' to allow microsegmentation.`,
-			},
-			"custom_epg_name": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				MarkdownDescription: `The display name of the user configured port-group.`,
-			},
-			"delimiter": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-					stringplanmodifier.RequiresReplace(),
-				},
-				MarkdownDescription: `The delimiter of the Relation To Domain object.`,
-			},
-			"encapsulation": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				MarkdownDescription: `The encapsulation of the Relation To Domain object. The encapsulation refers to the EPG VLAN when class preference is set to 'encap', or to the Secondary VLAN when class preference is set to 'useg'.`,
-			},
-			"encapsulation_mode": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				Validators: []validator.String{
-					stringvalidator.OneOf("auto", "vlan", "vxlan"),
-				},
-				MarkdownDescription: `The encapsulation mode of the Relation To Domain object.`,
-			},
-			"epg_cos": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				Validators: []validator.String{
-					stringvalidator.OneOf("Cos0", "Cos1", "Cos2", "Cos3", "Cos4", "Cos5", "Cos6", "Cos7"),
-				},
-				MarkdownDescription: `The class of service (CoS) of the Relation To Domain object.`,
-			},
-			"epg_cos_pref": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				Validators: []validator.String{
-					stringvalidator.OneOf("disabled", "enabled"),
-				},
-				MarkdownDescription: `The class of service (CoS) preference of the Relation To Domain object.`,
-			},
-			"deployment_immediacy": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				Validators: []validator.String{
-					stringvalidator.OneOf("immediate", "lazy"),
-				},
-				MarkdownDescription: `The deployment immediacy of the Relation To Domain object. Specifies when the policy is pushed into the hardware policy content-addressable memory (CAM).`,
-			},
-			"ipam_dhcp_override": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				MarkdownDescription: `The IP address management (IPAM) DHCP override of the Relation To Domain object. Only applicable for Nutanix domains.`,
-			},
-			"ipam_enabled": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				Validators: []validator.String{
-					stringvalidator.OneOf("no", "yes"),
-				},
-				MarkdownDescription: `The IP address management (IPAM) enabled status of the Relation To Domain object. Only applicable for Nutanix domains.`,
-			},
-			"ipam_gateway": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				MarkdownDescription: `The IP address management (IPAM) gateway of the Relation To Domain object. Only applicable for Nutanix domains.`,
-			},
-			"lag_policy_name": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				MarkdownDescription: `The link aggregation group (LAG) policy name of the Relation To Domain object.`,
-			},
-			"netflow_direction": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				Validators: []validator.String{
-					stringvalidator.OneOf("both", "egress", "ingress"),
-				},
-				MarkdownDescription: `The NetFlow monitoring direction of the Relation To Domain object.`,
-			},
-			"enable_netflow": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				Validators: []validator.String{
-					stringvalidator.OneOf("disabled", "enabled"),
-				},
-				MarkdownDescription: `The NetFlow enabled status for the Relation To Domain object.`,
-			},
-			"number_of_ports": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				MarkdownDescription: `The number of ports of the Relation To Domain object.`,
-			},
-			"port_allocation": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				Validators: []validator.String{
-					stringvalidator.OneOf("elastic", "fixed", "none"),
-				},
-				MarkdownDescription: `Port allocation for ports.`,
-			},
-			"primary_encapsulation": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				MarkdownDescription: `The primary encapsulation of the Relation To Domain object. This is used when the class preference is set to 'useg'.`,
-			},
-			"primary_encapsulation_inner": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				MarkdownDescription: `The primary inner encapsulation of the Relation To Domain object. This is used for the portgroup at the VMWare Distributed Virtual Switch (DVS). This VLAN is internal to the DVS and is used for communication between the other VMs and the AVE VM at a host. Traffic is not forwarded to the fabric over the VLAN. Only applicable for Cisco ACI Virtual Edge (AVE) domains.`,
-			},
-			"resolution_immediacy": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				Validators: []validator.String{
-					stringvalidator.OneOf("immediate", "lazy", "pre-provision"),
-				},
-				MarkdownDescription: `The resolution immediacy of the Relation To Domain object. Specifies if policies are resolved immmediately or when needed.`,
-			},
-			"secondary_encapsulation_inner": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				MarkdownDescription: `The secondary inner encapsulation of the Relation To Domain object. This is used for the portgroup at the VMWare Distributed Virtual Switch (DVS). This VLAN is internal to the DVS and is used for communication between the other VMs and the AVE VM at a host. Traffic is not forwarded to the fabric over the VLAN. Only applicable for Cisco ACI Virtual Edge (AVE) domains.`,
-			},
-			"switching_mode": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				Validators: []validator.String{
-					stringvalidator.OneOf("AVE", "native"),
-				},
-				MarkdownDescription: `The switching mode of the Relation To Domain object.`,
-			},
-			"target_dn": schema.StringAttribute{
-				Required: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-					stringplanmodifier.RequiresReplace(),
-				},
-				MarkdownDescription: `The distinguished name of the target Domain object.`,
-			},
-			"untagged": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				Validators: []validator.String{
-					stringvalidator.OneOf("no", "yes"),
-				},
-				MarkdownDescription: `The untagged status of the Relation To Domain object.`,
-			},
-			"uplink_order_container": schema.SingleNestedAttribute{
-				MarkdownDescription: `Uplink Failover Order Container Mo`,
-				Optional:            true,
-				Computed:            true,
-				PlanModifiers: []planmodifier.Object{
-					objectplanmodifier.UseNonNullStateForUnknown(),
-				},
-				Attributes: map[string]schema.Attribute{
-					"active_uplinks": schema.StringAttribute{
-						Optional: true,
-						Computed: true,
-						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseNonNullStateForUnknown(),
-						},
-						MarkdownDescription: `The active uplink IDs of the Uplink Order Container object. When defined the value cannot be set back to empty.`,
-					},
-					"annotation": schema.StringAttribute{
-						Optional: true,
-						Computed: true,
-						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseNonNullStateForUnknown(),
-						},
-						MarkdownDescription: `The annotation of the Uplink Order Container object.`,
-					},
-					"description": schema.StringAttribute{
-						Optional: true,
-						Computed: true,
-						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseNonNullStateForUnknown(),
-						},
-						MarkdownDescription: `The description of the Uplink Order Container object.`,
-					},
-					"name": schema.StringAttribute{
-						Optional: true,
-						Computed: true,
-						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseNonNullStateForUnknown(),
-						},
-						MarkdownDescription: `The name of the Uplink Order Container object.`,
-					},
-					"name_alias": schema.StringAttribute{
-						Optional: true,
-						Computed: true,
-						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseNonNullStateForUnknown(),
-						},
-						MarkdownDescription: `The name alias of the Uplink Order Container object.`,
-					},
-					"owner_key": schema.StringAttribute{
-						Optional: true,
-						Computed: true,
-						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseNonNullStateForUnknown(),
-						},
-						MarkdownDescription: `The key for enabling clients to own their data for entity correlation.`,
-					},
-					"owner_tag": schema.StringAttribute{
-						Optional: true,
-						Computed: true,
-						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseNonNullStateForUnknown(),
-						},
-						MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
-					},
-					"standby_uplinks": schema.StringAttribute{
-						Optional: true,
-						Computed: true,
-						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseNonNullStateForUnknown(),
-						},
-						MarkdownDescription: `The passive uplink IDs of the Uplink Order Container object.`,
-					},
-					"annotations": schema.SetNestedAttribute{
-						MarkdownDescription: ``,
-						Optional:            true,
-						Computed:            true,
-						PlanModifiers: []planmodifier.Set{
-							setplanmodifier.UseNonNullStateForUnknown(),
-						},
-						NestedObject: schema.NestedAttributeObject{
-							Attributes: map[string]schema.Attribute{
-								"key": schema.StringAttribute{
-									Required: true,
-									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseNonNullStateForUnknown(),
-									},
-									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-								},
-								"value": schema.StringAttribute{
-									Required: true,
-									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseNonNullStateForUnknown(),
-									},
-									MarkdownDescription: `The value of the property.`,
-								},
-							},
-						},
-					},
-					"tags": schema.SetNestedAttribute{
-						MarkdownDescription: ``,
-						Optional:            true,
-						Computed:            true,
-						PlanModifiers: []planmodifier.Set{
-							setplanmodifier.UseNonNullStateForUnknown(),
-						},
-						NestedObject: schema.NestedAttributeObject{
-							Attributes: map[string]schema.Attribute{
-								"key": schema.StringAttribute{
-									Required: true,
-									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseNonNullStateForUnknown(),
-									},
-									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-								},
-								"value": schema.StringAttribute{
-									Required: true,
-									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseNonNullStateForUnknown(),
-									},
-									MarkdownDescription: `The value of the property.`,
-								},
-							},
-						},
-					},
-				},
-			},
-			"annotations": schema.SetNestedAttribute{
-				MarkdownDescription: ``,
-				Optional:            true,
-				Computed:            true,
-				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseNonNullStateForUnknown(),
-				},
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"key": schema.StringAttribute{
-							Required: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseNonNullStateForUnknown(),
-							},
-							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-						},
-						"value": schema.StringAttribute{
-							Required: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseNonNullStateForUnknown(),
-							},
-							MarkdownDescription: `The value of the property.`,
-						},
-					},
-				},
-			},
-			"tags": schema.SetNestedAttribute{
-				MarkdownDescription: ``,
-				Optional:            true,
-				Computed:            true,
-				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseNonNullStateForUnknown(),
-				},
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"key": schema.StringAttribute{
-							Required: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseNonNullStateForUnknown(),
-							},
-							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-						},
-						"value": schema.StringAttribute{
-							Required: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseNonNullStateForUnknown(),
-							},
-							MarkdownDescription: `The value of the property.`,
-						},
-					},
-				},
-			},
-		},
-	}
+	resp.Schema = models.FvRsDomAttResourceSchema(globalAnnotation)
 	tflog.Debug(ctx, "End schema of resource: aci_relation_to_domain")
 }
 
@@ -789,759 +54,218 @@ func (r *FvRsDomAttResource) Configure(ctx context.Context, req resource.Configu
 		return
 	}
 
-	client, ok := req.ProviderData.(*client.Client)
-
+	aciClient, ok := req.ProviderData.(*client.Client)
 	if !ok {
 		resp.Diagnostics.AddError(
 			"Unexpected Resource Configure Type",
 			fmt.Sprintf("Expected *client.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
-
 		return
 	}
 
-	r.client = client
+	r.client = aciClient
 	tflog.Debug(ctx, "End configure of resource: aci_relation_to_domain")
+}
+
+func (r *FvRsDomAttResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
+	if req.Plan.Raw.IsNull() {
+		return
+	}
+
+	var data models.FvRsDomAttRootModel
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	// A parent reference or naming value may only become known during apply.
+	if data.ParentDN.IsNull() || data.ParentDN.IsUnknown() {
+		return
+	}
+	if data.TDn.IsNull() || data.TDn.IsUnknown() {
+		return
+	}
+
+	data.SetIDFromDN(data.BuildDN())
+	if req.State.Raw.IsNull() && !globalAllowExistingOnCreate {
+		CheckDn(ctx, &resp.Diagnostics, r.client, "fvRsDomAtt", data.ID.ValueString())
+		if resp.Diagnostics.HasError() {
+			return
+		}
+	}
+
+	resp.Diagnostics.Append(resp.Plan.Set(ctx, &data)...)
 }
 
 func (r *FvRsDomAttResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 	tflog.Debug(ctx, "Start create of resource: aci_relation_to_domain")
-	// On create retrieve information on current state prior to making any changes in order to determine child delete operations
-	var stateData *FvRsDomAttResourceModel
-	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
-	if stateData.Id.IsUnknown() || stateData.Id.IsNull() {
-		setFvRsDomAttId(ctx, stateData)
+
+	var data models.FvRsDomAttRootModel
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
+	if resp.Diagnostics.HasError() {
+		return
 	}
-	getAndSetFvRsDomAttAttributes(ctx, &resp.Diagnostics, r.client, stateData)
-	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
+
+	dn := data.BuildDN()
+	data.SetIDFromDN(dn)
+	// Read existing children before adoption so payload construction can reconcile them.
+	priorState := models.NewFvRsDomAttRootModelNull()
+	response := getManagedObject(ctx, &resp.Diagnostics, r.client, dn, data.SupportedSubtreeClasses(apicVersion))
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	found, diagnostics := priorState.SetFromResponse(ctx, response)
+	resp.Diagnostics.Append(diagnostics...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	if found && !globalAllowExistingOnCreate {
 		resp.Diagnostics.AddError(
 			"Object Already Exists",
-			fmt.Sprintf("The fvRsDomAtt object with DN '%s' already exists.", stateData.Id.ValueString()),
+			fmt.Sprintf("The fvRsDomAtt object with DN '%s' already exists.", dn),
 		)
 		return
 	}
 
-	var data *FvRsDomAttResourceModel
-
-	// Read Terraform plan data into the model
-	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
-
+	payload, diagnostics := data.BuildPayload(ctx, &priorState.FvRsDomAttModel, true, !globalAllowExistingOnCreate, globalAnnotation)
+	resp.Diagnostics.Append(diagnostics...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	if data.Id.IsUnknown() || data.Id.IsNull() {
-		setFvRsDomAttId(ctx, data)
-	}
-
-	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_relation_to_domain with id '%s'", data.Id.ValueString()))
-
-	var fvUplinkOrderContPlan, fvUplinkOrderContState FvUplinkOrderContFvRsDomAttResourceModel
-	data.FvUplinkOrderCont.As(ctx, &fvUplinkOrderContPlan, basetypes.ObjectAsOptions{})
-	stateData.FvUplinkOrderCont.As(ctx, &fvUplinkOrderContState, basetypes.ObjectAsOptions{})
-	var tagAnnotationPlan, tagAnnotationState []TagAnnotationFvRsDomAttResourceModel
-	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
-	stateData.TagAnnotation.ElementsAs(ctx, &tagAnnotationState, false)
-	var tagTagPlan, tagTagState []TagTagFvRsDomAttResourceModel
-	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
-	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getFvRsDomAttCreateJsonPayload(ctx, &resp.Diagnostics, true, data, fvUplinkOrderContPlan, fvUplinkOrderContState, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
-
+	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", dn), "POST", payload)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
-
+	// Retain the created object's DN if the subsequent read fails.
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), data.ID)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	getAndSetFvRsDomAttAttributes(ctx, &resp.Diagnostics, r.client, data)
+	response = getManagedObject(ctx, &resp.Diagnostics, r.client, dn, data.SupportedSubtreeClasses(apicVersion))
+	if resp.Diagnostics.HasError() {
+		return
+	}
 
-	// Save data into Terraform state
+	found, diagnostics = data.SetFromResponse(ctx, response)
+	resp.Diagnostics.Append(diagnostics...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	if !found {
+		resp.Diagnostics.AddError(
+			"Failed to read aci_relation_to_domain resource",
+			fmt.Sprintf("The aci_relation_to_domain resource with id '%s' has not been found after creation", dn),
+		)
+		return
+	}
+
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_relation_to_domain with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_relation_to_domain with id '%s'", data.ID.ValueString()))
 }
 
 func (r *FvRsDomAttResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 	tflog.Debug(ctx, "Start read of resource: aci_relation_to_domain")
-	var data *FvRsDomAttResourceModel
 
-	// Read Terraform prior state data into the model
+	var data models.FvRsDomAttRootModel
 	resp.Diagnostics.Append(req.State.Get(ctx, &data)...)
-
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Read of resource aci_relation_to_domain with id '%s'", data.Id.ValueString()))
-
-	getAndSetFvRsDomAttAttributes(ctx, &resp.Diagnostics, r.client, data)
-
-	// Save updated data into Terraform state
-	if data.Id.IsNull() {
-		var emptyData *FvRsDomAttResourceModel
-		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
-	} else {
-		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	// Imports initially provide only ID; the response reconstructs the remaining fields.
+	response := getManagedObject(ctx, &resp.Diagnostics, r.client, data.ID.ValueString(), data.SupportedSubtreeClasses(apicVersion))
+	if resp.Diagnostics.HasError() {
+		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_relation_to_domain with id '%s'", data.Id.ValueString()))
+	found, diagnostics := data.SetFromResponse(ctx, response)
+	resp.Diagnostics.Append(diagnostics...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	if !found {
+		resp.State.RemoveResource(ctx)
+		return
+	}
+
+	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_relation_to_domain with id '%s'", data.ID.ValueString()))
 }
 
 func (r *FvRsDomAttResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 	tflog.Debug(ctx, "Start update of resource: aci_relation_to_domain")
-	var data *FvRsDomAttResourceModel
-	var stateData *FvRsDomAttResourceModel
 
-	// Read Terraform plan data into the model
+	var data, priorState models.FvRsDomAttRootModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
-	resp.Diagnostics.Append(req.State.Get(ctx, &stateData)...)
-	if IsEmptySingleNestedAttribute(data.FvUplinkOrderCont.Attributes()) && !IsEmptySingleNestedAttribute(stateData.FvUplinkOrderCont.Attributes()) {
+	resp.Diagnostics.Append(req.State.Get(ctx, &priorState)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	dn := data.BuildDN()
+	data.SetIDFromDN(dn)
+	payload, diagnostics := data.BuildPayload(ctx, &priorState.FvRsDomAttModel, false, false, globalAnnotation)
+	resp.Diagnostics.Append(diagnostics...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", dn), "POST", payload)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	response := getManagedObject(ctx, &resp.Diagnostics, r.client, dn, data.SupportedSubtreeClasses(apicVersion))
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	found, diagnostics := data.SetFromResponse(ctx, response)
+	resp.Diagnostics.Append(diagnostics...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	if !found {
 		resp.Diagnostics.AddError(
-			"FvUplinkOrderCont object defined by uplink_order_container cannot be deleted",
-			"deletion of child is only possible upon deletion of the parent",
+			"Failed to read aci_relation_to_domain resource",
+			fmt.Sprintf("The aci_relation_to_domain resource with id '%s' has not been found after update", dn),
 		)
-	}
-
-	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_relation_to_domain with id '%s'", data.Id.ValueString()))
-
-	var fvUplinkOrderContPlan, fvUplinkOrderContState FvUplinkOrderContFvRsDomAttResourceModel
-	data.FvUplinkOrderCont.As(ctx, &fvUplinkOrderContPlan, basetypes.ObjectAsOptions{})
-	stateData.FvUplinkOrderCont.As(ctx, &fvUplinkOrderContState, basetypes.ObjectAsOptions{})
-	var tagAnnotationPlan, tagAnnotationState []TagAnnotationFvRsDomAttResourceModel
-	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
-	stateData.TagAnnotation.ElementsAs(ctx, &tagAnnotationState, false)
-	var tagTagPlan, tagTagState []TagTagFvRsDomAttResourceModel
-	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
-	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getFvRsDomAttCreateJsonPayload(ctx, &resp.Diagnostics, false, data, fvUplinkOrderContPlan, fvUplinkOrderContState, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
-
-	if resp.Diagnostics.HasError() {
-		return
-	}
-
-	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
-
-	if resp.Diagnostics.HasError() {
-		return
-	}
-
-	getAndSetFvRsDomAttAttributes(ctx, &resp.Diagnostics, r.client, data)
-
-	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_relation_to_domain with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_relation_to_domain with id '%s'", data.ID.ValueString()))
 }
 
 func (r *FvRsDomAttResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
 	tflog.Debug(ctx, "Start delete of resource: aci_relation_to_domain")
-	var data *FvRsDomAttResourceModel
 
-	// Read Terraform prior state data into the model
+	var data models.FvRsDomAttRootModel
 	resp.Diagnostics.Append(req.State.Get(ctx, &data)...)
-
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Delete of resource aci_relation_to_domain with id '%s'", data.Id.ValueString()))
-	jsonPayload := GetDeleteJsonPayload(ctx, &resp.Diagnostics, "fvRsDomAtt", data.Id.ValueString())
+	payload, diagnostics := data.BuildDeletePayload(ctx)
+	resp.Diagnostics.Append(diagnostics...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
+	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.ID.ValueString()), "POST", payload)
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	tflog.Debug(ctx, fmt.Sprintf("End delete of resource aci_relation_to_domain with id '%s'", data.Id.ValueString()))
+
+	tflog.Debug(ctx, fmt.Sprintf("End delete of resource aci_relation_to_domain with id '%s'", data.ID.ValueString()))
 }
 
 func (r *FvRsDomAttResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_relation_to_domain")
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
-
-	var stateData *FvRsDomAttResourceModel
-	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
-	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_relation_to_domain with id '%s'", stateData.Id.ValueString()))
-
-	tflog.Debug(ctx, "End import of state resource: aci_relation_to_domain")
-}
-
-func getAndSetFvRsDomAttAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *FvRsDomAttResourceModel) {
-	childClasses := getChildClassesForGetRequest([]string{"fvUplinkOrderCont", "tagAnnotation", "tagTag"})
-	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), strings.Join(childClasses, ",")), "GET", nil)
-
-	readData := getEmptyFvRsDomAttResourceModel()
-
-	if diags.HasError() {
-		return
-	}
-	if requestData.Search("imdata").Search("fvRsDomAtt").Data() != nil {
-		classReadInfo := requestData.Search("imdata").Search("fvRsDomAtt").Data().([]interface{})
-		if len(classReadInfo) == 1 {
-			attributes := classReadInfo[0].(map[string]interface{})["attributes"].(map[string]interface{})
-			for attributeName, attributeValue := range attributes {
-				if attributeName == "dn" {
-					readData.Id = basetypes.NewStringValue(attributeValue.(string))
-					setFvRsDomAttParentDn(ctx, attributeValue.(string), readData)
-				}
-				if attributeName == "annotation" {
-					readData.Annotation = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "bindingType" && attributeValue.(string) == "" {
-					readData.BindingType = basetypes.NewStringValue("none")
-				} else if attributeName == "bindingType" {
-					readData.BindingType = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "classPref" {
-					readData.ClassPref = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "customEpgName" {
-					readData.CustomEpgName = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "delimiter" {
-					readData.Delimiter = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "encap" {
-					readData.Encap = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "encapMode" {
-					readData.EncapMode = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "epgCos" {
-					readData.EpgCos = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "epgCosPref" {
-					readData.EpgCosPref = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "instrImedcy" {
-					readData.InstrImedcy = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "ipamDhcpOverride" {
-					readData.IpamDhcpOverride = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "ipamEnabled" {
-					readData.IpamEnabled = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "ipamGateway" {
-					readData.IpamGateway = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "lagPolicyName" {
-					readData.LagPolicyName = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "netflowDir" {
-					readData.NetflowDir = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "netflowPref" {
-					readData.NetflowPref = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "numPorts" {
-					readData.NumPorts = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "portAllocation" && attributeValue.(string) == "" {
-					readData.PortAllocation = basetypes.NewStringValue("none")
-				} else if attributeName == "portAllocation" {
-					readData.PortAllocation = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "primaryEncap" {
-					readData.PrimaryEncap = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "primaryEncapInner" {
-					readData.PrimaryEncapInner = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "resImedcy" {
-					readData.ResImedcy = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "secondaryEncapInner" {
-					readData.SecondaryEncapInner = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "switchingMode" {
-					readData.SwitchingMode = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "tDn" {
-					readData.TDn = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "untagged" {
-					readData.Untagged = basetypes.NewStringValue(attributeValue.(string))
-				}
-			}
-			FvUplinkOrderContFvRsDomAttList := make([]FvUplinkOrderContFvRsDomAttResourceModel, 0)
-			TagAnnotationFvRsDomAttList := make([]TagAnnotationFvRsDomAttResourceModel, 0)
-			TagTagFvRsDomAttList := make([]TagTagFvRsDomAttResourceModel, 0)
-			_, ok := classReadInfo[0].(map[string]interface{})["children"]
-			if ok {
-				children := classReadInfo[0].(map[string]interface{})["children"].([]interface{})
-				for _, child := range children {
-					for childClassName, childClassDetails := range child.(map[string]interface{}) {
-						childAttributes := childClassDetails.(map[string]interface{})["attributes"].(map[string]interface{})
-						if childClassName == "fvUplinkOrderCont" {
-							FvUplinkOrderContFvRsDomAtt := getEmptyFvUplinkOrderContFvRsDomAttResourceModel()
-							for childAttributeName, childAttributeValue := range childAttributes {
-								if childAttributeName == "active" {
-									FvUplinkOrderContFvRsDomAtt.Active = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-								if childAttributeName == "annotation" {
-									FvUplinkOrderContFvRsDomAtt.Annotation = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-								if childAttributeName == "descr" {
-									FvUplinkOrderContFvRsDomAtt.Descr = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-								if childAttributeName == "name" {
-									FvUplinkOrderContFvRsDomAtt.Name = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-								if childAttributeName == "nameAlias" {
-									FvUplinkOrderContFvRsDomAtt.NameAlias = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-								if childAttributeName == "ownerKey" {
-									FvUplinkOrderContFvRsDomAtt.OwnerKey = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-								if childAttributeName == "ownerTag" {
-									FvUplinkOrderContFvRsDomAtt.OwnerTag = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-								if childAttributeName == "standby" {
-									FvUplinkOrderContFvRsDomAtt.Standby = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-
-							}
-							TagAnnotationFvUplinkOrderContFvRsDomAttList := make([]TagAnnotationFvUplinkOrderContFvRsDomAttResourceModel, 0)
-							TagTagFvUplinkOrderContFvRsDomAttList := make([]TagTagFvUplinkOrderContFvRsDomAttResourceModel, 0)
-							childrenOfFvUplinkOrderContFvRsDomAtt, childrenOfFvUplinkOrderContFvRsDomAttExist := childClassDetails.(map[string]interface{})["children"]
-							if childrenOfFvUplinkOrderContFvRsDomAttExist {
-								for _, childFvUplinkOrderContFvRsDomAtt := range childrenOfFvUplinkOrderContFvRsDomAtt.([]interface{}) {
-									for childClassNameFvUplinkOrderContFvRsDomAtt, childClassDetailsFvUplinkOrderContFvRsDomAtt := range childFvUplinkOrderContFvRsDomAtt.(map[string]interface{}) {
-										if childClassNameFvUplinkOrderContFvRsDomAtt == "tagAnnotation" {
-											TagAnnotationFvUplinkOrderContFvRsDomAtt := getEmptyTagAnnotationFvUplinkOrderContFvRsDomAttResourceModel()
-											tagAnnotationchildAttributeValue := childClassDetailsFvUplinkOrderContFvRsDomAtt.(map[string]interface{})["attributes"].(map[string]interface{})
-											for childAttributeName, childAttributeValue := range tagAnnotationchildAttributeValue {
-												if childAttributeName == "key" {
-													TagAnnotationFvUplinkOrderContFvRsDomAtt.Key = basetypes.NewStringValue(childAttributeValue.(string))
-												}
-												if childAttributeName == "value" {
-													TagAnnotationFvUplinkOrderContFvRsDomAtt.Value = basetypes.NewStringValue(childAttributeValue.(string))
-												}
-											}
-											TagAnnotationFvUplinkOrderContFvRsDomAttList = append(TagAnnotationFvUplinkOrderContFvRsDomAttList, TagAnnotationFvUplinkOrderContFvRsDomAtt)
-										}
-										if childClassNameFvUplinkOrderContFvRsDomAtt == "tagTag" {
-											TagTagFvUplinkOrderContFvRsDomAtt := getEmptyTagTagFvUplinkOrderContFvRsDomAttResourceModel()
-											tagTagchildAttributeValue := childClassDetailsFvUplinkOrderContFvRsDomAtt.(map[string]interface{})["attributes"].(map[string]interface{})
-											for childAttributeName, childAttributeValue := range tagTagchildAttributeValue {
-												if childAttributeName == "key" {
-													TagTagFvUplinkOrderContFvRsDomAtt.Key = basetypes.NewStringValue(childAttributeValue.(string))
-												}
-												if childAttributeName == "value" {
-													TagTagFvUplinkOrderContFvRsDomAtt.Value = basetypes.NewStringValue(childAttributeValue.(string))
-												}
-											}
-											TagTagFvUplinkOrderContFvRsDomAttList = append(TagTagFvUplinkOrderContFvRsDomAttList, TagTagFvUplinkOrderContFvRsDomAtt)
-										}
-									}
-								}
-							}
-							TagAnnotationFvUplinkOrderContFvRsDomAttSet, _ := types.SetValueFrom(ctx, TagAnnotationFvUplinkOrderContFvRsDomAttType, TagAnnotationFvUplinkOrderContFvRsDomAttList)
-							FvUplinkOrderContFvRsDomAtt.TagAnnotation = TagAnnotationFvUplinkOrderContFvRsDomAttSet
-							TagTagFvUplinkOrderContFvRsDomAttSet, _ := types.SetValueFrom(ctx, TagTagFvUplinkOrderContFvRsDomAttType, TagTagFvUplinkOrderContFvRsDomAttList)
-							FvUplinkOrderContFvRsDomAtt.TagTag = TagTagFvUplinkOrderContFvRsDomAttSet
-							FvUplinkOrderContFvRsDomAttList = append(FvUplinkOrderContFvRsDomAttList, FvUplinkOrderContFvRsDomAtt)
-						}
-						if childClassName == "tagAnnotation" {
-							TagAnnotationFvRsDomAtt := getEmptyTagAnnotationFvRsDomAttResourceModel()
-							for childAttributeName, childAttributeValue := range childAttributes {
-								if childAttributeName == "key" {
-									TagAnnotationFvRsDomAtt.Key = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-								if childAttributeName == "value" {
-									TagAnnotationFvRsDomAtt.Value = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-
-							}
-							TagAnnotationFvRsDomAttList = append(TagAnnotationFvRsDomAttList, TagAnnotationFvRsDomAtt)
-						}
-						if childClassName == "tagTag" {
-							TagTagFvRsDomAtt := getEmptyTagTagFvRsDomAttResourceModel()
-							for childAttributeName, childAttributeValue := range childAttributes {
-								if childAttributeName == "key" {
-									TagTagFvRsDomAtt.Key = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-								if childAttributeName == "value" {
-									TagTagFvRsDomAtt.Value = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-
-							}
-							TagTagFvRsDomAttList = append(TagTagFvRsDomAttList, TagTagFvRsDomAtt)
-						}
-					}
-				}
-			}
-			if len(FvUplinkOrderContFvRsDomAttList) == 1 {
-				fvUplinkOrderContObject, _ := types.ObjectValueFrom(ctx, FvUplinkOrderContFvRsDomAttType, FvUplinkOrderContFvRsDomAttList[0])
-				readData.FvUplinkOrderCont = fvUplinkOrderContObject
-			} else {
-				fvUplinkOrderContObject, _ := types.ObjectValueFrom(ctx, FvUplinkOrderContFvRsDomAttType, getEmptyFvUplinkOrderContFvRsDomAttResourceModel())
-				readData.FvUplinkOrderCont = fvUplinkOrderContObject
-			}
-			tagAnnotationSet, _ := types.SetValueFrom(ctx, readData.TagAnnotation.ElementType(ctx), TagAnnotationFvRsDomAttList)
-			readData.TagAnnotation = tagAnnotationSet
-			tagTagSet, _ := types.SetValueFrom(ctx, readData.TagTag.ElementType(ctx), TagTagFvRsDomAttList)
-			readData.TagTag = tagTagSet
-		} else {
-			diags.AddError(
-				"too many results in response",
-				fmt.Sprintf("%v matches returned for class 'fvRsDomAtt'. Please report this issue to the provider developers.", len(classReadInfo)),
-			)
-		}
-	} else {
-		readData.Id = basetypes.NewStringNull()
-	}
-	*data = *readData
-}
-
-func getFvRsDomAttRn(ctx context.Context, data *FvRsDomAttResourceModel) string {
-	return fmt.Sprintf("rsdomAtt-[%s]", data.TDn.ValueString())
-}
-
-func setFvRsDomAttParentDn(ctx context.Context, dn string, data *FvRsDomAttResourceModel) {
-	bracketIndex := 0
-	rnIndex := 0
-	for i := len(dn) - 1; i >= 0; i-- {
-		if string(dn[i]) == "]" {
-			bracketIndex = bracketIndex + 1
-		} else if string(dn[i]) == "[" {
-			bracketIndex = bracketIndex - 1
-		} else if string(dn[i]) == "/" && bracketIndex == 0 {
-			rnIndex = i
-			break
-		}
-	}
-	data.ParentDn = basetypes.NewStringValue(dn[:rnIndex])
-}
-
-func setFvRsDomAttId(ctx context.Context, data *FvRsDomAttResourceModel) {
-	rn := getFvRsDomAttRn(ctx, data)
-	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
-}
-
-func getFvRsDomAttFvUplinkOrderContChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FvRsDomAttResourceModel, fvUplinkOrderContFvRsDomAttPlan, fvUplinkOrderContFvRsDomAttState FvUplinkOrderContFvRsDomAttResourceModel) []map[string]interface{} {
-	childPayloads := []map[string]interface{}{}
-	if !data.FvUplinkOrderCont.IsNull() && !data.FvUplinkOrderCont.IsUnknown() {
-		FvUplinkOrderContFvRsDomAttChildren := make([]map[string]interface{}, 0)
-		childMap := NewAciObject()
-		if !IsEmptySingleNestedAttribute(data.FvUplinkOrderCont.Attributes()) {
-			if !fvUplinkOrderContFvRsDomAttPlan.Active.IsUnknown() && !fvUplinkOrderContFvRsDomAttPlan.Active.IsNull() {
-				childMap.Attributes["active"] = fvUplinkOrderContFvRsDomAttPlan.Active.ValueString()
-			}
-			if !fvUplinkOrderContFvRsDomAttPlan.Annotation.IsUnknown() && !fvUplinkOrderContFvRsDomAttPlan.Annotation.IsNull() {
-				childMap.Attributes["annotation"] = fvUplinkOrderContFvRsDomAttPlan.Annotation.ValueString()
-			} else {
-				childMap.Attributes["annotation"] = globalAnnotation
-			}
-			if !fvUplinkOrderContFvRsDomAttPlan.Descr.IsUnknown() && !fvUplinkOrderContFvRsDomAttPlan.Descr.IsNull() {
-				childMap.Attributes["descr"] = fvUplinkOrderContFvRsDomAttPlan.Descr.ValueString()
-			}
-			if !fvUplinkOrderContFvRsDomAttPlan.Name.IsUnknown() && !fvUplinkOrderContFvRsDomAttPlan.Name.IsNull() {
-				childMap.Attributes["name"] = fvUplinkOrderContFvRsDomAttPlan.Name.ValueString()
-			}
-			if !fvUplinkOrderContFvRsDomAttPlan.NameAlias.IsUnknown() && !fvUplinkOrderContFvRsDomAttPlan.NameAlias.IsNull() {
-				childMap.Attributes["nameAlias"] = fvUplinkOrderContFvRsDomAttPlan.NameAlias.ValueString()
-			}
-			if !fvUplinkOrderContFvRsDomAttPlan.OwnerKey.IsUnknown() && !fvUplinkOrderContFvRsDomAttPlan.OwnerKey.IsNull() {
-				childMap.Attributes["ownerKey"] = fvUplinkOrderContFvRsDomAttPlan.OwnerKey.ValueString()
-			}
-			if !fvUplinkOrderContFvRsDomAttPlan.OwnerTag.IsUnknown() && !fvUplinkOrderContFvRsDomAttPlan.OwnerTag.IsNull() {
-				childMap.Attributes["ownerTag"] = fvUplinkOrderContFvRsDomAttPlan.OwnerTag.ValueString()
-			}
-			if !fvUplinkOrderContFvRsDomAttPlan.Standby.IsUnknown() && !fvUplinkOrderContFvRsDomAttPlan.Standby.IsNull() {
-				childMap.Attributes["standby"] = fvUplinkOrderContFvRsDomAttPlan.Standby.ValueString()
-			}
-
-			var tagAnnotationFvUplinkOrderContFvRsDomAttPlan, tagAnnotationFvUplinkOrderContFvRsDomAttState []TagAnnotationFvUplinkOrderContFvRsDomAttResourceModel
-			fvUplinkOrderContFvRsDomAttPlan.TagAnnotation.ElementsAs(ctx, &tagAnnotationFvUplinkOrderContFvRsDomAttPlan, false)
-			if !fvUplinkOrderContFvRsDomAttState.TagAnnotation.IsNull() {
-				fvUplinkOrderContFvRsDomAttState.TagAnnotation.ElementsAs(ctx, &tagAnnotationFvUplinkOrderContFvRsDomAttState, false)
-			}
-			if !fvUplinkOrderContFvRsDomAttPlan.TagAnnotation.IsNull() && !fvUplinkOrderContFvRsDomAttPlan.TagAnnotation.IsUnknown() {
-				tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
-				for _, tagAnnotationFvUplinkOrderContFvRsDomAtt := range tagAnnotationFvUplinkOrderContFvRsDomAttPlan {
-					tagAnnotationFvUplinkOrderContFvRsDomAttChildMap := NewAciObject()
-					if !tagAnnotationFvUplinkOrderContFvRsDomAtt.Key.IsNull() && !tagAnnotationFvUplinkOrderContFvRsDomAtt.Key.IsUnknown() {
-						tagAnnotationFvUplinkOrderContFvRsDomAttChildMap.Attributes["key"] = tagAnnotationFvUplinkOrderContFvRsDomAtt.Key.ValueString()
-					}
-					if !tagAnnotationFvUplinkOrderContFvRsDomAtt.Value.IsNull() && !tagAnnotationFvUplinkOrderContFvRsDomAtt.Value.IsUnknown() {
-						tagAnnotationFvUplinkOrderContFvRsDomAttChildMap.Attributes["value"] = tagAnnotationFvUplinkOrderContFvRsDomAtt.Value.ValueString()
-					}
-					FvUplinkOrderContFvRsDomAttChildren = append(FvUplinkOrderContFvRsDomAttChildren, map[string]interface{}{"tagAnnotation": tagAnnotationFvUplinkOrderContFvRsDomAttChildMap})
-					tagAnnotationIdentifier := TagAnnotationIdentifier{}
-					tagAnnotationIdentifier.Key = tagAnnotationFvUplinkOrderContFvRsDomAtt.Key
-					tagAnnotationIdentifiers = append(tagAnnotationIdentifiers, tagAnnotationIdentifier)
-				}
-				for _, tagAnnotationFvUplinkOrderContFvRsDomAtt := range tagAnnotationFvUplinkOrderContFvRsDomAttState {
-					delete := true
-					for _, tagAnnotationIdentifier := range tagAnnotationIdentifiers {
-						if tagAnnotationIdentifier.Key == tagAnnotationFvUplinkOrderContFvRsDomAtt.Key {
-							delete = false
-							break
-						}
-					}
-					if delete {
-						tagAnnotationFvUplinkOrderContFvRsDomAttChildMapForDelete := NewAciObject()
-						tagAnnotationFvUplinkOrderContFvRsDomAttChildMapForDelete.Attributes["status"] = "deleted"
-						tagAnnotationFvUplinkOrderContFvRsDomAttChildMapForDelete.Attributes["key"] = tagAnnotationFvUplinkOrderContFvRsDomAtt.Key.ValueString()
-						FvUplinkOrderContFvRsDomAttChildren = append(FvUplinkOrderContFvRsDomAttChildren, map[string]interface{}{"tagAnnotation": tagAnnotationFvUplinkOrderContFvRsDomAttChildMapForDelete})
-					}
-				}
-			}
-
-			var tagTagFvUplinkOrderContFvRsDomAttPlan, tagTagFvUplinkOrderContFvRsDomAttState []TagTagFvUplinkOrderContFvRsDomAttResourceModel
-			fvUplinkOrderContFvRsDomAttPlan.TagTag.ElementsAs(ctx, &tagTagFvUplinkOrderContFvRsDomAttPlan, false)
-			if !fvUplinkOrderContFvRsDomAttState.TagTag.IsNull() {
-				fvUplinkOrderContFvRsDomAttState.TagTag.ElementsAs(ctx, &tagTagFvUplinkOrderContFvRsDomAttState, false)
-			}
-			if !fvUplinkOrderContFvRsDomAttPlan.TagTag.IsNull() && !fvUplinkOrderContFvRsDomAttPlan.TagTag.IsUnknown() {
-				tagTagIdentifiers := []TagTagIdentifier{}
-				for _, tagTagFvUplinkOrderContFvRsDomAtt := range tagTagFvUplinkOrderContFvRsDomAttPlan {
-					tagTagFvUplinkOrderContFvRsDomAttChildMap := NewAciObject()
-					if !tagTagFvUplinkOrderContFvRsDomAtt.Key.IsNull() && !tagTagFvUplinkOrderContFvRsDomAtt.Key.IsUnknown() {
-						tagTagFvUplinkOrderContFvRsDomAttChildMap.Attributes["key"] = tagTagFvUplinkOrderContFvRsDomAtt.Key.ValueString()
-					}
-					if !tagTagFvUplinkOrderContFvRsDomAtt.Value.IsNull() && !tagTagFvUplinkOrderContFvRsDomAtt.Value.IsUnknown() {
-						tagTagFvUplinkOrderContFvRsDomAttChildMap.Attributes["value"] = tagTagFvUplinkOrderContFvRsDomAtt.Value.ValueString()
-					}
-					FvUplinkOrderContFvRsDomAttChildren = append(FvUplinkOrderContFvRsDomAttChildren, map[string]interface{}{"tagTag": tagTagFvUplinkOrderContFvRsDomAttChildMap})
-					tagTagIdentifier := TagTagIdentifier{}
-					tagTagIdentifier.Key = tagTagFvUplinkOrderContFvRsDomAtt.Key
-					tagTagIdentifiers = append(tagTagIdentifiers, tagTagIdentifier)
-				}
-				for _, tagTagFvUplinkOrderContFvRsDomAtt := range tagTagFvUplinkOrderContFvRsDomAttState {
-					delete := true
-					for _, tagTagIdentifier := range tagTagIdentifiers {
-						if tagTagIdentifier.Key == tagTagFvUplinkOrderContFvRsDomAtt.Key {
-							delete = false
-							break
-						}
-					}
-					if delete {
-						tagTagFvUplinkOrderContFvRsDomAttChildMapForDelete := NewAciObject()
-						tagTagFvUplinkOrderContFvRsDomAttChildMapForDelete.Attributes["status"] = "deleted"
-						tagTagFvUplinkOrderContFvRsDomAttChildMapForDelete.Attributes["key"] = tagTagFvUplinkOrderContFvRsDomAtt.Key.ValueString()
-						FvUplinkOrderContFvRsDomAttChildren = append(FvUplinkOrderContFvRsDomAttChildren, map[string]interface{}{"tagTag": tagTagFvUplinkOrderContFvRsDomAttChildMapForDelete})
-					}
-				}
-			}
-			childMap.Children = FvUplinkOrderContFvRsDomAttChildren
-			childPayloads = append(childPayloads, map[string]interface{}{"fvUplinkOrderCont": childMap})
-		}
-	} else {
-		FvUplinkOrderContObject, _ := types.ObjectValueFrom(ctx, FvUplinkOrderContFvRsDomAttType, getEmptyFvUplinkOrderContFvRsDomAttResourceModel())
-		data.FvUplinkOrderCont = FvUplinkOrderContObject
-	}
-
-	return childPayloads
-}
-
-func getFvRsDomAttTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FvRsDomAttResourceModel, tagAnnotationFvRsDomAttPlan, tagAnnotationFvRsDomAttState []TagAnnotationFvRsDomAttResourceModel) []map[string]interface{} {
-	childPayloads := []map[string]interface{}{}
-	if !data.TagAnnotation.IsNull() && !data.TagAnnotation.IsUnknown() {
-		tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
-		for _, tagAnnotationFvRsDomAtt := range tagAnnotationFvRsDomAttPlan {
-			childMap := NewAciObject()
-			if !tagAnnotationFvRsDomAtt.Key.IsNull() && !tagAnnotationFvRsDomAtt.Key.IsUnknown() {
-				childMap.Attributes["key"] = tagAnnotationFvRsDomAtt.Key.ValueString()
-			}
-			if !tagAnnotationFvRsDomAtt.Value.IsNull() && !tagAnnotationFvRsDomAtt.Value.IsUnknown() {
-				childMap.Attributes["value"] = tagAnnotationFvRsDomAtt.Value.ValueString()
-			}
-			childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": childMap})
-			tagAnnotationIdentifier := TagAnnotationIdentifier{}
-			tagAnnotationIdentifier.Key = tagAnnotationFvRsDomAtt.Key
-			tagAnnotationIdentifiers = append(tagAnnotationIdentifiers, tagAnnotationIdentifier)
-		}
-		for _, tagAnnotation := range tagAnnotationFvRsDomAttState {
-			delete := true
-			for _, tagAnnotationIdentifier := range tagAnnotationIdentifiers {
-				if tagAnnotationIdentifier.Key == tagAnnotation.Key {
-					delete = false
-					break
-				}
-			}
-			if delete {
-				tagAnnotationChildMapForDelete := NewAciObject()
-				tagAnnotationChildMapForDelete.Attributes["status"] = "deleted"
-				tagAnnotationChildMapForDelete.Attributes["key"] = tagAnnotation.Key.ValueString()
-				childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": tagAnnotationChildMapForDelete})
-			}
-		}
-	} else {
-		data.TagAnnotation = types.SetNull(data.TagAnnotation.ElementType(ctx))
-	}
-
-	return childPayloads
-}
-
-func getFvRsDomAttTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *FvRsDomAttResourceModel, tagTagFvRsDomAttPlan, tagTagFvRsDomAttState []TagTagFvRsDomAttResourceModel) []map[string]interface{} {
-	childPayloads := []map[string]interface{}{}
-	if !data.TagTag.IsNull() && !data.TagTag.IsUnknown() {
-		tagTagIdentifiers := []TagTagIdentifier{}
-		for _, tagTagFvRsDomAtt := range tagTagFvRsDomAttPlan {
-			childMap := NewAciObject()
-			if !tagTagFvRsDomAtt.Key.IsNull() && !tagTagFvRsDomAtt.Key.IsUnknown() {
-				childMap.Attributes["key"] = tagTagFvRsDomAtt.Key.ValueString()
-			}
-			if !tagTagFvRsDomAtt.Value.IsNull() && !tagTagFvRsDomAtt.Value.IsUnknown() {
-				childMap.Attributes["value"] = tagTagFvRsDomAtt.Value.ValueString()
-			}
-			childPayloads = append(childPayloads, map[string]interface{}{"tagTag": childMap})
-			tagTagIdentifier := TagTagIdentifier{}
-			tagTagIdentifier.Key = tagTagFvRsDomAtt.Key
-			tagTagIdentifiers = append(tagTagIdentifiers, tagTagIdentifier)
-		}
-		for _, tagTag := range tagTagFvRsDomAttState {
-			delete := true
-			for _, tagTagIdentifier := range tagTagIdentifiers {
-				if tagTagIdentifier.Key == tagTag.Key {
-					delete = false
-					break
-				}
-			}
-			if delete {
-				tagTagChildMapForDelete := NewAciObject()
-				tagTagChildMapForDelete.Attributes["status"] = "deleted"
-				tagTagChildMapForDelete.Attributes["key"] = tagTag.Key.ValueString()
-				childPayloads = append(childPayloads, map[string]interface{}{"tagTag": tagTagChildMapForDelete})
-			}
-		}
-	} else {
-		data.TagTag = types.SetNull(data.TagTag.ElementType(ctx))
-	}
-
-	return childPayloads
-}
-
-func getFvRsDomAttCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *FvRsDomAttResourceModel, fvUplinkOrderContPlan, fvUplinkOrderContState FvUplinkOrderContFvRsDomAttResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationFvRsDomAttResourceModel, tagTagPlan, tagTagState []TagTagFvRsDomAttResourceModel) *container.Container {
-	payloadMap := map[string]interface{}{}
-	payloadMap["attributes"] = map[string]string{}
-
-	if createType && !globalAllowExistingOnCreate {
-		payloadMap["attributes"].(map[string]string)["status"] = "created"
-	}
-	childPayloads := []map[string]interface{}{}
-
-	FvUplinkOrderContchildPayloads := getFvRsDomAttFvUplinkOrderContChildPayloads(ctx, diags, data, fvUplinkOrderContPlan, fvUplinkOrderContState)
-	if FvUplinkOrderContchildPayloads == nil {
-		return nil
-	}
-	childPayloads = append(childPayloads, FvUplinkOrderContchildPayloads...)
-
-	TagAnnotationchildPayloads := getFvRsDomAttTagAnnotationChildPayloads(ctx, diags, data, tagAnnotationPlan, tagAnnotationState)
-	if TagAnnotationchildPayloads == nil {
-		return nil
-	}
-	childPayloads = append(childPayloads, TagAnnotationchildPayloads...)
-
-	TagTagchildPayloads := getFvRsDomAttTagTagChildPayloads(ctx, diags, data, tagTagPlan, tagTagState)
-	if TagTagchildPayloads == nil {
-		return nil
-	}
-	childPayloads = append(childPayloads, TagTagchildPayloads...)
-
-	payloadMap["children"] = childPayloads
-	if !data.Annotation.IsNull() && !data.Annotation.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["annotation"] = data.Annotation.ValueString()
-	}
-	if !data.BindingType.IsNull() && !data.BindingType.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["bindingType"] = data.BindingType.ValueString()
-	}
-	if !data.ClassPref.IsNull() && !data.ClassPref.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["classPref"] = data.ClassPref.ValueString()
-	}
-	if !data.CustomEpgName.IsNull() && !data.CustomEpgName.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["customEpgName"] = data.CustomEpgName.ValueString()
-	}
-	if !data.Delimiter.IsNull() && !data.Delimiter.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["delimiter"] = data.Delimiter.ValueString()
-	}
-	if !data.Encap.IsNull() && !data.Encap.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["encap"] = data.Encap.ValueString()
-	}
-	if !data.EncapMode.IsNull() && !data.EncapMode.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["encapMode"] = data.EncapMode.ValueString()
-	}
-	if !data.EpgCos.IsNull() && !data.EpgCos.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["epgCos"] = data.EpgCos.ValueString()
-	}
-	if !data.EpgCosPref.IsNull() && !data.EpgCosPref.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["epgCosPref"] = data.EpgCosPref.ValueString()
-	}
-	if !data.InstrImedcy.IsNull() && !data.InstrImedcy.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["instrImedcy"] = data.InstrImedcy.ValueString()
-	}
-	if !data.IpamDhcpOverride.IsNull() && !data.IpamDhcpOverride.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["ipamDhcpOverride"] = data.IpamDhcpOverride.ValueString()
-	}
-	if !data.IpamEnabled.IsNull() && !data.IpamEnabled.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["ipamEnabled"] = data.IpamEnabled.ValueString()
-	}
-	if !data.IpamGateway.IsNull() && !data.IpamGateway.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["ipamGateway"] = data.IpamGateway.ValueString()
-	}
-	if !data.LagPolicyName.IsNull() && !data.LagPolicyName.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["lagPolicyName"] = data.LagPolicyName.ValueString()
-	}
-	if !data.NetflowDir.IsNull() && !data.NetflowDir.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["netflowDir"] = data.NetflowDir.ValueString()
-	}
-	if !data.NetflowPref.IsNull() && !data.NetflowPref.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["netflowPref"] = data.NetflowPref.ValueString()
-	}
-	if !data.NumPorts.IsNull() && !data.NumPorts.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["numPorts"] = data.NumPorts.ValueString()
-	}
-	if !data.PortAllocation.IsNull() && !data.PortAllocation.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["portAllocation"] = data.PortAllocation.ValueString()
-	}
-	if !data.PrimaryEncap.IsNull() && !data.PrimaryEncap.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["primaryEncap"] = data.PrimaryEncap.ValueString()
-	}
-	if !data.PrimaryEncapInner.IsNull() && !data.PrimaryEncapInner.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["primaryEncapInner"] = data.PrimaryEncapInner.ValueString()
-	}
-	if !data.ResImedcy.IsNull() && !data.ResImedcy.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["resImedcy"] = data.ResImedcy.ValueString()
-	}
-	if !data.SecondaryEncapInner.IsNull() && !data.SecondaryEncapInner.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["secondaryEncapInner"] = data.SecondaryEncapInner.ValueString()
-	}
-	if !data.SwitchingMode.IsNull() && !data.SwitchingMode.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["switchingMode"] = data.SwitchingMode.ValueString()
-	}
-	if !data.TDn.IsNull() && !data.TDn.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["tDn"] = data.TDn.ValueString()
-	}
-	if !data.Untagged.IsNull() && !data.Untagged.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["untagged"] = data.Untagged.ValueString()
-	}
-	payload, err := json.Marshal(map[string]interface{}{"fvRsDomAtt": payloadMap})
-	if err != nil {
-		diags.AddError(
-			"Marshalling of json payload failed",
-			fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
-		)
-		return nil
-	}
-
-	jsonPayload, err := container.ParseJSON(payload)
-
-	if err != nil {
-		diags.AddError(
-			"Construction of json payload failed",
-			fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
-		)
-		return nil
-	}
-	return jsonPayload
+	tflog.Debug(ctx, "End import state of resource: aci_relation_to_domain")
 }

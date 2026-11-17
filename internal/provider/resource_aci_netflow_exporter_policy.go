@@ -6,33 +6,20 @@ package provider
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	"strings"
 
-	customTypes "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/custom_types"
-	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/validators"
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
-	"github.com/ciscoecosystem/aci-go-client/v2/container"
-	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
-	"github.com/hashicorp/terraform-plugin-framework/attr"
-	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectplanmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/setplanmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
-	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
+
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &NetflowExporterPolResource{}
+var _ resource.ResourceWithConfigure = &NetflowExporterPolResource{}
+var _ resource.ResourceWithModifyPlan = &NetflowExporterPolResource{}
 var _ resource.ResourceWithImportState = &NetflowExporterPolResource{}
 
 func NewNetflowExporterPolResource() resource.Resource {
@@ -48,672 +35,15 @@ type NetflowExporterPolResource struct {
 	client *client.Client
 }
 
-// NetflowExporterPolResourceModel describes the resource data model.
-type NetflowExporterPolResourceModel struct {
-	Id                     types.String                                     `tfsdk:"id"`
-	ParentDn               types.String                                     `tfsdk:"parent_dn"`
-	Annotation             types.String                                     `tfsdk:"annotation"`
-	Descr                  types.String                                     `tfsdk:"description"`
-	Dscp                   customTypes.NetflowExporterPolDscpStringValue    `tfsdk:"qos_dscp_value"`
-	DstAddr                customTypes.IPAddressStringValue                 `tfsdk:"destination_ip_address"`
-	DstPort                customTypes.NetflowExporterPolDstPortStringValue `tfsdk:"destination_port"`
-	Name                   types.String                                     `tfsdk:"name"`
-	NameAlias              types.String                                     `tfsdk:"name_alias"`
-	OwnerKey               types.String                                     `tfsdk:"owner_key"`
-	OwnerTag               types.String                                     `tfsdk:"owner_tag"`
-	SourceIpType           types.String                                     `tfsdk:"source_ip_type"`
-	SrcAddr                customTypes.IPAddressStringValue                 `tfsdk:"source_ip_address"`
-	Ver                    types.String                                     `tfsdk:"version"`
-	NetflowRsExporterToCtx types.Object                                     `tfsdk:"relation_to_vrf"`
-	NetflowRsExporterToEPg types.Object                                     `tfsdk:"relation_to_epg"`
-	TagAnnotation          types.Set                                        `tfsdk:"annotations"`
-	TagTag                 types.Set                                        `tfsdk:"tags"`
-}
-
-func getEmptyNetflowExporterPolResourceModel() *NetflowExporterPolResourceModel {
-	return &NetflowExporterPolResourceModel{
-		Id:           basetypes.NewStringNull(),
-		ParentDn:     basetypes.NewStringNull(),
-		Annotation:   basetypes.NewStringNull(),
-		Descr:        basetypes.NewStringNull(),
-		Dscp:         customTypes.NewNetflowExporterPolDscpStringNull(),
-		DstAddr:      customTypes.NewIPAddressStringNull(),
-		DstPort:      customTypes.NewNetflowExporterPolDstPortStringNull(),
-		Name:         basetypes.NewStringNull(),
-		NameAlias:    basetypes.NewStringNull(),
-		OwnerKey:     basetypes.NewStringNull(),
-		OwnerTag:     basetypes.NewStringNull(),
-		SourceIpType: basetypes.NewStringNull(),
-		SrcAddr:      customTypes.NewIPAddressStringNull(),
-		Ver:          basetypes.NewStringNull(),
-		NetflowRsExporterToCtx: types.ObjectNull(map[string]attr.Type{
-			"annotation":  types.StringType,
-			"target_dn":   types.StringType,
-			"annotations": types.SetType{ElemType: TagAnnotationNetflowRsExporterToCtxNetflowExporterPolType},
-			"tags":        types.SetType{ElemType: TagTagNetflowRsExporterToCtxNetflowExporterPolType},
-		}),
-		NetflowRsExporterToEPg: types.ObjectNull(map[string]attr.Type{
-			"annotation":  types.StringType,
-			"target_dn":   types.StringType,
-			"annotations": types.SetType{ElemType: TagAnnotationNetflowRsExporterToEPgNetflowExporterPolType},
-			"tags":        types.SetType{ElemType: TagTagNetflowRsExporterToEPgNetflowExporterPolType},
-		}),
-		TagAnnotation: types.SetNull(types.ObjectType{
-			AttrTypes: map[string]attr.Type{
-				"key":   types.StringType,
-				"value": types.StringType,
-			},
-		}),
-		TagTag: types.SetNull(types.ObjectType{
-			AttrTypes: map[string]attr.Type{
-				"key":   types.StringType,
-				"value": types.StringType,
-			},
-		}),
-	}
-}
-
-// NetflowRsExporterToCtxNetflowExporterPolResourceModel describes the resource data model for the children without relation ships.
-type NetflowRsExporterToCtxNetflowExporterPolResourceModel struct {
-	Annotation    types.String `tfsdk:"annotation"`
-	TDn           types.String `tfsdk:"target_dn"`
-	TagAnnotation types.Set    `tfsdk:"annotations"`
-	TagTag        types.Set    `tfsdk:"tags"`
-}
-
-func getEmptyNetflowRsExporterToCtxNetflowExporterPolResourceModel() NetflowRsExporterToCtxNetflowExporterPolResourceModel {
-	return NetflowRsExporterToCtxNetflowExporterPolResourceModel{
-		Annotation: basetypes.NewStringNull(),
-		TDn:        basetypes.NewStringNull(),
-		TagAnnotation: types.SetNull(types.ObjectType{
-			AttrTypes: map[string]attr.Type{
-				"key":   types.StringType,
-				"value": types.StringType,
-			},
-		}),
-		TagTag: types.SetNull(types.ObjectType{
-			AttrTypes: map[string]attr.Type{
-				"key":   types.StringType,
-				"value": types.StringType,
-			},
-		}),
-	}
-}
-
-var NetflowRsExporterToCtxNetflowExporterPolType = map[string]attr.Type{
-	"annotation":  types.StringType,
-	"target_dn":   types.StringType,
-	"annotations": types.SetType{ElemType: TagAnnotationNetflowRsExporterToCtxNetflowExporterPolType},
-	"tags":        types.SetType{ElemType: TagTagNetflowRsExporterToCtxNetflowExporterPolType},
-}
-
-// TagAnnotationNetflowRsExporterToCtxNetflowExporterPolResourceModel describes the resource data model for the children without relation ships.
-type TagAnnotationNetflowRsExporterToCtxNetflowExporterPolResourceModel struct {
-	Key   types.String `tfsdk:"key"`
-	Value types.String `tfsdk:"value"`
-}
-
-func getEmptyTagAnnotationNetflowRsExporterToCtxNetflowExporterPolResourceModel() TagAnnotationNetflowRsExporterToCtxNetflowExporterPolResourceModel {
-	return TagAnnotationNetflowRsExporterToCtxNetflowExporterPolResourceModel{
-		Key:   basetypes.NewStringNull(),
-		Value: basetypes.NewStringNull(),
-	}
-}
-
-var TagAnnotationNetflowRsExporterToCtxNetflowExporterPolType = types.ObjectType{
-	AttrTypes: map[string]attr.Type{
-		"key":   types.StringType,
-		"value": types.StringType,
-	},
-}
-
-// TagTagNetflowRsExporterToCtxNetflowExporterPolResourceModel describes the resource data model for the children without relation ships.
-type TagTagNetflowRsExporterToCtxNetflowExporterPolResourceModel struct {
-	Key   types.String `tfsdk:"key"`
-	Value types.String `tfsdk:"value"`
-}
-
-func getEmptyTagTagNetflowRsExporterToCtxNetflowExporterPolResourceModel() TagTagNetflowRsExporterToCtxNetflowExporterPolResourceModel {
-	return TagTagNetflowRsExporterToCtxNetflowExporterPolResourceModel{
-		Key:   basetypes.NewStringNull(),
-		Value: basetypes.NewStringNull(),
-	}
-}
-
-var TagTagNetflowRsExporterToCtxNetflowExporterPolType = types.ObjectType{
-	AttrTypes: map[string]attr.Type{
-		"key":   types.StringType,
-		"value": types.StringType,
-	},
-}
-
-// NetflowRsExporterToEPgNetflowExporterPolResourceModel describes the resource data model for the children without relation ships.
-type NetflowRsExporterToEPgNetflowExporterPolResourceModel struct {
-	Annotation    types.String `tfsdk:"annotation"`
-	TDn           types.String `tfsdk:"target_dn"`
-	TagAnnotation types.Set    `tfsdk:"annotations"`
-	TagTag        types.Set    `tfsdk:"tags"`
-}
-
-func getEmptyNetflowRsExporterToEPgNetflowExporterPolResourceModel() NetflowRsExporterToEPgNetflowExporterPolResourceModel {
-	return NetflowRsExporterToEPgNetflowExporterPolResourceModel{
-		Annotation: basetypes.NewStringNull(),
-		TDn:        basetypes.NewStringNull(),
-		TagAnnotation: types.SetNull(types.ObjectType{
-			AttrTypes: map[string]attr.Type{
-				"key":   types.StringType,
-				"value": types.StringType,
-			},
-		}),
-		TagTag: types.SetNull(types.ObjectType{
-			AttrTypes: map[string]attr.Type{
-				"key":   types.StringType,
-				"value": types.StringType,
-			},
-		}),
-	}
-}
-
-var NetflowRsExporterToEPgNetflowExporterPolType = map[string]attr.Type{
-	"annotation":  types.StringType,
-	"target_dn":   types.StringType,
-	"annotations": types.SetType{ElemType: TagAnnotationNetflowRsExporterToEPgNetflowExporterPolType},
-	"tags":        types.SetType{ElemType: TagTagNetflowRsExporterToEPgNetflowExporterPolType},
-}
-
-// TagAnnotationNetflowRsExporterToEPgNetflowExporterPolResourceModel describes the resource data model for the children without relation ships.
-type TagAnnotationNetflowRsExporterToEPgNetflowExporterPolResourceModel struct {
-	Key   types.String `tfsdk:"key"`
-	Value types.String `tfsdk:"value"`
-}
-
-func getEmptyTagAnnotationNetflowRsExporterToEPgNetflowExporterPolResourceModel() TagAnnotationNetflowRsExporterToEPgNetflowExporterPolResourceModel {
-	return TagAnnotationNetflowRsExporterToEPgNetflowExporterPolResourceModel{
-		Key:   basetypes.NewStringNull(),
-		Value: basetypes.NewStringNull(),
-	}
-}
-
-var TagAnnotationNetflowRsExporterToEPgNetflowExporterPolType = types.ObjectType{
-	AttrTypes: map[string]attr.Type{
-		"key":   types.StringType,
-		"value": types.StringType,
-	},
-}
-
-// TagTagNetflowRsExporterToEPgNetflowExporterPolResourceModel describes the resource data model for the children without relation ships.
-type TagTagNetflowRsExporterToEPgNetflowExporterPolResourceModel struct {
-	Key   types.String `tfsdk:"key"`
-	Value types.String `tfsdk:"value"`
-}
-
-func getEmptyTagTagNetflowRsExporterToEPgNetflowExporterPolResourceModel() TagTagNetflowRsExporterToEPgNetflowExporterPolResourceModel {
-	return TagTagNetflowRsExporterToEPgNetflowExporterPolResourceModel{
-		Key:   basetypes.NewStringNull(),
-		Value: basetypes.NewStringNull(),
-	}
-}
-
-var TagTagNetflowRsExporterToEPgNetflowExporterPolType = types.ObjectType{
-	AttrTypes: map[string]attr.Type{
-		"key":   types.StringType,
-		"value": types.StringType,
-	},
-}
-
-// TagAnnotationNetflowExporterPolResourceModel describes the resource data model for the children without relation ships.
-type TagAnnotationNetflowExporterPolResourceModel struct {
-	Key   types.String `tfsdk:"key"`
-	Value types.String `tfsdk:"value"`
-}
-
-func getEmptyTagAnnotationNetflowExporterPolResourceModel() TagAnnotationNetflowExporterPolResourceModel {
-	return TagAnnotationNetflowExporterPolResourceModel{
-		Key:   basetypes.NewStringNull(),
-		Value: basetypes.NewStringNull(),
-	}
-}
-
-var TagAnnotationNetflowExporterPolType = types.ObjectType{
-	AttrTypes: map[string]attr.Type{
-		"key":   types.StringType,
-		"value": types.StringType,
-	},
-}
-
-// TagTagNetflowExporterPolResourceModel describes the resource data model for the children without relation ships.
-type TagTagNetflowExporterPolResourceModel struct {
-	Key   types.String `tfsdk:"key"`
-	Value types.String `tfsdk:"value"`
-}
-
-func getEmptyTagTagNetflowExporterPolResourceModel() TagTagNetflowExporterPolResourceModel {
-	return TagTagNetflowExporterPolResourceModel{
-		Key:   basetypes.NewStringNull(),
-		Value: basetypes.NewStringNull(),
-	}
-}
-
-var TagTagNetflowExporterPolType = types.ObjectType{
-	AttrTypes: map[string]attr.Type{
-		"key":   types.StringType,
-		"value": types.StringType,
-	},
-}
-
-type NetflowExporterPolIdentifier struct {
-	Name types.String
-}
-
-func (r *NetflowExporterPolResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
-	if !req.Plan.Raw.IsNull() {
-		var planData, stateData, configData *NetflowExporterPolResourceModel
-		resp.Diagnostics.Append(req.Plan.Get(ctx, &planData)...)
-		resp.Diagnostics.Append(req.State.Get(ctx, &stateData)...)
-		resp.Diagnostics.Append(req.Config.Get(ctx, &configData)...)
-
-		if resp.Diagnostics.HasError() {
-			return
-		}
-
-		if (planData.Id.IsUnknown() || planData.Id.IsNull()) && !planData.ParentDn.IsUnknown() && !planData.Name.IsUnknown() {
-			setNetflowExporterPolId(ctx, planData)
-		}
-
-		if stateData == nil && !globalAllowExistingOnCreate && !planData.Id.IsUnknown() && !planData.Id.IsNull() {
-			CheckDn(ctx, &resp.Diagnostics, r.client, "netflowExporterPol", planData.Id.ValueString())
-			if resp.Diagnostics.HasError() {
-				return
-			}
-		}
-
-		if !configData.NetflowRsExporterToCtx.IsNull() && stateData != nil {
-			if IsEmptySingleNestedAttribute(configData.NetflowRsExporterToCtx.Attributes()) {
-				NetflowRsExporterToCtxObject, _ := types.ObjectValueFrom(ctx, NetflowRsExporterToCtxNetflowExporterPolType, getEmptyNetflowRsExporterToCtxNetflowExporterPolResourceModel())
-				planData.NetflowRsExporterToCtx = NetflowRsExporterToCtxObject
-			}
-		}
-
-		if !configData.NetflowRsExporterToEPg.IsNull() && stateData != nil {
-			if IsEmptySingleNestedAttribute(configData.NetflowRsExporterToEPg.Attributes()) {
-				NetflowRsExporterToEPgObject, _ := types.ObjectValueFrom(ctx, NetflowRsExporterToEPgNetflowExporterPolType, getEmptyNetflowRsExporterToEPgNetflowExporterPolResourceModel())
-				planData.NetflowRsExporterToEPg = NetflowRsExporterToEPgObject
-			}
-		}
-
-		resp.Diagnostics.Append(resp.Plan.Set(ctx, &planData)...)
-	}
-}
-
 func (r *NetflowExporterPolResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	tflog.Debug(ctx, "Start metadata of resource: aci_netflow_exporter_policy")
 	resp.TypeName = req.ProviderTypeName + "_netflow_exporter_policy"
 	tflog.Debug(ctx, "End metadata of resource: aci_netflow_exporter_policy")
 }
 
-func (r *NetflowExporterPolResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *NetflowExporterPolResource) Schema(ctx context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	tflog.Debug(ctx, "Start schema of resource: aci_netflow_exporter_policy")
-	resp.Schema = schema.Schema{
-		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "The netflow_exporter_policy resource for the 'netflowExporterPol' class",
-
-		Attributes: map[string]schema.Attribute{
-			"id": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the NetFlow Exporter Policy object.",
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-				},
-			},
-			"parent_dn": schema.StringAttribute{
-				Optional:            true,
-				Computed:            true,
-				Default:             stringdefault.StaticString("uni/infra"),
-				MarkdownDescription: "The distinguished name (DN) of the parent object.",
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					stringplanmodifier.RequiresReplace(),
-				},
-			},
-			"annotation": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				Default:             stringdefault.StaticString(globalAnnotation),
-				MarkdownDescription: `The annotation of the NetFlow Exporter Policy object.`,
-			},
-			"description": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				MarkdownDescription: `The description of the NetFlow Exporter Policy object.`,
-			},
-			"qos_dscp_value": schema.StringAttribute{
-				CustomType: customTypes.NetflowExporterPolDscpStringType{},
-				Optional:   true,
-				Computed:   true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				Validators: []validator.String{
-					stringvalidator.Any(
-						stringvalidator.OneOf("AF11", "AF12", "AF13", "AF21", "AF22", "AF23", "AF31", "AF32", "AF33", "AF41", "AF42", "AF43", "CS0", "CS1", "CS2", "CS3", "CS4", "CS5", "CS6", "CS7", "EF", "VA"),
-						validators.InBetweenFromString(0, 63),
-					),
-				},
-				MarkdownDescription: `The DSCP value of the NetFlow Exporter Policy object.`,
-			},
-			"destination_ip_address": schema.StringAttribute{
-				CustomType: customTypes.IPAddressStringType{},
-				Required:   true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				MarkdownDescription: `The destination IP address of the remote node.`,
-			},
-			"destination_port": schema.StringAttribute{
-				CustomType: customTypes.NetflowExporterPolDstPortStringType{},
-				Required:   true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				Validators: []validator.String{
-					stringvalidator.Any(
-						stringvalidator.OneOf("dns", "ftpData", "http", "https", "pop3", "rtsp", "smtp", "ssh", "unspecified"),
-						validators.InBetweenFromString(0, 65535),
-					),
-				},
-				MarkdownDescription: `The destination port of the remote node.`,
-			},
-			"name": schema.StringAttribute{
-				Required: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-					stringplanmodifier.RequiresReplace(),
-				},
-				MarkdownDescription: `The name of the NetFlow Exporter Policy object.`,
-			},
-			"name_alias": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				MarkdownDescription: `The name alias of the NetFlow Exporter Policy object.`,
-			},
-			"owner_key": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				MarkdownDescription: `The key for enabling clients to own their data for entity correlation.`,
-			},
-			"owner_tag": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
-			},
-			"source_ip_type": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				Validators: []validator.String{
-					stringvalidator.OneOf("custom-src-ip", "inband-mgmt-ip", "oob-mgmt-ip", "ptep"),
-				},
-				MarkdownDescription: `The type of the source IP address for the NetFlow Exporter Policy object.`,
-			},
-			"source_ip_address": schema.StringAttribute{
-				CustomType: customTypes.IPAddressStringType{},
-				Optional:   true,
-				Computed:   true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				MarkdownDescription: `The source IP address.`,
-			},
-			"version": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				Validators: []validator.String{
-					stringvalidator.OneOf("cisco-v1", "v5", "v9"),
-				},
-				MarkdownDescription: `The NetFlow Exporter Version of the NetFlow Exporter Policy object.`,
-			},
-			"relation_to_vrf": schema.SingleNestedAttribute{
-				MarkdownDescription: `Points to the Ctx behind which the Netflow Exporter Resides`,
-				Optional:            true,
-				Computed:            true,
-				PlanModifiers: []planmodifier.Object{
-					objectplanmodifier.UseNonNullStateForUnknown(),
-				},
-				Attributes: map[string]schema.Attribute{
-					"annotation": schema.StringAttribute{
-						Optional: true,
-						Computed: true,
-						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseNonNullStateForUnknown(),
-						},
-						MarkdownDescription: `The annotation of the Relation From NetFlow Exporter To VRF object.`,
-					},
-					"target_dn": schema.StringAttribute{
-						Optional: true,
-						Computed: true,
-						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseNonNullStateForUnknown(),
-						},
-						MarkdownDescription: `The distinguished name of the target.`,
-					},
-					"annotations": schema.SetNestedAttribute{
-						MarkdownDescription: ``,
-						Optional:            true,
-						Computed:            true,
-						PlanModifiers: []planmodifier.Set{
-							setplanmodifier.UseNonNullStateForUnknown(),
-						},
-						NestedObject: schema.NestedAttributeObject{
-							Attributes: map[string]schema.Attribute{
-								"key": schema.StringAttribute{
-									Required: true,
-									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseNonNullStateForUnknown(),
-									},
-									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-								},
-								"value": schema.StringAttribute{
-									Required: true,
-									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseNonNullStateForUnknown(),
-									},
-									MarkdownDescription: `The value of the property.`,
-								},
-							},
-						},
-					},
-					"tags": schema.SetNestedAttribute{
-						MarkdownDescription: ``,
-						Optional:            true,
-						Computed:            true,
-						PlanModifiers: []planmodifier.Set{
-							setplanmodifier.UseNonNullStateForUnknown(),
-						},
-						NestedObject: schema.NestedAttributeObject{
-							Attributes: map[string]schema.Attribute{
-								"key": schema.StringAttribute{
-									Required: true,
-									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseNonNullStateForUnknown(),
-									},
-									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-								},
-								"value": schema.StringAttribute{
-									Required: true,
-									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseNonNullStateForUnknown(),
-									},
-									MarkdownDescription: `The value of the property.`,
-								},
-							},
-						},
-					},
-				},
-			},
-			"relation_to_epg": schema.SingleNestedAttribute{
-				MarkdownDescription: `Points to the EPg behind which the Netflow Exporter Resides`,
-				Optional:            true,
-				Computed:            true,
-				PlanModifiers: []planmodifier.Object{
-					objectplanmodifier.UseNonNullStateForUnknown(),
-				},
-				Attributes: map[string]schema.Attribute{
-					"annotation": schema.StringAttribute{
-						Optional: true,
-						Computed: true,
-						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseNonNullStateForUnknown(),
-						},
-						MarkdownDescription: `The annotation of the Relation From NetFlow Exporter To EPG object.`,
-					},
-					"target_dn": schema.StringAttribute{
-						Optional: true,
-						Computed: true,
-						PlanModifiers: []planmodifier.String{
-							stringplanmodifier.UseNonNullStateForUnknown(),
-						},
-						MarkdownDescription: `The distinguished name of the target.`,
-					},
-					"annotations": schema.SetNestedAttribute{
-						MarkdownDescription: ``,
-						Optional:            true,
-						Computed:            true,
-						PlanModifiers: []planmodifier.Set{
-							setplanmodifier.UseNonNullStateForUnknown(),
-						},
-						NestedObject: schema.NestedAttributeObject{
-							Attributes: map[string]schema.Attribute{
-								"key": schema.StringAttribute{
-									Required: true,
-									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseNonNullStateForUnknown(),
-									},
-									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-								},
-								"value": schema.StringAttribute{
-									Required: true,
-									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseNonNullStateForUnknown(),
-									},
-									MarkdownDescription: `The value of the property.`,
-								},
-							},
-						},
-					},
-					"tags": schema.SetNestedAttribute{
-						MarkdownDescription: ``,
-						Optional:            true,
-						Computed:            true,
-						PlanModifiers: []planmodifier.Set{
-							setplanmodifier.UseNonNullStateForUnknown(),
-						},
-						NestedObject: schema.NestedAttributeObject{
-							Attributes: map[string]schema.Attribute{
-								"key": schema.StringAttribute{
-									Required: true,
-									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseNonNullStateForUnknown(),
-									},
-									MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-								},
-								"value": schema.StringAttribute{
-									Required: true,
-									PlanModifiers: []planmodifier.String{
-										stringplanmodifier.UseNonNullStateForUnknown(),
-									},
-									MarkdownDescription: `The value of the property.`,
-								},
-							},
-						},
-					},
-				},
-			},
-			"annotations": schema.SetNestedAttribute{
-				MarkdownDescription: ``,
-				Optional:            true,
-				Computed:            true,
-				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseNonNullStateForUnknown(),
-				},
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"key": schema.StringAttribute{
-							Required: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseNonNullStateForUnknown(),
-							},
-							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-						},
-						"value": schema.StringAttribute{
-							Required: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseNonNullStateForUnknown(),
-							},
-							MarkdownDescription: `The value of the property.`,
-						},
-					},
-				},
-			},
-			"tags": schema.SetNestedAttribute{
-				MarkdownDescription: ``,
-				Optional:            true,
-				Computed:            true,
-				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseNonNullStateForUnknown(),
-				},
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"key": schema.StringAttribute{
-							Required: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseNonNullStateForUnknown(),
-							},
-							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-						},
-						"value": schema.StringAttribute{
-							Required: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseNonNullStateForUnknown(),
-							},
-							MarkdownDescription: `The value of the property.`,
-						},
-					},
-				},
-			},
-		},
-	}
+	resp.Schema = models.NetflowExporterPolResourceSchema(globalAnnotation)
 	tflog.Debug(ctx, "End schema of resource: aci_netflow_exporter_policy")
 }
 
@@ -724,810 +54,218 @@ func (r *NetflowExporterPolResource) Configure(ctx context.Context, req resource
 		return
 	}
 
-	client, ok := req.ProviderData.(*client.Client)
-
+	aciClient, ok := req.ProviderData.(*client.Client)
 	if !ok {
 		resp.Diagnostics.AddError(
 			"Unexpected Resource Configure Type",
 			fmt.Sprintf("Expected *client.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
-
 		return
 	}
 
-	r.client = client
+	r.client = aciClient
 	tflog.Debug(ctx, "End configure of resource: aci_netflow_exporter_policy")
+}
+
+func (r *NetflowExporterPolResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
+	if req.Plan.Raw.IsNull() {
+		return
+	}
+
+	var data models.NetflowExporterPolRootModel
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	// A parent reference or naming value may only become known during apply.
+	if data.ParentDN.IsNull() || data.ParentDN.IsUnknown() {
+		return
+	}
+	if data.Name.IsNull() || data.Name.IsUnknown() {
+		return
+	}
+
+	data.SetIDFromDN(data.BuildDN())
+	if req.State.Raw.IsNull() && !globalAllowExistingOnCreate {
+		CheckDn(ctx, &resp.Diagnostics, r.client, "netflowExporterPol", data.ID.ValueString())
+		if resp.Diagnostics.HasError() {
+			return
+		}
+	}
+
+	resp.Diagnostics.Append(resp.Plan.Set(ctx, &data)...)
 }
 
 func (r *NetflowExporterPolResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 	tflog.Debug(ctx, "Start create of resource: aci_netflow_exporter_policy")
-	// On create retrieve information on current state prior to making any changes in order to determine child delete operations
-	var stateData *NetflowExporterPolResourceModel
-	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
-	if stateData.Id.IsUnknown() || stateData.Id.IsNull() {
-		setNetflowExporterPolId(ctx, stateData)
+
+	var data models.NetflowExporterPolRootModel
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
+	if resp.Diagnostics.HasError() {
+		return
 	}
-	getAndSetNetflowExporterPolAttributes(ctx, &resp.Diagnostics, r.client, stateData)
-	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
+
+	dn := data.BuildDN()
+	data.SetIDFromDN(dn)
+	// Read existing children before adoption so payload construction can reconcile them.
+	priorState := models.NewNetflowExporterPolRootModelNull()
+	response := getManagedObject(ctx, &resp.Diagnostics, r.client, dn, data.SupportedSubtreeClasses(apicVersion))
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	found, diagnostics := priorState.SetFromResponse(ctx, response)
+	resp.Diagnostics.Append(diagnostics...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	if found && !globalAllowExistingOnCreate {
 		resp.Diagnostics.AddError(
 			"Object Already Exists",
-			fmt.Sprintf("The netflowExporterPol object with DN '%s' already exists.", stateData.Id.ValueString()),
+			fmt.Sprintf("The netflowExporterPol object with DN '%s' already exists.", dn),
 		)
 		return
 	}
 
-	var data *NetflowExporterPolResourceModel
-
-	// Read Terraform plan data into the model
-	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
-
+	payload, diagnostics := data.BuildPayload(ctx, &priorState.NetflowExporterPolModel, true, !globalAllowExistingOnCreate, globalAnnotation)
+	resp.Diagnostics.Append(diagnostics...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	if data.Id.IsUnknown() || data.Id.IsNull() {
-		setNetflowExporterPolId(ctx, data)
-	}
-
-	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_netflow_exporter_policy with id '%s'", data.Id.ValueString()))
-
-	var netflowRsExporterToCtxPlan, netflowRsExporterToCtxState NetflowRsExporterToCtxNetflowExporterPolResourceModel
-	data.NetflowRsExporterToCtx.As(ctx, &netflowRsExporterToCtxPlan, basetypes.ObjectAsOptions{})
-	stateData.NetflowRsExporterToCtx.As(ctx, &netflowRsExporterToCtxState, basetypes.ObjectAsOptions{})
-	var netflowRsExporterToEPgPlan, netflowRsExporterToEPgState NetflowRsExporterToEPgNetflowExporterPolResourceModel
-	data.NetflowRsExporterToEPg.As(ctx, &netflowRsExporterToEPgPlan, basetypes.ObjectAsOptions{})
-	stateData.NetflowRsExporterToEPg.As(ctx, &netflowRsExporterToEPgState, basetypes.ObjectAsOptions{})
-	var tagAnnotationPlan, tagAnnotationState []TagAnnotationNetflowExporterPolResourceModel
-	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
-	stateData.TagAnnotation.ElementsAs(ctx, &tagAnnotationState, false)
-	var tagTagPlan, tagTagState []TagTagNetflowExporterPolResourceModel
-	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
-	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getNetflowExporterPolCreateJsonPayload(ctx, &resp.Diagnostics, true, data, netflowRsExporterToCtxPlan, netflowRsExporterToCtxState, netflowRsExporterToEPgPlan, netflowRsExporterToEPgState, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
-
+	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", dn), "POST", payload)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
-
+	// Retain the created object's DN if the subsequent read fails.
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), data.ID)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	getAndSetNetflowExporterPolAttributes(ctx, &resp.Diagnostics, r.client, data)
+	response = getManagedObject(ctx, &resp.Diagnostics, r.client, dn, data.SupportedSubtreeClasses(apicVersion))
+	if resp.Diagnostics.HasError() {
+		return
+	}
 
-	// Save data into Terraform state
+	found, diagnostics = data.SetFromResponse(ctx, response)
+	resp.Diagnostics.Append(diagnostics...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	if !found {
+		resp.Diagnostics.AddError(
+			"Failed to read aci_netflow_exporter_policy resource",
+			fmt.Sprintf("The aci_netflow_exporter_policy resource with id '%s' has not been found after creation", dn),
+		)
+		return
+	}
+
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_netflow_exporter_policy with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_netflow_exporter_policy with id '%s'", data.ID.ValueString()))
 }
 
 func (r *NetflowExporterPolResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 	tflog.Debug(ctx, "Start read of resource: aci_netflow_exporter_policy")
-	var data *NetflowExporterPolResourceModel
 
-	// Read Terraform prior state data into the model
+	var data models.NetflowExporterPolRootModel
 	resp.Diagnostics.Append(req.State.Get(ctx, &data)...)
-
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Read of resource aci_netflow_exporter_policy with id '%s'", data.Id.ValueString()))
-
-	getAndSetNetflowExporterPolAttributes(ctx, &resp.Diagnostics, r.client, data)
-
-	// Save updated data into Terraform state
-	if data.Id.IsNull() {
-		var emptyData *NetflowExporterPolResourceModel
-		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
-	} else {
-		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	// Imports initially provide only ID; the response reconstructs the remaining fields.
+	response := getManagedObject(ctx, &resp.Diagnostics, r.client, data.ID.ValueString(), data.SupportedSubtreeClasses(apicVersion))
+	if resp.Diagnostics.HasError() {
+		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_netflow_exporter_policy with id '%s'", data.Id.ValueString()))
+	found, diagnostics := data.SetFromResponse(ctx, response)
+	resp.Diagnostics.Append(diagnostics...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	if !found {
+		resp.State.RemoveResource(ctx)
+		return
+	}
+
+	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_netflow_exporter_policy with id '%s'", data.ID.ValueString()))
 }
 
 func (r *NetflowExporterPolResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 	tflog.Debug(ctx, "Start update of resource: aci_netflow_exporter_policy")
-	var data *NetflowExporterPolResourceModel
-	var stateData *NetflowExporterPolResourceModel
 
-	// Read Terraform plan data into the model
+	var data, priorState models.NetflowExporterPolRootModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
-	resp.Diagnostics.Append(req.State.Get(ctx, &stateData)...)
-
+	resp.Diagnostics.Append(req.State.Get(ctx, &priorState)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_netflow_exporter_policy with id '%s'", data.Id.ValueString()))
-
-	var netflowRsExporterToCtxPlan, netflowRsExporterToCtxState NetflowRsExporterToCtxNetflowExporterPolResourceModel
-	data.NetflowRsExporterToCtx.As(ctx, &netflowRsExporterToCtxPlan, basetypes.ObjectAsOptions{})
-	stateData.NetflowRsExporterToCtx.As(ctx, &netflowRsExporterToCtxState, basetypes.ObjectAsOptions{})
-	var netflowRsExporterToEPgPlan, netflowRsExporterToEPgState NetflowRsExporterToEPgNetflowExporterPolResourceModel
-	data.NetflowRsExporterToEPg.As(ctx, &netflowRsExporterToEPgPlan, basetypes.ObjectAsOptions{})
-	stateData.NetflowRsExporterToEPg.As(ctx, &netflowRsExporterToEPgState, basetypes.ObjectAsOptions{})
-	var tagAnnotationPlan, tagAnnotationState []TagAnnotationNetflowExporterPolResourceModel
-	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
-	stateData.TagAnnotation.ElementsAs(ctx, &tagAnnotationState, false)
-	var tagTagPlan, tagTagState []TagTagNetflowExporterPolResourceModel
-	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
-	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getNetflowExporterPolCreateJsonPayload(ctx, &resp.Diagnostics, false, data, netflowRsExporterToCtxPlan, netflowRsExporterToCtxState, netflowRsExporterToEPgPlan, netflowRsExporterToEPgState, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
-
+	dn := data.BuildDN()
+	data.SetIDFromDN(dn)
+	payload, diagnostics := data.BuildPayload(ctx, &priorState.NetflowExporterPolModel, false, false, globalAnnotation)
+	resp.Diagnostics.Append(diagnostics...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
-
+	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", dn), "POST", payload)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	getAndSetNetflowExporterPolAttributes(ctx, &resp.Diagnostics, r.client, data)
+	response := getManagedObject(ctx, &resp.Diagnostics, r.client, dn, data.SupportedSubtreeClasses(apicVersion))
+	if resp.Diagnostics.HasError() {
+		return
+	}
 
-	// Save updated data into Terraform state
+	found, diagnostics := data.SetFromResponse(ctx, response)
+	resp.Diagnostics.Append(diagnostics...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	if !found {
+		resp.Diagnostics.AddError(
+			"Failed to read aci_netflow_exporter_policy resource",
+			fmt.Sprintf("The aci_netflow_exporter_policy resource with id '%s' has not been found after update", dn),
+		)
+		return
+	}
+
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_netflow_exporter_policy with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_netflow_exporter_policy with id '%s'", data.ID.ValueString()))
 }
 
 func (r *NetflowExporterPolResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
 	tflog.Debug(ctx, "Start delete of resource: aci_netflow_exporter_policy")
-	var data *NetflowExporterPolResourceModel
 
-	// Read Terraform prior state data into the model
+	var data models.NetflowExporterPolRootModel
 	resp.Diagnostics.Append(req.State.Get(ctx, &data)...)
-
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Delete of resource aci_netflow_exporter_policy with id '%s'", data.Id.ValueString()))
-	jsonPayload := GetDeleteJsonPayload(ctx, &resp.Diagnostics, "netflowExporterPol", data.Id.ValueString())
+	payload, diagnostics := data.BuildDeletePayload(ctx)
+	resp.Diagnostics.Append(diagnostics...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
+	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.ID.ValueString()), "POST", payload)
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	tflog.Debug(ctx, fmt.Sprintf("End delete of resource aci_netflow_exporter_policy with id '%s'", data.Id.ValueString()))
+
+	tflog.Debug(ctx, fmt.Sprintf("End delete of resource aci_netflow_exporter_policy with id '%s'", data.ID.ValueString()))
 }
 
 func (r *NetflowExporterPolResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_netflow_exporter_policy")
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
-
-	var stateData *NetflowExporterPolResourceModel
-	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
-	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_netflow_exporter_policy with id '%s'", stateData.Id.ValueString()))
-
-	tflog.Debug(ctx, "End import of state resource: aci_netflow_exporter_policy")
-}
-
-func getAndSetNetflowExporterPolAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *NetflowExporterPolResourceModel) {
-	childClasses := getChildClassesForGetRequest([]string{"netflowRsExporterToCtx", "netflowRsExporterToEPg", "tagAnnotation", "tagTag"})
-	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), strings.Join(childClasses, ",")), "GET", nil)
-
-	readData := getEmptyNetflowExporterPolResourceModel()
-
-	if diags.HasError() {
-		return
-	}
-	if requestData.Search("imdata").Search("netflowExporterPol").Data() != nil {
-		classReadInfo := requestData.Search("imdata").Search("netflowExporterPol").Data().([]interface{})
-		if len(classReadInfo) == 1 {
-			attributes := classReadInfo[0].(map[string]interface{})["attributes"].(map[string]interface{})
-			for attributeName, attributeValue := range attributes {
-				if attributeName == "dn" {
-					readData.Id = basetypes.NewStringValue(attributeValue.(string))
-					setNetflowExporterPolParentDn(ctx, attributeValue.(string), readData)
-				}
-				if attributeName == "annotation" {
-					readData.Annotation = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "descr" {
-					readData.Descr = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "dscp" {
-					readData.Dscp = customTypes.NewNetflowExporterPolDscpStringValue(attributeValue.(string))
-				}
-				if attributeName == "dstAddr" {
-					readData.DstAddr = customTypes.NewIPAddressStringValue(attributeValue.(string))
-				}
-				if attributeName == "dstPort" {
-					readData.DstPort = customTypes.NewNetflowExporterPolDstPortStringValue(attributeValue.(string))
-				}
-				if attributeName == "name" {
-					readData.Name = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "nameAlias" {
-					readData.NameAlias = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "ownerKey" {
-					readData.OwnerKey = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "ownerTag" {
-					readData.OwnerTag = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "sourceIpType" {
-					readData.SourceIpType = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "srcAddr" {
-					readData.SrcAddr = customTypes.NewIPAddressStringValue(attributeValue.(string))
-				}
-				if attributeName == "ver" {
-					readData.Ver = basetypes.NewStringValue(attributeValue.(string))
-				}
-			}
-			NetflowRsExporterToCtxNetflowExporterPolList := make([]NetflowRsExporterToCtxNetflowExporterPolResourceModel, 0)
-			NetflowRsExporterToEPgNetflowExporterPolList := make([]NetflowRsExporterToEPgNetflowExporterPolResourceModel, 0)
-			TagAnnotationNetflowExporterPolList := make([]TagAnnotationNetflowExporterPolResourceModel, 0)
-			TagTagNetflowExporterPolList := make([]TagTagNetflowExporterPolResourceModel, 0)
-			_, ok := classReadInfo[0].(map[string]interface{})["children"]
-			if ok {
-				children := classReadInfo[0].(map[string]interface{})["children"].([]interface{})
-				for _, child := range children {
-					for childClassName, childClassDetails := range child.(map[string]interface{}) {
-						childAttributes := childClassDetails.(map[string]interface{})["attributes"].(map[string]interface{})
-						if childClassName == "netflowRsExporterToCtx" {
-							NetflowRsExporterToCtxNetflowExporterPol := getEmptyNetflowRsExporterToCtxNetflowExporterPolResourceModel()
-							for childAttributeName, childAttributeValue := range childAttributes {
-								if childAttributeName == "annotation" {
-									NetflowRsExporterToCtxNetflowExporterPol.Annotation = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-								if childAttributeName == "tDn" {
-									NetflowRsExporterToCtxNetflowExporterPol.TDn = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-
-							}
-							TagAnnotationNetflowRsExporterToCtxNetflowExporterPolList := make([]TagAnnotationNetflowRsExporterToCtxNetflowExporterPolResourceModel, 0)
-							TagTagNetflowRsExporterToCtxNetflowExporterPolList := make([]TagTagNetflowRsExporterToCtxNetflowExporterPolResourceModel, 0)
-							childrenOfNetflowRsExporterToCtxNetflowExporterPol, childrenOfNetflowRsExporterToCtxNetflowExporterPolExist := childClassDetails.(map[string]interface{})["children"]
-							if childrenOfNetflowRsExporterToCtxNetflowExporterPolExist {
-								for _, childNetflowRsExporterToCtxNetflowExporterPol := range childrenOfNetflowRsExporterToCtxNetflowExporterPol.([]interface{}) {
-									for childClassNameNetflowRsExporterToCtxNetflowExporterPol, childClassDetailsNetflowRsExporterToCtxNetflowExporterPol := range childNetflowRsExporterToCtxNetflowExporterPol.(map[string]interface{}) {
-										if childClassNameNetflowRsExporterToCtxNetflowExporterPol == "tagAnnotation" {
-											TagAnnotationNetflowRsExporterToCtxNetflowExporterPol := getEmptyTagAnnotationNetflowRsExporterToCtxNetflowExporterPolResourceModel()
-											tagAnnotationchildAttributeValue := childClassDetailsNetflowRsExporterToCtxNetflowExporterPol.(map[string]interface{})["attributes"].(map[string]interface{})
-											for childAttributeName, childAttributeValue := range tagAnnotationchildAttributeValue {
-												if childAttributeName == "key" {
-													TagAnnotationNetflowRsExporterToCtxNetflowExporterPol.Key = basetypes.NewStringValue(childAttributeValue.(string))
-												}
-												if childAttributeName == "value" {
-													TagAnnotationNetflowRsExporterToCtxNetflowExporterPol.Value = basetypes.NewStringValue(childAttributeValue.(string))
-												}
-											}
-											TagAnnotationNetflowRsExporterToCtxNetflowExporterPolList = append(TagAnnotationNetflowRsExporterToCtxNetflowExporterPolList, TagAnnotationNetflowRsExporterToCtxNetflowExporterPol)
-										}
-										if childClassNameNetflowRsExporterToCtxNetflowExporterPol == "tagTag" {
-											TagTagNetflowRsExporterToCtxNetflowExporterPol := getEmptyTagTagNetflowRsExporterToCtxNetflowExporterPolResourceModel()
-											tagTagchildAttributeValue := childClassDetailsNetflowRsExporterToCtxNetflowExporterPol.(map[string]interface{})["attributes"].(map[string]interface{})
-											for childAttributeName, childAttributeValue := range tagTagchildAttributeValue {
-												if childAttributeName == "key" {
-													TagTagNetflowRsExporterToCtxNetflowExporterPol.Key = basetypes.NewStringValue(childAttributeValue.(string))
-												}
-												if childAttributeName == "value" {
-													TagTagNetflowRsExporterToCtxNetflowExporterPol.Value = basetypes.NewStringValue(childAttributeValue.(string))
-												}
-											}
-											TagTagNetflowRsExporterToCtxNetflowExporterPolList = append(TagTagNetflowRsExporterToCtxNetflowExporterPolList, TagTagNetflowRsExporterToCtxNetflowExporterPol)
-										}
-									}
-								}
-							}
-							TagAnnotationNetflowRsExporterToCtxNetflowExporterPolSet, _ := types.SetValueFrom(ctx, TagAnnotationNetflowRsExporterToCtxNetflowExporterPolType, TagAnnotationNetflowRsExporterToCtxNetflowExporterPolList)
-							NetflowRsExporterToCtxNetflowExporterPol.TagAnnotation = TagAnnotationNetflowRsExporterToCtxNetflowExporterPolSet
-							TagTagNetflowRsExporterToCtxNetflowExporterPolSet, _ := types.SetValueFrom(ctx, TagTagNetflowRsExporterToCtxNetflowExporterPolType, TagTagNetflowRsExporterToCtxNetflowExporterPolList)
-							NetflowRsExporterToCtxNetflowExporterPol.TagTag = TagTagNetflowRsExporterToCtxNetflowExporterPolSet
-							NetflowRsExporterToCtxNetflowExporterPolList = append(NetflowRsExporterToCtxNetflowExporterPolList, NetflowRsExporterToCtxNetflowExporterPol)
-						}
-						if childClassName == "netflowRsExporterToEPg" {
-							NetflowRsExporterToEPgNetflowExporterPol := getEmptyNetflowRsExporterToEPgNetflowExporterPolResourceModel()
-							for childAttributeName, childAttributeValue := range childAttributes {
-								if childAttributeName == "annotation" {
-									NetflowRsExporterToEPgNetflowExporterPol.Annotation = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-								if childAttributeName == "tDn" {
-									NetflowRsExporterToEPgNetflowExporterPol.TDn = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-
-							}
-							TagAnnotationNetflowRsExporterToEPgNetflowExporterPolList := make([]TagAnnotationNetflowRsExporterToEPgNetflowExporterPolResourceModel, 0)
-							TagTagNetflowRsExporterToEPgNetflowExporterPolList := make([]TagTagNetflowRsExporterToEPgNetflowExporterPolResourceModel, 0)
-							childrenOfNetflowRsExporterToEPgNetflowExporterPol, childrenOfNetflowRsExporterToEPgNetflowExporterPolExist := childClassDetails.(map[string]interface{})["children"]
-							if childrenOfNetflowRsExporterToEPgNetflowExporterPolExist {
-								for _, childNetflowRsExporterToEPgNetflowExporterPol := range childrenOfNetflowRsExporterToEPgNetflowExporterPol.([]interface{}) {
-									for childClassNameNetflowRsExporterToEPgNetflowExporterPol, childClassDetailsNetflowRsExporterToEPgNetflowExporterPol := range childNetflowRsExporterToEPgNetflowExporterPol.(map[string]interface{}) {
-										if childClassNameNetflowRsExporterToEPgNetflowExporterPol == "tagAnnotation" {
-											TagAnnotationNetflowRsExporterToEPgNetflowExporterPol := getEmptyTagAnnotationNetflowRsExporterToEPgNetflowExporterPolResourceModel()
-											tagAnnotationchildAttributeValue := childClassDetailsNetflowRsExporterToEPgNetflowExporterPol.(map[string]interface{})["attributes"].(map[string]interface{})
-											for childAttributeName, childAttributeValue := range tagAnnotationchildAttributeValue {
-												if childAttributeName == "key" {
-													TagAnnotationNetflowRsExporterToEPgNetflowExporterPol.Key = basetypes.NewStringValue(childAttributeValue.(string))
-												}
-												if childAttributeName == "value" {
-													TagAnnotationNetflowRsExporterToEPgNetflowExporterPol.Value = basetypes.NewStringValue(childAttributeValue.(string))
-												}
-											}
-											TagAnnotationNetflowRsExporterToEPgNetflowExporterPolList = append(TagAnnotationNetflowRsExporterToEPgNetflowExporterPolList, TagAnnotationNetflowRsExporterToEPgNetflowExporterPol)
-										}
-										if childClassNameNetflowRsExporterToEPgNetflowExporterPol == "tagTag" {
-											TagTagNetflowRsExporterToEPgNetflowExporterPol := getEmptyTagTagNetflowRsExporterToEPgNetflowExporterPolResourceModel()
-											tagTagchildAttributeValue := childClassDetailsNetflowRsExporterToEPgNetflowExporterPol.(map[string]interface{})["attributes"].(map[string]interface{})
-											for childAttributeName, childAttributeValue := range tagTagchildAttributeValue {
-												if childAttributeName == "key" {
-													TagTagNetflowRsExporterToEPgNetflowExporterPol.Key = basetypes.NewStringValue(childAttributeValue.(string))
-												}
-												if childAttributeName == "value" {
-													TagTagNetflowRsExporterToEPgNetflowExporterPol.Value = basetypes.NewStringValue(childAttributeValue.(string))
-												}
-											}
-											TagTagNetflowRsExporterToEPgNetflowExporterPolList = append(TagTagNetflowRsExporterToEPgNetflowExporterPolList, TagTagNetflowRsExporterToEPgNetflowExporterPol)
-										}
-									}
-								}
-							}
-							TagAnnotationNetflowRsExporterToEPgNetflowExporterPolSet, _ := types.SetValueFrom(ctx, TagAnnotationNetflowRsExporterToEPgNetflowExporterPolType, TagAnnotationNetflowRsExporterToEPgNetflowExporterPolList)
-							NetflowRsExporterToEPgNetflowExporterPol.TagAnnotation = TagAnnotationNetflowRsExporterToEPgNetflowExporterPolSet
-							TagTagNetflowRsExporterToEPgNetflowExporterPolSet, _ := types.SetValueFrom(ctx, TagTagNetflowRsExporterToEPgNetflowExporterPolType, TagTagNetflowRsExporterToEPgNetflowExporterPolList)
-							NetflowRsExporterToEPgNetflowExporterPol.TagTag = TagTagNetflowRsExporterToEPgNetflowExporterPolSet
-							NetflowRsExporterToEPgNetflowExporterPolList = append(NetflowRsExporterToEPgNetflowExporterPolList, NetflowRsExporterToEPgNetflowExporterPol)
-						}
-						if childClassName == "tagAnnotation" {
-							TagAnnotationNetflowExporterPol := getEmptyTagAnnotationNetflowExporterPolResourceModel()
-							for childAttributeName, childAttributeValue := range childAttributes {
-								if childAttributeName == "key" {
-									TagAnnotationNetflowExporterPol.Key = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-								if childAttributeName == "value" {
-									TagAnnotationNetflowExporterPol.Value = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-
-							}
-							TagAnnotationNetflowExporterPolList = append(TagAnnotationNetflowExporterPolList, TagAnnotationNetflowExporterPol)
-						}
-						if childClassName == "tagTag" {
-							TagTagNetflowExporterPol := getEmptyTagTagNetflowExporterPolResourceModel()
-							for childAttributeName, childAttributeValue := range childAttributes {
-								if childAttributeName == "key" {
-									TagTagNetflowExporterPol.Key = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-								if childAttributeName == "value" {
-									TagTagNetflowExporterPol.Value = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-
-							}
-							TagTagNetflowExporterPolList = append(TagTagNetflowExporterPolList, TagTagNetflowExporterPol)
-						}
-					}
-				}
-			}
-			if len(NetflowRsExporterToCtxNetflowExporterPolList) == 1 {
-				netflowRsExporterToCtxObject, _ := types.ObjectValueFrom(ctx, NetflowRsExporterToCtxNetflowExporterPolType, NetflowRsExporterToCtxNetflowExporterPolList[0])
-				readData.NetflowRsExporterToCtx = netflowRsExporterToCtxObject
-			} else {
-				netflowRsExporterToCtxObject, _ := types.ObjectValueFrom(ctx, NetflowRsExporterToCtxNetflowExporterPolType, getEmptyNetflowRsExporterToCtxNetflowExporterPolResourceModel())
-				readData.NetflowRsExporterToCtx = netflowRsExporterToCtxObject
-			}
-			if len(NetflowRsExporterToEPgNetflowExporterPolList) == 1 {
-				netflowRsExporterToEPgObject, _ := types.ObjectValueFrom(ctx, NetflowRsExporterToEPgNetflowExporterPolType, NetflowRsExporterToEPgNetflowExporterPolList[0])
-				readData.NetflowRsExporterToEPg = netflowRsExporterToEPgObject
-			} else {
-				netflowRsExporterToEPgObject, _ := types.ObjectValueFrom(ctx, NetflowRsExporterToEPgNetflowExporterPolType, getEmptyNetflowRsExporterToEPgNetflowExporterPolResourceModel())
-				readData.NetflowRsExporterToEPg = netflowRsExporterToEPgObject
-			}
-			tagAnnotationSet, _ := types.SetValueFrom(ctx, readData.TagAnnotation.ElementType(ctx), TagAnnotationNetflowExporterPolList)
-			readData.TagAnnotation = tagAnnotationSet
-			tagTagSet, _ := types.SetValueFrom(ctx, readData.TagTag.ElementType(ctx), TagTagNetflowExporterPolList)
-			readData.TagTag = tagTagSet
-		} else {
-			diags.AddError(
-				"too many results in response",
-				fmt.Sprintf("%v matches returned for class 'netflowExporterPol'. Please report this issue to the provider developers.", len(classReadInfo)),
-			)
-		}
-	} else {
-		readData.Id = basetypes.NewStringNull()
-	}
-	*data = *readData
-}
-
-func getNetflowExporterPolRn(ctx context.Context, data *NetflowExporterPolResourceModel) string {
-	return fmt.Sprintf("exporterpol-%s", data.Name.ValueString())
-}
-
-func setNetflowExporterPolParentDn(ctx context.Context, dn string, data *NetflowExporterPolResourceModel) {
-	bracketIndex := 0
-	rnIndex := 0
-	for i := len(dn) - 1; i >= 0; i-- {
-		if string(dn[i]) == "]" {
-			bracketIndex = bracketIndex + 1
-		} else if string(dn[i]) == "[" {
-			bracketIndex = bracketIndex - 1
-		} else if string(dn[i]) == "/" && bracketIndex == 0 {
-			rnIndex = i
-			break
-		}
-	}
-	data.ParentDn = basetypes.NewStringValue(dn[:rnIndex])
-}
-
-func setNetflowExporterPolId(ctx context.Context, data *NetflowExporterPolResourceModel) {
-	rn := getNetflowExporterPolRn(ctx, data)
-	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
-}
-
-func getNetflowExporterPolNetflowRsExporterToCtxChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *NetflowExporterPolResourceModel, netflowRsExporterToCtxNetflowExporterPolPlan, netflowRsExporterToCtxNetflowExporterPolState NetflowRsExporterToCtxNetflowExporterPolResourceModel) []map[string]interface{} {
-	childPayloads := []map[string]interface{}{}
-	if !data.NetflowRsExporterToCtx.IsNull() && !data.NetflowRsExporterToCtx.IsUnknown() {
-		NetflowRsExporterToCtxNetflowExporterPolChildren := make([]map[string]interface{}, 0)
-		childMap := NewAciObject()
-		if !IsEmptySingleNestedAttribute(data.NetflowRsExporterToCtx.Attributes()) {
-			if !netflowRsExporterToCtxNetflowExporterPolPlan.Annotation.IsUnknown() && !netflowRsExporterToCtxNetflowExporterPolPlan.Annotation.IsNull() {
-				childMap.Attributes["annotation"] = netflowRsExporterToCtxNetflowExporterPolPlan.Annotation.ValueString()
-			} else {
-				childMap.Attributes["annotation"] = globalAnnotation
-			}
-			if !netflowRsExporterToCtxNetflowExporterPolPlan.TDn.IsUnknown() && !netflowRsExporterToCtxNetflowExporterPolPlan.TDn.IsNull() {
-				childMap.Attributes["tDn"] = netflowRsExporterToCtxNetflowExporterPolPlan.TDn.ValueString()
-			}
-
-			var tagAnnotationNetflowRsExporterToCtxNetflowExporterPolPlan, tagAnnotationNetflowRsExporterToCtxNetflowExporterPolState []TagAnnotationNetflowRsExporterToCtxNetflowExporterPolResourceModel
-			netflowRsExporterToCtxNetflowExporterPolPlan.TagAnnotation.ElementsAs(ctx, &tagAnnotationNetflowRsExporterToCtxNetflowExporterPolPlan, false)
-			if !netflowRsExporterToCtxNetflowExporterPolState.TagAnnotation.IsNull() {
-				netflowRsExporterToCtxNetflowExporterPolState.TagAnnotation.ElementsAs(ctx, &tagAnnotationNetflowRsExporterToCtxNetflowExporterPolState, false)
-			}
-			if !netflowRsExporterToCtxNetflowExporterPolPlan.TagAnnotation.IsNull() && !netflowRsExporterToCtxNetflowExporterPolPlan.TagAnnotation.IsUnknown() {
-				tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
-				for _, tagAnnotationNetflowRsExporterToCtxNetflowExporterPol := range tagAnnotationNetflowRsExporterToCtxNetflowExporterPolPlan {
-					tagAnnotationNetflowRsExporterToCtxNetflowExporterPolChildMap := NewAciObject()
-					if !tagAnnotationNetflowRsExporterToCtxNetflowExporterPol.Key.IsNull() && !tagAnnotationNetflowRsExporterToCtxNetflowExporterPol.Key.IsUnknown() {
-						tagAnnotationNetflowRsExporterToCtxNetflowExporterPolChildMap.Attributes["key"] = tagAnnotationNetflowRsExporterToCtxNetflowExporterPol.Key.ValueString()
-					}
-					if !tagAnnotationNetflowRsExporterToCtxNetflowExporterPol.Value.IsNull() && !tagAnnotationNetflowRsExporterToCtxNetflowExporterPol.Value.IsUnknown() {
-						tagAnnotationNetflowRsExporterToCtxNetflowExporterPolChildMap.Attributes["value"] = tagAnnotationNetflowRsExporterToCtxNetflowExporterPol.Value.ValueString()
-					}
-					NetflowRsExporterToCtxNetflowExporterPolChildren = append(NetflowRsExporterToCtxNetflowExporterPolChildren, map[string]interface{}{"tagAnnotation": tagAnnotationNetflowRsExporterToCtxNetflowExporterPolChildMap})
-					tagAnnotationIdentifier := TagAnnotationIdentifier{}
-					tagAnnotationIdentifier.Key = tagAnnotationNetflowRsExporterToCtxNetflowExporterPol.Key
-					tagAnnotationIdentifiers = append(tagAnnotationIdentifiers, tagAnnotationIdentifier)
-				}
-				for _, tagAnnotationNetflowRsExporterToCtxNetflowExporterPol := range tagAnnotationNetflowRsExporterToCtxNetflowExporterPolState {
-					delete := true
-					for _, tagAnnotationIdentifier := range tagAnnotationIdentifiers {
-						if tagAnnotationIdentifier.Key == tagAnnotationNetflowRsExporterToCtxNetflowExporterPol.Key {
-							delete = false
-							break
-						}
-					}
-					if delete {
-						tagAnnotationNetflowRsExporterToCtxNetflowExporterPolChildMapForDelete := NewAciObject()
-						tagAnnotationNetflowRsExporterToCtxNetflowExporterPolChildMapForDelete.Attributes["status"] = "deleted"
-						tagAnnotationNetflowRsExporterToCtxNetflowExporterPolChildMapForDelete.Attributes["key"] = tagAnnotationNetflowRsExporterToCtxNetflowExporterPol.Key.ValueString()
-						NetflowRsExporterToCtxNetflowExporterPolChildren = append(NetflowRsExporterToCtxNetflowExporterPolChildren, map[string]interface{}{"tagAnnotation": tagAnnotationNetflowRsExporterToCtxNetflowExporterPolChildMapForDelete})
-					}
-				}
-			}
-
-			var tagTagNetflowRsExporterToCtxNetflowExporterPolPlan, tagTagNetflowRsExporterToCtxNetflowExporterPolState []TagTagNetflowRsExporterToCtxNetflowExporterPolResourceModel
-			netflowRsExporterToCtxNetflowExporterPolPlan.TagTag.ElementsAs(ctx, &tagTagNetflowRsExporterToCtxNetflowExporterPolPlan, false)
-			if !netflowRsExporterToCtxNetflowExporterPolState.TagTag.IsNull() {
-				netflowRsExporterToCtxNetflowExporterPolState.TagTag.ElementsAs(ctx, &tagTagNetflowRsExporterToCtxNetflowExporterPolState, false)
-			}
-			if !netflowRsExporterToCtxNetflowExporterPolPlan.TagTag.IsNull() && !netflowRsExporterToCtxNetflowExporterPolPlan.TagTag.IsUnknown() {
-				tagTagIdentifiers := []TagTagIdentifier{}
-				for _, tagTagNetflowRsExporterToCtxNetflowExporterPol := range tagTagNetflowRsExporterToCtxNetflowExporterPolPlan {
-					tagTagNetflowRsExporterToCtxNetflowExporterPolChildMap := NewAciObject()
-					if !tagTagNetflowRsExporterToCtxNetflowExporterPol.Key.IsNull() && !tagTagNetflowRsExporterToCtxNetflowExporterPol.Key.IsUnknown() {
-						tagTagNetflowRsExporterToCtxNetflowExporterPolChildMap.Attributes["key"] = tagTagNetflowRsExporterToCtxNetflowExporterPol.Key.ValueString()
-					}
-					if !tagTagNetflowRsExporterToCtxNetflowExporterPol.Value.IsNull() && !tagTagNetflowRsExporterToCtxNetflowExporterPol.Value.IsUnknown() {
-						tagTagNetflowRsExporterToCtxNetflowExporterPolChildMap.Attributes["value"] = tagTagNetflowRsExporterToCtxNetflowExporterPol.Value.ValueString()
-					}
-					NetflowRsExporterToCtxNetflowExporterPolChildren = append(NetflowRsExporterToCtxNetflowExporterPolChildren, map[string]interface{}{"tagTag": tagTagNetflowRsExporterToCtxNetflowExporterPolChildMap})
-					tagTagIdentifier := TagTagIdentifier{}
-					tagTagIdentifier.Key = tagTagNetflowRsExporterToCtxNetflowExporterPol.Key
-					tagTagIdentifiers = append(tagTagIdentifiers, tagTagIdentifier)
-				}
-				for _, tagTagNetflowRsExporterToCtxNetflowExporterPol := range tagTagNetflowRsExporterToCtxNetflowExporterPolState {
-					delete := true
-					for _, tagTagIdentifier := range tagTagIdentifiers {
-						if tagTagIdentifier.Key == tagTagNetflowRsExporterToCtxNetflowExporterPol.Key {
-							delete = false
-							break
-						}
-					}
-					if delete {
-						tagTagNetflowRsExporterToCtxNetflowExporterPolChildMapForDelete := NewAciObject()
-						tagTagNetflowRsExporterToCtxNetflowExporterPolChildMapForDelete.Attributes["status"] = "deleted"
-						tagTagNetflowRsExporterToCtxNetflowExporterPolChildMapForDelete.Attributes["key"] = tagTagNetflowRsExporterToCtxNetflowExporterPol.Key.ValueString()
-						NetflowRsExporterToCtxNetflowExporterPolChildren = append(NetflowRsExporterToCtxNetflowExporterPolChildren, map[string]interface{}{"tagTag": tagTagNetflowRsExporterToCtxNetflowExporterPolChildMapForDelete})
-					}
-				}
-			}
-			childMap.Children = NetflowRsExporterToCtxNetflowExporterPolChildren
-		} else {
-			childMap.Attributes["status"] = "deleted"
-		}
-		childPayloads = append(childPayloads, map[string]interface{}{"netflowRsExporterToCtx": childMap})
-	} else {
-		NetflowRsExporterToCtxObject, _ := types.ObjectValueFrom(ctx, NetflowRsExporterToCtxNetflowExporterPolType, getEmptyNetflowRsExporterToCtxNetflowExporterPolResourceModel())
-		data.NetflowRsExporterToCtx = NetflowRsExporterToCtxObject
-	}
-
-	return childPayloads
-}
-
-func getNetflowExporterPolNetflowRsExporterToEPgChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *NetflowExporterPolResourceModel, netflowRsExporterToEPgNetflowExporterPolPlan, netflowRsExporterToEPgNetflowExporterPolState NetflowRsExporterToEPgNetflowExporterPolResourceModel) []map[string]interface{} {
-	childPayloads := []map[string]interface{}{}
-	if !data.NetflowRsExporterToEPg.IsNull() && !data.NetflowRsExporterToEPg.IsUnknown() {
-		NetflowRsExporterToEPgNetflowExporterPolChildren := make([]map[string]interface{}, 0)
-		childMap := NewAciObject()
-		if !IsEmptySingleNestedAttribute(data.NetflowRsExporterToEPg.Attributes()) {
-			if !netflowRsExporterToEPgNetflowExporterPolPlan.Annotation.IsUnknown() && !netflowRsExporterToEPgNetflowExporterPolPlan.Annotation.IsNull() {
-				childMap.Attributes["annotation"] = netflowRsExporterToEPgNetflowExporterPolPlan.Annotation.ValueString()
-			} else {
-				childMap.Attributes["annotation"] = globalAnnotation
-			}
-			if !netflowRsExporterToEPgNetflowExporterPolPlan.TDn.IsUnknown() && !netflowRsExporterToEPgNetflowExporterPolPlan.TDn.IsNull() {
-				childMap.Attributes["tDn"] = netflowRsExporterToEPgNetflowExporterPolPlan.TDn.ValueString()
-			}
-
-			var tagAnnotationNetflowRsExporterToEPgNetflowExporterPolPlan, tagAnnotationNetflowRsExporterToEPgNetflowExporterPolState []TagAnnotationNetflowRsExporterToEPgNetflowExporterPolResourceModel
-			netflowRsExporterToEPgNetflowExporterPolPlan.TagAnnotation.ElementsAs(ctx, &tagAnnotationNetflowRsExporterToEPgNetflowExporterPolPlan, false)
-			if !netflowRsExporterToEPgNetflowExporterPolState.TagAnnotation.IsNull() {
-				netflowRsExporterToEPgNetflowExporterPolState.TagAnnotation.ElementsAs(ctx, &tagAnnotationNetflowRsExporterToEPgNetflowExporterPolState, false)
-			}
-			if !netflowRsExporterToEPgNetflowExporterPolPlan.TagAnnotation.IsNull() && !netflowRsExporterToEPgNetflowExporterPolPlan.TagAnnotation.IsUnknown() {
-				tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
-				for _, tagAnnotationNetflowRsExporterToEPgNetflowExporterPol := range tagAnnotationNetflowRsExporterToEPgNetflowExporterPolPlan {
-					tagAnnotationNetflowRsExporterToEPgNetflowExporterPolChildMap := NewAciObject()
-					if !tagAnnotationNetflowRsExporterToEPgNetflowExporterPol.Key.IsNull() && !tagAnnotationNetflowRsExporterToEPgNetflowExporterPol.Key.IsUnknown() {
-						tagAnnotationNetflowRsExporterToEPgNetflowExporterPolChildMap.Attributes["key"] = tagAnnotationNetflowRsExporterToEPgNetflowExporterPol.Key.ValueString()
-					}
-					if !tagAnnotationNetflowRsExporterToEPgNetflowExporterPol.Value.IsNull() && !tagAnnotationNetflowRsExporterToEPgNetflowExporterPol.Value.IsUnknown() {
-						tagAnnotationNetflowRsExporterToEPgNetflowExporterPolChildMap.Attributes["value"] = tagAnnotationNetflowRsExporterToEPgNetflowExporterPol.Value.ValueString()
-					}
-					NetflowRsExporterToEPgNetflowExporterPolChildren = append(NetflowRsExporterToEPgNetflowExporterPolChildren, map[string]interface{}{"tagAnnotation": tagAnnotationNetflowRsExporterToEPgNetflowExporterPolChildMap})
-					tagAnnotationIdentifier := TagAnnotationIdentifier{}
-					tagAnnotationIdentifier.Key = tagAnnotationNetflowRsExporterToEPgNetflowExporterPol.Key
-					tagAnnotationIdentifiers = append(tagAnnotationIdentifiers, tagAnnotationIdentifier)
-				}
-				for _, tagAnnotationNetflowRsExporterToEPgNetflowExporterPol := range tagAnnotationNetflowRsExporterToEPgNetflowExporterPolState {
-					delete := true
-					for _, tagAnnotationIdentifier := range tagAnnotationIdentifiers {
-						if tagAnnotationIdentifier.Key == tagAnnotationNetflowRsExporterToEPgNetflowExporterPol.Key {
-							delete = false
-							break
-						}
-					}
-					if delete {
-						tagAnnotationNetflowRsExporterToEPgNetflowExporterPolChildMapForDelete := NewAciObject()
-						tagAnnotationNetflowRsExporterToEPgNetflowExporterPolChildMapForDelete.Attributes["status"] = "deleted"
-						tagAnnotationNetflowRsExporterToEPgNetflowExporterPolChildMapForDelete.Attributes["key"] = tagAnnotationNetflowRsExporterToEPgNetflowExporterPol.Key.ValueString()
-						NetflowRsExporterToEPgNetflowExporterPolChildren = append(NetflowRsExporterToEPgNetflowExporterPolChildren, map[string]interface{}{"tagAnnotation": tagAnnotationNetflowRsExporterToEPgNetflowExporterPolChildMapForDelete})
-					}
-				}
-			}
-
-			var tagTagNetflowRsExporterToEPgNetflowExporterPolPlan, tagTagNetflowRsExporterToEPgNetflowExporterPolState []TagTagNetflowRsExporterToEPgNetflowExporterPolResourceModel
-			netflowRsExporterToEPgNetflowExporterPolPlan.TagTag.ElementsAs(ctx, &tagTagNetflowRsExporterToEPgNetflowExporterPolPlan, false)
-			if !netflowRsExporterToEPgNetflowExporterPolState.TagTag.IsNull() {
-				netflowRsExporterToEPgNetflowExporterPolState.TagTag.ElementsAs(ctx, &tagTagNetflowRsExporterToEPgNetflowExporterPolState, false)
-			}
-			if !netflowRsExporterToEPgNetflowExporterPolPlan.TagTag.IsNull() && !netflowRsExporterToEPgNetflowExporterPolPlan.TagTag.IsUnknown() {
-				tagTagIdentifiers := []TagTagIdentifier{}
-				for _, tagTagNetflowRsExporterToEPgNetflowExporterPol := range tagTagNetflowRsExporterToEPgNetflowExporterPolPlan {
-					tagTagNetflowRsExporterToEPgNetflowExporterPolChildMap := NewAciObject()
-					if !tagTagNetflowRsExporterToEPgNetflowExporterPol.Key.IsNull() && !tagTagNetflowRsExporterToEPgNetflowExporterPol.Key.IsUnknown() {
-						tagTagNetflowRsExporterToEPgNetflowExporterPolChildMap.Attributes["key"] = tagTagNetflowRsExporterToEPgNetflowExporterPol.Key.ValueString()
-					}
-					if !tagTagNetflowRsExporterToEPgNetflowExporterPol.Value.IsNull() && !tagTagNetflowRsExporterToEPgNetflowExporterPol.Value.IsUnknown() {
-						tagTagNetflowRsExporterToEPgNetflowExporterPolChildMap.Attributes["value"] = tagTagNetflowRsExporterToEPgNetflowExporterPol.Value.ValueString()
-					}
-					NetflowRsExporterToEPgNetflowExporterPolChildren = append(NetflowRsExporterToEPgNetflowExporterPolChildren, map[string]interface{}{"tagTag": tagTagNetflowRsExporterToEPgNetflowExporterPolChildMap})
-					tagTagIdentifier := TagTagIdentifier{}
-					tagTagIdentifier.Key = tagTagNetflowRsExporterToEPgNetflowExporterPol.Key
-					tagTagIdentifiers = append(tagTagIdentifiers, tagTagIdentifier)
-				}
-				for _, tagTagNetflowRsExporterToEPgNetflowExporterPol := range tagTagNetflowRsExporterToEPgNetflowExporterPolState {
-					delete := true
-					for _, tagTagIdentifier := range tagTagIdentifiers {
-						if tagTagIdentifier.Key == tagTagNetflowRsExporterToEPgNetflowExporterPol.Key {
-							delete = false
-							break
-						}
-					}
-					if delete {
-						tagTagNetflowRsExporterToEPgNetflowExporterPolChildMapForDelete := NewAciObject()
-						tagTagNetflowRsExporterToEPgNetflowExporterPolChildMapForDelete.Attributes["status"] = "deleted"
-						tagTagNetflowRsExporterToEPgNetflowExporterPolChildMapForDelete.Attributes["key"] = tagTagNetflowRsExporterToEPgNetflowExporterPol.Key.ValueString()
-						NetflowRsExporterToEPgNetflowExporterPolChildren = append(NetflowRsExporterToEPgNetflowExporterPolChildren, map[string]interface{}{"tagTag": tagTagNetflowRsExporterToEPgNetflowExporterPolChildMapForDelete})
-					}
-				}
-			}
-			childMap.Children = NetflowRsExporterToEPgNetflowExporterPolChildren
-		} else {
-			childMap.Attributes["status"] = "deleted"
-		}
-		childPayloads = append(childPayloads, map[string]interface{}{"netflowRsExporterToEPg": childMap})
-	} else {
-		NetflowRsExporterToEPgObject, _ := types.ObjectValueFrom(ctx, NetflowRsExporterToEPgNetflowExporterPolType, getEmptyNetflowRsExporterToEPgNetflowExporterPolResourceModel())
-		data.NetflowRsExporterToEPg = NetflowRsExporterToEPgObject
-	}
-
-	return childPayloads
-}
-
-func getNetflowExporterPolTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *NetflowExporterPolResourceModel, tagAnnotationNetflowExporterPolPlan, tagAnnotationNetflowExporterPolState []TagAnnotationNetflowExporterPolResourceModel) []map[string]interface{} {
-	childPayloads := []map[string]interface{}{}
-	if !data.TagAnnotation.IsNull() && !data.TagAnnotation.IsUnknown() {
-		tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
-		for _, tagAnnotationNetflowExporterPol := range tagAnnotationNetflowExporterPolPlan {
-			childMap := NewAciObject()
-			if !tagAnnotationNetflowExporterPol.Key.IsNull() && !tagAnnotationNetflowExporterPol.Key.IsUnknown() {
-				childMap.Attributes["key"] = tagAnnotationNetflowExporterPol.Key.ValueString()
-			}
-			if !tagAnnotationNetflowExporterPol.Value.IsNull() && !tagAnnotationNetflowExporterPol.Value.IsUnknown() {
-				childMap.Attributes["value"] = tagAnnotationNetflowExporterPol.Value.ValueString()
-			}
-			childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": childMap})
-			tagAnnotationIdentifier := TagAnnotationIdentifier{}
-			tagAnnotationIdentifier.Key = tagAnnotationNetflowExporterPol.Key
-			tagAnnotationIdentifiers = append(tagAnnotationIdentifiers, tagAnnotationIdentifier)
-		}
-		for _, tagAnnotation := range tagAnnotationNetflowExporterPolState {
-			delete := true
-			for _, tagAnnotationIdentifier := range tagAnnotationIdentifiers {
-				if tagAnnotationIdentifier.Key == tagAnnotation.Key {
-					delete = false
-					break
-				}
-			}
-			if delete {
-				tagAnnotationChildMapForDelete := NewAciObject()
-				tagAnnotationChildMapForDelete.Attributes["status"] = "deleted"
-				tagAnnotationChildMapForDelete.Attributes["key"] = tagAnnotation.Key.ValueString()
-				childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": tagAnnotationChildMapForDelete})
-			}
-		}
-	} else {
-		data.TagAnnotation = types.SetNull(data.TagAnnotation.ElementType(ctx))
-	}
-
-	return childPayloads
-}
-
-func getNetflowExporterPolTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *NetflowExporterPolResourceModel, tagTagNetflowExporterPolPlan, tagTagNetflowExporterPolState []TagTagNetflowExporterPolResourceModel) []map[string]interface{} {
-	childPayloads := []map[string]interface{}{}
-	if !data.TagTag.IsNull() && !data.TagTag.IsUnknown() {
-		tagTagIdentifiers := []TagTagIdentifier{}
-		for _, tagTagNetflowExporterPol := range tagTagNetflowExporterPolPlan {
-			childMap := NewAciObject()
-			if !tagTagNetflowExporterPol.Key.IsNull() && !tagTagNetflowExporterPol.Key.IsUnknown() {
-				childMap.Attributes["key"] = tagTagNetflowExporterPol.Key.ValueString()
-			}
-			if !tagTagNetflowExporterPol.Value.IsNull() && !tagTagNetflowExporterPol.Value.IsUnknown() {
-				childMap.Attributes["value"] = tagTagNetflowExporterPol.Value.ValueString()
-			}
-			childPayloads = append(childPayloads, map[string]interface{}{"tagTag": childMap})
-			tagTagIdentifier := TagTagIdentifier{}
-			tagTagIdentifier.Key = tagTagNetflowExporterPol.Key
-			tagTagIdentifiers = append(tagTagIdentifiers, tagTagIdentifier)
-		}
-		for _, tagTag := range tagTagNetflowExporterPolState {
-			delete := true
-			for _, tagTagIdentifier := range tagTagIdentifiers {
-				if tagTagIdentifier.Key == tagTag.Key {
-					delete = false
-					break
-				}
-			}
-			if delete {
-				tagTagChildMapForDelete := NewAciObject()
-				tagTagChildMapForDelete.Attributes["status"] = "deleted"
-				tagTagChildMapForDelete.Attributes["key"] = tagTag.Key.ValueString()
-				childPayloads = append(childPayloads, map[string]interface{}{"tagTag": tagTagChildMapForDelete})
-			}
-		}
-	} else {
-		data.TagTag = types.SetNull(data.TagTag.ElementType(ctx))
-	}
-
-	return childPayloads
-}
-
-func getNetflowExporterPolCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *NetflowExporterPolResourceModel, netflowRsExporterToCtxPlan, netflowRsExporterToCtxState NetflowRsExporterToCtxNetflowExporterPolResourceModel, netflowRsExporterToEPgPlan, netflowRsExporterToEPgState NetflowRsExporterToEPgNetflowExporterPolResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationNetflowExporterPolResourceModel, tagTagPlan, tagTagState []TagTagNetflowExporterPolResourceModel) *container.Container {
-	payloadMap := map[string]interface{}{}
-	payloadMap["attributes"] = map[string]string{}
-
-	if createType && !globalAllowExistingOnCreate {
-		payloadMap["attributes"].(map[string]string)["status"] = "created"
-	}
-	childPayloads := []map[string]interface{}{}
-
-	NetflowRsExporterToCtxchildPayloads := getNetflowExporterPolNetflowRsExporterToCtxChildPayloads(ctx, diags, data, netflowRsExporterToCtxPlan, netflowRsExporterToCtxState)
-	if NetflowRsExporterToCtxchildPayloads == nil {
-		return nil
-	}
-	childPayloads = append(childPayloads, NetflowRsExporterToCtxchildPayloads...)
-
-	NetflowRsExporterToEPgchildPayloads := getNetflowExporterPolNetflowRsExporterToEPgChildPayloads(ctx, diags, data, netflowRsExporterToEPgPlan, netflowRsExporterToEPgState)
-	if NetflowRsExporterToEPgchildPayloads == nil {
-		return nil
-	}
-	childPayloads = append(childPayloads, NetflowRsExporterToEPgchildPayloads...)
-
-	TagAnnotationchildPayloads := getNetflowExporterPolTagAnnotationChildPayloads(ctx, diags, data, tagAnnotationPlan, tagAnnotationState)
-	if TagAnnotationchildPayloads == nil {
-		return nil
-	}
-	childPayloads = append(childPayloads, TagAnnotationchildPayloads...)
-
-	TagTagchildPayloads := getNetflowExporterPolTagTagChildPayloads(ctx, diags, data, tagTagPlan, tagTagState)
-	if TagTagchildPayloads == nil {
-		return nil
-	}
-	childPayloads = append(childPayloads, TagTagchildPayloads...)
-
-	payloadMap["children"] = childPayloads
-	if !data.Annotation.IsNull() && !data.Annotation.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["annotation"] = data.Annotation.ValueString()
-	}
-	if !data.Descr.IsNull() && !data.Descr.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["descr"] = data.Descr.ValueString()
-	}
-	if !data.Dscp.IsNull() && !data.Dscp.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["dscp"] = data.Dscp.ValueString()
-	}
-	if !data.DstAddr.IsNull() && !data.DstAddr.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["dstAddr"] = data.DstAddr.ValueString()
-	}
-	if !data.DstPort.IsNull() && !data.DstPort.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["dstPort"] = data.DstPort.ValueString()
-	}
-	if !data.Name.IsNull() && !data.Name.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["name"] = data.Name.ValueString()
-	}
-	if !data.NameAlias.IsNull() && !data.NameAlias.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["nameAlias"] = data.NameAlias.ValueString()
-	}
-	if !data.OwnerKey.IsNull() && !data.OwnerKey.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["ownerKey"] = data.OwnerKey.ValueString()
-	}
-	if !data.OwnerTag.IsNull() && !data.OwnerTag.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["ownerTag"] = data.OwnerTag.ValueString()
-	}
-	if !data.SourceIpType.IsNull() && !data.SourceIpType.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["sourceIpType"] = data.SourceIpType.ValueString()
-	}
-	if !data.SrcAddr.IsNull() && !data.SrcAddr.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["srcAddr"] = data.SrcAddr.ValueString()
-	}
-	if !data.Ver.IsNull() && !data.Ver.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["ver"] = data.Ver.ValueString()
-	}
-	payload, err := json.Marshal(map[string]interface{}{"netflowExporterPol": payloadMap})
-	if err != nil {
-		diags.AddError(
-			"Marshalling of json payload failed",
-			fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
-		)
-		return nil
-	}
-
-	jsonPayload, err := container.ParseJSON(payload)
-
-	if err != nil {
-		diags.AddError(
-			"Construction of json payload failed",
-			fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
-		)
-		return nil
-	}
-	return jsonPayload
+	tflog.Debug(ctx, "End import state of resource: aci_netflow_exporter_policy")
 }
