@@ -6,30 +6,20 @@ package provider
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	"strings"
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
-	"github.com/ciscoecosystem/aci-go-client/v2/container"
-	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
-	"github.com/hashicorp/terraform-plugin-framework/attr"
-	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/setplanmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
-	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
+
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &L3extConsLblResource{}
+var _ resource.ResourceWithConfigure = &L3extConsLblResource{}
+var _ resource.ResourceWithModifyPlan = &L3extConsLblResource{}
 var _ resource.ResourceWithImportState = &L3extConsLblResource{}
 
 func NewL3extConsLblResource() resource.Resource {
@@ -45,686 +35,15 @@ type L3extConsLblResource struct {
 	client *client.Client
 }
 
-// L3extConsLblResourceModel describes the resource data model.
-type L3extConsLblResourceModel struct {
-	Id                  types.String `tfsdk:"id"`
-	ParentDn            types.String `tfsdk:"parent_dn"`
-	Annotation          types.String `tfsdk:"annotation"`
-	Descr               types.String `tfsdk:"description"`
-	Name                types.String `tfsdk:"name"`
-	NameAlias           types.String `tfsdk:"name_alias"`
-	Owner               types.String `tfsdk:"owner"`
-	OwnerKey            types.String `tfsdk:"owner_key"`
-	OwnerTag            types.String `tfsdk:"owner_tag"`
-	Tag                 types.String `tfsdk:"tag"`
-	L3extRsLblToInstP   types.Set    `tfsdk:"relation_to_external_epgs"`
-	L3extRsLblToProfile types.Set    `tfsdk:"relation_to_route_control_profiles"`
-	TagAnnotation       types.Set    `tfsdk:"annotations"`
-	TagTag              types.Set    `tfsdk:"tags"`
-}
-
-func getEmptyL3extConsLblResourceModel() *L3extConsLblResourceModel {
-	return &L3extConsLblResourceModel{
-		Id:         basetypes.NewStringNull(),
-		ParentDn:   basetypes.NewStringNull(),
-		Annotation: basetypes.NewStringNull(),
-		Descr:      basetypes.NewStringNull(),
-		Name:       basetypes.NewStringNull(),
-		NameAlias:  basetypes.NewStringNull(),
-		Owner:      basetypes.NewStringNull(),
-		OwnerKey:   basetypes.NewStringNull(),
-		OwnerTag:   basetypes.NewStringNull(),
-		Tag:        basetypes.NewStringNull(),
-		L3extRsLblToInstP: types.SetNull(types.ObjectType{
-			AttrTypes: map[string]attr.Type{
-				"annotation":  types.StringType,
-				"target_dn":   types.StringType,
-				"annotations": types.SetType{ElemType: TagAnnotationL3extRsLblToInstPL3extConsLblType},
-				"tags":        types.SetType{ElemType: TagTagL3extRsLblToInstPL3extConsLblType},
-			},
-		}),
-		L3extRsLblToProfile: types.SetNull(types.ObjectType{
-			AttrTypes: map[string]attr.Type{
-				"annotation":  types.StringType,
-				"direction":   types.StringType,
-				"target_dn":   types.StringType,
-				"annotations": types.SetType{ElemType: TagAnnotationL3extRsLblToProfileL3extConsLblType},
-				"tags":        types.SetType{ElemType: TagTagL3extRsLblToProfileL3extConsLblType},
-			},
-		}),
-		TagAnnotation: types.SetNull(types.ObjectType{
-			AttrTypes: map[string]attr.Type{
-				"key":   types.StringType,
-				"value": types.StringType,
-			},
-		}),
-		TagTag: types.SetNull(types.ObjectType{
-			AttrTypes: map[string]attr.Type{
-				"key":   types.StringType,
-				"value": types.StringType,
-			},
-		}),
-	}
-}
-
-// L3extRsLblToInstPL3extConsLblResourceModel describes the resource data model for the children without relation ships.
-type L3extRsLblToInstPL3extConsLblResourceModel struct {
-	Annotation    types.String `tfsdk:"annotation"`
-	TDn           types.String `tfsdk:"target_dn"`
-	TagAnnotation types.Set    `tfsdk:"annotations"`
-	TagTag        types.Set    `tfsdk:"tags"`
-}
-
-func getEmptyL3extRsLblToInstPL3extConsLblResourceModel() L3extRsLblToInstPL3extConsLblResourceModel {
-	return L3extRsLblToInstPL3extConsLblResourceModel{
-		Annotation: basetypes.NewStringNull(),
-		TDn:        basetypes.NewStringNull(),
-		TagAnnotation: types.SetNull(types.ObjectType{
-			AttrTypes: map[string]attr.Type{
-				"key":   types.StringType,
-				"value": types.StringType,
-			},
-		}),
-		TagTag: types.SetNull(types.ObjectType{
-			AttrTypes: map[string]attr.Type{
-				"key":   types.StringType,
-				"value": types.StringType,
-			},
-		}),
-	}
-}
-
-var L3extRsLblToInstPL3extConsLblType = types.ObjectType{
-	AttrTypes: map[string]attr.Type{
-		"annotation":  types.StringType,
-		"target_dn":   types.StringType,
-		"annotations": types.SetType{ElemType: TagAnnotationL3extRsLblToInstPL3extConsLblType},
-		"tags":        types.SetType{ElemType: TagTagL3extRsLblToInstPL3extConsLblType},
-	},
-}
-
-func L3extRsLblToInstPL3extConsLblSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(ctx context.Context, planValue, stateValue types.Set) basetypes.SetValue {
-	//  Function is needed to handle the case that an attribute is not yet supported in a version and gets set to null during read
-	var planSetValues, stateSetValues []L3extRsLblToInstPL3extConsLblResourceModel
-	stateValue.ElementsAs(ctx, &stateSetValues, false)
-	planValue.ElementsAs(ctx, &planSetValues, false)
-
-	// If the length of the state and plan values are different a change is already detected the loop can be skipped
-	if len(stateSetValues) == len(planSetValues) {
-		for index, stateValue := range stateSetValues {
-			nullInStateFound := false
-			if stateValue.Annotation.IsNull() {
-				nullInStateFound = true
-				planSetValues[index].Annotation = basetypes.NewStringNull()
-			}
-			if stateValue.TDn.IsNull() {
-				nullInStateFound = true
-				planSetValues[index].TDn = basetypes.NewStringNull()
-			}
-			if !nullInStateFound {
-				// when there are no null fields we can conclude the version supports all attributes in set
-				break
-			}
-		}
-	}
-	planSet, _ := types.SetValueFrom(ctx, L3extRsLblToInstPL3extConsLblType, planSetValues)
-	return planSet
-
-}
-
-// TagAnnotationL3extRsLblToInstPL3extConsLblResourceModel describes the resource data model for the children without relation ships.
-type TagAnnotationL3extRsLblToInstPL3extConsLblResourceModel struct {
-	Key   types.String `tfsdk:"key"`
-	Value types.String `tfsdk:"value"`
-}
-
-func getEmptyTagAnnotationL3extRsLblToInstPL3extConsLblResourceModel() TagAnnotationL3extRsLblToInstPL3extConsLblResourceModel {
-	return TagAnnotationL3extRsLblToInstPL3extConsLblResourceModel{
-		Key:   basetypes.NewStringNull(),
-		Value: basetypes.NewStringNull(),
-	}
-}
-
-var TagAnnotationL3extRsLblToInstPL3extConsLblType = types.ObjectType{
-	AttrTypes: map[string]attr.Type{
-		"key":   types.StringType,
-		"value": types.StringType,
-	},
-}
-
-// TagTagL3extRsLblToInstPL3extConsLblResourceModel describes the resource data model for the children without relation ships.
-type TagTagL3extRsLblToInstPL3extConsLblResourceModel struct {
-	Key   types.String `tfsdk:"key"`
-	Value types.String `tfsdk:"value"`
-}
-
-func getEmptyTagTagL3extRsLblToInstPL3extConsLblResourceModel() TagTagL3extRsLblToInstPL3extConsLblResourceModel {
-	return TagTagL3extRsLblToInstPL3extConsLblResourceModel{
-		Key:   basetypes.NewStringNull(),
-		Value: basetypes.NewStringNull(),
-	}
-}
-
-var TagTagL3extRsLblToInstPL3extConsLblType = types.ObjectType{
-	AttrTypes: map[string]attr.Type{
-		"key":   types.StringType,
-		"value": types.StringType,
-	},
-}
-
-// L3extRsLblToProfileL3extConsLblResourceModel describes the resource data model for the children without relation ships.
-type L3extRsLblToProfileL3extConsLblResourceModel struct {
-	Annotation    types.String `tfsdk:"annotation"`
-	Direction     types.String `tfsdk:"direction"`
-	TDn           types.String `tfsdk:"target_dn"`
-	TagAnnotation types.Set    `tfsdk:"annotations"`
-	TagTag        types.Set    `tfsdk:"tags"`
-}
-
-func getEmptyL3extRsLblToProfileL3extConsLblResourceModel() L3extRsLblToProfileL3extConsLblResourceModel {
-	return L3extRsLblToProfileL3extConsLblResourceModel{
-		Annotation: basetypes.NewStringNull(),
-		Direction:  basetypes.NewStringNull(),
-		TDn:        basetypes.NewStringNull(),
-		TagAnnotation: types.SetNull(types.ObjectType{
-			AttrTypes: map[string]attr.Type{
-				"key":   types.StringType,
-				"value": types.StringType,
-			},
-		}),
-		TagTag: types.SetNull(types.ObjectType{
-			AttrTypes: map[string]attr.Type{
-				"key":   types.StringType,
-				"value": types.StringType,
-			},
-		}),
-	}
-}
-
-var L3extRsLblToProfileL3extConsLblType = types.ObjectType{
-	AttrTypes: map[string]attr.Type{
-		"annotation":  types.StringType,
-		"direction":   types.StringType,
-		"target_dn":   types.StringType,
-		"annotations": types.SetType{ElemType: TagAnnotationL3extRsLblToProfileL3extConsLblType},
-		"tags":        types.SetType{ElemType: TagTagL3extRsLblToProfileL3extConsLblType},
-	},
-}
-
-func L3extRsLblToProfileL3extConsLblSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(ctx context.Context, planValue, stateValue types.Set) basetypes.SetValue {
-	//  Function is needed to handle the case that an attribute is not yet supported in a version and gets set to null during read
-	var planSetValues, stateSetValues []L3extRsLblToProfileL3extConsLblResourceModel
-	stateValue.ElementsAs(ctx, &stateSetValues, false)
-	planValue.ElementsAs(ctx, &planSetValues, false)
-
-	// If the length of the state and plan values are different a change is already detected the loop can be skipped
-	if len(stateSetValues) == len(planSetValues) {
-		for index, stateValue := range stateSetValues {
-			nullInStateFound := false
-			if stateValue.Annotation.IsNull() {
-				nullInStateFound = true
-				planSetValues[index].Annotation = basetypes.NewStringNull()
-			}
-			if stateValue.Direction.IsNull() {
-				nullInStateFound = true
-				planSetValues[index].Direction = basetypes.NewStringNull()
-			}
-			if stateValue.TDn.IsNull() {
-				nullInStateFound = true
-				planSetValues[index].TDn = basetypes.NewStringNull()
-			}
-			if !nullInStateFound {
-				// when there are no null fields we can conclude the version supports all attributes in set
-				break
-			}
-		}
-	}
-	planSet, _ := types.SetValueFrom(ctx, L3extRsLblToProfileL3extConsLblType, planSetValues)
-	return planSet
-
-}
-
-// TagAnnotationL3extRsLblToProfileL3extConsLblResourceModel describes the resource data model for the children without relation ships.
-type TagAnnotationL3extRsLblToProfileL3extConsLblResourceModel struct {
-	Key   types.String `tfsdk:"key"`
-	Value types.String `tfsdk:"value"`
-}
-
-func getEmptyTagAnnotationL3extRsLblToProfileL3extConsLblResourceModel() TagAnnotationL3extRsLblToProfileL3extConsLblResourceModel {
-	return TagAnnotationL3extRsLblToProfileL3extConsLblResourceModel{
-		Key:   basetypes.NewStringNull(),
-		Value: basetypes.NewStringNull(),
-	}
-}
-
-var TagAnnotationL3extRsLblToProfileL3extConsLblType = types.ObjectType{
-	AttrTypes: map[string]attr.Type{
-		"key":   types.StringType,
-		"value": types.StringType,
-	},
-}
-
-// TagTagL3extRsLblToProfileL3extConsLblResourceModel describes the resource data model for the children without relation ships.
-type TagTagL3extRsLblToProfileL3extConsLblResourceModel struct {
-	Key   types.String `tfsdk:"key"`
-	Value types.String `tfsdk:"value"`
-}
-
-func getEmptyTagTagL3extRsLblToProfileL3extConsLblResourceModel() TagTagL3extRsLblToProfileL3extConsLblResourceModel {
-	return TagTagL3extRsLblToProfileL3extConsLblResourceModel{
-		Key:   basetypes.NewStringNull(),
-		Value: basetypes.NewStringNull(),
-	}
-}
-
-var TagTagL3extRsLblToProfileL3extConsLblType = types.ObjectType{
-	AttrTypes: map[string]attr.Type{
-		"key":   types.StringType,
-		"value": types.StringType,
-	},
-}
-
-// TagAnnotationL3extConsLblResourceModel describes the resource data model for the children without relation ships.
-type TagAnnotationL3extConsLblResourceModel struct {
-	Key   types.String `tfsdk:"key"`
-	Value types.String `tfsdk:"value"`
-}
-
-func getEmptyTagAnnotationL3extConsLblResourceModel() TagAnnotationL3extConsLblResourceModel {
-	return TagAnnotationL3extConsLblResourceModel{
-		Key:   basetypes.NewStringNull(),
-		Value: basetypes.NewStringNull(),
-	}
-}
-
-var TagAnnotationL3extConsLblType = types.ObjectType{
-	AttrTypes: map[string]attr.Type{
-		"key":   types.StringType,
-		"value": types.StringType,
-	},
-}
-
-// TagTagL3extConsLblResourceModel describes the resource data model for the children without relation ships.
-type TagTagL3extConsLblResourceModel struct {
-	Key   types.String `tfsdk:"key"`
-	Value types.String `tfsdk:"value"`
-}
-
-func getEmptyTagTagL3extConsLblResourceModel() TagTagL3extConsLblResourceModel {
-	return TagTagL3extConsLblResourceModel{
-		Key:   basetypes.NewStringNull(),
-		Value: basetypes.NewStringNull(),
-	}
-}
-
-var TagTagL3extConsLblType = types.ObjectType{
-	AttrTypes: map[string]attr.Type{
-		"key":   types.StringType,
-		"value": types.StringType,
-	},
-}
-
-type L3extConsLblIdentifier struct {
-	Name types.String
-}
-
-func (r *L3extConsLblResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
-	if !req.Plan.Raw.IsNull() {
-		var planData, stateData *L3extConsLblResourceModel
-		resp.Diagnostics.Append(req.Plan.Get(ctx, &planData)...)
-		resp.Diagnostics.Append(req.State.Get(ctx, &stateData)...)
-
-		if resp.Diagnostics.HasError() {
-			return
-		}
-
-		if (planData.Id.IsUnknown() || planData.Id.IsNull()) && !planData.ParentDn.IsUnknown() && !planData.Name.IsUnknown() {
-			setL3extConsLblId(ctx, planData)
-		}
-
-		if stateData == nil && !globalAllowExistingOnCreate && !planData.Id.IsUnknown() && !planData.Id.IsNull() {
-			CheckDn(ctx, &resp.Diagnostics, r.client, "l3extConsLbl", planData.Id.ValueString())
-			if resp.Diagnostics.HasError() {
-				return
-			}
-		}
-
-		resp.Diagnostics.Append(resp.Plan.Set(ctx, &planData)...)
-	}
-}
-
 func (r *L3extConsLblResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	tflog.Debug(ctx, "Start metadata of resource: aci_l3out_consumer_label")
 	resp.TypeName = req.ProviderTypeName + "_l3out_consumer_label"
 	tflog.Debug(ctx, "End metadata of resource: aci_l3out_consumer_label")
 }
 
-func (r *L3extConsLblResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *L3extConsLblResource) Schema(ctx context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	tflog.Debug(ctx, "Start schema of resource: aci_l3out_consumer_label")
-	resp.Schema = schema.Schema{
-		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "The l3out_consumer_label resource for the 'l3extConsLbl' class",
-
-		Attributes: map[string]schema.Attribute{
-			"id": schema.StringAttribute{
-				Computed:            true,
-				MarkdownDescription: "The distinguished name (DN) of the L3Out Consumer Label object.",
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-				},
-			},
-			"parent_dn": schema.StringAttribute{
-				Required:            true,
-				MarkdownDescription: "The distinguished name (DN) of the parent object.",
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					stringplanmodifier.RequiresReplace(),
-				},
-			},
-			"annotation": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				Default:             stringdefault.StaticString(globalAnnotation),
-				MarkdownDescription: `The annotation of the L3Out Consumer Label object.`,
-			},
-			"description": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				MarkdownDescription: `The description of the L3Out Consumer Label object.`,
-			},
-			"name": schema.StringAttribute{
-				Required: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-					stringplanmodifier.RequiresReplace(),
-				},
-				MarkdownDescription: `The name of the L3Out Consumer Label object.`,
-			},
-			"name_alias": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				MarkdownDescription: `The name alias of the L3Out Consumer Label object.`,
-			},
-			"owner": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				Validators: []validator.String{
-					stringvalidator.OneOf("infra", "tenant"),
-				},
-				MarkdownDescription: `The owner of the L3Out Consumer Label object.`,
-			},
-			"owner_key": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				MarkdownDescription: `The key for enabling clients to own their data for entity correlation.`,
-			},
-			"owner_tag": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				MarkdownDescription: `A tag for enabling clients to add their own data. For example, to indicate who created this object.`,
-			},
-			"tag": schema.StringAttribute{
-				Optional: true,
-				Computed: true,
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseNonNullStateForUnknown(),
-					SetToStringNullWhenStateIsNullPlanIsUnknownDuringUpdate(),
-				},
-				Validators: []validator.String{
-					stringvalidator.OneOf("alice-blue", "antique-white", "aqua", "aquamarine", "azure", "beige", "bisque", "black", "blanched-almond", "blue", "blue-violet", "brown", "burlywood", "cadet-blue", "chartreuse", "chocolate", "coral", "cornflower-blue", "cornsilk", "crimson", "cyan", "dark-blue", "dark-cyan", "dark-goldenrod", "dark-gray", "dark-green", "dark-khaki", "dark-magenta", "dark-olive-green", "dark-orange", "dark-orchid", "dark-red", "dark-salmon", "dark-sea-green", "dark-slate-blue", "dark-slate-gray", "dark-turquoise", "dark-violet", "deep-pink", "deep-sky-blue", "dim-gray", "dodger-blue", "fire-brick", "floral-white", "forest-green", "fuchsia", "gainsboro", "ghost-white", "gold", "goldenrod", "gray", "green", "green-yellow", "honeydew", "hot-pink", "indian-red", "indigo", "ivory", "khaki", "lavender", "lavender-blush", "lawn-green", "lemon-chiffon", "light-blue", "light-coral", "light-cyan", "light-goldenrod-yellow", "light-gray", "light-green", "light-pink", "light-salmon", "light-sea-green", "light-sky-blue", "light-slate-gray", "light-steel-blue", "light-yellow", "lime", "lime-green", "linen", "magenta", "maroon", "medium-aquamarine", "medium-blue", "medium-orchid", "medium-purple", "medium-sea-green", "medium-slate-blue", "medium-spring-green", "medium-turquoise", "medium-violet-red", "midnight-blue", "mint-cream", "misty-rose", "moccasin", "navajo-white", "navy", "old-lace", "olive", "olive-drab", "orange", "orange-red", "orchid", "pale-goldenrod", "pale-green", "pale-turquoise", "pale-violet-red", "papaya-whip", "peachpuff", "peru", "pink", "plum", "powder-blue", "purple", "red", "rosy-brown", "royal-blue", "saddle-brown", "salmon", "sandy-brown", "sea-green", "seashell", "sienna", "silver", "sky-blue", "slate-blue", "slate-gray", "snow", "spring-green", "steel-blue", "tan", "teal", "thistle", "tomato", "turquoise", "violet", "wheat", "white", "white-smoke", "yellow", "yellow-green"),
-				},
-				MarkdownDescription: `Specifies the color of a policy label.`,
-			},
-			"relation_to_external_epgs": schema.SetNestedAttribute{
-				MarkdownDescription: ``,
-				Optional:            true,
-				Computed:            true,
-				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseNonNullStateForUnknown(),
-					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(L3extRsLblToInstPL3extConsLblSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate),
-				},
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"annotation": schema.StringAttribute{
-							Optional: true,
-							Computed: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseNonNullStateForUnknown(),
-							},
-							MarkdownDescription: `The annotation of the Relation From L3Out Consumer Label To External EPG object.`,
-						},
-						"target_dn": schema.StringAttribute{
-							Required: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseNonNullStateForUnknown(),
-							},
-							MarkdownDescription: `The distinguished name (DN) of the External EPG object.`,
-						},
-						"annotations": schema.SetNestedAttribute{
-							MarkdownDescription: ``,
-							Optional:            true,
-							Computed:            true,
-							PlanModifiers: []planmodifier.Set{
-								setplanmodifier.UseNonNullStateForUnknown(),
-							},
-							NestedObject: schema.NestedAttributeObject{
-								Attributes: map[string]schema.Attribute{
-									"key": schema.StringAttribute{
-										Required: true,
-										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseNonNullStateForUnknown(),
-										},
-										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-									},
-									"value": schema.StringAttribute{
-										Required: true,
-										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseNonNullStateForUnknown(),
-										},
-										MarkdownDescription: `The value of the property.`,
-									},
-								},
-							},
-						},
-						"tags": schema.SetNestedAttribute{
-							MarkdownDescription: ``,
-							Optional:            true,
-							Computed:            true,
-							PlanModifiers: []planmodifier.Set{
-								setplanmodifier.UseNonNullStateForUnknown(),
-							},
-							NestedObject: schema.NestedAttributeObject{
-								Attributes: map[string]schema.Attribute{
-									"key": schema.StringAttribute{
-										Required: true,
-										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseNonNullStateForUnknown(),
-										},
-										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-									},
-									"value": schema.StringAttribute{
-										Required: true,
-										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseNonNullStateForUnknown(),
-										},
-										MarkdownDescription: `The value of the property.`,
-									},
-								},
-							},
-						},
-					},
-				},
-			},
-			"relation_to_route_control_profiles": schema.SetNestedAttribute{
-				MarkdownDescription: `Consumer Lable Relation to Routing Policy`,
-				Optional:            true,
-				Computed:            true,
-				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseNonNullStateForUnknown(),
-					SetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate(L3extRsLblToProfileL3extConsLblSetToSetNullWhenStateIsNullPlanIsUnknownDuringUpdate),
-				},
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"annotation": schema.StringAttribute{
-							Optional: true,
-							Computed: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseNonNullStateForUnknown(),
-							},
-							MarkdownDescription: `The annotation of the Relation From L3Out Consumer Label To Route Control Profile object.`,
-						},
-						"direction": schema.StringAttribute{
-							Required: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseNonNullStateForUnknown(),
-							},
-							Validators: []validator.String{
-								stringvalidator.OneOf("export", "import"),
-								MakeStringRequired(),
-							},
-							MarkdownDescription: `The direction on which to apply the Route Map associated with the Route Control Profile.`,
-						},
-						"target_dn": schema.StringAttribute{
-							Required: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseNonNullStateForUnknown(),
-							},
-							MarkdownDescription: `The distinguished name (DN) of the Route Control Profile object.`,
-						},
-						"annotations": schema.SetNestedAttribute{
-							MarkdownDescription: ``,
-							Optional:            true,
-							Computed:            true,
-							PlanModifiers: []planmodifier.Set{
-								setplanmodifier.UseNonNullStateForUnknown(),
-							},
-							NestedObject: schema.NestedAttributeObject{
-								Attributes: map[string]schema.Attribute{
-									"key": schema.StringAttribute{
-										Required: true,
-										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseNonNullStateForUnknown(),
-										},
-										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-									},
-									"value": schema.StringAttribute{
-										Required: true,
-										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseNonNullStateForUnknown(),
-										},
-										MarkdownDescription: `The value of the property.`,
-									},
-								},
-							},
-						},
-						"tags": schema.SetNestedAttribute{
-							MarkdownDescription: ``,
-							Optional:            true,
-							Computed:            true,
-							PlanModifiers: []planmodifier.Set{
-								setplanmodifier.UseNonNullStateForUnknown(),
-							},
-							NestedObject: schema.NestedAttributeObject{
-								Attributes: map[string]schema.Attribute{
-									"key": schema.StringAttribute{
-										Required: true,
-										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseNonNullStateForUnknown(),
-										},
-										MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-									},
-									"value": schema.StringAttribute{
-										Required: true,
-										PlanModifiers: []planmodifier.String{
-											stringplanmodifier.UseNonNullStateForUnknown(),
-										},
-										MarkdownDescription: `The value of the property.`,
-									},
-								},
-							},
-						},
-					},
-				},
-			},
-			"annotations": schema.SetNestedAttribute{
-				MarkdownDescription: ``,
-				Optional:            true,
-				Computed:            true,
-				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseNonNullStateForUnknown(),
-				},
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"key": schema.StringAttribute{
-							Required: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseNonNullStateForUnknown(),
-							},
-							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-						},
-						"value": schema.StringAttribute{
-							Required: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseNonNullStateForUnknown(),
-							},
-							MarkdownDescription: `The value of the property.`,
-						},
-					},
-				},
-			},
-			"tags": schema.SetNestedAttribute{
-				MarkdownDescription: ``,
-				Optional:            true,
-				Computed:            true,
-				PlanModifiers: []planmodifier.Set{
-					setplanmodifier.UseNonNullStateForUnknown(),
-				},
-				NestedObject: schema.NestedAttributeObject{
-					Attributes: map[string]schema.Attribute{
-						"key": schema.StringAttribute{
-							Required: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseNonNullStateForUnknown(),
-							},
-							MarkdownDescription: `The key used to uniquely identify this configuration object.`,
-						},
-						"value": schema.StringAttribute{
-							Required: true,
-							PlanModifiers: []planmodifier.String{
-								stringplanmodifier.UseNonNullStateForUnknown(),
-							},
-							MarkdownDescription: `The value of the property.`,
-						},
-					},
-				},
-			},
-		},
-	}
+	resp.Schema = models.L3extConsLblResourceSchema(globalAnnotation)
 	tflog.Debug(ctx, "End schema of resource: aci_l3out_consumer_label")
 }
 
@@ -735,817 +54,218 @@ func (r *L3extConsLblResource) Configure(ctx context.Context, req resource.Confi
 		return
 	}
 
-	client, ok := req.ProviderData.(*client.Client)
-
+	aciClient, ok := req.ProviderData.(*client.Client)
 	if !ok {
 		resp.Diagnostics.AddError(
 			"Unexpected Resource Configure Type",
 			fmt.Sprintf("Expected *client.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
-
 		return
 	}
 
-	r.client = client
+	r.client = aciClient
 	tflog.Debug(ctx, "End configure of resource: aci_l3out_consumer_label")
+}
+
+func (r *L3extConsLblResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
+	if req.Plan.Raw.IsNull() {
+		return
+	}
+
+	var data models.L3extConsLblRootModel
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	// A parent reference or naming value may only become known during apply.
+	if data.ParentDN.IsNull() || data.ParentDN.IsUnknown() {
+		return
+	}
+	if data.Name.IsNull() || data.Name.IsUnknown() {
+		return
+	}
+
+	data.SetIDFromDN(data.BuildDN())
+	if req.State.Raw.IsNull() && !globalAllowExistingOnCreate {
+		CheckDn(ctx, &resp.Diagnostics, r.client, "l3extConsLbl", data.ID.ValueString())
+		if resp.Diagnostics.HasError() {
+			return
+		}
+	}
+
+	resp.Diagnostics.Append(resp.Plan.Set(ctx, &data)...)
 }
 
 func (r *L3extConsLblResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 	tflog.Debug(ctx, "Start create of resource: aci_l3out_consumer_label")
-	// On create retrieve information on current state prior to making any changes in order to determine child delete operations
-	var stateData *L3extConsLblResourceModel
-	resp.Diagnostics.Append(req.Plan.Get(ctx, &stateData)...)
-	if stateData.Id.IsUnknown() || stateData.Id.IsNull() {
-		setL3extConsLblId(ctx, stateData)
+
+	var data models.L3extConsLblRootModel
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
+	if resp.Diagnostics.HasError() {
+		return
 	}
-	getAndSetL3extConsLblAttributes(ctx, &resp.Diagnostics, r.client, stateData)
-	if !globalAllowExistingOnCreate && !stateData.Id.IsNull() {
+
+	dn := data.BuildDN()
+	data.SetIDFromDN(dn)
+	// Read existing children before adoption so payload construction can reconcile them.
+	priorState := models.NewL3extConsLblRootModelNull()
+	response := getManagedObject(ctx, &resp.Diagnostics, r.client, dn, data.SupportedSubtreeClasses(apicVersion))
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	found, diagnostics := priorState.SetFromResponse(ctx, response)
+	resp.Diagnostics.Append(diagnostics...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	if found && !globalAllowExistingOnCreate {
 		resp.Diagnostics.AddError(
 			"Object Already Exists",
-			fmt.Sprintf("The l3extConsLbl object with DN '%s' already exists.", stateData.Id.ValueString()),
+			fmt.Sprintf("The l3extConsLbl object with DN '%s' already exists.", dn),
 		)
 		return
 	}
 
-	var data *L3extConsLblResourceModel
-
-	// Read Terraform plan data into the model
-	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
-
+	payload, diagnostics := data.BuildPayload(ctx, &priorState.L3extConsLblModel, true, !globalAllowExistingOnCreate, globalAnnotation)
+	resp.Diagnostics.Append(diagnostics...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	if data.Id.IsUnknown() || data.Id.IsNull() {
-		setL3extConsLblId(ctx, data)
-	}
-
-	tflog.Debug(ctx, fmt.Sprintf("Create of resource aci_l3out_consumer_label with id '%s'", data.Id.ValueString()))
-
-	var l3extRsLblToInstPPlan, l3extRsLblToInstPState []L3extRsLblToInstPL3extConsLblResourceModel
-	data.L3extRsLblToInstP.ElementsAs(ctx, &l3extRsLblToInstPPlan, false)
-	stateData.L3extRsLblToInstP.ElementsAs(ctx, &l3extRsLblToInstPState, false)
-	var l3extRsLblToProfilePlan, l3extRsLblToProfileState []L3extRsLblToProfileL3extConsLblResourceModel
-	data.L3extRsLblToProfile.ElementsAs(ctx, &l3extRsLblToProfilePlan, false)
-	stateData.L3extRsLblToProfile.ElementsAs(ctx, &l3extRsLblToProfileState, false)
-	var tagAnnotationPlan, tagAnnotationState []TagAnnotationL3extConsLblResourceModel
-	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
-	stateData.TagAnnotation.ElementsAs(ctx, &tagAnnotationState, false)
-	var tagTagPlan, tagTagState []TagTagL3extConsLblResourceModel
-	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
-	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getL3extConsLblCreateJsonPayload(ctx, &resp.Diagnostics, true, data, l3extRsLblToInstPPlan, l3extRsLblToInstPState, l3extRsLblToProfilePlan, l3extRsLblToProfileState, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
-
+	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", dn), "POST", payload)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
-
+	// Retain the created object's DN if the subsequent read fails.
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), data.ID)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	getAndSetL3extConsLblAttributes(ctx, &resp.Diagnostics, r.client, data)
+	response = getManagedObject(ctx, &resp.Diagnostics, r.client, dn, data.SupportedSubtreeClasses(apicVersion))
+	if resp.Diagnostics.HasError() {
+		return
+	}
 
-	// Save data into Terraform state
+	found, diagnostics = data.SetFromResponse(ctx, response)
+	resp.Diagnostics.Append(diagnostics...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	if !found {
+		resp.Diagnostics.AddError(
+			"Failed to read aci_l3out_consumer_label resource",
+			fmt.Sprintf("The aci_l3out_consumer_label resource with id '%s' has not been found after creation", dn),
+		)
+		return
+	}
+
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_l3out_consumer_label with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_l3out_consumer_label with id '%s'", data.ID.ValueString()))
 }
 
 func (r *L3extConsLblResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 	tflog.Debug(ctx, "Start read of resource: aci_l3out_consumer_label")
-	var data *L3extConsLblResourceModel
 
-	// Read Terraform prior state data into the model
+	var data models.L3extConsLblRootModel
 	resp.Diagnostics.Append(req.State.Get(ctx, &data)...)
-
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Read of resource aci_l3out_consumer_label with id '%s'", data.Id.ValueString()))
-
-	getAndSetL3extConsLblAttributes(ctx, &resp.Diagnostics, r.client, data)
-
-	// Save updated data into Terraform state
-	if data.Id.IsNull() {
-		var emptyData *L3extConsLblResourceModel
-		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
-	} else {
-		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	// Imports initially provide only ID; the response reconstructs the remaining fields.
+	response := getManagedObject(ctx, &resp.Diagnostics, r.client, data.ID.ValueString(), data.SupportedSubtreeClasses(apicVersion))
+	if resp.Diagnostics.HasError() {
+		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_l3out_consumer_label with id '%s'", data.Id.ValueString()))
+	found, diagnostics := data.SetFromResponse(ctx, response)
+	resp.Diagnostics.Append(diagnostics...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	if !found {
+		resp.State.RemoveResource(ctx)
+		return
+	}
+
+	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_l3out_consumer_label with id '%s'", data.ID.ValueString()))
 }
 
 func (r *L3extConsLblResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 	tflog.Debug(ctx, "Start update of resource: aci_l3out_consumer_label")
-	var data *L3extConsLblResourceModel
-	var stateData *L3extConsLblResourceModel
 
-	// Read Terraform plan data into the model
+	var data, priorState models.L3extConsLblRootModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &data)...)
-	resp.Diagnostics.Append(req.State.Get(ctx, &stateData)...)
-
+	resp.Diagnostics.Append(req.State.Get(ctx, &priorState)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Update of resource aci_l3out_consumer_label with id '%s'", data.Id.ValueString()))
-
-	var l3extRsLblToInstPPlan, l3extRsLblToInstPState []L3extRsLblToInstPL3extConsLblResourceModel
-	data.L3extRsLblToInstP.ElementsAs(ctx, &l3extRsLblToInstPPlan, false)
-	stateData.L3extRsLblToInstP.ElementsAs(ctx, &l3extRsLblToInstPState, false)
-	var l3extRsLblToProfilePlan, l3extRsLblToProfileState []L3extRsLblToProfileL3extConsLblResourceModel
-	data.L3extRsLblToProfile.ElementsAs(ctx, &l3extRsLblToProfilePlan, false)
-	stateData.L3extRsLblToProfile.ElementsAs(ctx, &l3extRsLblToProfileState, false)
-	var tagAnnotationPlan, tagAnnotationState []TagAnnotationL3extConsLblResourceModel
-	data.TagAnnotation.ElementsAs(ctx, &tagAnnotationPlan, false)
-	stateData.TagAnnotation.ElementsAs(ctx, &tagAnnotationState, false)
-	var tagTagPlan, tagTagState []TagTagL3extConsLblResourceModel
-	data.TagTag.ElementsAs(ctx, &tagTagPlan, false)
-	stateData.TagTag.ElementsAs(ctx, &tagTagState, false)
-	jsonPayload := getL3extConsLblCreateJsonPayload(ctx, &resp.Diagnostics, false, data, l3extRsLblToInstPPlan, l3extRsLblToInstPState, l3extRsLblToProfilePlan, l3extRsLblToProfileState, tagAnnotationPlan, tagAnnotationState, tagTagPlan, tagTagState)
-
+	dn := data.BuildDN()
+	data.SetIDFromDN(dn)
+	payload, diagnostics := data.BuildPayload(ctx, &priorState.L3extConsLblModel, false, false, globalAnnotation)
+	resp.Diagnostics.Append(diagnostics...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
-
+	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", dn), "POST", payload)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	getAndSetL3extConsLblAttributes(ctx, &resp.Diagnostics, r.client, data)
+	response := getManagedObject(ctx, &resp.Diagnostics, r.client, dn, data.SupportedSubtreeClasses(apicVersion))
+	if resp.Diagnostics.HasError() {
+		return
+	}
 
-	// Save updated data into Terraform state
+	found, diagnostics := data.SetFromResponse(ctx, response)
+	resp.Diagnostics.Append(diagnostics...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	if !found {
+		resp.Diagnostics.AddError(
+			"Failed to read aci_l3out_consumer_label resource",
+			fmt.Sprintf("The aci_l3out_consumer_label resource with id '%s' has not been found after update", dn),
+		)
+		return
+	}
+
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_l3out_consumer_label with id '%s'", data.Id.ValueString()))
+	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_l3out_consumer_label with id '%s'", data.ID.ValueString()))
 }
 
 func (r *L3extConsLblResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
 	tflog.Debug(ctx, "Start delete of resource: aci_l3out_consumer_label")
-	var data *L3extConsLblResourceModel
 
-	// Read Terraform prior state data into the model
+	var data models.L3extConsLblRootModel
 	resp.Diagnostics.Append(req.State.Get(ctx, &data)...)
-
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("Delete of resource aci_l3out_consumer_label with id '%s'", data.Id.ValueString()))
-	jsonPayload := GetDeleteJsonPayload(ctx, &resp.Diagnostics, "l3extConsLbl", data.Id.ValueString())
+	payload, diagnostics := data.BuildDeletePayload(ctx)
+	resp.Diagnostics.Append(diagnostics...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.Id.ValueString()), "POST", jsonPayload)
+
+	DoRestRequest(ctx, &resp.Diagnostics, r.client, fmt.Sprintf("api/mo/%s.json", data.ID.ValueString()), "POST", payload)
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	tflog.Debug(ctx, fmt.Sprintf("End delete of resource aci_l3out_consumer_label with id '%s'", data.Id.ValueString()))
+
+	tflog.Debug(ctx, fmt.Sprintf("End delete of resource aci_l3out_consumer_label with id '%s'", data.ID.ValueString()))
 }
 
 func (r *L3extConsLblResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_l3out_consumer_label")
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
-
-	var stateData *L3extConsLblResourceModel
-	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
-	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_l3out_consumer_label with id '%s'", stateData.Id.ValueString()))
-
-	tflog.Debug(ctx, "End import of state resource: aci_l3out_consumer_label")
-}
-
-func getAndSetL3extConsLblAttributes(ctx context.Context, diags *diag.Diagnostics, client *client.Client, data *L3extConsLblResourceModel) {
-	childClasses := getChildClassesForGetRequest([]string{"l3extRsLblToInstP", "l3extRsLblToProfile", "tagAnnotation", "tagTag"})
-	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), strings.Join(childClasses, ",")), "GET", nil)
-
-	readData := getEmptyL3extConsLblResourceModel()
-
-	if diags.HasError() {
-		return
-	}
-	if requestData.Search("imdata").Search("l3extConsLbl").Data() != nil {
-		classReadInfo := requestData.Search("imdata").Search("l3extConsLbl").Data().([]interface{})
-		if len(classReadInfo) == 1 {
-			attributes := classReadInfo[0].(map[string]interface{})["attributes"].(map[string]interface{})
-			for attributeName, attributeValue := range attributes {
-				if attributeName == "dn" {
-					readData.Id = basetypes.NewStringValue(attributeValue.(string))
-					setL3extConsLblParentDn(ctx, attributeValue.(string), readData)
-				}
-				if attributeName == "annotation" {
-					readData.Annotation = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "descr" {
-					readData.Descr = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "name" {
-					readData.Name = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "nameAlias" {
-					readData.NameAlias = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "owner" {
-					readData.Owner = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "ownerKey" {
-					readData.OwnerKey = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "ownerTag" {
-					readData.OwnerTag = basetypes.NewStringValue(attributeValue.(string))
-				}
-				if attributeName == "tag" {
-					readData.Tag = basetypes.NewStringValue(attributeValue.(string))
-				}
-			}
-			L3extRsLblToInstPL3extConsLblList := make([]L3extRsLblToInstPL3extConsLblResourceModel, 0)
-			L3extRsLblToProfileL3extConsLblList := make([]L3extRsLblToProfileL3extConsLblResourceModel, 0)
-			TagAnnotationL3extConsLblList := make([]TagAnnotationL3extConsLblResourceModel, 0)
-			TagTagL3extConsLblList := make([]TagTagL3extConsLblResourceModel, 0)
-			_, ok := classReadInfo[0].(map[string]interface{})["children"]
-			if ok {
-				children := classReadInfo[0].(map[string]interface{})["children"].([]interface{})
-				for _, child := range children {
-					for childClassName, childClassDetails := range child.(map[string]interface{}) {
-						childAttributes := childClassDetails.(map[string]interface{})["attributes"].(map[string]interface{})
-						if childClassName == "l3extRsLblToInstP" {
-							L3extRsLblToInstPL3extConsLbl := getEmptyL3extRsLblToInstPL3extConsLblResourceModel()
-							for childAttributeName, childAttributeValue := range childAttributes {
-								if childAttributeName == "annotation" {
-									L3extRsLblToInstPL3extConsLbl.Annotation = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-								if childAttributeName == "tDn" {
-									L3extRsLblToInstPL3extConsLbl.TDn = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-
-							}
-							TagAnnotationL3extRsLblToInstPL3extConsLblList := make([]TagAnnotationL3extRsLblToInstPL3extConsLblResourceModel, 0)
-							TagTagL3extRsLblToInstPL3extConsLblList := make([]TagTagL3extRsLblToInstPL3extConsLblResourceModel, 0)
-							childrenOfL3extRsLblToInstPL3extConsLbl, childrenOfL3extRsLblToInstPL3extConsLblExist := childClassDetails.(map[string]interface{})["children"]
-							if childrenOfL3extRsLblToInstPL3extConsLblExist {
-								for _, childL3extRsLblToInstPL3extConsLbl := range childrenOfL3extRsLblToInstPL3extConsLbl.([]interface{}) {
-									for childClassNameL3extRsLblToInstPL3extConsLbl, childClassDetailsL3extRsLblToInstPL3extConsLbl := range childL3extRsLblToInstPL3extConsLbl.(map[string]interface{}) {
-										if childClassNameL3extRsLblToInstPL3extConsLbl == "tagAnnotation" {
-											TagAnnotationL3extRsLblToInstPL3extConsLbl := getEmptyTagAnnotationL3extRsLblToInstPL3extConsLblResourceModel()
-											tagAnnotationchildAttributeValue := childClassDetailsL3extRsLblToInstPL3extConsLbl.(map[string]interface{})["attributes"].(map[string]interface{})
-											for childAttributeName, childAttributeValue := range tagAnnotationchildAttributeValue {
-												if childAttributeName == "key" {
-													TagAnnotationL3extRsLblToInstPL3extConsLbl.Key = basetypes.NewStringValue(childAttributeValue.(string))
-												}
-												if childAttributeName == "value" {
-													TagAnnotationL3extRsLblToInstPL3extConsLbl.Value = basetypes.NewStringValue(childAttributeValue.(string))
-												}
-											}
-											TagAnnotationL3extRsLblToInstPL3extConsLblList = append(TagAnnotationL3extRsLblToInstPL3extConsLblList, TagAnnotationL3extRsLblToInstPL3extConsLbl)
-										}
-										if childClassNameL3extRsLblToInstPL3extConsLbl == "tagTag" {
-											TagTagL3extRsLblToInstPL3extConsLbl := getEmptyTagTagL3extRsLblToInstPL3extConsLblResourceModel()
-											tagTagchildAttributeValue := childClassDetailsL3extRsLblToInstPL3extConsLbl.(map[string]interface{})["attributes"].(map[string]interface{})
-											for childAttributeName, childAttributeValue := range tagTagchildAttributeValue {
-												if childAttributeName == "key" {
-													TagTagL3extRsLblToInstPL3extConsLbl.Key = basetypes.NewStringValue(childAttributeValue.(string))
-												}
-												if childAttributeName == "value" {
-													TagTagL3extRsLblToInstPL3extConsLbl.Value = basetypes.NewStringValue(childAttributeValue.(string))
-												}
-											}
-											TagTagL3extRsLblToInstPL3extConsLblList = append(TagTagL3extRsLblToInstPL3extConsLblList, TagTagL3extRsLblToInstPL3extConsLbl)
-										}
-									}
-								}
-							}
-							TagAnnotationL3extRsLblToInstPL3extConsLblSet, _ := types.SetValueFrom(ctx, TagAnnotationL3extRsLblToInstPL3extConsLblType, TagAnnotationL3extRsLblToInstPL3extConsLblList)
-							L3extRsLblToInstPL3extConsLbl.TagAnnotation = TagAnnotationL3extRsLblToInstPL3extConsLblSet
-							TagTagL3extRsLblToInstPL3extConsLblSet, _ := types.SetValueFrom(ctx, TagTagL3extRsLblToInstPL3extConsLblType, TagTagL3extRsLblToInstPL3extConsLblList)
-							L3extRsLblToInstPL3extConsLbl.TagTag = TagTagL3extRsLblToInstPL3extConsLblSet
-							L3extRsLblToInstPL3extConsLblList = append(L3extRsLblToInstPL3extConsLblList, L3extRsLblToInstPL3extConsLbl)
-						}
-						if childClassName == "l3extRsLblToProfile" {
-							L3extRsLblToProfileL3extConsLbl := getEmptyL3extRsLblToProfileL3extConsLblResourceModel()
-							for childAttributeName, childAttributeValue := range childAttributes {
-								if childAttributeName == "annotation" {
-									L3extRsLblToProfileL3extConsLbl.Annotation = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-								if childAttributeName == "direction" {
-									L3extRsLblToProfileL3extConsLbl.Direction = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-								if childAttributeName == "tDn" {
-									L3extRsLblToProfileL3extConsLbl.TDn = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-
-							}
-							TagAnnotationL3extRsLblToProfileL3extConsLblList := make([]TagAnnotationL3extRsLblToProfileL3extConsLblResourceModel, 0)
-							TagTagL3extRsLblToProfileL3extConsLblList := make([]TagTagL3extRsLblToProfileL3extConsLblResourceModel, 0)
-							childrenOfL3extRsLblToProfileL3extConsLbl, childrenOfL3extRsLblToProfileL3extConsLblExist := childClassDetails.(map[string]interface{})["children"]
-							if childrenOfL3extRsLblToProfileL3extConsLblExist {
-								for _, childL3extRsLblToProfileL3extConsLbl := range childrenOfL3extRsLblToProfileL3extConsLbl.([]interface{}) {
-									for childClassNameL3extRsLblToProfileL3extConsLbl, childClassDetailsL3extRsLblToProfileL3extConsLbl := range childL3extRsLblToProfileL3extConsLbl.(map[string]interface{}) {
-										if childClassNameL3extRsLblToProfileL3extConsLbl == "tagAnnotation" {
-											TagAnnotationL3extRsLblToProfileL3extConsLbl := getEmptyTagAnnotationL3extRsLblToProfileL3extConsLblResourceModel()
-											tagAnnotationchildAttributeValue := childClassDetailsL3extRsLblToProfileL3extConsLbl.(map[string]interface{})["attributes"].(map[string]interface{})
-											for childAttributeName, childAttributeValue := range tagAnnotationchildAttributeValue {
-												if childAttributeName == "key" {
-													TagAnnotationL3extRsLblToProfileL3extConsLbl.Key = basetypes.NewStringValue(childAttributeValue.(string))
-												}
-												if childAttributeName == "value" {
-													TagAnnotationL3extRsLblToProfileL3extConsLbl.Value = basetypes.NewStringValue(childAttributeValue.(string))
-												}
-											}
-											TagAnnotationL3extRsLblToProfileL3extConsLblList = append(TagAnnotationL3extRsLblToProfileL3extConsLblList, TagAnnotationL3extRsLblToProfileL3extConsLbl)
-										}
-										if childClassNameL3extRsLblToProfileL3extConsLbl == "tagTag" {
-											TagTagL3extRsLblToProfileL3extConsLbl := getEmptyTagTagL3extRsLblToProfileL3extConsLblResourceModel()
-											tagTagchildAttributeValue := childClassDetailsL3extRsLblToProfileL3extConsLbl.(map[string]interface{})["attributes"].(map[string]interface{})
-											for childAttributeName, childAttributeValue := range tagTagchildAttributeValue {
-												if childAttributeName == "key" {
-													TagTagL3extRsLblToProfileL3extConsLbl.Key = basetypes.NewStringValue(childAttributeValue.(string))
-												}
-												if childAttributeName == "value" {
-													TagTagL3extRsLblToProfileL3extConsLbl.Value = basetypes.NewStringValue(childAttributeValue.(string))
-												}
-											}
-											TagTagL3extRsLblToProfileL3extConsLblList = append(TagTagL3extRsLblToProfileL3extConsLblList, TagTagL3extRsLblToProfileL3extConsLbl)
-										}
-									}
-								}
-							}
-							TagAnnotationL3extRsLblToProfileL3extConsLblSet, _ := types.SetValueFrom(ctx, TagAnnotationL3extRsLblToProfileL3extConsLblType, TagAnnotationL3extRsLblToProfileL3extConsLblList)
-							L3extRsLblToProfileL3extConsLbl.TagAnnotation = TagAnnotationL3extRsLblToProfileL3extConsLblSet
-							TagTagL3extRsLblToProfileL3extConsLblSet, _ := types.SetValueFrom(ctx, TagTagL3extRsLblToProfileL3extConsLblType, TagTagL3extRsLblToProfileL3extConsLblList)
-							L3extRsLblToProfileL3extConsLbl.TagTag = TagTagL3extRsLblToProfileL3extConsLblSet
-							L3extRsLblToProfileL3extConsLblList = append(L3extRsLblToProfileL3extConsLblList, L3extRsLblToProfileL3extConsLbl)
-						}
-						if childClassName == "tagAnnotation" {
-							TagAnnotationL3extConsLbl := getEmptyTagAnnotationL3extConsLblResourceModel()
-							for childAttributeName, childAttributeValue := range childAttributes {
-								if childAttributeName == "key" {
-									TagAnnotationL3extConsLbl.Key = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-								if childAttributeName == "value" {
-									TagAnnotationL3extConsLbl.Value = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-
-							}
-							TagAnnotationL3extConsLblList = append(TagAnnotationL3extConsLblList, TagAnnotationL3extConsLbl)
-						}
-						if childClassName == "tagTag" {
-							TagTagL3extConsLbl := getEmptyTagTagL3extConsLblResourceModel()
-							for childAttributeName, childAttributeValue := range childAttributes {
-								if childAttributeName == "key" {
-									TagTagL3extConsLbl.Key = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-								if childAttributeName == "value" {
-									TagTagL3extConsLbl.Value = basetypes.NewStringValue(childAttributeValue.(string))
-								}
-
-							}
-							TagTagL3extConsLblList = append(TagTagL3extConsLblList, TagTagL3extConsLbl)
-						}
-					}
-				}
-			}
-			l3extRsLblToInstPSet, _ := types.SetValueFrom(ctx, readData.L3extRsLblToInstP.ElementType(ctx), L3extRsLblToInstPL3extConsLblList)
-			readData.L3extRsLblToInstP = l3extRsLblToInstPSet
-			l3extRsLblToProfileSet, _ := types.SetValueFrom(ctx, readData.L3extRsLblToProfile.ElementType(ctx), L3extRsLblToProfileL3extConsLblList)
-			readData.L3extRsLblToProfile = l3extRsLblToProfileSet
-			tagAnnotationSet, _ := types.SetValueFrom(ctx, readData.TagAnnotation.ElementType(ctx), TagAnnotationL3extConsLblList)
-			readData.TagAnnotation = tagAnnotationSet
-			tagTagSet, _ := types.SetValueFrom(ctx, readData.TagTag.ElementType(ctx), TagTagL3extConsLblList)
-			readData.TagTag = tagTagSet
-		} else {
-			diags.AddError(
-				"too many results in response",
-				fmt.Sprintf("%v matches returned for class 'l3extConsLbl'. Please report this issue to the provider developers.", len(classReadInfo)),
-			)
-		}
-	} else {
-		readData.Id = basetypes.NewStringNull()
-	}
-	*data = *readData
-}
-
-func getL3extConsLblRn(ctx context.Context, data *L3extConsLblResourceModel) string {
-	return fmt.Sprintf("conslbl-%s", data.Name.ValueString())
-}
-
-func setL3extConsLblParentDn(ctx context.Context, dn string, data *L3extConsLblResourceModel) {
-	bracketIndex := 0
-	rnIndex := 0
-	for i := len(dn) - 1; i >= 0; i-- {
-		if string(dn[i]) == "]" {
-			bracketIndex = bracketIndex + 1
-		} else if string(dn[i]) == "[" {
-			bracketIndex = bracketIndex - 1
-		} else if string(dn[i]) == "/" && bracketIndex == 0 {
-			rnIndex = i
-			break
-		}
-	}
-	data.ParentDn = basetypes.NewStringValue(dn[:rnIndex])
-}
-
-func setL3extConsLblId(ctx context.Context, data *L3extConsLblResourceModel) {
-	rn := getL3extConsLblRn(ctx, data)
-	data.Id = types.StringValue(fmt.Sprintf("%s/%s", data.ParentDn.ValueString(), rn))
-}
-
-func getL3extConsLblL3extRsLblToInstPChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *L3extConsLblResourceModel, l3extRsLblToInstPL3extConsLblPlan, l3extRsLblToInstPL3extConsLblState []L3extRsLblToInstPL3extConsLblResourceModel) []map[string]interface{} {
-	childPayloads := []map[string]interface{}{}
-	if !data.L3extRsLblToInstP.IsNull() && !data.L3extRsLblToInstP.IsUnknown() {
-		l3extRsLblToInstPIdentifiers := []L3extRsLblToInstPIdentifier{}
-		for _, l3extRsLblToInstPL3extConsLbl := range l3extRsLblToInstPL3extConsLblPlan {
-			L3extRsLblToInstPL3extConsLblChildren := make([]map[string]interface{}, 0)
-			childMap := NewAciObject()
-			if !l3extRsLblToInstPL3extConsLbl.Annotation.IsNull() && !l3extRsLblToInstPL3extConsLbl.Annotation.IsUnknown() {
-				childMap.Attributes["annotation"] = l3extRsLblToInstPL3extConsLbl.Annotation.ValueString()
-			} else {
-				childMap.Attributes["annotation"] = globalAnnotation
-			}
-			if !l3extRsLblToInstPL3extConsLbl.TDn.IsNull() && !l3extRsLblToInstPL3extConsLbl.TDn.IsUnknown() {
-				childMap.Attributes["tDn"] = l3extRsLblToInstPL3extConsLbl.TDn.ValueString()
-			}
-
-			var tagAnnotationL3extRsLblToInstPL3extConsLblPlan, tagAnnotationL3extRsLblToInstPL3extConsLblState []TagAnnotationL3extRsLblToInstPL3extConsLblResourceModel
-			l3extRsLblToInstPL3extConsLbl.TagAnnotation.ElementsAs(ctx, &tagAnnotationL3extRsLblToInstPL3extConsLblPlan, false)
-			for _, tagAnnotationL3extRsLblToInstPL3extConsLblstate := range l3extRsLblToInstPL3extConsLblState {
-				tagAnnotationL3extRsLblToInstPL3extConsLblstate.TagAnnotation.ElementsAs(ctx, &tagAnnotationL3extRsLblToInstPL3extConsLblState, false)
-			}
-			if !l3extRsLblToInstPL3extConsLbl.TagAnnotation.IsNull() && !l3extRsLblToInstPL3extConsLbl.TagAnnotation.IsUnknown() {
-				tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
-				for _, tagAnnotationL3extRsLblToInstPL3extConsLbl := range tagAnnotationL3extRsLblToInstPL3extConsLblPlan {
-					tagAnnotationL3extRsLblToInstPL3extConsLblChildMap := NewAciObject()
-					if !tagAnnotationL3extRsLblToInstPL3extConsLbl.Key.IsNull() && !tagAnnotationL3extRsLblToInstPL3extConsLbl.Key.IsUnknown() {
-						tagAnnotationL3extRsLblToInstPL3extConsLblChildMap.Attributes["key"] = tagAnnotationL3extRsLblToInstPL3extConsLbl.Key.ValueString()
-					}
-					if !tagAnnotationL3extRsLblToInstPL3extConsLbl.Value.IsNull() && !tagAnnotationL3extRsLblToInstPL3extConsLbl.Value.IsUnknown() {
-						tagAnnotationL3extRsLblToInstPL3extConsLblChildMap.Attributes["value"] = tagAnnotationL3extRsLblToInstPL3extConsLbl.Value.ValueString()
-					}
-					L3extRsLblToInstPL3extConsLblChildren = append(L3extRsLblToInstPL3extConsLblChildren, map[string]interface{}{"tagAnnotation": tagAnnotationL3extRsLblToInstPL3extConsLblChildMap})
-					tagAnnotationIdentifier := TagAnnotationIdentifier{}
-					tagAnnotationIdentifier.Key = tagAnnotationL3extRsLblToInstPL3extConsLbl.Key
-					tagAnnotationIdentifiers = append(tagAnnotationIdentifiers, tagAnnotationIdentifier)
-				}
-				for _, tagAnnotationL3extRsLblToInstPL3extConsLbl := range tagAnnotationL3extRsLblToInstPL3extConsLblState {
-					delete := true
-					for _, tagAnnotationIdentifier := range tagAnnotationIdentifiers {
-						if tagAnnotationIdentifier.Key == tagAnnotationL3extRsLblToInstPL3extConsLbl.Key {
-							delete = false
-							break
-						}
-					}
-					if delete {
-						tagAnnotationL3extRsLblToInstPL3extConsLblChildMapForDelete := NewAciObject()
-						tagAnnotationL3extRsLblToInstPL3extConsLblChildMapForDelete.Attributes["status"] = "deleted"
-						tagAnnotationL3extRsLblToInstPL3extConsLblChildMapForDelete.Attributes["key"] = tagAnnotationL3extRsLblToInstPL3extConsLbl.Key.ValueString()
-						L3extRsLblToInstPL3extConsLblChildren = append(L3extRsLblToInstPL3extConsLblChildren, map[string]interface{}{"tagAnnotation": tagAnnotationL3extRsLblToInstPL3extConsLblChildMapForDelete})
-					}
-				}
-			}
-
-			var tagTagL3extRsLblToInstPL3extConsLblPlan, tagTagL3extRsLblToInstPL3extConsLblState []TagTagL3extRsLblToInstPL3extConsLblResourceModel
-			l3extRsLblToInstPL3extConsLbl.TagTag.ElementsAs(ctx, &tagTagL3extRsLblToInstPL3extConsLblPlan, false)
-			for _, tagTagL3extRsLblToInstPL3extConsLblstate := range l3extRsLblToInstPL3extConsLblState {
-				tagTagL3extRsLblToInstPL3extConsLblstate.TagTag.ElementsAs(ctx, &tagTagL3extRsLblToInstPL3extConsLblState, false)
-			}
-			if !l3extRsLblToInstPL3extConsLbl.TagTag.IsNull() && !l3extRsLblToInstPL3extConsLbl.TagTag.IsUnknown() {
-				tagTagIdentifiers := []TagTagIdentifier{}
-				for _, tagTagL3extRsLblToInstPL3extConsLbl := range tagTagL3extRsLblToInstPL3extConsLblPlan {
-					tagTagL3extRsLblToInstPL3extConsLblChildMap := NewAciObject()
-					if !tagTagL3extRsLblToInstPL3extConsLbl.Key.IsNull() && !tagTagL3extRsLblToInstPL3extConsLbl.Key.IsUnknown() {
-						tagTagL3extRsLblToInstPL3extConsLblChildMap.Attributes["key"] = tagTagL3extRsLblToInstPL3extConsLbl.Key.ValueString()
-					}
-					if !tagTagL3extRsLblToInstPL3extConsLbl.Value.IsNull() && !tagTagL3extRsLblToInstPL3extConsLbl.Value.IsUnknown() {
-						tagTagL3extRsLblToInstPL3extConsLblChildMap.Attributes["value"] = tagTagL3extRsLblToInstPL3extConsLbl.Value.ValueString()
-					}
-					L3extRsLblToInstPL3extConsLblChildren = append(L3extRsLblToInstPL3extConsLblChildren, map[string]interface{}{"tagTag": tagTagL3extRsLblToInstPL3extConsLblChildMap})
-					tagTagIdentifier := TagTagIdentifier{}
-					tagTagIdentifier.Key = tagTagL3extRsLblToInstPL3extConsLbl.Key
-					tagTagIdentifiers = append(tagTagIdentifiers, tagTagIdentifier)
-				}
-				for _, tagTagL3extRsLblToInstPL3extConsLbl := range tagTagL3extRsLblToInstPL3extConsLblState {
-					delete := true
-					for _, tagTagIdentifier := range tagTagIdentifiers {
-						if tagTagIdentifier.Key == tagTagL3extRsLblToInstPL3extConsLbl.Key {
-							delete = false
-							break
-						}
-					}
-					if delete {
-						tagTagL3extRsLblToInstPL3extConsLblChildMapForDelete := NewAciObject()
-						tagTagL3extRsLblToInstPL3extConsLblChildMapForDelete.Attributes["status"] = "deleted"
-						tagTagL3extRsLblToInstPL3extConsLblChildMapForDelete.Attributes["key"] = tagTagL3extRsLblToInstPL3extConsLbl.Key.ValueString()
-						L3extRsLblToInstPL3extConsLblChildren = append(L3extRsLblToInstPL3extConsLblChildren, map[string]interface{}{"tagTag": tagTagL3extRsLblToInstPL3extConsLblChildMapForDelete})
-					}
-				}
-			}
-			childMap.Children = L3extRsLblToInstPL3extConsLblChildren
-			childPayloads = append(childPayloads, map[string]interface{}{"l3extRsLblToInstP": childMap})
-			l3extRsLblToInstPIdentifier := L3extRsLblToInstPIdentifier{}
-			l3extRsLblToInstPIdentifier.TDn = l3extRsLblToInstPL3extConsLbl.TDn
-			l3extRsLblToInstPIdentifiers = append(l3extRsLblToInstPIdentifiers, l3extRsLblToInstPIdentifier)
-		}
-		for _, l3extRsLblToInstP := range l3extRsLblToInstPL3extConsLblState {
-			delete := true
-			for _, l3extRsLblToInstPIdentifier := range l3extRsLblToInstPIdentifiers {
-				if l3extRsLblToInstPIdentifier.TDn == l3extRsLblToInstP.TDn {
-					delete = false
-					break
-				}
-			}
-			if delete {
-				l3extRsLblToInstPChildMapForDelete := NewAciObject()
-				l3extRsLblToInstPChildMapForDelete.Attributes["status"] = "deleted"
-				l3extRsLblToInstPChildMapForDelete.Attributes["tDn"] = l3extRsLblToInstP.TDn.ValueString()
-				childPayloads = append(childPayloads, map[string]interface{}{"l3extRsLblToInstP": l3extRsLblToInstPChildMapForDelete})
-			}
-		}
-	} else {
-		data.L3extRsLblToInstP = types.SetNull(data.L3extRsLblToInstP.ElementType(ctx))
-	}
-
-	return childPayloads
-}
-
-func getL3extConsLblL3extRsLblToProfileChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *L3extConsLblResourceModel, l3extRsLblToProfileL3extConsLblPlan, l3extRsLblToProfileL3extConsLblState []L3extRsLblToProfileL3extConsLblResourceModel) []map[string]interface{} {
-	childPayloads := []map[string]interface{}{}
-	if !data.L3extRsLblToProfile.IsNull() && !data.L3extRsLblToProfile.IsUnknown() {
-		l3extRsLblToProfileIdentifiers := []L3extRsLblToProfileIdentifier{}
-		for _, l3extRsLblToProfileL3extConsLbl := range l3extRsLblToProfileL3extConsLblPlan {
-			L3extRsLblToProfileL3extConsLblChildren := make([]map[string]interface{}, 0)
-			childMap := NewAciObject()
-			if !l3extRsLblToProfileL3extConsLbl.Annotation.IsNull() && !l3extRsLblToProfileL3extConsLbl.Annotation.IsUnknown() {
-				childMap.Attributes["annotation"] = l3extRsLblToProfileL3extConsLbl.Annotation.ValueString()
-			} else {
-				childMap.Attributes["annotation"] = globalAnnotation
-			}
-			if !l3extRsLblToProfileL3extConsLbl.Direction.IsNull() && !l3extRsLblToProfileL3extConsLbl.Direction.IsUnknown() {
-				childMap.Attributes["direction"] = l3extRsLblToProfileL3extConsLbl.Direction.ValueString()
-			}
-			if !l3extRsLblToProfileL3extConsLbl.TDn.IsNull() && !l3extRsLblToProfileL3extConsLbl.TDn.IsUnknown() {
-				childMap.Attributes["tDn"] = l3extRsLblToProfileL3extConsLbl.TDn.ValueString()
-			}
-
-			var tagAnnotationL3extRsLblToProfileL3extConsLblPlan, tagAnnotationL3extRsLblToProfileL3extConsLblState []TagAnnotationL3extRsLblToProfileL3extConsLblResourceModel
-			l3extRsLblToProfileL3extConsLbl.TagAnnotation.ElementsAs(ctx, &tagAnnotationL3extRsLblToProfileL3extConsLblPlan, false)
-			for _, tagAnnotationL3extRsLblToProfileL3extConsLblstate := range l3extRsLblToProfileL3extConsLblState {
-				tagAnnotationL3extRsLblToProfileL3extConsLblstate.TagAnnotation.ElementsAs(ctx, &tagAnnotationL3extRsLblToProfileL3extConsLblState, false)
-			}
-			if !l3extRsLblToProfileL3extConsLbl.TagAnnotation.IsNull() && !l3extRsLblToProfileL3extConsLbl.TagAnnotation.IsUnknown() {
-				tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
-				for _, tagAnnotationL3extRsLblToProfileL3extConsLbl := range tagAnnotationL3extRsLblToProfileL3extConsLblPlan {
-					tagAnnotationL3extRsLblToProfileL3extConsLblChildMap := NewAciObject()
-					if !tagAnnotationL3extRsLblToProfileL3extConsLbl.Key.IsNull() && !tagAnnotationL3extRsLblToProfileL3extConsLbl.Key.IsUnknown() {
-						tagAnnotationL3extRsLblToProfileL3extConsLblChildMap.Attributes["key"] = tagAnnotationL3extRsLblToProfileL3extConsLbl.Key.ValueString()
-					}
-					if !tagAnnotationL3extRsLblToProfileL3extConsLbl.Value.IsNull() && !tagAnnotationL3extRsLblToProfileL3extConsLbl.Value.IsUnknown() {
-						tagAnnotationL3extRsLblToProfileL3extConsLblChildMap.Attributes["value"] = tagAnnotationL3extRsLblToProfileL3extConsLbl.Value.ValueString()
-					}
-					L3extRsLblToProfileL3extConsLblChildren = append(L3extRsLblToProfileL3extConsLblChildren, map[string]interface{}{"tagAnnotation": tagAnnotationL3extRsLblToProfileL3extConsLblChildMap})
-					tagAnnotationIdentifier := TagAnnotationIdentifier{}
-					tagAnnotationIdentifier.Key = tagAnnotationL3extRsLblToProfileL3extConsLbl.Key
-					tagAnnotationIdentifiers = append(tagAnnotationIdentifiers, tagAnnotationIdentifier)
-				}
-				for _, tagAnnotationL3extRsLblToProfileL3extConsLbl := range tagAnnotationL3extRsLblToProfileL3extConsLblState {
-					delete := true
-					for _, tagAnnotationIdentifier := range tagAnnotationIdentifiers {
-						if tagAnnotationIdentifier.Key == tagAnnotationL3extRsLblToProfileL3extConsLbl.Key {
-							delete = false
-							break
-						}
-					}
-					if delete {
-						tagAnnotationL3extRsLblToProfileL3extConsLblChildMapForDelete := NewAciObject()
-						tagAnnotationL3extRsLblToProfileL3extConsLblChildMapForDelete.Attributes["status"] = "deleted"
-						tagAnnotationL3extRsLblToProfileL3extConsLblChildMapForDelete.Attributes["key"] = tagAnnotationL3extRsLblToProfileL3extConsLbl.Key.ValueString()
-						L3extRsLblToProfileL3extConsLblChildren = append(L3extRsLblToProfileL3extConsLblChildren, map[string]interface{}{"tagAnnotation": tagAnnotationL3extRsLblToProfileL3extConsLblChildMapForDelete})
-					}
-				}
-			}
-
-			var tagTagL3extRsLblToProfileL3extConsLblPlan, tagTagL3extRsLblToProfileL3extConsLblState []TagTagL3extRsLblToProfileL3extConsLblResourceModel
-			l3extRsLblToProfileL3extConsLbl.TagTag.ElementsAs(ctx, &tagTagL3extRsLblToProfileL3extConsLblPlan, false)
-			for _, tagTagL3extRsLblToProfileL3extConsLblstate := range l3extRsLblToProfileL3extConsLblState {
-				tagTagL3extRsLblToProfileL3extConsLblstate.TagTag.ElementsAs(ctx, &tagTagL3extRsLblToProfileL3extConsLblState, false)
-			}
-			if !l3extRsLblToProfileL3extConsLbl.TagTag.IsNull() && !l3extRsLblToProfileL3extConsLbl.TagTag.IsUnknown() {
-				tagTagIdentifiers := []TagTagIdentifier{}
-				for _, tagTagL3extRsLblToProfileL3extConsLbl := range tagTagL3extRsLblToProfileL3extConsLblPlan {
-					tagTagL3extRsLblToProfileL3extConsLblChildMap := NewAciObject()
-					if !tagTagL3extRsLblToProfileL3extConsLbl.Key.IsNull() && !tagTagL3extRsLblToProfileL3extConsLbl.Key.IsUnknown() {
-						tagTagL3extRsLblToProfileL3extConsLblChildMap.Attributes["key"] = tagTagL3extRsLblToProfileL3extConsLbl.Key.ValueString()
-					}
-					if !tagTagL3extRsLblToProfileL3extConsLbl.Value.IsNull() && !tagTagL3extRsLblToProfileL3extConsLbl.Value.IsUnknown() {
-						tagTagL3extRsLblToProfileL3extConsLblChildMap.Attributes["value"] = tagTagL3extRsLblToProfileL3extConsLbl.Value.ValueString()
-					}
-					L3extRsLblToProfileL3extConsLblChildren = append(L3extRsLblToProfileL3extConsLblChildren, map[string]interface{}{"tagTag": tagTagL3extRsLblToProfileL3extConsLblChildMap})
-					tagTagIdentifier := TagTagIdentifier{}
-					tagTagIdentifier.Key = tagTagL3extRsLblToProfileL3extConsLbl.Key
-					tagTagIdentifiers = append(tagTagIdentifiers, tagTagIdentifier)
-				}
-				for _, tagTagL3extRsLblToProfileL3extConsLbl := range tagTagL3extRsLblToProfileL3extConsLblState {
-					delete := true
-					for _, tagTagIdentifier := range tagTagIdentifiers {
-						if tagTagIdentifier.Key == tagTagL3extRsLblToProfileL3extConsLbl.Key {
-							delete = false
-							break
-						}
-					}
-					if delete {
-						tagTagL3extRsLblToProfileL3extConsLblChildMapForDelete := NewAciObject()
-						tagTagL3extRsLblToProfileL3extConsLblChildMapForDelete.Attributes["status"] = "deleted"
-						tagTagL3extRsLblToProfileL3extConsLblChildMapForDelete.Attributes["key"] = tagTagL3extRsLblToProfileL3extConsLbl.Key.ValueString()
-						L3extRsLblToProfileL3extConsLblChildren = append(L3extRsLblToProfileL3extConsLblChildren, map[string]interface{}{"tagTag": tagTagL3extRsLblToProfileL3extConsLblChildMapForDelete})
-					}
-				}
-			}
-			childMap.Children = L3extRsLblToProfileL3extConsLblChildren
-			childPayloads = append(childPayloads, map[string]interface{}{"l3extRsLblToProfile": childMap})
-			l3extRsLblToProfileIdentifier := L3extRsLblToProfileIdentifier{}
-			l3extRsLblToProfileIdentifier.Direction = l3extRsLblToProfileL3extConsLbl.Direction
-			l3extRsLblToProfileIdentifier.TDn = l3extRsLblToProfileL3extConsLbl.TDn
-			l3extRsLblToProfileIdentifiers = append(l3extRsLblToProfileIdentifiers, l3extRsLblToProfileIdentifier)
-		}
-		for _, l3extRsLblToProfile := range l3extRsLblToProfileL3extConsLblState {
-			delete := true
-			for _, l3extRsLblToProfileIdentifier := range l3extRsLblToProfileIdentifiers {
-				if l3extRsLblToProfileIdentifier.Direction == l3extRsLblToProfile.Direction &&
-					l3extRsLblToProfileIdentifier.TDn == l3extRsLblToProfile.TDn {
-					delete = false
-					break
-				}
-			}
-			if delete {
-				l3extRsLblToProfileChildMapForDelete := NewAciObject()
-				l3extRsLblToProfileChildMapForDelete.Attributes["status"] = "deleted"
-				l3extRsLblToProfileChildMapForDelete.Attributes["direction"] = l3extRsLblToProfile.Direction.ValueString()
-				l3extRsLblToProfileChildMapForDelete.Attributes["tDn"] = l3extRsLblToProfile.TDn.ValueString()
-				childPayloads = append(childPayloads, map[string]interface{}{"l3extRsLblToProfile": l3extRsLblToProfileChildMapForDelete})
-			}
-		}
-	} else {
-		data.L3extRsLblToProfile = types.SetNull(data.L3extRsLblToProfile.ElementType(ctx))
-	}
-
-	return childPayloads
-}
-
-func getL3extConsLblTagAnnotationChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *L3extConsLblResourceModel, tagAnnotationL3extConsLblPlan, tagAnnotationL3extConsLblState []TagAnnotationL3extConsLblResourceModel) []map[string]interface{} {
-	childPayloads := []map[string]interface{}{}
-	if !data.TagAnnotation.IsNull() && !data.TagAnnotation.IsUnknown() {
-		tagAnnotationIdentifiers := []TagAnnotationIdentifier{}
-		for _, tagAnnotationL3extConsLbl := range tagAnnotationL3extConsLblPlan {
-			childMap := NewAciObject()
-			if !tagAnnotationL3extConsLbl.Key.IsNull() && !tagAnnotationL3extConsLbl.Key.IsUnknown() {
-				childMap.Attributes["key"] = tagAnnotationL3extConsLbl.Key.ValueString()
-			}
-			if !tagAnnotationL3extConsLbl.Value.IsNull() && !tagAnnotationL3extConsLbl.Value.IsUnknown() {
-				childMap.Attributes["value"] = tagAnnotationL3extConsLbl.Value.ValueString()
-			}
-			childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": childMap})
-			tagAnnotationIdentifier := TagAnnotationIdentifier{}
-			tagAnnotationIdentifier.Key = tagAnnotationL3extConsLbl.Key
-			tagAnnotationIdentifiers = append(tagAnnotationIdentifiers, tagAnnotationIdentifier)
-		}
-		for _, tagAnnotation := range tagAnnotationL3extConsLblState {
-			delete := true
-			for _, tagAnnotationIdentifier := range tagAnnotationIdentifiers {
-				if tagAnnotationIdentifier.Key == tagAnnotation.Key {
-					delete = false
-					break
-				}
-			}
-			if delete {
-				tagAnnotationChildMapForDelete := NewAciObject()
-				tagAnnotationChildMapForDelete.Attributes["status"] = "deleted"
-				tagAnnotationChildMapForDelete.Attributes["key"] = tagAnnotation.Key.ValueString()
-				childPayloads = append(childPayloads, map[string]interface{}{"tagAnnotation": tagAnnotationChildMapForDelete})
-			}
-		}
-	} else {
-		data.TagAnnotation = types.SetNull(data.TagAnnotation.ElementType(ctx))
-	}
-
-	return childPayloads
-}
-
-func getL3extConsLblTagTagChildPayloads(ctx context.Context, diags *diag.Diagnostics, data *L3extConsLblResourceModel, tagTagL3extConsLblPlan, tagTagL3extConsLblState []TagTagL3extConsLblResourceModel) []map[string]interface{} {
-	childPayloads := []map[string]interface{}{}
-	if !data.TagTag.IsNull() && !data.TagTag.IsUnknown() {
-		tagTagIdentifiers := []TagTagIdentifier{}
-		for _, tagTagL3extConsLbl := range tagTagL3extConsLblPlan {
-			childMap := NewAciObject()
-			if !tagTagL3extConsLbl.Key.IsNull() && !tagTagL3extConsLbl.Key.IsUnknown() {
-				childMap.Attributes["key"] = tagTagL3extConsLbl.Key.ValueString()
-			}
-			if !tagTagL3extConsLbl.Value.IsNull() && !tagTagL3extConsLbl.Value.IsUnknown() {
-				childMap.Attributes["value"] = tagTagL3extConsLbl.Value.ValueString()
-			}
-			childPayloads = append(childPayloads, map[string]interface{}{"tagTag": childMap})
-			tagTagIdentifier := TagTagIdentifier{}
-			tagTagIdentifier.Key = tagTagL3extConsLbl.Key
-			tagTagIdentifiers = append(tagTagIdentifiers, tagTagIdentifier)
-		}
-		for _, tagTag := range tagTagL3extConsLblState {
-			delete := true
-			for _, tagTagIdentifier := range tagTagIdentifiers {
-				if tagTagIdentifier.Key == tagTag.Key {
-					delete = false
-					break
-				}
-			}
-			if delete {
-				tagTagChildMapForDelete := NewAciObject()
-				tagTagChildMapForDelete.Attributes["status"] = "deleted"
-				tagTagChildMapForDelete.Attributes["key"] = tagTag.Key.ValueString()
-				childPayloads = append(childPayloads, map[string]interface{}{"tagTag": tagTagChildMapForDelete})
-			}
-		}
-	} else {
-		data.TagTag = types.SetNull(data.TagTag.ElementType(ctx))
-	}
-
-	return childPayloads
-}
-
-func getL3extConsLblCreateJsonPayload(ctx context.Context, diags *diag.Diagnostics, createType bool, data *L3extConsLblResourceModel, l3extRsLblToInstPPlan, l3extRsLblToInstPState []L3extRsLblToInstPL3extConsLblResourceModel, l3extRsLblToProfilePlan, l3extRsLblToProfileState []L3extRsLblToProfileL3extConsLblResourceModel, tagAnnotationPlan, tagAnnotationState []TagAnnotationL3extConsLblResourceModel, tagTagPlan, tagTagState []TagTagL3extConsLblResourceModel) *container.Container {
-	payloadMap := map[string]interface{}{}
-	payloadMap["attributes"] = map[string]string{}
-
-	if createType && !globalAllowExistingOnCreate {
-		payloadMap["attributes"].(map[string]string)["status"] = "created"
-	}
-	childPayloads := []map[string]interface{}{}
-
-	L3extRsLblToInstPchildPayloads := getL3extConsLblL3extRsLblToInstPChildPayloads(ctx, diags, data, l3extRsLblToInstPPlan, l3extRsLblToInstPState)
-	if L3extRsLblToInstPchildPayloads == nil {
-		return nil
-	}
-	childPayloads = append(childPayloads, L3extRsLblToInstPchildPayloads...)
-
-	L3extRsLblToProfilechildPayloads := getL3extConsLblL3extRsLblToProfileChildPayloads(ctx, diags, data, l3extRsLblToProfilePlan, l3extRsLblToProfileState)
-	if L3extRsLblToProfilechildPayloads == nil {
-		return nil
-	}
-	childPayloads = append(childPayloads, L3extRsLblToProfilechildPayloads...)
-
-	TagAnnotationchildPayloads := getL3extConsLblTagAnnotationChildPayloads(ctx, diags, data, tagAnnotationPlan, tagAnnotationState)
-	if TagAnnotationchildPayloads == nil {
-		return nil
-	}
-	childPayloads = append(childPayloads, TagAnnotationchildPayloads...)
-
-	TagTagchildPayloads := getL3extConsLblTagTagChildPayloads(ctx, diags, data, tagTagPlan, tagTagState)
-	if TagTagchildPayloads == nil {
-		return nil
-	}
-	childPayloads = append(childPayloads, TagTagchildPayloads...)
-
-	payloadMap["children"] = childPayloads
-	if !data.Annotation.IsNull() && !data.Annotation.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["annotation"] = data.Annotation.ValueString()
-	}
-	if !data.Descr.IsNull() && !data.Descr.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["descr"] = data.Descr.ValueString()
-	}
-	if !data.Name.IsNull() && !data.Name.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["name"] = data.Name.ValueString()
-	}
-	if !data.NameAlias.IsNull() && !data.NameAlias.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["nameAlias"] = data.NameAlias.ValueString()
-	}
-	if !data.Owner.IsNull() && !data.Owner.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["owner"] = data.Owner.ValueString()
-	}
-	if !data.OwnerKey.IsNull() && !data.OwnerKey.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["ownerKey"] = data.OwnerKey.ValueString()
-	}
-	if !data.OwnerTag.IsNull() && !data.OwnerTag.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["ownerTag"] = data.OwnerTag.ValueString()
-	}
-	if !data.Tag.IsNull() && !data.Tag.IsUnknown() {
-		payloadMap["attributes"].(map[string]string)["tag"] = data.Tag.ValueString()
-	}
-	payload, err := json.Marshal(map[string]interface{}{"l3extConsLbl": payloadMap})
-	if err != nil {
-		diags.AddError(
-			"Marshalling of json payload failed",
-			fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
-		)
-		return nil
-	}
-
-	jsonPayload, err := container.ParseJSON(payload)
-
-	if err != nil {
-		diags.AddError(
-			"Construction of json payload failed",
-			fmt.Sprintf("Err: %s. Please report this issue to the provider developers.", err),
-		)
-		return nil
-	}
-	return jsonPayload
+	tflog.Debug(ctx, "End import state of resource: aci_l3out_consumer_label")
 }
