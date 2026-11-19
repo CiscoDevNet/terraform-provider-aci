@@ -793,20 +793,7 @@ func getAciRestManagedChildPayloads(ctx context.Context, diags *diag.Diagnostics
 	if !data.Child.IsUnknown() && !data.Child.IsNull() {
 		childIdentifiers := []AciRestManagedChildIdentifier{}
 		for _, child := range childPlan {
-			childMap := map[string]map[string]string{"attributes": {}}
-			if !child.Rn.IsUnknown() {
-				childMap["attributes"]["rn"] = child.Rn.ValueString()
-			}
-			if !data.Annotation.IsNull() && !data.Annotation.IsUnknown() && !ContainsString(NoAnnotationClasses, child.ClassName.ValueString()) {
-				childMap["attributes"]["annotation"] = data.Annotation.ValueString()
-			}
-			if !child.Content.IsNull() && !child.Content.IsUnknown() {
-				for k, v := range child.Content.Elements() {
-					if !v.(basetypes.StringValue).IsNull() && !v.(basetypes.StringValue).IsUnknown() {
-						childMap["attributes"][k] = v.(basetypes.StringValue).ValueString()
-					}
-				}
-			}
+			childMap := map[string]map[string]string{"attributes": getAciRestManagedChildAttributes(data, child, child.Content)}
 			childPayloads = append(childPayloads, map[string]interface{}{child.ClassName.ValueString(): childMap})
 			childIdentifier := AciRestManagedChildIdentifier{}
 			childIdentifier.Rn = child.Rn
@@ -822,12 +809,12 @@ func getAciRestManagedChildPayloads(ctx context.Context, diags *diag.Diagnostics
 				}
 			}
 			if delete {
-				childPayloads = append(childPayloads, getAciRestManagedRemoveChildPayload(child.ClassName.ValueString(), child.Rn.ValueString()))
+				childPayloads = append(childPayloads, getAciRestManagedRemovedChildPayload(data, child))
 			}
 		}
 	} else if data.Child.IsNull() {
 		for _, child := range childState {
-			childPayloads = append(childPayloads, getAciRestManagedRemoveChildPayload(child.ClassName.ValueString(), child.Rn.ValueString()))
+			childPayloads = append(childPayloads, getAciRestManagedRemovedChildPayload(data, child))
 		}
 	} else {
 		tflog.Debug(ctx, fmt.Sprintf("Child with null state set to '%v', and unknown state set to '%v'", data.Child.IsNull(), data.Child.IsUnknown()))
@@ -835,6 +822,35 @@ func getAciRestManagedChildPayloads(ctx context.Context, diags *diag.Diagnostics
 	}
 
 	return childPayloads
+}
+
+// Builds the child attributes (rn, annotation and the given content) used in the payload.
+func getAciRestManagedChildAttributes(data *AciRestManagedResourceModel, child ChildAciRestManagedResourceModel, content types.Map) map[string]string {
+	attributes := map[string]string{}
+	if !child.Rn.IsUnknown() {
+		attributes["rn"] = child.Rn.ValueString()
+	}
+	if !data.Annotation.IsNull() && !data.Annotation.IsUnknown() && !ContainsString(NoAnnotationClasses, child.ClassName.ValueString()) {
+		attributes["annotation"] = data.Annotation.ValueString()
+	}
+	if !content.IsNull() && !content.IsUnknown() {
+		for k, v := range content.Elements() {
+			if !v.(basetypes.StringValue).IsNull() && !v.(basetypes.StringValue).IsUnknown() {
+				attributes[k] = v.(basetypes.StringValue).ValueString()
+			}
+		}
+	}
+	return attributes
+}
+
+// A removed child with content_on_destroy is modified with those values instead of being deleted,
+// as some classes cannot be deleted from ACI.
+func getAciRestManagedRemovedChildPayload(data *AciRestManagedResourceModel, child ChildAciRestManagedResourceModel) map[string]interface{} {
+	className := child.ClassName.ValueString()
+	if child.ContentOnDestroy.IsNull() || child.ContentOnDestroy.IsUnknown() {
+		return map[string]interface{}{className: getAciRestManagedRemoveChildPayload(className, child.Rn.ValueString())[className]}
+	}
+	return map[string]interface{}{className: map[string]map[string]string{"attributes": getAciRestManagedChildAttributes(data, child, child.ContentOnDestroy)}}
 }
 
 func getAciRestManagedRemoveChildPayload(className, rn string) map[string]map[string]map[string]interface{} {

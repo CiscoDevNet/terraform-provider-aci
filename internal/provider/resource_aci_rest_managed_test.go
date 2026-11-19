@@ -1030,6 +1030,38 @@ func TestAccAciRestManaged_explpicitDestroy(t *testing.T) {
 	})
 }
 
+// Removing a child with content_on_destroy while the parent remains applies content_on_destroy instead of deleting the child
+func TestAccAciRestManaged_childContentOnDestroyOnChildRemoval(t *testing.T) {
+	name := acctest.RandStringFromCharSet(10, acctest.CharSetAlpha)
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t, "both", "5.2(1g)-") },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccAciRestManagedConfig_childContentOnDestroy(name, true, "default"),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_rest_managed.ipg", "child.#", "1"),
+					resource.TestCheckResourceAttr("data.aci_rest_managed.hif", "content.tnFabricHIfPolName", "default"),
+				),
+			},
+			{
+				// Changing the child content must not apply content_on_destroy
+				Config: testAccAciRestManagedConfig_childContentOnDestroy(name, true, "inherit"),
+				Check:  resource.TestCheckResourceAttr("data.aci_rest_managed.hif", "content.tnFabricHIfPolName", "inherit"),
+			},
+			{
+				Config: testAccAciRestManagedConfig_childContentOnDestroy(name, false, ""),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("aci_rest_managed.ipg", "dn", "uni/infra/funcprof/spaccportgrp-"+name),
+					resource.TestCheckResourceAttr("aci_rest_managed.ipg", "child.#", "0"),
+					resource.TestCheckResourceAttr("data.aci_rest_managed.hif", "content.tnFabricHIfPolName", ""),
+				),
+			},
+		},
+	})
+}
+
 func testAccAciRestManagedConfig_tenant(name string, description string) string {
 	return fmt.Sprintf(`
 	resource "aci_rest_managed" "fvTenant" {
@@ -1654,4 +1686,36 @@ func testAccAciRestManagedConfig_onDestroyMinimal() string {
         }
     }
     `, onDestroyTestName)
+}
+
+func testAccAciRestManagedConfig_childContentOnDestroy(name string, withChild bool, policy string) string {
+	child := ""
+	if withChild {
+		child = fmt.Sprintf(`
+        child {
+            rn         = "rshIfPol"
+            class_name = "infraRsHIfPol"
+            content = {
+                tnFabricHIfPolName = "%s"
+            }
+            content_on_destroy = {
+                tnFabricHIfPolName = ""
+            }
+        }`, policy)
+	}
+	return fmt.Sprintf(`
+    resource "aci_rest_managed" "ipg" {
+        dn         = "uni/infra/funcprof/spaccportgrp-%[1]s"
+        class_name = "infraSpAccPortGrp"
+        content = {
+            name = "%[1]s"
+        }
+%[2]s
+    }
+
+    data "aci_rest_managed" "hif" {
+        dn         = "uni/infra/funcprof/spaccportgrp-%[1]s/rshIfPol"
+        depends_on = [aci_rest_managed.ipg]
+    }
+    `, name, child)
 }
