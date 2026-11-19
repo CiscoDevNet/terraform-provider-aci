@@ -10,14 +10,14 @@ jobs:
       contents: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: develop
       - name: Unshallow
         run: git fetch --prune --unshallow
 
       # git-cliff generates CHANGELOG.md
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.10"
       - run: pip install git-cliff==2.4.0 typos
@@ -54,7 +54,7 @@ jobs:
         run: git cliff --bump --unreleased -p CHANGELOG.md --with-commit "${{ steps.type.outputs.bump }}"
 
       # Generate annotation_unsupported.go
-      - uses: actions/setup-go@v6
+      - uses: actions/setup-go@v7
         with:
           go-version-file: "go.mod"
       - uses: hashicorp/setup-terraform@v4
