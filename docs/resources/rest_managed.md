@@ -148,11 +148,11 @@ resource "aci_rest_managed" "tenant_with_cleanup" {
 
   * `content` - (map) A map of key-value pairs which represents the attributes for the child object. When annotation is provided in the content of the child it will take precedence over the annotation set at the parent level.
 
-  * `content_on_destroy` - (map) A map of key-value pairs to be applied to this specific child object during Terraform destroy operations. When specified, this child will be updated with these values instead of being deleted. Children without `content_on_destroy` will be deleted normally during destroy.
+  * `content_on_destroy` - (map) A map of key-value pairs to be applied to this specific child object instead of deleting it, either during Terraform destroy operations or when the child block is removed from the configuration while the parent resource remains. This is useful for child classes that cannot be deleted from ACI. Children without `content_on_destroy` will be deleted normally.
 
       ~> When adding `content_on_destroy` to an existing child, Terraform will show the child being replaced in the plan. This is expected behavior due to how Terraform handles set elements. You must run `terraform apply` to store the `content_on_destroy` configuration in the state before it can take effect during `terraform destroy`.
 
-      ~> Child-level `content_on_destroy` only takes effect when the parent-level `content_on_destroy` is also specified. If the parent does not have `content_on_destroy`, all children will be deleted using the standard deletion process regardless of child-level `content_on_destroy` configuration.
+      ~> When the parent resource is destroyed, child-level `content_on_destroy` only takes effect when the parent-level `content_on_destroy` is also specified. If the parent does not have `content_on_destroy`, all children will be deleted using the standard deletion process regardless of child-level `content_on_destroy` configuration. When only a child block is removed from the configuration, the child-level `content_on_destroy` is applied without requiring parent-level `content_on_destroy`.
 
 ## Importing ##
 
