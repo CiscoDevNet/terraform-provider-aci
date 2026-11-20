@@ -30,10 +30,15 @@ import (
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &FhsTrustCtrlPolResource{}
+var _ resource.ResourceWithIdentity = &FhsTrustCtrlPolResource{}
 var _ resource.ResourceWithImportState = &FhsTrustCtrlPolResource{}
 
 func NewFhsTrustCtrlPolResource() resource.Resource {
 	return &FhsTrustCtrlPolResource{}
+}
+
+func (r FhsTrustCtrlPolResource) IdentitySchema(_ context.Context, _ resource.IdentitySchemaRequest, resp *resource.IdentitySchemaResponse) {
+	resp.IdentitySchema = getIdentitySchema()
 }
 
 // FhsTrustCtrlPolResource defines the resource implementation.
@@ -449,6 +454,7 @@ func (r *FhsTrustCtrlPolResource) Create(ctx context.Context, req resource.Creat
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_trust_control_policy with id '%s'", data.Id.ValueString()))
 }
 
@@ -473,6 +479,7 @@ func (r *FhsTrustCtrlPolResource) Read(ctx context.Context, req resource.ReadReq
 		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
 	} else {
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+		resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_trust_control_policy with id '%s'", data.Id.ValueString()))
@@ -515,6 +522,7 @@ func (r *FhsTrustCtrlPolResource) Update(ctx context.Context, req resource.Updat
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_trust_control_policy with id '%s'", data.Id.ValueString()))
 }
 
@@ -543,10 +551,11 @@ func (r *FhsTrustCtrlPolResource) Delete(ctx context.Context, req resource.Delet
 
 func (r *FhsTrustCtrlPolResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_trust_control_policy")
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	resource.ImportStatePassthroughWithIdentity(ctx, path.Root("id"), path.Root("id"), req, resp)
 
 	var stateData *FhsTrustCtrlPolResourceModel
 	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: stateData.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_trust_control_policy with id '%s'", stateData.Id.ValueString()))
 
 	tflog.Debug(ctx, "End import of state resource: aci_trust_control_policy")
@@ -556,11 +565,17 @@ func getAndSetFhsTrustCtrlPolAttributes(ctx context.Context, diags *diag.Diagnos
 	childClasses := getChildClassesForGetRequest([]string{"tagAnnotation", "tagTag"})
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), strings.Join(childClasses, ",")), "GET", nil)
 
-	readData := getEmptyFhsTrustCtrlPolResourceModel()
-
 	if diags.HasError() {
 		return
 	}
+
+	setFhsTrustCtrlPolAttributes(ctx, diags, data, requestData)
+}
+
+func setFhsTrustCtrlPolAttributes(ctx context.Context, diags *diag.Diagnostics, data *FhsTrustCtrlPolResourceModel, requestData *container.Container) {
+
+	readData := getEmptyFhsTrustCtrlPolResourceModel()
+
 	if requestData.Search("imdata").Search("fhsTrustCtrlPol").Data() != nil {
 		classReadInfo := requestData.Search("imdata").Search("fhsTrustCtrlPol").Data().([]interface{})
 		if len(classReadInfo) == 1 {

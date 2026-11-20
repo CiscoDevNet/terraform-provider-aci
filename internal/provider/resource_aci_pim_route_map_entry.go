@@ -31,10 +31,15 @@ import (
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ resource.Resource = &PimRouteMapEntryResource{}
+var _ resource.ResourceWithIdentity = &PimRouteMapEntryResource{}
 var _ resource.ResourceWithImportState = &PimRouteMapEntryResource{}
 
 func NewPimRouteMapEntryResource() resource.Resource {
 	return &PimRouteMapEntryResource{}
+}
+
+func (r PimRouteMapEntryResource) IdentitySchema(_ context.Context, _ resource.IdentitySchemaRequest, resp *resource.IdentitySchemaResponse) {
+	resp.IdentitySchema = getIdentitySchema()
 }
 
 // PimRouteMapEntryResource defines the resource implementation.
@@ -405,6 +410,7 @@ func (r *PimRouteMapEntryResource) Create(ctx context.Context, req resource.Crea
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_pim_route_map_entry with id '%s'", data.Id.ValueString()))
 }
 
@@ -429,6 +435,7 @@ func (r *PimRouteMapEntryResource) Read(ctx context.Context, req resource.ReadRe
 		resp.Diagnostics.Append(resp.State.Set(ctx, &emptyData)...)
 	} else {
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+		resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	}
 
 	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_pim_route_map_entry with id '%s'", data.Id.ValueString()))
@@ -471,6 +478,7 @@ func (r *PimRouteMapEntryResource) Update(ctx context.Context, req resource.Upda
 
 	// Save updated data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: data.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_pim_route_map_entry with id '%s'", data.Id.ValueString()))
 }
 
@@ -499,10 +507,11 @@ func (r *PimRouteMapEntryResource) Delete(ctx context.Context, req resource.Dele
 
 func (r *PimRouteMapEntryResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Debug(ctx, "Start import state of resource: aci_pim_route_map_entry")
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	resource.ImportStatePassthroughWithIdentity(ctx, path.Root("id"), path.Root("id"), req, resp)
 
 	var stateData *PimRouteMapEntryResourceModel
 	resp.Diagnostics.Append(resp.State.Get(ctx, &stateData)...)
+	resp.Diagnostics.Append(resp.Identity.Set(ctx, IdentityModel{Id: stateData.Id})...)
 	tflog.Debug(ctx, fmt.Sprintf("Import state of resource aci_pim_route_map_entry with id '%s'", stateData.Id.ValueString()))
 
 	tflog.Debug(ctx, "End import of state resource: aci_pim_route_map_entry")
@@ -512,11 +521,17 @@ func getAndSetPimRouteMapEntryAttributes(ctx context.Context, diags *diag.Diagno
 	childClasses := getChildClassesForGetRequest([]string{"tagAnnotation", "tagTag"})
 	requestData := DoRestRequest(ctx, diags, client, fmt.Sprintf("api/mo/%s.json?rsp-subtree=full&rsp-subtree-class=%s", data.Id.ValueString(), strings.Join(childClasses, ",")), "GET", nil)
 
-	readData := getEmptyPimRouteMapEntryResourceModel()
-
 	if diags.HasError() {
 		return
 	}
+
+	setPimRouteMapEntryAttributes(ctx, diags, data, requestData)
+}
+
+func setPimRouteMapEntryAttributes(ctx context.Context, diags *diag.Diagnostics, data *PimRouteMapEntryResourceModel, requestData *container.Container) {
+
+	readData := getEmptyPimRouteMapEntryResourceModel()
+
 	if requestData.Search("imdata").Search("pimRouteMapEntry").Data() != nil {
 		classReadInfo := requestData.Search("imdata").Search("pimRouteMapEntry").Data().([]interface{})
 		if len(classReadInfo) == 1 {
