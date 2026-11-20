@@ -217,8 +217,8 @@ github.com/hashicorp/terraform-plugin-framework/statestore/schema
 github.com/hashicorp/terraform-plugin-framework/tfsdk
 github.com/hashicorp/terraform-plugin-framework/types
 github.com/hashicorp/terraform-plugin-framework/types/basetypes
-# github.com/hashicorp/terraform-plugin-framework-validators v0.18.0
-## explicit; go 1.23.0
+# github.com/hashicorp/terraform-plugin-framework-validators v0.19.0
+## explicit; go 1.24.0
 github.com/hashicorp/terraform-plugin-framework-validators/helpers/validatordiag
 github.com/hashicorp/terraform-plugin-framework-validators/helpers/validatorfuncerr
 github.com/hashicorp/terraform-plugin-framework-validators/internal/schemavalidator
@@ -245,8 +245,8 @@ github.com/hashicorp/terraform-plugin-go/tfprotov6/internal/tfplugin6
 github.com/hashicorp/terraform-plugin-go/tfprotov6/internal/toproto
 github.com/hashicorp/terraform-plugin-go/tfprotov6/tf6server
 github.com/hashicorp/terraform-plugin-go/tftypes
-# github.com/hashicorp/terraform-plugin-log v0.10.0
-## explicit; go 1.24.0
+# github.com/hashicorp/terraform-plugin-log v0.11.0
+## explicit; go 1.25.0
 github.com/hashicorp/terraform-plugin-log/internal/fieldutils
 github.com/hashicorp/terraform-plugin-log/internal/hclogutils
 github.com/hashicorp/terraform-plugin-log/internal/logging
@@ -282,8 +282,8 @@ github.com/hashicorp/terraform-plugin-sdk/v2/internal/tfdiags
 github.com/hashicorp/terraform-plugin-sdk/v2/meta
 github.com/hashicorp/terraform-plugin-sdk/v2/plugin
 github.com/hashicorp/terraform-plugin-sdk/v2/terraform
-# github.com/hashicorp/terraform-plugin-testing v1.15.0
-## explicit; go 1.25.0
+# github.com/hashicorp/terraform-plugin-testing v1.16.0
+## explicit; go 1.25.8
 github.com/hashicorp/terraform-plugin-testing/compare
 github.com/hashicorp/terraform-plugin-testing/config
 github.com/hashicorp/terraform-plugin-testing/helper/resource
@@ -313,8 +313,8 @@ github.com/hashicorp/terraform-plugin-testing/tfversion
 # github.com/hashicorp/terraform-registry-address v0.4.0
 ## explicit; go 1.23.0
 github.com/hashicorp/terraform-registry-address
-# github.com/hashicorp/terraform-svchost v0.1.1
-## explicit; go 1.19
+# github.com/hashicorp/terraform-svchost v0.2.1
+## explicit; go 1.24.0
 github.com/hashicorp/terraform-svchost
 # github.com/hashicorp/yamux v0.1.2
 ## explicit; go 1.20
@@ -340,8 +340,8 @@ github.com/mitchellh/mapstructure
 # github.com/mitchellh/reflectwalk v1.0.2
 ## explicit
 github.com/mitchellh/reflectwalk
-# github.com/oklog/run v1.1.0
-## explicit; go 1.13
+# github.com/oklog/run v1.2.0
+## explicit; go 1.20
 github.com/oklog/run
 # github.com/vmihailenco/msgpack v4.0.4+incompatible
 ## explicit
