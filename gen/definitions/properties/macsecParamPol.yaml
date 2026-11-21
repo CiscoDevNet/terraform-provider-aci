@@ -1,0 +1,18 @@
+documentation:
+    cipherSuite: The cipher suite of the %s object.
+    confOffset: The confidentiality offset in bytes of the %s object.
+    keySvrPrio: The key server priority of the %s object. The value must be in the range 0 - 255.
+    replayWindow: The replay protection window size of the %s object. The value must be in the range 0 - 4294967295.
+    secPolicy: The security policy of the %s object.
+ignores:
+    - sakExpiryTime
+overwrites:
+    conf_offset: confidentiality_offset
+    key_svr_prio: key_server_priority
+    replay_window: window_size
+    sec_policy: security_policy
+test_values:
+    all:
+        confidentiality_offset: offset-50
+        key_server_priority: "39"
+        window_size: "200"
