@@ -175,6 +175,94 @@ func TestAccResourceCdpIfPolGenerated(t *testing.T) {
 			},
 			{
 				PreConfig: func() {
+					t.Log("Test: CDP Interface Policy Resource - Configure Through Legacy Attributes")
+				},
+				ConfigVariables: variables,
+				Config:          testAccResourceCdpIfPolLegacy,
+				Check: func(state *terraform.State) error {
+					// Evaluate runtime prefixes after PreCheck has initialized the fixture variables.
+					return resource.ComposeAggregateTestCheckFunc(
+						identity.CheckID("aci_cdp_interface_policy.test_1", false),
+						testCheckResourceDN("aci_cdp_interface_policy.test_1", "infra/cdpIfP-{name}", "uni", map[string]string{
+							"name": "name",
+						}, []resourceTestDNVariant{}),
+						resource.TestCheckResourceAttr("aci_cdp_interface_policy.test_1", "admin_state", "disabled"),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_cdp_interface_policy.test_1", "annotation", "annotation_1"),
+						),
+						resource.TestCheckResourceAttr("aci_cdp_interface_policy.test_1", "description", "description_1"),
+						resource.TestCheckResourceAttr("aci_cdp_interface_policy.test_1", "name", fmt.Sprintf("%s-%s", testPrefix, "name_1")),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							resource.TestCheckResourceAttr("aci_cdp_interface_policy.test_1", "name_alias", "name_alias_1"),
+						),
+						resource.TestCheckResourceAttr("aci_cdp_interface_policy.test_1", "owner_key", "owner_key_1"),
+						resource.TestCheckResourceAttr("aci_cdp_interface_policy.test_1", "owner_tag", "owner_tag_1"),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_cdp_interface_policy.test_1", "annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_cdp_interface_policy.test_1", "annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_cdp_interface_policy.test_1", "annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_cdp_interface_policy.test_1", "tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_cdp_interface_policy.test_1", "tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_cdp_interface_policy.test_1", "tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						resource.TestCheckResourceAttrPair("aci_cdp_interface_policy.test_1", "admin_st", "aci_cdp_interface_policy.test_1", "admin_state"),
+					)(state)
+				},
+			},
+			{
+				PreConfig: func() {
+					t.Log("Test: CDP Interface Policy Resource - Repeat Legacy Configuration (Expect Empty Plan)")
+				},
+				ConfigVariables: variables,
+				Config:          testAccResourceCdpIfPolLegacyUnchanged,
+				PlanOnly:        true,
+				ConfigPlanChecks: resource.ConfigPlanChecks{
+					PostApplyPreRefresh: []plancheck.PlanCheck{plancheck.ExpectEmptyPlan()},
+				},
+			},
+			{
+				PreConfig: func() {
+					t.Log("Test: CDP Interface Policy Resource - Switch to Current Attributes Without Replacement")
+				},
+				ConfigVariables: variables,
+				Config:          testAccResourceCdpIfPolCurrentAfterLegacy,
+				PlanOnly:        true,
+				ConfigPlanChecks: resource.ConfigPlanChecks{
+					PostApplyPreRefresh: []plancheck.PlanCheck{plancheck.ExpectEmptyPlan()},
+				},
+			},
+			{
+				PreConfig: func() {
+					t.Log("Test: CDP Interface Policy Resource - Reject Simultaneous Legacy and Current Inputs")
+				},
+				ConfigVariables: variables,
+				Config:          testAccResourceCdpIfPolLegacyConflict,
+				ExpectError:     regexp.MustCompile("Invalid Attribute Combination|Conflicting legacy configuration"),
+			},
+			{
+				PreConfig: func() {
 					t.Log("Test: CDP Interface Policy Resource - Update Mutable Attributes in Place")
 				},
 				ConfigVariables: variables,
@@ -1102,6 +1190,135 @@ resource "aci_cdp_interface_policy" "test_1" {
       value = "value_2"
     },
   ] : null
+}
+`
+
+const testAccResourceCdpIfPolLegacy = testAccResourceCdpIfPolDependencies + `
+resource "aci_cdp_interface_policy" "test_1" {
+  annotation  = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+  description = "description_1"
+  name        = format("%s-%s", var.test_prefix, "name_1")
+  name_alias  = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
+  owner_key   = "owner_key_1"
+  owner_tag   = "owner_tag_1"
+  annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  admin_st = "disabled"
+}
+`
+
+const testAccResourceCdpIfPolLegacyUnchanged = testAccResourceCdpIfPolDependencies + `
+resource "aci_cdp_interface_policy" "test_1" {
+  annotation  = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+  description = "description_1"
+  name        = format("%s-%s", var.test_prefix, "name_1")
+  name_alias  = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
+  owner_key   = "owner_key_1"
+  owner_tag   = "owner_tag_1"
+  annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  admin_st = "disabled"
+}
+`
+
+const testAccResourceCdpIfPolCurrentAfterLegacy = testAccResourceCdpIfPolDependencies + `
+resource "aci_cdp_interface_policy" "test_1" {
+  admin_state = "disabled"
+  annotation  = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+  description = "description_1"
+  name        = format("%s-%s", var.test_prefix, "name_1")
+  name_alias  = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
+  owner_key   = "owner_key_1"
+  owner_tag   = "owner_tag_1"
+  annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+}
+`
+
+const testAccResourceCdpIfPolLegacyConflict = testAccResourceCdpIfPolDependencies + `
+resource "aci_cdp_interface_policy" "test_1" {
+  admin_state = "disabled"
+  annotation  = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+  description = "description_1"
+  name        = format("%s-%s", var.test_prefix, "name_1")
+  name_alias  = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
+  owner_key   = "owner_key_1"
+  owner_tag   = "owner_tag_1"
+  annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  admin_st = "disabled"
 }
 `
 

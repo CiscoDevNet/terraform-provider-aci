@@ -963,6 +963,2575 @@ func TestAccResourceFvCtxGenerated(t *testing.T) {
 			},
 			{
 				PreConfig: func() {
+					t.Log("Test: VRF Resource - Configure Through Legacy Attributes")
+				},
+				ConfigVariables: variables,
+				Config:          testAccResourceFvCtxLegacy,
+				Check: func(state *terraform.State) error {
+					// Evaluate runtime prefixes after PreCheck has initialized the fixture variables.
+					return resource.ComposeAggregateTestCheckFunc(
+						identity.CheckID("aci_vrf.test_1", false),
+						testCheckResourceDN("aci_vrf.test_1", "ctx-{name}", "uni", map[string]string{
+							"name": "name",
+						}, []resourceTestDNVariant{}),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "annotation", "annotation_1"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.0(1k)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "bd_enforcement", "no"),
+						),
+						resource.TestCheckResourceAttr("aci_vrf.test_1", "description", "description_1"),
+						composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "ip_data_plane_learning", "disabled"),
+						),
+						resource.TestCheckResourceAttr("aci_vrf.test_1", "name", "name_1"),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "name_alias", "name_alias_1"),
+						),
+						resource.TestCheckResourceAttr("aci_vrf.test_1", "owner_key", "owner_key_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test_1", "owner_tag", "owner_tag_1"),
+						resource.TestCheckResourceAttrPair("aci_vrf.test_1", "parent_dn", "aci_tenant.test_1.0", "id"),
+						composeAggregateTestCheckFuncWithVersion(t, "1.2(1i)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "policy_control_enforcement_direction", "egress"),
+						),
+						resource.TestCheckResourceAttr("aci_vrf.test_1", "policy_control_enforcement_mode", "enforced"),
+						resource.TestCheckResourceAttrSet("aci_vrf.test_1", "pc_tag"),
+						resource.TestCheckResourceAttrSet("aci_vrf.test_1", "scope"),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_bgp_timers.annotation", "annotation_1"),
+						),
+						resource.TestCheckResourceAttrPair("aci_vrf.test_1", "relation_to_bgp_timers.bgp_timers_name", "aci_bgp_timers.test_1.0", "name"),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_bgp_timers.annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_bgp_timers.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_bgp_timers.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_bgp_timers.tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_bgp_timers.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_bgp_timers.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_monitoring_policy.annotation", "annotation_1"),
+						),
+						resource.TestCheckResourceAttrPair("aci_vrf.test_1", "relation_to_monitoring_policy.monitoring_policy_name", "aci_monitoring_policy.test_1.0", "name"),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_monitoring_policy.annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_monitoring_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_monitoring_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_monitoring_policy.tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_monitoring_policy.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_monitoring_policy.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_bgp_address_family_contexts.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_bgp_address_family_contexts.*", map[string]acceptancetest.AttributeValue{
+								"address_family":                  {ExpectedValue: "ipv4-ucast"},
+								"bgp_address_family_context_name": {PairAddress: "aci_bgp_address_family_context.test_1.0", PairAttribute: "name"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_bgp_address_family_contexts.*", map[string]acceptancetest.AttributeValue{
+									"address_family":                  {ExpectedValue: "ipv4-ucast"},
+									"bgp_address_family_context_name": {PairAddress: "aci_bgp_address_family_context.test_1.0", PairAttribute: "name"},
+									"annotation":                      {ExpectedValue: "annotation_1"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_bgp_address_family_contexts.*", map[string]acceptancetest.AttributeValue{
+									"address_family":                  {ExpectedValue: "ipv4-ucast"},
+									"bgp_address_family_context_name": {PairAddress: "aci_bgp_address_family_context.test_1.0", PairAttribute: "name"},
+									"annotations.#":                   {ExpectedValue: "2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_bgp_address_family_contexts.*.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_bgp_address_family_contexts.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":                  {ExpectedValue: "ipv4-ucast"},
+										"bgp_address_family_context_name": {PairAddress: "aci_bgp_address_family_context.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_bgp_address_family_contexts.*.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_bgp_address_family_contexts.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":                  {ExpectedValue: "ipv4-ucast"},
+										"bgp_address_family_context_name": {PairAddress: "aci_bgp_address_family_context.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_bgp_address_family_contexts.*", map[string]acceptancetest.AttributeValue{
+									"address_family":                  {ExpectedValue: "ipv4-ucast"},
+									"bgp_address_family_context_name": {PairAddress: "aci_bgp_address_family_context.test_1.0", PairAttribute: "name"},
+									"tags.#":                          {ExpectedValue: "2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_bgp_address_family_contexts.*.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_bgp_address_family_contexts.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":                  {ExpectedValue: "ipv4-ucast"},
+										"bgp_address_family_context_name": {PairAddress: "aci_bgp_address_family_context.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_bgp_address_family_contexts.*.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_bgp_address_family_contexts.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":                  {ExpectedValue: "ipv4-ucast"},
+										"bgp_address_family_context_name": {PairAddress: "aci_bgp_address_family_context.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_bgp_address_family_contexts.*", map[string]acceptancetest.AttributeValue{
+								"address_family":                  {ExpectedValue: "ipv6-ucast"},
+								"bgp_address_family_context_name": {PairAddress: "aci_bgp_address_family_context.test_1.0", PairAttribute: "name"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_bgp_address_family_contexts.*", map[string]acceptancetest.AttributeValue{
+									"address_family":                  {ExpectedValue: "ipv6-ucast"},
+									"bgp_address_family_context_name": {PairAddress: "aci_bgp_address_family_context.test_1.0", PairAttribute: "name"},
+									"annotation":                      {ExpectedValue: "annotation_2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_bgp_address_family_contexts.*", map[string]acceptancetest.AttributeValue{
+									"address_family":                  {ExpectedValue: "ipv6-ucast"},
+									"bgp_address_family_context_name": {PairAddress: "aci_bgp_address_family_context.test_1.0", PairAttribute: "name"},
+									"annotations.#":                   {ExpectedValue: "2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_bgp_address_family_contexts.*.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_bgp_address_family_contexts.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":                  {ExpectedValue: "ipv6-ucast"},
+										"bgp_address_family_context_name": {PairAddress: "aci_bgp_address_family_context.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_bgp_address_family_contexts.*.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_bgp_address_family_contexts.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":                  {ExpectedValue: "ipv6-ucast"},
+										"bgp_address_family_context_name": {PairAddress: "aci_bgp_address_family_context.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_bgp_address_family_contexts.*", map[string]acceptancetest.AttributeValue{
+									"address_family":                  {ExpectedValue: "ipv6-ucast"},
+									"bgp_address_family_context_name": {PairAddress: "aci_bgp_address_family_context.test_1.0", PairAttribute: "name"},
+									"tags.#":                          {ExpectedValue: "2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_bgp_address_family_contexts.*.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_bgp_address_family_contexts.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":                  {ExpectedValue: "ipv6-ucast"},
+										"bgp_address_family_context_name": {PairAddress: "aci_bgp_address_family_context.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_bgp_address_family_contexts.*.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_bgp_address_family_contexts.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":                  {ExpectedValue: "ipv6-ucast"},
+										"bgp_address_family_context_name": {PairAddress: "aci_bgp_address_family_context.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_eigrp_address_family_contexts.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_eigrp_address_family_contexts.*", map[string]acceptancetest.AttributeValue{
+								"address_family":                    {ExpectedValue: "ipv4-ucast"},
+								"eigrp_address_family_context_name": {PairAddress: "aci_eigrp_address_family_context.test_1.0", PairAttribute: "name"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_eigrp_address_family_contexts.*", map[string]acceptancetest.AttributeValue{
+									"address_family":                    {ExpectedValue: "ipv4-ucast"},
+									"eigrp_address_family_context_name": {PairAddress: "aci_eigrp_address_family_context.test_1.0", PairAttribute: "name"},
+									"annotation":                        {ExpectedValue: "annotation_1"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_eigrp_address_family_contexts.*", map[string]acceptancetest.AttributeValue{
+									"address_family":                    {ExpectedValue: "ipv4-ucast"},
+									"eigrp_address_family_context_name": {PairAddress: "aci_eigrp_address_family_context.test_1.0", PairAttribute: "name"},
+									"annotations.#":                     {ExpectedValue: "2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_eigrp_address_family_contexts.*.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_eigrp_address_family_contexts.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":                    {ExpectedValue: "ipv4-ucast"},
+										"eigrp_address_family_context_name": {PairAddress: "aci_eigrp_address_family_context.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_eigrp_address_family_contexts.*.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_eigrp_address_family_contexts.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":                    {ExpectedValue: "ipv4-ucast"},
+										"eigrp_address_family_context_name": {PairAddress: "aci_eigrp_address_family_context.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_eigrp_address_family_contexts.*", map[string]acceptancetest.AttributeValue{
+									"address_family":                    {ExpectedValue: "ipv4-ucast"},
+									"eigrp_address_family_context_name": {PairAddress: "aci_eigrp_address_family_context.test_1.0", PairAttribute: "name"},
+									"tags.#":                            {ExpectedValue: "2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_eigrp_address_family_contexts.*.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_eigrp_address_family_contexts.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":                    {ExpectedValue: "ipv4-ucast"},
+										"eigrp_address_family_context_name": {PairAddress: "aci_eigrp_address_family_context.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_eigrp_address_family_contexts.*.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_eigrp_address_family_contexts.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":                    {ExpectedValue: "ipv4-ucast"},
+										"eigrp_address_family_context_name": {PairAddress: "aci_eigrp_address_family_context.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_eigrp_address_family_contexts.*", map[string]acceptancetest.AttributeValue{
+								"address_family":                    {ExpectedValue: "ipv6-ucast"},
+								"eigrp_address_family_context_name": {PairAddress: "aci_eigrp_address_family_context.test_2.0", PairAttribute: "name"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_eigrp_address_family_contexts.*", map[string]acceptancetest.AttributeValue{
+									"address_family":                    {ExpectedValue: "ipv6-ucast"},
+									"eigrp_address_family_context_name": {PairAddress: "aci_eigrp_address_family_context.test_2.0", PairAttribute: "name"},
+									"annotation":                        {ExpectedValue: "annotation_2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_eigrp_address_family_contexts.*", map[string]acceptancetest.AttributeValue{
+									"address_family":                    {ExpectedValue: "ipv6-ucast"},
+									"eigrp_address_family_context_name": {PairAddress: "aci_eigrp_address_family_context.test_2.0", PairAttribute: "name"},
+									"annotations.#":                     {ExpectedValue: "2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_eigrp_address_family_contexts.*.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_eigrp_address_family_contexts.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":                    {ExpectedValue: "ipv6-ucast"},
+										"eigrp_address_family_context_name": {PairAddress: "aci_eigrp_address_family_context.test_2.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_eigrp_address_family_contexts.*.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_eigrp_address_family_contexts.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":                    {ExpectedValue: "ipv6-ucast"},
+										"eigrp_address_family_context_name": {PairAddress: "aci_eigrp_address_family_context.test_2.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_eigrp_address_family_contexts.*", map[string]acceptancetest.AttributeValue{
+									"address_family":                    {ExpectedValue: "ipv6-ucast"},
+									"eigrp_address_family_context_name": {PairAddress: "aci_eigrp_address_family_context.test_2.0", PairAttribute: "name"},
+									"tags.#":                            {ExpectedValue: "2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_eigrp_address_family_contexts.*.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_eigrp_address_family_contexts.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":                    {ExpectedValue: "ipv6-ucast"},
+										"eigrp_address_family_context_name": {PairAddress: "aci_eigrp_address_family_context.test_2.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_eigrp_address_family_contexts.*.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_eigrp_address_family_contexts.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":                    {ExpectedValue: "ipv6-ucast"},
+										"eigrp_address_family_context_name": {PairAddress: "aci_eigrp_address_family_context.test_2.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_end_point_retention_policy.annotation", "annotation_1"),
+						),
+						resource.TestCheckResourceAttrPair("aci_vrf.test_1", "relation_to_end_point_retention_policy.end_point_retention_policy_name", "aci_end_point_retention_policy.test_1.0", "name"),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_end_point_retention_policy.annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_end_point_retention_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_end_point_retention_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_end_point_retention_policy.tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_end_point_retention_policy.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_end_point_retention_policy.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_l3out_route_tag_policy.annotation", "annotation_1"),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							resource.TestCheckResourceAttrPair("aci_vrf.test_1", "relation_to_l3out_route_tag_policy.l3out_route_tag_policy_name", "aci_l3out_route_tag_policy.test_1.0", "name"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_l3out_route_tag_policy.annotations.#", "2"),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_l3out_route_tag_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_l3out_route_tag_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_l3out_route_tag_policy.tags.#", "2"),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_l3out_route_tag_policy.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_l3out_route_tag_policy.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_address_family_ospf_timers.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_address_family_ospf_timers.*", map[string]acceptancetest.AttributeValue{
+								"address_family":   {ExpectedValue: "ipv4-ucast"},
+								"ospf_timers_name": {PairAddress: "aci_ospf_timers.test_1.0", PairAttribute: "name"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_address_family_ospf_timers.*", map[string]acceptancetest.AttributeValue{
+									"address_family":   {ExpectedValue: "ipv4-ucast"},
+									"ospf_timers_name": {PairAddress: "aci_ospf_timers.test_1.0", PairAttribute: "name"},
+									"annotation":       {ExpectedValue: "annotation_1"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_address_family_ospf_timers.*", map[string]acceptancetest.AttributeValue{
+									"address_family":   {ExpectedValue: "ipv4-ucast"},
+									"ospf_timers_name": {PairAddress: "aci_ospf_timers.test_1.0", PairAttribute: "name"},
+									"annotations.#":    {ExpectedValue: "2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_address_family_ospf_timers.*.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_address_family_ospf_timers.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":   {ExpectedValue: "ipv4-ucast"},
+										"ospf_timers_name": {PairAddress: "aci_ospf_timers.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_address_family_ospf_timers.*.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_address_family_ospf_timers.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":   {ExpectedValue: "ipv4-ucast"},
+										"ospf_timers_name": {PairAddress: "aci_ospf_timers.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_address_family_ospf_timers.*", map[string]acceptancetest.AttributeValue{
+									"address_family":   {ExpectedValue: "ipv4-ucast"},
+									"ospf_timers_name": {PairAddress: "aci_ospf_timers.test_1.0", PairAttribute: "name"},
+									"tags.#":           {ExpectedValue: "2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_address_family_ospf_timers.*.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_address_family_ospf_timers.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":   {ExpectedValue: "ipv4-ucast"},
+										"ospf_timers_name": {PairAddress: "aci_ospf_timers.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_address_family_ospf_timers.*.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_address_family_ospf_timers.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":   {ExpectedValue: "ipv4-ucast"},
+										"ospf_timers_name": {PairAddress: "aci_ospf_timers.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_address_family_ospf_timers.*", map[string]acceptancetest.AttributeValue{
+								"address_family":   {ExpectedValue: "ipv6-ucast"},
+								"ospf_timers_name": {PairAddress: "aci_ospf_timers.test_1.0", PairAttribute: "name"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_address_family_ospf_timers.*", map[string]acceptancetest.AttributeValue{
+									"address_family":   {ExpectedValue: "ipv6-ucast"},
+									"ospf_timers_name": {PairAddress: "aci_ospf_timers.test_1.0", PairAttribute: "name"},
+									"annotation":       {ExpectedValue: "annotation_2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_address_family_ospf_timers.*", map[string]acceptancetest.AttributeValue{
+									"address_family":   {ExpectedValue: "ipv6-ucast"},
+									"ospf_timers_name": {PairAddress: "aci_ospf_timers.test_1.0", PairAttribute: "name"},
+									"annotations.#":    {ExpectedValue: "2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_address_family_ospf_timers.*.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_address_family_ospf_timers.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":   {ExpectedValue: "ipv6-ucast"},
+										"ospf_timers_name": {PairAddress: "aci_ospf_timers.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_address_family_ospf_timers.*.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_address_family_ospf_timers.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":   {ExpectedValue: "ipv6-ucast"},
+										"ospf_timers_name": {PairAddress: "aci_ospf_timers.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_address_family_ospf_timers.*", map[string]acceptancetest.AttributeValue{
+									"address_family":   {ExpectedValue: "ipv6-ucast"},
+									"ospf_timers_name": {PairAddress: "aci_ospf_timers.test_1.0", PairAttribute: "name"},
+									"tags.#":           {ExpectedValue: "2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_address_family_ospf_timers.*.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_address_family_ospf_timers.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":   {ExpectedValue: "ipv6-ucast"},
+										"ospf_timers_name": {PairAddress: "aci_ospf_timers.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_address_family_ospf_timers.*.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_address_family_ospf_timers.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":   {ExpectedValue: "ipv6-ucast"},
+										"ospf_timers_name": {PairAddress: "aci_ospf_timers.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_wan_vpn.annotation", "annotation_1"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_wan_vpn.target_dn", "uni/tn-test_tenant/sdwanvpncont/sdwanvpnentry-sdwanvpn_1"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_wan_vpn.annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_wan_vpn.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_wan_vpn.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_wan_vpn.tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_wan_vpn.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_wan_vpn.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_ospf_timers.annotation", "annotation_1"),
+						),
+						resource.TestCheckResourceAttrPair("aci_vrf.test_1", "relation_to_ospf_timers.ospf_timers_name", "aci_ospf_timers.test_2.0", "name"),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_ospf_timers.annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_ospf_timers.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_ospf_timers.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_ospf_timers.tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_ospf_timers.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_ospf_timers.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						resource.TestCheckResourceAttrPair("aci_vrf.test_1", "bd_enforced_enable", "aci_vrf.test_1", "bd_enforcement"),
+						resource.TestCheckResourceAttrPair("aci_vrf.test_1", "pc_enf_dir", "aci_vrf.test_1", "policy_control_enforcement_direction"),
+						resource.TestCheckResourceAttrPair("aci_vrf.test_1", "pc_enf_pref", "aci_vrf.test_1", "policy_control_enforcement_mode"),
+						resource.TestCheckResourceAttrPair("aci_vrf.test_1", "relation_fv_rs_bgp_ctx_pol", "aci_bgp_timers.test_1.0", "id"),
+						resource.TestCheckResourceAttrPair("aci_vrf.test_1", "relation_fv_rs_ctx_mon_pol", "aci_monitoring_policy.test_1.0", "id"),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_fv_rs_ctx_to_bgp_ctx_af_pol.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_fv_rs_ctx_to_eigrp_ctx_af_pol.#", "2"),
+						),
+						resource.TestCheckResourceAttrPair("aci_vrf.test_1", "relation_fv_rs_ctx_to_ep_ret", "aci_end_point_retention_policy.test_1.0", "id"),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							resource.TestCheckResourceAttrPair("aci_vrf.test_1", "relation_fv_rs_ctx_to_ext_route_tag_pol", "aci_l3out_route_tag_policy.test_1.0", "id"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_fv_rs_ctx_to_ospf_ctx_pol.#", "2"),
+						),
+						resource.TestCheckResourceAttrPair("aci_vrf.test_1", "relation_fv_rs_ospf_ctx_pol", "aci_ospf_timers.test_2.0", "id"),
+						resource.TestCheckResourceAttrPair("aci_vrf.test_1", "tenant_dn", "aci_vrf.test_1", "parent_dn"),
+					)(state)
+				},
+			},
+			{
+				PreConfig: func() {
+					t.Log("Test: VRF Resource - Repeat Legacy Configuration (Expect Empty Plan)")
+				},
+				ConfigVariables: variables,
+				Config:          testAccResourceFvCtxLegacyUnchanged,
+				PlanOnly:        true,
+				ConfigPlanChecks: resource.ConfigPlanChecks{
+					PostApplyPreRefresh: []plancheck.PlanCheck{plancheck.ExpectEmptyPlan()},
+				},
+			},
+			{
+				PreConfig: func() {
+					t.Log("Test: VRF Resource - Switch to Current Attributes Without Replacement")
+				},
+				ConfigVariables: variables,
+				Config:          testAccResourceFvCtxCurrentAfterLegacy,
+				PlanOnly:        true,
+				ConfigPlanChecks: resource.ConfigPlanChecks{
+					PostApplyPreRefresh: []plancheck.PlanCheck{plancheck.ExpectEmptyPlan()},
+				},
+			},
+			{
+				PreConfig: func() {
+					t.Log("Test: VRF Resource - Reject Simultaneous Legacy and Current Inputs")
+				},
+				ConfigVariables: variables,
+				Config:          testAccResourceFvCtxLegacyConflict,
+				ExpectError:     regexp.MustCompile("Invalid Attribute Combination|Conflicting legacy configuration"),
+			},
+			{
+				PreConfig: func() {
+					t.Log("Test: VRF Resource - Retain Frozen Attribute Configuration")
+				},
+				ConfigVariables: variables,
+				Config:          testAccResourceFvCtxFrozen,
+				Check: func(state *terraform.State) error {
+					// Evaluate runtime prefixes after PreCheck has initialized the fixture variables.
+					return resource.ComposeAggregateTestCheckFunc(
+						identity.CheckID("aci_vrf.test_1", false),
+						testCheckResourceDN("aci_vrf.test_1", "ctx-{name}", "uni", map[string]string{
+							"name": "name",
+						}, []resourceTestDNVariant{}),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "annotation", "annotation_1"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.0(1k)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "bd_enforcement", "no"),
+						),
+						resource.TestCheckResourceAttr("aci_vrf.test_1", "description", "description_1"),
+						composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "ip_data_plane_learning", "disabled"),
+						),
+						resource.TestCheckResourceAttr("aci_vrf.test_1", "name", "name_1"),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "name_alias", "name_alias_1"),
+						),
+						resource.TestCheckResourceAttr("aci_vrf.test_1", "owner_key", "owner_key_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test_1", "owner_tag", "owner_tag_1"),
+						resource.TestCheckResourceAttrPair("aci_vrf.test_1", "parent_dn", "aci_tenant.test_1.0", "id"),
+						composeAggregateTestCheckFuncWithVersion(t, "1.2(1i)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "policy_control_enforcement_direction", "egress"),
+						),
+						resource.TestCheckResourceAttr("aci_vrf.test_1", "policy_control_enforcement_mode", "enforced"),
+						resource.TestCheckResourceAttrSet("aci_vrf.test_1", "pc_tag"),
+						resource.TestCheckResourceAttrSet("aci_vrf.test_1", "scope"),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_bgp_timers.annotation", "annotation_1"),
+						),
+						resource.TestCheckResourceAttrPair("aci_vrf.test_1", "relation_to_bgp_timers.bgp_timers_name", "aci_bgp_timers.test_1.0", "name"),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_bgp_timers.annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_bgp_timers.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_bgp_timers.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_bgp_timers.tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_bgp_timers.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_bgp_timers.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_monitoring_policy.annotation", "annotation_1"),
+						),
+						resource.TestCheckResourceAttrPair("aci_vrf.test_1", "relation_to_monitoring_policy.monitoring_policy_name", "aci_monitoring_policy.test_1.0", "name"),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_monitoring_policy.annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_monitoring_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_monitoring_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_monitoring_policy.tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_monitoring_policy.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_monitoring_policy.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_bgp_address_family_contexts.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_bgp_address_family_contexts.*", map[string]acceptancetest.AttributeValue{
+								"address_family":                  {ExpectedValue: "ipv4-ucast"},
+								"bgp_address_family_context_name": {PairAddress: "aci_bgp_address_family_context.test_1.0", PairAttribute: "name"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_bgp_address_family_contexts.*", map[string]acceptancetest.AttributeValue{
+									"address_family":                  {ExpectedValue: "ipv4-ucast"},
+									"bgp_address_family_context_name": {PairAddress: "aci_bgp_address_family_context.test_1.0", PairAttribute: "name"},
+									"annotation":                      {ExpectedValue: "annotation_1"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_bgp_address_family_contexts.*", map[string]acceptancetest.AttributeValue{
+									"address_family":                  {ExpectedValue: "ipv4-ucast"},
+									"bgp_address_family_context_name": {PairAddress: "aci_bgp_address_family_context.test_1.0", PairAttribute: "name"},
+									"annotations.#":                   {ExpectedValue: "2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_bgp_address_family_contexts.*.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_bgp_address_family_contexts.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":                  {ExpectedValue: "ipv4-ucast"},
+										"bgp_address_family_context_name": {PairAddress: "aci_bgp_address_family_context.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_bgp_address_family_contexts.*.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_bgp_address_family_contexts.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":                  {ExpectedValue: "ipv4-ucast"},
+										"bgp_address_family_context_name": {PairAddress: "aci_bgp_address_family_context.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_bgp_address_family_contexts.*", map[string]acceptancetest.AttributeValue{
+									"address_family":                  {ExpectedValue: "ipv4-ucast"},
+									"bgp_address_family_context_name": {PairAddress: "aci_bgp_address_family_context.test_1.0", PairAttribute: "name"},
+									"tags.#":                          {ExpectedValue: "2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_bgp_address_family_contexts.*.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_bgp_address_family_contexts.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":                  {ExpectedValue: "ipv4-ucast"},
+										"bgp_address_family_context_name": {PairAddress: "aci_bgp_address_family_context.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_bgp_address_family_contexts.*.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_bgp_address_family_contexts.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":                  {ExpectedValue: "ipv4-ucast"},
+										"bgp_address_family_context_name": {PairAddress: "aci_bgp_address_family_context.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_bgp_address_family_contexts.*", map[string]acceptancetest.AttributeValue{
+								"address_family":                  {ExpectedValue: "ipv6-ucast"},
+								"bgp_address_family_context_name": {PairAddress: "aci_bgp_address_family_context.test_1.0", PairAttribute: "name"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_bgp_address_family_contexts.*", map[string]acceptancetest.AttributeValue{
+									"address_family":                  {ExpectedValue: "ipv6-ucast"},
+									"bgp_address_family_context_name": {PairAddress: "aci_bgp_address_family_context.test_1.0", PairAttribute: "name"},
+									"annotation":                      {ExpectedValue: "annotation_2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_bgp_address_family_contexts.*", map[string]acceptancetest.AttributeValue{
+									"address_family":                  {ExpectedValue: "ipv6-ucast"},
+									"bgp_address_family_context_name": {PairAddress: "aci_bgp_address_family_context.test_1.0", PairAttribute: "name"},
+									"annotations.#":                   {ExpectedValue: "2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_bgp_address_family_contexts.*.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_bgp_address_family_contexts.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":                  {ExpectedValue: "ipv6-ucast"},
+										"bgp_address_family_context_name": {PairAddress: "aci_bgp_address_family_context.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_bgp_address_family_contexts.*.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_bgp_address_family_contexts.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":                  {ExpectedValue: "ipv6-ucast"},
+										"bgp_address_family_context_name": {PairAddress: "aci_bgp_address_family_context.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_bgp_address_family_contexts.*", map[string]acceptancetest.AttributeValue{
+									"address_family":                  {ExpectedValue: "ipv6-ucast"},
+									"bgp_address_family_context_name": {PairAddress: "aci_bgp_address_family_context.test_1.0", PairAttribute: "name"},
+									"tags.#":                          {ExpectedValue: "2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_bgp_address_family_contexts.*.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_bgp_address_family_contexts.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":                  {ExpectedValue: "ipv6-ucast"},
+										"bgp_address_family_context_name": {PairAddress: "aci_bgp_address_family_context.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_bgp_address_family_contexts.*.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_bgp_address_family_contexts.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":                  {ExpectedValue: "ipv6-ucast"},
+										"bgp_address_family_context_name": {PairAddress: "aci_bgp_address_family_context.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_eigrp_address_family_contexts.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_eigrp_address_family_contexts.*", map[string]acceptancetest.AttributeValue{
+								"address_family":                    {ExpectedValue: "ipv4-ucast"},
+								"eigrp_address_family_context_name": {PairAddress: "aci_eigrp_address_family_context.test_1.0", PairAttribute: "name"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_eigrp_address_family_contexts.*", map[string]acceptancetest.AttributeValue{
+									"address_family":                    {ExpectedValue: "ipv4-ucast"},
+									"eigrp_address_family_context_name": {PairAddress: "aci_eigrp_address_family_context.test_1.0", PairAttribute: "name"},
+									"annotation":                        {ExpectedValue: "annotation_1"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_eigrp_address_family_contexts.*", map[string]acceptancetest.AttributeValue{
+									"address_family":                    {ExpectedValue: "ipv4-ucast"},
+									"eigrp_address_family_context_name": {PairAddress: "aci_eigrp_address_family_context.test_1.0", PairAttribute: "name"},
+									"annotations.#":                     {ExpectedValue: "2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_eigrp_address_family_contexts.*.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_eigrp_address_family_contexts.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":                    {ExpectedValue: "ipv4-ucast"},
+										"eigrp_address_family_context_name": {PairAddress: "aci_eigrp_address_family_context.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_eigrp_address_family_contexts.*.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_eigrp_address_family_contexts.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":                    {ExpectedValue: "ipv4-ucast"},
+										"eigrp_address_family_context_name": {PairAddress: "aci_eigrp_address_family_context.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_eigrp_address_family_contexts.*", map[string]acceptancetest.AttributeValue{
+									"address_family":                    {ExpectedValue: "ipv4-ucast"},
+									"eigrp_address_family_context_name": {PairAddress: "aci_eigrp_address_family_context.test_1.0", PairAttribute: "name"},
+									"tags.#":                            {ExpectedValue: "2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_eigrp_address_family_contexts.*.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_eigrp_address_family_contexts.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":                    {ExpectedValue: "ipv4-ucast"},
+										"eigrp_address_family_context_name": {PairAddress: "aci_eigrp_address_family_context.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_eigrp_address_family_contexts.*.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_eigrp_address_family_contexts.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":                    {ExpectedValue: "ipv4-ucast"},
+										"eigrp_address_family_context_name": {PairAddress: "aci_eigrp_address_family_context.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_eigrp_address_family_contexts.*", map[string]acceptancetest.AttributeValue{
+								"address_family":                    {ExpectedValue: "ipv6-ucast"},
+								"eigrp_address_family_context_name": {PairAddress: "aci_eigrp_address_family_context.test_2.0", PairAttribute: "name"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_eigrp_address_family_contexts.*", map[string]acceptancetest.AttributeValue{
+									"address_family":                    {ExpectedValue: "ipv6-ucast"},
+									"eigrp_address_family_context_name": {PairAddress: "aci_eigrp_address_family_context.test_2.0", PairAttribute: "name"},
+									"annotation":                        {ExpectedValue: "annotation_2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_eigrp_address_family_contexts.*", map[string]acceptancetest.AttributeValue{
+									"address_family":                    {ExpectedValue: "ipv6-ucast"},
+									"eigrp_address_family_context_name": {PairAddress: "aci_eigrp_address_family_context.test_2.0", PairAttribute: "name"},
+									"annotations.#":                     {ExpectedValue: "2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_eigrp_address_family_contexts.*.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_eigrp_address_family_contexts.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":                    {ExpectedValue: "ipv6-ucast"},
+										"eigrp_address_family_context_name": {PairAddress: "aci_eigrp_address_family_context.test_2.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_eigrp_address_family_contexts.*.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_eigrp_address_family_contexts.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":                    {ExpectedValue: "ipv6-ucast"},
+										"eigrp_address_family_context_name": {PairAddress: "aci_eigrp_address_family_context.test_2.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_eigrp_address_family_contexts.*", map[string]acceptancetest.AttributeValue{
+									"address_family":                    {ExpectedValue: "ipv6-ucast"},
+									"eigrp_address_family_context_name": {PairAddress: "aci_eigrp_address_family_context.test_2.0", PairAttribute: "name"},
+									"tags.#":                            {ExpectedValue: "2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_eigrp_address_family_contexts.*.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_eigrp_address_family_contexts.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":                    {ExpectedValue: "ipv6-ucast"},
+										"eigrp_address_family_context_name": {PairAddress: "aci_eigrp_address_family_context.test_2.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_eigrp_address_family_contexts.*.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_eigrp_address_family_contexts.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":                    {ExpectedValue: "ipv6-ucast"},
+										"eigrp_address_family_context_name": {PairAddress: "aci_eigrp_address_family_context.test_2.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_end_point_retention_policy.annotation", "annotation_1"),
+						),
+						resource.TestCheckResourceAttrPair("aci_vrf.test_1", "relation_to_end_point_retention_policy.end_point_retention_policy_name", "aci_end_point_retention_policy.test_1.0", "name"),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_end_point_retention_policy.annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_end_point_retention_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_end_point_retention_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_end_point_retention_policy.tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_end_point_retention_policy.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_end_point_retention_policy.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_l3out_route_tag_policy.annotation", "annotation_1"),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							resource.TestCheckResourceAttrPair("aci_vrf.test_1", "relation_to_l3out_route_tag_policy.l3out_route_tag_policy_name", "aci_l3out_route_tag_policy.test_1.0", "name"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_l3out_route_tag_policy.annotations.#", "2"),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_l3out_route_tag_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_l3out_route_tag_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_l3out_route_tag_policy.tags.#", "2"),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_l3out_route_tag_policy.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_l3out_route_tag_policy.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_address_family_ospf_timers.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_address_family_ospf_timers.*", map[string]acceptancetest.AttributeValue{
+								"address_family":   {ExpectedValue: "ipv4-ucast"},
+								"ospf_timers_name": {PairAddress: "aci_ospf_timers.test_1.0", PairAttribute: "name"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_address_family_ospf_timers.*", map[string]acceptancetest.AttributeValue{
+									"address_family":   {ExpectedValue: "ipv4-ucast"},
+									"ospf_timers_name": {PairAddress: "aci_ospf_timers.test_1.0", PairAttribute: "name"},
+									"annotation":       {ExpectedValue: "annotation_1"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_address_family_ospf_timers.*", map[string]acceptancetest.AttributeValue{
+									"address_family":   {ExpectedValue: "ipv4-ucast"},
+									"ospf_timers_name": {PairAddress: "aci_ospf_timers.test_1.0", PairAttribute: "name"},
+									"annotations.#":    {ExpectedValue: "2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_address_family_ospf_timers.*.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_address_family_ospf_timers.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":   {ExpectedValue: "ipv4-ucast"},
+										"ospf_timers_name": {PairAddress: "aci_ospf_timers.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_address_family_ospf_timers.*.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_address_family_ospf_timers.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":   {ExpectedValue: "ipv4-ucast"},
+										"ospf_timers_name": {PairAddress: "aci_ospf_timers.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_address_family_ospf_timers.*", map[string]acceptancetest.AttributeValue{
+									"address_family":   {ExpectedValue: "ipv4-ucast"},
+									"ospf_timers_name": {PairAddress: "aci_ospf_timers.test_1.0", PairAttribute: "name"},
+									"tags.#":           {ExpectedValue: "2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_address_family_ospf_timers.*.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_address_family_ospf_timers.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":   {ExpectedValue: "ipv4-ucast"},
+										"ospf_timers_name": {PairAddress: "aci_ospf_timers.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_address_family_ospf_timers.*.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_address_family_ospf_timers.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":   {ExpectedValue: "ipv4-ucast"},
+										"ospf_timers_name": {PairAddress: "aci_ospf_timers.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_address_family_ospf_timers.*", map[string]acceptancetest.AttributeValue{
+								"address_family":   {ExpectedValue: "ipv6-ucast"},
+								"ospf_timers_name": {PairAddress: "aci_ospf_timers.test_1.0", PairAttribute: "name"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_address_family_ospf_timers.*", map[string]acceptancetest.AttributeValue{
+									"address_family":   {ExpectedValue: "ipv6-ucast"},
+									"ospf_timers_name": {PairAddress: "aci_ospf_timers.test_1.0", PairAttribute: "name"},
+									"annotation":       {ExpectedValue: "annotation_2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_address_family_ospf_timers.*", map[string]acceptancetest.AttributeValue{
+									"address_family":   {ExpectedValue: "ipv6-ucast"},
+									"ospf_timers_name": {PairAddress: "aci_ospf_timers.test_1.0", PairAttribute: "name"},
+									"annotations.#":    {ExpectedValue: "2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_address_family_ospf_timers.*.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_address_family_ospf_timers.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":   {ExpectedValue: "ipv6-ucast"},
+										"ospf_timers_name": {PairAddress: "aci_ospf_timers.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_address_family_ospf_timers.*.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_address_family_ospf_timers.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":   {ExpectedValue: "ipv6-ucast"},
+										"ospf_timers_name": {PairAddress: "aci_ospf_timers.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_address_family_ospf_timers.*", map[string]acceptancetest.AttributeValue{
+									"address_family":   {ExpectedValue: "ipv6-ucast"},
+									"ospf_timers_name": {PairAddress: "aci_ospf_timers.test_1.0", PairAttribute: "name"},
+									"tags.#":           {ExpectedValue: "2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_address_family_ospf_timers.*.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_address_family_ospf_timers.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":   {ExpectedValue: "ipv6-ucast"},
+										"ospf_timers_name": {PairAddress: "aci_ospf_timers.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_address_family_ospf_timers.*.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_address_family_ospf_timers.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":   {ExpectedValue: "ipv6-ucast"},
+										"ospf_timers_name": {PairAddress: "aci_ospf_timers.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_wan_vpn.annotation", "annotation_1"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_wan_vpn.target_dn", "uni/tn-test_tenant/sdwanvpncont/sdwanvpnentry-sdwanvpn_1"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_wan_vpn.annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_wan_vpn.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_wan_vpn.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_wan_vpn.tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_wan_vpn.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_wan_vpn.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_ospf_timers.annotation", "annotation_1"),
+						),
+						resource.TestCheckResourceAttrPair("aci_vrf.test_1", "relation_to_ospf_timers.ospf_timers_name", "aci_ospf_timers.test_2.0", "name"),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_ospf_timers.annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_ospf_timers.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_ospf_timers.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_ospf_timers.tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_ospf_timers.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_ospf_timers.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						resource.TestCheckResourceAttr("aci_vrf.test_1", "knw_mcast_act", "example"),
+						resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_fv_rs_ctx_mcast_to.#", "1"),
+						resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_fv_rs_vrf_validation_pol", "example"),
+					)(state)
+				},
+			},
+			{
+				PreConfig: func() {
+					t.Log("Test: VRF Resource - Repeat Frozen Configuration (Expect Empty Plan)")
+				},
+				ConfigVariables: variables,
+				Config:          testAccResourceFvCtxFrozenUnchanged,
+				PlanOnly:        true,
+				ConfigPlanChecks: resource.ConfigPlanChecks{
+					PostApplyPreRefresh: []plancheck.PlanCheck{plancheck.ExpectEmptyPlan()},
+				},
+			},
+			{
+				PreConfig: func() {
+					t.Log("Test: VRF Resource - Clear Frozen Attribute State")
+				},
+				ConfigVariables: variables,
+				Config:          testAccResourceFvCtxFrozenCleared,
+				Check: func(state *terraform.State) error {
+					// Evaluate runtime prefixes after PreCheck has initialized the fixture variables.
+					return resource.ComposeAggregateTestCheckFunc(
+						identity.CheckID("aci_vrf.test_1", false),
+						testCheckResourceDN("aci_vrf.test_1", "ctx-{name}", "uni", map[string]string{
+							"name": "name",
+						}, []resourceTestDNVariant{}),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "annotation", "annotation_1"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.0(1k)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "bd_enforcement", "no"),
+						),
+						resource.TestCheckResourceAttr("aci_vrf.test_1", "description", "description_1"),
+						composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "ip_data_plane_learning", "disabled"),
+						),
+						resource.TestCheckResourceAttr("aci_vrf.test_1", "name", "name_1"),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "name_alias", "name_alias_1"),
+						),
+						resource.TestCheckResourceAttr("aci_vrf.test_1", "owner_key", "owner_key_1"),
+						resource.TestCheckResourceAttr("aci_vrf.test_1", "owner_tag", "owner_tag_1"),
+						resource.TestCheckResourceAttrPair("aci_vrf.test_1", "parent_dn", "aci_tenant.test_1.0", "id"),
+						composeAggregateTestCheckFuncWithVersion(t, "1.2(1i)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "policy_control_enforcement_direction", "egress"),
+						),
+						resource.TestCheckResourceAttr("aci_vrf.test_1", "policy_control_enforcement_mode", "enforced"),
+						resource.TestCheckResourceAttrSet("aci_vrf.test_1", "pc_tag"),
+						resource.TestCheckResourceAttrSet("aci_vrf.test_1", "scope"),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_bgp_timers.annotation", "annotation_1"),
+						),
+						resource.TestCheckResourceAttrPair("aci_vrf.test_1", "relation_to_bgp_timers.bgp_timers_name", "aci_bgp_timers.test_1.0", "name"),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_bgp_timers.annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_bgp_timers.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_bgp_timers.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_bgp_timers.tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_bgp_timers.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_bgp_timers.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_monitoring_policy.annotation", "annotation_1"),
+						),
+						resource.TestCheckResourceAttrPair("aci_vrf.test_1", "relation_to_monitoring_policy.monitoring_policy_name", "aci_monitoring_policy.test_1.0", "name"),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_monitoring_policy.annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_monitoring_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_monitoring_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_monitoring_policy.tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_monitoring_policy.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_monitoring_policy.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_bgp_address_family_contexts.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_bgp_address_family_contexts.*", map[string]acceptancetest.AttributeValue{
+								"address_family":                  {ExpectedValue: "ipv4-ucast"},
+								"bgp_address_family_context_name": {PairAddress: "aci_bgp_address_family_context.test_1.0", PairAttribute: "name"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_bgp_address_family_contexts.*", map[string]acceptancetest.AttributeValue{
+									"address_family":                  {ExpectedValue: "ipv4-ucast"},
+									"bgp_address_family_context_name": {PairAddress: "aci_bgp_address_family_context.test_1.0", PairAttribute: "name"},
+									"annotation":                      {ExpectedValue: "annotation_1"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_bgp_address_family_contexts.*", map[string]acceptancetest.AttributeValue{
+									"address_family":                  {ExpectedValue: "ipv4-ucast"},
+									"bgp_address_family_context_name": {PairAddress: "aci_bgp_address_family_context.test_1.0", PairAttribute: "name"},
+									"annotations.#":                   {ExpectedValue: "2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_bgp_address_family_contexts.*.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_bgp_address_family_contexts.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":                  {ExpectedValue: "ipv4-ucast"},
+										"bgp_address_family_context_name": {PairAddress: "aci_bgp_address_family_context.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_bgp_address_family_contexts.*.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_bgp_address_family_contexts.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":                  {ExpectedValue: "ipv4-ucast"},
+										"bgp_address_family_context_name": {PairAddress: "aci_bgp_address_family_context.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_bgp_address_family_contexts.*", map[string]acceptancetest.AttributeValue{
+									"address_family":                  {ExpectedValue: "ipv4-ucast"},
+									"bgp_address_family_context_name": {PairAddress: "aci_bgp_address_family_context.test_1.0", PairAttribute: "name"},
+									"tags.#":                          {ExpectedValue: "2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_bgp_address_family_contexts.*.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_bgp_address_family_contexts.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":                  {ExpectedValue: "ipv4-ucast"},
+										"bgp_address_family_context_name": {PairAddress: "aci_bgp_address_family_context.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_bgp_address_family_contexts.*.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_bgp_address_family_contexts.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":                  {ExpectedValue: "ipv4-ucast"},
+										"bgp_address_family_context_name": {PairAddress: "aci_bgp_address_family_context.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_bgp_address_family_contexts.*", map[string]acceptancetest.AttributeValue{
+								"address_family":                  {ExpectedValue: "ipv6-ucast"},
+								"bgp_address_family_context_name": {PairAddress: "aci_bgp_address_family_context.test_1.0", PairAttribute: "name"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_bgp_address_family_contexts.*", map[string]acceptancetest.AttributeValue{
+									"address_family":                  {ExpectedValue: "ipv6-ucast"},
+									"bgp_address_family_context_name": {PairAddress: "aci_bgp_address_family_context.test_1.0", PairAttribute: "name"},
+									"annotation":                      {ExpectedValue: "annotation_2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_bgp_address_family_contexts.*", map[string]acceptancetest.AttributeValue{
+									"address_family":                  {ExpectedValue: "ipv6-ucast"},
+									"bgp_address_family_context_name": {PairAddress: "aci_bgp_address_family_context.test_1.0", PairAttribute: "name"},
+									"annotations.#":                   {ExpectedValue: "2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_bgp_address_family_contexts.*.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_bgp_address_family_contexts.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":                  {ExpectedValue: "ipv6-ucast"},
+										"bgp_address_family_context_name": {PairAddress: "aci_bgp_address_family_context.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_bgp_address_family_contexts.*.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_bgp_address_family_contexts.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":                  {ExpectedValue: "ipv6-ucast"},
+										"bgp_address_family_context_name": {PairAddress: "aci_bgp_address_family_context.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_bgp_address_family_contexts.*", map[string]acceptancetest.AttributeValue{
+									"address_family":                  {ExpectedValue: "ipv6-ucast"},
+									"bgp_address_family_context_name": {PairAddress: "aci_bgp_address_family_context.test_1.0", PairAttribute: "name"},
+									"tags.#":                          {ExpectedValue: "2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_bgp_address_family_contexts.*.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_bgp_address_family_contexts.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":                  {ExpectedValue: "ipv6-ucast"},
+										"bgp_address_family_context_name": {PairAddress: "aci_bgp_address_family_context.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_bgp_address_family_contexts.*.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_bgp_address_family_contexts.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":                  {ExpectedValue: "ipv6-ucast"},
+										"bgp_address_family_context_name": {PairAddress: "aci_bgp_address_family_context.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_eigrp_address_family_contexts.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_eigrp_address_family_contexts.*", map[string]acceptancetest.AttributeValue{
+								"address_family":                    {ExpectedValue: "ipv4-ucast"},
+								"eigrp_address_family_context_name": {PairAddress: "aci_eigrp_address_family_context.test_1.0", PairAttribute: "name"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_eigrp_address_family_contexts.*", map[string]acceptancetest.AttributeValue{
+									"address_family":                    {ExpectedValue: "ipv4-ucast"},
+									"eigrp_address_family_context_name": {PairAddress: "aci_eigrp_address_family_context.test_1.0", PairAttribute: "name"},
+									"annotation":                        {ExpectedValue: "annotation_1"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_eigrp_address_family_contexts.*", map[string]acceptancetest.AttributeValue{
+									"address_family":                    {ExpectedValue: "ipv4-ucast"},
+									"eigrp_address_family_context_name": {PairAddress: "aci_eigrp_address_family_context.test_1.0", PairAttribute: "name"},
+									"annotations.#":                     {ExpectedValue: "2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_eigrp_address_family_contexts.*.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_eigrp_address_family_contexts.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":                    {ExpectedValue: "ipv4-ucast"},
+										"eigrp_address_family_context_name": {PairAddress: "aci_eigrp_address_family_context.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_eigrp_address_family_contexts.*.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_eigrp_address_family_contexts.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":                    {ExpectedValue: "ipv4-ucast"},
+										"eigrp_address_family_context_name": {PairAddress: "aci_eigrp_address_family_context.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_eigrp_address_family_contexts.*", map[string]acceptancetest.AttributeValue{
+									"address_family":                    {ExpectedValue: "ipv4-ucast"},
+									"eigrp_address_family_context_name": {PairAddress: "aci_eigrp_address_family_context.test_1.0", PairAttribute: "name"},
+									"tags.#":                            {ExpectedValue: "2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_eigrp_address_family_contexts.*.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_eigrp_address_family_contexts.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":                    {ExpectedValue: "ipv4-ucast"},
+										"eigrp_address_family_context_name": {PairAddress: "aci_eigrp_address_family_context.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_eigrp_address_family_contexts.*.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_eigrp_address_family_contexts.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":                    {ExpectedValue: "ipv4-ucast"},
+										"eigrp_address_family_context_name": {PairAddress: "aci_eigrp_address_family_context.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_eigrp_address_family_contexts.*", map[string]acceptancetest.AttributeValue{
+								"address_family":                    {ExpectedValue: "ipv6-ucast"},
+								"eigrp_address_family_context_name": {PairAddress: "aci_eigrp_address_family_context.test_2.0", PairAttribute: "name"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_eigrp_address_family_contexts.*", map[string]acceptancetest.AttributeValue{
+									"address_family":                    {ExpectedValue: "ipv6-ucast"},
+									"eigrp_address_family_context_name": {PairAddress: "aci_eigrp_address_family_context.test_2.0", PairAttribute: "name"},
+									"annotation":                        {ExpectedValue: "annotation_2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_eigrp_address_family_contexts.*", map[string]acceptancetest.AttributeValue{
+									"address_family":                    {ExpectedValue: "ipv6-ucast"},
+									"eigrp_address_family_context_name": {PairAddress: "aci_eigrp_address_family_context.test_2.0", PairAttribute: "name"},
+									"annotations.#":                     {ExpectedValue: "2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_eigrp_address_family_contexts.*.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_eigrp_address_family_contexts.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":                    {ExpectedValue: "ipv6-ucast"},
+										"eigrp_address_family_context_name": {PairAddress: "aci_eigrp_address_family_context.test_2.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_eigrp_address_family_contexts.*.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_eigrp_address_family_contexts.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":                    {ExpectedValue: "ipv6-ucast"},
+										"eigrp_address_family_context_name": {PairAddress: "aci_eigrp_address_family_context.test_2.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_eigrp_address_family_contexts.*", map[string]acceptancetest.AttributeValue{
+									"address_family":                    {ExpectedValue: "ipv6-ucast"},
+									"eigrp_address_family_context_name": {PairAddress: "aci_eigrp_address_family_context.test_2.0", PairAttribute: "name"},
+									"tags.#":                            {ExpectedValue: "2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_eigrp_address_family_contexts.*.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_eigrp_address_family_contexts.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":                    {ExpectedValue: "ipv6-ucast"},
+										"eigrp_address_family_context_name": {PairAddress: "aci_eigrp_address_family_context.test_2.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_eigrp_address_family_contexts.*.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_eigrp_address_family_contexts.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":                    {ExpectedValue: "ipv6-ucast"},
+										"eigrp_address_family_context_name": {PairAddress: "aci_eigrp_address_family_context.test_2.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_end_point_retention_policy.annotation", "annotation_1"),
+						),
+						resource.TestCheckResourceAttrPair("aci_vrf.test_1", "relation_to_end_point_retention_policy.end_point_retention_policy_name", "aci_end_point_retention_policy.test_1.0", "name"),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_end_point_retention_policy.annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_end_point_retention_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_end_point_retention_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_end_point_retention_policy.tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_end_point_retention_policy.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_end_point_retention_policy.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_l3out_route_tag_policy.annotation", "annotation_1"),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							resource.TestCheckResourceAttrPair("aci_vrf.test_1", "relation_to_l3out_route_tag_policy.l3out_route_tag_policy_name", "aci_l3out_route_tag_policy.test_1.0", "name"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_l3out_route_tag_policy.annotations.#", "2"),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_l3out_route_tag_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_l3out_route_tag_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_l3out_route_tag_policy.tags.#", "2"),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_l3out_route_tag_policy.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_l3out_route_tag_policy.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_address_family_ospf_timers.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_address_family_ospf_timers.*", map[string]acceptancetest.AttributeValue{
+								"address_family":   {ExpectedValue: "ipv4-ucast"},
+								"ospf_timers_name": {PairAddress: "aci_ospf_timers.test_1.0", PairAttribute: "name"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_address_family_ospf_timers.*", map[string]acceptancetest.AttributeValue{
+									"address_family":   {ExpectedValue: "ipv4-ucast"},
+									"ospf_timers_name": {PairAddress: "aci_ospf_timers.test_1.0", PairAttribute: "name"},
+									"annotation":       {ExpectedValue: "annotation_1"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_address_family_ospf_timers.*", map[string]acceptancetest.AttributeValue{
+									"address_family":   {ExpectedValue: "ipv4-ucast"},
+									"ospf_timers_name": {PairAddress: "aci_ospf_timers.test_1.0", PairAttribute: "name"},
+									"annotations.#":    {ExpectedValue: "2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_address_family_ospf_timers.*.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_address_family_ospf_timers.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":   {ExpectedValue: "ipv4-ucast"},
+										"ospf_timers_name": {PairAddress: "aci_ospf_timers.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_address_family_ospf_timers.*.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_address_family_ospf_timers.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":   {ExpectedValue: "ipv4-ucast"},
+										"ospf_timers_name": {PairAddress: "aci_ospf_timers.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_address_family_ospf_timers.*", map[string]acceptancetest.AttributeValue{
+									"address_family":   {ExpectedValue: "ipv4-ucast"},
+									"ospf_timers_name": {PairAddress: "aci_ospf_timers.test_1.0", PairAttribute: "name"},
+									"tags.#":           {ExpectedValue: "2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_address_family_ospf_timers.*.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_address_family_ospf_timers.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":   {ExpectedValue: "ipv4-ucast"},
+										"ospf_timers_name": {PairAddress: "aci_ospf_timers.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_address_family_ospf_timers.*.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_address_family_ospf_timers.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":   {ExpectedValue: "ipv4-ucast"},
+										"ospf_timers_name": {PairAddress: "aci_ospf_timers.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_address_family_ospf_timers.*", map[string]acceptancetest.AttributeValue{
+								"address_family":   {ExpectedValue: "ipv6-ucast"},
+								"ospf_timers_name": {PairAddress: "aci_ospf_timers.test_1.0", PairAttribute: "name"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_address_family_ospf_timers.*", map[string]acceptancetest.AttributeValue{
+									"address_family":   {ExpectedValue: "ipv6-ucast"},
+									"ospf_timers_name": {PairAddress: "aci_ospf_timers.test_1.0", PairAttribute: "name"},
+									"annotation":       {ExpectedValue: "annotation_2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_address_family_ospf_timers.*", map[string]acceptancetest.AttributeValue{
+									"address_family":   {ExpectedValue: "ipv6-ucast"},
+									"ospf_timers_name": {PairAddress: "aci_ospf_timers.test_1.0", PairAttribute: "name"},
+									"annotations.#":    {ExpectedValue: "2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_address_family_ospf_timers.*.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_address_family_ospf_timers.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":   {ExpectedValue: "ipv6-ucast"},
+										"ospf_timers_name": {PairAddress: "aci_ospf_timers.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_address_family_ospf_timers.*.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_address_family_ospf_timers.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":   {ExpectedValue: "ipv6-ucast"},
+										"ospf_timers_name": {PairAddress: "aci_ospf_timers.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_address_family_ospf_timers.*", map[string]acceptancetest.AttributeValue{
+									"address_family":   {ExpectedValue: "ipv6-ucast"},
+									"ospf_timers_name": {PairAddress: "aci_ospf_timers.test_1.0", PairAttribute: "name"},
+									"tags.#":           {ExpectedValue: "2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_address_family_ospf_timers.*.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_address_family_ospf_timers.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":   {ExpectedValue: "ipv6-ucast"},
+										"ospf_timers_name": {PairAddress: "aci_ospf_timers.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_address_family_ospf_timers.*.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_address_family_ospf_timers.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"address_family":   {ExpectedValue: "ipv6-ucast"},
+										"ospf_timers_name": {PairAddress: "aci_ospf_timers.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_wan_vpn.annotation", "annotation_1"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_wan_vpn.target_dn", "uni/tn-test_tenant/sdwanvpncont/sdwanvpnentry-sdwanvpn_1"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_wan_vpn.annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_wan_vpn.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_wan_vpn.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_wan_vpn.tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_wan_vpn.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_wan_vpn.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_ospf_timers.annotation", "annotation_1"),
+						),
+						resource.TestCheckResourceAttrPair("aci_vrf.test_1", "relation_to_ospf_timers.ospf_timers_name", "aci_ospf_timers.test_2.0", "name"),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_ospf_timers.annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_ospf_timers.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_ospf_timers.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_to_ospf_timers.tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_ospf_timers.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "relation_to_ospf_timers.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vrf.test_1", "tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vrf.test_1", "tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						resource.TestCheckResourceAttr("aci_vrf.test_1", "knw_mcast_act", ""),
+						resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_fv_rs_ctx_mcast_to.#", "0"),
+						resource.TestCheckResourceAttr("aci_vrf.test_1", "relation_fv_rs_vrf_validation_pol", ""),
+					)(state)
+				},
+			},
+			{
+				PreConfig: func() {
 					t.Log("Test: VRF Resource - Update Mutable Attributes in Place")
 				},
 				ConfigVariables: variables,
@@ -12144,6 +14713,1906 @@ resource "aci_vrf" "test_1" {
       value = "value_2"
     },
   ] : null
+}
+`
+
+const testAccResourceFvCtxLegacy = testAccResourceFvCtxDependencies + `
+resource "aci_vrf" "test_1" {
+  annotation             = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+  description            = "description_1"
+  ip_data_plane_learning = provider::aci::compare_versions(var.apic_version, "inside", "4.0(1h)-") ? "disabled" : null
+  name                   = "name_1"
+  name_alias             = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
+  owner_key              = "owner_key_1"
+  owner_tag              = "owner_tag_1"
+  relation_to_wan_vpn = provider::aci::compare_versions(var.apic_version, "inside", "4.2(1i)-") ? {
+    annotation = "annotation_1"
+    target_dn  = "uni/tn-test_tenant/sdwanvpncont/sdwanvpnentry-sdwanvpn_1"
+    annotations = [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ]
+    tags = [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ]
+  } : null
+  annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  bd_enforced_enable         = provider::aci::compare_versions(var.apic_version, "inside", "3.0(1k)-") ? "no" : null
+  pc_enf_dir                 = provider::aci::compare_versions(var.apic_version, "inside", "1.2(1i)-") ? "egress" : null
+  pc_enf_pref                = "enforced"
+  relation_fv_rs_bgp_ctx_pol = aci_bgp_timers.test_1[0].id
+  relation_fv_rs_ctx_mon_pol = aci_monitoring_policy.test_1[0].id
+  relation_fv_rs_ctx_to_bgp_ctx_af_pol {
+    af                     = "ipv4-ucast"
+    tn_bgp_ctx_af_pol_name = aci_bgp_address_family_context.test_1[0].id
+  }
+  relation_fv_rs_ctx_to_bgp_ctx_af_pol {
+    af                     = "ipv6-ucast"
+    tn_bgp_ctx_af_pol_name = aci_bgp_address_family_context.test_1[0].id
+  }
+  relation_fv_rs_ctx_to_eigrp_ctx_af_pol {
+    af                       = "ipv4-ucast"
+    tn_eigrp_ctx_af_pol_name = aci_eigrp_address_family_context.test_1[0].id
+  }
+  relation_fv_rs_ctx_to_eigrp_ctx_af_pol {
+    af                       = "ipv6-ucast"
+    tn_eigrp_ctx_af_pol_name = aci_eigrp_address_family_context.test_2[0].id
+  }
+  relation_fv_rs_ctx_to_ep_ret            = aci_end_point_retention_policy.test_1[0].id
+  relation_fv_rs_ctx_to_ext_route_tag_pol = provider::aci::compare_versions(var.apic_version, "inside", "1.1(1j)-") ? aci_l3out_route_tag_policy.test_1[0].id : null
+  relation_fv_rs_ctx_to_ospf_ctx_pol {
+    af                   = "ipv4-ucast"
+    tn_ospf_ctx_pol_name = aci_ospf_timers.test_1[0].id
+  }
+  relation_fv_rs_ctx_to_ospf_ctx_pol {
+    af                   = "ipv6-ucast"
+    tn_ospf_ctx_pol_name = aci_ospf_timers.test_1[0].id
+  }
+  relation_fv_rs_ospf_ctx_pol = aci_ospf_timers.test_2[0].id
+  tenant_dn                   = aci_tenant.test_1[0].id
+}
+`
+
+const testAccResourceFvCtxLegacyUnchanged = testAccResourceFvCtxDependencies + `
+resource "aci_vrf" "test_1" {
+  annotation             = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+  description            = "description_1"
+  ip_data_plane_learning = provider::aci::compare_versions(var.apic_version, "inside", "4.0(1h)-") ? "disabled" : null
+  name                   = "name_1"
+  name_alias             = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
+  owner_key              = "owner_key_1"
+  owner_tag              = "owner_tag_1"
+  relation_to_wan_vpn = provider::aci::compare_versions(var.apic_version, "inside", "4.2(1i)-") ? {
+    annotation = "annotation_1"
+    target_dn  = "uni/tn-test_tenant/sdwanvpncont/sdwanvpnentry-sdwanvpn_1"
+    annotations = [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ]
+    tags = [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ]
+  } : null
+  annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  bd_enforced_enable         = provider::aci::compare_versions(var.apic_version, "inside", "3.0(1k)-") ? "no" : null
+  pc_enf_dir                 = provider::aci::compare_versions(var.apic_version, "inside", "1.2(1i)-") ? "egress" : null
+  pc_enf_pref                = "enforced"
+  relation_fv_rs_bgp_ctx_pol = aci_bgp_timers.test_1[0].id
+  relation_fv_rs_ctx_mon_pol = aci_monitoring_policy.test_1[0].id
+  relation_fv_rs_ctx_to_bgp_ctx_af_pol {
+    af                     = "ipv4-ucast"
+    tn_bgp_ctx_af_pol_name = aci_bgp_address_family_context.test_1[0].id
+  }
+  relation_fv_rs_ctx_to_bgp_ctx_af_pol {
+    af                     = "ipv6-ucast"
+    tn_bgp_ctx_af_pol_name = aci_bgp_address_family_context.test_1[0].id
+  }
+  relation_fv_rs_ctx_to_eigrp_ctx_af_pol {
+    af                       = "ipv4-ucast"
+    tn_eigrp_ctx_af_pol_name = aci_eigrp_address_family_context.test_1[0].id
+  }
+  relation_fv_rs_ctx_to_eigrp_ctx_af_pol {
+    af                       = "ipv6-ucast"
+    tn_eigrp_ctx_af_pol_name = aci_eigrp_address_family_context.test_2[0].id
+  }
+  relation_fv_rs_ctx_to_ep_ret            = aci_end_point_retention_policy.test_1[0].id
+  relation_fv_rs_ctx_to_ext_route_tag_pol = provider::aci::compare_versions(var.apic_version, "inside", "1.1(1j)-") ? aci_l3out_route_tag_policy.test_1[0].id : null
+  relation_fv_rs_ctx_to_ospf_ctx_pol {
+    af                   = "ipv4-ucast"
+    tn_ospf_ctx_pol_name = aci_ospf_timers.test_1[0].id
+  }
+  relation_fv_rs_ctx_to_ospf_ctx_pol {
+    af                   = "ipv6-ucast"
+    tn_ospf_ctx_pol_name = aci_ospf_timers.test_1[0].id
+  }
+  relation_fv_rs_ospf_ctx_pol = aci_ospf_timers.test_2[0].id
+  tenant_dn                   = aci_tenant.test_1[0].id
+}
+`
+
+const testAccResourceFvCtxCurrentAfterLegacy = testAccResourceFvCtxDependencies + `
+resource "aci_vrf" "test_1" {
+  annotation                           = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+  bd_enforcement                       = provider::aci::compare_versions(var.apic_version, "inside", "3.0(1k)-") ? "no" : null
+  description                          = "description_1"
+  ip_data_plane_learning               = provider::aci::compare_versions(var.apic_version, "inside", "4.0(1h)-") ? "disabled" : null
+  name                                 = "name_1"
+  name_alias                           = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
+  owner_key                            = "owner_key_1"
+  owner_tag                            = "owner_tag_1"
+  parent_dn                            = aci_tenant.test_1[0].id
+  policy_control_enforcement_direction = provider::aci::compare_versions(var.apic_version, "inside", "1.2(1i)-") ? "egress" : null
+  policy_control_enforcement_mode      = "enforced"
+  relation_to_bgp_timers = {
+    annotation      = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    bgp_timers_name = aci_bgp_timers.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  relation_to_monitoring_policy = {
+    annotation             = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    monitoring_policy_name = aci_monitoring_policy.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  relation_to_bgp_address_family_contexts = provider::aci::compare_versions(var.apic_version, "inside", "1.1(1j)-") ? [
+    {
+      address_family                  = "ipv4-ucast"
+      annotation                      = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+      bgp_address_family_context_name = aci_bgp_address_family_context.test_1[0].name
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+    {
+      address_family                  = "ipv6-ucast"
+      annotation                      = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_2" : null
+      bgp_address_family_context_name = aci_bgp_address_family_context.test_1[0].name
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+  ] : null
+  relation_to_eigrp_address_family_contexts = provider::aci::compare_versions(var.apic_version, "inside", "1.1(1j)-") ? [
+    {
+      address_family                    = "ipv4-ucast"
+      annotation                        = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+      eigrp_address_family_context_name = aci_eigrp_address_family_context.test_1[0].name
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+    {
+      address_family                    = "ipv6-ucast"
+      annotation                        = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_2" : null
+      eigrp_address_family_context_name = aci_eigrp_address_family_context.test_2[0].name
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+  ] : null
+  relation_to_end_point_retention_policy = {
+    annotation                      = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    end_point_retention_policy_name = aci_end_point_retention_policy.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  relation_to_l3out_route_tag_policy = provider::aci::compare_versions(var.apic_version, "inside", "1.1(1j)-") ? {
+    annotation                  = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    l3out_route_tag_policy_name = aci_l3out_route_tag_policy.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  } : null
+  relation_to_address_family_ospf_timers = provider::aci::compare_versions(var.apic_version, "inside", "1.1(1j)-") ? [
+    {
+      address_family   = "ipv4-ucast"
+      annotation       = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+      ospf_timers_name = aci_ospf_timers.test_1[0].name
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+    {
+      address_family   = "ipv6-ucast"
+      annotation       = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_2" : null
+      ospf_timers_name = aci_ospf_timers.test_1[0].name
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+  ] : null
+  relation_to_wan_vpn = provider::aci::compare_versions(var.apic_version, "inside", "4.2(1i)-") ? {
+    annotation = "annotation_1"
+    target_dn  = "uni/tn-test_tenant/sdwanvpncont/sdwanvpnentry-sdwanvpn_1"
+    annotations = [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ]
+    tags = [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ]
+  } : null
+  relation_to_ospf_timers = {
+    annotation       = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    ospf_timers_name = aci_ospf_timers.test_2[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+}
+`
+
+const testAccResourceFvCtxLegacyConflict = testAccResourceFvCtxDependencies + `
+resource "aci_vrf" "test_1" {
+  annotation                           = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+  bd_enforcement                       = provider::aci::compare_versions(var.apic_version, "inside", "3.0(1k)-") ? "no" : null
+  description                          = "description_1"
+  ip_data_plane_learning               = provider::aci::compare_versions(var.apic_version, "inside", "4.0(1h)-") ? "disabled" : null
+  name                                 = "name_1"
+  name_alias                           = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
+  owner_key                            = "owner_key_1"
+  owner_tag                            = "owner_tag_1"
+  parent_dn                            = aci_tenant.test_1[0].id
+  policy_control_enforcement_direction = provider::aci::compare_versions(var.apic_version, "inside", "1.2(1i)-") ? "egress" : null
+  policy_control_enforcement_mode      = "enforced"
+  relation_to_bgp_timers = {
+    annotation      = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    bgp_timers_name = aci_bgp_timers.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  relation_to_monitoring_policy = {
+    annotation             = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    monitoring_policy_name = aci_monitoring_policy.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  relation_to_bgp_address_family_contexts = provider::aci::compare_versions(var.apic_version, "inside", "1.1(1j)-") ? [
+    {
+      address_family                  = "ipv4-ucast"
+      annotation                      = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+      bgp_address_family_context_name = aci_bgp_address_family_context.test_1[0].name
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+    {
+      address_family                  = "ipv6-ucast"
+      annotation                      = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_2" : null
+      bgp_address_family_context_name = aci_bgp_address_family_context.test_1[0].name
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+  ] : null
+  relation_to_eigrp_address_family_contexts = provider::aci::compare_versions(var.apic_version, "inside", "1.1(1j)-") ? [
+    {
+      address_family                    = "ipv4-ucast"
+      annotation                        = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+      eigrp_address_family_context_name = aci_eigrp_address_family_context.test_1[0].name
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+    {
+      address_family                    = "ipv6-ucast"
+      annotation                        = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_2" : null
+      eigrp_address_family_context_name = aci_eigrp_address_family_context.test_2[0].name
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+  ] : null
+  relation_to_end_point_retention_policy = {
+    annotation                      = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    end_point_retention_policy_name = aci_end_point_retention_policy.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  relation_to_l3out_route_tag_policy = provider::aci::compare_versions(var.apic_version, "inside", "1.1(1j)-") ? {
+    annotation                  = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    l3out_route_tag_policy_name = aci_l3out_route_tag_policy.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  } : null
+  relation_to_address_family_ospf_timers = provider::aci::compare_versions(var.apic_version, "inside", "1.1(1j)-") ? [
+    {
+      address_family   = "ipv4-ucast"
+      annotation       = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+      ospf_timers_name = aci_ospf_timers.test_1[0].name
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+    {
+      address_family   = "ipv6-ucast"
+      annotation       = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_2" : null
+      ospf_timers_name = aci_ospf_timers.test_1[0].name
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+  ] : null
+  relation_to_wan_vpn = provider::aci::compare_versions(var.apic_version, "inside", "4.2(1i)-") ? {
+    annotation = "annotation_1"
+    target_dn  = "uni/tn-test_tenant/sdwanvpncont/sdwanvpnentry-sdwanvpn_1"
+    annotations = [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ]
+    tags = [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ]
+  } : null
+  relation_to_ospf_timers = {
+    annotation       = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    ospf_timers_name = aci_ospf_timers.test_2[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  bd_enforced_enable         = provider::aci::compare_versions(var.apic_version, "inside", "3.0(1k)-") ? "no" : null
+  pc_enf_dir                 = provider::aci::compare_versions(var.apic_version, "inside", "1.2(1i)-") ? "egress" : null
+  pc_enf_pref                = "enforced"
+  relation_fv_rs_bgp_ctx_pol = aci_bgp_timers.test_1[0].id
+  relation_fv_rs_ctx_mon_pol = aci_monitoring_policy.test_1[0].id
+  relation_fv_rs_ctx_to_bgp_ctx_af_pol {
+    af                     = "ipv4-ucast"
+    tn_bgp_ctx_af_pol_name = aci_bgp_address_family_context.test_1[0].id
+  }
+  relation_fv_rs_ctx_to_bgp_ctx_af_pol {
+    af                     = "ipv6-ucast"
+    tn_bgp_ctx_af_pol_name = aci_bgp_address_family_context.test_1[0].id
+  }
+  relation_fv_rs_ctx_to_eigrp_ctx_af_pol {
+    af                       = "ipv4-ucast"
+    tn_eigrp_ctx_af_pol_name = aci_eigrp_address_family_context.test_1[0].id
+  }
+  relation_fv_rs_ctx_to_eigrp_ctx_af_pol {
+    af                       = "ipv6-ucast"
+    tn_eigrp_ctx_af_pol_name = aci_eigrp_address_family_context.test_2[0].id
+  }
+  relation_fv_rs_ctx_to_ep_ret            = aci_end_point_retention_policy.test_1[0].id
+  relation_fv_rs_ctx_to_ext_route_tag_pol = provider::aci::compare_versions(var.apic_version, "inside", "1.1(1j)-") ? aci_l3out_route_tag_policy.test_1[0].id : null
+  relation_fv_rs_ctx_to_ospf_ctx_pol {
+    af                   = "ipv4-ucast"
+    tn_ospf_ctx_pol_name = aci_ospf_timers.test_1[0].id
+  }
+  relation_fv_rs_ctx_to_ospf_ctx_pol {
+    af                   = "ipv6-ucast"
+    tn_ospf_ctx_pol_name = aci_ospf_timers.test_1[0].id
+  }
+  relation_fv_rs_ospf_ctx_pol = aci_ospf_timers.test_2[0].id
+  tenant_dn                   = aci_tenant.test_1[0].id
+}
+`
+
+const testAccResourceFvCtxFrozen = testAccResourceFvCtxDependencies + `
+resource "aci_vrf" "test_1" {
+  annotation                           = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+  bd_enforcement                       = provider::aci::compare_versions(var.apic_version, "inside", "3.0(1k)-") ? "no" : null
+  description                          = "description_1"
+  ip_data_plane_learning               = provider::aci::compare_versions(var.apic_version, "inside", "4.0(1h)-") ? "disabled" : null
+  name                                 = "name_1"
+  name_alias                           = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
+  owner_key                            = "owner_key_1"
+  owner_tag                            = "owner_tag_1"
+  parent_dn                            = aci_tenant.test_1[0].id
+  policy_control_enforcement_direction = provider::aci::compare_versions(var.apic_version, "inside", "1.2(1i)-") ? "egress" : null
+  policy_control_enforcement_mode      = "enforced"
+  relation_to_bgp_timers = {
+    annotation      = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    bgp_timers_name = aci_bgp_timers.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  relation_to_monitoring_policy = {
+    annotation             = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    monitoring_policy_name = aci_monitoring_policy.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  relation_to_bgp_address_family_contexts = provider::aci::compare_versions(var.apic_version, "inside", "1.1(1j)-") ? [
+    {
+      address_family                  = "ipv4-ucast"
+      annotation                      = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+      bgp_address_family_context_name = aci_bgp_address_family_context.test_1[0].name
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+    {
+      address_family                  = "ipv6-ucast"
+      annotation                      = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_2" : null
+      bgp_address_family_context_name = aci_bgp_address_family_context.test_1[0].name
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+  ] : null
+  relation_to_eigrp_address_family_contexts = provider::aci::compare_versions(var.apic_version, "inside", "1.1(1j)-") ? [
+    {
+      address_family                    = "ipv4-ucast"
+      annotation                        = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+      eigrp_address_family_context_name = aci_eigrp_address_family_context.test_1[0].name
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+    {
+      address_family                    = "ipv6-ucast"
+      annotation                        = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_2" : null
+      eigrp_address_family_context_name = aci_eigrp_address_family_context.test_2[0].name
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+  ] : null
+  relation_to_end_point_retention_policy = {
+    annotation                      = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    end_point_retention_policy_name = aci_end_point_retention_policy.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  relation_to_l3out_route_tag_policy = provider::aci::compare_versions(var.apic_version, "inside", "1.1(1j)-") ? {
+    annotation                  = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    l3out_route_tag_policy_name = aci_l3out_route_tag_policy.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  } : null
+  relation_to_address_family_ospf_timers = provider::aci::compare_versions(var.apic_version, "inside", "1.1(1j)-") ? [
+    {
+      address_family   = "ipv4-ucast"
+      annotation       = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+      ospf_timers_name = aci_ospf_timers.test_1[0].name
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+    {
+      address_family   = "ipv6-ucast"
+      annotation       = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_2" : null
+      ospf_timers_name = aci_ospf_timers.test_1[0].name
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+  ] : null
+  relation_to_wan_vpn = provider::aci::compare_versions(var.apic_version, "inside", "4.2(1i)-") ? {
+    annotation = "annotation_1"
+    target_dn  = "uni/tn-test_tenant/sdwanvpncont/sdwanvpnentry-sdwanvpn_1"
+    annotations = [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ]
+    tags = [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ]
+  } : null
+  relation_to_ospf_timers = {
+    annotation       = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    ospf_timers_name = aci_ospf_timers.test_2[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  knw_mcast_act                     = "example"
+  relation_fv_rs_ctx_mcast_to       = ["example"]
+  relation_fv_rs_vrf_validation_pol = "example"
+}
+`
+
+const testAccResourceFvCtxFrozenUnchanged = testAccResourceFvCtxDependencies + `
+resource "aci_vrf" "test_1" {
+  annotation                           = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+  bd_enforcement                       = provider::aci::compare_versions(var.apic_version, "inside", "3.0(1k)-") ? "no" : null
+  description                          = "description_1"
+  ip_data_plane_learning               = provider::aci::compare_versions(var.apic_version, "inside", "4.0(1h)-") ? "disabled" : null
+  name                                 = "name_1"
+  name_alias                           = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
+  owner_key                            = "owner_key_1"
+  owner_tag                            = "owner_tag_1"
+  parent_dn                            = aci_tenant.test_1[0].id
+  policy_control_enforcement_direction = provider::aci::compare_versions(var.apic_version, "inside", "1.2(1i)-") ? "egress" : null
+  policy_control_enforcement_mode      = "enforced"
+  relation_to_bgp_timers = {
+    annotation      = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    bgp_timers_name = aci_bgp_timers.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  relation_to_monitoring_policy = {
+    annotation             = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    monitoring_policy_name = aci_monitoring_policy.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  relation_to_bgp_address_family_contexts = provider::aci::compare_versions(var.apic_version, "inside", "1.1(1j)-") ? [
+    {
+      address_family                  = "ipv4-ucast"
+      annotation                      = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+      bgp_address_family_context_name = aci_bgp_address_family_context.test_1[0].name
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+    {
+      address_family                  = "ipv6-ucast"
+      annotation                      = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_2" : null
+      bgp_address_family_context_name = aci_bgp_address_family_context.test_1[0].name
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+  ] : null
+  relation_to_eigrp_address_family_contexts = provider::aci::compare_versions(var.apic_version, "inside", "1.1(1j)-") ? [
+    {
+      address_family                    = "ipv4-ucast"
+      annotation                        = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+      eigrp_address_family_context_name = aci_eigrp_address_family_context.test_1[0].name
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+    {
+      address_family                    = "ipv6-ucast"
+      annotation                        = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_2" : null
+      eigrp_address_family_context_name = aci_eigrp_address_family_context.test_2[0].name
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+  ] : null
+  relation_to_end_point_retention_policy = {
+    annotation                      = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    end_point_retention_policy_name = aci_end_point_retention_policy.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  relation_to_l3out_route_tag_policy = provider::aci::compare_versions(var.apic_version, "inside", "1.1(1j)-") ? {
+    annotation                  = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    l3out_route_tag_policy_name = aci_l3out_route_tag_policy.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  } : null
+  relation_to_address_family_ospf_timers = provider::aci::compare_versions(var.apic_version, "inside", "1.1(1j)-") ? [
+    {
+      address_family   = "ipv4-ucast"
+      annotation       = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+      ospf_timers_name = aci_ospf_timers.test_1[0].name
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+    {
+      address_family   = "ipv6-ucast"
+      annotation       = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_2" : null
+      ospf_timers_name = aci_ospf_timers.test_1[0].name
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+  ] : null
+  relation_to_wan_vpn = provider::aci::compare_versions(var.apic_version, "inside", "4.2(1i)-") ? {
+    annotation = "annotation_1"
+    target_dn  = "uni/tn-test_tenant/sdwanvpncont/sdwanvpnentry-sdwanvpn_1"
+    annotations = [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ]
+    tags = [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ]
+  } : null
+  relation_to_ospf_timers = {
+    annotation       = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    ospf_timers_name = aci_ospf_timers.test_2[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  knw_mcast_act                     = "example"
+  relation_fv_rs_ctx_mcast_to       = ["example"]
+  relation_fv_rs_vrf_validation_pol = "example"
+}
+`
+
+const testAccResourceFvCtxFrozenCleared = testAccResourceFvCtxDependencies + `
+resource "aci_vrf" "test_1" {
+  annotation                           = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+  bd_enforcement                       = provider::aci::compare_versions(var.apic_version, "inside", "3.0(1k)-") ? "no" : null
+  description                          = "description_1"
+  ip_data_plane_learning               = provider::aci::compare_versions(var.apic_version, "inside", "4.0(1h)-") ? "disabled" : null
+  name                                 = "name_1"
+  name_alias                           = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
+  owner_key                            = "owner_key_1"
+  owner_tag                            = "owner_tag_1"
+  parent_dn                            = aci_tenant.test_1[0].id
+  policy_control_enforcement_direction = provider::aci::compare_versions(var.apic_version, "inside", "1.2(1i)-") ? "egress" : null
+  policy_control_enforcement_mode      = "enforced"
+  relation_to_bgp_timers = {
+    annotation      = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    bgp_timers_name = aci_bgp_timers.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  relation_to_monitoring_policy = {
+    annotation             = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    monitoring_policy_name = aci_monitoring_policy.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  relation_to_bgp_address_family_contexts = provider::aci::compare_versions(var.apic_version, "inside", "1.1(1j)-") ? [
+    {
+      address_family                  = "ipv4-ucast"
+      annotation                      = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+      bgp_address_family_context_name = aci_bgp_address_family_context.test_1[0].name
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+    {
+      address_family                  = "ipv6-ucast"
+      annotation                      = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_2" : null
+      bgp_address_family_context_name = aci_bgp_address_family_context.test_1[0].name
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+  ] : null
+  relation_to_eigrp_address_family_contexts = provider::aci::compare_versions(var.apic_version, "inside", "1.1(1j)-") ? [
+    {
+      address_family                    = "ipv4-ucast"
+      annotation                        = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+      eigrp_address_family_context_name = aci_eigrp_address_family_context.test_1[0].name
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+    {
+      address_family                    = "ipv6-ucast"
+      annotation                        = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_2" : null
+      eigrp_address_family_context_name = aci_eigrp_address_family_context.test_2[0].name
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+  ] : null
+  relation_to_end_point_retention_policy = {
+    annotation                      = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    end_point_retention_policy_name = aci_end_point_retention_policy.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  relation_to_l3out_route_tag_policy = provider::aci::compare_versions(var.apic_version, "inside", "1.1(1j)-") ? {
+    annotation                  = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    l3out_route_tag_policy_name = aci_l3out_route_tag_policy.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  } : null
+  relation_to_address_family_ospf_timers = provider::aci::compare_versions(var.apic_version, "inside", "1.1(1j)-") ? [
+    {
+      address_family   = "ipv4-ucast"
+      annotation       = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+      ospf_timers_name = aci_ospf_timers.test_1[0].name
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+    {
+      address_family   = "ipv6-ucast"
+      annotation       = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_2" : null
+      ospf_timers_name = aci_ospf_timers.test_1[0].name
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+  ] : null
+  relation_to_wan_vpn = provider::aci::compare_versions(var.apic_version, "inside", "4.2(1i)-") ? {
+    annotation = "annotation_1"
+    target_dn  = "uni/tn-test_tenant/sdwanvpncont/sdwanvpnentry-sdwanvpn_1"
+    annotations = [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ]
+    tags = [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ]
+  } : null
+  relation_to_ospf_timers = {
+    annotation       = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    ospf_timers_name = aci_ospf_timers.test_2[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  knw_mcast_act                     = ""
+  relation_fv_rs_ctx_mcast_to       = []
+  relation_fv_rs_vrf_validation_pol = ""
 }
 `
 

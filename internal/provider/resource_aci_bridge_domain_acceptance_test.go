@@ -1136,6 +1136,2969 @@ func TestAccResourceFvBDGenerated(t *testing.T) {
 			},
 			{
 				PreConfig: func() {
+					t.Log("Test: Bridge Domain Resource - Configure Through Legacy Attributes")
+				},
+				ConfigVariables: variables,
+				Config:          testAccResourceFvBDLegacy,
+				Check: func(state *terraform.State) error {
+					// Evaluate runtime prefixes after PreCheck has initialized the fixture variables.
+					return resource.ComposeAggregateTestCheckFunc(
+						identity.CheckID("aci_bridge_domain.test_1", false),
+						testCheckResourceDN("aci_bridge_domain.test_1", "BD-{name}", "uni", map[string]string{
+							"name": "name",
+						}, []resourceTestDNVariant{}),
+						composeAggregateTestCheckFuncWithVersion(t, "3.0(1k)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "optimize_wan_bandwidth", "no"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "annotation", "annotation_1"),
+						),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "arp_flooding", "no"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "description", "description_1"),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(2e)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "clear_remote_mac_entries", "no"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "endpoint_move_detection_mode", "garp"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "advertise_host_routes", "no"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.0(1k)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "enable_intersite_bum_traffic", "no"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.0(1k)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "intersite_l2_stretch", "no"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.0(1m)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "ip_learning", "no"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "pim_ipv6", "no"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "limit_ip_learn_to_subnets", "yes"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "link_local_ipv6_address", "fe80::1"),
+						),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "custom_mac_address", "00:22:BD:F8:19:FE"),
+						composeAggregateTestCheckFuncWithVersion(t, "5.2(5c)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "drop_arp_with_multicast_smac", "no"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.0(1m)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "pim", "no"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "multi_destination_flooding", "bd-flood"),
+						),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "name", "name_1"),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "name_alias", "name_alias_1"),
+						),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "owner_key", "owner_key_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "owner_tag", "owner_tag_1"),
+						resource.TestCheckResourceAttrPair("aci_bridge_domain.test_1", "parent_dn", "aci_tenant.test_1.0", "id"),
+						resource.TestCheckResourceAttrSet("aci_bridge_domain.test_1", "pc_tag"),
+						resource.TestCheckResourceAttrSet("aci_bridge_domain.test_1", "scope"),
+						resource.TestCheckResourceAttrSet("aci_bridge_domain.test_1", "segment"),
+						composeAggregateTestCheckFuncWithVersion(t, "6.0(4c)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "service_bd_routing_disable", "no"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.0(1m)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "bridge_domain_type", "regular"),
+						),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "unicast_routing", "yes"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "l2_unknown_unicast_flooding", "proxy"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "l3_unknown_multicast_flooding", "flood"),
+						composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "ipv6_l3_unknown_multicast_flooding", "flood"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.2(1i)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "virtual_mac_address", "00:22:BD:F8:19:FB"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "legacy_mode.annotation", "annotation_1"),
+						),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "legacy_mode.description", "description_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "legacy_mode.encapsulation", "vlan-100"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "legacy_mode.name", "name_1"),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "legacy_mode.name_alias", "name_alias_1"),
+						),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "legacy_mode.owner_key", "owner_key_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "legacy_mode.owner_tag", "owner_tag_1"),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "legacy_mode.annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "legacy_mode.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "legacy_mode.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "legacy_mode.tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "legacy_mode.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "legacy_mode.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "5.2(3e)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "rogue_coop_exceptions.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "5.2(3e)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "rogue_coop_exceptions.*", map[string]acceptancetest.AttributeValue{
+								"annotation":  {ExpectedValue: "annotation_1"},
+								"description": {ExpectedValue: "description_1"},
+								"mac":         {ExpectedValue: "00:00:00:00:00:03"},
+								"name":        {ExpectedValue: "name_1"},
+								"name_alias":  {ExpectedValue: "name_alias_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "5.2(3e)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "rogue_coop_exceptions.*", map[string]acceptancetest.AttributeValue{
+								"mac":           {ExpectedValue: "00:00:00:00:00:03"},
+								"annotations.#": {ExpectedValue: "2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "5.2(3e)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "rogue_coop_exceptions.*.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}, acceptancetest.ParentSetElement{
+								Path: "rogue_coop_exceptions.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"mac": {ExpectedValue: "00:00:00:00:00:03"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "5.2(3e)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "rogue_coop_exceptions.*.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}, acceptancetest.ParentSetElement{
+								Path: "rogue_coop_exceptions.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"mac": {ExpectedValue: "00:00:00:00:00:03"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "5.2(3e)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "rogue_coop_exceptions.*", map[string]acceptancetest.AttributeValue{
+								"mac":    {ExpectedValue: "00:00:00:00:00:03"},
+								"tags.#": {ExpectedValue: "2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "5.2(3e)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "rogue_coop_exceptions.*.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}, acceptancetest.ParentSetElement{
+								Path: "rogue_coop_exceptions.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"mac": {ExpectedValue: "00:00:00:00:00:03"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "5.2(3e)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "rogue_coop_exceptions.*.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}, acceptancetest.ParentSetElement{
+								Path: "rogue_coop_exceptions.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"mac": {ExpectedValue: "00:00:00:00:00:03"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "5.2(3e)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "rogue_coop_exceptions.*", map[string]acceptancetest.AttributeValue{
+								"annotation":  {ExpectedValue: "annotation_2"},
+								"description": {ExpectedValue: "description_2"},
+								"mac":         {ExpectedValue: "00:00:00:00:00:01"},
+								"name":        {ExpectedValue: "name_2"},
+								"name_alias":  {ExpectedValue: "name_alias_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "5.2(3e)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "rogue_coop_exceptions.*", map[string]acceptancetest.AttributeValue{
+								"mac":           {ExpectedValue: "00:00:00:00:00:01"},
+								"annotations.#": {ExpectedValue: "2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "5.2(3e)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "rogue_coop_exceptions.*.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}, acceptancetest.ParentSetElement{
+								Path: "rogue_coop_exceptions.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"mac": {ExpectedValue: "00:00:00:00:00:01"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "5.2(3e)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "rogue_coop_exceptions.*.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}, acceptancetest.ParentSetElement{
+								Path: "rogue_coop_exceptions.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"mac": {ExpectedValue: "00:00:00:00:00:01"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "5.2(3e)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "rogue_coop_exceptions.*", map[string]acceptancetest.AttributeValue{
+								"mac":    {ExpectedValue: "00:00:00:00:00:01"},
+								"tags.#": {ExpectedValue: "2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "5.2(3e)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "rogue_coop_exceptions.*.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}, acceptancetest.ParentSetElement{
+								Path: "rogue_coop_exceptions.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"mac": {ExpectedValue: "00:00:00:00:00:01"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "5.2(3e)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "rogue_coop_exceptions.*.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}, acceptancetest.ParentSetElement{
+								Path: "rogue_coop_exceptions.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"mac": {ExpectedValue: "00:00:00:00:00:01"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_monitoring_policy.annotation", "annotation_1"),
+						),
+						resource.TestCheckResourceAttrPair("aci_bridge_domain.test_1", "relation_to_monitoring_policy.monitoring_policy_name", "aci_monitoring_policy.test_1.0", "name"),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_monitoring_policy.annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_monitoring_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_monitoring_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_monitoring_policy.tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_monitoring_policy.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_monitoring_policy.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.0(1k)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_first_hop_security_policy.annotation", "annotation_1"),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.0(1k)-", "inside",
+							resource.TestCheckResourceAttrPair("aci_bridge_domain.test_1", "relation_to_first_hop_security_policy.first_hop_security_policy_name", "aci_first_hop_security_policy.test_1.0", "name"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.0(1k)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_first_hop_security_policy.annotations.#", "2"),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.0(1k)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_first_hop_security_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.0(1k)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_first_hop_security_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.0(1k)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_first_hop_security_policy.tags.#", "2"),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.0(1k)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_first_hop_security_policy.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.0(1k)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_first_hop_security_policy.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_neighbor_discovery_interface_policy.annotation", "annotation_1"),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							resource.TestCheckResourceAttrPair("aci_bridge_domain.test_1", "relation_to_neighbor_discovery_interface_policy.neighbor_discovery_interface_policy_name", "aci_neighbor_discovery_interface_policy.test_1.0", "name"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_neighbor_discovery_interface_policy.annotations.#", "2"),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_neighbor_discovery_interface_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_neighbor_discovery_interface_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_neighbor_discovery_interface_policy.tags.#", "2"),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_neighbor_discovery_interface_policy.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_neighbor_discovery_interface_policy.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_netflow_monitor_policies.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_netflow_monitor_policies.*", map[string]acceptancetest.AttributeValue{
+									"filter_type":                 {ExpectedValue: "ce"},
+									"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_1.0", PairAttribute: "name"},
+									"annotation":                  {ExpectedValue: "annotation_1"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_netflow_monitor_policies.*", map[string]acceptancetest.AttributeValue{
+								"filter_type":                 {ExpectedValue: "ce"},
+								"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_1.0", PairAttribute: "name"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_netflow_monitor_policies.*", map[string]acceptancetest.AttributeValue{
+									"filter_type":                 {ExpectedValue: "ce"},
+									"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_1.0", PairAttribute: "name"},
+									"annotations.#":               {ExpectedValue: "2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_netflow_monitor_policies.*.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_netflow_monitor_policies.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"filter_type":                 {ExpectedValue: "ce"},
+										"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_netflow_monitor_policies.*.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_netflow_monitor_policies.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"filter_type":                 {ExpectedValue: "ce"},
+										"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_netflow_monitor_policies.*", map[string]acceptancetest.AttributeValue{
+									"filter_type":                 {ExpectedValue: "ce"},
+									"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_1.0", PairAttribute: "name"},
+									"tags.#":                      {ExpectedValue: "2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_netflow_monitor_policies.*.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_netflow_monitor_policies.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"filter_type":                 {ExpectedValue: "ce"},
+										"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_netflow_monitor_policies.*.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_netflow_monitor_policies.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"filter_type":                 {ExpectedValue: "ce"},
+										"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_netflow_monitor_policies.*", map[string]acceptancetest.AttributeValue{
+									"filter_type":                 {ExpectedValue: "ipv4"},
+									"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_2.0", PairAttribute: "name"},
+									"annotation":                  {ExpectedValue: "annotation_2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_netflow_monitor_policies.*", map[string]acceptancetest.AttributeValue{
+								"filter_type":                 {ExpectedValue: "ipv4"},
+								"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_2.0", PairAttribute: "name"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_netflow_monitor_policies.*", map[string]acceptancetest.AttributeValue{
+									"filter_type":                 {ExpectedValue: "ipv4"},
+									"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_2.0", PairAttribute: "name"},
+									"annotations.#":               {ExpectedValue: "2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_netflow_monitor_policies.*.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_netflow_monitor_policies.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"filter_type":                 {ExpectedValue: "ipv4"},
+										"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_2.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_netflow_monitor_policies.*.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_netflow_monitor_policies.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"filter_type":                 {ExpectedValue: "ipv4"},
+										"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_2.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_netflow_monitor_policies.*", map[string]acceptancetest.AttributeValue{
+									"filter_type":                 {ExpectedValue: "ipv4"},
+									"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_2.0", PairAttribute: "name"},
+									"tags.#":                      {ExpectedValue: "2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_netflow_monitor_policies.*.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_netflow_monitor_policies.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"filter_type":                 {ExpectedValue: "ipv4"},
+										"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_2.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_netflow_monitor_policies.*.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_netflow_monitor_policies.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"filter_type":                 {ExpectedValue: "ipv4"},
+										"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_2.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_l3_outsides.#", "2"),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_l3_outsides.*", map[string]acceptancetest.AttributeValue{
+								"l3_outside_name": {PairAddress: "aci_l3_outside.test_1.0", PairAttribute: "name"},
+								"annotation":      {ExpectedValue: "annotation_1"},
+							}),
+						),
+						acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_l3_outsides.*", map[string]acceptancetest.AttributeValue{
+							"l3_outside_name": {PairAddress: "aci_l3_outside.test_1.0", PairAttribute: "name"},
+						}),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_l3_outsides.*", map[string]acceptancetest.AttributeValue{
+								"l3_outside_name": {PairAddress: "aci_l3_outside.test_1.0", PairAttribute: "name"},
+								"annotations.#":   {ExpectedValue: "2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_l3_outsides.*.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}, acceptancetest.ParentSetElement{
+								Path: "relation_to_l3_outsides.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"l3_outside_name": {PairAddress: "aci_l3_outside.test_1.0", PairAttribute: "name"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_l3_outsides.*.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}, acceptancetest.ParentSetElement{
+								Path: "relation_to_l3_outsides.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"l3_outside_name": {PairAddress: "aci_l3_outside.test_1.0", PairAttribute: "name"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_l3_outsides.*", map[string]acceptancetest.AttributeValue{
+								"l3_outside_name": {PairAddress: "aci_l3_outside.test_1.0", PairAttribute: "name"},
+								"tags.#":          {ExpectedValue: "2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_l3_outsides.*.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}, acceptancetest.ParentSetElement{
+								Path: "relation_to_l3_outsides.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"l3_outside_name": {PairAddress: "aci_l3_outside.test_1.0", PairAttribute: "name"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_l3_outsides.*.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}, acceptancetest.ParentSetElement{
+								Path: "relation_to_l3_outsides.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"l3_outside_name": {PairAddress: "aci_l3_outside.test_1.0", PairAttribute: "name"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_l3_outsides.*", map[string]acceptancetest.AttributeValue{
+								"l3_outside_name": {PairAddress: "aci_l3_outside.test_2.0", PairAttribute: "name"},
+								"annotation":      {ExpectedValue: "annotation_2"},
+							}),
+						),
+						acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_l3_outsides.*", map[string]acceptancetest.AttributeValue{
+							"l3_outside_name": {PairAddress: "aci_l3_outside.test_2.0", PairAttribute: "name"},
+						}),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_l3_outsides.*", map[string]acceptancetest.AttributeValue{
+								"l3_outside_name": {PairAddress: "aci_l3_outside.test_2.0", PairAttribute: "name"},
+								"annotations.#":   {ExpectedValue: "2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_l3_outsides.*.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}, acceptancetest.ParentSetElement{
+								Path: "relation_to_l3_outsides.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"l3_outside_name": {PairAddress: "aci_l3_outside.test_2.0", PairAttribute: "name"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_l3_outsides.*.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}, acceptancetest.ParentSetElement{
+								Path: "relation_to_l3_outsides.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"l3_outside_name": {PairAddress: "aci_l3_outside.test_2.0", PairAttribute: "name"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_l3_outsides.*", map[string]acceptancetest.AttributeValue{
+								"l3_outside_name": {PairAddress: "aci_l3_outside.test_2.0", PairAttribute: "name"},
+								"tags.#":          {ExpectedValue: "2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_l3_outsides.*.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}, acceptancetest.ParentSetElement{
+								Path: "relation_to_l3_outsides.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"l3_outside_name": {PairAddress: "aci_l3_outside.test_2.0", PairAttribute: "name"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_l3_outsides.*.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}, acceptancetest.ParentSetElement{
+								Path: "relation_to_l3_outsides.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"l3_outside_name": {PairAddress: "aci_l3_outside.test_2.0", PairAttribute: "name"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_route_control_profile.annotation", "annotation_1"),
+						),
+						resource.TestCheckResourceAttrPair("aci_bridge_domain.test_1", "relation_to_route_control_profile.l3_outside_name", "aci_l3_outside.test_1.0", "name"),
+						resource.TestCheckResourceAttrPair("aci_bridge_domain.test_1", "relation_to_route_control_profile.route_control_profile_name", "aci_route_control_profile.test_1.0", "name"),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_route_control_profile.annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_route_control_profile.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_route_control_profile.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_route_control_profile.tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_route_control_profile.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_route_control_profile.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-6.1(1e)", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_dhcp_relay_policy.annotation", "annotation_1"),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-6.1(1e)", "inside",
+							resource.TestCheckResourceAttrPair("aci_bridge_domain.test_1", "relation_to_dhcp_relay_policy.dhcp_relay_policy_name", "aci_dhcp_relay_policy.test_1.0", "name"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-6.1(1e)", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_dhcp_relay_policy.annotations.#", "2"),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-6.1(1e)", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_dhcp_relay_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-6.1(1e)", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_dhcp_relay_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-6.1(1e)", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_dhcp_relay_policy.tags.#", "2"),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-6.1(1e)", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_dhcp_relay_policy.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-6.1(1e)", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_dhcp_relay_policy.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_end_point_retention_policy.annotation", "annotation_1"),
+						),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_end_point_retention_policy.resolve_action", "inherit"),
+						resource.TestCheckResourceAttrPair("aci_bridge_domain.test_1", "relation_to_end_point_retention_policy.end_point_retention_policy_name", "aci_end_point_retention_policy.test_1.0", "name"),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_end_point_retention_policy.annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_end_point_retention_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_end_point_retention_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_end_point_retention_policy.tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_end_point_retention_policy.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_end_point_retention_policy.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_vrf.annotation", "annotation_1"),
+						),
+						resource.TestCheckResourceAttrPair("aci_bridge_domain.test_1", "relation_to_vrf.vrf_name", "aci_vrf.test_1.0", "name"),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_vrf.annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_vrf.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_vrf.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_vrf.tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_vrf.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_vrf.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_igmp_snooping_policy.annotation", "annotation_1"),
+						),
+						resource.TestCheckResourceAttrPair("aci_bridge_domain.test_1", "relation_to_igmp_snooping_policy.igmp_snooping_policy_name", "aci_igmp_snooping_policy.test_1.0", "name"),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_igmp_snooping_policy.annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_igmp_snooping_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_igmp_snooping_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_igmp_snooping_policy.tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_igmp_snooping_policy.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_igmp_snooping_policy.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_mld_snooping_policy.annotation", "annotation_1"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)-", "inside",
+							resource.TestCheckResourceAttrPair("aci_bridge_domain.test_1", "relation_to_mld_snooping_policy.mld_snooping_policy_name", "aci_mld_snooping_policy.test_1.0", "name"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_mld_snooping_policy.annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_mld_snooping_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_mld_snooping_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_mld_snooping_policy.tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_mld_snooping_policy.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_mld_snooping_policy.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						resource.TestCheckResourceAttrPair("aci_bridge_domain.test_1", "arp_flood", "aci_bridge_domain.test_1", "arp_flooding"),
+						resource.TestCheckResourceAttrPair("aci_bridge_domain.test_1", "ep_clear", "aci_bridge_domain.test_1", "clear_remote_mac_entries"),
+						resource.TestCheckResourceAttrPair("aci_bridge_domain.test_1", "ep_move_detect_mode", "aci_bridge_domain.test_1", "endpoint_move_detection_mode"),
+						resource.TestCheckResourceAttrPair("aci_bridge_domain.test_1", "host_based_routing", "aci_bridge_domain.test_1", "advertise_host_routes"),
+						resource.TestCheckResourceAttrPair("aci_bridge_domain.test_1", "intersite_bum_traffic_allow", "aci_bridge_domain.test_1", "enable_intersite_bum_traffic"),
+						resource.TestCheckResourceAttrPair("aci_bridge_domain.test_1", "ipv6_mcast_allow", "aci_bridge_domain.test_1", "pim_ipv6"),
+						resource.TestCheckResourceAttrPair("aci_bridge_domain.test_1", "ll_addr", "aci_bridge_domain.test_1", "link_local_ipv6_address"),
+						resource.TestCheckResourceAttrPair("aci_bridge_domain.test_1", "mac", "aci_bridge_domain.test_1", "custom_mac_address"),
+						resource.TestCheckResourceAttrPair("aci_bridge_domain.test_1", "mcast_allow", "aci_bridge_domain.test_1", "pim"),
+						resource.TestCheckResourceAttrPair("aci_bridge_domain.test_1", "multi_dst_pkt_act", "aci_bridge_domain.test_1", "multi_destination_flooding"),
+						resource.TestCheckResourceAttrPair("aci_bridge_domain.test_1", "relation_fv_rs_abd_pol_mon_pol", "aci_monitoring_policy.test_1.0", "id"),
+						resource.TestCheckResourceAttrPair("aci_bridge_domain.test_1", "relation_fv_rs_bd_to_ep_ret", "aci_end_point_retention_policy.test_1.0", "id"),
+						composeAggregateTestCheckFuncWithVersion(t, "3.0(1k)-", "inside",
+							resource.TestCheckResourceAttrPair("aci_bridge_domain.test_1", "relation_fv_rs_bd_to_fhs", "aci_first_hop_security_policy.test_1.0", "id"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							resource.TestCheckResourceAttrPair("aci_bridge_domain.test_1", "relation_fv_rs_bd_to_nd_p", "aci_neighbor_discovery_interface_policy.test_1.0", "id"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_fv_rs_bd_to_netflow_monitor_pol.#", "2"),
+						),
+						resource.TestCheckTypeSetElemAttrPair("aci_bridge_domain.test_1", "relation_fv_rs_bd_to_out.*", "aci_l3_outside.test_1.0", "id"),
+						resource.TestCheckTypeSetElemAttrPair("aci_bridge_domain.test_1", "relation_fv_rs_bd_to_out.*", "aci_l3_outside.test_2.0", "id"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_fv_rs_bd_to_out.#", "2"),
+						composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-6.1(1e)", "inside",
+							resource.TestCheckResourceAttrPair("aci_bridge_domain.test_1", "relation_fv_rs_bd_to_relay_p", "aci_dhcp_relay_policy.test_1.0", "id"),
+						),
+						resource.TestCheckResourceAttrPair("aci_bridge_domain.test_1", "relation_fv_rs_ctx", "aci_vrf.test_1.0", "id"),
+						resource.TestCheckResourceAttrPair("aci_bridge_domain.test_1", "relation_fv_rs_igmpsn", "aci_igmp_snooping_policy.test_1.0", "id"),
+						composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)-", "inside",
+							resource.TestCheckResourceAttrPair("aci_bridge_domain.test_1", "relation_fv_rs_mldsn", "aci_mld_snooping_policy.test_1.0", "id"),
+						),
+						resource.TestCheckResourceAttrPair("aci_bridge_domain.test_1", "tenant_dn", "aci_bridge_domain.test_1", "parent_dn"),
+						resource.TestCheckResourceAttrPair("aci_bridge_domain.test_1", "unicast_route", "aci_bridge_domain.test_1", "unicast_routing"),
+						resource.TestCheckResourceAttrPair("aci_bridge_domain.test_1", "unk_mac_ucast_act", "aci_bridge_domain.test_1", "l2_unknown_unicast_flooding"),
+						resource.TestCheckResourceAttrPair("aci_bridge_domain.test_1", "unk_mcast_act", "aci_bridge_domain.test_1", "l3_unknown_multicast_flooding"),
+						resource.TestCheckResourceAttrPair("aci_bridge_domain.test_1", "v6unk_mcast_act", "aci_bridge_domain.test_1", "ipv6_l3_unknown_multicast_flooding"),
+						resource.TestCheckResourceAttrPair("aci_bridge_domain.test_1", "vmac", "aci_bridge_domain.test_1", "virtual_mac_address"),
+					)(state)
+				},
+			},
+			{
+				PreConfig: func() {
+					t.Log("Test: Bridge Domain Resource - Repeat Legacy Configuration (Expect Empty Plan)")
+				},
+				ConfigVariables: variables,
+				Config:          testAccResourceFvBDLegacyUnchanged,
+				PlanOnly:        true,
+				ConfigPlanChecks: resource.ConfigPlanChecks{
+					PostApplyPreRefresh: []plancheck.PlanCheck{plancheck.ExpectEmptyPlan()},
+				},
+			},
+			{
+				PreConfig: func() {
+					t.Log("Test: Bridge Domain Resource - Switch to Current Attributes Without Replacement")
+				},
+				ConfigVariables: variables,
+				Config:          testAccResourceFvBDCurrentAfterLegacy,
+				PlanOnly:        true,
+				ConfigPlanChecks: resource.ConfigPlanChecks{
+					PostApplyPreRefresh: []plancheck.PlanCheck{plancheck.ExpectEmptyPlan()},
+				},
+			},
+			{
+				PreConfig: func() {
+					t.Log("Test: Bridge Domain Resource - Reject Simultaneous Legacy and Current Inputs")
+				},
+				ConfigVariables: variables,
+				Config:          testAccResourceFvBDLegacyConflict,
+				ExpectError:     regexp.MustCompile("Invalid Attribute Combination|Conflicting legacy configuration"),
+			},
+			{
+				PreConfig: func() {
+					t.Log("Test: Bridge Domain Resource - Retain Frozen Attribute Configuration")
+				},
+				ConfigVariables: variables,
+				Config:          testAccResourceFvBDFrozen,
+				Check: func(state *terraform.State) error {
+					// Evaluate runtime prefixes after PreCheck has initialized the fixture variables.
+					return resource.ComposeAggregateTestCheckFunc(
+						identity.CheckID("aci_bridge_domain.test_1", false),
+						testCheckResourceDN("aci_bridge_domain.test_1", "BD-{name}", "uni", map[string]string{
+							"name": "name",
+						}, []resourceTestDNVariant{}),
+						composeAggregateTestCheckFuncWithVersion(t, "3.0(1k)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "optimize_wan_bandwidth", "no"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "annotation", "annotation_1"),
+						),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "arp_flooding", "no"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "description", "description_1"),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(2e)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "clear_remote_mac_entries", "no"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "endpoint_move_detection_mode", "garp"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "advertise_host_routes", "no"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.0(1k)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "enable_intersite_bum_traffic", "no"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.0(1k)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "intersite_l2_stretch", "no"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.0(1m)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "ip_learning", "no"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "pim_ipv6", "no"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "limit_ip_learn_to_subnets", "yes"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "link_local_ipv6_address", "fe80::1"),
+						),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "custom_mac_address", "00:22:BD:F8:19:FE"),
+						composeAggregateTestCheckFuncWithVersion(t, "5.2(5c)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "drop_arp_with_multicast_smac", "no"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.0(1m)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "pim", "no"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "multi_destination_flooding", "bd-flood"),
+						),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "name", "name_1"),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "name_alias", "name_alias_1"),
+						),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "owner_key", "owner_key_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "owner_tag", "owner_tag_1"),
+						resource.TestCheckResourceAttrPair("aci_bridge_domain.test_1", "parent_dn", "aci_tenant.test_1.0", "id"),
+						resource.TestCheckResourceAttrSet("aci_bridge_domain.test_1", "pc_tag"),
+						resource.TestCheckResourceAttrSet("aci_bridge_domain.test_1", "scope"),
+						resource.TestCheckResourceAttrSet("aci_bridge_domain.test_1", "segment"),
+						composeAggregateTestCheckFuncWithVersion(t, "6.0(4c)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "service_bd_routing_disable", "no"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.0(1m)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "bridge_domain_type", "regular"),
+						),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "unicast_routing", "yes"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "l2_unknown_unicast_flooding", "proxy"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "l3_unknown_multicast_flooding", "flood"),
+						composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "ipv6_l3_unknown_multicast_flooding", "flood"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.2(1i)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "virtual_mac_address", "00:22:BD:F8:19:FB"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "legacy_mode.annotation", "annotation_1"),
+						),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "legacy_mode.description", "description_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "legacy_mode.encapsulation", "vlan-100"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "legacy_mode.name", "name_1"),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "legacy_mode.name_alias", "name_alias_1"),
+						),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "legacy_mode.owner_key", "owner_key_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "legacy_mode.owner_tag", "owner_tag_1"),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "legacy_mode.annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "legacy_mode.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "legacy_mode.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "legacy_mode.tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "legacy_mode.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "legacy_mode.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "5.2(3e)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "rogue_coop_exceptions.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "5.2(3e)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "rogue_coop_exceptions.*", map[string]acceptancetest.AttributeValue{
+								"annotation":  {ExpectedValue: "annotation_1"},
+								"description": {ExpectedValue: "description_1"},
+								"mac":         {ExpectedValue: "00:00:00:00:00:03"},
+								"name":        {ExpectedValue: "name_1"},
+								"name_alias":  {ExpectedValue: "name_alias_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "5.2(3e)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "rogue_coop_exceptions.*", map[string]acceptancetest.AttributeValue{
+								"mac":           {ExpectedValue: "00:00:00:00:00:03"},
+								"annotations.#": {ExpectedValue: "2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "5.2(3e)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "rogue_coop_exceptions.*.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}, acceptancetest.ParentSetElement{
+								Path: "rogue_coop_exceptions.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"mac": {ExpectedValue: "00:00:00:00:00:03"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "5.2(3e)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "rogue_coop_exceptions.*.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}, acceptancetest.ParentSetElement{
+								Path: "rogue_coop_exceptions.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"mac": {ExpectedValue: "00:00:00:00:00:03"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "5.2(3e)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "rogue_coop_exceptions.*", map[string]acceptancetest.AttributeValue{
+								"mac":    {ExpectedValue: "00:00:00:00:00:03"},
+								"tags.#": {ExpectedValue: "2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "5.2(3e)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "rogue_coop_exceptions.*.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}, acceptancetest.ParentSetElement{
+								Path: "rogue_coop_exceptions.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"mac": {ExpectedValue: "00:00:00:00:00:03"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "5.2(3e)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "rogue_coop_exceptions.*.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}, acceptancetest.ParentSetElement{
+								Path: "rogue_coop_exceptions.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"mac": {ExpectedValue: "00:00:00:00:00:03"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "5.2(3e)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "rogue_coop_exceptions.*", map[string]acceptancetest.AttributeValue{
+								"annotation":  {ExpectedValue: "annotation_2"},
+								"description": {ExpectedValue: "description_2"},
+								"mac":         {ExpectedValue: "00:00:00:00:00:01"},
+								"name":        {ExpectedValue: "name_2"},
+								"name_alias":  {ExpectedValue: "name_alias_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "5.2(3e)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "rogue_coop_exceptions.*", map[string]acceptancetest.AttributeValue{
+								"mac":           {ExpectedValue: "00:00:00:00:00:01"},
+								"annotations.#": {ExpectedValue: "2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "5.2(3e)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "rogue_coop_exceptions.*.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}, acceptancetest.ParentSetElement{
+								Path: "rogue_coop_exceptions.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"mac": {ExpectedValue: "00:00:00:00:00:01"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "5.2(3e)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "rogue_coop_exceptions.*.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}, acceptancetest.ParentSetElement{
+								Path: "rogue_coop_exceptions.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"mac": {ExpectedValue: "00:00:00:00:00:01"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "5.2(3e)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "rogue_coop_exceptions.*", map[string]acceptancetest.AttributeValue{
+								"mac":    {ExpectedValue: "00:00:00:00:00:01"},
+								"tags.#": {ExpectedValue: "2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "5.2(3e)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "rogue_coop_exceptions.*.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}, acceptancetest.ParentSetElement{
+								Path: "rogue_coop_exceptions.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"mac": {ExpectedValue: "00:00:00:00:00:01"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "5.2(3e)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "rogue_coop_exceptions.*.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}, acceptancetest.ParentSetElement{
+								Path: "rogue_coop_exceptions.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"mac": {ExpectedValue: "00:00:00:00:00:01"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_monitoring_policy.annotation", "annotation_1"),
+						),
+						resource.TestCheckResourceAttrPair("aci_bridge_domain.test_1", "relation_to_monitoring_policy.monitoring_policy_name", "aci_monitoring_policy.test_1.0", "name"),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_monitoring_policy.annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_monitoring_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_monitoring_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_monitoring_policy.tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_monitoring_policy.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_monitoring_policy.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.0(1k)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_first_hop_security_policy.annotation", "annotation_1"),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.0(1k)-", "inside",
+							resource.TestCheckResourceAttrPair("aci_bridge_domain.test_1", "relation_to_first_hop_security_policy.first_hop_security_policy_name", "aci_first_hop_security_policy.test_1.0", "name"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.0(1k)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_first_hop_security_policy.annotations.#", "2"),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.0(1k)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_first_hop_security_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.0(1k)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_first_hop_security_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.0(1k)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_first_hop_security_policy.tags.#", "2"),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.0(1k)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_first_hop_security_policy.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.0(1k)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_first_hop_security_policy.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_neighbor_discovery_interface_policy.annotation", "annotation_1"),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							resource.TestCheckResourceAttrPair("aci_bridge_domain.test_1", "relation_to_neighbor_discovery_interface_policy.neighbor_discovery_interface_policy_name", "aci_neighbor_discovery_interface_policy.test_1.0", "name"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_neighbor_discovery_interface_policy.annotations.#", "2"),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_neighbor_discovery_interface_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_neighbor_discovery_interface_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_neighbor_discovery_interface_policy.tags.#", "2"),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_neighbor_discovery_interface_policy.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_neighbor_discovery_interface_policy.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_netflow_monitor_policies.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_netflow_monitor_policies.*", map[string]acceptancetest.AttributeValue{
+									"filter_type":                 {ExpectedValue: "ce"},
+									"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_1.0", PairAttribute: "name"},
+									"annotation":                  {ExpectedValue: "annotation_1"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_netflow_monitor_policies.*", map[string]acceptancetest.AttributeValue{
+								"filter_type":                 {ExpectedValue: "ce"},
+								"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_1.0", PairAttribute: "name"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_netflow_monitor_policies.*", map[string]acceptancetest.AttributeValue{
+									"filter_type":                 {ExpectedValue: "ce"},
+									"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_1.0", PairAttribute: "name"},
+									"annotations.#":               {ExpectedValue: "2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_netflow_monitor_policies.*.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_netflow_monitor_policies.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"filter_type":                 {ExpectedValue: "ce"},
+										"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_netflow_monitor_policies.*.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_netflow_monitor_policies.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"filter_type":                 {ExpectedValue: "ce"},
+										"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_netflow_monitor_policies.*", map[string]acceptancetest.AttributeValue{
+									"filter_type":                 {ExpectedValue: "ce"},
+									"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_1.0", PairAttribute: "name"},
+									"tags.#":                      {ExpectedValue: "2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_netflow_monitor_policies.*.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_netflow_monitor_policies.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"filter_type":                 {ExpectedValue: "ce"},
+										"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_netflow_monitor_policies.*.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_netflow_monitor_policies.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"filter_type":                 {ExpectedValue: "ce"},
+										"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_netflow_monitor_policies.*", map[string]acceptancetest.AttributeValue{
+									"filter_type":                 {ExpectedValue: "ipv4"},
+									"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_2.0", PairAttribute: "name"},
+									"annotation":                  {ExpectedValue: "annotation_2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_netflow_monitor_policies.*", map[string]acceptancetest.AttributeValue{
+								"filter_type":                 {ExpectedValue: "ipv4"},
+								"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_2.0", PairAttribute: "name"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_netflow_monitor_policies.*", map[string]acceptancetest.AttributeValue{
+									"filter_type":                 {ExpectedValue: "ipv4"},
+									"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_2.0", PairAttribute: "name"},
+									"annotations.#":               {ExpectedValue: "2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_netflow_monitor_policies.*.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_netflow_monitor_policies.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"filter_type":                 {ExpectedValue: "ipv4"},
+										"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_2.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_netflow_monitor_policies.*.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_netflow_monitor_policies.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"filter_type":                 {ExpectedValue: "ipv4"},
+										"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_2.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_netflow_monitor_policies.*", map[string]acceptancetest.AttributeValue{
+									"filter_type":                 {ExpectedValue: "ipv4"},
+									"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_2.0", PairAttribute: "name"},
+									"tags.#":                      {ExpectedValue: "2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_netflow_monitor_policies.*.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_netflow_monitor_policies.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"filter_type":                 {ExpectedValue: "ipv4"},
+										"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_2.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_netflow_monitor_policies.*.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_netflow_monitor_policies.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"filter_type":                 {ExpectedValue: "ipv4"},
+										"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_2.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_l3_outsides.#", "2"),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_l3_outsides.*", map[string]acceptancetest.AttributeValue{
+								"l3_outside_name": {PairAddress: "aci_l3_outside.test_1.0", PairAttribute: "name"},
+								"annotation":      {ExpectedValue: "annotation_1"},
+							}),
+						),
+						acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_l3_outsides.*", map[string]acceptancetest.AttributeValue{
+							"l3_outside_name": {PairAddress: "aci_l3_outside.test_1.0", PairAttribute: "name"},
+						}),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_l3_outsides.*", map[string]acceptancetest.AttributeValue{
+								"l3_outside_name": {PairAddress: "aci_l3_outside.test_1.0", PairAttribute: "name"},
+								"annotations.#":   {ExpectedValue: "2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_l3_outsides.*.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}, acceptancetest.ParentSetElement{
+								Path: "relation_to_l3_outsides.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"l3_outside_name": {PairAddress: "aci_l3_outside.test_1.0", PairAttribute: "name"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_l3_outsides.*.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}, acceptancetest.ParentSetElement{
+								Path: "relation_to_l3_outsides.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"l3_outside_name": {PairAddress: "aci_l3_outside.test_1.0", PairAttribute: "name"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_l3_outsides.*", map[string]acceptancetest.AttributeValue{
+								"l3_outside_name": {PairAddress: "aci_l3_outside.test_1.0", PairAttribute: "name"},
+								"tags.#":          {ExpectedValue: "2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_l3_outsides.*.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}, acceptancetest.ParentSetElement{
+								Path: "relation_to_l3_outsides.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"l3_outside_name": {PairAddress: "aci_l3_outside.test_1.0", PairAttribute: "name"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_l3_outsides.*.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}, acceptancetest.ParentSetElement{
+								Path: "relation_to_l3_outsides.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"l3_outside_name": {PairAddress: "aci_l3_outside.test_1.0", PairAttribute: "name"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_l3_outsides.*", map[string]acceptancetest.AttributeValue{
+								"l3_outside_name": {PairAddress: "aci_l3_outside.test_2.0", PairAttribute: "name"},
+								"annotation":      {ExpectedValue: "annotation_2"},
+							}),
+						),
+						acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_l3_outsides.*", map[string]acceptancetest.AttributeValue{
+							"l3_outside_name": {PairAddress: "aci_l3_outside.test_2.0", PairAttribute: "name"},
+						}),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_l3_outsides.*", map[string]acceptancetest.AttributeValue{
+								"l3_outside_name": {PairAddress: "aci_l3_outside.test_2.0", PairAttribute: "name"},
+								"annotations.#":   {ExpectedValue: "2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_l3_outsides.*.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}, acceptancetest.ParentSetElement{
+								Path: "relation_to_l3_outsides.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"l3_outside_name": {PairAddress: "aci_l3_outside.test_2.0", PairAttribute: "name"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_l3_outsides.*.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}, acceptancetest.ParentSetElement{
+								Path: "relation_to_l3_outsides.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"l3_outside_name": {PairAddress: "aci_l3_outside.test_2.0", PairAttribute: "name"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_l3_outsides.*", map[string]acceptancetest.AttributeValue{
+								"l3_outside_name": {PairAddress: "aci_l3_outside.test_2.0", PairAttribute: "name"},
+								"tags.#":          {ExpectedValue: "2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_l3_outsides.*.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}, acceptancetest.ParentSetElement{
+								Path: "relation_to_l3_outsides.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"l3_outside_name": {PairAddress: "aci_l3_outside.test_2.0", PairAttribute: "name"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_l3_outsides.*.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}, acceptancetest.ParentSetElement{
+								Path: "relation_to_l3_outsides.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"l3_outside_name": {PairAddress: "aci_l3_outside.test_2.0", PairAttribute: "name"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_route_control_profile.annotation", "annotation_1"),
+						),
+						resource.TestCheckResourceAttrPair("aci_bridge_domain.test_1", "relation_to_route_control_profile.l3_outside_name", "aci_l3_outside.test_1.0", "name"),
+						resource.TestCheckResourceAttrPair("aci_bridge_domain.test_1", "relation_to_route_control_profile.route_control_profile_name", "aci_route_control_profile.test_1.0", "name"),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_route_control_profile.annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_route_control_profile.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_route_control_profile.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_route_control_profile.tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_route_control_profile.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_route_control_profile.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-6.1(1e)", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_dhcp_relay_policy.annotation", "annotation_1"),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-6.1(1e)", "inside",
+							resource.TestCheckResourceAttrPair("aci_bridge_domain.test_1", "relation_to_dhcp_relay_policy.dhcp_relay_policy_name", "aci_dhcp_relay_policy.test_1.0", "name"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-6.1(1e)", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_dhcp_relay_policy.annotations.#", "2"),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-6.1(1e)", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_dhcp_relay_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-6.1(1e)", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_dhcp_relay_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-6.1(1e)", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_dhcp_relay_policy.tags.#", "2"),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-6.1(1e)", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_dhcp_relay_policy.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-6.1(1e)", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_dhcp_relay_policy.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_end_point_retention_policy.annotation", "annotation_1"),
+						),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_end_point_retention_policy.resolve_action", "inherit"),
+						resource.TestCheckResourceAttrPair("aci_bridge_domain.test_1", "relation_to_end_point_retention_policy.end_point_retention_policy_name", "aci_end_point_retention_policy.test_1.0", "name"),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_end_point_retention_policy.annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_end_point_retention_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_end_point_retention_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_end_point_retention_policy.tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_end_point_retention_policy.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_end_point_retention_policy.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_vrf.annotation", "annotation_1"),
+						),
+						resource.TestCheckResourceAttrPair("aci_bridge_domain.test_1", "relation_to_vrf.vrf_name", "aci_vrf.test_1.0", "name"),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_vrf.annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_vrf.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_vrf.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_vrf.tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_vrf.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_vrf.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_igmp_snooping_policy.annotation", "annotation_1"),
+						),
+						resource.TestCheckResourceAttrPair("aci_bridge_domain.test_1", "relation_to_igmp_snooping_policy.igmp_snooping_policy_name", "aci_igmp_snooping_policy.test_1.0", "name"),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_igmp_snooping_policy.annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_igmp_snooping_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_igmp_snooping_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_igmp_snooping_policy.tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_igmp_snooping_policy.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_igmp_snooping_policy.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_mld_snooping_policy.annotation", "annotation_1"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)-", "inside",
+							resource.TestCheckResourceAttrPair("aci_bridge_domain.test_1", "relation_to_mld_snooping_policy.mld_snooping_policy_name", "aci_mld_snooping_policy.test_1.0", "name"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_mld_snooping_policy.annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_mld_snooping_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_mld_snooping_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_mld_snooping_policy.tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_mld_snooping_policy.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_mld_snooping_policy.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_fv_rs_bd_flood_to.#", "1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_fv_rs_bd_to_profile", "example"),
+					)(state)
+				},
+			},
+			{
+				PreConfig: func() {
+					t.Log("Test: Bridge Domain Resource - Repeat Frozen Configuration (Expect Empty Plan)")
+				},
+				ConfigVariables: variables,
+				Config:          testAccResourceFvBDFrozenUnchanged,
+				PlanOnly:        true,
+				ConfigPlanChecks: resource.ConfigPlanChecks{
+					PostApplyPreRefresh: []plancheck.PlanCheck{plancheck.ExpectEmptyPlan()},
+				},
+			},
+			{
+				PreConfig: func() {
+					t.Log("Test: Bridge Domain Resource - Clear Frozen Attribute State")
+				},
+				ConfigVariables: variables,
+				Config:          testAccResourceFvBDFrozenCleared,
+				Check: func(state *terraform.State) error {
+					// Evaluate runtime prefixes after PreCheck has initialized the fixture variables.
+					return resource.ComposeAggregateTestCheckFunc(
+						identity.CheckID("aci_bridge_domain.test_1", false),
+						testCheckResourceDN("aci_bridge_domain.test_1", "BD-{name}", "uni", map[string]string{
+							"name": "name",
+						}, []resourceTestDNVariant{}),
+						composeAggregateTestCheckFuncWithVersion(t, "3.0(1k)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "optimize_wan_bandwidth", "no"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "annotation", "annotation_1"),
+						),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "arp_flooding", "no"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "description", "description_1"),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(2e)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "clear_remote_mac_entries", "no"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "endpoint_move_detection_mode", "garp"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "advertise_host_routes", "no"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.0(1k)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "enable_intersite_bum_traffic", "no"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.0(1k)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "intersite_l2_stretch", "no"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.0(1m)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "ip_learning", "no"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "pim_ipv6", "no"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "limit_ip_learn_to_subnets", "yes"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "link_local_ipv6_address", "fe80::1"),
+						),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "custom_mac_address", "00:22:BD:F8:19:FE"),
+						composeAggregateTestCheckFuncWithVersion(t, "5.2(5c)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "drop_arp_with_multicast_smac", "no"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.0(1m)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "pim", "no"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "multi_destination_flooding", "bd-flood"),
+						),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "name", "name_1"),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "name_alias", "name_alias_1"),
+						),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "owner_key", "owner_key_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "owner_tag", "owner_tag_1"),
+						resource.TestCheckResourceAttrPair("aci_bridge_domain.test_1", "parent_dn", "aci_tenant.test_1.0", "id"),
+						resource.TestCheckResourceAttrSet("aci_bridge_domain.test_1", "pc_tag"),
+						resource.TestCheckResourceAttrSet("aci_bridge_domain.test_1", "scope"),
+						resource.TestCheckResourceAttrSet("aci_bridge_domain.test_1", "segment"),
+						composeAggregateTestCheckFuncWithVersion(t, "6.0(4c)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "service_bd_routing_disable", "no"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.0(1m)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "bridge_domain_type", "regular"),
+						),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "unicast_routing", "yes"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "l2_unknown_unicast_flooding", "proxy"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "l3_unknown_multicast_flooding", "flood"),
+						composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "ipv6_l3_unknown_multicast_flooding", "flood"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.2(1i)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "virtual_mac_address", "00:22:BD:F8:19:FB"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "legacy_mode.annotation", "annotation_1"),
+						),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "legacy_mode.description", "description_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "legacy_mode.encapsulation", "vlan-100"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "legacy_mode.name", "name_1"),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "legacy_mode.name_alias", "name_alias_1"),
+						),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "legacy_mode.owner_key", "owner_key_1"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "legacy_mode.owner_tag", "owner_tag_1"),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "legacy_mode.annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "legacy_mode.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "legacy_mode.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "legacy_mode.tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "legacy_mode.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "legacy_mode.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "5.2(3e)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "rogue_coop_exceptions.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "5.2(3e)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "rogue_coop_exceptions.*", map[string]acceptancetest.AttributeValue{
+								"annotation":  {ExpectedValue: "annotation_1"},
+								"description": {ExpectedValue: "description_1"},
+								"mac":         {ExpectedValue: "00:00:00:00:00:03"},
+								"name":        {ExpectedValue: "name_1"},
+								"name_alias":  {ExpectedValue: "name_alias_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "5.2(3e)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "rogue_coop_exceptions.*", map[string]acceptancetest.AttributeValue{
+								"mac":           {ExpectedValue: "00:00:00:00:00:03"},
+								"annotations.#": {ExpectedValue: "2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "5.2(3e)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "rogue_coop_exceptions.*.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}, acceptancetest.ParentSetElement{
+								Path: "rogue_coop_exceptions.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"mac": {ExpectedValue: "00:00:00:00:00:03"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "5.2(3e)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "rogue_coop_exceptions.*.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}, acceptancetest.ParentSetElement{
+								Path: "rogue_coop_exceptions.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"mac": {ExpectedValue: "00:00:00:00:00:03"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "5.2(3e)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "rogue_coop_exceptions.*", map[string]acceptancetest.AttributeValue{
+								"mac":    {ExpectedValue: "00:00:00:00:00:03"},
+								"tags.#": {ExpectedValue: "2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "5.2(3e)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "rogue_coop_exceptions.*.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}, acceptancetest.ParentSetElement{
+								Path: "rogue_coop_exceptions.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"mac": {ExpectedValue: "00:00:00:00:00:03"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "5.2(3e)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "rogue_coop_exceptions.*.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}, acceptancetest.ParentSetElement{
+								Path: "rogue_coop_exceptions.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"mac": {ExpectedValue: "00:00:00:00:00:03"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "5.2(3e)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "rogue_coop_exceptions.*", map[string]acceptancetest.AttributeValue{
+								"annotation":  {ExpectedValue: "annotation_2"},
+								"description": {ExpectedValue: "description_2"},
+								"mac":         {ExpectedValue: "00:00:00:00:00:01"},
+								"name":        {ExpectedValue: "name_2"},
+								"name_alias":  {ExpectedValue: "name_alias_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "5.2(3e)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "rogue_coop_exceptions.*", map[string]acceptancetest.AttributeValue{
+								"mac":           {ExpectedValue: "00:00:00:00:00:01"},
+								"annotations.#": {ExpectedValue: "2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "5.2(3e)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "rogue_coop_exceptions.*.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}, acceptancetest.ParentSetElement{
+								Path: "rogue_coop_exceptions.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"mac": {ExpectedValue: "00:00:00:00:00:01"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "5.2(3e)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "rogue_coop_exceptions.*.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}, acceptancetest.ParentSetElement{
+								Path: "rogue_coop_exceptions.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"mac": {ExpectedValue: "00:00:00:00:00:01"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "5.2(3e)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "rogue_coop_exceptions.*", map[string]acceptancetest.AttributeValue{
+								"mac":    {ExpectedValue: "00:00:00:00:00:01"},
+								"tags.#": {ExpectedValue: "2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "5.2(3e)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "rogue_coop_exceptions.*.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}, acceptancetest.ParentSetElement{
+								Path: "rogue_coop_exceptions.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"mac": {ExpectedValue: "00:00:00:00:00:01"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "5.2(3e)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "rogue_coop_exceptions.*.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}, acceptancetest.ParentSetElement{
+								Path: "rogue_coop_exceptions.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"mac": {ExpectedValue: "00:00:00:00:00:01"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_monitoring_policy.annotation", "annotation_1"),
+						),
+						resource.TestCheckResourceAttrPair("aci_bridge_domain.test_1", "relation_to_monitoring_policy.monitoring_policy_name", "aci_monitoring_policy.test_1.0", "name"),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_monitoring_policy.annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_monitoring_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_monitoring_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_monitoring_policy.tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_monitoring_policy.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_monitoring_policy.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.0(1k)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_first_hop_security_policy.annotation", "annotation_1"),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.0(1k)-", "inside",
+							resource.TestCheckResourceAttrPair("aci_bridge_domain.test_1", "relation_to_first_hop_security_policy.first_hop_security_policy_name", "aci_first_hop_security_policy.test_1.0", "name"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.0(1k)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_first_hop_security_policy.annotations.#", "2"),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.0(1k)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_first_hop_security_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.0(1k)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_first_hop_security_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.0(1k)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_first_hop_security_policy.tags.#", "2"),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.0(1k)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_first_hop_security_policy.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.0(1k)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_first_hop_security_policy.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_neighbor_discovery_interface_policy.annotation", "annotation_1"),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							resource.TestCheckResourceAttrPair("aci_bridge_domain.test_1", "relation_to_neighbor_discovery_interface_policy.neighbor_discovery_interface_policy_name", "aci_neighbor_discovery_interface_policy.test_1.0", "name"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_neighbor_discovery_interface_policy.annotations.#", "2"),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_neighbor_discovery_interface_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_neighbor_discovery_interface_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_neighbor_discovery_interface_policy.tags.#", "2"),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_neighbor_discovery_interface_policy.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_neighbor_discovery_interface_policy.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_netflow_monitor_policies.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_netflow_monitor_policies.*", map[string]acceptancetest.AttributeValue{
+									"filter_type":                 {ExpectedValue: "ce"},
+									"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_1.0", PairAttribute: "name"},
+									"annotation":                  {ExpectedValue: "annotation_1"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_netflow_monitor_policies.*", map[string]acceptancetest.AttributeValue{
+								"filter_type":                 {ExpectedValue: "ce"},
+								"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_1.0", PairAttribute: "name"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_netflow_monitor_policies.*", map[string]acceptancetest.AttributeValue{
+									"filter_type":                 {ExpectedValue: "ce"},
+									"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_1.0", PairAttribute: "name"},
+									"annotations.#":               {ExpectedValue: "2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_netflow_monitor_policies.*.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_netflow_monitor_policies.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"filter_type":                 {ExpectedValue: "ce"},
+										"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_netflow_monitor_policies.*.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_netflow_monitor_policies.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"filter_type":                 {ExpectedValue: "ce"},
+										"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_netflow_monitor_policies.*", map[string]acceptancetest.AttributeValue{
+									"filter_type":                 {ExpectedValue: "ce"},
+									"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_1.0", PairAttribute: "name"},
+									"tags.#":                      {ExpectedValue: "2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_netflow_monitor_policies.*.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_netflow_monitor_policies.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"filter_type":                 {ExpectedValue: "ce"},
+										"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_netflow_monitor_policies.*.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_netflow_monitor_policies.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"filter_type":                 {ExpectedValue: "ce"},
+										"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_1.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_netflow_monitor_policies.*", map[string]acceptancetest.AttributeValue{
+									"filter_type":                 {ExpectedValue: "ipv4"},
+									"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_2.0", PairAttribute: "name"},
+									"annotation":                  {ExpectedValue: "annotation_2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_netflow_monitor_policies.*", map[string]acceptancetest.AttributeValue{
+								"filter_type":                 {ExpectedValue: "ipv4"},
+								"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_2.0", PairAttribute: "name"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_netflow_monitor_policies.*", map[string]acceptancetest.AttributeValue{
+									"filter_type":                 {ExpectedValue: "ipv4"},
+									"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_2.0", PairAttribute: "name"},
+									"annotations.#":               {ExpectedValue: "2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_netflow_monitor_policies.*.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_netflow_monitor_policies.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"filter_type":                 {ExpectedValue: "ipv4"},
+										"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_2.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_netflow_monitor_policies.*.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_netflow_monitor_policies.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"filter_type":                 {ExpectedValue: "ipv4"},
+										"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_2.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_netflow_monitor_policies.*", map[string]acceptancetest.AttributeValue{
+									"filter_type":                 {ExpectedValue: "ipv4"},
+									"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_2.0", PairAttribute: "name"},
+									"tags.#":                      {ExpectedValue: "2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_netflow_monitor_policies.*.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_netflow_monitor_policies.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"filter_type":                 {ExpectedValue: "ipv4"},
+										"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_2.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_netflow_monitor_policies.*.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}, acceptancetest.ParentSetElement{
+									Path: "relation_to_netflow_monitor_policies.*",
+									Values: map[string]acceptancetest.AttributeValue{
+										"filter_type":                 {ExpectedValue: "ipv4"},
+										"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_2.0", PairAttribute: "name"},
+									},
+								}),
+							),
+						),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_l3_outsides.#", "2"),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_l3_outsides.*", map[string]acceptancetest.AttributeValue{
+								"l3_outside_name": {PairAddress: "aci_l3_outside.test_1.0", PairAttribute: "name"},
+								"annotation":      {ExpectedValue: "annotation_1"},
+							}),
+						),
+						acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_l3_outsides.*", map[string]acceptancetest.AttributeValue{
+							"l3_outside_name": {PairAddress: "aci_l3_outside.test_1.0", PairAttribute: "name"},
+						}),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_l3_outsides.*", map[string]acceptancetest.AttributeValue{
+								"l3_outside_name": {PairAddress: "aci_l3_outside.test_1.0", PairAttribute: "name"},
+								"annotations.#":   {ExpectedValue: "2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_l3_outsides.*.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}, acceptancetest.ParentSetElement{
+								Path: "relation_to_l3_outsides.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"l3_outside_name": {PairAddress: "aci_l3_outside.test_1.0", PairAttribute: "name"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_l3_outsides.*.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}, acceptancetest.ParentSetElement{
+								Path: "relation_to_l3_outsides.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"l3_outside_name": {PairAddress: "aci_l3_outside.test_1.0", PairAttribute: "name"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_l3_outsides.*", map[string]acceptancetest.AttributeValue{
+								"l3_outside_name": {PairAddress: "aci_l3_outside.test_1.0", PairAttribute: "name"},
+								"tags.#":          {ExpectedValue: "2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_l3_outsides.*.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}, acceptancetest.ParentSetElement{
+								Path: "relation_to_l3_outsides.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"l3_outside_name": {PairAddress: "aci_l3_outside.test_1.0", PairAttribute: "name"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_l3_outsides.*.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}, acceptancetest.ParentSetElement{
+								Path: "relation_to_l3_outsides.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"l3_outside_name": {PairAddress: "aci_l3_outside.test_1.0", PairAttribute: "name"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_l3_outsides.*", map[string]acceptancetest.AttributeValue{
+								"l3_outside_name": {PairAddress: "aci_l3_outside.test_2.0", PairAttribute: "name"},
+								"annotation":      {ExpectedValue: "annotation_2"},
+							}),
+						),
+						acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_l3_outsides.*", map[string]acceptancetest.AttributeValue{
+							"l3_outside_name": {PairAddress: "aci_l3_outside.test_2.0", PairAttribute: "name"},
+						}),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_l3_outsides.*", map[string]acceptancetest.AttributeValue{
+								"l3_outside_name": {PairAddress: "aci_l3_outside.test_2.0", PairAttribute: "name"},
+								"annotations.#":   {ExpectedValue: "2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_l3_outsides.*.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}, acceptancetest.ParentSetElement{
+								Path: "relation_to_l3_outsides.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"l3_outside_name": {PairAddress: "aci_l3_outside.test_2.0", PairAttribute: "name"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_l3_outsides.*.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}, acceptancetest.ParentSetElement{
+								Path: "relation_to_l3_outsides.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"l3_outside_name": {PairAddress: "aci_l3_outside.test_2.0", PairAttribute: "name"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_l3_outsides.*", map[string]acceptancetest.AttributeValue{
+								"l3_outside_name": {PairAddress: "aci_l3_outside.test_2.0", PairAttribute: "name"},
+								"tags.#":          {ExpectedValue: "2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_l3_outsides.*.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}, acceptancetest.ParentSetElement{
+								Path: "relation_to_l3_outsides.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"l3_outside_name": {PairAddress: "aci_l3_outside.test_2.0", PairAttribute: "name"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_l3_outsides.*.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}, acceptancetest.ParentSetElement{
+								Path: "relation_to_l3_outsides.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"l3_outside_name": {PairAddress: "aci_l3_outside.test_2.0", PairAttribute: "name"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_route_control_profile.annotation", "annotation_1"),
+						),
+						resource.TestCheckResourceAttrPair("aci_bridge_domain.test_1", "relation_to_route_control_profile.l3_outside_name", "aci_l3_outside.test_1.0", "name"),
+						resource.TestCheckResourceAttrPair("aci_bridge_domain.test_1", "relation_to_route_control_profile.route_control_profile_name", "aci_route_control_profile.test_1.0", "name"),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_route_control_profile.annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_route_control_profile.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_route_control_profile.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_route_control_profile.tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_route_control_profile.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_route_control_profile.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-6.1(1e)", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_dhcp_relay_policy.annotation", "annotation_1"),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-6.1(1e)", "inside",
+							resource.TestCheckResourceAttrPair("aci_bridge_domain.test_1", "relation_to_dhcp_relay_policy.dhcp_relay_policy_name", "aci_dhcp_relay_policy.test_1.0", "name"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-6.1(1e)", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_dhcp_relay_policy.annotations.#", "2"),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-6.1(1e)", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_dhcp_relay_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-6.1(1e)", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_dhcp_relay_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-6.1(1e)", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_dhcp_relay_policy.tags.#", "2"),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-6.1(1e)", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_dhcp_relay_policy.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_1"},
+									"value": {ExpectedValue: "value_1"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.0(1e)-6.1(1e)", "inside",
+							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_dhcp_relay_policy.tags.*", map[string]acceptancetest.AttributeValue{
+									"key":   {ExpectedValue: "key_2"},
+									"value": {ExpectedValue: "value_2"},
+								}),
+							),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_end_point_retention_policy.annotation", "annotation_1"),
+						),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_end_point_retention_policy.resolve_action", "inherit"),
+						resource.TestCheckResourceAttrPair("aci_bridge_domain.test_1", "relation_to_end_point_retention_policy.end_point_retention_policy_name", "aci_end_point_retention_policy.test_1.0", "name"),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_end_point_retention_policy.annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_end_point_retention_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_end_point_retention_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_end_point_retention_policy.tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_end_point_retention_policy.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_end_point_retention_policy.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_vrf.annotation", "annotation_1"),
+						),
+						resource.TestCheckResourceAttrPair("aci_bridge_domain.test_1", "relation_to_vrf.vrf_name", "aci_vrf.test_1.0", "name"),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_vrf.annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_vrf.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_vrf.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_vrf.tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_vrf.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_vrf.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_igmp_snooping_policy.annotation", "annotation_1"),
+						),
+						resource.TestCheckResourceAttrPair("aci_bridge_domain.test_1", "relation_to_igmp_snooping_policy.igmp_snooping_policy_name", "aci_igmp_snooping_policy.test_1.0", "name"),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_igmp_snooping_policy.annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_igmp_snooping_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_igmp_snooping_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_igmp_snooping_policy.tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_igmp_snooping_policy.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_igmp_snooping_policy.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_mld_snooping_policy.annotation", "annotation_1"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)-", "inside",
+							resource.TestCheckResourceAttrPair("aci_bridge_domain.test_1", "relation_to_mld_snooping_policy.mld_snooping_policy_name", "aci_mld_snooping_policy.test_1.0", "name"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_mld_snooping_policy.annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_mld_snooping_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_mld_snooping_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_to_mld_snooping_policy.tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_mld_snooping_policy.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.1(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_mld_snooping_policy.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_fv_rs_bd_flood_to.#", "0"),
+						resource.TestCheckResourceAttr("aci_bridge_domain.test_1", "relation_fv_rs_bd_to_profile", ""),
+					)(state)
+				},
+			},
+			{
+				PreConfig: func() {
 					t.Log("Test: Bridge Domain Resource - Update Mutable Attributes in Place")
 				},
 				ConfigVariables: variables,
@@ -12210,7 +15173,7 @@ func TestAccResourceFvBDGenerated(t *testing.T) {
 				Config:          testAccResourceFvBDReplaceParent,
 				SkipFunc: func() (bool, error) {
 					return testSkipUnsupportedResourceChanges(t, [][]string{
-						{"3.0(1k)-", "1.1(1j)-", "1.0(1e)-6.1(1e)", "4.1(1i)-"},
+						{"3.0(1k)-", "1.1(1j)-", "2.2(1k)-", "1.0(1e)-6.1(1e)", "4.1(1i)-"},
 					})
 				},
 				ConfigPlanChecks: resource.ConfigPlanChecks{
@@ -12608,7 +15571,7 @@ func TestAccResourceFvBDGenerated(t *testing.T) {
 							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
 								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_netflow_monitor_policies.*", map[string]acceptancetest.AttributeValue{
 									"filter_type":                 {ExpectedValue: "ce"},
-									"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_1.0", PairAttribute: "name"},
+									"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_3.0", PairAttribute: "name"},
 									"annotation":                  {ExpectedValue: "annotation_1"},
 								}),
 							),
@@ -12616,14 +15579,14 @@ func TestAccResourceFvBDGenerated(t *testing.T) {
 						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
 							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_netflow_monitor_policies.*", map[string]acceptancetest.AttributeValue{
 								"filter_type":                 {ExpectedValue: "ce"},
-								"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_1.0", PairAttribute: "name"},
+								"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_3.0", PairAttribute: "name"},
 							}),
 						),
 						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
 							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
 								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_netflow_monitor_policies.*", map[string]acceptancetest.AttributeValue{
 									"filter_type":                 {ExpectedValue: "ce"},
-									"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_1.0", PairAttribute: "name"},
+									"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_3.0", PairAttribute: "name"},
 									"annotations.#":               {ExpectedValue: "2"},
 								}),
 							),
@@ -12637,7 +15600,7 @@ func TestAccResourceFvBDGenerated(t *testing.T) {
 									Path: "relation_to_netflow_monitor_policies.*",
 									Values: map[string]acceptancetest.AttributeValue{
 										"filter_type":                 {ExpectedValue: "ce"},
-										"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_1.0", PairAttribute: "name"},
+										"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_3.0", PairAttribute: "name"},
 									},
 								}),
 							),
@@ -12651,7 +15614,7 @@ func TestAccResourceFvBDGenerated(t *testing.T) {
 									Path: "relation_to_netflow_monitor_policies.*",
 									Values: map[string]acceptancetest.AttributeValue{
 										"filter_type":                 {ExpectedValue: "ce"},
-										"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_1.0", PairAttribute: "name"},
+										"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_3.0", PairAttribute: "name"},
 									},
 								}),
 							),
@@ -12660,7 +15623,7 @@ func TestAccResourceFvBDGenerated(t *testing.T) {
 							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
 								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_netflow_monitor_policies.*", map[string]acceptancetest.AttributeValue{
 									"filter_type":                 {ExpectedValue: "ce"},
-									"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_1.0", PairAttribute: "name"},
+									"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_3.0", PairAttribute: "name"},
 									"tags.#":                      {ExpectedValue: "2"},
 								}),
 							),
@@ -12674,7 +15637,7 @@ func TestAccResourceFvBDGenerated(t *testing.T) {
 									Path: "relation_to_netflow_monitor_policies.*",
 									Values: map[string]acceptancetest.AttributeValue{
 										"filter_type":                 {ExpectedValue: "ce"},
-										"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_1.0", PairAttribute: "name"},
+										"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_3.0", PairAttribute: "name"},
 									},
 								}),
 							),
@@ -12688,7 +15651,7 @@ func TestAccResourceFvBDGenerated(t *testing.T) {
 									Path: "relation_to_netflow_monitor_policies.*",
 									Values: map[string]acceptancetest.AttributeValue{
 										"filter_type":                 {ExpectedValue: "ce"},
-										"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_1.0", PairAttribute: "name"},
+										"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_3.0", PairAttribute: "name"},
 									},
 								}),
 							),
@@ -12697,7 +15660,7 @@ func TestAccResourceFvBDGenerated(t *testing.T) {
 							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
 								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_netflow_monitor_policies.*", map[string]acceptancetest.AttributeValue{
 									"filter_type":                 {ExpectedValue: "ipv4"},
-									"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_2.0", PairAttribute: "name"},
+									"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_4.0", PairAttribute: "name"},
 									"annotation":                  {ExpectedValue: "annotation_2"},
 								}),
 							),
@@ -12705,14 +15668,14 @@ func TestAccResourceFvBDGenerated(t *testing.T) {
 						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
 							acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_netflow_monitor_policies.*", map[string]acceptancetest.AttributeValue{
 								"filter_type":                 {ExpectedValue: "ipv4"},
-								"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_2.0", PairAttribute: "name"},
+								"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_4.0", PairAttribute: "name"},
 							}),
 						),
 						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
 							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
 								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_netflow_monitor_policies.*", map[string]acceptancetest.AttributeValue{
 									"filter_type":                 {ExpectedValue: "ipv4"},
-									"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_2.0", PairAttribute: "name"},
+									"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_4.0", PairAttribute: "name"},
 									"annotations.#":               {ExpectedValue: "2"},
 								}),
 							),
@@ -12726,7 +15689,7 @@ func TestAccResourceFvBDGenerated(t *testing.T) {
 									Path: "relation_to_netflow_monitor_policies.*",
 									Values: map[string]acceptancetest.AttributeValue{
 										"filter_type":                 {ExpectedValue: "ipv4"},
-										"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_2.0", PairAttribute: "name"},
+										"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_4.0", PairAttribute: "name"},
 									},
 								}),
 							),
@@ -12740,7 +15703,7 @@ func TestAccResourceFvBDGenerated(t *testing.T) {
 									Path: "relation_to_netflow_monitor_policies.*",
 									Values: map[string]acceptancetest.AttributeValue{
 										"filter_type":                 {ExpectedValue: "ipv4"},
-										"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_2.0", PairAttribute: "name"},
+										"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_4.0", PairAttribute: "name"},
 									},
 								}),
 							),
@@ -12749,7 +15712,7 @@ func TestAccResourceFvBDGenerated(t *testing.T) {
 							composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
 								acceptancetest.CheckNestedSetElement("aci_bridge_domain.test_1", "relation_to_netflow_monitor_policies.*", map[string]acceptancetest.AttributeValue{
 									"filter_type":                 {ExpectedValue: "ipv4"},
-									"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_2.0", PairAttribute: "name"},
+									"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_4.0", PairAttribute: "name"},
 									"tags.#":                      {ExpectedValue: "2"},
 								}),
 							),
@@ -12763,7 +15726,7 @@ func TestAccResourceFvBDGenerated(t *testing.T) {
 									Path: "relation_to_netflow_monitor_policies.*",
 									Values: map[string]acceptancetest.AttributeValue{
 										"filter_type":                 {ExpectedValue: "ipv4"},
-										"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_2.0", PairAttribute: "name"},
+										"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_4.0", PairAttribute: "name"},
 									},
 								}),
 							),
@@ -12777,7 +15740,7 @@ func TestAccResourceFvBDGenerated(t *testing.T) {
 									Path: "relation_to_netflow_monitor_policies.*",
 									Values: map[string]acceptancetest.AttributeValue{
 										"filter_type":                 {ExpectedValue: "ipv4"},
-										"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_2.0", PairAttribute: "name"},
+										"netflow_monitor_policy_name": {PairAddress: "aci_netflow_monitor_policy.test_4.0", PairAttribute: "name"},
 									},
 								}),
 							),
@@ -13199,6 +16162,16 @@ resource "aci_tenant" "test_2" {
   count = 1
   name  = format("%s-%s", var.test_prefix, "name_2")
 }
+resource "aci_netflow_monitor_policy" "test_1" {
+  count     = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? 1 : 0
+  name      = "netfow_monitor"
+  parent_dn = aci_tenant.test_1[0].id
+}
+resource "aci_netflow_monitor_policy" "test_2" {
+  count     = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? 1 : 0
+  name      = "name_2"
+  parent_dn = aci_tenant.test_1[0].id
+}
 resource "aci_monitoring_policy" "test_1" {
   count     = 1
   name      = "name_1"
@@ -13214,16 +16187,6 @@ resource "aci_neighbor_discovery_interface_policy" "test_1" {
   controller_state = []
   name             = "name_1"
   parent_dn        = aci_tenant.test_1[0].id
-}
-resource "aci_netflow_monitor_policy" "test_1" {
-  count     = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? 1 : 0
-  name      = format("%s-%s", var.test_prefix, "netfow_monitor")
-  parent_dn = "uni/infra"
-}
-resource "aci_netflow_monitor_policy" "test_2" {
-  count     = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? 1 : 0
-  name      = format("%s-%s", var.test_prefix, "name_2")
-  parent_dn = "uni/infra"
 }
 resource "aci_vrf" "test_1" {
   count     = 1
@@ -13317,6 +16280,16 @@ resource "aci_neighbor_discovery_interface_policy" "test_3" {
   controller_state = []
   name             = "name_1"
   parent_dn        = aci_tenant.test_2[0].id
+}
+resource "aci_netflow_monitor_policy" "test_3" {
+  count     = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? 1 : 0
+  name      = "netfow_monitor"
+  parent_dn = aci_tenant.test_2[0].id
+}
+resource "aci_netflow_monitor_policy" "test_4" {
+  count     = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? 1 : 0
+  name      = "name_2"
+  parent_dn = aci_tenant.test_2[0].id
 }
 resource "aci_vrf" "test_3" {
   count     = 1
@@ -14336,6 +17309,2702 @@ resource "aci_bridge_domain" "test_1" {
       value = "value_2"
     },
   ] : null
+}
+`
+
+const testAccResourceFvBDLegacy = testAccResourceFvBDDependencies + `
+resource "aci_bridge_domain" "test_1" {
+  optimize_wan_bandwidth       = provider::aci::compare_versions(var.apic_version, "inside", "3.0(1k)-") ? "no" : null
+  annotation                   = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+  description                  = "description_1"
+  intersite_l2_stretch         = provider::aci::compare_versions(var.apic_version, "inside", "3.0(1k)-") ? "no" : null
+  ip_learning                  = provider::aci::compare_versions(var.apic_version, "inside", "2.0(1m)-") ? "no" : null
+  limit_ip_learn_to_subnets    = provider::aci::compare_versions(var.apic_version, "inside", "1.1(1j)-") ? "yes" : null
+  drop_arp_with_multicast_smac = provider::aci::compare_versions(var.apic_version, "inside", "5.2(5c)-") ? "no" : null
+  name                         = "name_1"
+  name_alias                   = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
+  owner_key                    = "owner_key_1"
+  owner_tag                    = "owner_tag_1"
+  service_bd_routing_disable   = provider::aci::compare_versions(var.apic_version, "inside", "6.0(4c)-") ? "no" : null
+  bridge_domain_type           = provider::aci::compare_versions(var.apic_version, "inside", "2.0(1m)-") ? "regular" : null
+  legacy_mode = {
+    annotation    = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    description   = "description_1"
+    encapsulation = "vlan-100"
+    name          = "name_1"
+    name_alias    = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
+    owner_key     = "owner_key_1"
+    owner_tag     = "owner_tag_1"
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  rogue_coop_exceptions = provider::aci::compare_versions(var.apic_version, "inside", "5.2(3e)-") ? [
+    {
+      annotation  = "annotation_1"
+      description = "description_1"
+      mac         = "00:00:00:00:00:03"
+      name        = "name_1"
+      name_alias  = "name_alias_1"
+      annotations = [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ]
+      tags = [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ]
+    },
+    {
+      annotation  = "annotation_2"
+      description = "description_2"
+      mac         = "00:00:00:00:00:01"
+      name        = "name_2"
+      name_alias  = "name_alias_2"
+      annotations = [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ]
+      tags = [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ]
+    },
+  ] : null
+  relation_to_route_control_profile = {
+    annotation                 = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    l3_outside_name            = aci_l3_outside.test_1[0].name
+    route_control_profile_name = aci_route_control_profile.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  arp_flood                      = "no"
+  ep_clear                       = provider::aci::compare_versions(var.apic_version, "inside", "2.2(2e)-") ? "no" : null
+  ep_move_detect_mode            = provider::aci::compare_versions(var.apic_version, "inside", "1.1(1j)-") ? "garp" : null
+  host_based_routing             = provider::aci::compare_versions(var.apic_version, "inside", "4.0(1h)-") ? "no" : null
+  intersite_bum_traffic_allow    = provider::aci::compare_versions(var.apic_version, "inside", "3.0(1k)-") ? "no" : null
+  ipv6_mcast_allow               = provider::aci::compare_versions(var.apic_version, "inside", "4.2(1i)-") ? "no" : null
+  ll_addr                        = provider::aci::compare_versions(var.apic_version, "inside", "1.1(1j)-") ? "fe80::1" : null
+  mac                            = "00:22:BD:F8:19:FE"
+  mcast_allow                    = provider::aci::compare_versions(var.apic_version, "inside", "2.0(1m)-") ? "no" : null
+  multi_dst_pkt_act              = provider::aci::compare_versions(var.apic_version, "inside", "1.1(1j)-") ? "bd-flood" : null
+  relation_fv_rs_abd_pol_mon_pol = aci_monitoring_policy.test_1[0].id
+  relation_fv_rs_bd_to_ep_ret    = aci_end_point_retention_policy.test_1[0].id
+  relation_fv_rs_bd_to_fhs       = provider::aci::compare_versions(var.apic_version, "inside", "3.0(1k)-") ? aci_first_hop_security_policy.test_1[0].id : null
+  relation_fv_rs_bd_to_nd_p      = provider::aci::compare_versions(var.apic_version, "inside", "1.1(1j)-") ? aci_neighbor_discovery_interface_policy.test_1[0].id : null
+  relation_fv_rs_bd_to_netflow_monitor_pol {
+    flt_type                    = "ce"
+    tn_netflow_monitor_pol_name = aci_netflow_monitor_policy.test_1[0].id
+  }
+  relation_fv_rs_bd_to_netflow_monitor_pol {
+    flt_type                    = "ipv4"
+    tn_netflow_monitor_pol_name = aci_netflow_monitor_policy.test_2[0].id
+  }
+  relation_fv_rs_bd_to_out     = [aci_l3_outside.test_1[0].id, aci_l3_outside.test_2[0].id]
+  relation_fv_rs_bd_to_relay_p = provider::aci::compare_versions(var.apic_version, "inside", "1.0(1e)-6.1(1e)") ? aci_dhcp_relay_policy.test_1[0].id : null
+  relation_fv_rs_ctx           = aci_vrf.test_1[0].id
+  relation_fv_rs_igmpsn        = aci_igmp_snooping_policy.test_1[0].id
+  relation_fv_rs_mldsn         = provider::aci::compare_versions(var.apic_version, "inside", "4.1(1i)-") ? aci_mld_snooping_policy.test_1[0].id : null
+  tenant_dn                    = aci_tenant.test_1[0].id
+  unicast_route                = "yes"
+  unk_mac_ucast_act            = "proxy"
+  unk_mcast_act                = "flood"
+  v6unk_mcast_act              = provider::aci::compare_versions(var.apic_version, "inside", "4.1(1i)-") ? "flood" : null
+  vmac                         = provider::aci::compare_versions(var.apic_version, "inside", "1.2(1i)-") ? "00:22:BD:F8:19:FB" : null
+}
+`
+
+const testAccResourceFvBDLegacyUnchanged = testAccResourceFvBDDependencies + `
+resource "aci_bridge_domain" "test_1" {
+  optimize_wan_bandwidth       = provider::aci::compare_versions(var.apic_version, "inside", "3.0(1k)-") ? "no" : null
+  annotation                   = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+  description                  = "description_1"
+  intersite_l2_stretch         = provider::aci::compare_versions(var.apic_version, "inside", "3.0(1k)-") ? "no" : null
+  ip_learning                  = provider::aci::compare_versions(var.apic_version, "inside", "2.0(1m)-") ? "no" : null
+  limit_ip_learn_to_subnets    = provider::aci::compare_versions(var.apic_version, "inside", "1.1(1j)-") ? "yes" : null
+  drop_arp_with_multicast_smac = provider::aci::compare_versions(var.apic_version, "inside", "5.2(5c)-") ? "no" : null
+  name                         = "name_1"
+  name_alias                   = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
+  owner_key                    = "owner_key_1"
+  owner_tag                    = "owner_tag_1"
+  service_bd_routing_disable   = provider::aci::compare_versions(var.apic_version, "inside", "6.0(4c)-") ? "no" : null
+  bridge_domain_type           = provider::aci::compare_versions(var.apic_version, "inside", "2.0(1m)-") ? "regular" : null
+  legacy_mode = {
+    annotation    = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    description   = "description_1"
+    encapsulation = "vlan-100"
+    name          = "name_1"
+    name_alias    = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
+    owner_key     = "owner_key_1"
+    owner_tag     = "owner_tag_1"
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  rogue_coop_exceptions = provider::aci::compare_versions(var.apic_version, "inside", "5.2(3e)-") ? [
+    {
+      annotation  = "annotation_1"
+      description = "description_1"
+      mac         = "00:00:00:00:00:03"
+      name        = "name_1"
+      name_alias  = "name_alias_1"
+      annotations = [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ]
+      tags = [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ]
+    },
+    {
+      annotation  = "annotation_2"
+      description = "description_2"
+      mac         = "00:00:00:00:00:01"
+      name        = "name_2"
+      name_alias  = "name_alias_2"
+      annotations = [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ]
+      tags = [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ]
+    },
+  ] : null
+  relation_to_route_control_profile = {
+    annotation                 = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    l3_outside_name            = aci_l3_outside.test_1[0].name
+    route_control_profile_name = aci_route_control_profile.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  arp_flood                      = "no"
+  ep_clear                       = provider::aci::compare_versions(var.apic_version, "inside", "2.2(2e)-") ? "no" : null
+  ep_move_detect_mode            = provider::aci::compare_versions(var.apic_version, "inside", "1.1(1j)-") ? "garp" : null
+  host_based_routing             = provider::aci::compare_versions(var.apic_version, "inside", "4.0(1h)-") ? "no" : null
+  intersite_bum_traffic_allow    = provider::aci::compare_versions(var.apic_version, "inside", "3.0(1k)-") ? "no" : null
+  ipv6_mcast_allow               = provider::aci::compare_versions(var.apic_version, "inside", "4.2(1i)-") ? "no" : null
+  ll_addr                        = provider::aci::compare_versions(var.apic_version, "inside", "1.1(1j)-") ? "fe80::1" : null
+  mac                            = "00:22:BD:F8:19:FE"
+  mcast_allow                    = provider::aci::compare_versions(var.apic_version, "inside", "2.0(1m)-") ? "no" : null
+  multi_dst_pkt_act              = provider::aci::compare_versions(var.apic_version, "inside", "1.1(1j)-") ? "bd-flood" : null
+  relation_fv_rs_abd_pol_mon_pol = aci_monitoring_policy.test_1[0].id
+  relation_fv_rs_bd_to_ep_ret    = aci_end_point_retention_policy.test_1[0].id
+  relation_fv_rs_bd_to_fhs       = provider::aci::compare_versions(var.apic_version, "inside", "3.0(1k)-") ? aci_first_hop_security_policy.test_1[0].id : null
+  relation_fv_rs_bd_to_nd_p      = provider::aci::compare_versions(var.apic_version, "inside", "1.1(1j)-") ? aci_neighbor_discovery_interface_policy.test_1[0].id : null
+  relation_fv_rs_bd_to_netflow_monitor_pol {
+    flt_type                    = "ce"
+    tn_netflow_monitor_pol_name = aci_netflow_monitor_policy.test_1[0].id
+  }
+  relation_fv_rs_bd_to_netflow_monitor_pol {
+    flt_type                    = "ipv4"
+    tn_netflow_monitor_pol_name = aci_netflow_monitor_policy.test_2[0].id
+  }
+  relation_fv_rs_bd_to_out     = [aci_l3_outside.test_1[0].id, aci_l3_outside.test_2[0].id]
+  relation_fv_rs_bd_to_relay_p = provider::aci::compare_versions(var.apic_version, "inside", "1.0(1e)-6.1(1e)") ? aci_dhcp_relay_policy.test_1[0].id : null
+  relation_fv_rs_ctx           = aci_vrf.test_1[0].id
+  relation_fv_rs_igmpsn        = aci_igmp_snooping_policy.test_1[0].id
+  relation_fv_rs_mldsn         = provider::aci::compare_versions(var.apic_version, "inside", "4.1(1i)-") ? aci_mld_snooping_policy.test_1[0].id : null
+  tenant_dn                    = aci_tenant.test_1[0].id
+  unicast_route                = "yes"
+  unk_mac_ucast_act            = "proxy"
+  unk_mcast_act                = "flood"
+  v6unk_mcast_act              = provider::aci::compare_versions(var.apic_version, "inside", "4.1(1i)-") ? "flood" : null
+  vmac                         = provider::aci::compare_versions(var.apic_version, "inside", "1.2(1i)-") ? "00:22:BD:F8:19:FB" : null
+}
+`
+
+const testAccResourceFvBDCurrentAfterLegacy = testAccResourceFvBDDependencies + `
+resource "aci_bridge_domain" "test_1" {
+  optimize_wan_bandwidth             = provider::aci::compare_versions(var.apic_version, "inside", "3.0(1k)-") ? "no" : null
+  annotation                         = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+  arp_flooding                       = "no"
+  description                        = "description_1"
+  clear_remote_mac_entries           = provider::aci::compare_versions(var.apic_version, "inside", "2.2(2e)-") ? "no" : null
+  endpoint_move_detection_mode       = provider::aci::compare_versions(var.apic_version, "inside", "1.1(1j)-") ? "garp" : null
+  advertise_host_routes              = provider::aci::compare_versions(var.apic_version, "inside", "4.0(1h)-") ? "no" : null
+  enable_intersite_bum_traffic       = provider::aci::compare_versions(var.apic_version, "inside", "3.0(1k)-") ? "no" : null
+  intersite_l2_stretch               = provider::aci::compare_versions(var.apic_version, "inside", "3.0(1k)-") ? "no" : null
+  ip_learning                        = provider::aci::compare_versions(var.apic_version, "inside", "2.0(1m)-") ? "no" : null
+  pim_ipv6                           = provider::aci::compare_versions(var.apic_version, "inside", "4.2(1i)-") ? "no" : null
+  limit_ip_learn_to_subnets          = provider::aci::compare_versions(var.apic_version, "inside", "1.1(1j)-") ? "yes" : null
+  link_local_ipv6_address            = provider::aci::compare_versions(var.apic_version, "inside", "1.1(1j)-") ? "fe80::1" : null
+  custom_mac_address                 = "00:22:BD:F8:19:FE"
+  drop_arp_with_multicast_smac       = provider::aci::compare_versions(var.apic_version, "inside", "5.2(5c)-") ? "no" : null
+  pim                                = provider::aci::compare_versions(var.apic_version, "inside", "2.0(1m)-") ? "no" : null
+  multi_destination_flooding         = provider::aci::compare_versions(var.apic_version, "inside", "1.1(1j)-") ? "bd-flood" : null
+  name                               = "name_1"
+  name_alias                         = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
+  owner_key                          = "owner_key_1"
+  owner_tag                          = "owner_tag_1"
+  parent_dn                          = aci_tenant.test_1[0].id
+  service_bd_routing_disable         = provider::aci::compare_versions(var.apic_version, "inside", "6.0(4c)-") ? "no" : null
+  bridge_domain_type                 = provider::aci::compare_versions(var.apic_version, "inside", "2.0(1m)-") ? "regular" : null
+  unicast_routing                    = "yes"
+  l2_unknown_unicast_flooding        = "proxy"
+  l3_unknown_multicast_flooding      = "flood"
+  ipv6_l3_unknown_multicast_flooding = provider::aci::compare_versions(var.apic_version, "inside", "4.1(1i)-") ? "flood" : null
+  virtual_mac_address                = provider::aci::compare_versions(var.apic_version, "inside", "1.2(1i)-") ? "00:22:BD:F8:19:FB" : null
+  legacy_mode = {
+    annotation    = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    description   = "description_1"
+    encapsulation = "vlan-100"
+    name          = "name_1"
+    name_alias    = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
+    owner_key     = "owner_key_1"
+    owner_tag     = "owner_tag_1"
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  rogue_coop_exceptions = provider::aci::compare_versions(var.apic_version, "inside", "5.2(3e)-") ? [
+    {
+      annotation  = "annotation_1"
+      description = "description_1"
+      mac         = "00:00:00:00:00:03"
+      name        = "name_1"
+      name_alias  = "name_alias_1"
+      annotations = [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ]
+      tags = [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ]
+    },
+    {
+      annotation  = "annotation_2"
+      description = "description_2"
+      mac         = "00:00:00:00:00:01"
+      name        = "name_2"
+      name_alias  = "name_alias_2"
+      annotations = [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ]
+      tags = [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ]
+    },
+  ] : null
+  relation_to_monitoring_policy = {
+    annotation             = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    monitoring_policy_name = aci_monitoring_policy.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  relation_to_first_hop_security_policy = provider::aci::compare_versions(var.apic_version, "inside", "3.0(1k)-") ? {
+    annotation                     = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    first_hop_security_policy_name = aci_first_hop_security_policy.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  } : null
+  relation_to_neighbor_discovery_interface_policy = provider::aci::compare_versions(var.apic_version, "inside", "1.1(1j)-") ? {
+    annotation                               = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    neighbor_discovery_interface_policy_name = aci_neighbor_discovery_interface_policy.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  } : null
+  relation_to_netflow_monitor_policies = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? [
+    {
+      annotation                  = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+      filter_type                 = "ce"
+      netflow_monitor_policy_name = aci_netflow_monitor_policy.test_1[0].name
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+    {
+      annotation                  = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_2" : null
+      filter_type                 = "ipv4"
+      netflow_monitor_policy_name = aci_netflow_monitor_policy.test_2[0].name
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+  ] : null
+  relation_to_l3_outsides = [
+    {
+      annotation      = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+      l3_outside_name = aci_l3_outside.test_1[0].name
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+    {
+      annotation      = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_2" : null
+      l3_outside_name = aci_l3_outside.test_2[0].name
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+  ]
+  relation_to_route_control_profile = {
+    annotation                 = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    l3_outside_name            = aci_l3_outside.test_1[0].name
+    route_control_profile_name = aci_route_control_profile.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  relation_to_dhcp_relay_policy = provider::aci::compare_versions(var.apic_version, "inside", "1.0(1e)-6.1(1e)") ? {
+    annotation             = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    dhcp_relay_policy_name = aci_dhcp_relay_policy.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  } : null
+  relation_to_end_point_retention_policy = {
+    annotation                      = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    resolve_action                  = "inherit"
+    end_point_retention_policy_name = aci_end_point_retention_policy.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  relation_to_vrf = {
+    annotation = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    vrf_name   = aci_vrf.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  relation_to_igmp_snooping_policy = {
+    annotation                = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    igmp_snooping_policy_name = aci_igmp_snooping_policy.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  relation_to_mld_snooping_policy = provider::aci::compare_versions(var.apic_version, "inside", "4.1(1i)-") ? {
+    annotation               = "annotation_1"
+    mld_snooping_policy_name = aci_mld_snooping_policy.test_1[0].name
+    annotations = [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ]
+    tags = [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ]
+  } : null
+  annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+}
+`
+
+const testAccResourceFvBDLegacyConflict = testAccResourceFvBDDependencies + `
+resource "aci_bridge_domain" "test_1" {
+  optimize_wan_bandwidth             = provider::aci::compare_versions(var.apic_version, "inside", "3.0(1k)-") ? "no" : null
+  annotation                         = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+  arp_flooding                       = "no"
+  description                        = "description_1"
+  clear_remote_mac_entries           = provider::aci::compare_versions(var.apic_version, "inside", "2.2(2e)-") ? "no" : null
+  endpoint_move_detection_mode       = provider::aci::compare_versions(var.apic_version, "inside", "1.1(1j)-") ? "garp" : null
+  advertise_host_routes              = provider::aci::compare_versions(var.apic_version, "inside", "4.0(1h)-") ? "no" : null
+  enable_intersite_bum_traffic       = provider::aci::compare_versions(var.apic_version, "inside", "3.0(1k)-") ? "no" : null
+  intersite_l2_stretch               = provider::aci::compare_versions(var.apic_version, "inside", "3.0(1k)-") ? "no" : null
+  ip_learning                        = provider::aci::compare_versions(var.apic_version, "inside", "2.0(1m)-") ? "no" : null
+  pim_ipv6                           = provider::aci::compare_versions(var.apic_version, "inside", "4.2(1i)-") ? "no" : null
+  limit_ip_learn_to_subnets          = provider::aci::compare_versions(var.apic_version, "inside", "1.1(1j)-") ? "yes" : null
+  link_local_ipv6_address            = provider::aci::compare_versions(var.apic_version, "inside", "1.1(1j)-") ? "fe80::1" : null
+  custom_mac_address                 = "00:22:BD:F8:19:FE"
+  drop_arp_with_multicast_smac       = provider::aci::compare_versions(var.apic_version, "inside", "5.2(5c)-") ? "no" : null
+  pim                                = provider::aci::compare_versions(var.apic_version, "inside", "2.0(1m)-") ? "no" : null
+  multi_destination_flooding         = provider::aci::compare_versions(var.apic_version, "inside", "1.1(1j)-") ? "bd-flood" : null
+  name                               = "name_1"
+  name_alias                         = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
+  owner_key                          = "owner_key_1"
+  owner_tag                          = "owner_tag_1"
+  parent_dn                          = aci_tenant.test_1[0].id
+  service_bd_routing_disable         = provider::aci::compare_versions(var.apic_version, "inside", "6.0(4c)-") ? "no" : null
+  bridge_domain_type                 = provider::aci::compare_versions(var.apic_version, "inside", "2.0(1m)-") ? "regular" : null
+  unicast_routing                    = "yes"
+  l2_unknown_unicast_flooding        = "proxy"
+  l3_unknown_multicast_flooding      = "flood"
+  ipv6_l3_unknown_multicast_flooding = provider::aci::compare_versions(var.apic_version, "inside", "4.1(1i)-") ? "flood" : null
+  virtual_mac_address                = provider::aci::compare_versions(var.apic_version, "inside", "1.2(1i)-") ? "00:22:BD:F8:19:FB" : null
+  legacy_mode = {
+    annotation    = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    description   = "description_1"
+    encapsulation = "vlan-100"
+    name          = "name_1"
+    name_alias    = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
+    owner_key     = "owner_key_1"
+    owner_tag     = "owner_tag_1"
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  rogue_coop_exceptions = provider::aci::compare_versions(var.apic_version, "inside", "5.2(3e)-") ? [
+    {
+      annotation  = "annotation_1"
+      description = "description_1"
+      mac         = "00:00:00:00:00:03"
+      name        = "name_1"
+      name_alias  = "name_alias_1"
+      annotations = [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ]
+      tags = [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ]
+    },
+    {
+      annotation  = "annotation_2"
+      description = "description_2"
+      mac         = "00:00:00:00:00:01"
+      name        = "name_2"
+      name_alias  = "name_alias_2"
+      annotations = [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ]
+      tags = [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ]
+    },
+  ] : null
+  relation_to_monitoring_policy = {
+    annotation             = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    monitoring_policy_name = aci_monitoring_policy.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  relation_to_first_hop_security_policy = provider::aci::compare_versions(var.apic_version, "inside", "3.0(1k)-") ? {
+    annotation                     = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    first_hop_security_policy_name = aci_first_hop_security_policy.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  } : null
+  relation_to_neighbor_discovery_interface_policy = provider::aci::compare_versions(var.apic_version, "inside", "1.1(1j)-") ? {
+    annotation                               = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    neighbor_discovery_interface_policy_name = aci_neighbor_discovery_interface_policy.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  } : null
+  relation_to_netflow_monitor_policies = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? [
+    {
+      annotation                  = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+      filter_type                 = "ce"
+      netflow_monitor_policy_name = aci_netflow_monitor_policy.test_1[0].name
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+    {
+      annotation                  = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_2" : null
+      filter_type                 = "ipv4"
+      netflow_monitor_policy_name = aci_netflow_monitor_policy.test_2[0].name
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+  ] : null
+  relation_to_l3_outsides = [
+    {
+      annotation      = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+      l3_outside_name = aci_l3_outside.test_1[0].name
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+    {
+      annotation      = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_2" : null
+      l3_outside_name = aci_l3_outside.test_2[0].name
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+  ]
+  relation_to_route_control_profile = {
+    annotation                 = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    l3_outside_name            = aci_l3_outside.test_1[0].name
+    route_control_profile_name = aci_route_control_profile.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  relation_to_dhcp_relay_policy = provider::aci::compare_versions(var.apic_version, "inside", "1.0(1e)-6.1(1e)") ? {
+    annotation             = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    dhcp_relay_policy_name = aci_dhcp_relay_policy.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  } : null
+  relation_to_end_point_retention_policy = {
+    annotation                      = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    resolve_action                  = "inherit"
+    end_point_retention_policy_name = aci_end_point_retention_policy.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  relation_to_vrf = {
+    annotation = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    vrf_name   = aci_vrf.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  relation_to_igmp_snooping_policy = {
+    annotation                = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    igmp_snooping_policy_name = aci_igmp_snooping_policy.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  relation_to_mld_snooping_policy = provider::aci::compare_versions(var.apic_version, "inside", "4.1(1i)-") ? {
+    annotation               = "annotation_1"
+    mld_snooping_policy_name = aci_mld_snooping_policy.test_1[0].name
+    annotations = [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ]
+    tags = [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ]
+  } : null
+  annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  arp_flood                      = "no"
+  ep_clear                       = provider::aci::compare_versions(var.apic_version, "inside", "2.2(2e)-") ? "no" : null
+  ep_move_detect_mode            = provider::aci::compare_versions(var.apic_version, "inside", "1.1(1j)-") ? "garp" : null
+  host_based_routing             = provider::aci::compare_versions(var.apic_version, "inside", "4.0(1h)-") ? "no" : null
+  intersite_bum_traffic_allow    = provider::aci::compare_versions(var.apic_version, "inside", "3.0(1k)-") ? "no" : null
+  ipv6_mcast_allow               = provider::aci::compare_versions(var.apic_version, "inside", "4.2(1i)-") ? "no" : null
+  ll_addr                        = provider::aci::compare_versions(var.apic_version, "inside", "1.1(1j)-") ? "fe80::1" : null
+  mac                            = "00:22:BD:F8:19:FE"
+  mcast_allow                    = provider::aci::compare_versions(var.apic_version, "inside", "2.0(1m)-") ? "no" : null
+  multi_dst_pkt_act              = provider::aci::compare_versions(var.apic_version, "inside", "1.1(1j)-") ? "bd-flood" : null
+  relation_fv_rs_abd_pol_mon_pol = aci_monitoring_policy.test_1[0].id
+  relation_fv_rs_bd_to_ep_ret    = aci_end_point_retention_policy.test_1[0].id
+  relation_fv_rs_bd_to_fhs       = provider::aci::compare_versions(var.apic_version, "inside", "3.0(1k)-") ? aci_first_hop_security_policy.test_1[0].id : null
+  relation_fv_rs_bd_to_nd_p      = provider::aci::compare_versions(var.apic_version, "inside", "1.1(1j)-") ? aci_neighbor_discovery_interface_policy.test_1[0].id : null
+  relation_fv_rs_bd_to_netflow_monitor_pol {
+    flt_type                    = "ce"
+    tn_netflow_monitor_pol_name = aci_netflow_monitor_policy.test_1[0].id
+  }
+  relation_fv_rs_bd_to_netflow_monitor_pol {
+    flt_type                    = "ipv4"
+    tn_netflow_monitor_pol_name = aci_netflow_monitor_policy.test_2[0].id
+  }
+  relation_fv_rs_bd_to_out     = [aci_l3_outside.test_1[0].id, aci_l3_outside.test_2[0].id]
+  relation_fv_rs_bd_to_relay_p = provider::aci::compare_versions(var.apic_version, "inside", "1.0(1e)-6.1(1e)") ? aci_dhcp_relay_policy.test_1[0].id : null
+  relation_fv_rs_ctx           = aci_vrf.test_1[0].id
+  relation_fv_rs_igmpsn        = aci_igmp_snooping_policy.test_1[0].id
+  relation_fv_rs_mldsn         = provider::aci::compare_versions(var.apic_version, "inside", "4.1(1i)-") ? aci_mld_snooping_policy.test_1[0].id : null
+  tenant_dn                    = aci_tenant.test_1[0].id
+  unicast_route                = "yes"
+  unk_mac_ucast_act            = "proxy"
+  unk_mcast_act                = "flood"
+  v6unk_mcast_act              = provider::aci::compare_versions(var.apic_version, "inside", "4.1(1i)-") ? "flood" : null
+  vmac                         = provider::aci::compare_versions(var.apic_version, "inside", "1.2(1i)-") ? "00:22:BD:F8:19:FB" : null
+}
+`
+
+const testAccResourceFvBDFrozen = testAccResourceFvBDDependencies + `
+resource "aci_bridge_domain" "test_1" {
+  optimize_wan_bandwidth             = provider::aci::compare_versions(var.apic_version, "inside", "3.0(1k)-") ? "no" : null
+  annotation                         = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+  arp_flooding                       = "no"
+  description                        = "description_1"
+  clear_remote_mac_entries           = provider::aci::compare_versions(var.apic_version, "inside", "2.2(2e)-") ? "no" : null
+  endpoint_move_detection_mode       = provider::aci::compare_versions(var.apic_version, "inside", "1.1(1j)-") ? "garp" : null
+  advertise_host_routes              = provider::aci::compare_versions(var.apic_version, "inside", "4.0(1h)-") ? "no" : null
+  enable_intersite_bum_traffic       = provider::aci::compare_versions(var.apic_version, "inside", "3.0(1k)-") ? "no" : null
+  intersite_l2_stretch               = provider::aci::compare_versions(var.apic_version, "inside", "3.0(1k)-") ? "no" : null
+  ip_learning                        = provider::aci::compare_versions(var.apic_version, "inside", "2.0(1m)-") ? "no" : null
+  pim_ipv6                           = provider::aci::compare_versions(var.apic_version, "inside", "4.2(1i)-") ? "no" : null
+  limit_ip_learn_to_subnets          = provider::aci::compare_versions(var.apic_version, "inside", "1.1(1j)-") ? "yes" : null
+  link_local_ipv6_address            = provider::aci::compare_versions(var.apic_version, "inside", "1.1(1j)-") ? "fe80::1" : null
+  custom_mac_address                 = "00:22:BD:F8:19:FE"
+  drop_arp_with_multicast_smac       = provider::aci::compare_versions(var.apic_version, "inside", "5.2(5c)-") ? "no" : null
+  pim                                = provider::aci::compare_versions(var.apic_version, "inside", "2.0(1m)-") ? "no" : null
+  multi_destination_flooding         = provider::aci::compare_versions(var.apic_version, "inside", "1.1(1j)-") ? "bd-flood" : null
+  name                               = "name_1"
+  name_alias                         = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
+  owner_key                          = "owner_key_1"
+  owner_tag                          = "owner_tag_1"
+  parent_dn                          = aci_tenant.test_1[0].id
+  service_bd_routing_disable         = provider::aci::compare_versions(var.apic_version, "inside", "6.0(4c)-") ? "no" : null
+  bridge_domain_type                 = provider::aci::compare_versions(var.apic_version, "inside", "2.0(1m)-") ? "regular" : null
+  unicast_routing                    = "yes"
+  l2_unknown_unicast_flooding        = "proxy"
+  l3_unknown_multicast_flooding      = "flood"
+  ipv6_l3_unknown_multicast_flooding = provider::aci::compare_versions(var.apic_version, "inside", "4.1(1i)-") ? "flood" : null
+  virtual_mac_address                = provider::aci::compare_versions(var.apic_version, "inside", "1.2(1i)-") ? "00:22:BD:F8:19:FB" : null
+  legacy_mode = {
+    annotation    = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    description   = "description_1"
+    encapsulation = "vlan-100"
+    name          = "name_1"
+    name_alias    = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
+    owner_key     = "owner_key_1"
+    owner_tag     = "owner_tag_1"
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  rogue_coop_exceptions = provider::aci::compare_versions(var.apic_version, "inside", "5.2(3e)-") ? [
+    {
+      annotation  = "annotation_1"
+      description = "description_1"
+      mac         = "00:00:00:00:00:03"
+      name        = "name_1"
+      name_alias  = "name_alias_1"
+      annotations = [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ]
+      tags = [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ]
+    },
+    {
+      annotation  = "annotation_2"
+      description = "description_2"
+      mac         = "00:00:00:00:00:01"
+      name        = "name_2"
+      name_alias  = "name_alias_2"
+      annotations = [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ]
+      tags = [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ]
+    },
+  ] : null
+  relation_to_monitoring_policy = {
+    annotation             = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    monitoring_policy_name = aci_monitoring_policy.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  relation_to_first_hop_security_policy = provider::aci::compare_versions(var.apic_version, "inside", "3.0(1k)-") ? {
+    annotation                     = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    first_hop_security_policy_name = aci_first_hop_security_policy.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  } : null
+  relation_to_neighbor_discovery_interface_policy = provider::aci::compare_versions(var.apic_version, "inside", "1.1(1j)-") ? {
+    annotation                               = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    neighbor_discovery_interface_policy_name = aci_neighbor_discovery_interface_policy.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  } : null
+  relation_to_netflow_monitor_policies = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? [
+    {
+      annotation                  = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+      filter_type                 = "ce"
+      netflow_monitor_policy_name = aci_netflow_monitor_policy.test_1[0].name
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+    {
+      annotation                  = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_2" : null
+      filter_type                 = "ipv4"
+      netflow_monitor_policy_name = aci_netflow_monitor_policy.test_2[0].name
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+  ] : null
+  relation_to_l3_outsides = [
+    {
+      annotation      = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+      l3_outside_name = aci_l3_outside.test_1[0].name
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+    {
+      annotation      = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_2" : null
+      l3_outside_name = aci_l3_outside.test_2[0].name
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+  ]
+  relation_to_route_control_profile = {
+    annotation                 = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    l3_outside_name            = aci_l3_outside.test_1[0].name
+    route_control_profile_name = aci_route_control_profile.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  relation_to_dhcp_relay_policy = provider::aci::compare_versions(var.apic_version, "inside", "1.0(1e)-6.1(1e)") ? {
+    annotation             = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    dhcp_relay_policy_name = aci_dhcp_relay_policy.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  } : null
+  relation_to_end_point_retention_policy = {
+    annotation                      = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    resolve_action                  = "inherit"
+    end_point_retention_policy_name = aci_end_point_retention_policy.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  relation_to_vrf = {
+    annotation = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    vrf_name   = aci_vrf.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  relation_to_igmp_snooping_policy = {
+    annotation                = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    igmp_snooping_policy_name = aci_igmp_snooping_policy.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  relation_to_mld_snooping_policy = provider::aci::compare_versions(var.apic_version, "inside", "4.1(1i)-") ? {
+    annotation               = "annotation_1"
+    mld_snooping_policy_name = aci_mld_snooping_policy.test_1[0].name
+    annotations = [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ]
+    tags = [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ]
+  } : null
+  annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  relation_fv_rs_bd_flood_to   = ["example"]
+  relation_fv_rs_bd_to_profile = "example"
+}
+`
+
+const testAccResourceFvBDFrozenUnchanged = testAccResourceFvBDDependencies + `
+resource "aci_bridge_domain" "test_1" {
+  optimize_wan_bandwidth             = provider::aci::compare_versions(var.apic_version, "inside", "3.0(1k)-") ? "no" : null
+  annotation                         = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+  arp_flooding                       = "no"
+  description                        = "description_1"
+  clear_remote_mac_entries           = provider::aci::compare_versions(var.apic_version, "inside", "2.2(2e)-") ? "no" : null
+  endpoint_move_detection_mode       = provider::aci::compare_versions(var.apic_version, "inside", "1.1(1j)-") ? "garp" : null
+  advertise_host_routes              = provider::aci::compare_versions(var.apic_version, "inside", "4.0(1h)-") ? "no" : null
+  enable_intersite_bum_traffic       = provider::aci::compare_versions(var.apic_version, "inside", "3.0(1k)-") ? "no" : null
+  intersite_l2_stretch               = provider::aci::compare_versions(var.apic_version, "inside", "3.0(1k)-") ? "no" : null
+  ip_learning                        = provider::aci::compare_versions(var.apic_version, "inside", "2.0(1m)-") ? "no" : null
+  pim_ipv6                           = provider::aci::compare_versions(var.apic_version, "inside", "4.2(1i)-") ? "no" : null
+  limit_ip_learn_to_subnets          = provider::aci::compare_versions(var.apic_version, "inside", "1.1(1j)-") ? "yes" : null
+  link_local_ipv6_address            = provider::aci::compare_versions(var.apic_version, "inside", "1.1(1j)-") ? "fe80::1" : null
+  custom_mac_address                 = "00:22:BD:F8:19:FE"
+  drop_arp_with_multicast_smac       = provider::aci::compare_versions(var.apic_version, "inside", "5.2(5c)-") ? "no" : null
+  pim                                = provider::aci::compare_versions(var.apic_version, "inside", "2.0(1m)-") ? "no" : null
+  multi_destination_flooding         = provider::aci::compare_versions(var.apic_version, "inside", "1.1(1j)-") ? "bd-flood" : null
+  name                               = "name_1"
+  name_alias                         = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
+  owner_key                          = "owner_key_1"
+  owner_tag                          = "owner_tag_1"
+  parent_dn                          = aci_tenant.test_1[0].id
+  service_bd_routing_disable         = provider::aci::compare_versions(var.apic_version, "inside", "6.0(4c)-") ? "no" : null
+  bridge_domain_type                 = provider::aci::compare_versions(var.apic_version, "inside", "2.0(1m)-") ? "regular" : null
+  unicast_routing                    = "yes"
+  l2_unknown_unicast_flooding        = "proxy"
+  l3_unknown_multicast_flooding      = "flood"
+  ipv6_l3_unknown_multicast_flooding = provider::aci::compare_versions(var.apic_version, "inside", "4.1(1i)-") ? "flood" : null
+  virtual_mac_address                = provider::aci::compare_versions(var.apic_version, "inside", "1.2(1i)-") ? "00:22:BD:F8:19:FB" : null
+  legacy_mode = {
+    annotation    = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    description   = "description_1"
+    encapsulation = "vlan-100"
+    name          = "name_1"
+    name_alias    = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
+    owner_key     = "owner_key_1"
+    owner_tag     = "owner_tag_1"
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  rogue_coop_exceptions = provider::aci::compare_versions(var.apic_version, "inside", "5.2(3e)-") ? [
+    {
+      annotation  = "annotation_1"
+      description = "description_1"
+      mac         = "00:00:00:00:00:03"
+      name        = "name_1"
+      name_alias  = "name_alias_1"
+      annotations = [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ]
+      tags = [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ]
+    },
+    {
+      annotation  = "annotation_2"
+      description = "description_2"
+      mac         = "00:00:00:00:00:01"
+      name        = "name_2"
+      name_alias  = "name_alias_2"
+      annotations = [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ]
+      tags = [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ]
+    },
+  ] : null
+  relation_to_monitoring_policy = {
+    annotation             = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    monitoring_policy_name = aci_monitoring_policy.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  relation_to_first_hop_security_policy = provider::aci::compare_versions(var.apic_version, "inside", "3.0(1k)-") ? {
+    annotation                     = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    first_hop_security_policy_name = aci_first_hop_security_policy.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  } : null
+  relation_to_neighbor_discovery_interface_policy = provider::aci::compare_versions(var.apic_version, "inside", "1.1(1j)-") ? {
+    annotation                               = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    neighbor_discovery_interface_policy_name = aci_neighbor_discovery_interface_policy.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  } : null
+  relation_to_netflow_monitor_policies = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? [
+    {
+      annotation                  = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+      filter_type                 = "ce"
+      netflow_monitor_policy_name = aci_netflow_monitor_policy.test_1[0].name
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+    {
+      annotation                  = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_2" : null
+      filter_type                 = "ipv4"
+      netflow_monitor_policy_name = aci_netflow_monitor_policy.test_2[0].name
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+  ] : null
+  relation_to_l3_outsides = [
+    {
+      annotation      = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+      l3_outside_name = aci_l3_outside.test_1[0].name
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+    {
+      annotation      = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_2" : null
+      l3_outside_name = aci_l3_outside.test_2[0].name
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+  ]
+  relation_to_route_control_profile = {
+    annotation                 = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    l3_outside_name            = aci_l3_outside.test_1[0].name
+    route_control_profile_name = aci_route_control_profile.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  relation_to_dhcp_relay_policy = provider::aci::compare_versions(var.apic_version, "inside", "1.0(1e)-6.1(1e)") ? {
+    annotation             = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    dhcp_relay_policy_name = aci_dhcp_relay_policy.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  } : null
+  relation_to_end_point_retention_policy = {
+    annotation                      = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    resolve_action                  = "inherit"
+    end_point_retention_policy_name = aci_end_point_retention_policy.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  relation_to_vrf = {
+    annotation = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    vrf_name   = aci_vrf.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  relation_to_igmp_snooping_policy = {
+    annotation                = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    igmp_snooping_policy_name = aci_igmp_snooping_policy.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  relation_to_mld_snooping_policy = provider::aci::compare_versions(var.apic_version, "inside", "4.1(1i)-") ? {
+    annotation               = "annotation_1"
+    mld_snooping_policy_name = aci_mld_snooping_policy.test_1[0].name
+    annotations = [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ]
+    tags = [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ]
+  } : null
+  annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  relation_fv_rs_bd_flood_to   = ["example"]
+  relation_fv_rs_bd_to_profile = "example"
+}
+`
+
+const testAccResourceFvBDFrozenCleared = testAccResourceFvBDDependencies + `
+resource "aci_bridge_domain" "test_1" {
+  optimize_wan_bandwidth             = provider::aci::compare_versions(var.apic_version, "inside", "3.0(1k)-") ? "no" : null
+  annotation                         = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+  arp_flooding                       = "no"
+  description                        = "description_1"
+  clear_remote_mac_entries           = provider::aci::compare_versions(var.apic_version, "inside", "2.2(2e)-") ? "no" : null
+  endpoint_move_detection_mode       = provider::aci::compare_versions(var.apic_version, "inside", "1.1(1j)-") ? "garp" : null
+  advertise_host_routes              = provider::aci::compare_versions(var.apic_version, "inside", "4.0(1h)-") ? "no" : null
+  enable_intersite_bum_traffic       = provider::aci::compare_versions(var.apic_version, "inside", "3.0(1k)-") ? "no" : null
+  intersite_l2_stretch               = provider::aci::compare_versions(var.apic_version, "inside", "3.0(1k)-") ? "no" : null
+  ip_learning                        = provider::aci::compare_versions(var.apic_version, "inside", "2.0(1m)-") ? "no" : null
+  pim_ipv6                           = provider::aci::compare_versions(var.apic_version, "inside", "4.2(1i)-") ? "no" : null
+  limit_ip_learn_to_subnets          = provider::aci::compare_versions(var.apic_version, "inside", "1.1(1j)-") ? "yes" : null
+  link_local_ipv6_address            = provider::aci::compare_versions(var.apic_version, "inside", "1.1(1j)-") ? "fe80::1" : null
+  custom_mac_address                 = "00:22:BD:F8:19:FE"
+  drop_arp_with_multicast_smac       = provider::aci::compare_versions(var.apic_version, "inside", "5.2(5c)-") ? "no" : null
+  pim                                = provider::aci::compare_versions(var.apic_version, "inside", "2.0(1m)-") ? "no" : null
+  multi_destination_flooding         = provider::aci::compare_versions(var.apic_version, "inside", "1.1(1j)-") ? "bd-flood" : null
+  name                               = "name_1"
+  name_alias                         = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
+  owner_key                          = "owner_key_1"
+  owner_tag                          = "owner_tag_1"
+  parent_dn                          = aci_tenant.test_1[0].id
+  service_bd_routing_disable         = provider::aci::compare_versions(var.apic_version, "inside", "6.0(4c)-") ? "no" : null
+  bridge_domain_type                 = provider::aci::compare_versions(var.apic_version, "inside", "2.0(1m)-") ? "regular" : null
+  unicast_routing                    = "yes"
+  l2_unknown_unicast_flooding        = "proxy"
+  l3_unknown_multicast_flooding      = "flood"
+  ipv6_l3_unknown_multicast_flooding = provider::aci::compare_versions(var.apic_version, "inside", "4.1(1i)-") ? "flood" : null
+  virtual_mac_address                = provider::aci::compare_versions(var.apic_version, "inside", "1.2(1i)-") ? "00:22:BD:F8:19:FB" : null
+  legacy_mode = {
+    annotation    = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    description   = "description_1"
+    encapsulation = "vlan-100"
+    name          = "name_1"
+    name_alias    = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
+    owner_key     = "owner_key_1"
+    owner_tag     = "owner_tag_1"
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  rogue_coop_exceptions = provider::aci::compare_versions(var.apic_version, "inside", "5.2(3e)-") ? [
+    {
+      annotation  = "annotation_1"
+      description = "description_1"
+      mac         = "00:00:00:00:00:03"
+      name        = "name_1"
+      name_alias  = "name_alias_1"
+      annotations = [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ]
+      tags = [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ]
+    },
+    {
+      annotation  = "annotation_2"
+      description = "description_2"
+      mac         = "00:00:00:00:00:01"
+      name        = "name_2"
+      name_alias  = "name_alias_2"
+      annotations = [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ]
+      tags = [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ]
+    },
+  ] : null
+  relation_to_monitoring_policy = {
+    annotation             = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    monitoring_policy_name = aci_monitoring_policy.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  relation_to_first_hop_security_policy = provider::aci::compare_versions(var.apic_version, "inside", "3.0(1k)-") ? {
+    annotation                     = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    first_hop_security_policy_name = aci_first_hop_security_policy.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  } : null
+  relation_to_neighbor_discovery_interface_policy = provider::aci::compare_versions(var.apic_version, "inside", "1.1(1j)-") ? {
+    annotation                               = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    neighbor_discovery_interface_policy_name = aci_neighbor_discovery_interface_policy.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  } : null
+  relation_to_netflow_monitor_policies = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? [
+    {
+      annotation                  = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+      filter_type                 = "ce"
+      netflow_monitor_policy_name = aci_netflow_monitor_policy.test_1[0].name
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+    {
+      annotation                  = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_2" : null
+      filter_type                 = "ipv4"
+      netflow_monitor_policy_name = aci_netflow_monitor_policy.test_2[0].name
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+  ] : null
+  relation_to_l3_outsides = [
+    {
+      annotation      = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+      l3_outside_name = aci_l3_outside.test_1[0].name
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+    {
+      annotation      = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_2" : null
+      l3_outside_name = aci_l3_outside.test_2[0].name
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+  ]
+  relation_to_route_control_profile = {
+    annotation                 = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    l3_outside_name            = aci_l3_outside.test_1[0].name
+    route_control_profile_name = aci_route_control_profile.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  relation_to_dhcp_relay_policy = provider::aci::compare_versions(var.apic_version, "inside", "1.0(1e)-6.1(1e)") ? {
+    annotation             = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    dhcp_relay_policy_name = aci_dhcp_relay_policy.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  } : null
+  relation_to_end_point_retention_policy = {
+    annotation                      = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    resolve_action                  = "inherit"
+    end_point_retention_policy_name = aci_end_point_retention_policy.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  relation_to_vrf = {
+    annotation = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    vrf_name   = aci_vrf.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  relation_to_igmp_snooping_policy = {
+    annotation                = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    igmp_snooping_policy_name = aci_igmp_snooping_policy.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  relation_to_mld_snooping_policy = provider::aci::compare_versions(var.apic_version, "inside", "4.1(1i)-") ? {
+    annotation               = "annotation_1"
+    mld_snooping_policy_name = aci_mld_snooping_policy.test_1[0].name
+    annotations = [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ]
+    tags = [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ]
+  } : null
+  annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  relation_fv_rs_bd_flood_to   = []
+  relation_fv_rs_bd_to_profile = ""
 }
 `
 
@@ -25161,7 +30830,7 @@ resource "aci_bridge_domain" "test_1" {
     {
       annotation                  = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
       filter_type                 = "ce"
-      netflow_monitor_policy_name = aci_netflow_monitor_policy.test_1[0].name
+      netflow_monitor_policy_name = aci_netflow_monitor_policy.test_3[0].name
       annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
         {
           key   = "key_1"
@@ -25186,7 +30855,7 @@ resource "aci_bridge_domain" "test_1" {
     {
       annotation                  = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_2" : null
       filter_type                 = "ipv4"
-      netflow_monitor_policy_name = aci_netflow_monitor_policy.test_2[0].name
+      netflow_monitor_policy_name = aci_netflow_monitor_policy.test_4[0].name
       annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
         {
           key   = "key_1"

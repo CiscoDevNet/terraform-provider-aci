@@ -187,6 +187,101 @@ func TestAccResourceL2IfPolGenerated(t *testing.T) {
 			},
 			{
 				PreConfig: func() {
+					t.Log("Test: L2 Interface Policy Resource - Configure Through Legacy Attributes")
+				},
+				ConfigVariables: variables,
+				Config:          testAccResourceL2IfPolLegacy,
+				Check: func(state *terraform.State) error {
+					// Evaluate runtime prefixes after PreCheck has initialized the fixture variables.
+					return resource.ComposeAggregateTestCheckFunc(
+						identity.CheckID("aci_l2_interface_policy.test_1", false),
+						testCheckResourceDN("aci_l2_interface_policy.test_1", "infra/l2IfP-{name}", "uni", map[string]string{
+							"name": "name",
+						}, []resourceTestDNVariant{}),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_l2_interface_policy.test_1", "annotation", "annotation_1"),
+						),
+						resource.TestCheckResourceAttr("aci_l2_interface_policy.test_1", "description", "description_1"),
+						resource.TestCheckResourceAttr("aci_l2_interface_policy.test_1", "name", fmt.Sprintf("%s-%s", testPrefix, "name_1")),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							resource.TestCheckResourceAttr("aci_l2_interface_policy.test_1", "name_alias", "name_alias_1"),
+						),
+						resource.TestCheckResourceAttr("aci_l2_interface_policy.test_1", "owner_key", "owner_key_1"),
+						resource.TestCheckResourceAttr("aci_l2_interface_policy.test_1", "owner_tag", "owner_tag_1"),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							resource.TestCheckResourceAttr("aci_l2_interface_policy.test_1", "q_in_q", "corePort"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.3(1e)-", "inside",
+							resource.TestCheckResourceAttr("aci_l2_interface_policy.test_1", "reflective_relay", "enabled"),
+						),
+						resource.TestCheckResourceAttr("aci_l2_interface_policy.test_1", "vlan_scope", "portlocal"),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_l2_interface_policy.test_1", "annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_l2_interface_policy.test_1", "annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_l2_interface_policy.test_1", "annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_l2_interface_policy.test_1", "tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_l2_interface_policy.test_1", "tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_l2_interface_policy.test_1", "tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						resource.TestCheckResourceAttrPair("aci_l2_interface_policy.test_1", "qinq", "aci_l2_interface_policy.test_1", "q_in_q"),
+						resource.TestCheckResourceAttrPair("aci_l2_interface_policy.test_1", "vepa", "aci_l2_interface_policy.test_1", "reflective_relay"),
+					)(state)
+				},
+			},
+			{
+				PreConfig: func() {
+					t.Log("Test: L2 Interface Policy Resource - Repeat Legacy Configuration (Expect Empty Plan)")
+				},
+				ConfigVariables: variables,
+				Config:          testAccResourceL2IfPolLegacyUnchanged,
+				PlanOnly:        true,
+				ConfigPlanChecks: resource.ConfigPlanChecks{
+					PostApplyPreRefresh: []plancheck.PlanCheck{plancheck.ExpectEmptyPlan()},
+				},
+			},
+			{
+				PreConfig: func() {
+					t.Log("Test: L2 Interface Policy Resource - Switch to Current Attributes Without Replacement")
+				},
+				ConfigVariables: variables,
+				Config:          testAccResourceL2IfPolCurrentAfterLegacy,
+				PlanOnly:        true,
+				ConfigPlanChecks: resource.ConfigPlanChecks{
+					PostApplyPreRefresh: []plancheck.PlanCheck{plancheck.ExpectEmptyPlan()},
+				},
+			},
+			{
+				PreConfig: func() {
+					t.Log("Test: L2 Interface Policy Resource - Reject Simultaneous Legacy and Current Inputs")
+				},
+				ConfigVariables: variables,
+				Config:          testAccResourceL2IfPolLegacyConflict,
+				ExpectError:     regexp.MustCompile("Invalid Attribute Combination|Conflicting legacy configuration"),
+			},
+			{
+				PreConfig: func() {
 					t.Log("Test: L2 Interface Policy Resource - Update Mutable Attributes in Place")
 				},
 				ConfigVariables: variables,
@@ -1191,6 +1286,144 @@ resource "aci_l2_interface_policy" "test_1" {
       value = "value_2"
     },
   ] : null
+}
+`
+
+const testAccResourceL2IfPolLegacy = testAccResourceL2IfPolDependencies + `
+resource "aci_l2_interface_policy" "test_1" {
+  annotation  = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+  description = "description_1"
+  name        = format("%s-%s", var.test_prefix, "name_1")
+  name_alias  = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
+  owner_key   = "owner_key_1"
+  owner_tag   = "owner_tag_1"
+  vlan_scope  = "portlocal"
+  annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  qinq = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "corePort" : null
+  vepa = provider::aci::compare_versions(var.apic_version, "inside", "2.3(1e)-") ? "enabled" : null
+}
+`
+
+const testAccResourceL2IfPolLegacyUnchanged = testAccResourceL2IfPolDependencies + `
+resource "aci_l2_interface_policy" "test_1" {
+  annotation  = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+  description = "description_1"
+  name        = format("%s-%s", var.test_prefix, "name_1")
+  name_alias  = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
+  owner_key   = "owner_key_1"
+  owner_tag   = "owner_tag_1"
+  vlan_scope  = "portlocal"
+  annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  qinq = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "corePort" : null
+  vepa = provider::aci::compare_versions(var.apic_version, "inside", "2.3(1e)-") ? "enabled" : null
+}
+`
+
+const testAccResourceL2IfPolCurrentAfterLegacy = testAccResourceL2IfPolDependencies + `
+resource "aci_l2_interface_policy" "test_1" {
+  annotation       = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+  description      = "description_1"
+  name             = format("%s-%s", var.test_prefix, "name_1")
+  name_alias       = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
+  owner_key        = "owner_key_1"
+  owner_tag        = "owner_tag_1"
+  q_in_q           = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "corePort" : null
+  reflective_relay = provider::aci::compare_versions(var.apic_version, "inside", "2.3(1e)-") ? "enabled" : null
+  vlan_scope       = "portlocal"
+  annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+}
+`
+
+const testAccResourceL2IfPolLegacyConflict = testAccResourceL2IfPolDependencies + `
+resource "aci_l2_interface_policy" "test_1" {
+  annotation       = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+  description      = "description_1"
+  name             = format("%s-%s", var.test_prefix, "name_1")
+  name_alias       = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
+  owner_key        = "owner_key_1"
+  owner_tag        = "owner_tag_1"
+  q_in_q           = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "corePort" : null
+  reflective_relay = provider::aci::compare_versions(var.apic_version, "inside", "2.3(1e)-") ? "enabled" : null
+  vlan_scope       = "portlocal"
+  annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  qinq = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "corePort" : null
+  vepa = provider::aci::compare_versions(var.apic_version, "inside", "2.3(1e)-") ? "enabled" : null
 }
 `
 

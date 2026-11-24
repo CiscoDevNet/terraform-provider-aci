@@ -304,6 +304,226 @@ func TestAccResourceInfraAttEntityPGenerated(t *testing.T) {
 			},
 			{
 				PreConfig: func() {
+					t.Log("Test: Attachable Access Entity Profile Resource - Configure Through Legacy Attributes")
+				},
+				ConfigVariables: variables,
+				Config:          testAccResourceInfraAttEntityPLegacy,
+				Check: func(state *terraform.State) error {
+					// Evaluate runtime prefixes after PreCheck has initialized the fixture variables.
+					return resource.ComposeAggregateTestCheckFunc(
+						identity.CheckID("aci_attachable_access_entity_profile.test_1", false),
+						testCheckResourceDN("aci_attachable_access_entity_profile.test_1", "infra/attentp-{name}", "uni", map[string]string{
+							"name": "name",
+						}, []resourceTestDNVariant{}),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_attachable_access_entity_profile.test_1", "annotation", "annotation_1"),
+						),
+						resource.TestCheckResourceAttr("aci_attachable_access_entity_profile.test_1", "description", "description_1"),
+						resource.TestCheckResourceAttr("aci_attachable_access_entity_profile.test_1", "name", fmt.Sprintf("%s-%s", testPrefix, "name_1")),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							resource.TestCheckResourceAttr("aci_attachable_access_entity_profile.test_1", "name_alias", "name_alias_1"),
+						),
+						resource.TestCheckResourceAttr("aci_attachable_access_entity_profile.test_1", "owner_key", "owner_key_1"),
+						resource.TestCheckResourceAttr("aci_attachable_access_entity_profile.test_1", "owner_tag", "owner_tag_1"),
+						resource.TestCheckResourceAttr("aci_attachable_access_entity_profile.test_1", "relation_to_domains.#", "2"),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_attachable_access_entity_profile.test_1", "relation_to_domains.*", map[string]acceptancetest.AttributeValue{
+								"target_dn":  {PairAddress: "aci_physical_domain.test_1.0", PairAttribute: "id"},
+								"annotation": {ExpectedValue: "annotation_1"},
+							}),
+						),
+						acceptancetest.CheckNestedSetElement("aci_attachable_access_entity_profile.test_1", "relation_to_domains.*", map[string]acceptancetest.AttributeValue{
+							"target_dn": {PairAddress: "aci_physical_domain.test_1.0", PairAttribute: "id"},
+						}),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_attachable_access_entity_profile.test_1", "relation_to_domains.*", map[string]acceptancetest.AttributeValue{
+								"target_dn":     {PairAddress: "aci_physical_domain.test_1.0", PairAttribute: "id"},
+								"annotations.#": {ExpectedValue: "2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_attachable_access_entity_profile.test_1", "relation_to_domains.*.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}, acceptancetest.ParentSetElement{
+								Path: "relation_to_domains.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"target_dn": {PairAddress: "aci_physical_domain.test_1.0", PairAttribute: "id"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_attachable_access_entity_profile.test_1", "relation_to_domains.*.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}, acceptancetest.ParentSetElement{
+								Path: "relation_to_domains.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"target_dn": {PairAddress: "aci_physical_domain.test_1.0", PairAttribute: "id"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_attachable_access_entity_profile.test_1", "relation_to_domains.*", map[string]acceptancetest.AttributeValue{
+								"target_dn": {PairAddress: "aci_physical_domain.test_1.0", PairAttribute: "id"},
+								"tags.#":    {ExpectedValue: "2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_attachable_access_entity_profile.test_1", "relation_to_domains.*.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}, acceptancetest.ParentSetElement{
+								Path: "relation_to_domains.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"target_dn": {PairAddress: "aci_physical_domain.test_1.0", PairAttribute: "id"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_attachable_access_entity_profile.test_1", "relation_to_domains.*.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}, acceptancetest.ParentSetElement{
+								Path: "relation_to_domains.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"target_dn": {PairAddress: "aci_physical_domain.test_1.0", PairAttribute: "id"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_attachable_access_entity_profile.test_1", "relation_to_domains.*", map[string]acceptancetest.AttributeValue{
+								"target_dn":  {PairAddress: "aci_physical_domain.test_2.0", PairAttribute: "id"},
+								"annotation": {ExpectedValue: "annotation_2"},
+							}),
+						),
+						acceptancetest.CheckNestedSetElement("aci_attachable_access_entity_profile.test_1", "relation_to_domains.*", map[string]acceptancetest.AttributeValue{
+							"target_dn": {PairAddress: "aci_physical_domain.test_2.0", PairAttribute: "id"},
+						}),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_attachable_access_entity_profile.test_1", "relation_to_domains.*", map[string]acceptancetest.AttributeValue{
+								"target_dn":     {PairAddress: "aci_physical_domain.test_2.0", PairAttribute: "id"},
+								"annotations.#": {ExpectedValue: "2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_attachable_access_entity_profile.test_1", "relation_to_domains.*.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}, acceptancetest.ParentSetElement{
+								Path: "relation_to_domains.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"target_dn": {PairAddress: "aci_physical_domain.test_2.0", PairAttribute: "id"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_attachable_access_entity_profile.test_1", "relation_to_domains.*.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}, acceptancetest.ParentSetElement{
+								Path: "relation_to_domains.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"target_dn": {PairAddress: "aci_physical_domain.test_2.0", PairAttribute: "id"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_attachable_access_entity_profile.test_1", "relation_to_domains.*", map[string]acceptancetest.AttributeValue{
+								"target_dn": {PairAddress: "aci_physical_domain.test_2.0", PairAttribute: "id"},
+								"tags.#":    {ExpectedValue: "2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_attachable_access_entity_profile.test_1", "relation_to_domains.*.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}, acceptancetest.ParentSetElement{
+								Path: "relation_to_domains.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"target_dn": {PairAddress: "aci_physical_domain.test_2.0", PairAttribute: "id"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_attachable_access_entity_profile.test_1", "relation_to_domains.*.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}, acceptancetest.ParentSetElement{
+								Path: "relation_to_domains.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"target_dn": {PairAddress: "aci_physical_domain.test_2.0", PairAttribute: "id"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_attachable_access_entity_profile.test_1", "annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_attachable_access_entity_profile.test_1", "annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_attachable_access_entity_profile.test_1", "annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_attachable_access_entity_profile.test_1", "tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_attachable_access_entity_profile.test_1", "tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_attachable_access_entity_profile.test_1", "tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						resource.TestCheckTypeSetElemAttrPair("aci_attachable_access_entity_profile.test_1", "relation_infra_rs_dom_p.*", "aci_physical_domain.test_1.0", "id"),
+						resource.TestCheckTypeSetElemAttrPair("aci_attachable_access_entity_profile.test_1", "relation_infra_rs_dom_p.*", "aci_physical_domain.test_2.0", "id"),
+						resource.TestCheckResourceAttr("aci_attachable_access_entity_profile.test_1", "relation_infra_rs_dom_p.#", "2"),
+					)(state)
+				},
+			},
+			{
+				PreConfig: func() {
+					t.Log("Test: Attachable Access Entity Profile Resource - Repeat Legacy Configuration (Expect Empty Plan)")
+				},
+				ConfigVariables: variables,
+				Config:          testAccResourceInfraAttEntityPLegacyUnchanged,
+				PlanOnly:        true,
+				ConfigPlanChecks: resource.ConfigPlanChecks{
+					PostApplyPreRefresh: []plancheck.PlanCheck{plancheck.ExpectEmptyPlan()},
+				},
+			},
+			{
+				PreConfig: func() {
+					t.Log("Test: Attachable Access Entity Profile Resource - Switch to Current Attributes Without Replacement")
+				},
+				ConfigVariables: variables,
+				Config:          testAccResourceInfraAttEntityPCurrentAfterLegacy,
+				PlanOnly:        true,
+				ConfigPlanChecks: resource.ConfigPlanChecks{
+					PostApplyPreRefresh: []plancheck.PlanCheck{plancheck.ExpectEmptyPlan()},
+				},
+			},
+			{
+				PreConfig: func() {
+					t.Log("Test: Attachable Access Entity Profile Resource - Reject Simultaneous Legacy and Current Inputs")
+				},
+				ConfigVariables: variables,
+				Config:          testAccResourceInfraAttEntityPLegacyConflict,
+				ExpectError:     regexp.MustCompile("Invalid Attribute Combination|Conflicting legacy configuration"),
+			},
+			{
+				PreConfig: func() {
 					t.Log("Test: Attachable Access Entity Profile Resource - Update Mutable Attributes in Place")
 				},
 				ConfigVariables: variables,
@@ -2726,6 +2946,233 @@ resource "aci_attachable_access_entity_profile" "test_1" {
       value = "value_2"
     },
   ] : null
+}
+`
+
+const testAccResourceInfraAttEntityPLegacy = testAccResourceInfraAttEntityPDependencies + `
+resource "aci_attachable_access_entity_profile" "test_1" {
+  annotation  = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+  description = "description_1"
+  name        = format("%s-%s", var.test_prefix, "name_1")
+  name_alias  = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
+  owner_key   = "owner_key_1"
+  owner_tag   = "owner_tag_1"
+  annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  relation_infra_rs_dom_p = [aci_physical_domain.test_1[0].id, aci_physical_domain.test_2[0].id]
+}
+`
+
+const testAccResourceInfraAttEntityPLegacyUnchanged = testAccResourceInfraAttEntityPDependencies + `
+resource "aci_attachable_access_entity_profile" "test_1" {
+  annotation  = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+  description = "description_1"
+  name        = format("%s-%s", var.test_prefix, "name_1")
+  name_alias  = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
+  owner_key   = "owner_key_1"
+  owner_tag   = "owner_tag_1"
+  annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  relation_infra_rs_dom_p = [aci_physical_domain.test_1[0].id, aci_physical_domain.test_2[0].id]
+}
+`
+
+const testAccResourceInfraAttEntityPCurrentAfterLegacy = testAccResourceInfraAttEntityPDependencies + `
+resource "aci_attachable_access_entity_profile" "test_1" {
+  annotation  = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+  description = "description_1"
+  name        = format("%s-%s", var.test_prefix, "name_1")
+  name_alias  = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
+  owner_key   = "owner_key_1"
+  owner_tag   = "owner_tag_1"
+  relation_to_domains = [
+    {
+      annotation = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+      target_dn  = aci_physical_domain.test_1[0].id
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+    {
+      annotation = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_2" : null
+      target_dn  = aci_physical_domain.test_2[0].id
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+  ]
+  annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+}
+`
+
+const testAccResourceInfraAttEntityPLegacyConflict = testAccResourceInfraAttEntityPDependencies + `
+resource "aci_attachable_access_entity_profile" "test_1" {
+  annotation  = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+  description = "description_1"
+  name        = format("%s-%s", var.test_prefix, "name_1")
+  name_alias  = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
+  owner_key   = "owner_key_1"
+  owner_tag   = "owner_tag_1"
+  relation_to_domains = [
+    {
+      annotation = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+      target_dn  = aci_physical_domain.test_1[0].id
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+    {
+      annotation = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_2" : null
+      target_dn  = aci_physical_domain.test_2[0].id
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+  ]
+  annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  relation_infra_rs_dom_p = [aci_physical_domain.test_1[0].id, aci_physical_domain.test_2[0].id]
 }
 `
 

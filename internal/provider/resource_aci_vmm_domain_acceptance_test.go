@@ -508,6 +508,1105 @@ func TestAccResourceVmmDomPGenerated(t *testing.T) {
 			},
 			{
 				PreConfig: func() {
+					t.Log("Test: VMM Domain Resource - Configure Through Legacy Attributes")
+				},
+				ConfigVariables: variables,
+				Config:          testAccResourceVmmDomPLegacy,
+				Check: func(state *terraform.State) error {
+					// Evaluate runtime prefixes after PreCheck has initialized the fixture variables.
+					return resource.ComposeAggregateTestCheckFunc(
+						identity.CheckID("aci_vmm_domain.test_1", false),
+						testCheckResourceDN("aci_vmm_domain.test_1", "dom-{name}", "uni", map[string]string{
+							"name": "name",
+						}, []resourceTestDNVariant{}),
+						composeAggregateTestCheckFuncWithVersion(t, "3.1(1i)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "access_mode", "read-only"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "annotation", "annotation_1"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.1(1i)-", "inside",
+							acceptancetest.CheckSemanticStringAttribute("aci_vmm_domain.test_1", "arp_learning", "disabled", customtypes.VMMArpLearningType{}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(10e)-3.2(10g),3.2(3n)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "ave_time_out", "30"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "configure_infra_port_groups", "no"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.0(1k)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "endpoint_data_path_verification", "epDpVerify"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "6.0(3d)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "custom_switch_name", ""),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.0(1m)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "delimiter", "@"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.1(1i)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "enable_ave_mode", "no"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(10e)-3.2(10g),3.2(4d)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "enable_tag_collection", "no"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(10e)-3.2(10g),3.2(6i)-3.2(9h),4.1(2g)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "enable_vm_folder_data_retrieval", "no"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.2(1i)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "encapsulation_mode", "ivxlan"),
+						),
+						resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "switching_enforcement_preference", "hw"),
+						composeAggregateTestCheckFuncWithVersion(t, "3.1(2p)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "endpoint_inventory_type", "none"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.0(1k)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "endpoint_retention_time", "0"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(10e)-3.2(10g),3.2(3n)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "host_availability_assurance", "no"),
+						),
+						resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "multicast_address", "224.0.1.0"),
+						resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "switch_type", "default"),
+						resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "name", fmt.Sprintf("%s-%s", testPrefix, "name_1")),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "name_alias", "name_alias_1"),
+						),
+						resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "owner_key", "owner_key_1"),
+						resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "owner_tag", "owner_tag_1"),
+						resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "parent_dn", "uni/vmmp-VMware"),
+						composeAggregateTestCheckFuncWithVersion(t, "2.1(1h)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "default_encapsulation_mode", "unspecified"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "relation_to_ip_address_pool.annotation", "annotation_1"),
+						),
+						resource.TestCheckResourceAttrPair("aci_vmm_domain.test_1", "relation_to_ip_address_pool.target_dn", "aci_ip_address_pool.test_1.0", "id"),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "relation_to_ip_address_pool.annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "relation_to_ip_address_pool.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "relation_to_ip_address_pool.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "relation_to_ip_address_pool.tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "relation_to_ip_address_pool.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "relation_to_ip_address_pool.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "relation_to_vlan_pool.annotation", "annotation_1"),
+						),
+						resource.TestCheckResourceAttrPair("aci_vmm_domain.test_1", "relation_to_vlan_pool.target_dn", "aci_vlan_pool.test_1.0", "id"),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "relation_to_vlan_pool.annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "relation_to_vlan_pool.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "relation_to_vlan_pool.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "relation_to_vlan_pool.tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "relation_to_vlan_pool.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "relation_to_vlan_pool.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "vmm_uplink_container.annotation", "annotation_1"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "vmm_uplink_container.name_alias", "name_alias_1"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "vmm_uplink_container.number_of_uplinks", "1"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "vmm_uplink_container.annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "vmm_uplink_container.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "vmm_uplink_container.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "vmm_uplink_container.tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "vmm_uplink_container.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "vmm_uplink_container.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "vmm_uplink_container.uplink_policies.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "vmm_uplink_container.uplink_policies.*", map[string]acceptancetest.AttributeValue{
+								"annotation":  {ExpectedValue: "annotation_1"},
+								"name_alias":  {ExpectedValue: "name_alias_1"},
+								"uplink_id":   {ExpectedValue: "1"},
+								"uplink_name": {ExpectedValue: "uplink_name_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "vmm_uplink_container.uplink_policies.*", map[string]acceptancetest.AttributeValue{
+								"uplink_id":     {ExpectedValue: "1"},
+								"annotations.#": {ExpectedValue: "2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "vmm_uplink_container.uplink_policies.*.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}, acceptancetest.ParentSetElement{
+								Path: "vmm_uplink_container.uplink_policies.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"uplink_id": {ExpectedValue: "1"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "vmm_uplink_container.uplink_policies.*.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}, acceptancetest.ParentSetElement{
+								Path: "vmm_uplink_container.uplink_policies.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"uplink_id": {ExpectedValue: "1"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "vmm_uplink_container.uplink_policies.*", map[string]acceptancetest.AttributeValue{
+								"uplink_id": {ExpectedValue: "1"},
+								"tags.#":    {ExpectedValue: "2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "vmm_uplink_container.uplink_policies.*.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}, acceptancetest.ParentSetElement{
+								Path: "vmm_uplink_container.uplink_policies.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"uplink_id": {ExpectedValue: "1"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "vmm_uplink_container.uplink_policies.*.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}, acceptancetest.ParentSetElement{
+								Path: "vmm_uplink_container.uplink_policies.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"uplink_id": {ExpectedValue: "1"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "vmm_uplink_container.uplink_policies.*", map[string]acceptancetest.AttributeValue{
+								"annotation":  {ExpectedValue: "annotation_2"},
+								"name_alias":  {ExpectedValue: "name_alias_2"},
+								"uplink_id":   {ExpectedValue: "2"},
+								"uplink_name": {ExpectedValue: "uplink_name_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "vmm_uplink_container.uplink_policies.*", map[string]acceptancetest.AttributeValue{
+								"uplink_id":     {ExpectedValue: "2"},
+								"annotations.#": {ExpectedValue: "2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "vmm_uplink_container.uplink_policies.*.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}, acceptancetest.ParentSetElement{
+								Path: "vmm_uplink_container.uplink_policies.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"uplink_id": {ExpectedValue: "2"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "vmm_uplink_container.uplink_policies.*.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}, acceptancetest.ParentSetElement{
+								Path: "vmm_uplink_container.uplink_policies.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"uplink_id": {ExpectedValue: "2"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "vmm_uplink_container.uplink_policies.*", map[string]acceptancetest.AttributeValue{
+								"uplink_id": {ExpectedValue: "2"},
+								"tags.#":    {ExpectedValue: "2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "vmm_uplink_container.uplink_policies.*.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}, acceptancetest.ParentSetElement{
+								Path: "vmm_uplink_container.uplink_policies.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"uplink_id": {ExpectedValue: "2"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "vmm_uplink_container.uplink_policies.*.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}, acceptancetest.ParentSetElement{
+								Path: "vmm_uplink_container.uplink_policies.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"uplink_id": {ExpectedValue: "2"},
+								},
+							}),
+						),
+						resource.TestCheckResourceAttrPair("aci_vmm_domain.test_1", "config_infra_pg", "aci_vmm_domain.test_1", "configure_infra_port_groups"),
+						resource.TestCheckResourceAttrPair("aci_vmm_domain.test_1", "ctrl_knob", "aci_vmm_domain.test_1", "endpoint_data_path_verification"),
+						resource.TestCheckResourceAttrPair("aci_vmm_domain.test_1", "enable_ave", "aci_vmm_domain.test_1", "enable_ave_mode"),
+						resource.TestCheckResourceAttrPair("aci_vmm_domain.test_1", "enable_tag", "aci_vmm_domain.test_1", "enable_tag_collection"),
+						resource.TestCheckResourceAttrPair("aci_vmm_domain.test_1", "enable_vm_folder", "aci_vmm_domain.test_1", "enable_vm_folder_data_retrieval"),
+						resource.TestCheckResourceAttrPair("aci_vmm_domain.test_1", "encap_mode", "aci_vmm_domain.test_1", "encapsulation_mode"),
+						resource.TestCheckResourceAttrPair("aci_vmm_domain.test_1", "enf_pref", "aci_vmm_domain.test_1", "switching_enforcement_preference"),
+						resource.TestCheckResourceAttrPair("aci_vmm_domain.test_1", "ep_inventory_type", "aci_vmm_domain.test_1", "endpoint_inventory_type"),
+						resource.TestCheckResourceAttrPair("aci_vmm_domain.test_1", "ep_ret_time", "aci_vmm_domain.test_1", "endpoint_retention_time"),
+						resource.TestCheckResourceAttrPair("aci_vmm_domain.test_1", "hv_avail_monitor", "aci_vmm_domain.test_1", "host_availability_assurance"),
+						resource.TestCheckResourceAttrPair("aci_vmm_domain.test_1", "mcast_addr", "aci_vmm_domain.test_1", "multicast_address"),
+						resource.TestCheckResourceAttrPair("aci_vmm_domain.test_1", "mode", "aci_vmm_domain.test_1", "switch_type"),
+						resource.TestCheckResourceAttrPair("aci_vmm_domain.test_1", "pref_encap_mode", "aci_vmm_domain.test_1", "default_encapsulation_mode"),
+						resource.TestCheckResourceAttrPair("aci_vmm_domain.test_1", "provider_profile_dn", "aci_vmm_domain.test_1", "parent_dn"),
+						resource.TestCheckResourceAttrPair("aci_vmm_domain.test_1", "relation_infra_rs_vip_addr_ns", "aci_ip_address_pool.test_1.0", "id"),
+						resource.TestCheckResourceAttrPair("aci_vmm_domain.test_1", "relation_infra_rs_vlan_ns", "aci_vlan_pool.test_1.0", "id"),
+					)(state)
+				},
+			},
+			{
+				PreConfig: func() {
+					t.Log("Test: VMM Domain Resource - Repeat Legacy Configuration (Expect Empty Plan)")
+				},
+				ConfigVariables: variables,
+				Config:          testAccResourceVmmDomPLegacyUnchanged,
+				PlanOnly:        true,
+				ConfigPlanChecks: resource.ConfigPlanChecks{
+					PostApplyPreRefresh: []plancheck.PlanCheck{plancheck.ExpectEmptyPlan()},
+				},
+			},
+			{
+				PreConfig: func() {
+					t.Log("Test: VMM Domain Resource - Switch to Current Attributes Without Replacement")
+				},
+				ConfigVariables: variables,
+				Config:          testAccResourceVmmDomPCurrentAfterLegacy,
+				PlanOnly:        true,
+				ConfigPlanChecks: resource.ConfigPlanChecks{
+					PostApplyPreRefresh: []plancheck.PlanCheck{plancheck.ExpectEmptyPlan()},
+				},
+			},
+			{
+				PreConfig: func() {
+					t.Log("Test: VMM Domain Resource - Reject Simultaneous Legacy and Current Inputs")
+				},
+				ConfigVariables: variables,
+				Config:          testAccResourceVmmDomPLegacyConflict,
+				ExpectError:     regexp.MustCompile("Invalid Attribute Combination|Conflicting legacy configuration"),
+			},
+			{
+				PreConfig: func() {
+					t.Log("Test: VMM Domain Resource - Retain Frozen Attribute Configuration")
+				},
+				ConfigVariables: variables,
+				Config:          testAccResourceVmmDomPFrozen,
+				Check: func(state *terraform.State) error {
+					// Evaluate runtime prefixes after PreCheck has initialized the fixture variables.
+					return resource.ComposeAggregateTestCheckFunc(
+						identity.CheckID("aci_vmm_domain.test_1", false),
+						testCheckResourceDN("aci_vmm_domain.test_1", "dom-{name}", "uni", map[string]string{
+							"name": "name",
+						}, []resourceTestDNVariant{}),
+						composeAggregateTestCheckFuncWithVersion(t, "3.1(1i)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "access_mode", "read-only"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "annotation", "annotation_1"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.1(1i)-", "inside",
+							acceptancetest.CheckSemanticStringAttribute("aci_vmm_domain.test_1", "arp_learning", "disabled", customtypes.VMMArpLearningType{}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(10e)-3.2(10g),3.2(3n)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "ave_time_out", "30"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "configure_infra_port_groups", "no"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.0(1k)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "endpoint_data_path_verification", "epDpVerify"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "6.0(3d)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "custom_switch_name", ""),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.0(1m)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "delimiter", "@"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.1(1i)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "enable_ave_mode", "no"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(10e)-3.2(10g),3.2(4d)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "enable_tag_collection", "no"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(10e)-3.2(10g),3.2(6i)-3.2(9h),4.1(2g)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "enable_vm_folder_data_retrieval", "no"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.2(1i)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "encapsulation_mode", "ivxlan"),
+						),
+						resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "switching_enforcement_preference", "hw"),
+						composeAggregateTestCheckFuncWithVersion(t, "3.1(2p)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "endpoint_inventory_type", "none"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.0(1k)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "endpoint_retention_time", "0"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(10e)-3.2(10g),3.2(3n)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "host_availability_assurance", "no"),
+						),
+						resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "multicast_address", "224.0.1.0"),
+						resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "switch_type", "default"),
+						resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "name", fmt.Sprintf("%s-%s", testPrefix, "name_1")),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "name_alias", "name_alias_1"),
+						),
+						resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "owner_key", "owner_key_1"),
+						resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "owner_tag", "owner_tag_1"),
+						resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "parent_dn", "uni/vmmp-VMware"),
+						composeAggregateTestCheckFuncWithVersion(t, "2.1(1h)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "default_encapsulation_mode", "unspecified"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "relation_to_ip_address_pool.annotation", "annotation_1"),
+						),
+						resource.TestCheckResourceAttrPair("aci_vmm_domain.test_1", "relation_to_ip_address_pool.target_dn", "aci_ip_address_pool.test_1.0", "id"),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "relation_to_ip_address_pool.annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "relation_to_ip_address_pool.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "relation_to_ip_address_pool.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "relation_to_ip_address_pool.tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "relation_to_ip_address_pool.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "relation_to_ip_address_pool.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "relation_to_vlan_pool.annotation", "annotation_1"),
+						),
+						resource.TestCheckResourceAttrPair("aci_vmm_domain.test_1", "relation_to_vlan_pool.target_dn", "aci_vlan_pool.test_1.0", "id"),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "relation_to_vlan_pool.annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "relation_to_vlan_pool.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "relation_to_vlan_pool.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "relation_to_vlan_pool.tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "relation_to_vlan_pool.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "relation_to_vlan_pool.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "vmm_uplink_container.annotation", "annotation_1"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "vmm_uplink_container.name_alias", "name_alias_1"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "vmm_uplink_container.number_of_uplinks", "1"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "vmm_uplink_container.annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "vmm_uplink_container.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "vmm_uplink_container.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "vmm_uplink_container.tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "vmm_uplink_container.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "vmm_uplink_container.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "vmm_uplink_container.uplink_policies.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "vmm_uplink_container.uplink_policies.*", map[string]acceptancetest.AttributeValue{
+								"annotation":  {ExpectedValue: "annotation_1"},
+								"name_alias":  {ExpectedValue: "name_alias_1"},
+								"uplink_id":   {ExpectedValue: "1"},
+								"uplink_name": {ExpectedValue: "uplink_name_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "vmm_uplink_container.uplink_policies.*", map[string]acceptancetest.AttributeValue{
+								"uplink_id":     {ExpectedValue: "1"},
+								"annotations.#": {ExpectedValue: "2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "vmm_uplink_container.uplink_policies.*.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}, acceptancetest.ParentSetElement{
+								Path: "vmm_uplink_container.uplink_policies.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"uplink_id": {ExpectedValue: "1"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "vmm_uplink_container.uplink_policies.*.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}, acceptancetest.ParentSetElement{
+								Path: "vmm_uplink_container.uplink_policies.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"uplink_id": {ExpectedValue: "1"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "vmm_uplink_container.uplink_policies.*", map[string]acceptancetest.AttributeValue{
+								"uplink_id": {ExpectedValue: "1"},
+								"tags.#":    {ExpectedValue: "2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "vmm_uplink_container.uplink_policies.*.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}, acceptancetest.ParentSetElement{
+								Path: "vmm_uplink_container.uplink_policies.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"uplink_id": {ExpectedValue: "1"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "vmm_uplink_container.uplink_policies.*.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}, acceptancetest.ParentSetElement{
+								Path: "vmm_uplink_container.uplink_policies.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"uplink_id": {ExpectedValue: "1"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "vmm_uplink_container.uplink_policies.*", map[string]acceptancetest.AttributeValue{
+								"annotation":  {ExpectedValue: "annotation_2"},
+								"name_alias":  {ExpectedValue: "name_alias_2"},
+								"uplink_id":   {ExpectedValue: "2"},
+								"uplink_name": {ExpectedValue: "uplink_name_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "vmm_uplink_container.uplink_policies.*", map[string]acceptancetest.AttributeValue{
+								"uplink_id":     {ExpectedValue: "2"},
+								"annotations.#": {ExpectedValue: "2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "vmm_uplink_container.uplink_policies.*.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}, acceptancetest.ParentSetElement{
+								Path: "vmm_uplink_container.uplink_policies.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"uplink_id": {ExpectedValue: "2"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "vmm_uplink_container.uplink_policies.*.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}, acceptancetest.ParentSetElement{
+								Path: "vmm_uplink_container.uplink_policies.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"uplink_id": {ExpectedValue: "2"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "vmm_uplink_container.uplink_policies.*", map[string]acceptancetest.AttributeValue{
+								"uplink_id": {ExpectedValue: "2"},
+								"tags.#":    {ExpectedValue: "2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "vmm_uplink_container.uplink_policies.*.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}, acceptancetest.ParentSetElement{
+								Path: "vmm_uplink_container.uplink_policies.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"uplink_id": {ExpectedValue: "2"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "vmm_uplink_container.uplink_policies.*.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}, acceptancetest.ParentSetElement{
+								Path: "vmm_uplink_container.uplink_policies.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"uplink_id": {ExpectedValue: "2"},
+								},
+							}),
+						),
+						resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "relation_infra_rs_dom_vxlan_ns_def", "example"),
+						resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "relation_infra_rs_vlan_ns_def", "example"),
+						resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "relation_vmm_rs_default_cdp_if_pol", "example"),
+						resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "relation_vmm_rs_default_fw_pol", "example"),
+						resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "relation_vmm_rs_default_l2_inst_pol", "example"),
+						resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "relation_vmm_rs_default_lacp_lag_pol", "example"),
+						resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "relation_vmm_rs_default_lldp_if_pol", "example"),
+						resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "relation_vmm_rs_default_stp_if_pol", "example"),
+					)(state)
+				},
+			},
+			{
+				PreConfig: func() {
+					t.Log("Test: VMM Domain Resource - Repeat Frozen Configuration (Expect Empty Plan)")
+				},
+				ConfigVariables: variables,
+				Config:          testAccResourceVmmDomPFrozenUnchanged,
+				PlanOnly:        true,
+				ConfigPlanChecks: resource.ConfigPlanChecks{
+					PostApplyPreRefresh: []plancheck.PlanCheck{plancheck.ExpectEmptyPlan()},
+				},
+			},
+			{
+				PreConfig: func() {
+					t.Log("Test: VMM Domain Resource - Clear Frozen Attribute State")
+				},
+				ConfigVariables: variables,
+				Config:          testAccResourceVmmDomPFrozenCleared,
+				Check: func(state *terraform.State) error {
+					// Evaluate runtime prefixes after PreCheck has initialized the fixture variables.
+					return resource.ComposeAggregateTestCheckFunc(
+						identity.CheckID("aci_vmm_domain.test_1", false),
+						testCheckResourceDN("aci_vmm_domain.test_1", "dom-{name}", "uni", map[string]string{
+							"name": "name",
+						}, []resourceTestDNVariant{}),
+						composeAggregateTestCheckFuncWithVersion(t, "3.1(1i)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "access_mode", "read-only"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "annotation", "annotation_1"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.1(1i)-", "inside",
+							acceptancetest.CheckSemanticStringAttribute("aci_vmm_domain.test_1", "arp_learning", "disabled", customtypes.VMMArpLearningType{}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(10e)-3.2(10g),3.2(3n)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "ave_time_out", "30"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "configure_infra_port_groups", "no"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.0(1k)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "endpoint_data_path_verification", "epDpVerify"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "6.0(3d)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "custom_switch_name", ""),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.0(1m)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "delimiter", "@"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.1(1i)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "enable_ave_mode", "no"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(10e)-3.2(10g),3.2(4d)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "enable_tag_collection", "no"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(10e)-3.2(10g),3.2(6i)-3.2(9h),4.1(2g)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "enable_vm_folder_data_retrieval", "no"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.2(1i)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "encapsulation_mode", "ivxlan"),
+						),
+						resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "switching_enforcement_preference", "hw"),
+						composeAggregateTestCheckFuncWithVersion(t, "3.1(2p)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "endpoint_inventory_type", "none"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.0(1k)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "endpoint_retention_time", "0"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(10e)-3.2(10g),3.2(3n)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "host_availability_assurance", "no"),
+						),
+						resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "multicast_address", "224.0.1.0"),
+						resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "switch_type", "default"),
+						resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "name", fmt.Sprintf("%s-%s", testPrefix, "name_1")),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "name_alias", "name_alias_1"),
+						),
+						resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "owner_key", "owner_key_1"),
+						resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "owner_tag", "owner_tag_1"),
+						resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "parent_dn", "uni/vmmp-VMware"),
+						composeAggregateTestCheckFuncWithVersion(t, "2.1(1h)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "default_encapsulation_mode", "unspecified"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "relation_to_ip_address_pool.annotation", "annotation_1"),
+						),
+						resource.TestCheckResourceAttrPair("aci_vmm_domain.test_1", "relation_to_ip_address_pool.target_dn", "aci_ip_address_pool.test_1.0", "id"),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "relation_to_ip_address_pool.annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "relation_to_ip_address_pool.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "relation_to_ip_address_pool.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "relation_to_ip_address_pool.tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "relation_to_ip_address_pool.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "relation_to_ip_address_pool.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "relation_to_vlan_pool.annotation", "annotation_1"),
+						),
+						resource.TestCheckResourceAttrPair("aci_vmm_domain.test_1", "relation_to_vlan_pool.target_dn", "aci_vlan_pool.test_1.0", "id"),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "relation_to_vlan_pool.annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "relation_to_vlan_pool.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "relation_to_vlan_pool.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "relation_to_vlan_pool.tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "relation_to_vlan_pool.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "relation_to_vlan_pool.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "vmm_uplink_container.annotation", "annotation_1"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "vmm_uplink_container.name_alias", "name_alias_1"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "vmm_uplink_container.number_of_uplinks", "1"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "vmm_uplink_container.annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "vmm_uplink_container.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "vmm_uplink_container.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "vmm_uplink_container.tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "vmm_uplink_container.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "vmm_uplink_container.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "vmm_uplink_container.uplink_policies.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "vmm_uplink_container.uplink_policies.*", map[string]acceptancetest.AttributeValue{
+								"annotation":  {ExpectedValue: "annotation_1"},
+								"name_alias":  {ExpectedValue: "name_alias_1"},
+								"uplink_id":   {ExpectedValue: "1"},
+								"uplink_name": {ExpectedValue: "uplink_name_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "vmm_uplink_container.uplink_policies.*", map[string]acceptancetest.AttributeValue{
+								"uplink_id":     {ExpectedValue: "1"},
+								"annotations.#": {ExpectedValue: "2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "vmm_uplink_container.uplink_policies.*.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}, acceptancetest.ParentSetElement{
+								Path: "vmm_uplink_container.uplink_policies.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"uplink_id": {ExpectedValue: "1"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "vmm_uplink_container.uplink_policies.*.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}, acceptancetest.ParentSetElement{
+								Path: "vmm_uplink_container.uplink_policies.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"uplink_id": {ExpectedValue: "1"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "vmm_uplink_container.uplink_policies.*", map[string]acceptancetest.AttributeValue{
+								"uplink_id": {ExpectedValue: "1"},
+								"tags.#":    {ExpectedValue: "2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "vmm_uplink_container.uplink_policies.*.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}, acceptancetest.ParentSetElement{
+								Path: "vmm_uplink_container.uplink_policies.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"uplink_id": {ExpectedValue: "1"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "vmm_uplink_container.uplink_policies.*.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}, acceptancetest.ParentSetElement{
+								Path: "vmm_uplink_container.uplink_policies.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"uplink_id": {ExpectedValue: "1"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "vmm_uplink_container.uplink_policies.*", map[string]acceptancetest.AttributeValue{
+								"annotation":  {ExpectedValue: "annotation_2"},
+								"name_alias":  {ExpectedValue: "name_alias_2"},
+								"uplink_id":   {ExpectedValue: "2"},
+								"uplink_name": {ExpectedValue: "uplink_name_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "vmm_uplink_container.uplink_policies.*", map[string]acceptancetest.AttributeValue{
+								"uplink_id":     {ExpectedValue: "2"},
+								"annotations.#": {ExpectedValue: "2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "vmm_uplink_container.uplink_policies.*.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}, acceptancetest.ParentSetElement{
+								Path: "vmm_uplink_container.uplink_policies.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"uplink_id": {ExpectedValue: "2"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "vmm_uplink_container.uplink_policies.*.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}, acceptancetest.ParentSetElement{
+								Path: "vmm_uplink_container.uplink_policies.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"uplink_id": {ExpectedValue: "2"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "vmm_uplink_container.uplink_policies.*", map[string]acceptancetest.AttributeValue{
+								"uplink_id": {ExpectedValue: "2"},
+								"tags.#":    {ExpectedValue: "2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "vmm_uplink_container.uplink_policies.*.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}, acceptancetest.ParentSetElement{
+								Path: "vmm_uplink_container.uplink_policies.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"uplink_id": {ExpectedValue: "2"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.2(1i)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_domain.test_1", "vmm_uplink_container.uplink_policies.*.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}, acceptancetest.ParentSetElement{
+								Path: "vmm_uplink_container.uplink_policies.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"uplink_id": {ExpectedValue: "2"},
+								},
+							}),
+						),
+						resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "relation_infra_rs_dom_vxlan_ns_def", ""),
+						resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "relation_infra_rs_vlan_ns_def", ""),
+						resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "relation_vmm_rs_default_cdp_if_pol", ""),
+						resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "relation_vmm_rs_default_fw_pol", ""),
+						resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "relation_vmm_rs_default_l2_inst_pol", ""),
+						resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "relation_vmm_rs_default_lacp_lag_pol", ""),
+						resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "relation_vmm_rs_default_lldp_if_pol", ""),
+						resource.TestCheckResourceAttr("aci_vmm_domain.test_1", "relation_vmm_rs_default_stp_if_pol", ""),
+					)(state)
+				},
+			},
+			{
+				PreConfig: func() {
 					t.Log("Test: VMM Domain Resource - Update Mutable Attributes in Place")
 				},
 				ConfigVariables: variables,
@@ -4993,6 +6092,1186 @@ resource "aci_vmm_domain" "test_1" {
       },
     ]
   } : null
+}
+`
+
+const testAccResourceVmmDomPLegacy = testAccResourceVmmDomPDependencies + `
+resource "aci_vmm_domain" "test_1" {
+  access_mode        = provider::aci::compare_versions(var.apic_version, "inside", "3.1(1i)-") ? "read-only" : null
+  annotation         = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+  arp_learning       = provider::aci::compare_versions(var.apic_version, "inside", "3.1(1i)-") ? "disabled" : null
+  ave_time_out       = provider::aci::compare_versions(var.apic_version, "inside", "3.2(10e)-3.2(10g),3.2(3n)-") ? "30" : null
+  custom_switch_name = provider::aci::compare_versions(var.apic_version, "inside", "6.0(3d)-") ? "" : null
+  delimiter          = provider::aci::compare_versions(var.apic_version, "inside", "2.0(1m)-") ? "@" : null
+  name               = format("%s-%s", var.test_prefix, "name_1")
+  name_alias         = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
+  owner_key          = "owner_key_1"
+  owner_tag          = "owner_tag_1"
+  annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  vmm_uplink_container = provider::aci::compare_versions(var.apic_version, "inside", "4.2(1i)-") ? {
+    annotation        = "annotation_1"
+    name_alias        = "name_alias_1"
+    number_of_uplinks = "1"
+    annotations = [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ]
+    tags = [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ]
+    uplink_policies = [
+      {
+        annotation  = "annotation_1"
+        name_alias  = "name_alias_1"
+        uplink_id   = "1"
+        uplink_name = "uplink_name_1"
+        annotations = [
+          {
+            key   = "key_1"
+            value = "value_1"
+          },
+          {
+            key   = "key_2"
+            value = "value_2"
+          },
+        ]
+        tags = [
+          {
+            key   = "key_1"
+            value = "value_1"
+          },
+          {
+            key   = "key_2"
+            value = "value_2"
+          },
+        ]
+      },
+      {
+        annotation  = "annotation_2"
+        name_alias  = "name_alias_2"
+        uplink_id   = "2"
+        uplink_name = "uplink_name_2"
+        annotations = [
+          {
+            key   = "key_1"
+            value = "value_1"
+          },
+          {
+            key   = "key_2"
+            value = "value_2"
+          },
+        ]
+        tags = [
+          {
+            key   = "key_1"
+            value = "value_1"
+          },
+          {
+            key   = "key_2"
+            value = "value_2"
+          },
+        ]
+      },
+    ]
+  } : null
+  config_infra_pg               = provider::aci::compare_versions(var.apic_version, "inside", "4.0(1h)-") ? "no" : null
+  ctrl_knob                     = provider::aci::compare_versions(var.apic_version, "inside", "3.0(1k)-") ? "epDpVerify" : null
+  enable_ave                    = provider::aci::compare_versions(var.apic_version, "inside", "3.1(1i)-") ? "no" : null
+  enable_tag                    = provider::aci::compare_versions(var.apic_version, "inside", "3.2(10e)-3.2(10g),3.2(4d)-") ? "no" : null
+  enable_vm_folder              = provider::aci::compare_versions(var.apic_version, "inside", "3.2(10e)-3.2(10g),3.2(6i)-3.2(9h),4.1(2g)-") ? "no" : null
+  encap_mode                    = provider::aci::compare_versions(var.apic_version, "inside", "1.2(1i)-") ? "ivxlan" : null
+  enf_pref                      = "hw"
+  ep_inventory_type             = provider::aci::compare_versions(var.apic_version, "inside", "3.1(2p)-") ? "none" : null
+  ep_ret_time                   = provider::aci::compare_versions(var.apic_version, "inside", "3.0(1k)-") ? "0" : null
+  hv_avail_monitor              = provider::aci::compare_versions(var.apic_version, "inside", "3.2(10e)-3.2(10g),3.2(3n)-") ? "no" : null
+  mcast_addr                    = "224.0.1.0"
+  mode                          = "default"
+  pref_encap_mode               = provider::aci::compare_versions(var.apic_version, "inside", "2.1(1h)-") ? "unspecified" : null
+  provider_profile_dn           = "uni/vmmp-VMware"
+  relation_infra_rs_vip_addr_ns = aci_ip_address_pool.test_1[0].id
+  relation_infra_rs_vlan_ns     = aci_vlan_pool.test_1[0].id
+}
+`
+
+const testAccResourceVmmDomPLegacyUnchanged = testAccResourceVmmDomPDependencies + `
+resource "aci_vmm_domain" "test_1" {
+  access_mode        = provider::aci::compare_versions(var.apic_version, "inside", "3.1(1i)-") ? "read-only" : null
+  annotation         = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+  arp_learning       = provider::aci::compare_versions(var.apic_version, "inside", "3.1(1i)-") ? "disabled" : null
+  ave_time_out       = provider::aci::compare_versions(var.apic_version, "inside", "3.2(10e)-3.2(10g),3.2(3n)-") ? "30" : null
+  custom_switch_name = provider::aci::compare_versions(var.apic_version, "inside", "6.0(3d)-") ? "" : null
+  delimiter          = provider::aci::compare_versions(var.apic_version, "inside", "2.0(1m)-") ? "@" : null
+  name               = format("%s-%s", var.test_prefix, "name_1")
+  name_alias         = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
+  owner_key          = "owner_key_1"
+  owner_tag          = "owner_tag_1"
+  annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  vmm_uplink_container = provider::aci::compare_versions(var.apic_version, "inside", "4.2(1i)-") ? {
+    annotation        = "annotation_1"
+    name_alias        = "name_alias_1"
+    number_of_uplinks = "1"
+    annotations = [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ]
+    tags = [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ]
+    uplink_policies = [
+      {
+        annotation  = "annotation_1"
+        name_alias  = "name_alias_1"
+        uplink_id   = "1"
+        uplink_name = "uplink_name_1"
+        annotations = [
+          {
+            key   = "key_1"
+            value = "value_1"
+          },
+          {
+            key   = "key_2"
+            value = "value_2"
+          },
+        ]
+        tags = [
+          {
+            key   = "key_1"
+            value = "value_1"
+          },
+          {
+            key   = "key_2"
+            value = "value_2"
+          },
+        ]
+      },
+      {
+        annotation  = "annotation_2"
+        name_alias  = "name_alias_2"
+        uplink_id   = "2"
+        uplink_name = "uplink_name_2"
+        annotations = [
+          {
+            key   = "key_1"
+            value = "value_1"
+          },
+          {
+            key   = "key_2"
+            value = "value_2"
+          },
+        ]
+        tags = [
+          {
+            key   = "key_1"
+            value = "value_1"
+          },
+          {
+            key   = "key_2"
+            value = "value_2"
+          },
+        ]
+      },
+    ]
+  } : null
+  config_infra_pg               = provider::aci::compare_versions(var.apic_version, "inside", "4.0(1h)-") ? "no" : null
+  ctrl_knob                     = provider::aci::compare_versions(var.apic_version, "inside", "3.0(1k)-") ? "epDpVerify" : null
+  enable_ave                    = provider::aci::compare_versions(var.apic_version, "inside", "3.1(1i)-") ? "no" : null
+  enable_tag                    = provider::aci::compare_versions(var.apic_version, "inside", "3.2(10e)-3.2(10g),3.2(4d)-") ? "no" : null
+  enable_vm_folder              = provider::aci::compare_versions(var.apic_version, "inside", "3.2(10e)-3.2(10g),3.2(6i)-3.2(9h),4.1(2g)-") ? "no" : null
+  encap_mode                    = provider::aci::compare_versions(var.apic_version, "inside", "1.2(1i)-") ? "ivxlan" : null
+  enf_pref                      = "hw"
+  ep_inventory_type             = provider::aci::compare_versions(var.apic_version, "inside", "3.1(2p)-") ? "none" : null
+  ep_ret_time                   = provider::aci::compare_versions(var.apic_version, "inside", "3.0(1k)-") ? "0" : null
+  hv_avail_monitor              = provider::aci::compare_versions(var.apic_version, "inside", "3.2(10e)-3.2(10g),3.2(3n)-") ? "no" : null
+  mcast_addr                    = "224.0.1.0"
+  mode                          = "default"
+  pref_encap_mode               = provider::aci::compare_versions(var.apic_version, "inside", "2.1(1h)-") ? "unspecified" : null
+  provider_profile_dn           = "uni/vmmp-VMware"
+  relation_infra_rs_vip_addr_ns = aci_ip_address_pool.test_1[0].id
+  relation_infra_rs_vlan_ns     = aci_vlan_pool.test_1[0].id
+}
+`
+
+const testAccResourceVmmDomPCurrentAfterLegacy = testAccResourceVmmDomPDependencies + `
+resource "aci_vmm_domain" "test_1" {
+  access_mode                      = provider::aci::compare_versions(var.apic_version, "inside", "3.1(1i)-") ? "read-only" : null
+  annotation                       = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+  arp_learning                     = provider::aci::compare_versions(var.apic_version, "inside", "3.1(1i)-") ? "disabled" : null
+  ave_time_out                     = provider::aci::compare_versions(var.apic_version, "inside", "3.2(10e)-3.2(10g),3.2(3n)-") ? "30" : null
+  configure_infra_port_groups      = provider::aci::compare_versions(var.apic_version, "inside", "4.0(1h)-") ? "no" : null
+  endpoint_data_path_verification  = provider::aci::compare_versions(var.apic_version, "inside", "3.0(1k)-") ? "epDpVerify" : null
+  custom_switch_name               = provider::aci::compare_versions(var.apic_version, "inside", "6.0(3d)-") ? "" : null
+  delimiter                        = provider::aci::compare_versions(var.apic_version, "inside", "2.0(1m)-") ? "@" : null
+  enable_ave_mode                  = provider::aci::compare_versions(var.apic_version, "inside", "3.1(1i)-") ? "no" : null
+  enable_tag_collection            = provider::aci::compare_versions(var.apic_version, "inside", "3.2(10e)-3.2(10g),3.2(4d)-") ? "no" : null
+  enable_vm_folder_data_retrieval  = provider::aci::compare_versions(var.apic_version, "inside", "3.2(10e)-3.2(10g),3.2(6i)-3.2(9h),4.1(2g)-") ? "no" : null
+  encapsulation_mode               = provider::aci::compare_versions(var.apic_version, "inside", "1.2(1i)-") ? "ivxlan" : null
+  switching_enforcement_preference = "hw"
+  endpoint_inventory_type          = provider::aci::compare_versions(var.apic_version, "inside", "3.1(2p)-") ? "none" : null
+  endpoint_retention_time          = provider::aci::compare_versions(var.apic_version, "inside", "3.0(1k)-") ? "0" : null
+  host_availability_assurance      = provider::aci::compare_versions(var.apic_version, "inside", "3.2(10e)-3.2(10g),3.2(3n)-") ? "no" : null
+  multicast_address                = "224.0.1.0"
+  switch_type                      = "default"
+  name                             = format("%s-%s", var.test_prefix, "name_1")
+  name_alias                       = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
+  owner_key                        = "owner_key_1"
+  owner_tag                        = "owner_tag_1"
+  parent_dn                        = "uni/vmmp-VMware"
+  default_encapsulation_mode       = provider::aci::compare_versions(var.apic_version, "inside", "2.1(1h)-") ? "unspecified" : null
+  relation_to_ip_address_pool = {
+    annotation = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    target_dn  = aci_ip_address_pool.test_1[0].id
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  relation_to_vlan_pool = {
+    annotation = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    target_dn  = aci_vlan_pool.test_1[0].id
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  vmm_uplink_container = provider::aci::compare_versions(var.apic_version, "inside", "4.2(1i)-") ? {
+    annotation        = "annotation_1"
+    name_alias        = "name_alias_1"
+    number_of_uplinks = "1"
+    annotations = [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ]
+    tags = [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ]
+    uplink_policies = [
+      {
+        annotation  = "annotation_1"
+        name_alias  = "name_alias_1"
+        uplink_id   = "1"
+        uplink_name = "uplink_name_1"
+        annotations = [
+          {
+            key   = "key_1"
+            value = "value_1"
+          },
+          {
+            key   = "key_2"
+            value = "value_2"
+          },
+        ]
+        tags = [
+          {
+            key   = "key_1"
+            value = "value_1"
+          },
+          {
+            key   = "key_2"
+            value = "value_2"
+          },
+        ]
+      },
+      {
+        annotation  = "annotation_2"
+        name_alias  = "name_alias_2"
+        uplink_id   = "2"
+        uplink_name = "uplink_name_2"
+        annotations = [
+          {
+            key   = "key_1"
+            value = "value_1"
+          },
+          {
+            key   = "key_2"
+            value = "value_2"
+          },
+        ]
+        tags = [
+          {
+            key   = "key_1"
+            value = "value_1"
+          },
+          {
+            key   = "key_2"
+            value = "value_2"
+          },
+        ]
+      },
+    ]
+  } : null
+}
+`
+
+const testAccResourceVmmDomPLegacyConflict = testAccResourceVmmDomPDependencies + `
+resource "aci_vmm_domain" "test_1" {
+  access_mode                      = provider::aci::compare_versions(var.apic_version, "inside", "3.1(1i)-") ? "read-only" : null
+  annotation                       = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+  arp_learning                     = provider::aci::compare_versions(var.apic_version, "inside", "3.1(1i)-") ? "disabled" : null
+  ave_time_out                     = provider::aci::compare_versions(var.apic_version, "inside", "3.2(10e)-3.2(10g),3.2(3n)-") ? "30" : null
+  configure_infra_port_groups      = provider::aci::compare_versions(var.apic_version, "inside", "4.0(1h)-") ? "no" : null
+  endpoint_data_path_verification  = provider::aci::compare_versions(var.apic_version, "inside", "3.0(1k)-") ? "epDpVerify" : null
+  custom_switch_name               = provider::aci::compare_versions(var.apic_version, "inside", "6.0(3d)-") ? "" : null
+  delimiter                        = provider::aci::compare_versions(var.apic_version, "inside", "2.0(1m)-") ? "@" : null
+  enable_ave_mode                  = provider::aci::compare_versions(var.apic_version, "inside", "3.1(1i)-") ? "no" : null
+  enable_tag_collection            = provider::aci::compare_versions(var.apic_version, "inside", "3.2(10e)-3.2(10g),3.2(4d)-") ? "no" : null
+  enable_vm_folder_data_retrieval  = provider::aci::compare_versions(var.apic_version, "inside", "3.2(10e)-3.2(10g),3.2(6i)-3.2(9h),4.1(2g)-") ? "no" : null
+  encapsulation_mode               = provider::aci::compare_versions(var.apic_version, "inside", "1.2(1i)-") ? "ivxlan" : null
+  switching_enforcement_preference = "hw"
+  endpoint_inventory_type          = provider::aci::compare_versions(var.apic_version, "inside", "3.1(2p)-") ? "none" : null
+  endpoint_retention_time          = provider::aci::compare_versions(var.apic_version, "inside", "3.0(1k)-") ? "0" : null
+  host_availability_assurance      = provider::aci::compare_versions(var.apic_version, "inside", "3.2(10e)-3.2(10g),3.2(3n)-") ? "no" : null
+  multicast_address                = "224.0.1.0"
+  switch_type                      = "default"
+  name                             = format("%s-%s", var.test_prefix, "name_1")
+  name_alias                       = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
+  owner_key                        = "owner_key_1"
+  owner_tag                        = "owner_tag_1"
+  parent_dn                        = "uni/vmmp-VMware"
+  default_encapsulation_mode       = provider::aci::compare_versions(var.apic_version, "inside", "2.1(1h)-") ? "unspecified" : null
+  relation_to_ip_address_pool = {
+    annotation = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    target_dn  = aci_ip_address_pool.test_1[0].id
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  relation_to_vlan_pool = {
+    annotation = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    target_dn  = aci_vlan_pool.test_1[0].id
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  vmm_uplink_container = provider::aci::compare_versions(var.apic_version, "inside", "4.2(1i)-") ? {
+    annotation        = "annotation_1"
+    name_alias        = "name_alias_1"
+    number_of_uplinks = "1"
+    annotations = [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ]
+    tags = [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ]
+    uplink_policies = [
+      {
+        annotation  = "annotation_1"
+        name_alias  = "name_alias_1"
+        uplink_id   = "1"
+        uplink_name = "uplink_name_1"
+        annotations = [
+          {
+            key   = "key_1"
+            value = "value_1"
+          },
+          {
+            key   = "key_2"
+            value = "value_2"
+          },
+        ]
+        tags = [
+          {
+            key   = "key_1"
+            value = "value_1"
+          },
+          {
+            key   = "key_2"
+            value = "value_2"
+          },
+        ]
+      },
+      {
+        annotation  = "annotation_2"
+        name_alias  = "name_alias_2"
+        uplink_id   = "2"
+        uplink_name = "uplink_name_2"
+        annotations = [
+          {
+            key   = "key_1"
+            value = "value_1"
+          },
+          {
+            key   = "key_2"
+            value = "value_2"
+          },
+        ]
+        tags = [
+          {
+            key   = "key_1"
+            value = "value_1"
+          },
+          {
+            key   = "key_2"
+            value = "value_2"
+          },
+        ]
+      },
+    ]
+  } : null
+  config_infra_pg               = provider::aci::compare_versions(var.apic_version, "inside", "4.0(1h)-") ? "no" : null
+  ctrl_knob                     = provider::aci::compare_versions(var.apic_version, "inside", "3.0(1k)-") ? "epDpVerify" : null
+  enable_ave                    = provider::aci::compare_versions(var.apic_version, "inside", "3.1(1i)-") ? "no" : null
+  enable_tag                    = provider::aci::compare_versions(var.apic_version, "inside", "3.2(10e)-3.2(10g),3.2(4d)-") ? "no" : null
+  enable_vm_folder              = provider::aci::compare_versions(var.apic_version, "inside", "3.2(10e)-3.2(10g),3.2(6i)-3.2(9h),4.1(2g)-") ? "no" : null
+  encap_mode                    = provider::aci::compare_versions(var.apic_version, "inside", "1.2(1i)-") ? "ivxlan" : null
+  enf_pref                      = "hw"
+  ep_inventory_type             = provider::aci::compare_versions(var.apic_version, "inside", "3.1(2p)-") ? "none" : null
+  ep_ret_time                   = provider::aci::compare_versions(var.apic_version, "inside", "3.0(1k)-") ? "0" : null
+  hv_avail_monitor              = provider::aci::compare_versions(var.apic_version, "inside", "3.2(10e)-3.2(10g),3.2(3n)-") ? "no" : null
+  mcast_addr                    = "224.0.1.0"
+  mode                          = "default"
+  pref_encap_mode               = provider::aci::compare_versions(var.apic_version, "inside", "2.1(1h)-") ? "unspecified" : null
+  provider_profile_dn           = "uni/vmmp-VMware"
+  relation_infra_rs_vip_addr_ns = aci_ip_address_pool.test_1[0].id
+  relation_infra_rs_vlan_ns     = aci_vlan_pool.test_1[0].id
+}
+`
+
+const testAccResourceVmmDomPFrozen = testAccResourceVmmDomPDependencies + `
+resource "aci_vmm_domain" "test_1" {
+  access_mode                      = provider::aci::compare_versions(var.apic_version, "inside", "3.1(1i)-") ? "read-only" : null
+  annotation                       = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+  arp_learning                     = provider::aci::compare_versions(var.apic_version, "inside", "3.1(1i)-") ? "disabled" : null
+  ave_time_out                     = provider::aci::compare_versions(var.apic_version, "inside", "3.2(10e)-3.2(10g),3.2(3n)-") ? "30" : null
+  configure_infra_port_groups      = provider::aci::compare_versions(var.apic_version, "inside", "4.0(1h)-") ? "no" : null
+  endpoint_data_path_verification  = provider::aci::compare_versions(var.apic_version, "inside", "3.0(1k)-") ? "epDpVerify" : null
+  custom_switch_name               = provider::aci::compare_versions(var.apic_version, "inside", "6.0(3d)-") ? "" : null
+  delimiter                        = provider::aci::compare_versions(var.apic_version, "inside", "2.0(1m)-") ? "@" : null
+  enable_ave_mode                  = provider::aci::compare_versions(var.apic_version, "inside", "3.1(1i)-") ? "no" : null
+  enable_tag_collection            = provider::aci::compare_versions(var.apic_version, "inside", "3.2(10e)-3.2(10g),3.2(4d)-") ? "no" : null
+  enable_vm_folder_data_retrieval  = provider::aci::compare_versions(var.apic_version, "inside", "3.2(10e)-3.2(10g),3.2(6i)-3.2(9h),4.1(2g)-") ? "no" : null
+  encapsulation_mode               = provider::aci::compare_versions(var.apic_version, "inside", "1.2(1i)-") ? "ivxlan" : null
+  switching_enforcement_preference = "hw"
+  endpoint_inventory_type          = provider::aci::compare_versions(var.apic_version, "inside", "3.1(2p)-") ? "none" : null
+  endpoint_retention_time          = provider::aci::compare_versions(var.apic_version, "inside", "3.0(1k)-") ? "0" : null
+  host_availability_assurance      = provider::aci::compare_versions(var.apic_version, "inside", "3.2(10e)-3.2(10g),3.2(3n)-") ? "no" : null
+  multicast_address                = "224.0.1.0"
+  switch_type                      = "default"
+  name                             = format("%s-%s", var.test_prefix, "name_1")
+  name_alias                       = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
+  owner_key                        = "owner_key_1"
+  owner_tag                        = "owner_tag_1"
+  parent_dn                        = "uni/vmmp-VMware"
+  default_encapsulation_mode       = provider::aci::compare_versions(var.apic_version, "inside", "2.1(1h)-") ? "unspecified" : null
+  relation_to_ip_address_pool = {
+    annotation = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    target_dn  = aci_ip_address_pool.test_1[0].id
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  relation_to_vlan_pool = {
+    annotation = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    target_dn  = aci_vlan_pool.test_1[0].id
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  vmm_uplink_container = provider::aci::compare_versions(var.apic_version, "inside", "4.2(1i)-") ? {
+    annotation        = "annotation_1"
+    name_alias        = "name_alias_1"
+    number_of_uplinks = "1"
+    annotations = [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ]
+    tags = [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ]
+    uplink_policies = [
+      {
+        annotation  = "annotation_1"
+        name_alias  = "name_alias_1"
+        uplink_id   = "1"
+        uplink_name = "uplink_name_1"
+        annotations = [
+          {
+            key   = "key_1"
+            value = "value_1"
+          },
+          {
+            key   = "key_2"
+            value = "value_2"
+          },
+        ]
+        tags = [
+          {
+            key   = "key_1"
+            value = "value_1"
+          },
+          {
+            key   = "key_2"
+            value = "value_2"
+          },
+        ]
+      },
+      {
+        annotation  = "annotation_2"
+        name_alias  = "name_alias_2"
+        uplink_id   = "2"
+        uplink_name = "uplink_name_2"
+        annotations = [
+          {
+            key   = "key_1"
+            value = "value_1"
+          },
+          {
+            key   = "key_2"
+            value = "value_2"
+          },
+        ]
+        tags = [
+          {
+            key   = "key_1"
+            value = "value_1"
+          },
+          {
+            key   = "key_2"
+            value = "value_2"
+          },
+        ]
+      },
+    ]
+  } : null
+  relation_infra_rs_dom_vxlan_ns_def   = "example"
+  relation_infra_rs_vlan_ns_def        = "example"
+  relation_vmm_rs_default_cdp_if_pol   = "example"
+  relation_vmm_rs_default_fw_pol       = "example"
+  relation_vmm_rs_default_l2_inst_pol  = "example"
+  relation_vmm_rs_default_lacp_lag_pol = "example"
+  relation_vmm_rs_default_lldp_if_pol  = "example"
+  relation_vmm_rs_default_stp_if_pol   = "example"
+}
+`
+
+const testAccResourceVmmDomPFrozenUnchanged = testAccResourceVmmDomPDependencies + `
+resource "aci_vmm_domain" "test_1" {
+  access_mode                      = provider::aci::compare_versions(var.apic_version, "inside", "3.1(1i)-") ? "read-only" : null
+  annotation                       = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+  arp_learning                     = provider::aci::compare_versions(var.apic_version, "inside", "3.1(1i)-") ? "disabled" : null
+  ave_time_out                     = provider::aci::compare_versions(var.apic_version, "inside", "3.2(10e)-3.2(10g),3.2(3n)-") ? "30" : null
+  configure_infra_port_groups      = provider::aci::compare_versions(var.apic_version, "inside", "4.0(1h)-") ? "no" : null
+  endpoint_data_path_verification  = provider::aci::compare_versions(var.apic_version, "inside", "3.0(1k)-") ? "epDpVerify" : null
+  custom_switch_name               = provider::aci::compare_versions(var.apic_version, "inside", "6.0(3d)-") ? "" : null
+  delimiter                        = provider::aci::compare_versions(var.apic_version, "inside", "2.0(1m)-") ? "@" : null
+  enable_ave_mode                  = provider::aci::compare_versions(var.apic_version, "inside", "3.1(1i)-") ? "no" : null
+  enable_tag_collection            = provider::aci::compare_versions(var.apic_version, "inside", "3.2(10e)-3.2(10g),3.2(4d)-") ? "no" : null
+  enable_vm_folder_data_retrieval  = provider::aci::compare_versions(var.apic_version, "inside", "3.2(10e)-3.2(10g),3.2(6i)-3.2(9h),4.1(2g)-") ? "no" : null
+  encapsulation_mode               = provider::aci::compare_versions(var.apic_version, "inside", "1.2(1i)-") ? "ivxlan" : null
+  switching_enforcement_preference = "hw"
+  endpoint_inventory_type          = provider::aci::compare_versions(var.apic_version, "inside", "3.1(2p)-") ? "none" : null
+  endpoint_retention_time          = provider::aci::compare_versions(var.apic_version, "inside", "3.0(1k)-") ? "0" : null
+  host_availability_assurance      = provider::aci::compare_versions(var.apic_version, "inside", "3.2(10e)-3.2(10g),3.2(3n)-") ? "no" : null
+  multicast_address                = "224.0.1.0"
+  switch_type                      = "default"
+  name                             = format("%s-%s", var.test_prefix, "name_1")
+  name_alias                       = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
+  owner_key                        = "owner_key_1"
+  owner_tag                        = "owner_tag_1"
+  parent_dn                        = "uni/vmmp-VMware"
+  default_encapsulation_mode       = provider::aci::compare_versions(var.apic_version, "inside", "2.1(1h)-") ? "unspecified" : null
+  relation_to_ip_address_pool = {
+    annotation = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    target_dn  = aci_ip_address_pool.test_1[0].id
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  relation_to_vlan_pool = {
+    annotation = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    target_dn  = aci_vlan_pool.test_1[0].id
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  vmm_uplink_container = provider::aci::compare_versions(var.apic_version, "inside", "4.2(1i)-") ? {
+    annotation        = "annotation_1"
+    name_alias        = "name_alias_1"
+    number_of_uplinks = "1"
+    annotations = [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ]
+    tags = [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ]
+    uplink_policies = [
+      {
+        annotation  = "annotation_1"
+        name_alias  = "name_alias_1"
+        uplink_id   = "1"
+        uplink_name = "uplink_name_1"
+        annotations = [
+          {
+            key   = "key_1"
+            value = "value_1"
+          },
+          {
+            key   = "key_2"
+            value = "value_2"
+          },
+        ]
+        tags = [
+          {
+            key   = "key_1"
+            value = "value_1"
+          },
+          {
+            key   = "key_2"
+            value = "value_2"
+          },
+        ]
+      },
+      {
+        annotation  = "annotation_2"
+        name_alias  = "name_alias_2"
+        uplink_id   = "2"
+        uplink_name = "uplink_name_2"
+        annotations = [
+          {
+            key   = "key_1"
+            value = "value_1"
+          },
+          {
+            key   = "key_2"
+            value = "value_2"
+          },
+        ]
+        tags = [
+          {
+            key   = "key_1"
+            value = "value_1"
+          },
+          {
+            key   = "key_2"
+            value = "value_2"
+          },
+        ]
+      },
+    ]
+  } : null
+  relation_infra_rs_dom_vxlan_ns_def   = "example"
+  relation_infra_rs_vlan_ns_def        = "example"
+  relation_vmm_rs_default_cdp_if_pol   = "example"
+  relation_vmm_rs_default_fw_pol       = "example"
+  relation_vmm_rs_default_l2_inst_pol  = "example"
+  relation_vmm_rs_default_lacp_lag_pol = "example"
+  relation_vmm_rs_default_lldp_if_pol  = "example"
+  relation_vmm_rs_default_stp_if_pol   = "example"
+}
+`
+
+const testAccResourceVmmDomPFrozenCleared = testAccResourceVmmDomPDependencies + `
+resource "aci_vmm_domain" "test_1" {
+  access_mode                      = provider::aci::compare_versions(var.apic_version, "inside", "3.1(1i)-") ? "read-only" : null
+  annotation                       = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+  arp_learning                     = provider::aci::compare_versions(var.apic_version, "inside", "3.1(1i)-") ? "disabled" : null
+  ave_time_out                     = provider::aci::compare_versions(var.apic_version, "inside", "3.2(10e)-3.2(10g),3.2(3n)-") ? "30" : null
+  configure_infra_port_groups      = provider::aci::compare_versions(var.apic_version, "inside", "4.0(1h)-") ? "no" : null
+  endpoint_data_path_verification  = provider::aci::compare_versions(var.apic_version, "inside", "3.0(1k)-") ? "epDpVerify" : null
+  custom_switch_name               = provider::aci::compare_versions(var.apic_version, "inside", "6.0(3d)-") ? "" : null
+  delimiter                        = provider::aci::compare_versions(var.apic_version, "inside", "2.0(1m)-") ? "@" : null
+  enable_ave_mode                  = provider::aci::compare_versions(var.apic_version, "inside", "3.1(1i)-") ? "no" : null
+  enable_tag_collection            = provider::aci::compare_versions(var.apic_version, "inside", "3.2(10e)-3.2(10g),3.2(4d)-") ? "no" : null
+  enable_vm_folder_data_retrieval  = provider::aci::compare_versions(var.apic_version, "inside", "3.2(10e)-3.2(10g),3.2(6i)-3.2(9h),4.1(2g)-") ? "no" : null
+  encapsulation_mode               = provider::aci::compare_versions(var.apic_version, "inside", "1.2(1i)-") ? "ivxlan" : null
+  switching_enforcement_preference = "hw"
+  endpoint_inventory_type          = provider::aci::compare_versions(var.apic_version, "inside", "3.1(2p)-") ? "none" : null
+  endpoint_retention_time          = provider::aci::compare_versions(var.apic_version, "inside", "3.0(1k)-") ? "0" : null
+  host_availability_assurance      = provider::aci::compare_versions(var.apic_version, "inside", "3.2(10e)-3.2(10g),3.2(3n)-") ? "no" : null
+  multicast_address                = "224.0.1.0"
+  switch_type                      = "default"
+  name                             = format("%s-%s", var.test_prefix, "name_1")
+  name_alias                       = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
+  owner_key                        = "owner_key_1"
+  owner_tag                        = "owner_tag_1"
+  parent_dn                        = "uni/vmmp-VMware"
+  default_encapsulation_mode       = provider::aci::compare_versions(var.apic_version, "inside", "2.1(1h)-") ? "unspecified" : null
+  relation_to_ip_address_pool = {
+    annotation = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    target_dn  = aci_ip_address_pool.test_1[0].id
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  relation_to_vlan_pool = {
+    annotation = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    target_dn  = aci_vlan_pool.test_1[0].id
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  vmm_uplink_container = provider::aci::compare_versions(var.apic_version, "inside", "4.2(1i)-") ? {
+    annotation        = "annotation_1"
+    name_alias        = "name_alias_1"
+    number_of_uplinks = "1"
+    annotations = [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ]
+    tags = [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ]
+    uplink_policies = [
+      {
+        annotation  = "annotation_1"
+        name_alias  = "name_alias_1"
+        uplink_id   = "1"
+        uplink_name = "uplink_name_1"
+        annotations = [
+          {
+            key   = "key_1"
+            value = "value_1"
+          },
+          {
+            key   = "key_2"
+            value = "value_2"
+          },
+        ]
+        tags = [
+          {
+            key   = "key_1"
+            value = "value_1"
+          },
+          {
+            key   = "key_2"
+            value = "value_2"
+          },
+        ]
+      },
+      {
+        annotation  = "annotation_2"
+        name_alias  = "name_alias_2"
+        uplink_id   = "2"
+        uplink_name = "uplink_name_2"
+        annotations = [
+          {
+            key   = "key_1"
+            value = "value_1"
+          },
+          {
+            key   = "key_2"
+            value = "value_2"
+          },
+        ]
+        tags = [
+          {
+            key   = "key_1"
+            value = "value_1"
+          },
+          {
+            key   = "key_2"
+            value = "value_2"
+          },
+        ]
+      },
+    ]
+  } : null
+  relation_infra_rs_dom_vxlan_ns_def   = ""
+  relation_infra_rs_vlan_ns_def        = ""
+  relation_vmm_rs_default_cdp_if_pol   = ""
+  relation_vmm_rs_default_fw_pol       = ""
+  relation_vmm_rs_default_l2_inst_pol  = ""
+  relation_vmm_rs_default_lacp_lag_pol = ""
+  relation_vmm_rs_default_lldp_if_pol  = ""
+  relation_vmm_rs_default_stp_if_pol   = ""
 }
 `
 

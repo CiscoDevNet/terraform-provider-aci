@@ -220,6 +220,135 @@ func TestAccResourceInfraPortBlkGenerated(t *testing.T) {
 			},
 			{
 				PreConfig: func() {
+					t.Log("Test: Access Port Block Resource - Configure Through Legacy Attributes")
+				},
+				ConfigVariables: variables,
+				Config:          testAccResourceInfraPortBlkLegacy,
+				Check: func(state *terraform.State) error {
+					// Evaluate runtime prefixes after PreCheck has initialized the fixture variables.
+					return resource.ComposeAggregateTestCheckFunc(
+						identity.CheckID("aci_access_port_block.test_1", false),
+						testCheckResourceDN("aci_access_port_block.test_1", "portblk-{name}", "uni", map[string]string{
+							"name": "name",
+						}, []resourceTestDNVariant{}),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_access_port_block.test_1", "annotation", "annotation_1"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.0(4g)-", "inside",
+							resource.TestCheckResourceAttr("aci_access_port_block.test_1", "description", "description_1"),
+						),
+						resource.TestCheckResourceAttr("aci_access_port_block.test_1", "from_card", "2"),
+						resource.TestCheckResourceAttr("aci_access_port_block.test_1", "from_port", "3"),
+						resource.TestCheckResourceAttr("aci_access_port_block.test_1", "name", "name_1"),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							resource.TestCheckResourceAttr("aci_access_port_block.test_1", "name_alias", "name_alias_1"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.0(1m)-", "inside",
+							resource.TestCheckResourceAttrPair("aci_access_port_block.test_1", "parent_dn", "aci_spine_access_port_selector.test_1.0", "id"),
+						),
+						resource.TestCheckResourceAttr("aci_access_port_block.test_1", "to_card", "4"),
+						resource.TestCheckResourceAttr("aci_access_port_block.test_1", "to_port", "5"),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_access_port_block.test_1", "relation_to_pc_vpc_override_policy.annotation", "annotation_1"),
+						),
+						resource.TestCheckResourceAttr("aci_access_port_block.test_1", "relation_to_pc_vpc_override_policy.target_dn", ""),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_access_port_block.test_1", "relation_to_pc_vpc_override_policy.annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_access_port_block.test_1", "relation_to_pc_vpc_override_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_access_port_block.test_1", "relation_to_pc_vpc_override_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_access_port_block.test_1", "relation_to_pc_vpc_override_policy.tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_access_port_block.test_1", "relation_to_pc_vpc_override_policy.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_access_port_block.test_1", "relation_to_pc_vpc_override_policy.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_access_port_block.test_1", "annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_access_port_block.test_1", "annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_access_port_block.test_1", "annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_access_port_block.test_1", "tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_access_port_block.test_1", "tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_access_port_block.test_1", "tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						resource.TestCheckResourceAttrPair("aci_access_port_block.test_1", "access_port_selector_dn", "aci_access_port_block.test_1", "parent_dn"),
+						resource.TestCheckResourceAttr("aci_access_port_block.test_1", "relation_infra_rs_acc_bndl_subgrp", ""),
+					)(state)
+				},
+			},
+			{
+				PreConfig: func() {
+					t.Log("Test: Access Port Block Resource - Repeat Legacy Configuration (Expect Empty Plan)")
+				},
+				ConfigVariables: variables,
+				Config:          testAccResourceInfraPortBlkLegacyUnchanged,
+				PlanOnly:        true,
+				ConfigPlanChecks: resource.ConfigPlanChecks{
+					PostApplyPreRefresh: []plancheck.PlanCheck{plancheck.ExpectEmptyPlan()},
+				},
+			},
+			{
+				PreConfig: func() {
+					t.Log("Test: Access Port Block Resource - Switch to Current Attributes Without Replacement")
+				},
+				ConfigVariables: variables,
+				Config:          testAccResourceInfraPortBlkCurrentAfterLegacy,
+				PlanOnly:        true,
+				ConfigPlanChecks: resource.ConfigPlanChecks{
+					PostApplyPreRefresh: []plancheck.PlanCheck{plancheck.ExpectEmptyPlan()},
+				},
+			},
+			{
+				PreConfig: func() {
+					t.Log("Test: Access Port Block Resource - Reject Simultaneous Legacy and Current Inputs")
+				},
+				ConfigVariables: variables,
+				Config:          testAccResourceInfraPortBlkLegacyConflict,
+				ExpectError:     regexp.MustCompile("Invalid Attribute Combination|Conflicting legacy configuration"),
+			},
+			{
+				PreConfig: func() {
 					t.Log("Test: Access Port Block Resource - Update Mutable Attributes in Place")
 				},
 				ConfigVariables: variables,
@@ -1669,6 +1798,194 @@ resource "aci_access_port_block" "test_1" {
       value = "value_2"
     },
   ] : null
+}
+`
+
+const testAccResourceInfraPortBlkLegacy = testAccResourceInfraPortBlkDependencies + `
+resource "aci_access_port_block" "test_1" {
+  annotation  = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+  description = provider::aci::compare_versions(var.apic_version, "inside", "1.0(4g)-") ? "description_1" : null
+  from_card   = "2"
+  from_port   = "3"
+  name        = "name_1"
+  name_alias  = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
+  to_card     = "4"
+  to_port     = "5"
+  annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  access_port_selector_dn           = provider::aci::compare_versions(var.apic_version, "inside", "2.0(1m)-") ? aci_spine_access_port_selector.test_1[0].id : null
+  relation_infra_rs_acc_bndl_subgrp = ""
+}
+`
+
+const testAccResourceInfraPortBlkLegacyUnchanged = testAccResourceInfraPortBlkDependencies + `
+resource "aci_access_port_block" "test_1" {
+  annotation  = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+  description = provider::aci::compare_versions(var.apic_version, "inside", "1.0(4g)-") ? "description_1" : null
+  from_card   = "2"
+  from_port   = "3"
+  name        = "name_1"
+  name_alias  = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
+  to_card     = "4"
+  to_port     = "5"
+  annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  access_port_selector_dn           = provider::aci::compare_versions(var.apic_version, "inside", "2.0(1m)-") ? aci_spine_access_port_selector.test_1[0].id : null
+  relation_infra_rs_acc_bndl_subgrp = ""
+}
+`
+
+const testAccResourceInfraPortBlkCurrentAfterLegacy = testAccResourceInfraPortBlkDependencies + `
+resource "aci_access_port_block" "test_1" {
+  annotation  = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+  description = provider::aci::compare_versions(var.apic_version, "inside", "1.0(4g)-") ? "description_1" : null
+  from_card   = "2"
+  from_port   = "3"
+  name        = "name_1"
+  name_alias  = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
+  parent_dn   = provider::aci::compare_versions(var.apic_version, "inside", "2.0(1m)-") ? aci_spine_access_port_selector.test_1[0].id : null
+  to_card     = "4"
+  to_port     = "5"
+  relation_to_pc_vpc_override_policy = {
+    annotation = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    target_dn  = ""
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+}
+`
+
+const testAccResourceInfraPortBlkLegacyConflict = testAccResourceInfraPortBlkDependencies + `
+resource "aci_access_port_block" "test_1" {
+  annotation  = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+  description = provider::aci::compare_versions(var.apic_version, "inside", "1.0(4g)-") ? "description_1" : null
+  from_card   = "2"
+  from_port   = "3"
+  name        = "name_1"
+  name_alias  = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
+  parent_dn   = provider::aci::compare_versions(var.apic_version, "inside", "2.0(1m)-") ? aci_spine_access_port_selector.test_1[0].id : null
+  to_card     = "4"
+  to_port     = "5"
+  relation_to_pc_vpc_override_policy = {
+    annotation = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    target_dn  = ""
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  access_port_selector_dn           = provider::aci::compare_versions(var.apic_version, "inside", "2.0(1m)-") ? aci_spine_access_port_selector.test_1[0].id : null
+  relation_infra_rs_acc_bndl_subgrp = ""
 }
 `
 
