@@ -142,6 +142,49 @@ func CheckSetElement(address, path string, value AttributeValue, parents ...Pare
 	}
 }
 
+// CheckSetPair compares collection counts and members without relying on matching state hashes.
+func CheckSetPair(address, path, pairAddress, pairPath string) resource.TestCheckFunc {
+	return func(state *terraform.State) error {
+		if err := resource.TestCheckResourceAttrPair(address, path+".#", pairAddress, pairPath+".#")(state); err != nil {
+			return err
+		}
+		actualElements := nestedSetCheck{address: address, state: state}.setElements(path)
+		expectedElements := nestedSetCheck{address: pairAddress, state: state}.setElements(pairPath)
+		for _, index := range slices.Sorted(maps.Keys(expectedElements)) {
+			expected := expectedElements[index]
+			matched := false
+			for _, hash := range slices.Sorted(maps.Keys(actualElements)) {
+				if maps.Equal(actualElements[hash], expected) {
+					delete(actualElements, hash)
+					matched = true
+					break
+				}
+			}
+			if !matched {
+				return fmt.Errorf("%s: no TypeSet element %q with exact attributes %#v", address, path+".*", expected)
+			}
+		}
+		return nil
+	}
+}
+
+func (c nestedSetCheck) setElements(path string) map[string]map[string]string {
+	elements := map[string]map[string]string{}
+	for name, value := range c.state.RootModule().Resources[c.address].Primary.Attributes {
+		remainder, found := strings.CutPrefix(name, path+".")
+		if !found || remainder == "#" {
+			continue
+		}
+		// Strip only the outer state hash; an empty member name holds a scalar value.
+		index, member, _ := strings.Cut(remainder, ".")
+		if elements[index] == nil {
+			elements[index] = map[string]string{}
+		}
+		elements[index][member] = value
+	}
+	return elements
+}
+
 func (c nestedSetCheck) resolveValues(values map[string]AttributeValue) (map[string]string, error) {
 	resolved := make(map[string]string, len(values))
 	for _, name := range slices.Sorted(maps.Keys(values)) {

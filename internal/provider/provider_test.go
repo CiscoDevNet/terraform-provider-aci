@@ -11,16 +11,22 @@ import (
 	"testing"
 
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/aci"
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils/test"
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/acceptancetest"
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
+	tfjson "github.com/hashicorp/terraform-json"
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"github.com/hashicorp/terraform-plugin-go/tfprotov6"
 	"github.com/hashicorp/terraform-plugin-mux/tf5to6server"
 	"github.com/hashicorp/terraform-plugin-mux/tf6muxserver"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
+	"github.com/hashicorp/terraform-plugin-testing/knownvalue"
+	"github.com/hashicorp/terraform-plugin-testing/statecheck"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
+	"github.com/hashicorp/terraform-plugin-testing/tfjsonpath"
+	"github.com/stretchr/testify/assert"
 )
 
 const testAccConfig = `
@@ -183,6 +189,80 @@ func composeAggregateTestCheckFuncWithVersion(t *testing.T, propertyVersion stri
 
 		}
 		return errors.Join(result...)
+	}
+}
+
+type versionedStateCheck struct {
+	t           *testing.T
+	versions    string
+	apicVersion func() string
+	check       statecheck.StateCheck
+}
+
+func stateCheckWithVersion(t *testing.T, versions string, check statecheck.StateCheck) statecheck.StateCheck {
+	return versionedStateCheck{
+		t:           t,
+		versions:    versions,
+		apicVersion: func() string { return getAPICVersionTest(t) },
+		check:       check,
+	}
+}
+
+func (c versionedStateCheck) CheckState(ctx context.Context, req statecheck.CheckStateRequest, resp *statecheck.CheckStateResponse) {
+	// Resolve the controller version when the check runs, after the acceptance precheck.
+	apicVersion := c.apicVersion()
+	supported, err := CompareVersionsRange(apicVersion, c.versions, "inside")
+	if err != nil {
+		resp.Error = fmt.Errorf("failed to compare versions in the state check: %w", err)
+		return
+	}
+	if !supported {
+		c.t.Logf("[WARNING] State check skipped due to version incompatibility between property version: %s and APIC version: %s.", c.versions, apicVersion)
+		return
+	}
+	c.check.CheckState(ctx, req, resp)
+}
+
+func TestStateCheckWithVersion(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+	type input struct {
+		APICVersion string
+		Versions    string
+		Target      any
+	}
+	testCases := []test.TestCase{
+		{Name: "test_supported_empty_target", Input: input{APICVersion: "6.2(2e)", Versions: "1.0(1e)-", Target: ""}},
+		{Name: "test_supported_resolved_target", Input: input{APICVersion: "6.2(2e)", Versions: "1.0(1e)-", Target: "uni/tn-common/monepg-policy_1"}},
+		{Name: "test_supported_null_target", Input: input{APICVersion: "6.2(2e)", Versions: "1.0(1e)-"}, Expected: "expected non-nil value"},
+		{Name: "test_below_supported_range", Input: input{APICVersion: "2.0(1e)", Versions: "3.0(1k)-"}},
+		{Name: "test_above_supported_range", Input: input{APICVersion: "6.2(2e)", Versions: "1.0(1e)-6.1(1e)"}},
+		{Name: "test_invalid_range", Input: input{APICVersion: "6.2(2e)", Versions: "invalid"}, Expected: "failed to compare versions"},
+		{Name: "test_invalid_apic_version", Input: input{APICVersion: "invalid", Versions: "1.0(1e)-"}, Expected: "failed to compare versions"},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			value := testCase.Input.(input)
+			check := stateCheckWithVersion(t, value.Versions, statecheck.ExpectKnownValue("data.aci_tenant.test", tfjsonpath.New("relation"), knownvalue.NotNull())).(versionedStateCheck)
+			versionReads := 0
+			check.apicVersion = func() string {
+				versionReads++
+				return value.APICVersion
+			}
+			state := &tfjson.State{Values: &tfjson.StateValues{RootModule: &tfjson.StateModule{Resources: []*tfjson.StateResource{{
+				Address:         "data.aci_tenant.test",
+				AttributeValues: map[string]any{"relation": value.Target},
+			}}}}}
+			var response statecheck.CheckStateResponse
+			check.CheckState(context.Background(), statecheck.CheckStateRequest{State: state}, &response)
+			assert.Equal(t, 1, versionReads)
+			if expected, _ := testCase.Expected.(string); expected != "" {
+				assert.ErrorContains(t, response.Error, expected)
+			} else {
+				assert.NoError(t, response.Error)
+			}
+		})
 	}
 }
 

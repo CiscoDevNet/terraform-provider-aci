@@ -13,6 +13,125 @@ import (
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/customtypes"
 )
 
+func TestCheckSetPair(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+	type input struct {
+		Attributes map[string]string
+		Reference  map[string]string
+	}
+	primitive := map[string]string{"expected.#": "2", "expected.100": "first", "expected.200": "second"}
+	objects := map[string]string{
+		"expected.#":        "2",
+		"expected.100.name": "first", "expected.100.value": "one",
+		"expected.200.name": "second", "expected.200.value": "two",
+	}
+	// Synthetic entries share an identifier to expose partial object matching.
+	overlappingObjects := map[string]string{
+		"expected.#":           "2",
+		"expected.100.node_dn": "node-101", "expected.100.mode": "regular", "expected.100.encap": "vlan-100",
+		"expected.200.node_dn": "node-101", "expected.200.mode": "regular",
+	}
+	testCases := []test.TestCase{
+		{
+			Name: "test_primitive_members_ignore_hashes_and_order",
+			Input: input{Attributes: map[string]string{
+				"legacy.#": "2", "legacy.300": "second", "legacy.400": "first",
+			}, Reference: primitive},
+		},
+		{
+			Name: "test_different_counts_fail",
+			Input: input{Attributes: map[string]string{
+				"legacy.#": "1", "legacy.300": "first",
+			}, Reference: primitive}, Expected: "expected",
+		},
+		{
+			Name: "test_different_primitive_members_fail",
+			Input: input{Attributes: map[string]string{
+				"legacy.#": "2", "legacy.300": "wrong", "legacy.400": "first",
+			}, Reference: primitive}, Expected: "no TypeSet element",
+		},
+		{
+			Name: "test_block_members_ignore_hashes_and_order",
+			Input: input{Attributes: map[string]string{
+				"legacy.#":        "2",
+				"legacy.300.name": "second", "legacy.300.value": "two",
+				"legacy.400.name": "first", "legacy.400.value": "one",
+			}, Reference: objects},
+		},
+		{
+			Name: "test_values_on_different_objects_cannot_match",
+			Input: input{Attributes: map[string]string{
+				"legacy.#":        "2",
+				"legacy.300.name": "second", "legacy.300.value": "one",
+				"legacy.400.name": "first", "legacy.400.value": "two",
+			}, Reference: objects}, Expected: "no TypeSet element",
+		},
+		{
+			Name: "test_missing_block_member_fails",
+			Input: input{Attributes: map[string]string{
+				"legacy.#": "2", "legacy.300.name": "second", "legacy.400.name": "first", "legacy.400.value": "one",
+			}, Reference: objects}, Expected: "no TypeSet element",
+		},
+		{
+			Name: "test_unexpected_block_member_fails",
+			Input: input{Attributes: map[string]string{
+				"legacy.#":        "2",
+				"legacy.300.name": "second", "legacy.300.value": "two", "legacy.300.extra": "unexpected",
+				"legacy.400.name": "first", "legacy.400.value": "one",
+			}, Reference: objects}, Expected: "no TypeSet element",
+		},
+		{
+			Name: "test_overlapping_partial_objects_fail",
+			Input: input{Attributes: map[string]string{
+				"legacy.#":           "2",
+				"legacy.300.node_dn": "node-101", "legacy.300.mode": "regular", "legacy.300.encap": "vlan-100",
+				"legacy.400.node_dn": "node-101",
+			}, Reference: overlappingObjects}, Expected: "no TypeSet element",
+		},
+		{
+			Name: "test_identical_overlapping_objects_ignore_hashes_and_order",
+			Input: input{Attributes: map[string]string{
+				"legacy.#":           "2",
+				"legacy.300.node_dn": "node-101", "legacy.300.mode": "regular",
+				"legacy.400.node_dn": "node-101", "legacy.400.mode": "regular", "legacy.400.encap": "vlan-100",
+			}, Reference: overlappingObjects},
+		},
+		{
+			Name: "test_empty_value_differs_from_missing_member",
+			Input: input{Attributes: map[string]string{
+				"legacy.#": "1", "legacy.300.name": "first",
+			}, Reference: map[string]string{
+				"expected.#": "1", "expected.100.name": "first", "expected.100.value": "",
+			}}, Expected: "no TypeSet element",
+		},
+		{
+			Name:  "test_empty_sets",
+			Input: input{Attributes: map[string]string{"legacy.#": "0"}, Reference: map[string]string{"expected.#": "0"}},
+		},
+		{
+			Name:  "test_null_and_empty_keep_framework_count_semantics",
+			Input: input{Attributes: map[string]string{}, Reference: map[string]string{"expected.#": "0"}},
+		},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			value := testCase.Input.(input)
+			state := nestedSetCheckState(nestedSetCheckInput{
+				Attributes: value.Attributes,
+				Sources:    map[string]map[string]string{"aci_example.test_1.0": value.Reference},
+			})
+			err := CheckSetPair("data.aci_example.test", "legacy", "aci_example.test_1.0", "expected")(state)
+			if expected, _ := testCase.Expected.(string); expected != "" {
+				assert.ErrorContains(t, err, expected)
+			} else {
+				assert.NoError(t, err)
+			}
+		})
+	}
+}
+
 func TestCheckPresent(t *testing.T) {
 	t.Parallel()
 	test.InitializeTest(t)
