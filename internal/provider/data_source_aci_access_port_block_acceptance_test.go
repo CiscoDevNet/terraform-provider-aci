@@ -117,6 +117,8 @@ func TestAccDataSourceInfraPortBlkGenerated(t *testing.T) {
 							"value": {ExpectedValue: "value_2"},
 						}),
 					),
+					resource.TestCheckResourceAttrPair("data.aci_access_port_block.test", "access_port_selector_dn", "aci_access_port_block.test_1", "access_port_selector_dn"),
+					resource.TestCheckResourceAttrPair("data.aci_access_port_block.test", "relation_infra_rs_acc_bndl_subgrp", "aci_access_port_block.test_1", "relation_infra_rs_acc_bndl_subgrp"),
 				),
 			},
 			{

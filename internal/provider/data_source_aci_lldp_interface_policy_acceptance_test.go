@@ -81,6 +81,8 @@ func TestAccDataSourceLldpIfPolGenerated(t *testing.T) {
 							"value": {ExpectedValue: "value_2"},
 						}),
 					),
+					resource.TestCheckResourceAttrPair("data.aci_lldp_interface_policy.test", "admin_rx_st", "aci_lldp_interface_policy.test_1", "admin_rx_st"),
+					resource.TestCheckResourceAttrPair("data.aci_lldp_interface_policy.test", "admin_tx_st", "aci_lldp_interface_policy.test_1", "admin_tx_st"),
 				),
 			},
 			{

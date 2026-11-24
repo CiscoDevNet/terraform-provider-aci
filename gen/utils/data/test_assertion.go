@@ -33,6 +33,8 @@ const (
 	testAssertionSetElementPair
 	testAssertionNestedSetElement
 	testAssertionAttributeAbsent
+	testAssertionAttributeNotNull
+	testAssertionSetPair
 )
 
 // TestAssertion is one ordered state assertion for a generated acceptance test.
@@ -63,6 +65,10 @@ func (a TestAssertion) IsAttributePair() bool {
 	return a.assertionType == testAssertionAttributePair
 }
 
+func (a TestAssertion) IsSetPair() bool {
+	return a.assertionType == testAssertionSetPair
+}
+
 func (a TestAssertion) IsSetCount() bool {
 	return a.assertionType == testAssertionSetCount
 }
@@ -81,6 +87,10 @@ func (a TestAssertion) IsNestedSetElement() bool {
 
 func (a TestAssertion) IsAttributeAbsent() bool {
 	return a.assertionType == testAssertionAttributeAbsent
+}
+
+func (a TestAssertion) IsAttributeNotNull() bool {
+	return a.assertionType == testAssertionAttributeNotNull
 }
 
 // DataSourceTestAssertions returns deterministic checks for the data source's
@@ -113,6 +123,60 @@ func (c *Class) DataSourceTestAssertions(ds *DataStore) []TestAssertion {
 		assertions = append(assertions, testPropertyAssertions(c.SupportedVersions, property.AttributeName, property, property.TestValues, nil)...)
 	}
 	assertions = append(assertions, testChildAssertions(ds, c, c.TestChildren, "", nil, nil, DatasourceArtifact)...)
+	for _, legacy := range c.LegacyAttributes {
+		if legacy.Status == Removed {
+			continue
+		}
+		if legacy.Sensitive {
+			assertions = append(assertions, TestAssertion{assertionType: testAssertionAttributeAbsent, AttributePath: legacy.AttributeName})
+			continue
+		}
+		if legacy.Status == Frozen {
+			if legacy.Type == StringAttribute {
+				assertions = append(assertions, TestAssertion{assertionType: testAssertionAttributeValue, AttributePath: legacy.AttributeName, ExpectedValue: ""})
+			} else {
+				assertions = append(assertions, TestAssertion{assertionType: testAssertionSetCount, AttributePath: legacy.AttributeName, ExpectedCount: 0})
+			}
+		} else if legacy.IsListToSet() && c.HasResourceArtifact() {
+			assertions = append(assertions, TestAssertion{assertionType: testAssertionAttributePair, AttributePath: legacy.AttributeName + ".#", PairAddress: renderer.subjectResourceAddress().String(), PairAttribute: legacy.AttributeName + ".#"})
+			for _, property := range c.ModelProperties() {
+				if property.AttributeName != legacy.ChildAttribute || property.TestValues == nil {
+					continue
+				}
+				versions := testAssertionVersions(nil, c.SupportedVersions, property.SupportedVersions)
+				for index := range property.TestValues.Create.includedEntries() {
+					path := fmt.Sprintf("%s.%d", legacy.AttributeName, index)
+					assertions = append(assertions, TestAssertion{assertionType: testAssertionAttributePair, AttributePath: path, PairAddress: renderer.subjectResourceAddress().String(), PairAttribute: path, Versions: versions})
+				}
+			}
+		} else if c.HasResourceArtifact() {
+			assertion := TestAssertion{assertionType: testAssertionAttributePair, AttributePath: legacy.AttributeName, PairAddress: renderer.subjectResourceAddress().String(), PairAttribute: legacy.AttributeName}
+			if legacy.Block || legacy.Type == SetAttribute {
+				assertion.assertionType = testAssertionSetPair
+				if legacy.ChildName != nil {
+					childClass := ds.Classes[legacy.ChildName.String()]
+					assertion.Versions = testAssertionVersions(nil, c.SupportedVersions, childClass.SupportedVersions)
+				}
+			} else if legacy.Named && legacy.Type == StringAttribute {
+				child := findResourceTestChild(c.TestChildren, legacy.ChildName)
+				childClass := ds.Classes[legacy.ChildName.String()]
+				if child != nil && len(child.Instances) > 0 && !slices.Contains(childClass.TestConfig.IgnoreTests, ChildIgnoreTest) {
+					// APIC can resolve named-relation tDn between reads; verify the alias exists even while it is empty.
+					assertion = TestAssertion{assertionType: testAssertionAttributeNotNull, AttributePath: legacy.AttributeName, Versions: testAssertionVersions(nil, c.SupportedVersions, childClass.SupportedVersions)}
+				}
+			}
+			assertions = append(assertions, assertion)
+		} else if legacy.ChildName == nil {
+			var versions []string
+			for _, property := range c.ModelProperties() {
+				if property.AttributeName == legacy.ChildAttribute {
+					versions = testAssertionVersions(nil, c.SupportedVersions, property.SupportedVersions)
+					break
+				}
+			}
+			assertions = append(assertions, TestAssertion{assertionType: testAssertionAttributePair, AttributePath: legacy.AttributeName, PairAddress: fmt.Sprintf("data.aci_%s.test", c.ResourceName), PairAttribute: legacy.ChildAttribute, Versions: versions})
+		}
+	}
 	return renderer.renderCountedDependencyAssertions(assertions)
 }
 
@@ -413,7 +477,7 @@ func (r testConfigurationRenderer) renderCountedDependencyAssertions(assertions 
 				assertion.Versions = append(assertion.Versions, versions)
 			}
 		}
-		if assertion.IsAttributePair() || assertion.IsSetElementPair() {
+		if assertion.IsAttributePair() || assertion.IsSetElementPair() || assertion.IsSetPair() {
 			renderReference(&assertion.PairAddress, assertion.PairAttribute)
 		}
 		for valueIndex := range assertion.NestedValues {

@@ -77,6 +77,7 @@ func TestAccDataSourceVzTabooGenerated(t *testing.T) {
 							"value": {ExpectedValue: "value_2"},
 						}),
 					),
+					resource.TestCheckResourceAttrPair("data.aci_taboo_contract.test", "tenant_dn", "aci_taboo_contract.test_1", "tenant_dn"),
 				),
 			},
 			{

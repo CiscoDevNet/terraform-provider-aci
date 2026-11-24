@@ -10,6 +10,9 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-testing/config"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
+	"github.com/hashicorp/terraform-plugin-testing/knownvalue"
+	"github.com/hashicorp/terraform-plugin-testing/statecheck"
+	"github.com/hashicorp/terraform-plugin-testing/tfjsonpath"
 
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/acceptancetest"
 )
@@ -34,6 +37,24 @@ func TestAccDataSourceFvBDGenerated(t *testing.T) {
 				},
 				Config:          testAccDataSourceFvBDExisting,
 				ConfigVariables: variables,
+				ConfigStateChecks: []statecheck.StateCheck{
+					statecheck.ExpectKnownValue("data.aci_bridge_domain.test", tfjsonpath.New("relation_fv_rs_abd_pol_mon_pol"), knownvalue.NotNull()),
+					statecheck.ExpectKnownValue("data.aci_bridge_domain.test", tfjsonpath.New("relation_fv_rs_bd_to_ep_ret"), knownvalue.NotNull()),
+					stateCheckWithVersion(t, "3.0(1k)-",
+						statecheck.ExpectKnownValue("data.aci_bridge_domain.test", tfjsonpath.New("relation_fv_rs_bd_to_fhs"), knownvalue.NotNull()),
+					),
+					stateCheckWithVersion(t, "1.1(1j)-",
+						statecheck.ExpectKnownValue("data.aci_bridge_domain.test", tfjsonpath.New("relation_fv_rs_bd_to_nd_p"), knownvalue.NotNull()),
+					),
+					stateCheckWithVersion(t, "1.0(1e)-6.1(1e)",
+						statecheck.ExpectKnownValue("data.aci_bridge_domain.test", tfjsonpath.New("relation_fv_rs_bd_to_relay_p"), knownvalue.NotNull()),
+					),
+					statecheck.ExpectKnownValue("data.aci_bridge_domain.test", tfjsonpath.New("relation_fv_rs_ctx"), knownvalue.NotNull()),
+					statecheck.ExpectKnownValue("data.aci_bridge_domain.test", tfjsonpath.New("relation_fv_rs_igmpsn"), knownvalue.NotNull()),
+					stateCheckWithVersion(t, "4.1(1i)-",
+						statecheck.ExpectKnownValue("data.aci_bridge_domain.test", tfjsonpath.New("relation_fv_rs_mldsn"), knownvalue.NotNull()),
+					),
+				},
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttrSet("data.aci_bridge_domain.test", "id"),
 					composeAggregateTestCheckFuncWithVersion(t, "3.0(1k)-", "inside",
@@ -980,6 +1001,28 @@ func TestAccDataSourceFvBDGenerated(t *testing.T) {
 							"value": {ExpectedValue: "value_2"},
 						}),
 					),
+					resource.TestCheckResourceAttrPair("data.aci_bridge_domain.test", "arp_flood", "aci_bridge_domain.test_1", "arp_flood"),
+					resource.TestCheckResourceAttrPair("data.aci_bridge_domain.test", "ep_clear", "aci_bridge_domain.test_1", "ep_clear"),
+					resource.TestCheckResourceAttrPair("data.aci_bridge_domain.test", "ep_move_detect_mode", "aci_bridge_domain.test_1", "ep_move_detect_mode"),
+					resource.TestCheckResourceAttrPair("data.aci_bridge_domain.test", "host_based_routing", "aci_bridge_domain.test_1", "host_based_routing"),
+					resource.TestCheckResourceAttrPair("data.aci_bridge_domain.test", "intersite_bum_traffic_allow", "aci_bridge_domain.test_1", "intersite_bum_traffic_allow"),
+					resource.TestCheckResourceAttrPair("data.aci_bridge_domain.test", "ipv6_mcast_allow", "aci_bridge_domain.test_1", "ipv6_mcast_allow"),
+					resource.TestCheckResourceAttrPair("data.aci_bridge_domain.test", "ll_addr", "aci_bridge_domain.test_1", "ll_addr"),
+					resource.TestCheckResourceAttrPair("data.aci_bridge_domain.test", "mac", "aci_bridge_domain.test_1", "mac"),
+					resource.TestCheckResourceAttrPair("data.aci_bridge_domain.test", "mcast_allow", "aci_bridge_domain.test_1", "mcast_allow"),
+					resource.TestCheckResourceAttrPair("data.aci_bridge_domain.test", "multi_dst_pkt_act", "aci_bridge_domain.test_1", "multi_dst_pkt_act"),
+					resource.TestCheckResourceAttr("data.aci_bridge_domain.test", "relation_fv_rs_bd_flood_to.#", "0"),
+					composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+						acceptancetest.CheckSetPair("data.aci_bridge_domain.test", "relation_fv_rs_bd_to_netflow_monitor_pol", "aci_bridge_domain.test_1", "relation_fv_rs_bd_to_netflow_monitor_pol"),
+					),
+					acceptancetest.CheckSetPair("data.aci_bridge_domain.test", "relation_fv_rs_bd_to_out", "aci_bridge_domain.test_1", "relation_fv_rs_bd_to_out"),
+					resource.TestCheckResourceAttr("data.aci_bridge_domain.test", "relation_fv_rs_bd_to_profile", ""),
+					resource.TestCheckResourceAttrPair("data.aci_bridge_domain.test", "tenant_dn", "aci_bridge_domain.test_1", "tenant_dn"),
+					resource.TestCheckResourceAttrPair("data.aci_bridge_domain.test", "unicast_route", "aci_bridge_domain.test_1", "unicast_route"),
+					resource.TestCheckResourceAttrPair("data.aci_bridge_domain.test", "unk_mac_ucast_act", "aci_bridge_domain.test_1", "unk_mac_ucast_act"),
+					resource.TestCheckResourceAttrPair("data.aci_bridge_domain.test", "unk_mcast_act", "aci_bridge_domain.test_1", "unk_mcast_act"),
+					resource.TestCheckResourceAttrPair("data.aci_bridge_domain.test", "v6unk_mcast_act", "aci_bridge_domain.test_1", "v6unk_mcast_act"),
+					resource.TestCheckResourceAttrPair("data.aci_bridge_domain.test", "vmac", "aci_bridge_domain.test_1", "vmac"),
 				),
 			},
 			{
@@ -999,6 +1042,16 @@ resource "aci_tenant" "test_1" {
   count = 1
   name  = format("%s-%s", var.test_prefix, "name_1")
 }
+resource "aci_netflow_monitor_policy" "test_1" {
+  count     = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? 1 : 0
+  name      = "netfow_monitor"
+  parent_dn = aci_tenant.test_1[0].id
+}
+resource "aci_netflow_monitor_policy" "test_2" {
+  count     = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? 1 : 0
+  name      = "name_2"
+  parent_dn = aci_tenant.test_1[0].id
+}
 resource "aci_monitoring_policy" "test_1" {
   count     = 1
   name      = "name_1"
@@ -1014,16 +1067,6 @@ resource "aci_neighbor_discovery_interface_policy" "test_1" {
   controller_state = []
   name             = "name_1"
   parent_dn        = aci_tenant.test_1[0].id
-}
-resource "aci_netflow_monitor_policy" "test_1" {
-  count     = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? 1 : 0
-  name      = format("%s-%s", var.test_prefix, "netfow_monitor")
-  parent_dn = "uni/infra"
-}
-resource "aci_netflow_monitor_policy" "test_2" {
-  count     = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? 1 : 0
-  name      = format("%s-%s", var.test_prefix, "name_2")
-  parent_dn = "uni/infra"
 }
 resource "aci_vrf" "test_1" {
   count     = 1

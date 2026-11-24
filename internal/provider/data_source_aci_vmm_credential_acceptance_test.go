@@ -78,6 +78,8 @@ func TestAccDataSourceVmmUsrAccPGenerated(t *testing.T) {
 							"value": {ExpectedValue: "value_2"},
 						}),
 					),
+					resource.TestCheckResourceAttrPair("data.aci_vmm_credential.test", "usr", "aci_vmm_credential.test_1", "usr"),
+					resource.TestCheckResourceAttrPair("data.aci_vmm_credential.test", "vmm_domain_dn", "aci_vmm_credential.test_1", "vmm_domain_dn"),
 				),
 			},
 			{

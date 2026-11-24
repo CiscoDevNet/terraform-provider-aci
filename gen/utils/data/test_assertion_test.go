@@ -9,6 +9,92 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestDataSourceLegacyNamedRelationAssertions(t *testing.T) {
+	test.InitializeTest(t)
+	type input struct {
+		Named        bool
+		Type         LegacyAttributeTypeEnum
+		Block        bool
+		Unconfigured bool
+		Ignored      bool
+		Versions     string
+	}
+	testCases := []test.TestCase{
+		{Name: "test_named_scalar", Input: input{Named: true, Type: StringAttribute}, Expected: testAssertionAttributeNotNull},
+		{Name: "test_named_scalar_version_gate", Input: input{Named: true, Type: StringAttribute, Versions: "1.0(1e)-6.1(1e)"}, Expected: testAssertionAttributeNotNull},
+		{Name: "test_explicit_target", Input: input{Type: StringAttribute}, Expected: testAssertionAttributePair},
+		{Name: "test_named_collection", Input: input{Named: true, Type: SetAttribute}, Expected: testAssertionSetPair},
+		{Name: "test_collection_version_gate", Input: input{Type: SetAttribute, Versions: "2.0(1a)-"}, Expected: testAssertionSetPair},
+		{Name: "test_legacy_block", Input: input{Named: true, Type: SetNestedAttribute, Block: true}, Expected: testAssertionSetPair},
+		{Name: "test_unconfigured_child", Input: input{Named: true, Type: StringAttribute, Unconfigured: true}, Expected: testAssertionAttributePair},
+		{Name: "test_ignored_child", Input: input{Named: true, Type: StringAttribute, Ignored: true}, Expected: testAssertionAttributePair},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			value := testCase.Input.(input)
+			class, store := resourceScenarioFixture()
+			childName := class.TestChildren[1].Class
+			class.LegacyAttributes = []MigrationAttribute{
+				{AttributeName: "legacy_monitor", ChildName: childName, Named: value.Named, Type: value.Type, Block: value.Block, Status: LegacyDeprecated},
+				{AttributeName: "legacy_name", ChildAttribute: "name", Type: StringAttribute, Status: LegacyDeprecated},
+			}
+			if value.Unconfigured {
+				class.TestChildren = class.TestChildren[:1]
+			}
+			child := store.Classes[childName.String()]
+			if value.Ignored {
+				child.TestConfig.IgnoreTests = []IgnoreTestEnum{ChildIgnoreTest}
+			}
+			if value.Versions != "" {
+				versions, err := NewVersions(value.Versions)
+				if !assert.NoError(t, err) {
+					return
+				}
+				child.SupportedVersions = versions
+			}
+			store.Classes[childName.String()] = child
+			assertions := class.DataSourceTestAssertions(store)
+			index := slices.IndexFunc(assertions, func(a TestAssertion) bool { return a.AttributePath == "legacy_monitor" })
+			if !assert.NotEqual(t, -1, index) {
+				return
+			}
+			assert.Equal(t, testCase.Expected, assertions[index].assertionType)
+			if assertions[index].IsSetPair() {
+				assert.Equal(t, "legacy_monitor", assertions[index].PairAttribute)
+				assert.Equal(t, "aci_example.test_1", assertions[index].PairAddress)
+			}
+			if value.Versions != "" {
+				assert.Equal(t, []string{value.Versions}, assertions[index].Versions)
+			}
+			aliasIndex := slices.IndexFunc(assertions, func(a TestAssertion) bool { return a.AttributePath == "legacy_name" })
+			if assert.NotEqual(t, -1, aliasIndex) {
+				assert.True(t, assertions[aliasIndex].IsAttributePair())
+			}
+		})
+	}
+}
+
+func TestDataSourceFrozenAttributes(t *testing.T) {
+	testCases := []test.TestCase{
+		{Name: "string", Input: StringAttribute, Expected: testAssertionAttributeValue},
+		{Name: "set", Input: SetAttribute, Expected: testAssertionSetCount},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			test.InitializeTest(t)
+			class, store := resourceScenarioFixture()
+			class.LegacyAttributes = []MigrationAttribute{{AttributeName: "frozen", Type: testCase.Input.(LegacyAttributeTypeEnum), Status: Frozen}}
+			assertions := class.DataSourceTestAssertions(store)
+			index := slices.IndexFunc(assertions, func(a TestAssertion) bool { return a.AttributePath == "frozen" })
+			if assert.NotEqual(t, -1, index) {
+				assert.Equal(t, testCase.Expected, assertions[index].assertionType)
+				assert.Empty(t, assertions[index].ExpectedValue)
+				assert.Zero(t, assertions[index].ExpectedCount)
+			}
+		})
+	}
+}
+
 func TestTestValueAssertionStrategy(t *testing.T) {
 	t.Parallel()
 	test.InitializeTest(t)
