@@ -1,227 +1,219 @@
 # State Upgrades
 
-> **Work in progress.** This document is actively being drafted alongside the wider `gen/docs/` restructure. Content and organization may change.
-
-This document describes the `state_upgrades` definition input used by the ACI provider code generator to drive Terraform's `UpgradeResourceState` RPC and the current-schema exposure of transitional legacy attributes. It covers the YAML shape, the recursive node model, the validation rules, and the `legacy_status` lifecycle.
-
----
+`state_upgrades` records historical schema differences and controls transitional
+legacy attributes. The active model and resource templates generate compatibility
+models, schemas, conversions, and registered upgraders from these definitions.
+The latest metadata and normal property overrides lead the current class model.
+Normal generation does not read the preserved SDKv2 schema snapshot.
 
 ## 1. Overview
 
-`state_upgrades` is a per-class YAML list, declared inside a class definition file (e.g. `gen/definitions/fvAEPg.yaml`), that records every prior schema version a resource has ever had and exactly how each prior version differs from the current schema.
+`schema_version` pins the current resource schema version. `state_upgrades` is a
+map keyed by saved schema version, not a list of sequential migration steps.
+Terraform selects the upgrader matching the saved version; every entry converts
+directly to the current model. Version numbers may have gaps and are independent
+of provider releases, APIC versions, and other resources.
 
-It replaces the legacy `migration_blocks` / `migration_version` / `type_changes` keys in `gen/definitions/classes/*.yaml`. `gen/scripts/migrate_class_definitions.go` bulk-converts those inputs into this normalized shape; the remaining work is the new schema, resource, documentation, and test template wiring.
-
-Two pieces of information drive the renderer:
-
-- **`state_upgrades`** — the list of upgrade hops. Each entry describes one prior schema version's shape in enough detail to (a) reconstruct the prior schema for the framework's `UpgradeResourceState` RPC and (b) render the current schema's transitional legacy aliases.
-- **`migration_source`** — the lineage of the resource (e.g. `from_sdkv2`). Orthogonal to `state_upgrades`. Populates the normalized warning for the future active resource-documentation template; the active datasource template intentionally does not render a resource state-migration warning.
-
----
+Record only historical differences. Unchanged root fields such as `name`,
+`description`, `annotation`, and `id` need no entries. Historical flags alone do
+not create another configurable alias. Datasources expose applicable legacy
+outputs but have no resource schema versions or registered state upgraders.
 
 ## 2. Single derivation rule
 
-Each `legacy_attribute` declared anywhere under `state_upgrades` is the only input the renderer needs to derive both:
-
-1. The prior-schema reconstruction required by `UpgradeResourceState`.
-2. The current-schema exposure (or non-exposure) of that legacy name as a deprecated alias.
-
-The optional `legacy_status` field on each node picks the lifecycle stage. See §6.
-
----
+An `attribute_name` records the historical Terraform name. The same declaration
+drives prior-state decoding and, when it differs from the current representation,
+the current compatibility alias. `status` determines whether that alias remains
+deprecated, is frozen, or has been removed. Type and restriction overrides can
+describe historical state without adding an alias to the current schema.
 
 ## 3. YAML shape
 
+This is the current Tenant history:
+
 ```yaml
-migration_source: from_sdkv2          # optional; today only "from_sdkv2"
-
+schema_version: 2
 state_upgrades:
-  - prior_schema_version: 0           # required; unique across the list
-    attributes:                       # optional; map of meta PropertyName -> node
-      pcEnfPref:
-        legacy_attribute: pc_enf_pref
-      removedAttr:
-        legacy_attribute: removed_attr
-        legacy_type: string_attribute
-        legacy_restriction: optional
-        legacy_status: removed
-    children:                         # optional; map of meta child class name -> node
-      fvRsBd:
-        legacy_attribute: relation_to_bridge_domain
-      fvRsNodeAtt:
-        attributes:                   # scalar-wrap: inner attrs carry prior flat scalars
-          tDn:
-            legacy_attribute: node_dn
-          encap:
-            legacy_attribute: node_encap
+  1:
+    source: sdkv2
+    attributes:
+      relation_fv_rs_tn_deny_rule:
+        type: set_attribute
+        element_type: string_attribute
+        restriction: optional
+        status: frozen
+    children:
+      fvRsTenantMonPol:
+        attributes:
+          tnMonEPGPolName:
+            attribute_name: relation_fv_rs_tenant_mon_pol
+            status: deprecated
 ```
 
-Per the Terraform plugin framework contract, each entry is **direct-to-current** — the framework selects the upgrader matching the saved state's version and does not chain intermediate entries.
+Omitting `schema_version` means version zero. The migration script imports the
+published version explicitly, including resources that have no state upgrader.
+Do not infer the current version from the number or maximum key of the history.
 
----
+## 4. Attribute nodes
 
-## 4. Attribute upgrade node model
+`StateUpgradeDefinition` contains `Source`, `Attributes`, and `Children`.
+`AttributeUpgradeDefinition` supplies these fields:
 
-`attributes` and `children` entries share the same recursive node shape:
-
-```go
-type AttributeUpgradeDefinition struct {
-    LegacyAttribute   string                                // prior TF attribute name
-    LegacyType        LegacyAttributeTypeEnum               // prior framework attribute type
-    LegacyRestriction RestrictionEnum                       // prior required/optional/read_only
-    LegacyStatus      LegacyStatusEnum                      // current-schema exposure
-    Attributes        map[string]AttributeUpgradeDefinition // inner scalar attrs
-    Children          map[string]AttributeUpgradeDefinition // inner nested blocks
-}
-```
-
-Recursive and unbounded in depth: any `attributes` or `children` map can itself describe inner attribute and child changes.
-
-### 4.1 Key namespace
-
-- Keys under `attributes` are **always** meta `PropertyName` values (meta-derived like `pcEnfPref` or synthetic like `parentDn` / `tDn`).
-- Keys under `children` are **always** meta child class names.
-- A `legacy_status: removed` entry may reference a meta-only property name that no longer appears in the resolved current-schema set.
-
-### 4.2 Field semantics
-
-| Field | Required? | Meaning |
-|---|---|---|
-| `legacy_attribute` | when status is `removed`; otherwise optional | The Terraform attribute name as it appeared in the prior schema. Omit to carry the current name forward. |
-| `legacy_type` | when status is `removed`; otherwise optional | The framework attribute type in the prior schema. Omit to inherit from the current attribute. |
-| `legacy_restriction` | when status is `removed`; otherwise optional | The schema restriction (`required` / `optional` / `read_only`) in the prior schema. Omit to inherit from the current attribute. |
-| `legacy_status` | optional | Current-schema exposure of the legacy name. See §6. |
-
----
-
-## 5. Disambiguation tables
-
-### 5.1 `attributes` entries
-
-| Fields present | Meaning |
+| YAML field | Meaning |
 |---|---|
-| `legacy_attribute` | Rename only. |
-| `legacy_type` | Type change only. |
-| Both | Rename + type change. |
-| `legacy_status: removed` + all three legacy fields | Attribute existed in prior schema, no current-schema home. Entry retained to drive migration only. |
+| `attribute_name` | Terraform name in the historical schema; omit to inherit the current name. |
+| `type` | Historical framework attribute type; omit to inherit the current type. |
+| `value_type` | Explicit historical string semantics, using the existing value-type vocabulary such as `ip_address`. Renamed aliases otherwise remain plain strings. BD's `llAddr` records `ip_address` to preserve its deprecated `ll_addr` custom type without changing the Terraform wire type. |
+| `element_type` | Historical element type for a collection. |
+| `restriction` | Historical `required`, `optional`, `optional_computed`, or `read_only` flags. |
+| `status` | Current exposure: `deprecated`, `frozen`, or `removed`. |
+| `attributes` | Historical scalar members of a child block. |
+| `children` | Historical child-class differences. |
 
-### 5.2 `children` entries
+Keys under `attributes` use metadata property names, or a known synthetic name
+such as `parentDn`/`tDn`. Keys under `children` use APIC class names. An orphaned
+frozen or removed field needs enough explicit information to reconstruct its
+historical type; it cannot inherit from a property that no longer exists.
 
-| Fields present | Meaning |
+## 5. Historical child shapes
+
+A `children` entry with an outer `attribute_name` describes a historical block.
+List its complete historical membership with explicit names, including members
+whose names did not change. This prevents newer child properties from entering
+the historical schema. See the static-leaf relationship example in
+[model.md](model.md#legacy-attributes-and-state-upgrades).
+
+An entry without an outer historical name can map an old flat scalar into a new
+child attribute, as in Tenant's monitoring-policy relationship above. A type-only
+entry can describe a historical set-to-singleton shape without exposing a new
+legacy block. Generation reports unsupported historical shapes rather than
+guessing a conversion. The recursive input type does not imply that every
+possible nested restructuring is implemented.
+
+## 6. Status lifecycle
+
+| Status | Current behavior |
 |---|---|
-| `legacy_attribute` only on the child | Block existed in prior schema under a different name, same type. |
-| `legacy_type` only on the child | Block existed under the same name, different type. |
-| Both on the child | Existed under a different name AND a different type. |
-| Neither on the child, only inner annotations | Block existed under the same name/type but inner properties had renames/type changes. |
-| Neither on the child, at least one inner attribute carries `legacy_attribute` | Block is NEW in current schema; inner attribute(s) receive the prior flat scalar value(s) (scalar-wrap). |
+| `deprecated` | Expose the old input, map it to the modern value, and reject simultaneous explicit configuration of both forms. |
+| `frozen` | Retain deprecated configuration/state without configuring the value on APIC. |
+| `removed` | Omit the old input from the current schema/model; retain historical decoding information for state upgrades. |
 
----
+Versions are resolved numerically. The latest explicit status for a legacy path
+wins; omission inherits the previous status. A new alias defaults to
+`deprecated`. Omission must not restore a removed field. There is no
+`functioning` status and no `legacy_status` input.
 
-## 6. `legacy_status` lifecycle
+When removing an exposed attribute, advance `schema_version` and record its
+removal in the history for the saved schema that still contained it. Immediate
+removal is also supported. Preserve earlier history instead of erasing the
+information needed to decode existing state.
 
-`legacy_status` controls how a legacy attribute is exposed in the **current** schema (separate from how it is consumed during state upgrade).
+## 7. Source lineage
 
-| Value | Current schema exposure | Device round-trip | Use case |
-|---|---|---|---|
-| `functioning` *(default; zero value)* | Legacy name exposed alongside the replacement, `Optional+Computed+Deprecated+ConflictsWith` | Yes — value piped into the replacement | Just renamed: both names work today. |
-| `frozen` | Legacy name exposed with `Deprecated`, state-preserving plan modifier | No | APIC has dropped support but configs keep the old name without a diff. |
-| `removed` | Legacy name NOT exposed | N/A — migration-only | Post schema-version bump: prior state still needs to be readable. |
-
-The zero value is `functioning` because that is the natural meaning of a freshly renamed attribute. Omitting the YAML field reaches the zero value via Go zero-init.
-
-A field present-but-empty (`legacy_status: ""`) is treated as a typo and errors at parse time.
-
-### 6.1 Typical progression
-
-Edited in-place on the YAML by flipping `legacy_status`:
-
-1. Rename introduced → add `state_upgrades` entry with `legacy_attribute: pc_enf_pref` on `pcEnfPref`. Default (`functioning`) — both names exposed.
-2. APIC drops support → set `legacy_status: frozen`. Both names still exposed, but old no longer talks to the device.
-3. Schema version bump → set `legacy_status: removed` AND bump the resource's `SchemaVersion`. Old name now gone from current schema; entry is migration-only.
-
----
-
-## 7. `migration_source`
-
-A class-level enum recording the lineage of the resource. Today the only non-zero value is `from_sdkv2`. The enum is extensible: additional sources can be added as plain new constants without changing the field type or any consumer.
-
-Coherence rule: if `migration_source` is set, `state_upgrades` MUST contain at least one entry — that entry (or entries) describes the migration hop from the prior provider. The specific `prior_schema_version` depends on what the prior resource was at when migrated: commonly `0` for an SDKv2 resource that never had a schema bump, but it can be any value if the SDKv2 resource itself went through one or more upgrades before the framework migration.
-
-The converse is allowed: `migration_source` omitted with a `prior_schema_version: 0` entry is a normal framework v0→v1 schema bump on a resource that was born in the framework.
-
----
+Each version entry may declare `source: sdkv2` or `source: framework`. This is
+version-specific history, not a class-level `migration_source` setting.
+SDKv2 entries also supply the resource documentation's migration warning.
+A resource requiring only a warning uses its existing documentation warnings;
+it does not need an artificial state-upgrade entry.
 
 ## 8. Validation
 
-`Class.setStateUpgrades()` runs the following checks after the YAML decode (typed enums already reject unknown values at parse time):
+YAML parsing rejects unknown fields and enum values. Normalization checks saved
+versions against the declared current version, resolves property/class names,
+and reports unsupported mappings through generator diagnostics. Removed scalar
+nodes require `attribute_name`, `type`, and `restriction`; collection element
+types must also describe a supported historical value. Block membership and
+scalar-to-child mappings must contain enough information for decoding.
 
-- Unique `prior_schema_version` across the list.
-- `legacy_status: removed` requires `legacy_attribute`, `legacy_type`, AND `legacy_restriction` — cannot inherit from a non-existent current property.
-- Duplicate `legacy_attribute` values within the same prior-version entry are rejected (collision detection).
-- Scalar-wrap shape: a `children` entry without `legacy_attribute`, `legacy_type`, or any inner annotations is rejected as ambiguous.
-- Keys under top-level `attributes` resolve to a current `Property.PropertyName` on the class (unless `legacy_status: removed`).
-- Keys under top-level `children` resolve to a known meta child class name on the class (unless `legacy_status: removed`).
-- `migration_source` set with an empty `state_upgrades` list is rejected (the migration hop from the prior provider must be described by at least one entry).
+Do not add unchanged root attributes merely to build a complete-schema
+inventory. Prior schemas start from the normalized current view and apply the
+historical differences. Missing optional JSON fields decode to null.
 
----
+## 9. Generated behavior
 
-## 9. How the renderer consumes the data
+The model template keeps APIC values separate from Terraform compatibility:
 
-- `Class.StateUpgrades` carries the full validated tree and will be consumed by the future upgrader template that emits one `resource.StateUpgrader` per entry.
-- `Property.StateUpgradeValues` is a flattened convenience map of `prior_schema_version -> StateUpgradeValue`, populated by `Class.setPropertyStateUpgradeValues()` for each top-level attribute on the owning class. Templates that iterate properties can ask "what was my legacy name at v0?" without traversing the upgrade tree.
-- Each `StateUpgradeValue` carries the `legacy_status` lifecycle stage from §6 in its `Status` field. The generator uses this to populate `Property.TestValues.Legacy` for each property with a `Functioning` or `Frozen` renamed alias — see `test_configuration.md` §2.4 "Legacy bucket auto-derivation" for the full rules. `Removed` entries never produce a Legacy bucket because they describe migration-only attributes that no longer exist in the current schema.
-- Inner `children[X].attributes` entries are **not** distributed into child-class Property maps in this phase. Templates that need inner-child state-upgrade data walk `Class.StateUpgrades` directly.
+- The root model embeds the class model and the current version's legacy model.
+- Historical root models and resource-schema functions retain prior names/types.
+- `SetFromLegacyConfig` converts configured legacy inputs during planning.
+- `SetLegacyFromResponse` populates compatibility outputs independently of modern
+  response decoding; unreadable secrets retain only their own prior/configured value.
+- Typed `UpgradeFromV<n>` methods convert each supported saved version directly
+  into the current root model. Resource adapters register those methods with
+  their corresponding prior schemas.
 
----
+Named relationship aliases accept historical DNs and extract names for modern
+attributes. Legacy reads use APIC's resolved `tDn`. Explicit-DN relationships
+retain their full DN. Existing null/empty behavior is part of each conversion.
 
-## 10. Out of scope (in this phase)
+## 10. Coverage and deferred work
 
-- Template wiring: how upgraders, prior schemas, and legacy alias rendering are emitted is a follow-up effort.
-- Further source corrections belong in the migration logic and must be propagated by rerunning `gen/scripts/migrate_class_definitions.go`. The legacy inputs remain identical to `develop`, and the active generator reads only the emitted flat definitions.
-- Orphan-frozen edge case (legacy attribute with no current replacement, frozen alias only) — deferred until a real case appears.
+`resource_migration_test.go.tmpl` generates APIC-independent unit tests for the
+declared resource histories. They invoke registered upgraders with historical
+JSON and compare complete typed state. Current fixtures cover values, null
+relations, empty relations, and missing optional fields. Scalar fields and
+collection entries use distinct markers; historical child blocks contain two
+distinct objects so swapped fields and dropped children are observable. These
+synthetic markers exercise state conversion, not APIC configuration validation.
 
----
+The generated upgrader and expected fixtures share normalized definitions, so
+passing generated tests alone cannot establish that those definitions match the
+published contract. `TestResourceStateUpgradeHistoricalFixtures` in
+`internal/provider/provider_migration_test.go` supplements them with handwritten
+input and expected JSON independent of the generator definitions. Its examples
+cover scalar/parent aliases, named and explicit-DN relationships, child blocks,
+frozen values, list-to-set conversion, NetFlow set-to-singleton conversion, and
+the accepted VMM null-preservation rule. Omitted fields decode to typed nulls;
+the harness still compares the complete current state. These fixtures are
+synthetic historical examples, not captured customer state.
 
-## 11. Worked example: lifecycle in YAML
+Generated resource acceptance tests separately exercise legacy input forms,
+unchanged plans, switching back to current inputs, conflicting forms, and
+frozen-field retention/clearing where applicable. Preserved resource/datasource
+tests remain unchanged. Running an older provider binary inside an acceptance
+step and resource identity imports remain outside this coverage.
 
-A fictional `fvBD` definition exercising all three `legacy_status` values in a single `state_upgrades` entry. Illustrates how the same input drives both the `UpgradeResourceState` upgrader and the auto-derived `TestValues.Legacy` bucket described in `test_configuration.md` §2.4.
+Migration-source corrections belong in
+`gen/scripts/migrate_class_definitions.go` and must survive rerunning that script.
+The preserved legacy definition files remain migration inputs, not active
+generator inputs.
+
+## 11. Worked example: removing a frozen attribute
+
+The following hypothetical next Tenant schema removes the frozen deny-rule
+input while preserving decoding for the versions that exposed it. The original
+version-1 entry remains; the new entry records the version-2 shape saved before
+removal:
 
 ```yaml
-# gen/definitions/fvBD.yaml (excerpt)
-migration_source: from_sdkv2
-
+schema_version: 3
 state_upgrades:
-  - prior_schema_version: 0
+  1:
+    source: sdkv2
     attributes:
-      # 1. Functioning rename: both names exposed in the current schema.
-      #    APIC still accepts the value via the new attribute name.
-      arpFlood:
-        legacy_attribute: arp_flooding
-
-      # 2. Frozen rename: legacy name still accepted by Terraform configs but
-      #    no longer round-trips to the device. State-preserving alias only.
-      mac:
-        legacy_attribute: mac_address
-        legacy_status: frozen
-
-      # 3. Removed: prior schema had the attribute, current schema does not.
-      #    Migration-only; the legacy fields are required because there is
-      #    no current property to inherit them from. Bump the resource
-      #    SchemaVersion to 1 in lockstep with this change.
-      legacyUnicastRoute:
-        legacy_attribute: enable_unicast_routing
-        legacy_type: string_attribute
-        legacy_restriction: optional
-        legacy_status: removed
+      relation_fv_rs_tn_deny_rule:
+        type: set_attribute
+        element_type: string_attribute
+        restriction: optional
+        status: frozen
+    children:
+      fvRsTenantMonPol:
+        attributes:
+          tnMonEPGPolName:
+            attribute_name: relation_fv_rs_tenant_mon_pol
+            status: deprecated
+  2:
+    source: framework
+    attributes:
+      relation_fv_rs_tn_deny_rule:
+        attribute_name: relation_fv_rs_tn_deny_rule
+        type: set_attribute
+        element_type: string_attribute
+        restriction: optional
+        status: removed
 ```
 
-What the normalized model represents, and what the future schema and test
-templates will emit from this single entry:
-
-| Meta property | `Status` | Current schema | Auto-derived `TestValues.Legacy` |
-|---|---|---|---|
-| `arpFlood` | `Functioning` | Both `arp_flood` (current) and `arp_flooding` (deprecated alias) will be exposed; `ConflictsWith` will be enforced. | Clone of `arpFlood`'s `Create` bucket. The future test template will render one scenario configuring the resource under `arp_flooding` and assert that the value lands in state at the current name. |
-| `mac` | `Frozen` | Both names will be exposed; `mac_address` will carry a state-preserving plan modifier so existing configs do not diff. | Clone of `mac`'s `Create` bucket. The future test template will render a scenario configuring the resource under `mac_address` and assert that no device write occurs. |
-| `legacyUnicastRoute` | `Removed` | Will not be exposed. The resource `SchemaVersion` will be bumped to 1. | Undefined. Coverage will come from the `UpgradeResourceState` migration scenario, not from a current-schema scenario. |
-
-If the `mac` rename had also changed type (for example a `string_attribute` becoming a `set_attribute`), `hasDivergentLegacyType()` would skip auto-derivation, emit a generator `Warn`, and require an explicit `test_config.legacy` block on the `mac` property carrying the prior-shape HCL values.
+The current schema omits `relation_fv_rs_tn_deny_rule`. Both old versions still
+have decoding views, and each upgrader converts directly to version 3. The
+monitoring-policy alias retains its earlier deprecated status because no later
+entry changes it. This example does not change the repository's Tenant schema.

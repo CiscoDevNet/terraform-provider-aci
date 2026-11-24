@@ -42,7 +42,7 @@ boundary, split between generated schemas and resource/data-source adapters:
 
 - generated schemas own current attributes, validators, defaults, and plan
   modifiers;
-- migration schema work will add deprecated Terraform aliases separately;
+- migration schemas add deprecated Terraform aliases separately from class values;
 - adapters own state upgrades and lifecycle orchestration;
 - provider registration;
 - import-state orchestration;
@@ -65,9 +65,11 @@ model, shared root model, null constructors, attribute type maps,
 RN/DN/ID handling, payload construction, deletion, response decoding, a neutral
 class schema definition, top-level schema functions, and version-aware subtree
 class selection. The active resource and data-source templates emit the
-class-backed adapters. Deprecated aliases, frozen attributes, state migration,
-and resource identity support remain later phases. The resource acceptance-test
-template exercises the current lifecycle through the same generated models.
+class-backed adapters, including deprecated aliases, frozen attributes, and
+declared state upgrades. Resource identity support remains deferred. The resource
+acceptance-test template exercises the current lifecycle, legacy input forms,
+conflicts, and frozen-field retention/clearing through the same generated models.
+Separate generated unit tests exercise the registered state upgraders.
 
 Only schema-backed attributes belong in the struct. Each field has a matching
 `tfsdk` tag and a Terraform framework type:
@@ -75,9 +77,9 @@ Only schema-backed attributes belong in the struct. Each field has a matching
 ```go
 type FvTenantModel struct {
 	Name             types.String `tfsdk:"name"`
-	Description      types.String `tfsdk:"description"`
-	MonitoringPolicy types.Object `tfsdk:"monitoring_policy"`
-	Annotations      types.Set    `tfsdk:"annotations"`
+	Descr            types.String `tfsdk:"description"`
+	FvRsTenantMonPol types.Object `tfsdk:"relation_to_monitoring_policy"`
+	TagAnnotation    types.Set    `tfsdk:"annotations"`
 }
 ```
 
@@ -94,6 +96,7 @@ top-level resource or data source into the same embedded root model:
 ```go
 type FvTenantRootModel struct {
 	FvTenantModel
+	FvTenantLegacyModelV2
 	ID types.String `tfsdk:"id"`
 }
 
@@ -115,10 +118,11 @@ between the schema attributes and the target struct's `tfsdk` tags. The shared
 root model must therefore contain every current-schema attribute that
 is not part of the reusable APIC class model. The active template adds `id`
 and, when applicable, `parent_dn`. Generated resource and data-source artifacts
-must retain the same attribute names and value types. The deferred migration
-work may add shared legacy aliases or retained unsupported attributes to the
-root model. A genuinely artifact-specific compatibility field belongs to an
-adapter-specific migration model rather than the shared generated root model.
+must retain the same attribute names and value types. Declared migration
+histories add shared legacy aliases or retained unsupported attributes through
+the root model's embedded legacy model. An artifact-specific compatibility
+field belongs to an adapter-specific migration model rather than the shared
+generated root model.
 Null constructors initialize root fields explicitly. Class operations ignore
 `id`; root identity operations use `parent_dn` when constructing or parsing a
 top-level DN, while payload construction ignores both fields.
@@ -240,9 +244,9 @@ Neither `FvTenantModel` nor `FvTenantRootModel` owns a `Schema()` method. The
 generated resource and data-source adapters call their generated top-level
 schema functions. These
 functions add `id`, `parent_dn`, and data-source lookup inputs around attributes
-constructed from the class schema definition. Deprecated aliases, frozen
-attributes, resource schema versions, and state upgrades are deferred to the
-migration phase. Every current-schema attribute added later must have a
+constructed from the class schema definition. Declared histories also provide
+deprecated aliases, frozen attributes, resource schema versions, and state
+upgraders. Every current-schema attribute added later must have a
 matching field on the root model.
 
 ## 3. Terraform value and child rules
@@ -443,8 +447,12 @@ response. Without a fallback their values remain null. This matches the
 existing provider's handling of write-only APIC values and prevents a masked
 response value from replacing the configured secret. Read-only sensitive
 attributes are decoded normally. Configurable sensitive resource properties
-are optional and sensitive rather than computed; their data-source
-projections remain computed and sensitive.
+are optional and sensitive. An explicit `computed: true` compatibility override
+preserves VMM Credential password retention when omitted. Their data-source
+projections remain computed and sensitive. A deprecated secret alias retains its
+own configured/state value; an APIC read cannot recover it from another secret
+field. Import verification excludes these unreadable aliases along with the
+corresponding modern secrets.
 
 Identifying attributes are semantically required in top-level resource and
 data-source schemas. Resource schemas normally express this with `Required`.
@@ -626,8 +634,8 @@ by a generated concrete child model:
 
 ```go
 type FvTenantModel struct {
-	MonitoringPolicy types.Object `tfsdk:"monitoring_policy"`
-	Annotations      types.Set    `tfsdk:"annotations"`
+	FvRsTenantMonPol types.Object `tfsdk:"relation_to_monitoring_policy"`
+	TagAnnotation    types.Set    `tfsdk:"annotations"`
 }
 ```
 
@@ -767,11 +775,176 @@ DoRestRequest
 
 Terraform-only behavior such as plan modifiers and current computed/default
 state values stays in generated schemas and schema helpers. Legacy-alias
-mapping and state upgrades remain deferred migration behavior for the
-resource adapter and migration schema definition. The root model stores any
+mapping and state upgrades belong to the resource adapter and migration schema
+definition. The root model stores any
 values needed at that boundary, but those values do not become APIC class
 behavior. This must not require a second APIC behavior model or a runtime model
 interface.
+
+### Legacy attributes and state upgrades
+
+Every loaded class with `state_upgrades` generates its declared compatibility
+fields and conversions. Datasource-only classes expose historical output aliases
+without registering resource state upgraders. The latest metadata and normal
+property overrides lead the current model and schema. `state_upgrades` contains
+historical differences, keyed by the saved schema version:
+
+```yaml
+schema_version: 2
+state_upgrades:
+  1:
+    source: sdkv2
+    attributes:
+      relation_fv_rs_tn_deny_rule:
+        type: set_attribute
+        element_type: string_attribute
+        restriction: optional
+        status: frozen
+    children:
+      fvRsTenantMonPol:
+        attributes:
+          tnMonEPGPolName:
+            attribute_name: relation_fv_rs_tenant_mon_pol
+            status: deprecated
+```
+
+`attribute_name`, `type`, `element_type`, and `restriction` override the current
+normalized shape only where necessary. Unchanged fields, including Tenant's
+`name`, `name_alias`, `description`, and `annotation`, need no entries. `id` is
+inherited and copied as a string: its former Optional+Computed restriction does
+not require a migration override or a configurable compatibility input.
+
+A renamed historical block also records its complete property membership, using
+explicit historical names even where the names have not changed:
+
+```yaml
+fvRsNodeAtt:
+  attribute_name: relation_fv_rs_node_att
+  attributes:
+    descr:
+      attribute_name: description
+    encap:
+      attribute_name: encap
+    instrImedcy:
+      attribute_name: deployment_immediacy
+    mode:
+      attribute_name: mode
+    tDn:
+      attribute_name: node_dn
+  status: deprecated
+```
+
+This keeps the old block's five fields without introducing newer properties or
+children from the current child model. Unchanged property types still come from
+metadata; this membership rule does not require listing unchanged root fields.
+
+Build the prior decoding view from the current normalized schema and apply the
+version's historical overrides. Attributes missing from older JSON decode to
+null, so newly introduced fields need no introduction-version declarations.
+An orphaned frozen/removed field needs enough explicit information to describe
+its historical type. The migration script imports all declared SDKv2 histories
+from the preserved schema and legacy mappings, including frozen fields, old
+collection types, and nested renames. Netflow's framework history retains its
+explicit type-change declaration. Every resource preserves its published
+`schema_version`, independently of the upgrade map. All declared histories are
+processed without a class allowlist or an extra YAML switch. Normal generation
+does not read the saved schema JSON.
+
+Historical list-to-set changes preserve null and unknown values, remove known
+duplicates from the modern set, and retain the old sorted state-upgrade list.
+Legacy reads keep a configured list's order when it still represents the same
+values. Historical child-set-to-singleton changes reuse the child's current
+member schema and select the first saved child, or null for an unset/empty set,
+matching the published NetFlow upgrader.
+
+Keep the current `FvTenantRootModel` name stable. It embeds `FvTenantModel` and
+`FvTenantLegacyModelV2`, alongside ID and optional ParentDN fields. The legacy
+struct is selected by the current `schema_version` and contains only the
+compatibility fields still exposed by that schema. Embed by value so Terraform
+continues to see individual attributes. Historical `FvTenantRootModelV1` and
+other source-version models remain separate decoding views; they must retain
+old names and types even after current exposure is removed. Generate one typed
+`UpgradeFromV<n>` method per supported source version, each converting directly
+into the current root model. Current compatibility fields retain their `Legacy`
+Go field prefixes to distinguish them from modern fields.
+
+Type/structure overrides describe state decoding and conversion. They do not
+by themselves add legacy attributes to the current schema. Keep current
+exposure separate from historical shape, using `status` inside the same
+recursive definition:
+
+| Status | Current-schema behavior |
+| --- | --- |
+| `deprecated` | Expose the old input and map it to the current representation. Accept either input form; reject simultaneous explicit configuration of both. |
+| `frozen` | Retain the deprecated configuration/state behavior without an APIC round-trip. |
+| `removed` | Omit the old input from the current schema/model while retaining its historical decoding and conversion information. |
+
+Resolve versions numerically. The latest explicit status per legacy attribute
+path wins; omissions inherit the previous status, and a new alias defaults to
+`deprecated`. Omission must not restore a removed field. Immediate removal is
+allowed. The framework selects one direct-to-current upgrader and does not
+chain versions.
+
+`schema_version` explicitly pins the current resource schema and is independent
+of other resources, provider releases, and APIC versions. Numbers need not be
+consecutive; omission means version zero. The migration script imports the old
+generator's published-version rules once and writes fixed values into the
+canonical definitions. An unchanged SDKv2/framework version remains unchanged
+without an artificial state-upgrade entry. The version covers the whole resource, including reusable children;
+child schemas have no independent version inside their parent. Datasources use
+the applicable compatibility fields but have no resource state upgraders.
+
+Each version entry may declare `source: sdkv2` or `source: framework`.
+Documentation derives the SDKv2 migration warning from these entries. A class
+that only needs a migration notice uses the existing resource documentation
+warnings instead of a dummy state upgrade.
+
+Legacy fields belong at the Terraform root/adapter boundary, outside the APIC
+class model and payload. Named relations convert old DN inputs to names;
+explicit relations keep their full DNs. Modern name attributes accept names
+directly. Preserve existing conversions and null/empty behavior; Tenant's
+published version-1 upgrade converts an unset monitoring relation to an empty
+name, while planning keeps unknown references unknown. State may contain both
+representations; conflicts are checked against explicit configuration.
+
+A required root property with historical names accepts exactly one configured
+name, including the current name. Its reusable child schema stays required;
+only the root compatibility schema allows the legacy alternative.
+
+Root string aliases convert through Terraform values so semantic string types
+retain known, null, and unknown values. Legacy DN collections become child sets
+matched by their identifying property, retaining other planned or prior child
+values. Legacy readback uses APIC's resolved target DNs. Historical nested blocks
+keep their block syntax in both resource and datasource schemas while mapping
+to the same modern child model. When only modern children are configured, the
+legacy block's planned elements contain unknown property values until readback,
+matching the published provider's computed compatibility outputs.
+
+`SetFromLegacyConfig` runs only in `ModifyPlan`, including final planning after
+dependency references resolve. Save the converted plan before returning for
+unknown identifiers. After ID is set, `SetLegacyFromState` retains unconfigured
+deprecated outputs only when a candidate with those values and read-only outputs
+copied from prior state equals the entire prior state. Restore read-only values
+only for that unchanged plan; real changes leave them available for refresh.
+Compare typed Terraform values, including
+collections; leave planned values untouched when there is a real change.
+This preserves the existing provider's suppression of unknown-only legacy
+diffs without freezing stale outputs during updates. Create and Update consume
+that plan without repeating
+configuration conversion. `SetFromResponse` decodes only modern fields, ID,
+and ParentDN. Resource and datasource reads, including Create/Update readback,
+then explicitly call `SetLegacyFromResponse` to populate mapped compatibility
+fields and normalize retained frozen values. Modern response decoding can be
+used independently, including when reading children before adoption.
+
+Verification uses the existing definition/class/template tests, generated
+`resource_migration_test.go.tmpl` unit tests for every registered source
+version, and the existing acceptance templates for configuration switching,
+conflicts, and frozen-field retention/clearing. Tests verify decoded old values
+and complete current state rather than requiring an exact historical schema
+snapshot. Compare sets without relying on ordering. Test removal only when an
+actual definition declares removal. Keep the existing legacy test files.
+Migration unit tests require neither APIC nor `TF_ACC=1`.
 
 ## 10. Standardization rule
 

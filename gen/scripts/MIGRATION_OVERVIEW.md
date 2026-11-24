@@ -61,9 +61,9 @@ Value or shape needs transformation. Notes describe what each transform does.
 | `contained_by` | 37 | `class.include_parents` / `class.exclude_parents` | The old key replaced meta `containedBy`; the canonical fields are additive/subtractive. Remove globally excluded parents, include desired parents absent from meta, and exclude meta parents absent from the desired set. This preserves whether the generated schema exposes `parent_dn`. |
 | `class_version` | 1 (`fvRsBDToRelayP`) | `class.supported_versions` | Rename only. |
 | `relationship_classes` | 5 | `class.relation_info.to_classes` | Move into nested block; combined with `multi_relationship_class` (size > 1 → drop the flag). For polymorphic-same-type relations (§8.6), union the legacy `parents[].target_classes` values into `to_classes` so the resolved set captures every parent-class scenario (only `fvRsSecInherited` is affected today — `[fvAEPg, fvESg]` becomes `[fvAEPg, fvESg, l3extInstP]`). |
-| `migration_version` | 23 | `class.state_upgrades[].prior_schema_version` (+ `class.migration_source: from_sdkv2`) | One `state_upgrades` entry per declared version. See §2.1. |
-| `migration_blocks` | 18 | `class.state_upgrades[].attributes` / `.children` | Each `oldKey: newKey` pair becomes an `AttributeUpgradeDefinition` with `legacy_attribute: oldKey` keyed by meta camelCase property name. Dotted values (e.g. `relation_to_static_leafs.deployment_immediacy`) become inner `attributes` / `children` entries. `legacy_type` and `legacy_restriction` remain unset and therefore inherit the current property unless an explicit `type_changes` entry supplies a prior type. See §2.1. |
-| `type_changes` | 1 (`netflowMonitorPol`) | `class.state_upgrades[<version>].attributes[<name>].legacy_type` (or `.children[<name>].legacy_type` for block-shape changes) | Move per-attribute type change into the matching `state_upgrades` entry, creating a fresh entry when no `migration_version` lands at that `version`. See §2.1. |
+| `migration_version` | 23 | `class.state_upgrades[<version>].source` | One `state_upgrades` entry per declared version. See §2.1. |
+| `migration_blocks` | 18 | `class.state_upgrades[<version>].attributes` / `.children` | Each `oldKey: newKey` pair becomes an `AttributeUpgradeDefinition` with `attribute_name: oldKey` keyed by meta camelCase property name. Dotted values (e.g. `relation_to_static_leafs.deployment_immediacy`) become inner `attributes` / `children` entries. `type` and `restriction` remain unset and therefore inherit the current property unless an explicit `type_changes` entry supplies a prior type. See §2.1. |
+| `type_changes` | 1 (`netflowMonitorPol`) | `class.state_upgrades[<version>].attributes[<name>].type` (or `.children[<name>].type` for block-shape changes) | Move per-attribute type change into the matching `state_upgrades` entry, creating a fresh entry when no `migration_version` lands at that `version`. See §2.1. |
 
 ### Property-level
 
@@ -92,37 +92,53 @@ Value or shape needs transformation. Notes describe what each transform does.
 | `ignores` | `properties/global.yaml` | `global.exclude_properties` | Already present in new global. Drop the old key. |
 | `resource_name_doc_overwrite` | `properties/global.yaml` and `properties/<class>.yaml` | `global.documentation_label_overrides` | Already present in new global; the per-class copies (1 file) can be dropped. |
 
-### 2.1 SDKv2 state-upgrade pipeline
+### 2.1 State-upgrade differences
 
-The three SDKv2-migration keys (`migration_version`, `migration_blocks`, `type_changes`) translate into a single `state_upgrades:` tree on the new class definition. The legacy YAML carries the name pairs and explicit type changes. The frozen SDKv2 schema remains at [gen/definitions/schema-git-commit-e21fb3e5.json](../definitions/schema-git-commit-e21fb3e5.json), but the current migration script does not read it. For `migration_blocks`, prior type and restriction therefore inherit the current property; `type_changes` is the only current source of an explicit `legacy_type`.
+`migration_version`, `migration_blocks`, and `type_changes` are translated into
+`state_upgrades`, a map keyed by the saved schema version. `source: sdkv2` records
+a migration from SDKv2; type changes on framework resources use
+`source: framework`. A class needing only the migration notice uses
+`documentation.resource.warnings`, with no empty upgrade entry.
 
-The JSON is retained unchanged with the legacy inputs so a future migration can enrich `legacy_type` or `legacy_restriction` when a concrete compatibility case requires it. It is not referenced by the active runtime pipeline.
+The latest metadata leads the current schema. Entries describe only historical
+differences using `attribute_name`, `type`, `element_type`, `restriction`, and
+`status`, recursively under `attributes` and `children`. Unspecified fields
+inherit the normalized current shape. An override of the old type alone does
+not introduce a compatibility input into the current schema. New attributes
+missing from old state decode to null and need no historical exclusion records.
 
-**Current migration flow (per attribute touched)**
+The migration script completes every declared SDKv2 history against the saved
+schema JSON and the normalized current metadata. It preserves collection types,
+block and inner-attribute renames, and 18 frozen fields across `fvAEPg`, `fvBD`,
+`fvCtx`, `fvESg`, `fvTenant`, and `vmmDomP`. Unchanged root fields and `id` need no
+entries. Renamed historical blocks retain explicit `attribute_name` entries for
+every old member, including unchanged names, so newer properties and children
+are not accidentally added to their compatibility schemas. SDKv2 blocks and framework nested attributes share a state shape, so
+only a changed collection shape needs a type override. Netflow's framework
+history comes from its existing `type_changes` declaration, rather than the
+SDKv2 dump. The two system datasource aliases `rl_auto_mode` and `rl_group_id`
+postdate that dump and retain their legacy definition mappings.
 
-For each `migration_blocks.<className>.<oldName>: <newName>` entry:
+Published resource versions are preserved independently of migration progress:
+18 resources use `schema_version: 2`, six use `schema_version: 1`, and resources
+at version zero omit the setting. The script imports the old generator's version
+rules once: SDKv2 aliases advance the previous version, unchanged schemas retain
+it, and framework type changes determine their published successor version.
+The canonical YAML pins the result; normal generation never calculates a version
+from the upgrade map. In particular, Tag retains its final SDKv2 version 1 even
+though the older saved SDKv2 dump records version 0.
 
-1. **Resolve `<newName>`** to the current meta camelCase property name via `global.attribute_name_overrides` + per-property `attribute_name`. Dotted values (e.g. `relation_to_static_leafs.deployment_immediacy`) become nested `children.<className>.attributes.<innerMetaName>` entries — the scalar-wrap shape that [AttributeUpgradeDefinition.validateChild](../utils/data/definitions.go) explicitly permits (the outer `children` entry carries no `legacy_attribute`; the inner attribute carries the prior flat scalar name).
-2. **Emit `legacy_attribute`** and leave `legacy_type` / `legacy_restriction` unset. The renderer and validator interpret those zero values as "inherit from current."
-3. **Merge `type_changes` last** by locating the matching `state_upgrades[<version>]` entry and setting `legacy_type` on the named node. The single existing case (`netflowMonitorPol`) has `version: 0` and no `migration_version`, so the script creates a fresh `prior_schema_version: 0` entry.
-4. **Leave `legacy_status` unset.** The loader's zero value is `Functioning` (see [`LegacyStatusEnum`](../utils/data/enums.go)), which matches the v2.19.0 "legacy name still exposed" semantic. `frozen` / `removed` are new editorial choices made in migration logic when required.
+Every declared history is consumed during model normalization. Resource
+histories generate prior decoding schemas and upgraders; datasource-only
+histories supply output aliases without resource upgraders. There is no class
+allowlist, and the published schema version remains independent of the map.
+Normal generation consumes the canonical YAML and does not read the saved JSON.
 
-**`migration_source` — what it means and what it controls**
-
-`migration_source: from_sdkv2` is an enum tag separate from `state_upgrades`. It records *where the resource came from*, not what the upgrade tree looks like. Three consumers today:
-
-| Consumer | Behaviour | Site |
-|---|---|---|
-| Docs migration warning | When set, `ClassDocumentation.MigrationWarning` is populated with the SDKv2 migration-guide banner for the future active resource-documentation template. The active datasource template intentionally does not render a resource state-migration warning. A framework-native resource gets no warning. | [`setMigrationWarning`](../utils/data/class_documentation.go) |
-| Cross-field validator | A non-zero `migration_source` requires at least one `state_upgrades` entry (otherwise the docs would say "migrated" but `UpgradeResourceState` would have nothing to do). | [`validateStateUpgrades`](../utils/data/class.go) |
-| Future-proofing | The enum is extensible. Today only `from_sdkv2` is recognised; adding a second source (e.g. `from_terraform_provider_ciscomso`) is a new iota constant + `String()` / `UnmarshalText()` case, no consumer changes needed. | [`MigrationSourceEnum`](../utils/data/enums.go) |
-
-**Orthogonal to `state_upgrades`** by design: a framework-native resource can still grow `state_upgrades` entries for v0→v1 framework-internal schema bumps without ever setting `migration_source`. The two axes:
-
-| | `migration_source` set | `migration_source` unset |
-|---|---|---|
-| `state_upgrades` present | SDKv2 resource (possibly with later framework-internal bumps) | Framework-native resource that has gone through one or more schema bumps |
-| `state_upgrades` absent | **Invalid** — caught by the validator | Framework-native resource, no upgrades ever |
+A new alias defaults to `deprecated`. Later explicit statuses override earlier
+ones in numeric version order; omitted statuses inherit. `frozen` retains
+configuration/state without APIC I/O; `removed` drops current exposure while
+keeping historical decoding information. See [model.md](../docs/model.md) for
+the full runtime and verification contract.
 
 ### 2.2 Test-dependency auto-resolution and override criteria
 
@@ -219,12 +235,12 @@ Reviewed and ratified. Per-field reasoning follows the table.
 
 #### `ClassDefinition.artifacts []ArtifactEnum` — was `include`
 
-Files: `fvCrtrn`, `vmmUplinkPCont`, `vzAny`, `fvSiteAssociated` (4) for the migration. The fifth file (`fvFBRoute`) carries `include: true` but is redundant — see the migration-script note in §9. The same field covers the `topSystem` datasource-only case once the render layer lands (see §8.2).
+Files: `fvCrtrn`, `vmmUplinkPCont`, `vzAny`, `fvSiteAssociated` (4) for the migration. The fifth file (`fvFBRoute`) carries `include: true` but is redundant — see the migration-script note in §9. The same field covers the implemented `topSystem` datasource-only case (see §8.2).
 
 `ArtifactEnum` values are `resource` and `datasource`. For metadata-backed classes, an omitted list means "auto-derive": select both when `IdentifiedBy` is non-empty and neither when it is empty (the legacy `provider.go.tmpl` default). An explicitly empty list opts a metadata-backed class out of both top-level artifact kinds, while a non-empty list selects exactly the listed kinds. Definitions without local APIC metadata are naming lookups only: they omit `artifacts`, remain outside `DataStore.Classes`, and cannot create render jobs.
 
-- Explicit opt-in for classes with empty `IdentifiedBy`. The four migration classes all carry `identifiedBy: []` in meta but ship as public resources today (`aci_epg_useg_block_statement`, `aci_vmm_uplink_container`, `aci_any`, `aci_associated_site`); each becomes `artifacts: [resource, datasource]`. Current example generation therefore retains both artifact kinds, and future implementation generation will do the same.
-- Artifact selection when the metadata-backed default "both" is wrong. A future normalized `topSystem` class would use `[datasource]`; the shape also permits `[resource]` where required.
+- Explicit opt-in for classes with empty `IdentifiedBy`. The four migration classes all carry `identifiedBy: []` in meta but ship as public resources today (`aci_epg_useg_block_statement`, `aci_vmm_uplink_container`, `aci_any`, `aci_associated_site`); each becomes `artifacts: [resource, datasource]`. Active example and implementation generation retain both artifact kinds.
+- Artifact selection when the metadata-backed default "both" is wrong. The normalized `topSystem` class uses `[datasource]`; the shape also permits `[resource]` where required.
 
 Not DERIVE: meta has no signal for "empty-identifier class that should be exposed" or "this class is datasource-only" — both are provider policy, not meta data.
 
@@ -280,15 +296,15 @@ Files: `vmmRsDomMcastAddrNs`, `vmmRsPrefEnhancedLagPol` (2). Both relation class
 
 | Enum value | Scope | What it suppresses |
 |---|---|---|
-| `child` | Parent’s future child-test iteration | One child scenario in every parent’s generated test inputs. The class’s own resource/data-source test selection is unaffected. |
-| `resource` | This class’s own resource | The future `resource_aci_<x>_test.go` render job. Other artifact kinds remain unaffected. |
+| `child` | Parent's child-test iteration | The child block in generated parent fixtures and its assertions. The class's own resource/data-source test selection is unaffected. |
+| `resource` | This class’s own resource | The active `resource_aci_<x>_acceptance_test.go` render job. Other artifact kinds remain unaffected. |
 | `datasource` | This class’s own datasource | The active `data_source_aci_<x>_acceptance_test.go` render job. Other artifact kinds remain unaffected. |
 
-The two migration classes both carry `ignore_tests: [child]`. No active template consumes the `child` value yet. The datasource test renderer consumes `datasource`; `resource` remains reserved for the resource-test renderer. Neither value has a legacy YAML driver, but both express the orthogonal case where an artifact is wanted while its generated test is genuinely unrunnable (APIC-side race, hardware/license requirement, or non-deterministic ordering).
+The two migration classes both carry `ignore_tests: [child]`. Both acceptance-test renderers honor child exclusions while rendering fixtures and assertions. The resource and datasource values suppress their respective acceptance-test jobs. Neither of those values has a legacy YAML driver, but both express the orthogonal case where an artifact is wanted while its generated test is unrunnable (APIC-side race, hardware/license requirement, or non-deterministic ordering).
 
 Why a list and not three booleans: the three scopes are the same axis (test-emission skip at three different render sites) and a class can legitimately combine them, e.g. `[child, resource]` for a relation class whose generated resource test is also flaky. Mirrors the `Artifacts []ArtifactEnum` shape from earlier in this section and keeps the schema growable — a future `import_step` or `replace_step` value drops in without a new field.
 
-Distinct from `ignore_import_state_verify`: the future resource-test template will use that flag to suppress one assertion inside a test that still runs, while `ignore_tests` suppresses whole test jobs or one child scenario.
+Distinct from `ignore_import_state_verify`: the active resource-test template uses that flag to suppress import equality verification inside a test that still runs, while `ignore_tests` suppresses whole test jobs or a child block and its assertions.
 
 Why `child` is needed at all on `vmmDomP`’s children — both have a dependency graph that does not fit a single `terraform apply`:
 
@@ -389,7 +405,7 @@ The other 10 nested `custom_type` entries are IpAddress values; their author-cho
 
 [gen/definitions/properties/topSystem.yaml](../definitions/properties/topSystem.yaml) was authored alongside the manual plugin-framework migration of `aci_system`. The migration script now resolves its top-level `datasource_required:` list into `identified_by: [id, podId]` and `restriction: required` on both properties. A canonical correction excludes the metadata parents, prepends `pod-{podId}/node-{id}` to the `sys` RN, and thereby preserves the established `topology/pod-<pod>/node-<system>/sys` lookup without exposing `parent_dn`.
 
-The four same-name provider-deprecated properties (`childAction`, `configIssues`, `lcOwn`, and `status`) remain current computed string attributes. The renamed SDKv2 aliases are deliberately not added to the current model during this phase; their mappings are recorded only under the `prior_schema_version: 1` `state_upgrades` entry for the later legacy-attribute implementation.
+The four same-name provider-deprecated properties (`childAction`, `configIssues`, `lcOwn`, and `status`) remain current computed string attributes. The renamed SDKv2 aliases are deliberately not added to the current model during this phase; their mappings are recorded only under the `state_upgrades[1]` entry for the later legacy-attribute implementation.
 
 ### 8.3 `ignore_custom_type_docs` / `SemanticEquality` valid-values rendering context
 
@@ -541,7 +557,7 @@ The future resource acceptance-test renderer may iterate every mapped parent-tar
 
 The current [migrate_class_definitions.go](migrate_class_definitions.go) is built out across §§1–7 for both class-level and property-level YAML (the `knownLegacyKeys` allowlist mirrors the §10 audit one-for-one and every entry is `implemented: true`); unresolved §8 POSTPONE entries are dropped during migration with a per-file log line. The normalized datasource-identifier, example-value, separate-tenant dependency, parent-target mapping, and datasource-test work described in §§8.2, 8.4, 8.5, and 8.6 is implemented. What remains is the downstream resource-test and custom-type work for the entries still listed in §8.
 
-Script inputs are the legacy YAML files under [gen/definitions/classes/](../definitions/classes/) and [gen/definitions/properties/](../definitions/properties/). Those directories and the one-shot SDKv2 schema dump [gen/definitions/schema-git-commit-e21fb3e5.json](../definitions/schema-git-commit-e21fb3e5.json) remain unchanged from `develop`. The current script does not consume the JSON; it is retained for future state-upgrade compatibility work. The active loader is non-recursive, so it reads only flat canonical YAML files and ignores the two legacy directories.
+Script inputs are the legacy YAML files under [gen/definitions/classes/](../definitions/classes/) and [gen/definitions/properties/](../definitions/properties/). Those directories and the one-shot SDKv2 schema dump [gen/definitions/schema-git-commit-e21fb3e5.json](../definitions/schema-git-commit-e21fb3e5.json) remain unchanged from `develop`. After writing the initial canonical files, the script loads their normalized metadata and completes all declared SDKv2 histories from the JSON. This also works after `clean`; it does not depend on previously generated canonical files. The active loader is non-recursive, so it reads only flat canonical YAML files and ignores the two legacy directories.
 
 Every successful migration rewrites the complete expected flat definition set and then removes stale flat class definitions, excluding `global.yaml`. Definition-only lookup classes are emitted from the migration's compatibility map rather than being added to the legacy directories. Unknown legacy keys fail the command, ensuring an upstream schema addition requires an explicit migration disposition.
 
@@ -563,10 +579,10 @@ The script writes YAML; consuming it requires three groups of upstream changes. 
 
 | New loader field | Resolved runtime field | Setter behaviour | Consumer site |
 |---|---|---|---|
-| `ClassDefinition.Artifacts` | `Class.Artifacts []ArtifactEnum` (same enum on both sides). | For metadata-backed classes, omitted YAML auto-derives `[resource, datasource]` when `len(IdentifiedBy) > 0` and `[]` otherwise. Explicit `artifacts: []` selects neither; a non-empty list selects exactly those kinds. Definition-only classes remain outside `DataStore.Classes` and are never rendered; omission means both existing legacy artifacts are available for documentation links, while an explicit list records datasource-only or name-only exceptions. | Artifact-specific call sites use `HasResourceArtifact` or `HasDatasourceArtifact` for loaded classes and `DataStore.getResourceNameForArtifact` for cross-class documentation lookup. Shared model jobs intentionally do not filter on artifacts. The static registry infrastructure receives self-registration from the active datasource template and current resource files; the future replacement resource template must retain that behavior only for emitted artifacts. |
+| `ClassDefinition.Artifacts` | `Class.Artifacts []ArtifactEnum` (same enum on both sides). | For metadata-backed classes, omitted YAML auto-derives `[resource, datasource]` when `len(IdentifiedBy) > 0` and `[]` otherwise. Explicit `artifacts: []` selects neither; a non-empty list selects exactly those kinds. Definition-only classes remain outside `DataStore.Classes` and are never rendered; omission means both existing legacy artifacts are available for documentation links, while an explicit list records datasource-only or name-only exceptions. | Artifact-specific call sites use `HasResourceArtifact` or `HasDatasourceArtifact` for loaded classes and `DataStore.getResourceNameForArtifact` for cross-class documentation lookup. Shared model jobs intentionally do not filter on artifacts. The active resource and datasource templates self-register only the emitted artifacts with the static registry infrastructure. |
 | `ClassDefinition.ExampleFiles` | `Class.ResourceExamples.Files []string` | Copy the ordered filenames during public-example normalization for classes with a resource artifact. | The generator preloads each file from `gen/definitions/example_files/` before cleanup, copies it beside the class's generated resource examples, and records the destination in the managed-files manifest. |
 | `ClassDefinition.ExampleParentClass` | `Class.ExampleContext.ParentClass *ClassName` | When set, resolve the singular override; otherwise inspect normalized `Class.Parents` in order and select the first parent with a resource artifact. | Resource and datasource examples use the resulting `ExampleContext.ParentValue`. Future documentation should consume the same selected example context rather than own parent-selection state. |
-| `ClassDefinition.ParentDnVariants` | `Class.ParentDnVariants []ParentDnVariant` plus a synthesised `Class.DefaultParentDn *ParentDnVariant` for the meta-derived placement. Each `ParentDnVariant` carries the loader fields plus resolved `ParentClass` and optional `WrapperClass` names. | See §9.1.1 for the full derivation and emission rules. | `model.go.tmpl` derives parent-DN match patterns through `ParentClass` and generates `BuildDN`; later resource/schema/test templates can consume the same resolved variants for API routing, schema behavior, and platform gating. Replaces the hand-coded `wrapperClassMap` in [resource_aci_key_ring.go](../../internal/provider/resource_aci_key_ring.go) and the matching block in `resource_aci_certificate_authority.go`. |
+| `ClassDefinition.ParentDnVariants` | `Class.ParentDnVariants []ParentDnVariant` plus a synthesised `Class.DefaultParentDn *ParentDnVariant` for the meta-derived placement. Each `ParentDnVariant` carries the loader fields plus resolved `ParentClass` and optional `WrapperClass` names. | See §9.1.1 for the full derivation and emission rules. | `model.go.tmpl` derives parent-DN match patterns through `ParentClass` and generates `BuildDN`; resource adapters consume the same resolved variants for API routing, while additional variant-specific test/platform scenarios can use that data without another mapping. Replaces the hand-coded `wrapperClassMap` in [resource_aci_key_ring.go](../../internal/provider/resource_aci_key_ring.go) and the matching block in `resource_aci_certificate_authority.go`. |
 | `ClassTestConfigDefinition.IgnoreTests` | `Class.TestConfig.IgnoreTests []IgnoreTestEnum` (same enum on both sides). | One-line passthrough from the loader. Empty list = nothing suppressed. | The active datasource-test render job gates on `datasource`. Future child/resource test render jobs must gate on their corresponding enum values. Runtime artifacts, schemas, docs, and examples are unaffected; use `Artifacts` to suppress those. |
 | `ClassTestConfigDefinition.IgnoreImportStateVerify` | `Class.TestConfig.IgnoreImportStateVerify bool` | One-line passthrough from the loader. | Future resource-test template branch that emits or skips `ImportStateVerify: true`. Distinct from `IgnoreTests: [resource]` — the test still runs; only the one assertion is suppressed. |
 | `GlobalMetaDefinition.PropertyDocumentationOverrides` | Consumed directly by the renderer; no per-class resolved counterpart needed. | n/a (lookup is per-property at render time). | The override is applied by [setPropertyDocumentationDescriptions](../utils/data/property_documentation.go) after per-property [setDescription](../utils/data/property_documentation.go); it interpolates `%s` with the class's humanised resource name (same `GetResourceNameAsDescription` substitution the legacy generator uses) and wins over the meta-comment fallback. |
@@ -637,7 +653,7 @@ The normalized variant data and generated model now provide the replacement for 
 All ten steps below are implemented in [migrate_class_definitions.go](migrate_class_definitions.go); the descriptions document the contract each step honours so a future re-run or extension stays anchored to the disposition catalog. Deliberately deferred downstream work is called out inline.
 
 1. **§1 direct mapping** — extend the loader to also copy `rn_prepend`, `required_as_child`, `resource_name`, and `dn_formats` (under `documentation:`), plus the per-property `documentation` map (121 files).
-2. **§2 semantic mapping, class-level** — implement the shape-changing transforms: `resource_notes` (+ `resource_warnings` / `datasource_notes` / `datasource_warnings` sibling slots, no v2.19.0 data), `children` → `include_children`, legacy replacement-style `contained_by` → the minimal `include_parents` / `exclude_parents` delta against meta, `class_version` → `supported_versions`, `relationship_classes` (+ drop `multi_relationship_class`) → `relation_info.to_classes`, and `migration_version` + `migration_blocks` + `type_changes` → `state_upgrades` (see §2.1; sets `migration_source: from_sdkv2`, while unspecified `legacy_type` / `legacy_restriction` inherit the current property).
+2. **§2 semantic mapping, class-level** — implement the shape-changing transforms: `resource_notes` (+ `resource_warnings` / `datasource_notes` / `datasource_warnings` sibling slots, no v2.19.0 data), `children` → `include_children`, legacy replacement-style `contained_by` → the minimal `include_parents` / `exclude_parents` delta against meta, `class_version` → `supported_versions`, `relationship_classes` (+ drop `multi_relationship_class`) → `relation_info.to_classes`, and `migration_version` + `migration_blocks` + `type_changes` → `state_upgrades` (see §2.1; sets per-version `source: sdkv2` or `source: framework`, while unspecified `type` / `restriction` inherit the current property).
 3. **§2 semantic mapping, property-level** — add a second pass that ingests `properties/<class>.yaml` and folds the entries into `NewClassDefinition.Properties` keyed by meta camelCase name. Covers the property-level transforms, the per-class `parents` / `targets` aggregation into class-level `test_config.dependencies[]`, and the `test_values` scenario merge. Preserve `parents[].target_classes` on Parent dependencies, union missing concrete targets into `relation_info.to_classes`, convert non-static target fixtures to resource references, retain explicit public-example differences in `example_config`, and preserve `test_values_for_parent` as `embedded_instances`.
 4. **§3 obsolete** — drop the 4 global keys, `multi_relationship_class`, the audited `definitions/properties/resource_name_overwrite.yaml` compatibility map, and `exclude_targets` (4 files) with a per-file log line. The latter is redundant because child dependencies are value-driven and the positive parent-to-target mapping is retained through `TargetClasses` (§8.6).
 5. **§4 ADD** — emit the six migrated fields into the output YAML. Verbatim values; one value remap (legacy `exclude_from_testing: true` → `ignore_tests: [child]`) plus the YAML key renames listed in the §4.1 table (e.g. `documentation` in `properties/global.yaml` → `property_documentation_overrides` in `global.yaml`). The `resource` and `datasource` enum values of `ignore_tests` have no legacy driver and so are not written by the script; the loader accepts explicit values when a generated test must be suppressed.

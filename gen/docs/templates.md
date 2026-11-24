@@ -11,8 +11,8 @@ associated with, `gen/generator.go`:
 
 | Output area | Tracked inventory | Cleanup status |
 | --- | ---: | --- |
-| `internal/provider/` | 955 files | Mixed static and generated output; 125 resource implementations, 126 data-source implementations, 125 resource acceptance tests, and 126 data-source acceptance tests are actively managed |
-| `internal/provider/models/` | 187 files | 177 class models are managed; shared model helpers and the class-version registry are static |
+| `internal/provider/` | 977 files | Mixed static and generated output; 125 resource implementations, 126 data-source implementations, 125 resource acceptance tests, 126 data-source acceptance tests, and 19 resource migration tests are actively managed |
+| `internal/provider/models/` | 189 files | 177 class models are managed; shared model helpers and the class-version registry are static |
 | `internal/apicversion/` | 2 files | Static APIC version parsing, comparison, and focused unit tests |
 | `internal/acceptancetest/` | 16 files | Static worker runner, Markdown reporting, event parsing, process management, fixture-prefix helpers, and focused unit tests |
 | `internal/customtypes/` | 6 files | Static custom types and focused unit tests used by generated models |
@@ -190,11 +190,14 @@ Create records the known ID after a successful POST so a failed read-back does
 not leave an untracked object. Classes with parent-DN variants use the model's
 `BuildPayloadDN()` for Create/Update requests; Read and Delete use the full ID.
 
-Resource adapters currently expose the normalized current schema. Deprecated
-aliases, frozen attributes, state upgrades, and resource identity are deferred.
-Generated resource acceptance tests cover the current lifecycle. Existing legacy
-resource test files and templates are preserved unchanged for the later
-compatibility work.
+Resource adapters expose the normalized current schema. Deprecated aliases,
+frozen attributes, and state upgrades are generated from each class's declared
+history. Resource identity remains deferred.
+Generated resource acceptance tests cover the current lifecycle. Legacy resource
+test files and templates remain unchanged as the compatibility baseline, including
+their original dependency configuration. New generated tests use current
+attributes for framework dependencies and existing SDKv2 attributes for resources
+that have not migrated.
 
 `resource.md.tmpl` owns the documentation page for every loaded class with a
 resource artifact. Resource pages without a metadata-backed class remain
@@ -374,5 +377,30 @@ the original resource stays managed; these tests require Terraform 1.7 or later.
 
 Local tests parse every resource scenario's HCL and validate its configuration
 and assertion references, including recursively configured children. Compilation
-checks cover every generated file without executing acceptance tests. Deprecated
-aliases, state migration, and resource identity remain separate work.
+checks cover every generated file without executing acceptance tests. Resource
+identity remains separate work.
+
+### Resource state-upgrade tests
+
+`resource_migration_test.go.tmpl` generates
+`internal/provider/resource_aci_<resource_name>_migration_test.go` for resources
+with normalized historical overrides and registered state upgraders. All 19
+resource histories are enabled. The published `schema_version` is preserved for
+every resource independently of its upgrade map. The datasource-only System
+class generates its 21 historical output aliases without a resource upgrader.
+
+The tests invoke the registered upgrader with historical JSON state and compare
+complete typed Terraform state, including nulls and collections. The shared
+harness lives in `internal/provider/provider_migration_test.go`. They require no
+APIC or `TF_ACC=1`. Generated values distinguish fields and collection members,
+including two objects in historical child blocks. The same harness file contains
+handwritten historical input/expected fixtures that are not regenerated or
+derived from the migration definitions. They provide independent examples of
+the conversion rules; generated tests provide coverage across all declared
+histories. Existing legacy tests remain unchanged. The resource
+acceptance flow additionally exercises switching input forms, conflicts, and
+frozen-field retention/clearing. Datasource assertions compare ordinary legacy
+outputs with the corresponding resource state. Configured named relationships'
+deprecated scalar DN outputs use native non-null checks with APIC-version gates,
+allowing APIC's target-DN resolution to complete between reads while retaining
+exact checks for modern relationship attributes.
