@@ -132,8 +132,8 @@ Driven by `state_upgrades` entries on the class definition (see `state_upgrades.
 
 1. **Explicit YAML wins.** `test_config.legacy` always replaces auto-derivation. This is the sole path when the legacy alias has a different Terraform type than the current attribute (auto-derive cannot guess a valid HCL shape).
 2. **Skip when not testable.** If the property has no `TestValues`, has `IgnoreInTest=true`, or is `ReadOnly`, Legacy stays undefined.
-3. **Skip when no testable legacy alias exists.** A legacy alias is testable when at least one `StateUpgradeValue` entry has `Status` `Functioning` or `Frozen` AND renames the attribute. Same-name entries (type-only or restriction-only changes) are not separately testable because they share the current attribute name. `Removed` entries are migration-only and never produce a Legacy bucket.
-4. **Skip with a generator warning when types diverge.** When any non-`Removed` legacy alias declares a `legacy_type` different from the current property's type, auto-derivation refuses to guess (cloning Create would produce HCL of the wrong shape). The generator logs a `Warn` and requires explicit `test_config.legacy` in the property definition. Templates can detect this case from `TestValues.Legacy.Defined == false` despite the property carrying a `Functioning`/`Frozen` `StateUpgradeValue` with a renamed alias.
+3. **Skip when no testable legacy alias exists.** A legacy alias is testable when at least one `StateUpgradeValue` entry has `Status` `LegacyDeprecated` or `Frozen` AND renames the attribute. Same-name entries (type-only or restriction-only changes) are not separately testable because they share the current attribute name. `Removed` entries are migration-only and never produce a Legacy bucket.
+4. **Skip with a generator warning when types diverge.** When any non-`Removed` legacy alias declares a `type` different from the current property's type, auto-derivation refuses to guess (cloning Create would produce HCL of the wrong shape). The generator logs a `Warn` and requires explicit `test_config.legacy` in the property definition. Templates can detect this case from `TestValues.Legacy.Defined == false` despite the property carrying a `LegacyDeprecated`/`Frozen` `StateUpgradeValue` with a renamed alias.
 5. **Otherwise: clone Create.** Each entry in `Create` is copied into `Legacy` field-for-field (including `Versions`). The legacy alias re-uses the current attribute's values, just rendered under its prior name.
 
 Legacy runs at the end of Loop 3 (`setPropertyTestValues`), after `parent_dn` / `tDn` placeholder resolution, so any dependency-derived `Create` entries are already wired and safe to clone.
@@ -186,7 +186,16 @@ properties:
 - `assert_value`: empty string defaults to `config_value`.
 - `assert_strategy`: `"value"` (default, existing value/reference/semantic comparison) or `"presence_only"` (a non-empty state value). It applies to each test-value entry in any scenario. Cloned scenarios retain the strategy, including resets derived from Default; an independently authored entry defaults to `value`. For set properties, member presence checks retain the existing element-count assertions and omit comparison of the selected member's value. Nested checks remain scoped to the identified parent objects. This setting does not change HCL inputs, provider behavior, or Terraform's consistency checks.
 - `value_type`: `"string"` (default, quoted), `"reference"` (a semantic Terraform address), or `"expression"` (another unquoted HCL expression).
-- `legacy`: optional. Overrides Legacy bucket auto-derivation (see §2.4). Required when the legacy alias declares a `legacy_type` different from the current attribute's type, because auto-derive cannot guess the prior HCL shape.
+- `legacy`: optional. Overrides Legacy bucket auto-derivation (see §2.4). Required when the legacy alias declares a `type` different from the current attribute's type, because auto-derive cannot guess the prior HCL shape.
+
+Generated datasource tests automatically use `statecheck.ExpectKnownValue` with
+`knownvalue.NotNull()` for deprecated scalar DN aliases of configured named
+relationships. APIC can resolve a named relationship's `tDn` between the resource
+and datasource reads, so these checks accept both an empty string and a resolved
+DN while rejecting null or missing attributes. They follow the child class's
+supported versions. Modern relationship attributes retain their exact checks.
+This rule is inferred from relationship metadata and has no definition override;
+the existing `presence_only` strategy continues to require a non-empty value.
 
 #### Independent scenario overrides
 
@@ -561,8 +570,8 @@ Loop 5 must follow all test-data loops because it is a read-only projection of t
 | Known datasource fixture legitimately leaves a parent diff | `class.test_config.datasource_expect_non_empty_plan: true` |
 | Prerequisite needed only for creation ordering | `order_only: true` on that nested dependency |
 | Server default differs from empty string | `test_config.default` on PropertyDefinition with both `assert_value: "<expected>"` AND explicit `config_include: false`. Omitting `config_include` defaults to `true` and would force the value into HCL config, defeating the point. |
-| 3+ parent classes | `test_config.dependencies` retains an additional parent for the future test renderer to emit as an HCL prerequisite, but `parent_dn` auto-wiring still only uses the first 2 Parent-role entries (Create/Update/Default use [0], ForceNew uses [1]). To actually switch between a 3rd parent type, also override the `parent_dn` property's `test_config` directly with a `{{<reference>}}` placeholder pointing at the desired entry. |
-| Legacy alias with divergent type | `test_config.legacy` on PropertyDefinition. Auto-derivation skips with a `Warn` log when any `Functioning`/`Frozen` `StateUpgradeValue` carries a `legacy_type` different from the current attribute's type — supply the prior-shape HCL values explicitly. See §2.4 "Legacy bucket auto-derivation". |
+| 3+ parent classes | `test_config.dependencies` retains an additional parent for the test renderer to emit as an HCL prerequisite, but `parent_dn` auto-wiring still only uses the first 2 Parent-role entries (Create/Update/Default use [0], ForceNew uses [1]). To actually switch between a 3rd parent type, also override the `parent_dn` property's `test_config` directly with a `{{<reference>}}` placeholder pointing at the desired entry. |
+| Legacy alias with divergent type | `test_config.legacy` on PropertyDefinition. Auto-derivation skips with a `Warn` log when a `deprecated` or `frozen` alias has a historical `type` different from the current attribute's type — supply the prior-shape HCL values explicitly. See §2.4 "Legacy bucket auto-derivation". |
 
 ---
 
@@ -788,9 +797,13 @@ VMM ARP-learning assertions use the model custom type's semantic equality:
 APIC's empty value and `disabled` are equivalent, while a missing attribute
 still fails the check.
 
-Legacy/deprecated attributes, state upgrades, and resource identity are not part
-of these tests.
-The legacy resource and datasource test files remain unchanged.
+Classes with compatibility attributes additionally generate scenarios for legacy
+configuration, an unchanged legacy plan, switching back to current inputs without
+replacement, conflicting input forms, and frozen-field retention/clearing where
+applicable. State upgrades have separate generated unit tests that invoke the
+registered upgrader with historical JSON and compare complete typed state; they
+require neither an APIC nor `TF_ACC=1`. Resource identity import remains deferred.
+The preserved legacy resource and datasource test files remain unchanged.
 
 With the normal ACI acceptance-test environment set, the generated resource
 suite can be run using the existing parallel worker runner:
@@ -1102,9 +1115,14 @@ The generated resource lifecycle passed on APIC `6.2(2e)` with this fixture
 override while retaining strict plan checks. Once the parent implementation
 changes, recheck whether this definition override is still needed.
 
-The current resource scenarios intentionally exclude:
+Legacy input and conflict scenarios are generated when a class has declared
+compatibility attributes. Frozen-field scenarios are generated when applicable.
+Historical state conversion is covered by the separate generated migration unit
+tests, rather than an acceptance step that installs an older provider binary.
 
-- legacy aliases, frozen attributes, conflicts with current attributes, and state upgrades;
+The current resource acceptance scenarios intentionally exclude:
+
+- state upgrades through an older provider binary;
 - resource identity import;
 - extra target or parent types beyond the selected lifecycle fixtures;
 - dedicated invalid-input and semantic-equivalence spelling scenarios.
@@ -1122,6 +1140,12 @@ attributes would produce an invalid combination.
 Associated Site fixtures retain the local `site_id` value `"0"`, as in the
 legacy test. The standalone simulator rejects changing the parent's local site
 ID, so these runs do not exercise a local-site-ID update.
+On shared APICs onboarded to NDO, an explicit local site ID can be required.
+The two preserved Associated Site datasource fixtures omit it and can fail during
+creation with `Mismatch siteId`, before their assertions run. Reassessing these
+environment-dependent failures is deferred until clean, isolated APIC labs are
+available; the preserved tests remain unchanged. IP pool/block fixtures that
+overlap the simulator's TEP allocation are likewise environment limitations.
 
 Data Plane Policing updates keep `mode = "bit"` while exercising the 2R3C type
 and marking actions. Packet mode requires a different combination of type,
