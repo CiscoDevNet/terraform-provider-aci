@@ -103,6 +103,9 @@ func (c *Class) ResourceTestScenarios(ds *DataStore) ([]ResourceTestScenario, er
 	if err := builder.unchanged("FullUnchanged", "Repeat Full Configuration (Expect Empty Plan)", &current); err != nil {
 		return nil, err
 	}
+	if err := builder.legacy(&current); err != nil {
+		return nil, err
+	}
 	updated := current.resourceTestCopy()
 	for _, name := range c.PropertiesAll {
 		property := updated.Properties[name]
@@ -1975,4 +1978,224 @@ func migrationNullState(c *Class, ds *DataStore) map[string]any {
 	}
 
 	return state
+}
+
+func (b *resourceTestBuilder) legacy(current *Class) error {
+	if len(b.class.LegacyAttributes) == 0 {
+		return nil
+	}
+	base := *b.last()
+	parse := func() (*hclwrite.File, error) {
+		file, diagnostics := hclwrite.ParseConfig([]byte(base.Configuration), "legacy.tf", hcl.InitialPos)
+		if diagnostics.HasErrors() {
+			return nil, fmt.Errorf("legacy test configuration: %s", diagnostics)
+		}
+		return file, nil
+	}
+	legacyFile, err := parse()
+	if err != nil {
+		return err
+	}
+	legacyBody := legacyFile.Body().Blocks()[0].Body()
+	conflictFile, err := parse()
+	if err != nil {
+		return err
+	}
+	checks := slices.Clone(base.Assertions)
+	renderer := newTestConfigurationRenderer(current, b.dataStore)
+	renderer.resourceTest = true
+	for _, alias := range b.class.LegacyAttributes {
+		if alias.Status != LegacyDeprecated {
+			continue
+		}
+		if alias.ChildName == nil {
+			if attribute := legacyBody.GetAttribute(alias.ChildAttribute); attribute != nil {
+				tokens := attribute.Expr().BuildTokens(nil)
+				legacyBody.RemoveAttribute(alias.ChildAttribute)
+				legacyBody.SetAttributeRaw(alias.AttributeName, tokens)
+				conflictFile.Body().Blocks()[0].Body().SetAttributeRaw(alias.AttributeName, tokens)
+				if alias.IsListToSet() {
+					for _, property := range current.ModelProperties() {
+						if property.AttributeName != alias.ChildAttribute || property.TestValues == nil {
+							continue
+						}
+						entries := property.TestValues.Create.includedEntries()
+						versions := testAssertionVersions(nil, current.SupportedVersions, property.SupportedVersions)
+						checks = append(checks, TestAssertion{assertionType: testAssertionSetCount, AttributePath: alias.AttributeName, ExpectedCount: len(entries), Versions: versions})
+						for index, entry := range entries {
+							checks = append(checks, testAttributeAssertion(fmt.Sprintf("%s.%d", alias.AttributeName, index), entry, versions))
+						}
+					}
+				} else {
+					checks = append(checks, TestAssertion{assertionType: testAssertionAttributePair, AttributePath: alias.AttributeName, PairAddress: renderer.subjectResourceAddress().String(), PairAttribute: alias.ChildAttribute})
+				}
+			}
+			continue
+		}
+		child := b.dataStore.Classes[alias.ChildName.String()]
+		// Convert only children configured by the current fixture; excluded children have no rendered dependencies.
+		if legacyBody.GetAttribute(child.ResourceNameNested) == nil {
+			continue
+		}
+		fragment, assertions, err := b.legacyChildConfiguration(current, alias, renderer)
+		if err != nil {
+			return err
+		}
+		if fragment == "" {
+			continue
+		}
+		parsed, diagnostics := hclwrite.ParseConfig([]byte(fragment), "legacy-values.tf", hcl.InitialPos)
+		if diagnostics.HasErrors() {
+			return fmt.Errorf("legacy value: %s", diagnostics)
+		}
+		legacyBody.RemoveAttribute(child.ResourceNameNested)
+		legacyBody.AppendUnstructuredTokens(parsed.Body().BuildTokens(nil))
+		conflictFile.Body().Blocks()[0].Body().AppendUnstructuredTokens(parsed.Body().BuildTokens(nil))
+		checks = append(checks, renderer.renderCountedDependencyAssertions(assertions)...)
+	}
+	add := func(name, description string, file *hclwrite.File, assertions []TestAssertion) {
+		b.scenarios = append(b.scenarios, ResourceTestScenario{Name: name, Description: description, Configuration: string(hclwrite.Format(file.Bytes())), Assertions: assertions})
+	}
+	add("Legacy", "Configure Through Legacy Attributes", legacyFile, checks)
+	add("LegacyUnchanged", "Repeat Legacy Configuration (Expect Empty Plan)", legacyFile, checks)
+	b.last().PlanOnly = true
+	b.scenarios = append(b.scenarios, ResourceTestScenario{Name: "CurrentAfterLegacy", Description: "Switch to Current Attributes Without Replacement", Configuration: base.Configuration, Assertions: base.Assertions, PlanOnly: true})
+	add("LegacyConflict", "Reject Simultaneous Legacy and Current Inputs", conflictFile, nil)
+	b.last().ExpectError = "Invalid Attribute Combination|Conflicting legacy configuration"
+	frozen, err := parse()
+	if err != nil {
+		return err
+	}
+	frozenChecks := slices.Clone(base.Assertions)
+	clearedChecks := slices.Clone(base.Assertions)
+	hasFrozen := false
+	for _, alias := range b.class.LegacyAttributes {
+		if alias.Status != Frozen {
+			continue
+		}
+		hasFrozen = true
+		if alias.Type == StringAttribute {
+			frozen.Body().Blocks()[0].Body().SetAttributeValue(alias.AttributeName, cty.StringVal("example"))
+			frozenChecks = append(frozenChecks, TestAssertion{assertionType: testAssertionAttributeValue, AttributePath: alias.AttributeName, ExpectedValue: "example"})
+			clearedChecks = append(clearedChecks, TestAssertion{assertionType: testAssertionAttributeValue, AttributePath: alias.AttributeName, ExpectedValue: ""})
+		} else {
+			frozen.Body().Blocks()[0].Body().SetAttributeValue(alias.AttributeName, cty.SetVal([]cty.Value{cty.StringVal("example")}))
+			frozenChecks = append(frozenChecks, TestAssertion{assertionType: testAssertionSetCount, AttributePath: alias.AttributeName, ExpectedCount: 1})
+			clearedChecks = append(clearedChecks, TestAssertion{assertionType: testAssertionSetCount, AttributePath: alias.AttributeName, ExpectedCount: 0})
+		}
+	}
+	if hasFrozen {
+		add("Frozen", "Retain Frozen Attribute Configuration", frozen, frozenChecks)
+		add("FrozenUnchanged", "Repeat Frozen Configuration (Expect Empty Plan)", frozen, frozenChecks)
+		b.last().PlanOnly = true
+		for _, alias := range b.class.LegacyAttributes {
+			if alias.Status == Frozen {
+				if alias.Type == StringAttribute {
+					frozen.Body().Blocks()[0].Body().SetAttributeValue(alias.AttributeName, cty.StringVal(""))
+				} else {
+					frozen.Body().Blocks()[0].Body().SetAttributeValue(alias.AttributeName, cty.SetValEmpty(cty.String))
+				}
+			}
+		}
+		add("FrozenCleared", "Clear Frozen Attribute State", frozen, clearedChecks)
+	}
+	b.state = current
+	return nil
+}
+
+func (b *resourceTestBuilder) legacyChildConfiguration(current *Class, alias MigrationAttribute, renderer testConfigurationRenderer) (string, []TestAssertion, error) {
+	// Reuse the full fixture's normalized references and values; only its legacy shape changes.
+	childClass := b.dataStore.Classes[alias.ChildName.String()]
+	var fixture *TestChild
+	for _, child := range current.TestChildren {
+		if child.Class.Equal(alias.ChildName) {
+			fixture = child
+			break
+		}
+	}
+	if fixture == nil || len(fixture.Instances) == 0 {
+		return "", nil, nil
+	}
+	versions := testAssertionVersions(nil, current.SupportedVersions, childClass.SupportedVersions)
+	var contents strings.Builder
+	var assertions []TestAssertion
+	if alias.Block {
+		for _, instance := range fixture.Instances {
+			fmt.Fprintf(&contents, "%s {\n", alias.AttributeName)
+			for _, member := range alias.Attributes {
+				scenario := renderer.resourceReferenceScenario(&childClass, instance.Properties[member.ChildAttribute])
+				if member.Named {
+					for index, entry := range scenario.Entries {
+						if entry.ValueType == ReferenceValue {
+							address, ok := parseTerraformTestReference(entry.ConfigValue)
+							if !ok {
+								return "", nil, fmt.Errorf("class %s: invalid legacy target reference %q", current.Name, entry.ConfigValue)
+							}
+							scenario.Entries[index].ConfigValue = address.withAttribute("id")
+						}
+					}
+				}
+				writeTestAttribute(&contents, member.AttributeName, String, scenario, "")
+			}
+			contents.WriteString("}\n")
+		}
+		assertions = append(assertions, TestAssertion{assertionType: testAssertionSetCount, AttributePath: alias.AttributeName, ExpectedCount: len(fixture.Instances), Versions: versions})
+		return contents.String(), assertions, nil
+	}
+	var property *Property
+	for _, candidate := range childClass.ModelProperties() {
+		if candidate.AttributeName == alias.ChildAttribute {
+			property = candidate
+			break
+		}
+	}
+	scenario := TestValueScenario{Defined: true}
+	for _, instance := range fixture.Instances {
+		entry, exists := instance.Properties[alias.ChildAttribute].firstIncludedEntry()
+		if !exists {
+			continue
+		}
+		if alias.Named {
+			if entry.ValueType == ReferenceValue {
+				address, ok := parseTerraformTestReference(entry.ConfigValue)
+				if !ok {
+					return "", nil, fmt.Errorf("class %s: invalid legacy target reference %q", current.Name, entry.ConfigValue)
+				}
+				entry.ConfigValue = address.withAttribute("id")
+			} else if property != nil && property.TestValues != nil {
+				if legacy, ok := property.TestValues.Legacy.firstIncludedEntry(); ok {
+					entry = legacy
+				}
+			}
+		}
+		assertion := TestAssertion{assertionType: testAssertionAttributeValue, AttributePath: alias.AttributeName, ExpectedValue: entry.AssertValue, Versions: versions}
+		if entry.ValueType == StringValue {
+			assertion.ExpectedValue = entry.ConfigValue
+		}
+		if alias.Repeated {
+			assertion.assertionType = testAssertionSetElementValue
+			assertion.AttributePath += ".*"
+		}
+		if entry.ValueType == ReferenceValue {
+			address, _ := parseTerraformTestReference(entry.ConfigValue)
+			assertion.PairAddress, assertion.PairAttribute = address.String(), address.Attribute
+			if alias.Repeated {
+				assertion.assertionType = testAssertionSetElementPair
+			} else {
+				assertion.assertionType = testAssertionAttributePair
+			}
+		}
+		if entry.ValueType != ExpressionValue {
+			assertions = append(assertions, assertion)
+		}
+		scenario.Entries = append(scenario.Entries, entry)
+	}
+	valueType := String
+	if alias.Repeated {
+		valueType = Set
+		assertions = append(assertions, TestAssertion{assertionType: testAssertionSetCount, AttributePath: alias.AttributeName, ExpectedCount: len(scenario.Entries), Versions: versions})
+	}
+	scenario = renderer.resourceReferenceScenario(&childClass, scenario)
+	writeTestAttribute(&contents, alias.AttributeName, valueType, scenario, testConfigurationVersions(current.SupportedVersions, childClass.SupportedVersions))
+	return contents.String(), assertions, nil
 }

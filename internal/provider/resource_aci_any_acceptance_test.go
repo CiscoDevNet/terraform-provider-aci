@@ -575,6 +575,506 @@ func TestAccResourceVzAnyGenerated(t *testing.T) {
 			},
 			{
 				PreConfig: func() {
+					t.Log("Test: Any Resource - Configure Through Legacy Attributes")
+				},
+				ConfigVariables: variables,
+				Config:          testAccResourceVzAnyLegacy,
+				Check: func(state *terraform.State) error {
+					// Evaluate runtime prefixes after PreCheck has initialized the fixture variables.
+					return resource.ComposeAggregateTestCheckFunc(
+						identity.CheckID("aci_any.test_1", false),
+						testCheckResourceDN("aci_any.test_1", "any", "uni", map[string]string{}, []resourceTestDNVariant{}),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_any.test_1", "annotation", "annotation_1"),
+						),
+						resource.TestCheckResourceAttr("aci_any.test_1", "description", "description_1"),
+						resource.TestCheckResourceAttr("aci_any.test_1", "match_criteria", "All"),
+						resource.TestCheckResourceAttr("aci_any.test_1", "name", "name_1"),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							resource.TestCheckResourceAttr("aci_any.test_1", "name_alias", "name_alias_1"),
+						),
+						resource.TestCheckResourceAttrPair("aci_any.test_1", "parent_dn", "aci_vrf.test_1.0", "id"),
+						composeAggregateTestCheckFuncWithVersion(t, "2.1(1h)-", "inside",
+							resource.TestCheckResourceAttr("aci_any.test_1", "preferred_group_member", "disabled"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_any.test_1", "annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_any.test_1", "annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_any.test_1", "annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_any.test_1", "tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_any.test_1", "tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_any.test_1", "tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						resource.TestCheckResourceAttr("aci_any.test_1", "relation_to_consumer_contracts.#", "2"),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_any.test_1", "relation_to_consumer_contracts.*", map[string]acceptancetest.AttributeValue{
+								"contract_name": {PairAddress: "aci_contract.test_1.0", PairAttribute: "name"},
+								"annotation":    {ExpectedValue: "annotation_1"},
+							}),
+						),
+						acceptancetest.CheckNestedSetElement("aci_any.test_1", "relation_to_consumer_contracts.*", map[string]acceptancetest.AttributeValue{
+							"priority":      {ExpectedValue: "level1"},
+							"contract_name": {PairAddress: "aci_contract.test_1.0", PairAttribute: "name"},
+						}),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_any.test_1", "relation_to_consumer_contracts.*", map[string]acceptancetest.AttributeValue{
+								"contract_name": {PairAddress: "aci_contract.test_1.0", PairAttribute: "name"},
+								"annotations.#": {ExpectedValue: "2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_any.test_1", "relation_to_consumer_contracts.*.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}, acceptancetest.ParentSetElement{
+								Path: "relation_to_consumer_contracts.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"contract_name": {PairAddress: "aci_contract.test_1.0", PairAttribute: "name"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_any.test_1", "relation_to_consumer_contracts.*.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}, acceptancetest.ParentSetElement{
+								Path: "relation_to_consumer_contracts.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"contract_name": {PairAddress: "aci_contract.test_1.0", PairAttribute: "name"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_any.test_1", "relation_to_consumer_contracts.*", map[string]acceptancetest.AttributeValue{
+								"contract_name": {PairAddress: "aci_contract.test_1.0", PairAttribute: "name"},
+								"tags.#":        {ExpectedValue: "2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_any.test_1", "relation_to_consumer_contracts.*.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}, acceptancetest.ParentSetElement{
+								Path: "relation_to_consumer_contracts.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"contract_name": {PairAddress: "aci_contract.test_1.0", PairAttribute: "name"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_any.test_1", "relation_to_consumer_contracts.*.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}, acceptancetest.ParentSetElement{
+								Path: "relation_to_consumer_contracts.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"contract_name": {PairAddress: "aci_contract.test_1.0", PairAttribute: "name"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_any.test_1", "relation_to_consumer_contracts.*", map[string]acceptancetest.AttributeValue{
+								"contract_name": {PairAddress: "aci_contract.test_2.0", PairAttribute: "name"},
+								"annotation":    {ExpectedValue: "annotation_2"},
+							}),
+						),
+						acceptancetest.CheckNestedSetElement("aci_any.test_1", "relation_to_consumer_contracts.*", map[string]acceptancetest.AttributeValue{
+							"priority":      {ExpectedValue: "unspecified"},
+							"contract_name": {PairAddress: "aci_contract.test_2.0", PairAttribute: "name"},
+						}),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_any.test_1", "relation_to_consumer_contracts.*", map[string]acceptancetest.AttributeValue{
+								"contract_name": {PairAddress: "aci_contract.test_2.0", PairAttribute: "name"},
+								"annotations.#": {ExpectedValue: "2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_any.test_1", "relation_to_consumer_contracts.*.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}, acceptancetest.ParentSetElement{
+								Path: "relation_to_consumer_contracts.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"contract_name": {PairAddress: "aci_contract.test_2.0", PairAttribute: "name"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_any.test_1", "relation_to_consumer_contracts.*.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}, acceptancetest.ParentSetElement{
+								Path: "relation_to_consumer_contracts.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"contract_name": {PairAddress: "aci_contract.test_2.0", PairAttribute: "name"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_any.test_1", "relation_to_consumer_contracts.*", map[string]acceptancetest.AttributeValue{
+								"contract_name": {PairAddress: "aci_contract.test_2.0", PairAttribute: "name"},
+								"tags.#":        {ExpectedValue: "2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_any.test_1", "relation_to_consumer_contracts.*.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}, acceptancetest.ParentSetElement{
+								Path: "relation_to_consumer_contracts.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"contract_name": {PairAddress: "aci_contract.test_2.0", PairAttribute: "name"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_any.test_1", "relation_to_consumer_contracts.*.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}, acceptancetest.ParentSetElement{
+								Path: "relation_to_consumer_contracts.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"contract_name": {PairAddress: "aci_contract.test_2.0", PairAttribute: "name"},
+								},
+							}),
+						),
+						resource.TestCheckResourceAttr("aci_any.test_1", "relation_to_contract_interfaces.#", "2"),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_any.test_1", "relation_to_contract_interfaces.*", map[string]acceptancetest.AttributeValue{
+								"imported_contract_name": {PairAddress: "aci_imported_contract.test_1.0", PairAttribute: "name"},
+								"annotation":             {ExpectedValue: "annotation_1"},
+							}),
+						),
+						acceptancetest.CheckNestedSetElement("aci_any.test_1", "relation_to_contract_interfaces.*", map[string]acceptancetest.AttributeValue{
+							"priority":               {ExpectedValue: "level1"},
+							"imported_contract_name": {PairAddress: "aci_imported_contract.test_1.0", PairAttribute: "name"},
+						}),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_any.test_1", "relation_to_contract_interfaces.*", map[string]acceptancetest.AttributeValue{
+								"imported_contract_name": {PairAddress: "aci_imported_contract.test_1.0", PairAttribute: "name"},
+								"annotations.#":          {ExpectedValue: "2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_any.test_1", "relation_to_contract_interfaces.*.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}, acceptancetest.ParentSetElement{
+								Path: "relation_to_contract_interfaces.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"imported_contract_name": {PairAddress: "aci_imported_contract.test_1.0", PairAttribute: "name"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_any.test_1", "relation_to_contract_interfaces.*.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}, acceptancetest.ParentSetElement{
+								Path: "relation_to_contract_interfaces.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"imported_contract_name": {PairAddress: "aci_imported_contract.test_1.0", PairAttribute: "name"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_any.test_1", "relation_to_contract_interfaces.*", map[string]acceptancetest.AttributeValue{
+								"imported_contract_name": {PairAddress: "aci_imported_contract.test_1.0", PairAttribute: "name"},
+								"tags.#":                 {ExpectedValue: "2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_any.test_1", "relation_to_contract_interfaces.*.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}, acceptancetest.ParentSetElement{
+								Path: "relation_to_contract_interfaces.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"imported_contract_name": {PairAddress: "aci_imported_contract.test_1.0", PairAttribute: "name"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_any.test_1", "relation_to_contract_interfaces.*.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}, acceptancetest.ParentSetElement{
+								Path: "relation_to_contract_interfaces.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"imported_contract_name": {PairAddress: "aci_imported_contract.test_1.0", PairAttribute: "name"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_any.test_1", "relation_to_contract_interfaces.*", map[string]acceptancetest.AttributeValue{
+								"imported_contract_name": {PairAddress: "aci_imported_contract.test_2.0", PairAttribute: "name"},
+								"annotation":             {ExpectedValue: "annotation_2"},
+							}),
+						),
+						acceptancetest.CheckNestedSetElement("aci_any.test_1", "relation_to_contract_interfaces.*", map[string]acceptancetest.AttributeValue{
+							"priority":               {ExpectedValue: "unspecified"},
+							"imported_contract_name": {PairAddress: "aci_imported_contract.test_2.0", PairAttribute: "name"},
+						}),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_any.test_1", "relation_to_contract_interfaces.*", map[string]acceptancetest.AttributeValue{
+								"imported_contract_name": {PairAddress: "aci_imported_contract.test_2.0", PairAttribute: "name"},
+								"annotations.#":          {ExpectedValue: "2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_any.test_1", "relation_to_contract_interfaces.*.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}, acceptancetest.ParentSetElement{
+								Path: "relation_to_contract_interfaces.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"imported_contract_name": {PairAddress: "aci_imported_contract.test_2.0", PairAttribute: "name"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_any.test_1", "relation_to_contract_interfaces.*.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}, acceptancetest.ParentSetElement{
+								Path: "relation_to_contract_interfaces.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"imported_contract_name": {PairAddress: "aci_imported_contract.test_2.0", PairAttribute: "name"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_any.test_1", "relation_to_contract_interfaces.*", map[string]acceptancetest.AttributeValue{
+								"imported_contract_name": {PairAddress: "aci_imported_contract.test_2.0", PairAttribute: "name"},
+								"tags.#":                 {ExpectedValue: "2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_any.test_1", "relation_to_contract_interfaces.*.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}, acceptancetest.ParentSetElement{
+								Path: "relation_to_contract_interfaces.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"imported_contract_name": {PairAddress: "aci_imported_contract.test_2.0", PairAttribute: "name"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_any.test_1", "relation_to_contract_interfaces.*.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}, acceptancetest.ParentSetElement{
+								Path: "relation_to_contract_interfaces.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"imported_contract_name": {PairAddress: "aci_imported_contract.test_2.0", PairAttribute: "name"},
+								},
+							}),
+						),
+						resource.TestCheckResourceAttr("aci_any.test_1", "relation_to_provider_contracts.#", "2"),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_any.test_1", "relation_to_provider_contracts.*", map[string]acceptancetest.AttributeValue{
+								"contract_name": {PairAddress: "aci_contract.test_1.0", PairAttribute: "name"},
+								"annotation":    {ExpectedValue: "annotation_1"},
+							}),
+						),
+						acceptancetest.CheckNestedSetElement("aci_any.test_1", "relation_to_provider_contracts.*", map[string]acceptancetest.AttributeValue{
+							"match_criteria": {ExpectedValue: "All"},
+							"priority":       {ExpectedValue: "level1"},
+							"contract_name":  {PairAddress: "aci_contract.test_1.0", PairAttribute: "name"},
+						}),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_any.test_1", "relation_to_provider_contracts.*", map[string]acceptancetest.AttributeValue{
+								"contract_name": {PairAddress: "aci_contract.test_1.0", PairAttribute: "name"},
+								"annotations.#": {ExpectedValue: "2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_any.test_1", "relation_to_provider_contracts.*.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}, acceptancetest.ParentSetElement{
+								Path: "relation_to_provider_contracts.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"contract_name": {PairAddress: "aci_contract.test_1.0", PairAttribute: "name"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_any.test_1", "relation_to_provider_contracts.*.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}, acceptancetest.ParentSetElement{
+								Path: "relation_to_provider_contracts.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"contract_name": {PairAddress: "aci_contract.test_1.0", PairAttribute: "name"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_any.test_1", "relation_to_provider_contracts.*", map[string]acceptancetest.AttributeValue{
+								"contract_name": {PairAddress: "aci_contract.test_1.0", PairAttribute: "name"},
+								"tags.#":        {ExpectedValue: "2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_any.test_1", "relation_to_provider_contracts.*.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}, acceptancetest.ParentSetElement{
+								Path: "relation_to_provider_contracts.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"contract_name": {PairAddress: "aci_contract.test_1.0", PairAttribute: "name"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_any.test_1", "relation_to_provider_contracts.*.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}, acceptancetest.ParentSetElement{
+								Path: "relation_to_provider_contracts.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"contract_name": {PairAddress: "aci_contract.test_1.0", PairAttribute: "name"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_any.test_1", "relation_to_provider_contracts.*", map[string]acceptancetest.AttributeValue{
+								"contract_name": {PairAddress: "aci_contract.test_2.0", PairAttribute: "name"},
+								"annotation":    {ExpectedValue: "annotation_2"},
+							}),
+						),
+						acceptancetest.CheckNestedSetElement("aci_any.test_1", "relation_to_provider_contracts.*", map[string]acceptancetest.AttributeValue{
+							"match_criteria": {ExpectedValue: "AtleastOne"},
+							"priority":       {ExpectedValue: "unspecified"},
+							"contract_name":  {PairAddress: "aci_contract.test_2.0", PairAttribute: "name"},
+						}),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_any.test_1", "relation_to_provider_contracts.*", map[string]acceptancetest.AttributeValue{
+								"contract_name": {PairAddress: "aci_contract.test_2.0", PairAttribute: "name"},
+								"annotations.#": {ExpectedValue: "2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_any.test_1", "relation_to_provider_contracts.*.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}, acceptancetest.ParentSetElement{
+								Path: "relation_to_provider_contracts.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"contract_name": {PairAddress: "aci_contract.test_2.0", PairAttribute: "name"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_any.test_1", "relation_to_provider_contracts.*.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}, acceptancetest.ParentSetElement{
+								Path: "relation_to_provider_contracts.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"contract_name": {PairAddress: "aci_contract.test_2.0", PairAttribute: "name"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_any.test_1", "relation_to_provider_contracts.*", map[string]acceptancetest.AttributeValue{
+								"contract_name": {PairAddress: "aci_contract.test_2.0", PairAttribute: "name"},
+								"tags.#":        {ExpectedValue: "2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_any.test_1", "relation_to_provider_contracts.*.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}, acceptancetest.ParentSetElement{
+								Path: "relation_to_provider_contracts.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"contract_name": {PairAddress: "aci_contract.test_2.0", PairAttribute: "name"},
+								},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_any.test_1", "relation_to_provider_contracts.*.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}, acceptancetest.ParentSetElement{
+								Path: "relation_to_provider_contracts.*",
+								Values: map[string]acceptancetest.AttributeValue{
+									"contract_name": {PairAddress: "aci_contract.test_2.0", PairAttribute: "name"},
+								},
+							}),
+						),
+						resource.TestCheckResourceAttrPair("aci_any.test_1", "match_t", "aci_any.test_1", "match_criteria"),
+						resource.TestCheckResourceAttrPair("aci_any.test_1", "pref_gr_memb", "aci_any.test_1", "preferred_group_member"),
+						resource.TestCheckTypeSetElemAttrPair("aci_any.test_1", "relation_vz_rs_any_to_cons.*", "aci_contract.test_1.0", "id"),
+						resource.TestCheckTypeSetElemAttrPair("aci_any.test_1", "relation_vz_rs_any_to_cons.*", "aci_contract.test_2.0", "id"),
+						resource.TestCheckResourceAttr("aci_any.test_1", "relation_vz_rs_any_to_cons.#", "2"),
+						resource.TestCheckTypeSetElemAttrPair("aci_any.test_1", "relation_vz_rs_any_to_cons_if.*", "aci_imported_contract.test_1.0", "id"),
+						resource.TestCheckTypeSetElemAttrPair("aci_any.test_1", "relation_vz_rs_any_to_cons_if.*", "aci_imported_contract.test_2.0", "id"),
+						resource.TestCheckResourceAttr("aci_any.test_1", "relation_vz_rs_any_to_cons_if.#", "2"),
+						resource.TestCheckTypeSetElemAttrPair("aci_any.test_1", "relation_vz_rs_any_to_prov.*", "aci_contract.test_1.0", "id"),
+						resource.TestCheckTypeSetElemAttrPair("aci_any.test_1", "relation_vz_rs_any_to_prov.*", "aci_contract.test_2.0", "id"),
+						resource.TestCheckResourceAttr("aci_any.test_1", "relation_vz_rs_any_to_prov.#", "2"),
+						resource.TestCheckResourceAttrPair("aci_any.test_1", "vrf_dn", "aci_any.test_1", "parent_dn"),
+					)(state)
+				},
+			},
+			{
+				PreConfig: func() {
+					t.Log("Test: Any Resource - Repeat Legacy Configuration (Expect Empty Plan)")
+				},
+				ConfigVariables: variables,
+				Config:          testAccResourceVzAnyLegacyUnchanged,
+				PlanOnly:        true,
+				ConfigPlanChecks: resource.ConfigPlanChecks{
+					PostApplyPreRefresh: []plancheck.PlanCheck{plancheck.ExpectEmptyPlan()},
+				},
+			},
+			{
+				PreConfig: func() {
+					t.Log("Test: Any Resource - Switch to Current Attributes Without Replacement")
+				},
+				ConfigVariables: variables,
+				Config:          testAccResourceVzAnyCurrentAfterLegacy,
+				PlanOnly:        true,
+				ConfigPlanChecks: resource.ConfigPlanChecks{
+					PostApplyPreRefresh: []plancheck.PlanCheck{plancheck.ExpectEmptyPlan()},
+				},
+			},
+			{
+				PreConfig: func() {
+					t.Log("Test: Any Resource - Reject Simultaneous Legacy and Current Inputs")
+				},
+				ConfigVariables: variables,
+				Config:          testAccResourceVzAnyLegacyConflict,
+				ExpectError:     regexp.MustCompile("Invalid Attribute Combination|Conflicting legacy configuration"),
+			},
+			{
+				PreConfig: func() {
 					t.Log("Test: Any Resource - Update Mutable Attributes in Place")
 				},
 				ConfigVariables: variables,
@@ -5707,6 +6207,462 @@ resource "aci_any" "test_1" {
       ] : null
     },
   ]
+}
+`
+
+const testAccResourceVzAnyLegacy = testAccResourceVzAnyDependencies + `
+resource "aci_any" "test_1" {
+  annotation  = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+  description = "description_1"
+  name        = "name_1"
+  name_alias  = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
+  annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  match_t                       = "All"
+  pref_gr_memb                  = provider::aci::compare_versions(var.apic_version, "inside", "2.1(1h)-") ? "disabled" : null
+  relation_vz_rs_any_to_cons    = [aci_contract.test_1[0].id, aci_contract.test_2[0].id]
+  relation_vz_rs_any_to_cons_if = [aci_imported_contract.test_1[0].id, aci_imported_contract.test_2[0].id]
+  relation_vz_rs_any_to_prov    = [aci_contract.test_1[0].id, aci_contract.test_2[0].id]
+  vrf_dn                        = aci_vrf.test_1[0].id
+}
+`
+
+const testAccResourceVzAnyLegacyUnchanged = testAccResourceVzAnyDependencies + `
+resource "aci_any" "test_1" {
+  annotation  = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+  description = "description_1"
+  name        = "name_1"
+  name_alias  = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
+  annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  match_t                       = "All"
+  pref_gr_memb                  = provider::aci::compare_versions(var.apic_version, "inside", "2.1(1h)-") ? "disabled" : null
+  relation_vz_rs_any_to_cons    = [aci_contract.test_1[0].id, aci_contract.test_2[0].id]
+  relation_vz_rs_any_to_cons_if = [aci_imported_contract.test_1[0].id, aci_imported_contract.test_2[0].id]
+  relation_vz_rs_any_to_prov    = [aci_contract.test_1[0].id, aci_contract.test_2[0].id]
+  vrf_dn                        = aci_vrf.test_1[0].id
+}
+`
+
+const testAccResourceVzAnyCurrentAfterLegacy = testAccResourceVzAnyDependencies + `
+resource "aci_any" "test_1" {
+  annotation             = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+  description            = "description_1"
+  match_criteria         = "All"
+  name                   = "name_1"
+  name_alias             = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
+  parent_dn              = aci_vrf.test_1[0].id
+  preferred_group_member = provider::aci::compare_versions(var.apic_version, "inside", "2.1(1h)-") ? "disabled" : null
+  annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  relation_to_consumer_contracts = [
+    {
+      annotation    = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+      priority      = "level1"
+      contract_name = aci_contract.test_1[0].name
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+    {
+      annotation    = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_2" : null
+      priority      = "unspecified"
+      contract_name = aci_contract.test_2[0].name
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+  ]
+  relation_to_contract_interfaces = [
+    {
+      annotation             = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+      priority               = "level1"
+      imported_contract_name = aci_imported_contract.test_1[0].name
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+    {
+      annotation             = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_2" : null
+      priority               = "unspecified"
+      imported_contract_name = aci_imported_contract.test_2[0].name
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+  ]
+  relation_to_provider_contracts = [
+    {
+      annotation     = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+      match_criteria = "All"
+      priority       = "level1"
+      contract_name  = aci_contract.test_1[0].name
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+    {
+      annotation     = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_2" : null
+      match_criteria = "AtleastOne"
+      priority       = "unspecified"
+      contract_name  = aci_contract.test_2[0].name
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+  ]
+}
+`
+
+const testAccResourceVzAnyLegacyConflict = testAccResourceVzAnyDependencies + `
+resource "aci_any" "test_1" {
+  annotation             = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+  description            = "description_1"
+  match_criteria         = "All"
+  name                   = "name_1"
+  name_alias             = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
+  parent_dn              = aci_vrf.test_1[0].id
+  preferred_group_member = provider::aci::compare_versions(var.apic_version, "inside", "2.1(1h)-") ? "disabled" : null
+  annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  relation_to_consumer_contracts = [
+    {
+      annotation    = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+      priority      = "level1"
+      contract_name = aci_contract.test_1[0].name
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+    {
+      annotation    = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_2" : null
+      priority      = "unspecified"
+      contract_name = aci_contract.test_2[0].name
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+  ]
+  relation_to_contract_interfaces = [
+    {
+      annotation             = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+      priority               = "level1"
+      imported_contract_name = aci_imported_contract.test_1[0].name
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+    {
+      annotation             = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_2" : null
+      priority               = "unspecified"
+      imported_contract_name = aci_imported_contract.test_2[0].name
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+  ]
+  relation_to_provider_contracts = [
+    {
+      annotation     = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+      match_criteria = "All"
+      priority       = "level1"
+      contract_name  = aci_contract.test_1[0].name
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+    {
+      annotation     = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_2" : null
+      match_criteria = "AtleastOne"
+      priority       = "unspecified"
+      contract_name  = aci_contract.test_2[0].name
+      annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+      tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+        {
+          key   = "key_1"
+          value = "value_1"
+        },
+        {
+          key   = "key_2"
+          value = "value_2"
+        },
+      ] : null
+    },
+  ]
+  match_t                       = "All"
+  pref_gr_memb                  = provider::aci::compare_versions(var.apic_version, "inside", "2.1(1h)-") ? "disabled" : null
+  relation_vz_rs_any_to_cons    = [aci_contract.test_1[0].id, aci_contract.test_2[0].id]
+  relation_vz_rs_any_to_cons_if = [aci_imported_contract.test_1[0].id, aci_imported_contract.test_2[0].id]
+  relation_vz_rs_any_to_prov    = [aci_contract.test_1[0].id, aci_contract.test_2[0].id]
+  vrf_dn                        = aci_vrf.test_1[0].id
 }
 `
 

@@ -540,6 +540,11 @@ func (c *Class) ResourceTestImportIgnore(ds *DataStore) []string {
 		}
 	}
 	collect(c, "", map[string]bool{})
+	for _, legacy := range c.LegacyAttributes {
+		if legacy.Sensitive && legacy.Status != Removed {
+			ignored = append(ignored, legacy.AttributeName)
+		}
+	}
 	return ignored
 }
 

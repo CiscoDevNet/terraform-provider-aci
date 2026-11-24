@@ -130,7 +130,7 @@ func TestAccResourceFvTenantGenerated(t *testing.T) {
 						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
 							resource.TestCheckResourceAttr("aci_tenant.test_1", "relation_to_monitoring_policy.annotation", "annotation_1"),
 						),
-						resource.TestCheckResourceAttr("aci_tenant.test_1", "relation_to_monitoring_policy.monitoring_policy_name", "default"),
+						resource.TestCheckResourceAttrPair("aci_tenant.test_1", "relation_to_monitoring_policy.monitoring_policy_name", "aci_monitoring_policy.test_1.0", "name"),
 						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
 							resource.TestCheckResourceAttr("aci_tenant.test_1", "relation_to_monitoring_policy.annotations.#", "2"),
 						),
@@ -207,6 +207,320 @@ func TestAccResourceFvTenantGenerated(t *testing.T) {
 			},
 			{
 				PreConfig: func() {
+					t.Log("Test: Tenant Resource - Configure Through Legacy Attributes")
+				},
+				ConfigVariables: variables,
+				Config:          testAccResourceFvTenantLegacy,
+				Check: func(state *terraform.State) error {
+					// Evaluate runtime prefixes after PreCheck has initialized the fixture variables.
+					return resource.ComposeAggregateTestCheckFunc(
+						identity.CheckID("aci_tenant.test_1", false),
+						testCheckResourceDN("aci_tenant.test_1", "tn-{name}", "uni", map[string]string{
+							"name": "name",
+						}, []resourceTestDNVariant{}),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_tenant.test_1", "annotation", "annotation_1"),
+						),
+						resource.TestCheckResourceAttr("aci_tenant.test_1", "description", "description_1"),
+						resource.TestCheckResourceAttr("aci_tenant.test_1", "name", fmt.Sprintf("%s-%s", testPrefix, "name_1")),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							resource.TestCheckResourceAttr("aci_tenant.test_1", "name_alias", "name_alias_1"),
+						),
+						resource.TestCheckResourceAttr("aci_tenant.test_1", "owner_key", "owner_key_1"),
+						resource.TestCheckResourceAttr("aci_tenant.test_1", "owner_tag", "owner_tag_1"),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_tenant.test_1", "relation_to_monitoring_policy.annotation", "annotation_1"),
+						),
+						resource.TestCheckResourceAttrPair("aci_tenant.test_1", "relation_to_monitoring_policy.monitoring_policy_name", "aci_monitoring_policy.test_1.0", "name"),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_tenant.test_1", "relation_to_monitoring_policy.annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_tenant.test_1", "relation_to_monitoring_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_tenant.test_1", "relation_to_monitoring_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_tenant.test_1", "relation_to_monitoring_policy.tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_tenant.test_1", "relation_to_monitoring_policy.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_tenant.test_1", "relation_to_monitoring_policy.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_tenant.test_1", "annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_tenant.test_1", "annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_tenant.test_1", "annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_tenant.test_1", "tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_tenant.test_1", "tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_tenant.test_1", "tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						resource.TestCheckResourceAttrPair("aci_tenant.test_1", "relation_fv_rs_tenant_mon_pol", "aci_monitoring_policy.test_1.0", "id"),
+					)(state)
+				},
+			},
+			{
+				PreConfig: func() {
+					t.Log("Test: Tenant Resource - Repeat Legacy Configuration (Expect Empty Plan)")
+				},
+				ConfigVariables: variables,
+				Config:          testAccResourceFvTenantLegacyUnchanged,
+				PlanOnly:        true,
+				ConfigPlanChecks: resource.ConfigPlanChecks{
+					PostApplyPreRefresh: []plancheck.PlanCheck{plancheck.ExpectEmptyPlan()},
+				},
+			},
+			{
+				PreConfig: func() {
+					t.Log("Test: Tenant Resource - Switch to Current Attributes Without Replacement")
+				},
+				ConfigVariables: variables,
+				Config:          testAccResourceFvTenantCurrentAfterLegacy,
+				PlanOnly:        true,
+				ConfigPlanChecks: resource.ConfigPlanChecks{
+					PostApplyPreRefresh: []plancheck.PlanCheck{plancheck.ExpectEmptyPlan()},
+				},
+			},
+			{
+				PreConfig: func() {
+					t.Log("Test: Tenant Resource - Reject Simultaneous Legacy and Current Inputs")
+				},
+				ConfigVariables: variables,
+				Config:          testAccResourceFvTenantLegacyConflict,
+				ExpectError:     regexp.MustCompile("Invalid Attribute Combination|Conflicting legacy configuration"),
+			},
+			{
+				PreConfig: func() {
+					t.Log("Test: Tenant Resource - Retain Frozen Attribute Configuration")
+				},
+				ConfigVariables: variables,
+				Config:          testAccResourceFvTenantFrozen,
+				Check: func(state *terraform.State) error {
+					// Evaluate runtime prefixes after PreCheck has initialized the fixture variables.
+					return resource.ComposeAggregateTestCheckFunc(
+						identity.CheckID("aci_tenant.test_1", false),
+						testCheckResourceDN("aci_tenant.test_1", "tn-{name}", "uni", map[string]string{
+							"name": "name",
+						}, []resourceTestDNVariant{}),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_tenant.test_1", "annotation", "annotation_1"),
+						),
+						resource.TestCheckResourceAttr("aci_tenant.test_1", "description", "description_1"),
+						resource.TestCheckResourceAttr("aci_tenant.test_1", "name", fmt.Sprintf("%s-%s", testPrefix, "name_1")),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							resource.TestCheckResourceAttr("aci_tenant.test_1", "name_alias", "name_alias_1"),
+						),
+						resource.TestCheckResourceAttr("aci_tenant.test_1", "owner_key", "owner_key_1"),
+						resource.TestCheckResourceAttr("aci_tenant.test_1", "owner_tag", "owner_tag_1"),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_tenant.test_1", "relation_to_monitoring_policy.annotation", "annotation_1"),
+						),
+						resource.TestCheckResourceAttrPair("aci_tenant.test_1", "relation_to_monitoring_policy.monitoring_policy_name", "aci_monitoring_policy.test_1.0", "name"),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_tenant.test_1", "relation_to_monitoring_policy.annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_tenant.test_1", "relation_to_monitoring_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_tenant.test_1", "relation_to_monitoring_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_tenant.test_1", "relation_to_monitoring_policy.tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_tenant.test_1", "relation_to_monitoring_policy.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_tenant.test_1", "relation_to_monitoring_policy.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_tenant.test_1", "annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_tenant.test_1", "annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_tenant.test_1", "annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_tenant.test_1", "tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_tenant.test_1", "tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_tenant.test_1", "tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						resource.TestCheckResourceAttr("aci_tenant.test_1", "relation_fv_rs_tn_deny_rule.#", "1"),
+					)(state)
+				},
+			},
+			{
+				PreConfig: func() {
+					t.Log("Test: Tenant Resource - Repeat Frozen Configuration (Expect Empty Plan)")
+				},
+				ConfigVariables: variables,
+				Config:          testAccResourceFvTenantFrozenUnchanged,
+				PlanOnly:        true,
+				ConfigPlanChecks: resource.ConfigPlanChecks{
+					PostApplyPreRefresh: []plancheck.PlanCheck{plancheck.ExpectEmptyPlan()},
+				},
+			},
+			{
+				PreConfig: func() {
+					t.Log("Test: Tenant Resource - Clear Frozen Attribute State")
+				},
+				ConfigVariables: variables,
+				Config:          testAccResourceFvTenantFrozenCleared,
+				Check: func(state *terraform.State) error {
+					// Evaluate runtime prefixes after PreCheck has initialized the fixture variables.
+					return resource.ComposeAggregateTestCheckFunc(
+						identity.CheckID("aci_tenant.test_1", false),
+						testCheckResourceDN("aci_tenant.test_1", "tn-{name}", "uni", map[string]string{
+							"name": "name",
+						}, []resourceTestDNVariant{}),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_tenant.test_1", "annotation", "annotation_1"),
+						),
+						resource.TestCheckResourceAttr("aci_tenant.test_1", "description", "description_1"),
+						resource.TestCheckResourceAttr("aci_tenant.test_1", "name", fmt.Sprintf("%s-%s", testPrefix, "name_1")),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							resource.TestCheckResourceAttr("aci_tenant.test_1", "name_alias", "name_alias_1"),
+						),
+						resource.TestCheckResourceAttr("aci_tenant.test_1", "owner_key", "owner_key_1"),
+						resource.TestCheckResourceAttr("aci_tenant.test_1", "owner_tag", "owner_tag_1"),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_tenant.test_1", "relation_to_monitoring_policy.annotation", "annotation_1"),
+						),
+						resource.TestCheckResourceAttrPair("aci_tenant.test_1", "relation_to_monitoring_policy.monitoring_policy_name", "aci_monitoring_policy.test_1.0", "name"),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_tenant.test_1", "relation_to_monitoring_policy.annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_tenant.test_1", "relation_to_monitoring_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_tenant.test_1", "relation_to_monitoring_policy.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_tenant.test_1", "relation_to_monitoring_policy.tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_tenant.test_1", "relation_to_monitoring_policy.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_tenant.test_1", "relation_to_monitoring_policy.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_tenant.test_1", "annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_tenant.test_1", "annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_tenant.test_1", "annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_tenant.test_1", "tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_tenant.test_1", "tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_tenant.test_1", "tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						resource.TestCheckResourceAttr("aci_tenant.test_1", "relation_fv_rs_tn_deny_rule.#", "0"),
+					)(state)
+				},
+			},
+			{
+				PreConfig: func() {
 					t.Log("Test: Tenant Resource - Update Mutable Attributes in Place")
 				},
 				ConfigVariables: variables,
@@ -234,7 +548,7 @@ func TestAccResourceFvTenantGenerated(t *testing.T) {
 						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
 							resource.TestCheckResourceAttr("aci_tenant.test_1", "relation_to_monitoring_policy.annotation", "annotation_1"),
 						),
-						resource.TestCheckResourceAttr("aci_tenant.test_1", "relation_to_monitoring_policy.monitoring_policy_name", "default"),
+						resource.TestCheckResourceAttrPair("aci_tenant.test_1", "relation_to_monitoring_policy.monitoring_policy_name", "aci_monitoring_policy.test_1.0", "name"),
 						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
 							resource.TestCheckResourceAttr("aci_tenant.test_1", "relation_to_monitoring_policy.annotations.#", "2"),
 						),
@@ -335,7 +649,7 @@ func TestAccResourceFvTenantGenerated(t *testing.T) {
 						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
 							resource.TestCheckResourceAttr("aci_tenant.test_1", "relation_to_monitoring_policy.annotation", "annotation_1"),
 						),
-						resource.TestCheckResourceAttr("aci_tenant.test_1", "relation_to_monitoring_policy.monitoring_policy_name", "default"),
+						resource.TestCheckResourceAttrPair("aci_tenant.test_1", "relation_to_monitoring_policy.monitoring_policy_name", "aci_monitoring_policy.test_1.0", "name"),
 						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
 							resource.TestCheckResourceAttr("aci_tenant.test_1", "relation_to_monitoring_policy.annotations.#", "2"),
 						),
@@ -425,7 +739,7 @@ func TestAccResourceFvTenantGenerated(t *testing.T) {
 						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
 							resource.TestCheckResourceAttr("aci_tenant.test_1", "relation_to_monitoring_policy.annotation", "annotation_1"),
 						),
-						resource.TestCheckResourceAttr("aci_tenant.test_1", "relation_to_monitoring_policy.monitoring_policy_name", "default"),
+						resource.TestCheckResourceAttrPair("aci_tenant.test_1", "relation_to_monitoring_policy.monitoring_policy_name", "aci_monitoring_policy.test_1.0", "name"),
 						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
 							resource.TestCheckResourceAttr("aci_tenant.test_1", "relation_to_monitoring_policy.annotations.#", "2"),
 						),
@@ -523,7 +837,7 @@ func TestAccResourceFvTenantGenerated(t *testing.T) {
 						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
 							resource.TestCheckResourceAttr("aci_tenant.test_1", "relation_to_monitoring_policy.annotation", "annotation_1"),
 						),
-						resource.TestCheckResourceAttr("aci_tenant.test_1", "relation_to_monitoring_policy.monitoring_policy_name", "default"),
+						resource.TestCheckResourceAttrPair("aci_tenant.test_1", "relation_to_monitoring_policy.monitoring_policy_name", "aci_monitoring_policy.test_1.0", "name"),
 						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
 							resource.TestCheckResourceAttr("aci_tenant.test_1", "relation_to_monitoring_policy.annotations.#", "2"),
 						),
@@ -631,7 +945,7 @@ func TestAccResourceFvTenantGenerated(t *testing.T) {
 						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
 							resource.TestCheckResourceAttr("aci_tenant.test_1", "relation_to_monitoring_policy.annotation", "annotation_1"),
 						),
-						resource.TestCheckResourceAttr("aci_tenant.test_1", "relation_to_monitoring_policy.monitoring_policy_name", "default"),
+						resource.TestCheckResourceAttrPair("aci_tenant.test_1", "relation_to_monitoring_policy.monitoring_policy_name", "aci_monitoring_policy.test_1.0", "name"),
 						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
 							resource.TestCheckResourceAttr("aci_tenant.test_1", "relation_to_monitoring_policy.annotations.#", "0"),
 						),
@@ -681,7 +995,7 @@ func TestAccResourceFvTenantGenerated(t *testing.T) {
 						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
 							resource.TestCheckResourceAttr("aci_tenant.test_1", "relation_to_monitoring_policy.annotation", "annotation_1"),
 						),
-						resource.TestCheckResourceAttr("aci_tenant.test_1", "relation_to_monitoring_policy.monitoring_policy_name", "default"),
+						resource.TestCheckResourceAttrPair("aci_tenant.test_1", "relation_to_monitoring_policy.monitoring_policy_name", "aci_monitoring_policy.test_1.0", "name"),
 						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
 							resource.TestCheckResourceAttr("aci_tenant.test_1", "relation_to_monitoring_policy.annotations.#", "2"),
 						),
@@ -1012,7 +1326,7 @@ func TestAccResourceFvTenantGenerated(t *testing.T) {
 						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
 							resource.TestCheckResourceAttr("aci_tenant.test_1", "relation_to_monitoring_policy.annotation", "annotation_1"),
 						),
-						resource.TestCheckResourceAttr("aci_tenant.test_1", "relation_to_monitoring_policy.monitoring_policy_name", "default"),
+						resource.TestCheckResourceAttrPair("aci_tenant.test_1", "relation_to_monitoring_policy.monitoring_policy_name", "aci_monitoring_policy.test_1.0", "name"),
 						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
 							resource.TestCheckResourceAttr("aci_tenant.test_1", "relation_to_monitoring_policy.annotations.#", "2"),
 						),
@@ -1113,7 +1427,7 @@ func TestAccResourceFvTenantGenerated(t *testing.T) {
 						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
 							resource.TestCheckResourceAttr("aci_tenant.test_1", "relation_to_monitoring_policy.annotation", "annotation_1"),
 						),
-						resource.TestCheckResourceAttr("aci_tenant.test_1", "relation_to_monitoring_policy.monitoring_policy_name", "default"),
+						resource.TestCheckResourceAttrPair("aci_tenant.test_1", "relation_to_monitoring_policy.monitoring_policy_name", "aci_monitoring_policy.test_1.0", "name"),
 						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
 							resource.TestCheckResourceAttr("aci_tenant.test_1", "relation_to_monitoring_policy.annotations.#", "2"),
 						),
@@ -1238,7 +1552,7 @@ func TestAccResourceFvTenantGenerated(t *testing.T) {
 						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
 							resource.TestCheckResourceAttr("aci_tenant.test_1", "relation_to_monitoring_policy.annotation", "annotation_1"),
 						),
-						resource.TestCheckResourceAttr("aci_tenant.test_1", "relation_to_monitoring_policy.monitoring_policy_name", "default"),
+						resource.TestCheckResourceAttrPair("aci_tenant.test_1", "relation_to_monitoring_policy.monitoring_policy_name", "aci_monitoring_policy.test_1.0", "name"),
 						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
 							resource.TestCheckResourceAttr("aci_tenant.test_1", "relation_to_monitoring_policy.annotations.#", "2"),
 						),
@@ -1331,7 +1645,7 @@ func TestAccResourceFvTenantGenerated(t *testing.T) {
 						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
 							resource.TestCheckResourceAttr("aci_tenant.test_1", "relation_to_monitoring_policy.annotation", "annotation_1"),
 						),
-						resource.TestCheckResourceAttr("aci_tenant.test_1", "relation_to_monitoring_policy.monitoring_policy_name", "default"),
+						resource.TestCheckResourceAttrPair("aci_tenant.test_1", "relation_to_monitoring_policy.monitoring_policy_name", "aci_monitoring_policy.test_1.0", "name"),
 						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
 							resource.TestCheckResourceAttr("aci_tenant.test_1", "relation_to_monitoring_policy.annotations.#", "2"),
 						),
@@ -1415,7 +1729,13 @@ func TestAccResourceFvTenantGenerated(t *testing.T) {
 	})
 }
 
-const testAccResourceFvTenantDependencies = testAccConfig
+const testAccResourceFvTenantDependencies = testAccConfig + `
+resource "aci_monitoring_policy" "test_1" {
+  count     = 1
+  name      = format("%s-%s", var.test_prefix, "name_1")
+  tenant_dn = "uni/tn-common"
+}
+`
 
 const testAccResourceFvTenantMinimum = testAccResourceFvTenantDependencies + `
 resource "aci_tenant" "test_1" {
@@ -1478,7 +1798,7 @@ resource "aci_tenant" "test_1" {
   owner_tag   = "owner_tag_1"
   relation_to_monitoring_policy = {
     annotation             = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
-    monitoring_policy_name = "default"
+    monitoring_policy_name = aci_monitoring_policy.test_1[0].name
     annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
       {
         key   = "key_1"
@@ -1533,7 +1853,7 @@ resource "aci_tenant" "test_1" {
   owner_tag   = "owner_tag_1"
   relation_to_monitoring_policy = {
     annotation             = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
-    monitoring_policy_name = "default"
+    monitoring_policy_name = aci_monitoring_policy.test_1[0].name
     annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
       {
         key   = "key_1"
@@ -1578,6 +1898,349 @@ resource "aci_tenant" "test_1" {
 }
 `
 
+const testAccResourceFvTenantLegacy = testAccResourceFvTenantDependencies + `
+resource "aci_tenant" "test_1" {
+  annotation  = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+  description = "description_1"
+  name        = format("%s-%s", var.test_prefix, "name_1")
+  name_alias  = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
+  owner_key   = "owner_key_1"
+  owner_tag   = "owner_tag_1"
+  annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  relation_fv_rs_tenant_mon_pol = aci_monitoring_policy.test_1[0].id
+}
+`
+
+const testAccResourceFvTenantLegacyUnchanged = testAccResourceFvTenantDependencies + `
+resource "aci_tenant" "test_1" {
+  annotation  = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+  description = "description_1"
+  name        = format("%s-%s", var.test_prefix, "name_1")
+  name_alias  = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
+  owner_key   = "owner_key_1"
+  owner_tag   = "owner_tag_1"
+  annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  relation_fv_rs_tenant_mon_pol = aci_monitoring_policy.test_1[0].id
+}
+`
+
+const testAccResourceFvTenantCurrentAfterLegacy = testAccResourceFvTenantDependencies + `
+resource "aci_tenant" "test_1" {
+  annotation  = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+  description = "description_1"
+  name        = format("%s-%s", var.test_prefix, "name_1")
+  name_alias  = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
+  owner_key   = "owner_key_1"
+  owner_tag   = "owner_tag_1"
+  relation_to_monitoring_policy = {
+    annotation             = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    monitoring_policy_name = aci_monitoring_policy.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+}
+`
+
+const testAccResourceFvTenantLegacyConflict = testAccResourceFvTenantDependencies + `
+resource "aci_tenant" "test_1" {
+  annotation  = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+  description = "description_1"
+  name        = format("%s-%s", var.test_prefix, "name_1")
+  name_alias  = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
+  owner_key   = "owner_key_1"
+  owner_tag   = "owner_tag_1"
+  relation_to_monitoring_policy = {
+    annotation             = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    monitoring_policy_name = aci_monitoring_policy.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  relation_fv_rs_tenant_mon_pol = aci_monitoring_policy.test_1[0].id
+}
+`
+
+const testAccResourceFvTenantFrozen = testAccResourceFvTenantDependencies + `
+resource "aci_tenant" "test_1" {
+  annotation  = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+  description = "description_1"
+  name        = format("%s-%s", var.test_prefix, "name_1")
+  name_alias  = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
+  owner_key   = "owner_key_1"
+  owner_tag   = "owner_tag_1"
+  relation_to_monitoring_policy = {
+    annotation             = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    monitoring_policy_name = aci_monitoring_policy.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  relation_fv_rs_tn_deny_rule = ["example"]
+}
+`
+
+const testAccResourceFvTenantFrozenUnchanged = testAccResourceFvTenantDependencies + `
+resource "aci_tenant" "test_1" {
+  annotation  = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+  description = "description_1"
+  name        = format("%s-%s", var.test_prefix, "name_1")
+  name_alias  = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
+  owner_key   = "owner_key_1"
+  owner_tag   = "owner_tag_1"
+  relation_to_monitoring_policy = {
+    annotation             = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    monitoring_policy_name = aci_monitoring_policy.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  relation_fv_rs_tn_deny_rule = ["example"]
+}
+`
+
+const testAccResourceFvTenantFrozenCleared = testAccResourceFvTenantDependencies + `
+resource "aci_tenant" "test_1" {
+  annotation  = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+  description = "description_1"
+  name        = format("%s-%s", var.test_prefix, "name_1")
+  name_alias  = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
+  owner_key   = "owner_key_1"
+  owner_tag   = "owner_tag_1"
+  relation_to_monitoring_policy = {
+    annotation             = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    monitoring_policy_name = aci_monitoring_policy.test_1[0].name
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  relation_fv_rs_tn_deny_rule = []
+}
+`
+
 const testAccResourceFvTenantUpdate = testAccResourceFvTenantDependencies + `
 resource "aci_tenant" "test_1" {
   annotation  = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_2" : null
@@ -1588,7 +2251,7 @@ resource "aci_tenant" "test_1" {
   owner_tag   = "owner_tag_2"
   relation_to_monitoring_policy = {
     annotation             = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
-    monitoring_policy_name = "default"
+    monitoring_policy_name = aci_monitoring_policy.test_1[0].name
     annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
       {
         key   = "key_1"
@@ -1643,7 +2306,7 @@ resource "aci_tenant" "test_1" {
   owner_tag   = "owner_tag_2"
   relation_to_monitoring_policy = {
     annotation             = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
-    monitoring_policy_name = "default"
+    monitoring_policy_name = aci_monitoring_policy.test_1[0].name
     annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
       {
         key   = "key_1"
@@ -1693,7 +2356,7 @@ resource "aci_tenant" "test_1" {
   name = format("%s-%s", var.test_prefix, "name_1")
   relation_to_monitoring_policy = {
     annotation             = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
-    monitoring_policy_name = "default"
+    monitoring_policy_name = aci_monitoring_policy.test_1[0].name
     annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
       {
         key   = "key_1"
@@ -1748,7 +2411,7 @@ resource "aci_tenant" "test_1" {
   owner_tag   = "owner_tag_2"
   relation_to_monitoring_policy = {
     annotation             = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
-    monitoring_policy_name = "default"
+    monitoring_policy_name = aci_monitoring_policy.test_1[0].name
     annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
       {
         key   = "key_1"
@@ -1803,7 +2466,7 @@ resource "aci_tenant" "test_1" {
   owner_tag   = "owner_tag_2"
   relation_to_monitoring_policy = {
     annotation             = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
-    monitoring_policy_name = "default"
+    monitoring_policy_name = aci_monitoring_policy.test_1[0].name
     annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
       {
         key   = "key_1"
@@ -1858,7 +2521,7 @@ resource "aci_tenant" "test_1" {
   owner_tag   = "owner_tag_2"
   relation_to_monitoring_policy = {
     annotation             = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
-    monitoring_policy_name = "default"
+    monitoring_policy_name = aci_monitoring_policy.test_1[0].name
     annotations            = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [] : null
     tags                   = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [] : null
   }
@@ -1877,7 +2540,7 @@ resource "aci_tenant" "test_1" {
   owner_tag   = "owner_tag_2"
   relation_to_monitoring_policy = {
     annotation             = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
-    monitoring_policy_name = "default"
+    monitoring_policy_name = aci_monitoring_policy.test_1[0].name
     annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
       {
         key   = "key_1"
@@ -2065,7 +2728,7 @@ resource "aci_tenant" "test_1" {
   owner_tag   = "owner_tag_2"
   relation_to_monitoring_policy = {
     annotation             = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
-    monitoring_policy_name = "default"
+    monitoring_policy_name = aci_monitoring_policy.test_1[0].name
     annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
       {
         key   = "key_1"
@@ -2120,7 +2783,7 @@ resource "aci_tenant" "test_1" {
   owner_tag   = "owner_tag_2"
   relation_to_monitoring_policy = {
     annotation             = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
-    monitoring_policy_name = "default"
+    monitoring_policy_name = aci_monitoring_policy.test_1[0].name
     annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
       {
         key   = "key_2"
@@ -2218,7 +2881,7 @@ resource "aci_tenant" "test_1" {
   owner_tag   = "owner_tag_2"
   relation_to_monitoring_policy = {
     annotation             = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
-    monitoring_policy_name = "default"
+    monitoring_policy_name = aci_monitoring_policy.test_1[0].name
     annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
       {
         key   = "key_1"
@@ -2273,7 +2936,7 @@ resource "aci_tenant" "test_1" {
   owner_tag   = "owner_tag_2"
   relation_to_monitoring_policy = {
     annotation             = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
-    monitoring_policy_name = "default"
+    monitoring_policy_name = aci_monitoring_policy.test_1[0].name
     annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
       {
         key   = "key_1"
@@ -2328,7 +2991,7 @@ resource "aci_tenant" "test_1" {
   owner_tag   = "owner_tag_2"
   relation_to_monitoring_policy = {
     annotation             = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
-    monitoring_policy_name = "default"
+    monitoring_policy_name = aci_monitoring_policy.test_1[0].name
     annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
       {
         key   = "key_1"
@@ -2383,7 +3046,7 @@ resource "aci_tenant" "test_1" {
   owner_tag   = "owner_tag_2"
   relation_to_monitoring_policy = {
     annotation             = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
-    monitoring_policy_name = "default"
+    monitoring_policy_name = aci_monitoring_policy.test_1[0].name
     annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
       {
         key   = "key_1"

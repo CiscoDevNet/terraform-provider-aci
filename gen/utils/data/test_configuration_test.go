@@ -1589,6 +1589,44 @@ func TestResourceTestExplicitSensitiveReset(t *testing.T) {
 	}
 }
 
+func TestResourceTestFrozenAttributes(t *testing.T) {
+	testCases := []test.TestCase{
+		{Name: "string", Input: StringAttribute, Expected: []string{`frozen = "example"`, `frozen = ""`}},
+		{Name: "set", Input: SetAttribute, Expected: []string{`frozen = ["example"]`, `frozen = []`}},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			test.InitializeTest(t)
+			class, store := resourceScenarioFixture()
+			class.LegacyAttributes = []MigrationAttribute{{AttributeName: "frozen", Type: testCase.Input.(LegacyAttributeTypeEnum), Status: Frozen}}
+			scenarios, err := class.ResourceTestScenarios(store)
+			if !assert.NoError(t, err) {
+				return
+			}
+			for index, name := range []string{"Frozen", "FrozenCleared"} {
+				scenarioIndex := slices.IndexFunc(scenarios, func(s ResourceTestScenario) bool { return s.Name == name })
+				if !assert.NotEqual(t, -1, scenarioIndex) {
+					continue
+				}
+				scenario := scenarios[scenarioIndex]
+				assert.Contains(t, strings.Join(strings.Fields(scenario.Configuration), " "), testCase.Expected.([]string)[index])
+				assertionIndex := slices.IndexFunc(scenario.Assertions, func(a TestAssertion) bool { return a.AttributePath == "frozen" })
+				if !assert.NotEqual(t, -1, assertionIndex) {
+					continue
+				}
+				assertion := scenario.Assertions[assertionIndex]
+				if testCase.Input == StringAttribute {
+					assert.Equal(t, testAssertionAttributeValue, assertion.assertionType)
+					assert.Equal(t, []string{"example", ""}[index], assertion.ExpectedValue)
+				} else {
+					assert.Equal(t, testAssertionSetCount, assertion.assertionType)
+					assert.Equal(t, []int{1, 0}[index], assertion.ExpectedCount)
+				}
+			}
+		})
+	}
+}
+
 func TestResourceTestScenarios(t *testing.T) {
 	t.Parallel()
 	test.InitializeTest(t)

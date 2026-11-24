@@ -212,6 +212,132 @@ func TestAccResourceInfraSHPortSGenerated(t *testing.T) {
 			},
 			{
 				PreConfig: func() {
+					t.Log("Test: Spine Access Port Selector Resource - Configure Through Legacy Attributes")
+				},
+				ConfigVariables: variables,
+				Config:          testAccResourceInfraSHPortSLegacy,
+				Check: func(state *terraform.State) error {
+					// Evaluate runtime prefixes after PreCheck has initialized the fixture variables.
+					return resource.ComposeAggregateTestCheckFunc(
+						identity.CheckID("aci_spine_access_port_selector.test_1", false),
+						testCheckResourceDN("aci_spine_access_port_selector.test_1", "shports-{name}-typ-{type}", "uni", map[string]string{
+							"name": "name",
+							"type": "port_selector_type",
+						}, []resourceTestDNVariant{}),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_spine_access_port_selector.test_1", "annotation", "annotation_1"),
+						),
+						resource.TestCheckResourceAttr("aci_spine_access_port_selector.test_1", "description", "description_1"),
+						resource.TestCheckResourceAttr("aci_spine_access_port_selector.test_1", "name", "name_1"),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							resource.TestCheckResourceAttr("aci_spine_access_port_selector.test_1", "name_alias", "name_alias_1"),
+						),
+						resource.TestCheckResourceAttr("aci_spine_access_port_selector.test_1", "owner_key", "owner_key_1"),
+						resource.TestCheckResourceAttr("aci_spine_access_port_selector.test_1", "owner_tag", "owner_tag_1"),
+						resource.TestCheckResourceAttrPair("aci_spine_access_port_selector.test_1", "parent_dn", "aci_spine_interface_profile.test_1.0", "id"),
+						resource.TestCheckResourceAttr("aci_spine_access_port_selector.test_1", "port_selector_type", "ALL"),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_spine_access_port_selector.test_1", "relation_to_spine_port_policy_group.annotation", "annotation_1"),
+						),
+						resource.TestCheckResourceAttr("aci_spine_access_port_selector.test_1", "relation_to_spine_port_policy_group.target_dn", "uni/infra/funcprof/spaccportgrp-spine_port_policy_group_1"),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_spine_access_port_selector.test_1", "relation_to_spine_port_policy_group.annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_spine_access_port_selector.test_1", "relation_to_spine_port_policy_group.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_spine_access_port_selector.test_1", "relation_to_spine_port_policy_group.annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_spine_access_port_selector.test_1", "relation_to_spine_port_policy_group.tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_spine_access_port_selector.test_1", "relation_to_spine_port_policy_group.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_spine_access_port_selector.test_1", "relation_to_spine_port_policy_group.tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_spine_access_port_selector.test_1", "annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_spine_access_port_selector.test_1", "annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_spine_access_port_selector.test_1", "annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_spine_access_port_selector.test_1", "tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_spine_access_port_selector.test_1", "tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_spine_access_port_selector.test_1", "tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						resource.TestCheckResourceAttr("aci_spine_access_port_selector.test_1", "relation_infra_rs_sp_acc_grp", "uni/infra/funcprof/spaccportgrp-spine_port_policy_group_1"),
+						resource.TestCheckResourceAttrPair("aci_spine_access_port_selector.test_1", "spine_access_port_selector_type", "aci_spine_access_port_selector.test_1", "port_selector_type"),
+						resource.TestCheckResourceAttrPair("aci_spine_access_port_selector.test_1", "spine_interface_profile_dn", "aci_spine_access_port_selector.test_1", "parent_dn"),
+					)(state)
+				},
+			},
+			{
+				PreConfig: func() {
+					t.Log("Test: Spine Access Port Selector Resource - Repeat Legacy Configuration (Expect Empty Plan)")
+				},
+				ConfigVariables: variables,
+				Config:          testAccResourceInfraSHPortSLegacyUnchanged,
+				PlanOnly:        true,
+				ConfigPlanChecks: resource.ConfigPlanChecks{
+					PostApplyPreRefresh: []plancheck.PlanCheck{plancheck.ExpectEmptyPlan()},
+				},
+			},
+			{
+				PreConfig: func() {
+					t.Log("Test: Spine Access Port Selector Resource - Switch to Current Attributes Without Replacement")
+				},
+				ConfigVariables: variables,
+				Config:          testAccResourceInfraSHPortSCurrentAfterLegacy,
+				PlanOnly:        true,
+				ConfigPlanChecks: resource.ConfigPlanChecks{
+					PostApplyPreRefresh: []plancheck.PlanCheck{plancheck.ExpectEmptyPlan()},
+				},
+			},
+			{
+				PreConfig: func() {
+					t.Log("Test: Spine Access Port Selector Resource - Reject Simultaneous Legacy and Current Inputs")
+				},
+				ConfigVariables: variables,
+				Config:          testAccResourceInfraSHPortSLegacyConflict,
+				ExpectError:     regexp.MustCompile("Invalid Attribute Combination|Conflicting legacy configuration"),
+			},
+			{
+				PreConfig: func() {
 					t.Log("Test: Spine Access Port Selector Resource - Update Mutable Attributes in Place")
 				},
 				ConfigVariables: variables,
@@ -1707,6 +1833,191 @@ resource "aci_spine_access_port_selector" "test_1" {
       value = "value_2"
     },
   ] : null
+}
+`
+
+const testAccResourceInfraSHPortSLegacy = testAccResourceInfraSHPortSDependencies + `
+resource "aci_spine_access_port_selector" "test_1" {
+  annotation  = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+  description = "description_1"
+  name        = "name_1"
+  name_alias  = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
+  owner_key   = "owner_key_1"
+  owner_tag   = "owner_tag_1"
+  annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  relation_infra_rs_sp_acc_grp    = "uni/infra/funcprof/spaccportgrp-spine_port_policy_group_1"
+  spine_access_port_selector_type = "ALL"
+  spine_interface_profile_dn      = aci_spine_interface_profile.test_1[0].id
+}
+`
+
+const testAccResourceInfraSHPortSLegacyUnchanged = testAccResourceInfraSHPortSDependencies + `
+resource "aci_spine_access_port_selector" "test_1" {
+  annotation  = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+  description = "description_1"
+  name        = "name_1"
+  name_alias  = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
+  owner_key   = "owner_key_1"
+  owner_tag   = "owner_tag_1"
+  annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  relation_infra_rs_sp_acc_grp    = "uni/infra/funcprof/spaccportgrp-spine_port_policy_group_1"
+  spine_access_port_selector_type = "ALL"
+  spine_interface_profile_dn      = aci_spine_interface_profile.test_1[0].id
+}
+`
+
+const testAccResourceInfraSHPortSCurrentAfterLegacy = testAccResourceInfraSHPortSDependencies + `
+resource "aci_spine_access_port_selector" "test_1" {
+  annotation         = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+  description        = "description_1"
+  name               = "name_1"
+  name_alias         = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
+  owner_key          = "owner_key_1"
+  owner_tag          = "owner_tag_1"
+  parent_dn          = aci_spine_interface_profile.test_1[0].id
+  port_selector_type = "ALL"
+  relation_to_spine_port_policy_group = {
+    annotation = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    target_dn  = "uni/infra/funcprof/spaccportgrp-spine_port_policy_group_1"
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+}
+`
+
+const testAccResourceInfraSHPortSLegacyConflict = testAccResourceInfraSHPortSDependencies + `
+resource "aci_spine_access_port_selector" "test_1" {
+  annotation         = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+  description        = "description_1"
+  name               = "name_1"
+  name_alias         = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
+  owner_key          = "owner_key_1"
+  owner_tag          = "owner_tag_1"
+  parent_dn          = aci_spine_interface_profile.test_1[0].id
+  port_selector_type = "ALL"
+  relation_to_spine_port_policy_group = {
+    annotation = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+    target_dn  = "uni/infra/funcprof/spaccportgrp-spine_port_policy_group_1"
+    annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+    tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+      {
+        key   = "key_1"
+        value = "value_1"
+      },
+      {
+        key   = "key_2"
+        value = "value_2"
+      },
+    ] : null
+  }
+  annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  relation_infra_rs_sp_acc_grp    = "uni/infra/funcprof/spaccportgrp-spine_port_policy_group_1"
+  spine_access_port_selector_type = "ALL"
+  spine_interface_profile_dn      = aci_spine_interface_profile.test_1[0].id
 }
 `
 

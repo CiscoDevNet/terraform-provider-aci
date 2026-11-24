@@ -178,6 +178,98 @@ func TestAccResourceVmmUsrAccPGenerated(t *testing.T) {
 			},
 			{
 				PreConfig: func() {
+					t.Log("Test: VMM Credential Resource - Configure Through Legacy Attributes")
+				},
+				ConfigVariables: variables,
+				Config:          testAccResourceVmmUsrAccPLegacy,
+				Check: func(state *terraform.State) error {
+					// Evaluate runtime prefixes after PreCheck has initialized the fixture variables.
+					return resource.ComposeAggregateTestCheckFunc(
+						identity.CheckID("aci_vmm_credential.test_1", false),
+						testCheckResourceDN("aci_vmm_credential.test_1", "usracc-{name}", "uni", map[string]string{
+							"name": "name",
+						}, []resourceTestDNVariant{}),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_credential.test_1", "annotation", "annotation_1"),
+						),
+						resource.TestCheckResourceAttr("aci_vmm_credential.test_1", "description", "description_1"),
+						resource.TestCheckResourceAttr("aci_vmm_credential.test_1", "name", "name_1"),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_credential.test_1", "name_alias", "name_alias_1"),
+						),
+						resource.TestCheckResourceAttr("aci_vmm_credential.test_1", "owner_key", "owner_key_1"),
+						resource.TestCheckResourceAttr("aci_vmm_credential.test_1", "owner_tag", "owner_tag_1"),
+						resource.TestCheckResourceAttrPair("aci_vmm_credential.test_1", "parent_dn", "aci_vmm_domain.test_1.0", "id"),
+						resource.TestCheckResourceAttr("aci_vmm_credential.test_1", "password", "password_1"),
+						resource.TestCheckResourceAttr("aci_vmm_credential.test_1", "username", "username_1"),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_credential.test_1", "annotations.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_credential.test_1", "annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_credential.test_1", "annotations.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttr("aci_vmm_credential.test_1", "tags.#", "2"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_credential.test_1", "tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_1"},
+								"value": {ExpectedValue: "value_1"},
+							}),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							acceptancetest.CheckNestedSetElement("aci_vmm_credential.test_1", "tags.*", map[string]acceptancetest.AttributeValue{
+								"key":   {ExpectedValue: "key_2"},
+								"value": {ExpectedValue: "value_2"},
+							}),
+						),
+						resource.TestCheckResourceAttrPair("aci_vmm_credential.test_1", "pwd", "aci_vmm_credential.test_1", "password"),
+						resource.TestCheckResourceAttrPair("aci_vmm_credential.test_1", "usr", "aci_vmm_credential.test_1", "username"),
+						resource.TestCheckResourceAttrPair("aci_vmm_credential.test_1", "vmm_domain_dn", "aci_vmm_credential.test_1", "parent_dn"),
+					)(state)
+				},
+			},
+			{
+				PreConfig: func() {
+					t.Log("Test: VMM Credential Resource - Repeat Legacy Configuration (Expect Empty Plan)")
+				},
+				ConfigVariables: variables,
+				Config:          testAccResourceVmmUsrAccPLegacyUnchanged,
+				PlanOnly:        true,
+				ConfigPlanChecks: resource.ConfigPlanChecks{
+					PostApplyPreRefresh: []plancheck.PlanCheck{plancheck.ExpectEmptyPlan()},
+				},
+			},
+			{
+				PreConfig: func() {
+					t.Log("Test: VMM Credential Resource - Switch to Current Attributes Without Replacement")
+				},
+				ConfigVariables: variables,
+				Config:          testAccResourceVmmUsrAccPCurrentAfterLegacy,
+				PlanOnly:        true,
+				ConfigPlanChecks: resource.ConfigPlanChecks{
+					PostApplyPreRefresh: []plancheck.PlanCheck{plancheck.ExpectEmptyPlan()},
+				},
+			},
+			{
+				PreConfig: func() {
+					t.Log("Test: VMM Credential Resource - Reject Simultaneous Legacy and Current Inputs")
+				},
+				ConfigVariables: variables,
+				Config:          testAccResourceVmmUsrAccPLegacyConflict,
+				ExpectError:     regexp.MustCompile("Invalid Attribute Combination|Conflicting legacy configuration"),
+			},
+			{
+				PreConfig: func() {
 					t.Log("Test: VMM Credential Resource - Update Mutable Attributes in Place")
 				},
 				ConfigVariables: variables,
@@ -444,6 +536,7 @@ func TestAccResourceVmmUsrAccPGenerated(t *testing.T) {
 				ImportStateVerify: true,
 				ImportStateVerifyIgnore: []string{
 					"password",
+					"pwd",
 				},
 			},
 			{
@@ -1218,6 +1311,145 @@ resource "aci_vmm_credential" "test_1" {
       value = "value_2"
     },
   ] : null
+}
+`
+
+const testAccResourceVmmUsrAccPLegacy = testAccResourceVmmUsrAccPDependencies + `
+resource "aci_vmm_credential" "test_1" {
+  annotation  = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+  description = "description_1"
+  name        = "name_1"
+  name_alias  = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
+  owner_key   = "owner_key_1"
+  owner_tag   = "owner_tag_1"
+  annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  pwd           = "password_1"
+  usr           = "username_1"
+  vmm_domain_dn = aci_vmm_domain.test_1[0].id
+}
+`
+
+const testAccResourceVmmUsrAccPLegacyUnchanged = testAccResourceVmmUsrAccPDependencies + `
+resource "aci_vmm_credential" "test_1" {
+  annotation  = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+  description = "description_1"
+  name        = "name_1"
+  name_alias  = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
+  owner_key   = "owner_key_1"
+  owner_tag   = "owner_tag_1"
+  annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  pwd           = "password_1"
+  usr           = "username_1"
+  vmm_domain_dn = aci_vmm_domain.test_1[0].id
+}
+`
+
+const testAccResourceVmmUsrAccPCurrentAfterLegacy = testAccResourceVmmUsrAccPDependencies + `
+resource "aci_vmm_credential" "test_1" {
+  annotation  = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+  description = "description_1"
+  name        = "name_1"
+  name_alias  = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
+  owner_key   = "owner_key_1"
+  owner_tag   = "owner_tag_1"
+  parent_dn   = aci_vmm_domain.test_1[0].id
+  password    = "password_1"
+  username    = "username_1"
+  annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+}
+`
+
+const testAccResourceVmmUsrAccPLegacyConflict = testAccResourceVmmUsrAccPDependencies + `
+resource "aci_vmm_credential" "test_1" {
+  annotation  = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
+  description = "description_1"
+  name        = "name_1"
+  name_alias  = provider::aci::compare_versions(var.apic_version, "inside", "2.2(1k)-") ? "name_alias_1" : null
+  owner_key   = "owner_key_1"
+  owner_tag   = "owner_tag_1"
+  parent_dn   = aci_vmm_domain.test_1[0].id
+  password    = "password_1"
+  username    = "username_1"
+  annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  tags = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
+    {
+      key   = "key_1"
+      value = "value_1"
+    },
+    {
+      key   = "key_2"
+      value = "value_2"
+    },
+  ] : null
+  pwd           = "password_1"
+  usr           = "username_1"
+  vmm_domain_dn = aci_vmm_domain.test_1[0].id
 }
 `
 
