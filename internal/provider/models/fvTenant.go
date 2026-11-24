@@ -14,6 +14,7 @@ import (
 	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
@@ -27,6 +28,17 @@ func fvTenantSchemaDefinition() modelHelpers.ClassSchema {
 	return modelHelpers.ClassSchema{
 		ResourceDescription:   "Manages ACI Tenant",
 		DataSourceDescription: "Data source for ACI Tenant",
+		Version:               2,
+		LegacyAttributes: map[string]modelHelpers.LegacyAttributeSchema{
+			"relation_fv_rs_tenant_mon_pol": {
+				Type:        types.StringType,
+				Replacement: "relation_to_monitoring_policy",
+			},
+			"relation_fv_rs_tn_deny_rule": {
+				Type:   types.SetType{ElemType: types.StringType},
+				Frozen: true,
+			},
+		},
 		Properties: map[string]modelHelpers.PropertySchema{
 			"annotation": {
 				Type:        modelHelpers.StringProperty,
@@ -340,16 +352,30 @@ func (m *FvTenantModel) BuildNestedDeletePayloadObject(
 	})
 }
 
+type FvTenantLegacyModelV2 struct {
+	LegacyRelationFvRsTenantMonPol types.String `tfsdk:"relation_fv_rs_tenant_mon_pol"`
+	LegacyRelationFvRsTnDenyRule   types.Set    `tfsdk:"relation_fv_rs_tn_deny_rule"`
+}
+
+func NewFvTenantLegacyModelV2Null() FvTenantLegacyModelV2 {
+	return FvTenantLegacyModelV2{
+		LegacyRelationFvRsTenantMonPol: types.StringNull(),
+		LegacyRelationFvRsTnDenyRule:   types.SetNull(types.StringType),
+	}
+}
+
 type FvTenantRootModel struct {
 	FvTenantModel
+	FvTenantLegacyModelV2
 
 	ID types.String `tfsdk:"id"`
 }
 
 func NewFvTenantRootModelNull() FvTenantRootModel {
 	return FvTenantRootModel{
-		FvTenantModel: NewFvTenantModelNull(),
-		ID:            types.StringNull(),
+		FvTenantModel:         NewFvTenantModelNull(),
+		FvTenantLegacyModelV2: NewFvTenantLegacyModelV2Null(),
+		ID:                    types.StringNull(),
 	}
 }
 
@@ -385,6 +411,16 @@ func (m *FvTenantRootModel) SetFromResponse(
 	return true, diagnostics
 }
 
+func (m *FvTenantRootModel) SetLegacyFromResponse(ctx context.Context, response *container.Container) diag.Diagnostics {
+	// Modern response decoding can also be used independently of compatibility state.
+	var diagnostics diag.Diagnostics
+	m.LegacyRelationFvRsTenantMonPol = modelHelpers.LegacyTargetDN(ctx, &diagnostics, response, "fvTenant", "fvRsTenantMonPol")
+	if m.LegacyRelationFvRsTnDenyRule.IsNull() || m.LegacyRelationFvRsTnDenyRule.IsUnknown() {
+		m.LegacyRelationFvRsTnDenyRule = types.SetValueMust(types.StringType, []attr.Value{})
+	}
+	return diagnostics
+}
+
 func (m *FvTenantRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *FvTenantModel,
@@ -408,4 +444,113 @@ func (m *FvTenantRootModel) BuildPayload(
 func (m *FvTenantRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
 	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "fvTenant", m.ID.ValueString()), diagnostics
+}
+
+func (m *FvTenantRootModel) SetFromLegacyConfig(ctx context.Context, config, priorState *FvTenantRootModel) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	if !config.LegacyRelationFvRsTenantMonPol.IsNull() {
+		if !config.FvRsTenantMonPol.IsNull() {
+			diagnostics.AddError("Conflicting legacy configuration", "Configure either relation_fv_rs_tenant_mon_pol or relation_to_monitoring_policy, not both.")
+			return diagnostics
+		}
+		var fallback *types.Object
+		if priorState != nil {
+			fallback = &priorState.FvRsTenantMonPol
+		}
+		relation := modelHelpers.LegacyChildRelation{
+			AttributeTypes: FvRsTenantMonPolModelAttributeTypes(),
+			AttributeName:  "monitoring_policy_name",
+			Named:          true,
+		}
+		m.FvRsTenantMonPol = relation.Plan(ctx, &diagnostics, config.LegacyRelationFvRsTenantMonPol, m.FvRsTenantMonPol, fallback, m.Annotation)
+	}
+	return diagnostics
+}
+
+func (m *FvTenantRootModel) SetLegacyFromState(ctx context.Context, config, priorState *FvTenantRootModel) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	if priorState == nil {
+		return diagnostics
+	}
+
+	// Retain legacy and read-only outputs when the configured and managed values are unchanged.
+	candidate := *m
+	if config.LegacyRelationFvRsTenantMonPol.IsNull() {
+		candidate.LegacyRelationFvRsTenantMonPol = priorState.LegacyRelationFvRsTenantMonPol
+	}
+	attributeType := FvTenantResourceSchema("").Type()
+	var planValue, stateValue types.Object
+	diagnostics.Append(tfsdk.ValueFrom(ctx, candidate, attributeType, &planValue)...)
+	diagnostics.Append(tfsdk.ValueFrom(ctx, priorState, attributeType, &stateValue)...)
+	if diagnostics.HasError() || !planValue.Equal(stateValue) {
+		return diagnostics
+	}
+	if config.LegacyRelationFvRsTenantMonPol.IsNull() {
+		m.LegacyRelationFvRsTenantMonPol = candidate.LegacyRelationFvRsTenantMonPol
+	}
+	return diagnostics
+}
+
+type FvTenantRootModelV1 struct {
+	Annotation                     types.String `tfsdk:"annotation"`
+	TagAnnotation                  types.Set    `tfsdk:"annotations"`
+	Descr                          types.String `tfsdk:"description"`
+	ID                             types.String `tfsdk:"id"`
+	Name                           types.String `tfsdk:"name"`
+	NameAlias                      types.String `tfsdk:"name_alias"`
+	OwnerKey                       types.String `tfsdk:"owner_key"`
+	OwnerTag                       types.String `tfsdk:"owner_tag"`
+	LegacyRelationFvRsTenantMonPol types.String `tfsdk:"relation_fv_rs_tenant_mon_pol"`
+	LegacyRelationFvRsTnDenyRule   types.Set    `tfsdk:"relation_fv_rs_tn_deny_rule"`
+	TagTag                         types.Set    `tfsdk:"tags"`
+}
+
+func FvTenantResourceSchemaV1() *resourceschema.Schema {
+	current := FvTenantResourceSchema("")
+	return &resourceschema.Schema{
+		Version: 1,
+		Attributes: map[string]resourceschema.Attribute{
+			"annotation":  current.Attributes["annotation"],
+			"annotations": current.Attributes["annotations"],
+			"description": current.Attributes["description"],
+			"id":          current.Attributes["id"],
+			"name":        current.Attributes["name"],
+			"name_alias":  current.Attributes["name_alias"],
+			"owner_key":   current.Attributes["owner_key"],
+			"owner_tag":   current.Attributes["owner_tag"],
+			"relation_fv_rs_tenant_mon_pol": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"relation_fv_rs_tn_deny_rule": resourceschema.SetAttribute{
+				Required:    false,
+				Optional:    true,
+				Computed:    false,
+				ElementType: types.StringType,
+			},
+			"tags": current.Attributes["tags"],
+		},
+	}
+}
+
+func (m *FvTenantRootModel) UpgradeFromV1(ctx context.Context, priorState *FvTenantRootModelV1) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	*m = NewFvTenantRootModelNull()
+	m.Annotation = priorState.Annotation
+	m.TagAnnotation = priorState.TagAnnotation
+	m.Descr = priorState.Descr
+	m.ID = priorState.ID
+	m.Name = priorState.Name
+	m.NameAlias = priorState.NameAlias
+	m.OwnerKey = priorState.OwnerKey
+	m.OwnerTag = priorState.OwnerTag
+	m.LegacyRelationFvRsTenantMonPol = priorState.LegacyRelationFvRsTenantMonPol
+	// Preserve the published SDKv2 upgrade: an unset relation produced an empty name.
+	m.FvRsTenantMonPol = modelHelpers.LegacyChildObject(ctx, &diagnostics, FvRsTenantMonPolModelAttributeTypes(), map[string]attr.Value{
+		"monitoring_policy_name": modelHelpers.LegacyRelationName(ctx, &diagnostics, types.StringValue(priorState.LegacyRelationFvRsTenantMonPol.ValueString())),
+	})
+	m.LegacyRelationFvRsTnDenyRule = priorState.LegacyRelationFvRsTnDenyRule
+	m.TagTag = priorState.TagTag
+	return diagnostics
 }

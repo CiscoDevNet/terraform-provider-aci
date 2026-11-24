@@ -14,6 +14,7 @@ import (
 	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
@@ -27,6 +28,106 @@ func fvCtxSchemaDefinition() modelHelpers.ClassSchema {
 	return modelHelpers.ClassSchema{
 		ResourceDescription:   "Manages ACI VRF",
 		DataSourceDescription: "Data source for ACI VRF",
+		Version:               2,
+		LegacyAttributes: map[string]modelHelpers.LegacyAttributeSchema{
+			"bd_enforced_enable": {
+				Type:        types.StringType,
+				Replacement: "bd_enforcement",
+			},
+			"knw_mcast_act": {
+				Type:   types.StringType,
+				Frozen: true,
+			},
+			"pc_enf_dir": {
+				Type:        types.StringType,
+				Replacement: "policy_control_enforcement_direction",
+			},
+			"pc_enf_pref": {
+				Type:        types.StringType,
+				Replacement: "policy_control_enforcement_mode",
+			},
+			"relation_fv_rs_bgp_ctx_pol": {
+				Type:        types.StringType,
+				Replacement: "relation_to_bgp_timers",
+			},
+			"relation_fv_rs_ctx_mcast_to": {
+				Type:   types.SetType{ElemType: types.StringType},
+				Frozen: true,
+			},
+			"relation_fv_rs_ctx_mon_pol": {
+				Type:        types.StringType,
+				Replacement: "relation_to_monitoring_policy",
+			},
+			"relation_fv_rs_ctx_to_bgp_ctx_af_pol": {
+				Type: types.SetType{ElemType: types.ObjectType{AttrTypes: map[string]attr.Type{"af": types.StringType, "tn_bgp_ctx_af_pol_name": types.StringType}}},
+				Attributes: map[string]modelHelpers.LegacyAttributeSchema{
+					"af": {
+						Type:        types.StringType,
+						Required:    true,
+						Replacement: "relation_to_bgp_address_family_contexts.address_family",
+					},
+					"tn_bgp_ctx_af_pol_name": {
+						Type:        types.StringType,
+						Required:    true,
+						Replacement: "relation_to_bgp_address_family_contexts.bgp_address_family_context_name",
+					},
+				},
+				Replacement: "relation_to_bgp_address_family_contexts",
+			},
+			"relation_fv_rs_ctx_to_eigrp_ctx_af_pol": {
+				Type: types.SetType{ElemType: types.ObjectType{AttrTypes: map[string]attr.Type{"af": types.StringType, "tn_eigrp_ctx_af_pol_name": types.StringType}}},
+				Attributes: map[string]modelHelpers.LegacyAttributeSchema{
+					"af": {
+						Type:        types.StringType,
+						Required:    true,
+						Replacement: "relation_to_eigrp_address_family_contexts.address_family",
+					},
+					"tn_eigrp_ctx_af_pol_name": {
+						Type:        types.StringType,
+						Required:    true,
+						Replacement: "relation_to_eigrp_address_family_contexts.eigrp_address_family_context_name",
+					},
+				},
+				Replacement: "relation_to_eigrp_address_family_contexts",
+			},
+			"relation_fv_rs_ctx_to_ep_ret": {
+				Type:        types.StringType,
+				Replacement: "relation_to_end_point_retention_policy",
+			},
+			"relation_fv_rs_ctx_to_ext_route_tag_pol": {
+				Type:        types.StringType,
+				Replacement: "relation_to_l3out_route_tag_policy",
+			},
+			"relation_fv_rs_ctx_to_ospf_ctx_pol": {
+				Type: types.SetType{ElemType: types.ObjectType{AttrTypes: map[string]attr.Type{"af": types.StringType, "tn_ospf_ctx_pol_name": types.StringType}}},
+				Attributes: map[string]modelHelpers.LegacyAttributeSchema{
+					"af": {
+						Type:        types.StringType,
+						Required:    true,
+						Replacement: "relation_to_address_family_ospf_timers.address_family",
+					},
+					"tn_ospf_ctx_pol_name": {
+						Type:        types.StringType,
+						Required:    true,
+						Replacement: "relation_to_address_family_ospf_timers.ospf_timers_name",
+					},
+				},
+				Replacement: "relation_to_address_family_ospf_timers",
+			},
+			"relation_fv_rs_ospf_ctx_pol": {
+				Type:        types.StringType,
+				Replacement: "relation_to_ospf_timers",
+			},
+			"relation_fv_rs_vrf_validation_pol": {
+				Type:   types.StringType,
+				Frozen: true,
+			},
+			"tenant_dn": {
+				Type:            types.StringType,
+				Replacement:     "parent_dn",
+				RequiresReplace: true,
+			},
+		},
 		Properties: map[string]modelHelpers.PropertySchema{
 			"annotation": {
 				Type:        modelHelpers.StringProperty,
@@ -805,8 +906,47 @@ func (m *FvCtxModel) BuildNestedDeletePayloadObject(
 	})
 }
 
+type FvCtxLegacyModelV2 struct {
+	LegacyBdEnforcedEnable                types.String `tfsdk:"bd_enforced_enable"`
+	LegacyKnwMcastAct                     types.String `tfsdk:"knw_mcast_act"`
+	LegacyPcEnfDir                        types.String `tfsdk:"pc_enf_dir"`
+	LegacyPcEnfPref                       types.String `tfsdk:"pc_enf_pref"`
+	LegacyRelationFvRsBgpCtxPol           types.String `tfsdk:"relation_fv_rs_bgp_ctx_pol"`
+	LegacyRelationFvRsCtxMcastTo          types.Set    `tfsdk:"relation_fv_rs_ctx_mcast_to"`
+	LegacyRelationFvRsCtxMonPol           types.String `tfsdk:"relation_fv_rs_ctx_mon_pol"`
+	LegacyRelationFvRsCtxToBgpCtxAfPol    types.Set    `tfsdk:"relation_fv_rs_ctx_to_bgp_ctx_af_pol"`
+	LegacyRelationFvRsCtxToEigrpCtxAfPol  types.Set    `tfsdk:"relation_fv_rs_ctx_to_eigrp_ctx_af_pol"`
+	LegacyRelationFvRsCtxToEpRet          types.String `tfsdk:"relation_fv_rs_ctx_to_ep_ret"`
+	LegacyRelationFvRsCtxToExtRouteTagPol types.String `tfsdk:"relation_fv_rs_ctx_to_ext_route_tag_pol"`
+	LegacyRelationFvRsCtxToOspfCtxPol     types.Set    `tfsdk:"relation_fv_rs_ctx_to_ospf_ctx_pol"`
+	LegacyRelationFvRsOspfCtxPol          types.String `tfsdk:"relation_fv_rs_ospf_ctx_pol"`
+	LegacyRelationFvRsVrfValidationPol    types.String `tfsdk:"relation_fv_rs_vrf_validation_pol"`
+	LegacyTenantDn                        types.String `tfsdk:"tenant_dn"`
+}
+
+func NewFvCtxLegacyModelV2Null() FvCtxLegacyModelV2 {
+	return FvCtxLegacyModelV2{
+		LegacyBdEnforcedEnable:                types.StringNull(),
+		LegacyKnwMcastAct:                     types.StringNull(),
+		LegacyPcEnfDir:                        types.StringNull(),
+		LegacyPcEnfPref:                       types.StringNull(),
+		LegacyRelationFvRsBgpCtxPol:           types.StringNull(),
+		LegacyRelationFvRsCtxMcastTo:          types.SetNull(types.StringType),
+		LegacyRelationFvRsCtxMonPol:           types.StringNull(),
+		LegacyRelationFvRsCtxToBgpCtxAfPol:    types.SetNull(types.ObjectType{AttrTypes: map[string]attr.Type{"af": types.StringType, "tn_bgp_ctx_af_pol_name": types.StringType}}),
+		LegacyRelationFvRsCtxToEigrpCtxAfPol:  types.SetNull(types.ObjectType{AttrTypes: map[string]attr.Type{"af": types.StringType, "tn_eigrp_ctx_af_pol_name": types.StringType}}),
+		LegacyRelationFvRsCtxToEpRet:          types.StringNull(),
+		LegacyRelationFvRsCtxToExtRouteTagPol: types.StringNull(),
+		LegacyRelationFvRsCtxToOspfCtxPol:     types.SetNull(types.ObjectType{AttrTypes: map[string]attr.Type{"af": types.StringType, "tn_ospf_ctx_pol_name": types.StringType}}),
+		LegacyRelationFvRsOspfCtxPol:          types.StringNull(),
+		LegacyRelationFvRsVrfValidationPol:    types.StringNull(),
+		LegacyTenantDn:                        types.StringNull(),
+	}
+}
+
 type FvCtxRootModel struct {
 	FvCtxModel
+	FvCtxLegacyModelV2
 
 	ID       types.String `tfsdk:"id"`
 	ParentDN types.String `tfsdk:"parent_dn"`
@@ -814,9 +954,10 @@ type FvCtxRootModel struct {
 
 func NewFvCtxRootModelNull() FvCtxRootModel {
 	return FvCtxRootModel{
-		FvCtxModel: NewFvCtxModelNull(),
-		ID:         types.StringNull(),
-		ParentDN:   types.StringNull(),
+		FvCtxModel:         NewFvCtxModelNull(),
+		FvCtxLegacyModelV2: NewFvCtxLegacyModelV2Null(),
+		ID:                 types.StringNull(),
+		ParentDN:           types.StringNull(),
 	}
 }
 
@@ -865,6 +1006,78 @@ func (m *FvCtxRootModel) SetFromResponse(
 	return true, diagnostics
 }
 
+func (m *FvCtxRootModel) SetLegacyFromResponse(ctx context.Context, response *container.Container) diag.Diagnostics {
+	// Modern response decoding can also be used independently of compatibility state.
+	var diagnostics diag.Diagnostics
+	m.LegacyBdEnforcedEnable = m.BdEnforcedEnable
+	if m.LegacyKnwMcastAct.IsNull() || m.LegacyKnwMcastAct.IsUnknown() {
+		m.LegacyKnwMcastAct = types.StringValue("")
+	}
+	m.LegacyPcEnfDir = m.PcEnfDir
+	m.LegacyPcEnfPref = m.PcEnfPref
+	m.LegacyRelationFvRsBgpCtxPol = modelHelpers.LegacyTargetDN(ctx, &diagnostics, response, "fvCtx", "fvRsBgpCtxPol")
+	if m.LegacyRelationFvRsCtxMcastTo.IsNull() || m.LegacyRelationFvRsCtxMcastTo.IsUnknown() {
+		m.LegacyRelationFvRsCtxMcastTo = types.SetValueMust(types.StringType, []attr.Value{})
+	}
+	m.LegacyRelationFvRsCtxMonPol = modelHelpers.LegacyTargetDN(ctx, &diagnostics, response, "fvCtx", "fvRsCtxMonPol")
+	fvRsCtxToBgpCtxAfPolMapping := modelHelpers.LegacyChildSet{
+		AttributeTypes:        FvRsCtxToBgpCtxAfPolModelAttributeTypes(),
+		IdentifyingAttributes: []string{"address_family", "bgp_address_family_context_name"},
+		AttributeName:         "bgp_address_family_context_name",
+		Named:                 true,
+		LegacyType:            types.ObjectType{AttrTypes: map[string]attr.Type{"af": types.StringType, "tn_bgp_ctx_af_pol_name": types.StringType}},
+		Attributes: map[string]string{
+			"af":                     "address_family",
+			"tn_bgp_ctx_af_pol_name": "bgp_address_family_context_name",
+		},
+		ResponseAttributes: map[string]string{
+			"af":                     "af",
+			"tn_bgp_ctx_af_pol_name": "tDn",
+		},
+	}
+	m.LegacyRelationFvRsCtxToBgpCtxAfPol = fvRsCtxToBgpCtxAfPolMapping.LegacyFromResponse(ctx, &diagnostics, response, "fvCtx", "fvRsCtxToBgpCtxAfPol")
+	fvRsCtxToEigrpCtxAfPolMapping := modelHelpers.LegacyChildSet{
+		AttributeTypes:        FvRsCtxToEigrpCtxAfPolModelAttributeTypes(),
+		IdentifyingAttributes: []string{"address_family", "eigrp_address_family_context_name"},
+		AttributeName:         "eigrp_address_family_context_name",
+		Named:                 true,
+		LegacyType:            types.ObjectType{AttrTypes: map[string]attr.Type{"af": types.StringType, "tn_eigrp_ctx_af_pol_name": types.StringType}},
+		Attributes: map[string]string{
+			"af":                       "address_family",
+			"tn_eigrp_ctx_af_pol_name": "eigrp_address_family_context_name",
+		},
+		ResponseAttributes: map[string]string{
+			"af":                       "af",
+			"tn_eigrp_ctx_af_pol_name": "tDn",
+		},
+	}
+	m.LegacyRelationFvRsCtxToEigrpCtxAfPol = fvRsCtxToEigrpCtxAfPolMapping.LegacyFromResponse(ctx, &diagnostics, response, "fvCtx", "fvRsCtxToEigrpCtxAfPol")
+	m.LegacyRelationFvRsCtxToEpRet = modelHelpers.LegacyTargetDN(ctx, &diagnostics, response, "fvCtx", "fvRsCtxToEpRet")
+	m.LegacyRelationFvRsCtxToExtRouteTagPol = modelHelpers.LegacyTargetDN(ctx, &diagnostics, response, "fvCtx", "fvRsCtxToExtRouteTagPol")
+	fvRsCtxToOspfCtxPolMapping := modelHelpers.LegacyChildSet{
+		AttributeTypes:        FvRsCtxToOspfCtxPolModelAttributeTypes(),
+		IdentifyingAttributes: []string{"address_family", "ospf_timers_name"},
+		AttributeName:         "ospf_timers_name",
+		Named:                 true,
+		LegacyType:            types.ObjectType{AttrTypes: map[string]attr.Type{"af": types.StringType, "tn_ospf_ctx_pol_name": types.StringType}},
+		Attributes: map[string]string{
+			"af":                   "address_family",
+			"tn_ospf_ctx_pol_name": "ospf_timers_name",
+		},
+		ResponseAttributes: map[string]string{
+			"af":                   "af",
+			"tn_ospf_ctx_pol_name": "tDn",
+		},
+	}
+	m.LegacyRelationFvRsCtxToOspfCtxPol = fvRsCtxToOspfCtxPolMapping.LegacyFromResponse(ctx, &diagnostics, response, "fvCtx", "fvRsCtxToOspfCtxPol")
+	m.LegacyRelationFvRsOspfCtxPol = modelHelpers.LegacyTargetDN(ctx, &diagnostics, response, "fvCtx", "fvRsOspfCtxPol")
+	if m.LegacyRelationFvRsVrfValidationPol.IsNull() || m.LegacyRelationFvRsVrfValidationPol.IsUnknown() {
+		m.LegacyRelationFvRsVrfValidationPol = types.StringValue("")
+	}
+	m.LegacyTenantDn = m.ParentDN
+	return diagnostics
+}
+
 func (m *FvCtxRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *FvCtxModel,
@@ -888,4 +1101,543 @@ func (m *FvCtxRootModel) BuildPayload(
 func (m *FvCtxRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
 	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "fvCtx", m.ID.ValueString()), diagnostics
+}
+
+func (m *FvCtxRootModel) SetFromLegacyConfig(ctx context.Context, config, priorState *FvCtxRootModel) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	if !config.LegacyBdEnforcedEnable.IsNull() {
+		m.BdEnforcedEnable = config.LegacyBdEnforcedEnable
+	}
+	if !config.LegacyPcEnfDir.IsNull() {
+		m.PcEnfDir = config.LegacyPcEnfDir
+	}
+	if !config.LegacyPcEnfPref.IsNull() {
+		m.PcEnfPref = config.LegacyPcEnfPref
+	}
+	if !config.LegacyRelationFvRsBgpCtxPol.IsNull() {
+		if !config.FvRsBgpCtxPol.IsNull() {
+			diagnostics.AddError("Conflicting legacy configuration", "Configure either relation_fv_rs_bgp_ctx_pol or relation_to_bgp_timers, not both.")
+			return diagnostics
+		}
+		var fallback *types.Object
+		if priorState != nil {
+			fallback = &priorState.FvRsBgpCtxPol
+		}
+		relation := modelHelpers.LegacyChildRelation{
+			AttributeTypes: FvRsBgpCtxPolModelAttributeTypes(),
+			AttributeName:  "bgp_timers_name",
+			Named:          true,
+		}
+		m.FvRsBgpCtxPol = relation.Plan(ctx, &diagnostics, config.LegacyRelationFvRsBgpCtxPol, m.FvRsBgpCtxPol, fallback, m.Annotation)
+	}
+	if !config.LegacyRelationFvRsCtxMonPol.IsNull() {
+		if !config.FvRsCtxMonPol.IsNull() {
+			diagnostics.AddError("Conflicting legacy configuration", "Configure either relation_fv_rs_ctx_mon_pol or relation_to_monitoring_policy, not both.")
+			return diagnostics
+		}
+		var fallback *types.Object
+		if priorState != nil {
+			fallback = &priorState.FvRsCtxMonPol
+		}
+		relation := modelHelpers.LegacyChildRelation{
+			AttributeTypes: FvRsCtxMonPolModelAttributeTypes(),
+			AttributeName:  "monitoring_policy_name",
+			Named:          true,
+		}
+		m.FvRsCtxMonPol = relation.Plan(ctx, &diagnostics, config.LegacyRelationFvRsCtxMonPol, m.FvRsCtxMonPol, fallback, m.Annotation)
+	}
+	fvRsCtxToBgpCtxAfPolMapping := modelHelpers.LegacyChildSet{
+		AttributeTypes:        FvRsCtxToBgpCtxAfPolModelAttributeTypes(),
+		IdentifyingAttributes: []string{"address_family", "bgp_address_family_context_name"},
+		AttributeName:         "bgp_address_family_context_name",
+		Named:                 true,
+		LegacyType:            types.ObjectType{AttrTypes: map[string]attr.Type{"af": types.StringType, "tn_bgp_ctx_af_pol_name": types.StringType}},
+		Attributes: map[string]string{
+			"af":                     "address_family",
+			"tn_bgp_ctx_af_pol_name": "bgp_address_family_context_name",
+		},
+		ResponseAttributes: map[string]string{
+			"af":                     "af",
+			"tn_bgp_ctx_af_pol_name": "tDn",
+		},
+	}
+	if config.LegacyRelationFvRsCtxToBgpCtxAfPol.IsUnknown() || len(config.LegacyRelationFvRsCtxToBgpCtxAfPol.Elements()) > 0 {
+		if !config.FvRsCtxToBgpCtxAfPol.IsNull() {
+			diagnostics.AddError("Conflicting legacy configuration", "Configure either relation_fv_rs_ctx_to_bgp_ctx_af_pol or relation_to_bgp_address_family_contexts, not both.")
+			return diagnostics
+		}
+		var fallback *types.Set
+		if priorState != nil {
+			fallback = &priorState.FvRsCtxToBgpCtxAfPol
+		}
+		m.FvRsCtxToBgpCtxAfPol = fvRsCtxToBgpCtxAfPolMapping.Plan(ctx, &diagnostics, m.LegacyRelationFvRsCtxToBgpCtxAfPol, m.FvRsCtxToBgpCtxAfPol, fallback, m.Annotation)
+	} else {
+		m.LegacyRelationFvRsCtxToBgpCtxAfPol = fvRsCtxToBgpCtxAfPolMapping.Unknown(ctx, &diagnostics, m.FvRsCtxToBgpCtxAfPol)
+	}
+	fvRsCtxToEigrpCtxAfPolMapping := modelHelpers.LegacyChildSet{
+		AttributeTypes:        FvRsCtxToEigrpCtxAfPolModelAttributeTypes(),
+		IdentifyingAttributes: []string{"address_family", "eigrp_address_family_context_name"},
+		AttributeName:         "eigrp_address_family_context_name",
+		Named:                 true,
+		LegacyType:            types.ObjectType{AttrTypes: map[string]attr.Type{"af": types.StringType, "tn_eigrp_ctx_af_pol_name": types.StringType}},
+		Attributes: map[string]string{
+			"af":                       "address_family",
+			"tn_eigrp_ctx_af_pol_name": "eigrp_address_family_context_name",
+		},
+		ResponseAttributes: map[string]string{
+			"af":                       "af",
+			"tn_eigrp_ctx_af_pol_name": "tDn",
+		},
+	}
+	if config.LegacyRelationFvRsCtxToEigrpCtxAfPol.IsUnknown() || len(config.LegacyRelationFvRsCtxToEigrpCtxAfPol.Elements()) > 0 {
+		if !config.FvRsCtxToEigrpCtxAfPol.IsNull() {
+			diagnostics.AddError("Conflicting legacy configuration", "Configure either relation_fv_rs_ctx_to_eigrp_ctx_af_pol or relation_to_eigrp_address_family_contexts, not both.")
+			return diagnostics
+		}
+		var fallback *types.Set
+		if priorState != nil {
+			fallback = &priorState.FvRsCtxToEigrpCtxAfPol
+		}
+		m.FvRsCtxToEigrpCtxAfPol = fvRsCtxToEigrpCtxAfPolMapping.Plan(ctx, &diagnostics, m.LegacyRelationFvRsCtxToEigrpCtxAfPol, m.FvRsCtxToEigrpCtxAfPol, fallback, m.Annotation)
+	} else {
+		m.LegacyRelationFvRsCtxToEigrpCtxAfPol = fvRsCtxToEigrpCtxAfPolMapping.Unknown(ctx, &diagnostics, m.FvRsCtxToEigrpCtxAfPol)
+	}
+	if !config.LegacyRelationFvRsCtxToEpRet.IsNull() {
+		if !config.FvRsCtxToEpRet.IsNull() {
+			diagnostics.AddError("Conflicting legacy configuration", "Configure either relation_fv_rs_ctx_to_ep_ret or relation_to_end_point_retention_policy, not both.")
+			return diagnostics
+		}
+		var fallback *types.Object
+		if priorState != nil {
+			fallback = &priorState.FvRsCtxToEpRet
+		}
+		relation := modelHelpers.LegacyChildRelation{
+			AttributeTypes: FvRsCtxToEpRetModelAttributeTypes(),
+			AttributeName:  "end_point_retention_policy_name",
+			Named:          true,
+		}
+		m.FvRsCtxToEpRet = relation.Plan(ctx, &diagnostics, config.LegacyRelationFvRsCtxToEpRet, m.FvRsCtxToEpRet, fallback, m.Annotation)
+	}
+	if !config.LegacyRelationFvRsCtxToExtRouteTagPol.IsNull() {
+		if !config.FvRsCtxToExtRouteTagPol.IsNull() {
+			diagnostics.AddError("Conflicting legacy configuration", "Configure either relation_fv_rs_ctx_to_ext_route_tag_pol or relation_to_l3out_route_tag_policy, not both.")
+			return diagnostics
+		}
+		var fallback *types.Object
+		if priorState != nil {
+			fallback = &priorState.FvRsCtxToExtRouteTagPol
+		}
+		relation := modelHelpers.LegacyChildRelation{
+			AttributeTypes: FvRsCtxToExtRouteTagPolModelAttributeTypes(),
+			AttributeName:  "l3out_route_tag_policy_name",
+			Named:          true,
+		}
+		m.FvRsCtxToExtRouteTagPol = relation.Plan(ctx, &diagnostics, config.LegacyRelationFvRsCtxToExtRouteTagPol, m.FvRsCtxToExtRouteTagPol, fallback, m.Annotation)
+	}
+	fvRsCtxToOspfCtxPolMapping := modelHelpers.LegacyChildSet{
+		AttributeTypes:        FvRsCtxToOspfCtxPolModelAttributeTypes(),
+		IdentifyingAttributes: []string{"address_family", "ospf_timers_name"},
+		AttributeName:         "ospf_timers_name",
+		Named:                 true,
+		LegacyType:            types.ObjectType{AttrTypes: map[string]attr.Type{"af": types.StringType, "tn_ospf_ctx_pol_name": types.StringType}},
+		Attributes: map[string]string{
+			"af":                   "address_family",
+			"tn_ospf_ctx_pol_name": "ospf_timers_name",
+		},
+		ResponseAttributes: map[string]string{
+			"af":                   "af",
+			"tn_ospf_ctx_pol_name": "tDn",
+		},
+	}
+	if config.LegacyRelationFvRsCtxToOspfCtxPol.IsUnknown() || len(config.LegacyRelationFvRsCtxToOspfCtxPol.Elements()) > 0 {
+		if !config.FvRsCtxToOspfCtxPol.IsNull() {
+			diagnostics.AddError("Conflicting legacy configuration", "Configure either relation_fv_rs_ctx_to_ospf_ctx_pol or relation_to_address_family_ospf_timers, not both.")
+			return diagnostics
+		}
+		var fallback *types.Set
+		if priorState != nil {
+			fallback = &priorState.FvRsCtxToOspfCtxPol
+		}
+		m.FvRsCtxToOspfCtxPol = fvRsCtxToOspfCtxPolMapping.Plan(ctx, &diagnostics, m.LegacyRelationFvRsCtxToOspfCtxPol, m.FvRsCtxToOspfCtxPol, fallback, m.Annotation)
+	} else {
+		m.LegacyRelationFvRsCtxToOspfCtxPol = fvRsCtxToOspfCtxPolMapping.Unknown(ctx, &diagnostics, m.FvRsCtxToOspfCtxPol)
+	}
+	if !config.LegacyRelationFvRsOspfCtxPol.IsNull() {
+		if !config.FvRsOspfCtxPol.IsNull() {
+			diagnostics.AddError("Conflicting legacy configuration", "Configure either relation_fv_rs_ospf_ctx_pol or relation_to_ospf_timers, not both.")
+			return diagnostics
+		}
+		var fallback *types.Object
+		if priorState != nil {
+			fallback = &priorState.FvRsOspfCtxPol
+		}
+		relation := modelHelpers.LegacyChildRelation{
+			AttributeTypes: FvRsOspfCtxPolModelAttributeTypes(),
+			AttributeName:  "ospf_timers_name",
+			Named:          true,
+		}
+		m.FvRsOspfCtxPol = relation.Plan(ctx, &diagnostics, config.LegacyRelationFvRsOspfCtxPol, m.FvRsOspfCtxPol, fallback, m.Annotation)
+	}
+	if !config.LegacyTenantDn.IsNull() {
+		m.ParentDN = config.LegacyTenantDn
+	}
+	return diagnostics
+}
+
+func (m *FvCtxRootModel) SetLegacyFromState(ctx context.Context, config, priorState *FvCtxRootModel) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	if priorState == nil {
+		return diagnostics
+	}
+
+	// Retain legacy and read-only outputs when the configured and managed values are unchanged.
+	candidate := *m
+	candidate.PcTag = priorState.PcTag
+	candidate.Scope = priorState.Scope
+	if config.LegacyBdEnforcedEnable.IsNull() {
+		candidate.LegacyBdEnforcedEnable = priorState.LegacyBdEnforcedEnable
+	}
+	if config.LegacyPcEnfDir.IsNull() {
+		candidate.LegacyPcEnfDir = priorState.LegacyPcEnfDir
+	}
+	if config.LegacyPcEnfPref.IsNull() {
+		candidate.LegacyPcEnfPref = priorState.LegacyPcEnfPref
+	}
+	if config.LegacyRelationFvRsBgpCtxPol.IsNull() {
+		candidate.LegacyRelationFvRsBgpCtxPol = priorState.LegacyRelationFvRsBgpCtxPol
+	}
+	if config.LegacyRelationFvRsCtxMonPol.IsNull() {
+		candidate.LegacyRelationFvRsCtxMonPol = priorState.LegacyRelationFvRsCtxMonPol
+	}
+	if !config.LegacyRelationFvRsCtxToBgpCtxAfPol.IsUnknown() && len(config.LegacyRelationFvRsCtxToBgpCtxAfPol.Elements()) == 0 {
+		candidate.LegacyRelationFvRsCtxToBgpCtxAfPol = priorState.LegacyRelationFvRsCtxToBgpCtxAfPol
+	}
+	if !config.LegacyRelationFvRsCtxToEigrpCtxAfPol.IsUnknown() && len(config.LegacyRelationFvRsCtxToEigrpCtxAfPol.Elements()) == 0 {
+		candidate.LegacyRelationFvRsCtxToEigrpCtxAfPol = priorState.LegacyRelationFvRsCtxToEigrpCtxAfPol
+	}
+	if config.LegacyRelationFvRsCtxToEpRet.IsNull() {
+		candidate.LegacyRelationFvRsCtxToEpRet = priorState.LegacyRelationFvRsCtxToEpRet
+	}
+	if config.LegacyRelationFvRsCtxToExtRouteTagPol.IsNull() {
+		candidate.LegacyRelationFvRsCtxToExtRouteTagPol = priorState.LegacyRelationFvRsCtxToExtRouteTagPol
+	}
+	if !config.LegacyRelationFvRsCtxToOspfCtxPol.IsUnknown() && len(config.LegacyRelationFvRsCtxToOspfCtxPol.Elements()) == 0 {
+		candidate.LegacyRelationFvRsCtxToOspfCtxPol = priorState.LegacyRelationFvRsCtxToOspfCtxPol
+	}
+	if config.LegacyRelationFvRsOspfCtxPol.IsNull() {
+		candidate.LegacyRelationFvRsOspfCtxPol = priorState.LegacyRelationFvRsOspfCtxPol
+	}
+	if config.LegacyTenantDn.IsNull() {
+		candidate.LegacyTenantDn = priorState.LegacyTenantDn
+	}
+	attributeType := FvCtxResourceSchema("").Type()
+	var planValue, stateValue types.Object
+	diagnostics.Append(tfsdk.ValueFrom(ctx, candidate, attributeType, &planValue)...)
+	diagnostics.Append(tfsdk.ValueFrom(ctx, priorState, attributeType, &stateValue)...)
+	if diagnostics.HasError() || !planValue.Equal(stateValue) {
+		return diagnostics
+	}
+	m.PcTag = candidate.PcTag
+	m.Scope = candidate.Scope
+	if config.LegacyBdEnforcedEnable.IsNull() {
+		m.LegacyBdEnforcedEnable = candidate.LegacyBdEnforcedEnable
+	}
+	if config.LegacyPcEnfDir.IsNull() {
+		m.LegacyPcEnfDir = candidate.LegacyPcEnfDir
+	}
+	if config.LegacyPcEnfPref.IsNull() {
+		m.LegacyPcEnfPref = candidate.LegacyPcEnfPref
+	}
+	if config.LegacyRelationFvRsBgpCtxPol.IsNull() {
+		m.LegacyRelationFvRsBgpCtxPol = candidate.LegacyRelationFvRsBgpCtxPol
+	}
+	if config.LegacyRelationFvRsCtxMonPol.IsNull() {
+		m.LegacyRelationFvRsCtxMonPol = candidate.LegacyRelationFvRsCtxMonPol
+	}
+	if !config.LegacyRelationFvRsCtxToBgpCtxAfPol.IsUnknown() && len(config.LegacyRelationFvRsCtxToBgpCtxAfPol.Elements()) == 0 {
+		m.LegacyRelationFvRsCtxToBgpCtxAfPol = candidate.LegacyRelationFvRsCtxToBgpCtxAfPol
+	}
+	if !config.LegacyRelationFvRsCtxToEigrpCtxAfPol.IsUnknown() && len(config.LegacyRelationFvRsCtxToEigrpCtxAfPol.Elements()) == 0 {
+		m.LegacyRelationFvRsCtxToEigrpCtxAfPol = candidate.LegacyRelationFvRsCtxToEigrpCtxAfPol
+	}
+	if config.LegacyRelationFvRsCtxToEpRet.IsNull() {
+		m.LegacyRelationFvRsCtxToEpRet = candidate.LegacyRelationFvRsCtxToEpRet
+	}
+	if config.LegacyRelationFvRsCtxToExtRouteTagPol.IsNull() {
+		m.LegacyRelationFvRsCtxToExtRouteTagPol = candidate.LegacyRelationFvRsCtxToExtRouteTagPol
+	}
+	if !config.LegacyRelationFvRsCtxToOspfCtxPol.IsUnknown() && len(config.LegacyRelationFvRsCtxToOspfCtxPol.Elements()) == 0 {
+		m.LegacyRelationFvRsCtxToOspfCtxPol = candidate.LegacyRelationFvRsCtxToOspfCtxPol
+	}
+	if config.LegacyRelationFvRsOspfCtxPol.IsNull() {
+		m.LegacyRelationFvRsOspfCtxPol = candidate.LegacyRelationFvRsOspfCtxPol
+	}
+	if config.LegacyTenantDn.IsNull() {
+		m.LegacyTenantDn = candidate.LegacyTenantDn
+	}
+	return diagnostics
+}
+
+type FvCtxRootModelV1 struct {
+	Annotation                            types.String `tfsdk:"annotation"`
+	TagAnnotation                         types.Set    `tfsdk:"annotations"`
+	LegacyBdEnforcedEnable                types.String `tfsdk:"bd_enforced_enable"`
+	Descr                                 types.String `tfsdk:"description"`
+	ID                                    types.String `tfsdk:"id"`
+	IpDataPlaneLearning                   types.String `tfsdk:"ip_data_plane_learning"`
+	LegacyKnwMcastAct                     types.String `tfsdk:"knw_mcast_act"`
+	Name                                  types.String `tfsdk:"name"`
+	NameAlias                             types.String `tfsdk:"name_alias"`
+	OwnerKey                              types.String `tfsdk:"owner_key"`
+	OwnerTag                              types.String `tfsdk:"owner_tag"`
+	LegacyPcEnfDir                        types.String `tfsdk:"pc_enf_dir"`
+	LegacyPcEnfPref                       types.String `tfsdk:"pc_enf_pref"`
+	PcTag                                 types.String `tfsdk:"pc_tag"`
+	LegacyRelationFvRsBgpCtxPol           types.String `tfsdk:"relation_fv_rs_bgp_ctx_pol"`
+	LegacyRelationFvRsCtxMcastTo          types.Set    `tfsdk:"relation_fv_rs_ctx_mcast_to"`
+	LegacyRelationFvRsCtxMonPol           types.String `tfsdk:"relation_fv_rs_ctx_mon_pol"`
+	LegacyRelationFvRsCtxToBgpCtxAfPol    types.Set    `tfsdk:"relation_fv_rs_ctx_to_bgp_ctx_af_pol"`
+	LegacyRelationFvRsCtxToEigrpCtxAfPol  types.Set    `tfsdk:"relation_fv_rs_ctx_to_eigrp_ctx_af_pol"`
+	LegacyRelationFvRsCtxToEpRet          types.String `tfsdk:"relation_fv_rs_ctx_to_ep_ret"`
+	LegacyRelationFvRsCtxToExtRouteTagPol types.String `tfsdk:"relation_fv_rs_ctx_to_ext_route_tag_pol"`
+	LegacyRelationFvRsCtxToOspfCtxPol     types.Set    `tfsdk:"relation_fv_rs_ctx_to_ospf_ctx_pol"`
+	LegacyRelationFvRsOspfCtxPol          types.String `tfsdk:"relation_fv_rs_ospf_ctx_pol"`
+	LegacyRelationFvRsVrfValidationPol    types.String `tfsdk:"relation_fv_rs_vrf_validation_pol"`
+	FvRsCtxToSDWanVpn                     types.Object `tfsdk:"relation_to_wan_vpn"`
+	Scope                                 types.String `tfsdk:"scope"`
+	TagTag                                types.Set    `tfsdk:"tags"`
+	LegacyTenantDn                        types.String `tfsdk:"tenant_dn"`
+}
+
+func FvCtxResourceSchemaV1() *resourceschema.Schema {
+	current := FvCtxResourceSchema("")
+	return &resourceschema.Schema{
+		Version: 1,
+		Attributes: map[string]resourceschema.Attribute{
+			"annotation":  current.Attributes["annotation"],
+			"annotations": current.Attributes["annotations"],
+			"bd_enforced_enable": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"description":            current.Attributes["description"],
+			"id":                     current.Attributes["id"],
+			"ip_data_plane_learning": current.Attributes["ip_data_plane_learning"],
+			"knw_mcast_act": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"name":       current.Attributes["name"],
+			"name_alias": current.Attributes["name_alias"],
+			"owner_key":  current.Attributes["owner_key"],
+			"owner_tag":  current.Attributes["owner_tag"],
+			"pc_enf_dir": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"pc_enf_pref": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"pc_tag": current.Attributes["pc_tag"],
+			"relation_fv_rs_bgp_ctx_pol": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"relation_fv_rs_ctx_mcast_to": resourceschema.SetAttribute{
+				Required:    false,
+				Optional:    true,
+				Computed:    false,
+				ElementType: types.StringType,
+			},
+			"relation_fv_rs_ctx_mon_pol": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: false,
+			},
+			"relation_fv_rs_ctx_to_ep_ret": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"relation_fv_rs_ctx_to_ext_route_tag_pol": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"relation_fv_rs_ospf_ctx_pol": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"relation_fv_rs_vrf_validation_pol": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"relation_to_wan_vpn": current.Attributes["relation_to_wan_vpn"],
+			"scope":               current.Attributes["scope"],
+			"tags":                current.Attributes["tags"],
+			"tenant_dn": resourceschema.StringAttribute{
+				Required: true,
+				Optional: false,
+				Computed: false,
+			},
+		},
+		Blocks: map[string]resourceschema.Block{
+			"relation_fv_rs_ctx_to_bgp_ctx_af_pol": resourceschema.SetNestedBlock{
+				NestedObject: resourceschema.NestedBlockObject{Attributes: map[string]resourceschema.Attribute{
+					"af": resourceschema.StringAttribute{
+						Required: true,
+						Optional: false,
+						Computed: false,
+					},
+					"tn_bgp_ctx_af_pol_name": resourceschema.StringAttribute{
+						Required: true,
+						Optional: false,
+						Computed: false,
+					},
+				}},
+			},
+			"relation_fv_rs_ctx_to_eigrp_ctx_af_pol": resourceschema.SetNestedBlock{
+				NestedObject: resourceschema.NestedBlockObject{Attributes: map[string]resourceschema.Attribute{
+					"af": resourceschema.StringAttribute{
+						Required: true,
+						Optional: false,
+						Computed: false,
+					},
+					"tn_eigrp_ctx_af_pol_name": resourceschema.StringAttribute{
+						Required: true,
+						Optional: false,
+						Computed: false,
+					},
+				}},
+			},
+			"relation_fv_rs_ctx_to_ospf_ctx_pol": resourceschema.SetNestedBlock{
+				NestedObject: resourceschema.NestedBlockObject{Attributes: map[string]resourceschema.Attribute{
+					"af": resourceschema.StringAttribute{
+						Required: true,
+						Optional: false,
+						Computed: false,
+					},
+					"tn_ospf_ctx_pol_name": resourceschema.StringAttribute{
+						Required: true,
+						Optional: false,
+						Computed: false,
+					},
+				}},
+			},
+		},
+	}
+}
+
+func (m *FvCtxRootModel) UpgradeFromV1(ctx context.Context, priorState *FvCtxRootModelV1) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	*m = NewFvCtxRootModelNull()
+	m.Annotation = priorState.Annotation
+	m.TagAnnotation = priorState.TagAnnotation
+	m.LegacyBdEnforcedEnable = priorState.LegacyBdEnforcedEnable
+	m.BdEnforcedEnable = priorState.LegacyBdEnforcedEnable
+	m.Descr = priorState.Descr
+	m.ID = priorState.ID
+	m.IpDataPlaneLearning = priorState.IpDataPlaneLearning
+	m.LegacyKnwMcastAct = priorState.LegacyKnwMcastAct
+	m.Name = priorState.Name
+	m.NameAlias = priorState.NameAlias
+	m.OwnerKey = priorState.OwnerKey
+	m.OwnerTag = priorState.OwnerTag
+	m.LegacyPcEnfDir = priorState.LegacyPcEnfDir
+	m.PcEnfDir = priorState.LegacyPcEnfDir
+	m.LegacyPcEnfPref = priorState.LegacyPcEnfPref
+	m.PcEnfPref = priorState.LegacyPcEnfPref
+	m.PcTag = priorState.PcTag
+	m.LegacyRelationFvRsBgpCtxPol = priorState.LegacyRelationFvRsBgpCtxPol
+	// Preserve the published SDKv2 upgrade: an unset relation produced an empty name.
+	m.FvRsBgpCtxPol = modelHelpers.LegacyChildObject(ctx, &diagnostics, FvRsBgpCtxPolModelAttributeTypes(), map[string]attr.Value{
+		"bgp_timers_name": modelHelpers.LegacyRelationName(ctx, &diagnostics, types.StringValue(priorState.LegacyRelationFvRsBgpCtxPol.ValueString())),
+	})
+	m.LegacyRelationFvRsCtxMcastTo = priorState.LegacyRelationFvRsCtxMcastTo
+	m.LegacyRelationFvRsCtxMonPol = priorState.LegacyRelationFvRsCtxMonPol
+	// Preserve the published SDKv2 upgrade: an unset relation produced an empty name.
+	m.FvRsCtxMonPol = modelHelpers.LegacyChildObject(ctx, &diagnostics, FvRsCtxMonPolModelAttributeTypes(), map[string]attr.Value{
+		"monitoring_policy_name": modelHelpers.LegacyRelationName(ctx, &diagnostics, types.StringValue(priorState.LegacyRelationFvRsCtxMonPol.ValueString())),
+	})
+	m.LegacyRelationFvRsCtxToBgpCtxAfPol = priorState.LegacyRelationFvRsCtxToBgpCtxAfPol
+	fvRsCtxToBgpCtxAfPolMapping := modelHelpers.LegacyChildSet{
+		AttributeTypes:        FvRsCtxToBgpCtxAfPolModelAttributeTypes(),
+		IdentifyingAttributes: []string{"address_family", "bgp_address_family_context_name"},
+		AttributeName:         "bgp_address_family_context_name",
+		Named:                 true,
+		LegacyType:            types.ObjectType{AttrTypes: map[string]attr.Type{"af": types.StringType, "tn_bgp_ctx_af_pol_name": types.StringType}},
+		Attributes: map[string]string{
+			"af":                     "address_family",
+			"tn_bgp_ctx_af_pol_name": "bgp_address_family_context_name",
+		},
+		ResponseAttributes: map[string]string{
+			"af":                     "af",
+			"tn_bgp_ctx_af_pol_name": "tDn",
+		},
+	}
+	m.FvRsCtxToBgpCtxAfPol = fvRsCtxToBgpCtxAfPolMapping.Upgrade(ctx, &diagnostics, priorState.LegacyRelationFvRsCtxToBgpCtxAfPol)
+	m.LegacyRelationFvRsCtxToEigrpCtxAfPol = priorState.LegacyRelationFvRsCtxToEigrpCtxAfPol
+	fvRsCtxToEigrpCtxAfPolMapping := modelHelpers.LegacyChildSet{
+		AttributeTypes:        FvRsCtxToEigrpCtxAfPolModelAttributeTypes(),
+		IdentifyingAttributes: []string{"address_family", "eigrp_address_family_context_name"},
+		AttributeName:         "eigrp_address_family_context_name",
+		Named:                 true,
+		LegacyType:            types.ObjectType{AttrTypes: map[string]attr.Type{"af": types.StringType, "tn_eigrp_ctx_af_pol_name": types.StringType}},
+		Attributes: map[string]string{
+			"af":                       "address_family",
+			"tn_eigrp_ctx_af_pol_name": "eigrp_address_family_context_name",
+		},
+		ResponseAttributes: map[string]string{
+			"af":                       "af",
+			"tn_eigrp_ctx_af_pol_name": "tDn",
+		},
+	}
+	m.FvRsCtxToEigrpCtxAfPol = fvRsCtxToEigrpCtxAfPolMapping.Upgrade(ctx, &diagnostics, priorState.LegacyRelationFvRsCtxToEigrpCtxAfPol)
+	m.LegacyRelationFvRsCtxToEpRet = priorState.LegacyRelationFvRsCtxToEpRet
+	// Preserve the published SDKv2 upgrade: an unset relation produced an empty name.
+	m.FvRsCtxToEpRet = modelHelpers.LegacyChildObject(ctx, &diagnostics, FvRsCtxToEpRetModelAttributeTypes(), map[string]attr.Value{
+		"end_point_retention_policy_name": modelHelpers.LegacyRelationName(ctx, &diagnostics, types.StringValue(priorState.LegacyRelationFvRsCtxToEpRet.ValueString())),
+	})
+	m.LegacyRelationFvRsCtxToExtRouteTagPol = priorState.LegacyRelationFvRsCtxToExtRouteTagPol
+	// Preserve the published SDKv2 upgrade: an unset relation produced an empty name.
+	m.FvRsCtxToExtRouteTagPol = modelHelpers.LegacyChildObject(ctx, &diagnostics, FvRsCtxToExtRouteTagPolModelAttributeTypes(), map[string]attr.Value{
+		"l3out_route_tag_policy_name": modelHelpers.LegacyRelationName(ctx, &diagnostics, types.StringValue(priorState.LegacyRelationFvRsCtxToExtRouteTagPol.ValueString())),
+	})
+	m.LegacyRelationFvRsCtxToOspfCtxPol = priorState.LegacyRelationFvRsCtxToOspfCtxPol
+	fvRsCtxToOspfCtxPolMapping := modelHelpers.LegacyChildSet{
+		AttributeTypes:        FvRsCtxToOspfCtxPolModelAttributeTypes(),
+		IdentifyingAttributes: []string{"address_family", "ospf_timers_name"},
+		AttributeName:         "ospf_timers_name",
+		Named:                 true,
+		LegacyType:            types.ObjectType{AttrTypes: map[string]attr.Type{"af": types.StringType, "tn_ospf_ctx_pol_name": types.StringType}},
+		Attributes: map[string]string{
+			"af":                   "address_family",
+			"tn_ospf_ctx_pol_name": "ospf_timers_name",
+		},
+		ResponseAttributes: map[string]string{
+			"af":                   "af",
+			"tn_ospf_ctx_pol_name": "tDn",
+		},
+	}
+	m.FvRsCtxToOspfCtxPol = fvRsCtxToOspfCtxPolMapping.Upgrade(ctx, &diagnostics, priorState.LegacyRelationFvRsCtxToOspfCtxPol)
+	m.LegacyRelationFvRsOspfCtxPol = priorState.LegacyRelationFvRsOspfCtxPol
+	// Preserve the published SDKv2 upgrade: an unset relation produced an empty name.
+	m.FvRsOspfCtxPol = modelHelpers.LegacyChildObject(ctx, &diagnostics, FvRsOspfCtxPolModelAttributeTypes(), map[string]attr.Value{
+		"ospf_timers_name": modelHelpers.LegacyRelationName(ctx, &diagnostics, types.StringValue(priorState.LegacyRelationFvRsOspfCtxPol.ValueString())),
+	})
+	m.LegacyRelationFvRsVrfValidationPol = priorState.LegacyRelationFvRsVrfValidationPol
+	m.FvRsCtxToSDWanVpn = priorState.FvRsCtxToSDWanVpn
+	m.Scope = priorState.Scope
+	m.TagTag = priorState.TagTag
+	m.LegacyTenantDn = priorState.LegacyTenantDn
+	m.ParentDN = priorState.LegacyTenantDn
+	return diagnostics
 }

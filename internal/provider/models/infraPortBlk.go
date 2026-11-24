@@ -14,6 +14,7 @@ import (
 	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
@@ -27,6 +28,18 @@ func infraPortBlkSchemaDefinition() modelHelpers.ClassSchema {
 	return modelHelpers.ClassSchema{
 		ResourceDescription:   "Manages ACI Access Port Block",
 		DataSourceDescription: "Data source for ACI Access Port Block",
+		Version:               2,
+		LegacyAttributes: map[string]modelHelpers.LegacyAttributeSchema{
+			"access_port_selector_dn": {
+				Type:            types.StringType,
+				Replacement:     "parent_dn",
+				RequiresReplace: true,
+			},
+			"relation_infra_rs_acc_bndl_subgrp": {
+				Type:        types.StringType,
+				Replacement: "relation_to_pc_vpc_override_policy",
+			},
+		},
 		Properties: map[string]modelHelpers.PropertySchema{
 			"annotation": {
 				Type:        modelHelpers.StringProperty,
@@ -366,8 +379,21 @@ func (m *InfraPortBlkModel) BuildNestedDeletePayloadObject(
 	})
 }
 
+type InfraPortBlkLegacyModelV2 struct {
+	LegacyAccessPortSelectorDn         types.String `tfsdk:"access_port_selector_dn"`
+	LegacyRelationInfraRsAccBndlSubgrp types.String `tfsdk:"relation_infra_rs_acc_bndl_subgrp"`
+}
+
+func NewInfraPortBlkLegacyModelV2Null() InfraPortBlkLegacyModelV2 {
+	return InfraPortBlkLegacyModelV2{
+		LegacyAccessPortSelectorDn:         types.StringNull(),
+		LegacyRelationInfraRsAccBndlSubgrp: types.StringNull(),
+	}
+}
+
 type InfraPortBlkRootModel struct {
 	InfraPortBlkModel
+	InfraPortBlkLegacyModelV2
 
 	ID       types.String `tfsdk:"id"`
 	ParentDN types.String `tfsdk:"parent_dn"`
@@ -375,9 +401,10 @@ type InfraPortBlkRootModel struct {
 
 func NewInfraPortBlkRootModelNull() InfraPortBlkRootModel {
 	return InfraPortBlkRootModel{
-		InfraPortBlkModel: NewInfraPortBlkModelNull(),
-		ID:                types.StringNull(),
-		ParentDN:          types.StringNull(),
+		InfraPortBlkModel:         NewInfraPortBlkModelNull(),
+		InfraPortBlkLegacyModelV2: NewInfraPortBlkLegacyModelV2Null(),
+		ID:                        types.StringNull(),
+		ParentDN:                  types.StringNull(),
 	}
 }
 
@@ -418,6 +445,14 @@ func (m *InfraPortBlkRootModel) SetFromResponse(
 	return true, diagnostics
 }
 
+func (m *InfraPortBlkRootModel) SetLegacyFromResponse(ctx context.Context, response *container.Container) diag.Diagnostics {
+	// Modern response decoding can also be used independently of compatibility state.
+	var diagnostics diag.Diagnostics
+	m.LegacyAccessPortSelectorDn = m.ParentDN
+	m.LegacyRelationInfraRsAccBndlSubgrp = modelHelpers.LegacyTargetDN(ctx, &diagnostics, response, "infraPortBlk", "infraRsAccBndlSubgrp")
+	return diagnostics
+}
+
 func (m *InfraPortBlkRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *InfraPortBlkModel,
@@ -441,4 +476,127 @@ func (m *InfraPortBlkRootModel) BuildPayload(
 func (m *InfraPortBlkRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
 	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "infraPortBlk", m.ID.ValueString()), diagnostics
+}
+
+func (m *InfraPortBlkRootModel) SetFromLegacyConfig(ctx context.Context, config, priorState *InfraPortBlkRootModel) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	if !config.LegacyAccessPortSelectorDn.IsNull() {
+		m.ParentDN = config.LegacyAccessPortSelectorDn
+	}
+	if !config.LegacyRelationInfraRsAccBndlSubgrp.IsNull() {
+		if !config.InfraRsAccBndlSubgrp.IsNull() {
+			diagnostics.AddError("Conflicting legacy configuration", "Configure either relation_infra_rs_acc_bndl_subgrp or relation_to_pc_vpc_override_policy, not both.")
+			return diagnostics
+		}
+		var fallback *types.Object
+		if priorState != nil {
+			fallback = &priorState.InfraRsAccBndlSubgrp
+		}
+		relation := modelHelpers.LegacyChildRelation{
+			AttributeTypes: InfraRsAccBndlSubgrpModelAttributeTypes(),
+			AttributeName:  "target_dn",
+			Named:          false,
+		}
+		m.InfraRsAccBndlSubgrp = relation.Plan(ctx, &diagnostics, config.LegacyRelationInfraRsAccBndlSubgrp, m.InfraRsAccBndlSubgrp, fallback, m.Annotation)
+	}
+	return diagnostics
+}
+
+func (m *InfraPortBlkRootModel) SetLegacyFromState(ctx context.Context, config, priorState *InfraPortBlkRootModel) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	if priorState == nil {
+		return diagnostics
+	}
+
+	// Retain legacy and read-only outputs when the configured and managed values are unchanged.
+	candidate := *m
+	if config.LegacyAccessPortSelectorDn.IsNull() {
+		candidate.LegacyAccessPortSelectorDn = priorState.LegacyAccessPortSelectorDn
+	}
+	if config.LegacyRelationInfraRsAccBndlSubgrp.IsNull() {
+		candidate.LegacyRelationInfraRsAccBndlSubgrp = priorState.LegacyRelationInfraRsAccBndlSubgrp
+	}
+	attributeType := InfraPortBlkResourceSchema("").Type()
+	var planValue, stateValue types.Object
+	diagnostics.Append(tfsdk.ValueFrom(ctx, candidate, attributeType, &planValue)...)
+	diagnostics.Append(tfsdk.ValueFrom(ctx, priorState, attributeType, &stateValue)...)
+	if diagnostics.HasError() || !planValue.Equal(stateValue) {
+		return diagnostics
+	}
+	if config.LegacyAccessPortSelectorDn.IsNull() {
+		m.LegacyAccessPortSelectorDn = candidate.LegacyAccessPortSelectorDn
+	}
+	if config.LegacyRelationInfraRsAccBndlSubgrp.IsNull() {
+		m.LegacyRelationInfraRsAccBndlSubgrp = candidate.LegacyRelationInfraRsAccBndlSubgrp
+	}
+	return diagnostics
+}
+
+type InfraPortBlkRootModelV1 struct {
+	LegacyAccessPortSelectorDn         types.String `tfsdk:"access_port_selector_dn"`
+	Annotation                         types.String `tfsdk:"annotation"`
+	TagAnnotation                      types.Set    `tfsdk:"annotations"`
+	Descr                              types.String `tfsdk:"description"`
+	FromCard                           types.String `tfsdk:"from_card"`
+	FromPort                           types.String `tfsdk:"from_port"`
+	ID                                 types.String `tfsdk:"id"`
+	Name                               types.String `tfsdk:"name"`
+	NameAlias                          types.String `tfsdk:"name_alias"`
+	LegacyRelationInfraRsAccBndlSubgrp types.String `tfsdk:"relation_infra_rs_acc_bndl_subgrp"`
+	TagTag                             types.Set    `tfsdk:"tags"`
+	ToCard                             types.String `tfsdk:"to_card"`
+	ToPort                             types.String `tfsdk:"to_port"`
+}
+
+func InfraPortBlkResourceSchemaV1() *resourceschema.Schema {
+	current := InfraPortBlkResourceSchema("")
+	return &resourceschema.Schema{
+		Version: 1,
+		Attributes: map[string]resourceschema.Attribute{
+			"access_port_selector_dn": resourceschema.StringAttribute{
+				Required: true,
+				Optional: false,
+				Computed: false,
+			},
+			"annotation":  current.Attributes["annotation"],
+			"annotations": current.Attributes["annotations"],
+			"description": current.Attributes["description"],
+			"from_card":   current.Attributes["from_card"],
+			"from_port":   current.Attributes["from_port"],
+			"id":          current.Attributes["id"],
+			"name":        current.Attributes["name"],
+			"name_alias":  current.Attributes["name_alias"],
+			"relation_infra_rs_acc_bndl_subgrp": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: false,
+			},
+			"tags":    current.Attributes["tags"],
+			"to_card": current.Attributes["to_card"],
+			"to_port": current.Attributes["to_port"],
+		},
+	}
+}
+
+func (m *InfraPortBlkRootModel) UpgradeFromV1(ctx context.Context, priorState *InfraPortBlkRootModelV1) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	*m = NewInfraPortBlkRootModelNull()
+	m.LegacyAccessPortSelectorDn = priorState.LegacyAccessPortSelectorDn
+	m.ParentDN = priorState.LegacyAccessPortSelectorDn
+	m.Annotation = priorState.Annotation
+	m.TagAnnotation = priorState.TagAnnotation
+	m.Descr = priorState.Descr
+	m.FromCard = priorState.FromCard
+	m.FromPort = priorState.FromPort
+	m.ID = priorState.ID
+	m.Name = priorState.Name
+	m.NameAlias = priorState.NameAlias
+	m.LegacyRelationInfraRsAccBndlSubgrp = priorState.LegacyRelationInfraRsAccBndlSubgrp
+	m.InfraRsAccBndlSubgrp = modelHelpers.LegacyChildObject(ctx, &diagnostics, InfraRsAccBndlSubgrpModelAttributeTypes(), map[string]attr.Value{
+		"target_dn": priorState.LegacyRelationInfraRsAccBndlSubgrp,
+	})
+	m.TagTag = priorState.TagTag
+	m.ToCard = priorState.ToCard
+	m.ToPort = priorState.ToPort
+	return diagnostics
 }

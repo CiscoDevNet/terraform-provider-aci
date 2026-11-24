@@ -21,6 +21,7 @@ var _ resource.Resource = &NetflowMonitorPolResource{}
 var _ resource.ResourceWithConfigure = &NetflowMonitorPolResource{}
 var _ resource.ResourceWithModifyPlan = &NetflowMonitorPolResource{}
 var _ resource.ResourceWithImportState = &NetflowMonitorPolResource{}
+var _ resource.ResourceWithUpgradeState = &NetflowMonitorPolResource{}
 
 func NewNetflowMonitorPolResource() resource.Resource {
 	return &NetflowMonitorPolResource{}
@@ -268,4 +269,25 @@ func (r *NetflowMonitorPolResource) ImportState(ctx context.Context, req resourc
 	tflog.Debug(ctx, "Start import state of resource: aci_netflow_monitor_policy")
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 	tflog.Debug(ctx, "End import state of resource: aci_netflow_monitor_policy")
+}
+
+func (r *NetflowMonitorPolResource) UpgradeState(ctx context.Context) map[int64]resource.StateUpgrader {
+	return map[int64]resource.StateUpgrader{
+		0: {
+			PriorSchema: models.NetflowMonitorPolResourceSchemaV0(),
+			StateUpgrader: func(ctx context.Context, req resource.UpgradeStateRequest, resp *resource.UpgradeStateResponse) {
+				var priorState models.NetflowMonitorPolRootModelV0
+				resp.Diagnostics.Append(req.State.Get(ctx, &priorState)...)
+				if resp.Diagnostics.HasError() {
+					return
+				}
+				var data models.NetflowMonitorPolRootModel
+				resp.Diagnostics.Append(data.UpgradeFromV0(ctx, &priorState)...)
+				if resp.Diagnostics.HasError() {
+					return
+				}
+				resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+			},
+		},
+	}
 }

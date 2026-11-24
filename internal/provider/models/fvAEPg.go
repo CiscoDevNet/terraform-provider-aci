@@ -14,6 +14,7 @@ import (
 	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/customtypes"
@@ -38,6 +39,142 @@ func fvAEPgSchemaDefinition() modelHelpers.ClassSchema {
 	return modelHelpers.ClassSchema{
 		ResourceDescription:   "Manages ACI Application EPG",
 		DataSourceDescription: "Data source for ACI Application EPG",
+		Version:               2,
+		LegacyAttributes: map[string]modelHelpers.LegacyAttributeSchema{
+			"application_profile_dn": {
+				Type:            types.StringType,
+				Replacement:     "parent_dn",
+				RequiresReplace: true,
+			},
+			"exception_tag": {
+				Type:        types.StringType,
+				Replacement: "contract_exception_tag",
+			},
+			"flood_on_encap": {
+				Type:        types.StringType,
+				Replacement: "flood_in_encapsulation",
+			},
+			"fwd_ctrl": {
+				Type:        types.StringType,
+				Replacement: "forwarding_control",
+			},
+			"has_mcast_source": {
+				Type:        types.StringType,
+				Replacement: "has_multicast_source",
+			},
+			"is_attr_based_epg": {
+				Type:            types.StringType,
+				Replacement:     "useg_epg",
+				RequiresReplace: true,
+			},
+			"match_t": {
+				Type:        types.StringType,
+				Replacement: "match_criteria",
+			},
+			"pc_enf_pref": {
+				Type:        types.StringType,
+				Replacement: "intra_epg_isolation",
+			},
+			"pref_gr_memb": {
+				Type:        types.StringType,
+				Replacement: "preferred_group_member",
+			},
+			"prio": {
+				Type:        types.StringType,
+				Replacement: "priority",
+			},
+			"relation_fv_rs_aepg_mon_pol": {
+				Type:        types.StringType,
+				Replacement: "relation_to_monitoring_policy",
+			},
+			"relation_fv_rs_bd": {
+				Type:        types.StringType,
+				Replacement: "relation_to_bridge_domain",
+			},
+			"relation_fv_rs_cons": {
+				Type:        types.SetType{ElemType: types.StringType},
+				Replacement: "relation_to_consumed_contracts",
+			},
+			"relation_fv_rs_cons_if": {
+				Type:        types.SetType{ElemType: types.StringType},
+				Replacement: "relation_to_imported_contracts",
+			},
+			"relation_fv_rs_cust_qos_pol": {
+				Type:        types.StringType,
+				Replacement: "relation_to_custom_qos_policy",
+			},
+			"relation_fv_rs_dpp_pol": {
+				Type:        types.StringType,
+				Replacement: "relation_to_data_plane_policing_policy",
+			},
+			"relation_fv_rs_fc_path_att": {
+				Type:        types.SetType{ElemType: types.StringType},
+				Replacement: "relation_to_fibre_channel_paths",
+			},
+			"relation_fv_rs_intra_epg": {
+				Type:        types.SetType{ElemType: types.StringType},
+				Replacement: "relation_to_intra_epg_contracts",
+			},
+			"relation_fv_rs_node_att": {
+				Type: types.SetType{ElemType: types.ObjectType{AttrTypes: map[string]attr.Type{"deployment_immediacy": types.StringType, "description": types.StringType, "encap": types.StringType, "mode": types.StringType, "node_dn": types.StringType}}},
+				Attributes: map[string]modelHelpers.LegacyAttributeSchema{
+					"deployment_immediacy": {
+						Type:        types.StringType,
+						Required:    false,
+						Replacement: "relation_to_static_leafs.deployment_immediacy",
+					},
+					"description": {
+						Type:        types.StringType,
+						Required:    false,
+						Replacement: "relation_to_static_leafs.description",
+					},
+					"encap": {
+						Type:        types.StringType,
+						Required:    true,
+						Replacement: "relation_to_static_leafs.encapsulation",
+					},
+					"mode": {
+						Type:        types.StringType,
+						Required:    false,
+						Replacement: "relation_to_static_leafs.mode",
+					},
+					"node_dn": {
+						Type:        types.StringType,
+						Required:    true,
+						Replacement: "relation_to_static_leafs.target_dn",
+					},
+				},
+				Replacement: "relation_to_static_leafs",
+			},
+			"relation_fv_rs_path_att": {
+				Type:   types.SetType{ElemType: types.StringType},
+				Frozen: true,
+			},
+			"relation_fv_rs_prot_by": {
+				Type:        types.SetType{ElemType: types.StringType},
+				Replacement: "relation_to_taboo_contracts",
+			},
+			"relation_fv_rs_prov": {
+				Type:        types.SetType{ElemType: types.StringType},
+				Replacement: "relation_to_provided_contracts",
+			},
+			"relation_fv_rs_prov_def": {
+				Type:   types.SetType{ElemType: types.StringType},
+				Frozen: true,
+			},
+			"relation_fv_rs_sec_inherited": {
+				Type:        types.SetType{ElemType: types.StringType},
+				Replacement: "relation_to_contract_masters",
+			},
+			"relation_fv_rs_trust_ctrl": {
+				Type:        types.StringType,
+				Replacement: "relation_to_trust_control_policy",
+			},
+			"shutdown": {
+				Type:        types.StringType,
+				Replacement: "admin_state",
+			},
+		},
 		Properties: map[string]modelHelpers.PropertySchema{
 			"annotation": {
 				Type:        modelHelpers.StringProperty,
@@ -1266,8 +1403,69 @@ func (m *FvAEPgModel) BuildNestedDeletePayloadObject(
 	})
 }
 
+type FvAEPgLegacyModelV2 struct {
+	LegacyApplicationProfileDn     types.String `tfsdk:"application_profile_dn"`
+	LegacyExceptionTag             types.String `tfsdk:"exception_tag"`
+	LegacyFloodOnEncap             types.String `tfsdk:"flood_on_encap"`
+	LegacyFwdCtrl                  types.String `tfsdk:"fwd_ctrl"`
+	LegacyHasMcastSource           types.String `tfsdk:"has_mcast_source"`
+	LegacyIsAttrBasedEpg           types.String `tfsdk:"is_attr_based_epg"`
+	LegacyMatchT                   types.String `tfsdk:"match_t"`
+	LegacyPcEnfPref                types.String `tfsdk:"pc_enf_pref"`
+	LegacyPrefGrMemb               types.String `tfsdk:"pref_gr_memb"`
+	LegacyPrio                     types.String `tfsdk:"prio"`
+	LegacyRelationFvRsAepgMonPol   types.String `tfsdk:"relation_fv_rs_aepg_mon_pol"`
+	LegacyRelationFvRsBd           types.String `tfsdk:"relation_fv_rs_bd"`
+	LegacyRelationFvRsCons         types.Set    `tfsdk:"relation_fv_rs_cons"`
+	LegacyRelationFvRsConsIf       types.Set    `tfsdk:"relation_fv_rs_cons_if"`
+	LegacyRelationFvRsCustQosPol   types.String `tfsdk:"relation_fv_rs_cust_qos_pol"`
+	LegacyRelationFvRsDppPol       types.String `tfsdk:"relation_fv_rs_dpp_pol"`
+	LegacyRelationFvRsFcPathAtt    types.Set    `tfsdk:"relation_fv_rs_fc_path_att"`
+	LegacyRelationFvRsIntraEpg     types.Set    `tfsdk:"relation_fv_rs_intra_epg"`
+	LegacyRelationFvRsNodeAtt      types.Set    `tfsdk:"relation_fv_rs_node_att"`
+	LegacyRelationFvRsPathAtt      types.Set    `tfsdk:"relation_fv_rs_path_att"`
+	LegacyRelationFvRsProtBy       types.Set    `tfsdk:"relation_fv_rs_prot_by"`
+	LegacyRelationFvRsProv         types.Set    `tfsdk:"relation_fv_rs_prov"`
+	LegacyRelationFvRsProvDef      types.Set    `tfsdk:"relation_fv_rs_prov_def"`
+	LegacyRelationFvRsSecInherited types.Set    `tfsdk:"relation_fv_rs_sec_inherited"`
+	LegacyRelationFvRsTrustCtrl    types.String `tfsdk:"relation_fv_rs_trust_ctrl"`
+	LegacyShutdown                 types.String `tfsdk:"shutdown"`
+}
+
+func NewFvAEPgLegacyModelV2Null() FvAEPgLegacyModelV2 {
+	return FvAEPgLegacyModelV2{
+		LegacyApplicationProfileDn:     types.StringNull(),
+		LegacyExceptionTag:             types.StringNull(),
+		LegacyFloodOnEncap:             types.StringNull(),
+		LegacyFwdCtrl:                  types.StringNull(),
+		LegacyHasMcastSource:           types.StringNull(),
+		LegacyIsAttrBasedEpg:           types.StringNull(),
+		LegacyMatchT:                   types.StringNull(),
+		LegacyPcEnfPref:                types.StringNull(),
+		LegacyPrefGrMemb:               types.StringNull(),
+		LegacyPrio:                     types.StringNull(),
+		LegacyRelationFvRsAepgMonPol:   types.StringNull(),
+		LegacyRelationFvRsBd:           types.StringNull(),
+		LegacyRelationFvRsCons:         types.SetNull(types.StringType),
+		LegacyRelationFvRsConsIf:       types.SetNull(types.StringType),
+		LegacyRelationFvRsCustQosPol:   types.StringNull(),
+		LegacyRelationFvRsDppPol:       types.StringNull(),
+		LegacyRelationFvRsFcPathAtt:    types.SetNull(types.StringType),
+		LegacyRelationFvRsIntraEpg:     types.SetNull(types.StringType),
+		LegacyRelationFvRsNodeAtt:      types.SetNull(types.ObjectType{AttrTypes: map[string]attr.Type{"deployment_immediacy": types.StringType, "description": types.StringType, "encap": types.StringType, "mode": types.StringType, "node_dn": types.StringType}}),
+		LegacyRelationFvRsPathAtt:      types.SetNull(types.StringType),
+		LegacyRelationFvRsProtBy:       types.SetNull(types.StringType),
+		LegacyRelationFvRsProv:         types.SetNull(types.StringType),
+		LegacyRelationFvRsProvDef:      types.SetNull(types.StringType),
+		LegacyRelationFvRsSecInherited: types.SetNull(types.StringType),
+		LegacyRelationFvRsTrustCtrl:    types.StringNull(),
+		LegacyShutdown:                 types.StringNull(),
+	}
+}
+
 type FvAEPgRootModel struct {
 	FvAEPgModel
+	FvAEPgLegacyModelV2
 
 	ID       types.String `tfsdk:"id"`
 	ParentDN types.String `tfsdk:"parent_dn"`
@@ -1275,9 +1473,10 @@ type FvAEPgRootModel struct {
 
 func NewFvAEPgRootModelNull() FvAEPgRootModel {
 	return FvAEPgRootModel{
-		FvAEPgModel: NewFvAEPgModelNull(),
-		ID:          types.StringNull(),
-		ParentDN:    types.StringNull(),
+		FvAEPgModel:         NewFvAEPgModelNull(),
+		FvAEPgLegacyModelV2: NewFvAEPgLegacyModelV2Null(),
+		ID:                  types.StringNull(),
+		ParentDN:            types.StringNull(),
 	}
 }
 
@@ -1335,6 +1534,55 @@ func (m *FvAEPgRootModel) SetFromResponse(
 	return true, diagnostics
 }
 
+func (m *FvAEPgRootModel) SetLegacyFromResponse(ctx context.Context, response *container.Container) diag.Diagnostics {
+	// Modern response decoding can also be used independently of compatibility state.
+	var diagnostics diag.Diagnostics
+	m.LegacyApplicationProfileDn = m.ParentDN
+	m.LegacyExceptionTag = m.ExceptionTag
+	m.LegacyFloodOnEncap = m.FloodOnEncap
+	m.LegacyFwdCtrl = m.FwdCtrl
+	m.LegacyHasMcastSource = m.HasMcastSource
+	m.LegacyIsAttrBasedEpg = m.IsAttrBasedEPg
+	m.LegacyMatchT = m.MatchT
+	m.LegacyPcEnfPref = m.PcEnfPref
+	m.LegacyPrefGrMemb = m.PrefGrMemb
+	m.LegacyPrio = modelHelpers.LegacyValue[types.String](ctx, &diagnostics, m.Prio, types.StringType)
+	m.LegacyRelationFvRsAepgMonPol = modelHelpers.LegacyTargetDN(ctx, &diagnostics, response, "fvAEPg", "fvRsAEPgMonPol")
+	m.LegacyRelationFvRsBd = modelHelpers.LegacyTargetDN(ctx, &diagnostics, response, "fvAEPg", "fvRsBd")
+	m.LegacyRelationFvRsCons = modelHelpers.LegacyTargetDNs(ctx, &diagnostics, response, "fvAEPg", "fvRsCons")
+	m.LegacyRelationFvRsConsIf = modelHelpers.LegacyTargetDNs(ctx, &diagnostics, response, "fvAEPg", "fvRsConsIf")
+	m.LegacyRelationFvRsCustQosPol = modelHelpers.LegacyTargetDN(ctx, &diagnostics, response, "fvAEPg", "fvRsCustQosPol")
+	m.LegacyRelationFvRsDppPol = modelHelpers.LegacyTargetDN(ctx, &diagnostics, response, "fvAEPg", "fvRsDppPol")
+	m.LegacyRelationFvRsFcPathAtt = modelHelpers.LegacyTargetDNs(ctx, &diagnostics, response, "fvAEPg", "fvRsFcPathAtt")
+	m.LegacyRelationFvRsIntraEpg = modelHelpers.LegacyTargetDNs(ctx, &diagnostics, response, "fvAEPg", "fvRsIntraEpg")
+	fvRsNodeAttMapping := modelHelpers.LegacyChildSet{
+		AttributeTypes:        FvRsNodeAttModelAttributeTypes(),
+		IdentifyingAttributes: []string{"target_dn"},
+		Named:                 false,
+		LegacyType:            types.ObjectType{AttrTypes: map[string]attr.Type{"deployment_immediacy": types.StringType, "description": types.StringType, "encap": types.StringType, "mode": types.StringType, "node_dn": types.StringType}},
+		Attributes: map[string]string{
+			"deployment_immediacy": "deployment_immediacy",
+			"description":          "description",
+			"encap":                "encapsulation",
+			"mode":                 "mode",
+			"node_dn":              "target_dn",
+		},
+	}
+	m.LegacyRelationFvRsNodeAtt = fvRsNodeAttMapping.Legacy(ctx, &diagnostics, m.FvRsNodeAtt)
+	if m.LegacyRelationFvRsPathAtt.IsNull() || m.LegacyRelationFvRsPathAtt.IsUnknown() {
+		m.LegacyRelationFvRsPathAtt = types.SetValueMust(types.StringType, []attr.Value{})
+	}
+	m.LegacyRelationFvRsProtBy = modelHelpers.LegacyTargetDNs(ctx, &diagnostics, response, "fvAEPg", "fvRsProtBy")
+	m.LegacyRelationFvRsProv = modelHelpers.LegacyTargetDNs(ctx, &diagnostics, response, "fvAEPg", "fvRsProv")
+	if m.LegacyRelationFvRsProvDef.IsNull() || m.LegacyRelationFvRsProvDef.IsUnknown() {
+		m.LegacyRelationFvRsProvDef = types.SetValueMust(types.StringType, []attr.Value{})
+	}
+	m.LegacyRelationFvRsSecInherited = modelHelpers.LegacyTargetDNs(ctx, &diagnostics, response, "fvAEPg", "fvRsSecInherited")
+	m.LegacyRelationFvRsTrustCtrl = modelHelpers.LegacyTargetDN(ctx, &diagnostics, response, "fvAEPg", "fvRsTrustCtrl")
+	m.LegacyShutdown = m.Shutdown
+	return diagnostics
+}
+
 func (m *FvAEPgRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *FvAEPgModel,
@@ -1358,4 +1606,787 @@ func (m *FvAEPgRootModel) BuildPayload(
 func (m *FvAEPgRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
 	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "fvAEPg", m.ID.ValueString()), diagnostics
+}
+
+func (m *FvAEPgRootModel) SetFromLegacyConfig(ctx context.Context, config, priorState *FvAEPgRootModel) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	if !config.LegacyApplicationProfileDn.IsNull() {
+		m.ParentDN = config.LegacyApplicationProfileDn
+	}
+	if !config.LegacyExceptionTag.IsNull() {
+		m.ExceptionTag = config.LegacyExceptionTag
+	}
+	if !config.LegacyFloodOnEncap.IsNull() {
+		m.FloodOnEncap = config.LegacyFloodOnEncap
+	}
+	if !config.LegacyFwdCtrl.IsNull() {
+		m.FwdCtrl = config.LegacyFwdCtrl
+	}
+	if !config.LegacyHasMcastSource.IsNull() {
+		m.HasMcastSource = config.LegacyHasMcastSource
+	}
+	if !config.LegacyIsAttrBasedEpg.IsNull() {
+		m.IsAttrBasedEPg = config.LegacyIsAttrBasedEpg
+	}
+	if !config.LegacyMatchT.IsNull() {
+		m.MatchT = config.LegacyMatchT
+	}
+	if !config.LegacyPcEnfPref.IsNull() {
+		m.PcEnfPref = config.LegacyPcEnfPref
+	}
+	if !config.LegacyPrefGrMemb.IsNull() {
+		m.PrefGrMemb = config.LegacyPrefGrMemb
+	}
+	if !config.LegacyPrio.IsNull() {
+		m.Prio = modelHelpers.LegacyValue[customtypes.SemanticStringValue](ctx, &diagnostics, config.LegacyPrio, fvAEPgPrioType)
+	}
+	if !config.LegacyRelationFvRsAepgMonPol.IsNull() {
+		if !config.FvRsAEPgMonPol.IsNull() {
+			diagnostics.AddError("Conflicting legacy configuration", "Configure either relation_fv_rs_aepg_mon_pol or relation_to_monitoring_policy, not both.")
+			return diagnostics
+		}
+		var fallback *types.Object
+		if priorState != nil {
+			fallback = &priorState.FvRsAEPgMonPol
+		}
+		relation := modelHelpers.LegacyChildRelation{
+			AttributeTypes: FvRsAEPgMonPolModelAttributeTypes(),
+			AttributeName:  "monitoring_policy_name",
+			Named:          true,
+		}
+		m.FvRsAEPgMonPol = relation.Plan(ctx, &diagnostics, config.LegacyRelationFvRsAepgMonPol, m.FvRsAEPgMonPol, fallback, m.Annotation)
+	}
+	if !config.LegacyRelationFvRsBd.IsNull() {
+		if !config.FvRsBd.IsNull() {
+			diagnostics.AddError("Conflicting legacy configuration", "Configure either relation_fv_rs_bd or relation_to_bridge_domain, not both.")
+			return diagnostics
+		}
+		var fallback *types.Object
+		if priorState != nil {
+			fallback = &priorState.FvRsBd
+		}
+		relation := modelHelpers.LegacyChildRelation{
+			AttributeTypes: FvRsBdModelAttributeTypes(),
+			AttributeName:  "bridge_domain_name",
+			Named:          true,
+		}
+		m.FvRsBd = relation.Plan(ctx, &diagnostics, config.LegacyRelationFvRsBd, m.FvRsBd, fallback, m.Annotation)
+	}
+	if !config.LegacyRelationFvRsCons.IsNull() {
+		if !config.FvRsCons.IsNull() {
+			diagnostics.AddError("Conflicting legacy configuration", "Configure either relation_fv_rs_cons or relation_to_consumed_contracts, not both.")
+			return diagnostics
+		}
+		var fallback *types.Set
+		if priorState != nil {
+			fallback = &priorState.FvRsCons
+		}
+		fvRsConsMapping := modelHelpers.LegacyChildSet{
+			AttributeTypes: FvRsConsModelAttributeTypes(),
+			AttributeName:  "contract_name",
+			Named:          true,
+		}
+		m.FvRsCons = fvRsConsMapping.Plan(ctx, &diagnostics, config.LegacyRelationFvRsCons, m.FvRsCons, fallback, m.Annotation)
+	}
+	if !config.LegacyRelationFvRsConsIf.IsNull() {
+		if !config.FvRsConsIf.IsNull() {
+			diagnostics.AddError("Conflicting legacy configuration", "Configure either relation_fv_rs_cons_if or relation_to_imported_contracts, not both.")
+			return diagnostics
+		}
+		var fallback *types.Set
+		if priorState != nil {
+			fallback = &priorState.FvRsConsIf
+		}
+		fvRsConsIfMapping := modelHelpers.LegacyChildSet{
+			AttributeTypes: FvRsConsIfModelAttributeTypes(),
+			AttributeName:  "imported_contract_name",
+			Named:          true,
+		}
+		m.FvRsConsIf = fvRsConsIfMapping.Plan(ctx, &diagnostics, config.LegacyRelationFvRsConsIf, m.FvRsConsIf, fallback, m.Annotation)
+	}
+	if !config.LegacyRelationFvRsCustQosPol.IsNull() {
+		if !config.FvRsCustQosPol.IsNull() {
+			diagnostics.AddError("Conflicting legacy configuration", "Configure either relation_fv_rs_cust_qos_pol or relation_to_custom_qos_policy, not both.")
+			return diagnostics
+		}
+		var fallback *types.Object
+		if priorState != nil {
+			fallback = &priorState.FvRsCustQosPol
+		}
+		relation := modelHelpers.LegacyChildRelation{
+			AttributeTypes: FvRsCustQosPolModelAttributeTypes(),
+			AttributeName:  "custom_qos_policy_name",
+			Named:          true,
+		}
+		m.FvRsCustQosPol = relation.Plan(ctx, &diagnostics, config.LegacyRelationFvRsCustQosPol, m.FvRsCustQosPol, fallback, m.Annotation)
+	}
+	if !config.LegacyRelationFvRsDppPol.IsNull() {
+		if !config.FvRsDppPol.IsNull() {
+			diagnostics.AddError("Conflicting legacy configuration", "Configure either relation_fv_rs_dpp_pol or relation_to_data_plane_policing_policy, not both.")
+			return diagnostics
+		}
+		var fallback *types.Object
+		if priorState != nil {
+			fallback = &priorState.FvRsDppPol
+		}
+		relation := modelHelpers.LegacyChildRelation{
+			AttributeTypes: FvRsDppPolModelAttributeTypes(),
+			AttributeName:  "data_plane_policing_policy_name",
+			Named:          true,
+		}
+		m.FvRsDppPol = relation.Plan(ctx, &diagnostics, config.LegacyRelationFvRsDppPol, m.FvRsDppPol, fallback, m.Annotation)
+	}
+	if !config.LegacyRelationFvRsFcPathAtt.IsNull() {
+		if !config.FvRsFcPathAtt.IsNull() {
+			diagnostics.AddError("Conflicting legacy configuration", "Configure either relation_fv_rs_fc_path_att or relation_to_fibre_channel_paths, not both.")
+			return diagnostics
+		}
+		var fallback *types.Set
+		if priorState != nil {
+			fallback = &priorState.FvRsFcPathAtt
+		}
+		fvRsFcPathAttMapping := modelHelpers.LegacyChildSet{
+			AttributeTypes: FvRsFcPathAttModelAttributeTypes(),
+			AttributeName:  "target_dn",
+			Named:          false,
+		}
+		m.FvRsFcPathAtt = fvRsFcPathAttMapping.Plan(ctx, &diagnostics, config.LegacyRelationFvRsFcPathAtt, m.FvRsFcPathAtt, fallback, m.Annotation)
+	}
+	if !config.LegacyRelationFvRsIntraEpg.IsNull() {
+		if !config.FvRsIntraEpg.IsNull() {
+			diagnostics.AddError("Conflicting legacy configuration", "Configure either relation_fv_rs_intra_epg or relation_to_intra_epg_contracts, not both.")
+			return diagnostics
+		}
+		var fallback *types.Set
+		if priorState != nil {
+			fallback = &priorState.FvRsIntraEpg
+		}
+		fvRsIntraEpgMapping := modelHelpers.LegacyChildSet{
+			AttributeTypes: FvRsIntraEpgModelAttributeTypes(),
+			AttributeName:  "contract_name",
+			Named:          true,
+		}
+		m.FvRsIntraEpg = fvRsIntraEpgMapping.Plan(ctx, &diagnostics, config.LegacyRelationFvRsIntraEpg, m.FvRsIntraEpg, fallback, m.Annotation)
+	}
+	fvRsNodeAttMapping := modelHelpers.LegacyChildSet{
+		AttributeTypes:        FvRsNodeAttModelAttributeTypes(),
+		IdentifyingAttributes: []string{"target_dn"},
+		Named:                 false,
+		LegacyType:            types.ObjectType{AttrTypes: map[string]attr.Type{"deployment_immediacy": types.StringType, "description": types.StringType, "encap": types.StringType, "mode": types.StringType, "node_dn": types.StringType}},
+		Attributes: map[string]string{
+			"deployment_immediacy": "deployment_immediacy",
+			"description":          "description",
+			"encap":                "encapsulation",
+			"mode":                 "mode",
+			"node_dn":              "target_dn",
+		},
+	}
+	if config.LegacyRelationFvRsNodeAtt.IsUnknown() || len(config.LegacyRelationFvRsNodeAtt.Elements()) > 0 {
+		if !config.FvRsNodeAtt.IsNull() {
+			diagnostics.AddError("Conflicting legacy configuration", "Configure either relation_fv_rs_node_att or relation_to_static_leafs, not both.")
+			return diagnostics
+		}
+		var fallback *types.Set
+		if priorState != nil {
+			fallback = &priorState.FvRsNodeAtt
+		}
+		m.FvRsNodeAtt = fvRsNodeAttMapping.Plan(ctx, &diagnostics, m.LegacyRelationFvRsNodeAtt, m.FvRsNodeAtt, fallback, m.Annotation)
+	} else {
+		m.LegacyRelationFvRsNodeAtt = fvRsNodeAttMapping.Unknown(ctx, &diagnostics, m.FvRsNodeAtt)
+	}
+	if !config.LegacyRelationFvRsProtBy.IsNull() {
+		if !config.FvRsProtBy.IsNull() {
+			diagnostics.AddError("Conflicting legacy configuration", "Configure either relation_fv_rs_prot_by or relation_to_taboo_contracts, not both.")
+			return diagnostics
+		}
+		var fallback *types.Set
+		if priorState != nil {
+			fallback = &priorState.FvRsProtBy
+		}
+		fvRsProtByMapping := modelHelpers.LegacyChildSet{
+			AttributeTypes: FvRsProtByModelAttributeTypes(),
+			AttributeName:  "taboo_contract_name",
+			Named:          true,
+		}
+		m.FvRsProtBy = fvRsProtByMapping.Plan(ctx, &diagnostics, config.LegacyRelationFvRsProtBy, m.FvRsProtBy, fallback, m.Annotation)
+	}
+	if !config.LegacyRelationFvRsProv.IsNull() {
+		if !config.FvRsProv.IsNull() {
+			diagnostics.AddError("Conflicting legacy configuration", "Configure either relation_fv_rs_prov or relation_to_provided_contracts, not both.")
+			return diagnostics
+		}
+		var fallback *types.Set
+		if priorState != nil {
+			fallback = &priorState.FvRsProv
+		}
+		fvRsProvMapping := modelHelpers.LegacyChildSet{
+			AttributeTypes: FvRsProvModelAttributeTypes(),
+			AttributeName:  "contract_name",
+			Named:          true,
+		}
+		m.FvRsProv = fvRsProvMapping.Plan(ctx, &diagnostics, config.LegacyRelationFvRsProv, m.FvRsProv, fallback, m.Annotation)
+	}
+	if !config.LegacyRelationFvRsSecInherited.IsNull() {
+		if !config.FvRsSecInherited.IsNull() {
+			diagnostics.AddError("Conflicting legacy configuration", "Configure either relation_fv_rs_sec_inherited or relation_to_contract_masters, not both.")
+			return diagnostics
+		}
+		var fallback *types.Set
+		if priorState != nil {
+			fallback = &priorState.FvRsSecInherited
+		}
+		fvRsSecInheritedMapping := modelHelpers.LegacyChildSet{
+			AttributeTypes: FvRsSecInheritedModelAttributeTypes(),
+			AttributeName:  "target_dn",
+			Named:          false,
+		}
+		m.FvRsSecInherited = fvRsSecInheritedMapping.Plan(ctx, &diagnostics, config.LegacyRelationFvRsSecInherited, m.FvRsSecInherited, fallback, m.Annotation)
+	}
+	if !config.LegacyRelationFvRsTrustCtrl.IsNull() {
+		if !config.FvRsTrustCtrl.IsNull() {
+			diagnostics.AddError("Conflicting legacy configuration", "Configure either relation_fv_rs_trust_ctrl or relation_to_trust_control_policy, not both.")
+			return diagnostics
+		}
+		var fallback *types.Object
+		if priorState != nil {
+			fallback = &priorState.FvRsTrustCtrl
+		}
+		relation := modelHelpers.LegacyChildRelation{
+			AttributeTypes: FvRsTrustCtrlModelAttributeTypes(),
+			AttributeName:  "trust_control_policy_name",
+			Named:          true,
+		}
+		m.FvRsTrustCtrl = relation.Plan(ctx, &diagnostics, config.LegacyRelationFvRsTrustCtrl, m.FvRsTrustCtrl, fallback, m.Annotation)
+	}
+	if !config.LegacyShutdown.IsNull() {
+		m.Shutdown = config.LegacyShutdown
+	}
+	return diagnostics
+}
+
+func (m *FvAEPgRootModel) SetLegacyFromState(ctx context.Context, config, priorState *FvAEPgRootModel) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	if priorState == nil {
+		return diagnostics
+	}
+
+	// Retain legacy and read-only outputs when the configured and managed values are unchanged.
+	candidate := *m
+	candidate.PcTag = priorState.PcTag
+	candidate.Scope = priorState.Scope
+	if config.LegacyApplicationProfileDn.IsNull() {
+		candidate.LegacyApplicationProfileDn = priorState.LegacyApplicationProfileDn
+	}
+	if config.LegacyExceptionTag.IsNull() {
+		candidate.LegacyExceptionTag = priorState.LegacyExceptionTag
+	}
+	if config.LegacyFloodOnEncap.IsNull() {
+		candidate.LegacyFloodOnEncap = priorState.LegacyFloodOnEncap
+	}
+	if config.LegacyFwdCtrl.IsNull() {
+		candidate.LegacyFwdCtrl = priorState.LegacyFwdCtrl
+	}
+	if config.LegacyHasMcastSource.IsNull() {
+		candidate.LegacyHasMcastSource = priorState.LegacyHasMcastSource
+	}
+	if config.LegacyIsAttrBasedEpg.IsNull() {
+		candidate.LegacyIsAttrBasedEpg = priorState.LegacyIsAttrBasedEpg
+	}
+	if config.LegacyMatchT.IsNull() {
+		candidate.LegacyMatchT = priorState.LegacyMatchT
+	}
+	if config.LegacyPcEnfPref.IsNull() {
+		candidate.LegacyPcEnfPref = priorState.LegacyPcEnfPref
+	}
+	if config.LegacyPrefGrMemb.IsNull() {
+		candidate.LegacyPrefGrMemb = priorState.LegacyPrefGrMemb
+	}
+	if config.LegacyPrio.IsNull() {
+		candidate.LegacyPrio = priorState.LegacyPrio
+	}
+	if config.LegacyRelationFvRsAepgMonPol.IsNull() {
+		candidate.LegacyRelationFvRsAepgMonPol = priorState.LegacyRelationFvRsAepgMonPol
+	}
+	if config.LegacyRelationFvRsBd.IsNull() {
+		candidate.LegacyRelationFvRsBd = priorState.LegacyRelationFvRsBd
+	}
+	if config.LegacyRelationFvRsCons.IsNull() {
+		candidate.LegacyRelationFvRsCons = priorState.LegacyRelationFvRsCons
+	}
+	if config.LegacyRelationFvRsConsIf.IsNull() {
+		candidate.LegacyRelationFvRsConsIf = priorState.LegacyRelationFvRsConsIf
+	}
+	if config.LegacyRelationFvRsCustQosPol.IsNull() {
+		candidate.LegacyRelationFvRsCustQosPol = priorState.LegacyRelationFvRsCustQosPol
+	}
+	if config.LegacyRelationFvRsDppPol.IsNull() {
+		candidate.LegacyRelationFvRsDppPol = priorState.LegacyRelationFvRsDppPol
+	}
+	if config.LegacyRelationFvRsFcPathAtt.IsNull() {
+		candidate.LegacyRelationFvRsFcPathAtt = priorState.LegacyRelationFvRsFcPathAtt
+	}
+	if config.LegacyRelationFvRsIntraEpg.IsNull() {
+		candidate.LegacyRelationFvRsIntraEpg = priorState.LegacyRelationFvRsIntraEpg
+	}
+	if !config.LegacyRelationFvRsNodeAtt.IsUnknown() && len(config.LegacyRelationFvRsNodeAtt.Elements()) == 0 {
+		candidate.LegacyRelationFvRsNodeAtt = priorState.LegacyRelationFvRsNodeAtt
+	}
+	if config.LegacyRelationFvRsProtBy.IsNull() {
+		candidate.LegacyRelationFvRsProtBy = priorState.LegacyRelationFvRsProtBy
+	}
+	if config.LegacyRelationFvRsProv.IsNull() {
+		candidate.LegacyRelationFvRsProv = priorState.LegacyRelationFvRsProv
+	}
+	if config.LegacyRelationFvRsSecInherited.IsNull() {
+		candidate.LegacyRelationFvRsSecInherited = priorState.LegacyRelationFvRsSecInherited
+	}
+	if config.LegacyRelationFvRsTrustCtrl.IsNull() {
+		candidate.LegacyRelationFvRsTrustCtrl = priorState.LegacyRelationFvRsTrustCtrl
+	}
+	if config.LegacyShutdown.IsNull() {
+		candidate.LegacyShutdown = priorState.LegacyShutdown
+	}
+	attributeType := FvAEPgResourceSchema("").Type()
+	var planValue, stateValue types.Object
+	diagnostics.Append(tfsdk.ValueFrom(ctx, candidate, attributeType, &planValue)...)
+	diagnostics.Append(tfsdk.ValueFrom(ctx, priorState, attributeType, &stateValue)...)
+	if diagnostics.HasError() || !planValue.Equal(stateValue) {
+		return diagnostics
+	}
+	m.PcTag = candidate.PcTag
+	m.Scope = candidate.Scope
+	if config.LegacyApplicationProfileDn.IsNull() {
+		m.LegacyApplicationProfileDn = candidate.LegacyApplicationProfileDn
+	}
+	if config.LegacyExceptionTag.IsNull() {
+		m.LegacyExceptionTag = candidate.LegacyExceptionTag
+	}
+	if config.LegacyFloodOnEncap.IsNull() {
+		m.LegacyFloodOnEncap = candidate.LegacyFloodOnEncap
+	}
+	if config.LegacyFwdCtrl.IsNull() {
+		m.LegacyFwdCtrl = candidate.LegacyFwdCtrl
+	}
+	if config.LegacyHasMcastSource.IsNull() {
+		m.LegacyHasMcastSource = candidate.LegacyHasMcastSource
+	}
+	if config.LegacyIsAttrBasedEpg.IsNull() {
+		m.LegacyIsAttrBasedEpg = candidate.LegacyIsAttrBasedEpg
+	}
+	if config.LegacyMatchT.IsNull() {
+		m.LegacyMatchT = candidate.LegacyMatchT
+	}
+	if config.LegacyPcEnfPref.IsNull() {
+		m.LegacyPcEnfPref = candidate.LegacyPcEnfPref
+	}
+	if config.LegacyPrefGrMemb.IsNull() {
+		m.LegacyPrefGrMemb = candidate.LegacyPrefGrMemb
+	}
+	if config.LegacyPrio.IsNull() {
+		m.LegacyPrio = candidate.LegacyPrio
+	}
+	if config.LegacyRelationFvRsAepgMonPol.IsNull() {
+		m.LegacyRelationFvRsAepgMonPol = candidate.LegacyRelationFvRsAepgMonPol
+	}
+	if config.LegacyRelationFvRsBd.IsNull() {
+		m.LegacyRelationFvRsBd = candidate.LegacyRelationFvRsBd
+	}
+	if config.LegacyRelationFvRsCons.IsNull() {
+		m.LegacyRelationFvRsCons = candidate.LegacyRelationFvRsCons
+	}
+	if config.LegacyRelationFvRsConsIf.IsNull() {
+		m.LegacyRelationFvRsConsIf = candidate.LegacyRelationFvRsConsIf
+	}
+	if config.LegacyRelationFvRsCustQosPol.IsNull() {
+		m.LegacyRelationFvRsCustQosPol = candidate.LegacyRelationFvRsCustQosPol
+	}
+	if config.LegacyRelationFvRsDppPol.IsNull() {
+		m.LegacyRelationFvRsDppPol = candidate.LegacyRelationFvRsDppPol
+	}
+	if config.LegacyRelationFvRsFcPathAtt.IsNull() {
+		m.LegacyRelationFvRsFcPathAtt = candidate.LegacyRelationFvRsFcPathAtt
+	}
+	if config.LegacyRelationFvRsIntraEpg.IsNull() {
+		m.LegacyRelationFvRsIntraEpg = candidate.LegacyRelationFvRsIntraEpg
+	}
+	if !config.LegacyRelationFvRsNodeAtt.IsUnknown() && len(config.LegacyRelationFvRsNodeAtt.Elements()) == 0 {
+		m.LegacyRelationFvRsNodeAtt = candidate.LegacyRelationFvRsNodeAtt
+	}
+	if config.LegacyRelationFvRsProtBy.IsNull() {
+		m.LegacyRelationFvRsProtBy = candidate.LegacyRelationFvRsProtBy
+	}
+	if config.LegacyRelationFvRsProv.IsNull() {
+		m.LegacyRelationFvRsProv = candidate.LegacyRelationFvRsProv
+	}
+	if config.LegacyRelationFvRsSecInherited.IsNull() {
+		m.LegacyRelationFvRsSecInherited = candidate.LegacyRelationFvRsSecInherited
+	}
+	if config.LegacyRelationFvRsTrustCtrl.IsNull() {
+		m.LegacyRelationFvRsTrustCtrl = candidate.LegacyRelationFvRsTrustCtrl
+	}
+	if config.LegacyShutdown.IsNull() {
+		m.LegacyShutdown = candidate.LegacyShutdown
+	}
+	return diagnostics
+}
+
+type FvAEPgRootModelV1 struct {
+	Annotation                     types.String `tfsdk:"annotation"`
+	TagAnnotation                  types.Set    `tfsdk:"annotations"`
+	LegacyApplicationProfileDn     types.String `tfsdk:"application_profile_dn"`
+	Descr                          types.String `tfsdk:"description"`
+	FvCrtrn                        types.Object `tfsdk:"epg_useg_block_statement"`
+	LegacyExceptionTag             types.String `tfsdk:"exception_tag"`
+	LegacyFloodOnEncap             types.String `tfsdk:"flood_on_encap"`
+	LegacyFwdCtrl                  types.String `tfsdk:"fwd_ctrl"`
+	LegacyHasMcastSource           types.String `tfsdk:"has_mcast_source"`
+	ID                             types.String `tfsdk:"id"`
+	LegacyIsAttrBasedEpg           types.String `tfsdk:"is_attr_based_epg"`
+	LegacyMatchT                   types.String `tfsdk:"match_t"`
+	Name                           types.String `tfsdk:"name"`
+	NameAlias                      types.String `tfsdk:"name_alias"`
+	LegacyPcEnfPref                types.String `tfsdk:"pc_enf_pref"`
+	PcTag                          types.String `tfsdk:"pc_tag"`
+	LegacyPrefGrMemb               types.String `tfsdk:"pref_gr_memb"`
+	LegacyPrio                     types.String `tfsdk:"prio"`
+	LegacyRelationFvRsAepgMonPol   types.String `tfsdk:"relation_fv_rs_aepg_mon_pol"`
+	LegacyRelationFvRsBd           types.String `tfsdk:"relation_fv_rs_bd"`
+	LegacyRelationFvRsCons         types.Set    `tfsdk:"relation_fv_rs_cons"`
+	LegacyRelationFvRsConsIf       types.Set    `tfsdk:"relation_fv_rs_cons_if"`
+	LegacyRelationFvRsCustQosPol   types.String `tfsdk:"relation_fv_rs_cust_qos_pol"`
+	LegacyRelationFvRsDppPol       types.String `tfsdk:"relation_fv_rs_dpp_pol"`
+	LegacyRelationFvRsFcPathAtt    types.Set    `tfsdk:"relation_fv_rs_fc_path_att"`
+	LegacyRelationFvRsIntraEpg     types.Set    `tfsdk:"relation_fv_rs_intra_epg"`
+	LegacyRelationFvRsNodeAtt      types.Set    `tfsdk:"relation_fv_rs_node_att"`
+	LegacyRelationFvRsPathAtt      types.Set    `tfsdk:"relation_fv_rs_path_att"`
+	LegacyRelationFvRsProtBy       types.Set    `tfsdk:"relation_fv_rs_prot_by"`
+	LegacyRelationFvRsProv         types.Set    `tfsdk:"relation_fv_rs_prov"`
+	LegacyRelationFvRsProvDef      types.Set    `tfsdk:"relation_fv_rs_prov_def"`
+	LegacyRelationFvRsSecInherited types.Set    `tfsdk:"relation_fv_rs_sec_inherited"`
+	LegacyRelationFvRsTrustCtrl    types.String `tfsdk:"relation_fv_rs_trust_ctrl"`
+	FvRsAepAtt                     types.Set    `tfsdk:"relation_to_attachable_access_entity_profiles"`
+	FvRsDomAtt                     types.Set    `tfsdk:"relation_to_domains"`
+	FvRsPathAtt                    types.Set    `tfsdk:"relation_to_static_paths"`
+	Scope                          types.String `tfsdk:"scope"`
+	LegacyShutdown                 types.String `tfsdk:"shutdown"`
+	TagTag                         types.Set    `tfsdk:"tags"`
+}
+
+func FvAEPgResourceSchemaV1() *resourceschema.Schema {
+	current := FvAEPgResourceSchema("")
+	return &resourceschema.Schema{
+		Version: 1,
+		Attributes: map[string]resourceschema.Attribute{
+			"annotation":  current.Attributes["annotation"],
+			"annotations": current.Attributes["annotations"],
+			"application_profile_dn": resourceschema.StringAttribute{
+				Required: true,
+				Optional: false,
+				Computed: false,
+			},
+			"description":              current.Attributes["description"],
+			"epg_useg_block_statement": current.Attributes["epg_useg_block_statement"],
+			"exception_tag": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"flood_on_encap": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"fwd_ctrl": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"has_mcast_source": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"id": current.Attributes["id"],
+			"is_attr_based_epg": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"match_t": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"name":       current.Attributes["name"],
+			"name_alias": current.Attributes["name_alias"],
+			"pc_enf_pref": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"pc_tag": current.Attributes["pc_tag"],
+			"pref_gr_memb": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"prio": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"relation_fv_rs_aepg_mon_pol": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: false,
+			},
+			"relation_fv_rs_bd": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"relation_fv_rs_cons": resourceschema.SetAttribute{
+				Required:    false,
+				Optional:    true,
+				Computed:    false,
+				ElementType: types.StringType,
+			},
+			"relation_fv_rs_cons_if": resourceschema.SetAttribute{
+				Required:    false,
+				Optional:    true,
+				Computed:    false,
+				ElementType: types.StringType,
+			},
+			"relation_fv_rs_cust_qos_pol": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"relation_fv_rs_dpp_pol": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: false,
+			},
+			"relation_fv_rs_fc_path_att": resourceschema.SetAttribute{
+				Required:    false,
+				Optional:    true,
+				Computed:    false,
+				ElementType: types.StringType,
+			},
+			"relation_fv_rs_intra_epg": resourceschema.SetAttribute{
+				Required:    false,
+				Optional:    true,
+				Computed:    false,
+				ElementType: types.StringType,
+			},
+			"relation_fv_rs_path_att": resourceschema.SetAttribute{
+				Required:    false,
+				Optional:    true,
+				Computed:    false,
+				ElementType: types.StringType,
+			},
+			"relation_fv_rs_prot_by": resourceschema.SetAttribute{
+				Required:    false,
+				Optional:    true,
+				Computed:    false,
+				ElementType: types.StringType,
+			},
+			"relation_fv_rs_prov": resourceschema.SetAttribute{
+				Required:    false,
+				Optional:    true,
+				Computed:    false,
+				ElementType: types.StringType,
+			},
+			"relation_fv_rs_prov_def": resourceschema.SetAttribute{
+				Required:    false,
+				Optional:    true,
+				Computed:    false,
+				ElementType: types.StringType,
+			},
+			"relation_fv_rs_sec_inherited": resourceschema.SetAttribute{
+				Required:    false,
+				Optional:    true,
+				Computed:    false,
+				ElementType: types.StringType,
+			},
+			"relation_fv_rs_trust_ctrl": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: false,
+			},
+			"relation_to_attachable_access_entity_profiles": current.Attributes["relation_to_attachable_access_entity_profiles"],
+			"relation_to_domains":                           current.Attributes["relation_to_domains"],
+			"relation_to_static_paths":                      current.Attributes["relation_to_static_paths"],
+			"scope":                                         current.Attributes["scope"],
+			"shutdown": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"tags": current.Attributes["tags"],
+		},
+		Blocks: map[string]resourceschema.Block{
+			"relation_fv_rs_node_att": resourceschema.SetNestedBlock{
+				NestedObject: resourceschema.NestedBlockObject{Attributes: map[string]resourceschema.Attribute{
+					"deployment_immediacy": resourceschema.StringAttribute{
+						Required: false,
+						Optional: true,
+						Computed: true,
+					},
+					"description": resourceschema.StringAttribute{
+						Required: false,
+						Optional: true,
+						Computed: true,
+					},
+					"encap": resourceschema.StringAttribute{
+						Required: true,
+						Optional: false,
+						Computed: false,
+					},
+					"mode": resourceschema.StringAttribute{
+						Required: false,
+						Optional: true,
+						Computed: true,
+					},
+					"node_dn": resourceschema.StringAttribute{
+						Required: true,
+						Optional: false,
+						Computed: false,
+					},
+				}},
+			},
+		},
+	}
+}
+
+func (m *FvAEPgRootModel) UpgradeFromV1(ctx context.Context, priorState *FvAEPgRootModelV1) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	*m = NewFvAEPgRootModelNull()
+	m.Annotation = priorState.Annotation
+	m.TagAnnotation = priorState.TagAnnotation
+	m.LegacyApplicationProfileDn = priorState.LegacyApplicationProfileDn
+	m.ParentDN = priorState.LegacyApplicationProfileDn
+	m.Descr = priorState.Descr
+	m.FvCrtrn = priorState.FvCrtrn
+	m.LegacyExceptionTag = priorState.LegacyExceptionTag
+	m.ExceptionTag = priorState.LegacyExceptionTag
+	m.LegacyFloodOnEncap = priorState.LegacyFloodOnEncap
+	m.FloodOnEncap = priorState.LegacyFloodOnEncap
+	m.LegacyFwdCtrl = priorState.LegacyFwdCtrl
+	m.FwdCtrl = priorState.LegacyFwdCtrl
+	m.LegacyHasMcastSource = priorState.LegacyHasMcastSource
+	m.HasMcastSource = priorState.LegacyHasMcastSource
+	m.ID = priorState.ID
+	m.LegacyIsAttrBasedEpg = priorState.LegacyIsAttrBasedEpg
+	m.IsAttrBasedEPg = priorState.LegacyIsAttrBasedEpg
+	m.LegacyMatchT = priorState.LegacyMatchT
+	m.MatchT = priorState.LegacyMatchT
+	m.Name = priorState.Name
+	m.NameAlias = priorState.NameAlias
+	m.LegacyPcEnfPref = priorState.LegacyPcEnfPref
+	m.PcEnfPref = priorState.LegacyPcEnfPref
+	m.PcTag = priorState.PcTag
+	m.LegacyPrefGrMemb = priorState.LegacyPrefGrMemb
+	m.PrefGrMemb = priorState.LegacyPrefGrMemb
+	m.LegacyPrio = priorState.LegacyPrio
+	m.Prio = modelHelpers.LegacyValue[customtypes.SemanticStringValue](ctx, &diagnostics, priorState.LegacyPrio, fvAEPgPrioType)
+	m.LegacyRelationFvRsAepgMonPol = priorState.LegacyRelationFvRsAepgMonPol
+	// Preserve the published SDKv2 upgrade: an unset relation produced an empty name.
+	m.FvRsAEPgMonPol = modelHelpers.LegacyChildObject(ctx, &diagnostics, FvRsAEPgMonPolModelAttributeTypes(), map[string]attr.Value{
+		"monitoring_policy_name": modelHelpers.LegacyRelationName(ctx, &diagnostics, types.StringValue(priorState.LegacyRelationFvRsAepgMonPol.ValueString())),
+	})
+	m.LegacyRelationFvRsBd = priorState.LegacyRelationFvRsBd
+	// Preserve the published SDKv2 upgrade: an unset relation produced an empty name.
+	m.FvRsBd = modelHelpers.LegacyChildObject(ctx, &diagnostics, FvRsBdModelAttributeTypes(), map[string]attr.Value{
+		"bridge_domain_name": modelHelpers.LegacyRelationName(ctx, &diagnostics, types.StringValue(priorState.LegacyRelationFvRsBd.ValueString())),
+	})
+	m.LegacyRelationFvRsCons = priorState.LegacyRelationFvRsCons
+	fvRsConsMapping := modelHelpers.LegacyChildSet{
+		AttributeTypes: FvRsConsModelAttributeTypes(),
+		AttributeName:  "contract_name",
+		Named:          true,
+	}
+	m.FvRsCons = fvRsConsMapping.Upgrade(ctx, &diagnostics, priorState.LegacyRelationFvRsCons)
+	m.LegacyRelationFvRsConsIf = priorState.LegacyRelationFvRsConsIf
+	fvRsConsIfMapping := modelHelpers.LegacyChildSet{
+		AttributeTypes: FvRsConsIfModelAttributeTypes(),
+		AttributeName:  "imported_contract_name",
+		Named:          true,
+	}
+	m.FvRsConsIf = fvRsConsIfMapping.Upgrade(ctx, &diagnostics, priorState.LegacyRelationFvRsConsIf)
+	m.LegacyRelationFvRsCustQosPol = priorState.LegacyRelationFvRsCustQosPol
+	// Preserve the published SDKv2 upgrade: an unset relation produced an empty name.
+	m.FvRsCustQosPol = modelHelpers.LegacyChildObject(ctx, &diagnostics, FvRsCustQosPolModelAttributeTypes(), map[string]attr.Value{
+		"custom_qos_policy_name": modelHelpers.LegacyRelationName(ctx, &diagnostics, types.StringValue(priorState.LegacyRelationFvRsCustQosPol.ValueString())),
+	})
+	m.LegacyRelationFvRsDppPol = priorState.LegacyRelationFvRsDppPol
+	// Preserve the published SDKv2 upgrade: an unset relation produced an empty name.
+	m.FvRsDppPol = modelHelpers.LegacyChildObject(ctx, &diagnostics, FvRsDppPolModelAttributeTypes(), map[string]attr.Value{
+		"data_plane_policing_policy_name": modelHelpers.LegacyRelationName(ctx, &diagnostics, types.StringValue(priorState.LegacyRelationFvRsDppPol.ValueString())),
+	})
+	m.LegacyRelationFvRsFcPathAtt = priorState.LegacyRelationFvRsFcPathAtt
+	fvRsFcPathAttMapping := modelHelpers.LegacyChildSet{
+		AttributeTypes: FvRsFcPathAttModelAttributeTypes(),
+		AttributeName:  "target_dn",
+		Named:          false,
+	}
+	m.FvRsFcPathAtt = fvRsFcPathAttMapping.Upgrade(ctx, &diagnostics, priorState.LegacyRelationFvRsFcPathAtt)
+	m.LegacyRelationFvRsIntraEpg = priorState.LegacyRelationFvRsIntraEpg
+	fvRsIntraEpgMapping := modelHelpers.LegacyChildSet{
+		AttributeTypes: FvRsIntraEpgModelAttributeTypes(),
+		AttributeName:  "contract_name",
+		Named:          true,
+	}
+	m.FvRsIntraEpg = fvRsIntraEpgMapping.Upgrade(ctx, &diagnostics, priorState.LegacyRelationFvRsIntraEpg)
+	m.LegacyRelationFvRsNodeAtt = priorState.LegacyRelationFvRsNodeAtt
+	fvRsNodeAttMapping := modelHelpers.LegacyChildSet{
+		AttributeTypes:        FvRsNodeAttModelAttributeTypes(),
+		IdentifyingAttributes: []string{"target_dn"},
+		Named:                 false,
+		LegacyType:            types.ObjectType{AttrTypes: map[string]attr.Type{"deployment_immediacy": types.StringType, "description": types.StringType, "encap": types.StringType, "mode": types.StringType, "node_dn": types.StringType}},
+		Attributes: map[string]string{
+			"deployment_immediacy": "deployment_immediacy",
+			"description":          "description",
+			"encap":                "encapsulation",
+			"mode":                 "mode",
+			"node_dn":              "target_dn",
+		},
+	}
+	m.FvRsNodeAtt = fvRsNodeAttMapping.Upgrade(ctx, &diagnostics, priorState.LegacyRelationFvRsNodeAtt)
+	m.LegacyRelationFvRsPathAtt = priorState.LegacyRelationFvRsPathAtt
+	m.LegacyRelationFvRsProtBy = priorState.LegacyRelationFvRsProtBy
+	fvRsProtByMapping := modelHelpers.LegacyChildSet{
+		AttributeTypes: FvRsProtByModelAttributeTypes(),
+		AttributeName:  "taboo_contract_name",
+		Named:          true,
+	}
+	m.FvRsProtBy = fvRsProtByMapping.Upgrade(ctx, &diagnostics, priorState.LegacyRelationFvRsProtBy)
+	m.LegacyRelationFvRsProv = priorState.LegacyRelationFvRsProv
+	fvRsProvMapping := modelHelpers.LegacyChildSet{
+		AttributeTypes: FvRsProvModelAttributeTypes(),
+		AttributeName:  "contract_name",
+		Named:          true,
+	}
+	m.FvRsProv = fvRsProvMapping.Upgrade(ctx, &diagnostics, priorState.LegacyRelationFvRsProv)
+	m.LegacyRelationFvRsProvDef = priorState.LegacyRelationFvRsProvDef
+	m.LegacyRelationFvRsSecInherited = priorState.LegacyRelationFvRsSecInherited
+	fvRsSecInheritedMapping := modelHelpers.LegacyChildSet{
+		AttributeTypes: FvRsSecInheritedModelAttributeTypes(),
+		AttributeName:  "target_dn",
+		Named:          false,
+	}
+	m.FvRsSecInherited = fvRsSecInheritedMapping.Upgrade(ctx, &diagnostics, priorState.LegacyRelationFvRsSecInherited)
+	m.LegacyRelationFvRsTrustCtrl = priorState.LegacyRelationFvRsTrustCtrl
+	// Preserve the published SDKv2 upgrade: an unset relation produced an empty name.
+	m.FvRsTrustCtrl = modelHelpers.LegacyChildObject(ctx, &diagnostics, FvRsTrustCtrlModelAttributeTypes(), map[string]attr.Value{
+		"trust_control_policy_name": modelHelpers.LegacyRelationName(ctx, &diagnostics, types.StringValue(priorState.LegacyRelationFvRsTrustCtrl.ValueString())),
+	})
+	m.FvRsAepAtt = priorState.FvRsAepAtt
+	m.FvRsDomAtt = priorState.FvRsDomAtt
+	m.FvRsPathAtt = priorState.FvRsPathAtt
+	m.Scope = priorState.Scope
+	m.LegacyShutdown = priorState.LegacyShutdown
+	m.Shutdown = priorState.LegacyShutdown
+	m.TagTag = priorState.TagTag
+	return diagnostics
 }

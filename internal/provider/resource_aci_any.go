@@ -21,6 +21,7 @@ var _ resource.Resource = &VzAnyResource{}
 var _ resource.ResourceWithConfigure = &VzAnyResource{}
 var _ resource.ResourceWithModifyPlan = &VzAnyResource{}
 var _ resource.ResourceWithImportState = &VzAnyResource{}
+var _ resource.ResourceWithUpgradeState = &VzAnyResource{}
 
 func NewVzAnyResource() resource.Resource {
 	return &VzAnyResource{}
@@ -78,8 +79,24 @@ func (r *VzAnyResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanR
 		return
 	}
 
+	var config models.VzAnyRootModel
+	resp.Diagnostics.Append(req.Config.Get(ctx, &config)...)
+	var priorState *models.VzAnyRootModel
+	if !req.State.Raw.IsNull() {
+		priorState = &models.VzAnyRootModel{}
+		resp.Diagnostics.Append(req.State.Get(ctx, priorState)...)
+	}
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	resp.Diagnostics.Append(data.SetFromLegacyConfig(ctx, &config, priorState)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	// A parent reference or naming value may only become known during apply.
 	if data.ParentDN.IsNull() || data.ParentDN.IsUnknown() {
+		resp.Diagnostics.Append(resp.Plan.Set(ctx, &data)...)
 		return
 	}
 
@@ -89,6 +106,11 @@ func (r *VzAnyResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanR
 		if resp.Diagnostics.HasError() {
 			return
 		}
+	}
+
+	resp.Diagnostics.Append(data.SetLegacyFromState(ctx, &config, priorState)...)
+	if resp.Diagnostics.HasError() {
+		return
 	}
 
 	resp.Diagnostics.Append(resp.Plan.Set(ctx, &data)...)
@@ -160,6 +182,11 @@ func (r *VzAnyResource) Create(ctx context.Context, req resource.CreateRequest, 
 		return
 	}
 
+	resp.Diagnostics.Append(data.SetLegacyFromResponse(ctx, response)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_any with id '%s'", data.ID.ValueString()))
 }
@@ -186,6 +213,11 @@ func (r *VzAnyResource) Read(ctx context.Context, req resource.ReadRequest, resp
 	}
 	if !found {
 		resp.State.RemoveResource(ctx)
+		return
+	}
+
+	resp.Diagnostics.Append(data.SetLegacyFromResponse(ctx, response)...)
+	if resp.Diagnostics.HasError() {
 		return
 	}
 
@@ -234,6 +266,11 @@ func (r *VzAnyResource) Update(ctx context.Context, req resource.UpdateRequest, 
 		return
 	}
 
+	resp.Diagnostics.Append(data.SetLegacyFromResponse(ctx, response)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_any with id '%s'", data.ID.ValueString()))
 }
@@ -259,4 +296,25 @@ func (r *VzAnyResource) ImportState(ctx context.Context, req resource.ImportStat
 	tflog.Debug(ctx, "Start import state of resource: aci_any")
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 	tflog.Debug(ctx, "End import state of resource: aci_any")
+}
+
+func (r *VzAnyResource) UpgradeState(ctx context.Context) map[int64]resource.StateUpgrader {
+	return map[int64]resource.StateUpgrader{
+		1: {
+			PriorSchema: models.VzAnyResourceSchemaV1(),
+			StateUpgrader: func(ctx context.Context, req resource.UpgradeStateRequest, resp *resource.UpgradeStateResponse) {
+				var priorState models.VzAnyRootModelV1
+				resp.Diagnostics.Append(req.State.Get(ctx, &priorState)...)
+				if resp.Diagnostics.HasError() {
+					return
+				}
+				var data models.VzAnyRootModel
+				resp.Diagnostics.Append(data.UpgradeFromV1(ctx, &priorState)...)
+				if resp.Diagnostics.HasError() {
+					return
+				}
+				resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+			},
+		},
+	}
 }

@@ -14,6 +14,7 @@ import (
 	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/customtypes"
@@ -38,6 +39,22 @@ func fvApSchemaDefinition() modelHelpers.ClassSchema {
 	return modelHelpers.ClassSchema{
 		ResourceDescription:   "Manages ACI Application Profile",
 		DataSourceDescription: "Data source for ACI Application Profile",
+		Version:               2,
+		LegacyAttributes: map[string]modelHelpers.LegacyAttributeSchema{
+			"prio": {
+				Type:        types.StringType,
+				Replacement: "priority",
+			},
+			"relation_fv_rs_ap_mon_pol": {
+				Type:        types.StringType,
+				Replacement: "relation_to_monitoring_policy",
+			},
+			"tenant_dn": {
+				Type:            types.StringType,
+				Replacement:     "parent_dn",
+				RequiresReplace: true,
+			},
+		},
 		Properties: map[string]modelHelpers.PropertySchema{
 			"annotation": {
 				Type:        modelHelpers.StringProperty,
@@ -377,8 +394,23 @@ func (m *FvApModel) BuildNestedDeletePayloadObject(
 	})
 }
 
+type FvApLegacyModelV2 struct {
+	LegacyPrio                 types.String `tfsdk:"prio"`
+	LegacyRelationFvRsApMonPol types.String `tfsdk:"relation_fv_rs_ap_mon_pol"`
+	LegacyTenantDn             types.String `tfsdk:"tenant_dn"`
+}
+
+func NewFvApLegacyModelV2Null() FvApLegacyModelV2 {
+	return FvApLegacyModelV2{
+		LegacyPrio:                 types.StringNull(),
+		LegacyRelationFvRsApMonPol: types.StringNull(),
+		LegacyTenantDn:             types.StringNull(),
+	}
+}
+
 type FvApRootModel struct {
 	FvApModel
+	FvApLegacyModelV2
 
 	ID       types.String `tfsdk:"id"`
 	ParentDN types.String `tfsdk:"parent_dn"`
@@ -386,9 +418,10 @@ type FvApRootModel struct {
 
 func NewFvApRootModelNull() FvApRootModel {
 	return FvApRootModel{
-		FvApModel: NewFvApModelNull(),
-		ID:        types.StringNull(),
-		ParentDN:  types.StringNull(),
+		FvApModel:         NewFvApModelNull(),
+		FvApLegacyModelV2: NewFvApLegacyModelV2Null(),
+		ID:                types.StringNull(),
+		ParentDN:          types.StringNull(),
 	}
 }
 
@@ -429,6 +462,15 @@ func (m *FvApRootModel) SetFromResponse(
 	return true, diagnostics
 }
 
+func (m *FvApRootModel) SetLegacyFromResponse(ctx context.Context, response *container.Container) diag.Diagnostics {
+	// Modern response decoding can also be used independently of compatibility state.
+	var diagnostics diag.Diagnostics
+	m.LegacyPrio = modelHelpers.LegacyValue[types.String](ctx, &diagnostics, m.Prio, types.StringType)
+	m.LegacyRelationFvRsApMonPol = modelHelpers.LegacyTargetDN(ctx, &diagnostics, response, "fvAp", "fvRsApMonPol")
+	m.LegacyTenantDn = m.ParentDN
+	return diagnostics
+}
+
 func (m *FvApRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *FvApModel,
@@ -452,4 +494,139 @@ func (m *FvApRootModel) BuildPayload(
 func (m *FvApRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
 	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "fvAp", m.ID.ValueString()), diagnostics
+}
+
+func (m *FvApRootModel) SetFromLegacyConfig(ctx context.Context, config, priorState *FvApRootModel) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	if !config.LegacyPrio.IsNull() {
+		m.Prio = modelHelpers.LegacyValue[customtypes.SemanticStringValue](ctx, &diagnostics, config.LegacyPrio, fvApPrioType)
+	}
+	if !config.LegacyRelationFvRsApMonPol.IsNull() {
+		if !config.FvRsApMonPol.IsNull() {
+			diagnostics.AddError("Conflicting legacy configuration", "Configure either relation_fv_rs_ap_mon_pol or relation_to_monitoring_policy, not both.")
+			return diagnostics
+		}
+		var fallback *types.Object
+		if priorState != nil {
+			fallback = &priorState.FvRsApMonPol
+		}
+		relation := modelHelpers.LegacyChildRelation{
+			AttributeTypes: FvRsApMonPolModelAttributeTypes(),
+			AttributeName:  "monitoring_policy_name",
+			Named:          true,
+		}
+		m.FvRsApMonPol = relation.Plan(ctx, &diagnostics, config.LegacyRelationFvRsApMonPol, m.FvRsApMonPol, fallback, m.Annotation)
+	}
+	if !config.LegacyTenantDn.IsNull() {
+		m.ParentDN = config.LegacyTenantDn
+	}
+	return diagnostics
+}
+
+func (m *FvApRootModel) SetLegacyFromState(ctx context.Context, config, priorState *FvApRootModel) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	if priorState == nil {
+		return diagnostics
+	}
+
+	// Retain legacy and read-only outputs when the configured and managed values are unchanged.
+	candidate := *m
+	if config.LegacyPrio.IsNull() {
+		candidate.LegacyPrio = priorState.LegacyPrio
+	}
+	if config.LegacyRelationFvRsApMonPol.IsNull() {
+		candidate.LegacyRelationFvRsApMonPol = priorState.LegacyRelationFvRsApMonPol
+	}
+	if config.LegacyTenantDn.IsNull() {
+		candidate.LegacyTenantDn = priorState.LegacyTenantDn
+	}
+	attributeType := FvApResourceSchema("").Type()
+	var planValue, stateValue types.Object
+	diagnostics.Append(tfsdk.ValueFrom(ctx, candidate, attributeType, &planValue)...)
+	diagnostics.Append(tfsdk.ValueFrom(ctx, priorState, attributeType, &stateValue)...)
+	if diagnostics.HasError() || !planValue.Equal(stateValue) {
+		return diagnostics
+	}
+	if config.LegacyPrio.IsNull() {
+		m.LegacyPrio = candidate.LegacyPrio
+	}
+	if config.LegacyRelationFvRsApMonPol.IsNull() {
+		m.LegacyRelationFvRsApMonPol = candidate.LegacyRelationFvRsApMonPol
+	}
+	if config.LegacyTenantDn.IsNull() {
+		m.LegacyTenantDn = candidate.LegacyTenantDn
+	}
+	return diagnostics
+}
+
+type FvApRootModelV1 struct {
+	Annotation                 types.String `tfsdk:"annotation"`
+	TagAnnotation              types.Set    `tfsdk:"annotations"`
+	Descr                      types.String `tfsdk:"description"`
+	ID                         types.String `tfsdk:"id"`
+	Name                       types.String `tfsdk:"name"`
+	NameAlias                  types.String `tfsdk:"name_alias"`
+	OwnerKey                   types.String `tfsdk:"owner_key"`
+	OwnerTag                   types.String `tfsdk:"owner_tag"`
+	LegacyPrio                 types.String `tfsdk:"prio"`
+	LegacyRelationFvRsApMonPol types.String `tfsdk:"relation_fv_rs_ap_mon_pol"`
+	TagTag                     types.Set    `tfsdk:"tags"`
+	LegacyTenantDn             types.String `tfsdk:"tenant_dn"`
+}
+
+func FvApResourceSchemaV1() *resourceschema.Schema {
+	current := FvApResourceSchema("")
+	return &resourceschema.Schema{
+		Version: 1,
+		Attributes: map[string]resourceschema.Attribute{
+			"annotation":  current.Attributes["annotation"],
+			"annotations": current.Attributes["annotations"],
+			"description": current.Attributes["description"],
+			"id":          current.Attributes["id"],
+			"name":        current.Attributes["name"],
+			"name_alias":  current.Attributes["name_alias"],
+			"owner_key":   current.Attributes["owner_key"],
+			"owner_tag":   current.Attributes["owner_tag"],
+			"prio": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"relation_fv_rs_ap_mon_pol": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"tags": current.Attributes["tags"],
+			"tenant_dn": resourceschema.StringAttribute{
+				Required: true,
+				Optional: false,
+				Computed: false,
+			},
+		},
+	}
+}
+
+func (m *FvApRootModel) UpgradeFromV1(ctx context.Context, priorState *FvApRootModelV1) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	*m = NewFvApRootModelNull()
+	m.Annotation = priorState.Annotation
+	m.TagAnnotation = priorState.TagAnnotation
+	m.Descr = priorState.Descr
+	m.ID = priorState.ID
+	m.Name = priorState.Name
+	m.NameAlias = priorState.NameAlias
+	m.OwnerKey = priorState.OwnerKey
+	m.OwnerTag = priorState.OwnerTag
+	m.LegacyPrio = priorState.LegacyPrio
+	m.Prio = modelHelpers.LegacyValue[customtypes.SemanticStringValue](ctx, &diagnostics, priorState.LegacyPrio, fvApPrioType)
+	m.LegacyRelationFvRsApMonPol = priorState.LegacyRelationFvRsApMonPol
+	// Preserve the published SDKv2 upgrade: an unset relation produced an empty name.
+	m.FvRsApMonPol = modelHelpers.LegacyChildObject(ctx, &diagnostics, FvRsApMonPolModelAttributeTypes(), map[string]attr.Value{
+		"monitoring_policy_name": modelHelpers.LegacyRelationName(ctx, &diagnostics, types.StringValue(priorState.LegacyRelationFvRsApMonPol.ValueString())),
+	})
+	m.TagTag = priorState.TagTag
+	m.LegacyTenantDn = priorState.LegacyTenantDn
+	m.ParentDN = priorState.LegacyTenantDn
+	return diagnostics
 }

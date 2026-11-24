@@ -14,6 +14,7 @@ import (
 	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/customtypes"
@@ -28,6 +29,114 @@ func vmmDomPSchemaDefinition() modelHelpers.ClassSchema {
 	return modelHelpers.ClassSchema{
 		ResourceDescription:   "Manages ACI VMM Domain",
 		DataSourceDescription: "Data source for ACI VMM Domain",
+		Version:               2,
+		LegacyAttributes: map[string]modelHelpers.LegacyAttributeSchema{
+			"config_infra_pg": {
+				Type:        types.StringType,
+				Replacement: "configure_infra_port_groups",
+			},
+			"ctrl_knob": {
+				Type:        types.StringType,
+				Replacement: "endpoint_data_path_verification",
+			},
+			"enable_ave": {
+				Type:        types.StringType,
+				Replacement: "enable_ave_mode",
+			},
+			"enable_tag": {
+				Type:        types.StringType,
+				Replacement: "enable_tag_collection",
+			},
+			"enable_vm_folder": {
+				Type:        types.StringType,
+				Replacement: "enable_vm_folder_data_retrieval",
+			},
+			"encap_mode": {
+				Type:        types.StringType,
+				Replacement: "encapsulation_mode",
+			},
+			"enf_pref": {
+				Type:        types.StringType,
+				Replacement: "switching_enforcement_preference",
+			},
+			"ep_inventory_type": {
+				Type:        types.StringType,
+				Replacement: "endpoint_inventory_type",
+			},
+			"ep_ret_time": {
+				Type:        types.StringType,
+				Replacement: "endpoint_retention_time",
+			},
+			"hv_avail_monitor": {
+				Type:        types.StringType,
+				Replacement: "host_availability_assurance",
+			},
+			"mcast_addr": {
+				Type:        types.StringType,
+				Replacement: "multicast_address",
+			},
+			"mode": {
+				Type:        types.StringType,
+				Replacement: "switch_type",
+			},
+			"pref_encap_mode": {
+				Type:        types.StringType,
+				Replacement: "default_encapsulation_mode",
+			},
+			"provider_profile_dn": {
+				Type:            types.StringType,
+				Replacement:     "parent_dn",
+				RequiresReplace: true,
+			},
+			"relation_infra_rs_dom_vxlan_ns_def": {
+				Type:   types.StringType,
+				Frozen: true,
+			},
+			"relation_infra_rs_vip_addr_ns": {
+				Type:        types.StringType,
+				Replacement: "relation_to_ip_address_pool",
+			},
+			"relation_infra_rs_vlan_ns": {
+				Type:        types.StringType,
+				Replacement: "relation_to_vlan_pool",
+			},
+			"relation_infra_rs_vlan_ns_def": {
+				Type:   types.StringType,
+				Frozen: true,
+			},
+			"relation_vmm_rs_default_cdp_if_pol": {
+				Type:   types.StringType,
+				Frozen: true,
+			},
+			"relation_vmm_rs_default_fw_pol": {
+				Type:   types.StringType,
+				Frozen: true,
+			},
+			"relation_vmm_rs_default_l2_inst_pol": {
+				Type:   types.StringType,
+				Frozen: true,
+			},
+			"relation_vmm_rs_default_lacp_lag_pol": {
+				Type:   types.StringType,
+				Frozen: true,
+			},
+			"relation_vmm_rs_default_lldp_if_pol": {
+				Type:   types.StringType,
+				Frozen: true,
+			},
+			"relation_vmm_rs_default_stp_if_pol": {
+				Type:   types.StringType,
+				Frozen: true,
+			},
+			"relation_vmm_rs_dom_mcast_addr_ns": {
+				Type:        types.StringType,
+				Replacement: "relation_to_multicast_pool",
+			},
+			"relation_vmm_rs_pref_enhanced_lag_pol": {
+				Type:        types.StringType,
+				Replacement: "relation_to_lacp_enhanced_lag_policy",
+			},
+		},
 		Properties: map[string]modelHelpers.PropertySchema{
 			"access_mode": {
 				Type:     modelHelpers.StringProperty,
@@ -803,8 +912,69 @@ func (m *VmmDomPModel) BuildNestedDeletePayloadObject(
 	})
 }
 
+type VmmDomPLegacyModelV2 struct {
+	LegacyConfigInfraPg                   types.String `tfsdk:"config_infra_pg"`
+	LegacyCtrlKnob                        types.String `tfsdk:"ctrl_knob"`
+	LegacyEnableAve                       types.String `tfsdk:"enable_ave"`
+	LegacyEnableTag                       types.String `tfsdk:"enable_tag"`
+	LegacyEnableVmFolder                  types.String `tfsdk:"enable_vm_folder"`
+	LegacyEncapMode                       types.String `tfsdk:"encap_mode"`
+	LegacyEnfPref                         types.String `tfsdk:"enf_pref"`
+	LegacyEpInventoryType                 types.String `tfsdk:"ep_inventory_type"`
+	LegacyEpRetTime                       types.String `tfsdk:"ep_ret_time"`
+	LegacyHvAvailMonitor                  types.String `tfsdk:"hv_avail_monitor"`
+	LegacyMcastAddr                       types.String `tfsdk:"mcast_addr"`
+	LegacyMode                            types.String `tfsdk:"mode"`
+	LegacyPrefEncapMode                   types.String `tfsdk:"pref_encap_mode"`
+	LegacyProviderProfileDn               types.String `tfsdk:"provider_profile_dn"`
+	LegacyRelationInfraRsDomVxlanNsDef    types.String `tfsdk:"relation_infra_rs_dom_vxlan_ns_def"`
+	LegacyRelationInfraRsVipAddrNs        types.String `tfsdk:"relation_infra_rs_vip_addr_ns"`
+	LegacyRelationInfraRsVlanNs           types.String `tfsdk:"relation_infra_rs_vlan_ns"`
+	LegacyRelationInfraRsVlanNsDef        types.String `tfsdk:"relation_infra_rs_vlan_ns_def"`
+	LegacyRelationVmmRsDefaultCdpIfPol    types.String `tfsdk:"relation_vmm_rs_default_cdp_if_pol"`
+	LegacyRelationVmmRsDefaultFwPol       types.String `tfsdk:"relation_vmm_rs_default_fw_pol"`
+	LegacyRelationVmmRsDefaultL2InstPol   types.String `tfsdk:"relation_vmm_rs_default_l2_inst_pol"`
+	LegacyRelationVmmRsDefaultLacpLagPol  types.String `tfsdk:"relation_vmm_rs_default_lacp_lag_pol"`
+	LegacyRelationVmmRsDefaultLldpIfPol   types.String `tfsdk:"relation_vmm_rs_default_lldp_if_pol"`
+	LegacyRelationVmmRsDefaultStpIfPol    types.String `tfsdk:"relation_vmm_rs_default_stp_if_pol"`
+	LegacyRelationVmmRsDomMcastAddrNs     types.String `tfsdk:"relation_vmm_rs_dom_mcast_addr_ns"`
+	LegacyRelationVmmRsPrefEnhancedLagPol types.String `tfsdk:"relation_vmm_rs_pref_enhanced_lag_pol"`
+}
+
+func NewVmmDomPLegacyModelV2Null() VmmDomPLegacyModelV2 {
+	return VmmDomPLegacyModelV2{
+		LegacyConfigInfraPg:                   types.StringNull(),
+		LegacyCtrlKnob:                        types.StringNull(),
+		LegacyEnableAve:                       types.StringNull(),
+		LegacyEnableTag:                       types.StringNull(),
+		LegacyEnableVmFolder:                  types.StringNull(),
+		LegacyEncapMode:                       types.StringNull(),
+		LegacyEnfPref:                         types.StringNull(),
+		LegacyEpInventoryType:                 types.StringNull(),
+		LegacyEpRetTime:                       types.StringNull(),
+		LegacyHvAvailMonitor:                  types.StringNull(),
+		LegacyMcastAddr:                       types.StringNull(),
+		LegacyMode:                            types.StringNull(),
+		LegacyPrefEncapMode:                   types.StringNull(),
+		LegacyProviderProfileDn:               types.StringNull(),
+		LegacyRelationInfraRsDomVxlanNsDef:    types.StringNull(),
+		LegacyRelationInfraRsVipAddrNs:        types.StringNull(),
+		LegacyRelationInfraRsVlanNs:           types.StringNull(),
+		LegacyRelationInfraRsVlanNsDef:        types.StringNull(),
+		LegacyRelationVmmRsDefaultCdpIfPol:    types.StringNull(),
+		LegacyRelationVmmRsDefaultFwPol:       types.StringNull(),
+		LegacyRelationVmmRsDefaultL2InstPol:   types.StringNull(),
+		LegacyRelationVmmRsDefaultLacpLagPol:  types.StringNull(),
+		LegacyRelationVmmRsDefaultLldpIfPol:   types.StringNull(),
+		LegacyRelationVmmRsDefaultStpIfPol:    types.StringNull(),
+		LegacyRelationVmmRsDomMcastAddrNs:     types.StringNull(),
+		LegacyRelationVmmRsPrefEnhancedLagPol: types.StringNull(),
+	}
+}
+
 type VmmDomPRootModel struct {
 	VmmDomPModel
+	VmmDomPLegacyModelV2
 
 	ID       types.String `tfsdk:"id"`
 	ParentDN types.String `tfsdk:"parent_dn"`
@@ -812,9 +982,10 @@ type VmmDomPRootModel struct {
 
 func NewVmmDomPRootModelNull() VmmDomPRootModel {
 	return VmmDomPRootModel{
-		VmmDomPModel: NewVmmDomPModelNull(),
-		ID:           types.StringNull(),
-		ParentDN:     types.StringNull(),
+		VmmDomPModel:         NewVmmDomPModelNull(),
+		VmmDomPLegacyModelV2: NewVmmDomPLegacyModelV2Null(),
+		ID:                   types.StringNull(),
+		ParentDN:             types.StringNull(),
 	}
 }
 
@@ -860,6 +1031,54 @@ func (m *VmmDomPRootModel) SetFromResponse(
 	return true, diagnostics
 }
 
+func (m *VmmDomPRootModel) SetLegacyFromResponse(ctx context.Context, response *container.Container) diag.Diagnostics {
+	// Modern response decoding can also be used independently of compatibility state.
+	var diagnostics diag.Diagnostics
+	m.LegacyConfigInfraPg = m.ConfigInfraPg
+	m.LegacyCtrlKnob = m.CtrlKnob
+	m.LegacyEnableAve = m.EnableAVE
+	m.LegacyEnableTag = m.EnableTag
+	m.LegacyEnableVmFolder = m.EnableVmFolder
+	m.LegacyEncapMode = m.EncapMode
+	m.LegacyEnfPref = m.EnfPref
+	m.LegacyEpInventoryType = m.EpInventoryType
+	m.LegacyEpRetTime = m.EpRetTime
+	m.LegacyHvAvailMonitor = m.HvAvailMonitor
+	m.LegacyMcastAddr = m.McastAddr
+	m.LegacyMode = m.Mode
+	m.LegacyPrefEncapMode = m.PrefEncapMode
+	m.LegacyProviderProfileDn = m.ParentDN
+	if m.LegacyRelationInfraRsDomVxlanNsDef.IsNull() || m.LegacyRelationInfraRsDomVxlanNsDef.IsUnknown() {
+		m.LegacyRelationInfraRsDomVxlanNsDef = types.StringValue("")
+	}
+	m.LegacyRelationInfraRsVipAddrNs = modelHelpers.LegacyTargetDN(ctx, &diagnostics, response, "vmmDomP", "infraRsVipAddrNs")
+	m.LegacyRelationInfraRsVlanNs = modelHelpers.LegacyTargetDN(ctx, &diagnostics, response, "vmmDomP", "infraRsVlanNs")
+	if m.LegacyRelationInfraRsVlanNsDef.IsNull() || m.LegacyRelationInfraRsVlanNsDef.IsUnknown() {
+		m.LegacyRelationInfraRsVlanNsDef = types.StringValue("")
+	}
+	if m.LegacyRelationVmmRsDefaultCdpIfPol.IsNull() || m.LegacyRelationVmmRsDefaultCdpIfPol.IsUnknown() {
+		m.LegacyRelationVmmRsDefaultCdpIfPol = types.StringValue("")
+	}
+	if m.LegacyRelationVmmRsDefaultFwPol.IsNull() || m.LegacyRelationVmmRsDefaultFwPol.IsUnknown() {
+		m.LegacyRelationVmmRsDefaultFwPol = types.StringValue("")
+	}
+	if m.LegacyRelationVmmRsDefaultL2InstPol.IsNull() || m.LegacyRelationVmmRsDefaultL2InstPol.IsUnknown() {
+		m.LegacyRelationVmmRsDefaultL2InstPol = types.StringValue("")
+	}
+	if m.LegacyRelationVmmRsDefaultLacpLagPol.IsNull() || m.LegacyRelationVmmRsDefaultLacpLagPol.IsUnknown() {
+		m.LegacyRelationVmmRsDefaultLacpLagPol = types.StringValue("")
+	}
+	if m.LegacyRelationVmmRsDefaultLldpIfPol.IsNull() || m.LegacyRelationVmmRsDefaultLldpIfPol.IsUnknown() {
+		m.LegacyRelationVmmRsDefaultLldpIfPol = types.StringValue("")
+	}
+	if m.LegacyRelationVmmRsDefaultStpIfPol.IsNull() || m.LegacyRelationVmmRsDefaultStpIfPol.IsUnknown() {
+		m.LegacyRelationVmmRsDefaultStpIfPol = types.StringValue("")
+	}
+	m.LegacyRelationVmmRsDomMcastAddrNs = modelHelpers.LegacyTargetDN(ctx, &diagnostics, response, "vmmDomP", "vmmRsDomMcastAddrNs")
+	m.LegacyRelationVmmRsPrefEnhancedLagPol = modelHelpers.LegacyTargetDN(ctx, &diagnostics, response, "vmmDomP", "vmmRsPrefEnhancedLagPol")
+	return diagnostics
+}
+
 func (m *VmmDomPRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *VmmDomPModel,
@@ -883,4 +1102,509 @@ func (m *VmmDomPRootModel) BuildPayload(
 func (m *VmmDomPRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
 	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "vmmDomP", m.ID.ValueString()), diagnostics
+}
+
+func (m *VmmDomPRootModel) SetFromLegacyConfig(ctx context.Context, config, priorState *VmmDomPRootModel) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	if !config.LegacyConfigInfraPg.IsNull() {
+		m.ConfigInfraPg = config.LegacyConfigInfraPg
+	}
+	if !config.LegacyCtrlKnob.IsNull() {
+		m.CtrlKnob = config.LegacyCtrlKnob
+	}
+	if !config.LegacyEnableAve.IsNull() {
+		m.EnableAVE = config.LegacyEnableAve
+	}
+	if !config.LegacyEnableTag.IsNull() {
+		m.EnableTag = config.LegacyEnableTag
+	}
+	if !config.LegacyEnableVmFolder.IsNull() {
+		m.EnableVmFolder = config.LegacyEnableVmFolder
+	}
+	if !config.LegacyEncapMode.IsNull() {
+		m.EncapMode = config.LegacyEncapMode
+	}
+	if !config.LegacyEnfPref.IsNull() {
+		m.EnfPref = config.LegacyEnfPref
+	}
+	if !config.LegacyEpInventoryType.IsNull() {
+		m.EpInventoryType = config.LegacyEpInventoryType
+	}
+	if !config.LegacyEpRetTime.IsNull() {
+		m.EpRetTime = config.LegacyEpRetTime
+	}
+	if !config.LegacyHvAvailMonitor.IsNull() {
+		m.HvAvailMonitor = config.LegacyHvAvailMonitor
+	}
+	if !config.LegacyMcastAddr.IsNull() {
+		m.McastAddr = config.LegacyMcastAddr
+	}
+	if !config.LegacyMode.IsNull() {
+		m.Mode = config.LegacyMode
+	}
+	if !config.LegacyPrefEncapMode.IsNull() {
+		m.PrefEncapMode = config.LegacyPrefEncapMode
+	}
+	if !config.LegacyProviderProfileDn.IsNull() {
+		m.ParentDN = config.LegacyProviderProfileDn
+	}
+	if !config.LegacyRelationInfraRsVipAddrNs.IsNull() {
+		if !config.InfraRsVipAddrNs.IsNull() {
+			diagnostics.AddError("Conflicting legacy configuration", "Configure either relation_infra_rs_vip_addr_ns or relation_to_ip_address_pool, not both.")
+			return diagnostics
+		}
+		var fallback *types.Object
+		if priorState != nil {
+			fallback = &priorState.InfraRsVipAddrNs
+		}
+		relation := modelHelpers.LegacyChildRelation{
+			AttributeTypes: InfraRsVipAddrNsModelAttributeTypes(),
+			AttributeName:  "target_dn",
+			Named:          false,
+		}
+		m.InfraRsVipAddrNs = relation.Plan(ctx, &diagnostics, config.LegacyRelationInfraRsVipAddrNs, m.InfraRsVipAddrNs, fallback, m.Annotation)
+	}
+	if !config.LegacyRelationInfraRsVlanNs.IsNull() {
+		if !config.InfraRsVlanNs.IsNull() {
+			diagnostics.AddError("Conflicting legacy configuration", "Configure either relation_infra_rs_vlan_ns or relation_to_vlan_pool, not both.")
+			return diagnostics
+		}
+		var fallback *types.Object
+		if priorState != nil {
+			fallback = &priorState.InfraRsVlanNs
+		}
+		relation := modelHelpers.LegacyChildRelation{
+			AttributeTypes: InfraRsVlanNsModelAttributeTypes(),
+			AttributeName:  "target_dn",
+			Named:          false,
+		}
+		m.InfraRsVlanNs = relation.Plan(ctx, &diagnostics, config.LegacyRelationInfraRsVlanNs, m.InfraRsVlanNs, fallback, m.Annotation)
+	}
+	if !config.LegacyRelationVmmRsDomMcastAddrNs.IsNull() {
+		if !config.VmmRsDomMcastAddrNs.IsNull() {
+			diagnostics.AddError("Conflicting legacy configuration", "Configure either relation_vmm_rs_dom_mcast_addr_ns or relation_to_multicast_pool, not both.")
+			return diagnostics
+		}
+		var fallback *types.Object
+		if priorState != nil {
+			fallback = &priorState.VmmRsDomMcastAddrNs
+		}
+		relation := modelHelpers.LegacyChildRelation{
+			AttributeTypes: VmmRsDomMcastAddrNsModelAttributeTypes(),
+			AttributeName:  "target_dn",
+			Named:          false,
+		}
+		m.VmmRsDomMcastAddrNs = relation.Plan(ctx, &diagnostics, config.LegacyRelationVmmRsDomMcastAddrNs, m.VmmRsDomMcastAddrNs, fallback, m.Annotation)
+	}
+	if !config.LegacyRelationVmmRsPrefEnhancedLagPol.IsNull() {
+		if !config.VmmRsPrefEnhancedLagPol.IsNull() {
+			diagnostics.AddError("Conflicting legacy configuration", "Configure either relation_vmm_rs_pref_enhanced_lag_pol or relation_to_lacp_enhanced_lag_policy, not both.")
+			return diagnostics
+		}
+		var fallback *types.Object
+		if priorState != nil {
+			fallback = &priorState.VmmRsPrefEnhancedLagPol
+		}
+		relation := modelHelpers.LegacyChildRelation{
+			AttributeTypes: VmmRsPrefEnhancedLagPolModelAttributeTypes(),
+			AttributeName:  "target_dn",
+			Named:          false,
+		}
+		m.VmmRsPrefEnhancedLagPol = relation.Plan(ctx, &diagnostics, config.LegacyRelationVmmRsPrefEnhancedLagPol, m.VmmRsPrefEnhancedLagPol, fallback, m.Annotation)
+	}
+	return diagnostics
+}
+
+func (m *VmmDomPRootModel) SetLegacyFromState(ctx context.Context, config, priorState *VmmDomPRootModel) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	if priorState == nil {
+		return diagnostics
+	}
+
+	// Retain legacy and read-only outputs when the configured and managed values are unchanged.
+	candidate := *m
+	if config.LegacyConfigInfraPg.IsNull() {
+		candidate.LegacyConfigInfraPg = priorState.LegacyConfigInfraPg
+	}
+	if config.LegacyCtrlKnob.IsNull() {
+		candidate.LegacyCtrlKnob = priorState.LegacyCtrlKnob
+	}
+	if config.LegacyEnableAve.IsNull() {
+		candidate.LegacyEnableAve = priorState.LegacyEnableAve
+	}
+	if config.LegacyEnableTag.IsNull() {
+		candidate.LegacyEnableTag = priorState.LegacyEnableTag
+	}
+	if config.LegacyEnableVmFolder.IsNull() {
+		candidate.LegacyEnableVmFolder = priorState.LegacyEnableVmFolder
+	}
+	if config.LegacyEncapMode.IsNull() {
+		candidate.LegacyEncapMode = priorState.LegacyEncapMode
+	}
+	if config.LegacyEnfPref.IsNull() {
+		candidate.LegacyEnfPref = priorState.LegacyEnfPref
+	}
+	if config.LegacyEpInventoryType.IsNull() {
+		candidate.LegacyEpInventoryType = priorState.LegacyEpInventoryType
+	}
+	if config.LegacyEpRetTime.IsNull() {
+		candidate.LegacyEpRetTime = priorState.LegacyEpRetTime
+	}
+	if config.LegacyHvAvailMonitor.IsNull() {
+		candidate.LegacyHvAvailMonitor = priorState.LegacyHvAvailMonitor
+	}
+	if config.LegacyMcastAddr.IsNull() {
+		candidate.LegacyMcastAddr = priorState.LegacyMcastAddr
+	}
+	if config.LegacyMode.IsNull() {
+		candidate.LegacyMode = priorState.LegacyMode
+	}
+	if config.LegacyPrefEncapMode.IsNull() {
+		candidate.LegacyPrefEncapMode = priorState.LegacyPrefEncapMode
+	}
+	if config.LegacyProviderProfileDn.IsNull() {
+		candidate.LegacyProviderProfileDn = priorState.LegacyProviderProfileDn
+	}
+	if config.LegacyRelationInfraRsVipAddrNs.IsNull() {
+		candidate.LegacyRelationInfraRsVipAddrNs = priorState.LegacyRelationInfraRsVipAddrNs
+	}
+	if config.LegacyRelationInfraRsVlanNs.IsNull() {
+		candidate.LegacyRelationInfraRsVlanNs = priorState.LegacyRelationInfraRsVlanNs
+	}
+	if config.LegacyRelationVmmRsDomMcastAddrNs.IsNull() {
+		candidate.LegacyRelationVmmRsDomMcastAddrNs = priorState.LegacyRelationVmmRsDomMcastAddrNs
+	}
+	if config.LegacyRelationVmmRsPrefEnhancedLagPol.IsNull() {
+		candidate.LegacyRelationVmmRsPrefEnhancedLagPol = priorState.LegacyRelationVmmRsPrefEnhancedLagPol
+	}
+	attributeType := VmmDomPResourceSchema("").Type()
+	var planValue, stateValue types.Object
+	diagnostics.Append(tfsdk.ValueFrom(ctx, candidate, attributeType, &planValue)...)
+	diagnostics.Append(tfsdk.ValueFrom(ctx, priorState, attributeType, &stateValue)...)
+	if diagnostics.HasError() || !planValue.Equal(stateValue) {
+		return diagnostics
+	}
+	if config.LegacyConfigInfraPg.IsNull() {
+		m.LegacyConfigInfraPg = candidate.LegacyConfigInfraPg
+	}
+	if config.LegacyCtrlKnob.IsNull() {
+		m.LegacyCtrlKnob = candidate.LegacyCtrlKnob
+	}
+	if config.LegacyEnableAve.IsNull() {
+		m.LegacyEnableAve = candidate.LegacyEnableAve
+	}
+	if config.LegacyEnableTag.IsNull() {
+		m.LegacyEnableTag = candidate.LegacyEnableTag
+	}
+	if config.LegacyEnableVmFolder.IsNull() {
+		m.LegacyEnableVmFolder = candidate.LegacyEnableVmFolder
+	}
+	if config.LegacyEncapMode.IsNull() {
+		m.LegacyEncapMode = candidate.LegacyEncapMode
+	}
+	if config.LegacyEnfPref.IsNull() {
+		m.LegacyEnfPref = candidate.LegacyEnfPref
+	}
+	if config.LegacyEpInventoryType.IsNull() {
+		m.LegacyEpInventoryType = candidate.LegacyEpInventoryType
+	}
+	if config.LegacyEpRetTime.IsNull() {
+		m.LegacyEpRetTime = candidate.LegacyEpRetTime
+	}
+	if config.LegacyHvAvailMonitor.IsNull() {
+		m.LegacyHvAvailMonitor = candidate.LegacyHvAvailMonitor
+	}
+	if config.LegacyMcastAddr.IsNull() {
+		m.LegacyMcastAddr = candidate.LegacyMcastAddr
+	}
+	if config.LegacyMode.IsNull() {
+		m.LegacyMode = candidate.LegacyMode
+	}
+	if config.LegacyPrefEncapMode.IsNull() {
+		m.LegacyPrefEncapMode = candidate.LegacyPrefEncapMode
+	}
+	if config.LegacyProviderProfileDn.IsNull() {
+		m.LegacyProviderProfileDn = candidate.LegacyProviderProfileDn
+	}
+	if config.LegacyRelationInfraRsVipAddrNs.IsNull() {
+		m.LegacyRelationInfraRsVipAddrNs = candidate.LegacyRelationInfraRsVipAddrNs
+	}
+	if config.LegacyRelationInfraRsVlanNs.IsNull() {
+		m.LegacyRelationInfraRsVlanNs = candidate.LegacyRelationInfraRsVlanNs
+	}
+	if config.LegacyRelationVmmRsDomMcastAddrNs.IsNull() {
+		m.LegacyRelationVmmRsDomMcastAddrNs = candidate.LegacyRelationVmmRsDomMcastAddrNs
+	}
+	if config.LegacyRelationVmmRsPrefEnhancedLagPol.IsNull() {
+		m.LegacyRelationVmmRsPrefEnhancedLagPol = candidate.LegacyRelationVmmRsPrefEnhancedLagPol
+	}
+	return diagnostics
+}
+
+type VmmDomPRootModelV1 struct {
+	AccessMode                            types.String                    `tfsdk:"access_mode"`
+	Annotation                            types.String                    `tfsdk:"annotation"`
+	TagAnnotation                         types.Set                       `tfsdk:"annotations"`
+	ArpLearning                           customtypes.VMMArpLearningValue `tfsdk:"arp_learning"`
+	AveTimeOut                            types.String                    `tfsdk:"ave_time_out"`
+	LegacyConfigInfraPg                   types.String                    `tfsdk:"config_infra_pg"`
+	LegacyCtrlKnob                        types.String                    `tfsdk:"ctrl_knob"`
+	CustomSwitchName                      types.String                    `tfsdk:"custom_switch_name"`
+	Delimiter                             types.String                    `tfsdk:"delimiter"`
+	LegacyEnableAve                       types.String                    `tfsdk:"enable_ave"`
+	LegacyEnableTag                       types.String                    `tfsdk:"enable_tag"`
+	LegacyEnableVmFolder                  types.String                    `tfsdk:"enable_vm_folder"`
+	LegacyEncapMode                       types.String                    `tfsdk:"encap_mode"`
+	LegacyEnfPref                         types.String                    `tfsdk:"enf_pref"`
+	LegacyEpInventoryType                 types.String                    `tfsdk:"ep_inventory_type"`
+	LegacyEpRetTime                       types.String                    `tfsdk:"ep_ret_time"`
+	LegacyHvAvailMonitor                  types.String                    `tfsdk:"hv_avail_monitor"`
+	ID                                    types.String                    `tfsdk:"id"`
+	LegacyMcastAddr                       types.String                    `tfsdk:"mcast_addr"`
+	LegacyMode                            types.String                    `tfsdk:"mode"`
+	Name                                  types.String                    `tfsdk:"name"`
+	NameAlias                             types.String                    `tfsdk:"name_alias"`
+	OwnerKey                              types.String                    `tfsdk:"owner_key"`
+	OwnerTag                              types.String                    `tfsdk:"owner_tag"`
+	LegacyPrefEncapMode                   types.String                    `tfsdk:"pref_encap_mode"`
+	LegacyProviderProfileDn               types.String                    `tfsdk:"provider_profile_dn"`
+	LegacyRelationInfraRsDomVxlanNsDef    types.String                    `tfsdk:"relation_infra_rs_dom_vxlan_ns_def"`
+	LegacyRelationInfraRsVipAddrNs        types.String                    `tfsdk:"relation_infra_rs_vip_addr_ns"`
+	LegacyRelationInfraRsVlanNs           types.String                    `tfsdk:"relation_infra_rs_vlan_ns"`
+	LegacyRelationInfraRsVlanNsDef        types.String                    `tfsdk:"relation_infra_rs_vlan_ns_def"`
+	LegacyRelationVmmRsDefaultCdpIfPol    types.String                    `tfsdk:"relation_vmm_rs_default_cdp_if_pol"`
+	LegacyRelationVmmRsDefaultFwPol       types.String                    `tfsdk:"relation_vmm_rs_default_fw_pol"`
+	LegacyRelationVmmRsDefaultL2InstPol   types.String                    `tfsdk:"relation_vmm_rs_default_l2_inst_pol"`
+	LegacyRelationVmmRsDefaultLacpLagPol  types.String                    `tfsdk:"relation_vmm_rs_default_lacp_lag_pol"`
+	LegacyRelationVmmRsDefaultLldpIfPol   types.String                    `tfsdk:"relation_vmm_rs_default_lldp_if_pol"`
+	LegacyRelationVmmRsDefaultStpIfPol    types.String                    `tfsdk:"relation_vmm_rs_default_stp_if_pol"`
+	LegacyRelationVmmRsDomMcastAddrNs     types.String                    `tfsdk:"relation_vmm_rs_dom_mcast_addr_ns"`
+	LegacyRelationVmmRsPrefEnhancedLagPol types.String                    `tfsdk:"relation_vmm_rs_pref_enhanced_lag_pol"`
+	TagTag                                types.Set                       `tfsdk:"tags"`
+	VmmUplinkPCont                        types.Object                    `tfsdk:"vmm_uplink_container"`
+}
+
+func VmmDomPResourceSchemaV1() *resourceschema.Schema {
+	current := VmmDomPResourceSchema("")
+	return &resourceschema.Schema{
+		Version: 1,
+		Attributes: map[string]resourceschema.Attribute{
+			"access_mode":  current.Attributes["access_mode"],
+			"annotation":   current.Attributes["annotation"],
+			"annotations":  current.Attributes["annotations"],
+			"arp_learning": current.Attributes["arp_learning"],
+			"ave_time_out": current.Attributes["ave_time_out"],
+			"config_infra_pg": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"ctrl_knob": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"custom_switch_name": current.Attributes["custom_switch_name"],
+			"delimiter":          current.Attributes["delimiter"],
+			"enable_ave": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"enable_tag": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"enable_vm_folder": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"encap_mode": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"enf_pref": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"ep_inventory_type": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"ep_ret_time": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"hv_avail_monitor": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"id": current.Attributes["id"],
+			"mcast_addr": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"mode": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"name":       current.Attributes["name"],
+			"name_alias": current.Attributes["name_alias"],
+			"owner_key":  current.Attributes["owner_key"],
+			"owner_tag":  current.Attributes["owner_tag"],
+			"pref_encap_mode": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"provider_profile_dn": resourceschema.StringAttribute{
+				Required: true,
+				Optional: false,
+				Computed: false,
+			},
+			"relation_infra_rs_dom_vxlan_ns_def": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: false,
+			},
+			"relation_infra_rs_vip_addr_ns": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: false,
+			},
+			"relation_infra_rs_vlan_ns": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: false,
+			},
+			"relation_infra_rs_vlan_ns_def": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: false,
+			},
+			"relation_vmm_rs_default_cdp_if_pol": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"relation_vmm_rs_default_fw_pol": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"relation_vmm_rs_default_l2_inst_pol": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"relation_vmm_rs_default_lacp_lag_pol": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"relation_vmm_rs_default_lldp_if_pol": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"relation_vmm_rs_default_stp_if_pol": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"relation_vmm_rs_dom_mcast_addr_ns": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: false,
+			},
+			"relation_vmm_rs_pref_enhanced_lag_pol": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: false,
+			},
+			"tags":                 current.Attributes["tags"],
+			"vmm_uplink_container": current.Attributes["vmm_uplink_container"],
+		},
+	}
+}
+
+func (m *VmmDomPRootModel) UpgradeFromV1(ctx context.Context, priorState *VmmDomPRootModelV1) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	*m = NewVmmDomPRootModelNull()
+	m.AccessMode = priorState.AccessMode
+	m.Annotation = priorState.Annotation
+	m.TagAnnotation = priorState.TagAnnotation
+	m.ArpLearning = priorState.ArpLearning
+	m.AveTimeOut = priorState.AveTimeOut
+	m.LegacyConfigInfraPg = priorState.LegacyConfigInfraPg
+	m.ConfigInfraPg = priorState.LegacyConfigInfraPg
+	m.LegacyCtrlKnob = priorState.LegacyCtrlKnob
+	m.CtrlKnob = priorState.LegacyCtrlKnob
+	m.CustomSwitchName = priorState.CustomSwitchName
+	m.Delimiter = priorState.Delimiter
+	m.LegacyEnableAve = priorState.LegacyEnableAve
+	m.EnableAVE = priorState.LegacyEnableAve
+	m.LegacyEnableTag = priorState.LegacyEnableTag
+	m.EnableTag = priorState.LegacyEnableTag
+	m.LegacyEnableVmFolder = priorState.LegacyEnableVmFolder
+	m.EnableVmFolder = priorState.LegacyEnableVmFolder
+	m.LegacyEncapMode = priorState.LegacyEncapMode
+	m.EncapMode = priorState.LegacyEncapMode
+	m.LegacyEnfPref = priorState.LegacyEnfPref
+	m.EnfPref = priorState.LegacyEnfPref
+	m.LegacyEpInventoryType = priorState.LegacyEpInventoryType
+	m.EpInventoryType = priorState.LegacyEpInventoryType
+	m.LegacyEpRetTime = priorState.LegacyEpRetTime
+	m.EpRetTime = priorState.LegacyEpRetTime
+	m.LegacyHvAvailMonitor = priorState.LegacyHvAvailMonitor
+	m.HvAvailMonitor = priorState.LegacyHvAvailMonitor
+	m.ID = priorState.ID
+	m.LegacyMcastAddr = priorState.LegacyMcastAddr
+	m.McastAddr = priorState.LegacyMcastAddr
+	m.LegacyMode = priorState.LegacyMode
+	m.Mode = priorState.LegacyMode
+	m.Name = priorState.Name
+	m.NameAlias = priorState.NameAlias
+	m.OwnerKey = priorState.OwnerKey
+	m.OwnerTag = priorState.OwnerTag
+	m.LegacyPrefEncapMode = priorState.LegacyPrefEncapMode
+	m.PrefEncapMode = priorState.LegacyPrefEncapMode
+	m.LegacyProviderProfileDn = priorState.LegacyProviderProfileDn
+	m.ParentDN = priorState.LegacyProviderProfileDn
+	m.LegacyRelationInfraRsDomVxlanNsDef = priorState.LegacyRelationInfraRsDomVxlanNsDef
+	m.LegacyRelationInfraRsVipAddrNs = priorState.LegacyRelationInfraRsVipAddrNs
+	m.InfraRsVipAddrNs = modelHelpers.LegacyChildObject(ctx, &diagnostics, InfraRsVipAddrNsModelAttributeTypes(), map[string]attr.Value{
+		"target_dn": priorState.LegacyRelationInfraRsVipAddrNs,
+	})
+	m.LegacyRelationInfraRsVlanNs = priorState.LegacyRelationInfraRsVlanNs
+	m.InfraRsVlanNs = modelHelpers.LegacyChildObject(ctx, &diagnostics, InfraRsVlanNsModelAttributeTypes(), map[string]attr.Value{
+		"target_dn": priorState.LegacyRelationInfraRsVlanNs,
+	})
+	m.LegacyRelationInfraRsVlanNsDef = priorState.LegacyRelationInfraRsVlanNsDef
+	m.LegacyRelationVmmRsDefaultCdpIfPol = priorState.LegacyRelationVmmRsDefaultCdpIfPol
+	m.LegacyRelationVmmRsDefaultFwPol = priorState.LegacyRelationVmmRsDefaultFwPol
+	m.LegacyRelationVmmRsDefaultL2InstPol = priorState.LegacyRelationVmmRsDefaultL2InstPol
+	m.LegacyRelationVmmRsDefaultLacpLagPol = priorState.LegacyRelationVmmRsDefaultLacpLagPol
+	m.LegacyRelationVmmRsDefaultLldpIfPol = priorState.LegacyRelationVmmRsDefaultLldpIfPol
+	m.LegacyRelationVmmRsDefaultStpIfPol = priorState.LegacyRelationVmmRsDefaultStpIfPol
+	m.LegacyRelationVmmRsDomMcastAddrNs = priorState.LegacyRelationVmmRsDomMcastAddrNs
+	m.VmmRsDomMcastAddrNs = modelHelpers.LegacyChildObject(ctx, &diagnostics, VmmRsDomMcastAddrNsModelAttributeTypes(), map[string]attr.Value{
+		"target_dn": priorState.LegacyRelationVmmRsDomMcastAddrNs,
+	})
+	m.LegacyRelationVmmRsPrefEnhancedLagPol = priorState.LegacyRelationVmmRsPrefEnhancedLagPol
+	m.VmmRsPrefEnhancedLagPol = modelHelpers.LegacyChildObject(ctx, &diagnostics, VmmRsPrefEnhancedLagPolModelAttributeTypes(), map[string]attr.Value{
+		"target_dn": priorState.LegacyRelationVmmRsPrefEnhancedLagPol,
+	})
+	m.TagTag = priorState.TagTag
+	m.VmmUplinkPCont = priorState.VmmUplinkPCont
+	return diagnostics
 }

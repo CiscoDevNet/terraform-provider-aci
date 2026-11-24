@@ -27,6 +27,7 @@ func infraAccPortPSchemaDefinition() modelHelpers.ClassSchema {
 	return modelHelpers.ClassSchema{
 		ResourceDescription:   "Manages ACI Leaf Interface Profile",
 		DataSourceDescription: "Data source for ACI Leaf Interface Profile",
+		Version:               1,
 		Properties: map[string]modelHelpers.PropertySchema{
 			"annotation": {
 				Type:        modelHelpers.StringProperty,

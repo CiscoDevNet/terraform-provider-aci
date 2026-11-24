@@ -26,6 +26,92 @@ func topSystemSchemaDefinition() modelHelpers.ClassSchema {
 	return modelHelpers.ClassSchema{
 		ResourceDescription:   "Manages ACI System",
 		DataSourceDescription: "Data source for ACI System",
+		LegacyAttributes: map[string]modelHelpers.LegacyAttributeSchema{
+			"boot_strap_tate": {
+				Type:        types.StringType,
+				Replacement: "bootstrap_state",
+			},
+			"etep_addr": {
+				Type:        types.StringType,
+				Replacement: "external_tep_address",
+			},
+			"inb_mgmt_addr": {
+				Type:        types.StringType,
+				Replacement: "inband_management_address",
+			},
+			"inb_mgmt_addr6": {
+				Type:        types.StringType,
+				Replacement: "inband_management_address_ipv6",
+			},
+			"inb_mgmt_addr6_mask": {
+				Type:        types.StringType,
+				Replacement: "inband_management_address_mask_ipv6",
+			},
+			"inb_mgmt_addr_mask": {
+				Type:        types.StringType,
+				Replacement: "inband_management_address_mask",
+			},
+			"inb_mgmt_gateway": {
+				Type:        types.StringType,
+				Replacement: "inband_management_gateway",
+			},
+			"inb_mgmt_gateway6": {
+				Type:        types.StringType,
+				Replacement: "inband_management_gateway_ipv6",
+			},
+			"mon_pol_dn": {
+				Type:        types.StringType,
+				Replacement: "monitoring_policy_dn",
+			},
+			"oob_mgmt_addr": {
+				Type:        types.StringType,
+				Replacement: "out_of_band_management_address",
+			},
+			"oob_mgmt_addr6": {
+				Type:        types.StringType,
+				Replacement: "out_of_band_management_address_ipv6",
+			},
+			"oob_mgmt_addr6_mask": {
+				Type:        types.StringType,
+				Replacement: "out_of_band_management_address_mask_ipv6",
+			},
+			"oob_mgmt_addr_mask": {
+				Type:        types.StringType,
+				Replacement: "out_of_band_management_address_mask",
+			},
+			"oob_mgmt_gateway": {
+				Type:        types.StringType,
+				Replacement: "out_of_band_management_gateway",
+			},
+			"oob_mgmt_gateway6": {
+				Type:        types.StringType,
+				Replacement: "out_of_band_management_gateway_ipv6",
+			},
+			"rl_auto_mode": {
+				Type:        types.StringType,
+				Replacement: "remote_leaf_auto_mode",
+			},
+			"rl_group_id": {
+				Type:        types.StringType,
+				Replacement: "remote_leaf_group_id",
+			},
+			"rl_oper_pod_id": {
+				Type:        types.StringType,
+				Replacement: "remote_leaf_operational_pod_id",
+			},
+			"rl_routable_mode": {
+				Type:        types.StringType,
+				Replacement: "remote_leaf_routable_mode",
+			},
+			"rldirect_mode": {
+				Type:        types.StringType,
+				Replacement: "remote_leaf_direct_mode",
+			},
+			"unicast_xr_ep_learn_disable": {
+				Type:        types.StringType,
+				Replacement: "unicast_xr_endpoint_learn_disable",
+			},
+		},
 		Properties: map[string]modelHelpers.PropertySchema{
 			"address": {
 				Type:        modelHelpers.StringProperty,
@@ -903,16 +989,68 @@ func (m *TopSystemModel) BuildPayloadObject(
 	), diagnostics
 }
 
+type TopSystemLegacyModelV0 struct {
+	LegacyBootStrapTate           types.String `tfsdk:"boot_strap_tate"`
+	LegacyEtepAddr                types.String `tfsdk:"etep_addr"`
+	LegacyInbMgmtAddr             types.String `tfsdk:"inb_mgmt_addr"`
+	LegacyInbMgmtAddr6            types.String `tfsdk:"inb_mgmt_addr6"`
+	LegacyInbMgmtAddr6Mask        types.String `tfsdk:"inb_mgmt_addr6_mask"`
+	LegacyInbMgmtAddrMask         types.String `tfsdk:"inb_mgmt_addr_mask"`
+	LegacyInbMgmtGateway          types.String `tfsdk:"inb_mgmt_gateway"`
+	LegacyInbMgmtGateway6         types.String `tfsdk:"inb_mgmt_gateway6"`
+	LegacyMonPolDn                types.String `tfsdk:"mon_pol_dn"`
+	LegacyOobMgmtAddr             types.String `tfsdk:"oob_mgmt_addr"`
+	LegacyOobMgmtAddr6            types.String `tfsdk:"oob_mgmt_addr6"`
+	LegacyOobMgmtAddr6Mask        types.String `tfsdk:"oob_mgmt_addr6_mask"`
+	LegacyOobMgmtAddrMask         types.String `tfsdk:"oob_mgmt_addr_mask"`
+	LegacyOobMgmtGateway          types.String `tfsdk:"oob_mgmt_gateway"`
+	LegacyOobMgmtGateway6         types.String `tfsdk:"oob_mgmt_gateway6"`
+	LegacyRlAutoMode              types.String `tfsdk:"rl_auto_mode"`
+	LegacyRlGroupId               types.String `tfsdk:"rl_group_id"`
+	LegacyRlOperPodId             types.String `tfsdk:"rl_oper_pod_id"`
+	LegacyRlRoutableMode          types.String `tfsdk:"rl_routable_mode"`
+	LegacyRldirectMode            types.String `tfsdk:"rldirect_mode"`
+	LegacyUnicastXrEpLearnDisable types.String `tfsdk:"unicast_xr_ep_learn_disable"`
+}
+
+func NewTopSystemLegacyModelV0Null() TopSystemLegacyModelV0 {
+	return TopSystemLegacyModelV0{
+		LegacyBootStrapTate:           types.StringNull(),
+		LegacyEtepAddr:                types.StringNull(),
+		LegacyInbMgmtAddr:             types.StringNull(),
+		LegacyInbMgmtAddr6:            types.StringNull(),
+		LegacyInbMgmtAddr6Mask:        types.StringNull(),
+		LegacyInbMgmtAddrMask:         types.StringNull(),
+		LegacyInbMgmtGateway:          types.StringNull(),
+		LegacyInbMgmtGateway6:         types.StringNull(),
+		LegacyMonPolDn:                types.StringNull(),
+		LegacyOobMgmtAddr:             types.StringNull(),
+		LegacyOobMgmtAddr6:            types.StringNull(),
+		LegacyOobMgmtAddr6Mask:        types.StringNull(),
+		LegacyOobMgmtAddrMask:         types.StringNull(),
+		LegacyOobMgmtGateway:          types.StringNull(),
+		LegacyOobMgmtGateway6:         types.StringNull(),
+		LegacyRlAutoMode:              types.StringNull(),
+		LegacyRlGroupId:               types.StringNull(),
+		LegacyRlOperPodId:             types.StringNull(),
+		LegacyRlRoutableMode:          types.StringNull(),
+		LegacyRldirectMode:            types.StringNull(),
+		LegacyUnicastXrEpLearnDisable: types.StringNull(),
+	}
+}
+
 type TopSystemRootModel struct {
 	TopSystemModel
+	TopSystemLegacyModelV0
 
 	ID types.String `tfsdk:"id"`
 }
 
 func NewTopSystemRootModelNull() TopSystemRootModel {
 	return TopSystemRootModel{
-		TopSystemModel: NewTopSystemModelNull(),
-		ID:             types.StringNull(),
+		TopSystemModel:         NewTopSystemModelNull(),
+		TopSystemLegacyModelV0: NewTopSystemLegacyModelV0Null(),
+		ID:                     types.StringNull(),
 	}
 }
 
@@ -942,4 +1080,31 @@ func (m *TopSystemRootModel) SetFromResponse(
 	m.TopSystemModel = *model
 	m.ID = types.StringValue(dn)
 	return true, diagnostics
+}
+
+func (m *TopSystemRootModel) SetLegacyFromResponse(ctx context.Context, response *container.Container) diag.Diagnostics {
+	// Modern response decoding can also be used independently of compatibility state.
+	var diagnostics diag.Diagnostics
+	m.LegacyBootStrapTate = m.BootstrapState
+	m.LegacyEtepAddr = m.EtepAddr
+	m.LegacyInbMgmtAddr = m.InbMgmtAddr
+	m.LegacyInbMgmtAddr6 = m.InbMgmtAddr6
+	m.LegacyInbMgmtAddr6Mask = m.InbMgmtAddr6Mask
+	m.LegacyInbMgmtAddrMask = m.InbMgmtAddrMask
+	m.LegacyInbMgmtGateway = m.InbMgmtGateway
+	m.LegacyInbMgmtGateway6 = m.InbMgmtGateway6
+	m.LegacyMonPolDn = m.MonPolDn
+	m.LegacyOobMgmtAddr = m.OobMgmtAddr
+	m.LegacyOobMgmtAddr6 = m.OobMgmtAddr6
+	m.LegacyOobMgmtAddr6Mask = m.OobMgmtAddr6Mask
+	m.LegacyOobMgmtAddrMask = m.OobMgmtAddrMask
+	m.LegacyOobMgmtGateway = m.OobMgmtGateway
+	m.LegacyOobMgmtGateway6 = m.OobMgmtGateway6
+	m.LegacyRlAutoMode = m.RlAutoMode
+	m.LegacyRlGroupId = m.RlGroupId
+	m.LegacyRlOperPodId = m.RlOperPodId
+	m.LegacyRlRoutableMode = m.RlRoutableMode
+	m.LegacyRldirectMode = m.RldirectMode
+	m.LegacyUnicastXrEpLearnDisable = m.UnicastXrEpLearnDisable
+	return diagnostics
 }

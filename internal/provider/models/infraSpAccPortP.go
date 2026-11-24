@@ -27,6 +27,7 @@ func infraSpAccPortPSchemaDefinition() modelHelpers.ClassSchema {
 	return modelHelpers.ClassSchema{
 		ResourceDescription:   "Manages ACI Spine Interface Profile",
 		DataSourceDescription: "Data source for ACI Spine Interface Profile",
+		Version:               1,
 		Properties: map[string]modelHelpers.PropertySchema{
 			"annotation": {
 				Type:        modelHelpers.StringProperty,

@@ -14,6 +14,7 @@ import (
 	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
@@ -27,6 +28,13 @@ func infraAttEntityPSchemaDefinition() modelHelpers.ClassSchema {
 	return modelHelpers.ClassSchema{
 		ResourceDescription:   "Manages ACI Attachable Access Entity Profile",
 		DataSourceDescription: "Data source for ACI Attachable Access Entity Profile",
+		Version:               2,
+		LegacyAttributes: map[string]modelHelpers.LegacyAttributeSchema{
+			"relation_infra_rs_dom_p": {
+				Type:        types.SetType{ElemType: types.StringType},
+				Replacement: "relation_to_domains",
+			},
+		},
 		Properties: map[string]modelHelpers.PropertySchema{
 			"annotation": {
 				Type:        modelHelpers.StringProperty,
@@ -339,16 +347,28 @@ func (m *InfraAttEntityPModel) BuildNestedDeletePayloadObject(
 	})
 }
 
+type InfraAttEntityPLegacyModelV2 struct {
+	LegacyRelationInfraRsDomP types.Set `tfsdk:"relation_infra_rs_dom_p"`
+}
+
+func NewInfraAttEntityPLegacyModelV2Null() InfraAttEntityPLegacyModelV2 {
+	return InfraAttEntityPLegacyModelV2{
+		LegacyRelationInfraRsDomP: types.SetNull(types.StringType),
+	}
+}
+
 type InfraAttEntityPRootModel struct {
 	InfraAttEntityPModel
+	InfraAttEntityPLegacyModelV2
 
 	ID types.String `tfsdk:"id"`
 }
 
 func NewInfraAttEntityPRootModelNull() InfraAttEntityPRootModel {
 	return InfraAttEntityPRootModel{
-		InfraAttEntityPModel: NewInfraAttEntityPModelNull(),
-		ID:                   types.StringNull(),
+		InfraAttEntityPModel:         NewInfraAttEntityPModelNull(),
+		InfraAttEntityPLegacyModelV2: NewInfraAttEntityPLegacyModelV2Null(),
+		ID:                           types.StringNull(),
 	}
 }
 
@@ -384,6 +404,13 @@ func (m *InfraAttEntityPRootModel) SetFromResponse(
 	return true, diagnostics
 }
 
+func (m *InfraAttEntityPRootModel) SetLegacyFromResponse(ctx context.Context, response *container.Container) diag.Diagnostics {
+	// Modern response decoding can also be used independently of compatibility state.
+	var diagnostics diag.Diagnostics
+	m.LegacyRelationInfraRsDomP = modelHelpers.LegacyTargetDNs(ctx, &diagnostics, response, "infraAttEntityP", "infraRsDomP")
+	return diagnostics
+}
+
 func (m *InfraAttEntityPRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *InfraAttEntityPModel,
@@ -407,4 +434,108 @@ func (m *InfraAttEntityPRootModel) BuildPayload(
 func (m *InfraAttEntityPRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
 	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "infraAttEntityP", m.ID.ValueString()), diagnostics
+}
+
+func (m *InfraAttEntityPRootModel) SetFromLegacyConfig(ctx context.Context, config, priorState *InfraAttEntityPRootModel) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	if !config.LegacyRelationInfraRsDomP.IsNull() {
+		if !config.InfraRsDomP.IsNull() {
+			diagnostics.AddError("Conflicting legacy configuration", "Configure either relation_infra_rs_dom_p or relation_to_domains, not both.")
+			return diagnostics
+		}
+		var fallback *types.Set
+		if priorState != nil {
+			fallback = &priorState.InfraRsDomP
+		}
+		infraRsDomPMapping := modelHelpers.LegacyChildSet{
+			AttributeTypes: InfraRsDomPModelAttributeTypes(),
+			AttributeName:  "target_dn",
+			Named:          false,
+		}
+		m.InfraRsDomP = infraRsDomPMapping.Plan(ctx, &diagnostics, config.LegacyRelationInfraRsDomP, m.InfraRsDomP, fallback, m.Annotation)
+	}
+	return diagnostics
+}
+
+func (m *InfraAttEntityPRootModel) SetLegacyFromState(ctx context.Context, config, priorState *InfraAttEntityPRootModel) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	if priorState == nil {
+		return diagnostics
+	}
+
+	// Retain legacy and read-only outputs when the configured and managed values are unchanged.
+	candidate := *m
+	if config.LegacyRelationInfraRsDomP.IsNull() {
+		candidate.LegacyRelationInfraRsDomP = priorState.LegacyRelationInfraRsDomP
+	}
+	attributeType := InfraAttEntityPResourceSchema("").Type()
+	var planValue, stateValue types.Object
+	diagnostics.Append(tfsdk.ValueFrom(ctx, candidate, attributeType, &planValue)...)
+	diagnostics.Append(tfsdk.ValueFrom(ctx, priorState, attributeType, &stateValue)...)
+	if diagnostics.HasError() || !planValue.Equal(stateValue) {
+		return diagnostics
+	}
+	if config.LegacyRelationInfraRsDomP.IsNull() {
+		m.LegacyRelationInfraRsDomP = candidate.LegacyRelationInfraRsDomP
+	}
+	return diagnostics
+}
+
+type InfraAttEntityPRootModelV1 struct {
+	Annotation                types.String `tfsdk:"annotation"`
+	TagAnnotation             types.Set    `tfsdk:"annotations"`
+	Descr                     types.String `tfsdk:"description"`
+	ID                        types.String `tfsdk:"id"`
+	Name                      types.String `tfsdk:"name"`
+	NameAlias                 types.String `tfsdk:"name_alias"`
+	OwnerKey                  types.String `tfsdk:"owner_key"`
+	OwnerTag                  types.String `tfsdk:"owner_tag"`
+	LegacyRelationInfraRsDomP types.Set    `tfsdk:"relation_infra_rs_dom_p"`
+	TagTag                    types.Set    `tfsdk:"tags"`
+}
+
+func InfraAttEntityPResourceSchemaV1() *resourceschema.Schema {
+	current := InfraAttEntityPResourceSchema("")
+	return &resourceschema.Schema{
+		Version: 1,
+		Attributes: map[string]resourceschema.Attribute{
+			"annotation":  current.Attributes["annotation"],
+			"annotations": current.Attributes["annotations"],
+			"description": current.Attributes["description"],
+			"id":          current.Attributes["id"],
+			"name":        current.Attributes["name"],
+			"name_alias":  current.Attributes["name_alias"],
+			"owner_key":   current.Attributes["owner_key"],
+			"owner_tag":   current.Attributes["owner_tag"],
+			"relation_infra_rs_dom_p": resourceschema.SetAttribute{
+				Required:    false,
+				Optional:    true,
+				Computed:    true,
+				ElementType: types.StringType,
+			},
+			"tags": current.Attributes["tags"],
+		},
+	}
+}
+
+func (m *InfraAttEntityPRootModel) UpgradeFromV1(ctx context.Context, priorState *InfraAttEntityPRootModelV1) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	*m = NewInfraAttEntityPRootModelNull()
+	m.Annotation = priorState.Annotation
+	m.TagAnnotation = priorState.TagAnnotation
+	m.Descr = priorState.Descr
+	m.ID = priorState.ID
+	m.Name = priorState.Name
+	m.NameAlias = priorState.NameAlias
+	m.OwnerKey = priorState.OwnerKey
+	m.OwnerTag = priorState.OwnerTag
+	m.LegacyRelationInfraRsDomP = priorState.LegacyRelationInfraRsDomP
+	infraRsDomPMapping := modelHelpers.LegacyChildSet{
+		AttributeTypes: InfraRsDomPModelAttributeTypes(),
+		AttributeName:  "target_dn",
+		Named:          false,
+	}
+	m.InfraRsDomP = infraRsDomPMapping.Upgrade(ctx, &diagnostics, priorState.LegacyRelationInfraRsDomP)
+	m.TagTag = priorState.TagTag
+	return diagnostics
 }

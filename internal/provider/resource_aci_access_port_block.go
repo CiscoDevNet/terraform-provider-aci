@@ -21,6 +21,7 @@ var _ resource.Resource = &InfraPortBlkResource{}
 var _ resource.ResourceWithConfigure = &InfraPortBlkResource{}
 var _ resource.ResourceWithModifyPlan = &InfraPortBlkResource{}
 var _ resource.ResourceWithImportState = &InfraPortBlkResource{}
+var _ resource.ResourceWithUpgradeState = &InfraPortBlkResource{}
 
 func NewInfraPortBlkResource() resource.Resource {
 	return &InfraPortBlkResource{}
@@ -78,11 +79,28 @@ func (r *InfraPortBlkResource) ModifyPlan(ctx context.Context, req resource.Modi
 		return
 	}
 
+	var config models.InfraPortBlkRootModel
+	resp.Diagnostics.Append(req.Config.Get(ctx, &config)...)
+	var priorState *models.InfraPortBlkRootModel
+	if !req.State.Raw.IsNull() {
+		priorState = &models.InfraPortBlkRootModel{}
+		resp.Diagnostics.Append(req.State.Get(ctx, priorState)...)
+	}
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	resp.Diagnostics.Append(data.SetFromLegacyConfig(ctx, &config, priorState)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	// A parent reference or naming value may only become known during apply.
 	if data.ParentDN.IsNull() || data.ParentDN.IsUnknown() {
+		resp.Diagnostics.Append(resp.Plan.Set(ctx, &data)...)
 		return
 	}
 	if data.Name.IsNull() || data.Name.IsUnknown() {
+		resp.Diagnostics.Append(resp.Plan.Set(ctx, &data)...)
 		return
 	}
 
@@ -92,6 +110,11 @@ func (r *InfraPortBlkResource) ModifyPlan(ctx context.Context, req resource.Modi
 		if resp.Diagnostics.HasError() {
 			return
 		}
+	}
+
+	resp.Diagnostics.Append(data.SetLegacyFromState(ctx, &config, priorState)...)
+	if resp.Diagnostics.HasError() {
+		return
 	}
 
 	resp.Diagnostics.Append(resp.Plan.Set(ctx, &data)...)
@@ -163,6 +186,11 @@ func (r *InfraPortBlkResource) Create(ctx context.Context, req resource.CreateRe
 		return
 	}
 
+	resp.Diagnostics.Append(data.SetLegacyFromResponse(ctx, response)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_access_port_block with id '%s'", data.ID.ValueString()))
 }
@@ -189,6 +217,11 @@ func (r *InfraPortBlkResource) Read(ctx context.Context, req resource.ReadReques
 	}
 	if !found {
 		resp.State.RemoveResource(ctx)
+		return
+	}
+
+	resp.Diagnostics.Append(data.SetLegacyFromResponse(ctx, response)...)
+	if resp.Diagnostics.HasError() {
 		return
 	}
 
@@ -237,6 +270,11 @@ func (r *InfraPortBlkResource) Update(ctx context.Context, req resource.UpdateRe
 		return
 	}
 
+	resp.Diagnostics.Append(data.SetLegacyFromResponse(ctx, response)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_access_port_block with id '%s'", data.ID.ValueString()))
 }
@@ -268,4 +306,25 @@ func (r *InfraPortBlkResource) ImportState(ctx context.Context, req resource.Imp
 	tflog.Debug(ctx, "Start import state of resource: aci_access_port_block")
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 	tflog.Debug(ctx, "End import state of resource: aci_access_port_block")
+}
+
+func (r *InfraPortBlkResource) UpgradeState(ctx context.Context) map[int64]resource.StateUpgrader {
+	return map[int64]resource.StateUpgrader{
+		1: {
+			PriorSchema: models.InfraPortBlkResourceSchemaV1(),
+			StateUpgrader: func(ctx context.Context, req resource.UpgradeStateRequest, resp *resource.UpgradeStateResponse) {
+				var priorState models.InfraPortBlkRootModelV1
+				resp.Diagnostics.Append(req.State.Get(ctx, &priorState)...)
+				if resp.Diagnostics.HasError() {
+					return
+				}
+				var data models.InfraPortBlkRootModel
+				resp.Diagnostics.Append(data.UpgradeFromV1(ctx, &priorState)...)
+				if resp.Diagnostics.HasError() {
+					return
+				}
+				resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+			},
+		},
+	}
 }

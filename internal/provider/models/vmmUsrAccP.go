@@ -14,6 +14,7 @@ import (
 	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
@@ -27,6 +28,23 @@ func vmmUsrAccPSchemaDefinition() modelHelpers.ClassSchema {
 	return modelHelpers.ClassSchema{
 		ResourceDescription:   "Manages ACI VMM Credential",
 		DataSourceDescription: "Data source for ACI VMM Credential",
+		Version:               2,
+		LegacyAttributes: map[string]modelHelpers.LegacyAttributeSchema{
+			"pwd": {
+				Type:        types.StringType,
+				Sensitive:   true,
+				Replacement: "password",
+			},
+			"usr": {
+				Type:        types.StringType,
+				Replacement: "username",
+			},
+			"vmm_domain_dn": {
+				Type:            types.StringType,
+				Replacement:     "parent_dn",
+				RequiresReplace: true,
+			},
+		},
 		Properties: map[string]modelHelpers.PropertySchema{
 			"annotation": {
 				Type:        modelHelpers.StringProperty,
@@ -321,8 +339,23 @@ func (m *VmmUsrAccPModel) BuildNestedDeletePayloadObject(
 	})
 }
 
+type VmmUsrAccPLegacyModelV2 struct {
+	LegacyPwd         types.String `tfsdk:"pwd"`
+	LegacyUsr         types.String `tfsdk:"usr"`
+	LegacyVmmDomainDn types.String `tfsdk:"vmm_domain_dn"`
+}
+
+func NewVmmUsrAccPLegacyModelV2Null() VmmUsrAccPLegacyModelV2 {
+	return VmmUsrAccPLegacyModelV2{
+		LegacyPwd:         types.StringNull(),
+		LegacyUsr:         types.StringNull(),
+		LegacyVmmDomainDn: types.StringNull(),
+	}
+}
+
 type VmmUsrAccPRootModel struct {
 	VmmUsrAccPModel
+	VmmUsrAccPLegacyModelV2
 
 	ID       types.String `tfsdk:"id"`
 	ParentDN types.String `tfsdk:"parent_dn"`
@@ -330,9 +363,10 @@ type VmmUsrAccPRootModel struct {
 
 func NewVmmUsrAccPRootModelNull() VmmUsrAccPRootModel {
 	return VmmUsrAccPRootModel{
-		VmmUsrAccPModel: NewVmmUsrAccPModelNull(),
-		ID:              types.StringNull(),
-		ParentDN:        types.StringNull(),
+		VmmUsrAccPModel:         NewVmmUsrAccPModelNull(),
+		VmmUsrAccPLegacyModelV2: NewVmmUsrAccPLegacyModelV2Null(),
+		ID:                      types.StringNull(),
+		ParentDN:                types.StringNull(),
 	}
 }
 
@@ -372,6 +406,18 @@ func (m *VmmUsrAccPRootModel) SetFromResponse(
 	return true, diagnostics
 }
 
+func (m *VmmUsrAccPRootModel) SetLegacyFromResponse(ctx context.Context, response *container.Container) diag.Diagnostics {
+	// Modern response decoding can also be used independently of compatibility state.
+	var diagnostics diag.Diagnostics
+	// APIC cannot recover this secret; retain only the legacy alias's own configured/state value.
+	if m.LegacyPwd.IsUnknown() {
+		m.LegacyPwd = types.StringNull()
+	}
+	m.LegacyUsr = m.Usr
+	m.LegacyVmmDomainDn = m.ParentDN
+	return diagnostics
+}
+
 func (m *VmmUsrAccPRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *VmmUsrAccPModel,
@@ -395,4 +441,127 @@ func (m *VmmUsrAccPRootModel) BuildPayload(
 func (m *VmmUsrAccPRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
 	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "vmmUsrAccP", m.ID.ValueString()), diagnostics
+}
+
+func (m *VmmUsrAccPRootModel) SetFromLegacyConfig(ctx context.Context, config, priorState *VmmUsrAccPRootModel) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	if !config.LegacyPwd.IsNull() {
+		m.Pwd = config.LegacyPwd
+	} else if priorState != nil {
+		m.LegacyPwd = priorState.LegacyPwd
+	} else {
+		m.LegacyPwd = modelHelpers.LegacyValue[types.String](ctx, &diagnostics, config.Pwd, types.StringType)
+	}
+	if !config.LegacyUsr.IsNull() {
+		m.Usr = config.LegacyUsr
+	}
+	if !config.LegacyVmmDomainDn.IsNull() {
+		m.ParentDN = config.LegacyVmmDomainDn
+	}
+	return diagnostics
+}
+
+func (m *VmmUsrAccPRootModel) SetLegacyFromState(ctx context.Context, config, priorState *VmmUsrAccPRootModel) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	if priorState == nil {
+		return diagnostics
+	}
+
+	// Retain legacy and read-only outputs when the configured and managed values are unchanged.
+	candidate := *m
+	if config.LegacyPwd.IsNull() {
+		candidate.LegacyPwd = priorState.LegacyPwd
+	}
+	if config.LegacyUsr.IsNull() {
+		candidate.LegacyUsr = priorState.LegacyUsr
+	}
+	if config.LegacyVmmDomainDn.IsNull() {
+		candidate.LegacyVmmDomainDn = priorState.LegacyVmmDomainDn
+	}
+	attributeType := VmmUsrAccPResourceSchema("").Type()
+	var planValue, stateValue types.Object
+	diagnostics.Append(tfsdk.ValueFrom(ctx, candidate, attributeType, &planValue)...)
+	diagnostics.Append(tfsdk.ValueFrom(ctx, priorState, attributeType, &stateValue)...)
+	if diagnostics.HasError() || !planValue.Equal(stateValue) {
+		return diagnostics
+	}
+	if config.LegacyPwd.IsNull() {
+		m.LegacyPwd = candidate.LegacyPwd
+	}
+	if config.LegacyUsr.IsNull() {
+		m.LegacyUsr = candidate.LegacyUsr
+	}
+	if config.LegacyVmmDomainDn.IsNull() {
+		m.LegacyVmmDomainDn = candidate.LegacyVmmDomainDn
+	}
+	return diagnostics
+}
+
+type VmmUsrAccPRootModelV1 struct {
+	Annotation        types.String `tfsdk:"annotation"`
+	TagAnnotation     types.Set    `tfsdk:"annotations"`
+	Descr             types.String `tfsdk:"description"`
+	ID                types.String `tfsdk:"id"`
+	Name              types.String `tfsdk:"name"`
+	NameAlias         types.String `tfsdk:"name_alias"`
+	OwnerKey          types.String `tfsdk:"owner_key"`
+	OwnerTag          types.String `tfsdk:"owner_tag"`
+	LegacyPwd         types.String `tfsdk:"pwd"`
+	TagTag            types.Set    `tfsdk:"tags"`
+	LegacyUsr         types.String `tfsdk:"usr"`
+	LegacyVmmDomainDn types.String `tfsdk:"vmm_domain_dn"`
+}
+
+func VmmUsrAccPResourceSchemaV1() *resourceschema.Schema {
+	current := VmmUsrAccPResourceSchema("")
+	return &resourceschema.Schema{
+		Version: 1,
+		Attributes: map[string]resourceschema.Attribute{
+			"annotation":  current.Attributes["annotation"],
+			"annotations": current.Attributes["annotations"],
+			"description": current.Attributes["description"],
+			"id":          current.Attributes["id"],
+			"name":        current.Attributes["name"],
+			"name_alias":  current.Attributes["name_alias"],
+			"owner_key":   current.Attributes["owner_key"],
+			"owner_tag":   current.Attributes["owner_tag"],
+			"pwd": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"tags": current.Attributes["tags"],
+			"usr": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"vmm_domain_dn": resourceschema.StringAttribute{
+				Required: true,
+				Optional: false,
+				Computed: false,
+			},
+		},
+	}
+}
+
+func (m *VmmUsrAccPRootModel) UpgradeFromV1(ctx context.Context, priorState *VmmUsrAccPRootModelV1) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	*m = NewVmmUsrAccPRootModelNull()
+	m.Annotation = priorState.Annotation
+	m.TagAnnotation = priorState.TagAnnotation
+	m.Descr = priorState.Descr
+	m.ID = priorState.ID
+	m.Name = priorState.Name
+	m.NameAlias = priorState.NameAlias
+	m.OwnerKey = priorState.OwnerKey
+	m.OwnerTag = priorState.OwnerTag
+	m.LegacyPwd = priorState.LegacyPwd
+	m.Pwd = priorState.LegacyPwd
+	m.TagTag = priorState.TagTag
+	m.LegacyUsr = priorState.LegacyUsr
+	m.Usr = priorState.LegacyUsr
+	m.LegacyVmmDomainDn = priorState.LegacyVmmDomainDn
+	m.ParentDN = priorState.LegacyVmmDomainDn
+	return diagnostics
 }

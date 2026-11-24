@@ -14,6 +14,7 @@ import (
 	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
@@ -27,6 +28,17 @@ func lldpIfPolSchemaDefinition() modelHelpers.ClassSchema {
 	return modelHelpers.ClassSchema{
 		ResourceDescription:   "Manages ACI LLDP Interface Policy",
 		DataSourceDescription: "Data source for ACI LLDP Interface Policy",
+		Version:               2,
+		LegacyAttributes: map[string]modelHelpers.LegacyAttributeSchema{
+			"admin_rx_st": {
+				Type:        types.StringType,
+				Replacement: "receive_state",
+			},
+			"admin_tx_st": {
+				Type:        types.StringType,
+				Replacement: "transmit_state",
+			},
+		},
 		Properties: map[string]modelHelpers.PropertySchema{
 			"receive_state": {
 				Type:     modelHelpers.StringProperty,
@@ -337,16 +349,30 @@ func (m *LldpIfPolModel) BuildNestedDeletePayloadObject(
 	})
 }
 
+type LldpIfPolLegacyModelV2 struct {
+	LegacyAdminRxSt types.String `tfsdk:"admin_rx_st"`
+	LegacyAdminTxSt types.String `tfsdk:"admin_tx_st"`
+}
+
+func NewLldpIfPolLegacyModelV2Null() LldpIfPolLegacyModelV2 {
+	return LldpIfPolLegacyModelV2{
+		LegacyAdminRxSt: types.StringNull(),
+		LegacyAdminTxSt: types.StringNull(),
+	}
+}
+
 type LldpIfPolRootModel struct {
 	LldpIfPolModel
+	LldpIfPolLegacyModelV2
 
 	ID types.String `tfsdk:"id"`
 }
 
 func NewLldpIfPolRootModelNull() LldpIfPolRootModel {
 	return LldpIfPolRootModel{
-		LldpIfPolModel: NewLldpIfPolModelNull(),
-		ID:             types.StringNull(),
+		LldpIfPolModel:         NewLldpIfPolModelNull(),
+		LldpIfPolLegacyModelV2: NewLldpIfPolLegacyModelV2Null(),
+		ID:                     types.StringNull(),
 	}
 }
 
@@ -381,6 +407,14 @@ func (m *LldpIfPolRootModel) SetFromResponse(
 	return true, diagnostics
 }
 
+func (m *LldpIfPolRootModel) SetLegacyFromResponse(ctx context.Context, response *container.Container) diag.Diagnostics {
+	// Modern response decoding can also be used independently of compatibility state.
+	var diagnostics diag.Diagnostics
+	m.LegacyAdminRxSt = m.AdminRxSt
+	m.LegacyAdminTxSt = m.AdminTxSt
+	return diagnostics
+}
+
 func (m *LldpIfPolRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *LldpIfPolModel,
@@ -404,4 +438,109 @@ func (m *LldpIfPolRootModel) BuildPayload(
 func (m *LldpIfPolRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
 	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "lldpIfPol", m.ID.ValueString()), diagnostics
+}
+
+func (m *LldpIfPolRootModel) SetFromLegacyConfig(ctx context.Context, config, priorState *LldpIfPolRootModel) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	if !config.LegacyAdminRxSt.IsNull() {
+		m.AdminRxSt = config.LegacyAdminRxSt
+	}
+	if !config.LegacyAdminTxSt.IsNull() {
+		m.AdminTxSt = config.LegacyAdminTxSt
+	}
+	return diagnostics
+}
+
+func (m *LldpIfPolRootModel) SetLegacyFromState(ctx context.Context, config, priorState *LldpIfPolRootModel) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	if priorState == nil {
+		return diagnostics
+	}
+
+	// Retain legacy and read-only outputs when the configured and managed values are unchanged.
+	candidate := *m
+	if config.LegacyAdminRxSt.IsNull() {
+		candidate.LegacyAdminRxSt = priorState.LegacyAdminRxSt
+	}
+	if config.LegacyAdminTxSt.IsNull() {
+		candidate.LegacyAdminTxSt = priorState.LegacyAdminTxSt
+	}
+	attributeType := LldpIfPolResourceSchema("").Type()
+	var planValue, stateValue types.Object
+	diagnostics.Append(tfsdk.ValueFrom(ctx, candidate, attributeType, &planValue)...)
+	diagnostics.Append(tfsdk.ValueFrom(ctx, priorState, attributeType, &stateValue)...)
+	if diagnostics.HasError() || !planValue.Equal(stateValue) {
+		return diagnostics
+	}
+	if config.LegacyAdminRxSt.IsNull() {
+		m.LegacyAdminRxSt = candidate.LegacyAdminRxSt
+	}
+	if config.LegacyAdminTxSt.IsNull() {
+		m.LegacyAdminTxSt = candidate.LegacyAdminTxSt
+	}
+	return diagnostics
+}
+
+type LldpIfPolRootModelV1 struct {
+	LegacyAdminRxSt types.String `tfsdk:"admin_rx_st"`
+	LegacyAdminTxSt types.String `tfsdk:"admin_tx_st"`
+	Annotation      types.String `tfsdk:"annotation"`
+	TagAnnotation   types.Set    `tfsdk:"annotations"`
+	PortDCBXPVer    types.String `tfsdk:"dcbxp_version"`
+	Descr           types.String `tfsdk:"description"`
+	ID              types.String `tfsdk:"id"`
+	Name            types.String `tfsdk:"name"`
+	NameAlias       types.String `tfsdk:"name_alias"`
+	OwnerKey        types.String `tfsdk:"owner_key"`
+	OwnerTag        types.String `tfsdk:"owner_tag"`
+	TagTag          types.Set    `tfsdk:"tags"`
+}
+
+func LldpIfPolResourceSchemaV1() *resourceschema.Schema {
+	current := LldpIfPolResourceSchema("")
+	return &resourceschema.Schema{
+		Version: 1,
+		Attributes: map[string]resourceschema.Attribute{
+			"admin_rx_st": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"admin_tx_st": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"annotation":    current.Attributes["annotation"],
+			"annotations":   current.Attributes["annotations"],
+			"dcbxp_version": current.Attributes["dcbxp_version"],
+			"description":   current.Attributes["description"],
+			"id":            current.Attributes["id"],
+			"name":          current.Attributes["name"],
+			"name_alias":    current.Attributes["name_alias"],
+			"owner_key":     current.Attributes["owner_key"],
+			"owner_tag":     current.Attributes["owner_tag"],
+			"tags":          current.Attributes["tags"],
+		},
+	}
+}
+
+func (m *LldpIfPolRootModel) UpgradeFromV1(ctx context.Context, priorState *LldpIfPolRootModelV1) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	*m = NewLldpIfPolRootModelNull()
+	m.LegacyAdminRxSt = priorState.LegacyAdminRxSt
+	m.AdminRxSt = priorState.LegacyAdminRxSt
+	m.LegacyAdminTxSt = priorState.LegacyAdminTxSt
+	m.AdminTxSt = priorState.LegacyAdminTxSt
+	m.Annotation = priorState.Annotation
+	m.TagAnnotation = priorState.TagAnnotation
+	m.PortDCBXPVer = priorState.PortDCBXPVer
+	m.Descr = priorState.Descr
+	m.ID = priorState.ID
+	m.Name = priorState.Name
+	m.NameAlias = priorState.NameAlias
+	m.OwnerKey = priorState.OwnerKey
+	m.OwnerTag = priorState.OwnerTag
+	m.TagTag = priorState.TagTag
+	return diagnostics
 }

@@ -14,6 +14,7 @@ import (
 	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
@@ -27,6 +28,99 @@ func fvESgSchemaDefinition() modelHelpers.ClassSchema {
 	return modelHelpers.ClassSchema{
 		ResourceDescription:   "Manages ACI Endpoint Security Group",
 		DataSourceDescription: "Data source for ACI Endpoint Security Group",
+		Version:               2,
+		LegacyAttributes: map[string]modelHelpers.LegacyAttributeSchema{
+			"application_profile_dn": {
+				Type:            types.StringType,
+				Replacement:     "parent_dn",
+				RequiresReplace: true,
+			},
+			"match_t": {
+				Type:        types.StringType,
+				Replacement: "match_criteria",
+			},
+			"pc_enf_pref": {
+				Type:        types.StringType,
+				Replacement: "intra_esg_isolation",
+			},
+			"pref_gr_memb": {
+				Type:        types.StringType,
+				Replacement: "preferred_group_member",
+			},
+			"relation_fv_rs_cons": {
+				Type: types.SetType{ElemType: types.ObjectType{AttrTypes: map[string]attr.Type{"prio": types.StringType, "target_dn": types.StringType}}},
+				Attributes: map[string]modelHelpers.LegacyAttributeSchema{
+					"prio": {
+						Type:        types.StringType,
+						Required:    false,
+						Replacement: "relation_to_consumed_contracts.priority",
+					},
+					"target_dn": {
+						Type:        types.StringType,
+						Required:    true,
+						Replacement: "relation_to_consumed_contracts.contract_name",
+					},
+				},
+				Replacement: "relation_to_consumed_contracts",
+			},
+			"relation_fv_rs_cons_if": {
+				Type: types.SetType{ElemType: types.ObjectType{AttrTypes: map[string]attr.Type{"prio": types.StringType, "target_dn": types.StringType}}},
+				Attributes: map[string]modelHelpers.LegacyAttributeSchema{
+					"prio": {
+						Type:        types.StringType,
+						Required:    false,
+						Replacement: "relation_to_imported_contracts.priority",
+					},
+					"target_dn": {
+						Type:        types.StringType,
+						Required:    true,
+						Replacement: "relation_to_imported_contracts.imported_contract_name",
+					},
+				},
+				Replacement: "relation_to_imported_contracts",
+			},
+			"relation_fv_rs_cust_qos_pol": {
+				Type:   types.StringType,
+				Frozen: true,
+			},
+			"relation_fv_rs_intra_epg": {
+				Type:        types.SetType{ElemType: types.StringType},
+				Replacement: "relation_to_intra_epg_contracts",
+			},
+			"relation_fv_rs_prot_by": {
+				Type:   types.SetType{ElemType: types.StringType},
+				Frozen: true,
+			},
+			"relation_fv_rs_prov": {
+				Type: types.SetType{ElemType: types.ObjectType{AttrTypes: map[string]attr.Type{"match_t": types.StringType, "prio": types.StringType, "target_dn": types.StringType}}},
+				Attributes: map[string]modelHelpers.LegacyAttributeSchema{
+					"match_t": {
+						Type:        types.StringType,
+						Required:    false,
+						Replacement: "relation_to_provided_contracts.match_criteria",
+					},
+					"prio": {
+						Type:        types.StringType,
+						Required:    false,
+						Replacement: "relation_to_provided_contracts.priority",
+					},
+					"target_dn": {
+						Type:        types.StringType,
+						Required:    true,
+						Replacement: "relation_to_provided_contracts.contract_name",
+					},
+				},
+				Replacement: "relation_to_provided_contracts",
+			},
+			"relation_fv_rs_scope": {
+				Type:        types.StringType,
+				Replacement: "relation_to_vrf",
+			},
+			"relation_fv_rs_sec_inherited": {
+				Type:        types.SetType{ElemType: types.StringType},
+				Replacement: "relation_to_contract_masters",
+			},
+		},
 		Properties: map[string]modelHelpers.PropertySchema{
 			"annotation": {
 				Type:        modelHelpers.StringProperty,
@@ -650,8 +744,41 @@ func (m *FvESgModel) BuildNestedDeletePayloadObject(
 	})
 }
 
+type FvESgLegacyModelV2 struct {
+	LegacyApplicationProfileDn     types.String `tfsdk:"application_profile_dn"`
+	LegacyMatchT                   types.String `tfsdk:"match_t"`
+	LegacyPcEnfPref                types.String `tfsdk:"pc_enf_pref"`
+	LegacyPrefGrMemb               types.String `tfsdk:"pref_gr_memb"`
+	LegacyRelationFvRsCons         types.Set    `tfsdk:"relation_fv_rs_cons"`
+	LegacyRelationFvRsConsIf       types.Set    `tfsdk:"relation_fv_rs_cons_if"`
+	LegacyRelationFvRsCustQosPol   types.String `tfsdk:"relation_fv_rs_cust_qos_pol"`
+	LegacyRelationFvRsIntraEpg     types.Set    `tfsdk:"relation_fv_rs_intra_epg"`
+	LegacyRelationFvRsProtBy       types.Set    `tfsdk:"relation_fv_rs_prot_by"`
+	LegacyRelationFvRsProv         types.Set    `tfsdk:"relation_fv_rs_prov"`
+	LegacyRelationFvRsScope        types.String `tfsdk:"relation_fv_rs_scope"`
+	LegacyRelationFvRsSecInherited types.Set    `tfsdk:"relation_fv_rs_sec_inherited"`
+}
+
+func NewFvESgLegacyModelV2Null() FvESgLegacyModelV2 {
+	return FvESgLegacyModelV2{
+		LegacyApplicationProfileDn:     types.StringNull(),
+		LegacyMatchT:                   types.StringNull(),
+		LegacyPcEnfPref:                types.StringNull(),
+		LegacyPrefGrMemb:               types.StringNull(),
+		LegacyRelationFvRsCons:         types.SetNull(types.ObjectType{AttrTypes: map[string]attr.Type{"prio": types.StringType, "target_dn": types.StringType}}),
+		LegacyRelationFvRsConsIf:       types.SetNull(types.ObjectType{AttrTypes: map[string]attr.Type{"prio": types.StringType, "target_dn": types.StringType}}),
+		LegacyRelationFvRsCustQosPol:   types.StringNull(),
+		LegacyRelationFvRsIntraEpg:     types.SetNull(types.StringType),
+		LegacyRelationFvRsProtBy:       types.SetNull(types.StringType),
+		LegacyRelationFvRsProv:         types.SetNull(types.ObjectType{AttrTypes: map[string]attr.Type{"match_t": types.StringType, "prio": types.StringType, "target_dn": types.StringType}}),
+		LegacyRelationFvRsScope:        types.StringNull(),
+		LegacyRelationFvRsSecInherited: types.SetNull(types.StringType),
+	}
+}
+
 type FvESgRootModel struct {
 	FvESgModel
+	FvESgLegacyModelV2
 
 	ID       types.String `tfsdk:"id"`
 	ParentDN types.String `tfsdk:"parent_dn"`
@@ -659,9 +786,10 @@ type FvESgRootModel struct {
 
 func NewFvESgRootModelNull() FvESgRootModel {
 	return FvESgRootModel{
-		FvESgModel: NewFvESgModelNull(),
-		ID:         types.StringNull(),
-		ParentDN:   types.StringNull(),
+		FvESgModel:         NewFvESgModelNull(),
+		FvESgLegacyModelV2: NewFvESgLegacyModelV2Null(),
+		ID:                 types.StringNull(),
+		ParentDN:           types.StringNull(),
 	}
 }
 
@@ -707,6 +835,75 @@ func (m *FvESgRootModel) SetFromResponse(
 	return true, diagnostics
 }
 
+func (m *FvESgRootModel) SetLegacyFromResponse(ctx context.Context, response *container.Container) diag.Diagnostics {
+	// Modern response decoding can also be used independently of compatibility state.
+	var diagnostics diag.Diagnostics
+	m.LegacyApplicationProfileDn = m.ParentDN
+	m.LegacyMatchT = m.MatchT
+	m.LegacyPcEnfPref = m.PcEnfPref
+	m.LegacyPrefGrMemb = m.PrefGrMemb
+	fvRsConsMapping := modelHelpers.LegacyChildSet{
+		AttributeTypes:        FvRsConsModelAttributeTypes(),
+		IdentifyingAttributes: []string{"contract_name"},
+		AttributeName:         "contract_name",
+		Named:                 true,
+		LegacyType:            types.ObjectType{AttrTypes: map[string]attr.Type{"prio": types.StringType, "target_dn": types.StringType}},
+		Attributes: map[string]string{
+			"prio":      "priority",
+			"target_dn": "contract_name",
+		},
+		ResponseAttributes: map[string]string{
+			"prio":      "prio",
+			"target_dn": "tDn",
+		},
+	}
+	m.LegacyRelationFvRsCons = fvRsConsMapping.LegacyFromResponse(ctx, &diagnostics, response, "fvESg", "fvRsCons")
+	fvRsConsIfMapping := modelHelpers.LegacyChildSet{
+		AttributeTypes:        FvRsConsIfModelAttributeTypes(),
+		IdentifyingAttributes: []string{"imported_contract_name"},
+		AttributeName:         "imported_contract_name",
+		Named:                 true,
+		LegacyType:            types.ObjectType{AttrTypes: map[string]attr.Type{"prio": types.StringType, "target_dn": types.StringType}},
+		Attributes: map[string]string{
+			"prio":      "priority",
+			"target_dn": "imported_contract_name",
+		},
+		ResponseAttributes: map[string]string{
+			"prio":      "prio",
+			"target_dn": "tDn",
+		},
+	}
+	m.LegacyRelationFvRsConsIf = fvRsConsIfMapping.LegacyFromResponse(ctx, &diagnostics, response, "fvESg", "fvRsConsIf")
+	if m.LegacyRelationFvRsCustQosPol.IsNull() || m.LegacyRelationFvRsCustQosPol.IsUnknown() {
+		m.LegacyRelationFvRsCustQosPol = types.StringValue("")
+	}
+	m.LegacyRelationFvRsIntraEpg = modelHelpers.LegacyTargetDNs(ctx, &diagnostics, response, "fvESg", "fvRsIntraEpg")
+	if m.LegacyRelationFvRsProtBy.IsNull() || m.LegacyRelationFvRsProtBy.IsUnknown() {
+		m.LegacyRelationFvRsProtBy = types.SetValueMust(types.StringType, []attr.Value{})
+	}
+	fvRsProvMapping := modelHelpers.LegacyChildSet{
+		AttributeTypes:        FvRsProvModelAttributeTypes(),
+		IdentifyingAttributes: []string{"contract_name"},
+		AttributeName:         "contract_name",
+		Named:                 true,
+		LegacyType:            types.ObjectType{AttrTypes: map[string]attr.Type{"match_t": types.StringType, "prio": types.StringType, "target_dn": types.StringType}},
+		Attributes: map[string]string{
+			"match_t":   "match_criteria",
+			"prio":      "priority",
+			"target_dn": "contract_name",
+		},
+		ResponseAttributes: map[string]string{
+			"match_t":   "matchT",
+			"prio":      "prio",
+			"target_dn": "tDn",
+		},
+	}
+	m.LegacyRelationFvRsProv = fvRsProvMapping.LegacyFromResponse(ctx, &diagnostics, response, "fvESg", "fvRsProv")
+	m.LegacyRelationFvRsScope = modelHelpers.LegacyTargetDN(ctx, &diagnostics, response, "fvESg", "fvRsScope")
+	m.LegacyRelationFvRsSecInherited = modelHelpers.LegacyTargetDNs(ctx, &diagnostics, response, "fvESg", "fvRsSecInherited")
+	return diagnostics
+}
+
 func (m *FvESgRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *FvESgModel,
@@ -730,4 +927,479 @@ func (m *FvESgRootModel) BuildPayload(
 func (m *FvESgRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
 	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "fvESg", m.ID.ValueString()), diagnostics
+}
+
+func (m *FvESgRootModel) SetFromLegacyConfig(ctx context.Context, config, priorState *FvESgRootModel) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	if !config.LegacyApplicationProfileDn.IsNull() {
+		m.ParentDN = config.LegacyApplicationProfileDn
+	}
+	if !config.LegacyMatchT.IsNull() {
+		m.MatchT = config.LegacyMatchT
+	}
+	if !config.LegacyPcEnfPref.IsNull() {
+		m.PcEnfPref = config.LegacyPcEnfPref
+	}
+	if !config.LegacyPrefGrMemb.IsNull() {
+		m.PrefGrMemb = config.LegacyPrefGrMemb
+	}
+	fvRsConsMapping := modelHelpers.LegacyChildSet{
+		AttributeTypes:        FvRsConsModelAttributeTypes(),
+		IdentifyingAttributes: []string{"contract_name"},
+		AttributeName:         "contract_name",
+		Named:                 true,
+		LegacyType:            types.ObjectType{AttrTypes: map[string]attr.Type{"prio": types.StringType, "target_dn": types.StringType}},
+		Attributes: map[string]string{
+			"prio":      "priority",
+			"target_dn": "contract_name",
+		},
+		ResponseAttributes: map[string]string{
+			"prio":      "prio",
+			"target_dn": "tDn",
+		},
+	}
+	if config.LegacyRelationFvRsCons.IsUnknown() || len(config.LegacyRelationFvRsCons.Elements()) > 0 {
+		if !config.FvRsCons.IsNull() {
+			diagnostics.AddError("Conflicting legacy configuration", "Configure either relation_fv_rs_cons or relation_to_consumed_contracts, not both.")
+			return diagnostics
+		}
+		var fallback *types.Set
+		if priorState != nil {
+			fallback = &priorState.FvRsCons
+		}
+		m.FvRsCons = fvRsConsMapping.Plan(ctx, &diagnostics, m.LegacyRelationFvRsCons, m.FvRsCons, fallback, m.Annotation)
+	} else {
+		m.LegacyRelationFvRsCons = fvRsConsMapping.Unknown(ctx, &diagnostics, m.FvRsCons)
+	}
+	fvRsConsIfMapping := modelHelpers.LegacyChildSet{
+		AttributeTypes:        FvRsConsIfModelAttributeTypes(),
+		IdentifyingAttributes: []string{"imported_contract_name"},
+		AttributeName:         "imported_contract_name",
+		Named:                 true,
+		LegacyType:            types.ObjectType{AttrTypes: map[string]attr.Type{"prio": types.StringType, "target_dn": types.StringType}},
+		Attributes: map[string]string{
+			"prio":      "priority",
+			"target_dn": "imported_contract_name",
+		},
+		ResponseAttributes: map[string]string{
+			"prio":      "prio",
+			"target_dn": "tDn",
+		},
+	}
+	if config.LegacyRelationFvRsConsIf.IsUnknown() || len(config.LegacyRelationFvRsConsIf.Elements()) > 0 {
+		if !config.FvRsConsIf.IsNull() {
+			diagnostics.AddError("Conflicting legacy configuration", "Configure either relation_fv_rs_cons_if or relation_to_imported_contracts, not both.")
+			return diagnostics
+		}
+		var fallback *types.Set
+		if priorState != nil {
+			fallback = &priorState.FvRsConsIf
+		}
+		m.FvRsConsIf = fvRsConsIfMapping.Plan(ctx, &diagnostics, m.LegacyRelationFvRsConsIf, m.FvRsConsIf, fallback, m.Annotation)
+	} else {
+		m.LegacyRelationFvRsConsIf = fvRsConsIfMapping.Unknown(ctx, &diagnostics, m.FvRsConsIf)
+	}
+	if !config.LegacyRelationFvRsIntraEpg.IsNull() {
+		if !config.FvRsIntraEpg.IsNull() {
+			diagnostics.AddError("Conflicting legacy configuration", "Configure either relation_fv_rs_intra_epg or relation_to_intra_epg_contracts, not both.")
+			return diagnostics
+		}
+		var fallback *types.Set
+		if priorState != nil {
+			fallback = &priorState.FvRsIntraEpg
+		}
+		fvRsIntraEpgMapping := modelHelpers.LegacyChildSet{
+			AttributeTypes: FvRsIntraEpgModelAttributeTypes(),
+			AttributeName:  "contract_name",
+			Named:          true,
+		}
+		m.FvRsIntraEpg = fvRsIntraEpgMapping.Plan(ctx, &diagnostics, config.LegacyRelationFvRsIntraEpg, m.FvRsIntraEpg, fallback, m.Annotation)
+	}
+	fvRsProvMapping := modelHelpers.LegacyChildSet{
+		AttributeTypes:        FvRsProvModelAttributeTypes(),
+		IdentifyingAttributes: []string{"contract_name"},
+		AttributeName:         "contract_name",
+		Named:                 true,
+		LegacyType:            types.ObjectType{AttrTypes: map[string]attr.Type{"match_t": types.StringType, "prio": types.StringType, "target_dn": types.StringType}},
+		Attributes: map[string]string{
+			"match_t":   "match_criteria",
+			"prio":      "priority",
+			"target_dn": "contract_name",
+		},
+		ResponseAttributes: map[string]string{
+			"match_t":   "matchT",
+			"prio":      "prio",
+			"target_dn": "tDn",
+		},
+	}
+	if config.LegacyRelationFvRsProv.IsUnknown() || len(config.LegacyRelationFvRsProv.Elements()) > 0 {
+		if !config.FvRsProv.IsNull() {
+			diagnostics.AddError("Conflicting legacy configuration", "Configure either relation_fv_rs_prov or relation_to_provided_contracts, not both.")
+			return diagnostics
+		}
+		var fallback *types.Set
+		if priorState != nil {
+			fallback = &priorState.FvRsProv
+		}
+		m.FvRsProv = fvRsProvMapping.Plan(ctx, &diagnostics, m.LegacyRelationFvRsProv, m.FvRsProv, fallback, m.Annotation)
+	} else {
+		m.LegacyRelationFvRsProv = fvRsProvMapping.Unknown(ctx, &diagnostics, m.FvRsProv)
+	}
+	if !config.LegacyRelationFvRsScope.IsNull() {
+		if !config.FvRsScope.IsNull() {
+			diagnostics.AddError("Conflicting legacy configuration", "Configure either relation_fv_rs_scope or relation_to_vrf, not both.")
+			return diagnostics
+		}
+		var fallback *types.Object
+		if priorState != nil {
+			fallback = &priorState.FvRsScope
+		}
+		relation := modelHelpers.LegacyChildRelation{
+			AttributeTypes: FvRsScopeModelAttributeTypes(),
+			AttributeName:  "vrf_name",
+			Named:          true,
+		}
+		m.FvRsScope = relation.Plan(ctx, &diagnostics, config.LegacyRelationFvRsScope, m.FvRsScope, fallback, m.Annotation)
+	}
+	if !config.LegacyRelationFvRsSecInherited.IsNull() {
+		if !config.FvRsSecInherited.IsNull() {
+			diagnostics.AddError("Conflicting legacy configuration", "Configure either relation_fv_rs_sec_inherited or relation_to_contract_masters, not both.")
+			return diagnostics
+		}
+		var fallback *types.Set
+		if priorState != nil {
+			fallback = &priorState.FvRsSecInherited
+		}
+		fvRsSecInheritedMapping := modelHelpers.LegacyChildSet{
+			AttributeTypes: FvRsSecInheritedModelAttributeTypes(),
+			AttributeName:  "target_dn",
+			Named:          false,
+		}
+		m.FvRsSecInherited = fvRsSecInheritedMapping.Plan(ctx, &diagnostics, config.LegacyRelationFvRsSecInherited, m.FvRsSecInherited, fallback, m.Annotation)
+	}
+	return diagnostics
+}
+
+func (m *FvESgRootModel) SetLegacyFromState(ctx context.Context, config, priorState *FvESgRootModel) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	if priorState == nil {
+		return diagnostics
+	}
+
+	// Retain legacy and read-only outputs when the configured and managed values are unchanged.
+	candidate := *m
+	candidate.PcTag = priorState.PcTag
+	candidate.Scope = priorState.Scope
+	if config.LegacyApplicationProfileDn.IsNull() {
+		candidate.LegacyApplicationProfileDn = priorState.LegacyApplicationProfileDn
+	}
+	if config.LegacyMatchT.IsNull() {
+		candidate.LegacyMatchT = priorState.LegacyMatchT
+	}
+	if config.LegacyPcEnfPref.IsNull() {
+		candidate.LegacyPcEnfPref = priorState.LegacyPcEnfPref
+	}
+	if config.LegacyPrefGrMemb.IsNull() {
+		candidate.LegacyPrefGrMemb = priorState.LegacyPrefGrMemb
+	}
+	if !config.LegacyRelationFvRsCons.IsUnknown() && len(config.LegacyRelationFvRsCons.Elements()) == 0 {
+		candidate.LegacyRelationFvRsCons = priorState.LegacyRelationFvRsCons
+	}
+	if !config.LegacyRelationFvRsConsIf.IsUnknown() && len(config.LegacyRelationFvRsConsIf.Elements()) == 0 {
+		candidate.LegacyRelationFvRsConsIf = priorState.LegacyRelationFvRsConsIf
+	}
+	if config.LegacyRelationFvRsIntraEpg.IsNull() {
+		candidate.LegacyRelationFvRsIntraEpg = priorState.LegacyRelationFvRsIntraEpg
+	}
+	if !config.LegacyRelationFvRsProv.IsUnknown() && len(config.LegacyRelationFvRsProv.Elements()) == 0 {
+		candidate.LegacyRelationFvRsProv = priorState.LegacyRelationFvRsProv
+	}
+	if config.LegacyRelationFvRsScope.IsNull() {
+		candidate.LegacyRelationFvRsScope = priorState.LegacyRelationFvRsScope
+	}
+	if config.LegacyRelationFvRsSecInherited.IsNull() {
+		candidate.LegacyRelationFvRsSecInherited = priorState.LegacyRelationFvRsSecInherited
+	}
+	attributeType := FvESgResourceSchema("").Type()
+	var planValue, stateValue types.Object
+	diagnostics.Append(tfsdk.ValueFrom(ctx, candidate, attributeType, &planValue)...)
+	diagnostics.Append(tfsdk.ValueFrom(ctx, priorState, attributeType, &stateValue)...)
+	if diagnostics.HasError() || !planValue.Equal(stateValue) {
+		return diagnostics
+	}
+	m.PcTag = candidate.PcTag
+	m.Scope = candidate.Scope
+	if config.LegacyApplicationProfileDn.IsNull() {
+		m.LegacyApplicationProfileDn = candidate.LegacyApplicationProfileDn
+	}
+	if config.LegacyMatchT.IsNull() {
+		m.LegacyMatchT = candidate.LegacyMatchT
+	}
+	if config.LegacyPcEnfPref.IsNull() {
+		m.LegacyPcEnfPref = candidate.LegacyPcEnfPref
+	}
+	if config.LegacyPrefGrMemb.IsNull() {
+		m.LegacyPrefGrMemb = candidate.LegacyPrefGrMemb
+	}
+	if !config.LegacyRelationFvRsCons.IsUnknown() && len(config.LegacyRelationFvRsCons.Elements()) == 0 {
+		m.LegacyRelationFvRsCons = candidate.LegacyRelationFvRsCons
+	}
+	if !config.LegacyRelationFvRsConsIf.IsUnknown() && len(config.LegacyRelationFvRsConsIf.Elements()) == 0 {
+		m.LegacyRelationFvRsConsIf = candidate.LegacyRelationFvRsConsIf
+	}
+	if config.LegacyRelationFvRsIntraEpg.IsNull() {
+		m.LegacyRelationFvRsIntraEpg = candidate.LegacyRelationFvRsIntraEpg
+	}
+	if !config.LegacyRelationFvRsProv.IsUnknown() && len(config.LegacyRelationFvRsProv.Elements()) == 0 {
+		m.LegacyRelationFvRsProv = candidate.LegacyRelationFvRsProv
+	}
+	if config.LegacyRelationFvRsScope.IsNull() {
+		m.LegacyRelationFvRsScope = candidate.LegacyRelationFvRsScope
+	}
+	if config.LegacyRelationFvRsSecInherited.IsNull() {
+		m.LegacyRelationFvRsSecInherited = candidate.LegacyRelationFvRsSecInherited
+	}
+	return diagnostics
+}
+
+type FvESgRootModelV1 struct {
+	Shutdown                       types.String `tfsdk:"admin_state"`
+	Annotation                     types.String `tfsdk:"annotation"`
+	TagAnnotation                  types.Set    `tfsdk:"annotations"`
+	LegacyApplicationProfileDn     types.String `tfsdk:"application_profile_dn"`
+	Descr                          types.String `tfsdk:"description"`
+	ExceptionTag                   types.String `tfsdk:"exception_tag"`
+	ID                             types.String `tfsdk:"id"`
+	LegacyMatchT                   types.String `tfsdk:"match_t"`
+	Name                           types.String `tfsdk:"name"`
+	NameAlias                      types.String `tfsdk:"name_alias"`
+	LegacyPcEnfPref                types.String `tfsdk:"pc_enf_pref"`
+	PcTag                          types.String `tfsdk:"pc_tag"`
+	LegacyPrefGrMemb               types.String `tfsdk:"pref_gr_memb"`
+	LegacyRelationFvRsCons         types.Set    `tfsdk:"relation_fv_rs_cons"`
+	LegacyRelationFvRsConsIf       types.Set    `tfsdk:"relation_fv_rs_cons_if"`
+	LegacyRelationFvRsCustQosPol   types.String `tfsdk:"relation_fv_rs_cust_qos_pol"`
+	LegacyRelationFvRsIntraEpg     types.Set    `tfsdk:"relation_fv_rs_intra_epg"`
+	LegacyRelationFvRsProtBy       types.Set    `tfsdk:"relation_fv_rs_prot_by"`
+	LegacyRelationFvRsProv         types.Set    `tfsdk:"relation_fv_rs_prov"`
+	LegacyRelationFvRsScope        types.String `tfsdk:"relation_fv_rs_scope"`
+	LegacyRelationFvRsSecInherited types.Set    `tfsdk:"relation_fv_rs_sec_inherited"`
+	Scope                          types.String `tfsdk:"scope"`
+	TagTag                         types.Set    `tfsdk:"tags"`
+}
+
+func FvESgResourceSchemaV1() *resourceschema.Schema {
+	current := FvESgResourceSchema("")
+	return &resourceschema.Schema{
+		Version: 1,
+		Attributes: map[string]resourceschema.Attribute{
+			"admin_state": current.Attributes["admin_state"],
+			"annotation":  current.Attributes["annotation"],
+			"annotations": current.Attributes["annotations"],
+			"application_profile_dn": resourceschema.StringAttribute{
+				Required: true,
+				Optional: false,
+				Computed: false,
+			},
+			"description":   current.Attributes["description"],
+			"exception_tag": current.Attributes["exception_tag"],
+			"id":            current.Attributes["id"],
+			"match_t": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"name":       current.Attributes["name"],
+			"name_alias": current.Attributes["name_alias"],
+			"pc_enf_pref": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"pc_tag": current.Attributes["pc_tag"],
+			"pref_gr_memb": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"relation_fv_rs_cust_qos_pol": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: false,
+			},
+			"relation_fv_rs_intra_epg": resourceschema.SetAttribute{
+				Required:    false,
+				Optional:    true,
+				Computed:    false,
+				ElementType: types.StringType,
+			},
+			"relation_fv_rs_prot_by": resourceschema.SetAttribute{
+				Required:    false,
+				Optional:    true,
+				Computed:    false,
+				ElementType: types.StringType,
+			},
+			"relation_fv_rs_scope": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: false,
+			},
+			"relation_fv_rs_sec_inherited": resourceschema.SetAttribute{
+				Required:    false,
+				Optional:    true,
+				Computed:    false,
+				ElementType: types.StringType,
+			},
+			"scope": current.Attributes["scope"],
+			"tags":  current.Attributes["tags"],
+		},
+		Blocks: map[string]resourceschema.Block{
+			"relation_fv_rs_cons": resourceschema.SetNestedBlock{
+				NestedObject: resourceschema.NestedBlockObject{Attributes: map[string]resourceschema.Attribute{
+					"prio": resourceschema.StringAttribute{
+						Required: false,
+						Optional: true,
+						Computed: false,
+					},
+					"target_dn": resourceschema.StringAttribute{
+						Required: true,
+						Optional: false,
+						Computed: false,
+					},
+				}},
+			},
+			"relation_fv_rs_cons_if": resourceschema.SetNestedBlock{
+				NestedObject: resourceschema.NestedBlockObject{Attributes: map[string]resourceschema.Attribute{
+					"prio": resourceschema.StringAttribute{
+						Required: false,
+						Optional: true,
+						Computed: false,
+					},
+					"target_dn": resourceschema.StringAttribute{
+						Required: true,
+						Optional: false,
+						Computed: false,
+					},
+				}},
+			},
+			"relation_fv_rs_prov": resourceschema.SetNestedBlock{
+				NestedObject: resourceschema.NestedBlockObject{Attributes: map[string]resourceschema.Attribute{
+					"match_t": resourceschema.StringAttribute{
+						Required: false,
+						Optional: true,
+						Computed: false,
+					},
+					"prio": resourceschema.StringAttribute{
+						Required: false,
+						Optional: true,
+						Computed: false,
+					},
+					"target_dn": resourceschema.StringAttribute{
+						Required: true,
+						Optional: false,
+						Computed: false,
+					},
+				}},
+			},
+		},
+	}
+}
+
+func (m *FvESgRootModel) UpgradeFromV1(ctx context.Context, priorState *FvESgRootModelV1) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	*m = NewFvESgRootModelNull()
+	m.Shutdown = priorState.Shutdown
+	m.Annotation = priorState.Annotation
+	m.TagAnnotation = priorState.TagAnnotation
+	m.LegacyApplicationProfileDn = priorState.LegacyApplicationProfileDn
+	m.ParentDN = priorState.LegacyApplicationProfileDn
+	m.Descr = priorState.Descr
+	m.ExceptionTag = priorState.ExceptionTag
+	m.ID = priorState.ID
+	m.LegacyMatchT = priorState.LegacyMatchT
+	m.MatchT = priorState.LegacyMatchT
+	m.Name = priorState.Name
+	m.NameAlias = priorState.NameAlias
+	m.LegacyPcEnfPref = priorState.LegacyPcEnfPref
+	m.PcEnfPref = priorState.LegacyPcEnfPref
+	m.PcTag = priorState.PcTag
+	m.LegacyPrefGrMemb = priorState.LegacyPrefGrMemb
+	m.PrefGrMemb = priorState.LegacyPrefGrMemb
+	m.LegacyRelationFvRsCons = priorState.LegacyRelationFvRsCons
+	fvRsConsMapping := modelHelpers.LegacyChildSet{
+		AttributeTypes:        FvRsConsModelAttributeTypes(),
+		IdentifyingAttributes: []string{"contract_name"},
+		AttributeName:         "contract_name",
+		Named:                 true,
+		LegacyType:            types.ObjectType{AttrTypes: map[string]attr.Type{"prio": types.StringType, "target_dn": types.StringType}},
+		Attributes: map[string]string{
+			"prio":      "priority",
+			"target_dn": "contract_name",
+		},
+		ResponseAttributes: map[string]string{
+			"prio":      "prio",
+			"target_dn": "tDn",
+		},
+	}
+	m.FvRsCons = fvRsConsMapping.Upgrade(ctx, &diagnostics, priorState.LegacyRelationFvRsCons)
+	m.LegacyRelationFvRsConsIf = priorState.LegacyRelationFvRsConsIf
+	fvRsConsIfMapping := modelHelpers.LegacyChildSet{
+		AttributeTypes:        FvRsConsIfModelAttributeTypes(),
+		IdentifyingAttributes: []string{"imported_contract_name"},
+		AttributeName:         "imported_contract_name",
+		Named:                 true,
+		LegacyType:            types.ObjectType{AttrTypes: map[string]attr.Type{"prio": types.StringType, "target_dn": types.StringType}},
+		Attributes: map[string]string{
+			"prio":      "priority",
+			"target_dn": "imported_contract_name",
+		},
+		ResponseAttributes: map[string]string{
+			"prio":      "prio",
+			"target_dn": "tDn",
+		},
+	}
+	m.FvRsConsIf = fvRsConsIfMapping.Upgrade(ctx, &diagnostics, priorState.LegacyRelationFvRsConsIf)
+	m.LegacyRelationFvRsCustQosPol = priorState.LegacyRelationFvRsCustQosPol
+	m.LegacyRelationFvRsIntraEpg = priorState.LegacyRelationFvRsIntraEpg
+	fvRsIntraEpgMapping := modelHelpers.LegacyChildSet{
+		AttributeTypes: FvRsIntraEpgModelAttributeTypes(),
+		AttributeName:  "contract_name",
+		Named:          true,
+	}
+	m.FvRsIntraEpg = fvRsIntraEpgMapping.Upgrade(ctx, &diagnostics, priorState.LegacyRelationFvRsIntraEpg)
+	m.LegacyRelationFvRsProtBy = priorState.LegacyRelationFvRsProtBy
+	m.LegacyRelationFvRsProv = priorState.LegacyRelationFvRsProv
+	fvRsProvMapping := modelHelpers.LegacyChildSet{
+		AttributeTypes:        FvRsProvModelAttributeTypes(),
+		IdentifyingAttributes: []string{"contract_name"},
+		AttributeName:         "contract_name",
+		Named:                 true,
+		LegacyType:            types.ObjectType{AttrTypes: map[string]attr.Type{"match_t": types.StringType, "prio": types.StringType, "target_dn": types.StringType}},
+		Attributes: map[string]string{
+			"match_t":   "match_criteria",
+			"prio":      "priority",
+			"target_dn": "contract_name",
+		},
+		ResponseAttributes: map[string]string{
+			"match_t":   "matchT",
+			"prio":      "prio",
+			"target_dn": "tDn",
+		},
+	}
+	m.FvRsProv = fvRsProvMapping.Upgrade(ctx, &diagnostics, priorState.LegacyRelationFvRsProv)
+	m.LegacyRelationFvRsScope = priorState.LegacyRelationFvRsScope
+	// Preserve the published SDKv2 upgrade: an unset relation produced an empty name.
+	m.FvRsScope = modelHelpers.LegacyChildObject(ctx, &diagnostics, FvRsScopeModelAttributeTypes(), map[string]attr.Value{
+		"vrf_name": modelHelpers.LegacyRelationName(ctx, &diagnostics, types.StringValue(priorState.LegacyRelationFvRsScope.ValueString())),
+	})
+	m.LegacyRelationFvRsSecInherited = priorState.LegacyRelationFvRsSecInherited
+	fvRsSecInheritedMapping := modelHelpers.LegacyChildSet{
+		AttributeTypes: FvRsSecInheritedModelAttributeTypes(),
+		AttributeName:  "target_dn",
+		Named:          false,
+	}
+	m.FvRsSecInherited = fvRsSecInheritedMapping.Upgrade(ctx, &diagnostics, priorState.LegacyRelationFvRsSecInherited)
+	m.Scope = priorState.Scope
+	m.TagTag = priorState.TagTag
+	return diagnostics
 }

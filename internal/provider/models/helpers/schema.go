@@ -8,6 +8,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/path"
 	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
@@ -360,6 +361,8 @@ type ParentDNSchema struct {
 // APIC class. It constructs concrete resource and data-source schemas on
 // demand.
 type ClassSchema struct {
+	Version               int64
+	LegacyAttributes      map[string]LegacyAttributeSchema
 	ResourceDescription   string
 	DataSourceDescription string
 	Properties            map[string]PropertySchema
@@ -485,9 +488,47 @@ func (s ClassSchema) DataSourceAttributes() map[string]datasourceschema.Attribut
 // ResourceSchema constructs the complete top-level resource schema.
 func (s ClassSchema) ResourceSchema(defaultAnnotation string) resourceschema.Schema {
 	attributes := s.ResourceAttributes(true)
+	blocks := map[string]resourceschema.Block{}
 	attributes["id"] = ResourceIDAttribute()
+	for name, property := range s.Properties {
+		if !property.Required || property.Type != StringProperty {
+			continue
+		}
+		var alternatives []path.Expression
+		for legacyName, legacy := range s.LegacyAttributes {
+			if !legacy.Frozen && legacy.Attributes == nil && legacy.Replacement == name {
+				alternatives = append(alternatives, path.MatchRoot(legacyName))
+			}
+		}
+		if len(alternatives) == 0 {
+			continue
+		}
+		// A required property can be supplied through any active historical name at the root.
+		property.Required, property.Optional, property.Computed = false, true, true
+		attribute := property.resourceAttribute(s.topLevelResourceContext(true)).(resourceschema.StringAttribute)
+		attribute.Validators = append(attribute.Validators, stringvalidator.ExactlyOneOf(alternatives...))
+		attributes[name] = attribute
+	}
+	for name, legacy := range s.LegacyAttributes {
+		if legacy.Attributes != nil {
+			blocks[name] = legacy.ResourceBlock()
+			continue
+		}
+		attributes[name] = legacy.ResourceAttribute()
+	}
 	if s.ParentDN != nil {
 		attributes[s.ParentDN.AttributeName] = ResourceParentDNAttribute(s.ParentDN.Config)
+		for name, legacy := range s.LegacyAttributes {
+			if legacy.Frozen || legacy.Replacement != s.ParentDN.AttributeName {
+				continue
+			}
+			parent := attributes[s.ParentDN.AttributeName].(resourceschema.StringAttribute)
+			parent.Required, parent.Optional, parent.Computed = false, true, true
+			if s.ParentDN.Config.DefaultValue == "" {
+				parent.Validators = append(parent.Validators, stringvalidator.AtLeastOneOf(path.MatchRoot(name)))
+			}
+			attributes[s.ParentDN.AttributeName] = parent
+		}
 	}
 	if s.AnnotationAttribute != "" {
 		attributes[s.AnnotationAttribute] = ResourceAnnotationAttribute(
@@ -497,15 +538,25 @@ func (s ClassSchema) ResourceSchema(defaultAnnotation string) resourceschema.Sch
 	}
 
 	return resourceschema.Schema{
+		Version:             s.Version,
 		MarkdownDescription: s.ResourceDescription,
 		Attributes:          attributes,
+		Blocks:              blocks,
 	}
 }
 
 // DataSourceSchema constructs the complete top-level data-source schema.
 func (s ClassSchema) DataSourceSchema() datasourceschema.Schema {
 	attributes := s.DataSourceAttributes()
+	blocks := map[string]datasourceschema.Block{}
 	attributes["id"] = DataSourceIDAttribute()
+	for name, legacy := range s.LegacyAttributes {
+		if legacy.Attributes != nil {
+			blocks[name] = legacy.DataSourceBlock()
+			continue
+		}
+		attributes[name] = legacy.DataSourceAttribute()
+	}
 	if s.ParentDN != nil {
 		attributes[s.ParentDN.AttributeName] = DataSourceParentDNAttribute(s.ParentDN.Config)
 	}
@@ -516,6 +567,7 @@ func (s ClassSchema) DataSourceSchema() datasourceschema.Schema {
 	return datasourceschema.Schema{
 		MarkdownDescription: s.DataSourceDescription,
 		Attributes:          attributes,
+		Blocks:              blocks,
 	}
 }
 
