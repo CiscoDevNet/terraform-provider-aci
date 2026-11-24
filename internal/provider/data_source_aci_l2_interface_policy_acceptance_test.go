@@ -83,6 +83,8 @@ func TestAccDataSourceL2IfPolGenerated(t *testing.T) {
 							"value": {ExpectedValue: "value_2"},
 						}),
 					),
+					resource.TestCheckResourceAttrPair("data.aci_l2_interface_policy.test", "qinq", "aci_l2_interface_policy.test_1", "qinq"),
+					resource.TestCheckResourceAttrPair("data.aci_l2_interface_policy.test", "vepa", "aci_l2_interface_policy.test_1", "vepa"),
 				),
 			},
 			{

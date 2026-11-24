@@ -112,6 +112,9 @@ func TestAccDataSourceInfraSHPortSGenerated(t *testing.T) {
 							"value": {ExpectedValue: "value_2"},
 						}),
 					),
+					resource.TestCheckResourceAttrPair("data.aci_spine_access_port_selector.test", "relation_infra_rs_sp_acc_grp", "aci_spine_access_port_selector.test_1", "relation_infra_rs_sp_acc_grp"),
+					resource.TestCheckResourceAttrPair("data.aci_spine_access_port_selector.test", "spine_access_port_selector_type", "aci_spine_access_port_selector.test_1", "spine_access_port_selector_type"),
+					resource.TestCheckResourceAttrPair("data.aci_spine_access_port_selector.test", "spine_interface_profile_dn", "aci_spine_access_port_selector.test_1", "spine_interface_profile_dn"),
 				),
 			},
 			{

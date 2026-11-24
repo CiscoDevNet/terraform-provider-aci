@@ -10,6 +10,9 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-testing/config"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
+	"github.com/hashicorp/terraform-plugin-testing/knownvalue"
+	"github.com/hashicorp/terraform-plugin-testing/statecheck"
+	"github.com/hashicorp/terraform-plugin-testing/tfjsonpath"
 
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/acceptancetest"
 )
@@ -34,6 +37,15 @@ func TestAccDataSourceFvCtxGenerated(t *testing.T) {
 				},
 				Config:          testAccDataSourceFvCtxExisting,
 				ConfigVariables: variables,
+				ConfigStateChecks: []statecheck.StateCheck{
+					statecheck.ExpectKnownValue("data.aci_vrf.test", tfjsonpath.New("relation_fv_rs_bgp_ctx_pol"), knownvalue.NotNull()),
+					statecheck.ExpectKnownValue("data.aci_vrf.test", tfjsonpath.New("relation_fv_rs_ctx_mon_pol"), knownvalue.NotNull()),
+					statecheck.ExpectKnownValue("data.aci_vrf.test", tfjsonpath.New("relation_fv_rs_ctx_to_ep_ret"), knownvalue.NotNull()),
+					stateCheckWithVersion(t, "1.1(1j)-",
+						statecheck.ExpectKnownValue("data.aci_vrf.test", tfjsonpath.New("relation_fv_rs_ctx_to_ext_route_tag_pol"), knownvalue.NotNull()),
+					),
+					statecheck.ExpectKnownValue("data.aci_vrf.test", tfjsonpath.New("relation_fv_rs_ospf_ctx_pol"), knownvalue.NotNull()),
+				},
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttrSet("data.aci_vrf.test", "id"),
 					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
@@ -854,6 +866,22 @@ func TestAccDataSourceFvCtxGenerated(t *testing.T) {
 							"value": {ExpectedValue: "value_2"},
 						}),
 					),
+					resource.TestCheckResourceAttrPair("data.aci_vrf.test", "bd_enforced_enable", "aci_vrf.test_1", "bd_enforced_enable"),
+					resource.TestCheckResourceAttr("data.aci_vrf.test", "knw_mcast_act", ""),
+					resource.TestCheckResourceAttrPair("data.aci_vrf.test", "pc_enf_dir", "aci_vrf.test_1", "pc_enf_dir"),
+					resource.TestCheckResourceAttrPair("data.aci_vrf.test", "pc_enf_pref", "aci_vrf.test_1", "pc_enf_pref"),
+					resource.TestCheckResourceAttr("data.aci_vrf.test", "relation_fv_rs_ctx_mcast_to.#", "0"),
+					composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+						acceptancetest.CheckSetPair("data.aci_vrf.test", "relation_fv_rs_ctx_to_bgp_ctx_af_pol", "aci_vrf.test_1", "relation_fv_rs_ctx_to_bgp_ctx_af_pol"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+						acceptancetest.CheckSetPair("data.aci_vrf.test", "relation_fv_rs_ctx_to_eigrp_ctx_af_pol", "aci_vrf.test_1", "relation_fv_rs_ctx_to_eigrp_ctx_af_pol"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "1.1(1j)-", "inside",
+						acceptancetest.CheckSetPair("data.aci_vrf.test", "relation_fv_rs_ctx_to_ospf_ctx_pol", "aci_vrf.test_1", "relation_fv_rs_ctx_to_ospf_ctx_pol"),
+					),
+					resource.TestCheckResourceAttr("data.aci_vrf.test", "relation_fv_rs_vrf_validation_pol", ""),
+					resource.TestCheckResourceAttrPair("data.aci_vrf.test", "tenant_dn", "aci_vrf.test_1", "tenant_dn"),
 				),
 			},
 			{

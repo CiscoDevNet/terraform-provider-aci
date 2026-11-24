@@ -207,6 +207,7 @@ func TestAccDataSourceInfraAttEntityPGenerated(t *testing.T) {
 							"value": {ExpectedValue: "value_2"},
 						}),
 					),
+					acceptancetest.CheckSetPair("data.aci_attachable_access_entity_profile.test", "relation_infra_rs_dom_p", "aci_attachable_access_entity_profile.test_1", "relation_infra_rs_dom_p"),
 				),
 			},
 			{

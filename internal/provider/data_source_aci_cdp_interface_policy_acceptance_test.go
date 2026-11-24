@@ -77,6 +77,7 @@ func TestAccDataSourceCdpIfPolGenerated(t *testing.T) {
 							"value": {ExpectedValue: "value_2"},
 						}),
 					),
+					resource.TestCheckResourceAttrPair("data.aci_cdp_interface_policy.test", "admin_st", "aci_cdp_interface_policy.test_1", "admin_st"),
 				),
 			},
 			{

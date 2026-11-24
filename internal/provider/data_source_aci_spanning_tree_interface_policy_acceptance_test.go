@@ -79,6 +79,9 @@ func TestAccDataSourceStpIfPolGenerated(t *testing.T) {
 							"value": {ExpectedValue: "value_2"},
 						}),
 					),
+					resource.TestCheckResourceAttrPair("data.aci_spanning_tree_interface_policy.test", "ctrl.#", "aci_spanning_tree_interface_policy.test_1", "ctrl.#"),
+					resource.TestCheckResourceAttrPair("data.aci_spanning_tree_interface_policy.test", "ctrl.0", "aci_spanning_tree_interface_policy.test_1", "ctrl.0"),
+					resource.TestCheckResourceAttrPair("data.aci_spanning_tree_interface_policy.test", "ctrl.1", "aci_spanning_tree_interface_policy.test_1", "ctrl.1"),
 				),
 			},
 			{

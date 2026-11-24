@@ -113,6 +113,9 @@ func TestAccDataSourceInfraHPortSGenerated(t *testing.T) {
 							"value": {ExpectedValue: "value_2"},
 						}),
 					),
+					resource.TestCheckResourceAttrPair("data.aci_access_port_selector.test", "access_port_selector_type", "aci_access_port_selector.test_1", "access_port_selector_type"),
+					resource.TestCheckResourceAttrPair("data.aci_access_port_selector.test", "leaf_interface_profile_dn", "aci_access_port_selector.test_1", "leaf_interface_profile_dn"),
+					resource.TestCheckResourceAttrPair("data.aci_access_port_selector.test", "relation_infra_rs_acc_base_grp", "aci_access_port_selector.test_1", "relation_infra_rs_acc_base_grp"),
 				),
 			},
 			{

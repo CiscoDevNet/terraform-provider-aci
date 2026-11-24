@@ -480,6 +480,12 @@ func TestAccDataSourceVzAnyGenerated(t *testing.T) {
 							},
 						}),
 					),
+					resource.TestCheckResourceAttrPair("data.aci_any.test", "match_t", "aci_any.test_1", "match_t"),
+					resource.TestCheckResourceAttrPair("data.aci_any.test", "pref_gr_memb", "aci_any.test_1", "pref_gr_memb"),
+					acceptancetest.CheckSetPair("data.aci_any.test", "relation_vz_rs_any_to_cons", "aci_any.test_1", "relation_vz_rs_any_to_cons"),
+					acceptancetest.CheckSetPair("data.aci_any.test", "relation_vz_rs_any_to_cons_if", "aci_any.test_1", "relation_vz_rs_any_to_cons_if"),
+					acceptancetest.CheckSetPair("data.aci_any.test", "relation_vz_rs_any_to_prov", "aci_any.test_1", "relation_vz_rs_any_to_prov"),
+					resource.TestCheckResourceAttrPair("data.aci_any.test", "vrf_dn", "aci_any.test_1", "vrf_dn"),
 				),
 			},
 			{

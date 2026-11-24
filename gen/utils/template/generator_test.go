@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"go/ast"
 	"go/parser"
 	"go/token"
@@ -1014,6 +1015,88 @@ func TestDatasourceTestTemplateGroupedReferences(t *testing.T) {
 	assert.NotContains(t, string(formatted), `resource.TestCheckTypeSetElemAttrPair("data.aci_tenant.test", "contracts.*.contract_name"`)
 	assert.NotContains(t, string(formatted), `resource.TestCheckTypeSetElemAttr("data.aci_tenant.test", "contracts.*.members.*"`)
 	assert.NotContains(t, string(formatted), `resource.TestCheckTypeSetElemAttrPair("data.aci_tenant.test", "contracts.*.members.*"`)
+}
+
+func TestDatasourceTestTemplateLegacyNamedRelation(t *testing.T) {
+	test.InitializeTest(t)
+	class := testClass(t, "fvTenant", data.ResourceArtifact, data.DatasourceArtifact)
+	class.ResourceName = "tenant"
+	class.PropertiesAll = []string{"name"}
+	class.IdentifiedBy = []string{"name"}
+	class.Properties = map[string]*data.Property{
+		"name": {PropertyName: "name", AttributeName: "name", ValueType: data.String, Required: true, TestValues: &data.TestValues{
+			Create: data.TestValueScenario{Defined: true, Entries: []data.TestValueEntry{{ConfigValue: "name_1", AssertValue: "name_1", ConfigInclude: true}}},
+		}},
+	}
+	monitor := testClass(t, "fvRsTenantMonPol")
+	monitor.ResourceNameNested = "relation_to_monitoring_policy"
+	monitor.IsSingleNestedWhenDefinedAsChild = true
+	monitor.PropertiesAll = []string{"tnMonEPGPolName"}
+	monitor.Properties = map[string]*data.Property{
+		"tnMonEPGPolName": {PropertyName: "tnMonEPGPolName", AttributeName: "monitoring_policy_name", ValueType: data.String},
+	}
+	class.TestChildren = []*data.TestChild{{Class: monitor.Name, Instances: []data.TestChildInstance{{Properties: map[string]data.TestValueScenario{
+		"monitoring_policy_name": {Defined: true, Entries: []data.TestValueEntry{{ConfigValue: "policy_1", AssertValue: "policy_1", ConfigInclude: true}}},
+	}}}}}
+	class.LegacyAttributes = []data.MigrationAttribute{
+		{AttributeName: "relation_fv_rs_tenant_mon_pol", ChildName: monitor.Name, Named: true, Type: data.StringAttribute, Status: data.LegacyDeprecated},
+		{AttributeName: "legacy_name", ChildAttribute: "name", Type: data.StringAttribute, Status: data.LegacyDeprecated},
+		{AttributeName: "legacy_targets", ChildName: monitor.Name, Type: data.SetAttribute, Status: data.LegacyDeprecated},
+		{AttributeName: "legacy_block", ChildName: monitor.Name, Type: data.SetNestedAttribute, Block: true, Status: data.LegacyDeprecated},
+	}
+	store := &data.DataStore{Classes: map[string]data.Class{class.Name.String(): class, monitor.Name.String(): monitor}}
+	generator := loadActiveGenerator(t, store)
+	testCases := []test.TestCase{
+		{Name: "test_no_legacy_aliases", Input: "none"},
+		{Name: "test_named_relation", Input: "named"},
+		{Name: "test_version_gated_relation", Input: "versioned"},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			class, monitor := class, monitor
+			if testCase.Input == "none" {
+				class.LegacyAttributes = nil
+			}
+			if testCase.Input == "versioned" {
+				versions, err := data.NewVersions("1.0(1e)-6.1(1e)")
+				if !assert.NoError(t, err) {
+					return
+				}
+				monitor.SupportedVersions = versions
+			}
+			store.Classes[monitor.Name.String()] = monitor
+			var rendered bytes.Buffer
+			if !assert.NoError(t, generator.templates[datasourceTestTemplateName].Execute(&rendered, TemplateContext{Class: &class, DataStore: store})) {
+				return
+			}
+			formatted, err := formatRenderedTemplate("data_source_aci_tenant_acceptance_test.go", rendered.Bytes())
+			if !assert.NoError(t, err) {
+				return
+			}
+			output := string(formatted)
+			assert.Contains(t, output, `resource.TestCheckResourceAttr("data.aci_tenant.test", "relation_to_monitoring_policy.monitoring_policy_name", "policy_1")`)
+			if testCase.Input == "none" {
+				assert.NotContains(t, output, "ConfigStateChecks:")
+				for _, name := range []string{"knownvalue", "statecheck", "tfjsonpath"} {
+					assert.NotContains(t, output, `"github.com/hashicorp/terraform-plugin-testing/`+name+`"`)
+				}
+				return
+			}
+			assert.Equal(t, 1, strings.Count(output, "ConfigStateChecks:"))
+			assert.Contains(t, output, `statecheck.ExpectKnownValue("data.aci_tenant.test", tfjsonpath.New("relation_fv_rs_tenant_mon_pol"), knownvalue.NotNull())`)
+			assert.Contains(t, output, `resource.TestCheckResourceAttrPair("data.aci_tenant.test", "legacy_name", "aci_tenant.test_1", "legacy_name")`)
+			for _, name := range []string{"legacy_targets", "legacy_block"} {
+				assert.Contains(t, output, fmt.Sprintf(`acceptancetest.CheckSetPair("data.aci_tenant.test", %q, "aci_tenant.test_1", %q)`, name, name))
+				assert.NotContains(t, output, fmt.Sprintf(`resource.TestCheckResourceAttrPair("data.aci_tenant.test", %q`, name))
+			}
+			assert.NotContains(t, output, `resource.TestCheckResourceAttrPair("data.aci_tenant.test", "relation_fv_rs_tenant_mon_pol"`)
+			if testCase.Input == "versioned" {
+				assert.Contains(t, output, "stateCheckWithVersion(t, \"1.0(1e)-6.1(1e)\",\n\t\t\t\t\t\tstatecheck.ExpectKnownValue(")
+			} else {
+				assert.NotContains(t, output, "stateCheckWithVersion(")
+			}
+		})
+	}
 }
 
 func TestDatasourceDocumentationTemplate(t *testing.T) {

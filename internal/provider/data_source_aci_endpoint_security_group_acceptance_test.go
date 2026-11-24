@@ -10,6 +10,9 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-testing/config"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
+	"github.com/hashicorp/terraform-plugin-testing/knownvalue"
+	"github.com/hashicorp/terraform-plugin-testing/statecheck"
+	"github.com/hashicorp/terraform-plugin-testing/tfjsonpath"
 
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/acceptancetest"
 )
@@ -34,6 +37,9 @@ func TestAccDataSourceFvESgGenerated(t *testing.T) {
 				},
 				Config:          testAccDataSourceFvESgExisting,
 				ConfigVariables: variables,
+				ConfigStateChecks: []statecheck.StateCheck{
+					statecheck.ExpectKnownValue("data.aci_endpoint_security_group.test", tfjsonpath.New("relation_fv_rs_scope"), knownvalue.NotNull()),
+				},
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttrSet("data.aci_endpoint_security_group.test", "id"),
 					resource.TestCheckResourceAttr("data.aci_endpoint_security_group.test", "annotation", "annotation_1"),
@@ -751,6 +757,17 @@ func TestAccDataSourceFvESgGenerated(t *testing.T) {
 						"key":   {ExpectedValue: "key_2"},
 						"value": {ExpectedValue: "value_2"},
 					}),
+					resource.TestCheckResourceAttrPair("data.aci_endpoint_security_group.test", "application_profile_dn", "aci_endpoint_security_group.test_1", "application_profile_dn"),
+					resource.TestCheckResourceAttrPair("data.aci_endpoint_security_group.test", "match_t", "aci_endpoint_security_group.test_1", "match_t"),
+					resource.TestCheckResourceAttrPair("data.aci_endpoint_security_group.test", "pc_enf_pref", "aci_endpoint_security_group.test_1", "pc_enf_pref"),
+					resource.TestCheckResourceAttrPair("data.aci_endpoint_security_group.test", "pref_gr_memb", "aci_endpoint_security_group.test_1", "pref_gr_memb"),
+					acceptancetest.CheckSetPair("data.aci_endpoint_security_group.test", "relation_fv_rs_cons", "aci_endpoint_security_group.test_1", "relation_fv_rs_cons"),
+					acceptancetest.CheckSetPair("data.aci_endpoint_security_group.test", "relation_fv_rs_cons_if", "aci_endpoint_security_group.test_1", "relation_fv_rs_cons_if"),
+					resource.TestCheckResourceAttr("data.aci_endpoint_security_group.test", "relation_fv_rs_cust_qos_pol", ""),
+					acceptancetest.CheckSetPair("data.aci_endpoint_security_group.test", "relation_fv_rs_intra_epg", "aci_endpoint_security_group.test_1", "relation_fv_rs_intra_epg"),
+					resource.TestCheckResourceAttr("data.aci_endpoint_security_group.test", "relation_fv_rs_prot_by.#", "0"),
+					acceptancetest.CheckSetPair("data.aci_endpoint_security_group.test", "relation_fv_rs_prov", "aci_endpoint_security_group.test_1", "relation_fv_rs_prov"),
+					acceptancetest.CheckSetPair("data.aci_endpoint_security_group.test", "relation_fv_rs_sec_inherited", "aci_endpoint_security_group.test_1", "relation_fv_rs_sec_inherited"),
 				),
 			},
 			{

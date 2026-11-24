@@ -10,6 +10,9 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-testing/config"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
+	"github.com/hashicorp/terraform-plugin-testing/knownvalue"
+	"github.com/hashicorp/terraform-plugin-testing/statecheck"
+	"github.com/hashicorp/terraform-plugin-testing/tfjsonpath"
 
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/acceptancetest"
 )
@@ -34,6 +37,9 @@ func TestAccDataSourceFvTenantGenerated(t *testing.T) {
 				},
 				Config:          testAccDataSourceFvTenantExisting,
 				ConfigVariables: variables,
+				ConfigStateChecks: []statecheck.StateCheck{
+					statecheck.ExpectKnownValue("data.aci_tenant.test", tfjsonpath.New("relation_fv_rs_tenant_mon_pol"), knownvalue.NotNull()),
+				},
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttrSet("data.aci_tenant.test", "id"),
 					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
@@ -49,7 +55,7 @@ func TestAccDataSourceFvTenantGenerated(t *testing.T) {
 					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
 						resource.TestCheckResourceAttr("data.aci_tenant.test", "relation_to_monitoring_policy.annotation", "annotation_1"),
 					),
-					resource.TestCheckResourceAttr("data.aci_tenant.test", "relation_to_monitoring_policy.monitoring_policy_name", "default"),
+					resource.TestCheckResourceAttrPair("data.aci_tenant.test", "relation_to_monitoring_policy.monitoring_policy_name", "aci_monitoring_policy.test_1.0", "name"),
 					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
 						resource.TestCheckResourceAttr("data.aci_tenant.test", "relation_to_monitoring_policy.annotations.#", "2"),
 					),
@@ -110,6 +116,7 @@ func TestAccDataSourceFvTenantGenerated(t *testing.T) {
 							"value": {ExpectedValue: "value_2"},
 						}),
 					),
+					resource.TestCheckResourceAttr("data.aci_tenant.test", "relation_fv_rs_tn_deny_rule.#", "0"),
 				),
 			},
 			{
@@ -124,7 +131,13 @@ func TestAccDataSourceFvTenantGenerated(t *testing.T) {
 	})
 }
 
-const testAccDataSourceFvTenantDependencies = testAccConfig
+const testAccDataSourceFvTenantDependencies = testAccConfig + `
+resource "aci_monitoring_policy" "test_1" {
+  count     = 1
+  name      = format("%s-%s", var.test_prefix, "name_1")
+  tenant_dn = "uni/tn-common"
+}
+`
 
 const testAccDataSourceFvTenantExisting = testAccDataSourceFvTenantDependencies + `
 resource "aci_tenant" "test_1" {
@@ -136,7 +149,7 @@ resource "aci_tenant" "test_1" {
   owner_tag   = "owner_tag_1"
   relation_to_monitoring_policy = {
     annotation             = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? "annotation_1" : null
-    monitoring_policy_name = "default"
+    monitoring_policy_name = aci_monitoring_policy.test_1[0].name
     annotations = provider::aci::compare_versions(var.apic_version, "inside", "3.2(1l)-") ? [
       {
         key   = "key_1"

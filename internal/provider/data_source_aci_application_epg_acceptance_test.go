@@ -10,6 +10,9 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-testing/config"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
+	"github.com/hashicorp/terraform-plugin-testing/knownvalue"
+	"github.com/hashicorp/terraform-plugin-testing/statecheck"
+	"github.com/hashicorp/terraform-plugin-testing/tfjsonpath"
 
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/acceptancetest"
 )
@@ -34,6 +37,17 @@ func TestAccDataSourceFvAEPgGenerated(t *testing.T) {
 				},
 				Config:          testAccDataSourceFvAEPgExisting,
 				ConfigVariables: variables,
+				ConfigStateChecks: []statecheck.StateCheck{
+					statecheck.ExpectKnownValue("data.aci_application_epg.test", tfjsonpath.New("relation_fv_rs_aepg_mon_pol"), knownvalue.NotNull()),
+					statecheck.ExpectKnownValue("data.aci_application_epg.test", tfjsonpath.New("relation_fv_rs_bd"), knownvalue.NotNull()),
+					statecheck.ExpectKnownValue("data.aci_application_epg.test", tfjsonpath.New("relation_fv_rs_cust_qos_pol"), knownvalue.NotNull()),
+					stateCheckWithVersion(t, "3.0(1k)-",
+						statecheck.ExpectKnownValue("data.aci_application_epg.test", tfjsonpath.New("relation_fv_rs_dpp_pol"), knownvalue.NotNull()),
+					),
+					stateCheckWithVersion(t, "3.0(1k)-",
+						statecheck.ExpectKnownValue("data.aci_application_epg.test", tfjsonpath.New("relation_fv_rs_trust_ctrl"), knownvalue.NotNull()),
+					),
+				},
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttrSet("data.aci_application_epg.test", "id"),
 					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
@@ -2279,6 +2293,33 @@ func TestAccDataSourceFvAEPgGenerated(t *testing.T) {
 							"value": {ExpectedValue: "value_2"},
 						}),
 					),
+					resource.TestCheckResourceAttrPair("data.aci_application_epg.test", "application_profile_dn", "aci_application_epg.test_1", "application_profile_dn"),
+					resource.TestCheckResourceAttrPair("data.aci_application_epg.test", "exception_tag", "aci_application_epg.test_1", "exception_tag"),
+					resource.TestCheckResourceAttrPair("data.aci_application_epg.test", "flood_on_encap", "aci_application_epg.test_1", "flood_on_encap"),
+					resource.TestCheckResourceAttrPair("data.aci_application_epg.test", "fwd_ctrl", "aci_application_epg.test_1", "fwd_ctrl"),
+					resource.TestCheckResourceAttrPair("data.aci_application_epg.test", "has_mcast_source", "aci_application_epg.test_1", "has_mcast_source"),
+					resource.TestCheckResourceAttrPair("data.aci_application_epg.test", "is_attr_based_epg", "aci_application_epg.test_1", "is_attr_based_epg"),
+					resource.TestCheckResourceAttrPair("data.aci_application_epg.test", "match_t", "aci_application_epg.test_1", "match_t"),
+					resource.TestCheckResourceAttrPair("data.aci_application_epg.test", "pc_enf_pref", "aci_application_epg.test_1", "pc_enf_pref"),
+					resource.TestCheckResourceAttrPair("data.aci_application_epg.test", "pref_gr_memb", "aci_application_epg.test_1", "pref_gr_memb"),
+					resource.TestCheckResourceAttrPair("data.aci_application_epg.test", "prio", "aci_application_epg.test_1", "prio"),
+					acceptancetest.CheckSetPair("data.aci_application_epg.test", "relation_fv_rs_cons", "aci_application_epg.test_1", "relation_fv_rs_cons"),
+					acceptancetest.CheckSetPair("data.aci_application_epg.test", "relation_fv_rs_cons_if", "aci_application_epg.test_1", "relation_fv_rs_cons_if"),
+					composeAggregateTestCheckFuncWithVersion(t, "2.0(1m)-", "inside",
+						acceptancetest.CheckSetPair("data.aci_application_epg.test", "relation_fv_rs_fc_path_att", "aci_application_epg.test_1", "relation_fv_rs_fc_path_att"),
+					),
+					composeAggregateTestCheckFuncWithVersion(t, "3.0(1k)-", "inside",
+						acceptancetest.CheckSetPair("data.aci_application_epg.test", "relation_fv_rs_intra_epg", "aci_application_epg.test_1", "relation_fv_rs_intra_epg"),
+					),
+					acceptancetest.CheckSetPair("data.aci_application_epg.test", "relation_fv_rs_node_att", "aci_application_epg.test_1", "relation_fv_rs_node_att"),
+					resource.TestCheckResourceAttr("data.aci_application_epg.test", "relation_fv_rs_path_att.#", "0"),
+					acceptancetest.CheckSetPair("data.aci_application_epg.test", "relation_fv_rs_prot_by", "aci_application_epg.test_1", "relation_fv_rs_prot_by"),
+					acceptancetest.CheckSetPair("data.aci_application_epg.test", "relation_fv_rs_prov", "aci_application_epg.test_1", "relation_fv_rs_prov"),
+					resource.TestCheckResourceAttr("data.aci_application_epg.test", "relation_fv_rs_prov_def.#", "0"),
+					composeAggregateTestCheckFuncWithVersion(t, "2.3(1e)-", "inside",
+						acceptancetest.CheckSetPair("data.aci_application_epg.test", "relation_fv_rs_sec_inherited", "aci_application_epg.test_1", "relation_fv_rs_sec_inherited"),
+					),
+					resource.TestCheckResourceAttrPair("data.aci_application_epg.test", "shutdown", "aci_application_epg.test_1", "shutdown"),
 				),
 			},
 			{
@@ -2306,6 +2347,11 @@ resource "aci_application_profile" "test_1" {
 resource "aci_bridge_domain" "test_1" {
   count     = 1
   pim       = provider::aci::compare_versions(var.apic_version, "inside", "2.0(1m)-") ? "yes" : null
+  name      = "name_1"
+  parent_dn = aci_tenant.test_1[0].id
+}
+resource "aci_data_plane_policing_policy" "test_1" {
+  count     = provider::aci::compare_versions(var.apic_version, "inside", "1.2(2g)-") ? 1 : 0
   name      = "name_1"
   parent_dn = aci_tenant.test_1[0].id
 }
@@ -2346,10 +2392,6 @@ resource "aci_custom_qos_policy" "test_1" {
   count     = 1
   name      = "name_1"
   parent_dn = aci_tenant.test_1[0].id
-}
-resource "aci_data_plane_policing_policy" "test_1" {
-  count = provider::aci::compare_versions(var.apic_version, "inside", "1.2(2g)-") ? 1 : 0
-  name  = format("%s-%s", var.test_prefix, "name_1")
 }
 resource "aci_taboo_contract" "test_1" {
   count     = 1

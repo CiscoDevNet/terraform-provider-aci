@@ -5,7 +5,14 @@
 {{- $dataSourceAddress := printf "data.aci_%s.test" $class.ResourceName -}}
 {{- $dependencies := $class.DataSourceTestDependenciesHCL .DataStore -}}
 {{- $existing := $class.DataSourceTestExistingHCL .DataStore -}}
-{{- $missing := $class.DataSourceTestMissingHCL .DataStore }}
+{{- $missing := $class.DataSourceTestMissingHCL .DataStore -}}
+{{- $assertions := $class.DataSourceTestAssertions .DataStore -}}
+{{- $hasStateChecks := false -}}
+{{- range $assertions }}
+    {{- if .IsAttributeNotNull }}
+        {{- $hasStateChecks = true }}
+    {{- end }}
+{{- end }}
 
 package provider
 
@@ -20,6 +27,11 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-testing/config"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
+{{- if $hasStateChecks }}
+	"github.com/hashicorp/terraform-plugin-testing/knownvalue"
+	"github.com/hashicorp/terraform-plugin-testing/statecheck"
+	"github.com/hashicorp/terraform-plugin-testing/tfjsonpath"
+{{- end }}
 
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/acceptancetest"
 )
@@ -62,9 +74,25 @@ func TestAccDataSource{{ $class.Name.Capitalized }}Generated(t *testing.T) {
 {{- if $class.TestConfig.DataSourceExpectNonEmptyPlan }}
 				ExpectNonEmptyPlan: true,
 {{- end }}
+{{- if $hasStateChecks }}
+				ConfigStateChecks: []statecheck.StateCheck{
+{{- range $assertion := $assertions }}
+    {{- if $assertion.IsAttributeNotNull }}
+        {{- range $versions := $assertion.Versions }}
+					stateCheckWithVersion(t, {{ printf "%q" $versions }},
+        {{- end }}
+					statecheck.ExpectKnownValue({{ printf "%q" $dataSourceAddress }}, tfjsonpath.New({{ printf "%q" $assertion.AttributePath }}), knownvalue.NotNull()),
+        {{- range $assertion.Versions }}
+					),
+        {{- end }}
+    {{- end }}
+{{- end }}
+				},
+{{- end }}
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttrSet({{ printf "%q" $dataSourceAddress }}, "id"),
-{{- range $assertion := $class.DataSourceTestAssertions .DataStore }}
+{{- range $assertion := $assertions }}
+{{- if not $assertion.IsAttributeNotNull }}
 {{- $scopedSetElement := and $assertion.Parents (or $assertion.IsSetElementValue $assertion.IsSetElementPair) }}
 {{- range $versions := $assertion.Versions }}
 					composeAggregateTestCheckFuncWithVersion(t, {{ printf "%q" $versions }}, "inside",
@@ -83,6 +111,8 @@ func TestAccDataSource{{ $class.Name.Capitalized }}Generated(t *testing.T) {
 						resource.TestCheckResourceAttr({{ printf "%q" $dataSourceAddress }}, {{ printf "%q" $assertion.AttributePath }}, {{ printf "%q" $assertion.ExpectedValue }}),
 {{- else if $assertion.IsAttributePair }}
 						resource.TestCheckResourceAttrPair({{ printf "%q" $dataSourceAddress }}, {{ printf "%q" $assertion.AttributePath }}, {{ printf "%q" $assertion.PairAddress }}, {{ printf "%q" $assertion.PairAttribute }}),
+{{- else if $assertion.IsSetPair }}
+						acceptancetest.CheckSetPair({{ printf "%q" $dataSourceAddress }}, {{ printf "%q" $assertion.AttributePath }}, {{ printf "%q" $assertion.PairAddress }}, {{ printf "%q" $assertion.PairAttribute }}),
 {{- else if $assertion.IsSetCount }}
 						resource.TestCheckResourceAttr({{ printf "%q" $dataSourceAddress }}, {{ printf "%q" (printf "%s.#" $assertion.AttributePath) }}, {{ printf "%q" (printf "%d" $assertion.ExpectedCount) }}),
 {{- else if $scopedSetElement }}
@@ -127,6 +157,7 @@ func TestAccDataSource{{ $class.Name.Capitalized }}Generated(t *testing.T) {
 {{- end }}
 {{- range $versions := $assertion.Versions }}
 					),
+{{- end }}
 {{- end }}
 {{- end }}
 				),

@@ -10,6 +10,9 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-testing/config"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
+	"github.com/hashicorp/terraform-plugin-testing/knownvalue"
+	"github.com/hashicorp/terraform-plugin-testing/statecheck"
+	"github.com/hashicorp/terraform-plugin-testing/tfjsonpath"
 
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/acceptancetest"
 )
@@ -34,6 +37,9 @@ func TestAccDataSourceFvApGenerated(t *testing.T) {
 				},
 				Config:          testAccDataSourceFvApExisting,
 				ConfigVariables: variables,
+				ConfigStateChecks: []statecheck.StateCheck{
+					statecheck.ExpectKnownValue("data.aci_application_profile.test", tfjsonpath.New("relation_fv_rs_ap_mon_pol"), knownvalue.NotNull()),
+				},
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttrSet("data.aci_application_profile.test", "id"),
 					composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
@@ -112,6 +118,8 @@ func TestAccDataSourceFvApGenerated(t *testing.T) {
 							"value": {ExpectedValue: "value_2"},
 						}),
 					),
+					resource.TestCheckResourceAttrPair("data.aci_application_profile.test", "prio", "aci_application_profile.test_1", "prio"),
+					resource.TestCheckResourceAttrPair("data.aci_application_profile.test", "tenant_dn", "aci_application_profile.test_1", "tenant_dn"),
 				),
 			},
 			{
