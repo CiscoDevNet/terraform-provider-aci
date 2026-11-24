@@ -11,19 +11,21 @@ documentation:
     notes:
     - This resource should not be used in combination with the `tags` nested attributes
       of other resources for the same object. Doing so will result in unexpected behaviour.
+    warnings:
+    - This resource has been migrated to the terraform plugin protocol version 6,
+      refer to the [migration guide](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/guides/migration)
+      for more details and implications for already managed resources.
   sub_category: Generic
   ui_locations:
   - Under every object as Policy Tags in the Operational tab in recent APIC versions.
 example_parent_class: fvTenant
-migration_source: from_sdkv2
 properties:
   key:
     documentation:
       description: The key used to uniquely identify this configuration object.
   value:
     restriction: required
-state_upgrades:
-- prior_schema_version: 1
+schema_version: 1
 test_config:
   dependencies:
   - class_name: fvAEPg

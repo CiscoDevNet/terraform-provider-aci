@@ -2576,7 +2576,7 @@ func TestSetLegacyTestValues(t *testing.T) {
 			Input: setLegacyTestValuesInput{
 				PropertyName:       "name",
 				AttributeName:      "name",
-				StateUpgradeValues: map[int]StateUpgradeValue{0: {AttributeName: "old_name", Type: String, Status: Functioning}},
+				StateUpgradeValues: map[int]StateUpgradeValue{0: {AttributeName: "old_name", Type: String, Status: LegacyDeprecated}},
 			},
 			Expected: setLegacyTestValuesExpected{LegacyNil: true},
 		},
@@ -2586,7 +2586,7 @@ func TestSetLegacyTestValues(t *testing.T) {
 				PropertyName:       "name",
 				AttributeName:      "name",
 				IgnoreInTest:       true,
-				StateUpgradeValues: map[int]StateUpgradeValue{0: {AttributeName: "old_name", Type: String, Status: Functioning}},
+				StateUpgradeValues: map[int]StateUpgradeValue{0: {AttributeName: "old_name", Type: String, Status: LegacyDeprecated}},
 				ExistingTestValues: &TestValues{Create: testValueScenario(TestValueEntry{ConfigValue: "name_1", ConfigInclude: true, AssertValue: "name_1", ValueType: StringValue})},
 			},
 			Expected: setLegacyTestValuesExpected{LegacyNil: true},
@@ -2597,7 +2597,7 @@ func TestSetLegacyTestValues(t *testing.T) {
 				PropertyName:       "pcTag",
 				AttributeName:      "pc_tag",
 				ReadOnly:           true,
-				StateUpgradeValues: map[int]StateUpgradeValue{0: {AttributeName: "old_pc_tag", Type: String, Status: Functioning}},
+				StateUpgradeValues: map[int]StateUpgradeValue{0: {AttributeName: "old_pc_tag", Type: String, Status: LegacyDeprecated}},
 				ExistingTestValues: &TestValues{Create: testValueScenario(TestValueEntry{ConfigValue: "1", ConfigInclude: true, AssertValue: "1", ValueType: StringValue})},
 			},
 			Expected: setLegacyTestValuesExpected{LegacyNil: true},
@@ -2609,7 +2609,7 @@ func TestSetLegacyTestValues(t *testing.T) {
 				AttributeName: "tags",
 				ValueType:     Set,
 				StateUpgradeValues: map[int]StateUpgradeValue{
-					0: {AttributeName: "tag_string", Type: String, Status: Functioning},
+					0: {AttributeName: "tag_string", Type: String, Status: LegacyDeprecated},
 				},
 				ExistingTestValues: &TestValues{Create: testValueScenario(TestValueEntry{ConfigValue: "tag_a", ConfigInclude: true, AssertValue: "tag_a", ValueType: StringValue})},
 				PropertyDefinition: PropertyDefinition{
@@ -2633,7 +2633,7 @@ func TestSetLegacyTestValues(t *testing.T) {
 				PropertyName:       "descr",
 				AttributeName:      "description",
 				ValueType:          String,
-				StateUpgradeValues: map[int]StateUpgradeValue{0: {AttributeName: "old_description", Type: String, Status: Functioning}},
+				StateUpgradeValues: map[int]StateUpgradeValue{0: {AttributeName: "old_description", Type: String, Status: LegacyDeprecated}},
 				ExistingTestValues: &TestValues{Create: testValueScenario(TestValueEntry{ConfigValue: "description_1", ConfigInclude: true, AssertValue: "description_1", ValueType: StringValue})},
 				PropertyDefinition: PropertyDefinition{
 					TestConfig: TestConfigDefinition{
@@ -2679,7 +2679,7 @@ func TestSetLegacyTestValues(t *testing.T) {
 				AttributeName: "name",
 				ValueType:     String,
 				StateUpgradeValues: map[int]StateUpgradeValue{
-					0: {AttributeName: "name", Type: String, Status: Functioning},
+					0: {AttributeName: "name", Type: String, Status: LegacyDeprecated},
 				},
 				ExistingTestValues: &TestValues{Create: testValueScenario(TestValueEntry{ConfigValue: "name_1", ConfigInclude: true, AssertValue: "name_1", ValueType: StringValue})},
 			},
@@ -2693,7 +2693,7 @@ func TestSetLegacyTestValues(t *testing.T) {
 				ValueType:     String,
 				StateUpgradeValues: map[int]StateUpgradeValue{
 					0: {AttributeName: "old_name", Type: String, Status: Removed},
-					1: {AttributeName: "name", Type: String, Status: Functioning},
+					1: {AttributeName: "name", Type: String, Status: LegacyDeprecated},
 				},
 				ExistingTestValues: &TestValues{Create: testValueScenario(TestValueEntry{ConfigValue: "name_1", ConfigInclude: true, AssertValue: "name_1", ValueType: StringValue})},
 			},
@@ -2706,7 +2706,7 @@ func TestSetLegacyTestValues(t *testing.T) {
 				AttributeName: "name",
 				ValueType:     String,
 				StateUpgradeValues: map[int]StateUpgradeValue{
-					0: {AttributeName: "old_name", Type: String, Status: Functioning},
+					0: {AttributeName: "old_name", Type: String, Status: LegacyDeprecated},
 				},
 				ExistingTestValues: &TestValues{Create: testValueScenario(TestValueEntry{ConfigValue: "name_1", ConfigInclude: true, AssertValue: "name_1", ValueType: StringValue})},
 			},
@@ -2742,7 +2742,7 @@ func TestSetLegacyTestValues(t *testing.T) {
 				AttributeName: "parent_dn",
 				ValueType:     String,
 				StateUpgradeValues: map[int]StateUpgradeValue{
-					0: {AttributeName: "tenant_dn", Type: String, Status: Functioning},
+					0: {AttributeName: "tenant_dn", Type: String, Status: LegacyDeprecated},
 				},
 				ExistingTestValues: &TestValues{Create: testValueScenario(TestValueEntry{ConfigValue: "aci_tenant.test.id", ConfigInclude: true, AssertValue: "aci_tenant.test.id", ValueType: ReferenceValue})},
 			},
@@ -2758,7 +2758,7 @@ func TestSetLegacyTestValues(t *testing.T) {
 				AttributeName: "vlan_scope",
 				ValueType:     String,
 				StateUpgradeValues: map[int]StateUpgradeValue{
-					0: {AttributeName: "old_vlan_scope", Type: String, Status: Functioning},
+					0: {AttributeName: "old_vlan_scope", Type: String, Status: LegacyDeprecated},
 				},
 				ExistingTestValues: &TestValues{Create: testValueScenario(TestValueEntry{ConfigValue: "portlocal", ConfigInclude: true, AssertValue: "portlocal", ValueType: StringValue, Versions: versionsAll})},
 			},
@@ -2774,7 +2774,7 @@ func TestSetLegacyTestValues(t *testing.T) {
 				AttributeName: "tags",
 				ValueType:     Set,
 				StateUpgradeValues: map[int]StateUpgradeValue{
-					0: {AttributeName: "tag_string", Type: String, Status: Functioning},
+					0: {AttributeName: "tag_string", Type: String, Status: LegacyDeprecated},
 				},
 				ExistingTestValues: &TestValues{Create: testValueScenario(TestValueEntry{ConfigValue: "tag_a", ConfigInclude: true, AssertValue: "tag_a", ValueType: StringValue})},
 			},
@@ -2791,7 +2791,7 @@ func TestSetLegacyTestValues(t *testing.T) {
 				ValueType:     String,
 				StateUpgradeValues: map[int]StateUpgradeValue{
 					0: {AttributeName: "old_name", Type: Set, Status: Removed},
-					1: {AttributeName: "renamed_name", Type: String, Status: Functioning},
+					1: {AttributeName: "renamed_name", Type: String, Status: LegacyDeprecated},
 				},
 				ExistingTestValues: &TestValues{Create: testValueScenario(TestValueEntry{ConfigValue: "name_1", ConfigInclude: true, AssertValue: "name_1", ValueType: StringValue})},
 			},

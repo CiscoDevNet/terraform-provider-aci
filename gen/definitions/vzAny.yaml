@@ -5,7 +5,6 @@ documentation:
   sub_category: Networking
   ui_locations:
   - Tenants -> Networking -> VRFs -> EPG|ESG Collection for VRF
-migration_source: from_sdkv2
 properties:
   parentDn:
     test_config:
@@ -17,25 +16,42 @@ properties:
       description: Parameter used to determine whether the EPG is part of the preferred
         group. Members of this group are allowed to communicate without contracts.
 resource_name: any
+schema_version: 2
 state_upgrades:
-- attributes:
-    matchT:
-      legacy_attribute: match_t
-    parentDn:
-      legacy_attribute: vrf_dn
-    prefGrMemb:
-      legacy_attribute: pref_gr_memb
-  children:
-    vzRsAnyToCons:
-      attributes:
-        tnVzBrCPName:
-          legacy_attribute: relation_vz_rs_any_to_cons
-    vzRsAnyToConsIf:
-      attributes:
-        tnVzCPIfName:
-          legacy_attribute: relation_vz_rs_any_to_cons_if
-    vzRsAnyToProv:
-      attributes:
-        tnVzBrCPName:
-          legacy_attribute: relation_vz_rs_any_to_prov
-  prior_schema_version: 1
+  1:
+    attributes:
+      matchT:
+        attribute_name: match_t
+        status: deprecated
+      parentDn:
+        attribute_name: vrf_dn
+        status: deprecated
+      prefGrMemb:
+        attribute_name: pref_gr_memb
+        status: deprecated
+    children:
+      vzRsAnyToCons:
+        attributes:
+          tnVzBrCPName:
+            attribute_name: relation_vz_rs_any_to_cons
+            element_type: string_attribute
+            restriction: optional
+            status: deprecated
+            type: set_attribute
+      vzRsAnyToConsIf:
+        attributes:
+          tnVzCPIfName:
+            attribute_name: relation_vz_rs_any_to_cons_if
+            element_type: string_attribute
+            restriction: optional
+            status: deprecated
+            type: set_attribute
+      vzRsAnyToProv:
+        attributes:
+          tnVzBrCPName:
+            attribute_name: relation_vz_rs_any_to_prov
+            element_type: string_attribute
+            restriction: optional
+            status: deprecated
+            type: set_attribute
+    source: sdkv2

@@ -8,7 +8,6 @@ documentation:
 exclude_children:
 - fvSiteAssociated
 - vzAny
-migration_source: from_sdkv2
 properties:
   bdEnforcedEnable:
     attribute_name: bd_enforcement
@@ -58,56 +57,84 @@ properties:
   vrfIndex:
     restriction: exclude
 resource_name: vrf
+schema_version: 2
 state_upgrades:
-- attributes:
-    bdEnforcedEnable:
-      legacy_attribute: bd_enforced_enable
-    parentDn:
-      legacy_attribute: tenant_dn
-    pcEnfDir:
-      legacy_attribute: pc_enf_dir
-    pcEnfPref:
-      legacy_attribute: pc_enf_pref
-  children:
-    fvRsBgpCtxPol:
-      attributes:
-        tnBgpCtxPolName:
-          legacy_attribute: relation_fv_rs_bgp_ctx_pol
-    fvRsCtxMonPol:
-      attributes:
-        tnMonEPGPolName:
-          legacy_attribute: relation_fv_rs_ctx_mon_pol
-    fvRsCtxToBgpCtxAfPol:
-      attributes:
-        af:
-          legacy_attribute: af
-        tnBgpCtxAfPolName:
-          legacy_attribute: tn_bgp_ctx_af_pol_name
-      legacy_attribute: relation_fv_rs_ctx_to_bgp_ctx_af_pol
-    fvRsCtxToEigrpCtxAfPol:
-      attributes:
-        af:
-          legacy_attribute: af
-        tnEigrpCtxAfPolName:
-          legacy_attribute: tn_eigrp_ctx_af_pol_name
-      legacy_attribute: relation_fv_rs_ctx_to_eigrp_ctx_af_pol
-    fvRsCtxToEpRet:
-      attributes:
-        tnFvEpRetPolName:
-          legacy_attribute: relation_fv_rs_ctx_to_ep_ret
-    fvRsCtxToExtRouteTagPol:
-      attributes:
-        tnL3extRouteTagPolName:
-          legacy_attribute: relation_fv_rs_ctx_to_ext_route_tag_pol
-    fvRsCtxToOspfCtxPol:
-      attributes:
-        af:
-          legacy_attribute: af
-        tnOspfCtxPolName:
-          legacy_attribute: tn_ospf_ctx_pol_name
-      legacy_attribute: relation_fv_rs_ctx_to_ospf_ctx_pol
-    fvRsOspfCtxPol:
-      attributes:
-        tnOspfCtxPolName:
-          legacy_attribute: relation_fv_rs_ospf_ctx_pol
-  prior_schema_version: 1
+  1:
+    attributes:
+      bdEnforcedEnable:
+        attribute_name: bd_enforced_enable
+        status: deprecated
+      knw_mcast_act:
+        restriction: optional_computed
+        status: frozen
+        type: string_attribute
+      parentDn:
+        attribute_name: tenant_dn
+        status: deprecated
+      pcEnfDir:
+        attribute_name: pc_enf_dir
+        status: deprecated
+      pcEnfPref:
+        attribute_name: pc_enf_pref
+        status: deprecated
+      relation_fv_rs_ctx_mcast_to:
+        element_type: string_attribute
+        restriction: optional
+        status: frozen
+        type: set_attribute
+      relation_fv_rs_vrf_validation_pol:
+        restriction: optional_computed
+        status: frozen
+        type: string_attribute
+    children:
+      fvRsBgpCtxPol:
+        attributes:
+          tnBgpCtxPolName:
+            attribute_name: relation_fv_rs_bgp_ctx_pol
+            status: deprecated
+      fvRsCtxMonPol:
+        attributes:
+          tnMonEPGPolName:
+            attribute_name: relation_fv_rs_ctx_mon_pol
+            restriction: optional
+            status: deprecated
+      fvRsCtxToBgpCtxAfPol:
+        attribute_name: relation_fv_rs_ctx_to_bgp_ctx_af_pol
+        attributes:
+          af:
+            attribute_name: af
+          tnBgpCtxAfPolName:
+            attribute_name: tn_bgp_ctx_af_pol_name
+        status: deprecated
+      fvRsCtxToEigrpCtxAfPol:
+        attribute_name: relation_fv_rs_ctx_to_eigrp_ctx_af_pol
+        attributes:
+          af:
+            attribute_name: af
+          tnEigrpCtxAfPolName:
+            attribute_name: tn_eigrp_ctx_af_pol_name
+        status: deprecated
+      fvRsCtxToEpRet:
+        attributes:
+          tnFvEpRetPolName:
+            attribute_name: relation_fv_rs_ctx_to_ep_ret
+            status: deprecated
+      fvRsCtxToExtRouteTagPol:
+        attributes:
+          tnL3extRouteTagPolName:
+            attribute_name: relation_fv_rs_ctx_to_ext_route_tag_pol
+            status: deprecated
+      fvRsCtxToOspfCtxPol:
+        attribute_name: relation_fv_rs_ctx_to_ospf_ctx_pol
+        attributes:
+          af:
+            attribute_name: af
+          tnOspfCtxPolName:
+            attribute_name: tn_ospf_ctx_pol_name
+        status: deprecated
+      fvRsOspfCtxPol:
+        attributes:
+          tnOspfCtxPolName:
+            attribute_name: relation_fv_rs_ospf_ctx_pol
+            status: deprecated
+    source: sdkv2

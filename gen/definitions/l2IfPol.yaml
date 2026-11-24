@@ -4,7 +4,6 @@ documentation:
   - Fabric -> Access Policies -> Policies -> Interface -> L2 Interface
 exclude_parents:
 - infraInfra
-migration_source: from_sdkv2
 properties:
   qinq:
     attribute_name: q_in_q
@@ -25,10 +24,14 @@ properties:
       - config_value: portlocal
 resource_name: l2_interface_policy
 rn_prepend: infra
+schema_version: 2
 state_upgrades:
-- attributes:
-    qinq:
-      legacy_attribute: qinq
-    vepa:
-      legacy_attribute: vepa
-  prior_schema_version: 1
+  1:
+    attributes:
+      qinq:
+        attribute_name: qinq
+        status: deprecated
+      vepa:
+        attribute_name: vepa
+        status: deprecated
+    source: sdkv2

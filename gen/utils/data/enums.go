@@ -88,50 +88,83 @@ func (p *PlatformTypeEnum) UnmarshalText(text []byte) error {
 	return nil
 }
 
-// LegacyStatusEnum describes the current-schema exposure of a legacy attribute
-// declared in state_upgrades. The iota zero (Functioning) is the natural state
-// of a freshly renamed attribute where both legacy and replacement names work,
-// and is the documented default applied when legacy_status is omitted.
+// LegacyStatusEnum records an explicit lifecycle declaration. Omission inherits
+// the previous declaration; a newly introduced alias defaults to deprecated.
 type LegacyStatusEnum int
 
 const (
-	// Functioning is the iota zero / default: legacy name remains in the current schema
-	// alongside the replacement attribute, with full device round-trip via the
-	// replacement. The typical "we just renamed, both work" state.
-	Functioning LegacyStatusEnum = iota
-	// Frozen exposes the legacy name in the current schema with Deprecated but
-	// without device round-trip. A state-preserving plan modifier suppresses the
-	// diff so existing configs keep working without touching the device.
+	UndefinedLegacyStatus LegacyStatusEnum = iota
+	LegacyDeprecated
 	Frozen
-	// Removed drops the legacy name from the current schema entirely. The
-	// state_upgrades entry is retained only to drive UpgradeResourceState.
 	Removed
 )
 
 func (l LegacyStatusEnum) String() string {
 	switch l {
+	case LegacyDeprecated:
+		return "deprecated"
 	case Frozen:
 		return "frozen"
 	case Removed:
 		return "removed"
 	default:
-		return "functioning"
+		return ""
 	}
 }
 
 func (l *LegacyStatusEnum) UnmarshalText(text []byte) error {
-	// Empty/missing is intentionally not handled: the zero value (Functioning) is
-	// reached by omitting the YAML field entirely. A field present-but-empty is
-	// treated as a typo and errors out.
 	switch string(text) {
-	case "functioning":
-		*l = Functioning
+	case "deprecated":
+		*l = LegacyDeprecated
 	case "frozen":
 		*l = Frozen
 	case "removed":
 		*l = Removed
 	default:
-		return fmt.Errorf("unknown legacy_status %q (expected one of: functioning, frozen, removed)", string(text))
+		return fmt.Errorf("unknown status %q (expected one of: deprecated, frozen, removed)", string(text))
+	}
+	return nil
+}
+
+// LegacyRestrictionEnum preserves historical flags without changing current
+// property restrictions, where optional values can also be computed.
+type LegacyRestrictionEnum int
+
+const (
+	UndefinedLegacyRestriction LegacyRestrictionEnum = iota
+	LegacyRequired
+	LegacyOptional
+	LegacyOptionalComputed
+	LegacyReadOnly
+)
+
+func (r LegacyRestrictionEnum) String() string {
+	switch r {
+	case LegacyRequired:
+		return "required"
+	case LegacyOptional:
+		return "optional"
+	case LegacyOptionalComputed:
+		return "optional_computed"
+	case LegacyReadOnly:
+		return "read_only"
+	default:
+		return ""
+	}
+}
+
+func (r *LegacyRestrictionEnum) UnmarshalText(text []byte) error {
+	switch string(text) {
+	case "required":
+		*r = LegacyRequired
+	case "optional":
+		*r = LegacyOptional
+	case "optional_computed":
+		*r = LegacyOptionalComputed
+	case "read_only":
+		*r = LegacyReadOnly
+	default:
+		return fmt.Errorf("unknown restriction %q (expected one of: required, optional, optional_computed, read_only)", string(text))
 	}
 	return nil
 }
@@ -394,12 +427,15 @@ const (
 	// FromSDKv2 indicates the resource was migrated from the SDKv2 provider
 	// implementation. Populates the SDKv2-specific documentation warning.
 	FromSDKv2
+	FromFramework
 )
 
 func (m MigrationSourceEnum) String() string {
 	switch m {
+	case FromFramework:
+		return "framework"
 	case FromSDKv2:
-		return "from_sdkv2"
+		return "sdkv2"
 	default:
 		return ""
 	}
@@ -410,10 +446,12 @@ func (m *MigrationSourceEnum) UnmarshalText(text []byte) error {
 	// (UndefinedMigrationSource) is reached by omitting the YAML field entirely.
 	// A field present-but-empty is treated as a typo and errors out.
 	switch string(text) {
-	case "from_sdkv2":
+	case "framework":
+		*m = FromFramework
+	case "sdkv2":
 		*m = FromSDKv2
 	default:
-		return fmt.Errorf("unknown migration_source %q (expected one of: from_sdkv2)", string(text))
+		return fmt.Errorf("unknown source %q (expected one of: sdkv2, framework)", string(text))
 	}
 	return nil
 }
@@ -771,7 +809,7 @@ func (l *LegacyAttributeTypeEnum) UnmarshalText(text []byte) error {
 	case "map_nested_attribute":
 		*l = MapNestedAttribute
 	default:
-		return fmt.Errorf("unknown legacy_type %q (expected one of: string_attribute, bool_attribute, int64_attribute, float64_attribute, list_attribute, set_attribute, map_attribute, single_nested_attribute, list_nested_attribute, set_nested_attribute, map_nested_attribute)", string(text))
+		return fmt.Errorf("unknown type %q (expected one of: string_attribute, bool_attribute, int64_attribute, float64_attribute, list_attribute, set_attribute, map_attribute, single_nested_attribute, list_nested_attribute, set_nested_attribute, map_nested_attribute)", string(text))
 	}
 	return nil
 }

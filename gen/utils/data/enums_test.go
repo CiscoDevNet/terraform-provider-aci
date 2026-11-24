@@ -290,16 +290,16 @@ func TestLegacyStatusEnum(t *testing.T) {
 	t.Parallel()
 	test.InitializeTest(t)
 
-	assert.Equal(t, "functioning", Functioning.String())
+	assert.Equal(t, "deprecated", LegacyDeprecated.String())
 	assert.Equal(t, "frozen", Frozen.String())
 	assert.Equal(t, "removed", Removed.String())
 
-	assert.Equal(t, Functioning, test.MustUnmarshalText[LegacyStatusEnum](t, "functioning"))
+	assert.Equal(t, LegacyDeprecated, test.MustUnmarshalText[LegacyStatusEnum](t, "deprecated"))
 	assert.Equal(t, Frozen, test.MustUnmarshalText[LegacyStatusEnum](t, "frozen"))
 	assert.Equal(t, Removed, test.MustUnmarshalText[LegacyStatusEnum](t, "removed"))
 
-	// Empty errors out: the zero value (Functioning) is reached by omitting the YAML
-	// field, so an explicit empty value is treated as a typo.
+	// Omission is distinct from an explicit declaration for lifecycle inheritance.
+	assert.Equal(t, "", UndefinedLegacyStatus.String())
 	assert.Error(t, test.UnmarshalTextErr[LegacyStatusEnum](""))
 	assert.Error(t, test.UnmarshalTextErr[LegacyStatusEnum]("garbage"))
 }
@@ -309,9 +309,11 @@ func TestMigrationSourceEnum(t *testing.T) {
 	test.InitializeTest(t)
 
 	assert.Equal(t, "", UndefinedMigrationSource.String())
-	assert.Equal(t, "from_sdkv2", FromSDKv2.String())
+	assert.Equal(t, "sdkv2", FromSDKv2.String())
+	assert.Equal(t, "framework", FromFramework.String())
+	assert.Equal(t, FromFramework, test.MustUnmarshalText[MigrationSourceEnum](t, "framework"))
 
-	assert.Equal(t, FromSDKv2, test.MustUnmarshalText[MigrationSourceEnum](t, "from_sdkv2"))
+	assert.Equal(t, FromSDKv2, test.MustUnmarshalText[MigrationSourceEnum](t, "sdkv2"))
 
 	// Empty errors out: the zero value (UndefinedMigrationSource) is reached by
 	// omitting the YAML field, so an explicit empty value is treated as a typo.

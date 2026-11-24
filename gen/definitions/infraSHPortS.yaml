@@ -3,7 +3,6 @@ documentation:
   ui_locations:
   - Fabric -> Access Policies -> Interfaces -> Spine Interfaces -> Profiles -> Interface
     Selectors
-migration_source: from_sdkv2
 properties:
   type:
     attribute_name: port_selector_type
@@ -13,15 +12,21 @@ properties:
       create:
       - config_value: ALL
 resource_name: spine_access_port_selector
+schema_version: 2
 state_upgrades:
-- attributes:
-    parentDn:
-      legacy_attribute: spine_interface_profile_dn
-    type:
-      legacy_attribute: spine_access_port_selector_type
-  children:
-    infraRsSpAccGrp:
-      attributes:
-        tDn:
-          legacy_attribute: relation_infra_rs_sp_acc_grp
-  prior_schema_version: 1
+  1:
+    attributes:
+      parentDn:
+        attribute_name: spine_interface_profile_dn
+        status: deprecated
+      type:
+        attribute_name: spine_access_port_selector_type
+        status: deprecated
+    children:
+      infraRsSpAccGrp:
+        attributes:
+          tDn:
+            attribute_name: relation_infra_rs_sp_acc_grp
+            restriction: optional
+            status: deprecated
+    source: sdkv2

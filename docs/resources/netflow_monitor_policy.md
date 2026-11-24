@@ -14,8 +14,6 @@ description: |-
 
 Manages ACI NetFlow Monitor Policy
 
-  !> This resource has been migrated to the terraform plugin protocol version 6, refer to the [migration guide](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/guides/migration) for more details and implications for already managed resources.
-
 ## API Information ##
 
 * Class: [netflowMonitorPol](https://pubhub.devnetcloud.com/media/model-doc-latest/docs/app/index.html#/objects/netflowMonitorPol/overview)

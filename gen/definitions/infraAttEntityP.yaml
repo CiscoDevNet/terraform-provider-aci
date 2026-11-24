@@ -4,12 +4,17 @@ documentation:
   - Fabric -> Access Policies -> Policies -> Global -> Attachable Access Entity Profiles
 exclude_parents:
 - infraInfra
-migration_source: from_sdkv2
 rn_prepend: infra
+schema_version: 2
 state_upgrades:
-- children:
-    infraRsDomP:
-      attributes:
-        tDn:
-          legacy_attribute: relation_infra_rs_dom_p
-  prior_schema_version: 1
+  1:
+    children:
+      infraRsDomP:
+        attributes:
+          tDn:
+            attribute_name: relation_infra_rs_dom_p
+            element_type: string_attribute
+            restriction: optional_computed
+            status: deprecated
+            type: set_attribute
+    source: sdkv2

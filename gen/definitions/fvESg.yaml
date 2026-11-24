@@ -5,7 +5,6 @@ documentation:
 exclude_children:
 - fvRsProtBy
 - fvRsCustQosPol
-migration_source: from_sdkv2
 properties:
   floodOnEncap:
     restriction: exclude
@@ -35,50 +34,82 @@ properties:
       "no": ""
     documentation:
       description: Withdraw the ESG configuration from all nodes in the fabric.
+schema_version: 2
 state_upgrades:
-- attributes:
-    matchT:
-      legacy_attribute: match_t
-    parentDn:
-      legacy_attribute: application_profile_dn
-    pcEnfPref:
-      legacy_attribute: pc_enf_pref
-    prefGrMemb:
-      legacy_attribute: pref_gr_memb
-  children:
-    fvRsCons:
-      attributes:
-        prio:
-          legacy_attribute: prio
-        tnVzBrCPName:
-          legacy_attribute: target_dn
-      legacy_attribute: relation_fv_rs_cons
-    fvRsConsIf:
-      attributes:
-        prio:
-          legacy_attribute: prio
-        tnVzCPIfName:
-          legacy_attribute: target_dn
-      legacy_attribute: relation_fv_rs_cons_if
-    fvRsIntraEpg:
-      attributes:
-        tnVzBrCPName:
-          legacy_attribute: relation_fv_rs_intra_epg
-    fvRsProv:
-      attributes:
-        matchT:
-          legacy_attribute: match_t
-        prio:
-          legacy_attribute: prio
-        tnVzBrCPName:
-          legacy_attribute: target_dn
-      legacy_attribute: relation_fv_rs_prov
-    fvRsScope:
-      attributes:
-        tnFvCtxName:
-          legacy_attribute: relation_fv_rs_scope
-    fvRsSecInherited:
-      attributes:
-        tDn:
-          legacy_attribute: relation_fv_rs_sec_inherited
-  prior_schema_version: 1
+  1:
+    attributes:
+      matchT:
+        attribute_name: match_t
+        status: deprecated
+      parentDn:
+        attribute_name: application_profile_dn
+        status: deprecated
+      pcEnfPref:
+        attribute_name: pc_enf_pref
+        status: deprecated
+      prefGrMemb:
+        attribute_name: pref_gr_memb
+        status: deprecated
+      relation_fv_rs_cust_qos_pol:
+        restriction: optional
+        status: frozen
+        type: string_attribute
+      relation_fv_rs_prot_by:
+        element_type: string_attribute
+        restriction: optional
+        status: frozen
+        type: set_attribute
+    children:
+      fvRsCons:
+        attribute_name: relation_fv_rs_cons
+        attributes:
+          prio:
+            attribute_name: prio
+            restriction: optional
+          tnVzBrCPName:
+            attribute_name: target_dn
+        status: deprecated
+      fvRsConsIf:
+        attribute_name: relation_fv_rs_cons_if
+        attributes:
+          prio:
+            attribute_name: prio
+            restriction: optional
+          tnVzCPIfName:
+            attribute_name: target_dn
+        status: deprecated
+      fvRsIntraEpg:
+        attributes:
+          tnVzBrCPName:
+            attribute_name: relation_fv_rs_intra_epg
+            element_type: string_attribute
+            restriction: optional
+            status: deprecated
+            type: set_attribute
+      fvRsProv:
+        attribute_name: relation_fv_rs_prov
+        attributes:
+          matchT:
+            attribute_name: match_t
+            restriction: optional
+          prio:
+            attribute_name: prio
+            restriction: optional
+          tnVzBrCPName:
+            attribute_name: target_dn
+        status: deprecated
+      fvRsScope:
+        attributes:
+          tnFvCtxName:
+            attribute_name: relation_fv_rs_scope
+            restriction: optional
+            status: deprecated
+      fvRsSecInherited:
+        attributes:
+          tDn:
+            attribute_name: relation_fv_rs_sec_inherited
+            element_type: string_attribute
+            restriction: optional
+            status: deprecated
+            type: set_attribute
+    source: sdkv2

@@ -17,7 +17,6 @@ exclude_parents:
 identified_by:
 - id
 - podId
-migration_source: from_sdkv2
 properties:
   address:
     restriction: read_only
@@ -254,47 +253,88 @@ properties:
     restriction: read_only
 rn_prepend: pod-{podId}/node-{id}
 state_upgrades:
-- attributes:
-    bootstrapState:
-      legacy_attribute: boot_strap_tate
-    etepAddr:
-      legacy_attribute: etep_addr
-    inbMgmtAddr:
-      legacy_attribute: inb_mgmt_addr
-    inbMgmtAddr6:
-      legacy_attribute: inb_mgmt_addr6
-    inbMgmtAddr6Mask:
-      legacy_attribute: inb_mgmt_addr6_mask
-    inbMgmtAddrMask:
-      legacy_attribute: inb_mgmt_addr_mask
-    inbMgmtGateway:
-      legacy_attribute: inb_mgmt_gateway
-    inbMgmtGateway6:
-      legacy_attribute: inb_mgmt_gateway6
-    monPolDn:
-      legacy_attribute: mon_pol_dn
-    oobMgmtAddr:
-      legacy_attribute: oob_mgmt_addr
-    oobMgmtAddr6:
-      legacy_attribute: oob_mgmt_addr6
-    oobMgmtAddr6Mask:
-      legacy_attribute: oob_mgmt_addr6_mask
-    oobMgmtAddrMask:
-      legacy_attribute: oob_mgmt_addr_mask
-    oobMgmtGateway:
-      legacy_attribute: oob_mgmt_gateway
-    oobMgmtGateway6:
-      legacy_attribute: oob_mgmt_gateway6
-    rlAutoMode:
-      legacy_attribute: rl_auto_mode
-    rlGroupId:
-      legacy_attribute: rl_group_id
-    rlOperPodId:
-      legacy_attribute: rl_oper_pod_id
-    rlRoutableMode:
-      legacy_attribute: rl_routable_mode
-    rldirectMode:
-      legacy_attribute: rldirect_mode
-    unicastXrEpLearnDisable:
-      legacy_attribute: unicast_xr_ep_learn_disable
-  prior_schema_version: 1
+  1:
+    attributes:
+      bootstrapState:
+        attribute_name: boot_strap_tate
+        restriction: optional_computed
+        status: deprecated
+      etepAddr:
+        attribute_name: etep_addr
+        restriction: optional_computed
+        status: deprecated
+      inbMgmtAddr:
+        attribute_name: inb_mgmt_addr
+        restriction: optional_computed
+        status: deprecated
+      inbMgmtAddr6:
+        attribute_name: inb_mgmt_addr6
+        restriction: optional_computed
+        status: deprecated
+      inbMgmtAddr6Mask:
+        attribute_name: inb_mgmt_addr6_mask
+        restriction: optional_computed
+        status: deprecated
+      inbMgmtAddrMask:
+        attribute_name: inb_mgmt_addr_mask
+        restriction: optional_computed
+        status: deprecated
+      inbMgmtGateway:
+        attribute_name: inb_mgmt_gateway
+        restriction: optional_computed
+        status: deprecated
+      inbMgmtGateway6:
+        attribute_name: inb_mgmt_gateway6
+        restriction: optional_computed
+        status: deprecated
+      monPolDn:
+        attribute_name: mon_pol_dn
+        restriction: optional_computed
+        status: deprecated
+      oobMgmtAddr:
+        attribute_name: oob_mgmt_addr
+        restriction: optional_computed
+        status: deprecated
+      oobMgmtAddr6:
+        attribute_name: oob_mgmt_addr6
+        restriction: optional_computed
+        status: deprecated
+      oobMgmtAddr6Mask:
+        attribute_name: oob_mgmt_addr6_mask
+        restriction: optional_computed
+        status: deprecated
+      oobMgmtAddrMask:
+        attribute_name: oob_mgmt_addr_mask
+        restriction: optional_computed
+        status: deprecated
+      oobMgmtGateway:
+        attribute_name: oob_mgmt_gateway
+        restriction: optional_computed
+        status: deprecated
+      oobMgmtGateway6:
+        attribute_name: oob_mgmt_gateway6
+        restriction: optional_computed
+        status: deprecated
+      rlAutoMode:
+        attribute_name: rl_auto_mode
+        status: deprecated
+      rlGroupId:
+        attribute_name: rl_group_id
+        status: deprecated
+      rlOperPodId:
+        attribute_name: rl_oper_pod_id
+        restriction: optional_computed
+        status: deprecated
+      rlRoutableMode:
+        attribute_name: rl_routable_mode
+        restriction: optional_computed
+        status: deprecated
+      rldirectMode:
+        attribute_name: rldirect_mode
+        restriction: optional_computed
+        status: deprecated
+      unicastXrEpLearnDisable:
+        attribute_name: unicast_xr_ep_learn_disable
+        restriction: optional_computed
+        status: deprecated
+    source: sdkv2

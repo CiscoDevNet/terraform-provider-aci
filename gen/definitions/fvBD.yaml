@@ -14,7 +14,6 @@ exclude_children:
 include_children:
 - fvRogueExceptionMac
 - fvAccP
-migration_source: from_sdkv2
 properties:
   OptimizeWanBandwidth:
     documentation:
@@ -174,82 +173,137 @@ properties:
       update:
       - config_value: 00:22:BD:F8:19:FC
 resource_name: bridge_domain
+schema_version: 2
 state_upgrades:
-- attributes:
-    arpFlood:
-      legacy_attribute: arp_flood
-    epClear:
-      legacy_attribute: ep_clear
-    epMoveDetectMode:
-      legacy_attribute: ep_move_detect_mode
-    hostBasedRouting:
-      legacy_attribute: host_based_routing
-    intersiteBumTrafficAllow:
-      legacy_attribute: intersite_bum_traffic_allow
-    ipv6McastAllow:
-      legacy_attribute: ipv6_mcast_allow
-    llAddr:
-      legacy_attribute: ll_addr
-    mac:
-      legacy_attribute: mac
-    mcastAllow:
-      legacy_attribute: mcast_allow
-    multiDstPktAct:
-      legacy_attribute: multi_dst_pkt_act
-    parentDn:
-      legacy_attribute: tenant_dn
-    unicastRoute:
-      legacy_attribute: unicast_route
-    unkMacUcastAct:
-      legacy_attribute: unk_mac_ucast_act
-    unkMcastAct:
-      legacy_attribute: unk_mcast_act
-    v6unkMcastAct:
-      legacy_attribute: v6unk_mcast_act
-    vmac:
-      legacy_attribute: vmac
-  children:
-    fvRsABDPolMonPol:
-      attributes:
-        tnMonEPGPolName:
-          legacy_attribute: relation_fv_rs_abd_pol_mon_pol
-    fvRsBDToFhs:
-      attributes:
-        tnFhsBDPolName:
-          legacy_attribute: relation_fv_rs_bd_to_fhs
-    fvRsBDToNdP:
-      attributes:
-        tnNdIfPolName:
-          legacy_attribute: relation_fv_rs_bd_to_nd_p
-    fvRsBDToNetflowMonitorPol:
-      attributes:
-        fltType:
-          legacy_attribute: flt_type
-        tnNetflowMonitorPolName:
-          legacy_attribute: tn_netflow_monitor_pol_name
-      legacy_attribute: relation_fv_rs_bd_to_netflow_monitor_pol
-    fvRsBDToOut:
-      attributes:
-        tnL3extOutName:
-          legacy_attribute: relation_fv_rs_bd_to_out
-    fvRsBDToRelayP:
-      attributes:
-        tnDhcpRelayPName:
-          legacy_attribute: relation_fv_rs_bd_to_relay_p
-    fvRsBdToEpRet:
-      attributes:
-        tnFvEpRetPolName:
-          legacy_attribute: relation_fv_rs_bd_to_ep_ret
-    fvRsCtx:
-      attributes:
-        tnFvCtxName:
-          legacy_attribute: relation_fv_rs_ctx
-    fvRsIgmpsn:
-      attributes:
-        tnIgmpSnoopPolName:
-          legacy_attribute: relation_fv_rs_igmpsn
-    fvRsMldsn:
-      attributes:
-        tnMldSnoopPolName:
-          legacy_attribute: relation_fv_rs_mldsn
-  prior_schema_version: 1
+  1:
+    attributes:
+      arpFlood:
+        attribute_name: arp_flood
+        status: deprecated
+      epClear:
+        attribute_name: ep_clear
+        status: deprecated
+      epMoveDetectMode:
+        attribute_name: ep_move_detect_mode
+        status: deprecated
+      hostBasedRouting:
+        attribute_name: host_based_routing
+        status: deprecated
+      intersiteBumTrafficAllow:
+        attribute_name: intersite_bum_traffic_allow
+        status: deprecated
+      ipv6McastAllow:
+        attribute_name: ipv6_mcast_allow
+        status: deprecated
+      llAddr:
+        attribute_name: ll_addr
+        status: deprecated
+        value_type: ip_address
+      mac:
+        attribute_name: mac
+        status: deprecated
+      mcastAllow:
+        attribute_name: mcast_allow
+        status: deprecated
+      multiDstPktAct:
+        attribute_name: multi_dst_pkt_act
+        status: deprecated
+      parentDn:
+        attribute_name: tenant_dn
+        status: deprecated
+      relation_fv_rs_bd_flood_to:
+        element_type: string_attribute
+        restriction: optional
+        status: frozen
+        type: set_attribute
+      relation_fv_rs_bd_to_profile:
+        restriction: optional
+        status: frozen
+        type: string_attribute
+      unicastRoute:
+        attribute_name: unicast_route
+        status: deprecated
+      unkMacUcastAct:
+        attribute_name: unk_mac_ucast_act
+        status: deprecated
+      unkMcastAct:
+        attribute_name: unk_mcast_act
+        status: deprecated
+      v6unkMcastAct:
+        attribute_name: v6unk_mcast_act
+        status: deprecated
+      vmac:
+        attribute_name: vmac
+        status: deprecated
+    children:
+      fvRsABDPolMonPol:
+        attributes:
+          tnMonEPGPolName:
+            attribute_name: relation_fv_rs_abd_pol_mon_pol
+            restriction: optional
+            status: deprecated
+      fvRsBDToFhs:
+        attributes:
+          tnFhsBDPolName:
+            attribute_name: relation_fv_rs_bd_to_fhs
+            restriction: optional
+            status: deprecated
+      fvRsBDToNdP:
+        attributes:
+          tnNdIfPolName:
+            attribute_name: relation_fv_rs_bd_to_nd_p
+            status: deprecated
+      fvRsBDToNetflowMonitorPol:
+        attribute_name: relation_fv_rs_bd_to_netflow_monitor_pol
+        attributes:
+          fltType:
+            attribute_name: flt_type
+          tnNetflowMonitorPolName:
+            attribute_name: tn_netflow_monitor_pol_name
+        status: deprecated
+      fvRsBDToOut:
+        attributes:
+          tnL3extOutName:
+            attribute_name: relation_fv_rs_bd_to_out
+            element_type: string_attribute
+            restriction: optional
+            status: deprecated
+            type: set_attribute
+      fvRsBDToRelayP:
+        attributes:
+          tnDhcpRelayPName:
+            attribute_name: relation_fv_rs_bd_to_relay_p
+            restriction: optional
+            status: deprecated
+      fvRsBdToEpRet:
+        attributes:
+          tnFvEpRetPolName:
+            attribute_name: relation_fv_rs_bd_to_ep_ret
+            status: deprecated
+      fvRsCtx:
+        attributes:
+          tnFvCtxName:
+            attribute_name: relation_fv_rs_ctx
+            status: deprecated
+      fvRsIgmpsn:
+        attributes:
+          tnIgmpSnoopPolName:
+            attribute_name: relation_fv_rs_igmpsn
+            status: deprecated
+      fvRsMldsn:
+        attributes:
+          tnMldSnoopPolName:
+            attribute_name: relation_fv_rs_mldsn
+            status: deprecated
+    source: sdkv2
+test_config:
+  dependencies:
+  - class_name: netflowMonitorPol
+    config_overrides:
+      parent_dn: aci_tenant.test_1.id
+    role: target
+  - class_name: netflowMonitorPol
+    config_overrides:
+      parent_dn: aci_tenant.test_1.id
+    reference: aci_netflow_monitor_policy.test_2.id
+    role: target
