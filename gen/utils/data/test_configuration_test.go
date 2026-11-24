@@ -1,6 +1,7 @@
 package data
 
 import (
+	"encoding/json"
 	"fmt"
 	"maps"
 	"path/filepath"
@@ -29,6 +30,87 @@ type dataSourceDependencyRenderingExpected struct {
 	Contains    []string
 	NotContains []string
 	Error       string
+}
+
+func TestMigrationTestCaseValues(t *testing.T) {
+	testCases := []test.TestCase{
+		{Name: "values", Expected: 2},
+		{Name: "null_relation", Expected: 0},
+		{Name: "empty_relation", Expected: 0},
+		{Name: "missing_optional_fields", Expected: 2},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			test.InitializeTest(t)
+			child := classWithProperties("fvRsNodeAtt", map[string]*Property{
+				"tDn":   {PropertyName: "tDn", AttributeName: "target_dn", ValueType: String, Required: true},
+				"descr": {PropertyName: "descr", AttributeName: "description", ValueType: String},
+			}, nil)
+			child.PropertiesAll = []string{"tDn", "descr"}
+			child.IdentifiedBy = []string{"tDn"}
+			child.ResourceNameNested = "nodes"
+			class := classWithProperties("fvTenant", map[string]*Property{
+				"name":       {PropertyName: "name", AttributeName: "name", ValueType: String, Required: true},
+				"descr":      {PropertyName: "descr", AttributeName: "description", ValueType: String},
+				"annotation": {PropertyName: "annotation", AttributeName: "annotation", ValueType: String},
+			}, []string{"fvRsNodeAtt"})
+			class.PropertiesAll = []string{"name", "descr", "annotation"}
+			version := 2
+			class.ClassDefinition.SchemaVersion = &version
+			class.StateUpgrades = map[int]StateUpgradeDefinition{1: {
+				Attributes: map[string]AttributeUpgradeDefinition{
+					"descr":         {AttributeName: "old_description"},
+					"removed_field": {Type: StringAttribute, Restriction: LegacyOptional, Status: Removed},
+				},
+				Children: map[string]AttributeUpgradeDefinition{"fvRsNodeAtt": {
+					AttributeName: "old_nodes", Attributes: map[string]AttributeUpgradeDefinition{
+						"tDn": {AttributeName: "node_dn"}, "descr": {AttributeName: "description"},
+					},
+				}},
+			}}
+			store := &DataStore{Classes: map[string]Class{"fvRsNodeAtt": *child}, ctx: NewContext()}
+			class.setMigrationData(store)
+			if !assert.NoError(t, store.ctx.Diagnostics.Error()) {
+				return
+			}
+			cases, err := class.MigrationTestCases(store)
+			if !assert.NoError(t, err) {
+				return
+			}
+			for _, fixture := range cases {
+				if fixture.Name != "v1_"+testCase.Name {
+					continue
+				}
+				var prior, expected map[string]any
+				if !assert.NoError(t, json.Unmarshal([]byte(fixture.State), &prior)) || !assert.NoError(t, json.Unmarshal([]byte(fixture.Expected), &expected)) {
+					return
+				}
+				assert.Equal(t, "name_value_1", prior["name"])
+				assert.Equal(t, "old_description_value_1", prior["old_description"])
+				assert.Equal(t, "old_description_value_1", expected["description"])
+				assert.Equal(t, "removed_field_value_1", prior["removed_field"])
+				assert.NotContains(t, expected, "removed_field")
+				if testCase.Name != "missing_optional_fields" {
+					assert.Equal(t, "annotation_value_1", prior["annotation"])
+				}
+				if testCase.Expected.(int) == 0 {
+					assert.Empty(t, prior["old_nodes"])
+					assert.Empty(t, expected["nodes"])
+					return
+				}
+				blocks := prior["old_nodes"].([]any)
+				children := expected["nodes"].([]any)
+				if !assert.Len(t, blocks, 2) || !assert.Len(t, children, 2) {
+					return
+				}
+				assert.Equal(t, "old_nodes_node_dn_value_1", blocks[0].(map[string]any)["node_dn"])
+				assert.Equal(t, "old_nodes_description_value_2", blocks[1].(map[string]any)["description"])
+				assert.Equal(t, "old_nodes_node_dn_value_2", children[1].(map[string]any)["target_dn"])
+				return
+			}
+			t.Fatal("migration fixture missing")
+		})
+	}
 }
 
 func TestDependencyIgnoredChanges(t *testing.T) {

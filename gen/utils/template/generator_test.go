@@ -3863,6 +3863,29 @@ func TestGeneratedEPGLegacyMapping(t *testing.T) {
 	assert.Len(t, resourceSchema.Blocks["relation_fv_rs_node_att"].(resourceschema.SetNestedBlock).NestedObject.Attributes, 5)
 }
 
+func TestBuildResourceMigrationTestRenderJobs(t *testing.T) {
+	testCases := []test.TestCase{
+		{Name: "resource_with_history", Input: data.ResourceArtifact, Expected: 1},
+		{Name: "datasource_only", Input: data.DatasourceArtifact, Expected: 0},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			class := testClass(t, "fvTenant", testCase.Input.(data.ArtifactEnum))
+			class.ResourceName = "tenant"
+			class.MigrationSchemas = []data.MigrationSchema{{PriorSchemaVersion: 1}}
+			generator := &Generator{dataStore: &data.DataStore{Classes: map[string]data.Class{"fvTenant": class}}}
+			jobs := generator.buildResourceMigrationTestRenderJobs()
+			if assert.Len(t, jobs, testCase.Expected.(int)) && len(jobs) > 0 {
+				assert.Equal(t, "internal/provider/resource_aci_tenant_migration_test.go", jobs[0].OutputPath)
+				assert.Equal(t, resourceMigrationTestTemplateName, jobs[0].TemplateName)
+			}
+			class.MigrationSchemas = nil
+			generator.dataStore.Classes["fvTenant"] = class
+			assert.Empty(t, generator.buildResourceMigrationTestRenderJobs())
+		})
+	}
+}
+
 func TestGeneratedTenantUpgradePreservesPublishedNullRelationHandling(t *testing.T) {
 	prior := models.FvTenantRootModelV1{
 		Name:                         types.StringValue("example"),

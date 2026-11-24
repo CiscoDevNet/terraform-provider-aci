@@ -1,6 +1,7 @@
 package data
 
 import (
+	"encoding/json"
 	"fmt"
 	"maps"
 	"net/netip"
@@ -1796,4 +1797,182 @@ func (c *Class) prepareResourceTest(ds *DataStore) Class {
 		class.TestDependencies = replacement.TestDependencies
 	}
 	return class
+}
+
+// MigrationTestCase supplies saved-state values and current-state expectations derived from normalized definitions.
+type MigrationTestCase struct {
+	Name     string
+	Version  int
+	State    string
+	Expected string
+}
+
+func (c *Class) MigrationTestCases(ds *DataStore) ([]MigrationTestCase, error) {
+	var cases []MigrationTestCase
+	for _, schema := range c.MigrationSchemas {
+		for _, variant := range []string{"values", "null_relation", "empty_relation", "missing_optional_fields"} {
+			prior := map[string]any{}
+			expected := migrationNullState(c, ds)
+			expected["id"] = nil
+			if parent := c.ParentDnProperty(); parent != nil {
+				expected[parent.AttributeName] = nil
+			}
+			for _, alias := range c.LegacyAttributes {
+				if alias.Status != Removed {
+					expected[alias.AttributeName] = nil
+				}
+			}
+			for _, attribute := range schema.Attributes {
+				if attribute.IsChildTypeChange() {
+					child := ds.Classes[attribute.ChildName.String()]
+					childState := migrationNullState(&child, ds)
+					for _, property := range child.ModelProperties() {
+						if property.ValueType == String && (variant != "missing_optional_fields" || property.Required) {
+							childState[property.AttributeName] = attribute.AttributeName + "_" + property.AttributeName + "_value_1"
+						}
+					}
+					prior[attribute.AttributeName] = []any{childState}
+					expected[attribute.AttributeName] = childState
+					if variant == "null_relation" || variant == "empty_relation" {
+						prior[attribute.AttributeName] = nil
+						if variant == "empty_relation" {
+							prior[attribute.AttributeName] = []any{}
+						}
+						expected[attribute.AttributeName] = nil
+					}
+					continue
+				}
+				if variant == "missing_optional_fields" && attribute.SchemaExpression != "" && !attribute.IsAlias() && !attribute.Required && attribute.AttributeName != "id" {
+					continue
+				}
+				// Distinct markers reveal assignments to the wrong property or relationship.
+				marker := attribute.AttributeName + "_value_1"
+				var value any = marker
+				if attribute.InheritedModelType == "types.Set" || attribute.InheritedModelType == "types.Object" {
+					value = nil
+				}
+				if attribute.Type == SetAttribute || attribute.Type == ListAttribute {
+					value = []string{marker, attribute.AttributeName + "_value_2"}
+				}
+				if attribute.IsListToSet() {
+					value = []string{attribute.AttributeName + "_value_2", marker}
+				}
+				if attribute.AttributeName == "id" {
+					value = "uni/tn-example"
+				}
+				if attribute.Named {
+					value = "uni/tn-example/policy-" + marker
+				}
+				if attribute.Repeated {
+					value = []string{"uni/tn-example/policy-" + marker, "uni/tn-example/policy-" + attribute.AttributeName + "_value_2"}
+				}
+				if attribute.Block {
+					// Two objects expose dropped children and accidental overwriting of an earlier member.
+					var instances []any
+					for index := range 2 {
+						members := map[string]any{}
+						for _, member := range attribute.Attributes {
+							memberMarker := fmt.Sprintf("%s_%s_value_%d", attribute.AttributeName, member.AttributeName, index+1)
+							members[member.AttributeName] = memberMarker
+							if member.Named {
+								members[member.AttributeName] = "uni/tn-example/policy-" + memberMarker
+							}
+						}
+						instances = append(instances, members)
+					}
+					value = instances
+				}
+				if attribute.ChildName != nil || attribute.IsListToSet() {
+					if variant == "null_relation" {
+						value = nil
+					}
+					if variant == "empty_relation" {
+						if attribute.Repeated || attribute.Block || attribute.IsListToSet() {
+							value = []any{}
+						} else {
+							value = ""
+						}
+					}
+				}
+				prior[attribute.AttributeName] = value
+				if attribute.IsAlias() && attribute.Status != Removed {
+					expected[attribute.AttributeName] = value
+				}
+				if attribute.IsListToSet() {
+					if values, ok := value.([]string); ok {
+						ordered := slices.Clone(values)
+						slices.Sort(ordered)
+						value = ordered
+						expected[attribute.AttributeName] = value
+					}
+					expected[attribute.ChildAttribute] = value
+					continue
+				}
+				if attribute.ChildName != nil {
+					child := ds.Classes[attribute.ChildName.String()]
+					if attribute.Repeated {
+						children := []any{}
+						if variant != "null_relation" && variant != "empty_relation" {
+							if attribute.Block {
+								for index := range 2 {
+									childState := migrationNullState(&child, ds)
+									for _, member := range attribute.Attributes {
+										childState[member.ChildAttribute] = fmt.Sprintf("%s_%s_value_%d", attribute.AttributeName, member.AttributeName, index+1)
+									}
+									children = append(children, childState)
+								}
+							} else {
+								for index, dn := range value.([]string) {
+									childState := migrationNullState(&child, ds)
+									var target any = dn
+									if attribute.Named {
+										target = fmt.Sprintf("%s_value_%d", attribute.AttributeName, index+1)
+									}
+									childState[attribute.ChildAttribute] = target
+									children = append(children, childState)
+								}
+							}
+						}
+						expected[child.ResourceNameNested] = children
+					} else {
+						childState := migrationNullState(&child, ds)
+						if attribute.Named {
+							// Published SDKv2 upgraders converted an unset singleton relation to an empty name.
+							if value == nil || value == "" {
+								value = ""
+							} else {
+								value = marker
+							}
+						}
+						childState[attribute.ChildAttribute] = value
+						expected[child.ResourceNameNested] = childState
+					}
+				} else if attribute.TargetField != "" {
+					expected[attribute.ChildAttribute] = value
+				}
+			}
+			inputJSON, err := json.MarshalIndent(prior, "", "  ")
+			if err != nil {
+				return nil, err
+			}
+			expectedJSON, err := json.MarshalIndent(expected, "", "  ")
+			if err != nil {
+				return nil, err
+			}
+			cases = append(cases, MigrationTestCase{Name: fmt.Sprintf("v%d_%s", schema.PriorSchemaVersion, variant), Version: schema.PriorSchemaVersion, State: string(inputJSON), Expected: string(expectedJSON)})
+		}
+	}
+	return cases, nil
+}
+
+func migrationNullState(c *Class, ds *DataStore) map[string]any {
+	state := map[string]any{}
+	for _, property := range c.ModelProperties() {
+		state[property.AttributeName] = nil
+	}
+	for _, name := range c.Children {
+		state[ds.Classes[name.String()].ResourceNameNested] = nil
+	}
+
+	return state
 }
