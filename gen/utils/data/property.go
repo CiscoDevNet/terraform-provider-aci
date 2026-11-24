@@ -222,7 +222,7 @@ type StateUpgradeValue struct {
 	Required bool
 	// The type of the attribute in the prior resource schema.
 	Type ValueTypeEnum
-	// Status carries the legacy lifecycle (Functioning / Frozen / Removed) so
+	// Status carries the resolved current lifecycle (LegacyDeprecated / Frozen / Removed) so
 	// consumers (Legacy test value derivation, plan-modifiers) can filter
 	// without re-walking the class StateUpgrades tree.
 	Status LegacyStatusEnum
@@ -326,7 +326,7 @@ type TestValues struct {
 	// All other properties: same as Create (resource is recreated with same attribute values).
 	ForceNew TestValueScenario
 	// Legacy is the per-step values for legacy alias attributes exposed via
-	// state_upgrades (Functioning / Frozen). Undefined when the property has no
+	// state_upgrades (LegacyDeprecated / Frozen). Undefined when the property has no
 	// testable legacy alias (no distinct renamed alias, or all legacy aliases
 	// have Status Removed). Auto-derived from Create when the legacy type
 	// matches the current attribute type; explicit YAML test_config.legacy
@@ -1135,7 +1135,7 @@ func (p *Property) setLegacyTestValues() {
 	}
 	if p.hasDivergentLegacyType() {
 		genLogger.Warnf(
-			"Skipping Legacy test value auto-derivation for property %q: at least one Functioning/Frozen legacy alias has a type different from the current attribute type %v. Supply explicit test_config.legacy values in the property definition.",
+			"Skipping Legacy test value auto-derivation for property %q: at least one LegacyDeprecated/Frozen legacy alias has a type different from the current attribute type %v. Supply explicit test_config.legacy values in the property definition.",
 			p.PropertyName, p.ValueType,
 		)
 		return
@@ -1203,7 +1203,7 @@ func (p *Property) fillUndefinedTestValueScenarios() {
 }
 
 // hasTestableLegacyAlias returns true when at least one StateUpgradeValue
-// entry has Status Functioning or Frozen AND renames the attribute. Same-name
+// entry has Status LegacyDeprecated or Frozen AND renames the attribute. Same-name
 // entries (type-only or restriction-only changes) are not testable as a
 // separate legacy attribute — they share the current attribute name, and
 // the standard Create bucket on that name already exercises them.

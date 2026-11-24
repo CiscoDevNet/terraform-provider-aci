@@ -4,7 +4,6 @@ documentation:
   - Fabric -> Access Policies -> Policies -> Interface -> Spanning Tree Interface
 exclude_parents:
 - infraInfra
-migration_source: from_sdkv2
 properties:
   ctrl:
     attribute_name: interface_controls
@@ -22,8 +21,13 @@ properties:
     value_type: set
 resource_name: spanning_tree_interface_policy
 rn_prepend: infra
+schema_version: 2
 state_upgrades:
-- attributes:
-    ctrl:
-      legacy_attribute: ctrl
-  prior_schema_version: 1
+  1:
+    attributes:
+      ctrl:
+        attribute_name: ctrl
+        element_type: string_attribute
+        status: deprecated
+        type: list_attribute
+    source: sdkv2

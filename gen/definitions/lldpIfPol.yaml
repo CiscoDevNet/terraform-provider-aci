@@ -6,7 +6,6 @@ documentation:
   - Access Policies -> Policies -> Interface -> LLDP Interface
 exclude_parents:
 - infraInfra
-migration_source: from_sdkv2
 properties:
   adminRxSt:
     attribute_name: receive_state
@@ -24,10 +23,14 @@ properties:
         converging. The link may need to be reset for the change to take effect.
 resource_name: lldp_interface_policy
 rn_prepend: infra
+schema_version: 2
 state_upgrades:
-- attributes:
-    adminRxSt:
-      legacy_attribute: admin_rx_st
-    adminTxSt:
-      legacy_attribute: admin_tx_st
-  prior_schema_version: 1
+  1:
+    attributes:
+      adminRxSt:
+        attribute_name: admin_rx_st
+        status: deprecated
+      adminTxSt:
+        attribute_name: admin_tx_st
+        status: deprecated
+    source: sdkv2

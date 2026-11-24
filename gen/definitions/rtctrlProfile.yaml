@@ -1,9 +1,13 @@
 documentation:
+  resource:
+    warnings:
+    - This resource has been migrated to the terraform plugin protocol version 6,
+      refer to the [migration guide](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/guides/migration)
+      for more details and implications for already managed resources.
   sub_category: L3Out
   ui_locations:
   - Tenants -> Networking -> L3Outs -> Route map for import and export Route Control
   - Tenants -> Policies -> Protocol -> Route Maps for Route Control
-migration_source: from_sdkv2
 properties:
   autoContinue:
     attribute_name: route_map_continue
@@ -24,5 +28,4 @@ properties:
         when the route profile is the only source of information to generate a route
         map, this will overwrite other policy attributes.
 resource_name: route_control_profile
-state_upgrades:
-- prior_schema_version: 1
+schema_version: 1

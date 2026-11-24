@@ -6578,12 +6578,11 @@ func TestSetStateUpgrades_HappyPathRenameAndTypeChange(t *testing.T) {
 		"pcEnfPref": {PropertyName: "pcEnfPref", AttributeName: "pc_enforcement_preference", Optional: true, Computed: true, ValueType: String},
 		"name":      {PropertyName: "name", AttributeName: "name", Required: true, ValueType: String},
 	}, nil)
-	class.ClassDefinition.StateUpgrades = []StateUpgradeDefinition{
-		{
-			PriorSchemaVersion: 0,
+	class.ClassDefinition.StateUpgrades = map[int]StateUpgradeDefinition{
+		0: {
 			Attributes: map[string]AttributeUpgradeDefinition{
-				"pcEnfPref": {LegacyAttribute: "pc_enf_pref"},
-				"name":      {LegacyType: StringAttribute},
+				"pcEnfPref": {AttributeName: "pc_enf_pref"},
+				"name":      {Type: StringAttribute},
 			},
 		},
 	}
@@ -6594,8 +6593,8 @@ func TestSetStateUpgrades_HappyPathRenameAndTypeChange(t *testing.T) {
 	assert.NoError(t, err, test.MessageUnexpectedError(err))
 	if assert.Len(t, class.StateUpgrades, 1) {
 		entry := class.StateUpgrades[0]
-		assert.Equal(t, "pc_enf_pref", entry.Attributes["pcEnfPref"].LegacyAttribute)
-		assert.Equal(t, StringAttribute, entry.Attributes["name"].LegacyType)
+		assert.Equal(t, "pc_enf_pref", entry.Attributes["pcEnfPref"].AttributeName)
+		assert.Equal(t, StringAttribute, entry.Attributes["name"].Type)
 	}
 
 	class.setPropertyStateUpgradeValues()
@@ -6615,105 +6614,10 @@ func TestSetStateUpgrades_HappyPathRenameAndTypeChange(t *testing.T) {
 	}
 }
 
-// TestSetStateUpgrades_DuplicatePriorSchemaVersion covers the uniqueness rule
-// on prior_schema_version across entries. Each saved-state version must map to
-// exactly one upgrader, so a repeated value is rejected even when the entries
-// themselves are otherwise valid.
-func TestSetStateUpgrades_DuplicatePriorSchemaVersion(t *testing.T) {
-	t.Parallel()
-	test.InitializeTest(t)
-
-	class := classWithProperties("fvCtx", map[string]*Property{"name": {PropertyName: "name"}}, nil)
-	class.ClassDefinition.StateUpgrades = []StateUpgradeDefinition{
-		{PriorSchemaVersion: 0, Attributes: map[string]AttributeUpgradeDefinition{"name": {LegacyAttribute: "n"}}},
-		{PriorSchemaVersion: 0, Attributes: map[string]AttributeUpgradeDefinition{"name": {LegacyAttribute: "m"}}},
-	}
-
-	ds := &DataStore{ctx: NewContext()}
-	class.setStateUpgrades(ds)
-	err := ds.ctx.Diagnostics.Error()
-	if assert.Error(t, err) {
-		assert.Contains(t, err.Error(), "duplicate prior_schema_version 0")
-	}
-}
-
-type stateUpgradesMigrationSourceInput struct {
-	Source   MigrationSourceEnum
-	Upgrades []StateUpgradeDefinition
-}
-
-// TestValidateStateUpgrades_MigrationSourceCoherence covers the rule that a
-// non-zero MigrationSource requires at least one state_upgrades entry. The
-// specific prior_schema_version on that entry does not matter — SDKv2 resources
-// may carry their own prior-provider upgrade history into the migration hop.
-// Conversely, framework-native v0->v1 upgrades may declare state_upgrades
-// entries without setting a MigrationSource.
-func TestValidateStateUpgrades_MigrationSourceCoherence(t *testing.T) {
-	t.Parallel()
-	test.InitializeTest(t)
-
-	testCases := []test.TestCase{
-		{
-			Name:     "test_source_set_no_entries_errors",
-			Input:    stateUpgradesMigrationSourceInput{Source: FromSDKv2},
-			Expected: "requires at least one state_upgrades entry",
-		},
-		{
-			Name: "test_source_set_v0_entry_ok",
-			Input: stateUpgradesMigrationSourceInput{Source: FromSDKv2, Upgrades: []StateUpgradeDefinition{
-				{PriorSchemaVersion: 0, Attributes: map[string]AttributeUpgradeDefinition{"name": {LegacyAttribute: "n"}}},
-			}},
-			Expected: "",
-		},
-		{
-			Name: "test_source_set_non_zero_prior_version_ok",
-			Input: stateUpgradesMigrationSourceInput{Source: FromSDKv2, Upgrades: []StateUpgradeDefinition{
-				{PriorSchemaVersion: 2, Attributes: map[string]AttributeUpgradeDefinition{"name": {LegacyAttribute: "n"}}},
-			}},
-			Expected: "",
-		},
-		{
-			Name: "test_no_source_v0_entry_ok",
-			Input: stateUpgradesMigrationSourceInput{Upgrades: []StateUpgradeDefinition{
-				{PriorSchemaVersion: 0, Attributes: map[string]AttributeUpgradeDefinition{"name": {LegacyAttribute: "n"}}},
-			}},
-			Expected: "",
-		},
-		{
-			Name:     "test_no_source_no_entries_ok",
-			Input:    stateUpgradesMigrationSourceInput{},
-			Expected: "",
-		},
-	}
-
-	for _, testCase := range testCases {
-		t.Run(testCase.Name, func(t *testing.T) {
-			t.Parallel()
-			input := testCase.Input.(stateUpgradesMigrationSourceInput)
-			expected := testCase.Expected.(string)
-			class := classWithProperties("fvCtx", map[string]*Property{"name": {PropertyName: "name"}}, nil)
-			class.ClassDefinition.MigrationSource = input.Source
-			class.ClassDefinition.StateUpgrades = input.Upgrades
-
-			ds := &DataStore{ctx: NewContext()}
-			class.setStateUpgrades(ds)
-			err := ds.ctx.Diagnostics.Error()
-			if expected == "" {
-				assert.NoError(t, err, test.MessageUnexpectedError(err))
-				assert.Equal(t, input.Source, class.MigrationSource)
-				return
-			}
-			if assert.Error(t, err) {
-				assert.Contains(t, err.Error(), expected)
-			}
-		})
-	}
-}
-
 type stateUpgradesExhaustivenessInput struct {
 	Properties map[string]*Property
 	Children   []string
-	Upgrades   []StateUpgradeDefinition
+	Upgrades   map[int]StateUpgradeDefinition
 }
 
 type stateUpgradesExhaustivenessExpected struct {
@@ -6723,7 +6627,7 @@ type stateUpgradesExhaustivenessExpected struct {
 
 // TestValidateStateUpgrades_Exhaustiveness covers the top-level key resolution
 // rule: every Attributes / Children key in an entry must resolve to a current
-// Property / child class on the class, OR be marked LegacyStatus == Removed in
+// Property / child class on the class, OR be marked Status == Removed in
 // which case the key may reference a meta-only / excluded name. The mixed case
 // proves resolved + Removed allow-through paths are silent and only the truly
 // unknown non-Removed key surfaces a diagnostic.
@@ -6736,8 +6640,8 @@ func TestValidateStateUpgrades_Exhaustiveness(t *testing.T) {
 			Name: "test_attribute_resolves_ok",
 			Input: stateUpgradesExhaustivenessInput{
 				Properties: map[string]*Property{"name": {PropertyName: "name"}},
-				Upgrades: []StateUpgradeDefinition{
-					{PriorSchemaVersion: 0, Attributes: map[string]AttributeUpgradeDefinition{"name": {LegacyAttribute: "n"}}},
+				Upgrades: map[int]StateUpgradeDefinition{
+					0: {Attributes: map[string]AttributeUpgradeDefinition{"name": {AttributeName: "n"}}},
 				},
 			},
 			Expected: stateUpgradesExhaustivenessExpected{},
@@ -6746,9 +6650,9 @@ func TestValidateStateUpgrades_Exhaustiveness(t *testing.T) {
 			Name: "test_attribute_unknown_errors",
 			Input: stateUpgradesExhaustivenessInput{
 				Properties: map[string]*Property{"name": {PropertyName: "name"}},
-				Upgrades: []StateUpgradeDefinition{
-					{PriorSchemaVersion: 0, Attributes: map[string]AttributeUpgradeDefinition{
-						"notARealProperty": {LegacyAttribute: "legacy_name"},
+				Upgrades: map[int]StateUpgradeDefinition{
+					0: {Attributes: map[string]AttributeUpgradeDefinition{
+						"notARealProperty": {AttributeName: "legacy_name"},
 					}},
 				},
 			},
@@ -6758,9 +6662,9 @@ func TestValidateStateUpgrades_Exhaustiveness(t *testing.T) {
 			Name: "test_attribute_unknown_but_removed_ok",
 			Input: stateUpgradesExhaustivenessInput{
 				Properties: map[string]*Property{"name": {PropertyName: "name"}},
-				Upgrades: []StateUpgradeDefinition{
-					{PriorSchemaVersion: 0, Attributes: map[string]AttributeUpgradeDefinition{
-						"gone": {LegacyAttribute: "old_gone", LegacyType: StringAttribute, LegacyRestriction: Optional, LegacyStatus: Removed},
+				Upgrades: map[int]StateUpgradeDefinition{
+					0: {Attributes: map[string]AttributeUpgradeDefinition{
+						"gone": {AttributeName: "old_gone", Type: StringAttribute, Restriction: LegacyOptional, Status: Removed},
 					}},
 				},
 			},
@@ -6770,9 +6674,9 @@ func TestValidateStateUpgrades_Exhaustiveness(t *testing.T) {
 			Name: "test_child_resolves_ok",
 			Input: stateUpgradesExhaustivenessInput{
 				Children: []string{"fvRsBd"},
-				Upgrades: []StateUpgradeDefinition{
-					{PriorSchemaVersion: 0, Children: map[string]AttributeUpgradeDefinition{
-						"fvRsBd": {LegacyAttribute: "renamed"},
+				Upgrades: map[int]StateUpgradeDefinition{
+					0: {Children: map[string]AttributeUpgradeDefinition{
+						"fvRsBd": {AttributeName: "renamed"},
 					}},
 				},
 			},
@@ -6782,9 +6686,9 @@ func TestValidateStateUpgrades_Exhaustiveness(t *testing.T) {
 			Name: "test_child_unknown_errors",
 			Input: stateUpgradesExhaustivenessInput{
 				Children: []string{"fvRsBd"},
-				Upgrades: []StateUpgradeDefinition{
-					{PriorSchemaVersion: 0, Children: map[string]AttributeUpgradeDefinition{
-						"notAChildClass": {LegacyAttribute: "x"},
+				Upgrades: map[int]StateUpgradeDefinition{
+					0: {Children: map[string]AttributeUpgradeDefinition{
+						"notAChildClass": {AttributeName: "x"},
 					}},
 				},
 			},
@@ -6794,9 +6698,9 @@ func TestValidateStateUpgrades_Exhaustiveness(t *testing.T) {
 			Name: "test_child_unknown_but_removed_ok",
 			Input: stateUpgradesExhaustivenessInput{
 				Children: []string{"fvRsBd"},
-				Upgrades: []StateUpgradeDefinition{
-					{PriorSchemaVersion: 0, Children: map[string]AttributeUpgradeDefinition{
-						"fvRsCustQosPol": {LegacyAttribute: "old_qos", LegacyType: StringAttribute, LegacyRestriction: Optional, LegacyStatus: Removed},
+				Upgrades: map[int]StateUpgradeDefinition{
+					0: {Children: map[string]AttributeUpgradeDefinition{
+						"fvRsCustQosPol": {AttributeName: "old_qos", Type: StringAttribute, Restriction: LegacyOptional, Status: Removed},
 					}},
 				},
 			},
@@ -6806,11 +6710,11 @@ func TestValidateStateUpgrades_Exhaustiveness(t *testing.T) {
 			Name: "test_mixed_resolved_unknown_removed_only_unknown_errors",
 			Input: stateUpgradesExhaustivenessInput{
 				Children: []string{"fvRsBd"},
-				Upgrades: []StateUpgradeDefinition{
-					{PriorSchemaVersion: 0, Children: map[string]AttributeUpgradeDefinition{
-						"fvRsBd":         {LegacyAttribute: "renamed"},
-						"fvRsDomAtt":     {LegacyAttribute: "relation_to_domain"},
-						"fvRsCustQosPol": {LegacyAttribute: "old_qos", LegacyType: StringAttribute, LegacyRestriction: Optional, LegacyStatus: Removed},
+				Upgrades: map[int]StateUpgradeDefinition{
+					0: {Children: map[string]AttributeUpgradeDefinition{
+						"fvRsBd":         {AttributeName: "renamed"},
+						"fvRsDomAtt":     {AttributeName: "relation_to_domain"},
+						"fvRsCustQosPol": {AttributeName: "old_qos", Type: StringAttribute, Restriction: LegacyOptional, Status: Removed},
 					}},
 				},
 			},
@@ -6860,18 +6764,18 @@ func TestValidateStateUpgrades_AccumulatesAllDiagnostics(t *testing.T) {
 	test.InitializeTest(t)
 
 	class := classWithProperties("fvAEPg", map[string]*Property{"name": {PropertyName: "name"}}, []string{"fvRsBd"})
-	class.ClassDefinition.StateUpgrades = []StateUpgradeDefinition{
-		{
-			PriorSchemaVersion: 0,
+	class.ClassDefinition.StateUpgrades = map[int]StateUpgradeDefinition{
+		0: {
 			Attributes: map[string]AttributeUpgradeDefinition{
-				"notARealProperty": {LegacyAttribute: "legacy_name"}, // triggers exhaustiveness error
-				"gone":             {LegacyStatus: Removed},          // triggers Removed-missing-fields error
+				"notARealProperty": {AttributeName: "legacy_name"}, // triggers exhaustiveness error
+				"gone":             {Status: Removed},              // triggers Removed-missing-fields error
 			},
 		},
-		{
-			PriorSchemaVersion: 0, // duplicate of the entry above
+
+		1: {
+			// duplicate of the entry above
 			Attributes: map[string]AttributeUpgradeDefinition{
-				"name": {LegacyAttribute: "n"},
+				"name": {AttributeName: "n"},
 			},
 		},
 	}
@@ -6883,16 +6787,16 @@ func TestValidateStateUpgrades_AccumulatesAllDiagnostics(t *testing.T) {
 		return
 	}
 	msg := err.Error()
-	assert.Contains(t, msg, "duplicate prior_schema_version 0", "uniqueness rule must surface")
+
 	assert.Contains(t, msg, "not found in resolved properties", "exhaustiveness rule must surface in the same pass")
-	assert.Contains(t, msg, "legacy_status: removed requires legacy_attribute", "Removed-required-fields rule must surface in the same pass")
+	assert.Contains(t, msg, "status: removed requires attribute_name", "Removed-required-fields rule must surface in the same pass")
 }
 
 // TestValidateStateUpgradeEntry_LegacyAttributeCollisions covers the per-entry
-// collision detector that flags two attributes sharing the same legacy_attribute
-// inside one prior_schema_version. The detector is scoped to a single entry, so
-// reusing the same legacy_attribute across distinct prior_schema_version entries
-// is allowed; empty legacy_attribute values are not tracked.
+// collision detector that flags two attributes sharing the same attribute_name
+// inside one schema version. The detector is scoped to a single entry, so
+// reusing the same attribute_name across distinct schema version entries
+// is allowed; empty attribute_name values are not tracked.
 func TestValidateStateUpgradeEntry_LegacyAttributeCollisions(t *testing.T) {
 	t.Parallel()
 	test.InitializeTest(t)
@@ -6900,39 +6804,36 @@ func TestValidateStateUpgradeEntry_LegacyAttributeCollisions(t *testing.T) {
 	testCases := []test.TestCase{
 		{
 			Name: "test_same_entry_duplicate_errors",
-			Input: []StateUpgradeDefinition{
-				{
-					PriorSchemaVersion: 0,
+			Input: map[int]StateUpgradeDefinition{
+				0: {
 					Attributes: map[string]AttributeUpgradeDefinition{
-						"a": {LegacyAttribute: "shared_legacy"},
-						"b": {LegacyAttribute: "shared_legacy"},
+						"a": {AttributeName: "shared_legacy"},
+						"b": {AttributeName: "shared_legacy"},
 					},
 				},
 			},
-			Expected: "duplicate legacy_attribute",
+			Expected: "duplicate attribute_name",
 		},
 		{
 			Name: "test_cross_entry_repeat_ok",
-			Input: []StateUpgradeDefinition{
-				{
-					PriorSchemaVersion: 0,
-					Attributes:         map[string]AttributeUpgradeDefinition{"a": {LegacyAttribute: "shared_legacy"}},
+			Input: map[int]StateUpgradeDefinition{
+				0: {
+					Attributes: map[string]AttributeUpgradeDefinition{"a": {AttributeName: "shared_legacy"}},
 				},
-				{
-					PriorSchemaVersion: 2,
-					Attributes:         map[string]AttributeUpgradeDefinition{"b": {LegacyAttribute: "shared_legacy"}},
+
+				2: {
+					Attributes: map[string]AttributeUpgradeDefinition{"b": {AttributeName: "shared_legacy"}},
 				},
 			},
 			Expected: "",
 		},
 		{
-			Name: "test_empty_legacy_attribute_not_counted",
-			Input: []StateUpgradeDefinition{
-				{
-					PriorSchemaVersion: 0,
+			Name: "test_empty_attribute_name_not_counted",
+			Input: map[int]StateUpgradeDefinition{
+				0: {
 					Attributes: map[string]AttributeUpgradeDefinition{
-						"a": {LegacyType: StringAttribute},
-						"b": {LegacyType: BoolAttribute},
+						"a": {Type: StringAttribute},
+						"b": {Type: BoolAttribute},
 					},
 				},
 			},
@@ -6948,7 +6849,7 @@ func TestValidateStateUpgradeEntry_LegacyAttributeCollisions(t *testing.T) {
 				"a": {PropertyName: "a"},
 				"b": {PropertyName: "b"},
 			}, nil)
-			class.ClassDefinition.StateUpgrades = testCase.Input.([]StateUpgradeDefinition)
+			class.ClassDefinition.StateUpgrades = testCase.Input.(map[int]StateUpgradeDefinition)
 
 			ds := &DataStore{ctx: NewContext()}
 			class.setStateUpgrades(ds)
@@ -6965,8 +6866,8 @@ func TestValidateStateUpgradeEntry_LegacyAttributeCollisions(t *testing.T) {
 }
 
 // TestAttributeUpgradeDefinition_Validate_Removed covers the attributes-bucket
-// Removed-required-fields rule: a node with LegacyStatus == Removed must supply
-// legacy_attribute, legacy_type, and legacy_restriction because there is no
+// Removed-required-fields rule: a node with Status == Removed must supply
+// attribute_name, type, and restriction because there is no
 // current attribute to inherit from. The negative controls prove the requirement
 // is gated on the Removed status itself — a fully-populated Removed node and a
 // non-Removed node missing the same fields both pass.
@@ -6976,45 +6877,45 @@ func TestAttributeUpgradeDefinition_Validate_Removed(t *testing.T) {
 
 	testCases := []test.TestCase{
 		{
-			Name: "test_missing_legacy_attribute",
+			Name: "test_missing_attribute_name",
 			Input: AttributeUpgradeDefinition{
-				LegacyType:        StringAttribute,
-				LegacyRestriction: Optional,
-				LegacyStatus:      Removed,
+				Type:        StringAttribute,
+				Restriction: LegacyOptional,
+				Status:      Removed,
 			},
-			Expected: "legacy_attribute",
+			Expected: "attribute_name",
 		},
 		{
-			Name: "test_missing_legacy_type",
+			Name: "test_missing_type",
 			Input: AttributeUpgradeDefinition{
-				LegacyAttribute:   "old",
-				LegacyRestriction: Optional,
-				LegacyStatus:      Removed,
+				AttributeName: "old",
+				Restriction:   LegacyOptional,
+				Status:        Removed,
 			},
-			Expected: "legacy_type",
+			Expected: "type",
 		},
 		{
-			Name: "test_missing_legacy_restriction",
+			Name: "test_missing_restriction",
 			Input: AttributeUpgradeDefinition{
-				LegacyAttribute: "old",
-				LegacyType:      StringAttribute,
-				LegacyStatus:    Removed,
+				AttributeName: "old",
+				Type:          StringAttribute,
+				Status:        Removed,
 			},
-			Expected: "legacy_restriction",
+			Expected: "restriction",
 		},
 		{
 			Name: "test_removed_all_legacy_fields_present_ok",
 			Input: AttributeUpgradeDefinition{
-				LegacyAttribute:   "old",
-				LegacyType:        StringAttribute,
-				LegacyRestriction: Optional,
-				LegacyStatus:      Removed,
+				AttributeName: "old",
+				Type:          StringAttribute,
+				Restriction:   LegacyOptional,
+				Status:        Removed,
 			},
 			Expected: "",
 		},
 		{
 			Name:     "test_not_removed_missing_fields_ok",
-			Input:    AttributeUpgradeDefinition{LegacyStatus: Functioning},
+			Input:    AttributeUpgradeDefinition{Status: LegacyDeprecated},
 			Expected: "",
 		},
 	}
@@ -7024,15 +6925,14 @@ func TestAttributeUpgradeDefinition_Validate_Removed(t *testing.T) {
 			t.Parallel()
 			expected := testCase.Expected.(string)
 			// Use a key that resolves so the exhaustiveness check stays silent
-			// regardless of the node's LegacyStatus; only the Removed-required
+			// regardless of the node's Status; only the Removed-required
 			// rule (or its absence) drives the assertion.
 			class := classWithProperties("fvCtx", map[string]*Property{
 				"someProp": {PropertyName: "someProp"},
 			}, nil)
-			class.ClassDefinition.StateUpgrades = []StateUpgradeDefinition{
-				{
-					PriorSchemaVersion: 0,
-					Attributes:         map[string]AttributeUpgradeDefinition{"someProp": testCase.Input.(AttributeUpgradeDefinition)},
+			class.ClassDefinition.StateUpgrades = map[int]StateUpgradeDefinition{
+				0: {
+					Attributes: map[string]AttributeUpgradeDefinition{"someProp": testCase.Input.(AttributeUpgradeDefinition)},
 				},
 			}
 
@@ -7058,7 +6958,7 @@ type validateChildShapeInput struct {
 // TestValidateChild_ShapeRules covers the children-bucket shape validator:
 // block rename, scalar-wrap via inner attributes, scalar-wrap via inner child
 // (the recursive hasInnerLegacyAttribute path), the empty-block error, the
-// Removed-without-legacy_attribute error, and recursive propagation of inner
+// Removed-without-attribute_name error, and recursive propagation of inner
 // failures with full path prefixes (children["X"]: attributes["Y"], and
 // children["X"]: children["Y"]).
 func TestValidateChild_ShapeRules(t *testing.T) {
@@ -7068,15 +6968,15 @@ func TestValidateChild_ShapeRules(t *testing.T) {
 	testCases := []test.TestCase{
 		{
 			Name:     "test_block_rename_only_ok",
-			Input:    validateChildShapeInput{ChildKey: "fvRsBd", Definition: AttributeUpgradeDefinition{LegacyAttribute: "relation_to_bridge_domain"}},
+			Input:    validateChildShapeInput{ChildKey: "fvRsBd", Definition: AttributeUpgradeDefinition{AttributeName: "relation_to_bridge_domain"}},
 			Expected: "",
 		},
 		{
 			Name: "test_scalar_wrap_via_inner_attribute_ok",
 			Input: validateChildShapeInput{ChildKey: "fvRsNodeAtt", Definition: AttributeUpgradeDefinition{
 				Attributes: map[string]AttributeUpgradeDefinition{
-					"tDn":   {LegacyAttribute: "node_dn"},
-					"encap": {LegacyAttribute: "node_encap"},
+					"tDn":   {AttributeName: "node_dn"},
+					"encap": {AttributeName: "node_encap"},
 				},
 			}},
 			Expected: "",
@@ -7085,7 +6985,7 @@ func TestValidateChild_ShapeRules(t *testing.T) {
 			Name: "test_scalar_wrap_via_inner_child_ok",
 			Input: validateChildShapeInput{ChildKey: "fvSubnet", Definition: AttributeUpgradeDefinition{
 				Children: map[string]AttributeUpgradeDefinition{
-					"fvRsBDSubnetToOut": {LegacyAttribute: "deep_legacy"},
+					"fvRsBDSubnetToOut": {AttributeName: "deep_legacy"},
 				},
 			}},
 			Expected: "",
@@ -7093,27 +6993,27 @@ func TestValidateChild_ShapeRules(t *testing.T) {
 		{
 			Name:     "test_empty_block_no_inner_errors",
 			Input:    validateChildShapeInput{ChildKey: "fvRsBd", Definition: AttributeUpgradeDefinition{}},
-			Expected: "neither legacy_attribute / legacy_type",
+			Expected: "neither attribute_name / type",
 		},
 		{
-			Name:     "test_removed_block_missing_legacy_attribute_errors",
-			Input:    validateChildShapeInput{ChildKey: "fvRsBd", Definition: AttributeUpgradeDefinition{LegacyStatus: Removed}},
-			Expected: "removed requires legacy_attribute",
+			Name:     "test_removed_block_missing_attribute_name_errors",
+			Input:    validateChildShapeInput{ChildKey: "fvRsBd", Definition: AttributeUpgradeDefinition{Status: Removed}},
+			Expected: "removed requires attribute_name",
 		},
 		{
-			Name: "test_removed_block_with_legacy_attribute_ok",
+			Name: "test_removed_block_with_attribute_name_ok",
 			Input: validateChildShapeInput{ChildKey: "fvRsBd", Definition: AttributeUpgradeDefinition{
-				LegacyAttribute: "old",
-				LegacyStatus:    Removed,
+				AttributeName: "old",
+				Status:        Removed,
 			}},
 			Expected: "",
 		},
 		{
 			Name: "test_inner_attribute_failure_propagates_with_path",
 			Input: validateChildShapeInput{ChildKey: "fvRsBd", Definition: AttributeUpgradeDefinition{
-				LegacyAttribute: "renamed",
+				AttributeName: "renamed",
 				Attributes: map[string]AttributeUpgradeDefinition{
-					"foo": {LegacyStatus: Removed}, // missing required fields
+					"foo": {Status: Removed}, // missing required fields
 				},
 			}},
 			Expected: `children["fvRsBd"]: attributes["foo"]`,
@@ -7121,7 +7021,7 @@ func TestValidateChild_ShapeRules(t *testing.T) {
 		{
 			Name: "test_inner_child_failure_propagates_with_path",
 			Input: validateChildShapeInput{ChildKey: "fvRsBd", Definition: AttributeUpgradeDefinition{
-				LegacyAttribute: "renamed",
+				AttributeName: "renamed",
 				Children: map[string]AttributeUpgradeDefinition{
 					"fvSubnet": {}, // empty inner block triggers the shape error
 				},
@@ -7136,10 +7036,9 @@ func TestValidateChild_ShapeRules(t *testing.T) {
 			input := testCase.Input.(validateChildShapeInput)
 			expected := testCase.Expected.(string)
 			class := classWithProperties("fvAEPg", map[string]*Property{}, []string{input.ChildKey})
-			class.ClassDefinition.StateUpgrades = []StateUpgradeDefinition{
-				{
-					PriorSchemaVersion: 0,
-					Children:           map[string]AttributeUpgradeDefinition{input.ChildKey: input.Definition},
+			class.ClassDefinition.StateUpgrades = map[int]StateUpgradeDefinition{
+				0: {
+					Children: map[string]AttributeUpgradeDefinition{input.ChildKey: input.Definition},
 				},
 			}
 
@@ -7186,7 +7085,7 @@ func TestParentDnHasSchemaDefaultDisabledByFunctioningLegacyAlias(t *testing.T) 
 		AttributeName: "parent_dn",
 		Documentation: PropertyDocumentation{DefaultValues: []DefaultValue{{Value: "uni/vmmp-VMware"}}},
 		StateUpgradeValues: map[int]StateUpgradeValue{
-			0: {AttributeName: "provider_profile_dn", Status: Functioning},
+			0: {AttributeName: "provider_profile_dn", Status: LegacyDeprecated},
 		},
 	}
 	class := Class{Properties: map[string]*Property{"parentDn": parentDn}}
@@ -7204,7 +7103,7 @@ func TestParentDnHasSchemaDefaultDisabledByFunctioningLegacyAlias(t *testing.T) 
 // per-Property distribution of the class-level StateUpgrades tree into
 // Property.StateUpgradeValues maps: single-version write, multi-version
 // accumulation under one PropertyName, untouched-property nil-map preservation,
-// silent skip for keys with no resolved Property (LegacyStatus == Removed), and
+// silent skip for keys with no resolved Property (Status == Removed), and
 // parentDn (the synthetic parent-DN attribute) handled the same as any
 // meta-derived property name.
 func TestSetPropertyStateUpgradeValues_Distribution(t *testing.T) {
@@ -7218,10 +7117,9 @@ func TestSetPropertyStateUpgradeValues_Distribution(t *testing.T) {
 				class := classWithProperties("fvCtx", map[string]*Property{
 					"name": {PropertyName: "name", AttributeName: "name", Required: true, ValueType: String},
 				}, nil)
-				class.ClassDefinition.StateUpgrades = []StateUpgradeDefinition{
-					{
-						PriorSchemaVersion: 0,
-						Attributes:         map[string]AttributeUpgradeDefinition{"name": {LegacyAttribute: "old_name"}},
+				class.ClassDefinition.StateUpgrades = map[int]StateUpgradeDefinition{
+					0: {
+						Attributes: map[string]AttributeUpgradeDefinition{"name": {AttributeName: "old_name"}},
 					},
 				}
 				return class
@@ -7239,14 +7137,13 @@ func TestSetPropertyStateUpgradeValues_Distribution(t *testing.T) {
 				class := classWithProperties("fvCtx", map[string]*Property{
 					"name": {PropertyName: "name", AttributeName: "name", Required: true, ValueType: String},
 				}, nil)
-				class.ClassDefinition.StateUpgrades = []StateUpgradeDefinition{
-					{
-						PriorSchemaVersion: 0,
-						Attributes:         map[string]AttributeUpgradeDefinition{"name": {LegacyAttribute: "v0_name"}},
+				class.ClassDefinition.StateUpgrades = map[int]StateUpgradeDefinition{
+					0: {
+						Attributes: map[string]AttributeUpgradeDefinition{"name": {AttributeName: "v0_name"}},
 					},
-					{
-						PriorSchemaVersion: 2,
-						Attributes:         map[string]AttributeUpgradeDefinition{"name": {LegacyAttribute: "v2_name"}},
+
+					2: {
+						Attributes: map[string]AttributeUpgradeDefinition{"name": {AttributeName: "v2_name"}},
 					},
 				}
 				return class
@@ -7266,10 +7163,9 @@ func TestSetPropertyStateUpgradeValues_Distribution(t *testing.T) {
 					"name":  {PropertyName: "name", AttributeName: "name", Required: true, ValueType: String},
 					"descr": {PropertyName: "descr", AttributeName: "description", Optional: true, ValueType: String},
 				}, nil)
-				class.ClassDefinition.StateUpgrades = []StateUpgradeDefinition{
-					{
-						PriorSchemaVersion: 0,
-						Attributes:         map[string]AttributeUpgradeDefinition{"name": {LegacyAttribute: "old_name"}},
+				class.ClassDefinition.StateUpgrades = map[int]StateUpgradeDefinition{
+					0: {
+						Attributes: map[string]AttributeUpgradeDefinition{"name": {AttributeName: "old_name"}},
 					},
 				}
 				return class
@@ -7283,15 +7179,14 @@ func TestSetPropertyStateUpgradeValues_Distribution(t *testing.T) {
 			Name: "test_removed_key_with_no_property_silent_skip",
 			Input: func() *Class {
 				class := classWithProperties("fvCtx", map[string]*Property{}, nil)
-				class.ClassDefinition.StateUpgrades = []StateUpgradeDefinition{
-					{
-						PriorSchemaVersion: 0,
+				class.ClassDefinition.StateUpgrades = map[int]StateUpgradeDefinition{
+					0: {
 						Attributes: map[string]AttributeUpgradeDefinition{
 							"oldAttr": {
-								LegacyAttribute:   "old_attr",
-								LegacyType:        StringAttribute,
-								LegacyRestriction: Optional,
-								LegacyStatus:      Removed,
+								AttributeName: "old_attr",
+								Type:          StringAttribute,
+								Restriction:   LegacyOptional,
+								Status:        Removed,
 							},
 						},
 					},
@@ -7308,10 +7203,9 @@ func TestSetPropertyStateUpgradeValues_Distribution(t *testing.T) {
 				class := classWithProperties("fvCtx", map[string]*Property{
 					"parentDn": {PropertyName: "parentDn", AttributeName: "parent_dn", Required: true, ValueType: String},
 				}, nil)
-				class.ClassDefinition.StateUpgrades = []StateUpgradeDefinition{
-					{
-						PriorSchemaVersion: 0,
-						Attributes:         map[string]AttributeUpgradeDefinition{"parentDn": {LegacyAttribute: "old_parent_dn"}},
+				class.ClassDefinition.StateUpgrades = map[int]StateUpgradeDefinition{
+					0: {
+						Attributes: map[string]AttributeUpgradeDefinition{"parentDn": {AttributeName: "old_parent_dn"}},
 					},
 				}
 				return class
@@ -7360,64 +7254,64 @@ func TestBuildStateUpgradeValue_Overlays(t *testing.T) {
 		{
 			Name:     "test_no_overlays_seed_carries_through",
 			Input:    buildStateUpgradeValueInput{Seed: &Property{PropertyName: "name", AttributeName: "name", Optional: true, Computed: true, ValueType: String}},
-			Expected: StateUpgradeValue{AttributeName: "name", Optional: true, Computed: true, Type: String},
+			Expected: StateUpgradeValue{Status: LegacyDeprecated, AttributeName: "name", Optional: true, Computed: true, Type: String},
 		},
 		{
-			Name:     "test_legacy_attribute_rewrites_name",
-			Input:    buildStateUpgradeValueInput{Seed: &Property{PropertyName: "name", AttributeName: "name", Required: true, ValueType: String}, Overlay: AttributeUpgradeDefinition{LegacyAttribute: "old_name"}},
-			Expected: StateUpgradeValue{AttributeName: "old_name", Required: true, Type: String},
+			Name:     "test_attribute_name_rewrites_name",
+			Input:    buildStateUpgradeValueInput{Seed: &Property{PropertyName: "name", AttributeName: "name", Required: true, ValueType: String}, Overlay: AttributeUpgradeDefinition{AttributeName: "old_name"}},
+			Expected: StateUpgradeValue{Status: LegacyDeprecated, AttributeName: "old_name", Required: true, Type: String},
 		},
 		{
-			Name:     "test_legacy_type_string_to_set",
-			Input:    buildStateUpgradeValueInput{Seed: &Property{PropertyName: "tags", AttributeName: "tags", Optional: true, ValueType: String}, Overlay: AttributeUpgradeDefinition{LegacyType: SetAttribute}},
-			Expected: StateUpgradeValue{AttributeName: "tags", Optional: true, Type: Set},
+			Name:     "test_type_string_to_set",
+			Input:    buildStateUpgradeValueInput{Seed: &Property{PropertyName: "tags", AttributeName: "tags", Optional: true, ValueType: String}, Overlay: AttributeUpgradeDefinition{Type: SetAttribute}},
+			Expected: StateUpgradeValue{Status: LegacyDeprecated, AttributeName: "tags", Optional: true, Type: Set},
 		},
 		{
-			Name:     "test_legacy_type_set_to_string",
-			Input:    buildStateUpgradeValueInput{Seed: &Property{PropertyName: "tags", AttributeName: "tags", Optional: true, ValueType: Set}, Overlay: AttributeUpgradeDefinition{LegacyType: StringAttribute}},
-			Expected: StateUpgradeValue{AttributeName: "tags", Optional: true, Type: String},
+			Name:     "test_type_set_to_string",
+			Input:    buildStateUpgradeValueInput{Seed: &Property{PropertyName: "tags", AttributeName: "tags", Optional: true, ValueType: Set}, Overlay: AttributeUpgradeDefinition{Type: StringAttribute}},
+			Expected: StateUpgradeValue{Status: LegacyDeprecated, AttributeName: "tags", Optional: true, Type: String},
 		},
 		{
-			Name:     "test_legacy_type_map_to_object",
-			Input:    buildStateUpgradeValueInput{Seed: &Property{PropertyName: "labels", AttributeName: "labels", Optional: true, ValueType: String}, Overlay: AttributeUpgradeDefinition{LegacyType: MapAttribute}},
-			Expected: StateUpgradeValue{AttributeName: "labels", Optional: true, Type: Object},
+			Name:     "test_type_map_to_object",
+			Input:    buildStateUpgradeValueInput{Seed: &Property{PropertyName: "labels", AttributeName: "labels", Optional: true, ValueType: String}, Overlay: AttributeUpgradeDefinition{Type: MapAttribute}},
+			Expected: StateUpgradeValue{Status: LegacyDeprecated, AttributeName: "labels", Optional: true, Type: Object},
 		},
 		{
-			Name:     "test_legacy_type_single_nested_to_object",
-			Input:    buildStateUpgradeValueInput{Seed: &Property{PropertyName: "spec", AttributeName: "spec", Optional: true, ValueType: String}, Overlay: AttributeUpgradeDefinition{LegacyType: SingleNestedAttribute}},
-			Expected: StateUpgradeValue{AttributeName: "spec", Optional: true, Type: Object},
+			Name:     "test_type_single_nested_to_object",
+			Input:    buildStateUpgradeValueInput{Seed: &Property{PropertyName: "spec", AttributeName: "spec", Optional: true, ValueType: String}, Overlay: AttributeUpgradeDefinition{Type: SingleNestedAttribute}},
+			Expected: StateUpgradeValue{Status: LegacyDeprecated, AttributeName: "spec", Optional: true, Type: Object},
 		},
 		{
-			Name:     "test_legacy_type_zero_keeps_seed_set",
-			Input:    buildStateUpgradeValueInput{Seed: &Property{PropertyName: "tags", AttributeName: "tags", Optional: true, ValueType: Set}, Overlay: AttributeUpgradeDefinition{LegacyType: UndefinedLegacyAttributeType}},
-			Expected: StateUpgradeValue{AttributeName: "tags", Optional: true, Type: Set},
+			Name:     "test_type_zero_keeps_seed_set",
+			Input:    buildStateUpgradeValueInput{Seed: &Property{PropertyName: "tags", AttributeName: "tags", Optional: true, ValueType: Set}, Overlay: AttributeUpgradeDefinition{Type: UndefinedLegacyAttributeType}},
+			Expected: StateUpgradeValue{Status: LegacyDeprecated, AttributeName: "tags", Optional: true, Type: Set},
 		},
 		{
-			Name:     "test_legacy_restriction_required",
-			Input:    buildStateUpgradeValueInput{Seed: &Property{PropertyName: "name", AttributeName: "name", Optional: true, Computed: true, ValueType: String}, Overlay: AttributeUpgradeDefinition{LegacyRestriction: Required}},
-			Expected: StateUpgradeValue{AttributeName: "name", Required: true, Type: String},
+			Name:     "test_restriction_required",
+			Input:    buildStateUpgradeValueInput{Seed: &Property{PropertyName: "name", AttributeName: "name", Optional: true, Computed: true, ValueType: String}, Overlay: AttributeUpgradeDefinition{Restriction: LegacyRequired}},
+			Expected: StateUpgradeValue{Status: LegacyDeprecated, AttributeName: "name", Required: true, Type: String},
 		},
 		{
-			Name:     "test_legacy_restriction_optional",
-			Input:    buildStateUpgradeValueInput{Seed: &Property{PropertyName: "name", AttributeName: "name", Required: true, ValueType: String}, Overlay: AttributeUpgradeDefinition{LegacyRestriction: Optional}},
-			Expected: StateUpgradeValue{AttributeName: "name", Optional: true, Computed: true, Type: String},
+			Name:     "test_restriction_optional",
+			Input:    buildStateUpgradeValueInput{Seed: &Property{PropertyName: "name", AttributeName: "name", Required: true, ValueType: String}, Overlay: AttributeUpgradeDefinition{Restriction: LegacyOptionalComputed}},
+			Expected: StateUpgradeValue{Status: LegacyDeprecated, AttributeName: "name", Optional: true, Computed: true, Type: String},
 		},
 		{
-			Name:     "test_legacy_restriction_read_only",
-			Input:    buildStateUpgradeValueInput{Seed: &Property{PropertyName: "name", AttributeName: "name", Required: true, ValueType: String}, Overlay: AttributeUpgradeDefinition{LegacyRestriction: ReadOnly}},
-			Expected: StateUpgradeValue{AttributeName: "name", Computed: true, Type: String},
+			Name:     "test_restriction_read_only",
+			Input:    buildStateUpgradeValueInput{Seed: &Property{PropertyName: "name", AttributeName: "name", Required: true, ValueType: String}, Overlay: AttributeUpgradeDefinition{Restriction: LegacyReadOnly}},
+			Expected: StateUpgradeValue{Status: LegacyDeprecated, AttributeName: "name", Computed: true, Type: String},
 		},
 		{
 			Name: "test_all_three_overlays_combined",
 			Input: buildStateUpgradeValueInput{
 				Seed: &Property{PropertyName: "x", AttributeName: "x", Required: true, ValueType: String},
 				Overlay: AttributeUpgradeDefinition{
-					LegacyAttribute:   "old_x",
-					LegacyType:        SetAttribute,
-					LegacyRestriction: Optional,
+					AttributeName: "old_x",
+					Type:          SetAttribute,
+					Restriction:   LegacyOptionalComputed,
 				},
 			},
-			Expected: StateUpgradeValue{AttributeName: "old_x", Optional: true, Computed: true, Type: Set},
+			Expected: StateUpgradeValue{Status: LegacyDeprecated, AttributeName: "old_x", Optional: true, Computed: true, Type: Set},
 		},
 	}
 

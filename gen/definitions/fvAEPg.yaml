@@ -6,7 +6,6 @@ documentation:
   - Tenants -> Application Profiles -> Application EPGs
 exclude_children:
 - fvSiteAssociated
-migration_source: from_sdkv2
 properties:
   exceptionTag:
     attribute_name: contract_exception_tag
@@ -65,93 +64,153 @@ properties:
     default_values:
       "no": ""
 resource_name: application_epg
+schema_version: 2
 state_upgrades:
-- attributes:
-    exceptionTag:
-      legacy_attribute: exception_tag
-    floodOnEncap:
-      legacy_attribute: flood_on_encap
-    fwdCtrl:
-      legacy_attribute: fwd_ctrl
-    hasMcastSource:
-      legacy_attribute: has_mcast_source
-    isAttrBasedEPg:
-      legacy_attribute: is_attr_based_epg
-    matchT:
-      legacy_attribute: match_t
-    parentDn:
-      legacy_attribute: application_profile_dn
-    pcEnfPref:
-      legacy_attribute: pc_enf_pref
-    prefGrMemb:
-      legacy_attribute: pref_gr_memb
-    prio:
-      legacy_attribute: prio
-    shutdown:
-      legacy_attribute: shutdown
-  children:
-    fvRsAEPgMonPol:
-      attributes:
-        tnMonEPGPolName:
-          legacy_attribute: relation_fv_rs_aepg_mon_pol
-    fvRsBd:
-      attributes:
-        tnFvBDName:
-          legacy_attribute: relation_fv_rs_bd
-    fvRsCons:
-      attributes:
-        tnVzBrCPName:
-          legacy_attribute: relation_fv_rs_cons
-    fvRsConsIf:
-      attributes:
-        tnVzCPIfName:
-          legacy_attribute: relation_fv_rs_cons_if
-    fvRsCustQosPol:
-      attributes:
-        tnQosCustomPolName:
-          legacy_attribute: relation_fv_rs_cust_qos_pol
-    fvRsDppPol:
-      attributes:
-        tnQosDppPolName:
-          legacy_attribute: relation_fv_rs_dpp_pol
-    fvRsFcPathAtt:
-      attributes:
-        tDn:
-          legacy_attribute: relation_fv_rs_fc_path_att
-    fvRsIntraEpg:
-      attributes:
-        tnVzBrCPName:
-          legacy_attribute: relation_fv_rs_intra_epg
-    fvRsNodeAtt:
-      attributes:
-        descr:
-          legacy_attribute: description
-        encap:
-          legacy_attribute: encap
-        instrImedcy:
-          legacy_attribute: deployment_immediacy
-        mode:
-          legacy_attribute: mode
-        tDn:
-          legacy_attribute: node_dn
-      legacy_attribute: relation_fv_rs_node_att
-    fvRsProtBy:
-      attributes:
-        tnVzTabooName:
-          legacy_attribute: relation_fv_rs_prot_by
-    fvRsProv:
-      attributes:
-        tnVzBrCPName:
-          legacy_attribute: relation_fv_rs_prov
-    fvRsSecInherited:
-      attributes:
-        tDn:
-          legacy_attribute: relation_fv_rs_sec_inherited
-    fvRsTrustCtrl:
-      attributes:
-        tnFhsTrustCtrlPolName:
-          legacy_attribute: relation_fv_rs_trust_ctrl
-  prior_schema_version: 1
+  1:
+    attributes:
+      exceptionTag:
+        attribute_name: exception_tag
+        status: deprecated
+      floodOnEncap:
+        attribute_name: flood_on_encap
+        status: deprecated
+      fwdCtrl:
+        attribute_name: fwd_ctrl
+        status: deprecated
+      hasMcastSource:
+        attribute_name: has_mcast_source
+        status: deprecated
+      isAttrBasedEPg:
+        attribute_name: is_attr_based_epg
+        status: deprecated
+      matchT:
+        attribute_name: match_t
+        status: deprecated
+      parentDn:
+        attribute_name: application_profile_dn
+        status: deprecated
+      pcEnfPref:
+        attribute_name: pc_enf_pref
+        status: deprecated
+      prefGrMemb:
+        attribute_name: pref_gr_memb
+        status: deprecated
+      prio:
+        attribute_name: prio
+        status: deprecated
+      relation_fv_rs_path_att:
+        element_type: string_attribute
+        restriction: optional
+        status: frozen
+        type: set_attribute
+      relation_fv_rs_prov_def:
+        element_type: string_attribute
+        restriction: optional
+        status: frozen
+        type: set_attribute
+      shutdown:
+        attribute_name: shutdown
+        status: deprecated
+    children:
+      fvRsAEPgMonPol:
+        attributes:
+          tnMonEPGPolName:
+            attribute_name: relation_fv_rs_aepg_mon_pol
+            restriction: optional
+            status: deprecated
+      fvRsBd:
+        attributes:
+          tnFvBDName:
+            attribute_name: relation_fv_rs_bd
+            status: deprecated
+      fvRsCons:
+        attributes:
+          tnVzBrCPName:
+            attribute_name: relation_fv_rs_cons
+            element_type: string_attribute
+            restriction: optional
+            status: deprecated
+            type: set_attribute
+      fvRsConsIf:
+        attributes:
+          tnVzCPIfName:
+            attribute_name: relation_fv_rs_cons_if
+            element_type: string_attribute
+            restriction: optional
+            status: deprecated
+            type: set_attribute
+      fvRsCustQosPol:
+        attributes:
+          tnQosCustomPolName:
+            attribute_name: relation_fv_rs_cust_qos_pol
+            status: deprecated
+      fvRsDppPol:
+        attributes:
+          tnQosDppPolName:
+            attribute_name: relation_fv_rs_dpp_pol
+            restriction: optional
+            status: deprecated
+      fvRsFcPathAtt:
+        attributes:
+          tDn:
+            attribute_name: relation_fv_rs_fc_path_att
+            element_type: string_attribute
+            restriction: optional
+            status: deprecated
+            type: set_attribute
+      fvRsIntraEpg:
+        attributes:
+          tnVzBrCPName:
+            attribute_name: relation_fv_rs_intra_epg
+            element_type: string_attribute
+            restriction: optional
+            status: deprecated
+            type: set_attribute
+      fvRsNodeAtt:
+        attribute_name: relation_fv_rs_node_att
+        attributes:
+          descr:
+            attribute_name: description
+          encap:
+            attribute_name: encap
+          instrImedcy:
+            attribute_name: deployment_immediacy
+          mode:
+            attribute_name: mode
+          tDn:
+            attribute_name: node_dn
+        status: deprecated
+      fvRsProtBy:
+        attributes:
+          tnVzTabooName:
+            attribute_name: relation_fv_rs_prot_by
+            element_type: string_attribute
+            restriction: optional
+            status: deprecated
+            type: set_attribute
+      fvRsProv:
+        attributes:
+          tnVzBrCPName:
+            attribute_name: relation_fv_rs_prov
+            element_type: string_attribute
+            restriction: optional
+            status: deprecated
+            type: set_attribute
+      fvRsSecInherited:
+        attributes:
+          tDn:
+            attribute_name: relation_fv_rs_sec_inherited
+            element_type: string_attribute
+            restriction: optional
+            status: deprecated
+            type: set_attribute
+      fvRsTrustCtrl:
+        attributes:
+          tnFhsTrustCtrlPolName:
+            attribute_name: relation_fv_rs_trust_ctrl
+            restriction: optional
+            status: deprecated
+    source: sdkv2
 test_config:
   dependencies:
   - class_name: fvBD
@@ -162,4 +221,13 @@ test_config:
     config_overrides:
       pim: "yes"
     reference: aci_bridge_domain.test_2.id
+    role: target
+  - class_name: qosDppPol
+    config_overrides:
+      parent_dn: aci_tenant.test_1.id
+    role: target
+  - class_name: qosDppPol
+    config_overrides:
+      parent_dn: aci_tenant.test_1.id
+    reference: aci_data_plane_policing_policy.test_2.id
     role: target

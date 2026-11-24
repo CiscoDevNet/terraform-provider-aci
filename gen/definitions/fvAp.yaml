@@ -2,17 +2,21 @@ documentation:
   sub_category: Application Management
   ui_locations:
   - Tenants -> Application Profiles
-migration_source: from_sdkv2
 resource_name: application_profile
+schema_version: 2
 state_upgrades:
-- attributes:
-    parentDn:
-      legacy_attribute: tenant_dn
-    prio:
-      legacy_attribute: prio
-  children:
-    fvRsApMonPol:
-      attributes:
-        tnMonEPGPolName:
-          legacy_attribute: relation_fv_rs_ap_mon_pol
-  prior_schema_version: 1
+  1:
+    attributes:
+      parentDn:
+        attribute_name: tenant_dn
+        status: deprecated
+      prio:
+        attribute_name: prio
+        status: deprecated
+    children:
+      fvRsApMonPol:
+        attributes:
+          tnMonEPGPolName:
+            attribute_name: relation_fv_rs_ap_mon_pol
+            status: deprecated
+    source: sdkv2

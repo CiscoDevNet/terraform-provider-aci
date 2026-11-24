@@ -138,7 +138,7 @@ var knownLegacyKeys = map[string]keyInfo{
 	"class_version":        {sectionSemantic, true}, // -> supported_versions
 	"relationship_classes": {sectionSemantic, true}, // -> relation_info.to_classes
 	"migration_blocks":     {sectionSemantic, true}, // -> state_upgrades attribute-name mappings
-	"migration_version":    {sectionSemantic, true}, // -> state_upgrades (drives migration_source)
+	"migration_version":    {sectionSemantic, true}, // -> state_upgrades (records per-version source)
 	"type_changes":         {sectionSemantic, true}, // -> state_upgrades.attributes
 	"resource_notes":       {sectionSemantic, true}, // -> documentation.resource.notes
 
@@ -1296,12 +1296,13 @@ func parseLegacyAttributeType(s string) data.LegacyAttributeTypeEnum {
 
 // migrateStateUpgrades reads the three SDKv2-migration keys
 // (migration_version, migration_blocks, type_changes) from the legacy YAML
-// and assembles a single state_upgrades:[] tree on `out`. Also sets
-// out.MigrationSource = FromSDKv2 when any of the three keys is present
-// (validates the cross-field rule in class.go validateStateUpgrades).
+// and assembles a single state_upgrades map tree on `out`.
+// Each version records sdkv2 or framework as its source. Notice-only migrations
+// use the existing documentation warnings instead of an empty upgrade entry.
 //
-// The frozen definitions/schema-git-commit-e21fb3e5.json is not consumed here.
-// legacy_type and legacy_restriction default to the zero value (interpreted as
+// The latest metadata supplies unchanged fields; only historical differences are recorded.
+// completeHistoricalDefinitions supplies the saved types and retained fields.
+// type and restriction default to the zero value (interpreted as
 // "inherit from current property"), which covers the common case of a pure
 // name rename. A real type or restriction difference must be encoded in the
 // migration logic; the script captures the legacy name pairs faithfully.
@@ -1325,6 +1326,28 @@ func migrateStateUpgrades(file string, legacy map[string]any, out *data.ClassDef
 	if !hasBlocks && !hasVersion && !hasTypes {
 		return
 	}
+	primaryVersion := 0
+	if hasVersion {
+		switch v := versionVal.(type) {
+		case int:
+			primaryVersion = v
+		case int64:
+			primaryVersion = int(v)
+		}
+	}
+	// Import the old generator's published version once; canonical definitions then pin it explicitly.
+	currentVersion := primaryVersion
+	if hasBlocks {
+		currentVersion++
+	}
+	if currentVersion > 0 {
+		out.SchemaVersion = &currentVersion
+	}
+	if hasVersion && !hasBlocks && !hasTypes {
+		// Preserve the published version without inventing an upgrade when the state shape did not change.
+		out.Documentation.Resource.Warnings = append(out.Documentation.Resource.Warnings, data.SDKv2MigrationWarning)
+		return
+	}
 	selfClass := strings.TrimSuffix(filepath.Base(file), ".yaml")
 
 	// versions indexes state_upgrades by PriorSchemaVersion so all three
@@ -1335,25 +1358,16 @@ func migrateStateUpgrades(file string, legacy map[string]any, out *data.ClassDef
 			return entry
 		}
 		entry := &data.StateUpgradeDefinition{
-			PriorSchemaVersion: v,
-			Attributes:         map[string]data.AttributeUpgradeDefinition{},
-			Children:           map[string]data.AttributeUpgradeDefinition{},
+			Source:     data.FromFramework,
+			Attributes: map[string]data.AttributeUpgradeDefinition{},
+			Children:   map[string]data.AttributeUpgradeDefinition{},
 		}
 		versions[v] = entry
 		return entry
 	}
 
-	primaryVersion := 0
-	if hasVersion {
-		switch v := versionVal.(type) {
-		case int:
-			primaryVersion = v
-		case int64:
-			primaryVersion = int(v)
-		}
-	}
 	if hasBlocks || hasVersion {
-		ensure(primaryVersion)
+		ensure(primaryVersion).Source = data.FromSDKv2
 	}
 
 	if hasBlocks {
@@ -1367,7 +1381,7 @@ func migrateStateUpgrades(file string, legacy map[string]any, out *data.ClassDef
 				oldName, _ := oldKey.(string)
 				newName, _ := newVal.(string)
 				upgrade := data.AttributeUpgradeDefinition{
-					LegacyAttribute: oldName,
+					AttributeName: oldName,
 				}
 				dotIdx := strings.Index(newName, ".")
 				if isSelf {
@@ -1387,10 +1401,10 @@ func migrateStateUpgrades(file string, legacy map[string]any, out *data.ClassDef
 				//     child class; the block prefix is purely informational.
 				//   - Bare "<block>": block-level rename (the legacy flat
 				//     attribute became the renamed child block as a whole).
-				//     Set legacy_attribute on the child directly, no inner.
+				//     Set attribute_name on the child directly, no inner.
 				child := entry.Children[className]
 				if dotIdx < 0 {
-					child.LegacyAttribute = oldName
+					child.AttributeName = oldName
 					entry.Children[className] = child
 					continue
 				}
@@ -1424,9 +1438,10 @@ func migrateStateUpgrades(file string, legacy map[string]any, out *data.ClassDef
 			case int64:
 				versionInt = int(v)
 			}
+			currentVersion = max(currentVersion, versionInt+1)
 			parsed := parseLegacyAttributeType(oldType)
 			if parsed == data.UndefinedLegacyAttributeType {
-				fmt.Printf("  WARN: %s type_changes attribute=%s old_type=%q is not a recognised legacy type; entry kept with zero legacy_type\n", file, attrName, oldType)
+				fmt.Printf("  WARN: %s type_changes attribute=%s old_type=%q is not a recognised legacy type; entry kept with zero type\n", file, attrName, oldType)
 			}
 			entry := ensure(versionInt)
 			// Nested legacy types route to .children; scalar legacy types
@@ -1435,7 +1450,7 @@ func migrateStateUpgrades(file string, legacy map[string]any, out *data.ClassDef
 			// carries scalar entries.
 			isNested := strings.Contains(oldType, "Nested")
 			upgrade := data.AttributeUpgradeDefinition{
-				LegacyType: parsed,
+				Type: parsed,
 			}
 			if isNested {
 				entry.Children[attrName] = upgrade
@@ -1444,24 +1459,305 @@ func migrateStateUpgrades(file string, legacy map[string]any, out *data.ClassDef
 			}
 		}
 	}
-
-	// Order entries by ascending PriorSchemaVersion so the emitted YAML
-	// is reproducible across runs (Go map iteration is randomised).
-	keys := make([]int, 0, len(versions))
-	for k := range versions {
-		keys = append(keys, k)
-	}
-	sort.Ints(keys)
-	for _, k := range keys {
-		out.StateUpgrades = append(out.StateUpgrades, *versions[k])
+	if currentVersion > 0 {
+		out.SchemaVersion = &currentVersion
 	}
 
-	// MigrationSource is the cross-field that drives the docs migration
-	// warning and the validator that requires at least one state_upgrades
-	// entry. The legacy YAML implies SDKv2 lineage whenever any of the
-	// three keys is present, so the migration script sets the enum on
-	// every translated file.
-	out.MigrationSource = data.FromSDKv2
+	out.StateUpgrades = make(map[int]data.StateUpgradeDefinition, len(versions))
+	for version, entry := range versions {
+		out.StateUpgrades[version] = *entry
+	}
+
+}
+
+type historicalAttribute struct {
+	Type     json.RawMessage `json:"type"`
+	Required bool            `json:"required"`
+	Optional bool            `json:"optional"`
+	Computed bool            `json:"computed"`
+}
+
+type historicalBlock struct {
+	Attributes map[string]historicalAttribute `json:"attributes"`
+	Blocks     map[string]struct {
+		Nesting string          `json:"nesting_mode"`
+		Block   historicalBlock `json:"block"`
+	} `json:"block_types"`
+}
+
+type historicalSchema struct {
+	Version int             `json:"version"`
+	Block   historicalBlock `json:"block"`
+}
+
+func deferHistoricalDefinition(className string, definition *data.ClassDefinition, deferredDefinitions map[string]data.ClassDefinition) {
+	// The bootstrap datastore needs current metadata before incomplete historical declarations can be normalized.
+	if definition.SchemaVersion == nil && len(definition.StateUpgrades) == 0 {
+		return
+	}
+	deferredDefinitions[className] = *definition
+	definition.SchemaVersion = nil
+	definition.StateUpgrades = nil
+}
+
+func completeHistoricalDefinitions(outputDir string, deferredDefinitions map[string]data.ClassDefinition) error {
+	// Load after the initial conversion so names and types use the same normalization as generation.
+	ctx := data.NewContext()
+	store, err := data.NewDataStore(ctx)
+	if err != nil {
+		return err
+	}
+	if err := ctx.Diagnostics.Error(); err != nil {
+		return err
+	}
+	payload, err := os.ReadFile("gen/definitions/schema-git-commit-e21fb3e5.json")
+	if err != nil {
+		return err
+	}
+	var snapshot struct {
+		Providers map[string]struct {
+			Resources   map[string]historicalSchema `json:"resource_schemas"`
+			Datasources map[string]historicalSchema `json:"data_source_schemas"`
+		} `json:"provider_schemas"`
+	}
+	if err := json.Unmarshal(payload, &snapshot); err != nil {
+		return err
+	}
+	provider := snapshot.Providers["registry.terraform.io/ciscodevnet/aci"]
+	classNames := make([]string, 0, len(store.ClassDefinitions))
+	for className := range store.ClassDefinitions {
+		classNames = append(classNames, className)
+	}
+	sort.Strings(classNames)
+	for _, className := range classNames {
+		definition := store.ClassDefinitions[className]
+		deferred, hasDeferred := deferredDefinitions[className]
+		if hasDeferred {
+			definition.SchemaVersion = deferred.SchemaVersion
+			definition.StateUpgrades = deferred.StateUpgrades
+		}
+		fromSDK := contains(definition.Documentation.Resource.Warnings, data.SDKv2MigrationWarning)
+		for _, entry := range definition.StateUpgrades {
+			fromSDK = fromSDK || entry.Source == data.FromSDKv2
+		}
+		if !fromSDK && !hasDeferred {
+			continue
+		}
+		if fromSDK {
+			class := store.Classes[className]
+			schemas := provider.Resources
+			if !class.HasResourceArtifact() {
+				schemas = provider.Datasources
+			}
+			schema, ok := schemas["aci_"+class.ResourceName]
+			if !ok {
+				return fmt.Errorf("class %s: no saved SDKv2 schema", className)
+			}
+			entry := definition.StateUpgrades[schema.Version]
+			if err := completeHistoricalUpgrade(&entry, &class, schema.Block, store); err != nil {
+				return fmt.Errorf("class %s: %w", className, err)
+			}
+			if len(entry.Attributes) > 0 || len(entry.Children) > 0 {
+				entry.Source = data.FromSDKv2
+				if definition.StateUpgrades == nil {
+					definition.StateUpgrades = map[int]data.StateUpgradeDefinition{}
+				}
+				definition.StateUpgrades[schema.Version] = entry
+			}
+		}
+		out, err := roundTripStrict(marshalView(definition))
+		if err != nil {
+			return fmt.Errorf("class %s: %w", className, err)
+		}
+		out = append([]byte(canonicalDefinitionComments[className]), out...)
+		if err := os.WriteFile(filepath.Join(outputDir, className+".yaml"), out, 0644); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func completeHistoricalUpgrade(entry *data.StateUpgradeDefinition, class *data.Class, block historicalBlock, store *data.DataStore) error {
+	consumed := map[string]bool{"id": true}
+	for key, node := range entry.Attributes {
+		property := class.Properties[key]
+		old, exists := block.Attributes[node.AttributeName]
+		// Two system datasource aliases were added after the saved dump; their source declarations remain authoritative.
+		if !exists && class.Name.String() == "topSystem" && (key == "rlAutoMode" || key == "rlGroupId") {
+			node.Status = data.LegacyDeprecated
+			entry.Attributes[key] = node
+			continue
+		}
+		if !exists || property == nil {
+			return fmt.Errorf("historical attribute %q has no saved schema or current property", node.AttributeName)
+		}
+		consumed[node.AttributeName] = true
+		if err := completeHistoricalAttribute(&node, property, old, true); err != nil {
+			return err
+		}
+		if reflect.DeepEqual(node, data.AttributeUpgradeDefinition{}) {
+			delete(entry.Attributes, key)
+		} else {
+			entry.Attributes[key] = node
+		}
+	}
+	for name, node := range entry.Children {
+		child := store.Classes[name]
+		oldBlock, nested := block.Blocks[node.AttributeName]
+		if nested {
+			consumed[node.AttributeName] = true
+			node.Status = data.LegacyDeprecated
+			// Blocks and nested attributes have the same state shape; record only a changed collection shape.
+			if oldBlock.Nesting != "set" {
+				return fmt.Errorf("unsupported historical nesting %q", oldBlock.Nesting)
+			}
+			if child.IsSingleNestedWhenDefinedAsChild {
+				node.Type = data.SetNestedAttribute
+			}
+		}
+		innerConsumed := map[string]bool{}
+		for key, attribute := range node.Attributes {
+			historicalName := attribute.AttributeName
+			source := block
+			if nested {
+				source = oldBlock.Block
+			}
+			old, exists := source.Attributes[attribute.AttributeName]
+			property := child.Properties[key]
+			if !exists || property == nil {
+				return fmt.Errorf("child %s: historical attribute %q has no saved schema or current property", name, attribute.AttributeName)
+			}
+			if nested {
+				innerConsumed[attribute.AttributeName] = true
+			} else {
+				consumed[attribute.AttributeName] = true
+			}
+			if err := completeHistoricalAttribute(&attribute, property, old, !nested); err != nil {
+				return err
+			}
+			if nested {
+				// Explicit historical names also preserve membership of an old block.
+				attribute.AttributeName = historicalName
+			}
+			if reflect.DeepEqual(attribute, data.AttributeUpgradeDefinition{}) {
+				delete(node.Attributes, key)
+			} else {
+				node.Attributes[key] = attribute
+			}
+		}
+		if nested {
+			if err := addHistoricalFields(&node.Attributes, &child, oldBlock.Block, innerConsumed, true); err != nil {
+				return err
+			}
+		}
+		entry.Children[name] = node
+	}
+	for name := range block.Blocks {
+		if !consumed[name] {
+			return fmt.Errorf("historical block %q has no migration mapping", name)
+		}
+	}
+	return addHistoricalFields(&entry.Attributes, class, block, consumed, false)
+}
+
+func completeHistoricalAttribute(node *data.AttributeUpgradeDefinition, property *data.Property, old historicalAttribute, alias bool) error {
+	shape, err := old.definition()
+	if err != nil {
+		return err
+	}
+	currentType := data.StringAttribute
+	if property.ValueType == data.Set {
+		currentType = data.SetAttribute
+	}
+	if shape.Type != currentType {
+		node.Type, node.ElementType = shape.Type, shape.ElementType
+	}
+	if node.AttributeName == property.AttributeName {
+		node.AttributeName = ""
+	}
+	if node.AttributeName != "" || node.Type != data.UndefinedLegacyAttributeType {
+		// Restrictions matter on changed inputs, but flag-only changes do not need historical fields.
+		if old.Required != property.Required || old.Optional != property.Optional || old.Computed != property.Computed {
+			node.Restriction = shape.Restriction
+		}
+		if alias && node.AttributeName != "" {
+			node.Status = data.LegacyDeprecated
+		}
+	}
+	return nil
+}
+
+func addHistoricalFields(attributes *map[string]data.AttributeUpgradeDefinition, class *data.Class, block historicalBlock, consumed map[string]bool, retainNames bool) error {
+	properties := map[string]string{}
+	for key, property := range class.Properties {
+		properties[property.AttributeName] = key
+	}
+	for name, old := range block.Attributes {
+		if consumed[name] {
+			continue
+		}
+		node, err := old.definition()
+		if err != nil {
+			return err
+		}
+		key, exists := properties[name]
+		if exists {
+			node = data.AttributeUpgradeDefinition{}
+			if err := completeHistoricalAttribute(&node, class.Properties[key], old, false); err != nil {
+				return err
+			}
+			if retainNames {
+				node.AttributeName = name
+			}
+			if reflect.DeepEqual(node, data.AttributeUpgradeDefinition{}) {
+				continue
+			}
+		} else {
+			// Unmapped SDKv2 inputs are retained without an APIC round-trip, matching the published frozen fields.
+			key, node.Status = name, data.Frozen
+		}
+		if *attributes == nil {
+			*attributes = map[string]data.AttributeUpgradeDefinition{}
+		}
+		(*attributes)[key] = node
+	}
+	return nil
+}
+
+func (a historicalAttribute) definition() (data.AttributeUpgradeDefinition, error) {
+	node := data.AttributeUpgradeDefinition{Restriction: data.LegacyOptional}
+	switch {
+	case a.Required:
+		node.Restriction = data.LegacyRequired
+	case a.Optional && a.Computed:
+		node.Restriction = data.LegacyOptionalComputed
+	case a.Computed:
+		node.Restriction = data.LegacyReadOnly
+	}
+	var value any
+	if err := json.Unmarshal(a.Type, &value); err != nil {
+		return node, err
+	}
+	switch value := value.(type) {
+	case string:
+		if value == "string" {
+			node.Type = data.StringAttribute
+		}
+	case []any:
+		if len(value) == 2 && value[1] == "string" {
+			switch value[0] {
+			case "set":
+				node.Type = data.SetAttribute
+			case "list":
+				node.Type = data.ListAttribute
+			}
+			node.ElementType = data.StringAttribute
+		}
+	}
+	if node.Type == data.UndefinedLegacyAttributeType {
+		return node, fmt.Errorf("unsupported historical type %s", a.Type)
+	}
+	return node, nil
 }
 
 // projectStateUpgrade emits a StateUpgradeDefinition as a YAML-friendly map
@@ -1470,8 +1766,9 @@ func migrateStateUpgrades(file string, legacy map[string]any, out *data.ClassDef
 // expectation: the YAML keys are meta camelCase, and unset fields surface
 // as the loader zero value (interpreted as "inherit from current property").
 func projectStateUpgrade(su data.StateUpgradeDefinition) map[string]any {
-	entry := map[string]any{
-		"prior_schema_version": su.PriorSchemaVersion,
+	entry := map[string]any{}
+	if su.Source != data.UndefinedMigrationSource {
+		entry["source"] = su.Source.String()
 	}
 	if len(su.Attributes) > 0 {
 		entry["attributes"] = projectAttributeMap(su.Attributes)
@@ -1494,19 +1791,24 @@ func projectAttributeMap(m map[string]data.AttributeUpgradeDefinition) map[strin
 
 func projectAttributeUpgrade(a data.AttributeUpgradeDefinition) map[string]any {
 	out := map[string]any{}
-	if a.LegacyAttribute != "" {
-		out["legacy_attribute"] = a.LegacyAttribute
+	if a.AttributeName != "" {
+		out["attribute_name"] = a.AttributeName
 	}
-	if a.LegacyType != data.UndefinedLegacyAttributeType {
-		out["legacy_type"] = a.LegacyType.String()
+	if a.ElementType != data.UndefinedLegacyAttributeType {
+		out["element_type"] = a.ElementType.String()
 	}
-	if a.LegacyRestriction != data.UndefinedRestriction {
-		out["legacy_restriction"] = a.LegacyRestriction.String()
+	if a.Type != data.UndefinedLegacyAttributeType {
+		out["type"] = a.Type.String()
 	}
-	// LegacyStatus's zero value (Functioning) is the documented default;
-	// emit only when non-zero so the migrated YAML stays minimal.
-	if a.LegacyStatus != data.Functioning {
-		out["legacy_status"] = a.LegacyStatus.String()
+	if a.ValueType != data.UndefinedValueType {
+		out["value_type"] = a.ValueType.String()
+	}
+	if a.Restriction != data.UndefinedLegacyRestriction {
+		out["restriction"] = a.Restriction.String()
+	}
+	// Preserve omission so later entries can inherit the last explicit lifecycle.
+	if a.Status != data.UndefinedLegacyStatus {
+		out["status"] = a.Status.String()
 	}
 	if len(a.Attributes) > 0 {
 		out["attributes"] = projectAttributeMap(a.Attributes)
@@ -1951,6 +2253,13 @@ func migrateExampleValueOverwrite(file, className string, value any, out *data.C
 // reconstructed faithfully from the legacy definition vocabulary. Keeping
 // them here ensures every migration run reproduces the canonical definitions.
 func applyCanonicalDefinitionCorrections(className string, out *data.ClassDefinition) {
+	if className == "fvRsTenantMonPol" {
+		// Create the target explicitly; the legacy renderer derives its .id reference from .name.
+		property := out.Properties["tnMonEPGPolName"]
+		property.TestConfig.Create = testValueScenario(data.TestValueEntryDefinition{ConfigValue: "aci_monitoring_policy.test.name", ValueType: data.ReferenceValue})
+		out.Properties["tnMonEPGPolName"] = property
+	}
+
 	if className == "fvAEPg" {
 		// APIC rejects changing uSeg mode in place despite the meta marking this property writable.
 		property := upsertProperty(out, "isAttrBasedEPg")
@@ -1970,6 +2279,17 @@ func applyCanonicalDefinitionCorrections(className string, out *data.ClassDefini
 				ReferenceType:   data.ResourceReference,
 				Role:            data.Target,
 				ConfigOverrides: map[string]string{"pim": "yes"},
+			})
+		}
+		// EPG name resolution uses tenant/common policing policies, not the infra placement default.
+		// Keep the tenant scope from the legacy fixture so resolved legacy DNs match the configured target.
+		for _, reference := range []string{"aci_data_plane_policing_policy.test.id", "aci_data_plane_policing_policy.test_2.id"} {
+			out.TestConfig.Dependencies = append(out.TestConfig.Dependencies, data.TestDependencyDefinition{
+				ClassName:       "qosDppPol",
+				Reference:       reference,
+				ReferenceType:   data.ResourceReference,
+				Role:            data.Target,
+				ConfigOverrides: map[string]string{"parent_dn": "aci_tenant.test.id"},
 			})
 		}
 	}
@@ -2306,6 +2626,22 @@ func applyCanonicalDefinitionCorrections(className string, out *data.ClassDefini
 		property.TestConfig.Update = testValueScenario(data.TestValueEntryDefinition{ConfigValue: "1"})
 		out.Properties["id"] = property
 	case "fvBD":
+		// The saved JSON schema loses custom types; ll_addr historically compared equivalent IP spellings.
+		upgrade := out.StateUpgrades[1]
+		address := upgrade.Attributes["llAddr"]
+		address.ValueType = data.IpAddress
+		upgrade.Attributes["llAddr"] = address
+		out.StateUpgrades[1] = upgrade
+		// BD named relationships resolve NetFlow policies in tenant/common scope, matching the legacy fixture.
+		for _, reference := range []string{"aci_netflow_monitor_policy.test.id", "aci_netflow_monitor_policy.test_2.id"} {
+			out.TestConfig.Dependencies = append(out.TestConfig.Dependencies, data.TestDependencyDefinition{
+				ClassName:       "netflowMonitorPol",
+				Reference:       reference,
+				ReferenceType:   data.ResourceReference,
+				Role:            data.Target,
+				ConfigOverrides: map[string]string{"parent_dn": "aci_tenant.test.id"},
+			})
+		}
 		// Metadata does not constrain this string to MAC syntax, but APIC validates it.
 		property := upsertProperty(out, "mac")
 		property.TestConfig.Update = testValueScenario(data.TestValueEntryDefinition{ConfigValue: "00:22:BD:F8:19:FD"})
@@ -2410,6 +2746,14 @@ func applyCanonicalDefinitionCorrections(className string, out *data.ClassDefini
 		appendCanonicalTargetDependencies(out, "ospfCtxPol", "ospf_timers")
 	case "fvRsTenantMonPol":
 		appendCanonicalTargetDependencies(out, "monEPGPol", "monitoring_policy")
+		// A policy in the tested tenant would create a dependency cycle. Common is fixed; only our prefixed policies are managed.
+		for index := range out.TestConfig.Dependencies {
+			dependency := &out.TestConfig.Dependencies[index]
+			if dependency.ClassName == "monEPGPol" && dependency.Role == data.Target {
+				setLegacyDependencyConfig(dependency, "tenant_dn", "uni/tn-common")
+				setLegacyDependencyConfig(dependency, "name", "monitoring_policy")
+			}
+		}
 	case "infraRsAccBndlSubgrp":
 		appendCanonicalTargetDependencies(out, "infraAccBndlSubgrp", "leaf_access_bundle_policy_sub_group")
 	case "vmmRsDomMcastAddrNs":
@@ -2649,35 +2993,34 @@ func applyCanonicalDefinitionCorrections(className string, out *data.ClassDefini
 		configIssues.RemoveValidValues = append(configIssues.RemoveValidValues, "none")
 		out.Properties["configIssues"] = configIssues
 
-		// Record the prior SDKv2 datasource shape without exposing the renamed
-		// aliases in generated models during the current migration phase.
-		out.MigrationSource = data.FromSDKv2
-		out.StateUpgrades = []data.StateUpgradeDefinition{{
-			PriorSchemaVersion: 1,
-			Attributes: map[string]data.AttributeUpgradeDefinition{
-				"bootstrapState":          {LegacyAttribute: "boot_strap_tate"},
-				"etepAddr":                {LegacyAttribute: "etep_addr"},
-				"inbMgmtAddr":             {LegacyAttribute: "inb_mgmt_addr"},
-				"inbMgmtAddr6":            {LegacyAttribute: "inb_mgmt_addr6"},
-				"inbMgmtAddr6Mask":        {LegacyAttribute: "inb_mgmt_addr6_mask"},
-				"inbMgmtAddrMask":         {LegacyAttribute: "inb_mgmt_addr_mask"},
-				"inbMgmtGateway":          {LegacyAttribute: "inb_mgmt_gateway"},
-				"inbMgmtGateway6":         {LegacyAttribute: "inb_mgmt_gateway6"},
-				"monPolDn":                {LegacyAttribute: "mon_pol_dn"},
-				"oobMgmtAddr":             {LegacyAttribute: "oob_mgmt_addr"},
-				"oobMgmtAddr6":            {LegacyAttribute: "oob_mgmt_addr6"},
-				"oobMgmtAddr6Mask":        {LegacyAttribute: "oob_mgmt_addr6_mask"},
-				"oobMgmtAddrMask":         {LegacyAttribute: "oob_mgmt_addr_mask"},
-				"oobMgmtGateway":          {LegacyAttribute: "oob_mgmt_gateway"},
-				"oobMgmtGateway6":         {LegacyAttribute: "oob_mgmt_gateway6"},
-				"rlAutoMode":              {LegacyAttribute: "rl_auto_mode"},
-				"rlGroupId":               {LegacyAttribute: "rl_group_id"},
-				"rlOperPodId":             {LegacyAttribute: "rl_oper_pod_id"},
-				"rlRoutableMode":          {LegacyAttribute: "rl_routable_mode"},
-				"rldirectMode":            {LegacyAttribute: "rldirect_mode"},
-				"unicastXrEpLearnDisable": {LegacyAttribute: "unicast_xr_ep_learn_disable"},
-			},
-		}}
+		// Record the prior SDKv2 datasource names so generated models retain the compatibility outputs.
+		out.StateUpgrades = map[int]data.StateUpgradeDefinition{
+			1: {
+				Source: data.FromSDKv2,
+				Attributes: map[string]data.AttributeUpgradeDefinition{
+					"bootstrapState":          {AttributeName: "boot_strap_tate"},
+					"etepAddr":                {AttributeName: "etep_addr"},
+					"inbMgmtAddr":             {AttributeName: "inb_mgmt_addr"},
+					"inbMgmtAddr6":            {AttributeName: "inb_mgmt_addr6"},
+					"inbMgmtAddr6Mask":        {AttributeName: "inb_mgmt_addr6_mask"},
+					"inbMgmtAddrMask":         {AttributeName: "inb_mgmt_addr_mask"},
+					"inbMgmtGateway":          {AttributeName: "inb_mgmt_gateway"},
+					"inbMgmtGateway6":         {AttributeName: "inb_mgmt_gateway6"},
+					"monPolDn":                {AttributeName: "mon_pol_dn"},
+					"oobMgmtAddr":             {AttributeName: "oob_mgmt_addr"},
+					"oobMgmtAddr6":            {AttributeName: "oob_mgmt_addr6"},
+					"oobMgmtAddr6Mask":        {AttributeName: "oob_mgmt_addr6_mask"},
+					"oobMgmtAddrMask":         {AttributeName: "oob_mgmt_addr_mask"},
+					"oobMgmtGateway":          {AttributeName: "oob_mgmt_gateway"},
+					"oobMgmtGateway6":         {AttributeName: "oob_mgmt_gateway6"},
+					"rlAutoMode":              {AttributeName: "rl_auto_mode"},
+					"rlGroupId":               {AttributeName: "rl_group_id"},
+					"rlOperPodId":             {AttributeName: "rl_oper_pod_id"},
+					"rlRoutableMode":          {AttributeName: "rl_routable_mode"},
+					"rldirectMode":            {AttributeName: "rldirect_mode"},
+					"unicastXrEpLearnDisable": {AttributeName: "unicast_xr_ep_learn_disable"},
+				},
+			}}
 	}
 
 	// The legacy datasource tests appended _not_existing to these named targets.
@@ -4490,7 +4833,7 @@ func hasMigratedData(c data.ClassDefinition) bool {
 	if c.SupportedVersions != "" {
 		return true
 	}
-	if c.MigrationSource != data.UndefinedMigrationSource || len(c.StateUpgrades) > 0 {
+	if len(c.StateUpgrades) > 0 {
 		return true
 	}
 	if len(c.RelationInfo.ToClasses) > 0 || c.RelationInfo.FromClass != "" || c.RelationInfo.Disabled || c.RelationInfo.Type != data.UndefinedRelationshipType {
@@ -4598,11 +4941,11 @@ func marshalView(c data.ClassDefinition) map[string]any {
 	if len(rel) > 0 {
 		out["relation_info"] = rel
 	}
-	if c.MigrationSource != data.UndefinedMigrationSource {
-		out["migration_source"] = c.MigrationSource.String()
+	if c.SchemaVersion != nil {
+		out["schema_version"] = *c.SchemaVersion
 	}
 	if len(c.StateUpgrades) > 0 {
-		entries := make([]map[string]any, len(c.StateUpgrades))
+		entries := make(map[int]map[string]any, len(c.StateUpgrades))
 		for i, su := range c.StateUpgrades {
 			entries[i] = projectStateUpgrade(su)
 		}
@@ -4850,6 +5193,7 @@ func main() {
 	tally := newKeyTally()
 	migrated, skipped, failed := 0, 0, 0
 	expectedDefinitions := map[string]struct{}{}
+	deferredDefinitions := map[string]data.ClassDefinition{}
 	for _, pf := range propFiles {
 		base := filepath.Base(pf)
 		// properties/global.yaml is the legacy carrier for what is now
@@ -4927,6 +5271,7 @@ func main() {
 			continue
 		}
 
+		deferHistoricalDefinition(className, &canonical, deferredDefinitions)
 		view := marshalView(canonical)
 		out, err := roundTripStrict(view)
 		if err != nil {
@@ -4974,6 +5319,7 @@ func main() {
 			skipped++
 			continue
 		}
+		deferHistoricalDefinition(orphanClass, &canonical, deferredDefinitions)
 		view := marshalView(canonical)
 		out, err := roundTripStrict(view)
 		if err != nil {
@@ -5006,6 +5352,7 @@ func main() {
 		}
 		canonical := data.ClassDefinition{ResourceName: definitionOnlyResourceNames[className]}
 		applyCanonicalDefinitionCorrections(className, &canonical)
+		deferHistoricalDefinition(className, &canonical, deferredDefinitions)
 		view := marshalView(canonical)
 		out, err := roundTripStrict(view)
 		if err != nil {
@@ -5036,6 +5383,12 @@ func main() {
 			failed++
 		} else if removed > 0 {
 			fmt.Printf("Removed %d stale canonical definitions.\n", removed)
+		}
+	}
+	if failed == 0 {
+		if err := completeHistoricalDefinitions(outputDir, deferredDefinitions); err != nil {
+			fmt.Fprintf(os.Stderr, "Error completing historical definitions: %v\n", err)
+			failed++
 		}
 	}
 

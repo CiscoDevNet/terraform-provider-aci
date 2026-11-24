@@ -7,7 +7,6 @@ documentation:
   sub_category: Virtual Networking
   ui_locations:
   - Virtual Networking -> Provider -> Domain
-migration_source: from_sdkv2
 properties:
   accessMode:
     documentation:
@@ -157,53 +156,109 @@ properties:
     documentation:
       description: The default encapsulation mode of the %s object.
 resource_name: vmm_domain
+schema_version: 2
 state_upgrades:
-- attributes:
-    configInfraPg:
-      legacy_attribute: config_infra_pg
-    ctrlKnob:
-      legacy_attribute: ctrl_knob
-    enableAVE:
-      legacy_attribute: enable_ave
-    enableTag:
-      legacy_attribute: enable_tag
-    enableVmFolder:
-      legacy_attribute: enable_vm_folder
-    encapMode:
-      legacy_attribute: encap_mode
-    enfPref:
-      legacy_attribute: enf_pref
-    epInventoryType:
-      legacy_attribute: ep_inventory_type
-    epRetTime:
-      legacy_attribute: ep_ret_time
-    hvAvailMonitor:
-      legacy_attribute: hv_avail_monitor
-    mcastAddr:
-      legacy_attribute: mcast_addr
-    mode:
-      legacy_attribute: mode
-    parentDn:
-      legacy_attribute: provider_profile_dn
-    prefEncapMode:
-      legacy_attribute: pref_encap_mode
-  children:
-    infraRsVipAddrNs:
-      attributes:
-        tDn:
-          legacy_attribute: relation_infra_rs_vip_addr_ns
-    infraRsVlanNs:
-      attributes:
-        tDn:
-          legacy_attribute: relation_infra_rs_vlan_ns
-    vmmRsDomMcastAddrNs:
-      attributes:
-        tDn:
-          legacy_attribute: relation_vmm_rs_dom_mcast_addr_ns
-    vmmRsPrefEnhancedLagPol:
-      attributes:
-        tDn:
-          legacy_attribute: relation_vmm_rs_pref_enhanced_lag_pol
-  prior_schema_version: 1
+  1:
+    attributes:
+      configInfraPg:
+        attribute_name: config_infra_pg
+        status: deprecated
+      ctrlKnob:
+        attribute_name: ctrl_knob
+        status: deprecated
+      enableAVE:
+        attribute_name: enable_ave
+        status: deprecated
+      enableTag:
+        attribute_name: enable_tag
+        status: deprecated
+      enableVmFolder:
+        attribute_name: enable_vm_folder
+        status: deprecated
+      encapMode:
+        attribute_name: encap_mode
+        status: deprecated
+      enfPref:
+        attribute_name: enf_pref
+        status: deprecated
+      epInventoryType:
+        attribute_name: ep_inventory_type
+        status: deprecated
+      epRetTime:
+        attribute_name: ep_ret_time
+        status: deprecated
+      hvAvailMonitor:
+        attribute_name: hv_avail_monitor
+        status: deprecated
+      mcastAddr:
+        attribute_name: mcast_addr
+        status: deprecated
+      mode:
+        attribute_name: mode
+        status: deprecated
+      parentDn:
+        attribute_name: provider_profile_dn
+        status: deprecated
+      prefEncapMode:
+        attribute_name: pref_encap_mode
+        status: deprecated
+      relation_infra_rs_dom_vxlan_ns_def:
+        restriction: optional
+        status: frozen
+        type: string_attribute
+      relation_infra_rs_vlan_ns_def:
+        restriction: optional
+        status: frozen
+        type: string_attribute
+      relation_vmm_rs_default_cdp_if_pol:
+        restriction: optional_computed
+        status: frozen
+        type: string_attribute
+      relation_vmm_rs_default_fw_pol:
+        restriction: optional_computed
+        status: frozen
+        type: string_attribute
+      relation_vmm_rs_default_l2_inst_pol:
+        restriction: optional_computed
+        status: frozen
+        type: string_attribute
+      relation_vmm_rs_default_lacp_lag_pol:
+        restriction: optional_computed
+        status: frozen
+        type: string_attribute
+      relation_vmm_rs_default_lldp_if_pol:
+        restriction: optional_computed
+        status: frozen
+        type: string_attribute
+      relation_vmm_rs_default_stp_if_pol:
+        restriction: optional_computed
+        status: frozen
+        type: string_attribute
+    children:
+      infraRsVipAddrNs:
+        attributes:
+          tDn:
+            attribute_name: relation_infra_rs_vip_addr_ns
+            restriction: optional
+            status: deprecated
+      infraRsVlanNs:
+        attributes:
+          tDn:
+            attribute_name: relation_infra_rs_vlan_ns
+            restriction: optional
+            status: deprecated
+      vmmRsDomMcastAddrNs:
+        attributes:
+          tDn:
+            attribute_name: relation_vmm_rs_dom_mcast_addr_ns
+            restriction: optional
+            status: deprecated
+      vmmRsPrefEnhancedLagPol:
+        attributes:
+          tDn:
+            attribute_name: relation_vmm_rs_pref_enhanced_lag_pol
+            restriction: optional
+            status: deprecated
+    source: sdkv2
 test_config:
   ignore_import_state_verify: true

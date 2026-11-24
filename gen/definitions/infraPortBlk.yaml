@@ -7,7 +7,6 @@ documentation:
   ui_locations:
   - Fabric -> Access Policies -> Interfaces -> Leaf/Spine Interfaces -> Profiles ->
     Interface Selectors -> Port Blocks
-migration_source: from_sdkv2
 properties:
   fromCard:
     default_values:
@@ -41,16 +40,21 @@ properties:
     test_config:
       create:
       - config_value: "5"
+schema_version: 2
 state_upgrades:
-- attributes:
-    parentDn:
-      legacy_attribute: access_port_selector_dn
-  children:
-    infraRsAccBndlSubgrp:
-      attributes:
-        tDn:
-          legacy_attribute: relation_infra_rs_acc_bndl_subgrp
-  prior_schema_version: 1
+  1:
+    attributes:
+      parentDn:
+        attribute_name: access_port_selector_dn
+        status: deprecated
+    children:
+      infraRsAccBndlSubgrp:
+        attributes:
+          tDn:
+            attribute_name: relation_infra_rs_acc_bndl_subgrp
+            restriction: optional
+            status: deprecated
+    source: sdkv2
 test_config:
   dependencies:
   - class_name: infraSHPortS

@@ -92,17 +92,14 @@ type Class struct {
 	// List of all identifying properties of the class.
 	// These are properties that are part of the relative name (RN) format, ex 'tn-{name}' where name is the identifying property.
 	IdentifiedBy []string
-	// Records the lineage of this resource: the prior provider or generator it was
-	// migrated from. Driven by ClassDefinition.MigrationSource. Drives the
-	// documentation migration warning when non-zero. Orthogonal to StateUpgrades:
-	// a resource born in the framework can still have StateUpgrades (v0→v1 framework
-	// schema bumps) without a MigrationSource set.
-	MigrationSource MigrationSourceEnum
 	// Resolved per-version state upgrade definitions, copied verbatim from
 	// ClassDefinition.StateUpgrades after validation against the resolved
 	// Properties / Children sets. Each entry is direct-to-current per the
 	// Terraform plugin framework contract.
-	StateUpgrades []StateUpgradeDefinition
+	StateUpgrades    map[int]StateUpgradeDefinition
+	SchemaVersion    int
+	MigrationSchemas []MigrationSchema
+	LegacyAttributes []MigrationAttribute
 	// Indicates that when the class is included in a resource as a child it can only be configured once.
 	// This is used to determine the type of the nested attribute to be a map or list.
 	IsSingleNestedWhenDefinedAsChild bool
@@ -751,11 +748,16 @@ func isBracketedDnPlaceholder(literalPrefix, remainingFormat string) bool {
 	return nextSegment == -1 || closingBracket < nextSegment
 }
 
-// HasCustomModelTypes reports whether this class's own properties require the
-// customtypes package in its generated model file.
+// HasCustomModelTypes reports whether the class's properties or historical
+// compatibility fields require the customtypes package in its generated model file.
 func (c Class) HasCustomModelTypes() bool {
 	for _, property := range c.ModelProperties() {
 		if property.UsesCustomModelType() {
+			return true
+		}
+	}
+	for _, attribute := range c.LegacyAttributes {
+		if attribute.ModelCustomStringType() != "" {
 			return true
 		}
 	}
@@ -2690,7 +2692,6 @@ func (c *Class) setStateUpgrades(ds *DataStore) {
 	// by setTestDependencies and validateTestCompleteness.
 	genLogger.Debugf("Setting StateUpgrades for class '%s'.", c.Name)
 
-	c.MigrationSource = c.ClassDefinition.MigrationSource
 	c.StateUpgrades = c.ClassDefinition.StateUpgrades
 
 	c.validateStateUpgrades(ds.ctx)
@@ -2707,47 +2708,35 @@ func (c *Class) validateStateUpgrades(ctx *Context) {
 	// All issues are written to ctx.Diagnostics rather than returned, and no check
 	// short-circuits, so a single pass surfaces every authoring mistake.
 
-	// Migration-source coherence: a non-zero MigrationSource requires at least
-	// one state_upgrades entry. The specific prior_schema_version is whatever
-	// the prior provider's resource was at when migrated (commonly 0 for a
-	// resource that never had a schema bump in SDKv2, but can be any value if
-	// the SDKv2 resource itself went through one or more upgrades).
-	if c.MigrationSource != UndefinedMigrationSource && len(c.StateUpgrades) == 0 {
-		ctx.Diagnostics.AddError("Class '%s': migration_source %q requires at least one state_upgrades entry describing the migration hop from the prior provider", c.Name, c.MigrationSource)
+	for version, entry := range c.StateUpgrades {
+		c.validateStateUpgradeEntry(ctx, entry, fmt.Sprintf("Class '%s': schema version %d", c.Name, version))
 	}
-
-	// Unique prior_schema_version values.
-	seenVersion := make(map[int]struct{}, len(c.StateUpgrades))
-	for _, entry := range c.StateUpgrades {
-		if _, dup := seenVersion[entry.PriorSchemaVersion]; dup {
-			ctx.Diagnostics.AddError("Class '%s': duplicate prior_schema_version %d", c.Name, entry.PriorSchemaVersion)
-		}
-		seenVersion[entry.PriorSchemaVersion] = struct{}{}
-
-		c.validateStateUpgradeEntry(ctx, entry, fmt.Sprintf("Class '%s': prior_schema_version %d", c.Name, entry.PriorSchemaVersion))
+	// Published resource histories and datasource aliases resolve inherited statuses and targets during model normalization.
+	if c.ClassDefinition.SchemaVersion != nil || c.HasDatasourceArtifact() && !c.HasResourceArtifact() {
+		return
 	}
 
 	// Exhaustiveness on top-level Attributes / Children: keys must resolve to a
 	// current Property / child class on this class (or be marked "removed", in
 	// which case the key is allowed to be a meta-only / excluded name).
-	for _, entry := range c.StateUpgrades {
+	for version, entry := range c.StateUpgrades {
 		for propertyName, attributeUpgrade := range entry.Attributes {
-			if _, ok := c.Properties[propertyName]; ok {
+			if propertyName == "id" || c.Properties[propertyName] != nil {
 				continue
 			}
-			if attributeUpgrade.LegacyStatus == Removed {
+			if attributeUpgrade.Status == Removed || attributeUpgrade.Status == Frozen {
 				continue
 			}
-			ctx.Diagnostics.AddError("Class '%s': prior_schema_version %d: attribute %q not found in resolved properties", c.Name, entry.PriorSchemaVersion, propertyName)
+			ctx.Diagnostics.AddError("Class '%s': schema version %d: attribute %q not found in resolved properties", c.Name, version, propertyName)
 		}
 		for childClassName, childUpgrade := range entry.Children {
 			if c.hasChild(childClassName) {
 				continue
 			}
-			if childUpgrade.LegacyStatus == Removed {
+			if childUpgrade.Status == Removed {
 				continue
 			}
-			ctx.Diagnostics.AddError("Class '%s': prior_schema_version %d: child %q not found in resolved children", c.Name, entry.PriorSchemaVersion, childClassName)
+			ctx.Diagnostics.AddError("Class '%s': schema version %d: child %q not found in resolved children", c.Name, version, childClassName)
 		}
 	}
 }
@@ -2762,18 +2751,21 @@ func (c *Class) hasChild(childClassName string) bool {
 }
 
 func (c *Class) validateStateUpgradeEntry(ctx *Context, entry StateUpgradeDefinition, prefix string) {
-	// Per-entry checks: collision detection across legacy_attribute values within
+	// Per-entry checks: collision detection across attribute_name values within
 	// the same prior-version entry, plus structural shape rules per node.
-	// The prefix already contains the class name and prior_schema_version, so
+	// The prefix already contains the class name and schema version, so
 	// per-node diagnostics only need to append the bucket and key.
 	legacyNames := make(map[string]struct{})
 	for propertyName, attributeUpgrade := range entry.Attributes {
-		attributeUpgrade.validate(ctx, fmt.Sprintf("%s: attributes[%q]", prefix, propertyName))
-		if attributeUpgrade.LegacyAttribute != "" {
-			if _, dup := legacyNames[attributeUpgrade.LegacyAttribute]; dup {
-				ctx.Diagnostics.AddError("%s: duplicate legacy_attribute %q within the same prior_schema_version entry", prefix, attributeUpgrade.LegacyAttribute)
+		// Active overrides are validated after metadata and earlier declarations are inherited.
+		if c.ClassDefinition.SchemaVersion == nil && !(c.HasDatasourceArtifact() && !c.HasResourceArtifact()) {
+			attributeUpgrade.validate(ctx, fmt.Sprintf("%s: attributes[%q]", prefix, propertyName))
+		}
+		if attributeUpgrade.AttributeName != "" {
+			if _, dup := legacyNames[attributeUpgrade.AttributeName]; dup {
+				ctx.Diagnostics.AddError("%s: duplicate attribute_name %q within the same schema version entry", prefix, attributeUpgrade.AttributeName)
 			}
-			legacyNames[attributeUpgrade.LegacyAttribute] = struct{}{}
+			legacyNames[attributeUpgrade.AttributeName] = struct{}{}
 		}
 	}
 	for childClassName, childUpgrade := range entry.Children {
@@ -2787,7 +2779,7 @@ func (c *Class) setPropertyStateUpgradeValues() {
 	// that property's prior-schema shape per version without a back-pointer
 	// to the owning class.
 	//
-	// Walk: the outer loop is one entry per prior_schema_version; the inner
+	// Walk: the outer loop is one entry per schema version; the inner
 	// Attributes map's keys are CURRENT property names, which is the join
 	// key against c.Properties. Each (property, version) pair lands at
 	// property.StateUpgradeValues[version], so a property referenced in N
@@ -2796,7 +2788,7 @@ func (c *Class) setPropertyStateUpgradeValues() {
 	//
 	// Attributes whose key does not resolve to a current Property are
 	// silently skipped — by design, validateStateUpgrades permits this
-	// when LegacyStatus == Removed. The underlying meta property may
+	// when Status == Removed. The underlying meta property may
 	// still be alive but intentionally excluded from the current schema
 	// (a future dual-expose + plan-modify target), or it may be truly
 	// gone; either way there is no schema attribute on c.Properties to
@@ -2811,12 +2803,12 @@ func (c *Class) setPropertyStateUpgradeValues() {
 	// DataStore. Templates that need inner-child state-upgrade data walk
 	// the full StateUpgrades tree on the owning class directly.
 	genLogger.Debugf("Distributing StateUpgradeValues for class '%s'.", c.Name)
-	for _, stateUpgradeEntry := range c.StateUpgrades {
+	for version, stateUpgradeEntry := range c.StateUpgrades {
 		for propertyName, attributeUpgradeDefinition := range stateUpgradeEntry.Attributes {
 			property, ok := c.Properties[propertyName]
 			if !ok {
 				// No current schema attribute under this key — by design
-				// when LegacyStatus == Removed. The underlying meta
+				// when Status == Removed. The underlying meta
 				// property may still be alive but intentionally excluded
 				// from the current schema (a future dual-expose +
 				// plan-modify target), or it may be truly gone. Nothing
@@ -2826,7 +2818,7 @@ func (c *Class) setPropertyStateUpgradeValues() {
 			if property.StateUpgradeValues == nil {
 				property.StateUpgradeValues = make(map[int]StateUpgradeValue)
 			}
-			property.StateUpgradeValues[stateUpgradeEntry.PriorSchemaVersion] = buildStateUpgradeValue(property, attributeUpgradeDefinition)
+			property.StateUpgradeValues[version] = buildStateUpgradeValue(property, attributeUpgradeDefinition)
 		}
 	}
 	genLogger.Debugf("Successfully distributed StateUpgradeValues for class '%s'.", c.Name)
@@ -2837,12 +2829,13 @@ func buildStateUpgradeValue(property *Property, attributeUpgradeDefinition Attri
 	// the current property's resolved attributes (AttributeName, Type, and
 	// the Required/Optional/Computed triplet), then overlay any explicit
 	// legacy_* overrides from the upgrade node. Unset overrides (empty
-	// string for LegacyAttribute, zero enum for LegacyType and
-	// LegacyRestriction) leave the seeded value in place.
+	// string for AttributeName, zero enum for Type and
+	// Restriction) leave the seeded value in place.
 	//
-	// LegacyType is mapped through legacyTypeToValueType to collapse the
+	// Type is mapped through legacyTypeToValueType to collapse the
 	// framework-attribute vocabulary into the renderer's ValueTypeEnum.
-	// LegacyRestriction rewrites the entire Required/Optional/Computed
+	// An explicit value_type then restores historical custom string semantics.
+	// Restriction rewrites the entire Required/Optional/Computed
 	// triplet rather than merging field by field, because the three flags
 	// are mutually constrained.
 	genLogger.Tracef("Building state upgrade value for property '%s'.", property.PropertyName)
@@ -2852,22 +2845,39 @@ func buildStateUpgradeValue(property *Property, attributeUpgradeDefinition Attri
 		Optional:      property.Optional,
 		Computed:      property.Computed,
 		Type:          property.ValueType,
-		Status:        attributeUpgradeDefinition.LegacyStatus,
+		Status:        attributeUpgradeDefinition.Status,
 	}
-	if attributeUpgradeDefinition.LegacyAttribute != "" {
-		stateUpgradeValue.AttributeName = attributeUpgradeDefinition.LegacyAttribute
+	if attributeUpgradeDefinition.AttributeName != "" {
+		stateUpgradeValue.AttributeName = attributeUpgradeDefinition.AttributeName
 	}
-	if attributeUpgradeDefinition.LegacyType != UndefinedLegacyAttributeType {
-		stateUpgradeValue.Type = legacyTypeToValueType(attributeUpgradeDefinition.LegacyType)
+	if attributeUpgradeDefinition.Type != UndefinedLegacyAttributeType {
+		stateUpgradeValue.Type = legacyTypeToValueType(attributeUpgradeDefinition.Type)
 	}
-	switch attributeUpgradeDefinition.LegacyRestriction {
-	case Required:
+	if attributeUpgradeDefinition.ValueType != UndefinedValueType {
+		stateUpgradeValue.Type = attributeUpgradeDefinition.ValueType
+	}
+	if stateUpgradeValue.Status == UndefinedLegacyStatus {
+		stateUpgradeValue.Status = LegacyDeprecated
+	}
+	switch attributeUpgradeDefinition.Restriction {
+	case LegacyOptional:
+		stateUpgradeValue.Required, stateUpgradeValue.Optional, stateUpgradeValue.Computed = false, true, false
+	case LegacyRequired:
 		stateUpgradeValue.Required, stateUpgradeValue.Optional, stateUpgradeValue.Computed = true, false, false
-	case Optional:
+	case LegacyOptionalComputed:
 		stateUpgradeValue.Required, stateUpgradeValue.Optional, stateUpgradeValue.Computed = false, true, true
-	case ReadOnly:
+	case LegacyReadOnly:
 		stateUpgradeValue.Required, stateUpgradeValue.Optional, stateUpgradeValue.Computed = false, false, true
 	}
 	genLogger.Tracef("Successfully built state upgrade value for property '%s'.", property.PropertyName)
 	return stateUpgradeValue
+}
+
+func (c *Class) HasSDKv2Migration() bool {
+	for _, entry := range c.StateUpgrades {
+		if entry.Source == FromSDKv2 {
+			return true
+		}
+	}
+	return false
 }

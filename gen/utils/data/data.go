@@ -276,6 +276,12 @@ func (ds *DataStore) loadClasses() error {
 		ds.Classes[classNameStr] = class
 	}
 
+	// Resolve historical schemas after cross-class attribute names are final.
+	for name, class := range ds.Classes {
+		class.setMigrationData(ds)
+		ds.Classes[name] = class
+	}
+
 	// Build complete documentation only after every referenced class has its
 	// documentation identity.
 	for classNameStr, class := range ds.Classes {

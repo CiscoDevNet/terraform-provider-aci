@@ -572,18 +572,14 @@ func TestParseClassDefinition_EmptyYAML(t *testing.T) {
 
 func boolPtr(b bool) *bool { return &b }
 
-// TestParseClassDefinition_MigrationSource exercises the top-level migration_source
-// field in isolation: defaulted to UndefinedMigrationSource when omitted, and
-// FromSDKv2 when explicitly set. Kept separate from the state_upgrades tests
-// since migration_source is an independent top-level field decoded by
-// parseClassDefinition regardless of whether state_upgrades is present.
+// TestParseClassDefinition_MigrationSource decodes origin per saved schema version.
 func TestParseClassDefinition_MigrationSource(t *testing.T) {
 	t.Parallel()
 	test.InitializeTest(t)
 
 	testCases := []test.TestCase{
 		{Name: "omitted", Input: "resource_name: tenant\n", Expected: UndefinedMigrationSource},
-		{Name: "from_sdkv2", Input: "migration_source: from_sdkv2\n", Expected: FromSDKv2},
+		{Name: "from_sdkv2", Input: "state_upgrades:\n  0:\n    source: sdkv2\n", Expected: FromSDKv2},
 	}
 
 	for _, testCase := range testCases {
@@ -591,7 +587,7 @@ func TestParseClassDefinition_MigrationSource(t *testing.T) {
 			t.Parallel()
 			parsedDefinition, err := parseClassDefinition([]byte(testCase.Input.(string)))
 			assert.NoError(t, err, test.MessageUnexpectedError(err))
-			assert.Equal(t, testCase.Expected.(MigrationSourceEnum), parsedDefinition.MigrationSource, testCase.Name)
+			assert.Equal(t, testCase.Expected.(MigrationSourceEnum), parsedDefinition.StateUpgrades[0].Source, testCase.Name)
 		})
 	}
 }
@@ -600,127 +596,127 @@ func TestParseClassDefinition_MigrationSource(t *testing.T) {
 // state_upgrades. It mixes every scenario the parser needs to handle into one
 // realistic fvBD (Bridge Domain) example:
 //
-//   - Two state_upgrades entries at distinct prior_schema_versions (1 and 3),
+//   - Two state_upgrades entries at distinct schema versions (1 and 3),
 //     proving slice decode at non-zero unique values.
-//   - An attribute with only legacy_attribute set, proving the trio of Undefined
-//     defaults (LegacyType, LegacyRestriction, LegacyStatus) for omitted fields.
-//   - An attribute with all four fields explicitly set, including legacy_status=frozen.
-//   - An attribute with legacy_status=removed (the case where legacy_type and
-//     legacy_restriction must be supplied because there is no current attribute
+//   - An attribute with only attribute_name set, proving the trio of Undefined
+//     defaults (Type, Restriction, Status) for omitted fields.
+//   - An attribute with all four fields explicitly set, including status=frozen.
+//   - An attribute with status=removed (the case where type and
+//     restriction must be supplied because there is no current attribute
 //     to inherit from).
-//   - A child block (fvSubnet) carrying its own legacy_attribute (block rename)
+//   - A child block (fvSubnet) carrying its own attribute_name (block rename)
 //     alongside inner attributes AND its own children (fvRsBDSubnetToOut),
 //     proving 3-level recursion: children -> children -> attributes.
-//   - A child block (fvRsCtx) without a block-level legacy_attribute, proving
+//   - A child block (fvRsCtx) without a block-level attribute_name, proving
 //     the empty-string decode for an unchanged block whose inner attributes
 //     are the only diff.
-//   - An attribute with legacy_status explicitly set to functioning, proving
+//   - An attribute with status explicitly set to functioning, proving
 //     that the explicit value round-trips identically to the default.
 func TestParseClassDefinition_StateUpgrades(t *testing.T) {
 	t.Parallel()
 	test.InitializeTest(t)
 
-	yamlBytes := []byte(`
-state_upgrades:
-  - prior_schema_version: 1
+	yamlBytes := []byte(`state_upgrades:
+  1:
     attributes:
-      mac:
-        legacy_attribute: mac_address
       arpFlood:
-        legacy_attribute: arp_flooding
-        legacy_type: bool_attribute
-        legacy_restriction: optional
-        legacy_status: frozen
+        attribute_name: arp_flooding
+        restriction: optional
+        status: frozen
+        type: bool_attribute
+      mac:
+        attribute_name: mac_address
       multiDstPktAct:
-        legacy_attribute: multi_dst_pkt_act
-        legacy_type: string_attribute
-        legacy_restriction: optional
-        legacy_status: removed
+        attribute_name: multi_dst_pkt_act
+        restriction: optional
+        status: removed
+        type: string_attribute
     children:
+      fvRsCtx:
+        attributes:
+          tnFvCtxName:
+            attribute_name: vrf_name
+            status: deprecated
       fvSubnet:
-        legacy_attribute: subnets
         attributes:
           ip:
-            legacy_attribute: subnet_ip
+            attribute_name: subnet_ip
         children:
           fvRsBDSubnetToOut:
             attributes:
               tnL3extOutName:
-                legacy_attribute: l3out_name
-                legacy_type: string_attribute
-      fvRsCtx:
-        attributes:
-          tnFvCtxName:
-            legacy_attribute: vrf_name
-            legacy_status: functioning
-  - prior_schema_version: 3
+                attribute_name: l3out_name
+                type: string_attribute
+        attribute_name: subnets
+  3:
     attributes:
       descr:
-        legacy_attribute: description
-`)
+        attribute_name: description
+`,
+	)
 
 	parsedDefinition, err := parseClassDefinition(yamlBytes)
 	assert.NoError(t, err, test.MessageUnexpectedError(err))
-	assert.Equal(t, UndefinedMigrationSource, parsedDefinition.MigrationSource, "migration_source is decoded by a dedicated test; absent here must default to UndefinedMigrationSource")
+	assert.Equal(t, UndefinedMigrationSource, parsedDefinition.StateUpgrades[1].Source, "an omitted version source remains undefined")
 
 	if !assert.Len(t, parsedDefinition.StateUpgrades, 2, "two state_upgrades entries must round-trip") {
 		return
 	}
 
-	v1 := parsedDefinition.StateUpgrades[0]
-	assert.Equal(t, 1, v1.PriorSchemaVersion, "non-zero prior_schema_version must round-trip; a 0 here would mask a silently-dropped field")
+	v1 := parsedDefinition.StateUpgrades[1]
+
 	assert.Len(t, v1.Attributes, 3)
 
-	// Defaults proof: only legacy_attribute set, the trio of Undefined defaults applies.
+	// Defaults proof: only attribute_name set, the trio of Undefined defaults applies.
 	mac := v1.Attributes["mac"]
-	assert.Equal(t, "mac_address", mac.LegacyAttribute)
-	assert.Equal(t, UndefinedLegacyAttributeType, mac.LegacyType)
-	assert.Equal(t, UndefinedRestriction, mac.LegacyRestriction)
-	assert.Equal(t, Functioning, mac.LegacyStatus, "Functioning is the LegacyStatus zero value reached by omitting the YAML field")
+	assert.Equal(t, "mac_address", mac.AttributeName)
+	assert.Equal(t, UndefinedLegacyAttributeType, mac.Type)
+	assert.Equal(t, UndefinedLegacyRestriction, mac.Restriction)
+	assert.Equal(t, UndefinedLegacyStatus, mac.Status, "omission must remain distinguishable for status inheritance")
 
-	// All four fields explicitly set, legacy_status=frozen.
+	// All four fields explicitly set, status=frozen.
 	arp := v1.Attributes["arpFlood"]
-	assert.Equal(t, "arp_flooding", arp.LegacyAttribute)
-	assert.Equal(t, BoolAttribute, arp.LegacyType)
-	assert.Equal(t, Optional, arp.LegacyRestriction)
-	assert.Equal(t, Frozen, arp.LegacyStatus)
+	assert.Equal(t, "arp_flooding", arp.AttributeName)
+	assert.Equal(t, BoolAttribute, arp.Type)
+	assert.Equal(t, LegacyOptional, arp.Restriction)
+	assert.Equal(t, Frozen, arp.Status)
 
-	// legacy_status=removed: the attribute is gone from the current schema, so
-	// legacy_type and legacy_restriction must be supplied here.
+	// status=removed: the attribute is gone from the current schema, so
+	// type and restriction must be supplied here.
 	rem := v1.Attributes["multiDstPktAct"]
-	assert.Equal(t, "multi_dst_pkt_act", rem.LegacyAttribute)
-	assert.Equal(t, StringAttribute, rem.LegacyType)
-	assert.Equal(t, Optional, rem.LegacyRestriction)
-	assert.Equal(t, Removed, rem.LegacyStatus)
+	assert.Equal(t, "multi_dst_pkt_act", rem.AttributeName)
+	assert.Equal(t, StringAttribute, rem.Type)
+	assert.Equal(t, LegacyOptional, rem.Restriction)
+	assert.Equal(t, Removed, rem.Status)
 
-	// Block with its own legacy_attribute (rename) + inner attributes + nested children.
+	// Block with its own attribute_name (rename) + inner attributes + nested children.
 	subnet, ok := v1.Children["fvSubnet"]
 	if assert.True(t, ok, "outer child must decode") {
-		assert.Equal(t, "subnets", subnet.LegacyAttribute, "block-level legacy_attribute records a block rename")
-		assert.Equal(t, "subnet_ip", subnet.Attributes["ip"].LegacyAttribute)
+		assert.Equal(t, "subnets", subnet.AttributeName, "block-level attribute_name records a block rename")
+		assert.Equal(t, "subnet_ip", subnet.Attributes["ip"].AttributeName)
 
 		rsToOut, ok := subnet.Children["fvRsBDSubnetToOut"]
 		if assert.True(t, ok, "grandchild block must decode (children -> children)") {
 			inner, ok := rsToOut.Attributes["tnL3extOutName"]
 			if assert.True(t, ok, "3-level recursion: children -> children -> attributes") {
-				assert.Equal(t, "l3out_name", inner.LegacyAttribute)
-				assert.Equal(t, StringAttribute, inner.LegacyType)
+				assert.Equal(t, "l3out_name", inner.AttributeName)
+				assert.Equal(t, StringAttribute, inner.Type)
 			}
 		}
 	}
 
-	// Block without its own legacy_attribute (block unchanged, only inner attribute changed).
+	// Block without its own attribute_name (block unchanged, only inner attribute changed).
 	rsCtx, ok := v1.Children["fvRsCtx"]
 	if assert.True(t, ok) {
-		assert.Equal(t, "", rsCtx.LegacyAttribute, "absent block-level legacy_attribute decodes to empty")
+		assert.Equal(t, "", rsCtx.AttributeName, "absent block-level attribute_name decodes to empty")
 		inner := rsCtx.Attributes["tnFvCtxName"]
-		assert.Equal(t, "vrf_name", inner.LegacyAttribute)
-		assert.Equal(t, Functioning, inner.LegacyStatus, "explicit 'functioning' must round-trip identically to the omitted default")
+		assert.Equal(t, "vrf_name", inner.AttributeName)
+		assert.Equal(t, LegacyDeprecated, inner.Status, "explicit 'functioning' must round-trip identically to the omitted default")
 	}
 
-	v3 := parsedDefinition.StateUpgrades[1]
-	assert.Equal(t, 3, v3.PriorSchemaVersion, "second entry's prior_schema_version must round-trip independently")
-	assert.Equal(t, "description", v3.Attributes["descr"].LegacyAttribute)
+	v3 := parsedDefinition.StateUpgrades[3]
+
+	assert.Equal(t, "description", v3.Attributes["descr"].AttributeName)
 }
 
 // TestTopSystemMigrationDefinition protects the datasource's documented DN and
@@ -744,7 +740,7 @@ func TestTopSystemMigrationDefinition(t *testing.T) {
 	}
 
 	assert.Equal(t, []string{"topology/pod-{id}/node-{id}/sys"}, definition.Documentation.DnFormats)
-	assert.Equal(t, FromSDKv2, definition.MigrationSource)
+	assert.Equal(t, FromSDKv2, definition.StateUpgrades[1].Source)
 	assert.Equal(t, "The `id` attribute of the parent APIC `fabricNode` class.", definition.Properties["id"].Documentation.Description)
 	assert.Equal(t, "id", definition.Properties["podId"].DocumentationPropertyName)
 	assert.Equal(t, "The `id` attribute of the parent APIC `fabricPod` class.", definition.Properties["podId"].Documentation.Description)
@@ -752,31 +748,162 @@ func TestTopSystemMigrationDefinition(t *testing.T) {
 		return
 	}
 
-	upgrade := definition.StateUpgrades[0]
-	assert.Equal(t, 1, upgrade.PriorSchemaVersion)
-	assert.Equal(t, map[string]AttributeUpgradeDefinition{
-		"bootstrapState":          {LegacyAttribute: "boot_strap_tate"},
-		"etepAddr":                {LegacyAttribute: "etep_addr"},
-		"inbMgmtAddr":             {LegacyAttribute: "inb_mgmt_addr"},
-		"inbMgmtAddr6":            {LegacyAttribute: "inb_mgmt_addr6"},
-		"inbMgmtAddr6Mask":        {LegacyAttribute: "inb_mgmt_addr6_mask"},
-		"inbMgmtAddrMask":         {LegacyAttribute: "inb_mgmt_addr_mask"},
-		"inbMgmtGateway":          {LegacyAttribute: "inb_mgmt_gateway"},
-		"inbMgmtGateway6":         {LegacyAttribute: "inb_mgmt_gateway6"},
-		"monPolDn":                {LegacyAttribute: "mon_pol_dn"},
-		"oobMgmtAddr":             {LegacyAttribute: "oob_mgmt_addr"},
-		"oobMgmtAddr6":            {LegacyAttribute: "oob_mgmt_addr6"},
-		"oobMgmtAddr6Mask":        {LegacyAttribute: "oob_mgmt_addr6_mask"},
-		"oobMgmtAddrMask":         {LegacyAttribute: "oob_mgmt_addr_mask"},
-		"oobMgmtGateway":          {LegacyAttribute: "oob_mgmt_gateway"},
-		"oobMgmtGateway6":         {LegacyAttribute: "oob_mgmt_gateway6"},
-		"rlAutoMode":              {LegacyAttribute: "rl_auto_mode"},
-		"rlGroupId":               {LegacyAttribute: "rl_group_id"},
-		"rlOperPodId":             {LegacyAttribute: "rl_oper_pod_id"},
-		"rlRoutableMode":          {LegacyAttribute: "rl_routable_mode"},
-		"rldirectMode":            {LegacyAttribute: "rldirect_mode"},
-		"unicastXrEpLearnDisable": {LegacyAttribute: "unicast_xr_ep_learn_disable"},
-	}, upgrade.Attributes)
+	upgrade := definition.StateUpgrades[1]
+
+	expectedAttributes := map[string]AttributeUpgradeDefinition{
+		"bootstrapState":          {AttributeName: "boot_strap_tate"},
+		"etepAddr":                {AttributeName: "etep_addr"},
+		"inbMgmtAddr":             {AttributeName: "inb_mgmt_addr"},
+		"inbMgmtAddr6":            {AttributeName: "inb_mgmt_addr6"},
+		"inbMgmtAddr6Mask":        {AttributeName: "inb_mgmt_addr6_mask"},
+		"inbMgmtAddrMask":         {AttributeName: "inb_mgmt_addr_mask"},
+		"inbMgmtGateway":          {AttributeName: "inb_mgmt_gateway"},
+		"inbMgmtGateway6":         {AttributeName: "inb_mgmt_gateway6"},
+		"monPolDn":                {AttributeName: "mon_pol_dn"},
+		"oobMgmtAddr":             {AttributeName: "oob_mgmt_addr"},
+		"oobMgmtAddr6":            {AttributeName: "oob_mgmt_addr6"},
+		"oobMgmtAddr6Mask":        {AttributeName: "oob_mgmt_addr6_mask"},
+		"oobMgmtAddrMask":         {AttributeName: "oob_mgmt_addr_mask"},
+		"oobMgmtGateway":          {AttributeName: "oob_mgmt_gateway"},
+		"oobMgmtGateway6":         {AttributeName: "oob_mgmt_gateway6"},
+		"rlAutoMode":              {AttributeName: "rl_auto_mode"},
+		"rlGroupId":               {AttributeName: "rl_group_id"},
+		"rlOperPodId":             {AttributeName: "rl_oper_pod_id"},
+		"rlRoutableMode":          {AttributeName: "rl_routable_mode"},
+		"rldirectMode":            {AttributeName: "rldirect_mode"},
+		"unicastXrEpLearnDisable": {AttributeName: "unicast_xr_ep_learn_disable"},
+	}
+	for key, attribute := range expectedAttributes {
+		attribute.Status = LegacyDeprecated
+		if key != "rlAutoMode" && key != "rlGroupId" {
+			attribute.Restriction = LegacyOptionalComputed
+		}
+		expectedAttributes[key] = attribute
+	}
+	assert.Equal(t, expectedAttributes, upgrade.Attributes)
+}
+
+func TestHistoricalDefinitionDifferences(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+	_, currentFile, _, ok := runtime.Caller(0)
+	if !ok {
+		t.Fatal("determine definitions test path")
+	}
+	definitionsPath := filepath.Join(filepath.Dir(currentFile), "..", "..", "definitions")
+	definitions := map[string]ClassDefinition{}
+	for _, className := range []string{"fvAEPg", "fvBD", "fvCtx", "fvESg", "fvTenant", "vmmDomP", "stpIfPol", "netflowMonitorPol", "infraAccPortP", "infraFexP", "infraSpAccPortP", "rtctrlProfile", "tagTag"} {
+		contents, err := os.ReadFile(filepath.Join(definitionsPath, className+".yaml"))
+		if !assert.NoError(t, err) {
+			continue
+		}
+		definition, err := parseClassDefinition(contents)
+		assert.NoError(t, err)
+		definitions[className] = definition
+		for _, upgrade := range definition.StateUpgrades {
+			for _, attribute := range []string{"id", "name", "nameAlias", "annotation", "descr"} {
+				assert.NotContains(t, upgrade.Attributes, attribute, "%s must inherit unchanged fields", className)
+			}
+		}
+	}
+
+	testCases := []test.TestCase{
+		{Name: "STP preserves the old list", Input: definitions["stpIfPol"].StateUpgrades[1].Attributes["ctrl"], Expected: AttributeUpgradeDefinition{AttributeName: "ctrl", Type: ListAttribute, ElementType: StringAttribute, Status: LegacyDeprecated}},
+		{Name: "EPG preserves the old set of DNs", Input: definitions["fvAEPg"].StateUpgrades[1].Children["fvRsCons"].Attributes["tnVzBrCPName"], Expected: AttributeUpgradeDefinition{AttributeName: "relation_fv_rs_cons", Type: SetAttribute, ElementType: StringAttribute, Restriction: LegacyOptional, Status: LegacyDeprecated}},
+		{Name: "VRF preserves a computed frozen string", Input: definitions["fvCtx"].StateUpgrades[1].Attributes["knw_mcast_act"], Expected: AttributeUpgradeDefinition{Type: StringAttribute, Restriction: LegacyOptionalComputed, Status: Frozen}},
+		{Name: "old block inner name maps to a named relation", Input: definitions["fvESg"].StateUpgrades[1].Children["fvRsCons"].Attributes["tnVzBrCPName"], Expected: AttributeUpgradeDefinition{AttributeName: "target_dn"}},
+		{Name: "unchanged block members retain their historical names", Input: definitions["fvAEPg"].StateUpgrades[1].Children["fvRsNodeAtt"].Attributes["mode"], Expected: AttributeUpgradeDefinition{AttributeName: "mode"}},
+		{Name: "Netflow keeps its framework collection shape", Input: definitions["netflowMonitorPol"].StateUpgrades[0].Children["netflowRsMonitorToRecord"], Expected: AttributeUpgradeDefinition{Type: SetNestedAttribute}},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			assert.Equal(t, testCase.Expected, testCase.Input)
+		})
+	}
+	assert.Equal(t, FromFramework, definitions["netflowMonitorPol"].StateUpgrades[0].Source)
+	assert.Equal(t, "relation_fv_rs_node_att", definitions["fvAEPg"].StateUpgrades[1].Children["fvRsNodeAtt"].AttributeName)
+	assert.Equal(t, LegacyDeprecated, definitions["fvAEPg"].StateUpgrades[1].Children["fvRsNodeAtt"].Status)
+
+	// Every retained orphan needs its own old shape; none can inherit it from current metadata.
+	frozenFields := map[string][]string{
+		"fvAEPg":   {"relation_fv_rs_path_att", "relation_fv_rs_prov_def"},
+		"fvBD":     {"relation_fv_rs_bd_flood_to", "relation_fv_rs_bd_to_profile"},
+		"fvCtx":    {"knw_mcast_act", "relation_fv_rs_ctx_mcast_to", "relation_fv_rs_vrf_validation_pol"},
+		"fvESg":    {"relation_fv_rs_cust_qos_pol", "relation_fv_rs_prot_by"},
+		"fvTenant": {"relation_fv_rs_tn_deny_rule"},
+		"vmmDomP":  {"relation_infra_rs_dom_vxlan_ns_def", "relation_infra_rs_vlan_ns_def", "relation_vmm_rs_default_cdp_if_pol", "relation_vmm_rs_default_fw_pol", "relation_vmm_rs_default_l2_inst_pol", "relation_vmm_rs_default_lacp_lag_pol", "relation_vmm_rs_default_lldp_if_pol", "relation_vmm_rs_default_stp_if_pol"},
+	}
+	for className, fields := range frozenFields {
+		count := 0
+		for _, attribute := range definitions[className].StateUpgrades[1].Attributes {
+			if attribute.Status == Frozen {
+				count++
+			}
+		}
+		assert.Equal(t, len(fields), count, "%s frozen fields", className)
+		for _, field := range fields {
+			attribute := definitions[className].StateUpgrades[1].Attributes[field]
+			assert.Equal(t, Frozen, attribute.Status, "%s.%s", className, field)
+			assert.NotEqual(t, UndefinedLegacyAttributeType, attribute.Type, "%s.%s", className, field)
+			assert.NotEqual(t, UndefinedLegacyRestriction, attribute.Restriction, "%s.%s", className, field)
+			if attribute.Type == SetAttribute {
+				assert.Equal(t, StringAttribute, attribute.ElementType, "%s.%s", className, field)
+			}
+		}
+	}
+	for _, className := range []string{"infraAccPortP", "infraFexP", "infraSpAccPortP", "rtctrlProfile", "tagTag"} {
+		assert.Empty(t, definitions[className].StateUpgrades, "%s needs only the migration notice", className)
+		assert.Contains(t, definitions[className].Documentation.Resource.Warnings, SDKv2MigrationWarning)
+	}
+}
+
+func TestPublishedResourceSchemaVersions(t *testing.T) {
+	t.Parallel()
+	// Preserve the published develop contract independently of migration implementation progress.
+	testCases := []test.TestCase{
+		{Name: "cdpIfPol", Expected: 2},
+		{Name: "fvAEPg", Expected: 2},
+		{Name: "fvAp", Expected: 2},
+		{Name: "fvBD", Expected: 2},
+		{Name: "fvCtx", Expected: 2},
+		{Name: "fvESg", Expected: 2},
+		{Name: "fvTenant", Expected: 2},
+		{Name: "infraAccPortP", Expected: 1},
+		{Name: "infraAttEntityP", Expected: 2},
+		{Name: "infraFexP", Expected: 1},
+		{Name: "infraHPortS", Expected: 2},
+		{Name: "infraPortBlk", Expected: 2},
+		{Name: "infraSHPortS", Expected: 2},
+		{Name: "infraSpAccPortP", Expected: 1},
+		{Name: "l2IfPol", Expected: 2},
+		{Name: "lldpIfPol", Expected: 2},
+		{Name: "netflowMonitorPol", Expected: 1},
+		{Name: "rtctrlProfile", Expected: 1},
+		{Name: "stpIfPol", Expected: 2},
+		{Name: "tagTag", Expected: 1},
+		{Name: "vmmDomP", Expected: 2},
+		{Name: "vmmUsrAccP", Expected: 2},
+		{Name: "vzAny", Expected: 2},
+		{Name: "vzTaboo", Expected: 2},
+	}
+	_, source, _, _ := runtime.Caller(0)
+	definitionsPath := filepath.Join(filepath.Dir(source), "..", "..", "definitions")
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			payload, err := os.ReadFile(filepath.Join(definitionsPath, testCase.Name+".yaml"))
+			if !assert.NoError(t, err) {
+				return
+			}
+			definition, err := parseClassDefinition(payload)
+			if !assert.NoError(t, err) || !assert.NotNil(t, definition.SchemaVersion) {
+				return
+			}
+			assert.Equal(t, testCase.Expected, *definition.SchemaVersion)
+			if testCase.Expected == 1 && testCase.Name != "netflowMonitorPol" {
+				assert.Empty(t, definition.StateUpgrades, "an unchanged published version needs no artificial upgrade entry")
+			}
+		})
+	}
 }
 
 // TestParseClassDefinition_StateUpgradesInvalidEnumValues confirms strict
@@ -787,63 +914,63 @@ func TestParseClassDefinition_StateUpgradesInvalidEnumValues(t *testing.T) {
 
 	testCases := []test.TestCase{
 		{
-			Name: "invalid_legacy_type",
-			Input: `
-state_upgrades:
-  - prior_schema_version: 0
+			Name: "invalid_type",
+			Input: `state_upgrades:
+  0:
     attributes:
       name:
-        legacy_type: not_a_type
+        type: not_a_type
 `,
-			Expected: "unknown legacy_type",
+
+			Expected: "unknown type",
 		},
 		{
-			Name: "invalid_legacy_status",
-			Input: `
-state_upgrades:
-  - prior_schema_version: 0
+			Name: "invalid_status",
+			Input: `state_upgrades:
+  0:
     attributes:
       name:
-        legacy_status: weird
+        status: weird
 `,
-			Expected: "unknown legacy_status",
+
+			Expected: "unknown status",
 		},
 		{
-			Name: "invalid_legacy_restriction",
-			Input: `
-state_upgrades:
-  - prior_schema_version: 0
+			Name: "invalid_restriction",
+			Input: `state_upgrades:
+  0:
     attributes:
       name:
-        legacy_restriction: weird
+        restriction: weird
 `,
+
 			Expected: "unknown restriction",
 		},
 		{
 			Name:     "invalid_migration_source",
-			Input:    "migration_source: bogus\n",
-			Expected: "unknown migration_source",
+			Input:    "state_upgrades:\n  0:\n    source: bogus\n",
+			Expected: "unknown source",
 		},
 		{
-			Name: "empty_legacy_status_is_typo",
-			Input: `
-state_upgrades:
-  - prior_schema_version: 0
+			Name: "empty_status_is_typo",
+			Input: `state_upgrades:
+  0:
     attributes:
       name:
-        legacy_status: ""
+        status: ""
 `,
-			Expected: "unknown legacy_status",
+
+			Expected: "unknown status",
 		},
 		{
-			Name: "empty_legacy_restriction_is_typo",
-			Input: `
-state_upgrades:
-  - prior_schema_version: 0
+			Name: "empty_restriction_is_typo",
+			Input: `state_upgrades:
+  0:
     attributes:
       name:
-        legacy_restriction: ""
+        restriction: ""
 `,
+
 			Expected: "unknown restriction",
 		},
 	}
@@ -867,35 +994,35 @@ func TestParseClassDefinition_StateUpgradesUnknownField(t *testing.T) {
 	testCases := []test.TestCase{
 		{
 			Name: "unknown_field_on_entry",
-			Input: `
-state_upgrades:
-  - prior_schema_version: 0
+			Input: `state_upgrades:
+  0:
     bogus_upgrade_field: true
 `,
+
 			Expected: "bogus_upgrade_field",
 		},
 		{
 			Name: "unknown_field_on_attribute_node",
-			Input: `
-state_upgrades:
-  - prior_schema_version: 0
+			Input: `state_upgrades:
+  0:
     attributes:
       name:
         bogus_attribute_field: true
 `,
+
 			Expected: "bogus_attribute_field",
 		},
 		{
 			Name: "unknown_field_on_inner_child_node",
-			Input: `
-state_upgrades:
-  - prior_schema_version: 0
+			Input: `state_upgrades:
+  0:
     children:
       fvRsBd:
         attributes:
           name:
             bogus_inner_field: true
 `,
+
 			Expected: "bogus_inner_field",
 		},
 	}
@@ -922,57 +1049,57 @@ func TestAttributeUpgradeDefinition_Validate(t *testing.T) {
 	t.Parallel()
 	test.InitializeTest(t)
 
-	const path = `Class 'fvCtx': prior_schema_version 0: attributes["name"]`
+	const path = `Class 'fvCtx': schema version 0: attributes["name"]`
 
 	testCases := []test.TestCase{
 		{
 			Name:     "test_non_removed_status_skips_all_checks",
-			Input:    AttributeUpgradeDefinition{LegacyStatus: Functioning},
+			Input:    AttributeUpgradeDefinition{Status: LegacyDeprecated},
 			Expected: attributeUpgradeValidationExpected{},
 		},
 		{
 			Name: "test_removed_with_all_legacy_fields_set_passes",
 			Input: AttributeUpgradeDefinition{
-				LegacyAttribute:   "old_name",
-				LegacyType:        StringAttribute,
-				LegacyRestriction: Optional,
-				LegacyStatus:      Removed,
+				AttributeName: "old_name",
+				Type:          StringAttribute,
+				Restriction:   LegacyOptional,
+				Status:        Removed,
 			},
 			Expected: attributeUpgradeValidationExpected{},
 		},
 		{
-			Name: "test_removed_missing_legacy_attribute_only",
+			Name: "test_removed_missing_attribute_name_only",
 			Input: AttributeUpgradeDefinition{
-				LegacyType:        StringAttribute,
-				LegacyRestriction: Optional,
-				LegacyStatus:      Removed,
+				Type:        StringAttribute,
+				Restriction: LegacyOptional,
+				Status:      Removed,
 			},
-			Expected: attributeUpgradeValidationExpected{ErrorCount: 1, Substrings: []string{"requires legacy_attribute"}},
+			Expected: attributeUpgradeValidationExpected{ErrorCount: 1, Substrings: []string{"requires attribute_name"}},
 		},
 		{
-			Name: "test_removed_missing_legacy_type_only",
+			Name: "test_removed_missing_type_only",
 			Input: AttributeUpgradeDefinition{
-				LegacyAttribute:   "old_name",
-				LegacyRestriction: Optional,
-				LegacyStatus:      Removed,
+				AttributeName: "old_name",
+				Restriction:   LegacyOptional,
+				Status:        Removed,
 			},
-			Expected: attributeUpgradeValidationExpected{ErrorCount: 1, Substrings: []string{"requires legacy_type"}},
+			Expected: attributeUpgradeValidationExpected{ErrorCount: 1, Substrings: []string{"requires type"}},
 		},
 		{
-			Name: "test_removed_missing_legacy_restriction_only",
+			Name: "test_removed_missing_restriction_only",
 			Input: AttributeUpgradeDefinition{
-				LegacyAttribute: "old_name",
-				LegacyType:      StringAttribute,
-				LegacyStatus:    Removed,
+				AttributeName: "old_name",
+				Type:          StringAttribute,
+				Status:        Removed,
 			},
-			Expected: attributeUpgradeValidationExpected{ErrorCount: 1, Substrings: []string{"requires legacy_restriction"}},
+			Expected: attributeUpgradeValidationExpected{ErrorCount: 1, Substrings: []string{"requires restriction"}},
 		},
 		{
 			Name:  "test_removed_all_fields_missing_aggregates_three_diagnostics",
-			Input: AttributeUpgradeDefinition{LegacyStatus: Removed},
+			Input: AttributeUpgradeDefinition{Status: Removed},
 			Expected: attributeUpgradeValidationExpected{
 				ErrorCount: 3,
-				Substrings: []string{"requires legacy_attribute", "requires legacy_type", "requires legacy_restriction"},
+				Substrings: []string{"requires attribute_name", "requires type", "requires restriction"},
 			},
 		},
 	}
@@ -1001,26 +1128,26 @@ func TestAttributeUpgradeDefinition_Validate(t *testing.T) {
 }
 
 // TestAttributeUpgradeDefinition_ValidateChild covers the children-bucket validator.
-// In addition to the Removed-only legacy_attribute check, it enforces the
+// In addition to the Removed-only attribute_name check, it enforces the
 // scalar-wrap shape (the only allowed way for a child entry to omit both
-// legacy_attribute and legacy_type) and recurses into inner attributes/children.
+// attribute_name and type) and recurses into inner attributes/children.
 func TestAttributeUpgradeDefinition_ValidateChild(t *testing.T) {
 	t.Parallel()
 	test.InitializeTest(t)
 
-	const path = `Class 'fvCtx': prior_schema_version 0: children["fvRsBd"]`
+	const path = `Class 'fvCtx': schema version 0: children["fvRsBd"]`
 
 	testCases := []test.TestCase{
 		{
 			Name:     "test_block_rename_only",
-			Input:    AttributeUpgradeDefinition{LegacyAttribute: "old_block"},
+			Input:    AttributeUpgradeDefinition{AttributeName: "old_block"},
 			Expected: attributeUpgradeValidationExpected{},
 		},
 		{
 			Name: "test_scalar_wrap_inner_attribute_carries_legacy",
 			Input: AttributeUpgradeDefinition{
 				Attributes: map[string]AttributeUpgradeDefinition{
-					"value": {LegacyAttribute: "old_flat"},
+					"value": {AttributeName: "old_flat"},
 				},
 			},
 			Expected: attributeUpgradeValidationExpected{},
@@ -1029,7 +1156,7 @@ func TestAttributeUpgradeDefinition_ValidateChild(t *testing.T) {
 			Name: "test_inner_attributes_only_no_legacy_on_block_or_inner",
 			Input: AttributeUpgradeDefinition{
 				Attributes: map[string]AttributeUpgradeDefinition{
-					"value": {LegacyType: StringAttribute},
+					"value": {Type: StringAttribute},
 				},
 			},
 			Expected: attributeUpgradeValidationExpected{},
@@ -1037,41 +1164,41 @@ func TestAttributeUpgradeDefinition_ValidateChild(t *testing.T) {
 		{
 			Name:     "test_orphan_block_no_legacy_no_inner_errors",
 			Input:    AttributeUpgradeDefinition{},
-			Expected: attributeUpgradeValidationExpected{ErrorCount: 1, Substrings: []string{"neither legacy_attribute / legacy_type"}},
+			Expected: attributeUpgradeValidationExpected{ErrorCount: 1, Substrings: []string{"neither attribute_name / type"}},
 		},
 		{
-			Name: "test_removed_block_missing_legacy_attribute",
+			Name: "test_removed_block_missing_attribute_name",
 			Input: AttributeUpgradeDefinition{
-				LegacyType:        StringAttribute,
-				LegacyRestriction: Optional,
-				LegacyStatus:      Removed,
+				Type:        StringAttribute,
+				Restriction: LegacyOptional,
+				Status:      Removed,
 			},
-			Expected: attributeUpgradeValidationExpected{ErrorCount: 1, Substrings: []string{"requires legacy_attribute"}},
+			Expected: attributeUpgradeValidationExpected{ErrorCount: 1, Substrings: []string{"requires attribute_name"}},
 		},
 		{
 			Name: "test_recurses_into_inner_attribute_validate",
 			Input: AttributeUpgradeDefinition{
-				LegacyAttribute: "old_block",
+				AttributeName: "old_block",
 				Attributes: map[string]AttributeUpgradeDefinition{
-					"inner": {LegacyStatus: Removed},
+					"inner": {Status: Removed},
 				},
 			},
 			Expected: attributeUpgradeValidationExpected{
 				ErrorCount: 3,
-				Substrings: []string{`attributes["inner"]`, "requires legacy_attribute", "requires legacy_type", "requires legacy_restriction"},
+				Substrings: []string{`attributes["inner"]`, "requires attribute_name", "requires type", "requires restriction"},
 			},
 		},
 		{
 			Name: "test_recurses_into_inner_child_validate_child",
 			Input: AttributeUpgradeDefinition{
-				LegacyAttribute: "old_block",
+				AttributeName: "old_block",
 				Children: map[string]AttributeUpgradeDefinition{
 					"grand": {},
 				},
 			},
 			Expected: attributeUpgradeValidationExpected{
 				ErrorCount: 1,
-				Substrings: []string{`children["grand"]`, "neither legacy_attribute / legacy_type"},
+				Substrings: []string{`children["grand"]`, "neither attribute_name / type"},
 			},
 		},
 	}
@@ -1111,44 +1238,44 @@ func TestAttributeUpgradeDefinition_HasInnerLegacyAttribute(t *testing.T) {
 			Expected: false,
 		},
 		{
-			Name:     "test_self_legacy_attribute_does_not_count_as_inner",
-			Input:    AttributeUpgradeDefinition{LegacyAttribute: "old_self"},
+			Name:     "test_self_attribute_name_does_not_count_as_inner",
+			Input:    AttributeUpgradeDefinition{AttributeName: "old_self"},
 			Expected: false,
 		},
 		{
-			Name: "test_inner_attribute_with_legacy_attribute",
+			Name: "test_inner_attribute_with_attribute_name",
 			Input: AttributeUpgradeDefinition{
 				Attributes: map[string]AttributeUpgradeDefinition{
-					"value": {LegacyAttribute: "old_flat"},
+					"value": {AttributeName: "old_flat"},
 				},
 			},
 			Expected: true,
 		},
 		{
-			Name: "test_inner_attribute_without_legacy_attribute",
+			Name: "test_inner_attribute_without_attribute_name",
 			Input: AttributeUpgradeDefinition{
 				Attributes: map[string]AttributeUpgradeDefinition{
-					"value": {LegacyType: StringAttribute},
+					"value": {Type: StringAttribute},
 				},
 			},
 			Expected: false,
 		},
 		{
-			Name: "test_inner_child_with_legacy_attribute",
+			Name: "test_inner_child_with_attribute_name",
 			Input: AttributeUpgradeDefinition{
 				Children: map[string]AttributeUpgradeDefinition{
-					"sub": {LegacyAttribute: "old_block"},
+					"sub": {AttributeName: "old_block"},
 				},
 			},
 			Expected: true,
 		},
 		{
-			Name: "test_nested_child_carries_legacy_attribute",
+			Name: "test_nested_child_carries_attribute_name",
 			Input: AttributeUpgradeDefinition{
 				Children: map[string]AttributeUpgradeDefinition{
 					"sub": {
 						Children: map[string]AttributeUpgradeDefinition{
-							"grand": {LegacyAttribute: "old_deep"},
+							"grand": {AttributeName: "old_deep"},
 						},
 					},
 				},
@@ -1161,7 +1288,7 @@ func TestAttributeUpgradeDefinition_HasInnerLegacyAttribute(t *testing.T) {
 				Children: map[string]AttributeUpgradeDefinition{
 					"sub": {
 						Children: map[string]AttributeUpgradeDefinition{
-							"grand": {LegacyType: StringAttribute},
+							"grand": {Type: StringAttribute},
 						},
 					},
 				},
@@ -1197,4 +1324,10 @@ func TestTestConfigScenarioPresence(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestParseClassDefinitionRejectsDuplicateSchemaVersions(t *testing.T) {
+	test.InitializeTest(t)
+	_, err := parseClassDefinition([]byte("state_upgrades:\n  1: {source: sdkv2}\n  1: {source: framework}\n"))
+	assert.Error(t, err)
 }

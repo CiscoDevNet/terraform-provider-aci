@@ -339,7 +339,7 @@ type TestConfigDefinition struct {
 	// Values for the ForceNew step. Typically auto-derived (same as Create for non-parent_dn).
 	ForceNew TestValueScenarioDefinition `yaml:"force_new"`
 	// Values for the Legacy step, exercising state_upgrades legacy attribute
-	// aliases (Functioning / Frozen). Independent of the standard buckets:
+	// aliases (LegacyDeprecated / Frozen). Independent of the standard buckets:
 	// supplying legacy alone is permitted, and supplying legacy is required
 	// when the legacy alias has a different Terraform type than the current
 	// attribute (auto-derivation skips that case with a warning).
@@ -458,19 +458,14 @@ type ClassDefinition struct {
 	// Property-level overrides keyed by the meta property name (e.g., "pcTag", "name").
 	// Used to override the attribute name, or control the schema restriction (required, optional, read_only, exclude).
 	Properties map[string]PropertyDefinition `yaml:"properties"`
-	// Records the lineage of this resource: the prior provider or generator it was
-	// migrated from. Today only "from_sdkv2" is recognized. Drives the documentation
-	// migration warning. A non-zero value also requires at least one state_upgrades
-	// entry describing the migration hop from the prior provider; the specific
-	// prior_schema_version depends on what the prior resource was at when migrated
-	// (validated in class.setStateUpgrades).
-	MigrationSource MigrationSourceEnum `yaml:"migration_source"`
 	// Per-version state upgrade definitions. Each entry describes the prior-schema
 	// shape used by Terraform's UpgradeResourceState RPC and the current-schema
 	// exposure (or non-exposure) of any legacy attribute alias. Independent
 	// direct-to-current upgraders per the framework contract: the framework selects
 	// the upgrader matching the saved version and does not chain entries.
-	StateUpgrades []StateUpgradeDefinition `yaml:"state_upgrades"`
+	StateUpgrades map[int]StateUpgradeDefinition `yaml:"state_upgrades"`
+	// Explicitly pins the published resource schema; omission means version zero.
+	SchemaVersion *int `yaml:"schema_version"`
 	// Overrides (or supplies) the meta `relationInfo` block on a per-field basis.
 	// Any non-empty field replaces the matching field from the meta file; empty fields fall back to meta.
 	// When the meta file has no `relationInfo` and this definition supplies at least one field,
@@ -597,16 +592,15 @@ type ClassTestConfigDefinition struct {
 }
 
 // StateUpgradeDefinition describes a single prior-schema version's state upgrade.
-// Each entry is direct-to-current: the Terraform plugin framework selects the
+// Keys are saved schema versions. Each entry is direct-to-current: the Terraform plugin framework selects the
 // upgrader matching the saved state's version and does not chain intermediate
 // upgraders. Keys under Attributes are meta PropertyName values (or known
 // synthetic names like "parentDn"/"tDn"); keys under Children are meta child
 // class names. The two splits keep scalar/leaf attributes separate from nested
 // blocks at every level.
 type StateUpgradeDefinition struct {
-	// The prior schema version this upgrader handles (the value saved in state).
-	// Must be unique across all StateUpgrades entries for a class.
-	PriorSchemaVersion int `yaml:"prior_schema_version"`
+	// Source describes the implementation that produced this saved schema version.
+	Source MigrationSourceEnum `yaml:"source"`
 	// Top-level scalar attributes that changed between the prior schema and the
 	// current schema. Map keys are meta PropertyName values; map values describe
 	// how the prior attribute differed from the current attribute and what to do
@@ -628,21 +622,26 @@ type AttributeUpgradeDefinition struct {
 	// records a block rename or a scalar-wrap (when the new block didn't exist
 	// in the prior schema, an inner attribute carries the prior flat scalar
 	// name instead).
-	LegacyAttribute string `yaml:"legacy_attribute"`
+	AttributeName string `yaml:"attribute_name"`
 	// The Terraform plugin framework attribute type in the prior schema. Omit
 	// when the prior type matches the current type. Required on a "removed"
 	// node since there is no current attribute to inherit from.
-	LegacyType LegacyAttributeTypeEnum `yaml:"legacy_type"`
+	Type LegacyAttributeTypeEnum `yaml:"type"`
+	// Preserves a historical custom string type independently of its Terraform wire type.
+	// Omission keeps renamed aliases as plain strings; it does not inherit modern semantics.
+	ValueType ValueTypeEnum `yaml:"value_type"`
 	// The schema restriction in the prior schema (required/optional/read_only).
-	// Omit to inherit from the current property (UndefinedRestriction). Required
+	// Omission inherits the current restriction; optional_computed is available. Required
 	// on a "removed" node since there is no current attribute to inherit from.
-	LegacyRestriction RestrictionEnum `yaml:"legacy_restriction"`
-	// Controls how this legacy attribute is exposed in the CURRENT schema:
-	//   - functioning (default): legacy name still exposed, full device round-trip.
+	Restriction LegacyRestrictionEnum `yaml:"restriction"`
+	// Records the exact element type of a historical collection.
+	ElementType LegacyAttributeTypeEnum `yaml:"element_type"`
+	// Controls current exposure; omission inherits the previous explicit status:
+	//   - deprecated: legacy name still exposed, full device round-trip.
 	//   - frozen: legacy name still exposed but no device round-trip.
 	//   - removed: legacy name dropped from current schema; entry retained for
 	//     state migration only.
-	LegacyStatus LegacyStatusEnum `yaml:"legacy_status"`
+	Status LegacyStatusEnum `yaml:"status"`
 	// Inner scalar attribute changes for a nested block. Same key/value
 	// semantics as StateUpgradeDefinition.Attributes.
 	Attributes map[string]AttributeUpgradeDefinition `yaml:"attributes"`
@@ -654,34 +653,34 @@ type AttributeUpgradeDefinition struct {
 // validate enforces the shape rules for an attributes-bucket node. Errors are
 // accumulated on ctx.Diagnostics rather than returned so a single pass surfaces
 // every authoring mistake in one summary. The path argument carries the fully
-// qualified location of this node (e.g. "Class 'fvCtx': prior_schema_version 0:
+// qualified location of this node (e.g. "Class 'fvCtx': schema version 0:
 // attributes[\"name\"]") so each diagnostic is self-describing.
 func (n AttributeUpgradeDefinition) validate(ctx *Context, path string) {
-	if n.LegacyStatus == Removed {
-		if n.LegacyAttribute == "" {
-			ctx.Diagnostics.AddError("%s: legacy_status: removed requires legacy_attribute to be set", path)
+	if n.Status == Removed {
+		if n.AttributeName == "" {
+			ctx.Diagnostics.AddError("%s: status: removed requires attribute_name to be set", path)
 		}
-		if n.LegacyType == UndefinedLegacyAttributeType {
-			ctx.Diagnostics.AddError("%s: legacy_status: removed requires legacy_type to be set", path)
+		if n.Type == UndefinedLegacyAttributeType {
+			ctx.Diagnostics.AddError("%s: status: removed requires type to be set", path)
 		}
-		if n.LegacyRestriction == UndefinedRestriction {
-			ctx.Diagnostics.AddError("%s: legacy_status: removed requires legacy_restriction to be set", path)
+		if n.Restriction == UndefinedLegacyRestriction {
+			ctx.Diagnostics.AddError("%s: status: removed requires restriction to be set", path)
 		}
 	}
 }
 
 // validateChild enforces the shape rules for a children-bucket node, including
-// the scalar-wrap shape: a children entry without legacy_attribute is only valid
-// when at least one inner attributes entry carries legacy_attribute (the inner
+// the scalar-wrap shape: a children entry without attribute_name is only valid
+// when at least one inner attributes entry carries attribute_name (the inner
 // attribute(s) inherit the prior flat scalar value(s)). Errors are accumulated
 // on ctx.Diagnostics, see validate for the path-prefix convention.
 func (n AttributeUpgradeDefinition) validateChild(ctx *Context, path string) {
-	if n.LegacyStatus == Removed && n.LegacyAttribute == "" {
-		ctx.Diagnostics.AddError("%s: legacy_status: removed requires legacy_attribute to be set", path)
+	if n.Status == Removed && n.AttributeName == "" {
+		ctx.Diagnostics.AddError("%s: status: removed requires attribute_name to be set", path)
 	}
-	if n.LegacyAttribute == "" && n.LegacyType == UndefinedLegacyAttributeType {
+	if n.AttributeName == "" && n.Type == UndefinedLegacyAttributeType {
 		if !n.hasInnerLegacyAttribute() && len(n.Attributes) == 0 && len(n.Children) == 0 {
-			ctx.Diagnostics.AddError("%s: entry has neither legacy_attribute / legacy_type on the block nor any inner attributes/children annotations", path)
+			ctx.Diagnostics.AddError("%s: entry has neither attribute_name / type on the block nor any inner attributes/children annotations", path)
 		}
 	}
 	for innerProp, innerNode := range n.Attributes {
@@ -694,12 +693,12 @@ func (n AttributeUpgradeDefinition) validateChild(ctx *Context, path string) {
 
 func (n AttributeUpgradeDefinition) hasInnerLegacyAttribute() bool {
 	for _, inner := range n.Attributes {
-		if inner.LegacyAttribute != "" {
+		if inner.AttributeName != "" {
 			return true
 		}
 	}
 	for _, inner := range n.Children {
-		if inner.LegacyAttribute != "" || inner.hasInnerLegacyAttribute() {
+		if inner.AttributeName != "" || inner.hasInnerLegacyAttribute() {
 			return true
 		}
 	}

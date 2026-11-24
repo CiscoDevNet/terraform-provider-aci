@@ -40,6 +40,9 @@ var validSubCategories = []string{
 }
 
 // validateSubCategory validates that the given sub-category value is one of the allowed sub-categories.
+// SDKv2MigrationWarning is shared by inferred and documentation-only migration notices.
+const SDKv2MigrationWarning = "This resource has been migrated to the terraform plugin protocol version 6, refer to the [migration guide](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/guides/migration) for more details and implications for already managed resources."
+
 func validateSubCategory(class *Class) error {
 	if class.ClassDefinition.Documentation.SubCategory == "" {
 		if class.IsSingleNestedWhenDefinedAsChild {
@@ -751,8 +754,8 @@ func actualDnFormats(dnFormats []string) []string {
 func (d *ClassDocumentation) setMigrationWarning(class *Class) {
 	genLogger.Debugf("Setting Documentation MigrationWarning for class '%s'.", class.Name.full)
 
-	if class.MigrationSource != UndefinedMigrationSource {
-		d.MigrationWarning = "This resource has been migrated to the terraform plugin protocol version 6, refer to the [migration guide](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/guides/migration) for more details and implications for already managed resources."
+	if class.HasSDKv2Migration() || slices.Contains(class.ClassDefinition.Documentation.Resource.Warnings, SDKv2MigrationWarning) {
+		d.MigrationWarning = SDKv2MigrationWarning
 	}
 
 	genLogger.Debugf("Successfully set Documentation MigrationWarning for class '%s'. MigrationWarning: %s", class.Name.full, d.MigrationWarning)
@@ -852,6 +855,11 @@ func (d *ClassDocumentation) setWarnings(class *Class) {
 
 	docDef := class.ClassDefinition.Documentation
 	d.ResourceWarnings = slices.Concat(docDef.Warnings, docDef.Resource.Warnings)
+	// Explicit migration notices use the existing migration banner and its warning marker.
+	if d.MigrationWarning != "" {
+		d.ResourceWarnings = slices.DeleteFunc(d.ResourceWarnings, func(warning string) bool { return warning == d.MigrationWarning })
+	}
+
 	d.DatasourceWarnings = slices.Concat(docDef.Warnings, docDef.Datasource.Warnings)
 
 	genLogger.Debugf("Successfully set Documentation Warnings for class '%s'. ResourceWarnings: %v, DatasourceWarnings: %v", class.Name.full, d.ResourceWarnings, d.DatasourceWarnings)

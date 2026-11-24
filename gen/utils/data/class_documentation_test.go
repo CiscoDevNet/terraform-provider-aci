@@ -1304,27 +1304,26 @@ func TestSetMigrationWarning(t *testing.T) {
 	testCases := []test.TestCase{
 		{
 			Name:     "test_not_migration",
-			Input:    false,
+			Input:    UndefinedMigrationSource,
 			Expected: "",
 		},
 		{
 			Name:     "test_migration",
-			Input:    true,
+			Input:    FromSDKv2,
 			Expected: migrationWarning,
 		},
 	}
+
+	testCases = append(testCases, test.TestCase{Name: "framework_upgrade_has_no_sdk_warning", Input: FromFramework, Expected: ""})
 
 	for _, testCase := range testCases {
 		t.Run(testCase.Name, func(t *testing.T) {
 			t.Parallel()
 
-			migrationSource := UndefinedMigrationSource
-			if testCase.Input.(bool) {
-				migrationSource = FromSDKv2
-			}
+			migrationSource := testCase.Input.(MigrationSourceEnum)
 			class := Class{
-				Name:            testClassName("fvTenant"),
-				MigrationSource: migrationSource,
+				Name:          testClassName("fvTenant"),
+				StateUpgrades: map[int]StateUpgradeDefinition{1: {Source: migrationSource}},
 			}
 			class.Documentation.setMigrationWarning(&class)
 
@@ -1989,4 +1988,14 @@ func TestDocumentationProperties(t *testing.T) {
 			assert.Equal(t, expected, actual, test.MessageEqual(expected, actual, testCase.Name))
 		})
 	}
+}
+
+func TestDocumentationOnlyMigrationNotice(t *testing.T) {
+	test.InitializeTest(t)
+	class := Class{Name: testClassName("infraFexP"), ClassDefinition: ClassDefinition{Documentation: ClassDocumentationDefinition{Resource: ArtifactDocumentationDefinition{Warnings: []string{SDKv2MigrationWarning}}}}}
+	class.Documentation.setMigrationWarning(&class)
+	class.Documentation.setWarnings(&class)
+	assert.Equal(t, SDKv2MigrationWarning, class.Documentation.MigrationWarning)
+	assert.Empty(t, class.Documentation.ResourceWarnings)
+	assert.Empty(t, class.StateUpgrades)
 }

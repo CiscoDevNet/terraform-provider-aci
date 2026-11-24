@@ -6,13 +6,20 @@ properties:
       description: The name of the monitoring policy.
     test_config:
       create:
-      - config_value: default
+      - config_value: aci_monitoring_policy.test.name
+        value_type: reference
 resource_name: relation_from_tenant_to_monitoring_policy
 test_config:
   dependencies:
   - class_name: monEPGPol
+    config_overrides:
+      name: name_1
+      tenant_dn: uni/tn-common
     reference: aci_monitoring_policy.test.id
     role: target
   - class_name: monEPGPol
+    config_overrides:
+      name: name_2
+      tenant_dn: uni/tn-common
     reference: aci_monitoring_policy.test_2.id
     role: target
