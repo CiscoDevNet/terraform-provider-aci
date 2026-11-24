@@ -21,6 +21,7 @@ var _ resource.Resource = &CdpIfPolResource{}
 var _ resource.ResourceWithConfigure = &CdpIfPolResource{}
 var _ resource.ResourceWithModifyPlan = &CdpIfPolResource{}
 var _ resource.ResourceWithImportState = &CdpIfPolResource{}
+var _ resource.ResourceWithUpgradeState = &CdpIfPolResource{}
 
 func NewCdpIfPolResource() resource.Resource {
 	return &CdpIfPolResource{}
@@ -78,8 +79,24 @@ func (r *CdpIfPolResource) ModifyPlan(ctx context.Context, req resource.ModifyPl
 		return
 	}
 
+	var config models.CdpIfPolRootModel
+	resp.Diagnostics.Append(req.Config.Get(ctx, &config)...)
+	var priorState *models.CdpIfPolRootModel
+	if !req.State.Raw.IsNull() {
+		priorState = &models.CdpIfPolRootModel{}
+		resp.Diagnostics.Append(req.State.Get(ctx, priorState)...)
+	}
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	resp.Diagnostics.Append(data.SetFromLegacyConfig(ctx, &config, priorState)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	// A parent reference or naming value may only become known during apply.
 	if data.Name.IsNull() || data.Name.IsUnknown() {
+		resp.Diagnostics.Append(resp.Plan.Set(ctx, &data)...)
 		return
 	}
 
@@ -89,6 +106,11 @@ func (r *CdpIfPolResource) ModifyPlan(ctx context.Context, req resource.ModifyPl
 		if resp.Diagnostics.HasError() {
 			return
 		}
+	}
+
+	resp.Diagnostics.Append(data.SetLegacyFromState(ctx, &config, priorState)...)
+	if resp.Diagnostics.HasError() {
+		return
 	}
 
 	resp.Diagnostics.Append(resp.Plan.Set(ctx, &data)...)
@@ -160,6 +182,11 @@ func (r *CdpIfPolResource) Create(ctx context.Context, req resource.CreateReques
 		return
 	}
 
+	resp.Diagnostics.Append(data.SetLegacyFromResponse(ctx, response)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_cdp_interface_policy with id '%s'", data.ID.ValueString()))
 }
@@ -186,6 +213,11 @@ func (r *CdpIfPolResource) Read(ctx context.Context, req resource.ReadRequest, r
 	}
 	if !found {
 		resp.State.RemoveResource(ctx)
+		return
+	}
+
+	resp.Diagnostics.Append(data.SetLegacyFromResponse(ctx, response)...)
+	if resp.Diagnostics.HasError() {
 		return
 	}
 
@@ -234,6 +266,11 @@ func (r *CdpIfPolResource) Update(ctx context.Context, req resource.UpdateReques
 		return
 	}
 
+	resp.Diagnostics.Append(data.SetLegacyFromResponse(ctx, response)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_cdp_interface_policy with id '%s'", data.ID.ValueString()))
 }
@@ -265,4 +302,25 @@ func (r *CdpIfPolResource) ImportState(ctx context.Context, req resource.ImportS
 	tflog.Debug(ctx, "Start import state of resource: aci_cdp_interface_policy")
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 	tflog.Debug(ctx, "End import state of resource: aci_cdp_interface_policy")
+}
+
+func (r *CdpIfPolResource) UpgradeState(ctx context.Context) map[int64]resource.StateUpgrader {
+	return map[int64]resource.StateUpgrader{
+		1: {
+			PriorSchema: models.CdpIfPolResourceSchemaV1(),
+			StateUpgrader: func(ctx context.Context, req resource.UpgradeStateRequest, resp *resource.UpgradeStateResponse) {
+				var priorState models.CdpIfPolRootModelV1
+				resp.Diagnostics.Append(req.State.Get(ctx, &priorState)...)
+				if resp.Diagnostics.HasError() {
+					return
+				}
+				var data models.CdpIfPolRootModel
+				resp.Diagnostics.Append(data.UpgradeFromV1(ctx, &priorState)...)
+				if resp.Diagnostics.HasError() {
+					return
+				}
+				resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+			},
+		},
+	}
 }

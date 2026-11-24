@@ -27,6 +27,7 @@ func infraFexPSchemaDefinition() modelHelpers.ClassSchema {
 	return modelHelpers.ClassSchema{
 		ResourceDescription:   "Manages ACI FEX Profile",
 		DataSourceDescription: "Data source for ACI FEX Profile",
+		Version:               1,
 		Properties: map[string]modelHelpers.PropertySchema{
 			"annotation": {
 				Type:        modelHelpers.StringProperty,

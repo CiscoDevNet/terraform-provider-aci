@@ -14,6 +14,7 @@ import (
 	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
@@ -27,6 +28,17 @@ func l2IfPolSchemaDefinition() modelHelpers.ClassSchema {
 	return modelHelpers.ClassSchema{
 		ResourceDescription:   "Manages ACI L2 Interface Policy",
 		DataSourceDescription: "Data source for ACI L2 Interface Policy",
+		Version:               2,
+		LegacyAttributes: map[string]modelHelpers.LegacyAttributeSchema{
+			"qinq": {
+				Type:        types.StringType,
+				Replacement: "q_in_q",
+			},
+			"vepa": {
+				Type:        types.StringType,
+				Replacement: "reflective_relay",
+			},
+		},
 		Properties: map[string]modelHelpers.PropertySchema{
 			"annotation": {
 				Type:        modelHelpers.StringProperty,
@@ -339,16 +351,30 @@ func (m *L2IfPolModel) BuildNestedDeletePayloadObject(
 	})
 }
 
+type L2IfPolLegacyModelV2 struct {
+	LegacyQinq types.String `tfsdk:"qinq"`
+	LegacyVepa types.String `tfsdk:"vepa"`
+}
+
+func NewL2IfPolLegacyModelV2Null() L2IfPolLegacyModelV2 {
+	return L2IfPolLegacyModelV2{
+		LegacyQinq: types.StringNull(),
+		LegacyVepa: types.StringNull(),
+	}
+}
+
 type L2IfPolRootModel struct {
 	L2IfPolModel
+	L2IfPolLegacyModelV2
 
 	ID types.String `tfsdk:"id"`
 }
 
 func NewL2IfPolRootModelNull() L2IfPolRootModel {
 	return L2IfPolRootModel{
-		L2IfPolModel: NewL2IfPolModelNull(),
-		ID:           types.StringNull(),
+		L2IfPolModel:         NewL2IfPolModelNull(),
+		L2IfPolLegacyModelV2: NewL2IfPolLegacyModelV2Null(),
+		ID:                   types.StringNull(),
 	}
 }
 
@@ -383,6 +409,14 @@ func (m *L2IfPolRootModel) SetFromResponse(
 	return true, diagnostics
 }
 
+func (m *L2IfPolRootModel) SetLegacyFromResponse(ctx context.Context, response *container.Container) diag.Diagnostics {
+	// Modern response decoding can also be used independently of compatibility state.
+	var diagnostics diag.Diagnostics
+	m.LegacyQinq = m.Qinq
+	m.LegacyVepa = m.Vepa
+	return diagnostics
+}
+
 func (m *L2IfPolRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *L2IfPolModel,
@@ -406,4 +440,109 @@ func (m *L2IfPolRootModel) BuildPayload(
 func (m *L2IfPolRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
 	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "l2IfPol", m.ID.ValueString()), diagnostics
+}
+
+func (m *L2IfPolRootModel) SetFromLegacyConfig(ctx context.Context, config, priorState *L2IfPolRootModel) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	if !config.LegacyQinq.IsNull() {
+		m.Qinq = config.LegacyQinq
+	}
+	if !config.LegacyVepa.IsNull() {
+		m.Vepa = config.LegacyVepa
+	}
+	return diagnostics
+}
+
+func (m *L2IfPolRootModel) SetLegacyFromState(ctx context.Context, config, priorState *L2IfPolRootModel) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	if priorState == nil {
+		return diagnostics
+	}
+
+	// Retain legacy and read-only outputs when the configured and managed values are unchanged.
+	candidate := *m
+	if config.LegacyQinq.IsNull() {
+		candidate.LegacyQinq = priorState.LegacyQinq
+	}
+	if config.LegacyVepa.IsNull() {
+		candidate.LegacyVepa = priorState.LegacyVepa
+	}
+	attributeType := L2IfPolResourceSchema("").Type()
+	var planValue, stateValue types.Object
+	diagnostics.Append(tfsdk.ValueFrom(ctx, candidate, attributeType, &planValue)...)
+	diagnostics.Append(tfsdk.ValueFrom(ctx, priorState, attributeType, &stateValue)...)
+	if diagnostics.HasError() || !planValue.Equal(stateValue) {
+		return diagnostics
+	}
+	if config.LegacyQinq.IsNull() {
+		m.LegacyQinq = candidate.LegacyQinq
+	}
+	if config.LegacyVepa.IsNull() {
+		m.LegacyVepa = candidate.LegacyVepa
+	}
+	return diagnostics
+}
+
+type L2IfPolRootModelV1 struct {
+	Annotation    types.String `tfsdk:"annotation"`
+	TagAnnotation types.Set    `tfsdk:"annotations"`
+	Descr         types.String `tfsdk:"description"`
+	ID            types.String `tfsdk:"id"`
+	Name          types.String `tfsdk:"name"`
+	NameAlias     types.String `tfsdk:"name_alias"`
+	OwnerKey      types.String `tfsdk:"owner_key"`
+	OwnerTag      types.String `tfsdk:"owner_tag"`
+	LegacyQinq    types.String `tfsdk:"qinq"`
+	TagTag        types.Set    `tfsdk:"tags"`
+	LegacyVepa    types.String `tfsdk:"vepa"`
+	VlanScope     types.String `tfsdk:"vlan_scope"`
+}
+
+func L2IfPolResourceSchemaV1() *resourceschema.Schema {
+	current := L2IfPolResourceSchema("")
+	return &resourceschema.Schema{
+		Version: 1,
+		Attributes: map[string]resourceschema.Attribute{
+			"annotation":  current.Attributes["annotation"],
+			"annotations": current.Attributes["annotations"],
+			"description": current.Attributes["description"],
+			"id":          current.Attributes["id"],
+			"name":        current.Attributes["name"],
+			"name_alias":  current.Attributes["name_alias"],
+			"owner_key":   current.Attributes["owner_key"],
+			"owner_tag":   current.Attributes["owner_tag"],
+			"qinq": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"tags": current.Attributes["tags"],
+			"vepa": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"vlan_scope": current.Attributes["vlan_scope"],
+		},
+	}
+}
+
+func (m *L2IfPolRootModel) UpgradeFromV1(ctx context.Context, priorState *L2IfPolRootModelV1) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	*m = NewL2IfPolRootModelNull()
+	m.Annotation = priorState.Annotation
+	m.TagAnnotation = priorState.TagAnnotation
+	m.Descr = priorState.Descr
+	m.ID = priorState.ID
+	m.Name = priorState.Name
+	m.NameAlias = priorState.NameAlias
+	m.OwnerKey = priorState.OwnerKey
+	m.OwnerTag = priorState.OwnerTag
+	m.LegacyQinq = priorState.LegacyQinq
+	m.Qinq = priorState.LegacyQinq
+	m.TagTag = priorState.TagTag
+	m.LegacyVepa = priorState.LegacyVepa
+	m.Vepa = priorState.LegacyVepa
+	m.VlanScope = priorState.VlanScope
+	return diagnostics
 }

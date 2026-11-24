@@ -21,6 +21,9 @@ var _ resource.Resource = &{{ .Class.Name.Capitalized }}Resource{}
 var _ resource.ResourceWithConfigure = &{{ .Class.Name.Capitalized }}Resource{}
 var _ resource.ResourceWithModifyPlan = &{{ .Class.Name.Capitalized }}Resource{}
 var _ resource.ResourceWithImportState = &{{ .Class.Name.Capitalized }}Resource{}
+{{ if .Class.MigrationSchemas -}}
+var _ resource.ResourceWithUpgradeState = &{{ .Class.Name.Capitalized }}Resource{}
+{{ end }}
 
 func New{{ .Class.Name.Capitalized }}Resource() resource.Resource {
 	return &{{ .Class.Name.Capitalized }}Resource{}
@@ -78,15 +81,34 @@ func (r *{{ .Class.Name.Capitalized }}Resource) ModifyPlan(ctx context.Context, 
 		return
 	}
 
+	{{ if .Class.LegacyAttributes -}}
+	var config models.{{ .Class.Name.Capitalized }}RootModel
+	resp.Diagnostics.Append(req.Config.Get(ctx, &config)...)
+	var priorState *models.{{ .Class.Name.Capitalized }}RootModel
+	if !req.State.Raw.IsNull() {
+		priorState = &models.{{ .Class.Name.Capitalized }}RootModel{}
+		resp.Diagnostics.Append(req.State.Get(ctx, priorState)...)
+	}
+	if resp.Diagnostics.HasError() { return }
+	resp.Diagnostics.Append(data.SetFromLegacyConfig(ctx, &config, priorState)...)
+	if resp.Diagnostics.HasError() { return }
+
+	{{ end -}}
 	// A parent reference or naming value may only become known during apply.
 	{{ with .Class.ParentDnProperty -}}
 	if data.ParentDN.IsNull() || data.ParentDN.IsUnknown() {
+		{{ if $.Class.LegacyAttributes -}}
+		resp.Diagnostics.Append(resp.Plan.Set(ctx, &data)...)
+		{{ end -}}
 		return
 	}
 	{{ end -}}
 	{{ range $identifier := .Class.IdentifiedBy -}}
 		{{- $property := index $.Class.Properties $identifier -}}
 	if data.{{ $property.ModelFieldName $.Class.Name }}.IsNull() || data.{{ $property.ModelFieldName $.Class.Name }}.IsUnknown() {
+		{{ if $.Class.LegacyAttributes -}}
+		resp.Diagnostics.Append(resp.Plan.Set(ctx, &data)...)
+		{{ end -}}
 		return
 	}
 	{{ end }}
@@ -98,6 +120,11 @@ func (r *{{ .Class.Name.Capitalized }}Resource) ModifyPlan(ctx context.Context, 
 		}
 	}
 
+	{{ if .Class.LegacyAttributes -}}
+	resp.Diagnostics.Append(data.SetLegacyFromState(ctx, &config, priorState)...)
+	if resp.Diagnostics.HasError() { return }
+
+	{{ end -}}
 	resp.Diagnostics.Append(resp.Plan.Set(ctx, &data)...)
 }
 
@@ -167,6 +194,11 @@ func (r *{{ .Class.Name.Capitalized }}Resource) Create(ctx context.Context, req 
 		return
 	}
 
+	{{ if .Class.LegacyAttributes -}}
+	resp.Diagnostics.Append(data.SetLegacyFromResponse(ctx, response)...)
+	if resp.Diagnostics.HasError() { return }
+
+	{{ end -}}
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_{{ .Class.ResourceName }} with id '%s'", data.ID.ValueString()))
 }
@@ -196,6 +228,11 @@ func (r *{{ .Class.Name.Capitalized }}Resource) Read(ctx context.Context, req re
 		return
 	}
 
+	{{ if .Class.LegacyAttributes -}}
+	resp.Diagnostics.Append(data.SetLegacyFromResponse(ctx, response)...)
+	if resp.Diagnostics.HasError() { return }
+
+	{{ end -}}
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 	tflog.Debug(ctx, fmt.Sprintf("End read of resource aci_{{ .Class.ResourceName }} with id '%s'", data.ID.ValueString()))
 }
@@ -241,6 +278,11 @@ func (r *{{ .Class.Name.Capitalized }}Resource) Update(ctx context.Context, req 
 		return
 	}
 
+	{{ if .Class.LegacyAttributes -}}
+	resp.Diagnostics.Append(data.SetLegacyFromResponse(ctx, response)...)
+	if resp.Diagnostics.HasError() { return }
+
+	{{ end -}}
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_{{ .Class.ResourceName }} with id '%s'", data.ID.ValueString()))
 }
@@ -279,3 +321,24 @@ func (r *{{ .Class.Name.Capitalized }}Resource) ImportState(ctx context.Context,
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 	tflog.Debug(ctx, "End import state of resource: aci_{{ .Class.ResourceName }}")
 }
+
+{{ if .Class.MigrationSchemas }}
+func (r *{{ .Class.Name.Capitalized }}Resource) UpgradeState(ctx context.Context) map[int64]resource.StateUpgrader {
+	return map[int64]resource.StateUpgrader{
+		{{- range .Class.MigrationSchemas }}
+		{{ .PriorSchemaVersion }}: {
+			PriorSchema: models.{{ $.Class.Name.Capitalized }}ResourceSchemaV{{ .PriorSchemaVersion }}(),
+			StateUpgrader: func(ctx context.Context, req resource.UpgradeStateRequest, resp *resource.UpgradeStateResponse) {
+				var priorState models.{{ $.Class.Name.Capitalized }}RootModelV{{ .PriorSchemaVersion }}
+				resp.Diagnostics.Append(req.State.Get(ctx, &priorState)...)
+				if resp.Diagnostics.HasError() { return }
+				var data models.{{ $.Class.Name.Capitalized }}RootModel
+				resp.Diagnostics.Append(data.UpgradeFromV{{ .PriorSchemaVersion }}(ctx, &priorState)...)
+				if resp.Diagnostics.HasError() { return }
+				resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+			},
+		},
+		{{- end }}
+	}
+}
+{{ end }}

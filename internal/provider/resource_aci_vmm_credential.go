@@ -21,6 +21,7 @@ var _ resource.Resource = &VmmUsrAccPResource{}
 var _ resource.ResourceWithConfigure = &VmmUsrAccPResource{}
 var _ resource.ResourceWithModifyPlan = &VmmUsrAccPResource{}
 var _ resource.ResourceWithImportState = &VmmUsrAccPResource{}
+var _ resource.ResourceWithUpgradeState = &VmmUsrAccPResource{}
 
 func NewVmmUsrAccPResource() resource.Resource {
 	return &VmmUsrAccPResource{}
@@ -78,11 +79,28 @@ func (r *VmmUsrAccPResource) ModifyPlan(ctx context.Context, req resource.Modify
 		return
 	}
 
+	var config models.VmmUsrAccPRootModel
+	resp.Diagnostics.Append(req.Config.Get(ctx, &config)...)
+	var priorState *models.VmmUsrAccPRootModel
+	if !req.State.Raw.IsNull() {
+		priorState = &models.VmmUsrAccPRootModel{}
+		resp.Diagnostics.Append(req.State.Get(ctx, priorState)...)
+	}
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	resp.Diagnostics.Append(data.SetFromLegacyConfig(ctx, &config, priorState)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	// A parent reference or naming value may only become known during apply.
 	if data.ParentDN.IsNull() || data.ParentDN.IsUnknown() {
+		resp.Diagnostics.Append(resp.Plan.Set(ctx, &data)...)
 		return
 	}
 	if data.Name.IsNull() || data.Name.IsUnknown() {
+		resp.Diagnostics.Append(resp.Plan.Set(ctx, &data)...)
 		return
 	}
 
@@ -92,6 +110,11 @@ func (r *VmmUsrAccPResource) ModifyPlan(ctx context.Context, req resource.Modify
 		if resp.Diagnostics.HasError() {
 			return
 		}
+	}
+
+	resp.Diagnostics.Append(data.SetLegacyFromState(ctx, &config, priorState)...)
+	if resp.Diagnostics.HasError() {
+		return
 	}
 
 	resp.Diagnostics.Append(resp.Plan.Set(ctx, &data)...)
@@ -163,6 +186,11 @@ func (r *VmmUsrAccPResource) Create(ctx context.Context, req resource.CreateRequ
 		return
 	}
 
+	resp.Diagnostics.Append(data.SetLegacyFromResponse(ctx, response)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_vmm_credential with id '%s'", data.ID.ValueString()))
 }
@@ -189,6 +217,11 @@ func (r *VmmUsrAccPResource) Read(ctx context.Context, req resource.ReadRequest,
 	}
 	if !found {
 		resp.State.RemoveResource(ctx)
+		return
+	}
+
+	resp.Diagnostics.Append(data.SetLegacyFromResponse(ctx, response)...)
+	if resp.Diagnostics.HasError() {
 		return
 	}
 
@@ -237,6 +270,11 @@ func (r *VmmUsrAccPResource) Update(ctx context.Context, req resource.UpdateRequ
 		return
 	}
 
+	resp.Diagnostics.Append(data.SetLegacyFromResponse(ctx, response)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_vmm_credential with id '%s'", data.ID.ValueString()))
 }
@@ -268,4 +306,25 @@ func (r *VmmUsrAccPResource) ImportState(ctx context.Context, req resource.Impor
 	tflog.Debug(ctx, "Start import state of resource: aci_vmm_credential")
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 	tflog.Debug(ctx, "End import state of resource: aci_vmm_credential")
+}
+
+func (r *VmmUsrAccPResource) UpgradeState(ctx context.Context) map[int64]resource.StateUpgrader {
+	return map[int64]resource.StateUpgrader{
+		1: {
+			PriorSchema: models.VmmUsrAccPResourceSchemaV1(),
+			StateUpgrader: func(ctx context.Context, req resource.UpgradeStateRequest, resp *resource.UpgradeStateResponse) {
+				var priorState models.VmmUsrAccPRootModelV1
+				resp.Diagnostics.Append(req.State.Get(ctx, &priorState)...)
+				if resp.Diagnostics.HasError() {
+					return
+				}
+				var data models.VmmUsrAccPRootModel
+				resp.Diagnostics.Append(data.UpgradeFromV1(ctx, &priorState)...)
+				if resp.Diagnostics.HasError() {
+					return
+				}
+				resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+			},
+		},
+	}
 }

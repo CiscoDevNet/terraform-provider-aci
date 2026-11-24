@@ -14,6 +14,7 @@ import (
 	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
@@ -27,6 +28,13 @@ func stpIfPolSchemaDefinition() modelHelpers.ClassSchema {
 	return modelHelpers.ClassSchema{
 		ResourceDescription:   "Manages ACI Spanning Tree Interface Policy",
 		DataSourceDescription: "Data source for ACI Spanning Tree Interface Policy",
+		Version:               2,
+		LegacyAttributes: map[string]modelHelpers.LegacyAttributeSchema{
+			"ctrl": {
+				Type:        types.ListType{ElemType: types.StringType},
+				Replacement: "interface_controls",
+			},
+		},
 		Properties: map[string]modelHelpers.PropertySchema{
 			"annotation": {
 				Type:        modelHelpers.StringProperty,
@@ -311,16 +319,28 @@ func (m *StpIfPolModel) BuildNestedDeletePayloadObject(
 	})
 }
 
+type StpIfPolLegacyModelV2 struct {
+	LegacyCtrl types.List `tfsdk:"ctrl"`
+}
+
+func NewStpIfPolLegacyModelV2Null() StpIfPolLegacyModelV2 {
+	return StpIfPolLegacyModelV2{
+		LegacyCtrl: types.ListNull(types.StringType),
+	}
+}
+
 type StpIfPolRootModel struct {
 	StpIfPolModel
+	StpIfPolLegacyModelV2
 
 	ID types.String `tfsdk:"id"`
 }
 
 func NewStpIfPolRootModelNull() StpIfPolRootModel {
 	return StpIfPolRootModel{
-		StpIfPolModel: NewStpIfPolModelNull(),
-		ID:            types.StringNull(),
+		StpIfPolModel:         NewStpIfPolModelNull(),
+		StpIfPolLegacyModelV2: NewStpIfPolLegacyModelV2Null(),
+		ID:                    types.StringNull(),
 	}
 }
 
@@ -355,6 +375,13 @@ func (m *StpIfPolRootModel) SetFromResponse(
 	return true, diagnostics
 }
 
+func (m *StpIfPolRootModel) SetLegacyFromResponse(ctx context.Context, response *container.Container) diag.Diagnostics {
+	// Modern response decoding can also be used independently of compatibility state.
+	var diagnostics diag.Diagnostics
+	m.LegacyCtrl = modelHelpers.LegacyStringList(ctx, &diagnostics, m.Ctrl, m.LegacyCtrl)
+	return diagnostics
+}
+
 func (m *StpIfPolRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *StpIfPolModel,
@@ -378,4 +405,90 @@ func (m *StpIfPolRootModel) BuildPayload(
 func (m *StpIfPolRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
 	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "stpIfPol", m.ID.ValueString()), diagnostics
+}
+
+func (m *StpIfPolRootModel) SetFromLegacyConfig(ctx context.Context, config, priorState *StpIfPolRootModel) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	if !config.LegacyCtrl.IsNull() {
+		m.Ctrl = modelHelpers.LegacyValue[types.Set](ctx, &diagnostics, config.LegacyCtrl, types.SetType{ElemType: types.StringType})
+	}
+	return diagnostics
+}
+
+func (m *StpIfPolRootModel) SetLegacyFromState(ctx context.Context, config, priorState *StpIfPolRootModel) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	if priorState == nil {
+		return diagnostics
+	}
+
+	// Retain legacy and read-only outputs when the configured and managed values are unchanged.
+	candidate := *m
+	if config.LegacyCtrl.IsNull() {
+		candidate.LegacyCtrl = priorState.LegacyCtrl
+	}
+	attributeType := StpIfPolResourceSchema("").Type()
+	var planValue, stateValue types.Object
+	diagnostics.Append(tfsdk.ValueFrom(ctx, candidate, attributeType, &planValue)...)
+	diagnostics.Append(tfsdk.ValueFrom(ctx, priorState, attributeType, &stateValue)...)
+	if diagnostics.HasError() || !planValue.Equal(stateValue) {
+		return diagnostics
+	}
+	if config.LegacyCtrl.IsNull() {
+		m.LegacyCtrl = candidate.LegacyCtrl
+	}
+	return diagnostics
+}
+
+type StpIfPolRootModelV1 struct {
+	Annotation    types.String `tfsdk:"annotation"`
+	TagAnnotation types.Set    `tfsdk:"annotations"`
+	LegacyCtrl    types.List   `tfsdk:"ctrl"`
+	Descr         types.String `tfsdk:"description"`
+	ID            types.String `tfsdk:"id"`
+	Name          types.String `tfsdk:"name"`
+	NameAlias     types.String `tfsdk:"name_alias"`
+	OwnerKey      types.String `tfsdk:"owner_key"`
+	OwnerTag      types.String `tfsdk:"owner_tag"`
+	TagTag        types.Set    `tfsdk:"tags"`
+}
+
+func StpIfPolResourceSchemaV1() *resourceschema.Schema {
+	current := StpIfPolResourceSchema("")
+	return &resourceschema.Schema{
+		Version: 1,
+		Attributes: map[string]resourceschema.Attribute{
+			"annotation":  current.Attributes["annotation"],
+			"annotations": current.Attributes["annotations"],
+			"ctrl": resourceschema.ListAttribute{
+				Required:    false,
+				Optional:    true,
+				Computed:    true,
+				ElementType: types.StringType,
+			},
+			"description": current.Attributes["description"],
+			"id":          current.Attributes["id"],
+			"name":        current.Attributes["name"],
+			"name_alias":  current.Attributes["name_alias"],
+			"owner_key":   current.Attributes["owner_key"],
+			"owner_tag":   current.Attributes["owner_tag"],
+			"tags":        current.Attributes["tags"],
+		},
+	}
+}
+
+func (m *StpIfPolRootModel) UpgradeFromV1(ctx context.Context, priorState *StpIfPolRootModelV1) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	*m = NewStpIfPolRootModelNull()
+	m.Annotation = priorState.Annotation
+	m.TagAnnotation = priorState.TagAnnotation
+	m.LegacyCtrl = modelHelpers.LegacySortedStringList(ctx, &diagnostics, priorState.LegacyCtrl)
+	m.Ctrl = modelHelpers.LegacyValue[types.Set](ctx, &diagnostics, m.LegacyCtrl, types.SetType{ElemType: types.StringType})
+	m.Descr = priorState.Descr
+	m.ID = priorState.ID
+	m.Name = priorState.Name
+	m.NameAlias = priorState.NameAlias
+	m.OwnerKey = priorState.OwnerKey
+	m.OwnerTag = priorState.OwnerTag
+	m.TagTag = priorState.TagTag
+	return diagnostics
 }

@@ -14,6 +14,7 @@ import (
 	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
@@ -27,6 +28,23 @@ func infraHPortSSchemaDefinition() modelHelpers.ClassSchema {
 	return modelHelpers.ClassSchema{
 		ResourceDescription:   "Manages ACI Access Port Selector",
 		DataSourceDescription: "Data source for ACI Access Port Selector",
+		Version:               2,
+		LegacyAttributes: map[string]modelHelpers.LegacyAttributeSchema{
+			"access_port_selector_type": {
+				Type:            types.StringType,
+				Replacement:     "port_selector_type",
+				RequiresReplace: true,
+			},
+			"leaf_interface_profile_dn": {
+				Type:            types.StringType,
+				Replacement:     "parent_dn",
+				RequiresReplace: true,
+			},
+			"relation_infra_rs_acc_base_grp": {
+				Type:        types.StringType,
+				Replacement: "relation_to_leaf_access_port_policy_group",
+			},
+		},
 		Properties: map[string]modelHelpers.PropertySchema{
 			"annotation": {
 				Type:        modelHelpers.StringProperty,
@@ -362,8 +380,23 @@ func (m *InfraHPortSModel) BuildNestedDeletePayloadObject(
 	})
 }
 
+type InfraHPortSLegacyModelV2 struct {
+	LegacyAccessPortSelectorType    types.String `tfsdk:"access_port_selector_type"`
+	LegacyLeafInterfaceProfileDn    types.String `tfsdk:"leaf_interface_profile_dn"`
+	LegacyRelationInfraRsAccBaseGrp types.String `tfsdk:"relation_infra_rs_acc_base_grp"`
+}
+
+func NewInfraHPortSLegacyModelV2Null() InfraHPortSLegacyModelV2 {
+	return InfraHPortSLegacyModelV2{
+		LegacyAccessPortSelectorType:    types.StringNull(),
+		LegacyLeafInterfaceProfileDn:    types.StringNull(),
+		LegacyRelationInfraRsAccBaseGrp: types.StringNull(),
+	}
+}
+
 type InfraHPortSRootModel struct {
 	InfraHPortSModel
+	InfraHPortSLegacyModelV2
 
 	ID       types.String `tfsdk:"id"`
 	ParentDN types.String `tfsdk:"parent_dn"`
@@ -371,9 +404,10 @@ type InfraHPortSRootModel struct {
 
 func NewInfraHPortSRootModelNull() InfraHPortSRootModel {
 	return InfraHPortSRootModel{
-		InfraHPortSModel: NewInfraHPortSModelNull(),
-		ID:               types.StringNull(),
-		ParentDN:         types.StringNull(),
+		InfraHPortSModel:         NewInfraHPortSModelNull(),
+		InfraHPortSLegacyModelV2: NewInfraHPortSLegacyModelV2Null(),
+		ID:                       types.StringNull(),
+		ParentDN:                 types.StringNull(),
 	}
 }
 
@@ -414,6 +448,15 @@ func (m *InfraHPortSRootModel) SetFromResponse(
 	return true, diagnostics
 }
 
+func (m *InfraHPortSRootModel) SetLegacyFromResponse(ctx context.Context, response *container.Container) diag.Diagnostics {
+	// Modern response decoding can also be used independently of compatibility state.
+	var diagnostics diag.Diagnostics
+	m.LegacyAccessPortSelectorType = m.Type
+	m.LegacyLeafInterfaceProfileDn = m.ParentDN
+	m.LegacyRelationInfraRsAccBaseGrp = modelHelpers.LegacyTargetDN(ctx, &diagnostics, response, "infraHPortS", "infraRsAccBaseGrp")
+	return diagnostics
+}
+
 func (m *InfraHPortSRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *InfraHPortSModel,
@@ -437,4 +480,138 @@ func (m *InfraHPortSRootModel) BuildPayload(
 func (m *InfraHPortSRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
 	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "infraHPortS", m.ID.ValueString()), diagnostics
+}
+
+func (m *InfraHPortSRootModel) SetFromLegacyConfig(ctx context.Context, config, priorState *InfraHPortSRootModel) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	if !config.LegacyAccessPortSelectorType.IsNull() {
+		m.Type = config.LegacyAccessPortSelectorType
+	}
+	if !config.LegacyLeafInterfaceProfileDn.IsNull() {
+		m.ParentDN = config.LegacyLeafInterfaceProfileDn
+	}
+	if !config.LegacyRelationInfraRsAccBaseGrp.IsNull() {
+		if !config.InfraRsAccBaseGrp.IsNull() {
+			diagnostics.AddError("Conflicting legacy configuration", "Configure either relation_infra_rs_acc_base_grp or relation_to_leaf_access_port_policy_group, not both.")
+			return diagnostics
+		}
+		var fallback *types.Object
+		if priorState != nil {
+			fallback = &priorState.InfraRsAccBaseGrp
+		}
+		relation := modelHelpers.LegacyChildRelation{
+			AttributeTypes: InfraRsAccBaseGrpModelAttributeTypes(),
+			AttributeName:  "target_dn",
+			Named:          false,
+		}
+		m.InfraRsAccBaseGrp = relation.Plan(ctx, &diagnostics, config.LegacyRelationInfraRsAccBaseGrp, m.InfraRsAccBaseGrp, fallback, m.Annotation)
+	}
+	return diagnostics
+}
+
+func (m *InfraHPortSRootModel) SetLegacyFromState(ctx context.Context, config, priorState *InfraHPortSRootModel) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	if priorState == nil {
+		return diagnostics
+	}
+
+	// Retain legacy and read-only outputs when the configured and managed values are unchanged.
+	candidate := *m
+	if config.LegacyAccessPortSelectorType.IsNull() {
+		candidate.LegacyAccessPortSelectorType = priorState.LegacyAccessPortSelectorType
+	}
+	if config.LegacyLeafInterfaceProfileDn.IsNull() {
+		candidate.LegacyLeafInterfaceProfileDn = priorState.LegacyLeafInterfaceProfileDn
+	}
+	if config.LegacyRelationInfraRsAccBaseGrp.IsNull() {
+		candidate.LegacyRelationInfraRsAccBaseGrp = priorState.LegacyRelationInfraRsAccBaseGrp
+	}
+	attributeType := InfraHPortSResourceSchema("").Type()
+	var planValue, stateValue types.Object
+	diagnostics.Append(tfsdk.ValueFrom(ctx, candidate, attributeType, &planValue)...)
+	diagnostics.Append(tfsdk.ValueFrom(ctx, priorState, attributeType, &stateValue)...)
+	if diagnostics.HasError() || !planValue.Equal(stateValue) {
+		return diagnostics
+	}
+	if config.LegacyAccessPortSelectorType.IsNull() {
+		m.LegacyAccessPortSelectorType = candidate.LegacyAccessPortSelectorType
+	}
+	if config.LegacyLeafInterfaceProfileDn.IsNull() {
+		m.LegacyLeafInterfaceProfileDn = candidate.LegacyLeafInterfaceProfileDn
+	}
+	if config.LegacyRelationInfraRsAccBaseGrp.IsNull() {
+		m.LegacyRelationInfraRsAccBaseGrp = candidate.LegacyRelationInfraRsAccBaseGrp
+	}
+	return diagnostics
+}
+
+type InfraHPortSRootModelV1 struct {
+	LegacyAccessPortSelectorType    types.String `tfsdk:"access_port_selector_type"`
+	Annotation                      types.String `tfsdk:"annotation"`
+	TagAnnotation                   types.Set    `tfsdk:"annotations"`
+	Descr                           types.String `tfsdk:"description"`
+	ID                              types.String `tfsdk:"id"`
+	LegacyLeafInterfaceProfileDn    types.String `tfsdk:"leaf_interface_profile_dn"`
+	Name                            types.String `tfsdk:"name"`
+	NameAlias                       types.String `tfsdk:"name_alias"`
+	OwnerKey                        types.String `tfsdk:"owner_key"`
+	OwnerTag                        types.String `tfsdk:"owner_tag"`
+	LegacyRelationInfraRsAccBaseGrp types.String `tfsdk:"relation_infra_rs_acc_base_grp"`
+	TagTag                          types.Set    `tfsdk:"tags"`
+}
+
+func InfraHPortSResourceSchemaV1() *resourceschema.Schema {
+	current := InfraHPortSResourceSchema("")
+	return &resourceschema.Schema{
+		Version: 1,
+		Attributes: map[string]resourceschema.Attribute{
+			"access_port_selector_type": resourceschema.StringAttribute{
+				Required: true,
+				Optional: false,
+				Computed: false,
+			},
+			"annotation":  current.Attributes["annotation"],
+			"annotations": current.Attributes["annotations"],
+			"description": current.Attributes["description"],
+			"id":          current.Attributes["id"],
+			"leaf_interface_profile_dn": resourceschema.StringAttribute{
+				Required: true,
+				Optional: false,
+				Computed: false,
+			},
+			"name":       current.Attributes["name"],
+			"name_alias": current.Attributes["name_alias"],
+			"owner_key":  current.Attributes["owner_key"],
+			"owner_tag":  current.Attributes["owner_tag"],
+			"relation_infra_rs_acc_base_grp": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: false,
+			},
+			"tags": current.Attributes["tags"],
+		},
+	}
+}
+
+func (m *InfraHPortSRootModel) UpgradeFromV1(ctx context.Context, priorState *InfraHPortSRootModelV1) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	*m = NewInfraHPortSRootModelNull()
+	m.LegacyAccessPortSelectorType = priorState.LegacyAccessPortSelectorType
+	m.Type = priorState.LegacyAccessPortSelectorType
+	m.Annotation = priorState.Annotation
+	m.TagAnnotation = priorState.TagAnnotation
+	m.Descr = priorState.Descr
+	m.ID = priorState.ID
+	m.LegacyLeafInterfaceProfileDn = priorState.LegacyLeafInterfaceProfileDn
+	m.ParentDN = priorState.LegacyLeafInterfaceProfileDn
+	m.Name = priorState.Name
+	m.NameAlias = priorState.NameAlias
+	m.OwnerKey = priorState.OwnerKey
+	m.OwnerTag = priorState.OwnerTag
+	m.LegacyRelationInfraRsAccBaseGrp = priorState.LegacyRelationInfraRsAccBaseGrp
+	m.InfraRsAccBaseGrp = modelHelpers.LegacyChildObject(ctx, &diagnostics, InfraRsAccBaseGrpModelAttributeTypes(), map[string]attr.Value{
+		"target_dn": priorState.LegacyRelationInfraRsAccBaseGrp,
+	})
+	m.TagTag = priorState.TagTag
+	return diagnostics
 }

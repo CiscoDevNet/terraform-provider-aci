@@ -27,6 +27,7 @@ func netflowMonitorPolSchemaDefinition() modelHelpers.ClassSchema {
 	return modelHelpers.ClassSchema{
 		ResourceDescription:   "Manages ACI NetFlow Monitor Policy",
 		DataSourceDescription: "Data source for ACI NetFlow Monitor Policy",
+		Version:               1,
 		Properties: map[string]modelHelpers.PropertySchema{
 			"annotation": {
 				Type:        modelHelpers.StringProperty,
@@ -473,4 +474,58 @@ func (m *NetflowMonitorPolRootModel) BuildPayload(
 func (m *NetflowMonitorPolRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
 	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "netflowMonitorPol", m.ID.ValueString()), diagnostics
+}
+
+type NetflowMonitorPolRootModelV0 struct {
+	Annotation                 types.String `tfsdk:"annotation"`
+	TagAnnotation              types.Set    `tfsdk:"annotations"`
+	Descr                      types.String `tfsdk:"description"`
+	ID                         types.String `tfsdk:"id"`
+	Name                       types.String `tfsdk:"name"`
+	NameAlias                  types.String `tfsdk:"name_alias"`
+	OwnerKey                   types.String `tfsdk:"owner_key"`
+	OwnerTag                   types.String `tfsdk:"owner_tag"`
+	ParentDN                   types.String `tfsdk:"parent_dn"`
+	NetflowRsMonitorToExporter types.Set    `tfsdk:"relation_to_netflow_exporters"`
+	NetflowRsMonitorToRecord   types.Set    `tfsdk:"relation_to_netflow_record"`
+	TagTag                     types.Set    `tfsdk:"tags"`
+}
+
+func NetflowMonitorPolResourceSchemaV0() *resourceschema.Schema {
+	current := NetflowMonitorPolResourceSchema("")
+	return &resourceschema.Schema{
+		Version: 0,
+		Attributes: map[string]resourceschema.Attribute{
+			"annotation":                    current.Attributes["annotation"],
+			"annotations":                   current.Attributes["annotations"],
+			"description":                   current.Attributes["description"],
+			"id":                            current.Attributes["id"],
+			"name":                          current.Attributes["name"],
+			"name_alias":                    current.Attributes["name_alias"],
+			"owner_key":                     current.Attributes["owner_key"],
+			"owner_tag":                     current.Attributes["owner_tag"],
+			"parent_dn":                     current.Attributes["parent_dn"],
+			"relation_to_netflow_exporters": current.Attributes["relation_to_netflow_exporters"],
+			"relation_to_netflow_record":    modelHelpers.LegacyChildSetAttribute(current.Attributes["relation_to_netflow_record"].(resourceschema.SingleNestedAttribute)),
+			"tags":                          current.Attributes["tags"],
+		},
+	}
+}
+
+func (m *NetflowMonitorPolRootModel) UpgradeFromV0(ctx context.Context, priorState *NetflowMonitorPolRootModelV0) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	*m = NewNetflowMonitorPolRootModelNull()
+	m.Annotation = priorState.Annotation
+	m.TagAnnotation = priorState.TagAnnotation
+	m.Descr = priorState.Descr
+	m.ID = priorState.ID
+	m.Name = priorState.Name
+	m.NameAlias = priorState.NameAlias
+	m.OwnerKey = priorState.OwnerKey
+	m.OwnerTag = priorState.OwnerTag
+	m.ParentDN = priorState.ParentDN
+	m.NetflowRsMonitorToExporter = priorState.NetflowRsMonitorToExporter
+	m.NetflowRsMonitorToRecord = modelHelpers.LegacyChildFromSet(ctx, &diagnostics, priorState.NetflowRsMonitorToRecord, NetflowRsMonitorToRecordModelAttributeTypes())
+	m.TagTag = priorState.TagTag
+	return diagnostics
 }

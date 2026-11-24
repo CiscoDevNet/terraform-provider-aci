@@ -94,6 +94,11 @@ func (d *InfraHPortSDataSource) Read(ctx context.Context, req datasource.ReadReq
 		return
 	}
 
+	resp.Diagnostics.Append(data.SetLegacyFromResponse(ctx, response)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 	if resp.Diagnostics.HasError() {
 		return

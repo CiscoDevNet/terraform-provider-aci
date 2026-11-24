@@ -94,6 +94,11 @@ func (d *FvBDDataSource) Read(ctx context.Context, req datasource.ReadRequest, r
 		return
 	}
 
+	resp.Diagnostics.Append(data.SetLegacyFromResponse(ctx, response)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 	if resp.Diagnostics.HasError() {
 		return

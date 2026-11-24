@@ -14,6 +14,7 @@ import (
 	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
@@ -27,6 +28,13 @@ func cdpIfPolSchemaDefinition() modelHelpers.ClassSchema {
 	return modelHelpers.ClassSchema{
 		ResourceDescription:   "Manages ACI CDP Interface Policy",
 		DataSourceDescription: "Data source for ACI CDP Interface Policy",
+		Version:               2,
+		LegacyAttributes: map[string]modelHelpers.LegacyAttributeSchema{
+			"admin_st": {
+				Type:        types.StringType,
+				Replacement: "admin_state",
+			},
+		},
 		Properties: map[string]modelHelpers.PropertySchema{
 			"admin_state": {
 				Type:     modelHelpers.StringProperty,
@@ -307,16 +315,28 @@ func (m *CdpIfPolModel) BuildNestedDeletePayloadObject(
 	})
 }
 
+type CdpIfPolLegacyModelV2 struct {
+	LegacyAdminSt types.String `tfsdk:"admin_st"`
+}
+
+func NewCdpIfPolLegacyModelV2Null() CdpIfPolLegacyModelV2 {
+	return CdpIfPolLegacyModelV2{
+		LegacyAdminSt: types.StringNull(),
+	}
+}
+
 type CdpIfPolRootModel struct {
 	CdpIfPolModel
+	CdpIfPolLegacyModelV2
 
 	ID types.String `tfsdk:"id"`
 }
 
 func NewCdpIfPolRootModelNull() CdpIfPolRootModel {
 	return CdpIfPolRootModel{
-		CdpIfPolModel: NewCdpIfPolModelNull(),
-		ID:            types.StringNull(),
+		CdpIfPolModel:         NewCdpIfPolModelNull(),
+		CdpIfPolLegacyModelV2: NewCdpIfPolLegacyModelV2Null(),
+		ID:                    types.StringNull(),
 	}
 }
 
@@ -351,6 +371,13 @@ func (m *CdpIfPolRootModel) SetFromResponse(
 	return true, diagnostics
 }
 
+func (m *CdpIfPolRootModel) SetLegacyFromResponse(ctx context.Context, response *container.Container) diag.Diagnostics {
+	// Modern response decoding can also be used independently of compatibility state.
+	var diagnostics diag.Diagnostics
+	m.LegacyAdminSt = m.AdminSt
+	return diagnostics
+}
+
 func (m *CdpIfPolRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *CdpIfPolModel,
@@ -374,4 +401,89 @@ func (m *CdpIfPolRootModel) BuildPayload(
 func (m *CdpIfPolRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
 	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "cdpIfPol", m.ID.ValueString()), diagnostics
+}
+
+func (m *CdpIfPolRootModel) SetFromLegacyConfig(ctx context.Context, config, priorState *CdpIfPolRootModel) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	if !config.LegacyAdminSt.IsNull() {
+		m.AdminSt = config.LegacyAdminSt
+	}
+	return diagnostics
+}
+
+func (m *CdpIfPolRootModel) SetLegacyFromState(ctx context.Context, config, priorState *CdpIfPolRootModel) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	if priorState == nil {
+		return diagnostics
+	}
+
+	// Retain legacy and read-only outputs when the configured and managed values are unchanged.
+	candidate := *m
+	if config.LegacyAdminSt.IsNull() {
+		candidate.LegacyAdminSt = priorState.LegacyAdminSt
+	}
+	attributeType := CdpIfPolResourceSchema("").Type()
+	var planValue, stateValue types.Object
+	diagnostics.Append(tfsdk.ValueFrom(ctx, candidate, attributeType, &planValue)...)
+	diagnostics.Append(tfsdk.ValueFrom(ctx, priorState, attributeType, &stateValue)...)
+	if diagnostics.HasError() || !planValue.Equal(stateValue) {
+		return diagnostics
+	}
+	if config.LegacyAdminSt.IsNull() {
+		m.LegacyAdminSt = candidate.LegacyAdminSt
+	}
+	return diagnostics
+}
+
+type CdpIfPolRootModelV1 struct {
+	LegacyAdminSt types.String `tfsdk:"admin_st"`
+	Annotation    types.String `tfsdk:"annotation"`
+	TagAnnotation types.Set    `tfsdk:"annotations"`
+	Descr         types.String `tfsdk:"description"`
+	ID            types.String `tfsdk:"id"`
+	Name          types.String `tfsdk:"name"`
+	NameAlias     types.String `tfsdk:"name_alias"`
+	OwnerKey      types.String `tfsdk:"owner_key"`
+	OwnerTag      types.String `tfsdk:"owner_tag"`
+	TagTag        types.Set    `tfsdk:"tags"`
+}
+
+func CdpIfPolResourceSchemaV1() *resourceschema.Schema {
+	current := CdpIfPolResourceSchema("")
+	return &resourceschema.Schema{
+		Version: 1,
+		Attributes: map[string]resourceschema.Attribute{
+			"admin_st": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"annotation":  current.Attributes["annotation"],
+			"annotations": current.Attributes["annotations"],
+			"description": current.Attributes["description"],
+			"id":          current.Attributes["id"],
+			"name":        current.Attributes["name"],
+			"name_alias":  current.Attributes["name_alias"],
+			"owner_key":   current.Attributes["owner_key"],
+			"owner_tag":   current.Attributes["owner_tag"],
+			"tags":        current.Attributes["tags"],
+		},
+	}
+}
+
+func (m *CdpIfPolRootModel) UpgradeFromV1(ctx context.Context, priorState *CdpIfPolRootModelV1) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	*m = NewCdpIfPolRootModelNull()
+	m.LegacyAdminSt = priorState.LegacyAdminSt
+	m.AdminSt = priorState.LegacyAdminSt
+	m.Annotation = priorState.Annotation
+	m.TagAnnotation = priorState.TagAnnotation
+	m.Descr = priorState.Descr
+	m.ID = priorState.ID
+	m.Name = priorState.Name
+	m.NameAlias = priorState.NameAlias
+	m.OwnerKey = priorState.OwnerKey
+	m.OwnerTag = priorState.OwnerTag
+	m.TagTag = priorState.TagTag
+	return diagnostics
 }

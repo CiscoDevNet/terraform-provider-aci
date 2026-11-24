@@ -21,6 +21,7 @@ var _ resource.Resource = &FvTenantResource{}
 var _ resource.ResourceWithConfigure = &FvTenantResource{}
 var _ resource.ResourceWithModifyPlan = &FvTenantResource{}
 var _ resource.ResourceWithImportState = &FvTenantResource{}
+var _ resource.ResourceWithUpgradeState = &FvTenantResource{}
 
 func NewFvTenantResource() resource.Resource {
 	return &FvTenantResource{}
@@ -78,8 +79,24 @@ func (r *FvTenantResource) ModifyPlan(ctx context.Context, req resource.ModifyPl
 		return
 	}
 
+	var config models.FvTenantRootModel
+	resp.Diagnostics.Append(req.Config.Get(ctx, &config)...)
+	var priorState *models.FvTenantRootModel
+	if !req.State.Raw.IsNull() {
+		priorState = &models.FvTenantRootModel{}
+		resp.Diagnostics.Append(req.State.Get(ctx, priorState)...)
+	}
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	resp.Diagnostics.Append(data.SetFromLegacyConfig(ctx, &config, priorState)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	// A parent reference or naming value may only become known during apply.
 	if data.Name.IsNull() || data.Name.IsUnknown() {
+		resp.Diagnostics.Append(resp.Plan.Set(ctx, &data)...)
 		return
 	}
 
@@ -89,6 +106,11 @@ func (r *FvTenantResource) ModifyPlan(ctx context.Context, req resource.ModifyPl
 		if resp.Diagnostics.HasError() {
 			return
 		}
+	}
+
+	resp.Diagnostics.Append(data.SetLegacyFromState(ctx, &config, priorState)...)
+	if resp.Diagnostics.HasError() {
+		return
 	}
 
 	resp.Diagnostics.Append(resp.Plan.Set(ctx, &data)...)
@@ -160,6 +182,11 @@ func (r *FvTenantResource) Create(ctx context.Context, req resource.CreateReques
 		return
 	}
 
+	resp.Diagnostics.Append(data.SetLegacyFromResponse(ctx, response)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 	tflog.Debug(ctx, fmt.Sprintf("End create of resource aci_tenant with id '%s'", data.ID.ValueString()))
 }
@@ -186,6 +213,11 @@ func (r *FvTenantResource) Read(ctx context.Context, req resource.ReadRequest, r
 	}
 	if !found {
 		resp.State.RemoveResource(ctx)
+		return
+	}
+
+	resp.Diagnostics.Append(data.SetLegacyFromResponse(ctx, response)...)
+	if resp.Diagnostics.HasError() {
 		return
 	}
 
@@ -234,6 +266,11 @@ func (r *FvTenantResource) Update(ctx context.Context, req resource.UpdateReques
 		return
 	}
 
+	resp.Diagnostics.Append(data.SetLegacyFromResponse(ctx, response)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 	tflog.Debug(ctx, fmt.Sprintf("End update of resource aci_tenant with id '%s'", data.ID.ValueString()))
 }
@@ -265,4 +302,25 @@ func (r *FvTenantResource) ImportState(ctx context.Context, req resource.ImportS
 	tflog.Debug(ctx, "Start import state of resource: aci_tenant")
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 	tflog.Debug(ctx, "End import state of resource: aci_tenant")
+}
+
+func (r *FvTenantResource) UpgradeState(ctx context.Context) map[int64]resource.StateUpgrader {
+	return map[int64]resource.StateUpgrader{
+		1: {
+			PriorSchema: models.FvTenantResourceSchemaV1(),
+			StateUpgrader: func(ctx context.Context, req resource.UpgradeStateRequest, resp *resource.UpgradeStateResponse) {
+				var priorState models.FvTenantRootModelV1
+				resp.Diagnostics.Append(req.State.Get(ctx, &priorState)...)
+				if resp.Diagnostics.HasError() {
+					return
+				}
+				var data models.FvTenantRootModel
+				resp.Diagnostics.Append(data.UpgradeFromV1(ctx, &priorState)...)
+				if resp.Diagnostics.HasError() {
+					return
+				}
+				resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
+			},
+		},
+	}
 }

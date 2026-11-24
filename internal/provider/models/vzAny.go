@@ -14,6 +14,7 @@ import (
 	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
@@ -27,6 +28,34 @@ func vzAnySchemaDefinition() modelHelpers.ClassSchema {
 	return modelHelpers.ClassSchema{
 		ResourceDescription:   "Manages ACI Any",
 		DataSourceDescription: "Data source for ACI Any",
+		Version:               2,
+		LegacyAttributes: map[string]modelHelpers.LegacyAttributeSchema{
+			"match_t": {
+				Type:        types.StringType,
+				Replacement: "match_criteria",
+			},
+			"pref_gr_memb": {
+				Type:        types.StringType,
+				Replacement: "preferred_group_member",
+			},
+			"relation_vz_rs_any_to_cons": {
+				Type:        types.SetType{ElemType: types.StringType},
+				Replacement: "relation_to_consumer_contracts",
+			},
+			"relation_vz_rs_any_to_cons_if": {
+				Type:        types.SetType{ElemType: types.StringType},
+				Replacement: "relation_to_contract_interfaces",
+			},
+			"relation_vz_rs_any_to_prov": {
+				Type:        types.SetType{ElemType: types.StringType},
+				Replacement: "relation_to_provider_contracts",
+			},
+			"vrf_dn": {
+				Type:            types.StringType,
+				Replacement:     "parent_dn",
+				RequiresReplace: true,
+			},
+		},
 		Properties: map[string]modelHelpers.PropertySchema{
 			"annotation": {
 				Type:        modelHelpers.StringProperty,
@@ -433,8 +462,29 @@ func (m *VzAnyModel) BuildPayloadObject(
 	), diagnostics
 }
 
+type VzAnyLegacyModelV2 struct {
+	LegacyMatchT                  types.String `tfsdk:"match_t"`
+	LegacyPrefGrMemb              types.String `tfsdk:"pref_gr_memb"`
+	LegacyRelationVzRsAnyToCons   types.Set    `tfsdk:"relation_vz_rs_any_to_cons"`
+	LegacyRelationVzRsAnyToConsIf types.Set    `tfsdk:"relation_vz_rs_any_to_cons_if"`
+	LegacyRelationVzRsAnyToProv   types.Set    `tfsdk:"relation_vz_rs_any_to_prov"`
+	LegacyVrfDn                   types.String `tfsdk:"vrf_dn"`
+}
+
+func NewVzAnyLegacyModelV2Null() VzAnyLegacyModelV2 {
+	return VzAnyLegacyModelV2{
+		LegacyMatchT:                  types.StringNull(),
+		LegacyPrefGrMemb:              types.StringNull(),
+		LegacyRelationVzRsAnyToCons:   types.SetNull(types.StringType),
+		LegacyRelationVzRsAnyToConsIf: types.SetNull(types.StringType),
+		LegacyRelationVzRsAnyToProv:   types.SetNull(types.StringType),
+		LegacyVrfDn:                   types.StringNull(),
+	}
+}
+
 type VzAnyRootModel struct {
 	VzAnyModel
+	VzAnyLegacyModelV2
 
 	ID       types.String `tfsdk:"id"`
 	ParentDN types.String `tfsdk:"parent_dn"`
@@ -442,9 +492,10 @@ type VzAnyRootModel struct {
 
 func NewVzAnyRootModelNull() VzAnyRootModel {
 	return VzAnyRootModel{
-		VzAnyModel: NewVzAnyModelNull(),
-		ID:         types.StringNull(),
-		ParentDN:   types.StringNull(),
+		VzAnyModel:         NewVzAnyModelNull(),
+		VzAnyLegacyModelV2: NewVzAnyLegacyModelV2Null(),
+		ID:                 types.StringNull(),
+		ParentDN:           types.StringNull(),
 	}
 }
 
@@ -487,6 +538,18 @@ func (m *VzAnyRootModel) SetFromResponse(
 	return true, diagnostics
 }
 
+func (m *VzAnyRootModel) SetLegacyFromResponse(ctx context.Context, response *container.Container) diag.Diagnostics {
+	// Modern response decoding can also be used independently of compatibility state.
+	var diagnostics diag.Diagnostics
+	m.LegacyMatchT = m.MatchT
+	m.LegacyPrefGrMemb = m.PrefGrMemb
+	m.LegacyRelationVzRsAnyToCons = modelHelpers.LegacyTargetDNs(ctx, &diagnostics, response, "vzAny", "vzRsAnyToCons")
+	m.LegacyRelationVzRsAnyToConsIf = modelHelpers.LegacyTargetDNs(ctx, &diagnostics, response, "vzAny", "vzRsAnyToConsIf")
+	m.LegacyRelationVzRsAnyToProv = modelHelpers.LegacyTargetDNs(ctx, &diagnostics, response, "vzAny", "vzRsAnyToProv")
+	m.LegacyVrfDn = m.ParentDN
+	return diagnostics
+}
+
 func (m *VzAnyRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *VzAnyModel,
@@ -505,4 +568,225 @@ func (m *VzAnyRootModel) BuildPayload(
 
 	payloadEnvelope := map[string]any{"vzAny": payloadObject}
 	return modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload"), diagnostics
+}
+
+func (m *VzAnyRootModel) SetFromLegacyConfig(ctx context.Context, config, priorState *VzAnyRootModel) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	if !config.LegacyMatchT.IsNull() {
+		m.MatchT = config.LegacyMatchT
+	}
+	if !config.LegacyPrefGrMemb.IsNull() {
+		m.PrefGrMemb = config.LegacyPrefGrMemb
+	}
+	if !config.LegacyRelationVzRsAnyToCons.IsNull() {
+		if !config.VzRsAnyToCons.IsNull() {
+			diagnostics.AddError("Conflicting legacy configuration", "Configure either relation_vz_rs_any_to_cons or relation_to_consumer_contracts, not both.")
+			return diagnostics
+		}
+		var fallback *types.Set
+		if priorState != nil {
+			fallback = &priorState.VzRsAnyToCons
+		}
+		vzRsAnyToConsMapping := modelHelpers.LegacyChildSet{
+			AttributeTypes: VzRsAnyToConsModelAttributeTypes(),
+			AttributeName:  "contract_name",
+			Named:          true,
+		}
+		m.VzRsAnyToCons = vzRsAnyToConsMapping.Plan(ctx, &diagnostics, config.LegacyRelationVzRsAnyToCons, m.VzRsAnyToCons, fallback, m.Annotation)
+	}
+	if !config.LegacyRelationVzRsAnyToConsIf.IsNull() {
+		if !config.VzRsAnyToConsIf.IsNull() {
+			diagnostics.AddError("Conflicting legacy configuration", "Configure either relation_vz_rs_any_to_cons_if or relation_to_contract_interfaces, not both.")
+			return diagnostics
+		}
+		var fallback *types.Set
+		if priorState != nil {
+			fallback = &priorState.VzRsAnyToConsIf
+		}
+		vzRsAnyToConsIfMapping := modelHelpers.LegacyChildSet{
+			AttributeTypes: VzRsAnyToConsIfModelAttributeTypes(),
+			AttributeName:  "imported_contract_name",
+			Named:          true,
+		}
+		m.VzRsAnyToConsIf = vzRsAnyToConsIfMapping.Plan(ctx, &diagnostics, config.LegacyRelationVzRsAnyToConsIf, m.VzRsAnyToConsIf, fallback, m.Annotation)
+	}
+	if !config.LegacyRelationVzRsAnyToProv.IsNull() {
+		if !config.VzRsAnyToProv.IsNull() {
+			diagnostics.AddError("Conflicting legacy configuration", "Configure either relation_vz_rs_any_to_prov or relation_to_provider_contracts, not both.")
+			return diagnostics
+		}
+		var fallback *types.Set
+		if priorState != nil {
+			fallback = &priorState.VzRsAnyToProv
+		}
+		vzRsAnyToProvMapping := modelHelpers.LegacyChildSet{
+			AttributeTypes: VzRsAnyToProvModelAttributeTypes(),
+			AttributeName:  "contract_name",
+			Named:          true,
+		}
+		m.VzRsAnyToProv = vzRsAnyToProvMapping.Plan(ctx, &diagnostics, config.LegacyRelationVzRsAnyToProv, m.VzRsAnyToProv, fallback, m.Annotation)
+	}
+	if !config.LegacyVrfDn.IsNull() {
+		m.ParentDN = config.LegacyVrfDn
+	}
+	return diagnostics
+}
+
+func (m *VzAnyRootModel) SetLegacyFromState(ctx context.Context, config, priorState *VzAnyRootModel) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	if priorState == nil {
+		return diagnostics
+	}
+
+	// Retain legacy and read-only outputs when the configured and managed values are unchanged.
+	candidate := *m
+	if config.LegacyMatchT.IsNull() {
+		candidate.LegacyMatchT = priorState.LegacyMatchT
+	}
+	if config.LegacyPrefGrMemb.IsNull() {
+		candidate.LegacyPrefGrMemb = priorState.LegacyPrefGrMemb
+	}
+	if config.LegacyRelationVzRsAnyToCons.IsNull() {
+		candidate.LegacyRelationVzRsAnyToCons = priorState.LegacyRelationVzRsAnyToCons
+	}
+	if config.LegacyRelationVzRsAnyToConsIf.IsNull() {
+		candidate.LegacyRelationVzRsAnyToConsIf = priorState.LegacyRelationVzRsAnyToConsIf
+	}
+	if config.LegacyRelationVzRsAnyToProv.IsNull() {
+		candidate.LegacyRelationVzRsAnyToProv = priorState.LegacyRelationVzRsAnyToProv
+	}
+	if config.LegacyVrfDn.IsNull() {
+		candidate.LegacyVrfDn = priorState.LegacyVrfDn
+	}
+	attributeType := VzAnyResourceSchema("").Type()
+	var planValue, stateValue types.Object
+	diagnostics.Append(tfsdk.ValueFrom(ctx, candidate, attributeType, &planValue)...)
+	diagnostics.Append(tfsdk.ValueFrom(ctx, priorState, attributeType, &stateValue)...)
+	if diagnostics.HasError() || !planValue.Equal(stateValue) {
+		return diagnostics
+	}
+	if config.LegacyMatchT.IsNull() {
+		m.LegacyMatchT = candidate.LegacyMatchT
+	}
+	if config.LegacyPrefGrMemb.IsNull() {
+		m.LegacyPrefGrMemb = candidate.LegacyPrefGrMemb
+	}
+	if config.LegacyRelationVzRsAnyToCons.IsNull() {
+		m.LegacyRelationVzRsAnyToCons = candidate.LegacyRelationVzRsAnyToCons
+	}
+	if config.LegacyRelationVzRsAnyToConsIf.IsNull() {
+		m.LegacyRelationVzRsAnyToConsIf = candidate.LegacyRelationVzRsAnyToConsIf
+	}
+	if config.LegacyRelationVzRsAnyToProv.IsNull() {
+		m.LegacyRelationVzRsAnyToProv = candidate.LegacyRelationVzRsAnyToProv
+	}
+	if config.LegacyVrfDn.IsNull() {
+		m.LegacyVrfDn = candidate.LegacyVrfDn
+	}
+	return diagnostics
+}
+
+type VzAnyRootModelV1 struct {
+	Annotation                    types.String `tfsdk:"annotation"`
+	TagAnnotation                 types.Set    `tfsdk:"annotations"`
+	Descr                         types.String `tfsdk:"description"`
+	ID                            types.String `tfsdk:"id"`
+	LegacyMatchT                  types.String `tfsdk:"match_t"`
+	Name                          types.String `tfsdk:"name"`
+	NameAlias                     types.String `tfsdk:"name_alias"`
+	LegacyPrefGrMemb              types.String `tfsdk:"pref_gr_memb"`
+	LegacyRelationVzRsAnyToCons   types.Set    `tfsdk:"relation_vz_rs_any_to_cons"`
+	LegacyRelationVzRsAnyToConsIf types.Set    `tfsdk:"relation_vz_rs_any_to_cons_if"`
+	LegacyRelationVzRsAnyToProv   types.Set    `tfsdk:"relation_vz_rs_any_to_prov"`
+	TagTag                        types.Set    `tfsdk:"tags"`
+	LegacyVrfDn                   types.String `tfsdk:"vrf_dn"`
+}
+
+func VzAnyResourceSchemaV1() *resourceschema.Schema {
+	current := VzAnyResourceSchema("")
+	return &resourceschema.Schema{
+		Version: 1,
+		Attributes: map[string]resourceschema.Attribute{
+			"annotation":  current.Attributes["annotation"],
+			"annotations": current.Attributes["annotations"],
+			"description": current.Attributes["description"],
+			"id":          current.Attributes["id"],
+			"match_t": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"name":       current.Attributes["name"],
+			"name_alias": current.Attributes["name_alias"],
+			"pref_gr_memb": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"relation_vz_rs_any_to_cons": resourceschema.SetAttribute{
+				Required:    false,
+				Optional:    true,
+				Computed:    false,
+				ElementType: types.StringType,
+			},
+			"relation_vz_rs_any_to_cons_if": resourceschema.SetAttribute{
+				Required:    false,
+				Optional:    true,
+				Computed:    false,
+				ElementType: types.StringType,
+			},
+			"relation_vz_rs_any_to_prov": resourceschema.SetAttribute{
+				Required:    false,
+				Optional:    true,
+				Computed:    false,
+				ElementType: types.StringType,
+			},
+			"tags": current.Attributes["tags"],
+			"vrf_dn": resourceschema.StringAttribute{
+				Required: true,
+				Optional: false,
+				Computed: false,
+			},
+		},
+	}
+}
+
+func (m *VzAnyRootModel) UpgradeFromV1(ctx context.Context, priorState *VzAnyRootModelV1) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	*m = NewVzAnyRootModelNull()
+	m.Annotation = priorState.Annotation
+	m.TagAnnotation = priorState.TagAnnotation
+	m.Descr = priorState.Descr
+	m.ID = priorState.ID
+	m.LegacyMatchT = priorState.LegacyMatchT
+	m.MatchT = priorState.LegacyMatchT
+	m.Name = priorState.Name
+	m.NameAlias = priorState.NameAlias
+	m.LegacyPrefGrMemb = priorState.LegacyPrefGrMemb
+	m.PrefGrMemb = priorState.LegacyPrefGrMemb
+	m.LegacyRelationVzRsAnyToCons = priorState.LegacyRelationVzRsAnyToCons
+	vzRsAnyToConsMapping := modelHelpers.LegacyChildSet{
+		AttributeTypes: VzRsAnyToConsModelAttributeTypes(),
+		AttributeName:  "contract_name",
+		Named:          true,
+	}
+	m.VzRsAnyToCons = vzRsAnyToConsMapping.Upgrade(ctx, &diagnostics, priorState.LegacyRelationVzRsAnyToCons)
+	m.LegacyRelationVzRsAnyToConsIf = priorState.LegacyRelationVzRsAnyToConsIf
+	vzRsAnyToConsIfMapping := modelHelpers.LegacyChildSet{
+		AttributeTypes: VzRsAnyToConsIfModelAttributeTypes(),
+		AttributeName:  "imported_contract_name",
+		Named:          true,
+	}
+	m.VzRsAnyToConsIf = vzRsAnyToConsIfMapping.Upgrade(ctx, &diagnostics, priorState.LegacyRelationVzRsAnyToConsIf)
+	m.LegacyRelationVzRsAnyToProv = priorState.LegacyRelationVzRsAnyToProv
+	vzRsAnyToProvMapping := modelHelpers.LegacyChildSet{
+		AttributeTypes: VzRsAnyToProvModelAttributeTypes(),
+		AttributeName:  "contract_name",
+		Named:          true,
+	}
+	m.VzRsAnyToProv = vzRsAnyToProvMapping.Upgrade(ctx, &diagnostics, priorState.LegacyRelationVzRsAnyToProv)
+	m.TagTag = priorState.TagTag
+	m.LegacyVrfDn = priorState.LegacyVrfDn
+	m.ParentDN = priorState.LegacyVrfDn
+	return diagnostics
 }

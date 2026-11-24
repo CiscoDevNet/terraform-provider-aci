@@ -25,6 +25,9 @@ import (
 	{{- if .Class.HasResourceArtifact }}
 	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	{{- end }}
+	{{- if and .Class.HasResourceArtifact .Class.LegacyAttributes }}
+	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
+	{{- end }}
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	{{ if .Class.HasCustomModelTypes }}
@@ -64,6 +67,48 @@ func {{ .Class.Name.String }}SchemaDefinition() modelHelpers.ClassSchema {
 	return modelHelpers.ClassSchema{
 		ResourceDescription:   {{ printf "%q" .Class.Documentation.ResourceDescription }},
 		DataSourceDescription: {{ printf "%q" .Class.Documentation.DatasourceDescription }},
+		{{- if .Class.SchemaVersion }}
+		Version: {{ .Class.SchemaVersion }},
+		{{- end }}
+		{{- if .Class.LegacyAttributes }}
+		LegacyAttributes: map[string]modelHelpers.LegacyAttributeSchema{
+			{{- range .Class.LegacyAttributes }}
+			{{- if ne .Status.String "removed" }}
+			{{ printf "%q" .AttributeName }}: {
+				Type: {{ .ModelAttributeType }},
+				{{- if .Sensitive }}
+				Sensitive: true,
+				{{- end }}
+				{{- if .Block }}
+				Attributes: map[string]modelHelpers.LegacyAttributeSchema{
+					{{- $child := index $.DataStore.Classes .ChildName.String }}
+					{{- range .Attributes }}
+					{{ printf "%q" .AttributeName }}: {
+						Type: {{ .ModelAttributeType }},
+						Required: {{ .Required }},
+						{{- if .Sensitive }}
+						Sensitive: true,
+						{{- end }}
+						Replacement: {{ printf "%q" (printf "%s.%s" $child.ResourceNameNested .ChildAttribute) }},
+					},
+					{{- end }}
+				},
+				{{- end }}
+				{{- if eq .Status.String "frozen" }}
+				Frozen: true,
+				{{- else if .ChildName }}
+				Replacement: {{ printf "%q" (index $.DataStore.Classes .ChildName.String).ResourceNameNested }},
+				{{- else }}
+				Replacement: {{ printf "%q" .ChildAttribute }},
+				{{- end }}
+				{{- if .RequiresReplace }}
+				RequiresReplace: true,
+				{{- end }}
+			},
+			{{- end }}
+			{{- end }}
+		},
+		{{- end }}
 		Properties: map[string]modelHelpers.PropertySchema{
 			{{- range $property := .Class.ModelProperties }}
 			"{{ $property.AttributeName }}": {
@@ -441,8 +486,30 @@ func (m *{{ .Class.Name.Capitalized }}Model) BuildNestedDeletePayloadObject(
 
 {{ end -}}
 {{ if or .Class.HasResourceArtifact .Class.HasDatasourceArtifact }}
+{{ if .Class.LegacyAttributes }}
+type {{ .Class.Name.Capitalized }}LegacyModelV{{ .Class.SchemaVersion }} struct {
+	{{- range .Class.LegacyAttributes }}
+	{{- if ne .Status.String "removed" }}
+	{{ .FieldName }} {{ .ModelValueType }} `tfsdk:"{{ .AttributeName }}"`
+	{{- end }}
+	{{- end }}
+}
+
+func New{{ .Class.Name.Capitalized }}LegacyModelV{{ .Class.SchemaVersion }}Null() {{ .Class.Name.Capitalized }}LegacyModelV{{ .Class.SchemaVersion }} {
+	return {{ .Class.Name.Capitalized }}LegacyModelV{{ .Class.SchemaVersion }}{
+		{{- range .Class.LegacyAttributes }}
+		{{- if ne .Status.String "removed" }}
+		{{ .FieldName }}: {{ .NullValue }},
+		{{- end }}
+		{{- end }}
+	}
+}
+{{ end }}
 type {{ .Class.Name.Capitalized }}RootModel struct {
 	{{ .Class.Name.Capitalized }}Model
+	{{- if .Class.LegacyAttributes }}
+	{{ .Class.Name.Capitalized }}LegacyModelV{{ .Class.SchemaVersion }}
+	{{- end }}
 
 	ID types.String `tfsdk:"id"`
 	{{- with .Class.ParentDnProperty }}
@@ -453,6 +520,9 @@ type {{ .Class.Name.Capitalized }}RootModel struct {
 func New{{ .Class.Name.Capitalized }}RootModelNull() {{ .Class.Name.Capitalized }}RootModel {
 	return {{ .Class.Name.Capitalized }}RootModel{
 		{{ .Class.Name.Capitalized }}Model: New{{ .Class.Name.Capitalized }}ModelNull(),
+		{{- if .Class.LegacyAttributes }}
+		{{ .Class.Name.Capitalized }}LegacyModelV{{ .Class.SchemaVersion }}: New{{ .Class.Name.Capitalized }}LegacyModelV{{ .Class.SchemaVersion }}Null(),
+		{{- end }}
 		ID: types.StringNull(),
 		{{- with .Class.ParentDnProperty }}
 		ParentDN: types.StringNull(),
@@ -555,6 +625,51 @@ func (m *{{ .Class.Name.Capitalized }}RootModel) SetFromResponse(
 	return true, diagnostics
 }
 
+{{ if .Class.LegacyAttributes }}
+func (m *{{ .Class.Name.Capitalized }}RootModel) SetLegacyFromResponse(ctx context.Context, response *container.Container) diag.Diagnostics {
+	// Modern response decoding can also be used independently of compatibility state.
+	var diagnostics diag.Diagnostics
+	{{- range .Class.LegacyAttributes }}
+	{{- if eq .Status.String "frozen" }}
+	if m.{{ .FieldName }}.IsNull() || m.{{ .FieldName }}.IsUnknown() {
+		{{- if eq .Type.String "set_attribute" }}
+		m.{{ .FieldName }} = types.SetValueMust(types.StringType, []attr.Value{})
+		{{- else }}
+		m.{{ .FieldName }} = types.StringValue("")
+		{{- end }}
+	}
+	{{- else if and (ne .Status.String "removed") .IsListToSet }}
+	m.{{ .FieldName }} = modelHelpers.LegacyStringList(ctx, &diagnostics, m.{{ .TargetField }}, m.{{ .FieldName }})
+	{{- else if and (ne .Status.String "removed") .Sensitive }}
+	// APIC cannot recover this secret; retain only the legacy alias's own configured/state value.
+	if m.{{ .FieldName }}.IsUnknown() {
+		m.{{ .FieldName }} = {{ .NullValue }}
+	}
+	{{- else if and (ne .Status.String "removed") .ChildName }}
+	{{- if .Block }}
+	{{ .ChildName.String }}Mapping := {{ template "legacyChildSet" . }}
+	{{- if .Named }}
+	m.{{ .FieldName }} = {{ .ChildName.String }}Mapping.LegacyFromResponse(ctx, &diagnostics, response, {{ printf "%q" $.Class.Name.String }}, {{ printf "%q" .ChildName.String }})
+	{{- else }}
+	m.{{ .FieldName }} = {{ .ChildName.String }}Mapping.Legacy(ctx, &diagnostics, m.{{ .ChildName.Capitalized }})
+	{{- end }}
+	{{- else if .Repeated }}
+	m.{{ .FieldName }} = modelHelpers.LegacyTargetDNs(ctx, &diagnostics, response, {{ printf "%q" $.Class.Name.String }}, {{ printf "%q" .ChildName.String }})
+	{{- else }}
+	m.{{ .FieldName }} = modelHelpers.LegacyTargetDN(ctx, &diagnostics, response, {{ printf "%q" $.Class.Name.String }}, {{ printf "%q" .ChildName.String }})
+	{{- end }}
+	{{- else if ne .Status.String "removed" }}
+	{{- if and .TargetModelType (ne .TargetModelType .ModelValueType) }}
+	m.{{ .FieldName }} = modelHelpers.LegacyValue[{{ .ModelValueType }}](ctx, &diagnostics, m.{{ .TargetField }}, {{ .ModelAttributeType }})
+	{{- else }}
+	m.{{ .FieldName }} = m.{{ .TargetField }}
+	{{- end }}
+	{{- end }}
+	{{- end }}
+	return diagnostics
+}
+{{ end }}
+
 {{ if .Class.HasResourceArtifact }}
 {{ if .Class.ParentDnVariants -}}
 func (m *{{ .Class.Name.Capitalized }}RootModel) BuildPayloadDN() string {
@@ -639,3 +754,218 @@ func (m *{{ .Class.Name.Capitalized }}RootModel) BuildDeletePayload(ctx context.
 {{ end }}
 {{ end }}
 {{ end }}
+
+{{ if and .Class.HasResourceArtifact .Class.LegacyAttributes }}
+func (m *{{ .Class.Name.Capitalized }}RootModel) SetFromLegacyConfig(ctx context.Context, config, priorState *{{ .Class.Name.Capitalized }}RootModel) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	{{- range .Class.LegacyAttributes }}
+	{{- if eq .Status.String "deprecated" }}
+	{{- if and .ChildName .Repeated .Block }}
+	{{ .ChildName.String }}Mapping := {{ template "legacyChildSet" . }}
+	{{- end }}
+	if {{ if .Block }}config.{{ .FieldName }}.IsUnknown() || len(config.{{ .FieldName }}.Elements()) > 0{{ else }}!config.{{ .FieldName }}.IsNull(){{ end }} {
+		{{- if .ChildName }}
+		{{- $child := index $.DataStore.Classes .ChildName.String }}
+		if !config.{{ $child.Name.Capitalized }}.IsNull() {
+			diagnostics.AddError("Conflicting legacy configuration", {{ printf "%q" (printf "Configure either %s or %s, not both." .AttributeName $child.ResourceNameNested) }})
+			return diagnostics
+		}
+		{{- if .Repeated }}
+		var fallback *types.Set
+		if priorState != nil { fallback = &priorState.{{ $child.Name.Capitalized }} }
+		{{- if not .Block }}
+		{{ .ChildName.String }}Mapping := {{ template "legacyChildSet" . }}
+		{{- end }}
+		m.{{ $child.Name.Capitalized }} = {{ .ChildName.String }}Mapping.Plan(ctx, &diagnostics, {{ if .Block }}m{{ else }}config{{ end }}.{{ .FieldName }}, m.{{ $child.Name.Capitalized }}, fallback, {{ if index $.Class.Properties "annotation" }}m.Annotation{{ else }}nil{{ end }})
+		{{- else }}
+		var fallback *types.Object
+		if priorState != nil { fallback = &priorState.{{ $child.Name.Capitalized }} }
+		relation := modelHelpers.LegacyChildRelation{
+			AttributeTypes: {{ $child.Name.Capitalized }}ModelAttributeTypes(),
+			AttributeName: {{ printf "%q" .ChildAttribute }},
+			Named: {{ .Named }},
+		}
+		m.{{ $child.Name.Capitalized }} = relation.Plan(ctx, &diagnostics, config.{{ .FieldName }}, m.{{ $child.Name.Capitalized }}, fallback, {{ if index $child.Properties "annotation" }}m.Annotation{{ else }}nil{{ end }})
+		{{- end }}
+		{{- else }}
+		{{- if and .TargetModelType (ne .TargetModelType .ModelValueType) }}
+		m.{{ .TargetField }} = modelHelpers.LegacyValue[{{ .TargetModelType }}](ctx, &diagnostics, config.{{ .FieldName }}, {{ .TargetAttributeType }})
+		{{- else }}
+		m.{{ .TargetField }} = config.{{ .FieldName }}
+		{{- end }}
+		{{- end }}
+	}{{ if .Block }} else {
+		m.{{ .FieldName }} = {{ .ChildName.String }}Mapping.Unknown(ctx, &diagnostics, m.{{ .ChildName.Capitalized }})
+	}{{ else if .Sensitive }} else if priorState != nil {
+		m.{{ .FieldName }} = priorState.{{ .FieldName }}
+	} else {
+		m.{{ .FieldName }} = modelHelpers.LegacyValue[{{ .ModelValueType }}](ctx, &diagnostics, config.{{ .TargetField }}, {{ .ModelAttributeType }})
+	}{{ end }}
+	{{- end }}
+	{{- end }}
+	return diagnostics
+}
+
+func (m *{{ .Class.Name.Capitalized }}RootModel) SetLegacyFromState(ctx context.Context, config, priorState *{{ .Class.Name.Capitalized }}RootModel) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	if priorState == nil {
+		return diagnostics
+	}
+
+	// Retain legacy and read-only outputs when the configured and managed values are unchanged.
+	candidate := *m
+	{{- range .Class.ModelProperties }}
+	{{- if .ReadOnly }}
+	candidate.{{ .ModelFieldName $.Class.Name }} = priorState.{{ .ModelFieldName $.Class.Name }}
+	{{- end }}
+	{{- end }}
+	{{- range .Class.LegacyAttributes }}
+	{{- if eq .Status.String "deprecated" }}
+	if {{ if .Block }}!config.{{ .FieldName }}.IsUnknown() && len(config.{{ .FieldName }}.Elements()) == 0{{ else }}config.{{ .FieldName }}.IsNull(){{ end }} {
+		candidate.{{ .FieldName }} = priorState.{{ .FieldName }}
+	}
+	{{- end }}
+	{{- end }}
+	attributeType := {{ .Class.Name.Capitalized }}ResourceSchema("").Type()
+	var planValue, stateValue types.Object
+	diagnostics.Append(tfsdk.ValueFrom(ctx, candidate, attributeType, &planValue)...)
+	diagnostics.Append(tfsdk.ValueFrom(ctx, priorState, attributeType, &stateValue)...)
+	if diagnostics.HasError() || !planValue.Equal(stateValue) {
+		return diagnostics
+	}
+	{{- range .Class.ModelProperties }}
+	{{- if .ReadOnly }}
+	m.{{ .ModelFieldName $.Class.Name }} = candidate.{{ .ModelFieldName $.Class.Name }}
+	{{- end }}
+	{{- end }}
+	{{- range .Class.LegacyAttributes }}
+	{{- if eq .Status.String "deprecated" }}
+	if {{ if .Block }}!config.{{ .FieldName }}.IsUnknown() && len(config.{{ .FieldName }}.Elements()) == 0{{ else }}config.{{ .FieldName }}.IsNull(){{ end }} {
+		m.{{ .FieldName }} = candidate.{{ .FieldName }}
+	}
+	{{- end }}
+	{{- end }}
+	return diagnostics
+}
+{{ end }}
+
+{{ range $migration := .Class.MigrationSchemas }}
+type {{ $.Class.Name.Capitalized }}RootModelV{{ .PriorSchemaVersion }} struct {
+	{{- range .Attributes }}
+	{{ .FieldName }} {{ .ModelValueType }} `tfsdk:"{{ .AttributeName }}"`
+	{{- end }}
+}
+
+func {{ $.Class.Name.Capitalized }}ResourceSchemaV{{ .PriorSchemaVersion }}() *resourceschema.Schema {
+	current := {{ $.Class.Name.Capitalized }}ResourceSchema("")
+	return &resourceschema.Schema{
+		Version: {{ .PriorSchemaVersion }},
+		Attributes: map[string]resourceschema.Attribute{
+			{{- range .Attributes }}
+			{{- if not .Block }}
+			{{- if .SchemaExpression }}
+			{{ printf "%q" .AttributeName }}: {{ .SchemaExpression }},
+			{{- else }}
+			{{ printf "%q" .AttributeName }}: resourceschema.{{ .SchemaAttributeType }}{
+				Required: {{ .Required }},
+				Optional: {{ .Optional }},
+				Computed: {{ .Computed }},
+				{{- with .ModelCustomStringType }}
+				CustomType: {{ . }},
+				{{- end }}
+				{{- if ne .Type.String "string_attribute" }}
+				ElementType: types.StringType,
+				{{- end }}
+			},
+			{{- end }}
+			{{- end }}
+			{{- end }}
+		},
+		{{- with .Blocks }}
+		Blocks: map[string]resourceschema.Block{
+			{{- range . }}
+			{{ printf "%q" .AttributeName }}: resourceschema.SetNestedBlock{
+				NestedObject: resourceschema.NestedBlockObject{Attributes: map[string]resourceschema.Attribute{
+					{{- range .Attributes }}
+					{{ printf "%q" .AttributeName }}: resourceschema.{{ .SchemaAttributeType }}{
+						Required: {{ .Required }},
+						Optional: {{ .Optional }},
+						Computed: {{ .Computed }},
+						{{- with .ModelCustomStringType }}
+						CustomType: {{ . }},
+						{{- end }}
+					},
+					{{- end }}
+				}},
+			},
+			{{- end }}
+		},
+		{{- end }}
+	}
+}
+
+func (m *{{ $.Class.Name.Capitalized }}RootModel) UpgradeFromV{{ .PriorSchemaVersion }}(ctx context.Context, priorState *{{ $.Class.Name.Capitalized }}RootModelV{{ .PriorSchemaVersion }}) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	*m = New{{ $.Class.Name.Capitalized }}RootModelNull()
+	{{- range .Attributes }}
+	{{- if and .IsAlias (ne .Status.String "removed") }}
+	m.{{ .FieldName }} = {{ if .IsListToSet }}modelHelpers.LegacySortedStringList(ctx, &diagnostics, priorState.{{ .FieldName }}){{ else }}priorState.{{ .FieldName }}{{ end }}
+	{{- end }}
+	{{- if .IsChildTypeChange }}
+	m.{{ .TargetField }} = modelHelpers.LegacyChildFromSet(ctx, &diagnostics, priorState.{{ .FieldName }}, {{ .ChildName.Capitalized }}ModelAttributeTypes())
+	{{- else if .ChildName }}
+	{{- $child := index $.DataStore.Classes .ChildName.String }}
+	{{- if .Repeated }}
+	{{ .ChildName.String }}Mapping := {{ template "legacyChildSet" . }}
+	m.{{ $child.Name.Capitalized }} = {{ .ChildName.String }}Mapping.Upgrade(ctx, &diagnostics, priorState.{{ .FieldName }})
+	{{- else }}
+	{{- if .Named }}
+	// Preserve the published SDKv2 upgrade: an unset relation produced an empty name.
+	{{- end }}
+	m.{{ $child.Name.Capitalized }} = modelHelpers.LegacyChildObject(ctx, &diagnostics, {{ $child.Name.Capitalized }}ModelAttributeTypes(), map[string]attr.Value{
+		{{- if .Named }}
+		{{ printf "%q" .ChildAttribute }}: modelHelpers.LegacyRelationName(ctx, &diagnostics, types.StringValue(priorState.{{ .FieldName }}.ValueString())),
+		{{- else }}
+		{{ printf "%q" .ChildAttribute }}: priorState.{{ .FieldName }},
+		{{- end }}
+	})
+	{{- end }}
+	{{- else if .TargetField }}
+	{{- if and .TargetModelType (ne .TargetModelType .ModelValueType) }}
+	m.{{ .TargetField }} = modelHelpers.LegacyValue[{{ .TargetModelType }}](ctx, &diagnostics, {{ if .IsListToSet }}m{{ else }}priorState{{ end }}.{{ .FieldName }}, {{ .TargetAttributeType }})
+	{{- else }}
+	m.{{ .TargetField }} = priorState.{{ .FieldName }}
+	{{- end }}
+	{{- end }}
+	{{- end }}
+	return diagnostics
+}
+{{ end }}
+
+{{- define "legacyChildSet" -}}
+modelHelpers.LegacyChildSet{
+	AttributeTypes: {{ .ChildName.Capitalized }}ModelAttributeTypes(),
+	{{- if .Block }}
+	IdentifyingAttributes: []string{ {{ range .IdentifyingAttributes }}{{ printf "%q" . }}, {{ end }} },
+	{{- end }}
+	{{- if or (not .Block) .Named }}
+	AttributeName: {{ printf "%q" .ChildAttribute }},
+	{{- end }}
+	Named: {{ .Named }},
+	{{- if .Block }}
+	LegacyType: {{ .ElementAttributeType }},
+	Attributes: map[string]string{
+		{{- range .Attributes }}
+		{{ printf "%q" .AttributeName }}: {{ printf "%q" .ChildAttribute }},
+		{{- end }}
+	},
+	{{- if .Named }}
+	ResponseAttributes: map[string]string{
+		{{- range .Attributes }}
+		{{ printf "%q" .AttributeName }}: {{ printf "%q" .ResponseAttribute }},
+		{{- end }}
+	},
+	{{- end }}
+	{{- end }}
+}
+{{- end -}}

@@ -14,6 +14,7 @@ import (
 	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
@@ -27,6 +28,23 @@ func infraSHPortSSchemaDefinition() modelHelpers.ClassSchema {
 	return modelHelpers.ClassSchema{
 		ResourceDescription:   "Manages ACI Spine Access Port Selector",
 		DataSourceDescription: "Data source for ACI Spine Access Port Selector",
+		Version:               2,
+		LegacyAttributes: map[string]modelHelpers.LegacyAttributeSchema{
+			"relation_infra_rs_sp_acc_grp": {
+				Type:        types.StringType,
+				Replacement: "relation_to_spine_port_policy_group",
+			},
+			"spine_access_port_selector_type": {
+				Type:            types.StringType,
+				Replacement:     "port_selector_type",
+				RequiresReplace: true,
+			},
+			"spine_interface_profile_dn": {
+				Type:            types.StringType,
+				Replacement:     "parent_dn",
+				RequiresReplace: true,
+			},
+		},
 		Properties: map[string]modelHelpers.PropertySchema{
 			"annotation": {
 				Type:        modelHelpers.StringProperty,
@@ -362,8 +380,23 @@ func (m *InfraSHPortSModel) BuildNestedDeletePayloadObject(
 	})
 }
 
+type InfraSHPortSLegacyModelV2 struct {
+	LegacyRelationInfraRsSpAccGrp     types.String `tfsdk:"relation_infra_rs_sp_acc_grp"`
+	LegacySpineAccessPortSelectorType types.String `tfsdk:"spine_access_port_selector_type"`
+	LegacySpineInterfaceProfileDn     types.String `tfsdk:"spine_interface_profile_dn"`
+}
+
+func NewInfraSHPortSLegacyModelV2Null() InfraSHPortSLegacyModelV2 {
+	return InfraSHPortSLegacyModelV2{
+		LegacyRelationInfraRsSpAccGrp:     types.StringNull(),
+		LegacySpineAccessPortSelectorType: types.StringNull(),
+		LegacySpineInterfaceProfileDn:     types.StringNull(),
+	}
+}
+
 type InfraSHPortSRootModel struct {
 	InfraSHPortSModel
+	InfraSHPortSLegacyModelV2
 
 	ID       types.String `tfsdk:"id"`
 	ParentDN types.String `tfsdk:"parent_dn"`
@@ -371,9 +404,10 @@ type InfraSHPortSRootModel struct {
 
 func NewInfraSHPortSRootModelNull() InfraSHPortSRootModel {
 	return InfraSHPortSRootModel{
-		InfraSHPortSModel: NewInfraSHPortSModelNull(),
-		ID:                types.StringNull(),
-		ParentDN:          types.StringNull(),
+		InfraSHPortSModel:         NewInfraSHPortSModelNull(),
+		InfraSHPortSLegacyModelV2: NewInfraSHPortSLegacyModelV2Null(),
+		ID:                        types.StringNull(),
+		ParentDN:                  types.StringNull(),
 	}
 }
 
@@ -414,6 +448,15 @@ func (m *InfraSHPortSRootModel) SetFromResponse(
 	return true, diagnostics
 }
 
+func (m *InfraSHPortSRootModel) SetLegacyFromResponse(ctx context.Context, response *container.Container) diag.Diagnostics {
+	// Modern response decoding can also be used independently of compatibility state.
+	var diagnostics diag.Diagnostics
+	m.LegacyRelationInfraRsSpAccGrp = modelHelpers.LegacyTargetDN(ctx, &diagnostics, response, "infraSHPortS", "infraRsSpAccGrp")
+	m.LegacySpineAccessPortSelectorType = m.Type
+	m.LegacySpineInterfaceProfileDn = m.ParentDN
+	return diagnostics
+}
+
 func (m *InfraSHPortSRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *InfraSHPortSModel,
@@ -437,4 +480,138 @@ func (m *InfraSHPortSRootModel) BuildPayload(
 func (m *InfraSHPortSRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
 	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "infraSHPortS", m.ID.ValueString()), diagnostics
+}
+
+func (m *InfraSHPortSRootModel) SetFromLegacyConfig(ctx context.Context, config, priorState *InfraSHPortSRootModel) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	if !config.LegacyRelationInfraRsSpAccGrp.IsNull() {
+		if !config.InfraRsSpAccGrp.IsNull() {
+			diagnostics.AddError("Conflicting legacy configuration", "Configure either relation_infra_rs_sp_acc_grp or relation_to_spine_port_policy_group, not both.")
+			return diagnostics
+		}
+		var fallback *types.Object
+		if priorState != nil {
+			fallback = &priorState.InfraRsSpAccGrp
+		}
+		relation := modelHelpers.LegacyChildRelation{
+			AttributeTypes: InfraRsSpAccGrpModelAttributeTypes(),
+			AttributeName:  "target_dn",
+			Named:          false,
+		}
+		m.InfraRsSpAccGrp = relation.Plan(ctx, &diagnostics, config.LegacyRelationInfraRsSpAccGrp, m.InfraRsSpAccGrp, fallback, m.Annotation)
+	}
+	if !config.LegacySpineAccessPortSelectorType.IsNull() {
+		m.Type = config.LegacySpineAccessPortSelectorType
+	}
+	if !config.LegacySpineInterfaceProfileDn.IsNull() {
+		m.ParentDN = config.LegacySpineInterfaceProfileDn
+	}
+	return diagnostics
+}
+
+func (m *InfraSHPortSRootModel) SetLegacyFromState(ctx context.Context, config, priorState *InfraSHPortSRootModel) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	if priorState == nil {
+		return diagnostics
+	}
+
+	// Retain legacy and read-only outputs when the configured and managed values are unchanged.
+	candidate := *m
+	if config.LegacyRelationInfraRsSpAccGrp.IsNull() {
+		candidate.LegacyRelationInfraRsSpAccGrp = priorState.LegacyRelationInfraRsSpAccGrp
+	}
+	if config.LegacySpineAccessPortSelectorType.IsNull() {
+		candidate.LegacySpineAccessPortSelectorType = priorState.LegacySpineAccessPortSelectorType
+	}
+	if config.LegacySpineInterfaceProfileDn.IsNull() {
+		candidate.LegacySpineInterfaceProfileDn = priorState.LegacySpineInterfaceProfileDn
+	}
+	attributeType := InfraSHPortSResourceSchema("").Type()
+	var planValue, stateValue types.Object
+	diagnostics.Append(tfsdk.ValueFrom(ctx, candidate, attributeType, &planValue)...)
+	diagnostics.Append(tfsdk.ValueFrom(ctx, priorState, attributeType, &stateValue)...)
+	if diagnostics.HasError() || !planValue.Equal(stateValue) {
+		return diagnostics
+	}
+	if config.LegacyRelationInfraRsSpAccGrp.IsNull() {
+		m.LegacyRelationInfraRsSpAccGrp = candidate.LegacyRelationInfraRsSpAccGrp
+	}
+	if config.LegacySpineAccessPortSelectorType.IsNull() {
+		m.LegacySpineAccessPortSelectorType = candidate.LegacySpineAccessPortSelectorType
+	}
+	if config.LegacySpineInterfaceProfileDn.IsNull() {
+		m.LegacySpineInterfaceProfileDn = candidate.LegacySpineInterfaceProfileDn
+	}
+	return diagnostics
+}
+
+type InfraSHPortSRootModelV1 struct {
+	Annotation                        types.String `tfsdk:"annotation"`
+	TagAnnotation                     types.Set    `tfsdk:"annotations"`
+	Descr                             types.String `tfsdk:"description"`
+	ID                                types.String `tfsdk:"id"`
+	Name                              types.String `tfsdk:"name"`
+	NameAlias                         types.String `tfsdk:"name_alias"`
+	OwnerKey                          types.String `tfsdk:"owner_key"`
+	OwnerTag                          types.String `tfsdk:"owner_tag"`
+	LegacyRelationInfraRsSpAccGrp     types.String `tfsdk:"relation_infra_rs_sp_acc_grp"`
+	LegacySpineAccessPortSelectorType types.String `tfsdk:"spine_access_port_selector_type"`
+	LegacySpineInterfaceProfileDn     types.String `tfsdk:"spine_interface_profile_dn"`
+	TagTag                            types.Set    `tfsdk:"tags"`
+}
+
+func InfraSHPortSResourceSchemaV1() *resourceschema.Schema {
+	current := InfraSHPortSResourceSchema("")
+	return &resourceschema.Schema{
+		Version: 1,
+		Attributes: map[string]resourceschema.Attribute{
+			"annotation":  current.Attributes["annotation"],
+			"annotations": current.Attributes["annotations"],
+			"description": current.Attributes["description"],
+			"id":          current.Attributes["id"],
+			"name":        current.Attributes["name"],
+			"name_alias":  current.Attributes["name_alias"],
+			"owner_key":   current.Attributes["owner_key"],
+			"owner_tag":   current.Attributes["owner_tag"],
+			"relation_infra_rs_sp_acc_grp": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: false,
+			},
+			"spine_access_port_selector_type": resourceschema.StringAttribute{
+				Required: true,
+				Optional: false,
+				Computed: false,
+			},
+			"spine_interface_profile_dn": resourceschema.StringAttribute{
+				Required: true,
+				Optional: false,
+				Computed: false,
+			},
+			"tags": current.Attributes["tags"],
+		},
+	}
+}
+
+func (m *InfraSHPortSRootModel) UpgradeFromV1(ctx context.Context, priorState *InfraSHPortSRootModelV1) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	*m = NewInfraSHPortSRootModelNull()
+	m.Annotation = priorState.Annotation
+	m.TagAnnotation = priorState.TagAnnotation
+	m.Descr = priorState.Descr
+	m.ID = priorState.ID
+	m.Name = priorState.Name
+	m.NameAlias = priorState.NameAlias
+	m.OwnerKey = priorState.OwnerKey
+	m.OwnerTag = priorState.OwnerTag
+	m.LegacyRelationInfraRsSpAccGrp = priorState.LegacyRelationInfraRsSpAccGrp
+	m.InfraRsSpAccGrp = modelHelpers.LegacyChildObject(ctx, &diagnostics, InfraRsSpAccGrpModelAttributeTypes(), map[string]attr.Value{
+		"target_dn": priorState.LegacyRelationInfraRsSpAccGrp,
+	})
+	m.LegacySpineAccessPortSelectorType = priorState.LegacySpineAccessPortSelectorType
+	m.Type = priorState.LegacySpineAccessPortSelectorType
+	m.LegacySpineInterfaceProfileDn = priorState.LegacySpineInterfaceProfileDn
+	m.ParentDN = priorState.LegacySpineInterfaceProfileDn
+	m.TagTag = priorState.TagTag
+	return diagnostics
 }

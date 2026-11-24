@@ -14,6 +14,7 @@ import (
 	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/customtypes"
@@ -28,6 +29,134 @@ func fvBDSchemaDefinition() modelHelpers.ClassSchema {
 	return modelHelpers.ClassSchema{
 		ResourceDescription:   "Manages ACI Bridge Domain",
 		DataSourceDescription: "Data source for ACI Bridge Domain",
+		Version:               2,
+		LegacyAttributes: map[string]modelHelpers.LegacyAttributeSchema{
+			"arp_flood": {
+				Type:        types.StringType,
+				Replacement: "arp_flooding",
+			},
+			"ep_clear": {
+				Type:        types.StringType,
+				Replacement: "clear_remote_mac_entries",
+			},
+			"ep_move_detect_mode": {
+				Type:        types.StringType,
+				Replacement: "endpoint_move_detection_mode",
+			},
+			"host_based_routing": {
+				Type:        types.StringType,
+				Replacement: "advertise_host_routes",
+			},
+			"intersite_bum_traffic_allow": {
+				Type:        types.StringType,
+				Replacement: "enable_intersite_bum_traffic",
+			},
+			"ipv6_mcast_allow": {
+				Type:        types.StringType,
+				Replacement: "pim_ipv6",
+			},
+			"ll_addr": {
+				Type:        customtypes.IPAddressType{},
+				Replacement: "link_local_ipv6_address",
+			},
+			"mac": {
+				Type:        types.StringType,
+				Replacement: "custom_mac_address",
+			},
+			"mcast_allow": {
+				Type:        types.StringType,
+				Replacement: "pim",
+			},
+			"multi_dst_pkt_act": {
+				Type:        types.StringType,
+				Replacement: "multi_destination_flooding",
+			},
+			"relation_fv_rs_abd_pol_mon_pol": {
+				Type:        types.StringType,
+				Replacement: "relation_to_monitoring_policy",
+			},
+			"relation_fv_rs_bd_flood_to": {
+				Type:   types.SetType{ElemType: types.StringType},
+				Frozen: true,
+			},
+			"relation_fv_rs_bd_to_ep_ret": {
+				Type:        types.StringType,
+				Replacement: "relation_to_end_point_retention_policy",
+			},
+			"relation_fv_rs_bd_to_fhs": {
+				Type:        types.StringType,
+				Replacement: "relation_to_first_hop_security_policy",
+			},
+			"relation_fv_rs_bd_to_nd_p": {
+				Type:        types.StringType,
+				Replacement: "relation_to_neighbor_discovery_interface_policy",
+			},
+			"relation_fv_rs_bd_to_netflow_monitor_pol": {
+				Type: types.SetType{ElemType: types.ObjectType{AttrTypes: map[string]attr.Type{"flt_type": types.StringType, "tn_netflow_monitor_pol_name": types.StringType}}},
+				Attributes: map[string]modelHelpers.LegacyAttributeSchema{
+					"flt_type": {
+						Type:        types.StringType,
+						Required:    true,
+						Replacement: "relation_to_netflow_monitor_policies.filter_type",
+					},
+					"tn_netflow_monitor_pol_name": {
+						Type:        types.StringType,
+						Required:    true,
+						Replacement: "relation_to_netflow_monitor_policies.netflow_monitor_policy_name",
+					},
+				},
+				Replacement: "relation_to_netflow_monitor_policies",
+			},
+			"relation_fv_rs_bd_to_out": {
+				Type:        types.SetType{ElemType: types.StringType},
+				Replacement: "relation_to_l3_outsides",
+			},
+			"relation_fv_rs_bd_to_profile": {
+				Type:   types.StringType,
+				Frozen: true,
+			},
+			"relation_fv_rs_bd_to_relay_p": {
+				Type:        types.StringType,
+				Replacement: "relation_to_dhcp_relay_policy",
+			},
+			"relation_fv_rs_ctx": {
+				Type:        types.StringType,
+				Replacement: "relation_to_vrf",
+			},
+			"relation_fv_rs_igmpsn": {
+				Type:        types.StringType,
+				Replacement: "relation_to_igmp_snooping_policy",
+			},
+			"relation_fv_rs_mldsn": {
+				Type:        types.StringType,
+				Replacement: "relation_to_mld_snooping_policy",
+			},
+			"tenant_dn": {
+				Type:            types.StringType,
+				Replacement:     "parent_dn",
+				RequiresReplace: true,
+			},
+			"unicast_route": {
+				Type:        types.StringType,
+				Replacement: "unicast_routing",
+			},
+			"unk_mac_ucast_act": {
+				Type:        types.StringType,
+				Replacement: "l2_unknown_unicast_flooding",
+			},
+			"unk_mcast_act": {
+				Type:        types.StringType,
+				Replacement: "l3_unknown_multicast_flooding",
+			},
+			"v6unk_mcast_act": {
+				Type:        types.StringType,
+				Replacement: "ipv6_l3_unknown_multicast_flooding",
+			},
+			"vmac": {
+				Type:        types.StringType,
+				Replacement: "virtual_mac_address",
+			},
+		},
 		Properties: map[string]modelHelpers.PropertySchema{
 			"optimize_wan_bandwidth": {
 				Type:     modelHelpers.StringProperty,
@@ -1283,8 +1412,73 @@ func (m *FvBDModel) BuildNestedDeletePayloadObject(
 	})
 }
 
+type FvBDLegacyModelV2 struct {
+	LegacyArpFlood                          types.String               `tfsdk:"arp_flood"`
+	LegacyEpClear                           types.String               `tfsdk:"ep_clear"`
+	LegacyEpMoveDetectMode                  types.String               `tfsdk:"ep_move_detect_mode"`
+	LegacyHostBasedRouting                  types.String               `tfsdk:"host_based_routing"`
+	LegacyIntersiteBumTrafficAllow          types.String               `tfsdk:"intersite_bum_traffic_allow"`
+	LegacyIpv6McastAllow                    types.String               `tfsdk:"ipv6_mcast_allow"`
+	LegacyLlAddr                            customtypes.IPAddressValue `tfsdk:"ll_addr"`
+	LegacyMac                               types.String               `tfsdk:"mac"`
+	LegacyMcastAllow                        types.String               `tfsdk:"mcast_allow"`
+	LegacyMultiDstPktAct                    types.String               `tfsdk:"multi_dst_pkt_act"`
+	LegacyRelationFvRsAbdPolMonPol          types.String               `tfsdk:"relation_fv_rs_abd_pol_mon_pol"`
+	LegacyRelationFvRsBdFloodTo             types.Set                  `tfsdk:"relation_fv_rs_bd_flood_to"`
+	LegacyRelationFvRsBdToEpRet             types.String               `tfsdk:"relation_fv_rs_bd_to_ep_ret"`
+	LegacyRelationFvRsBdToFhs               types.String               `tfsdk:"relation_fv_rs_bd_to_fhs"`
+	LegacyRelationFvRsBdToNdP               types.String               `tfsdk:"relation_fv_rs_bd_to_nd_p"`
+	LegacyRelationFvRsBdToNetflowMonitorPol types.Set                  `tfsdk:"relation_fv_rs_bd_to_netflow_monitor_pol"`
+	LegacyRelationFvRsBdToOut               types.Set                  `tfsdk:"relation_fv_rs_bd_to_out"`
+	LegacyRelationFvRsBdToProfile           types.String               `tfsdk:"relation_fv_rs_bd_to_profile"`
+	LegacyRelationFvRsBdToRelayP            types.String               `tfsdk:"relation_fv_rs_bd_to_relay_p"`
+	LegacyRelationFvRsCtx                   types.String               `tfsdk:"relation_fv_rs_ctx"`
+	LegacyRelationFvRsIgmpsn                types.String               `tfsdk:"relation_fv_rs_igmpsn"`
+	LegacyRelationFvRsMldsn                 types.String               `tfsdk:"relation_fv_rs_mldsn"`
+	LegacyTenantDn                          types.String               `tfsdk:"tenant_dn"`
+	LegacyUnicastRoute                      types.String               `tfsdk:"unicast_route"`
+	LegacyUnkMacUcastAct                    types.String               `tfsdk:"unk_mac_ucast_act"`
+	LegacyUnkMcastAct                       types.String               `tfsdk:"unk_mcast_act"`
+	LegacyV6unkMcastAct                     types.String               `tfsdk:"v6unk_mcast_act"`
+	LegacyVmac                              types.String               `tfsdk:"vmac"`
+}
+
+func NewFvBDLegacyModelV2Null() FvBDLegacyModelV2 {
+	return FvBDLegacyModelV2{
+		LegacyArpFlood:                          types.StringNull(),
+		LegacyEpClear:                           types.StringNull(),
+		LegacyEpMoveDetectMode:                  types.StringNull(),
+		LegacyHostBasedRouting:                  types.StringNull(),
+		LegacyIntersiteBumTrafficAllow:          types.StringNull(),
+		LegacyIpv6McastAllow:                    types.StringNull(),
+		LegacyLlAddr:                            customtypes.NewIPAddressNull(),
+		LegacyMac:                               types.StringNull(),
+		LegacyMcastAllow:                        types.StringNull(),
+		LegacyMultiDstPktAct:                    types.StringNull(),
+		LegacyRelationFvRsAbdPolMonPol:          types.StringNull(),
+		LegacyRelationFvRsBdFloodTo:             types.SetNull(types.StringType),
+		LegacyRelationFvRsBdToEpRet:             types.StringNull(),
+		LegacyRelationFvRsBdToFhs:               types.StringNull(),
+		LegacyRelationFvRsBdToNdP:               types.StringNull(),
+		LegacyRelationFvRsBdToNetflowMonitorPol: types.SetNull(types.ObjectType{AttrTypes: map[string]attr.Type{"flt_type": types.StringType, "tn_netflow_monitor_pol_name": types.StringType}}),
+		LegacyRelationFvRsBdToOut:               types.SetNull(types.StringType),
+		LegacyRelationFvRsBdToProfile:           types.StringNull(),
+		LegacyRelationFvRsBdToRelayP:            types.StringNull(),
+		LegacyRelationFvRsCtx:                   types.StringNull(),
+		LegacyRelationFvRsIgmpsn:                types.StringNull(),
+		LegacyRelationFvRsMldsn:                 types.StringNull(),
+		LegacyTenantDn:                          types.StringNull(),
+		LegacyUnicastRoute:                      types.StringNull(),
+		LegacyUnkMacUcastAct:                    types.StringNull(),
+		LegacyUnkMcastAct:                       types.StringNull(),
+		LegacyV6unkMcastAct:                     types.StringNull(),
+		LegacyVmac:                              types.StringNull(),
+	}
+}
+
 type FvBDRootModel struct {
 	FvBDModel
+	FvBDLegacyModelV2
 
 	ID       types.String `tfsdk:"id"`
 	ParentDN types.String `tfsdk:"parent_dn"`
@@ -1292,9 +1486,10 @@ type FvBDRootModel struct {
 
 func NewFvBDRootModelNull() FvBDRootModel {
 	return FvBDRootModel{
-		FvBDModel: NewFvBDModelNull(),
-		ID:        types.StringNull(),
-		ParentDN:  types.StringNull(),
+		FvBDModel:         NewFvBDModelNull(),
+		FvBDLegacyModelV2: NewFvBDLegacyModelV2Null(),
+		ID:                types.StringNull(),
+		ParentDN:          types.StringNull(),
 	}
 }
 
@@ -1347,6 +1542,59 @@ func (m *FvBDRootModel) SetFromResponse(
 	return true, diagnostics
 }
 
+func (m *FvBDRootModel) SetLegacyFromResponse(ctx context.Context, response *container.Container) diag.Diagnostics {
+	// Modern response decoding can also be used independently of compatibility state.
+	var diagnostics diag.Diagnostics
+	m.LegacyArpFlood = m.ArpFlood
+	m.LegacyEpClear = m.EpClear
+	m.LegacyEpMoveDetectMode = m.EpMoveDetectMode
+	m.LegacyHostBasedRouting = m.HostBasedRouting
+	m.LegacyIntersiteBumTrafficAllow = m.IntersiteBumTrafficAllow
+	m.LegacyIpv6McastAllow = m.Ipv6McastAllow
+	m.LegacyLlAddr = m.LlAddr
+	m.LegacyMac = m.Mac
+	m.LegacyMcastAllow = m.McastAllow
+	m.LegacyMultiDstPktAct = m.MultiDstPktAct
+	m.LegacyRelationFvRsAbdPolMonPol = modelHelpers.LegacyTargetDN(ctx, &diagnostics, response, "fvBD", "fvRsABDPolMonPol")
+	if m.LegacyRelationFvRsBdFloodTo.IsNull() || m.LegacyRelationFvRsBdFloodTo.IsUnknown() {
+		m.LegacyRelationFvRsBdFloodTo = types.SetValueMust(types.StringType, []attr.Value{})
+	}
+	m.LegacyRelationFvRsBdToEpRet = modelHelpers.LegacyTargetDN(ctx, &diagnostics, response, "fvBD", "fvRsBdToEpRet")
+	m.LegacyRelationFvRsBdToFhs = modelHelpers.LegacyTargetDN(ctx, &diagnostics, response, "fvBD", "fvRsBDToFhs")
+	m.LegacyRelationFvRsBdToNdP = modelHelpers.LegacyTargetDN(ctx, &diagnostics, response, "fvBD", "fvRsBDToNdP")
+	fvRsBDToNetflowMonitorPolMapping := modelHelpers.LegacyChildSet{
+		AttributeTypes:        FvRsBDToNetflowMonitorPolModelAttributeTypes(),
+		IdentifyingAttributes: []string{"filter_type", "netflow_monitor_policy_name"},
+		AttributeName:         "netflow_monitor_policy_name",
+		Named:                 true,
+		LegacyType:            types.ObjectType{AttrTypes: map[string]attr.Type{"flt_type": types.StringType, "tn_netflow_monitor_pol_name": types.StringType}},
+		Attributes: map[string]string{
+			"flt_type":                    "filter_type",
+			"tn_netflow_monitor_pol_name": "netflow_monitor_policy_name",
+		},
+		ResponseAttributes: map[string]string{
+			"flt_type":                    "fltType",
+			"tn_netflow_monitor_pol_name": "tDn",
+		},
+	}
+	m.LegacyRelationFvRsBdToNetflowMonitorPol = fvRsBDToNetflowMonitorPolMapping.LegacyFromResponse(ctx, &diagnostics, response, "fvBD", "fvRsBDToNetflowMonitorPol")
+	m.LegacyRelationFvRsBdToOut = modelHelpers.LegacyTargetDNs(ctx, &diagnostics, response, "fvBD", "fvRsBDToOut")
+	if m.LegacyRelationFvRsBdToProfile.IsNull() || m.LegacyRelationFvRsBdToProfile.IsUnknown() {
+		m.LegacyRelationFvRsBdToProfile = types.StringValue("")
+	}
+	m.LegacyRelationFvRsBdToRelayP = modelHelpers.LegacyTargetDN(ctx, &diagnostics, response, "fvBD", "fvRsBDToRelayP")
+	m.LegacyRelationFvRsCtx = modelHelpers.LegacyTargetDN(ctx, &diagnostics, response, "fvBD", "fvRsCtx")
+	m.LegacyRelationFvRsIgmpsn = modelHelpers.LegacyTargetDN(ctx, &diagnostics, response, "fvBD", "fvRsIgmpsn")
+	m.LegacyRelationFvRsMldsn = modelHelpers.LegacyTargetDN(ctx, &diagnostics, response, "fvBD", "fvRsMldsn")
+	m.LegacyTenantDn = m.ParentDN
+	m.LegacyUnicastRoute = m.UnicastRoute
+	m.LegacyUnkMacUcastAct = m.UnkMacUcastAct
+	m.LegacyUnkMcastAct = m.UnkMcastAct
+	m.LegacyV6unkMcastAct = m.V6unkMcastAct
+	m.LegacyVmac = m.Vmac
+	return diagnostics
+}
+
 func (m *FvBDRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *FvBDModel,
@@ -1370,4 +1618,776 @@ func (m *FvBDRootModel) BuildPayload(
 func (m *FvBDRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
 	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "fvBD", m.ID.ValueString()), diagnostics
+}
+
+func (m *FvBDRootModel) SetFromLegacyConfig(ctx context.Context, config, priorState *FvBDRootModel) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	if !config.LegacyArpFlood.IsNull() {
+		m.ArpFlood = config.LegacyArpFlood
+	}
+	if !config.LegacyEpClear.IsNull() {
+		m.EpClear = config.LegacyEpClear
+	}
+	if !config.LegacyEpMoveDetectMode.IsNull() {
+		m.EpMoveDetectMode = config.LegacyEpMoveDetectMode
+	}
+	if !config.LegacyHostBasedRouting.IsNull() {
+		m.HostBasedRouting = config.LegacyHostBasedRouting
+	}
+	if !config.LegacyIntersiteBumTrafficAllow.IsNull() {
+		m.IntersiteBumTrafficAllow = config.LegacyIntersiteBumTrafficAllow
+	}
+	if !config.LegacyIpv6McastAllow.IsNull() {
+		m.Ipv6McastAllow = config.LegacyIpv6McastAllow
+	}
+	if !config.LegacyLlAddr.IsNull() {
+		m.LlAddr = config.LegacyLlAddr
+	}
+	if !config.LegacyMac.IsNull() {
+		m.Mac = config.LegacyMac
+	}
+	if !config.LegacyMcastAllow.IsNull() {
+		m.McastAllow = config.LegacyMcastAllow
+	}
+	if !config.LegacyMultiDstPktAct.IsNull() {
+		m.MultiDstPktAct = config.LegacyMultiDstPktAct
+	}
+	if !config.LegacyRelationFvRsAbdPolMonPol.IsNull() {
+		if !config.FvRsABDPolMonPol.IsNull() {
+			diagnostics.AddError("Conflicting legacy configuration", "Configure either relation_fv_rs_abd_pol_mon_pol or relation_to_monitoring_policy, not both.")
+			return diagnostics
+		}
+		var fallback *types.Object
+		if priorState != nil {
+			fallback = &priorState.FvRsABDPolMonPol
+		}
+		relation := modelHelpers.LegacyChildRelation{
+			AttributeTypes: FvRsABDPolMonPolModelAttributeTypes(),
+			AttributeName:  "monitoring_policy_name",
+			Named:          true,
+		}
+		m.FvRsABDPolMonPol = relation.Plan(ctx, &diagnostics, config.LegacyRelationFvRsAbdPolMonPol, m.FvRsABDPolMonPol, fallback, m.Annotation)
+	}
+	if !config.LegacyRelationFvRsBdToEpRet.IsNull() {
+		if !config.FvRsBdToEpRet.IsNull() {
+			diagnostics.AddError("Conflicting legacy configuration", "Configure either relation_fv_rs_bd_to_ep_ret or relation_to_end_point_retention_policy, not both.")
+			return diagnostics
+		}
+		var fallback *types.Object
+		if priorState != nil {
+			fallback = &priorState.FvRsBdToEpRet
+		}
+		relation := modelHelpers.LegacyChildRelation{
+			AttributeTypes: FvRsBdToEpRetModelAttributeTypes(),
+			AttributeName:  "end_point_retention_policy_name",
+			Named:          true,
+		}
+		m.FvRsBdToEpRet = relation.Plan(ctx, &diagnostics, config.LegacyRelationFvRsBdToEpRet, m.FvRsBdToEpRet, fallback, m.Annotation)
+	}
+	if !config.LegacyRelationFvRsBdToFhs.IsNull() {
+		if !config.FvRsBDToFhs.IsNull() {
+			diagnostics.AddError("Conflicting legacy configuration", "Configure either relation_fv_rs_bd_to_fhs or relation_to_first_hop_security_policy, not both.")
+			return diagnostics
+		}
+		var fallback *types.Object
+		if priorState != nil {
+			fallback = &priorState.FvRsBDToFhs
+		}
+		relation := modelHelpers.LegacyChildRelation{
+			AttributeTypes: FvRsBDToFhsModelAttributeTypes(),
+			AttributeName:  "first_hop_security_policy_name",
+			Named:          true,
+		}
+		m.FvRsBDToFhs = relation.Plan(ctx, &diagnostics, config.LegacyRelationFvRsBdToFhs, m.FvRsBDToFhs, fallback, m.Annotation)
+	}
+	if !config.LegacyRelationFvRsBdToNdP.IsNull() {
+		if !config.FvRsBDToNdP.IsNull() {
+			diagnostics.AddError("Conflicting legacy configuration", "Configure either relation_fv_rs_bd_to_nd_p or relation_to_neighbor_discovery_interface_policy, not both.")
+			return diagnostics
+		}
+		var fallback *types.Object
+		if priorState != nil {
+			fallback = &priorState.FvRsBDToNdP
+		}
+		relation := modelHelpers.LegacyChildRelation{
+			AttributeTypes: FvRsBDToNdPModelAttributeTypes(),
+			AttributeName:  "neighbor_discovery_interface_policy_name",
+			Named:          true,
+		}
+		m.FvRsBDToNdP = relation.Plan(ctx, &diagnostics, config.LegacyRelationFvRsBdToNdP, m.FvRsBDToNdP, fallback, m.Annotation)
+	}
+	fvRsBDToNetflowMonitorPolMapping := modelHelpers.LegacyChildSet{
+		AttributeTypes:        FvRsBDToNetflowMonitorPolModelAttributeTypes(),
+		IdentifyingAttributes: []string{"filter_type", "netflow_monitor_policy_name"},
+		AttributeName:         "netflow_monitor_policy_name",
+		Named:                 true,
+		LegacyType:            types.ObjectType{AttrTypes: map[string]attr.Type{"flt_type": types.StringType, "tn_netflow_monitor_pol_name": types.StringType}},
+		Attributes: map[string]string{
+			"flt_type":                    "filter_type",
+			"tn_netflow_monitor_pol_name": "netflow_monitor_policy_name",
+		},
+		ResponseAttributes: map[string]string{
+			"flt_type":                    "fltType",
+			"tn_netflow_monitor_pol_name": "tDn",
+		},
+	}
+	if config.LegacyRelationFvRsBdToNetflowMonitorPol.IsUnknown() || len(config.LegacyRelationFvRsBdToNetflowMonitorPol.Elements()) > 0 {
+		if !config.FvRsBDToNetflowMonitorPol.IsNull() {
+			diagnostics.AddError("Conflicting legacy configuration", "Configure either relation_fv_rs_bd_to_netflow_monitor_pol or relation_to_netflow_monitor_policies, not both.")
+			return diagnostics
+		}
+		var fallback *types.Set
+		if priorState != nil {
+			fallback = &priorState.FvRsBDToNetflowMonitorPol
+		}
+		m.FvRsBDToNetflowMonitorPol = fvRsBDToNetflowMonitorPolMapping.Plan(ctx, &diagnostics, m.LegacyRelationFvRsBdToNetflowMonitorPol, m.FvRsBDToNetflowMonitorPol, fallback, m.Annotation)
+	} else {
+		m.LegacyRelationFvRsBdToNetflowMonitorPol = fvRsBDToNetflowMonitorPolMapping.Unknown(ctx, &diagnostics, m.FvRsBDToNetflowMonitorPol)
+	}
+	if !config.LegacyRelationFvRsBdToOut.IsNull() {
+		if !config.FvRsBDToOut.IsNull() {
+			diagnostics.AddError("Conflicting legacy configuration", "Configure either relation_fv_rs_bd_to_out or relation_to_l3_outsides, not both.")
+			return diagnostics
+		}
+		var fallback *types.Set
+		if priorState != nil {
+			fallback = &priorState.FvRsBDToOut
+		}
+		fvRsBDToOutMapping := modelHelpers.LegacyChildSet{
+			AttributeTypes: FvRsBDToOutModelAttributeTypes(),
+			AttributeName:  "l3_outside_name",
+			Named:          true,
+		}
+		m.FvRsBDToOut = fvRsBDToOutMapping.Plan(ctx, &diagnostics, config.LegacyRelationFvRsBdToOut, m.FvRsBDToOut, fallback, m.Annotation)
+	}
+	if !config.LegacyRelationFvRsBdToRelayP.IsNull() {
+		if !config.FvRsBDToRelayP.IsNull() {
+			diagnostics.AddError("Conflicting legacy configuration", "Configure either relation_fv_rs_bd_to_relay_p or relation_to_dhcp_relay_policy, not both.")
+			return diagnostics
+		}
+		var fallback *types.Object
+		if priorState != nil {
+			fallback = &priorState.FvRsBDToRelayP
+		}
+		relation := modelHelpers.LegacyChildRelation{
+			AttributeTypes: FvRsBDToRelayPModelAttributeTypes(),
+			AttributeName:  "dhcp_relay_policy_name",
+			Named:          true,
+		}
+		m.FvRsBDToRelayP = relation.Plan(ctx, &diagnostics, config.LegacyRelationFvRsBdToRelayP, m.FvRsBDToRelayP, fallback, m.Annotation)
+	}
+	if !config.LegacyRelationFvRsCtx.IsNull() {
+		if !config.FvRsCtx.IsNull() {
+			diagnostics.AddError("Conflicting legacy configuration", "Configure either relation_fv_rs_ctx or relation_to_vrf, not both.")
+			return diagnostics
+		}
+		var fallback *types.Object
+		if priorState != nil {
+			fallback = &priorState.FvRsCtx
+		}
+		relation := modelHelpers.LegacyChildRelation{
+			AttributeTypes: FvRsCtxModelAttributeTypes(),
+			AttributeName:  "vrf_name",
+			Named:          true,
+		}
+		m.FvRsCtx = relation.Plan(ctx, &diagnostics, config.LegacyRelationFvRsCtx, m.FvRsCtx, fallback, m.Annotation)
+	}
+	if !config.LegacyRelationFvRsIgmpsn.IsNull() {
+		if !config.FvRsIgmpsn.IsNull() {
+			diagnostics.AddError("Conflicting legacy configuration", "Configure either relation_fv_rs_igmpsn or relation_to_igmp_snooping_policy, not both.")
+			return diagnostics
+		}
+		var fallback *types.Object
+		if priorState != nil {
+			fallback = &priorState.FvRsIgmpsn
+		}
+		relation := modelHelpers.LegacyChildRelation{
+			AttributeTypes: FvRsIgmpsnModelAttributeTypes(),
+			AttributeName:  "igmp_snooping_policy_name",
+			Named:          true,
+		}
+		m.FvRsIgmpsn = relation.Plan(ctx, &diagnostics, config.LegacyRelationFvRsIgmpsn, m.FvRsIgmpsn, fallback, m.Annotation)
+	}
+	if !config.LegacyRelationFvRsMldsn.IsNull() {
+		if !config.FvRsMldsn.IsNull() {
+			diagnostics.AddError("Conflicting legacy configuration", "Configure either relation_fv_rs_mldsn or relation_to_mld_snooping_policy, not both.")
+			return diagnostics
+		}
+		var fallback *types.Object
+		if priorState != nil {
+			fallback = &priorState.FvRsMldsn
+		}
+		relation := modelHelpers.LegacyChildRelation{
+			AttributeTypes: FvRsMldsnModelAttributeTypes(),
+			AttributeName:  "mld_snooping_policy_name",
+			Named:          true,
+		}
+		m.FvRsMldsn = relation.Plan(ctx, &diagnostics, config.LegacyRelationFvRsMldsn, m.FvRsMldsn, fallback, m.Annotation)
+	}
+	if !config.LegacyTenantDn.IsNull() {
+		m.ParentDN = config.LegacyTenantDn
+	}
+	if !config.LegacyUnicastRoute.IsNull() {
+		m.UnicastRoute = config.LegacyUnicastRoute
+	}
+	if !config.LegacyUnkMacUcastAct.IsNull() {
+		m.UnkMacUcastAct = config.LegacyUnkMacUcastAct
+	}
+	if !config.LegacyUnkMcastAct.IsNull() {
+		m.UnkMcastAct = config.LegacyUnkMcastAct
+	}
+	if !config.LegacyV6unkMcastAct.IsNull() {
+		m.V6unkMcastAct = config.LegacyV6unkMcastAct
+	}
+	if !config.LegacyVmac.IsNull() {
+		m.Vmac = config.LegacyVmac
+	}
+	return diagnostics
+}
+
+func (m *FvBDRootModel) SetLegacyFromState(ctx context.Context, config, priorState *FvBDRootModel) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	if priorState == nil {
+		return diagnostics
+	}
+
+	// Retain legacy and read-only outputs when the configured and managed values are unchanged.
+	candidate := *m
+	candidate.PcTag = priorState.PcTag
+	candidate.Scope = priorState.Scope
+	candidate.Seg = priorState.Seg
+	if config.LegacyArpFlood.IsNull() {
+		candidate.LegacyArpFlood = priorState.LegacyArpFlood
+	}
+	if config.LegacyEpClear.IsNull() {
+		candidate.LegacyEpClear = priorState.LegacyEpClear
+	}
+	if config.LegacyEpMoveDetectMode.IsNull() {
+		candidate.LegacyEpMoveDetectMode = priorState.LegacyEpMoveDetectMode
+	}
+	if config.LegacyHostBasedRouting.IsNull() {
+		candidate.LegacyHostBasedRouting = priorState.LegacyHostBasedRouting
+	}
+	if config.LegacyIntersiteBumTrafficAllow.IsNull() {
+		candidate.LegacyIntersiteBumTrafficAllow = priorState.LegacyIntersiteBumTrafficAllow
+	}
+	if config.LegacyIpv6McastAllow.IsNull() {
+		candidate.LegacyIpv6McastAllow = priorState.LegacyIpv6McastAllow
+	}
+	if config.LegacyLlAddr.IsNull() {
+		candidate.LegacyLlAddr = priorState.LegacyLlAddr
+	}
+	if config.LegacyMac.IsNull() {
+		candidate.LegacyMac = priorState.LegacyMac
+	}
+	if config.LegacyMcastAllow.IsNull() {
+		candidate.LegacyMcastAllow = priorState.LegacyMcastAllow
+	}
+	if config.LegacyMultiDstPktAct.IsNull() {
+		candidate.LegacyMultiDstPktAct = priorState.LegacyMultiDstPktAct
+	}
+	if config.LegacyRelationFvRsAbdPolMonPol.IsNull() {
+		candidate.LegacyRelationFvRsAbdPolMonPol = priorState.LegacyRelationFvRsAbdPolMonPol
+	}
+	if config.LegacyRelationFvRsBdToEpRet.IsNull() {
+		candidate.LegacyRelationFvRsBdToEpRet = priorState.LegacyRelationFvRsBdToEpRet
+	}
+	if config.LegacyRelationFvRsBdToFhs.IsNull() {
+		candidate.LegacyRelationFvRsBdToFhs = priorState.LegacyRelationFvRsBdToFhs
+	}
+	if config.LegacyRelationFvRsBdToNdP.IsNull() {
+		candidate.LegacyRelationFvRsBdToNdP = priorState.LegacyRelationFvRsBdToNdP
+	}
+	if !config.LegacyRelationFvRsBdToNetflowMonitorPol.IsUnknown() && len(config.LegacyRelationFvRsBdToNetflowMonitorPol.Elements()) == 0 {
+		candidate.LegacyRelationFvRsBdToNetflowMonitorPol = priorState.LegacyRelationFvRsBdToNetflowMonitorPol
+	}
+	if config.LegacyRelationFvRsBdToOut.IsNull() {
+		candidate.LegacyRelationFvRsBdToOut = priorState.LegacyRelationFvRsBdToOut
+	}
+	if config.LegacyRelationFvRsBdToRelayP.IsNull() {
+		candidate.LegacyRelationFvRsBdToRelayP = priorState.LegacyRelationFvRsBdToRelayP
+	}
+	if config.LegacyRelationFvRsCtx.IsNull() {
+		candidate.LegacyRelationFvRsCtx = priorState.LegacyRelationFvRsCtx
+	}
+	if config.LegacyRelationFvRsIgmpsn.IsNull() {
+		candidate.LegacyRelationFvRsIgmpsn = priorState.LegacyRelationFvRsIgmpsn
+	}
+	if config.LegacyRelationFvRsMldsn.IsNull() {
+		candidate.LegacyRelationFvRsMldsn = priorState.LegacyRelationFvRsMldsn
+	}
+	if config.LegacyTenantDn.IsNull() {
+		candidate.LegacyTenantDn = priorState.LegacyTenantDn
+	}
+	if config.LegacyUnicastRoute.IsNull() {
+		candidate.LegacyUnicastRoute = priorState.LegacyUnicastRoute
+	}
+	if config.LegacyUnkMacUcastAct.IsNull() {
+		candidate.LegacyUnkMacUcastAct = priorState.LegacyUnkMacUcastAct
+	}
+	if config.LegacyUnkMcastAct.IsNull() {
+		candidate.LegacyUnkMcastAct = priorState.LegacyUnkMcastAct
+	}
+	if config.LegacyV6unkMcastAct.IsNull() {
+		candidate.LegacyV6unkMcastAct = priorState.LegacyV6unkMcastAct
+	}
+	if config.LegacyVmac.IsNull() {
+		candidate.LegacyVmac = priorState.LegacyVmac
+	}
+	attributeType := FvBDResourceSchema("").Type()
+	var planValue, stateValue types.Object
+	diagnostics.Append(tfsdk.ValueFrom(ctx, candidate, attributeType, &planValue)...)
+	diagnostics.Append(tfsdk.ValueFrom(ctx, priorState, attributeType, &stateValue)...)
+	if diagnostics.HasError() || !planValue.Equal(stateValue) {
+		return diagnostics
+	}
+	m.PcTag = candidate.PcTag
+	m.Scope = candidate.Scope
+	m.Seg = candidate.Seg
+	if config.LegacyArpFlood.IsNull() {
+		m.LegacyArpFlood = candidate.LegacyArpFlood
+	}
+	if config.LegacyEpClear.IsNull() {
+		m.LegacyEpClear = candidate.LegacyEpClear
+	}
+	if config.LegacyEpMoveDetectMode.IsNull() {
+		m.LegacyEpMoveDetectMode = candidate.LegacyEpMoveDetectMode
+	}
+	if config.LegacyHostBasedRouting.IsNull() {
+		m.LegacyHostBasedRouting = candidate.LegacyHostBasedRouting
+	}
+	if config.LegacyIntersiteBumTrafficAllow.IsNull() {
+		m.LegacyIntersiteBumTrafficAllow = candidate.LegacyIntersiteBumTrafficAllow
+	}
+	if config.LegacyIpv6McastAllow.IsNull() {
+		m.LegacyIpv6McastAllow = candidate.LegacyIpv6McastAllow
+	}
+	if config.LegacyLlAddr.IsNull() {
+		m.LegacyLlAddr = candidate.LegacyLlAddr
+	}
+	if config.LegacyMac.IsNull() {
+		m.LegacyMac = candidate.LegacyMac
+	}
+	if config.LegacyMcastAllow.IsNull() {
+		m.LegacyMcastAllow = candidate.LegacyMcastAllow
+	}
+	if config.LegacyMultiDstPktAct.IsNull() {
+		m.LegacyMultiDstPktAct = candidate.LegacyMultiDstPktAct
+	}
+	if config.LegacyRelationFvRsAbdPolMonPol.IsNull() {
+		m.LegacyRelationFvRsAbdPolMonPol = candidate.LegacyRelationFvRsAbdPolMonPol
+	}
+	if config.LegacyRelationFvRsBdToEpRet.IsNull() {
+		m.LegacyRelationFvRsBdToEpRet = candidate.LegacyRelationFvRsBdToEpRet
+	}
+	if config.LegacyRelationFvRsBdToFhs.IsNull() {
+		m.LegacyRelationFvRsBdToFhs = candidate.LegacyRelationFvRsBdToFhs
+	}
+	if config.LegacyRelationFvRsBdToNdP.IsNull() {
+		m.LegacyRelationFvRsBdToNdP = candidate.LegacyRelationFvRsBdToNdP
+	}
+	if !config.LegacyRelationFvRsBdToNetflowMonitorPol.IsUnknown() && len(config.LegacyRelationFvRsBdToNetflowMonitorPol.Elements()) == 0 {
+		m.LegacyRelationFvRsBdToNetflowMonitorPol = candidate.LegacyRelationFvRsBdToNetflowMonitorPol
+	}
+	if config.LegacyRelationFvRsBdToOut.IsNull() {
+		m.LegacyRelationFvRsBdToOut = candidate.LegacyRelationFvRsBdToOut
+	}
+	if config.LegacyRelationFvRsBdToRelayP.IsNull() {
+		m.LegacyRelationFvRsBdToRelayP = candidate.LegacyRelationFvRsBdToRelayP
+	}
+	if config.LegacyRelationFvRsCtx.IsNull() {
+		m.LegacyRelationFvRsCtx = candidate.LegacyRelationFvRsCtx
+	}
+	if config.LegacyRelationFvRsIgmpsn.IsNull() {
+		m.LegacyRelationFvRsIgmpsn = candidate.LegacyRelationFvRsIgmpsn
+	}
+	if config.LegacyRelationFvRsMldsn.IsNull() {
+		m.LegacyRelationFvRsMldsn = candidate.LegacyRelationFvRsMldsn
+	}
+	if config.LegacyTenantDn.IsNull() {
+		m.LegacyTenantDn = candidate.LegacyTenantDn
+	}
+	if config.LegacyUnicastRoute.IsNull() {
+		m.LegacyUnicastRoute = candidate.LegacyUnicastRoute
+	}
+	if config.LegacyUnkMacUcastAct.IsNull() {
+		m.LegacyUnkMacUcastAct = candidate.LegacyUnkMacUcastAct
+	}
+	if config.LegacyUnkMcastAct.IsNull() {
+		m.LegacyUnkMcastAct = candidate.LegacyUnkMcastAct
+	}
+	if config.LegacyV6unkMcastAct.IsNull() {
+		m.LegacyV6unkMcastAct = candidate.LegacyV6unkMcastAct
+	}
+	if config.LegacyVmac.IsNull() {
+		m.LegacyVmac = candidate.LegacyVmac
+	}
+	return diagnostics
+}
+
+type FvBDRootModelV1 struct {
+	Annotation                              types.String               `tfsdk:"annotation"`
+	TagAnnotation                           types.Set                  `tfsdk:"annotations"`
+	LegacyArpFlood                          types.String               `tfsdk:"arp_flood"`
+	Type                                    types.String               `tfsdk:"bridge_domain_type"`
+	Descr                                   types.String               `tfsdk:"description"`
+	McastARPDrop                            types.String               `tfsdk:"drop_arp_with_multicast_smac"`
+	EnableRogueExceptMac                    types.String               `tfsdk:"enable_rogue_exception_mac"`
+	LegacyEpClear                           types.String               `tfsdk:"ep_clear"`
+	LegacyEpMoveDetectMode                  types.String               `tfsdk:"ep_move_detect_mode"`
+	LegacyHostBasedRouting                  types.String               `tfsdk:"host_based_routing"`
+	ID                                      types.String               `tfsdk:"id"`
+	LegacyIntersiteBumTrafficAllow          types.String               `tfsdk:"intersite_bum_traffic_allow"`
+	IntersiteL2Stretch                      types.String               `tfsdk:"intersite_l2_stretch"`
+	IpLearning                              types.String               `tfsdk:"ip_learning"`
+	LegacyIpv6McastAllow                    types.String               `tfsdk:"ipv6_mcast_allow"`
+	FvAccP                                  types.Object               `tfsdk:"legacy_mode"`
+	LimitIpLearnToSubnets                   types.String               `tfsdk:"limit_ip_learn_to_subnets"`
+	LegacyLlAddr                            customtypes.IPAddressValue `tfsdk:"ll_addr"`
+	LegacyMac                               types.String               `tfsdk:"mac"`
+	LegacyMcastAllow                        types.String               `tfsdk:"mcast_allow"`
+	LegacyMultiDstPktAct                    types.String               `tfsdk:"multi_dst_pkt_act"`
+	Name                                    types.String               `tfsdk:"name"`
+	NameAlias                               types.String               `tfsdk:"name_alias"`
+	OptimizeWanBandwidth                    types.String               `tfsdk:"optimize_wan_bandwidth"`
+	OwnerKey                                types.String               `tfsdk:"owner_key"`
+	OwnerTag                                types.String               `tfsdk:"owner_tag"`
+	PcTag                                   types.String               `tfsdk:"pc_tag"`
+	LegacyRelationFvRsAbdPolMonPol          types.String               `tfsdk:"relation_fv_rs_abd_pol_mon_pol"`
+	LegacyRelationFvRsBdFloodTo             types.Set                  `tfsdk:"relation_fv_rs_bd_flood_to"`
+	LegacyRelationFvRsBdToEpRet             types.String               `tfsdk:"relation_fv_rs_bd_to_ep_ret"`
+	LegacyRelationFvRsBdToFhs               types.String               `tfsdk:"relation_fv_rs_bd_to_fhs"`
+	LegacyRelationFvRsBdToNdP               types.String               `tfsdk:"relation_fv_rs_bd_to_nd_p"`
+	LegacyRelationFvRsBdToNetflowMonitorPol types.Set                  `tfsdk:"relation_fv_rs_bd_to_netflow_monitor_pol"`
+	LegacyRelationFvRsBdToOut               types.Set                  `tfsdk:"relation_fv_rs_bd_to_out"`
+	LegacyRelationFvRsBdToProfile           types.String               `tfsdk:"relation_fv_rs_bd_to_profile"`
+	LegacyRelationFvRsBdToRelayP            types.String               `tfsdk:"relation_fv_rs_bd_to_relay_p"`
+	LegacyRelationFvRsCtx                   types.String               `tfsdk:"relation_fv_rs_ctx"`
+	LegacyRelationFvRsIgmpsn                types.String               `tfsdk:"relation_fv_rs_igmpsn"`
+	LegacyRelationFvRsMldsn                 types.String               `tfsdk:"relation_fv_rs_mldsn"`
+	FvRsBDToProfile                         types.Object               `tfsdk:"relation_to_route_control_profile"`
+	FvRogueExceptionMac                     types.Set                  `tfsdk:"rogue_coop_exceptions"`
+	Scope                                   types.String               `tfsdk:"scope"`
+	Seg                                     types.String               `tfsdk:"segment"`
+	ServiceBdRoutingDisable                 types.String               `tfsdk:"service_bd_routing_disable"`
+	TagTag                                  types.Set                  `tfsdk:"tags"`
+	LegacyTenantDn                          types.String               `tfsdk:"tenant_dn"`
+	LegacyUnicastRoute                      types.String               `tfsdk:"unicast_route"`
+	LegacyUnkMacUcastAct                    types.String               `tfsdk:"unk_mac_ucast_act"`
+	LegacyUnkMcastAct                       types.String               `tfsdk:"unk_mcast_act"`
+	LegacyV6unkMcastAct                     types.String               `tfsdk:"v6unk_mcast_act"`
+	LegacyVmac                              types.String               `tfsdk:"vmac"`
+}
+
+func FvBDResourceSchemaV1() *resourceschema.Schema {
+	current := FvBDResourceSchema("")
+	return &resourceschema.Schema{
+		Version: 1,
+		Attributes: map[string]resourceschema.Attribute{
+			"annotation":  current.Attributes["annotation"],
+			"annotations": current.Attributes["annotations"],
+			"arp_flood": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"bridge_domain_type":           current.Attributes["bridge_domain_type"],
+			"description":                  current.Attributes["description"],
+			"drop_arp_with_multicast_smac": current.Attributes["drop_arp_with_multicast_smac"],
+			"enable_rogue_exception_mac":   current.Attributes["enable_rogue_exception_mac"],
+			"ep_clear": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"ep_move_detect_mode": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"host_based_routing": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"id": current.Attributes["id"],
+			"intersite_bum_traffic_allow": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"intersite_l2_stretch": current.Attributes["intersite_l2_stretch"],
+			"ip_learning":          current.Attributes["ip_learning"],
+			"ipv6_mcast_allow": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"legacy_mode":               current.Attributes["legacy_mode"],
+			"limit_ip_learn_to_subnets": current.Attributes["limit_ip_learn_to_subnets"],
+			"ll_addr": resourceschema.StringAttribute{
+				Required:   false,
+				Optional:   true,
+				Computed:   true,
+				CustomType: customtypes.IPAddressType{},
+			},
+			"mac": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"mcast_allow": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"multi_dst_pkt_act": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"name":                   current.Attributes["name"],
+			"name_alias":             current.Attributes["name_alias"],
+			"optimize_wan_bandwidth": current.Attributes["optimize_wan_bandwidth"],
+			"owner_key":              current.Attributes["owner_key"],
+			"owner_tag":              current.Attributes["owner_tag"],
+			"pc_tag":                 current.Attributes["pc_tag"],
+			"relation_fv_rs_abd_pol_mon_pol": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: false,
+			},
+			"relation_fv_rs_bd_flood_to": resourceschema.SetAttribute{
+				Required:    false,
+				Optional:    true,
+				Computed:    false,
+				ElementType: types.StringType,
+			},
+			"relation_fv_rs_bd_to_ep_ret": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"relation_fv_rs_bd_to_fhs": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: false,
+			},
+			"relation_fv_rs_bd_to_nd_p": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"relation_fv_rs_bd_to_out": resourceschema.SetAttribute{
+				Required:    false,
+				Optional:    true,
+				Computed:    false,
+				ElementType: types.StringType,
+			},
+			"relation_fv_rs_bd_to_profile": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: false,
+			},
+			"relation_fv_rs_bd_to_relay_p": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: false,
+			},
+			"relation_fv_rs_ctx": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"relation_fv_rs_igmpsn": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"relation_fv_rs_mldsn": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"relation_to_route_control_profile": current.Attributes["relation_to_route_control_profile"],
+			"rogue_coop_exceptions":             current.Attributes["rogue_coop_exceptions"],
+			"scope":                             current.Attributes["scope"],
+			"segment":                           current.Attributes["segment"],
+			"service_bd_routing_disable":        current.Attributes["service_bd_routing_disable"],
+			"tags":                              current.Attributes["tags"],
+			"tenant_dn": resourceschema.StringAttribute{
+				Required: true,
+				Optional: false,
+				Computed: false,
+			},
+			"unicast_route": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"unk_mac_ucast_act": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"unk_mcast_act": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"v6unk_mcast_act": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+			"vmac": resourceschema.StringAttribute{
+				Required: false,
+				Optional: true,
+				Computed: true,
+			},
+		},
+		Blocks: map[string]resourceschema.Block{
+			"relation_fv_rs_bd_to_netflow_monitor_pol": resourceschema.SetNestedBlock{
+				NestedObject: resourceschema.NestedBlockObject{Attributes: map[string]resourceschema.Attribute{
+					"flt_type": resourceschema.StringAttribute{
+						Required: true,
+						Optional: false,
+						Computed: false,
+					},
+					"tn_netflow_monitor_pol_name": resourceschema.StringAttribute{
+						Required: true,
+						Optional: false,
+						Computed: false,
+					},
+				}},
+			},
+		},
+	}
+}
+
+func (m *FvBDRootModel) UpgradeFromV1(ctx context.Context, priorState *FvBDRootModelV1) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	*m = NewFvBDRootModelNull()
+	m.Annotation = priorState.Annotation
+	m.TagAnnotation = priorState.TagAnnotation
+	m.LegacyArpFlood = priorState.LegacyArpFlood
+	m.ArpFlood = priorState.LegacyArpFlood
+	m.Type = priorState.Type
+	m.Descr = priorState.Descr
+	m.McastARPDrop = priorState.McastARPDrop
+	m.EnableRogueExceptMac = priorState.EnableRogueExceptMac
+	m.LegacyEpClear = priorState.LegacyEpClear
+	m.EpClear = priorState.LegacyEpClear
+	m.LegacyEpMoveDetectMode = priorState.LegacyEpMoveDetectMode
+	m.EpMoveDetectMode = priorState.LegacyEpMoveDetectMode
+	m.LegacyHostBasedRouting = priorState.LegacyHostBasedRouting
+	m.HostBasedRouting = priorState.LegacyHostBasedRouting
+	m.ID = priorState.ID
+	m.LegacyIntersiteBumTrafficAllow = priorState.LegacyIntersiteBumTrafficAllow
+	m.IntersiteBumTrafficAllow = priorState.LegacyIntersiteBumTrafficAllow
+	m.IntersiteL2Stretch = priorState.IntersiteL2Stretch
+	m.IpLearning = priorState.IpLearning
+	m.LegacyIpv6McastAllow = priorState.LegacyIpv6McastAllow
+	m.Ipv6McastAllow = priorState.LegacyIpv6McastAllow
+	m.FvAccP = priorState.FvAccP
+	m.LimitIpLearnToSubnets = priorState.LimitIpLearnToSubnets
+	m.LegacyLlAddr = priorState.LegacyLlAddr
+	m.LlAddr = priorState.LegacyLlAddr
+	m.LegacyMac = priorState.LegacyMac
+	m.Mac = priorState.LegacyMac
+	m.LegacyMcastAllow = priorState.LegacyMcastAllow
+	m.McastAllow = priorState.LegacyMcastAllow
+	m.LegacyMultiDstPktAct = priorState.LegacyMultiDstPktAct
+	m.MultiDstPktAct = priorState.LegacyMultiDstPktAct
+	m.Name = priorState.Name
+	m.NameAlias = priorState.NameAlias
+	m.OptimizeWanBandwidth = priorState.OptimizeWanBandwidth
+	m.OwnerKey = priorState.OwnerKey
+	m.OwnerTag = priorState.OwnerTag
+	m.PcTag = priorState.PcTag
+	m.LegacyRelationFvRsAbdPolMonPol = priorState.LegacyRelationFvRsAbdPolMonPol
+	// Preserve the published SDKv2 upgrade: an unset relation produced an empty name.
+	m.FvRsABDPolMonPol = modelHelpers.LegacyChildObject(ctx, &diagnostics, FvRsABDPolMonPolModelAttributeTypes(), map[string]attr.Value{
+		"monitoring_policy_name": modelHelpers.LegacyRelationName(ctx, &diagnostics, types.StringValue(priorState.LegacyRelationFvRsAbdPolMonPol.ValueString())),
+	})
+	m.LegacyRelationFvRsBdFloodTo = priorState.LegacyRelationFvRsBdFloodTo
+	m.LegacyRelationFvRsBdToEpRet = priorState.LegacyRelationFvRsBdToEpRet
+	// Preserve the published SDKv2 upgrade: an unset relation produced an empty name.
+	m.FvRsBdToEpRet = modelHelpers.LegacyChildObject(ctx, &diagnostics, FvRsBdToEpRetModelAttributeTypes(), map[string]attr.Value{
+		"end_point_retention_policy_name": modelHelpers.LegacyRelationName(ctx, &diagnostics, types.StringValue(priorState.LegacyRelationFvRsBdToEpRet.ValueString())),
+	})
+	m.LegacyRelationFvRsBdToFhs = priorState.LegacyRelationFvRsBdToFhs
+	// Preserve the published SDKv2 upgrade: an unset relation produced an empty name.
+	m.FvRsBDToFhs = modelHelpers.LegacyChildObject(ctx, &diagnostics, FvRsBDToFhsModelAttributeTypes(), map[string]attr.Value{
+		"first_hop_security_policy_name": modelHelpers.LegacyRelationName(ctx, &diagnostics, types.StringValue(priorState.LegacyRelationFvRsBdToFhs.ValueString())),
+	})
+	m.LegacyRelationFvRsBdToNdP = priorState.LegacyRelationFvRsBdToNdP
+	// Preserve the published SDKv2 upgrade: an unset relation produced an empty name.
+	m.FvRsBDToNdP = modelHelpers.LegacyChildObject(ctx, &diagnostics, FvRsBDToNdPModelAttributeTypes(), map[string]attr.Value{
+		"neighbor_discovery_interface_policy_name": modelHelpers.LegacyRelationName(ctx, &diagnostics, types.StringValue(priorState.LegacyRelationFvRsBdToNdP.ValueString())),
+	})
+	m.LegacyRelationFvRsBdToNetflowMonitorPol = priorState.LegacyRelationFvRsBdToNetflowMonitorPol
+	fvRsBDToNetflowMonitorPolMapping := modelHelpers.LegacyChildSet{
+		AttributeTypes:        FvRsBDToNetflowMonitorPolModelAttributeTypes(),
+		IdentifyingAttributes: []string{"filter_type", "netflow_monitor_policy_name"},
+		AttributeName:         "netflow_monitor_policy_name",
+		Named:                 true,
+		LegacyType:            types.ObjectType{AttrTypes: map[string]attr.Type{"flt_type": types.StringType, "tn_netflow_monitor_pol_name": types.StringType}},
+		Attributes: map[string]string{
+			"flt_type":                    "filter_type",
+			"tn_netflow_monitor_pol_name": "netflow_monitor_policy_name",
+		},
+		ResponseAttributes: map[string]string{
+			"flt_type":                    "fltType",
+			"tn_netflow_monitor_pol_name": "tDn",
+		},
+	}
+	m.FvRsBDToNetflowMonitorPol = fvRsBDToNetflowMonitorPolMapping.Upgrade(ctx, &diagnostics, priorState.LegacyRelationFvRsBdToNetflowMonitorPol)
+	m.LegacyRelationFvRsBdToOut = priorState.LegacyRelationFvRsBdToOut
+	fvRsBDToOutMapping := modelHelpers.LegacyChildSet{
+		AttributeTypes: FvRsBDToOutModelAttributeTypes(),
+		AttributeName:  "l3_outside_name",
+		Named:          true,
+	}
+	m.FvRsBDToOut = fvRsBDToOutMapping.Upgrade(ctx, &diagnostics, priorState.LegacyRelationFvRsBdToOut)
+	m.LegacyRelationFvRsBdToProfile = priorState.LegacyRelationFvRsBdToProfile
+	m.LegacyRelationFvRsBdToRelayP = priorState.LegacyRelationFvRsBdToRelayP
+	// Preserve the published SDKv2 upgrade: an unset relation produced an empty name.
+	m.FvRsBDToRelayP = modelHelpers.LegacyChildObject(ctx, &diagnostics, FvRsBDToRelayPModelAttributeTypes(), map[string]attr.Value{
+		"dhcp_relay_policy_name": modelHelpers.LegacyRelationName(ctx, &diagnostics, types.StringValue(priorState.LegacyRelationFvRsBdToRelayP.ValueString())),
+	})
+	m.LegacyRelationFvRsCtx = priorState.LegacyRelationFvRsCtx
+	// Preserve the published SDKv2 upgrade: an unset relation produced an empty name.
+	m.FvRsCtx = modelHelpers.LegacyChildObject(ctx, &diagnostics, FvRsCtxModelAttributeTypes(), map[string]attr.Value{
+		"vrf_name": modelHelpers.LegacyRelationName(ctx, &diagnostics, types.StringValue(priorState.LegacyRelationFvRsCtx.ValueString())),
+	})
+	m.LegacyRelationFvRsIgmpsn = priorState.LegacyRelationFvRsIgmpsn
+	// Preserve the published SDKv2 upgrade: an unset relation produced an empty name.
+	m.FvRsIgmpsn = modelHelpers.LegacyChildObject(ctx, &diagnostics, FvRsIgmpsnModelAttributeTypes(), map[string]attr.Value{
+		"igmp_snooping_policy_name": modelHelpers.LegacyRelationName(ctx, &diagnostics, types.StringValue(priorState.LegacyRelationFvRsIgmpsn.ValueString())),
+	})
+	m.LegacyRelationFvRsMldsn = priorState.LegacyRelationFvRsMldsn
+	// Preserve the published SDKv2 upgrade: an unset relation produced an empty name.
+	m.FvRsMldsn = modelHelpers.LegacyChildObject(ctx, &diagnostics, FvRsMldsnModelAttributeTypes(), map[string]attr.Value{
+		"mld_snooping_policy_name": modelHelpers.LegacyRelationName(ctx, &diagnostics, types.StringValue(priorState.LegacyRelationFvRsMldsn.ValueString())),
+	})
+	m.FvRsBDToProfile = priorState.FvRsBDToProfile
+	m.FvRogueExceptionMac = priorState.FvRogueExceptionMac
+	m.Scope = priorState.Scope
+	m.Seg = priorState.Seg
+	m.ServiceBdRoutingDisable = priorState.ServiceBdRoutingDisable
+	m.TagTag = priorState.TagTag
+	m.LegacyTenantDn = priorState.LegacyTenantDn
+	m.ParentDN = priorState.LegacyTenantDn
+	m.LegacyUnicastRoute = priorState.LegacyUnicastRoute
+	m.UnicastRoute = priorState.LegacyUnicastRoute
+	m.LegacyUnkMacUcastAct = priorState.LegacyUnkMacUcastAct
+	m.UnkMacUcastAct = priorState.LegacyUnkMacUcastAct
+	m.LegacyUnkMcastAct = priorState.LegacyUnkMcastAct
+	m.UnkMcastAct = priorState.LegacyUnkMcastAct
+	m.LegacyV6unkMcastAct = priorState.LegacyV6unkMcastAct
+	m.V6unkMcastAct = priorState.LegacyV6unkMcastAct
+	m.LegacyVmac = priorState.LegacyVmac
+	m.Vmac = priorState.LegacyVmac
+	return diagnostics
 }

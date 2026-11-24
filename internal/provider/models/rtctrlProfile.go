@@ -27,6 +27,7 @@ func rtctrlProfileSchemaDefinition() modelHelpers.ClassSchema {
 	return modelHelpers.ClassSchema{
 		ResourceDescription:   "Manages ACI Route Control Profile",
 		DataSourceDescription: "Data source for ACI Route Control Profile",
+		Version:               1,
 		Properties: map[string]modelHelpers.PropertySchema{
 			"annotation": {
 				Type:        modelHelpers.StringProperty,

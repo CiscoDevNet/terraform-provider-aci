@@ -1778,6 +1778,11 @@ func TestGeneratedSensitivePropertySchemas(t *testing.T) {
 			Expected: true,
 		},
 		{
+			Name:     "test_vmm_credential_legacy_password",
+			Input:    models.VmmUsrAccPResourceSchema("").Attributes["pwd"],
+			Expected: true,
+		},
+		{
 			Name:     "test_fabric_external_connection_child",
 			Input:    models.FvFabricExtConnPResourceSchema("").Attributes["peering_profile"].(resourceschema.SingleNestedAttribute).Attributes["password"],
 			Expected: false,
@@ -1797,6 +1802,92 @@ func TestGeneratedSensitivePropertySchemas(t *testing.T) {
 	if !dataSourceAttribute.Computed || !dataSourceAttribute.Sensitive {
 		t.Fatalf("unexpected sensitive data-source attribute: %#v", dataSourceAttribute)
 	}
+	legacyPassword := models.VmmUsrAccPDataSourceSchema().Attributes["pwd"].(datasourceschema.StringAttribute)
+	assert.True(t, legacyPassword.Computed)
+	assert.True(t, legacyPassword.Sensitive)
+}
+
+func TestGeneratedLegacyIPAddress(t *testing.T) {
+	type input struct {
+		Type  attr.Type
+		Other string
+	}
+	testCases := []test.TestCase{
+		{Name: "resource_equivalent", Input: input{Type: models.FvBDResourceSchema("").Attributes["ll_addr"].GetType(), Other: "fe80:0:0:0:0:0:0:1"}, Expected: true},
+		{Name: "resource_different", Input: input{Type: models.FvBDResourceSchema("").Attributes["ll_addr"].GetType(), Other: "fe80::2"}, Expected: false},
+		{Name: "datasource_equivalent", Input: input{Type: models.FvBDDataSourceSchema().Attributes["ll_addr"].GetType(), Other: "fe80:0:0:0:0:0:0:1"}, Expected: true},
+		{Name: "datasource_different", Input: input{Type: models.FvBDDataSourceSchema().Attributes["ll_addr"].GetType(), Other: "fe80::2"}, Expected: false},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			ctx := context.Background()
+			values := testCase.Input.(input)
+			assert.IsType(t, customtypes.IPAddressType{}, values.Type)
+			configured, err := values.Type.ValueFromTerraform(ctx, tftypes.NewValue(tftypes.String, "FE80::1"))
+			if !assert.NoError(t, err) {
+				return
+			}
+			returned, err := values.Type.ValueFromTerraform(ctx, tftypes.NewValue(tftypes.String, values.Other))
+			if !assert.NoError(t, err) {
+				return
+			}
+			value, ok := configured.(basetypes.StringValuableWithSemanticEquals)
+			if !assert.True(t, ok, "legacy attribute must retain IP semantic equality") {
+				return
+			}
+			equal, diagnostics := value.StringSemanticEquals(ctx, returned.(basetypes.StringValuable))
+			assert.False(t, diagnostics.HasError(), diagnostics)
+			assert.Equal(t, testCase.Expected, equal)
+		})
+	}
+
+	ctx := context.Background()
+	config := models.NewFvBDRootModelNull()
+	assert.True(t, config.LegacyLlAddr.IsNull())
+	config.LegacyLlAddr = customtypes.NewIPAddressValue("FE80::1")
+	planned := config
+	diagnostics := planned.SetFromLegacyConfig(ctx, &config, nil)
+	assert.False(t, diagnostics.HasError(), diagnostics)
+	assert.Equal(t, config.LegacyLlAddr, planned.LlAddr)
+	response, err := container.ParseJSON([]byte(`{"imdata":[{"fvBD":{"attributes":{"dn":"uni/tn-example/BD-example","llAddr":"fe80::1"}}}]}`))
+	if !assert.NoError(t, err) {
+		return
+	}
+	found, diagnostics := planned.SetFromResponse(ctx, response)
+	assert.True(t, found)
+	assert.False(t, diagnostics.HasError(), diagnostics)
+	diagnostics = planned.SetLegacyFromResponse(ctx, response)
+	assert.False(t, diagnostics.HasError(), diagnostics)
+	assert.Equal(t, customtypes.NewIPAddressValue("fe80::1"), planned.LegacyLlAddr)
+}
+
+func TestGeneratedLegacySecretPlanning(t *testing.T) {
+	type input struct {
+		HasPriorState bool
+		LegacySecret  types.String
+	}
+	testCases := []test.TestCase{
+		{Name: "initial_modern_secret", Input: input{}, Expected: types.StringValue("current-secret")},
+		{Name: "unconfigured_alias_stays_null", Input: input{HasPriorState: true, LegacySecret: types.StringNull()}, Expected: types.StringNull()},
+		{Name: "configured_alias_retains_its_state", Input: input{HasPriorState: true, LegacySecret: types.StringValue("previous-secret")}, Expected: types.StringValue("previous-secret")},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			values := testCase.Input.(input)
+			config := models.NewVmmUsrAccPRootModelNull()
+			config.Pwd = types.StringValue("current-secret")
+			planned := config
+			var previous *models.VmmUsrAccPRootModel
+			if values.HasPriorState {
+				state := models.NewVmmUsrAccPRootModelNull()
+				state.LegacyPwd = values.LegacySecret
+				previous = &state
+			}
+			diagnostics := planned.SetFromLegacyConfig(context.Background(), &config, previous)
+			assert.False(t, diagnostics.HasError(), diagnostics)
+			assert.Equal(t, testCase.Expected.(types.String), planned.LegacyPwd)
+		})
+	}
 }
 
 func TestGeneratedComputedSecretFallback(t *testing.T) {
@@ -1815,6 +1906,16 @@ func TestGeneratedComputedSecretFallback(t *testing.T) {
 			model, diagnostics := models.VmmUsrAccPModelFromObject(context.Background(), mustAPICContainer(t, `{"attributes":{"name":"example","pwd":"returned"}}`), &fallback)
 			assert.False(t, diagnostics.HasError(), diagnostics)
 			assert.Equal(t, testCase.Expected.(types.String), model.Pwd)
+			root := models.NewVmmUsrAccPRootModelNull()
+			root.VmmUsrAccPModel = model
+			root.LegacyPwd = testCase.Input.(types.String)
+			diagnostics = root.SetLegacyFromResponse(context.Background(), nil)
+			assert.False(t, diagnostics.HasError(), diagnostics)
+			assert.Equal(t, testCase.Expected.(types.String), root.LegacyPwd)
+			root.LegacyPwd = types.StringNull()
+			diagnostics = root.SetLegacyFromResponse(context.Background(), nil)
+			assert.False(t, diagnostics.HasError(), diagnostics)
+			assert.True(t, root.LegacyPwd.IsNull(), "modern secrets must not populate an unconfigured legacy alias")
 		})
 	}
 }
@@ -1954,8 +2055,9 @@ func TestGeneratedTopSystemDataSourceSchema(t *testing.T) {
 		"unicast_xr_ep_learn_disable",
 	}
 	for _, attributeName := range legacyAttributes {
-		if _, exists := schema.Attributes[attributeName]; exists {
-			t.Fatalf("deferred topSystem legacy attribute %q is exposed in the generated schema", attributeName)
+		attribute, exists := schema.Attributes[attributeName]
+		if !exists || !attribute.IsComputed() || attribute.IsRequired() || attribute.IsOptional() || attribute.GetDeprecationMessage() == "" {
+			t.Fatalf("unexpected topSystem compatibility attribute %q: %#v", attributeName, attribute)
 		}
 	}
 }
@@ -2313,7 +2415,7 @@ func TestGeneratedResourceCreatePreservesIDOnReadbackFailure(t *testing.T) {
 				Schema: schema,
 				Raw:    tftypes.NewValue(schema.Type().TerraformType(ctx), nil),
 			}}
-			adapter.Create(ctx, resource.CreateRequest{Plan: plan}, &response)
+			adapter.Create(ctx, resource.CreateRequest{Plan: plan, Config: tfsdk.Config{Schema: schema, Raw: plan.Raw}}, &response)
 
 			assert.Equal(t, 1, writes)
 			assert.True(t, response.Diagnostics.HasError())
@@ -3469,4 +3571,364 @@ func testClass(t *testing.T, className string, artifacts ...data.ArtifactEnum) d
 		t.Fatalf("create supported versions for class %q: %v", className, err)
 	}
 	return data.Class{Name: name, Artifacts: artifacts, SupportedVersions: versions}
+}
+
+func TestGeneratedTenantPriorSchemaDecodesPublishedState(t *testing.T) {
+	test.InitializeTest(t)
+	_, source, _, _ := runtime.Caller(0)
+	payload, err := os.ReadFile(filepath.Join(filepath.Dir(source), "..", "..", "definitions", "schema-git-commit-e21fb3e5.json"))
+	if !assert.NoError(t, err) {
+		return
+	}
+	var snapshot struct {
+		Providers map[string]struct {
+			Resources map[string]struct {
+				Version int64 `json:"version"`
+				Block   struct {
+					Attributes map[string]struct {
+						Type     json.RawMessage `json:"type"`
+						Required bool            `json:"required"`
+						Optional bool            `json:"optional"`
+						Computed bool            `json:"computed"`
+					} `json:"attributes"`
+				} `json:"block"`
+			} `json:"resource_schemas"`
+		} `json:"provider_schemas"`
+	}
+	if !assert.NoError(t, json.Unmarshal(payload, &snapshot)) {
+		return
+	}
+	historical := snapshot.Providers["registry.terraform.io/ciscodevnet/aci"].Resources["aci_tenant"]
+	prior := models.FvTenantResourceSchemaV1()
+	assert.Equal(t, historical.Version, prior.Version)
+	assert.GreaterOrEqual(t, len(prior.Attributes), len(historical.Block.Attributes))
+	for name, expected := range historical.Block.Attributes {
+		t.Run(name, func(t *testing.T) {
+			actual, exists := prior.Attributes[name]
+			if !assert.True(t, exists) {
+				return
+			}
+			expectedType := attr.Type(types.StringType)
+			if string(expected.Type) != `"string"` {
+				expectedType = types.SetType{ElemType: types.StringType}
+			}
+			assert.True(t, actual.GetType().Equal(expectedType))
+		})
+	}
+	// Real older state omits newer metadata attributes; the decoder supplies nulls.
+	raw, err := tftypes.ValueFromJSON([]byte(`{"id":"uni/tn-example","name":"example","annotation":"kept","description":"kept","name_alias":"kept","relation_fv_rs_tenant_mon_pol":"uni/tn-common/monepg-default","relation_fv_rs_tn_deny_rule":["retained"]}`), prior.Type().TerraformType(context.Background()))
+	if !assert.NoError(t, err) {
+		return
+	}
+	state := tfsdk.State{Schema: prior, Raw: raw}
+	var saved models.FvTenantRootModelV1
+	if diagnostics := state.Get(context.Background(), &saved); !assert.False(t, diagnostics.HasError(), "%v", diagnostics) {
+		return
+	}
+	var upgraded models.FvTenantRootModel
+	diagnostics := upgraded.UpgradeFromV1(context.Background(), &saved)
+	assert.False(t, diagnostics.HasError(), "%v", diagnostics)
+	assert.Equal(t, types.StringValue("uni/tn-example"), upgraded.ID)
+	assert.Equal(t, types.StringValue("kept"), upgraded.Annotation)
+	assert.Equal(t, types.StringValue("kept"), upgraded.NameAlias)
+	assert.True(t, upgraded.OwnerKey.IsNull())
+	assert.True(t, upgraded.OwnerTag.IsNull())
+	assert.True(t, upgraded.TagAnnotation.IsNull())
+	assert.True(t, upgraded.TagTag.IsNull())
+	assert.Equal(t, types.StringValue("default"), upgraded.FvRsTenantMonPol.Attributes()["monitoring_policy_name"])
+	assert.Equal(t, types.SetValueMust(types.StringType, []attr.Value{types.StringValue("retained")}), upgraded.LegacyRelationFvRsTnDenyRule)
+	current := models.FvTenantResourceSchema("annotation")
+	assert.EqualValues(t, 2, current.Version)
+	assert.False(t, current.ValidateImplementation(context.Background()).HasError())
+	datasource := models.FvTenantDataSourceSchema()
+	for _, name := range []string{"relation_fv_rs_tenant_mon_pol", "relation_fv_rs_tn_deny_rule"} {
+		assert.True(t, current.Attributes[name].IsOptional())
+		assert.True(t, current.Attributes[name].IsComputed())
+		assert.True(t, datasource.Attributes[name].IsComputed())
+		assert.False(t, datasource.Attributes[name].IsOptional())
+		assert.NotContains(t, models.FvTenantModelAttributeTypes(), name, "compatibility fields must remain outside the APIC class model")
+	}
+}
+
+func TestGeneratedTenantLegacyPlanning(t *testing.T) {
+	type input struct {
+		legacy      types.String
+		conflicting bool
+	}
+	testCases := []test.TestCase{
+		{Name: "resolved_dn", Input: input{legacy: types.StringValue("uni/tn-common/monepg-policy-one")}, Expected: types.StringValue("policy-one")},
+		{Name: "unknown_reference", Input: input{legacy: types.StringUnknown()}, Expected: types.StringUnknown()},
+		{Name: "empty_value", Input: input{legacy: types.StringValue("")}, Expected: types.StringValue("")},
+		{Name: "both_forms_rejected", Input: input{legacy: types.StringValue("uni/tn-common/monepg-policy"), conflicting: true}},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			ctx := context.Background()
+			values := testCase.Input.(input)
+			config := models.NewFvTenantRootModelNull()
+			config.LegacyRelationFvRsTenantMonPol = values.legacy
+			plan := models.NewFvTenantRootModelNull()
+			plan.Annotation = types.StringValue("parent")
+			plan.FvRsTenantMonPol = types.ObjectUnknown(models.FvRsTenantMonPolModelAttributeTypes())
+			previous := models.NewFvTenantRootModelNull()
+			child := models.NewFvRsTenantMonPolModelNull()
+			child.Annotation = types.StringValue("keep-child-annotation")
+			child.TnMonEPGPolName = types.StringValue("previous")
+			previous.FvRsTenantMonPol, _ = types.ObjectValueFrom(ctx, models.FvRsTenantMonPolModelAttributeTypes(), child)
+			if values.conflicting {
+				config.FvRsTenantMonPol = previous.FvRsTenantMonPol
+			}
+			diagnostics := plan.SetFromLegacyConfig(ctx, &config, &previous)
+			if values.conflicting {
+				assert.True(t, diagnostics.HasError())
+				return
+			}
+			if !assert.False(t, diagnostics.HasError(), "%v", diagnostics) {
+				return
+			}
+			assert.Equal(t, testCase.Expected, plan.FvRsTenantMonPol.Attributes()["monitoring_policy_name"])
+			assert.Equal(t, child.Annotation, plan.FvRsTenantMonPol.Attributes()["annotation"])
+		})
+	}
+}
+
+func TestGeneratedTenantLegacyStatePreservation(t *testing.T) {
+	type input struct {
+		legacy         types.String
+		changeProperty bool
+		changeChild    bool
+		withoutState   bool
+	}
+	previousDN := types.StringValue("uni/tn-common/monepg-default")
+	configuredDN := types.StringValue("uni/tn-common/monepg-configured")
+	testCases := []test.TestCase{
+		{Name: "unchanged_retained_child", Input: input{legacy: types.StringNull()}, Expected: previousDN},
+		{Name: "changed_modern_property", Input: input{legacy: types.StringNull(), changeProperty: true}, Expected: types.StringUnknown()},
+		{Name: "changed_modern_child", Input: input{legacy: types.StringNull(), changeChild: true}, Expected: types.StringUnknown()},
+		{Name: "configured_legacy_value", Input: input{legacy: configuredDN}, Expected: configuredDN},
+		{Name: "configured_unknown_reference", Input: input{legacy: types.StringUnknown()}, Expected: types.StringUnknown()},
+		{Name: "creation_without_prior_state", Input: input{legacy: types.StringNull(), withoutState: true}, Expected: types.StringUnknown()},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			ctx := context.Background()
+			values := testCase.Input.(input)
+			previous := models.NewFvTenantRootModelNull()
+			previous.Name = types.StringValue("example")
+			previous.ID = types.StringValue("uni/tn-example")
+			previous.LegacyRelationFvRsTenantMonPol = previousDN
+			previous.LegacyRelationFvRsTnDenyRule = types.SetValueMust(types.StringType, []attr.Value{})
+			child := models.NewFvRsTenantMonPolModelNull()
+			child.TnMonEPGPolName = types.StringValue("default")
+			object, diagnostics := types.ObjectValueFrom(ctx, models.FvRsTenantMonPolModelAttributeTypes(), child)
+			if !assert.False(t, diagnostics.HasError(), "%v", diagnostics) {
+				return
+			}
+			previous.FvRsTenantMonPol = object
+			plan := previous
+			plan.LegacyRelationFvRsTenantMonPol = types.StringUnknown()
+			config := models.NewFvTenantRootModelNull()
+			config.LegacyRelationFvRsTenantMonPol = values.legacy
+			if !values.legacy.IsNull() {
+				plan.LegacyRelationFvRsTenantMonPol = values.legacy
+			}
+			if values.changeProperty {
+				plan.Descr = types.StringValue("changed")
+			}
+			if values.changeChild {
+				child.TnMonEPGPolName = types.StringValue("changed")
+				plan.FvRsTenantMonPol, diagnostics = types.ObjectValueFrom(ctx, models.FvRsTenantMonPolModelAttributeTypes(), child)
+				if !assert.False(t, diagnostics.HasError(), "%v", diagnostics) {
+					return
+				}
+			}
+			priorState := &previous
+			if values.withoutState {
+				priorState = nil
+			}
+			expected := plan
+			expected.LegacyRelationFvRsTenantMonPol = testCase.Expected.(types.String)
+			diagnostics = plan.SetLegacyFromState(ctx, &config, priorState)
+			assert.False(t, diagnostics.HasError(), "%v", diagnostics)
+			assert.Equal(t, expected, plan)
+			assert.Equal(t, previousDN, previous.LegacyRelationFvRsTenantMonPol, "state preservation must not modify prior state")
+		})
+	}
+}
+
+func TestGeneratedTenantLegacyResponseAndPayload(t *testing.T) {
+	ctx := context.Background()
+	model := models.NewFvTenantRootModelNull()
+	model.LegacyRelationFvRsTenantMonPol = types.StringValue("uni/tn-common/monepg-previous")
+	model.LegacyRelationFvRsTnDenyRule = types.SetValueMust(types.StringType, []attr.Value{types.StringValue("retained")})
+	response, err := container.ParseJSON([]byte(`{"imdata":[{"fvTenant":{"attributes":{"dn":"uni/tn-example","name":"example"},"children":[{"fvRsTenantMonPol":{"attributes":{"tnMonEPGPolName":"default","tDn":"uni/tn-common/monepg-default"}}}]}}]}`))
+	if !assert.NoError(t, err) {
+		return
+	}
+	found, diagnostics := model.SetFromResponse(ctx, response)
+	if !assert.True(t, found) || !assert.False(t, diagnostics.HasError(), "%v", diagnostics) {
+		return
+	}
+	assert.Equal(t, types.StringValue("default"), model.FvRsTenantMonPol.Attributes()["monitoring_policy_name"])
+	assert.Equal(t, types.StringValue("uni/tn-common/monepg-previous"), model.LegacyRelationFvRsTenantMonPol, "modern decoding must leave legacy fields untouched")
+	diagnostics = model.SetLegacyFromResponse(ctx, response)
+	assert.False(t, diagnostics.HasError(), "%v", diagnostics)
+	assert.Equal(t, types.StringValue("uni/tn-common/monepg-default"), model.LegacyRelationFvRsTenantMonPol)
+	assert.Equal(t, types.SetValueMust(types.StringType, []attr.Value{types.StringValue("retained")}), model.LegacyRelationFvRsTnDenyRule)
+	payload, diagnostics := model.BuildPayload(ctx, nil, true, false, "annotation")
+	if assert.False(t, diagnostics.HasError(), "%v", diagnostics) {
+		assert.NotContains(t, payload.String(), "relation_fv_rs_tn_deny_rule")
+		assert.NotContains(t, payload.String(), "relation_fv_rs_tenant_mon_pol")
+	}
+	imported := models.NewFvTenantRootModelNull()
+	_, diagnostics = imported.SetFromResponse(ctx, response)
+	assert.False(t, diagnostics.HasError())
+	assert.True(t, imported.LegacyRelationFvRsTenantMonPol.IsNull())
+	assert.True(t, imported.LegacyRelationFvRsTnDenyRule.IsNull())
+	diagnostics = imported.SetLegacyFromResponse(ctx, response)
+	assert.False(t, diagnostics.HasError(), "%v", diagnostics)
+	assert.Equal(t, types.StringValue("uni/tn-common/monepg-default"), imported.LegacyRelationFvRsTenantMonPol)
+	assert.Equal(t, 0, len(imported.LegacyRelationFvRsTnDenyRule.Elements()))
+}
+
+func TestGeneratedEPGLegacyMapping(t *testing.T) {
+	ctx := context.Background()
+	response, err := container.ParseJSON([]byte(`{"imdata":[{"fvAEPg":{"attributes":{"dn":"uni/tn-example/ap-example/epg-example","name":"example","annotation":"root","prio":"level1"},"children":[{"fvRsCons":{"attributes":{"tnVzBrCPName":"one","tDn":"uni/tn-other/brc-one","annotation":"retained"}}},{"fvRsNodeAtt":{"attributes":{"tDn":"topology/pod-1/node-101","encap":"vlan-100","instrImedcy":"immediate","descr":"description","mode":"native","annotation":"leaf-annotation"}}}]}}]}`))
+	if !assert.NoError(t, err) {
+		return
+	}
+	previous := models.NewFvAEPgRootModelNull()
+	found, diagnostics := previous.SetFromResponse(ctx, response)
+	if !assert.True(t, found) || !assert.False(t, diagnostics.HasError(), "%v", diagnostics) {
+		return
+	}
+	diagnostics = previous.SetLegacyFromResponse(ctx, response)
+	if !assert.False(t, diagnostics.HasError(), "%v", diagnostics) {
+		return
+	}
+	previous.PcTag, previous.Scope = types.StringValue("1001"), types.StringValue("10001")
+	assert.Equal(t, types.StringValue("uni/tn-example/ap-example"), previous.LegacyApplicationProfileDn)
+	assert.Equal(t, types.StringValue("level1"), previous.LegacyPrio)
+	if assert.Len(t, previous.LegacyRelationFvRsNodeAtt.Elements(), 1) {
+		attributes := previous.LegacyRelationFvRsNodeAtt.Elements()[0].(types.Object).Attributes()
+		assert.Len(t, attributes, 5)
+		assert.NotContains(t, attributes, "annotation")
+		assert.Equal(t, types.StringValue("vlan-100"), attributes["encap"])
+	}
+	testCases := []test.TestCase{
+		{Name: "same_identifier_preserves_child", Input: "one", Expected: types.StringValue("retained")},
+		{Name: "new_identifier_uses_root_annotation", Input: "two", Expected: types.StringValue("root")},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			config := models.NewFvAEPgRootModelNull()
+			config.LegacyApplicationProfileDn = previous.ParentDN
+			config.LegacyPrio = types.StringValue("level1")
+			config.LegacyRelationFvRsCons = types.SetValueMust(types.StringType, []attr.Value{types.StringValue("uni/tn-other/brc-" + testCase.Input.(string))})
+			config.LegacyRelationFvRsNodeAtt = previous.LegacyRelationFvRsNodeAtt
+			planned := previous
+			diagnostics := planned.SetFromLegacyConfig(ctx, &config, &previous)
+			if !assert.False(t, diagnostics.HasError(), "%v", diagnostics) {
+				return
+			}
+			assert.Equal(t, previous.ParentDN, planned.ParentDN)
+			assert.Equal(t, "level1", planned.Prio.ValueString())
+			if assert.Len(t, planned.FvRsCons.Elements(), 1) {
+				attributes := planned.FvRsCons.Elements()[0].(types.Object).Attributes()
+				assert.Equal(t, types.StringValue(testCase.Input.(string)), attributes["contract_name"])
+				assert.Equal(t, testCase.Expected, attributes["annotation"])
+			}
+			assert.True(t, planned.FvRsNodeAtt.Equal(previous.FvRsNodeAtt), "legacy block planning must retain newer child fields")
+			planned.PcTag, planned.Scope = types.StringUnknown(), types.StringUnknown()
+			planned.LegacyShutdown = types.StringUnknown()
+			diagnostics = planned.SetLegacyFromState(ctx, &config, &previous)
+			assert.False(t, diagnostics.HasError(), "%v", diagnostics)
+			if testCase.Input == "one" {
+				assert.Equal(t, previous.PcTag, planned.PcTag, "unchanged plans must retain computed EPG outputs")
+				assert.Equal(t, previous.Scope, planned.Scope)
+				assert.Equal(t, previous.LegacyShutdown, planned.LegacyShutdown)
+			} else {
+				assert.True(t, planned.PcTag.IsUnknown(), "real child changes must allow computed outputs to refresh")
+				assert.True(t, planned.Scope.IsUnknown())
+				assert.True(t, planned.LegacyShutdown.IsUnknown())
+			}
+			config.FvRsCons = previous.FvRsCons
+			assert.True(t, planned.SetFromLegacyConfig(ctx, &config, &previous).HasError(), "explicit legacy and modern children must conflict")
+		})
+	}
+	resourceSchema := models.FvAEPgResourceSchema("annotation")
+	assert.False(t, resourceSchema.ValidateImplementation(ctx).HasError())
+	assert.False(t, models.FvAEPgDataSourceSchema().ValidateImplementation(ctx).HasError())
+	assert.False(t, resourceSchema.Attributes["parent_dn"].IsRequired(), "the old parent alias remains a valid alternative")
+	assert.Len(t, resourceSchema.Blocks["relation_fv_rs_node_att"].(resourceschema.SetNestedBlock).NestedObject.Attributes, 5)
+}
+
+func TestGeneratedTenantUpgradePreservesPublishedNullRelationHandling(t *testing.T) {
+	prior := models.FvTenantRootModelV1{
+		Name:                         types.StringValue("example"),
+		ID:                           types.StringValue("uni/tn-example"),
+		LegacyRelationFvRsTnDenyRule: types.SetNull(types.StringType),
+	}
+	var current models.FvTenantRootModel
+	diagnostics := current.UpgradeFromV1(context.Background(), &prior)
+	assert.False(t, diagnostics.HasError(), "%v", diagnostics)
+	assert.True(t, current.LegacyRelationFvRsTenantMonPol.IsNull())
+	assert.Equal(t, types.StringValue(""), current.FvRsTenantMonPol.Attributes()["monitoring_policy_name"])
+}
+
+func TestGeneratedTenantLegacyReferenceResolvesDuringPlanning(t *testing.T) {
+	ctx := context.Background()
+	schema := models.FvTenantResourceSchema("annotation")
+	adapter := provider.NewFvTenantResource().(resource.ResourceWithModifyPlan)
+	previous := models.NewFvTenantRootModelNull()
+	previous.Name = types.StringValue("example")
+	previous.ID = types.StringValue("uni/tn-example")
+	state := tfsdk.State{Schema: schema}
+	if diagnostics := state.Set(ctx, &previous); diagnostics.HasError() {
+		t.Fatal(diagnostics)
+	}
+	plan := models.NewFvTenantRootModelNull()
+	plan.Annotation = types.StringValue("annotation")
+	type input struct {
+		name   types.String
+		legacy types.String
+	}
+	testCases := []test.TestCase{
+		{Name: "initial_plan_with_unknown_identifier", Input: input{name: types.StringUnknown(), legacy: types.StringUnknown()}, Expected: types.StringUnknown()},
+		{Name: "final_plan_with_resolved_reference", Input: input{name: types.StringValue("example"), legacy: types.StringValue("uni/tn-common/monepg-default")}, Expected: types.StringValue("default")},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			values := testCase.Input.(input)
+			config := models.NewFvTenantRootModelNull()
+			config.Name, config.LegacyRelationFvRsTenantMonPol = values.name, values.legacy
+			configuration := tfsdk.Plan{Schema: schema}
+			if diagnostics := configuration.Set(ctx, &config); diagnostics.HasError() {
+				t.Fatal(diagnostics)
+			}
+			plan.Name, plan.LegacyRelationFvRsTenantMonPol = values.name, values.legacy
+			request := resource.ModifyPlanRequest{Config: tfsdk.Config{Schema: schema, Raw: configuration.Raw}, Plan: tfsdk.Plan{Schema: schema}, State: state}
+			if diagnostics := request.Plan.Set(ctx, &plan); diagnostics.HasError() {
+				t.Fatal(diagnostics)
+			}
+			response := resource.ModifyPlanResponse{Plan: request.Plan}
+			adapter.ModifyPlan(ctx, request, &response)
+			if !assert.False(t, response.Diagnostics.HasError(), "%v", response.Diagnostics) {
+				return
+			}
+			if diagnostics := response.Plan.Get(ctx, &plan); diagnostics.HasError() {
+				t.Fatal(diagnostics)
+			}
+			assert.Equal(t, values.name, plan.Name)
+			assert.Equal(t, testCase.Expected, plan.FvRsTenantMonPol.Attributes()["monitoring_policy_name"])
+			if !values.name.IsUnknown() {
+				assert.Equal(t, types.StringValue("uni/tn-example"), plan.ID)
+				payload, diagnostics := plan.BuildPayload(ctx, &previous.FvTenantModel, false, false, "annotation")
+				if assert.False(t, diagnostics.HasError(), "%v", diagnostics) {
+					assert.Contains(t, payload.String(), `"tnMonEPGPolName":"default"`)
+					assert.NotContains(t, payload.String(), "relation_fv_rs_tenant_mon_pol")
+				}
+			}
+		})
+	}
 }

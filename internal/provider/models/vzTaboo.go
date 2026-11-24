@@ -14,6 +14,7 @@ import (
 	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	modelHelpers "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/provider/models/helpers"
@@ -27,6 +28,14 @@ func vzTabooSchemaDefinition() modelHelpers.ClassSchema {
 	return modelHelpers.ClassSchema{
 		ResourceDescription:   "Manages ACI Taboo Contract",
 		DataSourceDescription: "Data source for ACI Taboo Contract",
+		Version:               2,
+		LegacyAttributes: map[string]modelHelpers.LegacyAttributeSchema{
+			"tenant_dn": {
+				Type:            types.StringType,
+				Replacement:     "parent_dn",
+				RequiresReplace: true,
+			},
+		},
 		Properties: map[string]modelHelpers.PropertySchema{
 			"annotation": {
 				Type:        modelHelpers.StringProperty,
@@ -296,8 +305,19 @@ func (m *VzTabooModel) BuildNestedDeletePayloadObject(
 	})
 }
 
+type VzTabooLegacyModelV2 struct {
+	LegacyTenantDn types.String `tfsdk:"tenant_dn"`
+}
+
+func NewVzTabooLegacyModelV2Null() VzTabooLegacyModelV2 {
+	return VzTabooLegacyModelV2{
+		LegacyTenantDn: types.StringNull(),
+	}
+}
+
 type VzTabooRootModel struct {
 	VzTabooModel
+	VzTabooLegacyModelV2
 
 	ID       types.String `tfsdk:"id"`
 	ParentDN types.String `tfsdk:"parent_dn"`
@@ -305,9 +325,10 @@ type VzTabooRootModel struct {
 
 func NewVzTabooRootModelNull() VzTabooRootModel {
 	return VzTabooRootModel{
-		VzTabooModel: NewVzTabooModelNull(),
-		ID:           types.StringNull(),
-		ParentDN:     types.StringNull(),
+		VzTabooModel:         NewVzTabooModelNull(),
+		VzTabooLegacyModelV2: NewVzTabooLegacyModelV2Null(),
+		ID:                   types.StringNull(),
+		ParentDN:             types.StringNull(),
 	}
 }
 
@@ -347,6 +368,13 @@ func (m *VzTabooRootModel) SetFromResponse(
 	return true, diagnostics
 }
 
+func (m *VzTabooRootModel) SetLegacyFromResponse(ctx context.Context, response *container.Container) diag.Diagnostics {
+	// Modern response decoding can also be used independently of compatibility state.
+	var diagnostics diag.Diagnostics
+	m.LegacyTenantDn = m.ParentDN
+	return diagnostics
+}
+
 func (m *VzTabooRootModel) BuildPayload(
 	ctx context.Context,
 	priorState *VzTabooModel,
@@ -370,4 +398,89 @@ func (m *VzTabooRootModel) BuildPayload(
 func (m *VzTabooRootModel) BuildDeletePayload(ctx context.Context) (*container.Container, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
 	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "vzTaboo", m.ID.ValueString()), diagnostics
+}
+
+func (m *VzTabooRootModel) SetFromLegacyConfig(ctx context.Context, config, priorState *VzTabooRootModel) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	if !config.LegacyTenantDn.IsNull() {
+		m.ParentDN = config.LegacyTenantDn
+	}
+	return diagnostics
+}
+
+func (m *VzTabooRootModel) SetLegacyFromState(ctx context.Context, config, priorState *VzTabooRootModel) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	if priorState == nil {
+		return diagnostics
+	}
+
+	// Retain legacy and read-only outputs when the configured and managed values are unchanged.
+	candidate := *m
+	if config.LegacyTenantDn.IsNull() {
+		candidate.LegacyTenantDn = priorState.LegacyTenantDn
+	}
+	attributeType := VzTabooResourceSchema("").Type()
+	var planValue, stateValue types.Object
+	diagnostics.Append(tfsdk.ValueFrom(ctx, candidate, attributeType, &planValue)...)
+	diagnostics.Append(tfsdk.ValueFrom(ctx, priorState, attributeType, &stateValue)...)
+	if diagnostics.HasError() || !planValue.Equal(stateValue) {
+		return diagnostics
+	}
+	if config.LegacyTenantDn.IsNull() {
+		m.LegacyTenantDn = candidate.LegacyTenantDn
+	}
+	return diagnostics
+}
+
+type VzTabooRootModelV1 struct {
+	Annotation     types.String `tfsdk:"annotation"`
+	TagAnnotation  types.Set    `tfsdk:"annotations"`
+	Descr          types.String `tfsdk:"description"`
+	ID             types.String `tfsdk:"id"`
+	Name           types.String `tfsdk:"name"`
+	NameAlias      types.String `tfsdk:"name_alias"`
+	OwnerKey       types.String `tfsdk:"owner_key"`
+	OwnerTag       types.String `tfsdk:"owner_tag"`
+	TagTag         types.Set    `tfsdk:"tags"`
+	LegacyTenantDn types.String `tfsdk:"tenant_dn"`
+}
+
+func VzTabooResourceSchemaV1() *resourceschema.Schema {
+	current := VzTabooResourceSchema("")
+	return &resourceschema.Schema{
+		Version: 1,
+		Attributes: map[string]resourceschema.Attribute{
+			"annotation":  current.Attributes["annotation"],
+			"annotations": current.Attributes["annotations"],
+			"description": current.Attributes["description"],
+			"id":          current.Attributes["id"],
+			"name":        current.Attributes["name"],
+			"name_alias":  current.Attributes["name_alias"],
+			"owner_key":   current.Attributes["owner_key"],
+			"owner_tag":   current.Attributes["owner_tag"],
+			"tags":        current.Attributes["tags"],
+			"tenant_dn": resourceschema.StringAttribute{
+				Required: true,
+				Optional: false,
+				Computed: false,
+			},
+		},
+	}
+}
+
+func (m *VzTabooRootModel) UpgradeFromV1(ctx context.Context, priorState *VzTabooRootModelV1) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	*m = NewVzTabooRootModelNull()
+	m.Annotation = priorState.Annotation
+	m.TagAnnotation = priorState.TagAnnotation
+	m.Descr = priorState.Descr
+	m.ID = priorState.ID
+	m.Name = priorState.Name
+	m.NameAlias = priorState.NameAlias
+	m.OwnerKey = priorState.OwnerKey
+	m.OwnerTag = priorState.OwnerTag
+	m.TagTag = priorState.TagTag
+	m.LegacyTenantDn = priorState.LegacyTenantDn
+	m.ParentDN = priorState.LegacyTenantDn
+	return diagnostics
 }

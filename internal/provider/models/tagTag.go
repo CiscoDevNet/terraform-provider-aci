@@ -27,6 +27,7 @@ func tagTagSchemaDefinition() modelHelpers.ClassSchema {
 	return modelHelpers.ClassSchema{
 		ResourceDescription:   "Manages ACI Tag",
 		DataSourceDescription: "Data source for ACI Tag",
+		Version:               1,
 		Properties: map[string]modelHelpers.PropertySchema{
 			"key": {
 				Type:            modelHelpers.StringProperty,
