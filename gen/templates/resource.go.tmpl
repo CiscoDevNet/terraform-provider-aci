@@ -81,7 +81,7 @@ func (r *{{ .Class.Name.Capitalized }}Resource) ModifyPlan(ctx context.Context, 
 		return
 	}
 
-	{{ if .Class.LegacyAttributes -}}
+	{{ if .Class.HasCurrentLegacyAttributes -}}
 	var config models.{{ .Class.Name.Capitalized }}RootModel
 	resp.Diagnostics.Append(req.Config.Get(ctx, &config)...)
 	var priorState *models.{{ .Class.Name.Capitalized }}RootModel
@@ -97,7 +97,7 @@ func (r *{{ .Class.Name.Capitalized }}Resource) ModifyPlan(ctx context.Context, 
 	// A parent reference or naming value may only become known during apply.
 	{{ with .Class.ParentDnProperty -}}
 	if data.ParentDN.IsNull() || data.ParentDN.IsUnknown() {
-		{{ if $.Class.LegacyAttributes -}}
+		{{ if $.Class.HasCurrentLegacyAttributes -}}
 		resp.Diagnostics.Append(resp.Plan.Set(ctx, &data)...)
 		{{ end -}}
 		return
@@ -106,7 +106,7 @@ func (r *{{ .Class.Name.Capitalized }}Resource) ModifyPlan(ctx context.Context, 
 	{{ range $identifier := .Class.IdentifiedBy -}}
 		{{- $property := index $.Class.Properties $identifier -}}
 	if data.{{ $property.ModelFieldName $.Class.Name }}.IsNull() || data.{{ $property.ModelFieldName $.Class.Name }}.IsUnknown() {
-		{{ if $.Class.LegacyAttributes -}}
+		{{ if $.Class.HasCurrentLegacyAttributes -}}
 		resp.Diagnostics.Append(resp.Plan.Set(ctx, &data)...)
 		{{ end -}}
 		return
@@ -120,7 +120,7 @@ func (r *{{ .Class.Name.Capitalized }}Resource) ModifyPlan(ctx context.Context, 
 		}
 	}
 
-	{{ if .Class.LegacyAttributes -}}
+	{{ if .Class.HasCurrentLegacyAttributes -}}
 	resp.Diagnostics.Append(data.SetLegacyFromState(ctx, &config, priorState)...)
 	if resp.Diagnostics.HasError() { return }
 
@@ -194,7 +194,7 @@ func (r *{{ .Class.Name.Capitalized }}Resource) Create(ctx context.Context, req 
 		return
 	}
 
-	{{ if .Class.LegacyAttributes -}}
+	{{ if .Class.HasCurrentLegacyAttributes -}}
 	resp.Diagnostics.Append(data.SetLegacyFromResponse(ctx, response)...)
 	if resp.Diagnostics.HasError() { return }
 
@@ -228,7 +228,7 @@ func (r *{{ .Class.Name.Capitalized }}Resource) Read(ctx context.Context, req re
 		return
 	}
 
-	{{ if .Class.LegacyAttributes -}}
+	{{ if .Class.HasCurrentLegacyAttributes -}}
 	resp.Diagnostics.Append(data.SetLegacyFromResponse(ctx, response)...)
 	if resp.Diagnostics.HasError() { return }
 
@@ -278,7 +278,7 @@ func (r *{{ .Class.Name.Capitalized }}Resource) Update(ctx context.Context, req 
 		return
 	}
 
-	{{ if .Class.LegacyAttributes -}}
+	{{ if .Class.HasCurrentLegacyAttributes -}}
 	resp.Diagnostics.Append(data.SetLegacyFromResponse(ctx, response)...)
 	if resp.Diagnostics.HasError() { return }
 

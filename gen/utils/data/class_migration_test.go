@@ -468,3 +468,141 @@ func TestMigrationOrphanStatusInheritsEarlierShape(t *testing.T) {
 		}
 	}
 }
+
+func TestRetiredStoredAliasesPreserveModernFields(t *testing.T) {
+	type input struct {
+		Name   string
+		Source MigrationSourceEnum
+	}
+	testCases := []test.TestCase{
+		{Name: "framework_property_name_collision", Input: input{Name: "prio", Source: FromFramework}, Expected: true},
+		{Name: "framework_renamed_attribute", Input: input{Name: "old_priority", Source: FromFramework}, Expected: true},
+		{Name: "sdkv2_property_name_collision", Input: input{Name: "prio", Source: FromSDKv2}, Expected: false},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			test.InitializeTest(t)
+			version := 3
+			values := testCase.Input.(input)
+			name := values.Name
+			class := classWithProperties("fvAEPg", map[string]*Property{
+				"prio": {PropertyName: "prio", AttributeName: "priority", ValueType: String, Optional: true, Computed: true},
+			}, nil)
+			class.PropertiesAll = []string{"prio"}
+			class.ClassDefinition.SchemaVersion = &version
+			class.StateUpgrades = map[int]StateUpgradeDefinition{
+				1: {Attributes: map[string]AttributeUpgradeDefinition{"prio": {AttributeName: name}}},
+				2: {Source: values.Source, Attributes: map[string]AttributeUpgradeDefinition{name: {AttributeName: name, Type: StringAttribute, Restriction: LegacyOptionalComputed, Status: Removed}}},
+			}
+			store := &DataStore{Classes: map[string]Class{}, ctx: NewContext()}
+			class.setMigrationData(store)
+			assert.NoError(t, store.ctx.Diagnostics.Error())
+			assert.False(t, class.HasCurrentLegacyAttributes())
+			if !assert.Len(t, class.MigrationSchemas, 2) {
+				return
+			}
+			attributes := map[string]MigrationAttribute{}
+			for _, attribute := range class.MigrationSchemas[1].Attributes {
+				attributes[attribute.AttributeName] = attribute
+			}
+			if testCase.Expected.(bool) {
+				assert.Contains(t, attributes, "priority")
+				assert.Empty(t, attributes[name].TargetField)
+				assert.Equal(t, "Prio", attributes["priority"].TargetField)
+			} else {
+				assert.NotContains(t, attributes, "priority")
+				assert.Equal(t, "Prio", attributes[name].TargetField)
+			}
+			assert.Contains(t, attributes, name)
+			assert.Equal(t, Removed, attributes[name].Status)
+		})
+	}
+}
+
+func TestRetiredStoredBlockPreservesModernChild(t *testing.T) {
+	testCases := []test.TestCase{
+		{Name: "inherited_shape", Input: AttributeUpgradeDefinition{}},
+		{Name: "member_rename", Input: AttributeUpgradeDefinition{Attributes: map[string]AttributeUpgradeDefinition{"tDn": {AttributeName: "old_node_dn"}}}, Expected: "cannot override members or nested children"},
+		{Name: "member_type", Input: AttributeUpgradeDefinition{Attributes: map[string]AttributeUpgradeDefinition{"tDn": {Type: SetAttribute, ElementType: StringAttribute}}}, Expected: "cannot override members or nested children"},
+		{Name: "grandchild", Input: AttributeUpgradeDefinition{Children: map[string]AttributeUpgradeDefinition{"tagAnnotation": {AttributeName: "old_annotations"}}}, Expected: "cannot override members or nested children"},
+		{Name: "block_type", Input: AttributeUpgradeDefinition{Type: StringAttribute}, Expected: "cannot change its inherited type"},
+		{Name: "element_type", Input: AttributeUpgradeDefinition{ElementType: StringAttribute}, Expected: "cannot change its inherited type"},
+		{Name: "value_type", Input: AttributeUpgradeDefinition{ValueType: String}, Expected: "cannot change its inherited type"},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			test.InitializeTest(t)
+			version := 3
+			child := classWithProperties("fvRsNodeAtt", map[string]*Property{
+				"tDn": {PropertyName: "tDn", AttributeName: "target_dn", ValueType: String, Required: true},
+			}, nil)
+			child.PropertiesAll, child.IdentifiedBy = []string{"tDn"}, []string{"tDn"}
+			child.ResourceNameNested = "relation_to_static_leafs"
+			class := classWithProperties("fvAEPg", map[string]*Property{}, []string{"fvRsNodeAtt"})
+			class.ClassDefinition.SchemaVersion = &version
+			definition := testCase.Input.(AttributeUpgradeDefinition)
+			definition.AttributeName, definition.Status, definition.Restriction = "relation_fv_rs_node_att", Removed, LegacyOptional
+			if definition.Type == UndefinedLegacyAttributeType {
+				definition.Type = SetNestedAttribute
+			}
+			class.StateUpgrades = map[int]StateUpgradeDefinition{
+				1: {Children: map[string]AttributeUpgradeDefinition{"fvRsNodeAtt": {
+					AttributeName: "relation_fv_rs_node_att", Attributes: map[string]AttributeUpgradeDefinition{"tDn": {AttributeName: "node_dn"}},
+				}}},
+				2: {Source: FromFramework, Attributes: map[string]AttributeUpgradeDefinition{"relation_fv_rs_node_att": definition}},
+			}
+			store := &DataStore{Classes: map[string]Class{"fvRsNodeAtt": *child}, ctx: NewContext()}
+			class.setMigrationData(store)
+			if expected, _ := testCase.Expected.(string); expected != "" {
+				assert.ErrorContains(t, store.ctx.Diagnostics.Error(), expected)
+				assert.ErrorContains(t, store.ctx.Diagnostics.Error(), "schema version 2")
+				return
+			}
+			assert.NoError(t, store.ctx.Diagnostics.Error())
+			assert.False(t, class.HasCurrentLegacyAttributes())
+			if !assert.Len(t, class.MigrationSchemas, 2) {
+				return
+			}
+			attributes := map[string]MigrationAttribute{}
+			for _, attribute := range class.MigrationSchemas[1].Attributes {
+				attributes[attribute.AttributeName] = attribute
+			}
+			assert.Contains(t, attributes, "relation_to_static_leafs")
+			assert.Contains(t, attributes, "relation_fv_rs_node_att")
+			block := attributes["relation_fv_rs_node_att"]
+			assert.True(t, block.Block)
+			assert.Nil(t, block.ChildName)
+			if assert.Len(t, block.Attributes, 1) {
+				assert.Equal(t, "node_dn", block.Attributes[0].AttributeName)
+			}
+		})
+	}
+}
+
+func TestMigrationRejectsGrandchildChanges(t *testing.T) {
+	testCases := []test.TestCase{
+		{Name: "attribute_rename", Input: AttributeUpgradeDefinition{AttributeName: "old_value"}},
+		{Name: "attribute_type", Input: AttributeUpgradeDefinition{Type: SetAttribute, ElementType: StringAttribute}},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			test.InitializeTest(t)
+			version := 2
+			child := classWithProperties("fvAp", map[string]*Property{}, nil)
+			child.ResourceNameNested = "applications"
+			class := classWithProperties("fvTenant", map[string]*Property{}, []string{"fvAp"})
+			class.ClassDefinition.SchemaVersion = &version
+			class.StateUpgrades = map[int]StateUpgradeDefinition{1: {
+				Source: FromFramework,
+				Children: map[string]AttributeUpgradeDefinition{"fvAp": {
+					Children: map[string]AttributeUpgradeDefinition{"tagAnnotation": {
+						Attributes: map[string]AttributeUpgradeDefinition{"value": testCase.Input.(AttributeUpgradeDefinition)},
+					}},
+				}},
+			}}
+			store := &DataStore{Classes: map[string]Class{"fvAp": *child}, ctx: NewContext()}
+			class.setMigrationData(store)
+			assert.ErrorContains(t, store.ctx.Diagnostics.Error(), "needs nested-schema migration support")
+		})
+	}
+}

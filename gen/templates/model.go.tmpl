@@ -25,7 +25,7 @@ import (
 	{{- if .Class.HasResourceArtifact }}
 	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	{{- end }}
-	{{- if and .Class.HasResourceArtifact .Class.LegacyAttributes }}
+	{{- if and .Class.HasResourceArtifact .Class.HasCurrentLegacyAttributes }}
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	{{- end }}
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -70,7 +70,7 @@ func {{ .Class.Name.String }}SchemaDefinition() modelHelpers.ClassSchema {
 		{{- if .Class.SchemaVersion }}
 		Version: {{ .Class.SchemaVersion }},
 		{{- end }}
-		{{- if .Class.LegacyAttributes }}
+		{{- if .Class.HasCurrentLegacyAttributes }}
 		LegacyAttributes: map[string]modelHelpers.LegacyAttributeSchema{
 			{{- range .Class.LegacyAttributes }}
 			{{- if ne .Status.String "removed" }}
@@ -486,7 +486,7 @@ func (m *{{ .Class.Name.Capitalized }}Model) BuildNestedDeletePayloadObject(
 
 {{ end -}}
 {{ if or .Class.HasResourceArtifact .Class.HasDatasourceArtifact }}
-{{ if .Class.LegacyAttributes }}
+{{ if .Class.HasCurrentLegacyAttributes }}
 type {{ .Class.Name.Capitalized }}LegacyModelV{{ .Class.SchemaVersion }} struct {
 	{{- range .Class.LegacyAttributes }}
 	{{- if ne .Status.String "removed" }}
@@ -507,7 +507,7 @@ func New{{ .Class.Name.Capitalized }}LegacyModelV{{ .Class.SchemaVersion }}Null(
 {{ end }}
 type {{ .Class.Name.Capitalized }}RootModel struct {
 	{{ .Class.Name.Capitalized }}Model
-	{{- if .Class.LegacyAttributes }}
+	{{- if .Class.HasCurrentLegacyAttributes }}
 	{{ .Class.Name.Capitalized }}LegacyModelV{{ .Class.SchemaVersion }}
 	{{- end }}
 
@@ -520,7 +520,7 @@ type {{ .Class.Name.Capitalized }}RootModel struct {
 func New{{ .Class.Name.Capitalized }}RootModelNull() {{ .Class.Name.Capitalized }}RootModel {
 	return {{ .Class.Name.Capitalized }}RootModel{
 		{{ .Class.Name.Capitalized }}Model: New{{ .Class.Name.Capitalized }}ModelNull(),
-		{{- if .Class.LegacyAttributes }}
+		{{- if .Class.HasCurrentLegacyAttributes }}
 		{{ .Class.Name.Capitalized }}LegacyModelV{{ .Class.SchemaVersion }}: New{{ .Class.Name.Capitalized }}LegacyModelV{{ .Class.SchemaVersion }}Null(),
 		{{- end }}
 		ID: types.StringNull(),
@@ -625,7 +625,7 @@ func (m *{{ .Class.Name.Capitalized }}RootModel) SetFromResponse(
 	return true, diagnostics
 }
 
-{{ if .Class.LegacyAttributes }}
+{{ if .Class.HasCurrentLegacyAttributes }}
 func (m *{{ .Class.Name.Capitalized }}RootModel) SetLegacyFromResponse(ctx context.Context, response *container.Container) diag.Diagnostics {
 	// Modern response decoding can also be used independently of compatibility state.
 	var diagnostics diag.Diagnostics
@@ -755,7 +755,7 @@ func (m *{{ .Class.Name.Capitalized }}RootModel) BuildDeletePayload(ctx context.
 {{ end }}
 {{ end }}
 
-{{ if and .Class.HasResourceArtifact .Class.LegacyAttributes }}
+{{ if and .Class.HasResourceArtifact .Class.HasCurrentLegacyAttributes }}
 func (m *{{ .Class.Name.Capitalized }}RootModel) SetFromLegacyConfig(ctx context.Context, config, priorState *{{ .Class.Name.Capitalized }}RootModel) diag.Diagnostics {
 	var diagnostics diag.Diagnostics
 	{{- range .Class.LegacyAttributes }}

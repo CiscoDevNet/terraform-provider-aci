@@ -142,6 +142,16 @@ func (a MigrationAttribute) NullValue() string {
 	}
 }
 
+func (c *Class) HasCurrentLegacyAttributes() bool {
+	// Removed fields belong only to historical decoders, not current compatibility models or test scenarios.
+	for _, attribute := range c.LegacyAttributes {
+		if attribute.Status != Removed {
+			return true
+		}
+	}
+	return false
+}
+
 func (c *Class) setMigrationData(ds *DataStore) {
 	// Published schema versions are independent of compatibility implementation progress.
 	if c.ClassDefinition.SchemaVersion != nil {
@@ -168,6 +178,7 @@ func (c *Class) setMigrationData(ds *DataStore) {
 		}
 		flattened[version] = map[string]bool{}
 		add := func(key string, definition AttributeUpgradeDefinition, child *Class) {
+			storedAlias := false
 			name := definition.AttributeName
 			if name == "" {
 				name = key
@@ -175,6 +186,26 @@ func (c *Class) setMigrationData(ds *DataStore) {
 			if previous, exists := aliases[name]; exists {
 				if definition.Status == UndefinedLegacyStatus {
 					definition.Status = previous.Status
+				}
+				storedAlias = entry.Source == FromFramework && child == nil && key == name && definition.AttributeName == name && definition.Status == Removed
+				if storedAlias && previous.Block {
+					if len(definition.Attributes) > 0 || len(definition.Children) > 0 {
+						ds.ctx.Diagnostics.AddError("Class '%s': schema version %d: retired historical block %q cannot override members or nested children without nested-schema migration support", c.Name, version, name)
+						return
+					}
+					if definition.Type != UndefinedLegacyAttributeType && definition.Type != previous.Type ||
+						definition.ElementType != UndefinedLegacyAttributeType && definition.ElementType != previous.ElementType ||
+						definition.ValueType != UndefinedValueType {
+						ds.ctx.Diagnostics.AddError("Class '%s': schema version %d: retired historical block %q cannot change its inherited type without additional migration support", c.Name, version, name)
+						return
+					}
+					// Keep the old block's members without replacing the modern child stored alongside it.
+					previous.Status = definition.Status
+					previous.ChildName, previous.TargetField, previous.ChildAttribute = nil, "", ""
+					previous.TargetModelType, previous.TargetAttributeType = "", ""
+					aliases[name] = previous
+					overrides[version] = append(overrides[version], previous)
+					return
 				}
 				// Orphaned retained fields have no current metadata to supply their old shape.
 				owner := c
@@ -203,6 +234,11 @@ func (c *Class) setMigrationData(ds *DataStore) {
 				}
 			}
 			attribute := c.migrationAttribute(ds, key, definition, child)
+			if storedAlias {
+				// Retire the stored alias, even when its name is also an APIC property key such as prio.
+				attribute.ChildName, attribute.TargetField, attribute.ChildAttribute = nil, "", ""
+				attribute.TargetModelType, attribute.TargetAttributeType = "", ""
+			}
 			if attribute.IsAlias() {
 				aliases[attribute.AttributeName] = attribute
 			}
