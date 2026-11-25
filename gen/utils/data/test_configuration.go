@@ -1981,7 +1981,7 @@ func migrationNullState(c *Class, ds *DataStore) map[string]any {
 }
 
 func (b *resourceTestBuilder) legacy(current *Class) error {
-	if len(b.class.LegacyAttributes) == 0 {
+	if !b.class.HasCurrentLegacyAttributes() {
 		return nil
 	}
 	base := *b.last()
@@ -2002,6 +2002,7 @@ func (b *resourceTestBuilder) legacy(current *Class) error {
 		return err
 	}
 	checks := slices.Clone(base.Assertions)
+	hasDeprecatedConfiguration := false
 	renderer := newTestConfigurationRenderer(current, b.dataStore)
 	renderer.resourceTest = true
 	for _, alias := range b.class.LegacyAttributes {
@@ -2014,6 +2015,7 @@ func (b *resourceTestBuilder) legacy(current *Class) error {
 				legacyBody.RemoveAttribute(alias.ChildAttribute)
 				legacyBody.SetAttributeRaw(alias.AttributeName, tokens)
 				conflictFile.Body().Blocks()[0].Body().SetAttributeRaw(alias.AttributeName, tokens)
+				hasDeprecatedConfiguration = true
 				if alias.IsListToSet() {
 					for _, property := range current.ModelProperties() {
 						if property.AttributeName != alias.ChildAttribute || property.TestValues == nil {
@@ -2051,17 +2053,21 @@ func (b *resourceTestBuilder) legacy(current *Class) error {
 		legacyBody.RemoveAttribute(child.ResourceNameNested)
 		legacyBody.AppendUnstructuredTokens(parsed.Body().BuildTokens(nil))
 		conflictFile.Body().Blocks()[0].Body().AppendUnstructuredTokens(parsed.Body().BuildTokens(nil))
+		hasDeprecatedConfiguration = true
 		checks = append(checks, renderer.renderCountedDependencyAssertions(assertions)...)
 	}
 	add := func(name, description string, file *hclwrite.File, assertions []TestAssertion) {
 		b.scenarios = append(b.scenarios, ResourceTestScenario{Name: name, Description: description, Configuration: string(hclwrite.Format(file.Bytes())), Assertions: assertions})
 	}
-	add("Legacy", "Configure Through Legacy Attributes", legacyFile, checks)
-	add("LegacyUnchanged", "Repeat Legacy Configuration (Expect Empty Plan)", legacyFile, checks)
-	b.last().PlanOnly = true
-	b.scenarios = append(b.scenarios, ResourceTestScenario{Name: "CurrentAfterLegacy", Description: "Switch to Current Attributes Without Replacement", Configuration: base.Configuration, Assertions: base.Assertions, PlanOnly: true})
-	add("LegacyConflict", "Reject Simultaneous Legacy and Current Inputs", conflictFile, nil)
-	b.last().ExpectError = "Invalid Attribute Combination|Conflicting legacy configuration"
+	if hasDeprecatedConfiguration {
+		// A conflict is meaningful only when the fixture actually uses a deprecated input.
+		add("Legacy", "Configure Through Legacy Attributes", legacyFile, checks)
+		add("LegacyUnchanged", "Repeat Legacy Configuration (Expect Empty Plan)", legacyFile, checks)
+		b.last().PlanOnly = true
+		b.scenarios = append(b.scenarios, ResourceTestScenario{Name: "CurrentAfterLegacy", Description: "Switch to Current Attributes Without Replacement", Configuration: base.Configuration, Assertions: base.Assertions, PlanOnly: true})
+		add("LegacyConflict", "Reject Simultaneous Legacy and Current Inputs", conflictFile, nil)
+		b.last().ExpectError = "Invalid Attribute Combination|Conflicting legacy configuration"
+	}
 	frozen, err := parse()
 	if err != nil {
 		return err

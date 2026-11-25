@@ -612,10 +612,9 @@ type StateUpgradeDefinition struct {
 	Children map[string]AttributeUpgradeDefinition `yaml:"children"`
 }
 
-// AttributeUpgradeDefinition is the unified node type used for both scalar
-// attributes and nested blocks inside a state_upgrades entry. Recursive: an
-// attributes/children entry can itself contain attributes and children to
-// describe inner shape changes at any depth.
+// AttributeUpgradeDefinition describes scalar and nested differences inside a
+// state_upgrades entry. The definition can express recursive paths; normalization
+// currently supports the documented shallow mappings and rejects deeper changes.
 type AttributeUpgradeDefinition struct {
 	// The Terraform attribute name as it appeared in the prior schema. Omit when
 	// the prior name matches the current name. On a children entry, presence

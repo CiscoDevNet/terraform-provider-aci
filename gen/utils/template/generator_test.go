@@ -4038,3 +4038,54 @@ func TestGeneratedTenantLegacyReferenceResolvesDuringPlanning(t *testing.T) {
 		})
 	}
 }
+
+func TestTemplatesKeepHistoricalDecodersWithoutCurrentAliases(t *testing.T) {
+	generator := loadActiveGenerator(t, &data.DataStore{})
+	testCases := []test.TestCase{
+		{Name: "retained_alias", Input: data.LegacyDeprecated, Expected: true},
+		{Name: "removed_alias", Input: data.Removed, Expected: false},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			// Exercise a future schema locally; the repository's Tenant definition stays unchanged.
+			status := testCase.Input.(data.LegacyStatusEnum)
+			class := testClass(t, "fvTenant", data.ResourceArtifact, data.DatasourceArtifact)
+			class.SchemaVersion, class.ResourceName, class.RnFormat = 3, "tenant", "tn-{name}"
+			class.IdentifiedBy, class.PropertiesAll = []string{"name"}, []string{"name"}
+			class.Properties = map[string]*data.Property{
+				"name": {PropertyName: "name", AttributeName: "name", ValueType: data.String, Required: true},
+			}
+			alias := data.MigrationAttribute{AttributeName: "old_name", FieldName: "LegacyOldName", Type: data.StringAttribute, TargetField: "Name", TargetModelType: "types.String", TargetAttributeType: "types.StringType", ChildAttribute: "name", Status: status, Optional: true, Computed: true}
+			class.LegacyAttributes = []data.MigrationAttribute{alias}
+			stored := alias
+			stored.TargetField, stored.ChildAttribute, stored.TargetModelType, stored.TargetAttributeType = "", "", "", ""
+			class.MigrationSchemas = []data.MigrationSchema{
+				{PriorSchemaVersion: 1, Attributes: []data.MigrationAttribute{alias}},
+				{PriorSchemaVersion: 2, Attributes: []data.MigrationAttribute{stored, {AttributeName: "name", FieldName: "Name", TargetField: "Name", Type: data.StringAttribute, SchemaExpression: `current.Attributes["name"]`}}},
+			}
+			for _, templateName := range []string{modelTemplateName, resourceTemplateName, datasourceTemplateName} {
+				var rendered bytes.Buffer
+				if err := generator.templates[templateName].Execute(&rendered, TemplateContext{Class: &class, DataStore: generator.dataStore}); !assert.NoError(t, err) {
+					continue
+				}
+				formatted, err := formatRenderedTemplate(strings.TrimSuffix(templateName, ".tmpl"), rendered.Bytes())
+				if !assert.NoError(t, err) {
+					continue
+				}
+				output := string(formatted)
+				assert.Equal(t, testCase.Expected, strings.Contains(output, "SetLegacyFromResponse"))
+				if templateName == modelTemplateName {
+					assert.Equal(t, testCase.Expected, strings.Contains(output, "type FvTenantLegacyModelV3 struct"))
+					assert.Equal(t, testCase.Expected, strings.Contains(output, "SetFromLegacyConfig"))
+					assert.Contains(t, output, "type FvTenantRootModelV1 struct")
+					assert.Contains(t, output, "type FvTenantRootModelV2 struct")
+					assert.Contains(t, output, "UpgradeFromV1")
+					assert.Contains(t, output, "UpgradeFromV2")
+				}
+				if templateName == resourceTemplateName {
+					assert.Contains(t, output, "UpgradeState")
+				}
+			}
+		})
+	}
+}

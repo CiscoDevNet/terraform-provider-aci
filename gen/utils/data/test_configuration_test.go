@@ -1603,6 +1603,10 @@ func TestResourceTestFrozenAttributes(t *testing.T) {
 			if !assert.NoError(t, err) {
 				return
 			}
+			for _, name := range []string{"Legacy", "LegacyUnchanged", "CurrentAfterLegacy", "LegacyConflict"} {
+				assert.Equal(t, -1, slices.IndexFunc(scenarios, func(s ResourceTestScenario) bool { return s.Name == name }), "frozen-only configuration must not generate %s", name)
+			}
+			assert.NotEqual(t, -1, slices.IndexFunc(scenarios, func(s ResourceTestScenario) bool { return s.Name == "FrozenUnchanged" }))
 			for index, name := range []string{"Frozen", "FrozenCleared"} {
 				scenarioIndex := slices.IndexFunc(scenarios, func(s ResourceTestScenario) bool { return s.Name == name })
 				if !assert.NotEqual(t, -1, scenarioIndex) {
@@ -2068,6 +2072,34 @@ func TestAllResourceTestConfigurationsAreSelfContained(t *testing.T) {
 				t.Run(scenario.Name, func(t *testing.T) {
 					assert.NoError(t, validateDataSourceTestConfiguration(dependencies+"\n"+scenario.Configuration, scenario.Assertions))
 				})
+			}
+		})
+	}
+}
+
+func TestResourceTestLegacyScenariosRequireConfiguredAliases(t *testing.T) {
+	testCases := []test.TestCase{
+		{Name: "configured_alias", Input: "name", Expected: true},
+		{Name: "unused_alias", Input: "missing_attribute", Expected: false},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			test.InitializeTest(t)
+			class, store := resourceScenarioFixture()
+			class.LegacyAttributes = []MigrationAttribute{
+				{AttributeName: "old_name", ChildAttribute: testCase.Input.(string), Type: StringAttribute, Status: LegacyDeprecated},
+				{AttributeName: "frozen", Type: StringAttribute, Status: Frozen},
+			}
+			scenarios, err := class.ResourceTestScenarios(store)
+			if !assert.NoError(t, err) {
+				return
+			}
+			for _, name := range []string{"Legacy", "LegacyUnchanged", "CurrentAfterLegacy", "LegacyConflict"} {
+				index := slices.IndexFunc(scenarios, func(s ResourceTestScenario) bool { return s.Name == name })
+				assert.Equal(t, testCase.Expected, index >= 0, "%s", name)
+			}
+			for _, name := range []string{"Frozen", "FrozenUnchanged", "FrozenCleared"} {
+				assert.NotEqual(t, -1, slices.IndexFunc(scenarios, func(s ResourceTestScenario) bool { return s.Name == name }))
 			}
 		})
 	}
