@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.22.0 (November 27, 2026)
+
+IMPROVEMENTS:
+
+- Add `apic_version` provider attribute, also configurable with the `ACI_APIC_VERSION` environment variable, to set the APIC version and skip automatic version discovery.
+- Add support for applying child-level `content_on_destroy` in aci_rest_managed resource when a `child` block is removed while the parent resource remains, instead of deleting the child.
+- Upgrade Go version to 1.27.4.
+
 ## 2.21.0 (November 10, 2026)
 
 IMPROVEMENTS:
