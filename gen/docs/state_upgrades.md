@@ -112,7 +112,9 @@ information needed to decode existing state.
 
 Each version entry may declare `source: sdkv2` or `source: framework`. This is
 version-specific history, not a class-level `migration_source` setting.
-SDKv2 entries also supply the resource documentation's migration warning.
+Any SDKv2 entry keeps the resource documentation's conditional migration-guide
+notice, even when later entries come from the framework. Users can upgrade
+straight from an older saved schema to the current version.
 A resource requiring only a warning uses its existing documentation warnings;
 it does not need an artificial state-upgrade entry.
 
@@ -128,6 +130,24 @@ scalar-to-child mappings must contain enough information for decoding.
 Do not add unchanged root attributes merely to build a complete-schema
 inventory. Prior schemas start from the normalized current view and apply the
 historical differences. Missing optional JSON fields decode to null.
+
+The recursive definition shape does not yet provide recursive migration support.
+Renames or type changes inside a grandchild, and general in-place nested schema
+changes, currently require additional normalization, historical model/schema
+rendering, and conversion logic. Declaring an unsupported deep override stops
+generation. Unchanged nested values can still be preserved; adding fields that
+old JSON omits is different from renaming or changing an existing field.
+
+A retired framework block currently inherits its earlier member shape. Explicit
+member, child, or type overrides are rejected instead of silently ignored.
+Generated acceptance steps for deprecated aliases require an alias actually
+configured in the fixture; frozen-only retention and clearing remain separate.
+
+Nested state belongs to its containing resource's schema version. Changing a
+reused grandchild's standalone resource version does not migrate parent state;
+each affected top-level resource needs its own versioned historical path and
+conversion fixtures. The definition tree can be reused when recursive support
+is implemented; these deeper conversions are not currently generated.
 
 ## 9. Generated behavior
 
@@ -180,8 +200,8 @@ generator inputs.
 
 ## 11. Worked example: removing a frozen attribute
 
-The following hypothetical next Tenant schema removes the frozen deny-rule
-input while preserving decoding for the versions that exposed it. The original
+The following hypothetical next Tenant schema removes its deprecated monitoring
+policy alias and frozen deny-rule input while preserving both historical schemas. The original
 version-1 entry remains; the new entry records the version-2 shape saved before
 removal:
 
@@ -205,15 +225,33 @@ state_upgrades:
   2:
     source: framework
     attributes:
+      relation_fv_rs_tenant_mon_pol:
+        attribute_name: relation_fv_rs_tenant_mon_pol
+        type: string_attribute
+        restriction: optional_computed
+        status: removed
       relation_fv_rs_tn_deny_rule:
         attribute_name: relation_fv_rs_tn_deny_rule
         type: set_attribute
         element_type: string_attribute
-        restriction: optional
+        restriction: optional_computed
         status: removed
 ```
 
-The current schema omits `relation_fv_rs_tn_deny_rule`. Both old versions still
-have decoding views, and each upgrader converts directly to version 3. The
-monitoring-policy alias retains its earlier deprecated status because no later
-entry changes it. This example does not change the repository's Tenant schema.
+With this example, both aliases disappear from the current schema and no empty
+compatibility model or legacy configuration/read functions are rendered. Both
+historical versions retain decoding views and upgrade directly to version 3.
+Tenant and EPG remain at version 2 in the repository; this example is not active.
+
+Framework retirement entries use the stored Terraform alias names under
+`attributes`, because the saved framework schema contained those aliases
+alongside modern fields and children. A retired historical block uses
+`type: set_nested_attribute`; its member shape is inherited from the earlier
+history. This preserves the modern child alongside the retired block. Names
+such as `prio` must not be interpreted as another rename of modern `priority`.
+
+Record changes to historical schema flags too. For example, retiring EPG's
+`application_profile_dn` alternative makes current `parent_dn` required, while
+its prior framework schema still needs an explicit `optional_computed`
+override. Historical types and flags should be checked against the prior schema,
+with handwritten state fixtures covering the actual conversion.

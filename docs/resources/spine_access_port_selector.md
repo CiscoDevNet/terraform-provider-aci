@@ -14,7 +14,7 @@ description: |-
 
 Manages ACI Spine Access Port Selector
 
-  !> This resource has been migrated to the terraform plugin protocol version 6, refer to the [migration guide](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/guides/migration) for more details and implications for already managed resources.
+  !> When upgrading from an SDKv2-based provider release, refer to the [migration guide](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/guides/migration) for configuration and state compatibility considerations.
 
 ## API Information ##
 
