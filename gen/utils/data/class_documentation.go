@@ -41,7 +41,7 @@ var validSubCategories = []string{
 
 // validateSubCategory validates that the given sub-category value is one of the allowed sub-categories.
 // SDKv2MigrationWarning is shared by inferred and documentation-only migration notices.
-const SDKv2MigrationWarning = "This resource has been migrated to the terraform plugin protocol version 6, refer to the [migration guide](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/guides/migration) for more details and implications for already managed resources."
+const SDKv2MigrationWarning = "When upgrading from an SDKv2-based provider release, refer to the [migration guide](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/guides/migration) for configuration and state compatibility considerations."
 
 func validateSubCategory(class *Class) error {
 	if class.ClassDefinition.Documentation.SubCategory == "" {

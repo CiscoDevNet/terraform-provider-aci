@@ -1299,31 +1299,31 @@ func TestSetMigrationWarning(t *testing.T) {
 	t.Parallel()
 	test.InitializeTest(t)
 
-	migrationWarning := "This resource has been migrated to the terraform plugin protocol version 6, refer to the [migration guide](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/guides/migration) for more details and implications for already managed resources."
+	migrationWarning := "When upgrading from an SDKv2-based provider release, refer to the [migration guide](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/guides/migration) for configuration and state compatibility considerations."
 
 	testCases := []test.TestCase{
 		{
 			Name:     "test_not_migration",
-			Input:    UndefinedMigrationSource,
+			Input:    map[int]StateUpgradeDefinition{},
 			Expected: "",
 		},
 		{
 			Name:     "test_migration",
-			Input:    FromSDKv2,
+			Input:    map[int]StateUpgradeDefinition{1: {Source: FromSDKv2}},
 			Expected: migrationWarning,
 		},
+		{Name: "framework_upgrade_has_no_sdk_warning", Input: map[int]StateUpgradeDefinition{1: {Source: FromFramework}}, Expected: ""},
+		{Name: "later_framework_upgrade_keeps_sdk_guidance", Input: map[int]StateUpgradeDefinition{1: {Source: FromSDKv2}, 2: {Source: FromFramework}}, Expected: migrationWarning},
 	}
-
-	testCases = append(testCases, test.TestCase{Name: "framework_upgrade_has_no_sdk_warning", Input: FromFramework, Expected: ""})
 
 	for _, testCase := range testCases {
 		t.Run(testCase.Name, func(t *testing.T) {
 			t.Parallel()
 
-			migrationSource := testCase.Input.(MigrationSourceEnum)
+			history := testCase.Input.(map[int]StateUpgradeDefinition)
 			class := Class{
 				Name:          testClassName("fvTenant"),
-				StateUpgrades: map[int]StateUpgradeDefinition{1: {Source: migrationSource}},
+				StateUpgrades: history,
 			}
 			class.Documentation.setMigrationWarning(&class)
 

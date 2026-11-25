@@ -16,7 +16,7 @@ Manages ACI Tag
 
   -> This resource should not be used in combination with the `tags` nested attributes of other resources for the same object. Doing so will result in unexpected behaviour.
 
-  !> This resource has been migrated to the terraform plugin protocol version 6, refer to the [migration guide](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/guides/migration) for more details and implications for already managed resources.
+  !> When upgrading from an SDKv2-based provider release, refer to the [migration guide](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/guides/migration) for configuration and state compatibility considerations.
 
 ## API Information ##
 

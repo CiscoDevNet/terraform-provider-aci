@@ -860,8 +860,10 @@ matching the published NetFlow upgrader.
 Keep the current `FvTenantRootModel` name stable. It embeds `FvTenantModel` and
 `FvTenantLegacyModelV2`, alongside ID and optional ParentDN fields. The legacy
 struct is selected by the current `schema_version` and contains only the
-compatibility fields still exposed by that schema. Embed by value so Terraform
-continues to see individual attributes. Historical `FvTenantRootModelV1` and
+compatibility fields still exposed by that schema. `HasCurrentLegacyAttributes`
+omits the compatibility struct and its functions when every alias is removed;
+historical decoder models and registered upgraders remain. Embed retained
+compatibility structs by value so Terraform sees individual attributes. Historical `FvTenantRootModelV1` and
 other source-version models remain separate decoding views; they must retain
 old names and types even after current exposure is removed. Generate one typed
 `UpgradeFromV<n>` method per supported source version, each converting directly
