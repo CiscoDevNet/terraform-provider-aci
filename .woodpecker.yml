@@ -1,0 +1,54 @@
+when:
+  event:
+    - manual
+    - cron
+
+variables:
+  - &go_image "10.15.39.22:5000/ci-terraform:alpine-go1.27.4-tf1.17.2"
+
+matrix:
+  include:
+    - APIC_NAME: "APIC-609c"
+      APIC_URL: "https://10.15.39.210/"
+    - APIC_NAME: "APIC-615e"
+      APIC_URL: "https://10.15.39.211/"
+    - APIC_NAME: "APIC-622e"
+      APIC_URL: "https://10.15.39.212/"
+    - APIC_NAME: "APIC-623g"
+      APIC_URL: "https://10.15.39.213/"
+    - APIC_NAME: "APIC-616g"
+      APIC_URL: "https://10.15.39.214/"
+
+steps:
+  acceptance_test:
+    image: *go_image
+    when:
+      event: [manual, cron]
+    environment:
+      TF_ACC: "1"
+      ACI_VAL_REL_DN: "false"
+      APIC_NAME: "${APIC_NAME}"
+      ACI_URL: "${APIC_URL}"
+      ACI_USERNAME:
+        from_secret: APIC_USERNAME
+      ACI_PASSWORD:
+        from_secret: APIC_PASSWORD
+    commands:
+      - |
+        ACC_TEST_REGEX="$${ACC_TEST_REGEX:-$${CI_BUILD_PARAM_ACC_TEST_REGEX:-$${CI_PIPELINE_PARAM_ACC_TEST_REGEX:-.*}}}"
+        ACC_TIMEOUT="$${ACC_TIMEOUT:-$${CI_BUILD_PARAM_ACC_TIMEOUT:-$${CI_PIPELINE_PARAM_ACC_TIMEOUT:-600m}}}"
+        APIC_FILTER="$${APIC_FILTER:-$${CI_BUILD_PARAM_APIC_FILTER:-$${CI_PIPELINE_PARAM_APIC_FILTER:-all}}}"
+
+        if [ "$${APIC_FILTER}" != "all" ] && ! printf '%s\n' ",$${APIC_FILTER}," | grep -Fq ",$${APIC_NAME},"; then
+          echo "Skipping $${APIC_NAME} due to APIC_FILTER=$${APIC_FILTER}"
+          exit 0
+        fi
+
+        echo "Running acceptance tests for $${APIC_NAME} (regex $${ACC_TEST_REGEX}, timeout $${ACC_TIMEOUT})"
+
+        # The legacy aci test package currently has duplicate declarations.
+        TF_LOG="$${TF_LOG:-$${CI_BUILD_PARAM_TF_LOG:-$${CI_PIPELINE_PARAM_TF_LOG:-}}}" \
+        go test -v ./internal/provider/... -mod=vendor -run "$${ACC_TEST_REGEX}" -count=1 -timeout "$${ACC_TIMEOUT}"
+
+labels:
+  platform: linux/amd64
