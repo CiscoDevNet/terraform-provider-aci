@@ -1104,6 +1104,18 @@ func (m *VmmDomPRootModel) BuildDeletePayload(ctx context.Context) (*container.C
 	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "vmmDomP", m.ID.ValueString()), diagnostics
 }
 
+func (m *VmmDomPRootModel) SetFromLegacyLookup(ctx context.Context) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	if !m.LegacyProviderProfileDn.IsNull() && !m.LegacyProviderProfileDn.IsUnknown() {
+		if !m.ParentDN.IsNull() && !m.ParentDN.IsUnknown() {
+			diagnostics.AddError("Conflicting legacy configuration", "Configure either provider_profile_dn or parent_dn, not both.")
+			return diagnostics
+		}
+		m.ParentDN = m.LegacyProviderProfileDn
+	}
+	return diagnostics
+}
+
 func (m *VmmDomPRootModel) SetFromLegacyConfig(ctx context.Context, config, priorState *VmmDomPRootModel) diag.Diagnostics {
 	var diagnostics diag.Diagnostics
 	if !config.LegacyConfigInfraPg.IsNull() {

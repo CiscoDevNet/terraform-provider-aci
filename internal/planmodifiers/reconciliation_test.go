@@ -2,10 +2,12 @@ package planmodifiers
 
 import (
 	"context"
+	"maps"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/hashicorp/terraform-plugin-go/tftypes"
 
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils/test"
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/customtypes"
@@ -497,6 +499,111 @@ func TestReconciliationSchemaReconcilesNestedRepeatedChildren(t *testing.T) {
 	}
 	if !actual.Equal(expected) {
 		t.Fatalf("reconciled value %#v, expected %#v", actual, expected)
+	}
+}
+
+func TestReconciliationSchemaReconcilesDeepChildren(t *testing.T) {
+	ctx := context.Background()
+	protocolType := customtypes.NewSemanticStringType(map[string]string{"6": "tcp"})
+	attributeTypes := map[string]attr.Type{
+		"name":        types.StringType,
+		"description": types.StringType,
+		"flags":       types.SetType{ElemType: types.StringType},
+		"address":     customtypes.IPAddressType{},
+		"protocol":    protocolType,
+		"learning":    customtypes.VMMArpLearningType{},
+	}
+	stateAttributes := map[string]attr.Value{
+		"name":        types.StringValue("configured-name"),
+		"description": types.StringValue("retained-description"),
+		"flags":       types.SetValueMust(types.StringType, []attr.Value{types.StringValue("one"), types.StringValue("two")}),
+		"address":     customtypes.NewIPAddressValue("2001:db8::1"),
+		"protocol":    protocolType.Value("tcp"),
+		"learning":    customtypes.NewVMMArpLearningValue("disabled"),
+	}
+	type input struct {
+		Depth    int
+		ClearSet bool
+	}
+	testCases := []test.TestCase{
+		{Name: "grandchildren", Input: input{Depth: 3}},
+		{Name: "deeper_children", Input: input{Depth: 6}},
+		{Name: "explicit_empty_set", Input: input{Depth: 4, ClearSet: true}},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			values := testCase.Input.(input)
+			configAttributes := map[string]attr.Value{}
+			planAttributes := map[string]attr.Value{}
+			expectedAttributes := maps.Clone(stateAttributes)
+			for name, attributeType := range attributeTypes {
+				var err error
+				configAttributes[name], err = attributeType.ValueFromTerraform(ctx, tftypes.NewValue(attributeType.TerraformType(ctx), nil))
+				if err != nil {
+					t.Fatal(err)
+				}
+				planAttributes[name], err = attributeType.ValueFromTerraform(ctx, tftypes.NewValue(attributeType.TerraformType(ctx), tftypes.UnknownValue))
+				if err != nil {
+					t.Fatal(err)
+				}
+			}
+			// Keep the singleton configured; an object with only null fields requests deletion.
+			configAttributes["name"], planAttributes["name"] = stateAttributes["name"], stateAttributes["name"]
+			if values.ClearSet {
+				empty := types.SetValueMust(types.StringType, []attr.Value{})
+				configAttributes["flags"], planAttributes["flags"], expectedAttributes["flags"] = empty, empty, empty
+			}
+			config := types.ObjectValueMust(attributeTypes, configAttributes)
+			plan := types.ObjectValueMust(attributeTypes, planAttributes)
+			state := types.ObjectValueMust(attributeTypes, stateAttributes)
+			expected := types.ObjectValueMust(attributeTypes, expectedAttributes)
+			schema := ReconciliationSchema{}
+
+			// Alternate singleton objects and unordered sets without changing the leaf value types.
+			for depth := range values.Depth {
+				childType := types.ObjectType{AttrTypes: config.AttributeTypes(ctx)}
+				if depth%2 == 0 {
+					memberTypes := map[string]attr.Type{"name": types.StringType, "observed": types.StringType, "child": childType}
+					memberType := types.ObjectType{AttrTypes: memberTypes}
+					rootTypes := map[string]attr.Type{"children": types.SetType{ElemType: memberType}}
+					wrap := func(child types.Object, first, second types.String, reverse bool) types.Object {
+						members := []attr.Value{
+							types.ObjectValueMust(memberTypes, map[string]attr.Value{"name": types.StringValue("one"), "observed": first, "child": child}),
+							types.ObjectValueMust(memberTypes, map[string]attr.Value{"name": types.StringValue("two"), "observed": second, "child": child}),
+						}
+						if reverse {
+							members[0], members[1] = members[1], members[0]
+						}
+						return types.ObjectValueMust(rootTypes, map[string]attr.Value{"children": types.SetValueMust(memberType, members)})
+					}
+					config = wrap(config, types.StringNull(), types.StringNull(), false)
+					plan = wrap(plan, types.StringUnknown(), types.StringUnknown(), false)
+					state = wrap(state, types.StringValue("state-one"), types.StringValue("state-two"), true)
+					expected = wrap(expected, types.StringValue("state-one"), types.StringValue("state-two"), false)
+					schema = ReconciliationSchema{Children: map[string]ReconciliationChild{"children": {
+						Repeated: true,
+						Schema: ReconciliationSchema{Identifiers: []string{"name"}, Children: map[string]ReconciliationChild{
+							"child": {Schema: schema},
+						}},
+					}}}
+					continue
+				}
+				rootTypes := map[string]attr.Type{"child": childType}
+				wrap := func(child types.Object) types.Object {
+					return types.ObjectValueMust(rootTypes, map[string]attr.Value{"child": child})
+				}
+				config, plan, state, expected = wrap(config), wrap(plan), wrap(state), wrap(expected)
+				schema = ReconciliationSchema{Children: map[string]ReconciliationChild{"child": {Schema: schema}}}
+			}
+
+			actual, diagnostics := schema.reconcileSingletonValue(ctx, config, plan, state, true)
+			if diagnostics.HasError() {
+				t.Fatal(diagnostics)
+			}
+			if !actual.Equal(expected) {
+				t.Fatalf("reconciled value %s, expected %s", actual, expected)
+			}
+		})
 	}
 }
 

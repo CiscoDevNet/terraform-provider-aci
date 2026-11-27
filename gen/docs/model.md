@@ -861,14 +861,28 @@ Keep the current `FvTenantRootModel` name stable. It embeds `FvTenantModel` and
 `FvTenantLegacyModelV2`, alongside ID and optional ParentDN fields. The legacy
 struct is selected by the current `schema_version` and contains only the
 compatibility fields still exposed by that schema. `HasCurrentLegacyAttributes`
-omits the compatibility struct and its functions when every alias is removed;
-historical decoder models and registered upgraders remain. Embed retained
+omits the root compatibility struct when every root alias is removed;
+compatibility wrappers remain when descendants still need them. Historical
+decoder models and registered upgraders remain. Embed retained
 compatibility structs by value so Terraform sees individual attributes. Historical `FvTenantRootModelV1` and
 other source-version models remain separate decoding views; they must retain
 old names and types even after current exposure is removed. Generate one typed
 `UpgradeFromV<n>` method per supported source version, each converting directly
 into the current root model. Current compatibility fields retain their `Legacy`
 Go field prefixes to distinguish them from modern fields.
+
+Framework history can describe changes inside nested objects and sets at any
+depth. The reusable class model owns its active nested compatibility fields,
+using the same `Legacy` field prefix, attribute types, and null constructors.
+Root-only SDKv2 aliases are not copied into child models. Current deprecated
+alias inputs follow the owning class's current property restrictions; historical
+restrictions remain specific to each saved parent schema. Normal response
+decoding remains independent of compatibility population; adapters invoke the
+legacy response function separately with the model captured before decoding.
+Parent histories select their old nested shapes through existing `attributes`
+and `children` differences, without a child-version reference. Historical
+decoding uses typed objects/sets and recursive conversions rather than a new
+struct for every combination of parent and descendant versions.
 
 Type/structure overrides describe state decoding and conversion. They do not
 by themselves add legacy attributes to the current schema. Keep current
@@ -921,6 +935,10 @@ keep their block syntax in both resource and datasource schemas while mapping
 to the same modern child model. When only modern children are configured, the
 legacy block's planned elements contain unknown property values until readback,
 matching the published provider's computed compatibility outputs.
+
+`SetFromLegacyLookup` normalizes deprecated identifier/parent-DN inputs before
+datasource DN construction. Datasource schemas accept either the current name
+or a deprecated lookup name, while other legacy outputs remain computed-only.
 
 `SetFromLegacyConfig` runs only in `ModifyPlan`, including final planning after
 dependency references resolve. Save the converted plan before returning for

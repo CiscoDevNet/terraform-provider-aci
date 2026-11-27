@@ -606,3 +606,241 @@ func TestMigrationRejectsGrandchildChanges(t *testing.T) {
 		})
 	}
 }
+
+func TestMigrationNestedHistoricalShapes(t *testing.T) {
+	testCases := []test.TestCase{
+		{Name: "singleton_children", Input: true},
+		{Name: "repeated_children", Input: false},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			test.InitializeTest(t)
+			leaf := classWithProperties("fvAEPg", map[string]*Property{
+				"name":  {PropertyName: "name", AttributeName: "name", ValueType: String, Required: true},
+				"flags": {PropertyName: "flags", AttributeName: "flags", ValueType: Set, Optional: true, Computed: true},
+			}, nil)
+			leaf.PropertiesAll, leaf.IdentifiedBy = []string{"name", "flags"}, []string{"name"}
+			leaf.ResourceNameNested = "epgs"
+			leaf.IsSingleNestedWhenDefinedAsChild = testCase.Input.(bool)
+			application := classWithProperties("fvAp", map[string]*Property{}, []string{"fvAEPg"})
+			application.ResourceNameNested, application.IsSingleNestedWhenDefinedAsChild = "applications", testCase.Input.(bool)
+			version := 5
+			class := classWithProperties("fvTenant", map[string]*Property{}, []string{"fvAp"})
+			class.ClassDefinition.SchemaVersion = &version
+			class.StateUpgrades = map[int]StateUpgradeDefinition{
+				1: {Source: FromFramework, Children: map[string]AttributeUpgradeDefinition{"fvAp": {
+					Children: map[string]AttributeUpgradeDefinition{"fvAEPg": {Attributes: map[string]AttributeUpgradeDefinition{
+						"name":  {AttributeName: "old_name", Status: Removed, Type: StringAttribute, Restriction: LegacyRequired},
+						"flags": {Type: ListAttribute, ElementType: StringAttribute},
+					}}},
+				}}},
+				3: {Source: FromFramework, Children: map[string]AttributeUpgradeDefinition{"fvAp": {
+					Children: map[string]AttributeUpgradeDefinition{"fvAEPg": {Attributes: map[string]AttributeUpgradeDefinition{
+						"name": {AttributeName: "previous_name", Status: Removed, Type: StringAttribute, Restriction: LegacyRequired},
+					}}},
+				}}},
+			}
+			store := &DataStore{Classes: map[string]Class{"fvAp": *application, "fvAEPg": *leaf}, ctx: NewContext()}
+			class.setMigrationData(store)
+			if !assert.NoError(t, store.ctx.Diagnostics.Error()) || !assert.Len(t, class.MigrationSchemas, 2) {
+				return
+			}
+			for index, oldName := range []string{"old_name", "previous_name"} {
+				if !assert.Len(t, class.MigrationSchemas[index].Attributes, 2) {
+					continue
+				}
+				var parent MigrationAttribute
+				for _, attribute := range class.MigrationSchemas[index].Attributes {
+					if attribute.AttributeName == "applications" {
+						parent = attribute
+					}
+				}
+				assert.True(t, parent.Nested)
+				assert.False(t, parent.IsAlias())
+				if !assert.Len(t, parent.Attributes, 1) {
+					continue
+				}
+				child := parent.Attributes[0]
+				assert.True(t, child.Nested)
+				assert.Equal(t, "epgs", child.AttributeName)
+				assert.NotContains(t, child.ModelAttributeType(), `"id"`)
+				assert.Contains(t, child.ModelAttributeType(), oldName)
+				assert.Contains(t, child.UpgradeSchemaExpression(), `Replacement: "name"`)
+				assert.Equal(t, testCase.Input.(bool), child.Type == SingleNestedAttribute)
+				if index == 0 {
+					assert.Contains(t, child.ModelAttributeType(), "types.ListType")
+				} else {
+					assert.Contains(t, child.ModelAttributeType(), "types.SetType")
+				}
+			}
+			assert.Empty(t, store.Classes["fvAEPg"].MigrationSchemas, "normalizing a parent's historical view must not rewrite the child's own history")
+		})
+	}
+}
+
+func TestNestedLegacyAttributesOwnedByClass(t *testing.T) {
+	testCases := []test.TestCase{
+		{Name: "shared_alias", Input: LegacyDeprecated},
+		{Name: "inconsistent_parent_exposure", Input: Removed, Expected: "inconsistent current exposure"},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			test.InitializeTest(t)
+			leaf := classWithProperties("fvAEPg", map[string]*Property{"name": {PropertyName: "name", AttributeName: "name", ValueType: String, Required: true}}, nil)
+			leaf.PropertiesAll, leaf.IdentifiedBy, leaf.ResourceNameNested = []string{"name"}, []string{"name"}, "epgs"
+			leaf.LegacyAttributes = []MigrationAttribute{{AttributeName: "root_only", FieldName: "LegacyRootOnly", Type: StringAttribute, Status: Frozen}}
+			store := &DataStore{Classes: map[string]Class{"fvAEPg": *leaf}, ctx: NewContext()}
+			for index, name := range []string{"fvTenant", "fvBD"} {
+				class := classWithProperties(name, map[string]*Property{}, []string{"fvAEPg"})
+				version, savedVersion := 4+index*5, 1+index*6
+				class.ClassDefinition.SchemaVersion = &version
+				status := LegacyDeprecated
+				if index == 1 {
+					status = testCase.Input.(LegacyStatusEnum)
+				}
+				class.StateUpgrades = map[int]StateUpgradeDefinition{savedVersion: {
+					Source: FromFramework, Children: map[string]AttributeUpgradeDefinition{"fvAEPg": {Attributes: map[string]AttributeUpgradeDefinition{
+						"name": {AttributeName: "old_name", Type: StringAttribute, Restriction: LegacyRequired, Status: status},
+					}}},
+				}}
+				class.setMigrationData(store)
+				store.Classes[name] = *class
+			}
+			store.setNestedLegacyAttributes()
+			if message, expectedError := testCase.Expected.(string); expectedError {
+				assert.ErrorContains(t, store.ctx.Diagnostics.Error(), message)
+				return
+			}
+			assert.NoError(t, store.ctx.Diagnostics.Error())
+			class := store.Classes["fvAEPg"]
+			if assert.Len(t, class.NestedLegacyAttributes, 1) {
+				assert.Equal(t, "old_name", class.NestedLegacyAttributes[0].AttributeName)
+			}
+			assert.Len(t, class.RootLegacyAttributes(), 1)
+			assert.Equal(t, "root_only", class.RootLegacyAttributes()[0].AttributeName)
+			assert.True(t, store.Classes["fvTenant"].HasNestedLegacyChanges)
+			assert.True(t, store.Classes["fvBD"].HasNestedLegacyChanges)
+		})
+	}
+}
+
+func TestNestedLegacyAttributesUseCurrentRestrictions(t *testing.T) {
+	type input struct {
+		Property Property
+		History  []LegacyRestrictionEnum
+	}
+	testCases := []test.TestCase{
+		{Name: "required_current_property", Input: input{Property: Property{Required: true}, History: []LegacyRestrictionEnum{LegacyReadOnly}}},
+		{Name: "optional_current_property", Input: input{Property: Property{Optional: true, Computed: true}, History: []LegacyRestrictionEnum{LegacyReadOnly}}},
+		{Name: "read_only_current_property", Input: input{Property: Property{ReadOnly: true, Computed: true}, History: []LegacyRestrictionEnum{LegacyOptionalComputed}}},
+		{Name: "different_parent_histories", Input: input{Property: Property{Optional: true, Computed: true}, History: []LegacyRestrictionEnum{LegacyRequired, LegacyOptionalComputed, LegacyReadOnly}}},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			values := testCase.Input.(input)
+			property := values.Property
+			property.PropertyName, property.AttributeName, property.ValueType = "value", "value", String
+			child := classWithProperties("tagAnnotation", map[string]*Property{"value": &property}, nil)
+			child.PropertiesAll, child.ResourceNameNested = []string{"value"}, "annotations"
+			store := &DataStore{ctx: NewContext(), Classes: map[string]Class{"tagAnnotation": *child}}
+			parents := []string{"fvTenant", "fvBD", "fvAp"}
+			for index, restriction := range values.History {
+				parent := classWithProperties(parents[index], map[string]*Property{}, []string{"tagAnnotation"})
+				version, savedVersion := 4+index*5, 1+index*6
+				parent.ClassDefinition.SchemaVersion = &version
+				parent.StateUpgrades = map[int]StateUpgradeDefinition{savedVersion: {
+					Source: FromFramework, Children: map[string]AttributeUpgradeDefinition{"tagAnnotation": {Attributes: map[string]AttributeUpgradeDefinition{
+						"value": {AttributeName: "old_value", Restriction: restriction, Status: LegacyDeprecated},
+					}}},
+				}}
+				parent.setMigrationData(store)
+				store.Classes[parents[index]] = *parent
+			}
+			store.setNestedLegacyAttributes()
+			if !assert.NoError(t, store.ctx.Diagnostics.Error()) {
+				return
+			}
+			current := store.Classes["tagAnnotation"]
+			if !assert.Len(t, current.NestedLegacyAttributes, 1) {
+				return
+			}
+			alias := current.NestedLegacyAttributes[0]
+			assert.False(t, alias.Required)
+			assert.Equal(t, !property.ReadOnly, alias.Optional)
+			assert.True(t, alias.Computed)
+			assert.Equal(t, property, *current.Properties["value"])
+			// Collecting the shared alias must not rewrite any parent's historical decoding flags.
+			for index, restriction := range values.History {
+				parent := store.Classes[parents[index]]
+				assert.Equal(t, restriction, parent.StateUpgrades[1+index*6].Children["tagAnnotation"].Attributes["value"].Restriction)
+				if !assert.Len(t, parent.MigrationSchemas, 1) {
+					continue
+				}
+				found := false
+				for _, attribute := range parent.MigrationSchemas[0].Attributes {
+					if attribute.AttributeName != "annotations" {
+						continue
+					}
+					for _, member := range attribute.Attributes {
+						if member.AttributeName == "old_value" {
+							found = true
+							assert.Equal(t, restriction == LegacyRequired, member.Required)
+							assert.Equal(t, restriction == LegacyOptionalComputed, member.Optional)
+							assert.Equal(t, restriction != LegacyRequired, member.Computed)
+						}
+					}
+				}
+				assert.True(t, found, "historical child must retain its old_value field")
+			}
+		})
+	}
+}
+
+func TestMigrationUnsupportedPrimitiveConversions(t *testing.T) {
+	type input struct {
+		Current ValueTypeEnum
+		Prior   LegacyAttributeTypeEnum
+	}
+	testCases := []test.TestCase{
+		{Name: "string_to_set", Input: input{Current: Set, Prior: StringAttribute}, Expected: true},
+		{Name: "set_to_string", Input: input{Current: String, Prior: SetAttribute}, Expected: true},
+		{Name: "list_to_string", Input: input{Current: String, Prior: ListAttribute}, Expected: true},
+		{Name: "list_to_set", Input: input{Current: Set, Prior: ListAttribute}, Expected: false},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			test.InitializeTest(t)
+			values := testCase.Input.(input)
+			class := classWithProperties("fvAp", map[string]*Property{"value": {PropertyName: "value", AttributeName: "value", ValueType: values.Current, Optional: true, Computed: true}}, nil)
+			version := 2
+			class.PropertiesAll, class.ClassDefinition.SchemaVersion = []string{"value"}, &version
+			class.StateUpgrades = map[int]StateUpgradeDefinition{1: {Source: FromFramework, Attributes: map[string]AttributeUpgradeDefinition{"value": {Type: values.Prior, ElementType: StringAttribute}}}}
+			store := &DataStore{Classes: map[string]Class{}, ctx: NewContext()}
+			class.setMigrationData(store)
+			if testCase.Expected.(bool) {
+				assert.ErrorContains(t, store.ctx.Diagnostics.Error(), "explicit conversion")
+			} else {
+				assert.NoError(t, store.ctx.Diagnostics.Error())
+			}
+		})
+	}
+}
+
+func TestLegacyLookupAttributes(t *testing.T) {
+	testCases := []test.TestCase{
+		{Name: "identifier", Input: MigrationAttribute{AttributeName: "old_name", ChildAttribute: "name", Type: StringAttribute, Status: LegacyDeprecated}, Expected: true},
+		{Name: "parent", Input: MigrationAttribute{AttributeName: "tenant_dn", ChildAttribute: "parent_dn", Type: StringAttribute, Status: LegacyDeprecated}, Expected: true},
+		{Name: "ordinary_output", Input: MigrationAttribute{AttributeName: "descr", ChildAttribute: "description", Type: StringAttribute, Status: LegacyDeprecated}, Expected: false},
+		{Name: "frozen", Input: MigrationAttribute{AttributeName: "old_name", ChildAttribute: "name", Type: StringAttribute, Status: Frozen}, Expected: false},
+		{Name: "removed", Input: MigrationAttribute{AttributeName: "old_name", ChildAttribute: "name", Type: StringAttribute, Status: Removed}, Expected: false},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			class, _ := resourceScenarioFixture()
+			class.LegacyAttributes = []MigrationAttribute{testCase.Input.(MigrationAttribute)}
+			if actual := len(class.LegacyLookupAttributes()) > 0; actual != testCase.Expected.(bool) {
+				t.Fatalf("lookup alias eligibility: %t", actual)
+			}
+		})
+	}
+}

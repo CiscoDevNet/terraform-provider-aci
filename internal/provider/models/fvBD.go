@@ -1620,6 +1620,18 @@ func (m *FvBDRootModel) BuildDeletePayload(ctx context.Context) (*container.Cont
 	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "fvBD", m.ID.ValueString()), diagnostics
 }
 
+func (m *FvBDRootModel) SetFromLegacyLookup(ctx context.Context) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	if !m.LegacyTenantDn.IsNull() && !m.LegacyTenantDn.IsUnknown() {
+		if !m.ParentDN.IsNull() && !m.ParentDN.IsUnknown() {
+			diagnostics.AddError("Conflicting legacy configuration", "Configure either tenant_dn or parent_dn, not both.")
+			return diagnostics
+		}
+		m.ParentDN = m.LegacyTenantDn
+	}
+	return diagnostics
+}
+
 func (m *FvBDRootModel) SetFromLegacyConfig(ctx context.Context, config, priorState *FvBDRootModel) diag.Diagnostics {
 	var diagnostics diag.Diagnostics
 	if !config.LegacyArpFlood.IsNull() {

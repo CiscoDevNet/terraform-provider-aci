@@ -281,6 +281,7 @@ func (ds *DataStore) loadClasses() error {
 		class.setMigrationData(ds)
 		ds.Classes[name] = class
 	}
+	ds.setNestedLegacyAttributes()
 
 	// Build complete documentation only after every referenced class has its
 	// documentation identity.

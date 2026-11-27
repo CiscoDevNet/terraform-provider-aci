@@ -18,6 +18,10 @@ Record only historical differences. Unchanged root fields such as `name`,
 `description`, `annotation`, and `id` need no entries. Historical flags alone do
 not create another configurable alias. Datasources expose applicable legacy
 outputs but have no resource schema versions or registered state upgraders.
+Deprecated identifier and parent-DN names remain optional datasource lookup
+inputs until removal. Configure one name per lookup field; the model's
+`SetFromLegacyLookup` normalizes it before `BuildDN`. Other legacy datasource
+attributes remain computed-only.
 
 ## 2. Single derivation rule
 
@@ -131,12 +135,19 @@ Do not add unchanged root attributes merely to build a complete-schema
 inventory. Prior schemas start from the normalized current view and apply the
 historical differences. Missing optional JSON fields decode to null.
 
-The recursive definition shape does not yet provide recursive migration support.
-Renames or type changes inside a grandchild, and general in-place nested schema
-changes, currently require additional normalization, historical model/schema
-rendering, and conversion logic. Declaring an unsupported deep override stops
-generation. Unchanged nested values can still be preserved; adding fields that
-old JSON omits is different from renaming or changing an existing field.
+Framework histories resolve `attributes` and `children` recursively, including
+changes inside grandchildren and deeper descendants. The containing resource's
+history records the old names and types; no child `schema_version` reference is
+required. Current metadata supplies unchanged members. Existing SDKv2 flat
+relationship and historical-block conversions keep their original behavior.
+
+Supported nested values are strings, custom string types, string sets, singleton
+objects, and sets of objects. Historical string lists can convert to string sets.
+Null, unknown, and empty containers remain distinct. Renaming or removing scalar
+members does not require flattening their containing child. Unsupported primitive
+conversions, whole-child renames/removals, and singleton-to-set changes stop
+generation instead of selecting new conversion semantics. Historical semantic
+string types also require the corresponding semantic definition to remain available.
 
 A retired framework block currently inherits its earlier member shape. Explicit
 member, child, or type overrides are rejected instead of silently ignored.
@@ -146,8 +157,8 @@ configured in the fixture; frozen-only retention and clearing remain separate.
 Nested state belongs to its containing resource's schema version. Changing a
 reused grandchild's standalone resource version does not migrate parent state;
 each affected top-level resource needs its own versioned historical path and
-conversion fixtures. The definition tree can be reused when recursive support
-is implemented; these deeper conversions are not currently generated.
+conversion fixtures. Class conversion and compatibility functions are reused
+across consumers, while saved resource version numbers remain independent.
 
 ## 9. Generated behavior
 
@@ -161,6 +172,23 @@ The model template keeps APIC values separate from Terraform compatibility:
 - Typed `UpgradeFromV<n>` methods convert each supported saved version directly
   into the current root model. Resource adapters register those methods with
   their corresponding prior schemas.
+
+Class-owned nested aliases are included in the reusable model, attribute types,
+and resource/datasource attributes. Root-only SDKv2 aliases remain separate.
+Parents exposing the same class must agree on its current compatibility fields;
+inconsistent exposure is a generation error. Parent histories may record different
+historical restrictions. Current deprecated aliases derive their configurability
+from the owning class's current property: writable targets have optional/computed
+aliases, and read-only targets have computed-only aliases. Historical restrictions
+remain unchanged for decoding and do not select the current shared schema.
+Resource planning normalizes legacy inputs before identifier-based reconciliation,
+including members of nested sets.
+An omitted computed alias retains its prior value only while its canonical value
+is unchanged; a canonical update leaves the alias unknown until response decoding.
+Conflict validators use sibling paths. Frozen and sensitive aliases retain their
+own fallback values. Ordinary response decoding remains independent: adapters
+call `SetLegacyFromResponse` separately, using the model from before the read.
+Compatibility fields are excluded from APIC payloads.
 
 Named relationship aliases accept historical DNs and extract names for modern
 attributes. Legacy reads use APIC's resolved `tDn`. Explicit-DN relationships

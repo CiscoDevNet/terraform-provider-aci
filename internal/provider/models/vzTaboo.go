@@ -400,6 +400,18 @@ func (m *VzTabooRootModel) BuildDeletePayload(ctx context.Context) (*container.C
 	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "vzTaboo", m.ID.ValueString()), diagnostics
 }
 
+func (m *VzTabooRootModel) SetFromLegacyLookup(ctx context.Context) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	if !m.LegacyTenantDn.IsNull() && !m.LegacyTenantDn.IsUnknown() {
+		if !m.ParentDN.IsNull() && !m.ParentDN.IsUnknown() {
+			diagnostics.AddError("Conflicting legacy configuration", "Configure either tenant_dn or parent_dn, not both.")
+			return diagnostics
+		}
+		m.ParentDN = m.LegacyTenantDn
+	}
+	return diagnostics
+}
+
 func (m *VzTabooRootModel) SetFromLegacyConfig(ctx context.Context, config, priorState *VzTabooRootModel) diag.Diagnostics {
 	var diagnostics diag.Diagnostics
 	if !config.LegacyTenantDn.IsNull() {

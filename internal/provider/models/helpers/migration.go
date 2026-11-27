@@ -26,7 +26,7 @@ import (
 	aciValidators "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/validators"
 )
 
-// LegacyAttributeSchema describes Terraform-only compatibility fields on a root model.
+// LegacyAttributeSchema describes compatibility fields and historical nested member mappings.
 type LegacyAttributeSchema struct {
 	Type            attr.Type
 	Replacement     string
@@ -35,6 +35,377 @@ type LegacyAttributeSchema struct {
 	Attributes      map[string]LegacyAttributeSchema
 	Required        bool
 	Sensitive       bool
+	ReadOnly        bool
+	Removed         bool
+}
+
+func (s LegacyAttributeSchema) Upgrade(ctx context.Context, diagnostics *diag.Diagnostics, value attr.Value, target attr.Type) attr.Value {
+	// Preserve null/unknown containers before traversing their historical member mappings.
+	null, err := target.ValueFromTerraform(ctx, tftypes.NewValue(target.TerraformType(ctx), nil))
+	if err != nil {
+		diagnostics.AddError("Unable to convert legacy value", err.Error())
+		return nil
+	}
+	if s.Removed || value.IsNull() {
+		return null
+	}
+	if value.IsUnknown() {
+		unknown, err := target.ValueFromTerraform(ctx, tftypes.NewValue(target.TerraformType(ctx), tftypes.UnknownValue))
+		if err != nil {
+			diagnostics.AddError("Unable to convert legacy value", err.Error())
+			return null
+		}
+		return unknown
+	}
+	if _, objectTarget := target.(types.ObjectType); objectTarget {
+		if set, historicalSet := value.(types.Set); historicalSet {
+			if elementType, objectElements := set.ElementType(ctx).(types.ObjectType); objectElements {
+				// Keep historical member names/types until the recursive mappings have converted them.
+				value = LegacyChildFromSet(ctx, diagnostics, set, elementType.AttrTypes)
+				return s.Upgrade(ctx, diagnostics, value, target)
+			}
+		}
+	}
+	if len(s.Attributes) == 0 {
+		converted := LegacyValue[attr.Value](ctx, diagnostics, value, target)
+		if converted == nil {
+			return null
+		}
+		return converted
+	}
+	switch target := target.(type) {
+	case types.ObjectType:
+		object, ok := value.(types.Object)
+		if !ok {
+			break
+		}
+		return s.upgradeObject(ctx, diagnostics, object, target)
+	case types.SetType:
+		var elements []attr.Value
+		switch value := value.(type) {
+		case types.Set:
+			elements = value.Elements()
+		case types.List:
+			elements = value.Elements()
+		default:
+			diagnostics.AddError("Unable to convert legacy collection", "Expected a historical list or set of child objects.")
+			return null
+		}
+		converted := make([]attr.Value, 0, len(elements))
+		for _, element := range elements {
+			converted = append(converted, s.Upgrade(ctx, diagnostics, element, target.ElemType))
+		}
+		if diagnostics.HasError() {
+			return null
+		}
+		list, valueDiagnostics := types.ListValue(target.ElemType, converted)
+		diagnostics.Append(valueDiagnostics...)
+		if valueDiagnostics.HasError() {
+			return null
+		}
+		return LegacyValue[attr.Value](ctx, diagnostics, list, target)
+	}
+	diagnostics.AddError("Unable to convert legacy child", fmt.Sprintf("Cannot convert historical %T to %T with child mappings.", value, target))
+	return null
+}
+
+func (s LegacyAttributeSchema) upgradeObject(ctx context.Context, diagnostics *diag.Diagnostics, value types.Object, target types.ObjectType) types.Object {
+	// Current metadata supplies unchanged members; only recorded differences replace their historical names/types.
+	attributes := map[string]attr.Value{}
+	for name, attributeType := range target.AttrTypes {
+		null, err := attributeType.ValueFromTerraform(ctx, tftypes.NewValue(attributeType.TerraformType(ctx), nil))
+		if err != nil {
+			diagnostics.AddError("Unable to convert legacy child", err.Error())
+			return types.ObjectNull(target.AttrTypes)
+		}
+		attributes[name] = null
+	}
+	previous := value.Attributes()
+	for name, oldValue := range previous {
+		mapping := s.Attributes[name]
+		if mapping.Removed || mapping.Replacement != "" && mapping.Replacement != name {
+			continue
+		}
+		if attributeType, exists := target.AttrTypes[name]; exists {
+			attributes[name] = mapping.Upgrade(ctx, diagnostics, oldValue, attributeType)
+		}
+	}
+	for name, oldValue := range previous {
+		mapping := s.Attributes[name]
+		replacement := mapping.Replacement
+		if mapping.Removed || replacement == "" || replacement == name {
+			continue
+		}
+		if attributeType, exists := target.AttrTypes[replacement]; exists {
+			current, hasCurrent := previous[replacement]
+			if !hasCurrent || current.IsNull() || current.IsUnknown() {
+				attributes[replacement] = mapping.Upgrade(ctx, diagnostics, oldValue, attributeType)
+			}
+		}
+		if attributeType, retained := target.AttrTypes[name]; retained {
+			attributes[name] = LegacyValue[attr.Value](ctx, diagnostics, oldValue, attributeType)
+		}
+	}
+	if diagnostics.HasError() {
+		return types.ObjectNull(target.AttrTypes)
+	}
+	result, valueDiagnostics := types.ObjectValue(target.AttrTypes, attributes)
+	diagnostics.Append(valueDiagnostics...)
+	return result
+}
+
+func (s ClassSchema) SetFromLegacyConfig(ctx context.Context, diagnostics *diag.Diagnostics, config, plan, state types.Object) types.Object {
+	// Normalize deprecated inputs before reusing the schema's recursive state reconciliation.
+	plan, normalizedConfig := s.legacyPlanObject(ctx, diagnostics, config, plan, state)
+	if diagnostics.HasError() {
+		return plan
+	}
+	reconciled, reconciliationDiagnostics := s.reconciliationSchema().Reconcile(ctx, normalizedConfig, plan, state)
+	diagnostics.Append(reconciliationDiagnostics...)
+	return reconciled.(types.Object)
+}
+
+func (s ClassSchema) legacyConfigObject(ctx context.Context, diagnostics *diag.Diagnostics, value types.Object) types.Object {
+	if value.IsNull() || value.IsUnknown() || objectIsEmpty(value) {
+		return value
+	}
+	attributes := value.Attributes()
+	attributeTypes := value.AttributeTypes(ctx)
+	for name, legacy := range s.NestedLegacyAttributes {
+		if legacy.Frozen {
+			continue
+		}
+		configured := attributes[name]
+		if configured.IsNull() {
+			// An omitted computed alias must not overwrite a changed canonical value with stale state.
+			unknown, err := attributeTypes[name].ValueFromTerraform(ctx, tftypes.NewValue(attributeTypes[name].TerraformType(ctx), tftypes.UnknownValue))
+			if err != nil {
+				diagnostics.AddError("Unable to construct legacy child plan", err.Error())
+				continue
+			}
+			attributes[name] = unknown
+			continue
+		}
+		current := attributes[legacy.Replacement]
+		if current.IsNull() || current.IsUnknown() {
+			attributes[legacy.Replacement] = LegacyValue[attr.Value](ctx, diagnostics, configured, attributeTypes[legacy.Replacement])
+		}
+	}
+	if diagnostics.HasError() {
+		return value
+	}
+	result, valueDiagnostics := types.ObjectValue(attributeTypes, attributes)
+	diagnostics.Append(valueDiagnostics...)
+	return result
+}
+
+func (s ClassSchema) legacyPlanObject(ctx context.Context, diagnostics *diag.Diagnostics, config, plan, state types.Object) (types.Object, types.Object) {
+	if config.IsNull() || config.IsUnknown() || objectIsEmpty(config) {
+		return plan, config
+	}
+	attributeTypes := config.AttributeTypes(ctx)
+	configured := config.Attributes()
+	planned := plan.Attributes()
+	previous := state.Attributes()
+	if plan.IsNull() || plan.IsUnknown() {
+		planned = config.Attributes()
+		for name, value := range planned {
+			if value.IsNull() {
+				unknown, err := attributeTypes[name].ValueFromTerraform(ctx, tftypes.NewValue(attributeTypes[name].TerraformType(ctx), tftypes.UnknownValue))
+				if err != nil {
+					diagnostics.AddError("Unable to construct legacy child plan", err.Error())
+					return plan, config
+				}
+				planned[name] = unknown
+			}
+		}
+	}
+	for name, legacy := range s.NestedLegacyAttributes {
+		if !configured[name].IsNull() {
+			if !configured[name].IsUnknown() {
+				planned[name] = configured[name]
+			}
+			if !legacy.Frozen {
+				if !configured[legacy.Replacement].IsNull() {
+					diagnostics.AddError("Conflicting legacy configuration", fmt.Sprintf("Configure either %s or %s, not both.", name, legacy.Replacement))
+					return plan, config
+				}
+				value := configured[name]
+				if value.IsUnknown() && !planned[name].IsUnknown() {
+					value = planned[name]
+				}
+				planned[legacy.Replacement] = LegacyValue[attr.Value](ctx, diagnostics, value, attributeTypes[legacy.Replacement])
+			}
+			continue
+		}
+		if prior, exists := previous[name]; exists && (legacy.Frozen || legacy.Sensitive || planned[legacy.Replacement].Equal(previous[legacy.Replacement])) {
+			planned[name] = prior
+		} else if !legacy.Frozen && !legacy.Sensitive {
+			// Attribute plan modifiers may already have copied the old alias before its canonical value changed.
+			unknown, err := attributeTypes[name].ValueFromTerraform(ctx, tftypes.NewValue(attributeTypes[name].TerraformType(ctx), tftypes.UnknownValue))
+			if err != nil {
+				diagnostics.AddError("Unable to construct legacy child plan", err.Error())
+				return plan, config
+			}
+			planned[name] = unknown
+		}
+	}
+	normalized := s.legacyConfigObject(ctx, diagnostics, config)
+	if diagnostics.HasError() {
+		return plan, config
+	}
+	normalizedAttributes := normalized.Attributes()
+	for name, child := range s.Children {
+		childSchema := child.Schema()
+		if child.Cardinality == SingleChild {
+			planned[name], normalizedAttributes[name] = childSchema.legacyPlanObject(ctx, diagnostics, configured[name].(types.Object), planned[name].(types.Object), previousObject(previous[name], attributeTypes[name].(types.ObjectType)))
+			continue
+		}
+		prior := types.SetNull(attributeTypes[name].(types.SetType).ElemType)
+		if value, exists := previous[name]; exists {
+			prior = value.(types.Set)
+		}
+		planned[name], normalizedAttributes[name] = childSchema.legacyPlanSet(ctx, diagnostics, configured[name].(types.Set), planned[name].(types.Set), prior)
+	}
+	if diagnostics.HasError() {
+		return plan, config
+	}
+	result, valueDiagnostics := types.ObjectValue(attributeTypes, planned)
+	diagnostics.Append(valueDiagnostics...)
+	normalized, valueDiagnostics = types.ObjectValue(attributeTypes, normalizedAttributes)
+	diagnostics.Append(valueDiagnostics...)
+	return result, normalized
+}
+
+func previousObject(value attr.Value, objectType types.ObjectType) types.Object {
+	if value == nil {
+		return types.ObjectNull(objectType.AttrTypes)
+	}
+	return value.(types.Object)
+}
+
+func (s ClassSchema) legacyPlanSet(ctx context.Context, diagnostics *diag.Diagnostics, config, plan, state types.Set) (types.Set, types.Set) {
+	if config.IsNull() || config.IsUnknown() {
+		return plan, config
+	}
+	objects := func(value types.Set) []types.Object {
+		var result []types.Object
+		for _, element := range value.Elements() {
+			object := element.(types.Object)
+			if object.IsNull() || object.IsUnknown() {
+				continue
+			}
+			result = append(result, s.legacyConfigObject(ctx, diagnostics, object))
+		}
+		return result
+	}
+	plannedObjects, previousObjects := objects(plan), objects(state)
+	plannedMatched, previousMatched := make([]bool, len(plannedObjects)), make([]bool, len(previousObjects))
+	elementType := config.ElementType(ctx).(types.ObjectType)
+	var planned, normalized []attr.Value
+	matching := s.reconciliationSchema()
+	for _, element := range config.Elements() {
+		object := element.(types.Object)
+		if object.IsNull() || object.IsUnknown() {
+			planned, normalized = append(planned, object), append(normalized, object)
+			continue
+		}
+		identifiers := s.legacyConfigObject(ctx, diagnostics, object)
+		plannedObject := types.ObjectUnknown(elementType.AttrTypes)
+		previousObject := types.ObjectNull(elementType.AttrTypes)
+		if len(s.Identifiers) > 0 {
+			candidate, found, matchingDiagnostics := matching.MatchingObject(ctx, identifiers, plannedObjects, plannedMatched)
+			diagnostics.Append(matchingDiagnostics...)
+			if found {
+				plannedObject = candidate
+			}
+			candidate, found, matchingDiagnostics = matching.MatchingObject(ctx, identifiers, previousObjects, previousMatched)
+			diagnostics.Append(matchingDiagnostics...)
+			if found {
+				previousObject = candidate
+			}
+		}
+		plannedObject, normalizedObject := s.legacyPlanObject(ctx, diagnostics, object, plannedObject, previousObject)
+		planned, normalized = append(planned, plannedObject), append(normalized, normalizedObject)
+	}
+	if diagnostics.HasError() {
+		return plan, config
+	}
+	plannedSet, valueDiagnostics := types.SetValue(elementType, planned)
+	diagnostics.Append(valueDiagnostics...)
+	normalizedSet, valueDiagnostics := types.SetValue(elementType, normalized)
+	diagnostics.Append(valueDiagnostics...)
+	return plannedSet, normalizedSet
+}
+
+func (s ClassSchema) SetLegacyFromValues(ctx context.Context, diagnostics *diag.Diagnostics, value types.Object, fallback *types.Object) types.Object {
+	// Populate class-owned aliases after normal APIC decoding, retaining frozen and unreadable values from their own state.
+	if value.IsNull() || value.IsUnknown() {
+		return value
+	}
+	attributes := value.Attributes()
+	attributeTypes := value.AttributeTypes(ctx)
+	for name, legacy := range s.NestedLegacyAttributes {
+		if legacy.Frozen || legacy.Sensitive && !s.Properties[legacy.Replacement].ReadOnly {
+			if fallback != nil && !fallback.IsNull() && !fallback.IsUnknown() {
+				if prior := fallback.Attributes()[name]; !prior.IsUnknown() {
+					attributes[name] = prior
+				}
+				if property, exists := s.Properties[legacy.Replacement]; exists && property.Sensitive && !property.ReadOnly {
+					prior := fallback.Attributes()[legacy.Replacement]
+					if !prior.IsUnknown() {
+						attributes[legacy.Replacement] = prior
+					}
+				}
+			}
+			continue
+		}
+		attributes[name] = LegacyValue[attr.Value](ctx, diagnostics, attributes[legacy.Replacement], attributeTypes[name])
+	}
+	previous := map[string]attr.Value{}
+	if fallback != nil && !fallback.IsNull() && !fallback.IsUnknown() {
+		previous = fallback.Attributes()
+	}
+	for name, child := range s.Children {
+		childSchema := child.Schema()
+		if child.Cardinality == SingleChild {
+			prior := previousObject(previous[name], attributeTypes[name].(types.ObjectType))
+			attributes[name] = childSchema.SetLegacyFromValues(ctx, diagnostics, attributes[name].(types.Object), &prior)
+			continue
+		}
+		current := attributes[name].(types.Set)
+		if current.IsNull() || current.IsUnknown() {
+			continue
+		}
+		var priorObjects []types.Object
+		if previous[name] != nil {
+			for _, element := range previous[name].(types.Set).Elements() {
+				priorObjects = append(priorObjects, element.(types.Object))
+			}
+		}
+		matched := make([]bool, len(priorObjects))
+		var elements []attr.Value
+		for _, element := range current.Elements() {
+			var prior *types.Object
+			if len(childSchema.Identifiers) > 0 {
+				previous, found, matchingDiagnostics := childSchema.reconciliationSchema().MatchingObject(ctx, element.(types.Object), priorObjects, matched)
+				diagnostics.Append(matchingDiagnostics...)
+				if found {
+					prior = &previous
+				}
+			}
+			elements = append(elements, childSchema.SetLegacyFromValues(ctx, diagnostics, element.(types.Object), prior))
+		}
+		children, valueDiagnostics := types.SetValue(current.ElementType(ctx), elements)
+		diagnostics.Append(valueDiagnostics...)
+		attributes[name] = children
+	}
+	if diagnostics.HasError() {
+		return value
+	}
+	result, valueDiagnostics := types.ObjectValue(attributeTypes, attributes)
+	diagnostics.Append(valueDiagnostics...)
+	return result
 }
 
 func (s LegacyAttributeSchema) ResourceBlock() resourceschema.Block {
@@ -60,6 +431,10 @@ func (s LegacyAttributeSchema) DataSourceBlock() datasourceschema.Block {
 }
 
 func (s LegacyAttributeSchema) ResourceAttribute() resourceschema.Attribute {
+	return s.resourceAttribute(path.MatchRoot(s.Replacement))
+}
+
+func (s LegacyAttributeSchema) resourceAttribute(replacementPath path.Expression) resourceschema.Attribute {
 	message := deprecatedPropertyMessage
 	if s.Replacement != "" {
 		message = fmt.Sprintf("Use attribute `%s` instead.", s.Replacement)
@@ -69,36 +444,36 @@ func (s LegacyAttributeSchema) ResourceAttribute() resourceschema.Attribute {
 	}
 	switch attributeType := s.Type.(type) {
 	case basetypes.StringTypable:
-		attribute := resourceschema.StringAttribute{Optional: true, Computed: true, Sensitive: s.Sensitive, DeprecationMessage: message}
+		attribute := resourceschema.StringAttribute{Optional: !s.ReadOnly, Computed: true, Sensitive: s.Sensitive, DeprecationMessage: message}
 		if !s.Type.Equal(types.StringType) {
 			attribute.CustomType = attributeType
 		}
 		if s.Frozen {
 			attribute.PlanModifiers = ResourceStringPlanModifiers(false)
 		}
-		if s.RequiresReplace {
+		if s.RequiresReplace && !s.Frozen {
 			attribute.PlanModifiers = append(attribute.PlanModifiers, stringplanmodifier.RequiresReplaceIfConfigured())
 		}
-		if s.Replacement != "" {
-			attribute.Validators = []validator.String{stringvalidator.ConflictsWith(path.MatchRoot(s.Replacement))}
+		if s.Replacement != "" && !s.Frozen {
+			attribute.Validators = []validator.String{stringvalidator.ConflictsWith(replacementPath)}
 		}
 		return attribute
 	case basetypes.ListType:
-		attribute := resourceschema.ListAttribute{Optional: true, Computed: true, Sensitive: s.Sensitive, ElementType: types.StringType, DeprecationMessage: message}
-		if s.Replacement != "" {
+		attribute := resourceschema.ListAttribute{Optional: !s.ReadOnly, Computed: true, Sensitive: s.Sensitive, ElementType: types.StringType, DeprecationMessage: message}
+		if s.Replacement != "" && !s.Frozen {
 			// The shared framework conflict validator implements both collection interfaces.
-			attribute.Validators = []validator.List{setvalidator.ConflictsWith(path.MatchRoot(s.Replacement)).(validator.List)}
+			attribute.Validators = []validator.List{setvalidator.ConflictsWith(replacementPath).(validator.List)}
 		}
 		return attribute
 	default:
 		attribute := resourceschema.SetAttribute{
-			Optional: true, Computed: true, Sensitive: s.Sensitive, ElementType: types.StringType, DeprecationMessage: message,
+			Optional: !s.ReadOnly, Computed: true, Sensitive: s.Sensitive, ElementType: types.StringType, DeprecationMessage: message,
 		}
 		if s.Frozen {
 			attribute.PlanModifiers = []planmodifier.Set{setplanmodifier.UseNonNullStateForUnknown()}
 		}
-		if s.Replacement != "" {
-			attribute.Validators = []validator.Set{setvalidator.ConflictsWith(path.MatchRoot(s.Replacement))}
+		if s.Replacement != "" && !s.Frozen {
+			attribute.Validators = []validator.Set{setvalidator.ConflictsWith(replacementPath)}
 		}
 		return attribute
 	}

@@ -542,6 +542,9 @@ func (p *Property) setReference() error {
 
 func (p *Property) setNamedReferenceAttributeName(ds *DataStore, referenceClass *ClassName) {
 	// Use the referenced class's Terraform resource name for a name-reference attribute.
+	if p.propertyDefinition.AttributeName != "" || p.globalDefinition.AttributeNameOverrides[p.PropertyName] != "" {
+		return
+	}
 	if resourceName := ds.getResourceName(referenceClass.String()); resourceName != "" {
 		p.AttributeName = resourceName + "_name"
 	}

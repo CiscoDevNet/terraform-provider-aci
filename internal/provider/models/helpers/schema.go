@@ -309,8 +309,14 @@ func (c ChildSchema) resourceAttribute(attributeName string, parentContext resou
 		if !c.Required {
 			requiredProperties := childSchema.requiredPropertyNames()
 			if len(requiredProperties) > 0 {
+				alternatives := map[string][]string{}
+				for name, legacy := range childSchema.NestedLegacyAttributes {
+					if !legacy.Frozen {
+						alternatives[legacy.Replacement] = append(alternatives[legacy.Replacement], name)
+					}
+				}
 				attribute.Validators = []validator.Object{
-					aciValidators.RequiredAttributesWhenNotEmpty(attributeName, requiredProperties),
+					aciValidators.RequiredAttributesWhenNotEmpty(attributeName, requiredProperties, alternatives),
 				}
 			}
 		}
@@ -361,15 +367,16 @@ type ParentDNSchema struct {
 // APIC class. It constructs concrete resource and data-source schemas on
 // demand.
 type ClassSchema struct {
-	Version               int64
-	LegacyAttributes      map[string]LegacyAttributeSchema
-	ResourceDescription   string
-	DataSourceDescription string
-	Properties            map[string]PropertySchema
-	Children              map[string]ChildSchema
-	Identifiers           []string
-	ParentDN              *ParentDNSchema
-	AnnotationAttribute   string
+	Version                int64
+	LegacyAttributes       map[string]LegacyAttributeSchema
+	NestedLegacyAttributes map[string]LegacyAttributeSchema
+	ResourceDescription    string
+	DataSourceDescription  string
+	Properties             map[string]PropertySchema
+	Children               map[string]ChildSchema
+	Identifiers            []string
+	ParentDN               *ParentDNSchema
+	AnnotationAttribute    string
 }
 
 func (s ClassSchema) hasReadOnlyProperties() bool {
@@ -413,16 +420,51 @@ func (s ClassSchema) reconciliationSchema() planmodifiers.ReconciliationSchema {
 		}
 	}
 
+	var legacyAttributes []string
+	for name, legacy := range s.NestedLegacyAttributes {
+		legacyAttributes = append(legacyAttributes, name)
+		if property, exists := s.Properties[legacy.Replacement]; exists && property.Sensitive && !property.ReadOnly {
+			legacyAttributes = append(legacyAttributes, legacy.Replacement)
+		}
+	}
+	slices.Sort(legacyAttributes)
 	return planmodifiers.ReconciliationSchema{
-		Identifiers: slices.Clone(s.Identifiers),
-		Children:    children,
+		Identifiers:         slices.Clone(s.Identifiers),
+		Children:            children,
+		StateOnlyAttributes: legacyAttributes,
 	}
 }
 
 func (s ClassSchema) resourcePropertyAttributes(context resourceSchemaContext) map[string]resourceschema.Attribute {
 	attributes := make(map[string]resourceschema.Attribute, len(s.Properties))
 	for name, property := range s.Properties {
+		var alternatives []path.Expression
+		for legacyName, legacy := range s.NestedLegacyAttributes {
+			if !legacy.Frozen && !legacy.ReadOnly && legacy.Replacement == name {
+				if property.Required {
+					alternatives = append(alternatives, path.MatchRelative().AtParent().AtName(legacyName))
+				}
+				property.Computed = true
+			}
+		}
+		if len(alternatives) > 0 {
+			property.Required, property.Optional, property.Computed = false, true, true
+		}
 		attributes[name] = property.resourceAttribute(context)
+		if len(alternatives) > 0 && context.requiredPropertyRendering != requiredPropertyWithObjectValidator {
+			switch attribute := attributes[name].(type) {
+			case resourceschema.StringAttribute:
+				attribute.Validators = append(attribute.Validators, stringvalidator.ExactlyOneOf(alternatives...))
+				attributes[name] = attribute
+			case resourceschema.SetAttribute:
+				attribute.Validators = append(attribute.Validators, setvalidator.ExactlyOneOf(alternatives...))
+				attributes[name] = attribute
+			}
+		}
+	}
+	for name, legacy := range s.NestedLegacyAttributes {
+		legacy.RequiresReplace = legacy.RequiresReplace && context.includeRequiresReplace
+		attributes[name] = legacy.resourceAttribute(path.MatchRelative().AtParent().AtName(legacy.Replacement))
 	}
 	return attributes
 }
@@ -464,6 +506,9 @@ func (s ClassSchema) DataSourcePropertyAttributes() map[string]datasourceschema.
 	attributes := make(map[string]datasourceschema.Attribute, len(s.Properties))
 	for name, property := range s.Properties {
 		attributes[name] = property.DataSourceAttribute(false)
+	}
+	for name, legacy := range s.NestedLegacyAttributes {
+		attributes[name] = legacy.DataSourceAttribute()
 	}
 	return attributes
 }
@@ -562,6 +607,50 @@ func (s ClassSchema) DataSourceSchema() datasourceschema.Schema {
 	}
 	for _, identifier := range s.Identifiers {
 		attributes[identifier] = s.Properties[identifier].DataSourceAttribute(true)
+	}
+	// Historical lookup names remain inputs at the root; other aliases stay computed-only.
+	legacyAttributes := make(map[string]LegacyAttributeSchema, len(s.LegacyAttributes)+len(s.NestedLegacyAttributes))
+	maps.Copy(legacyAttributes, s.LegacyAttributes)
+	maps.Copy(legacyAttributes, s.NestedLegacyAttributes)
+	lookups := slices.Clone(s.Identifiers)
+	if s.ParentDN != nil {
+		lookups = append(lookups, s.ParentDN.AttributeName)
+	}
+	for _, name := range lookups {
+		var aliases []string
+		for legacyName, legacy := range legacyAttributes {
+			if !legacy.Frozen && legacy.Attributes == nil && legacy.Replacement == name {
+				if _, ok := attributes[legacyName].(datasourceschema.StringAttribute); ok {
+					aliases = append(aliases, legacyName)
+				}
+			}
+		}
+		if len(aliases) == 0 {
+			continue
+		}
+		slices.Sort(aliases)
+		current := attributes[name].(datasourceschema.StringAttribute)
+		var alternatives []path.Expression
+		for _, alias := range aliases {
+			alternatives = append(alternatives, path.MatchRoot(alias))
+		}
+		if current.Required {
+			current.Validators = append(current.Validators, stringvalidator.AtLeastOneOf(alternatives...))
+		}
+		current.Required, current.Optional, current.Computed = false, true, true
+		attributes[name] = current
+		for _, alias := range aliases {
+			attribute := attributes[alias].(datasourceschema.StringAttribute)
+			attribute.Optional = true
+			conflicts := []path.Expression{path.MatchRoot(name)}
+			for _, other := range aliases {
+				if other != alias {
+					conflicts = append(conflicts, path.MatchRoot(other))
+				}
+			}
+			attribute.Validators = append(attribute.Validators, stringvalidator.ConflictsWith(conflicts...))
+			attributes[alias] = attribute
+		}
 	}
 
 	return datasourceschema.Schema{

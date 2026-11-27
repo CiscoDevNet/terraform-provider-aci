@@ -72,6 +72,11 @@ func (d *FvAEPgDataSource) Read(ctx context.Context, req datasource.ReadRequest,
 		return
 	}
 
+	resp.Diagnostics.Append(data.SetFromLegacyLookup(ctx)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	dn := data.BuildDN()
 	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_application_epg with id '%s'", dn))
 

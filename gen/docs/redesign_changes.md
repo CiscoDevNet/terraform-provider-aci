@@ -11,6 +11,7 @@ a bug fix can still require resource replacement.
 
 | Area | Type | Difference and impact |
 | --- | --- | --- |
+| Deprecated datasource lookup names | Enhancement | Datasources now accept deprecated identifier and parent-DN names as lookup inputs until removal. Configure one current or historical name per lookup field; it is normalized before constructing the DN. Other legacy attributes remain read-only. This extends the accepted datasource inputs compared with `develop`. |
 | Application EPG `useg_epg` | Bug fix | Mode changes now require replacement after the tested APIC rejected an in-place change. Document the replacement impact. [Definition](../definitions/fvAEPg.yaml). |
 | Legacy named-relation block state | Bug fix | Historical Bridge Domain NetFlow, VRF address-family policy, and ESG contract block values are DNs. State upgrading now extracts the target name for the modern child while retaining the original DN in the deprecated block, aligning it with existing legacy planning. The previous upgraders copied the DN into the name field. |
 | NetFlow historical child values | Bug fix | The generated upgrader constructs exporter/record child values with the complete current object types. The baseline version-0 upgrader produces value-conversion diagnostics for historical objects lacking the newer nested annotation/tag fields; all four historical-shape probes now upgrade successfully. |
@@ -31,9 +32,15 @@ listed below.
 
 ## Internal mechanics
 
+The future nested-migration corrections below were verified with temporary class
+definitions. The current canonical definitions do not introduce those transitions.
+
 | Area | Type | Summary |
 | --- | --- | --- |
 | Shared models, schemas, helpers, and registration | Refactor | Removes duplication; code relocation alone is not a user-visible change. |
+| Recursive historical child shapes | Bug fix | A historical set containing a singleton child is unwrapped before recursive member conversion. This supports the same set-to-singleton conversion below other children and preserves old names/types until their mappings run. Live EPG/domain/uplink proof exposed the missing recursive path. |
+| Deprecated child outputs during updates | Bug fix | Changing a current child property invalidates its omitted computed alias during planning. This prevents a stale deprecated value from causing an inconsistent-result error after APIC returns the updated value. Unchanged values and frozen/secret retention keep their existing handling. Live Annotation/Tenant proof exposed and verified the correction. |
+| Frozen aliases with current fields | Bug fix | Frozen aliases may retain their own configured value alongside the current field. They no longer reject that current field or request replacement when a frozen identifier alias changes. This keeps frozen data isolated from APIC configuration. Live nested EPG proof exposed the conflict restriction. |
 | Secret retention | Compatibility | A `computed: true` override preserves VMM Credential password retention when configuration later omits it. Initial creation through the modern password also seeds the deprecated `pwd` alias, matching the baseline; subsequent reads retain the alias's own configured/state value. Imports cannot recover the secret from APIC. Key Ring and peering passwords remain optional without computed behavior. Never-configured or unknown secrets remain null when APIC cannot return them. |
 | Datasource sensitivity flags | Schema metadata alignment | Shared schemas now mark VMM Credential `password` and its deprecated `pwd` alias, Key Ring `key`, and peering `password` as sensitive in datasources too. These four datasource attributes remain null; their returned values are unchanged. |
 | Replacement inference | Compatibility | Metadata `isNaming` or `createOnly` restores the four existing replacement rules for Imported Logical Device description, IP SLA Track List type, and the two domain delimiter attributes. Certificate Authority `certificate_usage` uses `requires_replace: false` to preserve its legacy set behavior pending separate validation. |

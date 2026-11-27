@@ -674,3 +674,49 @@ func TestResourcePropertyPlanModifiers(t *testing.T) {
 		t.Fatal("expected set RequiresReplace to remain the final plan modifier")
 	}
 }
+
+func TestDataSourceLegacyLookupSchema(t *testing.T) {
+	testCases := []test.TestCase{
+		{Name: "identifier", Input: "name", Expected: 1},
+		{Name: "required_parent", Input: "parent_dn", Expected: 1},
+		{Name: "default_parent", Input: "default_parent", Expected: 0},
+		{Name: "multiple_aliases", Input: "multiple", Expected: 1},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			target := testCase.Input.(string)
+			if target == "multiple" {
+				target = "name"
+			}
+			defaultParent := ""
+			if target == "default_parent" {
+				target = "parent_dn"
+				defaultParent = "uni"
+			}
+			schema := ClassSchema{Properties: map[string]PropertySchema{"name": {Type: StringProperty, Required: true}, "description": {Type: StringProperty, Optional: true, Computed: true}}, Identifiers: []string{"name"}, ParentDN: &ParentDNSchema{AttributeName: "parent_dn", Config: ParentDNAttributeConfig{DefaultValue: defaultParent}}, LegacyAttributes: map[string]LegacyAttributeSchema{
+				"old_lookup": {Type: types.StringType, Replacement: target}, "old_description": {Type: types.StringType, Replacement: "description"}, "frozen_lookup": {Type: types.StringType, Replacement: target, Frozen: true},
+			}}
+			if testCase.Input == "multiple" {
+				schema.NestedLegacyAttributes = map[string]LegacyAttributeSchema{"older_lookup": {Type: types.StringType, Replacement: target}}
+			}
+			actual := schema.DataSourceSchema()
+			if diagnostics := actual.ValidateImplementation(context.Background()); diagnostics.HasError() {
+				t.Fatal(diagnostics)
+			}
+			current := actual.Attributes[target].(datasourceschema.StringAttribute)
+			if current.Required || !current.Optional || !current.Computed || len(current.Validators) != testCase.Expected.(int) {
+				t.Fatalf("unexpected canonical lookup: %#v", current)
+			}
+			legacy := actual.Attributes["old_lookup"].(datasourceschema.StringAttribute)
+			if !legacy.Optional || !legacy.Computed || len(legacy.Validators) != 1 {
+				t.Fatalf("unexpected legacy lookup: %#v", legacy)
+			}
+			for _, name := range []string{"old_description", "frozen_lookup"} {
+				a := actual.Attributes[name].(datasourceschema.StringAttribute)
+				if a.Optional || a.Required || !a.Computed {
+					t.Fatalf("%s must remain computed-only", name)
+				}
+			}
+		})
+	}
+}

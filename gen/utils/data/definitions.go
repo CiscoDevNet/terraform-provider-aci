@@ -613,8 +613,8 @@ type StateUpgradeDefinition struct {
 }
 
 // AttributeUpgradeDefinition describes scalar and nested differences inside a
-// state_upgrades entry. The definition can express recursive paths; normalization
-// currently supports the documented shallow mappings and rejects deeper changes.
+// state_upgrades entry. Framework histories resolve nested attribute differences
+// recursively; existing SDKv2 flat relation and block mappings retain their published behavior.
 type AttributeUpgradeDefinition struct {
 	// The Terraform attribute name as it appeared in the prior schema. Omit when
 	// the prior name matches the current name. On a children entry, presence

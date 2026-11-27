@@ -72,6 +72,11 @@ func (d *FvBDDataSource) Read(ctx context.Context, req datasource.ReadRequest, r
 		return
 	}
 
+	resp.Diagnostics.Append(data.SetFromLegacyLookup(ctx)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	dn := data.BuildDN()
 	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_bridge_domain with id '%s'", dn))
 

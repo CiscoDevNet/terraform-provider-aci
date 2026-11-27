@@ -482,6 +482,25 @@ func (m *InfraHPortSRootModel) BuildDeletePayload(ctx context.Context) (*contain
 	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "infraHPortS", m.ID.ValueString()), diagnostics
 }
 
+func (m *InfraHPortSRootModel) SetFromLegacyLookup(ctx context.Context) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	if !m.LegacyAccessPortSelectorType.IsNull() && !m.LegacyAccessPortSelectorType.IsUnknown() {
+		if !m.Type.IsNull() && !m.Type.IsUnknown() {
+			diagnostics.AddError("Conflicting legacy configuration", "Configure either access_port_selector_type or port_selector_type, not both.")
+			return diagnostics
+		}
+		m.Type = m.LegacyAccessPortSelectorType
+	}
+	if !m.LegacyLeafInterfaceProfileDn.IsNull() && !m.LegacyLeafInterfaceProfileDn.IsUnknown() {
+		if !m.ParentDN.IsNull() && !m.ParentDN.IsUnknown() {
+			diagnostics.AddError("Conflicting legacy configuration", "Configure either leaf_interface_profile_dn or parent_dn, not both.")
+			return diagnostics
+		}
+		m.ParentDN = m.LegacyLeafInterfaceProfileDn
+	}
+	return diagnostics
+}
+
 func (m *InfraHPortSRootModel) SetFromLegacyConfig(ctx context.Context, config, priorState *InfraHPortSRootModel) diag.Diagnostics {
 	var diagnostics diag.Diagnostics
 	if !config.LegacyAccessPortSelectorType.IsNull() {

@@ -570,6 +570,18 @@ func (m *VzAnyRootModel) BuildPayload(
 	return modelHelpers.NewPayloadContainer(ctx, &diagnostics, payloadEnvelope, "JSON payload"), diagnostics
 }
 
+func (m *VzAnyRootModel) SetFromLegacyLookup(ctx context.Context) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	if !m.LegacyVrfDn.IsNull() && !m.LegacyVrfDn.IsUnknown() {
+		if !m.ParentDN.IsNull() && !m.ParentDN.IsUnknown() {
+			diagnostics.AddError("Conflicting legacy configuration", "Configure either vrf_dn or parent_dn, not both.")
+			return diagnostics
+		}
+		m.ParentDN = m.LegacyVrfDn
+	}
+	return diagnostics
+}
+
 func (m *VzAnyRootModel) SetFromLegacyConfig(ctx context.Context, config, priorState *VzAnyRootModel) diag.Diagnostics {
 	var diagnostics diag.Diagnostics
 	if !config.LegacyMatchT.IsNull() {
