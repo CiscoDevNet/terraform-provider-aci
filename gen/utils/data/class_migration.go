@@ -177,6 +177,28 @@ func (c *Class) HasLegacyConfig() bool {
 	return c.HasCurrentLegacyAttributes() || c.HasNestedLegacyChanges
 }
 
+func (c *Class) validateLegacyAliases(ctx *Context) {
+	// Current configuration supports one previous name; older names remain available only to historical decoders.
+	names := map[string]string{}
+	for _, alias := range append(c.RootLegacyAttributes(), c.NestedLegacyAttributes...) {
+		if alias.Status != LegacyDeprecated || alias.Computed && !alias.Optional && !alias.Required {
+			continue
+		}
+		target := alias.ChildAttribute
+		if alias.ChildName != nil {
+			target = fmt.Sprintf("%s.%s", alias.ChildName, target)
+		}
+		if target == "" {
+			continue
+		}
+		if previous, exists := names[target]; exists && previous != alias.AttributeName {
+			ctx.Diagnostics.AddError("Class '%s': property %q has multiple active deprecated names %q and %q; mark the superseded name as removed in state_upgrades", c.Name, target, previous, alias.AttributeName)
+			continue
+		}
+		names[target] = alias.AttributeName
+	}
+}
+
 func (c *Class) LegacyLookupAttributes() []MigrationAttribute {
 	// Datasource compatibility inputs are limited to the fields used to construct its DN.
 	var attributes []MigrationAttribute
@@ -292,6 +314,15 @@ func (c *Class) setMigrationData(ds *DataStore) {
 			continue
 		}
 		flattened[version] = map[string]bool{}
+		names := map[string]bool{}
+		addOverride := func(attribute MigrationAttribute, explicitName bool) {
+			// Explicit duplicates are checked on the definition tree; inherited names become known only during normalization.
+			if previousExplicit, exists := names[attribute.AttributeName]; exists && (!previousExplicit || !explicitName) {
+				ds.ctx.Diagnostics.AddError("Class '%s': schema version %d: duplicate historical attribute name %q after resolving metadata names", c.Name, version, attribute.AttributeName)
+			}
+			names[attribute.AttributeName] = explicitName
+			overrides[version] = append(overrides[version], attribute)
+		}
 		add := func(key string, definition AttributeUpgradeDefinition, child *Class) {
 			storedAlias := false
 			name := definition.AttributeName
@@ -319,7 +350,7 @@ func (c *Class) setMigrationData(ds *DataStore) {
 					previous.ChildName, previous.TargetField, previous.ChildAttribute = nil, "", ""
 					previous.TargetModelType, previous.TargetAttributeType = "", ""
 					aliases[name] = previous
-					overrides[version] = append(overrides[version], previous)
+					addOverride(previous, true)
 					return
 				}
 				// Orphaned retained fields have no current metadata to supply their old shape.
@@ -357,14 +388,14 @@ func (c *Class) setMigrationData(ds *DataStore) {
 			if attribute.IsAlias() {
 				aliases[attribute.AttributeName] = attribute
 			}
-			overrides[version] = append(overrides[version], attribute)
+			addOverride(attribute, definition.AttributeName != "")
 		}
 		for key, definition := range entry.Attributes {
 			add(key, definition, nil)
 		}
 		for name, definition := range entry.Children {
 			if attribute, exists := nested[version][name]; exists {
-				overrides[version] = append(overrides[version], attribute)
+				addOverride(attribute, definition.AttributeName != "")
 				continue
 			}
 			child, exists := ds.Classes[name]
@@ -407,7 +438,7 @@ func (c *Class) setMigrationData(ds *DataStore) {
 				}
 				slices.SortFunc(attribute.Attributes, func(a, b MigrationAttribute) int { return strings.Compare(a.AttributeName, b.AttributeName) })
 				aliases[attribute.AttributeName] = attribute
-				overrides[version] = append(overrides[version], attribute)
+				addOverride(attribute, true)
 				flattened[version][child.ResourceNameNested] = true
 				continue
 			}
@@ -418,7 +449,7 @@ func (c *Class) setMigrationData(ds *DataStore) {
 				attribute.InheritedModelType = "types.Set"
 				attribute.InheritedAttributeType = fmt.Sprintf("types.SetType{ElemType: %s}", attribute.TargetAttributeType)
 				attribute.SchemaExpression = fmt.Sprintf("modelHelpers.LegacyChildSetAttribute(current.Attributes[%q].(resourceschema.SingleNestedAttribute))", child.ResourceNameNested)
-				overrides[version] = append(overrides[version], attribute)
+				addOverride(attribute, false)
 				continue
 			}
 			if definition.Type != UndefinedLegacyAttributeType {

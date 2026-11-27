@@ -3,6 +3,7 @@ package data
 import (
 	"encoding/json"
 	"fmt"
+	"maps"
 	"os"
 	"regexp"
 	"slices"
@@ -963,6 +964,50 @@ func (c *Class) setProperties(ds *DataStore) error {
 
 	genLogger.Debugf("Successfully set properties for class '%s'.", c.Name)
 	return nil
+}
+
+func (c *Class) validatePropertyDefinitions(ctx *Context) {
+	// Check raw metadata so overrides for excluded properties remain valid.
+	properties, _ := c.MetaFileContent["properties"].(map[string]any)
+	for _, name := range slices.Sorted(maps.Keys(c.ClassDefinition.Properties)) {
+		if _, exists := properties[name]; !exists && name != "parentDn" {
+			ctx.Diagnostics.AddError("Class '%s': unknown property override %q", c.Name, name)
+		}
+	}
+}
+
+func (c *Class) validateAttributeNames(ds *DataStore) {
+	// The reusable model and top-level wrapper share one Terraform field namespace.
+	names := map[string]string{}
+	add := func(name, source string) {
+		if previous, exists := names[name]; exists {
+			ds.ctx.Diagnostics.AddError("Class '%s': duplicate Terraform attribute name %q from %s and %s", c.Name, name, previous, source)
+			return
+		}
+		names[name] = source
+	}
+	for _, property := range c.ModelProperties() {
+		add(property.AttributeName, fmt.Sprintf("property %q", property.PropertyName))
+	}
+	for _, alias := range c.NestedLegacyAttributes {
+		add(alias.AttributeName, fmt.Sprintf("compatibility field %q", alias.AttributeName))
+	}
+	for _, name := range c.Children {
+		child := ds.Classes[name.String()]
+		add(child.ResourceNameNested, fmt.Sprintf("child %q", name))
+	}
+	if !c.HasResourceArtifact() && !c.HasDatasourceArtifact() {
+		return
+	}
+	add("id", "generated ID")
+	if parent := c.ParentDnProperty(); parent != nil {
+		add(parent.AttributeName, "generated parent DN")
+	}
+	for _, alias := range c.RootLegacyAttributes() {
+		if alias.Status != Removed {
+			add(alias.AttributeName, fmt.Sprintf("compatibility field %q", alias.AttributeName))
+		}
+	}
 }
 
 func (c *Class) setRelation() error {
@@ -2770,17 +2815,40 @@ func (c *Class) validateStateUpgradeEntry(ctx *Context, entry StateUpgradeDefini
 	// the same prior-version entry, plus structural shape rules per node.
 	// The prefix already contains the class name and schema version, so
 	// per-node diagnostics only need to append the bucket and key.
-	legacyNames := make(map[string]struct{})
+	var validateNames func(StateUpgradeDefinition, string)
+	validateNames = func(entry StateUpgradeDefinition, prefix string) {
+		legacyNames := map[string]string{}
+		add := func(name, source string) {
+			if name == "" {
+				return
+			}
+			if previous, exists := legacyNames[name]; exists {
+				ctx.Diagnostics.AddError("%s: duplicate attribute_name %q from %s and %s within the same schema object", prefix, name, previous, source)
+				return
+			}
+			legacyNames[name] = source
+		}
+		for _, name := range slices.Sorted(maps.Keys(entry.Attributes)) {
+			add(entry.Attributes[name].AttributeName, fmt.Sprintf("attribute %q", name))
+		}
+		for _, name := range slices.Sorted(maps.Keys(entry.Children)) {
+			child := entry.Children[name]
+			if entry.Source != FromFramework && child.AttributeName == "" {
+				// SDKv2 flat relationships occupy the containing object's namespace.
+				for _, member := range slices.Sorted(maps.Keys(child.Attributes)) {
+					add(child.Attributes[member].AttributeName, fmt.Sprintf("child %q attribute %q", name, member))
+				}
+				continue
+			}
+			add(child.AttributeName, fmt.Sprintf("child %q", name))
+			validateNames(StateUpgradeDefinition{Source: entry.Source, Attributes: child.Attributes, Children: child.Children}, fmt.Sprintf("%s: children[%q]", prefix, name))
+		}
+	}
+	validateNames(entry, prefix)
 	for propertyName, attributeUpgrade := range entry.Attributes {
 		// Active overrides are validated after metadata and earlier declarations are inherited.
 		if c.ClassDefinition.SchemaVersion == nil && !(c.HasDatasourceArtifact() && !c.HasResourceArtifact()) {
 			attributeUpgrade.validate(ctx, fmt.Sprintf("%s: attributes[%q]", prefix, propertyName))
-		}
-		if attributeUpgrade.AttributeName != "" {
-			if _, dup := legacyNames[attributeUpgrade.AttributeName]; dup {
-				ctx.Diagnostics.AddError("%s: duplicate attribute_name %q within the same schema version entry", prefix, attributeUpgrade.AttributeName)
-			}
-			legacyNames[attributeUpgrade.AttributeName] = struct{}{}
 		}
 	}
 	for childClassName, childUpgrade := range entry.Children {
