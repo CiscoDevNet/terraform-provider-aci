@@ -215,6 +215,27 @@ the accepted VMM null-preservation rule. Omitted fields decode to typed nulls;
 the harness still compares the complete current state. These fixtures are
 synthetic historical examples, not captured customer state.
 
+`TestGeneratedNestedMigrations` builds temporary fixtures from copied definitions
+and compiles their generated models, resource/datasource adapters, acceptance
+tests, and production helpers in a temporary module. The fixture checks two
+consumers with independent schema versions, skipped versions, direct registered
+upgrades, retained/removed aliases, nested list-to-set conversion, and historical
+custom string types.
+It calls the actual framework configuration-validation and planning RPCs and
+checks response decoding and payload exclusion without an APIC connection.
+Fictive aliases cover a root identifier, a singleton monitoring-policy relation,
+repeated domain relations, and their annotation grandchildren. The acceptance
+configuration and assertion builders traverse these configured children
+recursively. The fixture executes the actual rendered grandchild assertion calls against independently
+specified state and verifies that swapping legacy values between set members
+fails. Local framework checks also cover mixed legacy/current forms in separate
+members, conflicts within the same object, and rejection of removed fields.
+The temporary provider uses the existing acceptance helpers with a framework-only
+factory; generated acceptance functions are compiled but not executed against APIC.
+The fixture's EPG bitmask override is synthetic; production `fwdCtrl` remains a
+string. Lower-level tests cover deeper alternating objects/sets, reordered
+members, empty/null/unknown values, frozen fields, and sensitive-value fallback.
+
 Generated resource acceptance tests separately exercise legacy input forms,
 unchanged plans, switching back to current inputs, conflicting forms, and
 frozen-field retention/clearing where applicable. Preserved resource/datasource

@@ -732,3 +732,152 @@ func TestResourceTestSemanticStringAssertions(t *testing.T) {
 		}
 	}
 }
+
+func TestNestedLegacyAssertions(t *testing.T) {
+	testCases := []test.TestCase{
+		{Name: "resource", Input: ResourceArtifact},
+		{Name: "datasource", Input: DatasourceArtifact},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			test.InitializeTest(t)
+			class, store := nestedLegacyScenarioFixture(LegacyDeprecated)
+			original := class.resourceTestCopy()
+			assertions := class.resourceTestAssertions(store)
+			if testCase.Input.(ArtifactEnum) == DatasourceArtifact {
+				assertions = class.DataSourceTestAssertions(store)
+			}
+			assert.Equal(t, original, class.resourceTestCopy())
+			for index, key := range []string{"key_1", "key_2"} {
+				assert.True(t, slices.ContainsFunc(assertions, func(a TestAssertion) bool {
+					return a.AttributePath == "annotations.*" && a.IsNestedSetElement() && slices.Contains(a.NestedValues, TestAssertionValue{AttributePath: "key", ExpectedValue: key}) && slices.Contains(a.NestedValues, TestAssertionValue{AttributePath: "old_key", ExpectedValue: key}) && slices.Contains(a.NestedValues, TestAssertionValue{AttributePath: "old_value", ExpectedValue: fmt.Sprintf("value_%d", index+1)})
+				}), "legacy values must remain associated with %s", key)
+			}
+			assert.True(t, slices.ContainsFunc(assertions, func(a TestAssertion) bool {
+				return a.AttributePath == "monitoring.old_name" && a.ExpectedValue == "monitor_1"
+			}))
+			assert.True(t, slices.ContainsFunc(assertions, func(a TestAssertion) bool {
+				return a.AttributePath == "annotations.*" && slices.Contains(a.NestedValues, TestAssertionValue{AttributePath: "key", ExpectedValue: "key_2"}) && slices.Contains(a.NestedValues, TestAssertionValue{AttributePath: "monitoring.old_name", ExpectedValue: "monitor_2"})
+			}))
+			assert.True(t, slices.ContainsFunc(assertions, func(a TestAssertion) bool {
+				return a.AttributePath == "monitoring.annotations.*" && slices.Contains(a.NestedValues, TestAssertionValue{AttributePath: "old_key", ExpectedValue: "key_1"})
+			}))
+		})
+	}
+}
+
+func TestNestedLegacyAssertionRestrictions(t *testing.T) {
+	testCases := []test.TestCase{
+		{Name: "removed", Input: Removed},
+		{Name: "frozen_unconfigured", Input: Frozen},
+		{Name: "sensitive_datasource", Input: LegacyDeprecated},
+		{Name: "presence_only", Input: LegacyDeprecated, Expected: true},
+		{Name: "versioned_list", Input: LegacyDeprecated, Expected: true},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			test.InitializeTest(t)
+			class, store := nestedLegacyScenarioFixture(testCase.Input.(LegacyStatusEnum))
+			child := store.Classes["tagAnnotation"]
+			if testCase.Name == "sensitive_datasource" {
+				child.NestedLegacyAttributes[1].Sensitive = true
+			}
+			if testCase.Name == "presence_only" {
+				for index := range class.TestChildren[0].Instances {
+					scenario := class.TestChildren[0].Instances[index].Properties["value"]
+					scenario.Entries[0].AssertStrategy = AssertPresenceOnly
+					class.TestChildren[0].Instances[index].Properties["value"] = scenario
+				}
+			}
+			if testCase.Name == "versioned_list" {
+				child.Properties["value"].ValueType = Set
+				child.Properties["value"].SupportedVersions, _ = NewVersions("6.0(1a)-")
+				child.NestedLegacyAttributes[1].Type = ListAttribute
+			}
+			store.Classes[child.Name.String()] = child
+			assertions := class.DataSourceTestAssertions(store)
+			found := slices.ContainsFunc(assertions, func(a TestAssertion) bool {
+				if testCase.Name == "presence_only" {
+					return a.AttributePath == "annotations.*.old_value" && a.IsAttributeSet() && len(a.Parents) == 1 && a.Parents[0].Values[0].AttributePath == "key"
+				}
+				return a.AttributePath == "annotations.*" && slices.Contains(a.Versions, "6.0(1a)-") && slices.Contains(a.NestedValues, TestAssertionValue{AttributePath: "old_value.#", ExpectedValue: "1"})
+			})
+			if testCase.Expected == true {
+				assert.True(t, found)
+			} else {
+				for _, assertion := range assertions {
+					assert.NotContains(t, assertion.AttributePath, "old_value")
+					assert.False(t, slices.ContainsFunc(assertion.NestedValues, func(v TestAssertionValue) bool { return v.AttributePath == "old_value" }))
+				}
+			}
+		})
+	}
+}
+
+func TestDataSourceClassOwnedFrozenAssertion(t *testing.T) {
+	test.InitializeTest(t)
+	class, store := resourceScenarioFixture()
+	class.NestedLegacyAttributes = []MigrationAttribute{{AttributeName: "old_frozen", Type: StringAttribute, Status: Frozen}}
+	assertions := class.DataSourceTestAssertions(store)
+	assert.True(t, slices.ContainsFunc(assertions, func(a TestAssertion) bool { return a.AttributePath == "old_frozen" && a.IsAttributeAbsent() }))
+}
+
+func TestNestedLegacyAssertionPropertyNameCollision(t *testing.T) {
+	testCases := []test.TestCase{{Name: "resource", Input: ResourceArtifact}, {Name: "datasource", Input: DatasourceArtifact}}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			test.InitializeTest(t)
+			class, store := nestedLegacyScenarioFixture(LegacyDeprecated)
+			child := store.Classes["tagAnnotation"]
+			child.Properties["key"].AttributeName = "annotation_key"
+			child.Properties["value"].AttributeName = "annotation_value"
+			child.NestedLegacyAttributes = []MigrationAttribute{
+				{AttributeName: "key", ChildAttribute: "annotation_key", Type: StringAttribute, Status: LegacyDeprecated},
+				{AttributeName: "value", ChildAttribute: "annotation_value", Type: StringAttribute, Status: LegacyDeprecated},
+			}
+			store.Classes[child.Name.String()] = child
+			var rename func([]*TestChild)
+			rename = func(children []*TestChild) {
+				for _, entry := range children {
+					for index := range entry.Instances {
+						instance := &entry.Instances[index]
+						if entry.Class.Equal(child.Name) {
+							for _, name := range []string{"key", "value"} {
+								instance.Properties["annotation_"+name] = instance.Properties[name]
+								delete(instance.Properties, name)
+							}
+						}
+						rename(instance.Children)
+					}
+				}
+			}
+			rename(class.TestChildren)
+			original := class.resourceTestCopy()
+			assertions := class.resourceTestAssertions(store)
+			if testCase.Input == DatasourceArtifact {
+				assertions = class.DataSourceTestAssertions(store)
+			}
+			assert.Equal(t, original, class.resourceTestCopy())
+			found := false
+			for _, assertion := range assertions {
+				paths := map[string]bool{}
+				for _, value := range assertion.NestedValues {
+					assert.False(t, paths[value.AttributePath], "duplicate field %s in %s", value.AttributePath, assertion.AttributePath)
+					paths[value.AttributePath] = true
+				}
+				for _, parent := range assertion.Parents {
+					for _, value := range parent.Values {
+						assert.NotEqual(t, "key", value.AttributePath, "only canonical identifiers select parent members")
+					}
+				}
+				if assertion.AttributePath == "annotations.*" && slices.Contains(assertion.NestedValues, TestAssertionValue{AttributePath: "annotation_key", ExpectedValue: "key_1"}) && slices.Contains(assertion.NestedValues, TestAssertionValue{AttributePath: "annotation_value", ExpectedValue: "value_1"}) {
+					assert.Contains(t, assertion.NestedValues, TestAssertionValue{AttributePath: "key", ExpectedValue: "key_1"})
+					assert.Contains(t, assertion.NestedValues, TestAssertionValue{AttributePath: "annotation_value", ExpectedValue: "value_1"})
+					assert.Contains(t, assertion.NestedValues, TestAssertionValue{AttributePath: "value", ExpectedValue: "value_1"})
+					found = true
+				}
+			}
+			assert.True(t, found, "both the canonical property and its alias must be checked")
+		})
+	}
+}

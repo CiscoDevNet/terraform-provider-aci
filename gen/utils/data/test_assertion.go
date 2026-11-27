@@ -123,7 +123,7 @@ func (c *Class) DataSourceTestAssertions(ds *DataStore) []TestAssertion {
 		assertions = append(assertions, testPropertyAssertions(c.SupportedVersions, property.AttributeName, property, property.TestValues, nil)...)
 	}
 	assertions = append(assertions, testChildAssertions(ds, c, c.TestChildren, "", nil, nil, DatasourceArtifact)...)
-	for _, legacy := range c.LegacyAttributes {
+	for _, legacy := range c.testLegacyAttributes() {
 		if legacy.Status == Removed {
 			continue
 		}
@@ -132,7 +132,10 @@ func (c *Class) DataSourceTestAssertions(ds *DataStore) []TestAssertion {
 			continue
 		}
 		if legacy.Status == Frozen {
-			if legacy.Type == StringAttribute {
+			if slices.ContainsFunc(c.NestedLegacyAttributes, func(alias MigrationAttribute) bool { return alias.AttributeName == legacy.AttributeName }) {
+				// Class-owned frozen fields have no APIC value or prior datasource state to restore.
+				assertions = append(assertions, TestAssertion{assertionType: testAssertionAttributeAbsent, AttributePath: legacy.AttributeName})
+			} else if legacy.Type == StringAttribute {
 				assertions = append(assertions, TestAssertion{assertionType: testAssertionAttributeValue, AttributePath: legacy.AttributeName, ExpectedValue: ""})
 			} else {
 				assertions = append(assertions, TestAssertion{assertionType: testAssertionSetCount, AttributePath: legacy.AttributeName, ExpectedCount: 0})
@@ -352,6 +355,8 @@ func testSingleChildAssertions(ds *DataStore, childClass *Class, instance TestCh
 	if len(parents) > 0 {
 		return testSingleChildWithinSetAssertions(ds, childClass, instance, childPath, versions, parents, artifact)
 	}
+	class, instance := childClass.nestedLegacyTestInstance(instance)
+	childClass = &class
 
 	var assertions []TestAssertion
 	for _, propertyName := range childClass.PropertiesAll {
@@ -374,6 +379,8 @@ func testSingleChildAssertions(ds *DataStore, childClass *Class, instance TestCh
 }
 
 func testSingleChildWithinSetAssertions(ds *DataStore, childClass *Class, instance TestChildInstance, childPath string, versions []string, parents []TestAssertionParent, artifact ArtifactEnum) []TestAssertion {
+	class, instance := childClass.nestedLegacyTestInstance(instance)
+	childClass = &class
 	parent := parents[len(parents)-1]
 	relativePrefix := strings.TrimPrefix(childPath, parent.AttributePath+".")
 	nested := nestedTestAssertion{AttributePath: parent.AttributePath, Identity: parent.Values, Parents: parents[:len(parents)-1]}
@@ -384,12 +391,57 @@ func testSingleChildWithinSetAssertions(ds *DataStore, childClass *Class, instan
 }
 
 func testRepeatedChildInstanceAssertions(ds *DataStore, childClass *Class, instance TestChildInstance, childPath string, versions []string, parents []TestAssertionParent, artifact ArtifactEnum) []TestAssertion {
+	class, instance := childClass.nestedLegacyTestInstance(instance)
+	childClass = &class
 	nested := nestedTestAssertion{AttributePath: childPath, Parents: parents}
 	assertions := nested.collectProperties(childClass, instance, childPath, "", versions, artifact)
 	assertions = append(nested.assertions(), assertions...)
 	childParents := append(slices.Clone(parents), TestAssertionParent{AttributePath: childPath, Values: nested.Identity})
 	assertions = append(assertions, testChildAssertions(ds, childClass, instance.Children, childPath, versions, childParents, artifact)...)
 	return assertions
+}
+
+func (c *Class) nestedLegacyTestInstance(instance TestChildInstance) (Class, TestChildInstance) {
+	// Project compatibility outputs through the existing property assertions without changing canonical fixtures.
+	if len(c.NestedLegacyAttributes) == 0 {
+		return *c, instance
+	}
+	class := *c
+	class.PropertiesAll = slices.Clone(c.PropertiesAll)
+	class.Properties = maps.Clone(c.Properties)
+	instance.Properties = maps.Clone(instance.Properties)
+	for _, alias := range c.NestedLegacyAttributes {
+		if alias.Status == Removed {
+			continue
+		}
+		property := Property{Computed: true, ValueType: String}
+		for _, candidate := range c.ModelProperties() {
+			if candidate.AttributeName == alias.ChildAttribute {
+				property = *candidate
+				if _, configured := instance.Properties[alias.AttributeName]; !configured {
+					if scenario, exists := instance.Properties[alias.ChildAttribute]; exists {
+						instance.Properties[alias.AttributeName] = scenario.clone()
+					}
+				}
+				break
+			}
+		}
+		if alias.Status == Frozen {
+			if _, configured := instance.Properties[alias.AttributeName]; !configured {
+				continue
+			}
+		}
+		// An old Terraform name can equal an APIC property key that now has a different Terraform name.
+		propertyName := "__legacy_" + alias.AttributeName
+		property.PropertyName, property.AttributeName = propertyName, alias.AttributeName
+		property.Sensitive = alias.Sensitive
+		if alias.Type != StringAttribute {
+			property.ValueType = Set
+		}
+		class.PropertiesAll = append(class.PropertiesAll, propertyName)
+		class.Properties[propertyName] = &property
+	}
+	return class, instance
 }
 
 func (a *nestedTestAssertion) collectProperties(childClass *Class, instance TestChildInstance, childPath, relativePrefix string, versions []string, artifact ArtifactEnum) []TestAssertion {
@@ -604,7 +656,7 @@ func (c *Class) ResourceTestImportIgnore(ds *DataStore) []string {
 		}
 	}
 	collect(c, "", map[string]bool{})
-	for _, legacy := range c.LegacyAttributes {
+	for _, legacy := range c.testLegacyAttributes() {
 		if legacy.Sensitive && legacy.Status != Removed {
 			ignored = append(ignored, legacy.AttributeName)
 		}

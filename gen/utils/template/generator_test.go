@@ -11,9 +11,12 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"reflect"
 	"runtime"
+	"slices"
+	"strconv"
 	"strings"
 	"testing"
 	texttemplate "text/template"
@@ -21,6 +24,8 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
+	"github.com/hashicorp/hcl/v2"
+	"github.com/hashicorp/hcl/v2/hclsyntax"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -30,6 +35,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"github.com/hashicorp/terraform-plugin-go/tftypes"
 	"github.com/stretchr/testify/assert"
+	"gopkg.in/yaml.v3"
 
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils/data"
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils/test"
@@ -4085,6 +4091,369 @@ func TestTemplatesKeepHistoricalDecodersWithoutCurrentAliases(t *testing.T) {
 				if templateName == resourceTemplateName {
 					assert.Contains(t, output, "UpgradeState")
 				}
+			}
+		})
+	}
+}
+
+func TestGeneratedNestedMigrations(t *testing.T) {
+	testCases := []test.TestCase{
+		{Name: "retained_alias", Input: true},
+		{Name: "removed_alias", Input: false},
+	}
+	// Compile only a temporary fixture's generated models/adapters, using production helpers and framework planning.
+	generator := loadActiveGenerator(t, &data.DataStore{})
+	t.Setenv("GEN_ANNOTATION_UNSUPPORTED", "false")
+	repositoryRoot, err := os.Getwd()
+	if !assert.NoError(t, err) {
+		return
+	}
+	ctx := data.NewContext()
+	baseline, err := data.NewDataStore(ctx)
+	if !assert.NoError(t, err) || !assert.NoError(t, ctx.Diagnostics.Error()) {
+		return
+	}
+	root := t.TempDir()
+	copyFile := func(source, destination string) {
+		t.Helper()
+		contents, err := os.ReadFile(source)
+		if !assert.NoError(t, err) || !assert.NoError(t, os.MkdirAll(filepath.Dir(destination), 0o755)) {
+			t.FailNow()
+		}
+		if !assert.NoError(t, os.WriteFile(destination, contents, 0o600)) {
+			t.FailNow()
+		}
+	}
+	for _, directory := range []string{"gen/meta", "gen/definitions", "internal/provider/models/helpers", "internal/apicversion", "internal/customtypes", "internal/planmodifiers", "internal/validators", "internal/acceptancetest", "vendor"} {
+		if !assert.NoError(t, os.CopyFS(filepath.Join(root, directory), os.DirFS(filepath.Join(repositoryRoot, directory)))) {
+			return
+		}
+	}
+	for _, path := range []string{"go.mod", "go.sum", "internal/provider/provider.go", "internal/provider/provider_registry.go", "internal/provider/utils.go", "internal/provider/versions.go", "internal/provider/annotation_unsupported.go", "internal/provider/function_compare_versions.go", "internal/provider/models/versions.go"} {
+		copyFile(filepath.Join(repositoryRoot, path), filepath.Join(root, path))
+	}
+	copyFile(filepath.Join(repositoryRoot, "gen/utils/test/helpers.go"), filepath.Join(root, "gen/utils/test/helpers.go"))
+	copyFile(filepath.Join(repositoryRoot, "internal/provider/resource_acceptance_test.go"), filepath.Join(root, "internal/provider/resource_acceptance_test.go"))
+	support, err := os.ReadFile(filepath.Join(repositoryRoot, "internal/provider/provider_test.go"))
+	if !assert.NoError(t, err) {
+		return
+	}
+	// This temporary provider contains only framework resources; reuse the real test helpers without the SDKv2 mux.
+	supportText := string(support)
+	for _, importPath := range []string{"github.com/CiscoDevNet/terraform-provider-aci/v2/aci", "github.com/hashicorp/terraform-plugin-mux/tf5to6server", "github.com/hashicorp/terraform-plugin-mux/tf6muxserver"} {
+		supportText = strings.ReplaceAll(supportText, "\t\""+importPath+"\"\n", "")
+	}
+	factoryStart := strings.Index(supportText, "var testAccProtoV6ProviderFactories =")
+	factoryEnd := strings.Index(supportText, "var testAccProtoV6ProviderFactoriesFunction =")
+	if !assert.Greater(t, factoryEnd, factoryStart) || !assert.GreaterOrEqual(t, factoryStart, 0) {
+		return
+	}
+	supportText = supportText[:factoryStart] + `var testAccProtoV6ProviderFactories = map[string]func() (tfprotov6.ProviderServer, error){"aci": providerserver.NewProtocol6WithError(New("nested-fixture")())}
+
+` + supportText[factoryEnd:]
+	if !assert.NoError(t, os.WriteFile(filepath.Join(root, "internal/provider/provider_test.go"), []byte(supportText), 0o600)) {
+		return
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			for _, name := range []string{"fvTenant", "fvBD", "fvAp", "fvAEPg", "fvRsTenantMonPol", "fvRsDomAtt", "tagAnnotation"} {
+				path := filepath.Join(root, "gen/definitions", name+".yaml")
+				contents, err := os.ReadFile(path)
+				if !assert.NoError(t, err) {
+					return
+				}
+				definition := map[string]any{}
+				if !assert.NoError(t, yaml.Unmarshal(contents, &definition)) {
+					return
+				}
+				var excluded []string
+				for _, child := range baseline.Classes[name].Children {
+					excluded = append(excluded, child.String())
+				}
+				definition["exclude_children"], definition["include_children"] = excluded, []string{}
+				definition["state_upgrades"] = map[int]any{}
+				switch name {
+				case "fvTenant", "fvBD":
+					definition["include_children"] = []string{"fvAp"}
+					version, first, second := 5, 1, 3
+					if name == "fvBD" {
+						version, first, second = 9, 4, 7
+					}
+					definition["schema_version"] = version
+					old := map[string]any{
+						"name":       map[string]any{"attribute_name": "old_name", "type": "string_attribute", "restriction": "required", "status": "deprecated"},
+						"fwdCtrl":    map[string]any{"type": "list_attribute", "element_type": "string_attribute", "restriction": "optional_computed"},
+						"descr":      map[string]any{"value_type": "ip_address"},
+						"old_frozen": map[string]any{"type": "string_attribute", "restriction": "optional_computed", "status": "frozen"},
+					}
+					if name == "fvBD" {
+						// Parent histories can differ; the current shared alias follows fvAEPg's writable name property.
+						old["name"].(map[string]any)["restriction"] = "read_only"
+					}
+					later := map[string]any{}
+					if !testCase.Input.(bool) {
+						later["old_name"] = map[string]any{"attribute_name": "old_name", "type": "string_attribute", "restriction": "optional_computed", "status": "removed"}
+					}
+					history := func(attributes map[string]any, removed bool) map[string]any {
+						aliases := func(names map[string]string) map[string]any {
+							values := map[string]any{}
+							for property, alias := range names {
+								if removed {
+									values[alias] = map[string]any{"attribute_name": alias, "type": "string_attribute", "restriction": "optional_computed", "status": "removed"}
+								} else {
+									values[property] = map[string]any{"attribute_name": alias, "status": "deprecated"}
+								}
+							}
+							return values
+						}
+						children := map[string]any{"fvAp": map[string]any{"type": "single_nested_attribute", "children": map[string]any{"fvAEPg": map[string]any{
+							"type": "set_nested_attribute", "attributes": attributes,
+							"children": map[string]any{"fvRsDomAtt": map[string]any{
+								"type": "set_nested_attribute", "attributes": aliases(map[string]string{"tDn": "old_target_dn"}),
+								"children": map[string]any{"tagAnnotation": map[string]any{"type": "set_nested_attribute", "attributes": aliases(map[string]string{"key": "old_key", "value": "old_value"})}},
+							}},
+						}}}}
+						if name == "fvTenant" {
+							children["fvRsTenantMonPol"] = map[string]any{"type": "single_nested_attribute", "attributes": aliases(map[string]string{"tnMonEPGPolName": "old_policy_name"})}
+						}
+						rootAttributes := aliases(map[string]string{"name": "old_name"})
+						return map[string]any{"source": "framework", "attributes": rootAttributes, "children": children}
+					}
+					if name == "fvTenant" {
+						definition["include_children"] = []string{"fvAp", "fvRsTenantMonPol"}
+					}
+					if !testCase.Input.(bool) {
+						later["old_frozen"] = map[string]any{"attribute_name": "old_frozen", "type": "string_attribute", "restriction": "optional_computed", "status": "removed"}
+					}
+					definition["state_upgrades"] = map[int]any{first: history(old, false), second: history(later, !testCase.Input.(bool))}
+				case "fvAp":
+					definition["include_children"] = []string{"fvAEPg"}
+					definition["is_single_nested_when_defined_as_child"] = true
+				case "fvAEPg":
+					definition["include_children"] = []string{"fvRsDomAtt"}
+					// Exercise a nested set property in this synthetic fixture; production fwdCtrl stays a string.
+					properties := definition["properties"].(map[string]any)
+					properties["fwdCtrl"].(map[string]any)["value_type"] = "set"
+				case "fvRsDomAtt":
+					definition["include_children"] = []string{"tagAnnotation"}
+				}
+				included := definition["include_children"].([]string)
+				definition["exclude_children"] = slices.DeleteFunc(excluded, func(child string) bool { return slices.Contains(included, child) })
+				contents, err = yaml.Marshal(definition)
+				if !assert.NoError(t, err) || !assert.NoError(t, os.WriteFile(path, contents, 0o600)) {
+					return
+				}
+			}
+			t.Chdir(root)
+			ctx := data.NewContext()
+			store, err := data.NewDataStore(ctx)
+			if !assert.NoError(t, err) || !assert.NoError(t, ctx.Diagnostics.Error()) {
+				return
+			}
+			value := func(text string) data.TestValueScenario {
+				return data.TestValueScenario{Defined: true, Entries: []data.TestValueEntry{{ConfigValue: text, AssertValue: text, ConfigInclude: true, ValueType: data.StringValue}}}
+			}
+			var epgs []data.TestChildInstance
+			for _, name := range []string{"one", "two"} {
+				var domains []data.TestChildInstance
+				for _, domain := range []string{"a", "b"} {
+					var annotations []data.TestChildInstance
+					for _, key := range []string{"key_1", "key_2"} {
+						annotations = append(annotations, data.TestChildInstance{Properties: map[string]data.TestValueScenario{"key": value(key), "value": value(name + "-" + domain + "-" + key)}})
+					}
+					domains = append(domains, data.TestChildInstance{Properties: map[string]data.TestValueScenario{"target_dn": value("uni/phys-" + name + "-" + domain)}, Children: []*data.TestChild{{Class: store.Classes["tagAnnotation"].Name, Instances: annotations}}})
+				}
+				epgs = append(epgs, data.TestChildInstance{Properties: map[string]data.TestValueScenario{"name": value(name), "forwarding_control": value("proxy-arp")}, Children: []*data.TestChild{{Class: store.Classes["fvRsDomAtt"].Name, Instances: domains}}})
+			}
+			tenant := store.Classes["fvTenant"]
+			tenant.TestChildren = []*data.TestChild{
+				{Class: store.Classes["fvAp"].Name, Instances: []data.TestChildInstance{{Properties: map[string]data.TestValueScenario{"name": value("application")}, Children: []*data.TestChild{{Class: store.Classes["fvAEPg"].Name, Instances: epgs}}}}},
+				{Class: store.Classes["fvRsTenantMonPol"].Name, Instances: []data.TestChildInstance{{Properties: map[string]data.TestValueScenario{"monitoring_policy_name": value("policy_1")}}}},
+			}
+			store.Classes["fvTenant"] = tenant
+			var acceptanceChecks []string
+			modelNames := []string{"fvTenant", "fvBD", "fvAp", "fvAEPg"}
+			seen := map[string]bool{}
+			for index := 0; index < len(modelNames); index++ {
+				name := modelNames[index]
+				if seen[name] {
+					continue
+				}
+				seen[name] = true
+				class := store.Classes[name]
+				for _, child := range class.Children {
+					modelNames = append(modelNames, child.String())
+				}
+				for _, templateName := range []string{modelTemplateName, resourceTemplateName, datasourceTemplateName, resourceTestTemplateName, datasourceTestTemplateName} {
+					if name != "fvTenant" && name != "fvBD" && templateName != modelTemplateName {
+						continue
+					}
+					if (templateName == resourceTestTemplateName || templateName == datasourceTestTemplateName) && name != "fvTenant" {
+						continue
+					}
+					var rendered bytes.Buffer
+					if !assert.NoError(t, generator.templates[templateName].Execute(&rendered, TemplateContext{Class: &class, DataStore: store})) {
+						return
+					}
+					output := filepath.Join("internal/provider", name+"_"+strings.TrimSuffix(templateName, ".tmpl"))
+					if templateName == modelTemplateName {
+						output = filepath.Join("internal/provider/models", name+".go")
+					}
+					if templateName == resourceTestTemplateName || templateName == datasourceTestTemplateName {
+						acceptanceChecks = append(acceptanceChecks, verifyNestedAcceptanceTemplate(t, templateName, rendered.String(), testCase.Input.(bool))...)
+					}
+					formatted, err := formatRenderedTemplate(output, rendered.Bytes())
+					if !assert.NoError(t, err) || !assert.NoError(t, os.WriteFile(output, formatted, 0o600)) {
+						return
+					}
+				}
+			}
+			fixture, err := texttemplate.ParseFiles(filepath.Join(repositoryRoot, "gen/utils/test/data/test_generated_nested_migrations/nested_migration_test.go.tmpl"))
+			if !assert.NoError(t, err) {
+				return
+			}
+			var rendered bytes.Buffer
+			if !assert.NoError(t, fixture.Execute(&rendered, map[string]any{
+				"AcceptanceChecks": acceptanceChecks, "RetainAlias": testCase.Input.(bool), "ApplicationAttribute": store.Classes["fvAp"].ResourceNameNested, "EPGAttribute": store.Classes["fvAEPg"].ResourceNameNested, "DomainAttribute": store.Classes["fvRsDomAtt"].ResourceNameNested,
+			})) || !assert.NoError(t, os.WriteFile("internal/provider/nested_migration_test.go", rendered.Bytes(), 0o600)) {
+				return
+			}
+			command := exec.Command("go", "test", "-mod=vendor", "-p=1", "-count=1", "-v", "-run", "^TestNested", "./internal/provider")
+			command.Env = append(os.Environ(), "GOWORK=off", "GOMAXPROCS=2", "GOGC=10", "GOMEMLIMIT=4GiB", "TF_ACC=")
+			output, err := command.CombinedOutput()
+			assert.NoError(t, err, "%s", output)
+		})
+	}
+}
+
+func verifyNestedAcceptanceTemplate(t *testing.T, templateName, source string, retained bool) []string {
+	t.Helper()
+	file, err := parser.ParseFile(token.NewFileSet(), templateName, source, 0)
+	if !assert.NoError(t, err) {
+		return nil
+	}
+	for _, alias := range []string{"old_name", "old_policy_name", "old_target_dn", "old_key", "old_value"} {
+		assert.Equal(t, retained, strings.Contains(source, alias), "%s: %s", templateName, alias)
+	}
+	if templateName == resourceTestTemplateName {
+		for _, scenario := range []string{"Legacy", "LegacyUnchanged", "CurrentAfterLegacy", "LegacyConflict", "NestedLegacy", "NestedLegacyUnchanged", "NestedLegacyReordered", "CurrentAfterNestedLegacy", "NestedLegacyConflict1", "NestedFrozen", "NestedFrozenCleared"} {
+			assert.Equal(t, retained, strings.Contains(source, "const testAccResourceFvTenant"+scenario+" ="), scenario)
+		}
+	}
+	// Compile and execute the first full fixture's real generated grandchild checks against independent state.
+	var checks []string
+	ast.Inspect(file, func(node ast.Node) bool {
+		if declaration, ok := node.(*ast.ValueSpec); ok && len(declaration.Names) == 1 && len(declaration.Values) == 1 {
+			name := strings.TrimPrefix(declaration.Names[0].Name, "testAccResourceFvTenant")
+			if name == "Legacy" || name == "NestedLegacy" || name == "NestedFrozen" || name == "NestedFrozenCleared" {
+				expression, ok := declaration.Values[0].(*ast.BinaryExpr)
+				if !assert.True(t, ok) {
+					return true
+				}
+				literal, ok := expression.Y.(*ast.BasicLit)
+				if !assert.True(t, ok) {
+					return true
+				}
+				configuration, err := strconv.Unquote(literal.Value)
+				if !assert.NoError(t, err) {
+					return true
+				}
+				parsed, diagnostics := hclsyntax.ParseConfig([]byte(configuration), "nested-acceptance.tf", hcl.InitialPos)
+				if !assert.False(t, diagnostics.HasErrors(), diagnostics.Error()) {
+					return true
+				}
+				body := parsed.Body.(*hclsyntax.Body).Blocks[0].Body
+				if name == "Legacy" {
+					assert.Contains(t, body.Attributes, "old_name")
+					assert.NotContains(t, body.Attributes, "name")
+					return true
+				}
+				assert.Contains(t, body.Attributes, "name", "nested scenarios keep the root configuration current")
+				counts := map[string]int{}
+				hclsyntax.VisitAll(body, func(node hclsyntax.Node) hcl.Diagnostics {
+					if object, ok := node.(*hclsyntax.ObjectConsExpr); ok {
+						keys := map[string]hclsyntax.Expression{}
+						for _, item := range object.Items {
+							key, diagnostics := item.KeyExpr.Value(nil)
+							if !diagnostics.HasErrors() {
+								keys[key.AsString()] = item.ValueExpr
+							}
+						}
+						for old, current := range map[string]string{"old_name": "name", "old_target_dn": "target_dn", "old_key": "key", "old_value": "value", "old_policy_name": "monitoring_policy_name", "old_frozen": ""} {
+							if expression, exists := keys[old]; exists {
+								counts[old]++
+								if name == "NestedLegacy" {
+									assert.NotContains(t, keys, current, "legacy-only inputs must be isolated to their object")
+								} else if old == "old_frozen" {
+									value, diagnostics := expression.Value(nil)
+									if assert.False(t, diagnostics.HasErrors(), diagnostics.Error()) {
+										expected := "example"
+										if name == "NestedFrozenCleared" {
+											expected = ""
+										}
+										assert.Equal(t, expected, value.AsString())
+									}
+								}
+							}
+						}
+					}
+					return nil
+				})
+				if name == "NestedLegacy" {
+					assert.Equal(t, map[string]int{"old_name": 2, "old_target_dn": 4, "old_key": 8, "old_value": 8, "old_policy_name": 1}, counts)
+				} else {
+					assert.Equal(t, map[string]int{"old_frozen": 2}, counts)
+				}
+			}
+		}
+		call, ok := node.(*ast.CallExpr)
+		if !ok || len(call.Args) < 3 || len(checks) >= 8 {
+			return true
+		}
+		selector, ok := call.Fun.(*ast.SelectorExpr)
+		if !ok || selector.Sel.Name != "CheckNestedSetElement" {
+			return true
+		}
+		literal, ok := call.Args[1].(*ast.BasicLit)
+		if !ok || !strings.Contains(literal.Value, ".*.annotations.*") {
+			return true
+		}
+		expression := source[int(call.Pos())-1 : int(call.End())-1]
+		if strings.Contains(expression, `"old_key"`) && strings.Contains(expression, `"old_value"`) {
+			assert.Contains(t, expression, `"key"`)
+			assert.Contains(t, expression, `"value"`)
+			assert.Contains(t, expression, "ParentSetElement")
+			checks = append(checks, expression)
+		}
+		return true
+	})
+	if retained {
+		assert.Len(t, checks, 8, "each EPG/domain/annotation combination needs a scoped legacy check")
+	} else {
+		assert.Empty(t, checks)
+	}
+	return checks
+}
+
+func TestGeneratedLegacyParentLookup(t *testing.T) {
+	testCases := []test.TestCase{
+		{Name: "legacy_parent", Input: "", Expected: false},
+		{Name: "conflicting_parent", Input: "uni/tn-other/ap-other", Expected: true},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			model := models.NewFvAEPgRootModelNull()
+			model.Name = types.StringValue("epg-proof")
+			model.LegacyApplicationProfileDn = types.StringValue("uni/tn-proof/ap-proof")
+			if testCase.Input != "" {
+				model.ParentDN = types.StringValue(testCase.Input.(string))
+			}
+			diagnostics := model.SetFromLegacyLookup(context.Background())
+			if diagnostics.HasError() != testCase.Expected.(bool) {
+				t.Fatalf("unexpected lookup diagnostics: %v", diagnostics)
+			}
+			if !diagnostics.HasError() && model.BuildDN() != "uni/tn-proof/ap-proof/epg-epg-proof" {
+				t.Fatalf("unexpected DN %s", model.BuildDN())
 			}
 		})
 	}
