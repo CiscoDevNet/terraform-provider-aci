@@ -313,3 +313,23 @@ Record changes to historical schema flags too. For example, retiring EPG's
 its prior framework schema still needs an explicit `optional_computed`
 override. Historical types and flags should be checked against the prior schema,
 with handwritten state fixtures covering the actual conversion.
+
+## APIC lifecycle versus provider removal
+
+APIC deprecation/hiding versions affect attribute documentation and generated
+test availability. They do not deprecate or remove Terraform schema fields.
+An unchanged current property can be deliberately deprecated with
+`properties.<property>.deprecated: true`, without an artificial state upgrade.
+
+To remove that property later, exclude it from the current schema with
+`restriction: exclude`, increment the resource `schema_version`, and record its
+historical name/type/restriction with `status: removed` in each registered source
+version that needs those differences. Each upgrader converts directly to the
+current schema. Alias removal continues to use the alias's existing status.
+Datasources have no resource state upgrader, and neither flow rewrites user HCL.
+
+The compiled synthetic migration fixture also exercises an unchanged root
+`description` property: the retained variant marks it provider-deprecated without
+an alias; the removed variant excludes it from current resource/datasource
+schemas and decodes/discards its value through each registered historical
+upgrader. Full-state comparison verifies unrelated values remain intact.

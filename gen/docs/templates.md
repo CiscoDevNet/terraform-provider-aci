@@ -418,3 +418,41 @@ outputs with the corresponding resource state. Configured named relationships'
 deprecated scalar DN outputs use native non-null checks with APIC-version gates,
 allowing APIC's target-DN resolution to complete between reads while retaining
 exact checks for modern relationship attributes.
+
+## Property lifecycle and supported versions
+
+APIC lifecycle metadata and Terraform deprecation have separate owners:
+
+- `isDeprecated` and `deprecatedSince` describe APIC deprecation in generated
+  attribute documentation. Deprecation alone does not end APIC support.
+- `isHidden` and `hiddenSince` describe APIC hiding. A known hidden-version range
+  is subtracted from inferred property availability. A hidden flag without an
+  effective version is documented without inventing a historical cutoff.
+- `properties.<property>.deprecated` explicitly enables Terraform schema
+  deprecation and a provider-deprecation notice in attribute documentation.
+  Compatibility aliases remain controlled by `state_upgrades`.
+
+The generator normalizes final property availability once in the datastore.
+Declared property `versions` remains independent of the enclosing class range;
+absent property versions inherit class availability. Known hidden ranges are then
+subtracted. An explicit `supported_versions` definition replaces inferred property
+availability, including hiding cutoffs. Enclosing class availability is applied
+separately in tests and does not rewrite a declared property's documentation.
+
+Metadata and definition strings retain their existing inclusive `start-end`
+syntax and comma-separated intervals. A metadata `hiddenSince: 6.2(1)` means
+`6.2(1)` and later are unavailable. Its derived supported range therefore ends
+*before* `6.2(1)`. The normalized range retains that exclusive boundary internally;
+documentation and generated tests use the normalized bounds rather than
+round-tripping them through the original string.
+
+Backports can produce multiple supported intervals with gaps. Explicit interval
+boundaries are retained. Multiple bare lifecycle starting points do not establish
+where each release train ends; supply explicit lifecycle ranges in the definition
+instead of treating every starting point as globally open-ended. Permanent
+metadata refreshes are a separate maintenance task.
+
+Ordinary inclusive ranges keep the compact string-based generated test checks.
+Derived inclusive intervals also use the existing string format. Bound-aware
+checks are emitted for exclusive endpoints, empty availability, or an unbounded
+lower endpoint that needs direct comparison.
