@@ -1045,7 +1045,7 @@ func TestDatasourceTestTemplateLegacyNamedRelation(t *testing.T) {
 		"monitoring_policy_name": {Defined: true, Entries: []data.TestValueEntry{{ConfigValue: "policy_1", AssertValue: "policy_1", ConfigInclude: true}}},
 	}}}}}
 	class.LegacyAttributes = []data.MigrationAttribute{
-		{AttributeName: "relation_fv_rs_tenant_mon_pol", ChildName: monitor.Name, Named: true, Type: data.StringAttribute, Status: data.LegacyDeprecated},
+		{AttributeName: "relation_fv_rs_tenant_mon_pol", ChildName: monitor.Name, ChildAttribute: "monitoring_policy_name", Named: true, Type: data.StringAttribute, Status: data.LegacyDeprecated},
 		{AttributeName: "legacy_name", ChildAttribute: "name", Type: data.StringAttribute, Status: data.LegacyDeprecated},
 		{AttributeName: "legacy_targets", ChildName: monitor.Name, Type: data.SetAttribute, Status: data.LegacyDeprecated},
 		{AttributeName: "legacy_block", ChildName: monitor.Name, Type: data.SetNestedAttribute, Block: true, Status: data.LegacyDeprecated},
@@ -1056,6 +1056,8 @@ func TestDatasourceTestTemplateLegacyNamedRelation(t *testing.T) {
 		{Name: "test_no_legacy_aliases", Input: "none"},
 		{Name: "test_named_relation", Input: "named"},
 		{Name: "test_version_gated_relation", Input: "versioned"},
+		{Name: "test_exclusive_version_gated_relation", Input: "exclusive"},
+		{Name: "test_mapped_property_version_gate", Input: "property_exclusive"},
 	}
 	for _, testCase := range testCases {
 		t.Run(testCase.Name, func(t *testing.T) {
@@ -1069,6 +1071,23 @@ func TestDatasourceTestTemplateLegacyNamedRelation(t *testing.T) {
 					return
 				}
 				monitor.SupportedVersions = versions
+			}
+			if testCase.Input == "exclusive" || testCase.Input == "property_exclusive" {
+				versions, err := data.NewVersions("1.0(1e)-")
+				if !assert.NoError(t, err) {
+					return
+				}
+				hidden, err := data.NewVersions("6.2(1)-")
+				if !assert.NoError(t, err) {
+					return
+				}
+				if testCase.Input == "property_exclusive" {
+					property := *monitor.Properties["tnMonEPGPolName"]
+					property.SupportedVersions = versions.Exclude(hidden)
+					monitor.Properties = map[string]*data.Property{"tnMonEPGPolName": &property}
+				} else {
+					monitor.SupportedVersions = versions.Exclude(hidden)
+				}
 			}
 			store.Classes[monitor.Name.String()] = monitor
 			var rendered bytes.Buffer
@@ -1098,8 +1117,15 @@ func TestDatasourceTestTemplateLegacyNamedRelation(t *testing.T) {
 			assert.NotContains(t, output, `resource.TestCheckResourceAttrPair("data.aci_tenant.test", "relation_fv_rs_tenant_mon_pol"`)
 			if testCase.Input == "versioned" {
 				assert.Contains(t, output, "stateCheckWithVersion(t, \"1.0(1e)-6.1(1e)\",\n\t\t\t\t\t\tstatecheck.ExpectKnownValue(")
+			} else if testCase.Input == "exclusive" || testCase.Input == "property_exclusive" {
+				assert.Contains(t, output, `stateCheckWithVersionRanges(t, []apicversion.VersionRange{{Min: "1.0(1e)", Max: "6.2(1)", MaxExclusive: true}},`)
+				assert.Contains(t, output, `composeAggregateTestCheckFuncWithVersionRanges(t, []apicversion.VersionRange{{Min: "1.0(1e)", Max: "6.2(1)", MaxExclusive: true}},`)
 			} else {
-				assert.NotContains(t, output, "stateCheckWithVersion(")
+				assert.NotContains(t, output, "stateCheckWithVersionRanges(")
+			}
+			if testCase.Input != "exclusive" && testCase.Input != "property_exclusive" {
+				assert.NotContains(t, output, `"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/apicversion"`)
+				assert.NotContains(t, output, "composeAggregateTestCheckFuncWithVersionRanges(")
 			}
 		})
 	}
@@ -2168,6 +2194,17 @@ func TestGeneratedTopSystemDataSourceDocumentation(t *testing.T) {
 		if !strings.Contains(string(contents), expected) {
 			t.Fatalf("generated system documentation does not contain %q", expected)
 		}
+	}
+	for _, attribute := range []string{"child_action", "config_issues", "lc_own", "status"} {
+		start := strings.Index(string(contents), "* `"+attribute+"`")
+		if !assert.NotEqual(t, -1, start) {
+			continue
+		}
+		entry := string(contents)[start:]
+		if next := strings.Index(entry[1:], "\n* `"); next >= 0 {
+			entry = entry[:next+1]
+		}
+		assert.Contains(t, entry, "~> This attribute is deprecated by the Terraform provider.")
 	}
 }
 
@@ -4175,6 +4212,22 @@ func TestGeneratedNestedMigrations(t *testing.T) {
 				switch name {
 				case "fvTenant", "fvBD":
 					definition["include_children"] = []string{"fvAp"}
+					// Keep this ordinary field's name unchanged through deprecation and later removal.
+					properties, _ := definition["properties"].(map[string]any)
+					if properties == nil {
+						properties = map[string]any{}
+						definition["properties"] = properties
+					}
+					description, _ := properties["descr"].(map[string]any)
+					if description == nil {
+						description = map[string]any{}
+						properties["descr"] = description
+					}
+					if testCase.Input.(bool) {
+						description["deprecated"] = true
+					} else {
+						description["restriction"] = "exclude"
+					}
 					version, first, second := 5, 1, 3
 					if name == "fvBD" {
 						version, first, second = 9, 4, 7
@@ -4217,6 +4270,9 @@ func TestGeneratedNestedMigrations(t *testing.T) {
 							children["fvRsTenantMonPol"] = map[string]any{"type": "single_nested_attribute", "attributes": aliases(map[string]string{"tnMonEPGPolName": "old_policy_name"})}
 						}
 						rootAttributes := aliases(map[string]string{"name": "old_name"})
+						if !testCase.Input.(bool) {
+							rootAttributes["descr"] = map[string]any{"attribute_name": "description", "type": "string_attribute", "restriction": "optional_computed", "status": "removed"}
+						}
 						return map[string]any{"source": "framework", "attributes": rootAttributes, "children": children}
 					}
 					if name == "fvTenant" {

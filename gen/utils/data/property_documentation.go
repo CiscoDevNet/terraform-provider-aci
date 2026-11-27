@@ -183,6 +183,18 @@ func (d *PropertyDocumentation) setWarnings(p *Property) {
 	genLogger.Debugf("Setting Documentation Warnings for property '%s'.", p.PropertyName)
 
 	d.Warnings = p.propertyDefinition.Documentation.Warnings
+	d.Warnings = slices.Clone(d.Warnings)
+	if p.Deprecated {
+		d.Warnings = append(d.Warnings, "This attribute is deprecated by the Terraform provider.")
+	}
+	if p.DeprecatedVersions != nil {
+		d.Warnings = append(d.Warnings, fmt.Sprintf("This attribute is deprecated by APIC in versions: %s. APIC deprecation does not remove it from the Terraform schema.", p.DeprecatedVersions))
+	} else if p.APICDeprecated {
+		d.Warnings = append(d.Warnings, "This attribute is deprecated by APIC; the metadata does not specify an effective version.")
+	}
+	if p.Hidden && p.HiddenVersions == nil {
+		d.Warnings = append(d.Warnings, "APIC metadata marks this attribute as hidden without an effective version; its supported-version range cannot be narrowed from this flag alone.")
+	}
 
 	genLogger.Debugf("Successfully set Documentation Warnings for property '%s'. Warnings: %v", p.PropertyName, d.Warnings)
 }

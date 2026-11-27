@@ -9,9 +9,14 @@
 {{- $usesFormatting := false -}}
 {{- $expectsError := false -}}
 {{- $usesSemanticStrings := false -}}
+{{- $usesVersionRanges := false -}}
 {{- range $scenarios -}}
+    {{- if .NeedsVersionBounds }}{{ $usesVersionRanges = true }}{{ end -}}
     {{- if .ExpectError }}{{ $expectsError = true }}{{ end -}}
     {{- range .Assertions -}}
+        {{- range .Versions }}
+            {{- if .NeedsBounds }}{{ $usesVersionRanges = true }}{{ end -}}
+        {{- end -}}
         {{- if .SemanticStringType }}{{ $usesSemanticStrings = true }}{{ end -}}
         {{- if .UsesFormatting }}{{ $usesFormatting = true }}{{ end -}}
     {{- end -}}
@@ -37,6 +42,9 @@ import (
     "github.com/hashicorp/terraform-plugin-testing/terraform"
 
     "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/acceptancetest"
+{{- if $usesVersionRanges }}
+    "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/apicversion"
+{{- end }}
 {{- if $usesSemanticStrings }}
     "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/customtypes"
 {{- end }}
@@ -97,9 +105,16 @@ func TestAccResource{{ $class.Name.Capitalized }}Generated(t *testing.T) {
                 Config: testAccResource{{ $class.Name.Capitalized }}{{ $scenario.Name }},
 {{- if $scenario.ChangeVersions }}
                 SkipFunc: func() (bool, error) {
+{{- if $scenario.NeedsVersionBounds }}
+                    return testSkipUnsupportedResourceVersionRanges(t, [][][]apicversion.VersionRange{
+{{- range $group := $scenario.ChangeVersions }}
+                        { {{- range $group }}{{ .Go }}, {{ end -}} },
+{{- end }}
+{{- else }}
                     return testSkipUnsupportedResourceChanges(t, [][]string{
 {{- range $group := $scenario.ChangeVersions }}
-                        { {{- range $group }}{{ printf "%q" . }}, {{ end -}} },
+                        { {{- range $group }}{{ printf "%q" .Raw }}, {{ end -}} },
+{{- end }}
 {{- end }}
                     })
                 },
@@ -167,7 +182,11 @@ func TestAccResource{{ $class.Name.Capitalized }}Generated(t *testing.T) {
 {{- range $assertion := $scenario.Assertions }}
 {{- $scopedSetElement := and $assertion.Parents (or $assertion.IsSetElementValue $assertion.IsSetElementPair) }}
 {{- range $versions := $assertion.Versions }}
-					composeAggregateTestCheckFuncWithVersion(t, {{ printf "%q" $versions }}, "inside",
+{{- if $versions.NeedsBounds }}
+					composeAggregateTestCheckFuncWithVersionRanges(t, {{ $versions.Go }},
+{{- else }}
+					composeAggregateTestCheckFuncWithVersion(t, {{ printf "%q" $versions.Raw }}, "inside",
+{{- end }}
 {{- end }}
 {{- if and $assertion.IsAttributeSet $assertion.Parents }}
 						acceptancetest.CheckPresent({{ printf "%q" $resourceAddress }}, {{ printf "%q" $assertion.AttributePath }}

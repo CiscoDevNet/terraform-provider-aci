@@ -13,6 +13,7 @@ import (
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/aci"
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils/test"
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/acceptancetest"
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/apicversion"
 	"github.com/ciscoecosystem/aci-go-client/v2/client"
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	tfjson "github.com/hashicorp/terraform-json"
@@ -167,18 +168,30 @@ func testAccPreCheck(t *testing.T, testType string, testApplicableFromVersion st
 }
 
 func composeAggregateTestCheckFuncWithVersion(t *testing.T, propertyVersion string, operator string, checks ...resource.TestCheckFunc) resource.TestCheckFunc {
+	return composeAggregateTestCheckFuncWithVersionCheck(t, propertyVersion, func(version string) (bool, error) {
+		return CompareVersionsRange(version, propertyVersion, operator)
+	}, checks...)
+}
+
+func composeAggregateTestCheckFuncWithVersionRanges(t *testing.T, ranges []apicversion.VersionRange, checks ...resource.TestCheckFunc) resource.TestCheckFunc {
+	return composeAggregateTestCheckFuncWithVersionCheck(t, fmt.Sprint(ranges), func(version string) (bool, error) {
+		return apicversion.IsVersionInRanges(version, ranges)
+	}, checks...)
+}
+
+func composeAggregateTestCheckFuncWithVersionCheck(t *testing.T, description string, compare func(string) (bool, error), checks ...resource.TestCheckFunc) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		apicVersion := getAPICVersionTest(t)
 
 		var result []error
 
-		comparisonResult, err := CompareVersionsRange(apicVersion, propertyVersion, operator)
+		comparisonResult, err := compare(apicVersion)
 		if err != nil {
 			return fmt.Errorf("Failed to compare versions in the test check function: %w", err)
 		}
 
 		if !comparisonResult {
-			t.Logf("[WARNING] Test for checking the resource attribute value skipped due to version incompatibility between Property version: %s and APIC version: %s.", propertyVersion, apicVersion)
+			t.Logf("[WARNING] Test for checking the resource attribute value skipped due to version incompatibility between Property version: %s and APIC version: %s.", description, apicVersion)
 			return nil
 		}
 
@@ -197,6 +210,7 @@ type versionedStateCheck struct {
 	versions    string
 	apicVersion func() string
 	check       statecheck.StateCheck
+	compare     func(string) (bool, error)
 }
 
 func stateCheckWithVersion(t *testing.T, versions string, check statecheck.StateCheck) statecheck.StateCheck {
@@ -208,10 +222,22 @@ func stateCheckWithVersion(t *testing.T, versions string, check statecheck.State
 	}
 }
 
+func stateCheckWithVersionRanges(t *testing.T, ranges []apicversion.VersionRange, check statecheck.StateCheck) statecheck.StateCheck {
+	return versionedStateCheck{
+		t: t, versions: fmt.Sprint(ranges), check: check,
+		apicVersion: func() string { return getAPICVersionTest(t) },
+		compare:     func(version string) (bool, error) { return apicversion.IsVersionInRanges(version, ranges) },
+	}
+}
+
 func (c versionedStateCheck) CheckState(ctx context.Context, req statecheck.CheckStateRequest, resp *statecheck.CheckStateResponse) {
 	// Resolve the controller version when the check runs, after the acceptance precheck.
 	apicVersion := c.apicVersion()
-	supported, err := CompareVersionsRange(apicVersion, c.versions, "inside")
+	compare := c.compare
+	if compare == nil {
+		compare = func(version string) (bool, error) { return CompareVersionsRange(version, c.versions, "inside") }
+	}
+	supported, err := compare(apicVersion)
 	if err != nil {
 		resp.Error = fmt.Errorf("failed to compare versions in the state check: %w", err)
 		return
@@ -229,6 +255,7 @@ func TestStateCheckWithVersion(t *testing.T) {
 	type input struct {
 		APICVersion string
 		Versions    string
+		Ranges      []apicversion.VersionRange
 		Target      any
 	}
 	testCases := []test.TestCase{
@@ -239,12 +266,19 @@ func TestStateCheckWithVersion(t *testing.T) {
 		{Name: "test_above_supported_range", Input: input{APICVersion: "6.2(2e)", Versions: "1.0(1e)-6.1(1e)"}},
 		{Name: "test_invalid_range", Input: input{APICVersion: "6.2(2e)", Versions: "invalid"}, Expected: "failed to compare versions"},
 		{Name: "test_invalid_apic_version", Input: input{APICVersion: "invalid", Versions: "1.0(1e)-"}, Expected: "failed to compare versions"},
+		{Name: "test_before_hidden_cutoff_requires_value", Input: input{APICVersion: "6.1(5e)", Ranges: []apicversion.VersionRange{{Min: "5.2(1g)", Max: "6.2(1)", MaxExclusive: true}}}, Expected: "expected non-nil value"},
+		{Name: "test_at_hidden_cutoff_skips_value", Input: input{APICVersion: "6.2(1)", Ranges: []apicversion.VersionRange{{Min: "5.2(1g)", Max: "6.2(1)", MaxExclusive: true}}}},
+		{Name: "test_after_hidden_cutoff_skips_value", Input: input{APICVersion: "6.2(2e)", Ranges: []apicversion.VersionRange{{Min: "5.2(1g)", Max: "6.2(1)", MaxExclusive: true}}}},
+		{Name: "test_empty_availability_skips_value", Input: input{APICVersion: "6.2(2e)", Ranges: []apicversion.VersionRange{}}},
 	}
 	for _, testCase := range testCases {
 		t.Run(testCase.Name, func(t *testing.T) {
 			t.Parallel()
 			value := testCase.Input.(input)
 			check := stateCheckWithVersion(t, value.Versions, statecheck.ExpectKnownValue("data.aci_tenant.test", tfjsonpath.New("relation"), knownvalue.NotNull())).(versionedStateCheck)
+			if value.Ranges != nil {
+				check = stateCheckWithVersionRanges(t, value.Ranges, statecheck.ExpectKnownValue("data.aci_tenant.test", tfjsonpath.New("relation"), knownvalue.NotNull())).(versionedStateCheck)
+			}
 			versionReads := 0
 			check.apicVersion = func() string {
 				versionReads++

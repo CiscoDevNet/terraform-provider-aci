@@ -705,3 +705,58 @@ func TestVersionRangeString(t *testing.T) {
 		})
 	}
 }
+
+func testVersionRanges(raw ...string) []*Versions {
+	var result []*Versions
+	for _, value := range raw {
+		versions, err := NewVersions(value)
+		if err != nil {
+			panic(err)
+		}
+		result = append(result, versions)
+	}
+	return result
+}
+
+func TestDerivedVersionBoundaries(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+	supported := testVersionRanges("4.2(0)-")[0]
+	hidden := testVersionRanges("6.2(1)-")[0]
+	normalized := supported.Exclude(hidden)
+	inclusive := testVersionRanges("4.2(0)-6.2(1)")[0]
+	assert.False(t, normalized.Equal(inclusive))
+	assert.False(t, normalized.Covers(inclusive))
+	assert.True(t, inclusive.Covers(normalized))
+	assert.Contains(t, normalized.TestExpression(), `"<", "6.2(1)"`)
+	assert.Contains(t, normalized.Go(), `Max: "6.2(1)", MaxExclusive: true`)
+	assert.NotContains(t, normalized.TestExpression(), `"<=", "6.2(1)"`)
+	assert.Equal(t, "4.2(0) up to, but excluding, 6.2(1)", documentationVersions(normalized))
+	assert.Equal(t, "false", supported.Exclude(supported).TestExpression())
+	assert.Equal(t, "[]apicversion.VersionRange{}", supported.Exclude(supported).Go())
+}
+
+func TestVersionCheckRepresentation(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+	testCases := []test.TestCase{
+		{Name: "ordinary_open_range", Input: testVersionRanges("3.2(1l)-")[0], Expected: false},
+		{Name: "ordinary_bounded_range", Input: testVersionRanges("3.2(1l)-6.1(1e)")[0], Expected: false},
+		{Name: "ordinary_multiple_ranges", Input: testVersionRanges("3.2(1l)-4.2(7w),5.2(1g)-")[0], Expected: false},
+		{Name: "derived_inclusive_range", Input: testVersionRanges("3.2(1l)-")[0].Intersect(testVersionRanges("1.0(1e)-6.1(1e)")[0]), Expected: false},
+		{Name: "exclusive_cutoff", Input: testVersionRanges("3.2(1l)-")[0].Exclude(testVersionRanges("6.2(1)-")[0]), Expected: true},
+		{Name: "unbounded_lower", Input: testVersionRanges("-6.2(1)")[0], Expected: true},
+		{Name: "empty_availability", Input: testVersionRanges("3.2(1l)-")[0].Exclude(testVersionRanges("3.2(1l)-")[0]), Expected: true},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			versions := testCase.Input.(*Versions)
+			assert.Equal(t, testCase.Expected, versions.NeedsBounds())
+			if testCase.Name == "derived_inclusive_range" {
+				assert.Equal(t, "3.2(1l)-6.1(1e)", versions.Raw())
+				assert.Contains(t, versions.TestExpression(), `"inside", "3.2(1l)-6.1(1e)"`)
+			}
+		})
+	}
+}

@@ -13,6 +13,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/gen/utils/test"
+	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/apicversion"
 )
 
 type resourceTestDNVariant struct {
@@ -48,12 +49,28 @@ func testCheckResourceDN(address, rnFormat, fixedParent string, identifiers map[
 }
 
 func testSkipUnsupportedResourceChanges(t *testing.T, groups [][]string) (bool, error) {
+	var normalized [][][]apicversion.VersionRange
+	for _, group := range groups {
+		var ranges [][]apicversion.VersionRange
+		for _, raw := range group {
+			parsed, err := apicversion.GetVersionRangesListFromVersionRangesString(raw)
+			if err != nil {
+				return false, err
+			}
+			ranges = append(ranges, parsed)
+		}
+		normalized = append(normalized, ranges)
+	}
+	return testSkipUnsupportedResourceVersionRanges(t, normalized)
+}
+
+func testSkipUnsupportedResourceVersionRanges(t *testing.T, groups [][][]apicversion.VersionRange) (bool, error) {
 	// Each group is an intersection of owner/property/dependency versions; any supported change permits the step.
 	version := getAPICVersionTest(t)
 	for _, group := range groups {
 		supported := true
 		for _, versions := range group {
-			inside, err := CompareVersionsRange(version, versions, "inside")
+			inside, err := apicversion.IsVersionInRanges(version, versions)
 			if err != nil {
 				return false, err
 			}

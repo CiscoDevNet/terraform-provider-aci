@@ -842,3 +842,27 @@ func testVersions(t *testing.T, versionStr string) *Versions {
 	}
 	return v
 }
+
+func TestPropertyDeprecationNotices(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+	type input struct {
+		Provider bool
+		APIC     bool
+	}
+	testCases := []test.TestCase{
+		{Name: "neither", Input: input{}, Expected: []string(nil)},
+		{Name: "provider_only", Input: input{Provider: true}, Expected: []string{"This attribute is deprecated by the Terraform provider."}},
+		{Name: "apic_only", Input: input{APIC: true}, Expected: []string{"This attribute is deprecated by APIC; the metadata does not specify an effective version."}},
+		{Name: "independent_notices", Input: input{Provider: true, APIC: true}, Expected: []string{"This attribute is deprecated by the Terraform provider.", "This attribute is deprecated by APIC; the metadata does not specify an effective version."}},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			value := testCase.Input.(input)
+			property := &Property{PropertyName: "value", Deprecated: value.Provider, APICDeprecated: value.APIC}
+			property.Documentation.setWarnings(property)
+			assert.Equal(t, testCase.Expected, property.Documentation.Warnings)
+		})
+	}
+}

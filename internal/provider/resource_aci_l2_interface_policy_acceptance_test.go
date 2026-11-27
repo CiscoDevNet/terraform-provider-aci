@@ -245,8 +245,12 @@ func TestAccResourceL2IfPolGenerated(t *testing.T) {
 								"value": {ExpectedValue: "value_2"},
 							}),
 						),
-						resource.TestCheckResourceAttrPair("aci_l2_interface_policy.test_1", "qinq", "aci_l2_interface_policy.test_1", "q_in_q"),
-						resource.TestCheckResourceAttrPair("aci_l2_interface_policy.test_1", "vepa", "aci_l2_interface_policy.test_1", "reflective_relay"),
+						composeAggregateTestCheckFuncWithVersion(t, "2.2(1k)-", "inside",
+							resource.TestCheckResourceAttrPair("aci_l2_interface_policy.test_1", "qinq", "aci_l2_interface_policy.test_1", "q_in_q"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.3(1e)-", "inside",
+							resource.TestCheckResourceAttrPair("aci_l2_interface_policy.test_1", "vepa", "aci_l2_interface_policy.test_1", "reflective_relay"),
+						),
 					)(state)
 				},
 			},
@@ -278,7 +282,13 @@ func TestAccResourceL2IfPolGenerated(t *testing.T) {
 				},
 				ConfigVariables: variables,
 				Config:          testAccResourceL2IfPolLegacyConflict,
-				ExpectError:     regexp.MustCompile("Invalid Attribute Combination|Conflicting legacy configuration"),
+				SkipFunc: func() (bool, error) {
+					return testSkipUnsupportedResourceChanges(t, [][]string{
+						{"2.2(1k)-"},
+						{"2.3(1e)-"},
+					})
+				},
+				ExpectError: regexp.MustCompile("Invalid Attribute Combination|Conflicting legacy configuration"),
 			},
 			{
 				PreConfig: func() {

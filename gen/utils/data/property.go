@@ -18,24 +18,24 @@ type Property struct {
 	Computed bool
 	// APIC create-only values require replacement and stay fixed throughout generated in-place test scenarios.
 	CreateOnly bool
+	// APIC deprecation is documentation metadata, independent of Terraform schema deprecation.
+	APICDeprecated bool
 	// Indicates if the property is deprecated in the resource and datasource schemas.
 	// Deprecated properties include a warning the resource and datasource schemas.
-	// Driven by the meta isDeprecated flag with an optional definition override.
+	// Set explicitly by the definition; APIC lifecycle metadata never promises provider removal.
 	Deprecated bool
 	// The deprecated APIC versions for the property.
 	// Used to indicate versions where the property is deprecated but still functional.
 	// Driven by the meta `deprecatedSince` value with an optional definition override.
-	// Currently retained only; not rendered in attribute documentation or used by version gates.
 	DeprecatedVersions *Versions
 	// Documentation specific information for the property.
 	Documentation PropertyDocumentation
 	// Hidden indicates that the property is no longer accepted by the APIC API.
 	// Driven by the meta `isHidden` flag with an optional definition override (logical OR).
-	// Currently retained only; does not filter schemas, attribute documentation, or test coverage.
+	// A known hidden-version boundary narrows generated documentation and test availability.
 	Hidden bool
 	// The hidden APIC versions for the property.
 	// Driven by the meta `hiddenSince` value with an optional definition override.
-	// Currently retained only; does not narrow SupportedVersions.
 	HiddenVersions *Versions
 	// State upgrade specific information for the property.
 	// Maps prior schema version to the prior-schema representation of this attribute,
@@ -584,11 +584,8 @@ func (p *Property) setDeprecated() {
 	// Determine if the property is deprecated.
 	genLogger.Debugf("Setting Deprecated for property '%s'.", p.PropertyName)
 
-	if p.propertyDefinition.Deprecated != nil {
-		p.Deprecated = *p.propertyDefinition.Deprecated
-	} else if metaDeprecated, ok := p.metaDetails["isDeprecated"].(bool); ok {
-		p.Deprecated = metaDeprecated
-	}
+	p.Deprecated = p.propertyDefinition.Deprecated != nil && *p.propertyDefinition.Deprecated
+	p.APICDeprecated, _ = p.metaDetails["isDeprecated"].(bool)
 
 	genLogger.Debugf("Successfully set Deprecated '%t' for property '%s'.", p.Deprecated, p.PropertyName)
 }
@@ -597,16 +594,7 @@ func (p *Property) setDeprecatedVersions() error {
 	// Determine the deprecated APIC versions for the property from the definition file (override) or meta `deprecatedSince`.
 	genLogger.Debugf("Setting DeprecatedVersions for property '%s'.", p.PropertyName)
 
-	deprecatedVersions := p.propertyDefinition.DeprecatedVersions
-	if deprecatedVersions == "" {
-		deprecatedVersions, _ = p.metaDetails["deprecatedSince"].(string)
-	}
-	if deprecatedVersions == "" {
-		genLogger.Debugf("No DeprecatedVersions specified for property '%s'.", p.PropertyName)
-		return nil
-	}
-
-	parsedVersions, err := NewVersions(deprecatedVersions)
+	parsedVersions, err := lifecycleVersions(p.propertyDefinition.DeprecatedVersions, p.metaDetails["deprecatedSince"])
 	if err != nil {
 		return fmt.Errorf("failed to parse deprecated versions for property '%s': %w", p.PropertyName, err)
 	}
@@ -633,16 +621,12 @@ func (p *Property) setHiddenVersions() error {
 	// Determine the hidden APIC versions for the property from the definition file (override) or meta `hiddenSince`.
 	genLogger.Debugf("Setting HiddenVersions for property '%s'.", p.PropertyName)
 
-	hiddenVersions := p.propertyDefinition.HiddenVersions
-	if hiddenVersions == "" {
-		hiddenVersions, _ = p.metaDetails["hiddenSince"].(string)
+	parsedVersions, err := lifecycleVersions(p.propertyDefinition.HiddenVersions, p.metaDetails["hiddenSince"])
+	if err != nil && p.propertyDefinition.SupportedVersions != "" && p.propertyDefinition.HiddenVersions == "" {
+		// An explicit availability override avoids inferring backport bounds from bare starting points.
+		since, _ := p.metaDetails["hiddenSince"].(string)
+		parsedVersions, err = NewVersions(since)
 	}
-	if hiddenVersions == "" {
-		genLogger.Debugf("No HiddenVersions specified for property '%s'.", p.PropertyName)
-		return nil
-	}
-
-	parsedVersions, err := NewVersions(hiddenVersions)
 	if err != nil {
 		return fmt.Errorf("failed to parse hidden versions for property '%s': %w", p.PropertyName, err)
 	}
@@ -650,6 +634,32 @@ func (p *Property) setHiddenVersions() error {
 
 	genLogger.Debugf("Successfully set HiddenVersions for property '%s'. Versions: '%s'", p.PropertyName, p.HiddenVersions)
 	return nil
+}
+
+func lifecycleVersions(override string, metadata any) (*Versions, error) {
+	if override != "" {
+		return NewVersions(override)
+	}
+	since, _ := metadata.(string)
+	if since == "" {
+		return nil, nil
+	}
+	parts := strings.Split(since, ",")
+	for index, part := range parts {
+		part = strings.TrimSpace(part)
+		if !strings.Contains(part, "-") {
+			if _, err := NewVersions(part); err != nil {
+				return nil, err
+			}
+			// Several starting points do not identify where a backport's release train ends.
+			if len(parts) > 1 {
+				return nil, fmt.Errorf("multiple lifecycle starting versions %q need explicit version ranges in the definition", since)
+			}
+			part += "-"
+		}
+		parts[index] = part
+	}
+	return NewVersions(strings.Join(parts, ","))
 }
 
 func (p *Property) setOptional() {
@@ -1498,10 +1508,8 @@ func (p *Property) setValueType() error {
 
 func (p *Property) setSupportedVersions() error {
 	// Determine the supported APIC versions for the property.
-	// TODO: After the generator refactor, use Hidden/HiddenVersions for support and
-	// test version gates, and expose hidden/deprecated metadata in attribute documentation.
-	// deprecatedSince, isHidden, and hiddenSince are parsed separately but do not affect
-	// this range, generated test configuration, or assertions. Deprecation alone does not end support.
+	// Class normalization supplies inherited bounds and subtracts known hidden versions.
+	// Explicit supported_versions is authoritative; APIC deprecation does not end support.
 	genLogger.Debugf("Setting SupportedVersions for property '%s'.", p.PropertyName)
 
 	// Initialize with versions from PropertyDefinition, if not defined set the versions from meta file.

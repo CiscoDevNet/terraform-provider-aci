@@ -45,7 +45,7 @@ type ResourceTestScenario struct {
 	Configuration  string
 	Assertions     []TestAssertion
 	Action         string
-	ChangeVersions [][]string
+	ChangeVersions [][]*Versions
 	PlanOnly       bool
 	Import         bool
 	ExternalDelete bool
@@ -54,6 +54,15 @@ type ResourceTestScenario struct {
 	ExpectError    string
 	ExistingObject bool
 	ForgetExisting bool
+}
+
+func (s ResourceTestScenario) NeedsVersionBounds() bool {
+	for _, group := range s.ChangeVersions {
+		if slices.ContainsFunc(group, (*Versions).NeedsBounds) {
+			return true
+		}
+	}
+	return false
 }
 
 type resourceTestBuilder struct {
@@ -728,7 +737,7 @@ func (r testConfigurationRenderer) writeTestChildren(contents *strings.Builder, 
 
 		versions := testConfigurationVersions(parentClass.SupportedVersions, childClass.SupportedVersions)
 		fmt.Fprintf(contents, "%s = ", childClass.ResourceNameNested)
-		if versions != "" {
+		if versions != nil {
 			fmt.Fprintf(contents, "%s ? ", testVersionExpression(versions))
 		}
 		if len(child.Instances) == 0 {
@@ -737,7 +746,7 @@ func (r testConfigurationRenderer) writeTestChildren(contents *strings.Builder, 
 			} else {
 				contents.WriteString("[]")
 			}
-			if versions != "" {
+			if versions != nil {
 				contents.WriteString(" : null")
 			}
 			contents.WriteString("\n")
@@ -749,7 +758,7 @@ func (r testConfigurationRenderer) writeTestChildren(contents *strings.Builder, 
 				return err
 			}
 			contents.WriteString("}")
-			if versions != "" {
+			if versions != nil {
 				contents.WriteString(" : null")
 			}
 			contents.WriteString("\n")
@@ -765,7 +774,7 @@ func (r testConfigurationRenderer) writeTestChildren(contents *strings.Builder, 
 			contents.WriteString("},\n")
 		}
 		contents.WriteString("]")
-		if versions != "" {
+		if versions != nil {
 			contents.WriteString(" : null")
 		}
 		contents.WriteString("\n")
@@ -801,7 +810,7 @@ func (r testConfigurationRenderer) writeTestChildInstance(contents *strings.Buil
 		if alias.Type != StringAttribute {
 			valueType = Set
 		}
-		versions := ""
+		var versions *Versions
 		for _, property := range class.ModelProperties() {
 			if property.AttributeName == alias.ChildAttribute {
 				versions = testConfigurationVersions(class.SupportedVersions, property.SupportedVersions)
@@ -845,7 +854,7 @@ func (r testConfigurationRenderer) writeLookupAttributes(contents *strings.Build
 				ConfigInclude: true,
 				ValueType:     testOverrideValueType(override),
 			}})
-			writeTestAttribute(contents, property.AttributeName, property.ValueType, r.testPropertyScenario(class, property, scenario), "")
+			writeTestAttribute(contents, property.AttributeName, property.ValueType, r.testPropertyScenario(class, property, scenario), nil)
 			continue
 		}
 		if property.TestValues == nil {
@@ -862,7 +871,7 @@ func (r testConfigurationRenderer) writeLookupAttributes(contents *strings.Build
 		case missing && len(class.IdentifiedBy) == 0 && property.PropertyName == "parentDn":
 			scenario, _ = r.missingParentScenario()
 		}
-		writeTestAttribute(contents, property.AttributeName, property.ValueType, r.testPropertyScenario(class, property, scenario), "")
+		writeTestAttribute(contents, property.AttributeName, property.ValueType, r.testPropertyScenario(class, property, scenario), nil)
 	}
 	for key := range overrides {
 		if usedOverrides[key] {
@@ -1152,7 +1161,7 @@ func (r testConfigurationRenderer) subjectResourceAddress() terraformTestAddress
 	return terraformTestAddress{BlockType: "resource", Type: "aci_" + r.class.ResourceName, Name: "test_1"}
 }
 
-func writeTestAttribute(contents *strings.Builder, attributeName string, valueType ValueTypeEnum, scenario TestValueScenario, versions string) {
+func writeTestAttribute(contents *strings.Builder, attributeName string, valueType ValueTypeEnum, scenario TestValueScenario, versions *Versions) {
 	if !scenario.Defined {
 		return
 	}
@@ -1182,35 +1191,45 @@ func writeTestAttribute(contents *strings.Builder, attributeName string, valueTy
 				value = testValueHCL(entry)
 				continue
 			}
-			value = fmt.Sprintf("%s ? %s : %s", testVersionExpression(entry.Versions.Raw()), testValueHCL(entry), value)
+			value = fmt.Sprintf("%s ? %s : %s", testVersionExpression(entry.Versions), testValueHCL(entry), value)
 		}
 	}
 	writeTestAssignment(contents, attributeName, value, versions)
 }
 
-func writeTestAssignment(contents *strings.Builder, attributeName, value, versions string) {
-	if versions == "" {
+func writeTestAssignment(contents *strings.Builder, attributeName, value string, versions *Versions) {
+	if versions == nil {
 		fmt.Fprintf(contents, "%s = %s\n", attributeName, value)
 		return
 	}
 	fmt.Fprintf(contents, "%s = %s ? %s : null\n", attributeName, testVersionExpression(versions), value)
 }
 
-func testVersionExpression(versions string) string {
-	return fmt.Sprintf("provider::aci::compare_versions(var.apic_version, %q, %q)", "inside", versions)
+func testVersionExpression(versions *Versions) string {
+	return versions.TestExpression()
 }
 
-func testConfigurationVersions(ownerVersions, valueVersions *Versions) string {
+func testConfigurationVersions(ownerVersions, valueVersions *Versions) *Versions {
 	if valueVersions == nil || valueVersions.Covers(ownerVersions) {
-		return ""
+		return nil
 	}
-	return valueVersions.Raw()
+	return valueVersions
+}
+
+func (c *Class) testPropertySupportedVersions(attributeName string) *Versions {
+	// Compatibility names inherit the availability of the APIC property they represent.
+	for _, property := range c.ModelProperties() {
+		if property.AttributeName == attributeName {
+			return property.SupportedVersions
+		}
+	}
+	return nil
 }
 
 func (r testConfigurationRenderer) dependencyCountExpression(class *Class) string {
 	// Keep every dependency counted while omitting classes unavailable on the active APIC version.
 	versions := testConfigurationVersions(r.class.SupportedVersions, class.SupportedVersions)
-	if versions == "" {
+	if versions == nil {
 		return "1"
 	}
 	return testVersionExpression(versions) + " ? 1 : 0"
@@ -1427,7 +1446,7 @@ func (b *resourceTestBuilder) change(name, description string, after *Class, act
 	}
 	if action == "Replace" {
 		// Every new identifying reference must exist before a replacement can be attempted.
-		var requiredVersions []string
+		var requiredVersions []*Versions
 		renderer := newTestConfigurationRenderer(after, b.dataStore)
 		for _, name := range after.PropertiesAll {
 			property := after.Properties[name]
@@ -1446,19 +1465,19 @@ func (b *resourceTestBuilder) change(name, description string, after *Class, act
 		}
 		for _, group := range versions {
 			for _, value := range group {
-				if !slices.Contains(requiredVersions, value) {
+				if !slices.ContainsFunc(requiredVersions, value.Equal) {
 					requiredVersions = append(requiredVersions, value)
 				}
 			}
 		}
-		versions = [][]string{requiredVersions}
+		versions = [][]*Versions{requiredVersions}
 	}
 	if err := b.addScenario(name, description, configuration, expected, action); err != nil {
 		return false, err
 	}
 	// Later steps start from expected state, including retained values after omission.
 	*after = *expected
-	if !slices.ContainsFunc(versions, func(group []string) bool { return len(group) == 0 }) {
+	if !slices.ContainsFunc(versions, func(group []*Versions) bool { return len(group) == 0 }) {
 		b.last().ChangeVersions = versions
 	}
 	return true, nil
@@ -1646,8 +1665,8 @@ func (b *resourceTestBuilder) children(current *Class) error {
 func (b *resourceTestBuilder) rejectChildRemovals(full *Class) error {
 	// Remove one object at a time, including descendants, then verify the failed update left the full configuration intact.
 	invalid := full.resourceTestCopy()
-	var visit func(*[]*TestChild, string, []string) error
-	visit = func(children *[]*TestChild, path string, inherited []string) error {
+	var visit func(*[]*TestChild, string, []*Versions) error
+	visit = func(children *[]*TestChild, path string, inherited []*Versions) error {
 		for childIndex, child := range *children {
 			childClass, ok := b.dataStore.Classes[child.Class.String()]
 			if !ok || slices.Contains(childClass.TestConfig.IgnoreTests, ChildIgnoreTest) || len(child.Instances) == 0 {
@@ -1676,7 +1695,7 @@ func (b *resourceTestBuilder) rejectChildRemovals(full *Class) error {
 					b.last().ExpectError = regexp.QuoteMeta(fmt.Sprintf("The argument %q is required", childClass.ResourceNameNested))
 				}
 				if len(versions) > 0 {
-					b.last().ChangeVersions = [][]string{versions}
+					b.last().ChangeVersions = [][]*Versions{versions}
 				}
 				if err := b.unchanged(name+"Unchanged", "Verify Rejected Removal Left the Object Unchanged", full); err != nil {
 					return err
@@ -1747,10 +1766,10 @@ func findResourceTestChild(children []*TestChild, name *ClassName) *TestChild {
 	return nil
 }
 
-func resourceTestChanges(before, after *Class, ds *DataStore) [][]string {
-	var groups [][]string
-	add := func(versions []string) {
-		if !slices.ContainsFunc(groups, func(group []string) bool { return slices.Equal(group, versions) }) {
+func resourceTestChanges(before, after *Class, ds *DataStore) [][]*Versions {
+	var groups [][]*Versions
+	add := func(versions []*Versions) {
+		if !slices.ContainsFunc(groups, func(group []*Versions) bool { return slices.EqualFunc(group, versions, (*Versions).Equal) }) {
 			groups = append(groups, versions)
 		}
 	}
@@ -1764,8 +1783,8 @@ func resourceTestChanges(before, after *Class, ds *DataStore) [][]string {
 			add(testAssertionVersions(nil, before.SupportedVersions, property.SupportedVersions))
 		}
 	}
-	var compareChildren func([]*TestChild, []*TestChild, []string)
-	compareChildren = func(previous, next []*TestChild, inherited []string) {
+	var compareChildren func([]*TestChild, []*TestChild, []*Versions)
+	compareChildren = func(previous, next []*TestChild, inherited []*Versions) {
 		for _, child := range next {
 			childClass, ok := ds.Classes[child.Class.String()]
 			if !ok || slices.Contains(childClass.TestConfig.IgnoreTests, ChildIgnoreTest) {
@@ -2012,9 +2031,10 @@ func (c *Class) testLegacyAttributes() []MigrationAttribute {
 func (b *resourceTestBuilder) nestedLegacy(current *Class) error {
 	// Work on configured instances so aliases keep their owning object, values and dependencies.
 	var conflictScopes []string
+	conflictVersions := map[string][]*Versions{}
 	conflictScope := ""
-	var configure func([]*TestChild, string, string) bool
-	configure = func(children []*TestChild, prefix, mode string) bool {
+	var configure func([]*TestChild, string, string, []*Versions) bool
+	configure = func(children []*TestChild, prefix, mode string, inherited []*Versions) bool {
 		changed := false
 		for _, child := range children {
 			class := b.dataStore.Classes[child.Class.String()]
@@ -2022,6 +2042,7 @@ func (b *resourceTestBuilder) nestedLegacy(current *Class) error {
 				continue
 			}
 			path := joinTestAttributePath(prefix, class.ResourceNameNested)
+			versions := testAssertionVersions(inherited, current.SupportedVersions, class.SupportedVersions)
 			for index := range child.Instances {
 				instance := &child.Instances[index]
 				configured := len(instance.Children) > 0
@@ -2063,19 +2084,20 @@ func (b *resourceTestBuilder) nestedLegacy(current *Class) error {
 							delete(instance.Properties, alias.ChildAttribute)
 							if !slices.Contains(conflictScopes, scope) {
 								conflictScopes = append(conflictScopes, scope)
+								conflictVersions[scope] = testAssertionVersions(versions, class.SupportedVersions, class.testPropertySupportedVersions(alias.ChildAttribute))
 							}
 						}
 					}
 					instance.Properties[alias.AttributeName] = scenario.clone()
 					changed = true
 				}
-				changed = configure(instance.Children, path, mode) || changed
+				changed = configure(instance.Children, path, mode, versions) || changed
 			}
 		}
 		return changed
 	}
 	legacy := current.resourceTestCopy()
-	if configure(legacy.TestChildren, "", "legacy") {
+	if configure(legacy.TestChildren, "", "legacy", nil) {
 		if err := b.addScenario("NestedLegacy", "Configure Through Nested Legacy Attributes", &legacy, current, ""); err != nil {
 			return err
 		}
@@ -2111,15 +2133,18 @@ func (b *resourceTestBuilder) nestedLegacy(current *Class) error {
 		for index, scope := range conflictScopes {
 			conflictScope = scope
 			conflict := current.resourceTestCopy()
-			configure(conflict.TestChildren, "", "conflict")
+			configure(conflict.TestChildren, "", "conflict", nil)
 			if err := b.addScenario(fmt.Sprintf("NestedLegacyConflict%d", index+1), "Reject Simultaneous Inputs for "+scope, &conflict, current, ""); err != nil {
 				return err
 			}
 			b.last().ExpectError = "Invalid Attribute Combination|Conflicting legacy configuration"
+			if versions := conflictVersions[scope]; len(versions) > 0 {
+				b.last().ChangeVersions = [][]*Versions{versions}
+			}
 		}
 	}
 	frozen := current.resourceTestCopy()
-	if configure(frozen.TestChildren, "", "frozen") {
+	if configure(frozen.TestChildren, "", "frozen", nil) {
 		if err := b.addScenario("NestedFrozen", "Retain Frozen Nested Attribute Configuration", &frozen, &frozen, ""); err != nil {
 			return err
 		}
@@ -2127,7 +2152,7 @@ func (b *resourceTestBuilder) nestedLegacy(current *Class) error {
 			return err
 		}
 		b.last().PlanOnly = true
-		configure(frozen.TestChildren, "", "clear")
+		configure(frozen.TestChildren, "", "clear", nil)
 		if err := b.addScenario("NestedFrozenCleared", "Clear Frozen Nested Attribute State", &frozen, &frozen, ""); err != nil {
 			return err
 		}
@@ -2159,6 +2184,7 @@ func (b *resourceTestBuilder) legacy(current *Class) error {
 	}
 	checks := slices.Clone(base.Assertions)
 	hasDeprecatedConfiguration := false
+	var conflictVersions [][]*Versions
 	renderer := newTestConfigurationRenderer(current, b.dataStore)
 	renderer.resourceTest = true
 	for _, alias := range b.class.testLegacyAttributes() {
@@ -2172,6 +2198,7 @@ func (b *resourceTestBuilder) legacy(current *Class) error {
 				legacyBody.SetAttributeRaw(alias.AttributeName, tokens)
 				conflictFile.Body().Blocks()[0].Body().SetAttributeRaw(alias.AttributeName, tokens)
 				hasDeprecatedConfiguration = true
+				conflictVersions = append(conflictVersions, testAssertionVersions(nil, current.SupportedVersions, current.testPropertySupportedVersions(alias.ChildAttribute)))
 				if alias.IsListToSet() {
 					for _, property := range current.ModelProperties() {
 						if property.AttributeName != alias.ChildAttribute || property.TestValues == nil {
@@ -2185,7 +2212,7 @@ func (b *resourceTestBuilder) legacy(current *Class) error {
 						}
 					}
 				} else {
-					checks = append(checks, TestAssertion{assertionType: testAssertionAttributePair, AttributePath: alias.AttributeName, PairAddress: renderer.subjectResourceAddress().String(), PairAttribute: alias.ChildAttribute})
+					checks = append(checks, TestAssertion{assertionType: testAssertionAttributePair, AttributePath: alias.AttributeName, PairAddress: renderer.subjectResourceAddress().String(), PairAttribute: alias.ChildAttribute, Versions: testAssertionVersions(nil, current.SupportedVersions, current.testPropertySupportedVersions(alias.ChildAttribute))})
 				}
 			}
 			continue
@@ -2210,6 +2237,8 @@ func (b *resourceTestBuilder) legacy(current *Class) error {
 		legacyBody.AppendUnstructuredTokens(parsed.Body().BuildTokens(nil))
 		conflictFile.Body().Blocks()[0].Body().AppendUnstructuredTokens(parsed.Body().BuildTokens(nil))
 		hasDeprecatedConfiguration = true
+		availability := child.testPropertySupportedVersions(alias.ChildAttribute).Intersect(child.SupportedVersions)
+		conflictVersions = append(conflictVersions, testAssertionVersions(nil, current.SupportedVersions, availability))
 		checks = append(checks, renderer.renderCountedDependencyAssertions(assertions)...)
 	}
 	add := func(name, description string, file *hclwrite.File, assertions []TestAssertion) {
@@ -2223,6 +2252,9 @@ func (b *resourceTestBuilder) legacy(current *Class) error {
 		b.scenarios = append(b.scenarios, ResourceTestScenario{Name: "CurrentAfterLegacy", Description: "Switch to Current Attributes Without Replacement", Configuration: base.Configuration, Assertions: base.Assertions, PlanOnly: true})
 		add("LegacyConflict", "Reject Simultaneous Legacy and Current Inputs", conflictFile, nil)
 		b.last().ExpectError = "Invalid Attribute Combination|Conflicting legacy configuration"
+		if !slices.ContainsFunc(conflictVersions, func(group []*Versions) bool { return len(group) == 0 }) {
+			b.last().ChangeVersions = conflictVersions
+		}
 	}
 	frozen, err := parse()
 	if err != nil {
@@ -2297,7 +2329,7 @@ func (b *resourceTestBuilder) legacyChildConfiguration(current *Class, alias Mig
 						}
 					}
 				}
-				writeTestAttribute(&contents, member.AttributeName, String, scenario, "")
+				writeTestAttribute(&contents, member.AttributeName, String, scenario, testConfigurationVersions(childClass.SupportedVersions, childClass.testPropertySupportedVersions(member.ChildAttribute)))
 			}
 			contents.WriteString("}\n")
 		}
@@ -2310,6 +2342,9 @@ func (b *resourceTestBuilder) legacyChildConfiguration(current *Class, alias Mig
 			property = candidate
 			break
 		}
+	}
+	if property != nil {
+		versions = testAssertionVersions(versions, childClass.SupportedVersions, property.SupportedVersions)
 	}
 	scenario := TestValueScenario{Defined: true}
 	for _, instance := range fixture.Instances {
@@ -2358,6 +2393,10 @@ func (b *resourceTestBuilder) legacyChildConfiguration(current *Class, alias Mig
 		assertions = append(assertions, TestAssertion{assertionType: testAssertionSetCount, AttributePath: alias.AttributeName, ExpectedCount: len(scenario.Entries), Versions: versions})
 	}
 	scenario = renderer.resourceReferenceScenario(&childClass, scenario)
-	writeTestAttribute(&contents, alias.AttributeName, valueType, scenario, testConfigurationVersions(current.SupportedVersions, childClass.SupportedVersions))
+	availability := childClass.SupportedVersions
+	if property != nil {
+		availability = property.SupportedVersions.Intersect(availability)
+	}
+	writeTestAttribute(&contents, alias.AttributeName, valueType, scenario, testConfigurationVersions(current.SupportedVersions, availability))
 	return contents.String(), assertions, nil
 }

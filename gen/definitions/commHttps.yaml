@@ -1,7 +1,3 @@
-# Compatibility: dhParam keeps its tested API/state behavior without a provider
-# deprecation warning. APIC 6.2(2e) metadata records deprecatedSince: 6.0(2).
-# TODO: Reassess warnings with refreshed metadata and version-aware deprecation handling.
-
 properties:
   accessControlAllowCredential:
     attribute_name: allow_credentials
@@ -38,7 +34,6 @@ properties:
       - config_value: description_1
   dhParam:
     attribute_name: dh_parameter
-    deprecated: false
     documentation:
       description: Determines the settings for Diffie-Hellman (DH) parameters.
   globalThrottleRate:

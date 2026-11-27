@@ -4657,14 +4657,28 @@ func TestAccResourceFvAEPgGenerated(t *testing.T) {
 							}),
 						),
 						resource.TestCheckResourceAttrPair("aci_application_epg.test_1", "application_profile_dn", "aci_application_epg.test_1", "parent_dn"),
-						resource.TestCheckResourceAttrPair("aci_application_epg.test_1", "exception_tag", "aci_application_epg.test_1", "contract_exception_tag"),
-						resource.TestCheckResourceAttrPair("aci_application_epg.test_1", "flood_on_encap", "aci_application_epg.test_1", "flood_in_encapsulation"),
-						resource.TestCheckResourceAttrPair("aci_application_epg.test_1", "fwd_ctrl", "aci_application_epg.test_1", "forwarding_control"),
-						resource.TestCheckResourceAttrPair("aci_application_epg.test_1", "has_mcast_source", "aci_application_epg.test_1", "has_multicast_source"),
-						resource.TestCheckResourceAttrPair("aci_application_epg.test_1", "is_attr_based_epg", "aci_application_epg.test_1", "useg_epg"),
+						composeAggregateTestCheckFuncWithVersion(t, "3.2(1l)-", "inside",
+							resource.TestCheckResourceAttrPair("aci_application_epg.test_1", "exception_tag", "aci_application_epg.test_1", "contract_exception_tag"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "3.1(1i)-", "inside",
+							resource.TestCheckResourceAttrPair("aci_application_epg.test_1", "flood_on_encap", "aci_application_epg.test_1", "flood_in_encapsulation"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.0(2f)-", "inside",
+							resource.TestCheckResourceAttrPair("aci_application_epg.test_1", "fwd_ctrl", "aci_application_epg.test_1", "forwarding_control"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)-", "inside",
+							resource.TestCheckResourceAttrPair("aci_application_epg.test_1", "has_mcast_source", "aci_application_epg.test_1", "has_multicast_source"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "1.2(1i)-", "inside",
+							resource.TestCheckResourceAttrPair("aci_application_epg.test_1", "is_attr_based_epg", "aci_application_epg.test_1", "useg_epg"),
+						),
 						resource.TestCheckResourceAttrPair("aci_application_epg.test_1", "match_t", "aci_application_epg.test_1", "match_criteria"),
-						resource.TestCheckResourceAttrPair("aci_application_epg.test_1", "pc_enf_pref", "aci_application_epg.test_1", "intra_epg_isolation"),
-						resource.TestCheckResourceAttrPair("aci_application_epg.test_1", "pref_gr_memb", "aci_application_epg.test_1", "preferred_group_member"),
+						composeAggregateTestCheckFuncWithVersion(t, "1.2(2g)-", "inside",
+							resource.TestCheckResourceAttrPair("aci_application_epg.test_1", "pc_enf_pref", "aci_application_epg.test_1", "intra_epg_isolation"),
+						),
+						composeAggregateTestCheckFuncWithVersion(t, "2.1(1h)-", "inside",
+							resource.TestCheckResourceAttrPair("aci_application_epg.test_1", "pref_gr_memb", "aci_application_epg.test_1", "preferred_group_member"),
+						),
 						resource.TestCheckResourceAttrPair("aci_application_epg.test_1", "prio", "aci_application_epg.test_1", "priority"),
 						resource.TestCheckResourceAttrPair("aci_application_epg.test_1", "relation_fv_rs_aepg_mon_pol", "aci_monitoring_policy.test_1.0", "id"),
 						resource.TestCheckResourceAttrPair("aci_application_epg.test_1", "relation_fv_rs_bd", "aci_bridge_domain.test_1.0", "id"),
@@ -4715,7 +4729,9 @@ func TestAccResourceFvAEPgGenerated(t *testing.T) {
 						composeAggregateTestCheckFuncWithVersion(t, "3.0(1k)-", "inside",
 							resource.TestCheckResourceAttrPair("aci_application_epg.test_1", "relation_fv_rs_trust_ctrl", "aci_trust_control_policy.test_1.0", "id"),
 						),
-						resource.TestCheckResourceAttrPair("aci_application_epg.test_1", "shutdown", "aci_application_epg.test_1", "admin_state"),
+						composeAggregateTestCheckFuncWithVersion(t, "4.0(1h)-", "inside",
+							resource.TestCheckResourceAttrPair("aci_application_epg.test_1", "shutdown", "aci_application_epg.test_1", "admin_state"),
+						),
 					)(state)
 				},
 			},
@@ -38879,14 +38895,14 @@ resource "aci_application_epg" "test_1" {
   relation_fv_rs_intra_epg    = provider::aci::compare_versions(var.apic_version, "inside", "3.0(1k)-") ? [aci_contract.test_1[0].id, aci_contract.test_2[0].id] : null
   relation_fv_rs_node_att {
     deployment_immediacy = "immediate"
-    description          = "description_1"
+    description          = provider::aci::compare_versions(var.apic_version, "inside", "1.0(4g)-") ? "description_1" : null
     encap                = "vlan-100"
     mode                 = "native"
     node_dn              = "topology/pod-1/node-101"
   }
   relation_fv_rs_node_att {
     deployment_immediacy = "lazy"
-    description          = "description_2"
+    description          = provider::aci::compare_versions(var.apic_version, "inside", "1.0(4g)-") ? "description_2" : null
     encap                = "vlan-101"
     mode                 = "regular"
     node_dn              = "topology/pod-1/node-102"
@@ -39242,14 +39258,14 @@ resource "aci_application_epg" "test_1" {
   relation_fv_rs_intra_epg    = provider::aci::compare_versions(var.apic_version, "inside", "3.0(1k)-") ? [aci_contract.test_1[0].id, aci_contract.test_2[0].id] : null
   relation_fv_rs_node_att {
     deployment_immediacy = "immediate"
-    description          = "description_1"
+    description          = provider::aci::compare_versions(var.apic_version, "inside", "1.0(4g)-") ? "description_1" : null
     encap                = "vlan-100"
     mode                 = "native"
     node_dn              = "topology/pod-1/node-101"
   }
   relation_fv_rs_node_att {
     deployment_immediacy = "lazy"
-    description          = "description_2"
+    description          = provider::aci::compare_versions(var.apic_version, "inside", "1.0(4g)-") ? "description_2" : null
     encap                = "vlan-101"
     mode                 = "regular"
     node_dn              = "topology/pod-1/node-102"
@@ -41037,14 +41053,14 @@ resource "aci_application_epg" "test_1" {
   relation_fv_rs_intra_epg    = provider::aci::compare_versions(var.apic_version, "inside", "3.0(1k)-") ? [aci_contract.test_1[0].id, aci_contract.test_2[0].id] : null
   relation_fv_rs_node_att {
     deployment_immediacy = "immediate"
-    description          = "description_1"
+    description          = provider::aci::compare_versions(var.apic_version, "inside", "1.0(4g)-") ? "description_1" : null
     encap                = "vlan-100"
     mode                 = "native"
     node_dn              = "topology/pod-1/node-101"
   }
   relation_fv_rs_node_att {
     deployment_immediacy = "lazy"
-    description          = "description_2"
+    description          = provider::aci::compare_versions(var.apic_version, "inside", "1.0(4g)-") ? "description_2" : null
     encap                = "vlan-101"
     mode                 = "regular"
     node_dn              = "topology/pod-1/node-102"
