@@ -385,6 +385,7 @@ func (c *Class) setClassData(ds *DataStore) error {
 	if err != nil {
 		return err
 	}
+	c.setPropertySupportedVersions()
 
 	genLogger.Debugf("Successfully set class data for class '%s'.", c.Name)
 	return nil
@@ -1373,6 +1374,19 @@ func (c *Class) setSupportedVersions() error {
 
 	genLogger.Debugf("Successfully set SupportedVersions for class '%s'. Versions: '%s'", c.Name, c.SupportedVersions)
 	return nil
+}
+
+func (c *Class) setPropertySupportedVersions() {
+	// Finalize availability once, after both class and property metadata have been loaded.
+	for _, property := range c.Properties {
+		// Declared property ranges remain independent; enclosing class gates apply separately.
+		if property.SupportedVersions == nil {
+			property.SupportedVersions = c.SupportedVersions
+		}
+		if property.propertyDefinition.SupportedVersions == "" {
+			property.SupportedVersions = property.SupportedVersions.Exclude(property.HiddenVersions)
+		}
+	}
 }
 
 func shouldIncludeChild(rn, className string, excludeChildrenFromClassDef, alwaysIncludeFromGlobalDef []string) bool {

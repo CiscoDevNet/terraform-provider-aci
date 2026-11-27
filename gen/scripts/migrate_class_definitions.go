@@ -277,11 +277,6 @@ var canonicalDefinitionComments = map[string]string{
 # change omission behavior and must be treated as a breaking compatibility change.
 
 `,
-	"commHttps": `# Compatibility: dhParam keeps its tested API/state behavior without a provider
-# deprecation warning. APIC 6.2(2e) metadata records deprecatedSince: 6.0(2).
-# TODO: Reassess warnings with refreshed metadata and version-aware deprecation handling.
-
-`,
 	"commPol": `# Test limitation: strictSecurityOnApicOOBSubnet is excluded from acceptance tests.
 # This is a legacy exclusion whose original reason was not recorded.
 # TODO: Reassess coverage after the generator refactor; metadata marks it configurable.
@@ -2894,17 +2889,12 @@ func applyCanonicalDefinitionCorrections(className string, out *data.ClassDefini
 		// retain their established plural documentation filename.
 		out.Documentation.RegistryPath = "l4_l7_devices"
 	case "commHttps":
-		// Defer APIC deprecation warnings until metadata versions are handled explicitly.
-		property := upsertProperty(out, "dhParam")
-		deprecated := false
-		property.Deprecated = &deprecated
-		out.Properties["dhParam"] = property
 		// APIC metadata provides globalThrottleUnit with both validValues and a
 		// regex validator, so generic normalization infers semantic_equality.
 		// Its accepted values (r/s and r/m) are already the literal APIC wire
 		// values; there is no alias representation requiring semantic comparison.
 		// Preserve the current provider's plain string schema explicitly.
-		property = upsertProperty(out, "globalThrottleUnit")
+		property := upsertProperty(out, "globalThrottleUnit")
 		property.ValueType = data.String
 		out.Properties["globalThrottleUnit"] = property
 		for dependencyIndex := range out.TestConfig.Dependencies {

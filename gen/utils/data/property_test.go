@@ -761,7 +761,7 @@ func TestPropertySetDeprecated(t *testing.T) {
 		{
 			Name:     "test_meta_true_no_override",
 			Input:    setPropertyDeprecatedInput{MetaDetails: map[string]any{"isDeprecated": true}},
-			Expected: true,
+			Expected: false,
 		},
 		{
 			Name:     "test_meta_wrong_type",
@@ -797,6 +797,8 @@ func TestPropertySetDeprecated(t *testing.T) {
 			}
 
 			property.setDeprecated()
+			metaDeprecated, _ := input.MetaDetails["isDeprecated"].(bool)
+			assert.Equal(t, metaDeprecated, property.APICDeprecated)
 
 			assert.Equal(t, testCase.Expected, property.Deprecated, test.MessageEqual(testCase.Expected, property.Deprecated, testCase.Name))
 		})
@@ -2917,6 +2919,93 @@ func TestNamedReferenceAttributeNameHonorsOverrides(t *testing.T) {
 			ds := &DataStore{Classes: map[string]Class{"monEPGPol": {ResourceName: "monitoring_policy"}}}
 			property.setNamedReferenceAttributeName(ds, testClassName("monEPGPol"))
 			assert.Equal(t, testCase.Expected, property.AttributeName)
+		})
+	}
+}
+
+func TestPropertySupportedLifecycle(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+	type input struct {
+		Class                string
+		Property             string
+		Hidden               string
+		Deprecated           string
+		Override             string
+		HiddenOverride       string
+		HiddenWithoutVersion bool
+	}
+	testCases := []test.TestCase{
+		{Name: "inherit_class_start", Input: input{Class: "4.2(0)-"}, Expected: "4.2(0) and later"},
+		{Name: "property_does_not_inherit_class_end", Input: input{Class: "1.0(1e)-6.1(1e)", Property: "3.2(1l)-"}, Expected: "3.2(1l) and later"},
+		{Name: "override_does_not_inherit_class_end", Input: input{Class: "1.0(1e)-6.1(1e)", Override: "3.2(1l)-"}, Expected: "3.2(1l) and later"},
+		{Name: "missing_property_range_inherits_class", Input: input{Class: "1.0(1e)-6.1(1e)"}, Expected: "1.0(1e) to 6.1(1e)"},
+		{Name: "property_starts_later", Input: input{Class: "4.2(0)-", Property: "5.2(1)-"}, Expected: "5.2(1) and later"},
+		{Name: "declared_property_start_remains_independent", Input: input{Class: "4.2(0)-", Property: "1.0(1)-"}, Expected: "1.0(1) and later"},
+		{Name: "hidden_boundary_is_exclusive", Input: input{Class: "4.2(0)-", Hidden: "6.2(1)", Deprecated: "6.1(1)"}, Expected: "4.2(0) up to, but excluding, 6.2(1)"},
+		{Name: "deprecation_keeps_support", Input: input{Class: "4.2(0)-", Deprecated: "6.1(1)"}, Expected: "4.2(0) and later"},
+		{Name: "hidden_flag_has_no_historical_cutoff", Input: input{Class: "4.2(0)-", HiddenWithoutVersion: true}, Expected: "4.2(0) and later"},
+		{Name: "explicit_availability_overrides_ambiguous_hidden_dates", Input: input{Class: "4.2(0)-", Hidden: "5.2(10),6.2(1)", Override: "6.0(0)-6.1(9)"}, Expected: "6.0(0) to 6.1(9)"},
+		{Name: "explicit_availability_overrides_hidden", Input: input{Class: "4.2(0)-", Hidden: "6.2(1)", Override: "6.3(1)-"}, Expected: "6.3(1) and later"},
+		{Name: "declared_property_range_remains_independent", Input: input{Class: "4.2(0)-4.2(7)", Property: "6.0(1)-"}, Expected: "6.0(1) and later"},
+		{Name: "hidden_before_introduction", Input: input{Class: "5.2(1)-", Hidden: "4.2(1)"}, Expected: "none"},
+		{Name: "multiple_support_and_hidden_ranges", Input: input{Class: "4.2(0)-", Property: "4.2(0)-5.2(12),6.0(0)-", HiddenOverride: "5.2(10)-5.2(12),6.2(1)-"}, Expected: "4.2(0) up to, but excluding, 5.2(10), 6.0(0) up to, but excluding, 6.2(1)"},
+		{Name: "bounded_hidden_interval", Input: input{Class: "4.2(0)-", HiddenOverride: "5.2(1)-5.2(10)"}, Expected: "4.2(0) up to, but excluding, 5.2(1), after 5.2(10)"},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			value := testCase.Input.(input)
+			property := &Property{PropertyName: "value", metaDetails: map[string]any{"versions": value.Property, "hiddenSince": value.Hidden, "deprecatedSince": value.Deprecated, "isHidden": value.Hidden != "" || value.HiddenWithoutVersion, "isDeprecated": value.Deprecated != ""}, propertyDefinition: PropertyDefinition{SupportedVersions: value.Override, HiddenVersions: value.HiddenOverride}}
+			property.setDeprecated()
+			property.setHidden()
+			if !assert.NoError(t, property.setDeprecatedVersions()) || !assert.NoError(t, property.setHiddenVersions()) || !assert.NoError(t, property.setSupportedVersions()) {
+				return
+			}
+			versions, err := NewVersions(value.Class)
+			if !assert.NoError(t, err) {
+				return
+			}
+			class := &Class{SupportedVersions: versions, Properties: map[string]*Property{"value": property}}
+			class.setPropertySupportedVersions()
+			assert.Equal(t, testCase.Expected, property.SupportedVersions.String())
+			assert.False(t, property.Deprecated)
+			property.Documentation.setWarnings(property)
+			if value.Deprecated != "" {
+				assert.Contains(t, strings.Join(property.Documentation.Warnings, " "), "deprecated by APIC")
+			}
+			if value.HiddenWithoutVersion {
+				assert.Contains(t, strings.Join(property.Documentation.Warnings, " "), "without an effective version")
+			}
+		})
+	}
+}
+
+func TestLifecycleVersions(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+	type input struct {
+		Override string
+		Metadata string
+	}
+	testCases := []test.TestCase{
+		{Name: "since_is_open_ended", Input: input{Metadata: "6.2(1)"}, Expected: "6.2(1)-"},
+		{Name: "explicit_ranges_preserved", Input: input{Metadata: "5.2(10)-5.2(12),6.2(1)-"}, Expected: "5.2(10)-5.2(12),6.2(1)-"},
+		{Name: "override_is_authoritative", Input: input{Override: "5.2(10)-5.2(12),6.2(1)-", Metadata: "6.2(1)"}, Expected: "5.2(10)-5.2(12),6.2(1)-"},
+		{Name: "ambiguous_backport_starts", Input: input{Metadata: "5.2(10),6.2(1)"}, Expected: "multiple lifecycle starting versions"},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			value := testCase.Input.(input)
+			versions, err := lifecycleVersions(value.Override, value.Metadata)
+			if testCase.Name == "ambiguous_backport_starts" {
+				assert.ErrorContains(t, err, testCase.Expected.(string))
+				return
+			}
+			if assert.NoError(t, err) {
+				assert.Equal(t, testCase.Expected, versions.Raw())
+			}
 		})
 	}
 }

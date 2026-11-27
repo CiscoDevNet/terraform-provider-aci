@@ -151,7 +151,7 @@ type PropertyDefinition struct {
 	// Overrides the APIC property name displayed in generated documentation without
 	// changing the property used for payload construction or response decoding.
 	DocumentationPropertyName string `yaml:"documentation_property_name"`
-	// Overrides the meta isDeprecated flag; nil retains metadata behavior and false suppresses the schema warning.
+	// Explicit Terraform/provider deprecation. APIC isDeprecated is documentation metadata only.
 	Deprecated *bool `yaml:"deprecated"`
 	// The deprecated APIC versions for the property. Format: "1.0(1e)-" or "4.2(7f)-4.2(7w),5.2(1g)-".
 	// Used to indicate versions where the property is deprecated but still functional.
@@ -175,7 +175,8 @@ type PropertyDefinition struct {
 	// Overrides the sensitive flag for the property.
 	// When true, the property is marked as sensitive in the Terraform schema regardless of the meta file.
 	Sensitive bool `yaml:"sensitive"`
-	// Overrides the versions from the meta file. Format: "1.0(1e)-" or "4.2(7f)-4.2(7w),5.2(1g)-".
+	// Overrides inferred property availability, including hidden-version cutoffs. Class test gates apply separately.
+	// Uses inclusive metadata ranges: "1.0(1e)-" or "4.2(7f)-4.2(7w),5.2(1g)-".
 	SupportedVersions string `yaml:"supported_versions"`
 	// Overrides the meta `validators` array. When non-empty, replaces the meta validators entirely.
 	Validators []ValidatorDefinition `yaml:"validators"`

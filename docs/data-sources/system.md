@@ -50,8 +50,10 @@ data "aci_system" "example" {
 * `address` (address) - (string) The IP address of the system.
 * `bootstrap_state` (bootstrapState) - (string) Bootstrap state of this system. This attribute is supported in ACI versions: 2.0(1m) and later.
 * `child_action` (childAction) - (string) Delete or ignore. For internal use only.
+  ~> This attribute is deprecated by the Terraform provider.
 * `cluster_time_diff` (clusterTimeDiff) - (string) Difference in cluster time from local time for this system. This attribute is supported in ACI versions: 4.2(4o) and later.
 * `config_issues` (configIssues) - (string) Bitmask representation of the configuration issues found during the endpoint group deployment. This attribute is supported in ACI versions: 1.0(2j) and later.
+  ~> This attribute is deprecated by the Terraform provider.
 * `control_plane_mtu` (controlPlaneMTU) - (string) MTU for control plane (SUP-originated) packets. This attribute is supported in ACI versions: 2.2(2e) and later.
 * `current_time` (currentTime) - (string) The current time on this system.
 * `enforce_subnet_check` (enforceSubnetCheck) - (string) Enforce subnet check on all VRFs. This attribute is supported in ACI versions: 2.2(2q) to 2.2(4r), 3.0(2h) and later.
@@ -68,6 +70,7 @@ data "aci_system" "example" {
 * `last_reboot_time` (lastRebootTime) - (string) The last reboot time for this system. This attribute is supported in ACI versions: 3.2(10e) to 3.2(10g), 3.2(8d) to 3.2(9h), 4.1(2g) and later.
 * `last_reset_reason` (lastResetReason) - (string) The last reset reason for this system. This attribute is supported in ACI versions: 3.2(10e) to 3.2(10g), 3.2(8d) to 3.2(9h), 4.1(2g) and later.
 * `lc_own` (lcOwn) - (string) A value that indicates how this object was created. For internal use only.
+  ~> This attribute is deprecated by the Terraform provider.
 * `mod_ts` (modTs) - (string) The time when this object was last modified.
 * `mode` (mode) - (string) Specifies if this system is configured in standalone mode or HA pair.
 * `monitoring_policy_dn` (monPolDn) - (string) The monitoring policy attached to this observable object.
@@ -93,6 +96,7 @@ data "aci_system" "example" {
 * `site_id` (siteId) - (string) The site identifier. This attribute is supported in ACI versions: 3.0(1k) and later.
 * `state` (state) - (string) The operational state of this system.
 * `status` (status) - (string) The upgrade status. This property is for internal use only.
+  ~> This attribute is deprecated by the Terraform provider.
 * `system_uptime` (systemUpTime) - (string) The time (in seconds) since the system was booted.
 * `tep_pool` (tepPool) - (string) The pool of TEP IP addresses allocated for this system. This attribute is supported in ACI versions: 2.2(4p) to 2.2(4r), 3.0(1k) and later.
 * `unicast_xr_endpoint_learn_disable` (unicastXrEpLearnDisable) - (string) Indicates whether the learning of unicast endpoints for external routing is disabled. This attribute is supported in ACI versions: 2.2(2e) and later.

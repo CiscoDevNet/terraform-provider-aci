@@ -86,6 +86,7 @@ data "aci_management_access_policy" "example" {
     * `client_certificate_authentication_state` (clientCertAuthState) - (string) The authentication state of the client certificate. This attribute is supported in ACI versions: 4.0(1h) and later.
     * `description` (descr) - (string) The description of the HTTPS Service object.
     * `dh_parameter` (dhParam) - (string) Determines the settings for Diffie-Hellman (DH) parameters. This attribute is supported in ACI versions: 1.2(2g) and later.
+      ~> This attribute is deprecated by APIC; the metadata does not specify an effective version.
     * `global_throttle_rate` (globalThrottleRate) - (string) The maximum amount of API calls allowed per unit time. This attribute is supported in ACI versions: 4.2(1i) and later.
     * `global_throttle_state` (globalThrottleSt) - (string) The throttle state for all clients without specific identifier in their headers. This attribute is supported in ACI versions: 4.2(1i) and later.
     * `global_throttle_unit` (globalThrottleUnit) - (string) The unit of measurement for rate limiting specified with the 'global_throttle_rate' attribute. This attribute is supported in ACI versions: 4.2(1i) and later.

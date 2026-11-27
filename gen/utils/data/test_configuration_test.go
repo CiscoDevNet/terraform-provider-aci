@@ -1020,7 +1020,7 @@ func TestDataSourceTestVersionedDependency(t *testing.T) {
 	}
 	if assert.Len(t, assertions, 1) {
 		assert.Equal(t, "aci_example_dependency.test_1.0", assertions[0].PairAddress)
-		assert.Equal(t, []string{"3.0(1a)-"}, assertions[0].Versions)
+		assert.Equal(t, testVersionRanges("3.0(1a)-"), assertions[0].Versions)
 	}
 }
 
@@ -1963,7 +1963,12 @@ func TestResourceTestChangedVersionsAndSingletonClear(t *testing.T) {
 		t.Run(testCase.Name, func(t *testing.T) {
 			index := slices.IndexFunc(scenarios, func(scenario ResourceTestScenario) bool { return scenario.Name == testCase.Name })
 			if assert.NotEqual(t, -1, index) {
-				assert.Equal(t, testCase.Expected, scenarios[index].ChangeVersions)
+				expected := testCase.Expected.([][]string)
+				var ranges [][]*Versions
+				for _, group := range expected {
+					ranges = append(ranges, testVersionRanges(group...))
+				}
+				assert.Equal(t, ranges, scenarios[index].ChangeVersions)
 			}
 		})
 	}
@@ -2269,4 +2274,112 @@ func TestResourceTestNestedLegacyCollections(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestNormalizedAvailabilityReachesTestConfigurationAndAssertions(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+	testCases := []test.TestCase{
+		{Name: "resource", Input: ResourceArtifact},
+		{Name: "datasource", Input: DatasourceArtifact},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			t.Parallel()
+			class, store := resourceScenarioFixture()
+			availability := testVersionRanges("1.0(1a)-")[0].Exclude(testVersionRanges("6.2(1)-")[0])
+			class.Properties["descr"].SupportedVersions = availability
+			child := store.Classes["tagAnnotation"]
+			child.Properties["value"].SupportedVersions = availability
+			store.Classes[child.Name.String()] = child
+			var configuration string
+			var assertions []TestAssertion
+			if testCase.Input == DatasourceArtifact {
+				var err error
+				configuration, err = class.DataSourceTestExistingHCL(store)
+				if !assert.NoError(t, err) {
+					return
+				}
+				assertions = class.DataSourceTestAssertions(store)
+			} else {
+				scenarios, err := class.ResourceTestScenarios(store)
+				if !assert.NoError(t, err) {
+					return
+				}
+				full := slices.IndexFunc(scenarios, func(scenario ResourceTestScenario) bool { return scenario.Name == "Full" })
+				if !assert.NotEqual(t, -1, full) {
+					return
+				}
+				configuration, assertions = scenarios[full].Configuration, scenarios[full].Assertions
+			}
+			dependencies, err := class.DataSourceTestDependenciesHCL(store)
+			if !assert.NoError(t, err) {
+				return
+			}
+			assert.NoError(t, validateDataSourceTestConfiguration(dependencies+"\n"+configuration, assertions))
+			assert.Contains(t, configuration, `"<", "6.2(1)"`)
+			assert.Contains(t, configuration, `? "description_1" : null`)
+			assert.Contains(t, configuration, `? "value_1" : null`)
+			for _, path := range []string{"description", "annotations.*"} {
+				found := slices.ContainsFunc(assertions, func(assertion TestAssertion) bool {
+					return assertion.AttributePath == path && slices.ContainsFunc(assertion.Versions, availability.Equal)
+				})
+				assert.True(t, found, "missing normalized availability for %s", path)
+			}
+		})
+	}
+}
+
+func TestLegacyAvailabilityGates(t *testing.T) {
+	t.Parallel()
+	test.InitializeTest(t)
+	class, store := resourceScenarioFixture()
+	availability := testVersionRanges("1.0(1a)-")[0].Exclude(testVersionRanges("6.2(1)-")[0])
+	class.Properties["descr"].SupportedVersions = availability
+	class.Properties["labels"].SupportedVersions = availability
+	class.LegacyAttributes = []MigrationAttribute{
+		{AttributeName: "old_description", ChildAttribute: "description", Type: StringAttribute, Status: LegacyDeprecated, Optional: true, Computed: true},
+		{AttributeName: "old_labels", ChildAttribute: "labels", Type: ListAttribute, TargetModelType: "types.Set", Status: LegacyDeprecated, Optional: true, Computed: true},
+	}
+	assertions := class.DataSourceTestAssertions(store)
+	for _, path := range []string{"old_description", "old_labels.#", "old_labels.0"} {
+		index := slices.IndexFunc(assertions, func(assertion TestAssertion) bool { return assertion.AttributePath == path })
+		if assert.NotEqual(t, -1, index) {
+			assert.True(t, slices.ContainsFunc(assertions[index].Versions, availability.Equal), path)
+		}
+	}
+	scenarios, err := class.ResourceTestScenarios(store)
+	if !assert.NoError(t, err) {
+		return
+	}
+	for _, name := range []string{"Legacy", "LegacyConflict"} {
+		index := slices.IndexFunc(scenarios, func(scenario ResourceTestScenario) bool { return scenario.Name == name })
+		if !assert.NotEqual(t, -1, index) {
+			continue
+		}
+		if name == "LegacyConflict" {
+			assert.True(t, slices.ContainsFunc(scenarios[index].ChangeVersions, func(group []*Versions) bool { return slices.ContainsFunc(group, availability.Equal) }))
+		} else {
+			found := slices.ContainsFunc(scenarios[index].Assertions, func(assertion TestAssertion) bool {
+				return assertion.AttributePath == "old_description" && slices.ContainsFunc(assertion.Versions, availability.Equal)
+			})
+			assert.True(t, found)
+		}
+	}
+	nested, nestedStore := nestedLegacyScenarioFixture(LegacyDeprecated)
+	child := nestedStore.Classes["tagAnnotation"]
+	child.Properties["value"].SupportedVersions = availability
+	nestedStore.Classes[child.Name.String()] = child
+	nestedScenarios, err := nested.ResourceTestScenarios(nestedStore)
+	if !assert.NoError(t, err) {
+		return
+	}
+	conflicts := 0
+	for _, scenario := range nestedScenarios {
+		if strings.HasPrefix(scenario.Name, "NestedLegacyConflict") && strings.HasSuffix(scenario.Description, ".old_value") {
+			conflicts++
+			assert.True(t, slices.ContainsFunc(scenario.ChangeVersions, func(group []*Versions) bool { return slices.ContainsFunc(group, availability.Equal) }))
+		}
+	}
+	assert.Positive(t, conflicts)
 }

@@ -569,7 +569,7 @@ func (r testConfigurationRenderer) resourceReferenceScenario(class *Class, scena
 			continue
 		}
 		if target, ok := r.dataStore.Classes[dependency.Class.String()]; ok {
-			if versions := testConfigurationVersions(class.SupportedVersions, target.SupportedVersions); versions != "" {
+			if versions := testConfigurationVersions(class.SupportedVersions, target.SupportedVersions); versions != nil {
 				entry.ConfigValue = fmt.Sprintf("%s ? %s : null", testVersionExpression(versions), testValueHCL(*entry))
 				entry.ValueType = ExpressionValue
 			}

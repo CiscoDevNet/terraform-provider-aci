@@ -50,7 +50,7 @@ type TestAssertion struct {
 	PairFormat         string
 	NestedValues       []TestAssertionValue
 	Parents            []TestAssertionParent
-	Versions           []string
+	Versions           []*Versions
 }
 
 func (a TestAssertion) IsAttributeSet() bool {
@@ -131,6 +131,14 @@ func (c *Class) DataSourceTestAssertions(ds *DataStore) []TestAssertion {
 			assertions = append(assertions, TestAssertion{assertionType: testAssertionAttributeAbsent, AttributePath: legacy.AttributeName})
 			continue
 		}
+		targetClass := c
+		var versions []*Versions
+		if legacy.ChildName != nil {
+			childClass := ds.Classes[legacy.ChildName.String()]
+			targetClass = &childClass
+			versions = testAssertionVersions(versions, c.SupportedVersions, childClass.SupportedVersions)
+		}
+		versions = testAssertionVersions(versions, targetClass.SupportedVersions, targetClass.testPropertySupportedVersions(legacy.ChildAttribute))
 		if legacy.Status == Frozen {
 			if slices.ContainsFunc(c.NestedLegacyAttributes, func(alias MigrationAttribute) bool { return alias.AttributeName == legacy.AttributeName }) {
 				// Class-owned frozen fields have no APIC value or prior datasource state to restore.
@@ -141,7 +149,7 @@ func (c *Class) DataSourceTestAssertions(ds *DataStore) []TestAssertion {
 				assertions = append(assertions, TestAssertion{assertionType: testAssertionSetCount, AttributePath: legacy.AttributeName, ExpectedCount: 0})
 			}
 		} else if legacy.IsListToSet() && c.HasResourceArtifact() {
-			assertions = append(assertions, TestAssertion{assertionType: testAssertionAttributePair, AttributePath: legacy.AttributeName + ".#", PairAddress: renderer.subjectResourceAddress().String(), PairAttribute: legacy.AttributeName + ".#"})
+			assertions = append(assertions, TestAssertion{assertionType: testAssertionAttributePair, AttributePath: legacy.AttributeName + ".#", PairAddress: renderer.subjectResourceAddress().String(), PairAttribute: legacy.AttributeName + ".#", Versions: versions})
 			for _, property := range c.ModelProperties() {
 				if property.AttributeName != legacy.ChildAttribute || property.TestValues == nil {
 					continue
@@ -153,37 +161,26 @@ func (c *Class) DataSourceTestAssertions(ds *DataStore) []TestAssertion {
 				}
 			}
 		} else if c.HasResourceArtifact() {
-			assertion := TestAssertion{assertionType: testAssertionAttributePair, AttributePath: legacy.AttributeName, PairAddress: renderer.subjectResourceAddress().String(), PairAttribute: legacy.AttributeName}
+			assertion := TestAssertion{assertionType: testAssertionAttributePair, AttributePath: legacy.AttributeName, PairAddress: renderer.subjectResourceAddress().String(), PairAttribute: legacy.AttributeName, Versions: versions}
 			if legacy.Block || legacy.Type == SetAttribute {
 				assertion.assertionType = testAssertionSetPair
-				if legacy.ChildName != nil {
-					childClass := ds.Classes[legacy.ChildName.String()]
-					assertion.Versions = testAssertionVersions(nil, c.SupportedVersions, childClass.SupportedVersions)
-				}
 			} else if legacy.Named && legacy.Type == StringAttribute {
 				child := findResourceTestChild(c.TestChildren, legacy.ChildName)
 				childClass := ds.Classes[legacy.ChildName.String()]
 				if child != nil && len(child.Instances) > 0 && !slices.Contains(childClass.TestConfig.IgnoreTests, ChildIgnoreTest) {
 					// APIC can resolve named-relation tDn between reads; verify the alias exists even while it is empty.
-					assertion = TestAssertion{assertionType: testAssertionAttributeNotNull, AttributePath: legacy.AttributeName, Versions: testAssertionVersions(nil, c.SupportedVersions, childClass.SupportedVersions)}
+					assertion = TestAssertion{assertionType: testAssertionAttributeNotNull, AttributePath: legacy.AttributeName, Versions: versions}
 				}
 			}
 			assertions = append(assertions, assertion)
 		} else if legacy.ChildName == nil {
-			var versions []string
-			for _, property := range c.ModelProperties() {
-				if property.AttributeName == legacy.ChildAttribute {
-					versions = testAssertionVersions(nil, c.SupportedVersions, property.SupportedVersions)
-					break
-				}
-			}
 			assertions = append(assertions, TestAssertion{assertionType: testAssertionAttributePair, AttributePath: legacy.AttributeName, PairAddress: fmt.Sprintf("data.aci_%s.test", c.ResourceName), PairAttribute: legacy.ChildAttribute, Versions: versions})
 		}
 	}
 	return renderer.renderCountedDependencyAssertions(assertions)
 }
 
-func testPropertyAssertions(ownerVersions *Versions, attributePath string, property *Property, values *TestValues, inheritedVersions []string) []TestAssertion {
+func testPropertyAssertions(ownerVersions *Versions, attributePath string, property *Property, values *TestValues, inheritedVersions []*Versions) []TestAssertion {
 	versions := testAssertionVersions(inheritedVersions, ownerVersions, property.SupportedVersions)
 	if property.ReadOnly || values == nil {
 		if property.ValueType == Set {
@@ -216,7 +213,7 @@ func testPropertyAssertions(ownerVersions *Versions, attributePath string, prope
 	return assertions
 }
 
-func testAttributeAssertion(attributePath string, entry TestValueEntry, versions []string) TestAssertion {
+func testAttributeAssertion(attributePath string, entry TestValueEntry, versions []*Versions) TestAssertion {
 	if entry.AssertStrategy == AssertPresenceOnly {
 		return TestAssertion{assertionType: testAssertionAttributeSet, AttributePath: attributePath, ExpectedValue: entry.AssertValue, Versions: versions}
 	}
@@ -234,7 +231,7 @@ func testAttributeAssertion(attributePath string, entry TestValueEntry, versions
 	return TestAssertion{assertionType: testAssertionAttributeValue, AttributePath: attributePath, ExpectedValue: entry.AssertValue, Versions: versions}
 }
 
-func testSetElementAssertion(attributePath string, entry TestValueEntry, versions []string) TestAssertion {
+func testSetElementAssertion(attributePath string, entry TestValueEntry, versions []*Versions) TestAssertion {
 	if entry.AssertStrategy == AssertPresenceOnly {
 		return TestAssertion{assertionType: testAssertionAttributeSet, AttributePath: strings.TrimSuffix(attributePath, ".*") + ".#", Versions: versions}
 	}
@@ -253,7 +250,7 @@ func testSetElementAssertion(attributePath string, entry TestValueEntry, version
 }
 
 type nestedTestAssertionGroup struct {
-	Versions []string
+	Versions []*Versions
 	Values   []TestAssertionValue
 }
 
@@ -264,12 +261,12 @@ type nestedTestAssertion struct {
 	Groups        []nestedTestAssertionGroup
 }
 
-func (a *nestedTestAssertion) addValue(versions []string, value TestAssertionValue) {
+func (a *nestedTestAssertion) addValue(versions []*Versions, value TestAssertionValue) {
 	groupIndex := slices.IndexFunc(a.Groups, func(group nestedTestAssertionGroup) bool {
-		return slices.Equal(group.Versions, versions)
+		return slices.EqualFunc(group.Versions, versions, (*Versions).Equal)
 	})
 	if groupIndex == -1 {
-		a.Groups = append(a.Groups, nestedTestAssertionGroup{Versions: append([]string(nil), versions...)})
+		a.Groups = append(a.Groups, nestedTestAssertionGroup{Versions: append([]*Versions(nil), versions...)})
 		groupIndex = len(a.Groups) - 1
 	}
 	a.Groups[groupIndex].Values = append(a.Groups[groupIndex].Values, value)
@@ -301,7 +298,7 @@ func (a nestedTestAssertion) assertions() []TestAssertion {
 	return assertions
 }
 
-func testChildAssertions(ds *DataStore, parentClass *Class, children []*TestChild, pathPrefix string, inheritedVersions []string, parents []TestAssertionParent, artifact ArtifactEnum) []TestAssertion {
+func testChildAssertions(ds *DataStore, parentClass *Class, children []*TestChild, pathPrefix string, inheritedVersions []*Versions, parents []TestAssertionParent, artifact ArtifactEnum) []TestAssertion {
 	var assertions []TestAssertion
 	for _, child := range children {
 		if child == nil || len(child.Instances) == 0 && artifact != ResourceArtifact {
@@ -351,7 +348,7 @@ func testChildAssertions(ds *DataStore, parentClass *Class, children []*TestChil
 	return assertions
 }
 
-func testSingleChildAssertions(ds *DataStore, childClass *Class, instance TestChildInstance, childPath string, versions []string, parents []TestAssertionParent, artifact ArtifactEnum) []TestAssertion {
+func testSingleChildAssertions(ds *DataStore, childClass *Class, instance TestChildInstance, childPath string, versions []*Versions, parents []TestAssertionParent, artifact ArtifactEnum) []TestAssertion {
 	if len(parents) > 0 {
 		return testSingleChildWithinSetAssertions(ds, childClass, instance, childPath, versions, parents, artifact)
 	}
@@ -378,7 +375,7 @@ func testSingleChildAssertions(ds *DataStore, childClass *Class, instance TestCh
 	return assertions
 }
 
-func testSingleChildWithinSetAssertions(ds *DataStore, childClass *Class, instance TestChildInstance, childPath string, versions []string, parents []TestAssertionParent, artifact ArtifactEnum) []TestAssertion {
+func testSingleChildWithinSetAssertions(ds *DataStore, childClass *Class, instance TestChildInstance, childPath string, versions []*Versions, parents []TestAssertionParent, artifact ArtifactEnum) []TestAssertion {
 	class, instance := childClass.nestedLegacyTestInstance(instance)
 	childClass = &class
 	parent := parents[len(parents)-1]
@@ -390,7 +387,7 @@ func testSingleChildWithinSetAssertions(ds *DataStore, childClass *Class, instan
 	return assertions
 }
 
-func testRepeatedChildInstanceAssertions(ds *DataStore, childClass *Class, instance TestChildInstance, childPath string, versions []string, parents []TestAssertionParent, artifact ArtifactEnum) []TestAssertion {
+func testRepeatedChildInstanceAssertions(ds *DataStore, childClass *Class, instance TestChildInstance, childPath string, versions []*Versions, parents []TestAssertionParent, artifact ArtifactEnum) []TestAssertion {
 	class, instance := childClass.nestedLegacyTestInstance(instance)
 	childClass = &class
 	nested := nestedTestAssertion{AttributePath: childPath, Parents: parents}
@@ -444,7 +441,7 @@ func (c *Class) nestedLegacyTestInstance(instance TestChildInstance) (Class, Tes
 	return class, instance
 }
 
-func (a *nestedTestAssertion) collectProperties(childClass *Class, instance TestChildInstance, childPath, relativePrefix string, versions []string, artifact ArtifactEnum) []TestAssertion {
+func (a *nestedTestAssertion) collectProperties(childClass *Class, instance TestChildInstance, childPath, relativePrefix string, versions []*Versions, artifact ArtifactEnum) []TestAssertion {
 	var assertions []TestAssertion
 	for _, propertyName := range childClass.PropertiesAll {
 		property := childClass.Properties[propertyName]
@@ -502,12 +499,12 @@ func joinTestAttributePath(prefix, attribute string) string {
 	return prefix + "." + attribute
 }
 
-func testAssertionVersions(inherited []string, ownerVersions, valueVersions *Versions) []string {
-	versions := append([]string(nil), inherited...)
-	if valueVersions == nil || valueVersions.Covers(ownerVersions) || slices.Contains(versions, valueVersions.Raw()) {
+func testAssertionVersions(inherited []*Versions, ownerVersions, valueVersions *Versions) []*Versions {
+	versions := append([]*Versions(nil), inherited...)
+	if valueVersions == nil || valueVersions.Covers(ownerVersions) || slices.ContainsFunc(versions, valueVersions.Equal) {
 		return versions
 	}
-	return append(versions, valueVersions.Raw())
+	return append(versions, valueVersions)
 }
 
 func (r testConfigurationRenderer) renderCountedDependencyAssertions(assertions []TestAssertion) []TestAssertion {
@@ -525,7 +522,7 @@ func (r testConfigurationRenderer) renderCountedDependencyAssertions(assertions 
 				return
 			}
 			versions := testConfigurationVersions(r.class.SupportedVersions, dependencyClass.SupportedVersions)
-			if versions != "" && !dependencyVersionsCoveredByAssertion(dependencyClass.SupportedVersions, assertion.Versions) {
+			if versions != nil && !dependencyVersionsCoveredByAssertion(dependencyClass.SupportedVersions, assertion.Versions) {
 				assertion.Versions = append(assertion.Versions, versions)
 			}
 		}
@@ -555,11 +552,10 @@ func (r testConfigurationRenderer) renderCountedDependencyAssertions(assertions 
 	return assertions
 }
 
-func dependencyVersionsCoveredByAssertion(dependencyVersions *Versions, assertionVersions []string) bool {
+func dependencyVersionsCoveredByAssertion(dependencyVersions *Versions, assertionVersions []*Versions) bool {
 	// Assertion gates are combined with AND, so one range covered by the dependency is sufficient.
-	return slices.ContainsFunc(assertionVersions, func(raw string) bool {
-		versions, err := NewVersions(raw)
-		return err == nil && dependencyVersions.Covers(versions)
+	return slices.ContainsFunc(assertionVersions, func(versions *Versions) bool {
+		return dependencyVersions.Covers(versions)
 	})
 }
 

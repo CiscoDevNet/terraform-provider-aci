@@ -8,7 +8,11 @@
 {{- $missing := $class.DataSourceTestMissingHCL .DataStore -}}
 {{- $assertions := $class.DataSourceTestAssertions .DataStore -}}
 {{- $hasStateChecks := false -}}
+{{- $usesVersionRanges := false -}}
 {{- range $assertions }}
+    {{- range .Versions }}
+        {{- if .NeedsBounds }}{{ $usesVersionRanges = true }}{{ end -}}
+    {{- end -}}
     {{- if .IsAttributeNotNull }}
         {{- $hasStateChecks = true }}
     {{- end }}
@@ -34,6 +38,9 @@ import (
 {{- end }}
 
 	"github.com/CiscoDevNet/terraform-provider-aci/v2/internal/acceptancetest"
+{{- if $usesVersionRanges }}
+    "github.com/CiscoDevNet/terraform-provider-aci/v2/internal/apicversion"
+{{- end }}
 )
 
 func TestAccDataSource{{ $class.Name.Capitalized }}Generated(t *testing.T) {
@@ -79,7 +86,11 @@ func TestAccDataSource{{ $class.Name.Capitalized }}Generated(t *testing.T) {
 {{- range $assertion := $assertions }}
     {{- if $assertion.IsAttributeNotNull }}
         {{- range $versions := $assertion.Versions }}
-					stateCheckWithVersion(t, {{ printf "%q" $versions }},
+            {{- if $versions.NeedsBounds }}
+					stateCheckWithVersionRanges(t, {{ $versions.Go }},
+            {{- else }}
+					stateCheckWithVersion(t, {{ printf "%q" $versions.Raw }},
+            {{- end }}
         {{- end }}
 					statecheck.ExpectKnownValue({{ printf "%q" $dataSourceAddress }}, tfjsonpath.New({{ printf "%q" $assertion.AttributePath }}), knownvalue.NotNull()),
         {{- range $assertion.Versions }}
@@ -95,7 +106,11 @@ func TestAccDataSource{{ $class.Name.Capitalized }}Generated(t *testing.T) {
 {{- if not $assertion.IsAttributeNotNull }}
 {{- $scopedSetElement := and $assertion.Parents (or $assertion.IsSetElementValue $assertion.IsSetElementPair) }}
 {{- range $versions := $assertion.Versions }}
-					composeAggregateTestCheckFuncWithVersion(t, {{ printf "%q" $versions }}, "inside",
+{{- if $versions.NeedsBounds }}
+					composeAggregateTestCheckFuncWithVersionRanges(t, {{ $versions.Go }},
+{{- else }}
+					composeAggregateTestCheckFuncWithVersion(t, {{ printf "%q" $versions.Raw }}, "inside",
+{{- end }}
 {{- end }}
 {{- if and $assertion.IsAttributeSet $assertion.Parents }}
 						acceptancetest.CheckPresent({{ printf "%q" $dataSourceAddress }}, {{ printf "%q" $assertion.AttributePath }}

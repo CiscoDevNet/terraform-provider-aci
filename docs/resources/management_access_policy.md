@@ -336,6 +336,7 @@ All examples for the Management Access Policy resource can be found in the [exam
     * `dh_parameter` (dhParam) - (string) Determines the settings for Diffie-Hellman (DH) parameters. This attribute is supported in ACI versions: 1.2(2g) and later.
       - Default: `"none"`
       - Valid Values: `"1024"`, `"2048"`, `"4096"`, `"none"`.
+      ~> This attribute is deprecated by APIC; the metadata does not specify an effective version.
     * `global_throttle_rate` (globalThrottleRate) - (string) The maximum amount of API calls allowed per unit time. This attribute is supported in ACI versions: 4.2(1i) and later.
       - Default: `"10000"`
     * `global_throttle_state` (globalThrottleSt) - (string) The throttle state for all clients without specific identifier in their headers. This attribute is supported in ACI versions: 4.2(1i) and later.

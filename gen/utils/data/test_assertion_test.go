@@ -12,16 +12,22 @@ import (
 func TestDataSourceLegacyNamedRelationAssertions(t *testing.T) {
 	test.InitializeTest(t)
 	type input struct {
-		Named        bool
-		Type         LegacyAttributeTypeEnum
-		Block        bool
-		Unconfigured bool
-		Ignored      bool
-		Versions     string
+		Named            bool
+		Type             LegacyAttributeTypeEnum
+		Block            bool
+		Unconfigured     bool
+		Ignored          bool
+		Versions         string
+		PropertyVersions string
+		HiddenFrom       string
 	}
 	testCases := []test.TestCase{
 		{Name: "test_named_scalar", Input: input{Named: true, Type: StringAttribute}, Expected: testAssertionAttributeNotNull},
 		{Name: "test_named_scalar_version_gate", Input: input{Named: true, Type: StringAttribute, Versions: "1.0(1e)-6.1(1e)"}, Expected: testAssertionAttributeNotNull},
+		{Name: "test_named_scalar_property_cutoff", Input: input{Named: true, Type: StringAttribute, HiddenFrom: "6.2(1)"}, Expected: testAssertionAttributeNotNull},
+		{Name: "test_explicit_target_property_cutoff", Input: input{Type: StringAttribute, HiddenFrom: "6.2(1)"}, Expected: testAssertionAttributePair},
+		{Name: "test_collection_property_cutoff", Input: input{Named: true, Type: SetAttribute, HiddenFrom: "6.2(1)"}, Expected: testAssertionSetPair},
+		{Name: "test_class_and_property_gate", Input: input{Named: true, Type: StringAttribute, Versions: "2.0(1a)-", PropertyVersions: "4.0(1h)-"}, Expected: testAssertionAttributeNotNull},
 		{Name: "test_explicit_target", Input: input{Type: StringAttribute}, Expected: testAssertionAttributePair},
 		{Name: "test_named_collection", Input: input{Named: true, Type: SetAttribute}, Expected: testAssertionSetPair},
 		{Name: "test_collection_version_gate", Input: input{Type: SetAttribute, Versions: "2.0(1a)-"}, Expected: testAssertionSetPair},
@@ -52,6 +58,27 @@ func TestDataSourceLegacyNamedRelationAssertions(t *testing.T) {
 				}
 				child.SupportedVersions = versions
 			}
+			var propertyVersions *Versions
+			if value.PropertyVersions != "" || value.HiddenFrom != "" {
+				raw := value.PropertyVersions
+				if raw == "" {
+					raw = "1.0(1e)-"
+				}
+				var err error
+				propertyVersions, err = NewVersions(raw)
+				if !assert.NoError(t, err) {
+					return
+				}
+				if value.HiddenFrom != "" {
+					hidden, err := NewVersions(value.HiddenFrom + "-")
+					if !assert.NoError(t, err) {
+						return
+					}
+					propertyVersions = propertyVersions.Exclude(hidden)
+				}
+				child.Properties["name"].SupportedVersions = propertyVersions
+				class.LegacyAttributes[0].ChildAttribute = "name"
+			}
 			store.Classes[childName.String()] = child
 			assertions := class.DataSourceTestAssertions(store)
 			index := slices.IndexFunc(assertions, func(a TestAssertion) bool { return a.AttributePath == "legacy_monitor" })
@@ -64,7 +91,10 @@ func TestDataSourceLegacyNamedRelationAssertions(t *testing.T) {
 				assert.Equal(t, "aci_example.test_1", assertions[index].PairAddress)
 			}
 			if value.Versions != "" {
-				assert.Equal(t, []string{value.Versions}, assertions[index].Versions)
+				assert.True(t, slices.ContainsFunc(assertions[index].Versions, testVersionRanges(value.Versions)[0].Equal))
+			}
+			if propertyVersions != nil {
+				assert.True(t, slices.ContainsFunc(assertions[index].Versions, propertyVersions.Equal))
 			}
 			aliasIndex := slices.IndexFunc(assertions, func(a TestAssertion) bool { return a.AttributePath == "legacy_name" })
 			if assert.NotEqual(t, -1, aliasIndex) {
@@ -98,7 +128,7 @@ func TestDataSourceFrozenAttributes(t *testing.T) {
 func TestTestValueAssertionStrategy(t *testing.T) {
 	t.Parallel()
 	test.InitializeTest(t)
-	versions := []string{"3.0(1k)-"}
+	versions := testVersionRanges("3.0(1k)-")
 	testCases := []test.TestCase{
 		{Name: "test_literal_value", Input: TestValueEntry{AssertValue: "0"}, Expected: testAssertionAttributeValue},
 		{Name: "test_literal_presence", Input: TestValueEntry{AssertValue: "0", AssertStrategy: AssertPresenceOnly}, Expected: testAssertionAttributeSet},
@@ -148,7 +178,7 @@ func TestDependencyVersionsCoveredByAssertion(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run(testCase.Name, func(t *testing.T) {
 			t.Parallel()
-			actual := dependencyVersionsCoveredByAssertion(dependencyVersions, testCase.Input.([]string))
+			actual := dependencyVersionsCoveredByAssertion(dependencyVersions, testVersionRanges(testCase.Input.([]string)...))
 			assert.Equal(t, testCase.Expected.(bool), actual, test.MessageEqual(testCase.Expected, actual, testCase.Name))
 		})
 	}
@@ -225,7 +255,7 @@ func TestRepeatedGrandchildAssertionParents(t *testing.T) {
 			if !assert.NotEqual(t, -1, countIndex, "a count is required for each parent's annotations") {
 				return
 			}
-			assert.Equal(t, []string{"2.0(1a)-", "4.0(1a)-", "5.0(1a)-"}, assertions[countIndex].Versions)
+			assert.Equal(t, testVersionRanges("2.0(1a)-", "4.0(1a)-", "5.0(1a)-"), assertions[countIndex].Versions)
 			grandchildIndex := slices.IndexFunc(assertions, func(a TestAssertion) bool {
 				return a.AttributePath == "children.*.annotations.*" && len(a.Parents) == 1 && slices.Contains(a.Parents[0].Values, identity) && slices.Contains(a.NestedValues, TestAssertionValue{AttributePath: "value", ExpectedValue: "value_1"})
 			})
@@ -233,7 +263,7 @@ func TestRepeatedGrandchildAssertionParents(t *testing.T) {
 				return
 			}
 			assert.Equal(t, "children.*", assertions[grandchildIndex].Parents[0].AttributePath)
-			assert.Equal(t, []string{"2.0(1a)-", "4.0(1a)-", "5.0(1a)-"}, assertions[grandchildIndex].Versions)
+			assert.Equal(t, testVersionRanges("2.0(1a)-", "4.0(1a)-", "5.0(1a)-"), assertions[grandchildIndex].Versions)
 			greatGrandchildIndex := slices.IndexFunc(assertions, func(a TestAssertion) bool {
 				return a.AttributePath == "children.*.annotations.*.rules.*" && len(a.Parents) == 2 && slices.Contains(a.Parents[0].Values, identity)
 			})
@@ -316,7 +346,7 @@ func TestDataSourceTestAssertions(t *testing.T) {
 		{assertionType: testAssertionSetElementValue, AttributePath: "members.*", ExpectedValue: "first"},
 		{assertionType: testAssertionSetElementPair, AttributePath: "members.*", PairAddress: "aci_tenant.test.0", PairAttribute: "id"},
 		{assertionType: testAssertionAttributeSet, AttributePath: "computed"},
-		{assertionType: testAssertionAttributeValue, AttributePath: "versioned", ExpectedValue: "value", Versions: []string{"2.0(1a)-"}},
+		{assertionType: testAssertionAttributeValue, AttributePath: "versioned", ExpectedValue: "value", Versions: testVersionRanges("2.0(1a)-")},
 	}
 	store := &DataStore{Classes: map[string]Class{tenant.Name.String(): tenant}}
 	assert.Equal(t, expected, class.DataSourceTestAssertions(store))
@@ -420,15 +450,15 @@ func TestDataSourceTestChildAssertions(t *testing.T) {
 	}}
 
 	expected := []TestAssertion{
-		{assertionType: testAssertionSetCount, AttributePath: "children", ExpectedCount: 2, Versions: []string{"2.0(1a)-"}},
-		{assertionType: testAssertionNestedSetElement, AttributePath: "children.*", NestedValues: []TestAssertionValue{{AttributePath: "key", ExpectedValue: "key_1"}, {AttributePath: "labels.#", ExpectedValue: "1"}}, Versions: []string{"2.0(1a)-"}},
-		{assertionType: testAssertionNestedSetElement, AttributePath: "children.*", NestedValues: []TestAssertionValue{{AttributePath: "key", ExpectedValue: "key_1"}, {AttributePath: "target", PairAddress: "aci_tenant.test_1.0", PairAttribute: "id"}}, Versions: []string{"2.0(1a)-", "3.0(1a)-"}},
-		{assertionType: testAssertionSetElementValue, AttributePath: "children.*.labels.*", ExpectedValue: "label_1", Parents: []TestAssertionParent{{AttributePath: "children.*", Values: []TestAssertionValue{{AttributePath: "key", ExpectedValue: "key_1"}}}}, Versions: []string{"2.0(1a)-"}},
-		{assertionType: testAssertionNestedSetElement, AttributePath: "children.*", NestedValues: []TestAssertionValue{{AttributePath: "key", ExpectedValue: "key_1"}, {AttributePath: "details.value", ExpectedValue: "detail_1"}}, Versions: []string{"2.0(1a)-"}},
-		{assertionType: testAssertionNestedSetElement, AttributePath: "children.*", NestedValues: []TestAssertionValue{{AttributePath: "key", ExpectedValue: "key_2"}, {AttributePath: "labels.#", ExpectedValue: "1"}}, Versions: []string{"2.0(1a)-"}},
-		{assertionType: testAssertionNestedSetElement, AttributePath: "children.*", NestedValues: []TestAssertionValue{{AttributePath: "key", ExpectedValue: "key_2"}, {AttributePath: "target", PairAddress: "aci_tenant.test_2.0", PairAttribute: "id"}}, Versions: []string{"2.0(1a)-", "3.0(1a)-"}},
-		{assertionType: testAssertionSetElementValue, AttributePath: "children.*.labels.*", ExpectedValue: "label_2", Parents: []TestAssertionParent{{AttributePath: "children.*", Values: []TestAssertionValue{{AttributePath: "key", ExpectedValue: "key_2"}}}}, Versions: []string{"2.0(1a)-"}},
-		{assertionType: testAssertionNestedSetElement, AttributePath: "children.*", NestedValues: []TestAssertionValue{{AttributePath: "key", ExpectedValue: "key_2"}, {AttributePath: "details.value", ExpectedValue: "detail_2"}}, Versions: []string{"2.0(1a)-"}},
+		{assertionType: testAssertionSetCount, AttributePath: "children", ExpectedCount: 2, Versions: testVersionRanges("2.0(1a)-")},
+		{assertionType: testAssertionNestedSetElement, AttributePath: "children.*", NestedValues: []TestAssertionValue{{AttributePath: "key", ExpectedValue: "key_1"}, {AttributePath: "labels.#", ExpectedValue: "1"}}, Versions: testVersionRanges("2.0(1a)-")},
+		{assertionType: testAssertionNestedSetElement, AttributePath: "children.*", NestedValues: []TestAssertionValue{{AttributePath: "key", ExpectedValue: "key_1"}, {AttributePath: "target", PairAddress: "aci_tenant.test_1.0", PairAttribute: "id"}}, Versions: testVersionRanges("2.0(1a)-", "3.0(1a)-")},
+		{assertionType: testAssertionSetElementValue, AttributePath: "children.*.labels.*", ExpectedValue: "label_1", Parents: []TestAssertionParent{{AttributePath: "children.*", Values: []TestAssertionValue{{AttributePath: "key", ExpectedValue: "key_1"}}}}, Versions: testVersionRanges("2.0(1a)-")},
+		{assertionType: testAssertionNestedSetElement, AttributePath: "children.*", NestedValues: []TestAssertionValue{{AttributePath: "key", ExpectedValue: "key_1"}, {AttributePath: "details.value", ExpectedValue: "detail_1"}}, Versions: testVersionRanges("2.0(1a)-")},
+		{assertionType: testAssertionNestedSetElement, AttributePath: "children.*", NestedValues: []TestAssertionValue{{AttributePath: "key", ExpectedValue: "key_2"}, {AttributePath: "labels.#", ExpectedValue: "1"}}, Versions: testVersionRanges("2.0(1a)-")},
+		{assertionType: testAssertionNestedSetElement, AttributePath: "children.*", NestedValues: []TestAssertionValue{{AttributePath: "key", ExpectedValue: "key_2"}, {AttributePath: "target", PairAddress: "aci_tenant.test_2.0", PairAttribute: "id"}}, Versions: testVersionRanges("2.0(1a)-", "3.0(1a)-")},
+		{assertionType: testAssertionSetElementValue, AttributePath: "children.*.labels.*", ExpectedValue: "label_2", Parents: []TestAssertionParent{{AttributePath: "children.*", Values: []TestAssertionValue{{AttributePath: "key", ExpectedValue: "key_2"}}}}, Versions: testVersionRanges("2.0(1a)-")},
+		{assertionType: testAssertionNestedSetElement, AttributePath: "children.*", NestedValues: []TestAssertionValue{{AttributePath: "key", ExpectedValue: "key_2"}, {AttributePath: "details.value", ExpectedValue: "detail_2"}}, Versions: testVersionRanges("2.0(1a)-")},
 	}
 	assert.Equal(t, expected, parent.DataSourceTestAssertions(store))
 }
@@ -491,10 +521,10 @@ func TestReferenceChildIdentityAssertions(t *testing.T) {
 			}
 			identity := TestAssertionValue{AttributePath: "target", PairAddress: "aci_tenant.test_1.0", PairAttribute: "id"}
 			expected := []TestAssertion{
-				{assertionType: testAssertionSetCount, AttributePath: "children", ExpectedCount: 1, Versions: []string{"2.0(1a)-"}},
-				{assertionType: testAssertionNestedSetElement, AttributePath: "children.*", NestedValues: []TestAssertionValue{identity}, Versions: testCase.Expected.([]string)},
-				{assertionType: testAssertionNestedSetElement, AttributePath: "children.*", NestedValues: []TestAssertionValue{identity, {AttributePath: "priority", ExpectedValue: "level1"}}, Versions: []string{"2.0(1a)-", "4.0(1a)-"}},
-				{assertionType: testAssertionNestedSetElement, AttributePath: "children.*", NestedValues: []TestAssertionValue{identity, {AttributePath: "details.value", ExpectedValue: "detail_1"}}, Versions: testCase.Expected.([]string)},
+				{assertionType: testAssertionSetCount, AttributePath: "children", ExpectedCount: 1, Versions: testVersionRanges("2.0(1a)-")},
+				{assertionType: testAssertionNestedSetElement, AttributePath: "children.*", NestedValues: []TestAssertionValue{identity}, Versions: testVersionRanges(testCase.Expected.([]string)...)},
+				{assertionType: testAssertionNestedSetElement, AttributePath: "children.*", NestedValues: []TestAssertionValue{identity, {AttributePath: "priority", ExpectedValue: "level1"}}, Versions: testVersionRanges("2.0(1a)-", "4.0(1a)-")},
+				{assertionType: testAssertionNestedSetElement, AttributePath: "children.*", NestedValues: []TestAssertionValue{identity, {AttributePath: "details.value", ExpectedValue: "detail_1"}}, Versions: testVersionRanges(testCase.Expected.([]string)...)},
 			}
 			assert.Equal(t, expected, parent.DataSourceTestAssertions(store))
 		})
@@ -573,13 +603,13 @@ func TestPrimitiveSetAssertionParents(t *testing.T) {
 				return
 			}
 			assert.Contains(t, assertions[countIndex].NestedValues, identity)
-			assert.Equal(t, []string{"4.0(1a)-"}, assertions[countIndex].Versions)
+			assert.Equal(t, testVersionRanges("4.0(1a)-"), assertions[countIndex].Versions)
 			var memberAssertions []TestAssertion
 			for _, a := range assertions {
 				if a.AttributePath == path {
 					memberAssertions = append(memberAssertions, a)
 					assert.Equal(t, []TestAssertionParent{{AttributePath: "children.*", Values: []TestAssertionValue{identity}}}, a.Parents)
-					assert.Equal(t, []string{"4.0(1a)-"}, a.Versions)
+					assert.Equal(t, testVersionRanges("4.0(1a)-"), a.Versions)
 				}
 			}
 			if !assert.Len(t, memberAssertions, len(input.Entries)) {
@@ -800,7 +830,7 @@ func TestNestedLegacyAssertionRestrictions(t *testing.T) {
 				if testCase.Name == "presence_only" {
 					return a.AttributePath == "annotations.*.old_value" && a.IsAttributeSet() && len(a.Parents) == 1 && a.Parents[0].Values[0].AttributePath == "key"
 				}
-				return a.AttributePath == "annotations.*" && slices.Contains(a.Versions, "6.0(1a)-") && slices.Contains(a.NestedValues, TestAssertionValue{AttributePath: "old_value.#", ExpectedValue: "1"})
+				return a.AttributePath == "annotations.*" && slices.ContainsFunc(a.Versions, testVersionRanges("6.0(1a)-")[0].Equal) && slices.Contains(a.NestedValues, TestAssertionValue{AttributePath: "old_value.#", ExpectedValue: "1"})
 			})
 			if testCase.Expected == true {
 				assert.True(t, found)

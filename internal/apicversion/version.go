@@ -66,6 +66,41 @@ func CompareVersionsRange(version, versionRanges, operator string) (bool, error)
 type VersionRange struct {
 	Min string
 	Max string
+	// Metadata ranges are inclusive. Normalized availability may exclude a lifecycle boundary.
+	MinExclusive bool
+	MaxExclusive bool
+}
+
+func IsVersionInRanges(version string, ranges []VersionRange) (bool, error) {
+	// A comma-separated range is a union; an empty normalized result supports no release.
+	for _, interval := range ranges {
+		inside := true
+		for _, bound := range []struct {
+			version   string
+			operator  string
+			exclusive bool
+		}{
+			{interval.Min, ">=", interval.MinExclusive},
+			{interval.Max, "<=", interval.MaxExclusive},
+		} {
+			if bound.version == "" || bound.version == "unlimited" {
+				continue
+			}
+			operator := bound.operator
+			if bound.exclusive {
+				operator = strings.TrimSuffix(operator, "=")
+			}
+			matches, err := CompareVersions(version, bound.version, operator)
+			if err != nil {
+				return false, err
+			}
+			inside = inside && matches
+		}
+		if inside {
+			return true, nil
+		}
+	}
+	return false, nil
 }
 
 // GetVersionRangesListFromVersionRangesString parses APIC's comma-separated
