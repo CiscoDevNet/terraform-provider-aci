@@ -36,8 +36,6 @@ properties:
     documentation:
       description: The scope ID (L3-VNI) of the %s object.
     restriction: read_only
-  shutdown:
-    attribute_name: admin_state
   targetDscp:
     documentation:
       description: The target DSCP value of the %s object.

@@ -63,6 +63,20 @@ entries are currently unmanaged and can either remain static or be migrated
 to an active template later, except for `annotation_unsupported.go`, which is
 the refresh-owned generated output described below.
 
+## Input validation
+
+Per-class property overrides must name a property in the checked-in metadata or
+the synthetic `parentDn` property. Excluded metadata properties remain valid
+override keys. Final Terraform field names must be unique within each object,
+including properties, children, exposed compatibility fields, and top-level
+`id` and `parent_dn`. State-upgrade-specific checks are described in
+[state_upgrades.md](state_upgrades.md#8-validation).
+
+Definition validation errors accumulate into one diagnostic report before
+template generation and managed-file cleanup. File loading and parsing failures
+still stop generation immediately. Template rendering failures are collected
+across render jobs and reported together.
+
 ## Cleanup contract
 
 The active generator must use a manifest containing the files owned and

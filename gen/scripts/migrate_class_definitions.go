@@ -3079,6 +3079,12 @@ func omitDerivedTestConfiguration(className string, out *data.ClassDefinition) {
 		identifiers = out.IdentifiedBy
 	}
 	for name, property := range out.Properties {
+		// Legacy inputs can mention properties absent from the checked-in metadata; those overrides never reach generated models.
+		if _, hasMetadata := metaReg.ClassMetaProperties[className]; hasMetadata && name != "parentDn" && !metaReg.classHasMetaProperty(className, name) {
+			fmt.Printf("  Dropped unused property override %s.%s: absent from metadata\n", className, name)
+			delete(out.Properties, name)
+			continue
+		}
 		config := &property.TestConfig
 		required := property.Restriction == data.Required || name == "parentDn" || contains(metaReg.ClassRequiredProperties[className], name)
 		if required && len(config.Create.Entries) > 0 && config.Default.Defined && reflect.DeepEqual(config.Create.Entries, config.Default.Entries) {

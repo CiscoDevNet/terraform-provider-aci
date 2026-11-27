@@ -3677,6 +3677,114 @@ func TestSetProperties(t *testing.T) {
 	}
 }
 
+func TestValidatePropertyDefinitions(t *testing.T) {
+	testCases := []test.TestCase{
+		{Name: "metadata_property", Input: map[string]PropertyDefinition{"name": {}}},
+		{Name: "excluded_metadata_property", Input: map[string]PropertyDefinition{"descr": {Restriction: Exclude}}},
+		{Name: "unexposed_metadata_property", Input: map[string]PropertyDefinition{"dn": {}}},
+		{Name: "synthetic_parent", Input: map[string]PropertyDefinition{"parentDn": {}}},
+		{Name: "misspelled_property", Input: map[string]PropertyDefinition{"nmae": {}}, Expected: []string{"nmae"}},
+		{Name: "terraform_name_instead_of_metadata_key", Input: map[string]PropertyDefinition{"description": {}}, Expected: []string{"description"}},
+		{Name: "collect_all_unknown_keys", Input: map[string]PropertyDefinition{"nmae": {}, "decsr": {}}, Expected: []string{"decsr", "nmae"}},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			ctx := NewContext()
+			class := Class{
+				Name:            testClassName("fvTenant"),
+				MetaFileContent: map[string]any{"properties": map[string]any{"name": map[string]any{}, "descr": map[string]any{}, "dn": map[string]any{}}},
+				ClassDefinition: ClassDefinition{Properties: testCase.Input.(map[string]PropertyDefinition)},
+			}
+			class.validatePropertyDefinitions(ctx)
+			if unknown, invalid := testCase.Expected.([]string); invalid {
+				if assert.Error(t, ctx.Diagnostics.Error()) {
+					assert.Len(t, ctx.Diagnostics.errors, len(unknown))
+					for _, name := range unknown {
+						assert.ErrorContains(t, ctx.Diagnostics.Error(), "unknown property override \""+name+"\"")
+					}
+				}
+			} else {
+				assert.NoError(t, ctx.Diagnostics.Error())
+			}
+		})
+	}
+}
+
+func TestValidateAttributeNames(t *testing.T) {
+	testCases := []test.TestCase{
+		{Name: "separate_object_namespaces"},
+		{Name: "two_properties", Input: func(c *Class, _ *DataStore) { c.Properties["descr"].AttributeName = "name" }, Expected: "duplicate Terraform attribute name \"name\""},
+		{Name: "property_and_child", Input: func(c *Class, _ *DataStore) { c.Properties["descr"].AttributeName = "annotations" }, Expected: "duplicate Terraform attribute name \"annotations\""},
+		{Name: "two_children", Input: func(c *Class, ds *DataStore) {
+			c.Children = append(c.Children, testClassName("tagTag"))
+			ds.Classes["tagTag"] = Class{ResourceNameNested: "annotations"}
+		}, Expected: "duplicate Terraform attribute name \"annotations\""},
+		{Name: "generated_id", Input: func(c *Class, _ *DataStore) { c.Properties["name"].AttributeName = "id" }, Expected: "duplicate Terraform attribute name \"id\""},
+		{Name: "generated_parent_dn", Input: func(c *Class, _ *DataStore) { c.Properties["name"].AttributeName = "parent_dn" }, Expected: "duplicate Terraform attribute name \"parent_dn\""},
+		{Name: "child_only_id_property", Input: func(c *Class, _ *DataStore) {
+			c.Artifacts = nil
+			c.Properties["name"].AttributeName = "id"
+		}},
+		{Name: "root_alias", Input: func(c *Class, _ *DataStore) {
+			c.LegacyAttributes = []MigrationAttribute{{AttributeName: "name", Status: LegacyDeprecated}}
+		}, Expected: "duplicate Terraform attribute name \"name\""},
+		{Name: "nested_alias", Input: func(c *Class, _ *DataStore) {
+			c.NestedLegacyAttributes = []MigrationAttribute{{AttributeName: "annotations", Status: LegacyDeprecated}}
+		}, Expected: "duplicate Terraform attribute name \"annotations\""},
+		{Name: "frozen_alias", Input: func(c *Class, _ *DataStore) {
+			c.LegacyAttributes = []MigrationAttribute{{AttributeName: "name", Status: Frozen}}
+		}, Expected: "duplicate Terraform attribute name \"name\""},
+		{Name: "removed_alias", Input: func(c *Class, _ *DataStore) {
+			c.LegacyAttributes = []MigrationAttribute{{AttributeName: "name", Status: Removed}}
+		}},
+		{Name: "shared_root_and_nested_alias", Input: func(c *Class, _ *DataStore) {
+			c.LegacyAttributes = []MigrationAttribute{{AttributeName: "old_name", ChildAttribute: "name", Status: LegacyDeprecated}}
+			c.NestedLegacyAttributes = append([]MigrationAttribute(nil), c.LegacyAttributes...)
+		}},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			class := classWithProperties("fvTenant", map[string]*Property{
+				"name": {PropertyName: "name", AttributeName: "name"}, "descr": {PropertyName: "descr", AttributeName: "description"}, "parentDn": {AttributeName: "parent_dn"},
+			}, []string{"tagAnnotation"})
+			class.PropertiesAll, class.Artifacts = []string{"name", "descr", "parentDn"}, []ArtifactEnum{ResourceArtifact, DatasourceArtifact}
+			store := &DataStore{ctx: NewContext(), Classes: map[string]Class{
+				"tagAnnotation": {ResourceNameNested: "annotations", Properties: map[string]*Property{"name": {AttributeName: "name"}}},
+			}}
+			if configure, exists := testCase.Input.(func(*Class, *DataStore)); exists {
+				configure(class, store)
+			}
+			class.validateAttributeNames(store)
+			if message, invalid := testCase.Expected.(string); invalid {
+				assert.ErrorContains(t, store.ctx.Diagnostics.Error(), message)
+			} else {
+				assert.NoError(t, store.ctx.Diagnostics.Error())
+			}
+		})
+	}
+}
+
+func TestDefinitionValidationAccumulatesDiagnostics(t *testing.T) {
+	store := &DataStore{ctx: NewContext()}
+	first := classWithProperties("fvTenant", map[string]*Property{
+		"name": {PropertyName: "name", AttributeName: "name"}, "descr": {PropertyName: "descr", AttributeName: "name"},
+	}, nil)
+	first.PropertiesAll = []string{"name", "descr"}
+	first.ClassDefinition.Properties = map[string]PropertyDefinition{"nmae": {}}
+	first.MetaFileContent = map[string]any{"properties": map[string]any{"name": map[string]any{}, "descr": map[string]any{}}}
+	second := Class{Name: testClassName("fvAp"), LegacyAttributes: []MigrationAttribute{
+		{AttributeName: "old_name", ChildAttribute: "name", Status: LegacyDeprecated, Optional: true},
+		{AttributeName: "older_name", ChildAttribute: "name", Status: LegacyDeprecated, Optional: true},
+	}}
+	first.validatePropertyDefinitions(store.ctx)
+	first.validateAttributeNames(store)
+	second.validateLegacyAliases(store.ctx)
+	assert.Len(t, store.ctx.Diagnostics.errors, 3)
+	assert.ErrorContains(t, store.ctx.Diagnostics.Error(), "unknown property override")
+	assert.ErrorContains(t, store.ctx.Diagnostics.Error(), "duplicate Terraform attribute name")
+	assert.ErrorContains(t, store.ctx.Diagnostics.Error(), "multiple active deprecated names")
+}
+
 type setTestDependenciesInput struct {
 	Classes     map[string]Class
 	TargetClass string
@@ -6860,6 +6968,44 @@ func TestValidateStateUpgradeEntry_LegacyAttributeCollisions(t *testing.T) {
 			}
 			if assert.Error(t, err) {
 				assert.Contains(t, err.Error(), expected)
+			}
+		})
+	}
+}
+
+func TestValidateStateUpgradeEntryNestedNames(t *testing.T) {
+	attributes := map[string]AttributeUpgradeDefinition{
+		"name": {AttributeName: "old_value"}, "descr": {AttributeName: "old_value"},
+	}
+	member := AttributeUpgradeDefinition{Attributes: map[string]AttributeUpgradeDefinition{"name": {AttributeName: "old_value"}}}
+	testCases := []test.TestCase{
+		{Name: "grandchild_duplicate", Input: StateUpgradeDefinition{Source: FromFramework, Children: map[string]AttributeUpgradeDefinition{
+			"fvAp": {Children: map[string]AttributeUpgradeDefinition{"fvAEPg": {Attributes: attributes}}},
+		}}, Expected: "children[\"fvAp\"]: children[\"fvAEPg\"]: duplicate attribute_name"},
+		{Name: "separate_children", Input: StateUpgradeDefinition{Source: FromFramework, Children: map[string]AttributeUpgradeDefinition{"fvAp": member, "fvBD": member}}},
+		{Name: "root_and_nested_names", Input: StateUpgradeDefinition{Source: FromFramework, Attributes: member.Attributes, Children: map[string]AttributeUpgradeDefinition{"fvAp": member}}},
+		{Name: "root_attribute_and_block", Input: StateUpgradeDefinition{Source: FromFramework, Attributes: member.Attributes, Children: map[string]AttributeUpgradeDefinition{
+			"fvAp": {AttributeName: "old_value", Attributes: member.Attributes},
+		}}, Expected: "duplicate attribute_name \"old_value\""},
+		{Name: "two_blocks", Input: StateUpgradeDefinition{Source: FromSDKv2, Children: map[string]AttributeUpgradeDefinition{
+			"fvAp": {AttributeName: "old_block", Attributes: member.Attributes}, "fvBD": {AttributeName: "old_block", Attributes: member.Attributes},
+		}}, Expected: "duplicate attribute_name \"old_block\""},
+		{Name: "separate_blocks", Input: StateUpgradeDefinition{Source: FromSDKv2, Children: map[string]AttributeUpgradeDefinition{
+			"fvAp": {AttributeName: "first_block", Attributes: member.Attributes}, "fvBD": {AttributeName: "second_block", Attributes: member.Attributes},
+		}}},
+		{Name: "two_flat_relations", Input: StateUpgradeDefinition{Source: FromSDKv2, Children: map[string]AttributeUpgradeDefinition{"fvRsBD": member, "fvRsCtx": member}}, Expected: "duplicate attribute_name \"old_value\""},
+		{Name: "root_attribute_and_flat_relation", Input: StateUpgradeDefinition{Source: FromSDKv2, Attributes: member.Attributes, Children: map[string]AttributeUpgradeDefinition{"fvRsBD": member}}, Expected: "duplicate attribute_name \"old_value\""},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			version := 3
+			class := Class{Name: testClassName("fvTenant"), ClassDefinition: ClassDefinition{SchemaVersion: &version}}
+			ctx := NewContext()
+			class.validateStateUpgradeEntry(ctx, testCase.Input.(StateUpgradeDefinition), "Class 'fvTenant': schema version 1")
+			if message, invalid := testCase.Expected.(string); invalid {
+				assert.ErrorContains(t, ctx.Diagnostics.Error(), message)
+			} else {
+				assert.NoError(t, ctx.Diagnostics.Error())
 			}
 		})
 	}

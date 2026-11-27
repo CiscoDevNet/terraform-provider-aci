@@ -70,10 +70,6 @@ properties:
     attribute_name: redirect_state
     documentation:
       description: The state of HTTP communication service.
-  referer:
-    test_config:
-      create:
-      - config_value: referer_1
   serverHeader:
     documentation:
       description: Determines if the server header is included in responses.

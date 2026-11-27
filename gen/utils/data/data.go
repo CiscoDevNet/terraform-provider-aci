@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"maps"
 	"net/http"
 	"os"
 	"slices"
@@ -282,6 +283,12 @@ func (ds *DataStore) loadClasses() error {
 		ds.Classes[name] = class
 	}
 	ds.setNestedLegacyAttributes()
+	for _, name := range slices.Sorted(maps.Keys(ds.Classes)) {
+		class := ds.Classes[name]
+		class.validatePropertyDefinitions(ds.ctx)
+		class.validateAttributeNames(ds)
+		class.validateLegacyAliases(ds.ctx)
+	}
 
 	// Build complete documentation only after every referenced class has its
 	// documentation identity.

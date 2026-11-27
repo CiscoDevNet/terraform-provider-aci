@@ -131,6 +131,15 @@ nodes require `attribute_name`, `type`, and `restriction`; collection element
 types must also describe a supported historical value. Block membership and
 scalar-to-child mappings must contain enough information for decoding.
 
+Current configuration permits one configurable deprecated name per current
+property, counting root and nested histories together. Consistent declarations
+of the same alias are deduplicated; frozen, removed, and read-only fields do not
+count as alternative inputs. Remove the superseded alias before introducing
+another deprecated name for the same property. Historical decoders can still
+understand every recorded prior name. Historical names must be unique within
+each saved schema object, including flat SDKv2 relationships; separate objects
+and saved versions may reuse names.
+
 Do not add unchanged root attributes merely to build a complete-schema
 inventory. Prior schemas start from the normalized current view and apply the
 historical differences. Missing optional JSON fields decode to null.

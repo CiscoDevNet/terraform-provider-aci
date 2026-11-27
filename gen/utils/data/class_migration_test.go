@@ -844,3 +844,82 @@ func TestLegacyLookupAttributes(t *testing.T) {
 		})
 	}
 }
+
+func TestValidateLegacyAliases(t *testing.T) {
+	alias := func(name, target string, status LegacyStatusEnum) MigrationAttribute {
+		return MigrationAttribute{AttributeName: name, ChildAttribute: target, Type: StringAttribute, Status: status, Optional: true, Computed: true}
+	}
+	type input struct {
+		Root   []MigrationAttribute
+		Nested []MigrationAttribute
+	}
+	readOnly := alias("older_name", "name", LegacyDeprecated)
+	readOnly.Optional = false
+	testCases := []test.TestCase{
+		{Name: "one_previous_name", Input: input{Root: []MigrationAttribute{alias("old_name", "name", LegacyDeprecated)}}},
+		{Name: "same_name_in_root_and_nested_history", Input: input{Root: []MigrationAttribute{alias("old_name", "name", LegacyDeprecated)}, Nested: []MigrationAttribute{alias("old_name", "name", LegacyDeprecated)}}},
+		{Name: "removed_history", Input: input{Root: []MigrationAttribute{alias("older_name", "name", Removed), alias("old_name", "name", LegacyDeprecated)}}},
+		{Name: "frozen_field", Input: input{Root: []MigrationAttribute{alias("older_name", "name", Frozen), alias("old_name", "name", LegacyDeprecated)}}},
+		{Name: "read_only_field", Input: input{Nested: []MigrationAttribute{readOnly, alias("old_name", "name", LegacyDeprecated)}}},
+		{Name: "different_properties", Input: input{Root: []MigrationAttribute{alias("old_name", "name", LegacyDeprecated), alias("old_description", "description", LegacyDeprecated)}}},
+		{Name: "two_root_names", Input: input{Root: []MigrationAttribute{alias("old_name", "name", LegacyDeprecated), alias("older_name", "name", LegacyDeprecated)}}, Expected: "multiple active deprecated names"},
+		{Name: "two_nested_names", Input: input{Nested: []MigrationAttribute{alias("old_name", "name", LegacyDeprecated), alias("older_name", "name", LegacyDeprecated)}}, Expected: "multiple active deprecated names"},
+		{Name: "different_root_and_nested_names", Input: input{Root: []MigrationAttribute{alias("old_name", "name", LegacyDeprecated)}, Nested: []MigrationAttribute{alias("older_name", "name", LegacyDeprecated)}}, Expected: "multiple active deprecated names"},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			values := testCase.Input.(input)
+			class := Class{Name: testClassName("fvTenant"), LegacyAttributes: values.Root, NestedLegacyAttributes: values.Nested}
+			ctx := NewContext()
+			class.validateLegacyAliases(ctx)
+			if message, invalid := testCase.Expected.(string); invalid {
+				assert.ErrorContains(t, ctx.Diagnostics.Error(), message)
+				assert.ErrorContains(t, ctx.Diagnostics.Error(), "Class 'fvTenant': property \"name\"")
+			} else {
+				assert.NoError(t, ctx.Diagnostics.Error())
+			}
+		})
+	}
+}
+
+func TestMigrationInheritedHistoricalNames(t *testing.T) {
+	testCases := []test.TestCase{
+		{Name: "root", Input: false},
+		{Name: "nested", Input: true},
+		{Name: "separate_versions", Input: false, Expected: true},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			version := 4
+			class := classWithProperties("fvAEPg", map[string]*Property{
+				"name":  {PropertyName: "name", AttributeName: "display_name", ValueType: String, Required: true},
+				"descr": {PropertyName: "descr", AttributeName: "description", ValueType: String, Optional: true, Computed: true},
+			}, nil)
+			class.PropertiesAll, class.ResourceNameNested, class.ClassDefinition.SchemaVersion = []string{"name", "descr"}, "epgs", &version
+			attributes := map[string]AttributeUpgradeDefinition{
+				"name":  {Type: StringAttribute},
+				"descr": {AttributeName: "display_name", Type: StringAttribute, Restriction: LegacyOptionalComputed, Status: Removed},
+			}
+			class.StateUpgrades = map[int]StateUpgradeDefinition{1: {Source: FromFramework, Attributes: attributes}}
+			store := &DataStore{ctx: NewContext(), Classes: map[string]Class{}}
+			if testCase.Input.(bool) {
+				store.Classes["fvAEPg"] = *class
+				class = classWithProperties("fvTenant", map[string]*Property{}, []string{"fvAEPg"})
+				class.ClassDefinition.SchemaVersion = &version
+				class.StateUpgrades = map[int]StateUpgradeDefinition{1: {Source: FromFramework, Children: map[string]AttributeUpgradeDefinition{"fvAEPg": {Attributes: attributes}}}}
+			}
+			if testCase.Expected == true {
+				class.StateUpgrades = map[int]StateUpgradeDefinition{
+					1: {Source: FromFramework, Attributes: map[string]AttributeUpgradeDefinition{"name": attributes["name"]}},
+					3: {Source: FromFramework, Attributes: map[string]AttributeUpgradeDefinition{"descr": attributes["descr"]}},
+				}
+			}
+			class.setMigrationData(store)
+			if testCase.Expected == true {
+				assert.NoError(t, store.ctx.Diagnostics.Error())
+			} else {
+				assert.ErrorContains(t, store.ctx.Diagnostics.Error(), "schema version 1: duplicate historical attribute name \"display_name\"")
+			}
+		})
+	}
+}
