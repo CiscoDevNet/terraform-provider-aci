@@ -15,7 +15,7 @@ require (
 	github.com/hashicorp/terraform-plugin-mux v0.23.1
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.41.1
 	github.com/hashicorp/terraform-plugin-testing v1.16.0
-	golang.org/x/exp v0.0.0-20250408133849-7e4ce0ab07d0
+	golang.org/x/exp v0.0.0-20261124000051-d6646c509b6d
 	golang.org/x/text v0.44.0
 	golang.org/x/tools v0.53.0
 	gopkg.in/yaml.v2 v2.4.0
