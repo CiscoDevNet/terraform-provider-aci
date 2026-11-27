@@ -2081,6 +2081,7 @@ func TestResourceTestLegacyScenariosRequireConfiguredAliases(t *testing.T) {
 	testCases := []test.TestCase{
 		{Name: "configured_alias", Input: "name", Expected: true},
 		{Name: "unused_alias", Input: "missing_attribute", Expected: false},
+		{Name: "read_only_alias", Input: "name", Expected: false},
 	}
 	for _, testCase := range testCases {
 		t.Run(testCase.Name, func(t *testing.T) {
@@ -2089,6 +2090,9 @@ func TestResourceTestLegacyScenariosRequireConfiguredAliases(t *testing.T) {
 			class.LegacyAttributes = []MigrationAttribute{
 				{AttributeName: "old_name", ChildAttribute: testCase.Input.(string), Type: StringAttribute, Status: LegacyDeprecated},
 				{AttributeName: "frozen", Type: StringAttribute, Status: Frozen},
+			}
+			if testCase.Name == "read_only_alias" {
+				class.LegacyAttributes[0].Computed = true
 			}
 			scenarios, err := class.ResourceTestScenarios(store)
 			if !assert.NoError(t, err) {
@@ -2100,6 +2104,168 @@ func TestResourceTestLegacyScenariosRequireConfiguredAliases(t *testing.T) {
 			}
 			for _, name := range []string{"Frozen", "FrozenUnchanged", "FrozenCleared"} {
 				assert.NotEqual(t, -1, slices.IndexFunc(scenarios, func(s ResourceTestScenario) bool { return s.Name == name }))
+			}
+		})
+	}
+}
+
+func nestedLegacyScenarioFixture(status LegacyStatusEnum) (Class, *DataStore) {
+	class, store := resourceScenarioFixture()
+	class.HasNestedLegacyChanges = true
+	for name, child := range store.Classes {
+		if name != "tagAnnotation" && name != "exampleMonitor" {
+			continue
+		}
+		attributes := []string{"key", "value"}
+		if name == "exampleMonitor" {
+			attributes = []string{"name"}
+		}
+		for _, attribute := range attributes {
+			target := attribute
+			if status == Frozen {
+				target = ""
+			}
+			child.NestedLegacyAttributes = append(child.NestedLegacyAttributes, MigrationAttribute{AttributeName: "old_" + attribute, ChildAttribute: target, Type: StringAttribute, Status: status, Optional: true, Computed: true})
+		}
+		store.Classes[name] = child
+	}
+	// Reuse the configured classes at greater depth, with distinct values on each parent.
+	for index := range class.TestChildren[0].Instances {
+		monitor := class.TestChildren[1].clone()
+		monitor.Instances[0].Properties["name"] = dataSourceTestScenario(fmt.Sprintf("monitor_%d", index+1), fmt.Sprintf("monitor_%d", index+1), StringValue, true)
+		class.TestChildren[0].Instances[index].Children = []*TestChild{monitor}
+	}
+	class.TestChildren[1].Instances[0].Children = []*TestChild{class.TestChildren[0].clone()}
+	return class, store
+}
+
+func TestResourceTestNestedLegacyScenarios(t *testing.T) {
+	testCases := []test.TestCase{
+		{Name: "deprecated", Input: LegacyDeprecated, Expected: true},
+		{Name: "removed", Input: Removed, Expected: false},
+		{Name: "frozen", Input: Frozen, Expected: false},
+		{Name: "read_only", Input: LegacyDeprecated, Expected: false},
+		{Name: "unconfigured", Input: LegacyDeprecated, Expected: false},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			test.InitializeTest(t)
+			status := testCase.Input.(LegacyStatusEnum)
+			class, store := nestedLegacyScenarioFixture(status)
+			if testCase.Name == "read_only" {
+				for name, child := range store.Classes {
+					for index := range child.NestedLegacyAttributes {
+						child.NestedLegacyAttributes[index].Optional = false
+					}
+					store.Classes[name] = child
+				}
+			}
+			if testCase.Name == "unconfigured" {
+				class.TestChildren = nil
+			}
+			original := class.resourceTestCopy()
+			scenarios, err := class.ResourceTestScenarios(store)
+			if !assert.NoError(t, err) {
+				return
+			}
+			assert.Equal(t, original, class.resourceTestCopy())
+			for _, name := range []string{"NestedLegacy", "NestedLegacyUnchanged", "NestedLegacyReordered", "CurrentAfterNestedLegacy"} {
+				index := slices.IndexFunc(scenarios, func(s ResourceTestScenario) bool { return s.Name == name })
+				if !assert.Equal(t, testCase.Expected, index >= 0, name) || index < 0 {
+					continue
+				}
+				assert.Equal(t, name != "NestedLegacy", scenarios[index].PlanOnly, name)
+			}
+			for _, scenario := range scenarios {
+				file, diagnostics := hclsyntax.ParseConfig([]byte(scenario.Configuration), "nested.tf", hcl.InitialPos)
+				if !assert.False(t, diagnostics.HasErrors(), diagnostics.Error()) {
+					continue
+				}
+				if scenario.Name == "NestedLegacy" || scenario.Name == "NestedLegacyReordered" || strings.HasPrefix(scenario.Name, "NestedLegacyConflict") || scenario.Name == "NestedFrozen" || scenario.Name == "NestedFrozenCleared" {
+					body := file.Body.(*hclsyntax.Body).Blocks[0].Body
+					value, diagnostics := body.Attributes["annotations"].Expr.Value(nil)
+					if !assert.False(t, diagnostics.HasErrors(), diagnostics.Error()) {
+						continue
+					}
+					members := value.AsValueSlice()
+					if scenario.Name == "NestedLegacy" || scenario.Name == "NestedLegacyReordered" {
+						first := "key_1"
+						if scenario.Name == "NestedLegacyReordered" {
+							first = "key_2"
+						}
+						assert.Equal(t, first, members[0].GetAttr("old_key").AsString())
+						assert.False(t, members[0].Type().HasAttribute("key"))
+						assert.Equal(t, strings.Replace(first, "key_", "monitor_", 1), members[0].GetAttr("monitoring").GetAttr("old_name").AsString())
+						assert.True(t, body.Attributes["name"] != nil, "root inputs stay current")
+					} else if strings.HasPrefix(scenario.Name, "NestedLegacyConflict") {
+						assert.NotEmpty(t, scenario.ExpectError)
+						assert.NotContains(t, scenario.Configuration, "old_name = \"name_1\"", "a root conflict must not mask a nested validator")
+					} else {
+						expected := "example"
+						if scenario.Name == "NestedFrozenCleared" {
+							expected = ""
+						}
+						assert.Equal(t, expected, members[0].GetAttr("old_key").AsString())
+						assert.True(t, members[0].Type().HasAttribute("key"))
+					}
+				}
+				if status == Removed {
+					assert.NotContains(t, scenario.Configuration, "old_key")
+					assert.NotContains(t, scenario.Configuration, "old_name")
+				}
+			}
+			if testCase.Expected == true {
+				assert.True(t, slices.ContainsFunc(scenarios, func(s ResourceTestScenario) bool {
+					return s.Description == "Reject Simultaneous Inputs for annotations.monitoring.old_name"
+				}))
+				assert.True(t, slices.ContainsFunc(scenarios, func(s ResourceTestScenario) bool {
+					return s.Description == "Reject Simultaneous Inputs for monitoring.annotations.old_value"
+				}))
+			}
+		})
+	}
+}
+
+func TestResourceTestNestedLegacyCollections(t *testing.T) {
+	testCases := []test.TestCase{
+		{Name: "list_alias", Input: LegacyDeprecated, Expected: "NestedLegacy"},
+		{Name: "empty_list_alias", Input: LegacyDeprecated, Expected: "NestedLegacy"},
+		{Name: "frozen_set", Input: Frozen, Expected: "NestedFrozenCleared"},
+		{Name: "empty_singleton", Input: Frozen, Expected: ""},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			test.InitializeTest(t)
+			class, store := resourceScenarioFixture()
+			class.HasNestedLegacyChanges = true
+			monitor := store.Classes["exampleMonitor"]
+			monitor.NestedLegacyAttributes = []MigrationAttribute{{AttributeName: "old_names", ChildAttribute: "name", Type: ListAttribute, Status: testCase.Input.(LegacyStatusEnum), Optional: true, Computed: true}}
+			monitor.Properties["name"].ValueType = Set
+			if testCase.Input == Frozen {
+				monitor.NestedLegacyAttributes[0].ChildAttribute = ""
+				monitor.NestedLegacyAttributes[0].Type = SetAttribute
+			}
+			store.Classes[monitor.Name.String()] = monitor
+			if testCase.Name == "empty_list_alias" {
+				class.TestChildren[1].Instances[0].Properties["name"] = newTestValueScenario(nil)
+			}
+			if testCase.Name == "empty_singleton" {
+				class.TestChildren[1].Instances[0].Properties = map[string]TestValueScenario{}
+			}
+			scenarios, err := class.ResourceTestScenarios(store)
+			if !assert.NoError(t, err) {
+				return
+			}
+			index := slices.IndexFunc(scenarios, func(s ResourceTestScenario) bool { return s.Name == testCase.Expected.(string) })
+			if testCase.Expected == "" {
+				assert.Equal(t, -1, slices.IndexFunc(scenarios, func(s ResourceTestScenario) bool { return strings.HasPrefix(s.Name, "NestedFrozen") }))
+			} else if assert.NotEqual(t, -1, index) {
+				configuration := strings.Join(strings.Fields(scenarios[index].Configuration), " ")
+				if testCase.Name == "list_alias" {
+					assert.Contains(t, configuration, `old_names = ["monitor_1"]`)
+				} else {
+					assert.Contains(t, configuration, `old_names = []`)
+				}
 			}
 		})
 	}

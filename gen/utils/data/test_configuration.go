@@ -106,6 +106,9 @@ func (c *Class) ResourceTestScenarios(ds *DataStore) ([]ResourceTestScenario, er
 	if err := builder.legacy(&current); err != nil {
 		return nil, err
 	}
+	if err := builder.nestedLegacy(&current); err != nil {
+		return nil, err
+	}
 	updated := current.resourceTestCopy()
 	for _, name := range c.PropertiesAll {
 		property := updated.Properties[name]
@@ -784,6 +787,27 @@ func (r testConfigurationRenderer) writeTestChildInstance(contents *strings.Buil
 			scenario = r.resourceReferenceScenario(class, scenario)
 		}
 		writeTestAttribute(contents, property.AttributeName, property.ValueType, scenario, testConfigurationVersions(class.SupportedVersions, property.SupportedVersions))
+	}
+	// Compatibility scenarios carry aliases in the same instance as their current properties.
+	for _, alias := range class.NestedLegacyAttributes {
+		if alias.Status == Removed || alias.Computed && !alias.Optional && !alias.Required {
+			continue
+		}
+		scenario, exists := instance.Properties[alias.AttributeName]
+		if !exists {
+			continue
+		}
+		valueType := String
+		if alias.Type != StringAttribute {
+			valueType = Set
+		}
+		versions := ""
+		for _, property := range class.ModelProperties() {
+			if property.AttributeName == alias.ChildAttribute {
+				versions = testConfigurationVersions(class.SupportedVersions, property.SupportedVersions)
+			}
+		}
+		writeTestAttribute(contents, alias.AttributeName, valueType, r.resourceReferenceScenario(class, scenario), versions)
 	}
 	return r.writeTestChildren(contents, class, instance.Children)
 }
@@ -1980,8 +2004,140 @@ func migrationNullState(c *Class, ds *DataStore) map[string]any {
 	return state
 }
 
+func (c *Class) testLegacyAttributes() []MigrationAttribute {
+	// A class can expose the same alias at its root and through a containing resource.
+	return append(c.RootLegacyAttributes(), c.NestedLegacyAttributes...)
+}
+
+func (b *resourceTestBuilder) nestedLegacy(current *Class) error {
+	// Work on configured instances so aliases keep their owning object, values and dependencies.
+	var conflictScopes []string
+	conflictScope := ""
+	var configure func([]*TestChild, string, string) bool
+	configure = func(children []*TestChild, prefix, mode string) bool {
+		changed := false
+		for _, child := range children {
+			class := b.dataStore.Classes[child.Class.String()]
+			if slices.Contains(class.TestConfig.IgnoreTests, ChildIgnoreTest) {
+				continue
+			}
+			path := joinTestAttributePath(prefix, class.ResourceNameNested)
+			for index := range child.Instances {
+				instance := &child.Instances[index]
+				configured := len(instance.Children) > 0
+				for _, scenario := range instance.Properties {
+					configured = configured || scenario.Defined
+				}
+				if !configured {
+					// An empty singleton object requests deletion, not legacy configuration.
+					continue
+				}
+				for _, alias := range class.NestedLegacyAttributes {
+					if alias.Status == Removed || alias.Computed && !alias.Optional && !alias.Required {
+						continue
+					}
+					scope := joinTestAttributePath(path, alias.AttributeName)
+					var scenario TestValueScenario
+					if mode == "frozen" || mode == "clear" {
+						if alias.Status != Frozen {
+							continue
+						}
+						value := "example"
+						if mode == "clear" {
+							value = ""
+						}
+						scenario = newTestValueScenario([]TestValueEntry{{ConfigValue: value, AssertValue: value, ValueType: StringValue, ConfigInclude: true}})
+						if mode == "clear" && alias.Type != StringAttribute {
+							scenario = newTestValueScenario(nil)
+						}
+					} else {
+						if alias.Status != LegacyDeprecated || mode == "conflict" && scope != conflictScope {
+							continue
+						}
+						var exists bool
+						scenario, exists = instance.Properties[alias.ChildAttribute]
+						if !exists || !scenario.Defined || alias.Type == StringAttribute && len(scenario.includedEntries()) == 0 {
+							continue
+						}
+						if mode == "legacy" {
+							delete(instance.Properties, alias.ChildAttribute)
+							if !slices.Contains(conflictScopes, scope) {
+								conflictScopes = append(conflictScopes, scope)
+							}
+						}
+					}
+					instance.Properties[alias.AttributeName] = scenario.clone()
+					changed = true
+				}
+				changed = configure(instance.Children, path, mode) || changed
+			}
+		}
+		return changed
+	}
+	legacy := current.resourceTestCopy()
+	if configure(legacy.TestChildren, "", "legacy") {
+		if err := b.addScenario("NestedLegacy", "Configure Through Nested Legacy Attributes", &legacy, current, ""); err != nil {
+			return err
+		}
+		if err := b.addScenario("NestedLegacyUnchanged", "Repeat Nested Legacy Configuration (Expect Empty Plan)", &legacy, current, ""); err != nil {
+			return err
+		}
+		b.last().PlanOnly = true
+		reordered := legacy.resourceTestCopy()
+		var reorder func([]*TestChild) bool
+		reorder = func(children []*TestChild) bool {
+			changed := false
+			for _, child := range children {
+				if len(child.Instances) > 1 {
+					slices.Reverse(child.Instances)
+					changed = true
+				}
+				for _, instance := range child.Instances {
+					changed = reorder(instance.Children) || changed
+				}
+			}
+			return changed
+		}
+		if reorder(reordered.TestChildren) {
+			if err := b.addScenario("NestedLegacyReordered", "Reorder Nested Legacy Members (Expect Empty Plan)", &reordered, current, ""); err != nil {
+				return err
+			}
+			b.last().PlanOnly = true
+		}
+		if err := b.addScenario("CurrentAfterNestedLegacy", "Switch to Current Nested Attributes Without Replacement", current, current, ""); err != nil {
+			return err
+		}
+		b.last().PlanOnly = true
+		for index, scope := range conflictScopes {
+			conflictScope = scope
+			conflict := current.resourceTestCopy()
+			configure(conflict.TestChildren, "", "conflict")
+			if err := b.addScenario(fmt.Sprintf("NestedLegacyConflict%d", index+1), "Reject Simultaneous Inputs for "+scope, &conflict, current, ""); err != nil {
+				return err
+			}
+			b.last().ExpectError = "Invalid Attribute Combination|Conflicting legacy configuration"
+		}
+	}
+	frozen := current.resourceTestCopy()
+	if configure(frozen.TestChildren, "", "frozen") {
+		if err := b.addScenario("NestedFrozen", "Retain Frozen Nested Attribute Configuration", &frozen, &frozen, ""); err != nil {
+			return err
+		}
+		if err := b.addScenario("NestedFrozenUnchanged", "Repeat Frozen Nested Configuration (Expect Empty Plan)", &frozen, &frozen, ""); err != nil {
+			return err
+		}
+		b.last().PlanOnly = true
+		configure(frozen.TestChildren, "", "clear")
+		if err := b.addScenario("NestedFrozenCleared", "Clear Frozen Nested Attribute State", &frozen, &frozen, ""); err != nil {
+			return err
+		}
+	}
+	b.state = current
+	return nil
+}
+
 func (b *resourceTestBuilder) legacy(current *Class) error {
-	if !b.class.HasCurrentLegacyAttributes() {
+	if !b.class.HasLegacyConfig() {
 		return nil
 	}
 	base := *b.last()
@@ -2005,8 +2161,8 @@ func (b *resourceTestBuilder) legacy(current *Class) error {
 	hasDeprecatedConfiguration := false
 	renderer := newTestConfigurationRenderer(current, b.dataStore)
 	renderer.resourceTest = true
-	for _, alias := range b.class.LegacyAttributes {
-		if alias.Status != LegacyDeprecated {
+	for _, alias := range b.class.testLegacyAttributes() {
+		if alias.Status != LegacyDeprecated || alias.Computed && !alias.Optional && !alias.Required {
 			continue
 		}
 		if alias.ChildName == nil {
@@ -2075,7 +2231,7 @@ func (b *resourceTestBuilder) legacy(current *Class) error {
 	frozenChecks := slices.Clone(base.Assertions)
 	clearedChecks := slices.Clone(base.Assertions)
 	hasFrozen := false
-	for _, alias := range b.class.LegacyAttributes {
+	for _, alias := range b.class.testLegacyAttributes() {
 		if alias.Status != Frozen {
 			continue
 		}
@@ -2094,7 +2250,7 @@ func (b *resourceTestBuilder) legacy(current *Class) error {
 		add("Frozen", "Retain Frozen Attribute Configuration", frozen, frozenChecks)
 		add("FrozenUnchanged", "Repeat Frozen Configuration (Expect Empty Plan)", frozen, frozenChecks)
 		b.last().PlanOnly = true
-		for _, alias := range b.class.LegacyAttributes {
+		for _, alias := range b.class.testLegacyAttributes() {
 			if alias.Status == Frozen {
 				if alias.Type == StringAttribute {
 					frozen.Body().Blocks()[0].Body().SetAttributeValue(alias.AttributeName, cty.StringVal(""))
