@@ -214,13 +214,15 @@ where an attribute returned as null remains null when the connected APIC
 version does not support it. Generated resource adapters use these modifiers
 through the model's resource schema.
 
-Property definitions may override the inferred `computed`, `deprecated`, and
+Property definitions may override the inferred `computed` and
 `requires_replace` flags with explicit `true` or `false`; omission keeps the
 normal inference. Replacement is inferred from metadata `isNaming` or
-`createOnly`. Compatibility overrides preserve VMM Credential password
-retention, the legacy Certificate Authority set behavior, and HTTPS DH parameter
-handling while version-aware deprecation is deferred. Their reasons and follow-up
-work are recorded in the generated definitions and [change overview](redesign_changes.md).
+`createOnly`. Terraform deprecation is enabled explicitly with `deprecated: true`;
+APIC lifecycle metadata affects documentation and generated test availability
+separately, as described in [templates.md](templates.md#property-lifecycle-and-supported-versions).
+Compatibility overrides preserve VMM Credential password retention and the
+legacy Certificate Authority set behavior. Their reasons and follow-up work are
+recorded in the generated definitions and [change overview](redesign_changes.md).
 
 Each direct child attribute owns planning for its complete subtree. A singleton
 child uses `ReconcileSingletonChild`: an omitted child retains prior state, an

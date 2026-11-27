@@ -1179,3 +1179,19 @@ The `diff` job in `.github/workflows/checks.yml` already runs `go generate` foll
 - Run `go vet ./gen/...` and `staticcheck` in CI to catch shadowed errors, unused returns, and other static issues that unit tests don't cover. The active `build` job runs `gofmt`, module and vendor drift checks, and `go build`, but neither static-analysis command.
 - Add `go test -race ./gen/...` to CI. The generator suite is race-clean locally;
   no active CI job currently runs generator tests or uses `-race`.
+
+## APIC property availability
+
+Generated configuration and assertions consume the same normalized property
+supported-version ranges described in [templates.md](templates.md#property-lifecycle-and-supported-versions).
+Outside those ranges, configurable property values are rendered as `null` and
+the corresponding value checks are skipped. The rules also apply to dependency
+configuration, nested children, compatibility aliases mapped to those properties,
+and version-dependent scenario selection. A property deprecated by APIC remains
+configured and asserted while it is supported.
+
+Multiple intervals are combined with OR; enclosing class and dependency gates
+are combined with AND. Hiding cutoffs are exclusive: an attribute hidden starting
+with `6.2(1)` is not sent or value-asserted on `6.2(1)` itself. Definition ranges
+retain their existing inclusive endpoints. Existing test exclusions remain
+explicit test limitations rather than substitutes for version metadata.

@@ -139,15 +139,14 @@ The terraform-plugin-framework implementation is located in
 Reusable generated ACI class models are located in
 [`internal/provider/models`](https://github.com/CiscoDevNet/terraform-provider-aci/tree/main/internal/provider/models).
 
-The generator is being migrated incrementally. A generated marker does not by
-itself mean that the current generator owns a file: legacy generated files keep
-their marker until their templates have been replaced. The exact files owned by
+A generated marker does not by itself mean that the current generator owns a
+file: preserved legacy test files retain their marker. The exact files owned by
 normal generation are recorded in [`gen/managed_files.json`](https://github.com/CiscoDevNet/terraform-provider-aci/blob/main/gen/managed_files.json).
-Currently, normal generation owns the class model files, provider index, and
-the provider, minimum-resource, all-attributes-resource, and data-source
-example files and associated supporting files recorded in the manifest. Resource
-and data-source implementations, tests, and their Markdown documentation remain
-static or legacy outputs until their replacement templates are introduced.
+Normal generation owns class models, resource and data-source implementations,
+generated acceptance and migration tests, resource and data-source Markdown
+documentation, the provider index, examples, and associated supporting files
+recorded in the manifest. Legacy acceptance tests and handwritten provider
+helpers remain outside the manifest.
 
 Generated files should not be edited manually. Fix their normalized metadata,
 class definition, generator logic, or active template and regenerate the full
