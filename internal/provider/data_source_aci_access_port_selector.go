@@ -72,6 +72,11 @@ func (d *InfraHPortSDataSource) Read(ctx context.Context, req datasource.ReadReq
 		return
 	}
 
+	resp.Diagnostics.Append(data.SetFromLegacyLookup(ctx)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	dn := data.BuildDN()
 	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_access_port_selector with id '%s'", dn))
 

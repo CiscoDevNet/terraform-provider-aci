@@ -929,6 +929,18 @@ func (m *FvESgRootModel) BuildDeletePayload(ctx context.Context) (*container.Con
 	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "fvESg", m.ID.ValueString()), diagnostics
 }
 
+func (m *FvESgRootModel) SetFromLegacyLookup(ctx context.Context) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	if !m.LegacyApplicationProfileDn.IsNull() && !m.LegacyApplicationProfileDn.IsUnknown() {
+		if !m.ParentDN.IsNull() && !m.ParentDN.IsUnknown() {
+			diagnostics.AddError("Conflicting legacy configuration", "Configure either application_profile_dn or parent_dn, not both.")
+			return diagnostics
+		}
+		m.ParentDN = m.LegacyApplicationProfileDn
+	}
+	return diagnostics
+}
+
 func (m *FvESgRootModel) SetFromLegacyConfig(ctx context.Context, config, priorState *FvESgRootModel) diag.Diagnostics {
 	var diagnostics diag.Diagnostics
 	if !config.LegacyApplicationProfileDn.IsNull() {

@@ -2,6 +2,7 @@ package data
 
 import (
 	"fmt"
+	"maps"
 	"slices"
 	"strings"
 )
@@ -48,15 +49,17 @@ type MigrationAttribute struct {
 	RequiresReplace        bool
 	Repeated               bool
 	Block                  bool
+	Nested                 bool
 	Attributes             []MigrationAttribute
+	LegacyAttributes       []MigrationAttribute
 }
 
 func (a MigrationAttribute) IsAlias() bool {
-	return a.FieldName != a.TargetField || a.ChildName != nil && !a.IsChildTypeChange()
+	return a.FieldName != a.TargetField || a.ChildName != nil && !a.IsChildTypeChange() && !a.Nested
 }
 
 func (a MigrationAttribute) IsChildTypeChange() bool {
-	return a.ChildName != nil && a.Type == SetNestedAttribute && !a.Block
+	return a.ChildName != nil && a.Type == SetNestedAttribute && !a.Block && !a.Nested
 }
 
 func (a MigrationAttribute) IsListToSet() bool {
@@ -80,6 +83,13 @@ func (a MigrationAttribute) ModelValueType() string {
 }
 
 func (a MigrationAttribute) ModelAttributeType() string {
+	if a.Nested {
+		objectType := a.ElementAttributeType()
+		if a.Type == SingleNestedAttribute {
+			return objectType
+		}
+		return fmt.Sprintf("types.SetType{ElemType: %s}", objectType)
+	}
 	if a.InheritedAttributeType != "" {
 		return a.InheritedAttributeType
 	}
@@ -99,7 +109,7 @@ func (a MigrationAttribute) ModelAttributeType() string {
 }
 
 func (a MigrationAttribute) ElementAttributeType() string {
-	if !a.Block {
+	if !a.Block && !a.Nested {
 		return "types.StringType"
 	}
 	var attributes strings.Builder
@@ -144,12 +154,116 @@ func (a MigrationAttribute) NullValue() string {
 
 func (c *Class) HasCurrentLegacyAttributes() bool {
 	// Removed fields belong only to historical decoders, not current compatibility models or test scenarios.
-	for _, attribute := range c.LegacyAttributes {
+	for _, attribute := range c.RootLegacyAttributes() {
 		if attribute.Status != Removed {
 			return true
 		}
 	}
 	return false
+}
+
+func (c *Class) RootLegacyAttributes() []MigrationAttribute {
+	// Class-owned compatibility fields are embedded only once, even when the resource has the same alias.
+	var attributes []MigrationAttribute
+	for _, attribute := range c.LegacyAttributes {
+		if !slices.ContainsFunc(c.NestedLegacyAttributes, func(nested MigrationAttribute) bool { return nested.AttributeName == attribute.AttributeName }) {
+			attributes = append(attributes, attribute)
+		}
+	}
+	return attributes
+}
+
+func (c *Class) HasLegacyConfig() bool {
+	return c.HasCurrentLegacyAttributes() || c.HasNestedLegacyChanges
+}
+
+func (c *Class) LegacyLookupAttributes() []MigrationAttribute {
+	// Datasource compatibility inputs are limited to the fields used to construct its DN.
+	var attributes []MigrationAttribute
+	for _, alias := range append(c.RootLegacyAttributes(), c.NestedLegacyAttributes...) {
+		if alias.Status != LegacyDeprecated || alias.ChildName != nil || alias.Type != StringAttribute {
+			continue
+		}
+		for _, name := range c.PropertiesAll {
+			property := c.Properties[name]
+			if property.AttributeName == alias.ChildAttribute && (property.PropertyName == "parentDn" || c.IsIdentifyingProperty(property.PropertyName)) {
+				attributes = append(attributes, alias)
+				break
+			}
+		}
+	}
+	return attributes
+}
+
+func (ds *DataStore) setNestedLegacyAttributes() {
+	// Reused class models have one current shape; gather their active aliases from historical parent subtrees.
+	aliases := map[string]map[string]MigrationAttribute{}
+	var collect func([]MigrationAttribute)
+	collect = func(attributes []MigrationAttribute) {
+		for _, attribute := range attributes {
+			if !attribute.Nested {
+				continue
+			}
+			class := ds.Classes[attribute.ChildName.String()]
+			for _, alias := range attribute.LegacyAttributes {
+				if alias.Status == LegacyDeprecated {
+					// Historical parent restrictions describe decoding; the owning class defines current alias inputs.
+					for _, property := range class.ModelProperties() {
+						if property.AttributeName == alias.ChildAttribute {
+							alias.Required, alias.Optional, alias.Computed = false, !property.ReadOnly, true
+							break
+						}
+					}
+				}
+				for _, own := range class.LegacyAttributes {
+					if own.AttributeName == alias.AttributeName && (own.Status != alias.Status || alias.Status != Removed && (own.ModelAttributeType() != alias.ModelAttributeType() || own.ChildAttribute != alias.ChildAttribute)) {
+						ds.ctx.Diagnostics.AddError("Class '%s': nested alias %q disagrees with its resource compatibility definition", class.Name, alias.AttributeName)
+					}
+				}
+				if aliases[class.Name.String()] == nil {
+					aliases[class.Name.String()] = map[string]MigrationAttribute{}
+				}
+				if previous, exists := aliases[class.Name.String()][alias.AttributeName]; exists {
+					if previous.Status != alias.Status || alias.Status != Removed && (previous.ModelAttributeType() != alias.ModelAttributeType() || previous.ChildAttribute != alias.ChildAttribute || previous.Sensitive != alias.Sensitive) {
+						ds.ctx.Diagnostics.AddError("Class '%s': nested alias %q has inconsistent current exposure across parent histories", class.Name, alias.AttributeName)
+					}
+				}
+				aliases[class.Name.String()][alias.AttributeName] = alias
+				if alias.Status == Removed || slices.ContainsFunc(class.NestedLegacyAttributes, func(previous MigrationAttribute) bool { return previous.AttributeName == alias.AttributeName }) {
+					continue
+				}
+				class.NestedLegacyAttributes = append(class.NestedLegacyAttributes, alias)
+			}
+			slices.SortFunc(class.NestedLegacyAttributes, func(a, b MigrationAttribute) int { return strings.Compare(a.AttributeName, b.AttributeName) })
+			ds.Classes[class.Name.String()] = class
+			collect(attribute.Attributes)
+		}
+	}
+	for _, class := range ds.Classes {
+		for _, schema := range class.MigrationSchemas {
+			collect(schema.Attributes)
+		}
+	}
+	var containsLegacy func(Class, map[string]bool) bool
+	containsLegacy = func(class Class, visited map[string]bool) bool {
+		if len(class.NestedLegacyAttributes) > 0 {
+			return true
+		}
+		if visited[class.Name.String()] {
+			return false
+		}
+		visited[class.Name.String()] = true
+		for _, name := range class.Children {
+			if containsLegacy(ds.Classes[name.String()], visited) {
+				return true
+			}
+		}
+		return false
+	}
+	for name, class := range ds.Classes {
+		class.HasNestedLegacyChanges = containsLegacy(class, map[string]bool{})
+		ds.Classes[name] = class
+	}
 }
 
 func (c *Class) setMigrationData(ds *DataStore) {
@@ -167,6 +281,7 @@ func (c *Class) setMigrationData(ds *DataStore) {
 		versions = append(versions, version)
 	}
 	slices.Sort(versions)
+	nested := c.nestedMigrationAttributes(ds, versions)
 	aliases := map[string]MigrationAttribute{}
 	overrides := map[int][]MigrationAttribute{}
 	flattened := map[int]map[string]bool{}
@@ -248,6 +363,10 @@ func (c *Class) setMigrationData(ds *DataStore) {
 			add(key, definition, nil)
 		}
 		for name, definition := range entry.Children {
+			if attribute, exists := nested[version][name]; exists {
+				overrides[version] = append(overrides[version], attribute)
+				continue
+			}
 			child, exists := ds.Classes[name]
 			if !exists || len(definition.Children) > 0 {
 				ds.ctx.Diagnostics.AddError("Class '%s': historical child %q needs nested-schema migration support before it can be rendered", c.Name, name)
@@ -369,6 +488,122 @@ func (c *Class) setMigrationData(ds *DataStore) {
 	}
 }
 
+func (c *Class) nestedMigrationAttributes(ds *DataStore, versions []int) map[int]map[string]MigrationAttribute {
+	// Existing SDKv2 child entries describe flat relations/blocks. Framework history describes nested attributes.
+	result := map[int]map[string]MigrationAttribute{}
+	histories := map[string]map[int]StateUpgradeDefinition{}
+	for _, version := range versions {
+		entry := c.StateUpgrades[version]
+		for name, definition := range entry.Children {
+			if entry.Source != FromFramework {
+				continue
+			}
+			child, exists := ds.Classes[name]
+			if !exists {
+				continue
+			}
+			if definition.Type == SetNestedAttribute && child.IsSingleNestedWhenDefinedAsChild && len(definition.Attributes) == 0 && len(definition.Children) == 0 {
+				// Preserve the published NetFlow set-to-singleton conversion.
+				continue
+			}
+			if definition.Type != UndefinedLegacyAttributeType && definition.Type != SingleNestedAttribute && definition.Type != SetNestedAttribute {
+				continue
+			}
+			if histories[name] == nil {
+				histories[name] = map[int]StateUpgradeDefinition{}
+			}
+			histories[name][version] = StateUpgradeDefinition{Source: FromFramework, Attributes: definition.Attributes, Children: definition.Children}
+		}
+	}
+	for name, history := range histories {
+		child := ds.Classes[name]
+		current, exists := c.currentMigrationAttributes(ds)[child.ResourceNameNested]
+		if !exists {
+			ds.ctx.Diagnostics.AddError("Class '%s': historical child %q has no current nested target; removing entire children needs additional migration support", c.Name, name)
+			continue
+		}
+		child.Properties = maps.Clone(child.Properties)
+		for name, property := range child.Properties {
+			propertyCopy := *property
+			propertyCopy.StateUpgradeValues = maps.Clone(property.StateUpgradeValues)
+			child.Properties[name] = &propertyCopy
+		}
+		child.ClassDefinition.SchemaVersion = &c.SchemaVersion
+		child.StateUpgrades, child.MigrationSchemas, child.LegacyAttributes = history, nil, nil
+		child.Artifacts = []ArtifactEnum{ResourceArtifact}
+		child.setMigrationData(ds)
+		for _, schema := range child.MigrationSchemas {
+			definition := c.StateUpgrades[schema.PriorSchemaVersion].Children[name]
+			attribute := current
+			attribute.Nested, attribute.ChildName = true, child.Name
+			attribute.Type = definition.Type
+			if attribute.Type == UndefinedLegacyAttributeType {
+				attribute.Type = SetNestedAttribute
+				if child.IsSingleNestedWhenDefinedAsChild {
+					attribute.Type = SingleNestedAttribute
+				}
+			}
+			if attribute.Type == SingleNestedAttribute && !child.IsSingleNestedWhenDefinedAsChild {
+				ds.ctx.Diagnostics.AddError("Class '%s': historical child %q needs singleton-to-set migration support before it can be rendered", c.Name, name)
+				continue
+			}
+			if definition.Status != UndefinedLegacyStatus {
+				ds.ctx.Diagnostics.AddError("Class '%s': historical child %q needs nested child-name migration support for a container status", c.Name, name)
+				continue
+			}
+			attribute.Required, attribute.Optional, attribute.Computed = child.RequiredAsChild, !child.RequiredAsChild, !child.RequiredAsChild
+			switch definition.Restriction {
+			case LegacyRequired:
+				attribute.Required, attribute.Optional, attribute.Computed = true, false, false
+			case LegacyOptional:
+				attribute.Required, attribute.Optional, attribute.Computed = false, true, false
+			case LegacyOptionalComputed:
+				attribute.Required, attribute.Optional, attribute.Computed = false, true, true
+			case LegacyReadOnly:
+				attribute.Required, attribute.Optional, attribute.Computed = false, false, true
+			}
+			attribute.InheritedModelType = "types.Set"
+			if attribute.Type == SingleNestedAttribute {
+				attribute.InheritedModelType = "types.Object"
+			}
+			attribute.TargetModelType, attribute.TargetAttributeType = current.InheritedModelType, current.InheritedAttributeType
+			attribute.LegacyAttributes = child.LegacyAttributes
+			for _, member := range schema.Attributes {
+				if member.AttributeName != "id" && member.TargetField != "ParentDN" {
+					attribute.Attributes = append(attribute.Attributes, member)
+				}
+			}
+			if definition.AttributeName != "" && definition.AttributeName != attribute.AttributeName {
+				ds.ctx.Diagnostics.AddError("Class '%s': historical child %q needs nested child-name migration support before it can be rendered", c.Name, name)
+				continue
+			}
+			attribute.SchemaExpression = attribute.nestedSchemaExpression()
+			if result[schema.PriorSchemaVersion] == nil {
+				result[schema.PriorSchemaVersion] = map[string]MigrationAttribute{}
+			}
+			result[schema.PriorSchemaVersion][name] = attribute
+		}
+	}
+	return result
+}
+
+func (a MigrationAttribute) nestedSchemaExpression() string {
+	// Historical schemas need the old wire shape; current validators and plan modifiers do not participate in decoding.
+	flags := fmt.Sprintf("Required: %t, Optional: %t, Computed: %t,", a.Required, a.Optional, a.Computed)
+	if a.Type == SingleNestedAttribute {
+		return fmt.Sprintf("resourceschema.ObjectAttribute{%s AttributeTypes: %s.AttrTypes}", flags, a.ElementAttributeType())
+	}
+	return fmt.Sprintf("resourceschema.SetAttribute{%s ElementType: %s}", flags, a.ElementAttributeType())
+}
+
+func (a MigrationAttribute) UpgradeSchemaExpression() string {
+	var attributes strings.Builder
+	for _, member := range a.Attributes {
+		fmt.Fprintf(&attributes, "%q: %s,", member.AttributeName, member.UpgradeSchemaExpression())
+	}
+	return fmt.Sprintf("modelHelpers.LegacyAttributeSchema{Replacement: %q, Removed: %t, Attributes: map[string]modelHelpers.LegacyAttributeSchema{%s}}", a.ChildAttribute, a.Status == Removed && a.TargetField == "" && a.ChildAttribute == "", attributes.String())
+}
+
 func (c *Class) currentMigrationAttributes(ds *DataStore) map[string]MigrationAttribute {
 	attributes := map[string]MigrationAttribute{}
 	for _, property := range c.ModelProperties() {
@@ -444,7 +679,9 @@ func (c *Class) migrationAttribute(ds *DataStore, key string, definition Attribu
 			historical = *property
 		}
 		historical.ValueType = definition.ValueType
-		if attribute.Type != StringAttribute || historical.ValueType.SchemaPropertyType() != "StringProperty" {
+		if definition.ValueType == SemanticEquality && (property == nil || property.ValueType != SemanticEquality) {
+			ds.ctx.Diagnostics.AddError("Class '%s': historical attribute %q needs a historical semantic-string definition before it can be rendered", c.Name, key)
+		} else if attribute.Type != StringAttribute || historical.ValueType.SchemaPropertyType() != "StringProperty" {
 			ds.ctx.Diagnostics.AddError("Class '%s': historical attribute %q value_type requires a string attribute", c.Name, key)
 		} else {
 			attribute.InheritedModelType = historical.ModelValueType(owner.Name)
@@ -478,6 +715,9 @@ func (c *Class) migrationAttribute(ds *DataStore, key string, definition Attribu
 	}
 	if attribute.Type != StringAttribute && attribute.ElementType != StringAttribute {
 		ds.ctx.Diagnostics.AddError("Class '%s': historical collection %q requires a supported element_type", c.Name, key)
+	}
+	if child == nil && property != nil && (property.ValueType.SchemaPropertyType() == "StringProperty" && attribute.Type != StringAttribute || property.ValueType == Set && attribute.Type != ListAttribute && attribute.Type != SetAttribute) {
+		ds.ctx.Diagnostics.AddError("Class '%s': historical attribute %q needs an explicit conversion from %q to %q", c.Name, key, attribute.Type, property.ValueType)
 	}
 	if child != nil && !((attribute.Type == StringAttribute && !attribute.Repeated) || (attribute.Type == SetAttribute && attribute.Repeated)) {
 		ds.ctx.Diagnostics.AddError("Class '%s': historical attribute %q needs collection-to-child migration support before it can be rendered", c.Name, key)

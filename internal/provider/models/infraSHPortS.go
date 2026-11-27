@@ -482,6 +482,25 @@ func (m *InfraSHPortSRootModel) BuildDeletePayload(ctx context.Context) (*contai
 	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "infraSHPortS", m.ID.ValueString()), diagnostics
 }
 
+func (m *InfraSHPortSRootModel) SetFromLegacyLookup(ctx context.Context) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	if !m.LegacySpineAccessPortSelectorType.IsNull() && !m.LegacySpineAccessPortSelectorType.IsUnknown() {
+		if !m.Type.IsNull() && !m.Type.IsUnknown() {
+			diagnostics.AddError("Conflicting legacy configuration", "Configure either spine_access_port_selector_type or port_selector_type, not both.")
+			return diagnostics
+		}
+		m.Type = m.LegacySpineAccessPortSelectorType
+	}
+	if !m.LegacySpineInterfaceProfileDn.IsNull() && !m.LegacySpineInterfaceProfileDn.IsUnknown() {
+		if !m.ParentDN.IsNull() && !m.ParentDN.IsUnknown() {
+			diagnostics.AddError("Conflicting legacy configuration", "Configure either spine_interface_profile_dn or parent_dn, not both.")
+			return diagnostics
+		}
+		m.ParentDN = m.LegacySpineInterfaceProfileDn
+	}
+	return diagnostics
+}
+
 func (m *InfraSHPortSRootModel) SetFromLegacyConfig(ctx context.Context, config, priorState *InfraSHPortSRootModel) diag.Diagnostics {
 	var diagnostics diag.Diagnostics
 	if !config.LegacyRelationInfraRsSpAccGrp.IsNull() {

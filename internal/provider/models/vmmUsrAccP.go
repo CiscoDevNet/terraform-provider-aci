@@ -443,6 +443,18 @@ func (m *VmmUsrAccPRootModel) BuildDeletePayload(ctx context.Context) (*containe
 	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "vmmUsrAccP", m.ID.ValueString()), diagnostics
 }
 
+func (m *VmmUsrAccPRootModel) SetFromLegacyLookup(ctx context.Context) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	if !m.LegacyVmmDomainDn.IsNull() && !m.LegacyVmmDomainDn.IsUnknown() {
+		if !m.ParentDN.IsNull() && !m.ParentDN.IsUnknown() {
+			diagnostics.AddError("Conflicting legacy configuration", "Configure either vmm_domain_dn or parent_dn, not both.")
+			return diagnostics
+		}
+		m.ParentDN = m.LegacyVmmDomainDn
+	}
+	return diagnostics
+}
+
 func (m *VmmUsrAccPRootModel) SetFromLegacyConfig(ctx context.Context, config, priorState *VmmUsrAccPRootModel) diag.Diagnostics {
 	var diagnostics diag.Diagnostics
 	if !config.LegacyPwd.IsNull() {

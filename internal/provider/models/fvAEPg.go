@@ -1608,6 +1608,18 @@ func (m *FvAEPgRootModel) BuildDeletePayload(ctx context.Context) (*container.Co
 	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "fvAEPg", m.ID.ValueString()), diagnostics
 }
 
+func (m *FvAEPgRootModel) SetFromLegacyLookup(ctx context.Context) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	if !m.LegacyApplicationProfileDn.IsNull() && !m.LegacyApplicationProfileDn.IsUnknown() {
+		if !m.ParentDN.IsNull() && !m.ParentDN.IsUnknown() {
+			diagnostics.AddError("Conflicting legacy configuration", "Configure either application_profile_dn or parent_dn, not both.")
+			return diagnostics
+		}
+		m.ParentDN = m.LegacyApplicationProfileDn
+	}
+	return diagnostics
+}
+
 func (m *FvAEPgRootModel) SetFromLegacyConfig(ctx context.Context, config, priorState *FvAEPgRootModel) diag.Diagnostics {
 	var diagnostics diag.Diagnostics
 	if !config.LegacyApplicationProfileDn.IsNull() {

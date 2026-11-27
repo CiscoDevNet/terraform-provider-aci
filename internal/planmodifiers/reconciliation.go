@@ -2,6 +2,7 @@ package planmodifiers
 
 import (
 	"context"
+	"slices"
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
@@ -12,14 +13,21 @@ import (
 // ReconciliationSchema contains only the class information needed to reconcile
 // configured, planned, and prior-state child values.
 type ReconciliationSchema struct {
-	Identifiers []string
-	Children    map[string]ReconciliationChild
+	Identifiers         []string
+	Children            map[string]ReconciliationChild
+	StateOnlyAttributes []string
 }
 
 // ReconciliationChild identifies the shape and class schema of a child value.
 type ReconciliationChild struct {
 	Repeated bool
 	Schema   ReconciliationSchema
+}
+
+func (s ReconciliationSchema) Reconcile(ctx context.Context, config, plan, state attr.Value) (attr.Value, diag.Diagnostics) {
+	// Compatibility planning uses the same identifier matching and recursive preservation as schema plan modifiers.
+	_, repeated := plan.(types.Set)
+	return (ReconciliationChild{Repeated: repeated, Schema: s}).reconcile(ctx, "child", config, plan, state)
 }
 
 type reconciliationMode uint8
@@ -54,7 +62,12 @@ func (s ReconciliationSchema) reconcileObject(
 
 		child, isChild := s.Children[name]
 		if !isChild {
-			planAttributes[name] = reconcileProperty(configAttribute, planAttribute, stateAttribute, mode)
+			propertyMode := mode
+			if slices.Contains(s.StateOnlyAttributes, name) {
+				// A null Terraform-only alias does not mean its APIC property is unsupported.
+				propertyMode = singletonReconciliation
+			}
+			planAttributes[name] = reconcileProperty(configAttribute, planAttribute, stateAttribute, propertyMode)
 			continue
 		}
 
@@ -209,7 +222,7 @@ func (s ReconciliationSchema) reconcileSetElements(
 	stateMatched := make([]bool, len(stateObjects))
 	planElements := planValue.Elements()
 	for index, planObject := range planObjects {
-		configObject, configFound, matchDiagnostics := s.matchingObject(ctx, planObject, configObjects, configMatched)
+		configObject, configFound, matchDiagnostics := s.MatchingObject(ctx, planObject, configObjects, configMatched)
 		diagnostics.Append(matchDiagnostics...)
 		if matchDiagnostics.HasError() {
 			return planValue, diagnostics
@@ -218,7 +231,7 @@ func (s ReconciliationSchema) reconcileSetElements(
 			continue
 		}
 
-		stateObject, stateFound, matchDiagnostics := s.matchingObject(ctx, planObject, stateObjects, stateMatched)
+		stateObject, stateFound, matchDiagnostics := s.MatchingObject(ctx, planObject, stateObjects, stateMatched)
 		diagnostics.Append(matchDiagnostics...)
 		if matchDiagnostics.HasError() {
 			return planValue, diagnostics
@@ -267,7 +280,7 @@ func objectElements(elements []attr.Value, description string) ([]types.Object, 
 	return objects, diagnostics
 }
 
-func (s ReconciliationSchema) matchingObject(
+func (s ReconciliationSchema) MatchingObject(
 	ctx context.Context,
 	target types.Object,
 	candidates []types.Object,
@@ -299,6 +312,9 @@ func (s ReconciliationSchema) identifiersEqual(
 	right types.Object,
 ) (bool, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
+	if left.IsNull() || left.IsUnknown() || right.IsNull() || right.IsUnknown() {
+		return false, diagnostics
+	}
 	leftAttributes := left.Attributes()
 	rightAttributes := right.Attributes()
 	for _, identifier := range s.Identifiers {

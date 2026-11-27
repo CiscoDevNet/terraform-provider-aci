@@ -100,6 +100,9 @@ type Class struct {
 	SchemaVersion    int
 	MigrationSchemas []MigrationSchema
 	LegacyAttributes []MigrationAttribute
+	// Compatibility properties belonging to the class when reused inside other models.
+	NestedLegacyAttributes []MigrationAttribute
+	HasNestedLegacyChanges bool
 	// Indicates that when the class is included in a resource as a child it can only be configured once.
 	// This is used to determine the type of the nested attribute to be a map or list.
 	IsSingleNestedWhenDefinedAsChild bool
@@ -759,6 +762,18 @@ func (c Class) HasCustomModelTypes() bool {
 	for _, attribute := range c.LegacyAttributes {
 		if attribute.ModelCustomStringType() != "" {
 			return true
+		}
+	}
+	for _, attribute := range c.NestedLegacyAttributes {
+		if strings.Contains(attribute.ModelValueType(), "customtypes.") || strings.Contains(attribute.ModelAttributeType(), "customtypes.") {
+			return true
+		}
+	}
+	for _, schema := range c.MigrationSchemas {
+		for _, attribute := range schema.Attributes {
+			if strings.Contains(attribute.ModelValueType(), "customtypes.") || strings.Contains(attribute.ModelAttributeType(), "customtypes.") {
+				return true
+			}
 		}
 	}
 	return false

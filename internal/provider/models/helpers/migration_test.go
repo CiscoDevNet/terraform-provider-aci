@@ -7,6 +7,7 @@ import (
 
 	"github.com/ciscoecosystem/aci-go-client/v2/container"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	datasourceschema "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	resourceschema "github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -32,6 +33,343 @@ func TestLegacyRelationName(t *testing.T) {
 			var diagnostics diag.Diagnostics
 			assert.Equal(t, testCase.Expected, LegacyRelationName(context.Background(), &diagnostics, testCase.Input.(types.String)))
 			assert.False(t, diagnostics.HasError())
+		})
+	}
+}
+
+func TestLegacyAttributeSchemaUpgradeNestedValues(t *testing.T) {
+	ctx := context.Background()
+	protocolType := customtypes.NewSemanticStringType(map[string]string{"6": "tcp"})
+	oldTypes := map[string]attr.Type{
+		"old_name": types.StringType,
+		"flags":    types.ListType{ElemType: types.StringType},
+		"address":  types.StringType,
+		"protocol": types.StringType,
+		"learning": types.StringType,
+		"removed":  types.StringType,
+	}
+	newTypes := map[string]attr.Type{
+		"name":     types.StringType,
+		"flags":    types.SetType{ElemType: types.StringType},
+		"address":  customtypes.IPAddressType{},
+		"protocol": protocolType,
+		"learning": customtypes.VMMArpLearningType{},
+	}
+	oldLeaf := func(name string) types.Object {
+		return types.ObjectValueMust(oldTypes, map[string]attr.Value{
+			"old_name": types.StringValue(name),
+			"flags":    types.ListValueMust(types.StringType, []attr.Value{types.StringValue("two"), types.StringValue("one"), types.StringValue("one")}),
+			"address":  types.StringValue("2001:db8::1"),
+			"protocol": types.StringValue("6"),
+			"learning": types.StringValue("disabled"),
+			"removed":  types.StringValue("retired-value"),
+		})
+	}
+	newLeaf := func(name string) types.Object {
+		return types.ObjectValueMust(newTypes, map[string]attr.Value{
+			"name":     types.StringValue(name),
+			"flags":    types.SetValueMust(types.StringType, []attr.Value{types.StringValue("one"), types.StringValue("two")}),
+			"address":  customtypes.NewIPAddressValue("2001:db8::1"),
+			"protocol": protocolType.Value("6"),
+			"learning": customtypes.NewVMMArpLearningValue("disabled"),
+		})
+	}
+	oldSetType := types.SetType{ElemType: types.ObjectType{AttrTypes: oldTypes}}
+	newSetType := types.SetType{ElemType: types.ObjectType{AttrTypes: newTypes}}
+	oldRootTypes := map[string]attr.Type{"members": oldSetType}
+	newRootTypes := map[string]attr.Type{"members": newSetType}
+	oldRoot := func(members types.Set) types.Object {
+		return types.ObjectValueMust(oldRootTypes, map[string]attr.Value{"members": members})
+	}
+	newRoot := func(members types.Set) types.Object {
+		return types.ObjectValueMust(newRootTypes, map[string]attr.Value{"members": members})
+	}
+	mapping := LegacyAttributeSchema{Attributes: map[string]LegacyAttributeSchema{
+		"members": {Attributes: map[string]LegacyAttributeSchema{"old_name": {Replacement: "name"}}},
+	}}
+	testCases := []test.TestCase{
+		{Name: "distinct_members_and_supported_types", Input: oldRoot(types.SetValueMust(oldSetType.ElemType, []attr.Value{oldLeaf("two"), oldLeaf("one")})), Expected: newRoot(types.SetValueMust(newSetType.ElemType, []attr.Value{newLeaf("one"), newLeaf("two")}))},
+		{Name: "null_root", Input: types.ObjectNull(oldRootTypes), Expected: types.ObjectNull(newRootTypes)},
+		{Name: "unknown_root", Input: types.ObjectUnknown(oldRootTypes), Expected: types.ObjectUnknown(newRootTypes)},
+		{Name: "null_set", Input: oldRoot(types.SetNull(oldSetType.ElemType)), Expected: newRoot(types.SetNull(newSetType.ElemType))},
+		{Name: "unknown_set", Input: oldRoot(types.SetUnknown(oldSetType.ElemType)), Expected: newRoot(types.SetUnknown(newSetType.ElemType))},
+		{Name: "empty_set", Input: oldRoot(types.SetValueMust(oldSetType.ElemType, []attr.Value{})), Expected: newRoot(types.SetValueMust(newSetType.ElemType, []attr.Value{}))},
+		{Name: "unknown_member", Input: oldRoot(types.SetValueMust(oldSetType.ElemType, []attr.Value{types.ObjectUnknown(oldTypes)})), Expected: newRoot(types.SetValueMust(newSetType.ElemType, []attr.Value{types.ObjectUnknown(newTypes)}))},
+		{Name: "null_member", Input: oldRoot(types.SetValueMust(oldSetType.ElemType, []attr.Value{types.ObjectNull(oldTypes)})), Expected: newRoot(types.SetValueMust(newSetType.ElemType, []attr.Value{types.ObjectNull(newTypes)}))},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			var diagnostics diag.Diagnostics
+			actual := mapping.Upgrade(ctx, &diagnostics, testCase.Input.(attr.Value), types.ObjectType{AttrTypes: newRootTypes})
+			assert.False(t, diagnostics.HasError(), diagnostics)
+			assert.True(t, actual.Equal(testCase.Expected.(attr.Value)), "actual: %s; expected: %s", actual, testCase.Expected)
+		})
+	}
+}
+
+func TestLegacyAttributeSchemaUpgradeNestedSetToSingleton(t *testing.T) {
+	ctx := context.Background()
+	oldTypes := map[string]attr.Type{"old_name": types.StringType, "flags": types.ListType{ElemType: types.StringType}}
+	newTypes := map[string]attr.Type{"name": types.StringType, "flags": types.SetType{ElemType: types.StringType}}
+	oldType, newType := types.ObjectType{AttrTypes: oldTypes}, types.ObjectType{AttrTypes: newTypes}
+	oldObject := types.ObjectValueMust(oldTypes, map[string]attr.Value{"old_name": types.StringValue("one"), "flags": types.ListValueMust(types.StringType, []attr.Value{types.StringValue("a"), types.StringValue("a")})})
+	newObject := types.ObjectValueMust(newTypes, map[string]attr.Value{"name": types.StringValue("one"), "flags": types.SetValueMust(types.StringType, []attr.Value{types.StringValue("a")})})
+	type input struct {
+		Value   types.Set
+		Target  types.ObjectType
+		Mapping LegacyAttributeSchema
+	}
+	rename := LegacyAttributeSchema{Attributes: map[string]LegacyAttributeSchema{"old_name": {Replacement: "name"}}}
+	testCases := []test.TestCase{
+		{Name: "shape_only", Input: input{Value: types.SetValueMust(oldType, []attr.Value{oldObject}), Target: oldType}, Expected: oldObject},
+		{Name: "renamed_member_and_list_to_set", Input: input{Value: types.SetValueMust(oldType, []attr.Value{oldObject}), Target: newType, Mapping: rename}, Expected: newObject},
+		{Name: "empty", Input: input{Value: types.SetValueMust(oldType, nil), Target: newType, Mapping: rename}, Expected: types.ObjectNull(newTypes)},
+		{Name: "null", Input: input{Value: types.SetNull(oldType), Target: newType, Mapping: rename}, Expected: types.ObjectNull(newTypes)},
+		{Name: "unknown", Input: input{Value: types.SetUnknown(oldType), Target: newType, Mapping: rename}, Expected: types.ObjectUnknown(newTypes)},
+		{Name: "unknown_member", Input: input{Value: types.SetValueMust(oldType, []attr.Value{types.ObjectUnknown(oldTypes)}), Target: newType, Mapping: rename}, Expected: types.ObjectUnknown(newTypes)},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			values := testCase.Input.(input)
+			// Exercise the conversion below a containing object, as in the EPG/domain/uplink history.
+			schema := LegacyAttributeSchema{Attributes: map[string]LegacyAttributeSchema{"child": values.Mapping}}
+			previous := types.ObjectValueMust(map[string]attr.Type{"child": values.Value.Type(ctx)}, map[string]attr.Value{"child": values.Value})
+			target := types.ObjectType{AttrTypes: map[string]attr.Type{"child": values.Target}}
+			expected := types.ObjectValueMust(target.AttrTypes, map[string]attr.Value{"child": testCase.Expected.(attr.Value)})
+			var diagnostics diag.Diagnostics
+			actual := schema.Upgrade(ctx, &diagnostics, previous, target)
+			assert.False(t, diagnostics.HasError(), diagnostics)
+			assert.True(t, actual.Equal(expected), "actual: %s; expected: %s", actual, expected)
+		})
+	}
+}
+
+func TestLegacyAttributeSchemaUpgradeRetiredAlias(t *testing.T) {
+	attributeTypes := map[string]attr.Type{"prio": types.StringType, "priority": types.StringType}
+	prior := types.ObjectValueMust(attributeTypes, map[string]attr.Value{"prio": types.StringValue("historical"), "priority": types.StringValue("modern")})
+	testCases := []test.TestCase{
+		{Name: "retired_alias_does_not_populate_reused_name", Input: true, Expected: types.ObjectValueMust(attributeTypes, map[string]attr.Value{"prio": types.StringNull(), "priority": types.StringValue("modern")})},
+		{Name: "unchanged_fields_are_preserved", Input: false, Expected: prior},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			mapping := LegacyAttributeSchema{Attributes: map[string]LegacyAttributeSchema{"prio": {Removed: testCase.Input.(bool)}}}
+			var diagnostics diag.Diagnostics
+			actual := mapping.Upgrade(context.Background(), &diagnostics, prior, types.ObjectType{AttrTypes: attributeTypes})
+			assert.False(t, diagnostics.HasError(), diagnostics)
+			assert.True(t, actual.Equal(testCase.Expected.(types.Object)), "actual: %s; expected: %s", actual, testCase.Expected)
+		})
+	}
+}
+
+func TestClassSchemaNestedLegacyPlanning(t *testing.T) {
+	ctx := context.Background()
+	leaf := ClassSchema{
+		Properties: map[string]PropertySchema{
+			"name":        {Type: StringProperty, Required: true, RequiresReplace: true},
+			"description": {Type: StringProperty, Optional: true, Computed: true},
+		},
+		Identifiers: []string{"name"},
+		NestedLegacyAttributes: map[string]LegacyAttributeSchema{
+			"old_name": {Type: types.StringType, Replacement: "name", RequiresReplace: true},
+		},
+	}
+	middle := ClassSchema{Children: map[string]ChildSchema{"members": {Cardinality: SetChild, Schema: func() ClassSchema { return leaf }}}}
+	root := ClassSchema{Children: map[string]ChildSchema{"group": {Cardinality: SingleChild, Schema: func() ClassSchema { return middle }}}}
+	resourceSchema := root.ResourceSchema("")
+	assert.False(t, resourceSchema.ValidateImplementation(ctx).HasError())
+	rootTypes := map[string]attr.Type{"group": resourceSchema.Attributes["group"].GetType()}
+	groupType := rootTypes["group"].(types.ObjectType)
+	memberSetType := groupType.AttrTypes["members"].(types.SetType)
+	memberType := memberSetType.ElemType.(types.ObjectType)
+	member := func(name, oldName, description types.String) types.Object {
+		return types.ObjectValueMust(memberType.AttrTypes, map[string]attr.Value{"name": name, "old_name": oldName, "description": description})
+	}
+	wrap := func(members types.Set) types.Object {
+		return types.ObjectValueMust(rootTypes, map[string]attr.Value{"group": types.ObjectValueMust(groupType.AttrTypes, map[string]attr.Value{"members": members})})
+	}
+	set := func(members ...attr.Value) types.Set { return types.SetValueMust(memberType, members) }
+	state := wrap(set(
+		member(types.StringValue("one"), types.StringValue("one"), types.StringValue("observed-one")),
+		member(types.StringValue("two"), types.StringValue("two"), types.StringValue("observed-two")),
+	))
+	type input struct {
+		Config types.Object
+		Plan   types.Object
+		State  *types.Object
+	}
+	legacyConfig := wrap(set(
+		member(types.StringNull(), types.StringValue("two"), types.StringNull()),
+		member(types.StringNull(), types.StringValue("one"), types.StringNull()),
+	))
+	legacyPlan := wrap(set(
+		member(types.StringUnknown(), types.StringValue("two"), types.StringUnknown()),
+		member(types.StringUnknown(), types.StringValue("one"), types.StringUnknown()),
+	))
+	stateWithoutAliases := wrap(set(
+		member(types.StringValue("one"), types.StringNull(), types.StringValue("observed-one")),
+		member(types.StringValue("two"), types.StringNull(), types.StringValue("observed-two")),
+	))
+	stateWithStaleAliases := wrap(set(
+		member(types.StringValue("one"), types.StringValue("stale-one"), types.StringValue("observed-one")),
+		member(types.StringValue("two"), types.StringValue("stale-two"), types.StringValue("observed-two")),
+	))
+	testCases := []test.TestCase{
+		{Name: "legacy_identifiers_match_reordered_state", Input: input{Config: legacyConfig, Plan: legacyPlan}, Expected: state},
+		{Name: "previously_null_aliases_accept_configuration", Input: input{Config: legacyConfig, Plan: legacyPlan, State: &stateWithoutAliases}, Expected: state},
+		{Name: "canonical_identifiers_win_over_stale_alias_outputs", Input: input{Config: legacyConfig, Plan: legacyPlan, State: &stateWithStaleAliases}, Expected: state},
+		{Name: "unknown_collection_plan", Input: input{Config: legacyConfig, Plan: wrap(types.SetUnknown(memberType))}, Expected: state},
+		{Name: "current_inputs_retain_computed_aliases", Input: input{
+			Config: wrap(set(member(types.StringValue("one"), types.StringNull(), types.StringNull()), member(types.StringValue("two"), types.StringNull(), types.StringNull()))),
+			Plan:   wrap(set(member(types.StringValue("one"), types.StringUnknown(), types.StringUnknown()), member(types.StringValue("two"), types.StringUnknown(), types.StringUnknown()))),
+		}, Expected: state},
+		{Name: "removed_member_stays_removed", Input: input{
+			Config: wrap(set(member(types.StringNull(), types.StringValue("two"), types.StringNull()))),
+			Plan:   wrap(set(member(types.StringUnknown(), types.StringValue("two"), types.StringUnknown()))),
+		}, Expected: wrap(set(member(types.StringValue("two"), types.StringValue("two"), types.StringValue("observed-two"))))},
+		{Name: "explicit_empty_set", Input: input{Config: wrap(set()), Plan: wrap(set())}, Expected: wrap(set())},
+		{Name: "conflicting_inputs", Input: input{
+			Config: wrap(set(member(types.StringValue("one"), types.StringValue("one"), types.StringNull()))),
+			Plan:   wrap(set(member(types.StringValue("one"), types.StringValue("one"), types.StringUnknown()))),
+		}, Expected: "Conflicting legacy configuration"},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			values := testCase.Input.(input)
+			var diagnostics diag.Diagnostics
+			prior := state
+			if values.State != nil {
+				prior = *values.State
+			}
+			actual := root.SetFromLegacyConfig(ctx, &diagnostics, values.Config, values.Plan, prior)
+			if message, expectedError := testCase.Expected.(string); expectedError {
+				assert.Contains(t, diagnostics.Errors()[0].Summary(), message)
+				return
+			}
+			assert.False(t, diagnostics.HasError(), diagnostics)
+			assert.True(t, actual.Equal(testCase.Expected.(types.Object)), "actual: %s; expected: %s", actual, testCase.Expected)
+		})
+	}
+
+	// Repeated-child identifiers and their legacy alternatives must not replace the containing resource.
+	group := resourceSchema.Attributes["group"].(resourceschema.SingleNestedAttribute)
+	members := group.Attributes["members"].(resourceschema.SetNestedAttribute)
+	for _, name := range []string{"name", "old_name"} {
+		assert.Empty(t, members.NestedObject.Attributes[name].(resourceschema.StringAttribute).PlanModifiers)
+	}
+}
+
+func TestClassSchemaChangedCanonicalValueInvalidatesAlias(t *testing.T) {
+	ctx := context.Background()
+	leaf := ClassSchema{
+		Identifiers: []string{"name"},
+		Properties: map[string]PropertySchema{
+			"name":  {Type: StringProperty, Required: true},
+			"value": {Type: StringProperty, Optional: true, Computed: true},
+		},
+		NestedLegacyAttributes: map[string]LegacyAttributeSchema{
+			"old_value": {Type: types.StringType, Replacement: "value"},
+		},
+	}
+	leafTypes := map[string]attr.Type{"name": types.StringType, "value": types.StringType, "old_value": types.StringType}
+	object := func(value, alias types.String) types.Object {
+		return types.ObjectValueMust(leafTypes, map[string]attr.Value{"name": types.StringValue("one"), "value": value, "old_value": alias})
+	}
+	testCases := []test.TestCase{
+		{Name: "class_properties"},
+		{Name: "singleton_child", Input: SingleChild},
+		{Name: "repeated_child", Input: SetChild},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			schema := leaf
+			wrap := func(value types.Object) types.Object { return value }
+			if testCase.Input != nil {
+				cardinality := testCase.Input.(ChildCardinality)
+				schema = ClassSchema{Children: map[string]ChildSchema{"members": {Cardinality: cardinality, Schema: func() ClassSchema { return leaf }}}}
+				childType := schema.ResourceAttributes(false)["members"].GetType()
+				wrap = func(value types.Object) types.Object {
+					var child attr.Value = value
+					if cardinality == SetChild {
+						child = types.SetValueMust(types.ObjectType{AttrTypes: leafTypes}, []attr.Value{value})
+					}
+					return types.ObjectValueMust(map[string]attr.Type{"members": childType}, map[string]attr.Value{"members": child})
+				}
+			}
+			config := wrap(object(types.StringValue("updated"), types.StringNull()))
+			plan := wrap(object(types.StringValue("updated"), types.StringValue("original")))
+			state := wrap(object(types.StringValue("original"), types.StringValue("original")))
+			expected := wrap(object(types.StringValue("updated"), types.StringUnknown()))
+			var diagnostics diag.Diagnostics
+			actual := schema.SetFromLegacyConfig(ctx, &diagnostics, config, plan, state)
+			assert.False(t, diagnostics.HasError(), diagnostics)
+			assert.True(t, actual.Equal(expected), "actual: %s; expected: %s", actual, expected)
+		})
+	}
+}
+
+func TestClassSchemaNestedLegacyResponse(t *testing.T) {
+	ctx := context.Background()
+	leaf := ClassSchema{
+		Identifiers: []string{"name"},
+		Properties: map[string]PropertySchema{
+			"name":      {Type: StringProperty, Required: true},
+			"password":  {Type: StringProperty, Optional: true, Computed: true, Sensitive: true},
+			"read_only": {Type: StringProperty, Computed: true, ReadOnly: true, Sensitive: true},
+		},
+		NestedLegacyAttributes: map[string]LegacyAttributeSchema{
+			"old_password":  {Type: types.StringType, Replacement: "password", Sensitive: true},
+			"old_read_only": {Type: types.StringType, Replacement: "read_only", Sensitive: true, ReadOnly: true},
+			"frozen":        {Type: types.SetType{ElemType: types.StringType}, Frozen: true},
+		},
+	}
+	root := ClassSchema{Children: map[string]ChildSchema{"members": {Cardinality: SetChild, Schema: func() ClassSchema { return leaf }}}}
+	memberSetType := root.ResourceAttributes(false)["members"].GetType().(types.SetType)
+	memberType := memberSetType.ElemType.(types.ObjectType)
+	rootTypes := map[string]attr.Type{"members": memberSetType}
+	member := func(name string, prior bool) types.Object {
+		values := map[string]attr.Value{
+			"name": types.StringValue(name), "password": types.StringNull(), "old_password": types.StringNull(),
+			"read_only": types.StringValue("readable-" + name), "old_read_only": types.StringNull(), "frozen": types.SetNull(types.StringType),
+		}
+		if prior {
+			values["password"], values["old_password"] = types.StringValue("current-"+name), types.StringValue("historical-"+name)
+			values["frozen"] = types.SetValueMust(types.StringType, []attr.Value{types.StringValue("retained-" + name)})
+		}
+		return types.ObjectValueMust(memberType.AttrTypes, values)
+	}
+	wrap := func(first, second types.Object) types.Object {
+		return types.ObjectValueMust(rootTypes, map[string]attr.Value{"members": types.SetValueMust(memberType, []attr.Value{first, second})})
+	}
+	prior := wrap(member("one", true), member("two", true))
+	decoded := wrap(member("two", false), member("one", false))
+	expectedMember := func(name string) types.Object {
+		values := member(name, true).Attributes()
+		values["old_read_only"] = types.StringValue("readable-" + name)
+		return types.ObjectValueMust(memberType.AttrTypes, values)
+	}
+	unknownMember := func(name string) types.Object {
+		values := member(name, false).Attributes()
+		values["password"], values["old_password"] = types.StringUnknown(), types.StringUnknown()
+		values["frozen"] = types.SetUnknown(types.StringType)
+		return types.ObjectValueMust(memberType.AttrTypes, values)
+	}
+	emptyMember := func(name string) types.Object {
+		values := member(name, false).Attributes()
+		values["old_read_only"] = types.StringValue("readable-" + name)
+		return types.ObjectValueMust(memberType.AttrTypes, values)
+	}
+	testCases := []test.TestCase{
+		{Name: "matching_members_retain_own_values", Input: prior, Expected: wrap(expectedMember("one"), expectedMember("two"))},
+		{Name: "unconfigured_values_do_not_leave_unknown_state", Input: wrap(unknownMember("one"), unknownMember("two")), Expected: wrap(emptyMember("one"), emptyMember("two"))},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			var diagnostics diag.Diagnostics
+			prior := testCase.Input.(types.Object)
+			actual := root.SetLegacyFromValues(ctx, &diagnostics, decoded, &prior)
+			assert.False(t, diagnostics.HasError(), diagnostics)
+			assert.True(t, actual.Equal(testCase.Expected.(types.Object)), "actual: %s; expected: %s", actual, testCase.Expected)
 		})
 	}
 }
@@ -215,8 +553,9 @@ func TestLegacyAttributeSchema(t *testing.T) {
 		{Name: "deprecated_ip_address", Input: LegacyAttributeSchema{Type: customtypes.IPAddressType{}, Replacement: "link_local_ipv6_address"}},
 		{Name: "sensitive_string", Input: LegacyAttributeSchema{Type: types.StringType, Replacement: "password", Sensitive: true}},
 		{Name: "deprecated_list", Input: LegacyAttributeSchema{Type: types.ListType{ElemType: types.StringType}, Replacement: "interface_controls"}},
-		{Name: "frozen_set", Input: LegacyAttributeSchema{Type: types.SetType{ElemType: types.StringType}, Frozen: true}},
-		{Name: "frozen_string", Input: LegacyAttributeSchema{Type: types.StringType, Frozen: true}},
+		{Name: "frozen_set", Input: LegacyAttributeSchema{Type: types.SetType{ElemType: types.StringType}, Replacement: "current_set", Frozen: true}},
+		{Name: "frozen_list", Input: LegacyAttributeSchema{Type: types.ListType{ElemType: types.StringType}, Replacement: "current_list", Frozen: true}},
+		{Name: "frozen_string", Input: LegacyAttributeSchema{Type: types.StringType, Replacement: "current_string", RequiresReplace: true, Frozen: true}},
 		{Name: "deprecated_set", Input: LegacyAttributeSchema{Type: types.SetType{ElemType: types.StringType}, Replacement: "relations"}},
 	}
 	for _, testCase := range testCases {
@@ -229,7 +568,8 @@ func TestLegacyAttributeSchema(t *testing.T) {
 			assert.True(t, resource.GetType().Equal(legacy.Type))
 			if attribute, ok := resource.(resourceschema.StringAttribute); ok {
 				if legacy.Frozen {
-					assert.Len(t, attribute.PlanModifiers, 1, "frozen strings must preserve prior state for unknown plans")
+					assert.Len(t, attribute.PlanModifiers, 1, "frozen strings retain unknown state without replacement")
+					assert.Empty(t, attribute.Validators, "frozen aliases may coexist with current attributes")
 				} else {
 					assert.Empty(t, attribute.PlanModifiers, "deprecated outputs must remain unknown during real changes")
 				}
@@ -237,9 +577,13 @@ func TestLegacyAttributeSchema(t *testing.T) {
 			if attribute, ok := resource.(resourceschema.SetAttribute); ok {
 				if legacy.Frozen {
 					assert.Len(t, attribute.PlanModifiers, 1)
+					assert.Empty(t, attribute.Validators, "frozen aliases may coexist with current attributes")
 				} else {
 					assert.Empty(t, attribute.PlanModifiers, "deprecated outputs must remain unknown during real changes")
 				}
+			}
+			if attribute, ok := resource.(resourceschema.ListAttribute); ok && legacy.Frozen {
+				assert.Empty(t, attribute.Validators, "frozen aliases may coexist with current attributes")
 			}
 			datasource := legacy.DataSourceAttribute()
 			assert.False(t, datasource.IsOptional())
@@ -438,7 +782,14 @@ func TestLegacyParentDNSchema(t *testing.T) {
 				assert.Len(t, alias.Validators, 1, "simultaneous current and old parent inputs conflict")
 				assert.Len(t, alias.PlanModifiers, 1, "configured old parent changes still require replacement")
 			}
-			assert.True(t, definition.DataSourceSchema().Attributes["parent_dn"].IsRequired())
+			dataSource := definition.DataSourceSchema()
+			assert.Equal(t, testCase.Expected, dataSource.Attributes["parent_dn"].IsRequired())
+			if !testCase.Expected.(bool) {
+				alias := dataSource.Attributes["application_profile_dn"].(datasourceschema.StringAttribute)
+				assert.True(t, alias.Optional)
+				assert.True(t, alias.Computed)
+				assert.Len(t, alias.Validators, 1)
+			}
 		})
 	}
 }

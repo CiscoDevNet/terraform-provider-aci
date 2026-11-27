@@ -16,6 +16,7 @@ var _ validator.Object = requiredAttributesWhenNotEmptyValidator{}
 type requiredAttributesWhenNotEmptyValidator struct {
 	attributeName      string
 	requiredAttributes []string
+	alternatives       map[string][]string
 }
 
 func (v requiredAttributesWhenNotEmptyValidator) Description(_ context.Context) string {
@@ -32,7 +33,7 @@ func (v requiredAttributesWhenNotEmptyValidator) ValidateObject(_ context.Contex
 	}
 
 	attributes := request.ConfigValue.Attributes()
-	if IsEmptySingleNestedAttribute(attributes) || !requiredAttributesMissing(attributes, v.requiredAttributes) {
+	if IsEmptySingleNestedAttribute(attributes) || !v.requiredAttributesMissing(attributes) {
 		return
 	}
 
@@ -63,11 +64,20 @@ func IsEmptySingleNestedAttribute(attributes map[string]attr.Value) bool {
 	return true
 }
 
-func requiredAttributesMissing(attributes map[string]attr.Value, requiredAttributes []string) bool {
-	for _, requiredAttribute := range requiredAttributes {
+func (v requiredAttributesWhenNotEmptyValidator) requiredAttributesMissing(attributes map[string]attr.Value) bool {
+	for _, requiredAttribute := range v.requiredAttributes {
 		value, ok := attributes[requiredAttribute]
 		if !ok || value.IsNull() {
-			return true
+			provided := false
+			for _, alternative := range v.alternatives[requiredAttribute] {
+				if value, exists := attributes[alternative]; exists && !value.IsNull() {
+					provided = true
+					break
+				}
+			}
+			if !provided {
+				return true
+			}
 		}
 	}
 	return false
@@ -75,9 +85,10 @@ func requiredAttributesMissing(attributes map[string]attr.Value, requiredAttribu
 
 // RequiredAttributesWhenNotEmpty returns a validator that permits an empty
 // object but rejects partially configured objects that omit required values.
-func RequiredAttributesWhenNotEmpty(attributeName string, requiredAttributes []string) validator.Object {
+func RequiredAttributesWhenNotEmpty(attributeName string, requiredAttributes []string, alternatives map[string][]string) validator.Object {
 	return requiredAttributesWhenNotEmptyValidator{
 		attributeName:      attributeName,
 		requiredAttributes: requiredAttributes,
+		alternatives:       alternatives,
 	}
 }

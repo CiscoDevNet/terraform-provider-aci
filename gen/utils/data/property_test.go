@@ -2897,3 +2897,26 @@ func TestPropertySetCreateOnly(t *testing.T) {
 		})
 	}
 }
+
+func TestNamedReferenceAttributeNameHonorsOverrides(t *testing.T) {
+	testCases := []test.TestCase{
+		{Name: "derived", Expected: "monitoring_policy_name"},
+		{Name: "class_override", Input: "class", Expected: "policy_name"},
+		{Name: "global_override", Input: "global", Expected: "global_policy_name"},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.Name, func(t *testing.T) {
+			property := &Property{PropertyName: "tnMonEPGPolName"}
+			if testCase.Input == "class" {
+				property.propertyDefinition.AttributeName = "policy_name"
+			}
+			if testCase.Input == "global" {
+				property.globalDefinition.AttributeNameOverrides = map[string]string{"tnMonEPGPolName": "global_policy_name"}
+			}
+			property.setAttributeName()
+			ds := &DataStore{Classes: map[string]Class{"monEPGPol": {ResourceName: "monitoring_policy"}}}
+			property.setNamedReferenceAttributeName(ds, testClassName("monEPGPol"))
+			assert.Equal(t, testCase.Expected, property.AttributeName)
+		})
+	}
+}

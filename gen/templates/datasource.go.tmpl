@@ -72,6 +72,11 @@ func (d *{{ .Class.Name.Capitalized }}DataSource) Read(ctx context.Context, req 
 		return
 	}
 
+	{{ if .Class.LegacyLookupAttributes -}}
+	resp.Diagnostics.Append(data.SetFromLegacyLookup(ctx)...)
+	if resp.Diagnostics.HasError() { return }
+
+	{{ end -}}
 	dn := data.BuildDN()
 	tflog.Debug(ctx, fmt.Sprintf("Read of datasource aci_{{ .Class.ResourceName }} with id '%s'", dn))
 
@@ -80,6 +85,9 @@ func (d *{{ .Class.Name.Capitalized }}DataSource) Read(ctx context.Context, req 
 		return
 	}
 
+	{{ if .Class.HasNestedLegacyChanges -}}
+	fallbackModel := data.{{ .Class.Name.Capitalized }}Model
+	{{ end -}}
 	found, diagnostics := data.SetFromResponse(ctx, response)
 	resp.Diagnostics.Append(diagnostics...)
 	if resp.Diagnostics.HasError() {
@@ -94,8 +102,8 @@ func (d *{{ .Class.Name.Capitalized }}DataSource) Read(ctx context.Context, req 
 		return
 	}
 
-	{{ if .Class.HasCurrentLegacyAttributes -}}
-	resp.Diagnostics.Append(data.SetLegacyFromResponse(ctx, response)...)
+	{{ if .Class.HasLegacyConfig -}}
+	resp.Diagnostics.Append(data.SetLegacyFromResponse(ctx, response{{ if .Class.HasNestedLegacyChanges }}, &fallbackModel{{ end }})...)
 	if resp.Diagnostics.HasError() { return }
 
 	{{ end -}}

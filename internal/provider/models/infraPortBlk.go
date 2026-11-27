@@ -478,6 +478,18 @@ func (m *InfraPortBlkRootModel) BuildDeletePayload(ctx context.Context) (*contai
 	return modelHelpers.NewDeletePayload(ctx, &diagnostics, "infraPortBlk", m.ID.ValueString()), diagnostics
 }
 
+func (m *InfraPortBlkRootModel) SetFromLegacyLookup(ctx context.Context) diag.Diagnostics {
+	var diagnostics diag.Diagnostics
+	if !m.LegacyAccessPortSelectorDn.IsNull() && !m.LegacyAccessPortSelectorDn.IsUnknown() {
+		if !m.ParentDN.IsNull() && !m.ParentDN.IsUnknown() {
+			diagnostics.AddError("Conflicting legacy configuration", "Configure either access_port_selector_dn or parent_dn, not both.")
+			return diagnostics
+		}
+		m.ParentDN = m.LegacyAccessPortSelectorDn
+	}
+	return diagnostics
+}
+
 func (m *InfraPortBlkRootModel) SetFromLegacyConfig(ctx context.Context, config, priorState *InfraPortBlkRootModel) diag.Diagnostics {
 	var diagnostics diag.Diagnostics
 	if !config.LegacyAccessPortSelectorDn.IsNull() {
